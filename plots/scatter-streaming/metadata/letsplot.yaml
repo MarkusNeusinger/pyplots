@@ -1,0 +1,209 @@
+library: letsplot
+specification_id: scatter-streaming
+created: '2026-01-19T15:41:20Z'
+updated: '2026-01-19T15:44:07Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 21143284385
+issue: 3790
+python_version: 3.13.11
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-streaming/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-streaming/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-streaming/letsplot/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of the streaming concept using dual opacity/color encoding
+  - Realistic sensor data scenario with temperature-humidity correlation and temporal
+    drift
+  - Clean, readable code following KISS principles
+  - Proper use of lets-plot grammar of graphics with scale_color_gradient and scale_alpha
+  - Correct title format and well-labeled axes with units
+  weaknesses:
+  - Legend positioned far from plot creates slight visual imbalance
+  - Oldest data points (age=0) may be too faint with alpha starting at 0.15
+  - HTML version could leverage interactive tooltips to show timestamp on hover
+  image_description: The plot displays a scatter plot of 200 simulated sensor readings
+    showing Temperature (°C) on the x-axis (range ~21-26.5) and Humidity (%) on the
+    y-axis (range ~44-68). Points are colored using a blue gradient from dark navy
+    (#1a365d) for older points to medium blue (#306998) for newer points, with a "Recency"
+    legend on the right showing values from 0 to 1. Older points appear more transparent
+    (faded) while newer points are more opaque, creating a visual effect of streaming
+    data where recent arrivals stand out. The plot uses a minimal white background
+    with subtle gridlines. The title correctly shows "scatter-streaming · letsplot
+    · pyplots.ai" at the top. The data shows a positive correlation between temperature
+    and humidity with some drift over time, representing simulated IoT sensor readings.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: 'All text clearly readable: title, axis labels, tick marks, and legend
+          text are appropriately sized'
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text or data elements; all labels are well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 8
+        passed: true
+        comment: Markers visible and alpha encoding works well; oldest points are
+          quite faint
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue gradient is colorblind-safe; single-hue scheme avoids problematic
+          color combinations
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions with plot filling majority of canvas, balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: Temperature (°C) and Humidity (%)'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Legend positioned far to the right creating visual imbalance
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct scatter plot type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y correctly mapped to temperature and humidity
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Implements opacity encoding for point age, color gradient for recency;
+          static output acceptable
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data points visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Recency legend correctly describes the color encoding
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: scatter-streaming · letsplot · pyplots.ai'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows streaming effect with opacity/color gradients, correlation
+          in data, drift over time
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: 'Excellent realistic scenario: IoT temperature/humidity sensor readings
+          at 100ms intervals'
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Temperature 21-26°C and humidity 44-68% are realistic indoor sensor
+          ranges
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean flat structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) ensures deterministic output
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current lets-plot API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of ggplot grammar with scale_color_gradient and scale_alpha;
+          could use more advanced features like tooltips
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - time-series
+  - cumulative-sum
+  styling:
+  - alpha-blending
+  - custom-colormap

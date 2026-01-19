@@ -1,0 +1,209 @@
+library: bokeh
+specification_id: scatter-streaming
+created: '2026-01-19T15:41:43Z'
+updated: '2026-01-19T15:44:16Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 21143284182
+issue: 3790
+python_version: 3.13.11
+library_version: 3.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-streaming/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-streaming/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-streaming/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent visual representation of streaming data through opacity and size gradients
+  - Clear highlighting of newest points with ring markers
+  - Realistic sensor data scenario (temperature vs humidity)
+  - Good use of Bokeh ColumnDataSource for data management
+  - Proper title format and axis labels with units
+  weaknesses:
+  - Legend text is quite small relative to the large canvas size
+  - Could leverage Bokeh actual streaming/callback features for HTML output
+  - The oldest points (alpha=0.15) may be slightly too faint
+  image_description: The plot displays a streaming scatter plot showing simulated
+    sensor data with Temperature (°C) on the x-axis (range ~20-22.5) and Relative
+    Humidity (%) on the y-axis (range ~55-59). The visualization effectively demonstrates
+    a streaming data effect through an opacity gradient where older points appear
+    lighter/more transparent (faded light blue) and newer points appear darker/more
+    opaque (solid blue). Point sizes also increase from older to newer points. The
+    5 most recent points are highlighted with distinctive blue ring markers and labeled
+    in a legend as "Newest Points" in the top-left corner. The title "scatter-streaming
+    · bokeh · pyplots.ai" appears in blue at the top. The background is a light gray
+    (#fafafa) with dashed gray grid lines. The data shows a random walk pattern typical
+    of sensor readings with cumulative drift.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title and axis labels are readable, though tick labels could be slightly
+          larger
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Points are visible with good opacity gradient; some older points
+          may be slightly too faint
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue color scheme is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, plot fills canvas well
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive with units: Temperature (°C) and Relative Humidity (%)'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Legend is very small and positioned far from main data area
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct streaming scatter plot
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y correctly assigned to temperature and humidity
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has opacity gradient for age, point buffer, timestamp-based coloring,
+          newest point highlighting
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show all data appropriately
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies newest points
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format scatter-streaming · bokeh · pyplots.ai
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows streaming effect well, though could show more dramatic temporal
+          pattern
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Sensor readings (temp vs humidity) is a realistic IoT scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Temperature range 20-22.5C and humidity 55-59% are realistic indoor
+          conditions
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear script: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current Bokeh API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves as plot.png but also saves plot.html (minor)
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses ColumnDataSource well, but does not leverage Bokeh true streaming
+          capabilities
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - custom-legend
+  - html-export
+  patterns:
+  - data-generation
+  - columndatasource
+  dataprep:
+  - time-series
+  - cumulative-sum
+  styling:
+  - alpha-blending
+  - grid-styling

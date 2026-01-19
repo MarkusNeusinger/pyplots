@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: scatter-streaming
 created: '2026-01-19T15:44:04Z'
-updated: '2026-01-19T15:47:14Z'
+updated: '2026-01-19T15:53:14Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21143284399
 issue: 3790
@@ -10,37 +10,32 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-streaming/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-streaming/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-streaming/highcharts/plot.html
-quality_score: 86
+quality_score: 91
 review:
   strengths:
-  - Excellent implementation of the streaming scatter concept using opacity to encode
-    data recency
-  - Realistic sensor data scenario (temperature vs humidity) directly from spec examples
-  - Clean, well-structured code following highcharts library best practices
-  - Proper use of ScatterSeries with grouped data for visual distinction
-  - Good visual design with appropriate font sizing and colorblind-safe palette
-  - Generates both PNG and HTML output as expected for interactive library
+  - Excellent implementation of opacity-based data recency visualization with four
+    distinct groups
+  - Clean, well-structured code following the KISS principle
+  - Realistic sensor data scenario with appropriate value ranges
+  - Good use of Highcharts features including hover states, tooltips, and styled legend
+  - Both PNG and HTML outputs generated correctly
   weaknesses:
-  - The opacity differences between the four groups are subtle - could use a wider
-    opacity range (e.g., 0.1 to 1.0 instead of 0.2 to 1.0) for clearer visual distinction
-  - Data clustering on the left side of the plot due to random walk pattern - could
-    adjust random walk parameters for better spread
-  - Marker stroke (lineColor) is the same for all groups, reducing the visual distinction
-    between recency levels
-  image_description: 'The plot displays a scatter plot of sensor readings with Temperature
-    (°C) on the x-axis ranging from approximately 17.9°C to 23.3°C, and Humidity (%)
-    on the y-axis ranging from 50% to 82%. The chart shows 150 data points grouped
-    into four series by opacity level: "Oldest readings" (most transparent), "Older
-    readings", "Recent readings", and "Latest readings" (most opaque). All points
-    use a consistent blue color (#306998) with varying transparency to indicate data
-    recency. The title "scatter-streaming · highcharts · pyplots.ai" appears at the
-    top with a subtitle explaining the opacity encoding. The legend is positioned
-    in the upper right corner with a white background. Grid lines are subtle gray.
-    The data shows an inverse correlation between temperature and humidity, with a
-    random walk pattern representing streaming sensor data.'
+  - Library version shown as "unknown" in the header comment
+  - Legend text could be slightly larger for optimal visibility at 4800x2700 resolution
+  image_description: 'The plot displays a scatter plot visualization of streaming
+    sensor data showing Temperature (°C) on the x-axis (ranging from ~20 to ~30.5)
+    versus Humidity (%) on the y-axis (ranging from ~27 to ~75). The data points use
+    a consistent blue color (#306998) with varying opacity levels to indicate data
+    recency - older readings appear more transparent while newer readings are more
+    opaque. The plot is divided into four series shown in the legend: "Oldest readings",
+    "Older readings", "Recent readings", and "Latest readings", each with progressively
+    increasing opacity. The title follows the correct format "scatter-streaming ·
+    highcharts · pyplots.ai" with a subtitle explaining that opacity indicates data
+    recency. A subtle grid is visible in the background, and the legend is positioned
+    in the upper right corner with a semi-transparent white background.'
   criteria_checklist:
     visual_quality:
-      score: 35
+      score: 36
       max: 40
       items:
       - id: VQ-01
@@ -48,48 +43,48 @@ review:
         score: 9
         max: 10
         passed: true
-        comment: Title, axis labels, and tick labels are all readable. Font sizes
-          are appropriately scaled for the canvas size.
+        comment: Title, axis labels, and tick marks are clearly readable at the large
+          canvas size. Font sizes are appropriately scaled.
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements. All labels are clearly separated.
+        comment: No overlapping text elements; legend is well-positioned away from
+          data.
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Markers are visible with good size (radius 14). However, the opacity
-          gradient could be more distinct - the differences between the four groups
-          are subtle.
+        comment: Markers are well-sized (radius 14) for the data density of 150 points.
+          Opacity gradient effectively shows data recency.
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Single blue color with opacity variations is colorblind-safe.
+        comment: Single blue hue with opacity variation is colorblind-safe.
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Plot uses good portion of canvas but data is clustered in the left-center
-          region leaving right side sparse.
+        comment: Good use of canvas space. Plot area fills most of the canvas with
+          balanced margins.
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: 'Both axes have descriptive labels with units: Temperature (°C) and
-          Humidity (%).'
+        comment: 'Descriptive labels with units: Temperature (°C) and Humidity (%).'
       - id: VQ-07
         name: Grid & Legend
-        score: 2
+        score: 1
         max: 2
         passed: true
-        comment: Grid lines are subtle, legend is well-positioned and clear.
+        comment: Grid is subtle with light gray color. Legend is well-positioned but
+          could have slightly larger text for the canvas size.
     spec_compliance:
       score: 23
       max: 25
@@ -105,59 +100,59 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: X/Y correctly assigned to temperature and humidity respectively.
+        comment: X (temperature) and Y (humidity) correctly mapped as numeric coordinates.
       - id: SC-03
         name: Required Features
         score: 4
         max: 5
         passed: true
-        comment: Opacity-based recency encoding is implemented. Opacity gradient between
-          groups could be more visually distinct.
+        comment: Opacity gradient for data recency is well-implemented. Missing fade-in
+          animation (expected for static output showing snapshot).
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data points visible within axis ranges.
+        comment: All 150 data points visible within axis ranges.
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Legend labels correctly describe the four recency groups.
+        comment: Legend correctly describes the four opacity groups.
       - id: SC-06
         name: Title Format
         score: 1
         max: 2
         passed: true
-        comment: Title format is correct with middle dot separator.
+        comment: Title uses correct format with middle dot separator.
     data_quality:
-      score: 17
+      score: 19
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Shows streaming concept with opacity encoding. Could better demonstrate
-          the buffer limit concept.
+        comment: Shows data streaming concept with opacity-based recency. Good scatter
+          distribution showing temperature-humidity correlation.
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Temperature vs humidity sensor data is a realistic IoT monitoring
-          scenario.
+        comment: Sensor readings for temperature and humidity is a realistic IoT monitoring
+          scenario mentioned in the spec.
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Temperature range (18-23°C) and humidity (50-80%) are realistic for
-          indoor sensors.
+        comment: Temperature range 20-30°C and humidity 27-75% are realistic environmental
+          sensor values.
     code_quality:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -165,49 +160,49 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear script structure: imports → data → plot → save.'
+        comment: Linear script structure without unnecessary functions or classes.
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42) for reproducible output.
+        comment: Uses np.random.seed(42) for reproducible data generation.
       - id: CQ-03
         name: Clean Imports
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: 'Minor issue: _color variable defined but not used in the loop.'
+        comment: All imports are used (highcharts_core, selenium, numpy, etc.).
       - id: CQ-04
         name: No Deprecated API
-        score: 1
-        max: 1
-        passed: true
-        comment: Uses current highcharts_core API.
-      - id: CQ-05
-        name: Output Correct
         score: 0
         max: 1
         passed: false
-        comment: Saves as plot.png AND plot.html - both are expected for interactive
-          libraries.
+        comment: Library version shown as unknown in the header comment.
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Correctly saves both plot.png and plot.html.
     library_features:
-      score: 3
+      score: 4
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Uses Highcharts scatter series with custom markers and opacity groups.
-          Could leverage more Highcharts-specific features like hover states.
-  verdict: REJECTED
+        comment: Good use of Highcharts series with custom markers, hover states,
+          and tooltip configuration. HTML export with interactive features.
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - selenium
   techniques:
   - html-export
+  - hover-tooltips
   - custom-legend
   patterns:
   - data-generation
@@ -215,4 +210,4 @@ impl_tags:
   dataprep: []
   styling:
   - alpha-blending
-  - grid-styling
+  - edge-highlighting

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-streaming: Streaming Scatter Plot
 Library: highcharts unknown | Python 3.13.11
-Quality: 86/100 | Created: 2026-01-19
+Quality: 91/100 | Created: 2026-01-19
 """
 
 import tempfile

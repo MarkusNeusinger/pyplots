@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-streaming: Streaming Scatter Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 86/100 | Created: 2026-01-19
@@ -25,24 +25,34 @@ n_points = 150
 # Simulate streaming data with timestamps
 timestamps = np.arange(n_points)  # Arrival order (0 = oldest, n-1 = newest)
 
-# Temperature: random walk around 22C
-temperature = 22 + np.cumsum(np.random.randn(n_points) * 0.3)
-temperature = np.clip(temperature, 15, 30)
+# Temperature: random walk around 22C with wider spread
+# Using larger step size and resetting periodically for better data distribution
+temperature = np.zeros(n_points)
+temperature[0] = 22
+for i in range(1, n_points):
+    # Larger random steps with occasional jumps for better spread
+    step = np.random.randn() * 0.8
+    if np.random.random() < 0.1:  # 10% chance of larger jump
+        step *= 3
+    temperature[i] = temperature[i - 1] + step
+temperature = np.clip(temperature, 15, 32)
 
-# Humidity: correlated with temperature (inverse relationship) plus noise
-humidity = 60 - (temperature - 22) * 2 + np.random.randn(n_points) * 5
-humidity = np.clip(humidity, 30, 80)
+# Humidity: correlated with temperature (inverse relationship) plus larger noise
+# Using independent noise component for more scatter
+humidity = 55 - (temperature - 22) * 1.5 + np.random.randn(n_points) * 8
+humidity = np.clip(humidity, 30, 85)
 
 # Calculate opacity based on recency (newer = more opaque)
-# Oldest points start at 0.2, newest at 1.0
-opacities = 0.2 + 0.8 * (timestamps / (n_points - 1))
+# Oldest points start at 0.1, newest at 1.0 for maximum visual distinction
+opacities = 0.1 + 0.9 * (timestamps / (n_points - 1))
 
 # Group points by opacity ranges to create visual layers
+# Using varied line colors for additional visual distinction between groups
 opacity_groups = [
-    (0.2, 0.4, "#306998", "Oldest readings"),
-    (0.4, 0.6, "#306998", "Older readings"),
-    (0.6, 0.8, "#306998", "Recent readings"),
-    (0.8, 1.01, "#306998", "Latest readings"),
+    (0.1, 0.325, "rgba(48, 105, 152, 0.3)", "Oldest readings"),
+    (0.325, 0.55, "rgba(48, 105, 152, 0.5)", "Older readings"),
+    (0.55, 0.775, "rgba(48, 105, 152, 0.7)", "Recent readings"),
+    (0.775, 1.01, "rgba(48, 105, 152, 1.0)", "Latest readings"),
 ]
 
 # Create chart
@@ -110,7 +120,7 @@ chart.options.tooltip = {
 }
 
 # Add series for each opacity group
-for min_op, max_op, _color, name in opacity_groups:
+for min_op, max_op, line_color, name in opacity_groups:
     mask = (opacities >= min_op) & (opacities < max_op)
     if not np.any(mask):
         continue
@@ -127,7 +137,15 @@ for min_op, max_op, _color, name in opacity_groups:
         "radius": 14,
         "fillColor": f"rgba(48, 105, 152, {avg_opacity})",
         "lineWidth": 2,
-        "lineColor": "#306998",
+        "lineColor": line_color,
+        "states": {
+            "hover": {
+                "enabled": True,
+                "radius": 18,
+                "lineWidth": 3,
+                "fillColor": f"rgba(48, 105, 152, {min(avg_opacity + 0.2, 1.0)})",
+            }
+        },
     }
 
     chart.add_series(series)

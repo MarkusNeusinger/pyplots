@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 gauge-realtime: Real-Time Updating Gauge
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 82/100 | Created: 2026-01-19
+Quality: 90/100 | Created: 2026-01-19
 """
 
 import pygal

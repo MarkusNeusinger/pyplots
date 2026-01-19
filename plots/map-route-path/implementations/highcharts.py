@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-route-path: Route Path Map
 Library: highcharts unknown | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-19
@@ -289,12 +289,12 @@ html_content = f"""<!DOCTYPE html>
                 spacing: [100, 80, 80, 80]
             }},
             title: {{
-                text: 'Alpine Hiking Trail · map-route-path · highcharts · pyplots.ai',
+                text: 'map-route-path · highcharts · pyplots.ai',
                 style: {{ fontSize: '56px', fontWeight: 'bold' }},
                 y: 60
             }},
             subtitle: {{
-                text: 'GPS track from Zermatt region through the Swiss Alps (150 waypoints, 6-hour hike)<br>' +
+                text: 'Alpine Hiking Trail: GPS track from Zermatt region through the Swiss Alps (150 waypoints, 6-hour hike)<br>' +
                       '<span style="font-size: 28px; color: #666;">Route color: <span style="color: #1a4f9c;">■</span> Start (blue) → <span style="color: #b2182b;">■</span> End (red) = time progression</span>',
                 useHTML: true,
                 style: {{ fontSize: '36px', color: '#666666' }},
@@ -350,19 +350,19 @@ html_content = f"""<!DOCTYPE html>
                 ],
                 labels: {{
                     format: '{{value}} hrs',
-                    style: {{ fontSize: '24px' }}
+                    style: {{ fontSize: '28px' }}
                 }},
                 title: {{
                     text: 'Time (hours)',
-                    style: {{ fontSize: '28px' }}
+                    style: {{ fontSize: '32px' }}
                 }},
                 layout: 'horizontal',
                 floating: false,
                 align: 'center',
                 verticalAlign: 'bottom',
-                y: -20,
-                width: 600,
-                height: 20
+                y: -30,
+                width: 900,
+                height: 28
             }},
             tooltip: {{
                 useHTML: true,
@@ -444,8 +444,8 @@ standalone_html = f"""<!DOCTYPE html>
 
                 Highcharts.mapChart('container', {{
                     chart: {{ backgroundColor: '#f0f4f8' }},
-                    title: {{ text: 'Alpine Hiking Trail · map-route-path · highcharts · pyplots.ai' }},
-                    subtitle: {{ text: 'GPS track from Zermatt region through the Swiss Alps (150 waypoints, 6-hour hike)<br><span style="font-size: 12px; color: #666;">Route color: blue (start) → red (end) = time progression</span>', useHTML: true }},
+                    title: {{ text: 'map-route-path · highcharts · pyplots.ai' }},
+                    subtitle: {{ text: 'Alpine Hiking Trail: GPS track from Zermatt region through the Swiss Alps (150 waypoints, 6-hour hike)<br><span style="font-size: 12px; color: #666;">Route color: blue (start) → red (end) = time progression</span>', useHTML: true }},
                     mapNavigation: {{ enabled: true }},
                     mapView: {{
                         projection: {{ name: 'WebMercator' }},

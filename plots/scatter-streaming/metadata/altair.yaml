@@ -1,0 +1,211 @@
+library: altair
+specification_id: scatter-streaming
+created: '2026-01-19T15:40:00Z'
+updated: '2026-01-19T15:42:50Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 21143284204
+issue: 3790
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-streaming/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-streaming/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-streaming/altair/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of dual encoding (opacity and color) to convey point recency/age
+  - Realistic sensor data scenario with temperature-humidity correlation
+  - Proper Altair declarative syntax with clean encoding specifications
+  - 'Good use of Altair-specific features: labelExpr for legend customization, tooltips,
+    scale domains'
+  - Clean code structure following KISS principles
+  weaknesses:
+  - Some older points (opacity 0.2) may be too faint to see clearly against the white
+    background
+  - Fixed scale domain leaves some empty space on the right side of the plot
+  image_description: The plot displays a streaming scatter plot with approximately
+    200 data points representing simulated sensor readings. The X-axis shows "Temperature
+    (°C)" ranging from about 19 to 31, and the Y-axis shows "Humidity (%)" ranging
+    from 36 to 84. Points are rendered using a blue color scheme with a gradient from
+    light (old data) to dark blue (new data), indicating recency through both color
+    intensity and opacity. The title "scatter-streaming · altair · pyplots.ai" is
+    clearly displayed at the top center. A vertical legend on the right labeled "Recency"
+    shows the color gradient from "New" (dark blue) to "Old" (light blue). The data
+    shows a positive correlation between temperature and humidity, with older (more
+    transparent) points clustered in the lower-left region and newer (more opaque)
+    points in the upper-right, simulating a data stream moving over time. The grid
+    is subtle and the overall layout is clean.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt, axis labels at 22pt, tick labels at 18pt - all clearly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers sized at 200 with appropriate opacity gradient (0.2-1.0);
+          some older points are quite faint
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blues color scheme is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Plot fills canvas well but some empty space on the right side due
+          to fixed scale domain
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive with units: Temperature (°C) and Humidity (%)'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha 0.5, light gray), legend well placed
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct scatter plot type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y correctly assigned with timestamp-based encoding
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Has opacity encoding for point age, timestamp coloring, fixed axis
+          bounds; no animation (expected for static output)
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show all data with appropriate padding
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Recency legend correctly labeled with New and Old
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: scatter-streaming · altair · pyplots.ai'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows streaming effect with opacity gradient and color encoding;
+          data flows from lower-left to upper-right showing temporal progression
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Temperature/humidity sensor readings is a realistic IoT scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Temperature 20-30°C and humidity 40-80% are realistic sensor ranges
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Linear imports → data → plot → save structure, no functions or classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports used (altair, numpy, pandas)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Modern Altair API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent use of Altair's declarative encoding with dual encoding
+          (opacity + color) for age, proper scale configuration, custom legend with
+          labelExpr, tooltips, and HTML export
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - time-series
+  dataprep: []
+  styling:
+  - custom-colormap
+  - alpha-blending
+  - grid-styling

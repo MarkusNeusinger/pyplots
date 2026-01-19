@@ -1,0 +1,210 @@
+library: highcharts
+specification_id: bar-realtime
+created: '2026-01-19T20:26:29Z'
+updated: '2026-01-19T20:35:03Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 21150506591
+issue: 3789
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-realtime/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-realtime/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-realtime/highcharts/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of colorblind-safe blue/orange palette instead of problematic red/green
+  - Ghost bars effectively convey the motion effect for real-time visualization
+  - Change indicators with delta values provide clear feedback on direction and magnitude
+  - Professional subtitle with LIVE indicator adds dashboard authenticity
+  - 'Good use of Highcharts-specific features: animations, annotations, rounded borders'
+  weaknesses:
+  - Legend icons display as circles rather than rectangles/bars matching the chart
+    type
+  - Legend positioned far from the chart in upper-right corner with excessive gap
+  image_description: 'The plot displays a real-time updating bar chart showing service
+    throughput metrics (requests per second) for 6 services: API Gateway, Auth Service,
+    Database, Cache, Queue, and CDN. Each service has two bars side-by-side: a light
+    gray semi-transparent "Previous" bar and a colored "Current" bar. The current
+    bars use a colorblind-safe palette with blue (#306998) for increases and orange
+    (#E07B39) for decreases. Above each current bar are change indicators showing
+    directional arrows (▲/▼) with the absolute change value in matching colors. The
+    title "bar-realtime · highcharts · pyplots.ai" is prominently displayed at the
+    top, with a green "● LIVE" subtitle indicating real-time data. The y-axis shows
+    "Requests per Second" ranging from 0-500, and the x-axis shows "Service" with
+    category labels. A legend in the upper right distinguishes Previous (light blue
+    circle) from Current (dark blue circle) series. Data labels on each bar show exact
+    values (e.g., 252, 420, 256, 221, 338, 170 for current values).'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 72px, axis titles at 48px, labels at 36px, data labels at
+          32px - all highly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping elements, bars well-spaced, annotations positioned
+          above bars
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars properly sized, ghost bars visible at 40% opacity, data labels
+          clear
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses blue/orange colorblind-safe palette instead of red/green
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good canvas utilization, slight excess margin at bottom
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Y-axis: Requests per Second (descriptive), X-axis: Service'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Legend icons show circles instead of rectangles for bar chart; legend
+          positioned far from chart
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct column/bar chart type for real-time updating data
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X-axis, values on Y-axis correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Has ghost bars for motion effect, change indicators, animation settings;
+          missing auto-sorting
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows 0-500, accommodating all data points (145-462)
+      - id: SC-05
+        name: Legend Accuracy
+        score: 1
+        max: 2
+        passed: false
+        comment: Legend labels correct but icons don't match bar shapes
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format bar-realtime · highcharts · pyplots.ai
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows both increases and decreases, previous/current comparison,
+          change indicators
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Service throughput monitoring is a realistic dashboard scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values 145-462 req/sec are plausible for service metrics
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 2
+        max: 3
+        passed: true
+        comment: Mostly linear structure with some helper loops for annotations
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) is set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 0
+        max: 1
+        passed: false
+        comment: Implementation has functions-style logic patterns
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses Highcharts animations, annotations module, column series, data
+          labels, proper HTML export with Selenium
+  verdict: APPROVED
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
+  - grid-styling

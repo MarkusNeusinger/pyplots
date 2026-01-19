@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-realtime: Real-Time Updating Bar Chart
 Library: highcharts unknown | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-19
@@ -21,11 +21,15 @@ from selenium.webdriver.chrome.options import Options
 np.random.seed(42)
 categories = ["API Gateway", "Auth Service", "Database", "Cache", "Queue", "CDN"]
 current_values = np.random.randint(150, 450, size=len(categories))
-previous_values = current_values - np.random.randint(-30, 50, size=len(categories))
+# Generate realistic changes: +/- 5-15% of current value, with controlled mix of increases/decreases
+change_percentages = np.array([0.08, -0.10, 0.12, 0.05, -0.07, 0.15])  # Fixed mix of positive/negative
+changes = (current_values * change_percentages).astype(int)
+previous_values = current_values - changes
 
-# Colors - using Python blue as primary, with variation based on change direction
-base_color = "#306998"
-colors = ["#306998" if current_values[i] >= previous_values[i] else "#9467BD" for i in range(len(categories))]
+# Colors - using colorblind-safe palette (blue for increases, orange for decreases - NOT red/green)
+increase_color = "#306998"  # Blue
+decrease_color = "#E07B39"  # Orange (colorblind-safe alternative to red/green)
+colors = [increase_color if changes[i] >= 0 else decrease_color for i in range(len(categories))]
 
 # Create chart with container
 chart = Chart(container="container")
@@ -69,8 +73,16 @@ chart.options.y_axis = {
     "gridLineColor": "#e5e7eb",
 }
 
-# Legend
-chart.options.legend = {"enabled": True, "itemStyle": {"fontSize": "36px"}}
+# Legend - clear distinction between Previous (ghost) and Current values
+chart.options.legend = {
+    "enabled": True,
+    "itemStyle": {"fontSize": "40px", "fontWeight": "bold"},
+    "align": "right",
+    "verticalAlign": "top",
+    "layout": "vertical",
+    "x": -50,
+    "y": 100,
+}
 
 # Plot options with animation settings
 chart.options.plot_options = {
@@ -99,12 +111,13 @@ current_series.data = [{"y": int(current_values[i]), "color": colors[i]} for i i
 current_series.name = "Current"
 chart.add_series(current_series)
 
-# Add annotations for change indicators
+# Add annotations for change indicators - using colorblind-safe colors (blue/orange, NOT red/green)
 annotations_data = []
-for i, (curr, prev) in enumerate(zip(current_values, previous_values, strict=True)):
-    change = curr - prev
+increase_indicator_color = "#306998"  # Blue for positive change
+decrease_indicator_color = "#E07B39"  # Orange for negative change (colorblind-safe)
+for i, (curr, change) in enumerate(zip(current_values, changes, strict=True)):
     symbol = "▲" if change >= 0 else "▼"
-    color = "#059669" if change >= 0 else "#DC2626"
+    color = increase_indicator_color if change >= 0 else decrease_indicator_color
     annotations_data.append(
         {
             "point": {"x": i, "y": int(curr), "xAxis": 0, "yAxis": 0},

@@ -1,0 +1,215 @@
+library: plotly
+specification_id: scatter-streaming
+created: '2026-01-19T15:41:30Z'
+updated: '2026-01-19T15:44:16Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 21143284100
+issue: 3790
+python_version: 3.13.11
+library_version: 6.5.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-streaming/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-streaming/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-streaming/plotly/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of opacity-based recency encoding that clearly shows
+    data flow direction
+  - Well-annotated with Latest and Oldest markers that visually communicate the streaming
+    concept
+  - Clean, professional styling with appropriate font sizes for the target resolution
+  - Realistic IoT sensor scenario with temperature and humidity measurements
+  - Informative footer explaining the visualization encoding
+  weaknesses:
+  - The annotations for Latest and Oldest appear to point to nearby but different
+    data points - Oldest annotation seems misplaced in the middle of data rather than
+    at the truly oldest (most faded) point
+  - Could benefit from a more prominent visual legend explaining the opacity scale
+  - HTML export is included but adds no value for static image evaluation
+  image_description: 'The plot displays a scatter plot with 200 data points representing
+    temperature (°C) on the x-axis and humidity (%) on the y-axis. The points use
+    a blue color scheme (#306998) with varying opacity to indicate data recency -
+    older points appear more faded/transparent while newer points are solid. The data
+    spans roughly 18-26°C in temperature and 40-72% humidity. Two annotations with
+    arrows point to specific data points: "Latest" indicates the newest data point,
+    and "Oldest" indicates the oldest. The title "scatter-streaming · plotly · pyplots.ai"
+    is centered at the top. A subtle footer note explains the opacity encoding: "200
+    sensor readings | Point opacity indicates recency (older → faded, newer → solid)".
+    The plot uses a clean white template with light gray grid lines and well-sized
+    axis labels.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, tick marks, and annotations are all clearly readable
+          at target resolution
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; annotations are well-positioned
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 8
+        passed: true
+        comment: Markers visible and sized appropriately for 200 points, but oldest
+          faded points could be slightly larger
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color scheme with opacity variation is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good canvas utilization with balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: Temperature (°C) and Humidity (%)'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is subtle and appropriate, but no legend explaining the opacity
+          encoding
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct scatter plot type for streaming data visualization
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y correctly assigned to temperature and humidity
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Implements opacity gradient for recency, annotations for data flow,
+          appropriate point buffer
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data points visible within axis ranges
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Footer annotation explains the opacity encoding adequately
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly formatted as scatter-streaming · plotly · pyplots.ai
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows streaming effect well with opacity gradient and annotations,
+          but could show more dramatic temporal patterns
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: IoT sensor data (temperature vs humidity) is a perfect real-world
+          streaming scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Temperature (18-26°C) and humidity (40-72%) are realistic indoor
+          sensor ranges
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used (numpy, pandas, plotly.graph_objects)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves as plot.png but also includes HTML export which is unnecessary
+          for static review
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses go.Scatter with custom markers, annotations, and write_image/write_html.
+          Could leverage Plotly animation frames for streaming simulation
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - time-series
+  styling:
+  - alpha-blending
+  - grid-styling

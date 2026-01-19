@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 chart-export-menu: Chart with Built-in Export Menu
-Library: lets-plot | Python 3.13
-Quality: pending | Created: 2025-01-19
+Library: letsplot 4.8.2 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-19
 """
 
 import numpy as np

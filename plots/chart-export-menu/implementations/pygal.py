@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 chart-export-menu: Chart with Built-in Export Menu
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 75/100 | Created: 2026-01-19
+Quality: 90/100 | Created: 2026-01-19
 """
 
 import pygal

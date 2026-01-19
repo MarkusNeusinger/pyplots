@@ -1,7 +1,7 @@
 library: pygal
 specification_id: chart-export-menu
 created: '2026-01-19T20:59:52Z'
-updated: '2026-01-19T21:02:31Z'
+updated: '2026-01-19T21:09:39Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21151242605
 issue: 3787
@@ -10,89 +10,81 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/chart-export-menu/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/chart-export-menu/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/chart-export-menu/pygal/plot.html
-quality_score: 75
+quality_score: 90
 review:
   strengths:
-  - Clean, readable line chart with professional styling
-  - Good use of pygal custom Style for consistent branding
-  - Appropriate data visualization for monthly sales trends
-  - Correct title format following pyplots.ai conventions
-  - Dual output (HTML + PNG) provides both interactive and static versions
+  - Excellent implementation of export menu functionality via embedded JavaScript
+    in HTML output
+  - Three distinct export formats (PNG, SVG, CSV) as specified with working download
+    functionality
+  - Clean, well-styled chart with appropriate colors from pyplots color scheme
+  - Good use of pygal native SVG capabilities for high-resolution output
+  - Deterministic data with realistic seasonal sales pattern
   weaknesses:
-  - 'Critical: The spec is for Chart with Built-in Export Menu but no export menu/button
-    is visible in the rendered chart - the core feature is missing from the visual
-    output'
-  - The legend is positioned in the top-left corner outside the main plot area, making
-    it feel disconnected
-  - No visible export button, hamburger menu, or download icon as required by the
-    specification
-  - The static PNG does not demonstrate the export functionality that pygal SVG can
-    provide
-  image_description: The plot shows a line chart with three data series (Product A,
-    Product B, Product C) displaying monthly sales data over a year (Jan-Dec). Product
-    A is represented by a dark blue line, Product B by a yellow/gold line, and Product
-    C by a light blue/cyan line. The title reads "chart-export-menu · pygal · pyplots.ai"
-    at the top center. The Y-axis is labeled "Sales (thousands)" ranging from approximately
-    25 to 95. The X-axis shows months (Jan through Dec) with the label "Month" below.
-    The legend appears in the top-left corner with colored squares indicating each
-    product series. A subtle grid is visible with light gray horizontal and vertical
-    lines. The chart shows a seasonal pattern with sales peaking around July-August
-    and declining afterward. Notably, there is no visible export menu, hamburger icon,
-    or download button in the chart, which is the primary feature required by the
-    specification.
+  - The PNG static output does not show the export menu button (menu only visible
+    in HTML)
+  - Legend placement at bottom creates excessive gap between chart and legend
+  image_description: The plot displays a multi-line chart showing monthly sales data
+    for three products (Product A, B, C) over 12 months (Jan-Dec). The chart uses
+    a white background with subtle gray grid lines. Product A is rendered in a dark
+    blue (#306998) line with circular dot markers, Product B in golden yellow (#FFD43B),
+    and Product C in a light blue (#4B8BBE). The title "chart-export-menu · pygal
+    · pyplots.ai" appears at the top center. The Y-axis is labeled "Sales (thousands)"
+    and the X-axis is labeled "Month". The legend appears at the bottom with three
+    colored squares identifying each product line. All three lines show a seasonal
+    pattern peaking around July-August. Lines are clearly distinguishable with good
+    spacing and data points marked with visible dots.
   criteria_checklist:
     visual_quality:
-      score: 29
+      score: 36
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 10
         max: 10
         passed: true
-        comment: Title and axis labels are readable but legend text is somewhat small
-          in the corner
+        comment: Title, axis labels, and tick labels are all clearly readable at the
+          large canvas size
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping text elements; month labels well-spaced
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 8
         max: 8
         passed: true
-        comment: Lines and dots are visible, dots sized appropriately for data density
+        comment: Dot markers appropriately sized, lines have good stroke width
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Colors are distinguishable but blue tones could be confused by some
-          users
+        comment: Three distinct colors that work well for colorblind viewers
       - id: VQ-05
         name: Layout Balance
         score: 3
         max: 5
         passed: true
-        comment: Good plot area usage, legend in corner is acceptable but slightly
-          isolated
+        comment: Good canvas utilization but slightly more whitespace at top/bottom
+          than ideal
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive axis labels with units: Sales (thousands) and Month'
+        comment: Y-axis has units, X-axis labeled Month
       - id: VQ-07
         name: Grid & Legend
         score: 0
         max: 2
         passed: false
-        comment: Legend is positioned in top-left corner outside the plot area, small
-          colored squares may not be optimal
+        comment: Legend at bottom is spaced too far from the chart
     spec_compliance:
-      score: 19
+      score: 23
       max: 25
       items:
       - id: SC-01
@@ -100,64 +92,62 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct line chart type for time series data
+        comment: Line chart correctly implements chart visualization as specified
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: X (months) and Y (sales values) correctly mapped
+        comment: X-axis shows months, Y-axis shows sales values correctly
       - id: SC-03
         name: Required Features
-        score: 1
+        score: 4
         max: 5
-        passed: false
-        comment: The spec requires an export menu as the primary feature. No visible
-          export menu/button in the chart itself
+        passed: true
+        comment: Export menu implemented in HTML output; PNG shows static chart only
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data points visible within axes range
+        comment: All data points visible within axis ranges
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Legend correctly labels all three product series
+        comment: Legend correctly identifies all three product series
       - id: SC-06
         name: Title Format
-        score: 0
+        score: 1
         max: 2
-        passed: false
-        comment: 'Title format is correct but scored 0 in PR comment - correcting:
-          title IS correct'
+        passed: true
+        comment: Title uses correct format
     data_quality:
-      score: 17
+      score: 18
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 8
         max: 8
         passed: true
-        comment: Shows multiple series with seasonal trends, but doesn't demonstrate
-          export functionality which is the spec focus
+        comment: Shows multiple series with different patterns, seasonal variation,
+          clear differentiation
       - id: DQ-02
         name: Realistic Context
-        score: 7
+        score: 5
         max: 7
         passed: true
-        comment: Sales data over time is a realistic, neutral business scenario
+        comment: Monthly sales data is plausible but generic
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Values are plausible for thousands of sales units
+        comment: Sales values in tens of thousands are realistic
     code_quality:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: CQ-01
@@ -165,49 +155,49 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save structure, no functions/classes
+        comment: 'Linear code flow: imports → data → chart config → render'
       - id: CQ-02
         name: Reproducibility
-        score: 0
+        score: 3
         max: 3
-        passed: false
-        comment: Uses hardcoded deterministic data but no np.random.seed for any random
-          elements
+        passed: true
+        comment: Deterministic data (no random values)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports used (pygal, Style)
+        comment: Only pygal and Style imported, both used
       - id: CQ-04
         name: No Deprecated API
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Uses current pygal API
+        passed: false
+        comment: Using disable_xml_declaration which may have compatibility issues
       - id: CQ-05
         name: Output Correct
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Saves as plot.png and plot.html
+        passed: false
+        comment: Creates both plot.png AND plot.html
     library_features:
-      score: 3
+      score: 5
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Uses pygal custom Style, SVG export to HTML, line chart with dots,
-          but doesn't leverage the built-in export capabilities visible in the static
-          image
-  verdict: REJECTED
+        comment: Excellent use of pygal's native SVG rendering, custom Style class,
+          legend positioning, and HTML embedding capabilities
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - html-export
+  - custom-legend
   patterns: []
   dataprep: []
-  styling: []
+  styling:
+  - grid-styling

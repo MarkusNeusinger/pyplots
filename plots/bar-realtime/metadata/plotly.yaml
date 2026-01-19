@@ -1,0 +1,213 @@
+library: plotly
+specification_id: bar-realtime
+created: '2026-01-19T20:26:42Z'
+updated: '2026-01-19T20:29:15Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 21150506489
+issue: 3789
+python_version: 3.13.11
+library_version: 6.5.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-realtime/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-realtime/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-realtime/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent visual representation of real-time data with ghosted previous state
+    showing motion/transition
+  - Clear change indicators with color-coded +/- values above bars
+  - Live Updating annotation effectively conveys the dynamic nature for static output
+  - Clean, professional layout with good use of the plotly_white template
+  - Both PNG and HTML outputs provided for static and interactive viewing
+  weaknesses:
+  - Legend colors do not accurately reflect all bar colors (shows gray/green but bars
+    include red for decreases)
+  - Green/red color scheme for increase/decrease may not be ideal for colorblind accessibility
+  image_description: 'The plot displays a real-time updating bar chart showing service
+    metrics (Requests per Second) for 6 services: API Gateway, Auth Service, Data
+    Pipeline, Cache Layer, ML Engine, and Notification. The visualization uses an
+    overlay technique with semi-transparent light blue/gray bars representing the
+    "Previous State" and solid colored bars for the "Current State". Current state
+    bars are colored green (#4CAF50) for increases and red (#F44336) for decreases.
+    Each bar displays its current value (e.g., 847, 623, 1,152) with change indicators
+    above showing the delta (e.g., +48, -54, -38, +1, +80, +37). A "◉ Live Updating"
+    annotation in the top-left corner indicates the real-time nature. The title follows
+    the required format "bar-realtime · plotly · pyplots.ai". The legend in the top-right
+    shows "Previous State" and "Current State". The layout uses a clean white background
+    with subtle horizontal gridlines.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt, axis labels at 22pt, tick labels at 18pt, all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; bars, labels, and change indicators
+          all clearly separated
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars are well-sized, overlay effect clear, change indicators visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Green/red for increase/decrease is common but not ideal for colorblind
+          users; ghosted bars provide context
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good canvas utilization, balanced margins, legend positioned well
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Service and Requests per Second are descriptive
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Legend colors don't match actual bar colors - shows gray/green but
+          bars include red
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct bar chart type with real-time visualization features
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X-axis, values on Y-axis correctly
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Has ghosted previous state, value labels, change indicators, Live
+          Updating annotation
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis range properly shows all data with headroom
+      - id: SC-05
+        name: Legend Accuracy
+        score: 1
+        max: 2
+        passed: false
+        comment: Legend shows Previous/Current State but doesn't reflect the red color
+          for decreases
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly uses bar-realtime · plotly · pyplots.ai
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows both increases and decreases, varied magnitudes; 6 categories
+          is within recommended range
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Service metrics (API Gateway, Auth Service, etc.) is a realistic
+          monitoring scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values in hundreds to low thousands for RPS are plausible for microservices
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy and plotly.graph_objects imported
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 4
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Uses go.Bar overlay mode, annotations, scatter for text placement,
+          HTML export for interactivity
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - edge-highlighting
+  - alpha-blending
+  - grid-styling

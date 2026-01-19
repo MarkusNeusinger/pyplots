@@ -1,0 +1,218 @@
+library: matplotlib
+specification_id: scatter-streaming
+created: '2026-01-19T15:40:36Z'
+updated: '2026-01-19T15:43:30Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 21143284156
+issue: 3790
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-streaming/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-streaming/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent visual representation of streaming data concept with clear temporal
+    encoding
+  - Well-implemented colorbar showing time progression with inverted axis (0=newest
+    at top)
+  - Yellow highlight for latest reading provides immediate visual identification
+  - Arrow annotation cleverly shows data flow direction
+  - Buffer info annotation adds context about streaming parameters
+  - Good use of the Blues colormap for colorblind accessibility
+  weaknesses:
+  - Legend in lower right may overlap with data points in certain data distributions
+  - Iterating over each point individually for scatter is less efficient than using
+    array-based alpha (though visually identical)
+  - Pandas imported only for date_range - could simplify to numpy only since timestamps
+    are not displayed
+  image_description: 'The plot displays a streaming scatter plot showing temperature
+    (°C) on the x-axis versus humidity (%) on the y-axis. There are 200 data points
+    visible, representing simulated sensor readings. The visualization uses a blue
+    color gradient from the Blues colormap - older points appear lighter/more transparent
+    (indicating ~60 seconds ago) while newer points appear darker and more opaque.
+    A vertical colorbar on the right shows "Time (seconds ago)" with values from 0
+    (newest, light blue at top) to 60 (oldest, dark blue at bottom). The most recent
+    data point is highlighted with a bright yellow marker with a blue border, accompanied
+    by an arrow pointing to it from a previous position to indicate data flow direction.
+    The legend in the lower right labels this as "Latest reading". Italicized annotation
+    text in the upper left shows "Buffer: 200 points | Stream rate: ~3 pts/sec". The
+    title follows the correct format: "scatter-streaming · matplotlib · pyplots.ai".
+    Grid lines are visible with subtle alpha. Overall layout is well-balanced with
+    the plot occupying good canvas space.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, labels at 20pt, ticks at 16pt, all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, annotation positioned cleanly
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Points appropriately sized (150-250 based on age), good alpha variation.
+          Some older faded points blend into background slightly
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blues colormap is colorblind-safe, yellow highlight provides excellent
+          contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills good canvas area, colorbar well-positioned, margins balanced
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Temperature (°C) and Humidity (%) include units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Legend in lower right may partially overlap with data points
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct scatter plot type for streaming visualization
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y correctly assigned to temperature/humidity
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Has opacity gradient, buffer limit, timestamp-based coloring, data
+          flow indication
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show all data points with appropriate padding
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly labels Latest reading
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly uses scatter-streaming · matplotlib · pyplots.ai
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows temporal gradient, point buffer, flow direction, highlighted
+          latest point
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Temperature vs humidity sensor scenario is completely realistic and
+          neutral
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Temperature 19-30°C and humidity 37-56% are realistic indoor ranges
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 1
+        max: 2
+        passed: false
+        comment: pandas imported only for date_range, could simplify to numpy
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: All APIs are current
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses colorbar with ScalarMappable, annotate for arrow, but iteration
+          over points is not optimal matplotlib approach
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - annotations
+  - custom-legend
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep:
+  - time-series
+  styling:
+  - alpha-blending
+  - custom-colormap
+  - grid-styling

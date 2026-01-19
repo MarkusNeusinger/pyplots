@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-route-path: Route Path Map
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 87/100 | Created: 2026-01-19
@@ -48,12 +48,17 @@ df = pd.DataFrame(
 sns.set_context("talk", font_scale=1.2)
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Draw the route path as connected line segments colored by time progression
-# Use lineplot for the main path
-points = ax.scatter(df["lon"], df["lat"], c=df["elapsed_min"], cmap="viridis", s=80, alpha=0.7, zorder=2)
+# Draw the connecting path using seaborn's lineplot
+sns.lineplot(data=df, x="lon", y="lat", color="#306998", linewidth=2, alpha=0.5, ax=ax, sort=False, zorder=1)
 
-# Connect points with a line
-ax.plot(df["lon"], df["lat"], color="#306998", linewidth=2, alpha=0.5, zorder=1)
+# Draw waypoints colored by elapsed time using seaborn's scatterplot
+sns.scatterplot(
+    data=df, x="lon", y="lat", hue="elapsed_min", palette="viridis", s=80, alpha=0.7, ax=ax, legend=False, zorder=2
+)
+
+# Create a ScalarMappable for colorbar since scatterplot with hue doesn't provide one
+norm = plt.Normalize(df["elapsed_min"].min(), df["elapsed_min"].max())
+sm = plt.cm.ScalarMappable(cmap="viridis", norm=norm)
 
 # Mark start point (green circle)
 ax.scatter(
@@ -94,13 +99,13 @@ for i in arrow_indices:
         )
 
 # Colorbar for time progression
-cbar = plt.colorbar(points, ax=ax, pad=0.02)
+cbar = plt.colorbar(sm, ax=ax, pad=0.02)
 cbar.set_label("Elapsed Time (minutes)", fontsize=18)
 cbar.ax.tick_params(labelsize=14)
 
 # Labels and styling
-ax.set_xlabel("Longitude", fontsize=20)
-ax.set_ylabel("Latitude", fontsize=20)
+ax.set_xlabel("Longitude (°)", fontsize=20)
+ax.set_ylabel("Latitude (°)", fontsize=20)
 ax.set_title("map-route-path · seaborn · pyplots.ai", fontsize=24)
 ax.tick_params(axis="both", labelsize=16)
 ax.grid(True, alpha=0.3, linestyle="--")

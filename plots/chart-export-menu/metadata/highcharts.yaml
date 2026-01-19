@@ -1,0 +1,207 @@
+library: highcharts
+specification_id: chart-export-menu
+created: '2026-01-19T21:01:44Z'
+updated: '2026-01-19T21:04:29Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 21151242723
+issue: 3787
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/chart-export-menu/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/chart-export-menu/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/chart-export-menu/highcharts/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of Highcharts native export functionality with comprehensive
+    menu options (PNG, SVG, PDF, CSV, XLS, print)
+  - Professional button styling with hover states using pyplots brand colors
+  - Subtitle clearly explains the export feature to users
+  - Clean, well-organized chart configuration as dictionary
+  - Proper inclusion of exporting.js and export-data.js modules for full functionality
+  - Good visual hierarchy with clear title and data labels
+  weaknesses:
+  - Data labels on the line points are slightly small relative to the large canvas
+    size
+  - Legend positioned far from the chart area with extra spacing
+  image_description: The plot displays a line chart showing monthly sales data over
+    a year (January to December). The chart has a white background with a blue line
+    (#306998) connecting data points. Each data point is marked with a circular marker
+    and labeled with its value (ranging from 601 in January to 1,910 in December,
+    showing cumulative growth). The title "chart-export-menu · highcharts · pyplots.ai"
+    appears at the top center in bold black text, with a subtitle explaining the export
+    functionality ("Click the menu icon (≡) in top right to export as PNG, SVG, PDF,
+    or CSV"). The Y-axis is labeled "Sales (units)" and shows values from 500 to 2000.
+    The X-axis shows month abbreviations (Jan through Dec). A prominent blue hamburger
+    menu button (≡) is visible in the top-right corner for export options - this is
+    the key feature of the chart. The legend shows "Monthly Sales" at the bottom.
+    Grid lines are subtle gray (#e0e0e0). The overall layout is clean and professional
+    with good use of the canvas space.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title and subtitle clear; axis labels and data labels readable, though
+          data labels slightly small
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Line and markers visible and well-sized
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses colorblind-safe blue (#306998)
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good canvas use; slight excess whitespace on right
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Y-axis has units: Sales (units); X-axis labeled Month'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid subtle; legend could be closer to chart
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct line chart type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=months, Y=sales correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Export menu with PNG/SVG/PDF/CSV options, hamburger icon top-right
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly shows Monthly Sales
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses spec-id · library · pyplots.ai format
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows upward trend with variation; demonstrates export functionality
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly sales data is realistic business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values plausible for unit sales
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports, data, config, HTML, screenshot'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Highcharts API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves plot.png but aspect ratio slightly off from spec
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of Highcharts native exporting module with menu customization
+  verdict: APPROVED
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  - annotations
+  patterns:
+  - data-generation
+  dataprep:
+  - cumulative-sum
+  styling:
+  - grid-styling
+  - edge-highlighting

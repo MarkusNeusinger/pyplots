@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 barcode-ean13: EAN-13 Barcode
-Library: bokeh | Python 3.13
-Quality: pending | Created: 2026-01-19
+Library: bokeh 3.8.2 | Python 3.13.11
+Quality: 92/100 | Created: 2026-01-19
 """
 
 from bokeh.io import export_png, output_file, save

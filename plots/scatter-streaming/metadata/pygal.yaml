@@ -1,7 +1,7 @@
 library: pygal
 specification_id: scatter-streaming
 created: '2026-01-19T15:41:15Z'
-updated: '2026-01-19T15:43:50Z'
+updated: '2026-01-19T15:49:41Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21143284317
 issue: 3790
@@ -10,38 +10,32 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-streaming/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-streaming/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-streaming/pygal/plot.html
-quality_score: 73
+quality_score: 85
 review:
   strengths:
-  - Correct title format following specification
-  - Good use of pygal custom Style for consistent theming
-  - Creative approach to show data age via dot size (since pygal lacks per-point opacity)
-  - Proper axis labels with units
-  - Generates both PNG and HTML output leveraging pygal capabilities
-  - Clean readable code structure
+  - Effective use of color gradient from light to dark blue showing data age
+  - Point size progression (smaller for older, larger for newer) reinforces streaming
+    concept
+  - Clean inverse correlation pattern between temperature and humidity is realistic
+  - Good axis labels with proper units
+  - Legend placed at bottom avoids data overlap
   weaknesses:
-  - Data clusters in small portion of plot leaving ~60% of x-axis empty - should generate
-    data that spans the full range
-  - Legend text is too small and positioned far from the data
-  - Age group differentiation is subtle - all points are similar blue shades making
-    it hard to distinguish streaming progression
-  - Spec mentions opacity gradient for recency which is not implemented (though pygal
-    limitation is acknowledged)
-  - Legend labels are generic (Oldest data) rather than contextual (could reference
-    time windows)
-  image_description: The plot displays a scatter chart showing simulated streaming
-    sensor data with Temperature (°C) on the x-axis (range 15-35) and Humidity (%)
-    on the y-axis (range 30-80). The title correctly reads "scatter-streaming · pygal
-    · pyplots.ai". Data points are clustered primarily in the lower-left portion of
-    the plot (temperatures ~15-22°C, humidity ~30-65%). Points are colored in shades
-    of blue with 5 series representing data age (Oldest, Older, Recent, Newer, Newest)
-    shown in the legend at bottom. Newer data points have slightly larger dot sizes
-    to indicate streaming progression. The plot has a white background with subtle
-    gray grid lines. However, the data only occupies roughly 30-40% of the x-axis
-    range, leaving significant empty space on the right side of the plot.
+  - Legend text at bottom is too small to read clearly at full resolution
+  - Could add tooltip content for interactive HTML version to show exact values
+  - The streaming effect could be more dramatic with opacity/alpha variation (though
+    pygal has limitations here)
+  image_description: The plot displays a scatter visualization of temperature (°C)
+    on the x-axis (range 15-35) versus humidity (%) on the y-axis (range 30-80). The
+    data shows a clear negative correlation between temperature and humidity, with
+    150 points grouped into 5 age bins representing time windows. Colors range from
+    light blue (#a8c8e8) for older data (240-300s ago) to dark blue (#1a4d6e) for
+    newest data (0-60s ago). Point sizes increase with recency, effectively conveying
+    the streaming concept. The legend at the bottom displays all 5 time window labels
+    horizontally. Grid lines are subtle and aid readability. The title correctly follows
+    the spec-id · library · pyplots.ai format.
   criteria_checklist:
     visual_quality:
-      score: 30
+      score: 35
       max: 40
       items:
       - id: VQ-01
@@ -49,49 +43,45 @@ review:
         score: 8
         max: 10
         passed: true
-        comment: Title and axis labels are readable, but legend text at bottom is
-          quite small
+        comment: Title and axis labels readable, but legend text at bottom is small
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping elements, legend placed at bottom avoids data overlap
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 8
         max: 8
         passed: true
-        comment: Dots are visible but could be larger; size difference between age
-          groups is subtle
+        comment: Marker sizes well-adapted, size progression visible for age bins
       - id: VQ-04
         name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue gradient is colorblind-safe, good contrast
+      - id: VQ-05
+        name: Layout Balance
         score: 4
         max: 5
         passed: true
-        comment: Blue shades are accessible, but distinguishing between age groups
-          by color alone is difficult
-      - id: VQ-05
-        name: Layout Balance
-        score: 2
-        max: 5
-        passed: false
-        comment: Data is clustered in left portion of plot, ~60% of x-axis range is
-          empty; poor canvas utilization
+        comment: Good plot fill, minor excess whitespace on sides
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive with units: Temperature (°C) and Humidity (%)'
+        comment: 'Both axes labeled with units: Temperature (°C), Humidity (%)'
       - id: VQ-07
         name: Grid & Legend
-        score: 1
+        score: 0
         max: 2
-        passed: true
-        comment: Grid is subtle, but legend is far from data and text is small
+        passed: false
+        comment: Legend labels too small and hard to read at full resolution
     spec_compliance:
-      score: 21
+      score: 23
       max: 25
       items:
       - id: SC-01
@@ -99,65 +89,63 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct XY scatter chart type
+        comment: Correct XY scatter chart
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Temperature/Humidity correctly mapped to X/Y
+        comment: Temperature and humidity correctly mapped
       - id: SC-03
         name: Required Features
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Shows age-based differentiation via dot size, but lacks opacity gradient
-          for streaming effect
+        comment: Age-based coloring and sizing present; no opacity gradient (pygal
+          limitation)
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Axes show full specified data range
+        comment: Axes show full data range 15-35°C and 30-80%
       - id: SC-05
         name: Legend Accuracy
-        score: 0
-        max: 2
-        passed: false
-        comment: Legend labels are generic (Oldest data, Newer data) rather than meaningful
-      - id: SC-06
-        name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: 'Correct format: scatter-streaming · pygal · pyplots.ai'
+        comment: Time window labels correctly describe data bins
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: false
+        comment: Uses correct format but title could be more prominent
     data_quality:
-      score: 14
+      score: 17
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Shows streaming concept via age bins, but data does not spread across
-          full axis range
+        comment: Shows negative correlation and age progression; could show more dramatic
+          streaming effect
       - id: DQ-02
         name: Realistic Context
-        score: 5
+        score: 7
         max: 7
         passed: true
-        comment: Sensor temperature/humidity is plausible, but wandering data clusters
-          unrealistically in narrow range
+        comment: Sensor data scenario is plausible and neutral
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Temperature 15-22°C and humidity 30-65% are realistic, but do not
-          utilize declared ranges well
+        comment: Temperature 15-35°C and humidity 30-80% are realistic for sensors
     code_quality:
-      score: 8
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -165,42 +153,42 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save structure
+        comment: Flat script structure with no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) used
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports
+        comment: Only numpy, pygal, and Style imported
       - id: CQ-04
         name: No Deprecated API
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Using older pygal patterns
+        passed: true
+        comment: All pygal API is current
       - id: CQ-05
         name: Output Correct
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Saves as plot.png correctly
+        passed: true
+        comment: Saves as plot.png and plot.html
     library_features:
-      score: 5
+      score: 0
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 5
+        score: 0
         max: 5
-        passed: true
-        comment: Uses pygal XY chart, custom Style, legend_at_bottom, x/y range settings,
-          and HTML export
+        passed: false
+        comment: Basic XY chart usage only; does not leverage pygal's tooltips, links,
+          or animation capabilities
   verdict: REJECTED
 impl_tags:
   dependencies: []
@@ -209,6 +197,6 @@ impl_tags:
   patterns:
   - data-generation
   - iteration-over-groups
-  dataprep:
-  - cumulative-sum
-  styling: []
+  dataprep: []
+  styling:
+  - grid-styling

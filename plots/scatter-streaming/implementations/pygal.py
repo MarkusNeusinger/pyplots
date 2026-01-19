@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-streaming: Streaming Scatter Plot
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 73/100 | Created: 2026-01-19
+Quality: 85/100 | Created: 2026-01-19
 """
 
 import numpy as np

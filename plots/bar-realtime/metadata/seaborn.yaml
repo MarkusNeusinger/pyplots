@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: bar-realtime
 created: '2026-01-19T20:26:12Z'
-updated: '2026-01-19T20:28:46Z'
+updated: '2026-01-19T20:33:47Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21150506517
 issue: 3789
@@ -10,88 +10,85 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-realtime/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-realtime/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 75
+quality_score: 91
 review:
   strengths:
-  - Excellent visualization concept with ghosted previous state bars showing transition
-  - Clear value labels with meaningful change indicators (arrows + percentages)
-  - LIVE indicator adds to the real-time aesthetic
-  - Realistic server metrics scenario is compelling
-  - Good use of color for positive/negative changes
+  - Excellent visual representation of real-time data with ghosted previous values
+    showing transition
+  - Colorblind-friendly color scheme using blue/orange from the scientific color palette
+  - Motion lines effectively suggest animation in a static image
+  - LIVE indicator with timestamp adds authenticity to the real-time concept
+  - Clear value labels with percentage change indicators
   weaknesses:
-  - 'CRITICAL: No seaborn library usage - This is pure matplotlib code, fails AR-05
-    (Library not used) criteria. Must use sns.barplot() or other seaborn functions.'
-  - The motion blur horizontal lines are barely visible and do not effectively convey
-    animation
-  - Legend position could conflict with taller bars in other datasets
-  - Green/red color scheme for changes is not colorblind-accessible
+  - Legend patch styling does not perfectly match the actual bars (legend shows solid
+    patches but bars have edge highlighting)
+  - DataFrames are created but barely utilized - the hue parameter usage is somewhat
+    forced
   image_description: 'The plot displays a real-time updating bar chart showing server
-    metrics (requests per second) for 6 services: API Gateway (847), Auth Service
-    (623), Database (512), Cache (389), Worker Queue (278), and CDN (156). Each bar
-    has a "ghosted" lighter version behind it showing the previous state, creating
-    a visual transition effect. Above each bar are value labels in bold dark blue
-    text, and change indicators with colored arrows (green ▲ for increases like +6.9%,
-    +2.8%, +13.7%; red ▼ for decreases like -5.3%, -5.8%, -17.5%). The title "bar-realtime
-    · seaborn · pyplots.ai" is at the top. A "● LIVE" indicator in red appears in
-    the upper left with "Last update: 0.8s ago" text. A legend in the upper right
-    shows "Previous State" and "Current State". The Y-axis is labeled "Requests per
-    Second" and X-axis is "Service". Horizontal dashed grid lines at alpha 0.3 provide
-    reference. The color scheme uses blue (#306998) with varying alpha levels.'
+    metrics (requests per second) for 6 services: API Gateway, Auth Service, Database,
+    Cache, Worker Queue, and CDN. Each service has two overlaid bars - a ghosted/transparent
+    light blue bar showing the "Previous State" and a solid darker blue bar showing
+    the "Current State". Above each bar, the current value is displayed in bold (e.g.,
+    847, 623, 512, etc.), along with a change indicator showing percentage change
+    with colored arrows (blue upward arrows for increases like +6.9%, orange downward
+    arrows for decreases like -5.3%). The plot has horizontal motion lines across
+    bars to suggest animation/transition. A red "LIVE" indicator with timestamp "Last
+    update: 0.8s ago" appears in the upper left. A legend in the upper right distinguishes
+    Previous State from Current State. The title follows the required format: "bar-realtime
+    · seaborn · pyplots.ai".'
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 37
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
+        score: 10
         max: 10
         passed: true
-        comment: 'Title at 24pt, labels at 20pt, ticks at 16pt, all readable. Minor:
-          value labels could be slightly larger.'
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt, value labels
+          at 18pt - all perfectly readable
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements, all labels clearly separated
+        comment: No overlapping text elements, labels well spaced above bars
       - id: VQ-03
         name: Element Visibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Bars well-sized, ghost bars visible but subtle. Transition lines
-          barely visible.
+        comment: Bars clearly visible with good contrast between previous (alpha=0.25)
+          and current (alpha=0.85) states
       - id: VQ-04
         name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses colorblind-friendly blue (#0072B2) for increases and orange
+          (#D55E00) for decreases
+      - id: VQ-05
+        name: Layout Balance
         score: 4
         max: 5
         passed: true
-        comment: Blue primary color is good, green/red for change indicators is common
-          but not ideal for colorblind users
-      - id: VQ-05
-        name: Layout Balance
-        score: 3
-        max: 5
-        passed: true
-        comment: Good layout but significant white space at top (y-axis goes to ~1050
-          when max value is 847)
+        comment: Good proportions, plot fills canvas well, slight crowding at top
+          with change indicators
       - id: VQ-06
         name: Axis Labels
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Labels descriptive but no units beyond per Second which is part of
-          the label
+        comment: 'Descriptive labels: Requests per Second and Service'
       - id: VQ-07
         name: Grid & Legend
         score: 0
         max: 2
         passed: false
-        comment: Grid is good (alpha 0.3, dashed), but legend overlaps with the data
-          area conceptually
+        comment: Legend patch styling does not match the actual bars with edge highlighting
     spec_compliance:
-      score: 21
+      score: 25
       max: 25
       items:
       - id: SC-01
@@ -99,121 +96,117 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct bar chart type
+        comment: Correct bar chart type for real-time monitoring
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Categories on X, values on Y correctly assigned
+        comment: Categories on X-axis, values on Y-axis, correctly assigned
       - id: SC-03
         name: Required Features
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: 'Has ghosted previous state, value labels, change indicators, LIVE
-          indicator. Missing: motion blur effect is minimal'
+        comment: Has ghosted previous state, value labels, change indicators, motion
+          blur effect, LIVE indicator
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axes
+        comment: Y-axis shows all data with appropriate padding (0 to ~1000)
       - id: SC-05
         name: Legend Accuracy
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Legend labels correct but could be clearer
+        passed: true
+        comment: Legend correctly labels Previous State and Current State
       - id: SC-06
         name: Title Format
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Title uses correct format with middle dots - wait, reviewing again
-          this is correct
+        passed: true
+        comment: Uses bar-realtime · seaborn · pyplots.ai format
     data_quality:
-      score: 17
+      score: 19
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Shows both increases and decreases, multiple categories, realistic
-          server metrics
+        comment: Shows both increasing and decreasing values, demonstrates dynamic
+          nature
       - id: DQ-02
         name: Realistic Context
-        score: 7
+        score: 6
         max: 7
         passed: true
-        comment: Server monitoring is a perfect realistic real-time scenario
+        comment: Server monitoring metrics is plausible and neutral, values are reasonable
       - id: DQ-03
         name: Appropriate Scale
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Values plausible for requests/sec
+        comment: Requests per second values (156-847) are realistic for service metrics
     code_quality:
-      score: 5
+      score: 7
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 0
+        score: 3
         max: 3
-        passed: false
-        comment: 'CRITICAL: Does not use seaborn at all! Uses only matplotlib (ax.bar).
-          This is pure matplotlib code.'
+        passed: true
+        comment: Follows imports → data → plot → save structure, no functions/classes
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) set
+        comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 0
         max: 2
         passed: false
-        comment: Imports seaborn in docstring mention but never actually imports or
-          uses it
+        comment: Imports matplotlib.patches.Patch and pandas with minimal DataFrame
+          utilization
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: No deprecated functions
+        comment: Uses current seaborn API correctly
       - id: CQ-05
         name: Output Correct
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Saves as plot.png
+        passed: false
+        comment: Saves as plot.png correctly
     library_features:
-      score: 0
+      score: 3
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 0
+        score: 3
         max: 5
-        passed: false
-        comment: 'CRITICAL FAILURE: No seaborn functions used at all. The code claims
-          to be a seaborn implementation but uses only matplotlib.pyplot with ax.bar().
-          Should use sns.barplot() or other seaborn functions.'
-  verdict: REJECTED
+        passed: true
+        comment: Uses sns.barplot and sns.despine correctly, but overlaying technique
+          is more of a workaround
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
-  - manual-ticks
+  - custom-legend
   patterns:
   - data-generation
-  - iteration-over-groups
   dataprep: []
   styling:
   - alpha-blending
-  - grid-styling
   - edge-highlighting
+  - grid-styling

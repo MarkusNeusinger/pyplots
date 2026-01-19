@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bar-realtime: Real-Time Updating Bar Chart
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 75/100 | Created: 2026-01-19
+Quality: 91/100 | Created: 2026-01-19
 """
 
 import matplotlib.pyplot as plt

@@ -1,7 +1,7 @@
 library: pygal
 specification_id: scatter-streaming
 created: '2026-01-19T15:41:15Z'
-updated: '2026-01-19T15:49:41Z'
+updated: '2026-01-19T15:55:34Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21143284317
 issue: 3790
@@ -10,29 +10,32 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-streaming/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-streaming/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-streaming/pygal/plot.html
-quality_score: 85
+quality_score: 90
 review:
   strengths:
-  - Effective use of color gradient from light to dark blue showing data age
-  - Point size progression (smaller for older, larger for newer) reinforces streaming
-    concept
-  - Clean inverse correlation pattern between temperature and humidity is realistic
-  - Good axis labels with proper units
-  - Legend placed at bottom avoids data overlap
+  - Excellent streaming visualization with clear age progression via color and size
+    encoding
+  - Well-designed custom style with appropriate font sizes for high-resolution output
+  - Custom tooltips provide detailed per-point information (temperature, humidity,
+    age)
+  - Clean implementation following KISS principles
+  - Realistic sensor data scenario with meaningful temperature-humidity correlation
   weaknesses:
-  - Legend text at bottom is too small to read clearly at full resolution
-  - Could add tooltip content for interactive HTML version to show exact values
-  - The streaming effect could be more dramatic with opacity/alpha variation (though
-    pygal has limitations here)
-  image_description: The plot displays a scatter visualization of temperature (°C)
-    on the x-axis (range 15-35) versus humidity (%) on the y-axis (range 30-80). The
-    data shows a clear negative correlation between temperature and humidity, with
-    150 points grouped into 5 age bins representing time windows. Colors range from
-    light blue (#a8c8e8) for older data (240-300s ago) to dark blue (#1a4d6e) for
-    newest data (0-60s ago). Point sizes increase with recency, effectively conveying
-    the streaming concept. The legend at the bottom displays all 5 time window labels
-    horizontally. Grid lines are subtle and aid readability. The title correctly follows
-    the spec-id · library · pyplots.ai format.
+  - Legend entry labels use different format than intended time labels (shows reversed
+    order from code comments)
+  - Points in dense regions could benefit from slight alpha transparency for better
+    visibility
+  - Grid styling could be more subtle (currently dotted lines are prominent)
+  image_description: 'The plot displays a scatter plot visualizing streaming sensor
+    data with temperature (°C) on the x-axis (ranging from 15-35) and humidity (%)
+    on the y-axis (ranging from 30-80). Data points are color-coded in a gradient
+    from light blue to dark blue representing different time windows, with 5 series
+    shown in the legend at the bottom: "240-300s ago" (lightest), "180-240s ago",
+    "120-180s ago", "60-120s ago", and "0-60s ago" (darkest). The marker sizes also
+    vary by age, with newer points appearing larger. The title follows the correct
+    format "scatter-streaming · pygal · pyplots.ai". Subtle dotted grid lines help
+    with reading values, and the plot shows a clear negative correlation between temperature
+    and humidity. The overall layout is clean with good use of canvas space.'
   criteria_checklist:
     visual_quality:
       score: 35
@@ -40,48 +43,53 @@ review:
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 9
         max: 10
         passed: true
-        comment: Title and axis labels readable, but legend text at bottom is small
+        comment: Title and axis labels are clearly readable; tick labels and legend
+          text are appropriately sized for the canvas
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping elements, legend placed at bottom avoids data overlap
+        comment: No overlapping text elements; legend at bottom with 5 columns prevents
+          crowding
       - id: VQ-03
         name: Element Visibility
-        score: 8
+        score: 6
         max: 8
         passed: true
-        comment: Marker sizes well-adapted, size progression visible for age bins
+        comment: Markers are visible with good size progression; some clustering in
+          middle regions could benefit from more alpha transparency
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Blue gradient is colorblind-safe, good contrast
+        comment: Blue gradient is colorblind-safe; progression from light to dark
+          is intuitive
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Good plot fill, minor excess whitespace on sides
+        comment: Plot fills canvas well; balanced margins; legend placement at bottom
+          is clean
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: 'Both axes labeled with units: Temperature (°C), Humidity (%)'
+        comment: 'Descriptive labels with units: Temperature (°C) and Humidity (%)'
       - id: VQ-07
         name: Grid & Legend
         score: 0
         max: 2
         passed: false
-        comment: Legend labels too small and hard to read at full resolution
+        comment: Grid lines are visible but prominent; legend time format inconsistency
     spec_compliance:
-      score: 23
+      score: 24
       max: 25
       items:
       - id: SC-01
@@ -89,61 +97,63 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct XY scatter chart
+        comment: Correct XY scatter plot
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Temperature and humidity correctly mapped
+        comment: Temperature and humidity correctly mapped to X and Y
       - id: SC-03
         name: Required Features
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Age-based coloring and sizing present; no opacity gradient (pygal
-          limitation)
+        comment: Implements streaming visualization with age-based coloring and size
+          encoding; buffer limit of 150 points; time-based grouping
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Axes show full data range 15-35°C and 30-80%
+        comment: Axes show full data range with appropriate bounds (15-35°C, 30-80%)
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Time window labels correctly describe data bins
+        comment: Legend accurately describes time windows
       - id: SC-06
         name: Title Format
         score: 1
         max: 2
-        passed: false
-        comment: Uses correct format but title could be more prominent
+        passed: true
+        comment: Uses correct format but minor label inconsistency
     data_quality:
-      score: 17
+      score: 18
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Shows negative correlation and age progression; could show more dramatic
-          streaming effect
+        comment: Shows streaming pattern well with age progression; demonstrates inverse
+          temperature-humidity correlation
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Sensor data scenario is plausible and neutral
+        comment: Sensor readings (temperature/humidity) is a plausible real-world
+          IoT scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Temperature 15-35°C and humidity 30-80% are realistic for sensors
+        comment: Temperature 15-35°C and humidity 30-80% are realistic ranges; simulated
+          daily variation pattern is sensible
     code_quality:
       score: 10
       max: 10
@@ -153,46 +163,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Flat script structure with no functions or classes
+        comment: 'Linear flow: imports → data → style → chart → save'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) used
+        comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only numpy, pygal, and Style imported
+        comment: Only necessary imports (numpy, pygal, Style)
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: All pygal API is current
+        comment: Uses current pygal API
       - id: CQ-05
         name: Output Correct
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html
+        comment: Saves as plot.png (and plot.html)
     library_features:
-      score: 0
+      score: 3
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 0
+        score: 3
         max: 5
-        passed: false
-        comment: Basic XY chart usage only; does not leverage pygal's tooltips, links,
-          or animation capabilities
-  verdict: REJECTED
+        passed: true
+        comment: Uses pygal XY chart with custom Style, custom tooltips with value
+          dictionaries, legend_at_bottom with columns, HTML export for interactivity
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
+  - hover-tooltips
   - html-export
   patterns:
   - data-generation

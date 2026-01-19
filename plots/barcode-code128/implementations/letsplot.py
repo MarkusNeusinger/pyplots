@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 barcode-code128: Code 128 Barcode
-Library: lets-plot | Python 3.13
-Quality: pending | Created: 2025-01-19
+Library: letsplot 4.8.2 | Python 3.13.11
+Quality: 92/100 | Created: 2026-01-19
 """
 
 import pandas as pd

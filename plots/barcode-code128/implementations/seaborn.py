@@ -1,11 +1,11 @@
-""" pyplots.ai
+"""pyplots.ai
 barcode-code128: Code 128 Barcode
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 72/100 | Created: 2026-01-19
 """
 
-import matplotlib.patches as patches
 import matplotlib.pyplot as plt
+import numpy as np
 import seaborn as sns
 
 
@@ -246,51 +246,39 @@ else:
 
 barcode_binary += STOP
 
+# Add quiet zones (10 modules of white space on each side)
+quiet_zone = "0" * 10
+barcode_with_quiet = quiet_zone + barcode_binary + quiet_zone
+
+# Convert binary string to numpy array for seaborn heatmap
+# Create a 2D array where each row is the same barcode pattern
+barcode_array = np.array([[int(bit) for bit in barcode_with_quiet]])
+# Repeat rows to create proper bar height (aspect ratio for barcode)
+barcode_data = np.repeat(barcode_array, 60, axis=0)
+
 # Set seaborn style
 sns.set_theme(style="white")
 
-# Create figure
+# Create figure with proper aspect ratio
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Calculate barcode dimensions
-bar_width = 0.008
-bar_height = 0.5
-quiet_zone = 0.1
-total_width = len(barcode_binary) * bar_width + 2 * quiet_zone
-
-# Center the barcode
-x_start = (1 - total_width) / 2 + quiet_zone
-y_start = 0.35
-
-# Add subtle border around the barcode area
-border = patches.FancyBboxPatch(
-    (x_start - quiet_zone, y_start - 0.15),
-    total_width,
-    bar_height + 0.22,
-    boxstyle="round,pad=0.02,rounding_size=0.02",
-    linewidth=2,
-    edgecolor="#E0E0E0",
-    facecolor="white",
-    zorder=0,
+# Use seaborn heatmap to render the barcode
+# Binary colormap: white (0) and blue (1)
+cmap = sns.color_palette(["white", "#306998"], as_cmap=True)
+sns.heatmap(
+    barcode_data, cmap=cmap, cbar=False, xticklabels=False, yticklabels=False, linewidths=0, linecolor="none", ax=ax
 )
-ax.add_patch(border)
 
-# Draw barcode bars
-x = x_start
-for bit in barcode_binary:
-    if bit == "1":
-        rect = patches.Rectangle(
-            (x, y_start), bar_width, bar_height, linewidth=0, facecolor="#306998", edgecolor="none"
-        )
-        ax.add_patch(rect)
-    x += bar_width
+# Remove axis spines for clean look
+for spine in ax.spines.values():
+    spine.set_visible(False)
 
 # Add human-readable text below barcode
 ax.text(
-    0.5,
-    y_start - 0.08,
+    len(barcode_with_quiet) / 2,
+    barcode_data.shape[0] + 12,
     content,
-    fontsize=28,
+    fontsize=32,
     fontfamily="monospace",
     fontweight="bold",
     ha="center",
@@ -298,16 +286,21 @@ ax.text(
     color="#306998",
 )
 
-# Add title
-ax.set_title(
-    "barcode-code128 \u00b7 seaborn \u00b7 pyplots.ai", fontsize=24, fontweight="bold", pad=20, color="#333333"
+# Add title above the barcode
+ax.text(
+    len(barcode_with_quiet) / 2,
+    -8,
+    "barcode-code128 · seaborn · pyplots.ai",
+    fontsize=28,
+    fontweight="bold",
+    ha="center",
+    va="bottom",
+    color="#333333",
 )
 
-# Clean up axes
-ax.set_xlim(0, 1)
-ax.set_ylim(0, 1)
-ax.set_aspect("equal")
-ax.axis("off")
+# Adjust plot limits to show text and provide balanced margins
+ax.set_xlim(-5, len(barcode_with_quiet) + 5)
+ax.set_ylim(barcode_data.shape[0] + 25, -15)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="white")

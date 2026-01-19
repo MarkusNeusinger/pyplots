@@ -1,0 +1,207 @@
+library: matplotlib
+specification_id: chart-export-menu
+created: '2026-01-19T21:00:43Z'
+updated: '2026-01-19T21:03:18Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 21151242499
+issue: 3787
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/chart-export-menu/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/chart-export-menu/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of interactive export buttons using matplotlib.widgets.Button
+  - Clean visual design with good color contrast and readable text
+  - Properly implements all four export formats (PNG, SVG, PDF, CSV) as specified
+  - Good use of the correct title format and overall professional appearance
+  - Realistic sales data scenario with uptrending Product A showing growth pattern
+  weaknesses:
+  - Export buttons positioned at bottom rather than top-right corner or hamburger
+    menu style as suggested in spec
+  - Axis label Units Sold could include units (e.g., Units Sold (count))
+  - Functions are required for button callbacks but deviate from pure KISS structure
+  image_description: 'The plot displays a dual-line chart showing monthly sales data
+    for two products (Product A and Product B) over a 12-month period. Product A is
+    shown in blue (#306998) with circular markers, while Product B is shown in yellow
+    (#FFD43B) with square markers. Both lines have a linewidth of 3 and markers of
+    appropriate size (12pt and 10pt respectively). The chart has a clear title "chart-export-menu
+    · matplotlib · pyplots.ai" at the top. The x-axis shows months (Jan-Dec) and y-axis
+    shows "Units Sold" ranging from 0 to ~365. A legend in the upper left identifies
+    the two series. A subtle dashed grid with alpha=0.3 aids readability. At the bottom
+    of the figure, there is an "Export Menu:" label followed by four interactive buttons:
+    "Export PNG", "Export SVG", "Export PDF", and "Export Data (CSV)" - all styled
+    with blue backgrounds (#306998) and white text. The layout is well-balanced with
+    the chart filling most of the canvas and the export menu clearly positioned at
+    the bottom.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, labels at 20pt, tick labels at 14-16pt, all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Markers and linewidth well-sized for 12 data points
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue and yellow are colorblind-safe with good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Good proportions but export buttons reduce main chart area slightly
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels but no units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid subtle at alpha=0.3 with dashed style; legend placed well
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct chart type - line chart with markers
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=months, Y=units sold correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Export menu with PNG, SVG, PDF, CSV present; buttons at bottom rather
+          than corner
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis from 0 to max*1.15 shows all data
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies Product A and Product B
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: chart-export-menu · matplotlib · pyplots.ai'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows two series with different trends but patterns somewhat similar
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly sales data is a realistic neutral business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values 100-350 units are realistic for monthly product sales
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 1
+        max: 3
+        passed: false
+        comment: Has callback functions required for button functionality
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) ensures reproducibility
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only necessary imports used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current matplotlib API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent use of matplotlib.widgets.Button for interactive export
+          menu
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - manual-ticks
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling:
+  - alpha-blending
+  - grid-styling

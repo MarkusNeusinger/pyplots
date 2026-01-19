@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: barcode-code128
 created: '2026-01-19T10:59:02Z'
-updated: '2026-01-19T11:01:21Z'
+updated: '2026-01-19T11:07:58Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21134791901
 issue: 3809
@@ -10,34 +10,31 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/barcode-code128/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/barcode-code128/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 72
+quality_score: 91
 review:
   strengths:
-  - Correct implementation of Code 128B encoding with proper start/stop patterns and
-    check digit calculation
-  - Clean, professional appearance with good color choice and typography
-  - Human-readable text properly displayed below the barcode
-  - Quiet zones correctly implemented for scanner compatibility
-  - Realistic shipping label example data
+  - Implements full Code 128B encoding with correct start pattern, check digit calculation
+    (modulo 103), and stop pattern
+  - Creative use of seaborn heatmap to render binary barcode data
+  - Clean white background with high-contrast blue bars for scan reliability
+  - Proper quiet zones on both sides as required by spec
+  - Human-readable text below barcode for visual verification
+  - Correct title format following pyplots.ai conventions
   weaknesses:
-  - Does not use seaborn plotting functions - only uses sns.set_theme() for styling,
-    all rendering is pure matplotlib patches
-  - Canvas utilization is poor - barcode and text occupy less than 40% of the vertical
-    space
-  - The aspect ratio results in a nearly square image rather than the preferred 16:9
-    landscape format
-  image_description: The plot displays a Code 128 barcode rendered with blue (#306998)
-    vertical bars on a white background. The barcode encodes "SHIP-2024-ABC123" which
-    is displayed as human-readable text below the barcode in a bold monospace font
-    matching the blue color. The title "barcode-code128 · seaborn · pyplots.ai" appears
-    at the top in dark gray bold text. The barcode area is enclosed in a subtle rounded
-    rectangle border with light gray edges. The bars vary in width according to Code
-    128 encoding standards, with proper quiet zones on both sides. The layout is clean
-    with good vertical spacing between elements. The overall image has a nearly square
-    aspect ratio with significant white space above and below the barcode area.
+  - The encoding tables are extensive (200+ lines) which adds complexity, though necessary
+    for proper Code 128 implementation
+  - Could leverage seaborn color palette features more distinctively
+  image_description: The plot displays a Code 128 barcode rendered using seaborn's
+    heatmap function. The barcode consists of blue (#306998) vertical bars on a white
+    background, representing the encoded string "SHIP-2024-ABC123". The title "barcode-code128
+    · seaborn · pyplots.ai" appears at the top in dark gray text. The human-readable
+    text "SHIP-2024-ABC123" is displayed below the barcode in blue monospace font.
+    The barcode includes proper quiet zones (white space) on both sides. The overall
+    layout is clean with the barcode well-centered and taking up appropriate canvas
+    space.
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 37
       max: 40
       items:
       - id: VQ-01
@@ -45,46 +42,45 @@ review:
         score: 10
         max: 10
         passed: true
-        comment: Title at 24pt, human-readable text at 28pt, all perfectly readable
+        comment: Title and human-readable text are large and clearly readable
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping elements, clean layout
+        comment: No overlapping elements
       - id: VQ-03
         name: Element Visibility
         score: 8
         max: 8
         passed: true
-        comment: Barcode bars clearly visible with good contrast
+        comment: Barcode bars are clearly visible with proper contrast
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Single blue color on white, excellent contrast
+        comment: Blue on white provides excellent contrast, colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 1
+        score: 4
         max: 5
-        passed: false
-        comment: Plot uses less than 50% of canvas vertically; significant white space
-          above and below
+        passed: true
+        comment: Good layout but barcode could use slightly more vertical presence
       - id: VQ-06
         name: Axis Labels
-        score: 0
+        score: 2
         max: 2
         passed: true
-        comment: N/A for barcode visualization
+        comment: N/A for barcode (no axes needed, appropriately hidden)
       - id: VQ-07
         name: Grid & Legend
         score: 0
         max: 2
         passed: true
-        comment: N/A for barcode visualization
+        comment: N/A for barcode type
     spec_compliance:
-      score: 23
+      score: 25
       max: 25
       items:
       - id: SC-01
@@ -98,23 +94,23 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Content correctly encoded into barcode pattern
+        comment: Alphanumeric content correctly encoded to binary pattern
       - id: SC-03
         name: Required Features
         score: 5
         max: 5
         passed: true
-        comment: Start pattern, check digit, stop pattern, quiet zones, human-readable
-          text all present
+        comment: Includes quiet zones, start/stop patterns, check digit, human-readable
+          text
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: N/A for barcode
+        comment: Full barcode visible with proper margins
       - id: SC-05
         name: Legend Accuracy
-        score: 0
+        score: 2
         max: 2
         passed: true
         comment: N/A for barcode
@@ -123,18 +119,17 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Correctly uses spec-id · library · pyplots.ai format
+        comment: 'Correct format: barcode-code128 · seaborn · pyplots.ai'
     data_quality:
-      score: 15
+      score: 17
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Shows a typical shipping label barcode; could demonstrate more character
-          variety
+        comment: Shows Code 128B encoding with realistic shipping label example
       - id: DQ-02
         name: Realistic Context
         score: 7
@@ -143,63 +138,66 @@ review:
         comment: SHIP-2024-ABC123 is a realistic shipping label identifier
       - id: DQ-03
         name: Appropriate Scale
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Bar proportions work but overall barcode could be larger on canvas
+        passed: true
+        comment: Barcode proportions are acceptable but aspect ratio is slightly non-standard
     code_quality:
-      score: 7
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 1
+        score: 3
         max: 3
-        passed: false
-        comment: Uses large encoding tables (necessary for Code 128) but structure
-          is flat
+        passed: true
+        comment: Linear script with imports, data, encoding, plot, save
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Deterministic encoding, no random data
+        comment: Deterministic encoding (no random data needed)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only imports what is used
+        comment: Only necessary imports (matplotlib, numpy, seaborn)
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Uses current API
+        comment: Uses current seaborn API
       - id: CQ-05
         name: Output Correct
         score: 0
         max: 1
-        passed: true
-        comment: Saves as plot.png correctly
+        passed: false
+        comment: 'Minor: saves correctly but score reflects overall code assessment'
     library_features:
-      score: 0
+      score: 3
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 0
+        score: 3
         max: 5
-        passed: false
-        comment: Does NOT use any seaborn plotting functions; only uses sns.set_theme()
-          for styling. The actual rendering is done entirely with matplotlib patches.
-  verdict: REJECTED
+        passed: true
+        comment: Uses seaborn heatmap creatively for barcode rendering with custom
+          binary colormap
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
-  - patches
   - annotations
-  patterns: []
+  - custom-legend
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
   dataprep: []
   styling:
   - minimal-chrome
+  - custom-colormap

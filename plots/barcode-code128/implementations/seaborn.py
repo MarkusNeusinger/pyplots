@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 barcode-code128: Code 128 Barcode
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 72/100 | Created: 2026-01-19
+Quality: 91/100 | Created: 2026-01-19
 """
 
 import matplotlib.pyplot as plt

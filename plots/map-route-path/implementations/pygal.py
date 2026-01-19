@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 map-route-path: Route Path Map
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 72/100 | Created: 2026-01-19
+Library: pygal 3.1.0 | Python 3.13
+Quality: /100 | Created: 2026-01-19
 """
 
 import numpy as np
@@ -28,17 +28,18 @@ lat = base_lat + np.random.normal(0, 0.0003, n_points)
 n_segments = 5
 segment_size = n_points // n_segments
 
-# Define distinct gradient colors with high contrast (blue -> cyan -> green -> yellow -> red)
-gradient_colors = ["#1E3A8A", "#0891B2", "#16A34A", "#EAB308", "#DC2626"]
+# Define distinct gradient colors with high contrast (blue -> cyan -> green -> yellow -> orange)
+gradient_colors = ["#1E3A8A", "#0891B2", "#16A34A", "#EAB308", "#F97316"]
 
 # Custom style with larger fonts for better legibility
+# Color order: START (green), 5 segments (blue to orange), FINISH (magenta)
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#1F2937",
     foreground_strong="#111827",
     foreground_subtle="#4B5563",
-    colors=tuple(gradient_colors + ["#15803D", "#B91C1C"]),
+    colors=("#15803D",) + tuple(gradient_colors) + ("#BE185D",),
     title_font_size=64,
     label_font_size=36,
     major_label_font_size=32,
@@ -65,6 +66,10 @@ chart = pygal.XY(
     truncate_legend=-1,
 )
 
+# Add start point marker FIRST (distinct green) for logical legend order
+start_data = [(lon[0], lat[0])]
+chart.add("▶ START", [{"value": start_data[0], "node": {"r": 24}}], dots_size=24, stroke=False, show_dots=True)
+
 # Add route segments with color gradient to show time progression
 segment_labels = ["1: Start", "2: Morning", "3: Midday", "4: Afternoon", "5: End"]
 for i in range(n_segments):
@@ -73,13 +78,9 @@ for i in range(n_segments):
     segment_data = list(zip(lon[start_idx:end_idx], lat[start_idx:end_idx], strict=False))
     chart.add(segment_labels[i], segment_data, stroke_style={"width": 8})
 
-# Add start point marker (distinct green square)
-start_data = [(lon[0], lat[0])]
-chart.add("▶ START", [{"value": start_data[0], "node": {"r": 20}}], dots_size=20, stroke=False, show_dots=True)
-
-# Add end point marker (distinct red square)
+# Add end point marker LAST (distinct magenta) for logical legend order
 end_data = [(lon[-1], lat[-1])]
-chart.add("◼ FINISH", [{"value": end_data[0], "node": {"r": 20}}], dots_size=20, stroke=False, show_dots=True)
+chart.add("◼ FINISH", [{"value": end_data[0], "node": {"r": 24}}], dots_size=24, stroke=False, show_dots=True)
 
 # Save outputs
 chart.render_to_file("plot.html")

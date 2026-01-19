@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 map-route-path: Route Path Map
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 68/100 | Created: 2026-01-19
+Quality: 72/100 | Created: 2026-01-19
 """
 
 import numpy as np

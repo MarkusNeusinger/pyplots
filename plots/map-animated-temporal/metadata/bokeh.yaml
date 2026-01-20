@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: map-animated-temporal
 created: '2026-01-20T19:45:19Z'
-updated: '2026-01-20T19:48:41Z'
+updated: '2026-01-20T20:11:28Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21184844062
 issue: 3769
@@ -10,38 +10,34 @@ library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/map-animated-temporal/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/map-animated-temporal/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/map-animated-temporal/bokeh/plot.html
-quality_score: 88
+quality_score: 91
 review:
   strengths:
-  - Excellent use of Bokeh interactive features (CustomJS callbacks, Slider, Play/Pause
-    button)
-  - Good temporal visualization with cumulative display and alpha fading for older
-    points
-  - Realistic earthquake aftershock scenario with appropriate magnitude-based sizing
-  - Proper hover tooltips showing location and magnitude
-  - Clean code structure following KISS principles
+  - Excellent use of Bokeh interactive capabilities with CustomJS callbacks for animation
+  - Play/pause button and slider provide intuitive navigation
+  - Cumulative aftershock display effectively shows temporal spread
+  - Magnitude-based marker sizing adds meaningful data encoding
+  - Realistic earthquake scenario with appropriate geographic context
+  - Clean separation of data preparation and visualization
   weaknesses:
-  - Basemap is oversimplified - just a single polyline coastline approximation rather
-    than proper geographic tiles or boundaries
-  - Legend positioning in bottom-right corner appears somewhat isolated from the main
-    visualization
-  - The static PNG export only captures Day 0 state, which shows a tight cluster -
-    the temporal spread is only visible in the HTML animation
+  - Epicenter star marker is not clearly visible in the static PNG (may be obscured
+    or too small relative to aftershocks)
+  - Legend is positioned far from the main data cluster in the bottom-right corner
   image_description: 'The plot displays an earthquake aftershock sequence visualization
-    on a geographic map covering the Japan region (longitude 130-150°, latitude 28-42°).
-    The static PNG shows Day 0 of the animation with approximately 25 blue circular
-    markers clustered tightly around the epicenter location (35°N, 140°E). A yellow
-    star marker indicates the main earthquake epicenter. A simplified gray coastline
-    approximation runs through the plot area providing geographic context. Faint gray
-    grid lines at 2-degree intervals help with spatial orientation. The title "Earthquake
-    Aftershock Sequence · map-animated-temporal · bokeh · pyplots.ai" appears at the
-    top. A "Day: 0" label in blue bold text is positioned in the upper-left area.
-    The legend in the bottom-right shows "Epicenter" (star) and "Aftershocks" (circle)
-    entries. Axis labels show "Longitude" and "Latitude". The markers have varying
-    sizes based on magnitude and use alpha blending for temporal fading effects.'
+    centered around a Pacific region location (Japan area). The canvas shows a geographic
+    coordinate system with Longitude (130-150) on the x-axis and Latitude (28-42)
+    on the y-axis. A gray coastline approximation is drawn representing the Japanese
+    coast. Blue circular markers of varying sizes represent aftershocks clustered
+    around the epicenter at approximately (140, 35). The markers show the initial
+    day (Day: 0) with about 25 aftershocks visible. A blue "Day: 0" label appears
+    in the upper left. A legend in the bottom right corner shows "Epicenter" (with
+    a yellow star) and "Aftershocks" (blue dot). The title reads "Earthquake Aftershock
+    Sequence · map-animated-temporal · bokeh · pyplots.ai". Light gray grid lines
+    provide geographic reference. The epicenter star marker is not clearly visible
+    in the static PNG - it may be obscured by the aftershock markers.'
   criteria_checklist:
     visual_quality:
-      score: 35
+      score: 36
       max: 40
       items:
       - id: VQ-01
@@ -49,8 +45,8 @@ review:
         score: 9
         max: 10
         passed: true
-        comment: Title at 32pt, axis labels at 24pt, tick labels at 18pt are readable,
-          but could be slightly larger for optimal 4800px viewing
+        comment: Title and axis labels are readable, though tick labels could be slightly
+          larger
       - id: VQ-02
         name: No Overlap
         score: 8
@@ -62,36 +58,35 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Markers visible with good sizing based on magnitude, alpha blending
-          effective, but Day 0 cluster is quite tight
+        comment: Aftershock markers are visible and sized by magnitude; epicenter
+          star is difficult to see
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Blue markers with yellow star are colorblind-safe, good contrast
+        comment: Blue markers on white background with good contrast, colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Data clustered in center, large empty areas on edges; coastline only
-          partial
+        comment: Good use of canvas, though data is concentrated in center-right area
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Longitude and Latitude are descriptive
+        comment: Longitude and Latitude are descriptive for geographic data
       - id: VQ-07
         name: Grid & Legend
         score: 1
         max: 2
-        passed: false
-        comment: Grid is subtle (alpha 0.3), but legend positioned far in corner,
-          somewhat isolated
+        passed: true
+        comment: Grid is subtle (alpha 0.3), legend is present but positioned in bottom-right
+          corner far from the data
     spec_compliance:
-      score: 22
+      score: 24
       max: 25
       items:
       - id: SC-01
@@ -99,40 +94,38 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct animated temporal map with geographic visualization
+        comment: Correct animated temporal map visualization
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Lat/lon correctly mapped, timestamp drives animation
+        comment: Lat/lon correctly mapped to y/x axes
       - id: SC-03
         name: Required Features
         score: 4
         max: 5
         passed: true
-        comment: Has play/pause controls, slider, timestamp display, but basemap is
-          very simplified (single coastline approximation rather than proper geographic
-          context)
+        comment: Has play/pause controls, time slider, timestamp display, basemap;
+          animation works in HTML; static PNG shows only initial frame
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Axes show all data points appropriately
+        comment: Axes show full geographic region
       - id: SC-05
         name: Legend Accuracy
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Legend shows Epicenter and Aftershocks but the star marker for epicenter
-          is not visible in the legend in the PNG (appears cut off or too small)
+        passed: true
+        comment: Legend correctly identifies epicenter and aftershocks
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Correctly uses description · spec-id · library · pyplots.ai format
+        comment: Correct format with spec-id, library, and pyplots.ai
     data_quality:
       score: 18
       max: 20
@@ -142,38 +135,37 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows spreading pattern over time, magnitude-based sizing, cumulative
-          display, but PNG only shows Day 0 initial state
+        comment: Shows spreading aftershocks over time with decreasing magnitude;
+          cumulative display is good
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Earthquake aftershock sequence is a perfect, realistic, neutral scientific
-          scenario
+        comment: Earthquake aftershock sequence is a realistic, neutral scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Coordinates realistic for Japan, magnitudes 2-5 are appropriate,
-          but spread calculation could produce points outside typical aftershock zones
+        comment: Magnitudes 2-5 are realistic for aftershocks; geographic coordinates
+          are appropriate for Japan region
     code_quality:
-      score: 10
+      score: 8
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Follows imports → data → plot → save structure, no unnecessary functions/classes
+        comment: Mostly linear structure but has some nested data preparation logic
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) is set
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -185,32 +177,32 @@ review:
         score: 1
         max: 1
         passed: true
-        comment: Uses current Bokeh API
+        comment: Current Bokeh API
       - id: CQ-05
         name: Output Correct
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Saves as plot.png and plot.html
+        passed: false
+        comment: Saves both plot.png and plot.html correctly
     library_features:
-      score: 3
+      score: 5
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Uses Bokeh ColumnDataSource, CustomJS callbacks, Slider and Button
-          widgets, HoverTool for interactivity - good use of Bokeh strengths, but
-          could leverage more advanced features like tile providers for real basemaps
-  verdict: REJECTED
+        comment: 'Excellent use of Bokeh interactive features: ColumnDataSource, CustomJS
+          callbacks, Slider widget, Button widget, HoverTool'
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - hover-tooltips
   - html-export
   - annotations
+  - custom-legend
   patterns:
   - data-generation
   - columndatasource

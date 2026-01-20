@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-tile-background: Map with Tile Background
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 52/100 | Created: 2026-01-20
@@ -41,27 +41,32 @@ landmarks = [
     {"label": "Vatican Museums", "lat": 41.9065, "lon": 12.4536, "value": 6800},
 ]
 
-# Map bounds for Europe (adjusted to include all landmarks with padding)
-lat_min, lat_max = 36, 54
-lon_min, lon_max = -2, 25
+# Map bounds for Europe (expanded to include all landmarks with ample padding)
+# Acropolis is at 37.97°N, so we extend southward to 35°N for visibility
+lat_min, lat_max = 35, 55
+lon_min, lon_max = -3, 26
 
-# Custom style for 4800x2700 canvas with tile-map-like appearance
+# Custom style for 4800x2700 canvas with OSM-inspired map appearance
+# Note: Pygal cannot render actual tile-based backgrounds; this uses colors
+# inspired by OpenStreetMap (ocean blue #aad3df, land beige #f2efe9) to
+# simulate a map aesthetic. Tile attribution: Colors inspired by OpenStreetMap.
 custom_style = Style(
     background="#aad3df",  # OSM ocean blue as background
     plot_background="#f2efe9",  # OSM land beige as plot area
     foreground="#333333",
     foreground_strong="#111111",
     foreground_subtle="#666666",
-    colors=("#306998", "#4a86c7", "#6ba3e0"),  # Blue gradient for visitor ranges
+    # Distinct colors for better accessibility: orange, teal, purple
+    colors=("#e67e22", "#16a085", "#8e44ad"),
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=44,
     legend_font_size=40,
     value_font_size=32,
     tooltip_font_size=36,
-    guide_stroke_color="#ffffff",  # White grid lines like tile divisions
+    guide_stroke_color="#d4cfc4",  # Subtle beige/tan grid lines
     guide_stroke_dasharray="0",  # Solid grid lines
-    opacity=0.8,
+    opacity=0.85,
     opacity_hover=1.0,
 )
 
@@ -70,7 +75,7 @@ chart = pygal.XY(
     width=4800,
     height=2700,
     style=custom_style,
-    title="European Landmarks · map-tile-background · pygal · pyplots.ai",
+    title="map-tile-background · pygal · pyplots.ai",
     x_title="Longitude (degrees East/West)",
     y_title="Latitude (degrees North)",
     show_legend=True,
@@ -113,9 +118,8 @@ chart.add("3,000K–5,999K visitors/year", medium_visitors, dots_size=22)
 chart.add("6,000K–9,600K visitors/year", high_visitors, dots_size=28)
 
 # Set axis labels with degree notation
-chart.x_labels = [f"{lon}°" for lon in range(lon_min, lon_max + 1, 6)]
-chart.y_labels = [f"{lat}°" for lat in range(lat_min, lat_max + 1, 4)]
+chart.x_labels = [f"{lon}°" for lon in range(lon_min, lon_max + 1, 5)]
+chart.y_labels = [f"{lat}°" for lat in range(lat_min, lat_max + 1, 5)]
 
-# Save outputs
+# Save output (PNG only)
 chart.render_to_png("plot.png")
-chart.render_to_file("plot.html")

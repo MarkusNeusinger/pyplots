@@ -1,0 +1,200 @@
+library: highcharts
+specification_id: line-range-buttons
+created: '2026-01-20T09:52:11Z'
+updated: '2026-01-20T09:54:42Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 21166846720
+issue: 3786
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-range-buttons/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-range-buttons/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/line-range-buttons/highcharts/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Perfect implementation of all required range selector buttons (1M, 3M, 6M, YTD,
+    1Y, All)
+  - 'Excellent use of Highstock features: navigator, scrollbar, date input fields'
+  - Active button (1Y) is clearly highlighted with different background color
+  - Clean visual design with consistent color scheme (#306998)
+  - Good data generation with realistic trend and seasonality over 3 years
+  weaknesses:
+  - Y-axis label is generic (Value); could benefit from more descriptive context
+  - X-axis tick labels are dense for 1Y view; consider fewer ticks or auto-formatting
+  image_description: |-
+    The plot displays a time series line chart with range selector buttons. The title "line-range-buttons · highcharts · pyplots.ai" is clearly visible at the top center. On the upper left, there are six range selector buttons labeled "1M", "3M", "6M", "YTD", "1Y", and "All". The "1Y" button is highlighted with a blue background indicating it is the currently selected range. Date input fields are visible in the upper right showing "Dec 30, 2024" to "Dec 30, 2025".
+
+    The main chart area shows a blue line (#306998) plotting daily values over a 1-year period. The line shows an overall upward trend with seasonality and noise, starting around 148-150 in January and climbing to approximately 196 by December. The X-axis shows dates from January to December with weekly tick marks (Jan 6, Jan 13, etc.). The Y-axis shows values from approximately 144 to 200 with a "Value" label. Below the main chart, there is a navigator/overview panel showing the full data range with the current selection highlighted. A scrollbar is present beneath the navigator.
+
+    The color scheme uses a blue primary color (#306998) with gray gridlines and white background. All text is readable, though the X-axis labels appear somewhat dense.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title and labels readable, though X-axis tick labels are slightly
+          small for the canvas size
+      - id: VQ-02
+        name: No Overlap
+        score: 7
+        max: 8
+        passed: true
+        comment: X-axis labels are dense but not overlapping significantly
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Line is clearly visible with good lineWidth of 4
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color, no accessibility concerns
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good use of canvas with navigator and buttons well positioned
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: Y-axis has Value label but no units, X-axis has no label
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle, legend disabled (appropriate for single series)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct time series line chart with range buttons
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Date on X, value on Y correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: All required buttons (1M, 3M, 6M, YTD, 1Y, All) present with date
+          inputs
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Shows full data range with navigator
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend disabled appropriately for single series
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: line-range-buttons · highcharts · pyplots.ai'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows trend, seasonality, and random walk; buttons work for range
+          selection
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Generic daily values, could be more domain-specific
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values 100-200 range is sensible
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Simple script structure, no classes/functions
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) used
+      - id: CQ-03
+        name: Clean Imports
+        score: 1
+        max: 2
+        passed: false
+        comment: datetime and timedelta could use more targeted import
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current Highstock API used
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves both plot.png and plot.html (HTML is appropriate for interactive
+          library)
+    library_features:
+      score: 4
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Excellent use of Highstock rangeSelector, navigator, scrollbar, and
+          input fields
+  verdict: APPROVED
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - time-series
+  styling:
+  - grid-styling

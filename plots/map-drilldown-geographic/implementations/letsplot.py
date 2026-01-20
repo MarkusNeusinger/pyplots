@@ -574,17 +574,17 @@ continents = pd.DataFrame(continent_rows)
 country_ids = hierarchy_data["world"]["children"]
 countries_data = []
 
-# Label offset adjustments to avoid overlap (nudge_x, nudge_y)
-# European countries need larger offsets to avoid label collision
+# Label offset adjustments to avoid overlap (nudge_x, nudge_y in degrees)
+# Keep labels close to their bubbles while avoiding collisions
 label_offsets = {
-    "usa": (0, -14),
-    "canada": (0, -14),
-    "mexico": (0, -12),
-    "brazil": (0, -14),
-    "uk": (-30, -10),  # Move UK label left and down to avoid Germany
-    "germany": (25, 10),  # Move Germany label right and up
-    "france": (-30, -10),  # Move France label left and down, away from others
-    "australia": (-45, 0),  # Move Australia label further left to avoid edge cutoff
+    "usa": (0, -8),  # Below bubble
+    "canada": (15, 0),  # Right of bubble to avoid US proximity
+    "mexico": (0, -8),  # Below bubble
+    "brazil": (0, -10),  # Below bubble
+    "uk": (-12, -8),  # Left and below to separate from Germany
+    "germany": (12, 5),  # Right and up to separate from UK/France
+    "france": (-15, -8),  # Left and below to separate from others
+    "australia": (-35, 0),  # Left to avoid edge cutoff
 }
 
 for cid in country_ids:

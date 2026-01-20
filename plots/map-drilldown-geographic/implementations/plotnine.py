@@ -1,0 +1,294 @@
+"""pyplots.ai
+map-drilldown-geographic: Drillable Geographic Map
+Library: plotnine | Python 3.13
+Quality: pending | Created: 2026-01-20
+"""
+
+import numpy as np
+import pandas as pd
+from plotnine import (
+    aes,
+    annotate,
+    coord_fixed,
+    element_blank,
+    element_rect,
+    element_text,
+    geom_polygon,
+    geom_text,
+    ggplot,
+    labs,
+    scale_fill_gradient,
+    theme,
+)
+
+
+# Seed for reproducibility
+np.random.seed(42)
+
+# Hierarchical geographic data: USA states with performance metrics
+# This represents a static view of what would be a drillable map
+# Note: plotnine is a static library - interactive drill-down requires
+# libraries like plotly, bokeh, or altair
+
+# Simplified US state boundaries (approximate polygons)
+states_data = {
+    "California": {
+        "coords": [
+            (-124.4, 42.0),
+            (-124.2, 40.0),
+            (-122.4, 37.8),
+            (-120.0, 34.5),
+            (-117.1, 32.5),
+            (-114.6, 32.7),
+            (-114.6, 34.9),
+            (-120.0, 39.0),
+            (-121.5, 41.2),
+            (-124.4, 42.0),
+        ],
+        "value": 85,
+        "centroid": (-119.4, 37.2),
+        "abbrev": "CA",
+    },
+    "Texas": {
+        "coords": [
+            (-106.6, 32.0),
+            (-103.0, 32.0),
+            (-103.0, 36.5),
+            (-100.0, 36.5),
+            (-100.0, 34.5),
+            (-94.4, 33.6),
+            (-93.5, 31.0),
+            (-94.0, 29.5),
+            (-97.1, 26.0),
+            (-99.0, 26.0),
+            (-101.4, 29.8),
+            (-104.0, 29.5),
+            (-106.5, 31.8),
+            (-106.6, 32.0),
+        ],
+        "value": 72,
+        "centroid": (-99.5, 31.2),
+        "abbrev": "TX",
+    },
+    "New York": {
+        "coords": [
+            (-79.8, 43.0),
+            (-75.0, 45.0),
+            (-73.3, 45.0),
+            (-73.3, 41.2),
+            (-74.7, 41.4),
+            (-75.4, 39.9),
+            (-79.8, 42.3),
+            (-79.8, 43.0),
+        ],
+        "value": 91,
+        "centroid": (-76.0, 42.8),
+        "abbrev": "NY",
+    },
+    "Florida": {
+        "coords": [
+            (-87.6, 31.0),
+            (-85.0, 31.0),
+            (-82.0, 30.4),
+            (-81.5, 29.0),
+            (-80.4, 25.8),
+            (-80.0, 24.5),
+            (-82.8, 24.5),
+            (-83.0, 27.0),
+            (-84.9, 29.7),
+            (-87.6, 30.4),
+            (-87.6, 31.0),
+        ],
+        "value": 68,
+        "centroid": (-82.5, 28.5),
+        "abbrev": "FL",
+    },
+    "Illinois": {
+        "coords": [
+            (-91.5, 42.5),
+            (-87.5, 42.5),
+            (-87.5, 39.5),
+            (-88.0, 37.5),
+            (-89.5, 36.5),
+            (-91.5, 36.9),
+            (-91.0, 40.0),
+            (-91.5, 42.5),
+        ],
+        "value": 78,
+        "centroid": (-89.4, 40.0),
+        "abbrev": "IL",
+    },
+    "Washington": {
+        "coords": [(-124.7, 48.4), (-117.0, 49.0), (-117.0, 46.0), (-119.0, 45.9), (-124.0, 46.3), (-124.7, 48.4)],
+        "value": 82,
+        "centroid": (-120.5, 47.4),
+        "abbrev": "WA",
+    },
+    "Colorado": {
+        "coords": [(-109.0, 41.0), (-102.0, 41.0), (-102.0, 37.0), (-109.0, 37.0), (-109.0, 41.0)],
+        "value": 75,
+        "centroid": (-105.5, 39.0),
+        "abbrev": "CO",
+    },
+    "Arizona": {
+        "coords": [(-114.8, 37.0), (-109.0, 37.0), (-109.0, 31.3), (-111.1, 31.3), (-114.8, 32.5), (-114.8, 37.0)],
+        "value": 64,
+        "centroid": (-111.9, 34.2),
+        "abbrev": "AZ",
+    },
+    "Georgia": {
+        "coords": [
+            (-85.6, 35.0),
+            (-83.1, 35.0),
+            (-83.4, 34.5),
+            (-82.2, 33.5),
+            (-81.0, 32.1),
+            (-80.9, 30.4),
+            (-82.0, 30.4),
+            (-84.9, 30.7),
+            (-85.0, 32.0),
+            (-85.6, 35.0),
+        ],
+        "value": 71,
+        "centroid": (-83.5, 32.7),
+        "abbrev": "GA",
+    },
+    "Ohio": {
+        "coords": [(-84.8, 41.7), (-80.5, 42.0), (-80.5, 39.5), (-81.7, 38.9), (-84.8, 39.1), (-84.8, 41.7)],
+        "value": 69,
+        "centroid": (-82.9, 40.4),
+        "abbrev": "OH",
+    },
+    "Pennsylvania": {
+        "coords": [(-80.5, 42.0), (-75.0, 42.0), (-75.0, 39.7), (-80.5, 39.7), (-80.5, 42.0)],
+        "value": 76,
+        "centroid": (-77.8, 40.9),
+        "abbrev": "PA",
+    },
+    "Michigan": {
+        "coords": [
+            (-90.4, 46.0),
+            (-84.0, 46.5),
+            (-82.5, 45.0),
+            (-82.5, 43.5),
+            (-84.5, 41.7),
+            (-87.0, 41.7),
+            (-87.5, 43.0),
+            (-88.0, 45.0),
+            (-90.4, 46.0),
+        ],
+        "value": 73,
+        "centroid": (-85.5, 44.0),
+        "abbrev": "MI",
+    },
+    "Nevada": {
+        "coords": [(-120.0, 42.0), (-114.0, 42.0), (-114.0, 36.0), (-117.0, 36.0), (-120.0, 39.0), (-120.0, 42.0)],
+        "value": 79,
+        "centroid": (-117.0, 39.5),
+        "abbrev": "NV",
+    },
+    "Oregon": {
+        "coords": [(-124.5, 46.0), (-117.0, 46.0), (-117.0, 42.0), (-124.5, 42.0), (-124.5, 46.0)],
+        "value": 81,
+        "centroid": (-120.5, 44.0),
+        "abbrev": "OR",
+    },
+}
+
+# Build dataframe for state polygons
+polygon_rows = []
+for state_name, state_info in states_data.items():
+    for idx, (lon, lat) in enumerate(state_info["coords"]):
+        polygon_rows.append(
+            {
+                "state": state_name,
+                "lon": lon,
+                "lat": lat,
+                "order": idx,
+                "value": state_info["value"],
+                "abbrev": state_info["abbrev"],
+            }
+        )
+
+df_states = pd.DataFrame(polygon_rows)
+
+# State labels (centroids) for annotations
+label_rows = []
+for state_name, state_info in states_data.items():
+    label_rows.append(
+        {
+            "state": state_name,
+            "lon": state_info["centroid"][0],
+            "lat": state_info["centroid"][1],
+            "value": state_info["value"],
+            "abbrev": state_info["abbrev"],
+            "label": f"{state_info['abbrev']}\n{state_info['value']}",
+        }
+    )
+
+df_labels = pd.DataFrame(label_rows)
+
+# Create breadcrumb navigation indicator (static representation)
+breadcrumb_text = "World  >  USA  >  States"
+
+# Build choropleth-style state map
+plot = (
+    ggplot()
+    # State polygons with value-based fill (choropleth)
+    + geom_polygon(
+        aes(x="lon", y="lat", group="state", fill="value"), data=df_states, color="#FFFFFF", size=1.2, alpha=0.9
+    )
+    # State labels with abbreviation and value
+    + geom_text(
+        aes(x="lon", y="lat", label="label"),
+        data=df_labels,
+        size=9,
+        color="#1a1a1a",
+        fontweight="bold",
+        va="center",
+        ha="center",
+    )
+    # Color scale - Python colors
+    + scale_fill_gradient(low="#FFD43B", high="#306998", name="Performance\nScore", limits=(60, 95))
+    # Fixed aspect ratio for geographic accuracy
+    + coord_fixed(ratio=1.3)
+    # Breadcrumb as annotation
+    + annotate("text", x=-122, y=51, label=breadcrumb_text, size=12, color="#306998", fontweight="bold", ha="left")
+    # Click instruction annotation
+    + annotate(
+        "text",
+        x=-122,
+        y=49.5,
+        label="Click any state to drill down to cities (interactive version)",
+        size=9,
+        color="#666666",
+        ha="left",
+        fontstyle="italic",
+    )
+    # Title and labels
+    + labs(
+        title="map-drilldown-geographic · plotnine · pyplots.ai",
+        subtitle="US Regional Performance Scores (Static View - Drill-down requires interactive library)",
+        x="",
+        y="",
+    )
+    + theme(
+        figure_size=(16, 9),
+        plot_title=element_text(size=26, weight="bold", ha="center"),
+        plot_subtitle=element_text(size=14, ha="center", color="#666666"),
+        axis_title=element_blank(),
+        axis_text=element_blank(),
+        axis_ticks=element_blank(),
+        panel_grid_major=element_blank(),
+        panel_grid_minor=element_blank(),
+        panel_background=element_rect(fill="#E8EEF2"),
+        plot_background=element_rect(fill="white"),
+        legend_title=element_text(size=14, weight="bold"),
+        legend_text=element_text(size=12),
+        legend_position="right",
+        legend_background=element_rect(fill="white", color="#CCCCCC", size=0.5),
+    )
+)
+
+# Save at 300 DPI for 4800x2700 px output
+plot.save("plot.png", dpi=300, verbose=False)

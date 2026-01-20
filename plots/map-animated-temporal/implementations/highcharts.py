@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 map-animated-temporal: Animated Map over Time
 Library: highcharts unknown | Python 3.13.11
-Quality: 83/100 | Created: 2026-01-20
+Quality: 90/100 | Created: 2026-01-20
 """
 
 import tempfile

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-animated-temporal: Animated Map over Time
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-20
@@ -9,13 +9,13 @@ import pandas as pd
 from plotnine import (
     aes,
     coord_fixed,
+    element_line,
     element_rect,
     element_text,
     facet_wrap,
     geom_path,
     geom_point,
     ggplot,
-    guides,
     labs,
     scale_color_cmap,
     scale_size_continuous,
@@ -129,7 +129,7 @@ plot = (
     + geom_point(aes(color="magnitude", size="magnitude"), alpha=0.7)
     + facet_wrap("~day", ncol=3)
     + scale_color_cmap(cmap_name="viridis", name="Magnitude")
-    + scale_size_continuous(range=(2, 8), guide=False)
+    + scale_size_continuous(range=(2, 8), name="Magnitude")
     + coord_fixed(ratio=1.0)
     + labs(
         title="Earthquake Aftershock Sequence · map-animated-temporal · plotnine · pyplots.ai",
@@ -149,8 +149,9 @@ plot = (
         legend_text=element_text(size=12),
         panel_background=element_rect(fill="#F5F5F0"),
         plot_background=element_rect(fill="white"),
+        panel_grid_major=element_line(color="#CCCCCC", size=0.3, alpha=0.4),
+        panel_grid_minor=element_line(color="#DDDDDD", size=0.2, alpha=0.3),
     )
-    + guides(size=False)
 )
 
 # Save

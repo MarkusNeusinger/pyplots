@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 pie-portfolio-interactive: Interactive Portfolio Allocation Chart
-Library: pygal | Python 3.13
-Quality: pending | Created: 2025-01-20
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 85/100 | Created: 2026-01-20
 """
 
 import pygal

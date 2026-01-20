@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 pie-portfolio-interactive: Interactive Portfolio Allocation Chart
-Library: seaborn | Python 3.13
-Quality: pending | Created: 2026-01-20
+Library: seaborn 0.13.2 | Python 3.13.11
+Quality: 88/100 | Created: 2026-01-20
 """
 
 import matplotlib.pyplot as plt

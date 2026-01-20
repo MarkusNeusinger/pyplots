@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-tile-background: Map with Tile Background
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-20
@@ -191,8 +191,8 @@ class TileBackgroundMap(Graph):
         attrib_text.set("style", f"font-size:{attrib_font_size}px;font-family:sans-serif")
         attrib_text.text = f"© {self.tile_provider} style (simulated)"
 
-        # Draw legend
-        legend_x = x_offset + map_width - 350
+        # Draw legend with actual value ranges
+        legend_x = x_offset + map_width - 450
         legend_y = y_offset + 40
         legend_font = 36
 
@@ -200,11 +200,26 @@ class TileBackgroundMap(Graph):
         legend_title = self.svg.node(map_group, "text", x=legend_x, y=legend_y)
         legend_title.set("fill", "#333333")
         legend_title.set("style", f"font-size:{legend_font}px;font-weight:bold;font-family:sans-serif")
-        legend_title.text = "Visitor Count"
+        legend_title.text = "Visitors (thousands/year)"
 
-        # Legend markers (small, medium, large)
-        sizes = [(25, "Low"), (40, "Medium"), (55, "High")]
-        for i, (size, lbl) in enumerate(sizes):
+        # Calculate actual value ranges for legend
+        if self.point_data:
+            values = [p.get("value", 1) for p in self.point_data]
+            data_min = min(values)
+            data_max = max(values)
+            data_range = data_max - data_min if data_max > data_min else 1
+            # Define three ranges: low (0-33%), medium (33-66%), high (66-100%)
+            low_upper = data_min + data_range * 0.33
+            high_lower = data_min + data_range * 0.66
+            legend_items = [
+                (25, f"{data_min:.0f}–{low_upper:.0f}K"),
+                (40, f"{low_upper:.0f}–{high_lower:.0f}K"),
+                (55, f"{high_lower:.0f}–{data_max:.0f}K"),
+            ]
+        else:
+            legend_items = [(25, "Low"), (40, "Medium"), (55, "High")]
+
+        for i, (size, lbl) in enumerate(legend_items):
             cy = legend_y + 60 + i * 70
             cx = legend_x + 30
 

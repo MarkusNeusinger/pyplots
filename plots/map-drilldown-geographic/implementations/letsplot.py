@@ -1,10 +1,8 @@
-""" pyplots.ai
+"""pyplots.ai
 map-drilldown-geographic: Drillable Geographic Map
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 72/100 | Created: 2026-01-20
 """
-
-import json
 
 import numpy as np
 import pandas as pd
@@ -20,6 +18,7 @@ from lets_plot import (
     ggplot,
     ggsize,
     labs,
+    layer_tooltips,
     scale_fill_gradient,
     scale_size,
     theme,
@@ -82,7 +81,7 @@ hierarchy_data = {
     },
     "uk": {
         "id": "uk",
-        "name": "United Kingdom",
+        "name": "UK",
         "level": "country",
         "parent": "world",
         "value": 2100000,
@@ -571,11 +570,26 @@ for lon, lat in aus_coords:
 
 continents = pd.DataFrame(continent_rows)
 
-# Prepare country data for static bubble map
+# Prepare country data for static bubble map with custom label positions
 country_ids = hierarchy_data["world"]["children"]
 countries_data = []
+
+# Label offset adjustments to avoid overlap (nudge_x, nudge_y)
+# European countries need larger offsets to avoid label collision
+label_offsets = {
+    "usa": (0, -14),
+    "canada": (0, -14),
+    "mexico": (0, -12),
+    "brazil": (0, -14),
+    "uk": (-30, -10),  # Move UK label left and down to avoid Germany
+    "germany": (25, 10),  # Move Germany label right and up
+    "france": (-30, -10),  # Move France label left and down, away from others
+    "australia": (-45, 0),  # Move Australia label further left to avoid edge cutoff
+}
+
 for cid in country_ids:
     c = hierarchy_data[cid]
+    nudge_x, nudge_y = label_offsets.get(cid, (0, -8))
     countries_data.append(
         {
             "name": c["name"],
@@ -584,12 +598,16 @@ for cid in country_ids:
             "value": c["value"],
             "value_millions": c["value"] / 1_000_000,
             "has_children": len(c.get("children", [])) > 0,
+            "label_lon": c["lon"] + nudge_x,
+            "label_lat": c["lat"] + nudge_y,
+            "sales_formatted": f"${c['value'] / 1_000_000:.2f}M",
         }
     )
 
 df = pd.DataFrame(countries_data)
 
-# Create static bubble map for PNG
+# Create static bubble map for PNG with tooltips
+# Use color gradient only (no size) for cleaner single-legend display
 plot = (
     ggplot()
     # Continent outlines for geographic context
@@ -600,8 +618,9 @@ plot = (
         color="#CCCCCC",
         alpha=0.7,
         size=0.5,
+        tooltips="none",
     )
-    # Bubble markers for countries - sized and colored by value
+    # Bubble markers for countries - single aesthetic (fill) for unified legend
     + geom_point(
         data=df,
         mapping=aes(x="lon", y="lat", size="value_millions", fill="value_millions"),
@@ -609,18 +628,28 @@ plot = (
         alpha=0.85,
         shape=21,
         stroke=1.5,
+        tooltips=layer_tooltips()
+        .title("@name")
+        .line("Sales|@sales_formatted")
+        .line("Click to drill down (HTML version)"),
     )
-    # Country labels
+    # Country labels at adjusted positions with smaller size for Europe
     + geom_text(
-        data=df, mapping=aes(x="lon", y="lat", label="name"), size=10, color="#333333", nudge_y=-8, fontface="bold"
+        data=df,
+        mapping=aes(x="label_lon", y="label_lat", label="name"),
+        size=10,
+        color="#333333",
+        fontface="bold",
+        tooltips="none",
     )
-    # Scales
-    + scale_size(range=[8, 25], name="Sales\n(Millions $)")
-    + scale_fill_gradient(low="#FFD43B", high="#306998", name="Sales\n(Millions $)")
-    # Coordinate and labels
-    + coord_fixed(ratio=1.3, xlim=[-180, 180], ylim=[-60, 75])
+    # Scales - hide size legend, only show color gradient
+    + scale_size(range=[10, 28], guide="none")
+    + scale_fill_gradient(low="#FFD43B", high="#306998", name="Sales (Millions $)")
+    # Coordinate and labels - extend xlim to prevent Australia cutoff
+    + coord_fixed(ratio=1.3, xlim=[-180, 200], ylim=[-60, 75])
     + labs(
-        title="map-drilldown-geographic · letsplot · pyplots.ai", subtitle="Global Sales · Click to drill down (HTML)"
+        title="map-drilldown-geographic · letsplot · pyplots.ai",
+        subtitle="Global Sales by Country · Drill-down available in HTML version",
     )
     + ggsize(1600, 900)
     + theme_void()
@@ -629,7 +658,7 @@ plot = (
         plot_subtitle=element_text(size=18, hjust=0.5, color="#666666"),
         legend_title=element_text(size=16),
         legend_text=element_text(size=14),
-        legend_position=[0.92, 0.25],
+        legend_position=[0.88, 0.18],
         plot_background=element_rect(fill="#f0f4f8"),
     )
 )
@@ -637,522 +666,5 @@ plot = (
 # Save static PNG (scale 3x for 4800 × 2700 px)
 export_ggsave(plot, "plot.png", path=".", scale=3)
 
-# Color interpolation for HTML
-color_low = (255, 212, 59)  # #FFD43B
-color_high = (48, 105, 152)  # #306998
-
-
-def value_to_color(value, min_val, max_val):
-    """Map a value to a color between low and high."""
-    if max_val == min_val:
-        t = 0.5
-    else:
-        t = (value - min_val) / (max_val - min_val)
-    r = int(color_low[0] + t * (color_high[0] - color_low[0]))
-    g = int(color_low[1] + t * (color_high[1] - color_low[1]))
-    b = int(color_low[2] + t * (color_high[2] - color_low[2]))
-    return f"#{r:02x}{g:02x}{b:02x}"
-
-
-# Prepare levels data for JavaScript
-levels_data = {}
-
-# World level
-world_data = hierarchy_data["world"]
-child_ids = world_data["children"]
-child_items = [hierarchy_data[cid] for cid in child_ids]
-values = [item["value"] for item in child_items]
-min_val, max_val = min(values), max(values)
-levels_data["world"] = {
-    "name": "World",
-    "level": "world",
-    "bounds": {"lat_min": -60, "lat_max": 70, "lon_min": -180, "lon_max": 180},
-    "items": [
-        {
-            "id": item["id"],
-            "name": item["name"],
-            "value": item["value"],
-            "lat": item.get("lat", 0),
-            "lon": item.get("lon", 0),
-            "has_children": len(item.get("children", [])) > 0,
-            "color": value_to_color(item["value"], min_val, max_val),
-        }
-        for item in child_items
-    ],
-}
-
-# Country levels (USA, Canada)
-for country_id in ["usa", "canada"]:
-    country = hierarchy_data[country_id]
-    if not country.get("children"):
-        continue
-    child_ids = country["children"]
-    child_items = [hierarchy_data[cid] for cid in child_ids]
-    values = [item["value"] for item in child_items]
-    min_val, max_val = min(values), max(values)
-
-    lats = [item.get("lat", 0) for item in child_items]
-    lons = [item.get("lon", 0) for item in child_items]
-
-    if country_id == "usa":
-        bounds = {"lat_min": 24, "lat_max": 50, "lon_min": -125, "lon_max": -66}
-    else:
-        bounds = {"lat_min": 42, "lat_max": 70, "lon_min": -140, "lon_max": -52}
-
-    levels_data[country_id] = {
-        "name": country["name"],
-        "level": "country",
-        "parent": "world",
-        "bounds": bounds,
-        "items": [
-            {
-                "id": item["id"],
-                "name": item["name"],
-                "value": item["value"],
-                "lat": item.get("lat", 0),
-                "lon": item.get("lon", 0),
-                "has_children": len(item.get("children", [])) > 0,
-                "color": value_to_color(item["value"], min_val, max_val),
-            }
-            for item in child_items
-        ],
-    }
-
-# State levels
-for state_id in ["california", "texas", "new_york", "florida", "illinois", "ontario", "quebec", "british_columbia"]:
-    state = hierarchy_data[state_id]
-    if not state.get("children"):
-        continue
-    child_ids = state["children"]
-    child_items = [hierarchy_data[cid] for cid in child_ids]
-    values = [item["value"] for item in child_items]
-    min_val, max_val = min(values), max(values)
-
-    lats = [item.get("lat", 0) for item in child_items]
-    lons = [item.get("lon", 0) for item in child_items]
-
-    lat_padding = max((max(lats) - min(lats)) * 0.3, 2)
-    lon_padding = max((max(lons) - min(lons)) * 0.3, 3)
-
-    levels_data[state_id] = {
-        "name": state["name"],
-        "level": "state",
-        "parent": state["parent"],
-        "bounds": {
-            "lat_min": min(lats) - lat_padding,
-            "lat_max": max(lats) + lat_padding,
-            "lon_min": min(lons) - lon_padding,
-            "lon_max": max(lons) + lon_padding,
-        },
-        "items": [
-            {
-                "id": item["id"],
-                "name": item["name"],
-                "value": item["value"],
-                "lat": item.get("lat", 0),
-                "lon": item.get("lon", 0),
-                "has_children": False,
-                "color": value_to_color(item["value"], min_val, max_val),
-            }
-            for item in child_items
-        ],
-    }
-
-# HTML template with interactive map
-html_content = f"""<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>map-drilldown-geographic · letsplot · pyplots.ai</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <style>
-        * {{
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }}
-        body {{
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }}
-        .container {{
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            padding: 30px;
-            max-width: 1100px;
-            width: 100%;
-        }}
-        h1 {{
-            color: #333;
-            text-align: center;
-            font-size: 26px;
-            margin-bottom: 6px;
-        }}
-        .subtitle {{
-            color: #666;
-            text-align: center;
-            font-size: 15px;
-            margin-bottom: 20px;
-        }}
-        .breadcrumb {{
-            background: #306998;
-            color: white;
-            padding: 12px 18px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }}
-        .back-btn {{
-            background: #FFD43B;
-            color: #333;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }}
-        .back-btn:hover {{
-            background: #E6BE35;
-            transform: translateX(-2px);
-        }}
-        .back-btn:disabled {{
-            opacity: 0.4;
-            cursor: not-allowed;
-            transform: none;
-        }}
-        .breadcrumb-path {{
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }}
-        .breadcrumb-path span {{
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }}
-        .breadcrumb-path span:hover:not(.current) {{
-            text-decoration: underline;
-            opacity: 0.9;
-        }}
-        .breadcrumb-path .separator {{
-            opacity: 0.6;
-        }}
-        .breadcrumb-path .current {{
-            font-weight: 600;
-            cursor: default;
-        }}
-        #map {{
-            height: 500px;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid #ddd;
-        }}
-        .legend {{
-            background: white;
-            padding: 12px 16px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-            line-height: 1.6;
-        }}
-        .legend-title {{
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #333;
-        }}
-        .legend-bar {{
-            width: 120px;
-            height: 14px;
-            background: linear-gradient(to right, #FFD43B, #306998);
-            border-radius: 3px;
-        }}
-        .legend-labels {{
-            display: flex;
-            justify-content: space-between;
-            font-size: 11px;
-            color: #666;
-            margin-top: 4px;
-        }}
-        .total-display {{
-            text-align: center;
-            margin-top: 18px;
-            font-size: 18px;
-            color: #333;
-        }}
-        .total-display .amount {{
-            font-weight: 700;
-            color: #306998;
-            font-size: 24px;
-        }}
-        .hint {{
-            text-align: center;
-            color: #888;
-            margin-top: 14px;
-            font-size: 13px;
-        }}
-        .marker-label {{
-            background: rgba(255, 255, 255, 0.95);
-            border: none;
-            border-radius: 4px;
-            padding: 4px 8px;
-            font-size: 12px;
-            font-weight: 600;
-            white-space: nowrap;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-        }}
-        .leaflet-popup-content-wrapper {{
-            border-radius: 10px;
-        }}
-        .popup-content {{
-            padding: 8px 4px;
-        }}
-        .popup-content h3 {{
-            margin: 0 0 8px 0;
-            color: #306998;
-            font-size: 16px;
-        }}
-        .popup-content .value {{
-            font-size: 20px;
-            font-weight: 700;
-            color: #333;
-        }}
-        .popup-content .drill-hint {{
-            margin-top: 8px;
-            font-size: 12px;
-            color: #666;
-            font-style: italic;
-        }}
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>map-drilldown-geographic · letsplot · pyplots.ai</h1>
-        <p class="subtitle">Sales by Region · Click markers to drill down</p>
-
-        <div class="breadcrumb">
-            <button class="back-btn" id="backBtn" disabled>← Back</button>
-            <div class="breadcrumb-path" id="breadcrumb-path">
-                <span class="current">World</span>
-            </div>
-        </div>
-
-        <div id="map"></div>
-
-        <div class="total-display">
-            Level Total: <span class="amount" id="total-amount">$16,520,000</span>
-        </div>
-
-        <p class="hint" id="hint">Click on a marker to drill down to states/provinces</p>
-    </div>
-
-    <script>
-        const levelsData = {json.dumps(levels_data)};
-        const hierarchyData = {json.dumps(hierarchy_data)};
-
-        let currentLevel = 'world';
-        let history = [];
-        let map;
-        let markersLayer;
-
-        // Initialize map
-        function initMap() {{
-            map = L.map('map', {{
-                worldCopyJump: true,
-                maxBoundsViscosity: 1.0
-            }}).setView([30, 0], 2);
-
-            L.tileLayer('https://{{s}}.basemaps.cartocdn.com/light_all/{{z}}/{{x}}/{{y}}{{r}}.png', {{
-                attribution: '&copy; OpenStreetMap &copy; CARTO',
-                subdomains: 'abcd',
-                maxZoom: 19
-            }}).addTo(map);
-
-            // Add legend
-            const legend = L.control({{position: 'bottomright'}});
-            legend.onAdd = function() {{
-                const div = L.DomUtil.create('div', 'legend');
-                div.innerHTML = `
-                    <div class="legend-title">Sales Value</div>
-                    <div class="legend-bar"></div>
-                    <div class="legend-labels">
-                        <span>Low</span>
-                        <span>High</span>
-                    </div>
-                `;
-                return div;
-            }};
-            legend.addTo(map);
-
-            markersLayer = L.layerGroup().addTo(map);
-            renderLevel('world');
-        }}
-
-        function renderLevel(levelId) {{
-            const data = levelsData[levelId];
-            if (!data) return;
-
-            markersLayer.clearLayers();
-
-            // Fit bounds with animation
-            const bounds = data.bounds;
-            map.flyToBounds([
-                [bounds.lat_min, bounds.lon_min],
-                [bounds.lat_max, bounds.lon_max]
-            ], {{
-                padding: [30, 30],
-                duration: 0.8
-            }});
-
-            // Add markers for each item
-            data.items.forEach(item => {{
-                const maxVal = Math.max(...data.items.map(i => i.value));
-                const minVal = Math.min(...data.items.map(i => i.value));
-                const normalizedSize = minVal === maxVal ? 0.5 :
-                    (item.value - minVal) / (maxVal - minVal);
-                const radius = 15 + normalizedSize * 25;
-
-                const marker = L.circleMarker([item.lat, item.lon], {{
-                    radius: radius,
-                    fillColor: item.color,
-                    color: '#333',
-                    weight: 2,
-                    opacity: 1,
-                    fillOpacity: 0.85
-                }});
-
-                const popupContent = `
-                    <div class="popup-content">
-                        <h3>${{item.name}}</h3>
-                        <div class="value">${{formatCurrency(item.value)}}</div>
-                        ${{item.has_children ? '<div class="drill-hint">Click to drill down</div>' : ''}}
-                    </div>
-                `;
-                marker.bindPopup(popupContent);
-
-                marker.on('click', function() {{
-                    if (item.has_children && levelsData[item.id]) {{
-                        drillDown(item.id);
-                    }}
-                }});
-
-                marker.on('mouseover', function() {{
-                    this.setStyle({{
-                        weight: 3,
-                        fillOpacity: 1
-                    }});
-                    this.openPopup();
-                }});
-
-                marker.on('mouseout', function() {{
-                    this.setStyle({{
-                        weight: 2,
-                        fillOpacity: 0.85
-                    }});
-                }});
-
-                markersLayer.addLayer(marker);
-
-                if (radius > 20) {{
-                    const label = L.marker([item.lat, item.lon], {{
-                        icon: L.divIcon({{
-                            className: 'marker-label',
-                            html: item.name,
-                            iconSize: null
-                        }})
-                    }});
-                    markersLayer.addLayer(label);
-                }}
-            }});
-
-            const total = data.items.reduce((sum, item) => sum + item.value, 0);
-            document.getElementById('total-amount').textContent = formatCurrency(total);
-
-            const hint = document.getElementById('hint');
-            const hasChildren = data.items.some(item => item.has_children);
-            if (hasChildren) {{
-                const levelName = data.level === 'world' ? 'states/provinces' :
-                                  data.level === 'country' ? 'cities' : 'details';
-                hint.textContent = `Click on a marker to drill down to ${{levelName}}`;
-            }} else {{
-                hint.textContent = 'Lowest level reached · Use breadcrumb to navigate back';
-            }}
-        }}
-
-        function formatCurrency(value) {{
-            return new Intl.NumberFormat('en-US', {{
-                style: 'currency',
-                currency: 'USD',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            }}).format(value);
-        }}
-
-        function drillDown(targetId) {{
-            if (levelsData[targetId]) {{
-                history.push(currentLevel);
-                currentLevel = targetId;
-                updateBreadcrumb();
-                renderLevel(currentLevel);
-            }}
-        }}
-
-        function goBack() {{
-            if (history.length > 0) {{
-                currentLevel = history.pop();
-                updateBreadcrumb();
-                renderLevel(currentLevel);
-            }}
-        }}
-
-        function updateBreadcrumb() {{
-            const pathDiv = document.getElementById('breadcrumb-path');
-            const fullPath = ['world', ...history];
-            if (!fullPath.includes(currentLevel)) fullPath.push(currentLevel);
-
-            let html = '';
-            fullPath.forEach((id, index) => {{
-                if (index > 0) html += '<span class="separator"> > </span>';
-                const name = levelsData[id]?.name || hierarchyData[id]?.name || id;
-                if (id === currentLevel) {{
-                    html += `<span class="current">${{name}}</span>`;
-                }} else {{
-                    html += `<span onclick="navigateTo('${{id}}')">${{name}}</span>`;
-                }}
-            }});
-
-            pathDiv.innerHTML = html;
-            document.getElementById('backBtn').disabled = currentLevel === 'world';
-        }}
-
-        window.navigateTo = function(id) {{
-            const idx = history.indexOf(id);
-            if (idx >= 0) {{
-                history = history.slice(0, idx);
-            }} else {{
-                history = [];
-            }}
-            currentLevel = id;
-            updateBreadcrumb();
-            renderLevel(currentLevel);
-        }};
-
-        document.getElementById('backBtn').addEventListener('click', goBack);
-
-        initMap();
-    </script>
-</body>
-</html>"""
-
-with open("plot.html", "w") as f:
-    f.write(html_content)
+# Save interactive HTML using lets-plot native export
+export_ggsave(plot, "plot.html", path=".", iframe=False)

@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: map-marker-clustered
 created: '2026-01-20T18:51:57Z'
-updated: '2026-01-20T18:54:33Z'
+updated: '2026-01-20T19:05:15Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21183368834
 issue: 3766
@@ -10,80 +10,84 @@ library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/map-marker-clustered/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/map-marker-clustered/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/map-marker-clustered/letsplot/plot.html
-quality_score: 84
+quality_score: 90
 review:
   strengths:
-  - Clean grid-based clustering algorithm implementation
-  - Excellent use of dual legends (size for count, color for category)
-  - Realistic US store location scenario with regional clustering
-  - Proper title formatting and caption
-  - Good visual design with simplified US boundary polygon
+  - Excellent visual clarity with well-designed cluster markers showing count labels
+  - Good use of letsplot layer_tooltips() for interactive hover information
+  - Effective displacement algorithm prevents cluster overlap
+  - Clean two-legend design (size and color) provides clear interpretation
+  - Realistic store location data with meaningful categories
   weaknesses:
-  - Cluster markers overlap in dense areas (Florida shows 3 overlapping clusters)
-  - Missing interactive zoom/click-to-expand behavior mentioned in spec
-  - Does not show individual unclustered markers distinctly (all markers appear clustered)
-  - No hover tooltips or interactive features despite HTML export capability
-  image_description: 'The plot displays a clustered marker map of the contiguous United
-    States with a simplified gray polygon boundary on a light gray background. Circular
-    markers of varying sizes show the count of store locations in each cluster, with
-    white bold text labels displaying the count numbers (94, 75, 80, 50, 55, 57, 67,
-    49, 28, 56, 14, 6, 5, 5, 5, 10, 3). The markers are primarily blue (Retail - dominant
-    category), with potential for yellow (Warehouse) and red (Service Center). Two
-    legends appear on the right side: "Locations" showing a size scale (5, 20, 50,
-    100) and "Store Type" showing the three category colors. The title "map-marker-clustered
-    · letsplot · pyplots.ai" is centered at the top in bold, and a caption "Store
-    locations clustered by proximity | 760 total locations" appears at the bottom
-    center in gray text.'
+  - Helper function displace_overlapping_clusters violates KISS principle (could be
+    inline or simplified)
+  image_description: 'The plot displays a clustered marker map of the continental
+    United States showing store locations. A simplified gray polygon outlines the
+    US boundaries. Cluster markers are displayed as filled circles with varying sizes
+    representing the count of locations (from small clusters like 5-6 to large clusters
+    like 131). Each cluster shows a white number inside indicating the count. The
+    clusters are color-coded by dominant store type: blue for Retail (most common),
+    yellow/gold for Warehouse, and red for Service Center. The map shows regional
+    clusters: West Coast (99, 6, 74), Midwest (97), East Coast (131, 60, 5), Texas
+    area (67, 6, 12, 25), and Florida (45, 22). Two legends appear on the right: a
+    "Locations" size legend showing scale from 10-200, and a "Store Type" color legend.
+    The title "map-marker-clustered · letsplot · pyplots.ai" appears at the top, and
+    a caption "Store locations clustered by proximity | Hover for details | 760 total
+    locations" at the bottom.'
   criteria_checklist:
     visual_quality:
-      score: 34
+      score: 36
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
+        score: 10
         max: 10
         passed: true
-        comment: Title and labels readable, count labels in clusters are clear
+        comment: Title is bold and prominent, cluster count labels are clear white
+          text on colored backgrounds, legend text is readable
       - id: VQ-02
         name: No Overlap
-        score: 5
-        max: 8
-        passed: false
-        comment: Some cluster markers overlap in Florida area (57, 10, 3) and East
-          Coast (67, 28)
-      - id: VQ-03
-        name: Element Visibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Markers well-sized for density, size encoding clear
+        comment: Cluster markers are well-separated with the displacement algorithm
+          preventing overlaps
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 8
+        passed: true
+        comment: Clusters are well-sized and visible; some smaller individual markers
+          could be more prominent
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Blue, yellow, red palette is colorblind-distinguishable
+        comment: Blue, yellow, and red are distinguishable, including for most colorblind
+          conditions
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Good use of canvas, US map centered, legend well-placed
+        comment: Good use of canvas space, US map centered with appropriate margins
       - id: VQ-06
         name: Axis Labels
-        score: 2
+        score: 0
         max: 2
         passed: true
-        comment: N/A for map, appropriate for context
+        comment: Map visualization, no axis labels needed (appropriate for this plot
+          type)
       - id: VQ-07
         name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: Legend well-organized with both size and color legends
+        comment: Two legends well placed on right side, no grid (appropriate for map)
     spec_compliance:
-      score: 22
+      score: 23
       max: 25
       items:
       - id: SC-01
@@ -91,37 +95,38 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct clustered marker map
+        comment: Correct clustered marker map implementation
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Lat/lon correctly mapped, categories color-coded
+        comment: Lat/lon correctly mapped to geographic positions
       - id: SC-03
         name: Required Features
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Missing interactive zoom/click behavior, no hover effects
+        passed: true
+        comment: Shows clusters with counts, categories color-coded, tooltips configured;
+          lacks zoom/expand interactivity in static PNG
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Full US coverage shown
+        comment: US continental bounds shown appropriately
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Both legends accurate and clear
+        comment: Both legends (size and color) accurately represent data
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Correctly uses spec-id · library · pyplots.ai format
+        comment: 'Correct format: map-marker-clustered · letsplot · pyplots.ai'
     data_quality:
       score: 18
       max: 20
@@ -131,47 +136,51 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows clustering with counts, multiple regions, category distinction
+        comment: Shows multiple cluster sizes, different categories, regional distribution;
+          missing individual expanded markers demonstration
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Store locations with Retail/Warehouse/Service Center is realistic
+        comment: Store locations (Retail, Warehouse, Service Center) across US is
+          a realistic business scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: 760 locations across US regions; cluster counts reasonable
+        comment: 760 total locations is reasonable; some regional distributions slightly
+          idealized
     code_quality:
-      score: 10
+      score: 8
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 1
         max: 3
-        passed: true
-        comment: Clean imports → data → plot → save structure
+        passed: false
+        comment: Defines helper function displace_overlapping_clusters which breaks
+          KISS principle
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) set
+        comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: All imports are used
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Current API usage
+        comment: Uses current letsplot API
       - id: CQ-05
         name: Output Correct
         score: 1
@@ -179,27 +188,30 @@ review:
         passed: true
         comment: Saves as plot.png and plot.html
     library_features:
-      score: 0
+      score: 5
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 0
+        score: 5
         max: 5
-        passed: false
-        comment: Does not leverage lets-plot interactive features like tooltips or
-          hover behaviors
-  verdict: REJECTED
+        passed: true
+        comment: 'Excellent use of letsplot features: layer_tooltips() for interactive
+          hover info, ggplot2 grammar with geom_polygon, geom_point, geom_text, scale_fill_manual,
+          scale_size, theme_void(), and HTML export'
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
-  - layer-composition
   - annotations
+  - layer-composition
+  - hover-tooltips
+  - html-export
   patterns:
   - data-generation
   - groupby-aggregation
-  dataprep:
-  - binning
+  - iteration-over-groups
+  dataprep: []
   styling:
   - minimal-chrome
   - alpha-blending

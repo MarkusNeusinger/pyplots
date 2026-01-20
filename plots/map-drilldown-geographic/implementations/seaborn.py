@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-drilldown-geographic: Drillable Geographic Map
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 86/100 | Created: 2026-01-20
@@ -11,8 +11,9 @@ import seaborn as sns
 from matplotlib.patches import Rectangle
 
 
-# Set seaborn theme
+# Set seaborn theme with subtle grid
 sns.set_theme(style="whitegrid", context="talk", font_scale=1.0)
+plt.rcParams["grid.alpha"] = 0.25
 
 # Seed for reproducibility
 np.random.seed(42)
@@ -195,13 +196,38 @@ sns.scatterplot(
     palette="Blues",
     alpha=0.85,
     ax=ax3,
-    legend=False,
+    legend="brief",
 )
 
-# City labels
+# Customize the size legend
+handles, labels = ax3.get_legend_handles_labels()
+# Filter to keep only size legend entries (numeric values)
+size_handles = []
+size_labels = []
+for h, lbl in zip(handles, labels, strict=False):
+    try:
+        val = float(lbl)
+        size_handles.append(h)
+        size_labels.append(f"${int(val)}M")
+    except ValueError:
+        pass
+ax3.legend(size_handles, size_labels, title="Sales", loc="lower right", fontsize=9, title_fontsize=10, framealpha=0.9)
+
+# City labels - offset San Jose and San Francisco to avoid overlap
 for _, row in cities_df.iterrows():
-    ax3.text(row["lon"], row["lat"] + 0.4, row["name"], fontsize=10, ha="center", va="bottom", fontweight="bold")
-    ax3.text(row["lon"], row["lat"] - 0.35, f"${row['value']:,}M", fontsize=9, ha="center", va="top")
+    name = row["name"]
+    # Adjust positions for nearby cities to avoid text overlap
+    if name == "San Francisco":
+        # Move label to the left
+        ax3.text(row["lon"] - 0.8, row["lat"] + 0.2, name, fontsize=10, ha="right", va="bottom", fontweight="bold")
+        ax3.text(row["lon"] - 0.8, row["lat"] - 0.15, f"${row['value']:,}M", fontsize=9, ha="right", va="top")
+    elif name == "San Jose":
+        # Move label to the right
+        ax3.text(row["lon"] + 0.8, row["lat"] - 0.1, name, fontsize=10, ha="left", va="top", fontweight="bold")
+        ax3.text(row["lon"] + 0.8, row["lat"] - 0.5, f"${row['value']:,}M", fontsize=9, ha="left", va="top")
+    else:
+        ax3.text(row["lon"], row["lat"] + 0.4, name, fontsize=10, ha="center", va="bottom", fontweight="bold")
+        ax3.text(row["lon"], row["lat"] - 0.35, f"${row['value']:,}M", fontsize=9, ha="center", va="top")
 
 ax3.set_xlim(-125.5, -113)
 ax3.set_ylim(31.5, 43)
@@ -247,12 +273,6 @@ fig.text(
     fontweight="bold",
 )
 
-# Add colorbar
-sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(vmin=vmin, vmax=vmax))
-cbar = fig.colorbar(sm, ax=axes, orientation="horizontal", fraction=0.03, pad=0.12, aspect=40)
-cbar.set_label("Sales Revenue ($M)", fontsize=14)
-cbar.ax.tick_params(labelsize=12)
-
 # Main title
 fig.suptitle("map-drilldown-geographic · seaborn · pyplots.ai", fontsize=24, fontweight="bold", y=0.99)
 
@@ -267,5 +287,13 @@ fig.text(
     color="#555555",
 )
 
-plt.subplots_adjust(left=0.06, right=0.95, top=0.85, bottom=0.18, wspace=0.18)
+# Adjust layout first to make room for colorbar
+plt.subplots_adjust(left=0.06, right=0.95, top=0.85, bottom=0.22, wspace=0.18)
+
+# Add colorbar below the plots with more space
+sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(vmin=vmin, vmax=vmax))
+cbar = fig.colorbar(sm, ax=axes, orientation="horizontal", fraction=0.025, pad=0.08, aspect=40)
+cbar.set_label("Sales Revenue ($M)", fontsize=14)
+cbar.ax.tick_params(labelsize=12)
+
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

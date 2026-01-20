@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: map-marker-clustered
 created: '2026-01-20T18:49:31Z'
-updated: '2026-01-20T18:52:11Z'
+updated: '2026-01-20T19:05:41Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21183365421
 issue: 3766
@@ -10,83 +10,90 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/map-marker-clustered/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/map-marker-clustered/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/map-marker-clustered/highcharts/plot.html
-quality_score: 85
+quality_score: 92
 review:
   strengths:
-  - Excellent use of Highcharts Maps module with marker-clusters extension
-  - Colorblind-safe palette following project guidelines
-  - Realistic retail store location scenario with appropriate geographic distribution
-  - Clean code structure with proper separation of data generation and chart configuration
-  - Interactive HTML output includes zoom functionality for cluster exploration
-  - Zone-based cluster sizing provides visual hierarchy
+  - Excellent implementation of Highcharts marker-clusters module with zone-based
+    sizing
+  - Clean colorblind-safe color palette with good visual distinction
+  - Realistic retail store distribution scenario with 420 stores across 15 major US
+    cities
+  - Proper title format following pyplots.ai convention
+  - Good use of cluster animations and map navigation controls
+  - Well-structured HTML generation with inline JS to avoid CDN issues in headless
+    Chrome
   weaknesses:
-  - Cluster count labels are not visible in the static PNG output (dataLabels configured
-    but not rendering)
-  - Legend text appears small relative to the 4800x2700 canvas size
-  - Title format uses parenthetical (Clustered) instead of standard spec-id format
-  image_description: 'The plot displays a map of the United States with store location
-    markers clustered by geographic proximity. The base map shows US states in light
-    gray with gray borders. Multiple circular markers are distributed across 15 major
-    metropolitan areas (Seattle, San Francisco, Los Angeles, San Diego, Phoenix, Denver,
-    Dallas, San Antonio, Houston, Chicago, Atlanta, Miami, Philadelphia, Boston, and
-    New York). Markers are color-coded by category: blue (Grocery), yellow (Electronics),
-    purple (Clothing), and cyan (Home Goods). At this zoom level, markers appear as
-    individual points or small clusters. The title reads "Retail Store Locations (Clustered)
-    · map-marker-clustered · highcharts · pyplots.ai" with a subtitle "420 stores
-    across 15 major US cities - zoom to expand clusters". A legend on the right side
-    identifies the four store categories.'
+  - Legend symbol sizes are smaller than actual map markers, making visual correlation
+    less intuitive
+  - Spider lines or convex hull on cluster hover (mentioned in spec Notes) not implemented
+  image_description: 'The plot displays a map of the United States with clustered
+    retail store markers distributed across 15 major metropolitan areas. The map has
+    a light gray basemap showing US state boundaries. Clusters are displayed as circular
+    markers with white count numbers (e.g., "4", "8", "6") inside them. Four categories
+    are shown: Grocery (dark blue), Electronics (yellow), Clothing (purple), and Home
+    Goods (cyan). The clusters vary in size based on the number of contained points.
+    Major clusters are visible in Seattle, San Francisco Bay Area, Los Angeles/San
+    Diego, Phoenix, Denver, Dallas-Fort Worth, San Antonio-Houston, Chicago, Atlanta,
+    Miami, and the Northeast corridor (Philadelphia, New York, Boston). The legend
+    is positioned on the right side of the map, displaying all four categories. The
+    title reads "Clustered Retail Store Locations · map-marker-clustered · highcharts
+    · pyplots.ai" with a subtitle indicating "420 stores across 15 major US cities
+    - zoom to expand clusters".'
   criteria_checklist:
     visual_quality:
-      score: 33
+      score: 37
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 9
         max: 10
         passed: true
-        comment: Title and subtitle are readable, legend text is slightly small relative
-          to the large canvas
+        comment: Title and subtitle are readable; cluster count labels are clear with
+          white text and dark outline. Legend text is appropriately sized.
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements
+        comment: No significant overlap between clusters or text elements. Clusters
+          in dense areas (Northeast) are distinguishable.
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 8
         max: 8
         passed: true
-        comment: Markers are visible but cluster markers lack count labels in the
-          static PNG
+        comment: Cluster markers are well-sized with the zone-based scaling (20-52px
+          radius). Individual markers visible in less dense areas.
       - id: VQ-04
         name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Uses colorblind-safe palette (blue, yellow, purple, cyan). Yellow
+          and cyan could be slightly harder to distinguish for some users.
+      - id: VQ-05
+        name: Layout Balance
         score: 5
         max: 5
         passed: true
-        comment: Uses colorblind-safe palette (blue, yellow, purple, cyan)
-      - id: VQ-05
-        name: Layout Balance
-        score: 3
-        max: 5
-        passed: true
-        comment: Map uses good portion of canvas but there is significant empty space
-          at left and bottom margins
+        comment: Map fills the canvas well with appropriate margins. Legend placement
+          on right side is balanced.
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: N/A for maps, geographic context provided
+        comment: N/A for map visualizations but title and subtitle provide context.
       - id: VQ-07
         name: Grid & Legend
         score: 1
         max: 2
         passed: true
-        comment: Legend placed well but small; map boundaries serve as grid
+        comment: Legend is well positioned but symbol size in legend is smaller than
+          the map markers, which could be improved.
     spec_compliance:
-      score: 22
+      score: 24
       max: 25
       items:
       - id: SC-01
@@ -94,39 +101,40 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct map with clustered markers
+        comment: Correct implementation of clustered marker map using Highcharts mappoint
+          with clustering enabled.
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Lat/lon correctly mapped to map positions
+        comment: Lat/lon correctly assigned to map coordinates.
       - id: SC-03
         name: Required Features
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Clustering enabled but cluster count labels not visible in static
-          image
+        passed: true
+        comment: Has clustering with count display, zoom transitions, category colors.
+          Missing spider lines/convex hull on hover mentioned in spec notes.
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All US locations shown correctly
+        comment: All US locations are visible within the map bounds.
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Legend correctly shows four categories
+        comment: Legend correctly shows all four categories with accurate colors.
       - id: SC-06
         name: Title Format
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Title includes spec-id and library but format differs slightly (uses
-          parenthetical)
+        passed: true
+        comment: 'Follows the required format: map-marker-clustered · highcharts ·
+          pyplots.ai'
     data_quality:
       score: 18
       max: 20
@@ -136,23 +144,24 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows multiple cities with varying store counts, multiple categories;
-          clustering visible but counts not displayed
+        comment: Shows multiple clusters across the US with varying sizes and mixed
+          categories. Could show more variation in cluster density.
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Retail store locations is a realistic, neutral scenario
+        comment: Retail store distribution across major US cities is a realistic and
+          neutral scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: 420 stores across 15 cities is reasonable; coordinate spreads are
-          appropriate
+        comment: 420 stores across 15 cities is reasonable. Store distribution within
+          cities uses realistic spread (0.15 degree std dev).
     code_quality:
-      score: 9
+      score: 8
       max: 10
       items:
       - id: CQ-01
@@ -160,44 +169,46 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear structure: imports → data → chart config → output'
+        comment: 'Simple linear structure: imports, data generation, HTML creation,
+          Selenium screenshot.'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: Uses np.random.seed(42) for deterministic data.
       - id: CQ-03
         name: Clean Imports
-        score: 2
+        score: 1
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports are used, but json module could be avoided by constructing
+          JS directly.
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Using current Highcharts API
+        comment: Uses current Highcharts API.
       - id: CQ-05
         name: Output Correct
         score: 0
         max: 1
-        passed: true
-        comment: Saves both plot.png and plot.html correctly
+        passed: false
+        comment: Saves both plot.png and plot.html correctly.
     library_features:
-      score: 3
+      score: 5
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Uses Highcharts Maps module with marker-clusters, zone-based cluster
-          sizing, and mapNavigation; however, the cluster data labels are not rendering
-          in the static PNG
-  verdict: REJECTED
+        comment: Excellent use of Highcharts Maps with marker-clusters module, including
+          zone-based cluster sizing, smooth animations, grid-based layout algorithm,
+          and custom dataLabels formatter.
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - selenium

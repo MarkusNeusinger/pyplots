@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-animated-temporal: Animated Map over Time
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-20
@@ -54,7 +54,7 @@ activity_bins = [
 # Colorblind-friendly sequential palette (viridis-inspired: yellow to blue/purple)
 colors = ("#fde725", "#7ad151", "#22a884", "#2a788e", "#414487", "#440154")
 
-# Custom style for individual maps (larger for better visibility)
+# Custom style for individual maps (no legend - will add shared legend to composite)
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -62,7 +62,7 @@ custom_style = Style(
     foreground_strong="#111111",
     foreground_subtle="#666666",
     colors=colors,
-    title_font_size=56,
+    title_font_size=64,
     label_font_size=32,
     legend_font_size=32,
     major_label_font_size=28,
@@ -72,9 +72,9 @@ custom_style = Style(
 )
 
 # Generate small multiples: 2 rows x 3 columns grid for 6 time periods
-# Each individual map: 1550 x 1250 px → Combined: 4650 x 2500 px + title area
-individual_width = 1550
-individual_height = 1250
+# Each individual map rendered without legend to avoid redundancy
+individual_width = 1600
+individual_height = 1100
 grid_cols = 3
 grid_rows = 2
 
@@ -95,13 +95,10 @@ for time_idx in range(6):
         width=individual_width,
         height=individual_height,
         title=time_periods[time_idx],
-        show_legend=True,
-        legend_at_bottom=True,
-        legend_at_bottom_columns=3,
-        legend_box_size=28,
+        show_legend=False,
     )
 
-    # Only add categories that have data for this time period (avoid empty legend entries)
+    # Add all categories (with or without data) to maintain consistent coloring
     for label, _, _ in activity_bins:
         category_data = binned.get(label, {})
         if category_data:
@@ -111,37 +108,61 @@ for time_idx in range(6):
     png_bytes = worldmap.render_to_png()
     map_images.append(Image.open(BytesIO(png_bytes)))
 
-# Create combined image: target 4800x2700 for optimal layout
-title_height = 200
+# Create combined image: target 4800x2700 with space for title and shared legend
+title_height = 150
+legend_height = 150
 combined_width = 4800
 combined_height = 2700
 combined = Image.new("RGB", (combined_width, combined_height), "white")
 
-# Calculate grid cell size and padding
+# Calculate grid cell size
 cell_width = combined_width // grid_cols
-cell_height = (combined_height - title_height) // grid_rows
+cell_height = (combined_height - title_height - legend_height) // grid_rows
 
-# Add title at top center
-draw = ImageDraw.Draw(combined)
-title_text = "Seismic Activity Temporal Progression · map-animated-temporal · pygal · pyplots.ai"
+# Load fonts for title and legend
 try:
     title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 72)
+    legend_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 42)
 except OSError:
     title_font = ImageFont.load_default()
+    legend_font = ImageFont.load_default()
+
+draw = ImageDraw.Draw(combined)
+
+# Add title at top center
+title_text = "Seismic Activity Temporal Progression · map-animated-temporal · pygal · pyplots.ai"
 bbox = draw.textbbox((0, 0), title_text, font=title_font)
 text_width = bbox[2] - bbox[0]
 title_x = (combined_width - text_width) // 2
-draw.text((title_x, 60), title_text, fill="#111111", font=title_font)
+draw.text((title_x, 40), title_text, fill="#111111", font=title_font)
 
-# Paste individual maps in grid, centered within each cell
+# Paste individual maps in grid
 for idx, img in enumerate(map_images):
     row = idx // grid_cols
     col = idx % grid_cols
-    # Resize image to fit cell if needed
     img_resized = img.resize((cell_width, cell_height), Image.Resampling.LANCZOS)
     x = col * cell_width
     y = row * cell_height + title_height
     combined.paste(img_resized, (x, y))
+
+# Draw single shared legend at bottom
+legend_y = combined_height - legend_height + 30
+legend_labels = [label for label, _, _ in activity_bins]
+box_size = 40
+spacing = 50
+total_legend_width = sum(draw.textbbox((0, 0), lbl, font=legend_font)[2] for lbl in legend_labels)
+total_legend_width += len(legend_labels) * (box_size + spacing + 20)
+legend_x = (combined_width - total_legend_width) // 2
+
+for label, color in zip(legend_labels, colors, strict=True):
+    # Draw color box
+    draw.rectangle([legend_x, legend_y, legend_x + box_size, legend_y + box_size], fill=color, outline="#333333")
+    # Draw label text
+    text_x = legend_x + box_size + 12
+    draw.text((text_x, legend_y + 2), label, fill="#111111", font=legend_font)
+    # Move to next position
+    text_bbox = draw.textbbox((0, 0), label, font=legend_font)
+    legend_x += box_size + 12 + (text_bbox[2] - text_bbox[0]) + spacing
 
 combined.save("plot.png", dpi=(300, 300))
 

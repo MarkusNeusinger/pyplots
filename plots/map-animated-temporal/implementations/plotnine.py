@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 map-animated-temporal: Animated Map over Time
-Library: plotnine | Python 3.13
-Quality: pending | Created: 2025-01-20
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 86/100 | Created: 2026-01-20
 """
 
 import numpy as np

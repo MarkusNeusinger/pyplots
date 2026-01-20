@@ -1,11 +1,11 @@
-""" pyplots.ai
+"""pyplots.ai
 map-drilldown-geographic: Drillable Geographic Map
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-20
 """
 
 import numpy as np
-from bokeh.io import export_png, output_file, save
+from bokeh.io import export_png
 from bokeh.layouts import column
 from bokeh.models import ColorBar, ColumnDataSource, CustomJS, Div, HoverTool, LinearColorMapper, TapTool
 from bokeh.palettes import Blues9
@@ -129,11 +129,11 @@ country_patches = p.patches(
     name="countries",
 )
 
-# Country labels - name
+# Country labels - name (with contrasting background for visibility in PNG)
 countries_label_source = ColumnDataSource(
     data={
         "x": countries_data["centroid_x"],
-        "y": [cy + 2 for cy in countries_data["centroid_y"]],  # Offset up for name
+        "y": [cy + 4 for cy in countries_data["centroid_y"]],  # Offset up for name
         "name": countries_data["name"],
     }
 )
@@ -143,11 +143,13 @@ p.text(
     y="y",
     text="name",
     source=countries_label_source,
-    text_font_size="20pt",
+    text_font_size="28pt",
     text_align="center",
     text_baseline="middle",
-    text_color="#333333",
+    text_color="#000000",
     text_font_style="bold",
+    background_fill_color="rgba(255, 255, 255, 0.85)",
+    background_fill_alpha=0.85,
     name="country_labels",
 )
 
@@ -155,7 +157,7 @@ p.text(
 countries_value_source = ColumnDataSource(
     data={
         "x": countries_data["centroid_x"],
-        "y": [cy - 3 for cy in countries_data["centroid_y"]],  # Offset down for value
+        "y": [cy - 5 for cy in countries_data["centroid_y"]],  # Offset down for value
         "value": [f"${v}M" for v in countries_data["value"]],
     }
 )
@@ -165,11 +167,13 @@ p.text(
     y="y",
     text="value",
     source=countries_value_source,
-    text_font_size="18pt",
+    text_font_size="24pt",
     text_align="center",
     text_baseline="middle",
     text_color="#1a3c5a",
     text_font_style="bold",
+    background_fill_color="rgba(255, 255, 255, 0.85)",
+    background_fill_alpha=0.85,
     name="country_value_labels",
 )
 
@@ -206,7 +210,7 @@ state_patches = p.patches(
 states_label_source = ColumnDataSource(
     data={
         "x": us_states_data["centroid_x"],
-        "y": [cy + 1 for cy in us_states_data["centroid_y"]],  # Offset up for name
+        "y": [cy + 1.5 for cy in us_states_data["centroid_y"]],  # Offset up for name
         "name": us_states_data["name"],
     }
 )
@@ -216,11 +220,13 @@ state_labels = p.text(
     y="y",
     text="name",
     source=states_label_source,
-    text_font_size="18pt",
+    text_font_size="22pt",
     text_align="center",
     text_baseline="middle",
-    text_color="#333333",
+    text_color="#000000",
     text_font_style="bold",
+    background_fill_color="rgba(255, 255, 255, 0.85)",
+    background_fill_alpha=0.85,
     visible=False,
     name="state_labels",
 )
@@ -229,7 +235,7 @@ state_labels = p.text(
 states_value_source = ColumnDataSource(
     data={
         "x": us_states_data["centroid_x"],
-        "y": [cy - 1.5 for cy in us_states_data["centroid_y"]],  # Offset down for value
+        "y": [cy - 2 for cy in us_states_data["centroid_y"]],  # Offset down for value
         "value": [f"${v}M" for v in us_states_data["value"]],
     }
 )
@@ -239,11 +245,13 @@ state_value_labels = p.text(
     y="y",
     text="value",
     source=states_value_source,
-    text_font_size="16pt",
+    text_font_size="20pt",
     text_align="center",
     text_baseline="middle",
     text_color="#1a3c5a",
     text_font_style="bold",
+    background_fill_color="rgba(255, 255, 255, 0.85)",
+    background_fill_alpha=0.85,
     visible=False,
     name="state_value_labels",
 )
@@ -281,7 +289,7 @@ city_patches = p.patches(
 cities_label_source = ColumnDataSource(
     data={
         "x": ca_cities_data["centroid_x"],
-        "y": [cy + 0.15 for cy in ca_cities_data["centroid_y"]],  # Offset up for name
+        "y": [cy + 0.25 for cy in ca_cities_data["centroid_y"]],  # Offset up for name
         "name": ca_cities_data["name"],
     }
 )
@@ -291,11 +299,13 @@ city_labels = p.text(
     y="y",
     text="name",
     source=cities_label_source,
-    text_font_size="16pt",
+    text_font_size="20pt",
     text_align="center",
     text_baseline="middle",
-    text_color="#333333",
+    text_color="#000000",
     text_font_style="bold",
+    background_fill_color="rgba(255, 255, 255, 0.85)",
+    background_fill_alpha=0.85,
     visible=False,
     name="city_labels",
 )
@@ -304,7 +314,7 @@ city_labels = p.text(
 cities_value_source = ColumnDataSource(
     data={
         "x": ca_cities_data["centroid_x"],
-        "y": [cy - 0.25 for cy in ca_cities_data["centroid_y"]],  # Offset down for value
+        "y": [cy - 0.35 for cy in ca_cities_data["centroid_y"]],  # Offset down for value
         "value": [f"${v}M" for v in ca_cities_data["value"]],
     }
 )
@@ -314,11 +324,13 @@ city_value_labels = p.text(
     y="y",
     text="value",
     source=cities_value_source,
-    text_font_size="14pt",
+    text_font_size="18pt",
     text_align="center",
     text_baseline="middle",
     text_color="#1a3c5a",
     text_font_style="bold",
+    background_fill_color="rgba(255, 255, 255, 0.85)",
+    background_fill_alpha=0.85,
     visible=False,
     name="city_value_labels",
 )
@@ -348,18 +360,19 @@ breadcrumb_div = Div(
 # =============================================================================
 color_bar = ColorBar(
     color_mapper=color_mapper,
-    width=40,
-    height=400,
+    width=60,
+    height=800,
     location=(0, 0),
     title="Sales ($M)",
-    title_text_font_size="20pt",
-    major_label_text_font_size="18pt",
-    title_standoff=15,
-    margin=40,
-    padding=20,
+    title_text_font_size="28pt",
+    title_text_font_style="bold",
+    major_label_text_font_size="22pt",
+    title_standoff=25,
+    margin=80,
+    padding=40,
 )
 p.add_layout(color_bar, "right")
-p.min_border_right = 150  # Ensure space for color bar
+p.min_border_right = 250  # Ensure space for color bar
 
 # =============================================================================
 # Hover tool with tooltips
@@ -492,9 +505,6 @@ instruction_div = Div(
 layout = column(breadcrumb_div, p, instruction_div)
 
 # =============================================================================
-# Save outputs
+# Save output
 # =============================================================================
 export_png(layout, filename="plot.png")
-
-output_file("plot.html")
-save(layout, title="Drillable Geographic Map - pyplots.ai")

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-animated-temporal: Animated Map over Time
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-20
@@ -104,8 +104,17 @@ for lat in range(28, 43, 2):
 for lon in range(130, 151, 2):
     p.line([lon, lon], [28, 42], line_width=1, line_color="#CCCCCC", alpha=0.3)
 
-# Mark epicenter
-p.scatter([epicenter_lon], [epicenter_lat], size=30, color="#FFD43B", marker="star", legend_label="Epicenter")
+# Mark epicenter - larger star marker for better visibility in legend
+p.scatter(
+    [epicenter_lon],
+    [epicenter_lat],
+    size=40,
+    color="#FFD43B",
+    marker="star",
+    line_color="#B8860B",
+    line_width=2,
+    legend_label="Epicenter",
+)
 
 # Plot aftershocks
 aftershocks = p.scatter(
@@ -128,10 +137,15 @@ p.add_tools(hover)
 time_label = Label(x=131, y=41, text="Day: 0", text_font_size="28pt", text_color="#306998", text_font_style="bold")
 p.add_layout(time_label)
 
-# Legend styling
-p.legend.location = "bottom_right"
-p.legend.label_text_font_size = "18pt"
-p.legend.background_fill_alpha = 0.8
+# Legend styling - position near the data area for better integration
+p.legend.location = "top_right"
+p.legend.label_text_font_size = "20pt"
+p.legend.background_fill_alpha = 0.9
+p.legend.glyph_height = 35
+p.legend.glyph_width = 35
+p.legend.padding = 15
+p.legend.spacing = 10
+p.legend.margin = 15
 
 # Create slider
 slider = Slider(start=0, end=n_days - 1, value=0, step=1, title="Day", width=800)

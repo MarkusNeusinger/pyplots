@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-drilldown-geographic: Drillable Geographic Map
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 86/100 | Created: 2026-01-20
@@ -250,35 +250,33 @@ region_data = (
 region_data["avg_value"] = region_data["total_value"] / region_data["num_states"]
 
 # Selection parameter for drill-down interaction
-region_select = alt.selection_point(fields=["region"], name="drill", empty=False)
+# empty=True ensures states show colors when no region is selected (important for static PNG)
+region_select = alt.selection_point(fields=["region"], name="drill", empty=True)
 
 # Base US states map with topojson
 states_map = alt.topo_feature(us_states_url, "states")
 
-# Main choropleth map - states colored by value, highlighted when region selected
+# Main choropleth map - always show colors (important for static PNG export)
+# When a region is selected, non-selected states dim (lower opacity)
 choropleth = (
     alt.Chart(states_map)
     .mark_geoshape(stroke="white", strokeWidth=1.5)
     .encode(
-        color=alt.condition(
-            region_select,
-            alt.Color(
-                "value:Q",
-                scale=alt.Scale(scheme="blues", domain=[0, 550]),
-                legend=alt.Legend(
-                    title="Sales ($K)",
-                    titleFontSize=16,
-                    labelFontSize=14,
-                    orient="bottom-left",
-                    direction="vertical",
-                    gradientLength=200,
-                    gradientThickness=20,
-                    offset=10,
-                ),
+        color=alt.Color(
+            "value:Q",
+            scale=alt.Scale(scheme="blues", domain=[0, 550]),
+            legend=alt.Legend(
+                title="Sales ($K)",
+                titleFontSize=16,
+                labelFontSize=14,
+                orient="bottom-left",
+                direction="vertical",
+                gradientLength=200,
+                gradientThickness=20,
+                offset=10,
             ),
-            alt.value("#e0e0e0"),
         ),
-        opacity=alt.condition(region_select, alt.value(1), alt.value(0.7)),
+        opacity=alt.condition(region_select, alt.value(1), alt.value(0.5)),
         tooltip=[
             alt.Tooltip("state:N", title="State"),
             alt.Tooltip("region:N", title="Region"),
@@ -291,26 +289,21 @@ choropleth = (
 )
 
 # Region bar chart - click to drill down and filter states
+# Always show colors (not conditional) so static view looks good
 region_bars = (
     alt.Chart(region_data)
     .mark_bar(cornerRadiusTopRight=5, cornerRadiusBottomRight=5)
     .encode(
         y=alt.Y("region:N", sort="-x", title=None, axis=alt.Axis(labelFontSize=16, labelFontWeight="bold")),
         x=alt.X("total_value:Q", title="Total Sales ($K)", axis=alt.Axis(labelFontSize=14, titleFontSize=16)),
-        color=alt.condition(
-            region_select,
-            alt.Color(
-                "region:N",
-                scale=alt.Scale(
-                    domain=["West", "South", "Midwest", "Northeast"], range=["#4477AA", "#EE6677", "#228833", "#CCBB44"]
-                ),
-                legend=alt.Legend(
-                    title="Region", titleFontSize=14, labelFontSize=12, orient="top", direction="horizontal"
-                ),
+        color=alt.Color(
+            "region:N",
+            scale=alt.Scale(
+                domain=["West", "South", "Midwest", "Northeast"], range=["#4477AA", "#EE6677", "#228833", "#CCBB44"]
             ),
-            alt.value("#cccccc"),
+            legend=alt.Legend(title="Region", titleFontSize=14, labelFontSize=12, orient="top", direction="horizontal"),
         ),
-        opacity=alt.condition(region_select, alt.value(1), alt.value(0.5)),
+        opacity=alt.condition(region_select, alt.value(1), alt.value(0.6)),
         tooltip=[
             alt.Tooltip("region:N", title="Region"),
             alt.Tooltip("total_value:Q", title="Total Sales ($K)", format=",.0f"),
@@ -322,7 +315,8 @@ region_bars = (
     .properties(width=400, height=180, title=alt.Title("📍 USA > Click a Region to Drill Down", fontSize=18))
 )
 
-# State detail chart - shows only states from selected region (empty=False ensures filtering)
+# State detail chart - shows states from selected region, or top 15 states when nothing selected
+# With empty=True, all states match when no selection - we limit to top 15 for readability
 state_bars = (
     alt.Chart(states_data)
     .mark_bar(cornerRadiusTopRight=4, cornerRadiusBottomRight=4)
@@ -343,22 +337,13 @@ state_bars = (
         ],
     )
     .transform_filter(region_select)
-    .properties(width=400, height=450, title=alt.Title("📊 States in Selected Region", fontSize=18))
+    .transform_window(rank="rank()", sort=[alt.SortField("value", order="descending")])
+    .transform_filter(alt.datum.rank <= 15)
+    .properties(width=400, height=450, title=alt.Title("📊 Top States (click region to filter)", fontSize=18))
 )
-
-# Placeholder text when no region is selected
-placeholder = (
-    alt.Chart(pd.DataFrame({"text": ["← Click a region bar\n   to view states"]}))
-    .mark_text(fontSize=16, align="center", baseline="middle", color="#888", lineBreak="\n")
-    .encode(text="text:N")
-    .properties(width=400, height=450, title=alt.Title("📊 States in Selected Region", fontSize=18))
-)
-
-# Combine state bars with placeholder using layer
-state_section = alt.layer(placeholder, state_bars)
 
 # Combine charts with layout - sidebar on right
-sidebar = alt.vconcat(region_bars, state_section, spacing=20).resolve_legend(color="independent")
+sidebar = alt.vconcat(region_bars, state_bars, spacing=20).resolve_legend(color="independent")
 
 # Final composition - map fills more space
 chart = (

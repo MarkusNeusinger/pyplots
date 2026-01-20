@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-range-buttons: Line Chart with Range Selector Buttons
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-20
@@ -10,6 +10,7 @@ from plotnine import (
     aes,
     annotate,
     element_blank,
+    element_line,
     element_rect,
     element_text,
     geom_line,
@@ -124,7 +125,7 @@ plot = (
         plot_title=element_text(size=24),
         axis_text_x=element_text(rotation=45, ha="right"),
         panel_grid_minor=element_blank(),
-        panel_grid_major=element_text(color="#E0E0E0"),
+        panel_grid_major=element_line(color="#E0E0E0", size=0.5, alpha=0.3),
         plot_background=element_rect(fill="white"),
         panel_background=element_rect(fill="white"),
     )
@@ -140,4 +141,4 @@ plot = (
     )
 )
 
-plot.save("plot.png", dpi=300)
+plot.save("plot.png", dpi=300, width=16, height=9, verbose=False)

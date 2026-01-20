@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-projections: World Map with Different Projections
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-20
@@ -24,258 +24,668 @@ from plotnine import (
 # Seed for reproducibility
 np.random.seed(42)
 
-
-# Simplified world continent boundaries (lon, lat pairs)
-# These are stylized coastline approximations for visualization purposes
-def get_continent_data():
-    continents = []
-
-    # North America
-    na_lon = [
-        -170,
+# More detailed continent boundaries (lon, lat pairs)
+# North America - more realistic coastline
+na_lon = np.array(
+    [
         -168,
+        -165,
+        -155,
         -145,
-        -125,
+        -140,
+        -135,
+        -130,
+        -127,
         -124,
-        -117,
+        -122,
+        -120,
+        -118,
+        -115,
+        -112,
+        -108,
         -105,
+        -100,
         -97,
+        -95,
+        -90,
+        -88,
+        -85,
         -82,
-        -77,
+        -80,
+        -78,
+        -75,
+        -72,
         -68,
+        -65,
+        -60,
         -55,
         -52,
+        -55,
+        -60,
+        -65,
+        -70,
+        -75,
         -80,
-        -87,
-        -97,
+        -85,
+        -90,
+        -95,
+        -100,
         -105,
-        -125,
-        -145,
-        -165,
-        -170,
+        -110,
+        -115,
+        -120,
+        -130,
+        -140,
+        -150,
+        -160,
+        -168,
     ]
-    na_lat = [60, 65, 70, 55, 48, 33, 25, 26, 25, 35, 45, 48, 45, 27, 30, 20, 22, 50, 60, 55, 60]
-    for i in range(len(na_lon)):
-        continents.append({"continent": "North America", "order": i, "lon": na_lon[i], "lat": na_lat[i]})
+)
+na_lat = np.array(
+    [
+        65,
+        62,
+        60,
+        62,
+        60,
+        58,
+        55,
+        52,
+        48,
+        45,
+        42,
+        38,
+        35,
+        32,
+        30,
+        28,
+        26,
+        26,
+        28,
+        30,
+        28,
+        26,
+        25,
+        27,
+        30,
+        35,
+        40,
+        45,
+        47,
+        48,
+        47,
+        42,
+        38,
+        35,
+        32,
+        30,
+        28,
+        26,
+        28,
+        30,
+        28,
+        30,
+        32,
+        35,
+        40,
+        48,
+        55,
+        60,
+        62,
+        64,
+        65,
+    ]
+)
+continents_raw = [("North America", na_lon, na_lat)]
 
-    # South America
-    sa_lon = [-80, -68, -60, -50, -35, -40, -50, -55, -68, -72, -75, -80, -82, -80]
-    sa_lat = [10, 12, 5, 0, -5, -22, -35, -52, -55, -18, -5, 0, 8, 10]
-    for i in range(len(sa_lon)):
-        continents.append({"continent": "South America", "order": i, "lon": sa_lon[i], "lat": sa_lat[i]})
+# South America - more realistic
+sa_lon = np.array(
+    [
+        -82,
+        -80,
+        -78,
+        -75,
+        -72,
+        -68,
+        -65,
+        -60,
+        -55,
+        -50,
+        -45,
+        -40,
+        -35,
+        -38,
+        -42,
+        -48,
+        -52,
+        -58,
+        -62,
+        -68,
+        -72,
+        -75,
+        -78,
+        -80,
+        -82,
+    ]
+)
+sa_lat = np.array(
+    [10, 8, 5, 2, 0, -2, -5, -4, 0, 2, 0, -5, -8, -15, -22, -28, -35, -45, -55, -52, -40, -25, -15, -5, 10]
+)
+continents_raw.append(("South America", sa_lon, sa_lat))
 
-    # Europe
-    eu_lon = [-10, 0, 10, 20, 30, 40, 50, 60, 50, 35, 25, 20, 10, 0, -10, -10]
-    eu_lat = [35, 37, 36, 35, 35, 40, 45, 55, 70, 70, 70, 65, 60, 50, 40, 35]
-    for i in range(len(eu_lon)):
-        continents.append({"continent": "Europe", "order": i, "lon": eu_lon[i], "lat": eu_lat[i]})
+# Europe - more realistic
+eu_lon = np.array(
+    [
+        -10,
+        -8,
+        -5,
+        0,
+        5,
+        8,
+        12,
+        15,
+        18,
+        22,
+        25,
+        28,
+        32,
+        35,
+        40,
+        45,
+        50,
+        55,
+        60,
+        65,
+        60,
+        55,
+        50,
+        45,
+        40,
+        35,
+        30,
+        25,
+        20,
+        15,
+        10,
+        5,
+        0,
+        -5,
+        -10,
+    ]
+)
+eu_lat = np.array(
+    [
+        36,
+        38,
+        40,
+        43,
+        44,
+        45,
+        46,
+        44,
+        42,
+        40,
+        38,
+        36,
+        38,
+        40,
+        42,
+        45,
+        48,
+        52,
+        55,
+        60,
+        65,
+        68,
+        70,
+        70,
+        68,
+        70,
+        68,
+        65,
+        62,
+        58,
+        55,
+        50,
+        48,
+        44,
+        36,
+    ]
+)
+continents_raw.append(("Europe", eu_lon, eu_lat))
 
-    # Africa
-    af_lon = [-17, -5, 10, 35, 50, 52, 43, 35, 30, 15, 0, -17, -17]
-    af_lat = [15, 37, 37, 32, 12, 0, -25, -35, -35, -25, 5, 20, 15]
-    for i in range(len(af_lon)):
-        continents.append({"continent": "Africa", "order": i, "lon": af_lon[i], "lat": af_lat[i]})
+# Africa - more realistic
+af_lon = np.array(
+    [
+        -17,
+        -15,
+        -12,
+        -8,
+        -5,
+        0,
+        5,
+        10,
+        15,
+        20,
+        25,
+        30,
+        32,
+        35,
+        40,
+        45,
+        50,
+        52,
+        48,
+        45,
+        40,
+        35,
+        32,
+        30,
+        28,
+        25,
+        22,
+        18,
+        15,
+        12,
+        10,
+        8,
+        5,
+        2,
+        0,
+        -5,
+        -10,
+        -15,
+        -17,
+    ]
+)
+af_lat = np.array(
+    [
+        20,
+        22,
+        25,
+        30,
+        35,
+        37,
+        37,
+        35,
+        32,
+        32,
+        30,
+        28,
+        25,
+        22,
+        15,
+        10,
+        5,
+        0,
+        -5,
+        -12,
+        -18,
+        -25,
+        -30,
+        -33,
+        -35,
+        -34,
+        -32,
+        -28,
+        -25,
+        -20,
+        -15,
+        -10,
+        -5,
+        5,
+        10,
+        15,
+        18,
+        20,
+        20,
+    ]
+)
+continents_raw.append(("Africa", af_lon, af_lat))
 
-    # Asia
-    as_lon = [60, 80, 100, 120, 140, 145, 140, 130, 105, 100, 80, 60, 45, 30, 25, 30, 35, 50, 60]
-    as_lat = [55, 70, 75, 70, 55, 45, 35, 30, 0, 5, 10, 25, 30, 35, 42, 55, 70, 70, 55]
-    for i in range(len(as_lon)):
-        continents.append({"continent": "Asia", "order": i, "lon": as_lon[i], "lat": as_lat[i]})
+# Asia - more realistic
+as_lon = np.array(
+    [
+        60,
+        65,
+        70,
+        75,
+        80,
+        85,
+        90,
+        95,
+        100,
+        105,
+        110,
+        115,
+        120,
+        125,
+        130,
+        135,
+        140,
+        145,
+        150,
+        145,
+        140,
+        135,
+        130,
+        125,
+        120,
+        115,
+        110,
+        105,
+        100,
+        95,
+        90,
+        85,
+        80,
+        75,
+        70,
+        68,
+        65,
+        60,
+        55,
+        50,
+        45,
+        40,
+        35,
+        32,
+        35,
+        40,
+        50,
+        60,
+    ]
+)
+as_lat = np.array(
+    [
+        40,
+        45,
+        50,
+        55,
+        60,
+        65,
+        68,
+        70,
+        72,
+        75,
+        72,
+        70,
+        68,
+        65,
+        60,
+        55,
+        52,
+        48,
+        45,
+        42,
+        38,
+        35,
+        32,
+        28,
+        25,
+        22,
+        18,
+        12,
+        8,
+        10,
+        15,
+        18,
+        20,
+        22,
+        25,
+        28,
+        30,
+        32,
+        35,
+        38,
+        38,
+        40,
+        38,
+        35,
+        32,
+        32,
+        35,
+        40,
+    ]
+)
+continents_raw.append(("Asia", as_lon, as_lat))
 
-    # Australia
-    au_lon = [113, 125, 135, 145, 152, 150, 140, 130, 115, 113]
-    au_lat = [-22, -15, -12, -15, -25, -38, -38, -33, -35, -22]
-    for i in range(len(au_lon)):
-        continents.append({"continent": "Australia", "order": i, "lon": au_lon[i], "lat": au_lat[i]})
+# Australia - more realistic
+au_lon = np.array(
+    [
+        115,
+        118,
+        122,
+        125,
+        128,
+        132,
+        135,
+        138,
+        142,
+        145,
+        148,
+        151,
+        153,
+        150,
+        147,
+        143,
+        140,
+        138,
+        135,
+        132,
+        128,
+        125,
+        122,
+        118,
+        115,
+    ]
+)
+au_lat = np.array(
+    [
+        -20,
+        -18,
+        -15,
+        -14,
+        -15,
+        -12,
+        -12,
+        -14,
+        -12,
+        -14,
+        -18,
+        -22,
+        -28,
+        -35,
+        -38,
+        -38,
+        -36,
+        -34,
+        -32,
+        -30,
+        -28,
+        -25,
+        -22,
+        -20,
+        -20,
+    ]
+)
+continents_raw.append(("Australia", au_lon, au_lat))
 
-    # Antarctica (partial)
-    an_lon = [-180, -120, -60, 0, 60, 120, 180, 180, -180, -180]
-    an_lat = [-65, -70, -72, -70, -72, -70, -65, -85, -85, -65]
-    for i in range(len(an_lon)):
-        continents.append({"continent": "Antarctica", "order": i, "lon": an_lon[i], "lat": an_lat[i]})
+# Antarctica - simplified band
+an_lon = np.linspace(-180, 180, 40)
+an_lat_north = np.array([-62 - 8 * np.abs(np.sin(np.radians(lon))) for lon in an_lon])
+an_lon_full = np.concatenate([an_lon, an_lon[::-1], [an_lon[0]]])
+an_lat_full = np.concatenate([an_lat_north, np.full(40, -85), [an_lat_north[0]]])
+continents_raw.append(("Antarctica", an_lon_full, an_lat_full))
 
-    return pd.DataFrame(continents)
+# Build continent dataframe
+continents_list = []
+for name, lons, lats in continents_raw:
+    for i in range(len(lons)):
+        continents_list.append({"continent": name, "order": i, "lon": lons[i], "lat": lats[i]})
+df_continents = pd.DataFrame(continents_list)
 
+# Generate graticule with high resolution for smooth curves
+graticule_list = []
+# Longitude lines (meridians) every 30 degrees - 200 points for smooth curves
+for lon_val in range(-180, 181, 30):
+    lats = np.linspace(-85, 85, 200)
+    for i, lat_val in enumerate(lats):
+        graticule_list.append(
+            {"type": "meridian", "group": f"lon_{lon_val}", "lon": lon_val, "lat": lat_val, "order": i}
+        )
 
-# Projection functions
-def mercator(lon, lat):
-    """Mercator projection - cylindrical, conformal, extreme polar distortion"""
-    x = np.radians(lon)
-    # Clip latitude to avoid infinity at poles
-    lat_clipped = np.clip(lat, -85, 85)
-    y = np.log(np.tan(np.pi / 4 + np.radians(lat_clipped) / 2))
-    return x, y
+# Latitude lines (parallels) every 30 degrees - 300 points for smooth curves
+for lat_val in range(-60, 61, 30):
+    lons = np.linspace(-180, 180, 300)
+    for i, lon_val in enumerate(lons):
+        graticule_list.append(
+            {"type": "parallel", "group": f"lat_{lat_val}", "lon": lon_val, "lat": lat_val, "order": i}
+        )
 
+df_graticule = pd.DataFrame(graticule_list)
 
-def robinson(lon, lat):
-    """Robinson projection - pseudo-cylindrical, compromise projection"""
-    # Robinson projection lookup table (simplified)
-    lat_table = np.array([0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90])
-    x_table = np.array(
-        [
-            1.0000,
-            0.9986,
-            0.9954,
-            0.9900,
-            0.9822,
-            0.9730,
-            0.9600,
-            0.9427,
-            0.9216,
-            0.8962,
-            0.8679,
-            0.8350,
-            0.7986,
-            0.7597,
-            0.7186,
-            0.6732,
-            0.6213,
-            0.5722,
-            0.5322,
-        ]
-    )
-    y_table = np.array(
-        [
-            0.0000,
-            0.0620,
-            0.1240,
-            0.1860,
-            0.2480,
-            0.3100,
-            0.3720,
-            0.4340,
-            0.4958,
-            0.5571,
-            0.6176,
-            0.6769,
-            0.7346,
-            0.7903,
-            0.8435,
-            0.8936,
-            0.9394,
-            0.9761,
-            1.0000,
-        ]
-    )
+# Projection transformations
+proj_order = ["Equirectangular", "Mercator", "Robinson", "Mollweide"]
 
-    abs_lat = np.abs(lat)
-    x_factor = np.interp(abs_lat, lat_table, x_table)
-    y_factor = np.interp(abs_lat, lat_table, y_table)
+# Equirectangular (Plate Carree)
+df_equi_cont = df_continents.copy()
+df_equi_cont["x"] = np.radians(df_equi_cont["lon"])
+df_equi_cont["y"] = np.radians(df_equi_cont["lat"])
+df_equi_cont["projection"] = "Equirectangular"
 
-    x = np.radians(lon) * x_factor * 0.8487
-    y = y_factor * np.sign(lat) * 1.3523
-    return x, y
+df_equi_grat = df_graticule.copy()
+df_equi_grat["x"] = np.radians(df_equi_grat["lon"])
+df_equi_grat["y"] = np.radians(df_equi_grat["lat"])
+df_equi_grat["projection"] = "Equirectangular"
 
+# Mercator projection
+df_merc_cont = df_continents.copy()
+df_merc_cont["x"] = np.radians(df_merc_cont["lon"])
+lat_clipped = np.clip(df_merc_cont["lat"], -85, 85)
+df_merc_cont["y"] = np.log(np.tan(np.pi / 4 + np.radians(lat_clipped) / 2))
+df_merc_cont["projection"] = "Mercator"
 
-def mollweide(lon, lat):
-    """Mollweide projection - equal-area, pseudocylindrical"""
-    lon_rad = np.radians(lon)
-    lat_rad = np.radians(lat)
+df_merc_grat = df_graticule.copy()
+df_merc_grat["x"] = np.radians(df_merc_grat["lon"])
+lat_clipped_g = np.clip(df_merc_grat["lat"], -85, 85)
+df_merc_grat["y"] = np.log(np.tan(np.pi / 4 + np.radians(lat_clipped_g) / 2))
+df_merc_grat["projection"] = "Mercator"
 
-    # Newton-Raphson iteration to solve for theta
-    theta = lat_rad.copy() if isinstance(lat_rad, np.ndarray) else lat_rad
-    for _ in range(10):
-        denom = 2 + 2 * np.cos(2 * theta)
-        # Avoid division by zero at poles
-        denom = np.where(np.abs(denom) < 1e-10, 1e-10, denom)
-        delta = -(2 * theta + np.sin(2 * theta) - np.pi * np.sin(lat_rad)) / denom
-        theta = theta + delta
+# Robinson projection (lookup table)
+lat_table = np.array([0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90])
+x_table = np.array(
+    [
+        1.0,
+        0.9986,
+        0.9954,
+        0.99,
+        0.9822,
+        0.973,
+        0.96,
+        0.9427,
+        0.9216,
+        0.8962,
+        0.8679,
+        0.835,
+        0.7986,
+        0.7597,
+        0.7186,
+        0.6732,
+        0.6213,
+        0.5722,
+        0.5322,
+    ]
+)
+y_table = np.array(
+    [
+        0.0,
+        0.062,
+        0.124,
+        0.186,
+        0.248,
+        0.31,
+        0.372,
+        0.434,
+        0.4958,
+        0.5571,
+        0.6176,
+        0.6769,
+        0.7346,
+        0.7903,
+        0.8435,
+        0.8936,
+        0.9394,
+        0.9761,
+        1.0,
+    ]
+)
 
-    x = 2 * np.sqrt(2) / np.pi * lon_rad * np.cos(theta)
-    y = np.sqrt(2) * np.sin(theta)
-    return x, y
+df_robi_cont = df_continents.copy()
+abs_lat_c = np.abs(df_robi_cont["lat"])
+x_factor_c = np.interp(abs_lat_c, lat_table, x_table)
+y_factor_c = np.interp(abs_lat_c, lat_table, y_table)
+df_robi_cont["x"] = np.radians(df_robi_cont["lon"]) * x_factor_c * 0.8487
+df_robi_cont["y"] = y_factor_c * np.sign(df_robi_cont["lat"]) * 1.3523
+df_robi_cont["projection"] = "Robinson"
 
+df_robi_grat = df_graticule.copy()
+abs_lat_g = np.abs(df_robi_grat["lat"])
+x_factor_g = np.interp(abs_lat_g, lat_table, x_table)
+y_factor_g = np.interp(abs_lat_g, lat_table, y_table)
+df_robi_grat["x"] = np.radians(df_robi_grat["lon"]) * x_factor_g * 0.8487
+df_robi_grat["y"] = y_factor_g * np.sign(df_robi_grat["lat"]) * 1.3523
+df_robi_grat["projection"] = "Robinson"
 
-def equirectangular(lon, lat):
-    """Equirectangular (Plate Carree) projection - simplest cylindrical"""
-    x = np.radians(lon)
-    y = np.radians(lat)
-    return x, y
+# Mollweide projection (iterative solution)
+df_moll_cont = df_continents.copy()
+lon_rad_c = np.radians(df_moll_cont["lon"].values)
+lat_rad_c = np.radians(df_moll_cont["lat"].values)
+theta_c = lat_rad_c.copy()
+for _ in range(15):
+    denom = 2 + 2 * np.cos(2 * theta_c)
+    denom = np.where(np.abs(denom) < 1e-10, 1e-10, denom)
+    theta_c = theta_c - (2 * theta_c + np.sin(2 * theta_c) - np.pi * np.sin(lat_rad_c)) / denom
+df_moll_cont["x"] = 2 * np.sqrt(2) / np.pi * lon_rad_c * np.cos(theta_c)
+df_moll_cont["y"] = np.sqrt(2) * np.sin(theta_c)
+df_moll_cont["projection"] = "Mollweide"
 
+df_moll_grat = df_graticule.copy()
+lon_rad_g = np.radians(df_moll_grat["lon"].values)
+lat_rad_g = np.radians(df_moll_grat["lat"].values)
+theta_g = lat_rad_g.copy()
+for _ in range(15):
+    denom = 2 + 2 * np.cos(2 * theta_g)
+    denom = np.where(np.abs(denom) < 1e-10, 1e-10, denom)
+    theta_g = theta_g - (2 * theta_g + np.sin(2 * theta_g) - np.pi * np.sin(lat_rad_g)) / denom
+df_moll_grat["x"] = 2 * np.sqrt(2) / np.pi * lon_rad_g * np.cos(theta_g)
+df_moll_grat["y"] = np.sqrt(2) * np.sin(theta_g)
+df_moll_grat["projection"] = "Mollweide"
 
-# Apply projection to dataframe
-def apply_projection(df, projection_func, proj_name):
-    result = df.copy()
-    x, y = projection_func(df["lon"].values, df["lat"].values)
-    result["x"] = x
-    result["y"] = y
-    result["projection"] = proj_name
-    return result
+# Combine all projections
+df_all_continents = pd.concat([df_equi_cont, df_merc_cont, df_robi_cont, df_moll_cont], ignore_index=True)
+df_all_graticule = pd.concat([df_equi_grat, df_merc_grat, df_robi_grat, df_moll_grat], ignore_index=True)
 
-
-# Generate graticule (latitude/longitude grid lines)
-def generate_graticule():
-    graticule_data = []
-
-    # Longitude lines (meridians) every 30 degrees
-    for lon_val in range(-180, 181, 30):
-        lats = np.linspace(-90, 90, 50)
-        for i, lat_val in enumerate(lats):
-            graticule_data.append(
-                {"type": "meridian", "group": f"lon_{lon_val}", "lon": lon_val, "lat": lat_val, "order": i}
-            )
-
-    # Latitude lines (parallels) every 30 degrees
-    for lat_val in range(-60, 61, 30):
-        lons = np.linspace(-180, 180, 100)
-        for i, lon_val in enumerate(lons):
-            graticule_data.append(
-                {"type": "parallel", "group": f"lat_{lat_val}", "lon": lon_val, "lat": lat_val, "order": i}
-            )
-
-    return pd.DataFrame(graticule_data)
-
-
-# Get continent and graticule data
-df_continents = get_continent_data()
-df_graticule = generate_graticule()
-
-# Define projections to display
-projections = [
-    ("Equirectangular", equirectangular),
-    ("Mercator", mercator),
-    ("Robinson", robinson),
-    ("Mollweide", mollweide),
-]
-
-# Apply all projections to continents
-continent_frames = []
-for proj_name, proj_func in projections:
-    continent_frames.append(apply_projection(df_continents, proj_func, proj_name))
-df_all_continents = pd.concat(continent_frames, ignore_index=True)
-
-# Apply all projections to graticule
-graticule_frames = []
-for proj_name, proj_func in projections:
-    graticule_frames.append(apply_projection(df_graticule, proj_func, proj_name))
-df_all_graticule = pd.concat(graticule_frames, ignore_index=True)
-
-# Create a unique group identifier for each graticule line per projection
+# Create unique group identifiers
 df_all_graticule["proj_group"] = df_all_graticule["projection"] + "_" + df_all_graticule["group"]
-
-# Create a unique group for continents per projection
 df_all_continents["proj_continent"] = df_all_continents["projection"] + "_" + df_all_continents["continent"]
 
-# Set projection as ordered categorical for consistent facet ordering
-proj_order = ["Equirectangular", "Mercator", "Robinson", "Mollweide"]
+# Set projection as ordered categorical
 df_all_continents["projection"] = pd.Categorical(df_all_continents["projection"], categories=proj_order, ordered=True)
 df_all_graticule["projection"] = pd.Categorical(df_all_graticule["projection"], categories=proj_order, ordered=True)
 
 # Create the multi-panel projection comparison plot
 plot = (
     ggplot()
-    # Draw graticule (grid lines) first
-    + geom_path(aes(x="x", y="y", group="proj_group"), data=df_all_graticule, color="#B0C4DE", size=0.3, alpha=0.7)
-    # Draw continent polygons on top
+    + geom_path(aes(x="x", y="y", group="proj_group"), data=df_all_graticule, color="#B0C4DE", size=0.4, alpha=0.6)
     + geom_polygon(
         aes(x="x", y="y", group="proj_continent"),
         data=df_all_continents,
         fill="#306998",
         color="#1a3a52",
-        size=0.5,
+        size=0.6,
         alpha=0.85,
     )
-    # Facet by projection type
     + facet_wrap("~projection", ncol=2, scales="free")
     + coord_fixed(ratio=1.0)
     + labs(

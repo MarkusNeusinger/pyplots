@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-marker-clustered: Clustered Marker Map
 Library: highcharts unknown | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-20
@@ -88,33 +88,55 @@ for store in stores:
         series_data[cat] = []
     series_data[cat].append({"lat": store["lat"], "lon": store["lon"], "name": store["name"]})
 
-# Build series configuration
-series_config = []
+# Build series data for each category (JSON only for data points)
+series_data_json = {}
 for cat, points in series_data.items():
-    series_config.append(
-        {
-            "type": "mappoint",
-            "name": cat,
-            "color": category_colors[cat],
-            "data": points,
-            "cluster": {
-                "enabled": True,
-                "allowOverlap": False,
-                "animation": {"duration": 450},
-                "layoutAlgorithm": {"type": "grid", "gridSize": 70},
-                "zones": [
-                    {"from": 1, "to": 4, "marker": {"radius": 15}},
-                    {"from": 5, "to": 9, "marker": {"radius": 20}},
-                    {"from": 10, "to": 19, "marker": {"radius": 25}},
-                    {"from": 20, "to": 49, "marker": {"radius": 32}},
-                    {"from": 50, "to": 100, "marker": {"radius": 40}},
-                ],
-            },
-            "marker": {"radius": 8, "symbol": "circle"},
-        }
-    )
+    series_data_json[cat] = json.dumps(points)
 
-series_json = json.dumps(series_config)
+# Build JavaScript series definitions with proper cluster dataLabels formatter
+js_series_definitions = []
+for cat in series_data.keys():
+    color = category_colors[cat]
+    data_json = series_data_json[cat]
+    js_series_definitions.append(f"""{{
+            type: 'mappoint',
+            name: '{cat}',
+            color: '{color}',
+            data: {data_json},
+            dataLabels: {{
+                enabled: true,
+                allowOverlap: true,
+                formatter: function() {{
+                    if (this.point.isCluster) {{
+                        return this.point.clusterPointsAmount;
+                    }}
+                    return '';
+                }},
+                style: {{
+                    fontSize: '20px',
+                    fontWeight: 'bold',
+                    color: '#ffffff',
+                    textOutline: '2px #333333'
+                }},
+                y: 5
+            }},
+            cluster: {{
+                enabled: true,
+                allowOverlap: false,
+                animation: {{ duration: 450 }},
+                layoutAlgorithm: {{ type: 'grid', gridSize: 70 }},
+                zones: [
+                    {{ from: 1, to: 4, marker: {{ radius: 20 }} }},
+                    {{ from: 5, to: 9, marker: {{ radius: 26 }} }},
+                    {{ from: 10, to: 19, marker: {{ radius: 34 }} }},
+                    {{ from: 20, to: 49, marker: {{ radius: 42 }} }},
+                    {{ from: 50, to: 100, marker: {{ radius: 52 }} }}
+                ]
+            }},
+            marker: {{ radius: 10, symbol: 'circle' }}
+        }}""")
+
+series_js = ",\n        ".join(js_series_definitions)
 
 # Create HTML with Highcharts map
 html_content = f"""<!DOCTYPE html>
@@ -137,16 +159,16 @@ html_content = f"""<!DOCTYPE html>
                 marginBottom: 120
             }},
             title: {{
-                text: 'Retail Store Locations (Clustered) \u00b7 map-marker-clustered \u00b7 highcharts \u00b7 pyplots.ai',
+                text: 'Clustered Retail Store Locations \\u00b7 map-marker-clustered \\u00b7 highcharts \\u00b7 pyplots.ai',
                 style: {{
-                    fontSize: '48px',
+                    fontSize: '52px',
                     fontWeight: 'bold'
                 }}
             }},
             subtitle: {{
                 text: '420 stores across 15 major US cities - zoom to expand clusters',
                 style: {{
-                    fontSize: '32px'
+                    fontSize: '36px'
                 }}
             }},
             mapNavigation: {{
@@ -164,11 +186,13 @@ html_content = f"""<!DOCTYPE html>
                 verticalAlign: 'middle',
                 layout: 'vertical',
                 itemStyle: {{
-                    fontSize: '28px'
+                    fontSize: '36px'
                 }},
-                symbolRadius: 8,
-                symbolHeight: 20,
-                symbolWidth: 20
+                symbolRadius: 12,
+                symbolHeight: 28,
+                symbolWidth: 28,
+                itemMarginTop: 10,
+                itemMarginBottom: 10
             }},
             tooltip: {{
                 headerFormat: '',
@@ -180,29 +204,9 @@ html_content = f"""<!DOCTYPE html>
             }},
             plotOptions: {{
                 mappoint: {{
-                    cluster: {{
-                        enabled: true,
-                        allowOverlap: false,
-                        animation: {{
-                            duration: 450
-                        }},
-                        layoutAlgorithm: {{
-                            type: 'grid',
-                            gridSize: 70
-                        }},
-                        dataLabels: {{
-                            enabled: true,
-                            format: '{{point.clusterPointsAmount}}',
-                            style: {{
-                                fontSize: '20px',
-                                fontWeight: 'bold',
-                                color: 'white',
-                                textOutline: '2px contrast'
-                            }}
-                        }}
-                    }},
                     dataLabels: {{
-                        enabled: false
+                        enabled: true,
+                        allowOverlap: true
                     }}
                 }}
             }},
@@ -212,7 +216,8 @@ html_content = f"""<!DOCTYPE html>
                 nullColor: '#f0f0f0',
                 showInLegend: false,
                 enableMouseTracking: false
-            }}, {series_json[1:-1]}]
+            }},
+        {series_js}]
         }});
     </script>
 </body>

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-marker-clustered: Clustered Marker Map
 Library: matplotlib 3.10.8 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-20
@@ -88,14 +88,104 @@ cat_colors = {
 # Plot
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Draw background grid to simulate map
-ax.set_facecolor("#f5f5f5")
-ax.grid(True, alpha=0.5, linestyle="-", color="white", linewidth=1.5)
+# Draw background to simulate ocean/land
+ax.set_facecolor("#d4e6f1")  # Light blue for ocean
+
+# Simplified European coastline outline (approximate polygon)
+# This provides geographic context without external dependencies
+europe_coast_lon = [
+    -10,
+    -9,
+    -9.5,
+    -8,
+    -5,
+    -2,
+    0,
+    2,
+    3,
+    5,
+    7,
+    9,
+    10,
+    12,
+    13,
+    15,
+    16,
+    18,
+    20,
+    22,
+    22,
+    20,
+    18,
+    15,
+    12,
+    10,
+    8,
+    5,
+    3,
+    0,
+    -2,
+    -5,
+    -8,
+    -10,
+    -10,
+]
+europe_coast_lat = [
+    36,
+    37,
+    40,
+    42,
+    43,
+    44,
+    46,
+    47,
+    50,
+    52,
+    54,
+    55,
+    54,
+    52,
+    50,
+    48,
+    46,
+    44,
+    42,
+    40,
+    56,
+    56,
+    55,
+    54,
+    55,
+    55,
+    54,
+    52,
+    50,
+    51,
+    52,
+    48,
+    44,
+    40,
+    36,
+]
+ax.fill(europe_coast_lon, europe_coast_lat, color="#f5f5dc", alpha=0.9, zorder=1)  # Beige land
+
+# Add simplified country boundaries (major borders)
+# France-Spain border (Pyrenees)
+ax.plot([-2, 3], [42.5, 42.5], color="#999999", linewidth=1, linestyle="-", alpha=0.5, zorder=2)
+# France-Germany border
+ax.plot([6, 8, 8], [49, 49, 47], color="#999999", linewidth=1, linestyle="-", alpha=0.5, zorder=2)
+# Germany-Poland border
+ax.plot([15, 15], [51, 54], color="#999999", linewidth=1, linestyle="-", alpha=0.5, zorder=2)
+# Alps region line
+ax.plot([6, 10, 14], [46, 47, 46], color="#999999", linewidth=1, linestyle="-", alpha=0.5, zorder=2)
+
+# Subtle coordinate grid (dashed for subtlety)
+ax.grid(True, alpha=0.3, linestyle="--", color="#888888", linewidth=0.8, zorder=3)
 
 # Plot individual points (semi-transparent, smaller) to show raw data
 for cat in cat_names:
     mask = categories == cat
-    ax.scatter(lons[mask], lats[mask], c=cat_colors[cat], alpha=0.2, s=50, edgecolors="none", label=None)
+    ax.scatter(lons[mask], lats[mask], c=cat_colors[cat], alpha=0.25, s=50, edgecolors="none", label=None, zorder=4)
 
 # Plot cluster markers (larger circles with count)
 for center, size, cat in zip(cluster_centers, cluster_sizes, cluster_dominant_cat, strict=True):
@@ -133,8 +223,8 @@ ax.annotate("Atlantic\nOcean", (-9, 46), fontsize=13, style="italic", color="#66
 ax.annotate("Mediterranean Sea", (8, 37.5), fontsize=13, style="italic", color="#6699bb", ha="center", alpha=0.8)
 
 # Labels and styling
-ax.set_xlabel("Longitude", fontsize=20)
-ax.set_ylabel("Latitude", fontsize=20)
+ax.set_xlabel("Longitude (degrees)", fontsize=20)
+ax.set_ylabel("Latitude (degrees)", fontsize=20)
 ax.set_title("map-marker-clustered \u00b7 matplotlib \u00b7 pyplots.ai", fontsize=24)
 ax.tick_params(axis="both", labelsize=16)
 

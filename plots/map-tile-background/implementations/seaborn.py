@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 map-tile-background: Map with Tile Background
-Library: seaborn | Python 3.13
-Quality: pending | Created: 2026-01-20
+Library: seaborn 0.13.2 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-20
 """
 
 import io

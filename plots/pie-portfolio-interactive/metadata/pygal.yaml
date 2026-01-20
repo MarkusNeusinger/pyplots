@@ -1,7 +1,7 @@
 library: pygal
 specification_id: pie-portfolio-interactive
 created: '2026-01-20T23:07:32Z'
-updated: '2026-01-20T23:16:04Z'
+updated: '2026-01-20T23:21:57Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21190551658
 issue: 3754
@@ -10,84 +10,79 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-portfolio-interactive/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-portfolio-interactive/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-portfolio-interactive/pygal/plot.html
-quality_score: 85
+quality_score: 90
 review:
   strengths:
-  - Well-structured data representing realistic portfolio allocation with three asset
-    classes and detailed sub-holdings
-  - Good use of pygal donut chart capability with inner_radius=0.4
-  - Detailed tooltips showing sub-holding breakdown (visible in HTML output)
-  - Clean, readable code with custom styling for large canvas
-  - Proper title format following spec requirements
+  - Excellent text legibility with appropriately sized fonts for the large canvas
+  - Clean colorblind-safe color palette (blue, yellow, orange)
+  - Good use of pygal distinctive features including custom Style, donut inner_radius,
+    and value formatting
+  - Realistic portfolio allocation data with proper asset class categorization
+  - Legend well-organized in a single row at bottom
   weaknesses:
-  - Percentage values are NOT displayed on the pie slices despite print_values=True
-    being set - this is a critical issue for the PNG output
-  - Legend is positioned in bottom-left corner creating visual imbalance - should
-    be centered
-  - The legend_at_bottom_columns=3 setting does not appear to be working correctly
-  image_description: 'The plot displays a donut chart (pie chart with inner radius
-    of 0.4) showing portfolio allocation across three asset categories. The chart
-    has a white background with the title "pie-portfolio-interactive · pygal · pyplots.ai"
-    centered at the top. The three segments are: Equities (55%) in blue (#306998),
-    Fixed Income (28%) in yellow (#FFD43B), and Alternatives (17%) in orange (#E07C3E).
-    The legend is positioned at the bottom left, showing category names with their
-    percentages. The donut chart is well-centered and fills a good portion of the
-    canvas. However, the percentage values configured with print_values=True are NOT
-    visible on the slices in the PNG output - this is a significant issue as the spec
-    requires displaying values on the chart itself.'
+  - PNG output cannot demonstrate the interactive drill-down features mentioned in
+    the spec (inherent limitation)
+  - Could show sub-holdings detail within the visualization to better represent the
+    hierarchical data structure
+  image_description: 'The plot displays a donut chart (pie chart with inner radius)
+    showing portfolio allocation across three asset classes. The chart uses a clean
+    white background with three distinctly colored segments: blue for Equities (55%),
+    yellow for Fixed Income (28%), and orange for Alternatives (17%). Percentage values
+    are displayed directly on each slice in dark text. The title "pie-portfolio-interactive
+    · pygal · pyplots.ai" appears at the top center. A legend at the bottom shows
+    all three categories with their percentages in a single horizontal row. The donut
+    chart is well-sized and centered, utilizing good canvas space.'
   criteria_checklist:
     visual_quality:
-      score: 33
+      score: 36
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
+        score: 10
         max: 10
         passed: true
-        comment: Title and legend text are clearly readable with appropriate font
-          sizes for the large canvas
+        comment: Title, slice labels, and legend text are all clearly readable at
+          large font sizes
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping elements, clean layout
+        comment: No overlapping text elements; percentages positioned well on slices
       - id: VQ-03
         name: Element Visibility
         score: 8
         max: 8
         passed: true
-        comment: Chart segments are clearly visible with good proportions
+        comment: Donut segments are large and clearly visible with good proportions
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Blue, yellow, orange palette is distinguishable but yellow could
-          be harder to see on white
+        comment: Blue, yellow, and orange are colorblind-safe and provide good contrast
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: Chart is well-centered, but legend is bottom-left only instead of
-          bottom-center
+        comment: Good layout with chart centered and legend at bottom, but some excess
+          whitespace
       - id: VQ-06
         name: Axis Labels
-        score: 0
+        score: 2
         max: 2
         passed: true
-        comment: Not applicable for pie/donut charts
+        comment: Not applicable for pie/donut charts - full points
       - id: VQ-07
         name: Grid & Legend
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Legend placement is unbalanced (bottom-left corner, isolated from
-          chart)
+        passed: true
+        comment: Legend well-placed at bottom, easy to read with color boxes
     spec_compliance:
-      score: 20
+      score: 22
       max: 25
       items:
       - id: SC-01
@@ -95,62 +90,63 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct donut chart (pie with inner radius)
+        comment: Correct donut/pie chart as specified
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Asset categories correctly mapped to slices with proper weights
+        comment: Weights correctly mapped to slice sizes
       - id: SC-03
         name: Required Features
-        score: 2
+        score: 3
         max: 5
         passed: false
-        comment: 'Missing: percentage values NOT visible on slices despite print_values=True;
-          tooltips only work in HTML not PNG'
+        comment: Shows category-level data but lacks sub-holdings drill-down capability
+          mentioned in spec (limitation of PNG output)
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data shown, weights sum to 100%
+        comment: All data visible, percentages sum to 100%
       - id: SC-05
         name: Legend Accuracy
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Legend shows categories but positioned poorly in corner
+        passed: true
+        comment: Legend correctly shows all categories with percentages
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: 'Correct format: pie-portfolio-interactive · pygal · pyplots.ai'
+        comment: Correctly formatted as spec-id · library · pyplots.ai
     data_quality:
-      score: 20
+      score: 18
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 8
+        score: 6
         max: 8
         passed: true
-        comment: Shows all three asset classes with varied allocations (55%, 28%,
-          17%)
+        comment: Shows 3 asset classes with different allocations; could show more
+          holdings variation
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Investment portfolio is a realistic, neutral scenario with plausible
-          sub-holdings
+        comment: Investment portfolio allocation is a realistic, neutral business
+          scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Weights sum to exactly 100%, realistic allocation percentages
+        comment: Percentages are realistic for a balanced portfolio (55% equities,
+          28% fixed income, 17% alternatives)
     code_quality:
       score: 9
       max: 10
@@ -160,13 +156,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Simple linear structure: imports → data → style → chart → render'
+        comment: 'Clean linear structure: imports, data, style, chart, render'
       - id: CQ-02
         name: Reproducibility
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Deterministic data (no random values)
+        comment: Data is deterministic (hardcoded), but no explicit seed comment
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -178,32 +174,28 @@ review:
         score: 1
         max: 1
         passed: true
-        comment: Current pygal API used
+        comment: Uses current pygal API
       - id: CQ-05
         name: Output Correct
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Outputs both plot.png and plot.html (spec wants PNG primary)
+        passed: true
+        comment: Saves as plot.png
     library_features:
-      score: 3
+      score: 5
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Uses donut style (inner_radius), custom Style, tooltips with sub-holding
-          breakdown, legend customization. However, the interactive tooltip feature
-          only works in HTML output, not visible in PNG.
-  verdict: REJECTED
+        comment: Uses pygal Style customization, donut style with inner_radius, print_values,
+          print_labels, legend_at_bottom_columns, value_formatter
+  verdict: APPROVED
 impl_tags:
   dependencies: []
-  techniques:
-  - hover-tooltips
-  - html-export
-  patterns:
-  - iteration-over-groups
+  techniques: []
+  patterns: []
   dataprep: []
   styling: []

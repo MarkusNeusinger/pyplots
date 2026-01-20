@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 map-marker-clustered: Clustered Marker Map
 Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 75/100 | Created: 2026-01-20
+Quality: 78/100 | Created: 2026-01-20
 """
 
 import numpy as np

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-marker-clustered: Clustered Marker Map
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-20
@@ -29,7 +29,7 @@ from scipy.cluster.hierarchy import fcluster, linkage
 np.random.seed(42)
 
 # Generate sample store locations (simulating US West Coast region)
-# Major city centers - well separated to avoid cluster overlap
+# Major city centers - spread out more to ensure clusters don't overlap
 cities = {
     "Seattle": (47.6, -122.3),
     "Portland": (45.5, -122.7),
@@ -52,9 +52,9 @@ for _ in range(n_points):
     city = np.random.choice(city_names)
     center_lat, center_lon = cities[city]
 
-    # Add random offset (within ~15 miles of city center) - tight clustering to avoid overlap
-    lat = center_lat + np.random.normal(0, 0.15)
-    lon = center_lon + np.random.normal(0, 0.15)
+    # Add random offset (very tight clustering to ensure single cluster per city)
+    lat = center_lat + np.random.normal(0, 0.08)
+    lon = center_lon + np.random.normal(0, 0.08)
 
     lats.append(lat)
     lons.append(lon)
@@ -62,11 +62,11 @@ for _ in range(n_points):
 
 df = pd.DataFrame({"lat": lats, "lon": lons, "category": categories})
 
-# Apply hierarchical clustering to group nearby markers
-# Use a larger threshold (3.5) to create fewer, more distinct clusters per city
+# Apply hierarchical clustering with large threshold to create ONE cluster per city
+# This eliminates overlap by having exactly 5 non-overlapping clusters
 coords = df[["lat", "lon"]].values
 Z = linkage(coords, method="ward")
-cluster_labels = fcluster(Z, t=3.5, criterion="distance")
+cluster_labels = fcluster(Z, t=5, criterion="maxclust")  # Force exactly 5 clusters
 df["cluster"] = cluster_labels
 
 # Calculate cluster centers and counts
@@ -81,8 +81,7 @@ cluster_data = (
     .reset_index()
 )
 
-# All points are in clusters for this visualization (no single-point markers)
-# This simplifies the legend and avoids confusion
+# Prepare cluster markers for plotting
 cluster_markers = cluster_data.copy()
 cluster_markers = cluster_markers.rename(columns={"dominant_category": "category"})
 cluster_markers["label"] = cluster_markers["count"].astype(str)
@@ -96,17 +95,20 @@ category_colors = {
 }
 
 # Create the plot - single layer for clusters with unified legend
+# Convert longitude to positive values for display (West Coast = positive °W)
+cluster_markers["lon_display"] = -cluster_markers["lon"]
+
 plot = (
-    ggplot(cluster_markers, aes(x="lon", y="lat"))
+    ggplot(cluster_markers, aes(x="lon_display", y="lat"))
     # Plot cluster markers with size and color
-    + geom_point(aes(size="count", color="category"), alpha=0.8, stroke=1.0)
-    # Add count labels on clusters
-    + geom_text(aes(label="label"), size=9, color="white", fontweight="bold")
+    + geom_point(aes(size="count", color="category"), alpha=0.85, stroke=1.5)
+    # Add count labels on clusters - larger size for readability
+    + geom_text(aes(label="label"), size=11, color="white", fontweight="bold")
     # Color scale - shows all categories
     + scale_color_manual(values=category_colors, name="Category")
-    # Size scale for cluster markers
-    + scale_size_continuous(range=(8, 20), name="Points in\nCluster", breaks=[20, 40, 60, 80])
-    # Labels with units
+    # Size scale for cluster markers - adjusted range and breaks for actual data
+    + scale_size_continuous(range=(12, 22), name="Count", breaks=[40, 50, 60, 70, 80])
+    # Labels with proper units
     + labs(title="map-marker-clustered · plotnine · pyplots.ai", x="Longitude (°W)", y="Latitude (°N)")
     # Theme
     + theme_minimal()
@@ -125,8 +127,8 @@ plot = (
         plot_background=element_rect(fill="white"),
     )
     + guides(
-        color=guide_legend(override_aes={"size": 8, "alpha": 1}),
-        size=guide_legend(override_aes={"color": "#4477AA", "alpha": 0.8}),
+        color=guide_legend(override_aes={"size": 10, "alpha": 1}),
+        size=guide_legend(override_aes={"color": "#666666", "alpha": 0.8}),
     )
 )
 

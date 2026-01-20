@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 map-projections: World Map with Different Projections
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 85/100 | Created: 2026-01-20
+Quality: 86/100 | Created: 2026-01-20
 """
 
 from pygal.style import Style

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 hexbin-map-geographic: Hexagonal Binning Map
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 75/100 | Created: 2026-01-20
+Quality: 72/100 | Created: 2026-01-20
 """
 
 # Fix module name conflict (this file is named pygal.py)

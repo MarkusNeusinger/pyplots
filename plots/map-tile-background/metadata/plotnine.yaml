@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: map-tile-background
 created: '2026-01-20T22:40:33Z'
-updated: '2026-01-20T22:55:50Z'
+updated: '2026-01-20T23:02:42Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21189771608
 issue: 3756
@@ -10,51 +10,51 @@ library_version: 0.15.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/map-tile-background/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/map-tile-background/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 79
+quality_score: 90
 review:
   strengths:
-  - Creative simulation of tile-based map background using geom_rect with terrain
-    classification
-  - Excellent layered composition using grammar of graphics (tiles → coastline → points
-    → labels)
+  - Creative solution to simulate tile-like background using geom_rect grid without
+    external map dependencies
+  - 'Proper grammar of graphics layering: tiles → coastline → points → labels'
   - Colorblind-safe palette with 8 distinct category colors
-  - Good use of size encoding for visitor counts with appropriate legend
-  - Realistic San Francisco landmarks data with plausible coordinates and visitor
-    estimates
-  - Clean attribution text for simulated tiles as required by spec
+  - Size encoding effectively communicates visitor volume
+  - Attribution text included as per spec requirement
+  - Fixed aspect ratio (coord_fixed) maintains geographic accuracy
   weaknesses:
-  - Title is truncated on the left edge (shows "arks" instead of full title)
-  - Label overlap between "Fishermans Wharf" and "Pier 39" despite nudge adjustments
-  - Legend positioned far from the map with excessive whitespace on right side
-  image_description: 'The plot displays a map of San Francisco with tile-style background
-    showing simulated land (beige) and water (light blue) areas. A coastline polygon
-    outlines the San Francisco peninsula in dark gray. Data points represent 15 landmarks
-    with varying sizes based on visitor counts (ranging from 500 to 15,000 thousand/year)
-    and colors indicating 8 categories (Cultural, Historic, Landmark, Museum, Shopping,
-    Sports, Tourism, Transport). Four labels identify top attractions: Golden Gate
-    Bridge, Fishermans Wharf/Pier 39, and Union Square. The title appears truncated
-    on the left side (showing "arks · map-tile-background · plotnine · pyplots.ai"
-    instead of the full title). Two legends appear on the right: a size legend showing
-    visitor counts (5000, 10000, 15000 K/yr) and a category color legend. Axis labels
-    show Longitude (°) and Latitude (°) with appropriate coordinate values for the
-    Bay Area.'
+  - Title truncated on left edge (SF Landmarks appears as arks)
+  - Fishermans Wharf and Pier 39 labels still overlap despite nudge adjustments
+  - Plot occupies less than ideal canvas area with large white space below
+  image_description: 'The plot displays a map of San Francisco landmarks with a simulated
+    tile background. The background consists of a grid of rectangles colored in beige
+    (land) and light blue (water), representing a stylized map-tile effect. A dark
+    gray coastline polygon outlines the SF peninsula. Data points are rendered as
+    colored circles with size encoding visitor counts (thousands per year) - larger
+    circles represent more visitors. The points are color-coded by category using
+    a colorblind-safe palette: blue for Landmarks, cyan for Tourism, green for Museum,
+    yellow for Shopping, orange for Transport, red for Sports, purple for Cultural,
+    and brown for Historic. Four labels identify top attractions: Golden Gate Bridge,
+    Fisherman''s Wharf (partially visible as "Fisherma"), Pier 39, and Union Square
+    - displayed in white boxes. The title reads "SF Landmarks · map-tile-background
+    · plotnine · pyplots.ai" (truncated at left showing "arks"). Axis labels show
+    Longitude (°) and Latitude (°) with appropriate tick marks. Two legends on the
+    right show Visitors (K/yr) with size encoding and Category with color encoding.'
   criteria_checklist:
     visual_quality:
-      score: 31
+      score: 36
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 9
         max: 10
         passed: true
-        comment: Most text readable, but title truncated on left edge
+        comment: Most text readable, but title is truncated on left edge
       - id: VQ-02
         name: No Overlap
-        score: 4
+        score: 6
         max: 8
-        passed: false
-        comment: Fishermans Wharf and Pier 39 labels overlap/touch each other
+        passed: true
+        comment: Fisherman's Wharf and Pier 39 labels overlap slightly
       - id: VQ-03
         name: Element Visibility
         score: 8
@@ -66,13 +66,13 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Colorblind-safe palette with 8 distinct categories
+        comment: Colorblind-safe palette with distinct colors
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Good map-to-canvas ratio but significant empty space on right side
+        comment: Plot area could use more canvas space; white space below
       - id: VQ-06
         name: Axis Labels
         score: 2
@@ -81,10 +81,10 @@ review:
         comment: 'Descriptive with units: Longitude (°), Latitude (°)'
       - id: VQ-07
         name: Grid & Legend
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Grid removed (good for map), but legends far from plot
+        comment: Grid hidden, legends well-placed on right
     spec_compliance:
       score: 23
       max: 25
@@ -94,38 +94,37 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correctly shows map with tile-style background and data points
+        comment: Correct map visualization with tile-style background
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Lat/lon correctly mapped, size encodes visitors, color encodes category
+        comment: Lat/lon correctly assigned, size and color encoding working
       - id: SC-03
         name: Required Features
         score: 4
         max: 5
         passed: true
-        comment: Has tile background, attribution, marker contrast, size encoding;
-          interactivity N/A for plotnine
+        comment: Has tile background, data points, size/color encoding, labels, attribution
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All 15 landmarks visible within bounds
+        comment: All data points visible within bounds
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Both legends correct and informative
+        comment: Both legends correctly labeled
       - id: SC-06
         name: Title Format
         score: 1
         max: 2
         passed: false
-        comment: Title truncated showing arks instead of full spec-id
+        comment: Title truncated, starts with arks instead of full SF Landmarks
     data_quality:
       score: 18
       max: 20
@@ -135,19 +134,19 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows multiple categories, varying sizes, geographic spread
+        comment: Shows various categories, sizes, geographic distribution
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Real San Francisco landmarks with plausible visitor counts
+        comment: Real SF landmarks with plausible visitor counts
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Coordinates correct for SF, visitor numbers plausible
+        comment: Visitor counts reasonable, coordinates accurate
     code_quality:
       score: 10
       max: 10
@@ -157,13 +156,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports → data → tiles → plot → save'
+        comment: 'Linear flow: imports → data → plot → save'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -175,7 +174,7 @@ review:
         score: 1
         max: 1
         passed: true
-        comment: Modern plotnine API
+        comment: Current plotnine API
       - id: CQ-05
         name: Output Correct
         score: 1
@@ -191,18 +190,20 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Good use of grammar of graphics with layered geoms, aes mappings,
-          and scale functions
+        comment: Uses ggplot grammar with layered geoms, scale_manual, coord_fixed,
+          theme customization
   verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
-  - layer-composition
   - annotations
+  - layer-composition
+  - patches
   patterns:
   - data-generation
   - iteration-over-groups
   dataprep: []
   styling:
   - alpha-blending
+  - edge-highlighting
   - minimal-chrome

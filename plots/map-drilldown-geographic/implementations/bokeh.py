@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-drilldown-geographic: Drillable Geographic Map
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-20
@@ -88,7 +88,7 @@ color_mapper = LinearColorMapper(palette=Blues9[::-1], low=0, high=900)
 p = figure(
     width=4800,
     height=2700,
-    x_range=(-150, -30),
+    x_range=(-140, -25),
     y_range=(-60, 75),
     tools="pan,wheel_zoom,reset",
     toolbar_location="right",
@@ -360,19 +360,19 @@ breadcrumb_div = Div(
 # =============================================================================
 color_bar = ColorBar(
     color_mapper=color_mapper,
-    width=60,
-    height=800,
+    width=50,
+    height=700,
     location=(0, 0),
-    title="Sales ($M)",
-    title_text_font_size="28pt",
+    title="Sales\n($M)",
+    title_text_font_size="26pt",
     title_text_font_style="bold",
-    major_label_text_font_size="22pt",
-    title_standoff=25,
-    margin=80,
-    padding=40,
+    major_label_text_font_size="20pt",
+    title_standoff=20,
+    margin=30,
+    padding=20,
 )
 p.add_layout(color_bar, "right")
-p.min_border_right = 250  # Ensure space for color bar
+p.min_border_right = 300  # Ensure space for color bar
 
 # =============================================================================
 # Hover tool with tooltips

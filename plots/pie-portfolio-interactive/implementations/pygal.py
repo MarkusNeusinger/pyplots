@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-portfolio-interactive: Interactive Portfolio Allocation Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-20
@@ -28,12 +28,12 @@ custom_style = Style(
         "#E07C3E",  # Orange - Alternatives
     ),
     title_font_size=72,
-    label_font_size=42,
-    major_label_font_size=42,
-    legend_font_size=48,
-    value_font_size=54,
-    tooltip_font_size=36,
-    value_label_font_size=54,
+    label_font_size=48,
+    major_label_font_size=48,
+    legend_font_size=52,
+    value_font_size=60,
+    tooltip_font_size=40,
+    value_label_font_size=60,
 )
 
 # Create interactive pie chart with value labels on slices
@@ -45,25 +45,23 @@ chart = pygal.Pie(
     show_legend=True,
     legend_at_bottom=True,
     legend_at_bottom_columns=3,  # All legend items in one row for balance
-    legend_box_size=48,
+    legend_box_size=52,
     title="pie-portfolio-interactive · pygal · pyplots.ai",
     print_values=True,  # Show percentage values on slices
-    print_labels=False,  # Don't show labels on slices (they go in legend)
+    print_labels=True,  # Show labels on slices for better PNG readability
     value_formatter=lambda x: f"{x:.0f}%",  # Format as percentage
     truncate_legend=None,  # Don't truncate legend text
-    margin=80,  # Margin around chart
-    margin_bottom=150,  # Extra margin for legend
+    margin=100,  # Margin around chart
+    margin_bottom=200,  # Extra margin for legend
+    spacing=30,  # Spacing between chart and legend
 )
 
-# Add category-level slices with detailed tooltips showing sub-holdings breakdown
+# Add category-level slices with simple values (not dict) for print_values to work
 for category, holdings in categories.items():
     total = sum(holdings.values())
-    # Build detailed tooltip with sub-holding breakdown for interactivity
-    holdings_lines = [f"  • {name}: {pct:.1f}%" for name, pct in holdings.items()]
-    tooltip = f"{category} Total: {total:.1f}%\n\nSub-holdings:\n" + "\n".join(holdings_lines)
-    # Legend shows category with percentage, tooltip provides drill-down details
-    chart.add(f"{category} ({total:.0f}%)", [{"value": total, "label": tooltip}])
+    # Use simple numeric value for proper value display on slices
+    # Legend shows category name, slice shows percentage value
+    chart.add(f"{category} ({total:.0f}%)", total)
 
-# Render to PNG and HTML for interactivity
+# Render to PNG (primary output as per spec)
 chart.render_to_png("plot.png")
-chart.render_to_file("plot.html")

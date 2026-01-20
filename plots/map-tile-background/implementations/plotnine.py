@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-tile-background: Map with Tile Background
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 79/100 | Created: 2026-01-20
@@ -182,12 +182,12 @@ category_colors = {
 top_attractions = df[df["visitors"] >= 10000].copy()
 
 # Create label positions with nudge offsets to prevent overlap
-# Fisherman's Wharf moved left/up, Pier 39 moved right/down for clear separation
+# Labels positioned with significant separation to avoid any touching
 label_positions = {
-    "Golden Gate Bridge": {"nudge_x": 0.01, "nudge_y": 0.012},
-    "Fisherman's Wharf": {"nudge_x": -0.045, "nudge_y": 0.015},
-    "Pier 39": {"nudge_x": 0.035, "nudge_y": -0.018},
-    "Union Square": {"nudge_x": 0.02, "nudge_y": 0.012},
+    "Golden Gate Bridge": {"nudge_x": 0.01, "nudge_y": 0.016},
+    "Fisherman's Wharf": {"nudge_x": -0.055, "nudge_y": 0.02},
+    "Pier 39": {"nudge_x": 0.045, "nudge_y": -0.025},
+    "Union Square": {"nudge_x": 0.025, "nudge_y": 0.015},
 }
 
 # Build label dataframe with adjusted positions
@@ -235,22 +235,22 @@ plot = (
     )
     # Coordinate system with proper aspect ratio for geographic accuracy
     + coord_fixed(ratio=1.3, xlim=(lon_min, lon_max), ylim=(lat_min, lat_max))
-    + labs(title="map-tile-background · plotnine · pyplots.ai", x="Longitude (°)", y="Latitude (°)")
+    + labs(title="SF Landmarks · map-tile-background · plotnine · pyplots.ai", x="Longitude (°)", y="Latitude (°)")
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
-        plot_title=element_text(size=22, weight="bold", ha="center"),
+        plot_title=element_text(size=20, weight="bold", ha="center"),
         axis_title=element_text(size=18),
         axis_text=element_text(size=14),
-        legend_title=element_text(size=16),
-        legend_text=element_text(size=12),
+        legend_title=element_text(size=14),
+        legend_text=element_text(size=11),
         legend_position="right",
-        legend_box_spacing=0.15,
-        legend_key_size=18,
+        legend_box_spacing=0.1,
+        legend_key_size=16,
         panel_grid_major=element_blank(),
         panel_grid_minor=element_blank(),
         panel_background=element_rect(fill="none"),
-        plot_margin=0.05,
+        plot_margin=0.02,
     )
 )
 

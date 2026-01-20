@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 map-marker-clustered: Clustered Marker Map
 Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 85/100 | Created: 2026-01-20
+Quality: 91/100 | Created: 2026-01-20
 """
 
 import matplotlib.pyplot as plt

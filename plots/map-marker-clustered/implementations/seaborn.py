@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-marker-clustered: Clustered Marker Map
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-20
@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from matplotlib.lines import Line2D
 from sklearn.cluster import AgglomerativeClustering
 
 
@@ -135,6 +136,24 @@ legend = ax.legend(
 )
 legend.get_frame().set_linewidth(1.5)
 
+# Add size legend for cluster markers
+size_handles = [
+    Line2D([0], [0], marker="o", color="w", markerfacecolor="gray", markersize=8, alpha=0.7, label="2-5 points"),
+    Line2D([0], [0], marker="o", color="w", markerfacecolor="gray", markersize=14, alpha=0.7, label="6-15 points"),
+    Line2D([0], [0], marker="o", color="w", markerfacecolor="gray", markersize=20, alpha=0.7, label="16+ points"),
+]
+size_legend = ax.legend(
+    handles=size_handles,
+    title="Cluster Size",
+    loc="lower left",
+    fontsize=12,
+    title_fontsize=14,
+    framealpha=0.95,
+    edgecolor="gray",
+)
+size_legend.get_frame().set_linewidth(1.5)
+ax.add_artist(legend)  # Re-add the first legend
+
 # Styling with seaborn-friendly axis formatting
 ax.set_xlabel("Longitude (°)", fontsize=20)
 ax.set_ylabel("Latitude (°)", fontsize=20)
@@ -143,7 +162,7 @@ ax.tick_params(axis="both", labelsize=16)
 
 # Customize grid using seaborn despine and grid settings
 sns.despine(ax=ax, left=False, bottom=False)
-ax.grid(True, alpha=0.3, linestyle="--", color="gray")
+ax.grid(True, alpha=0.15, linestyle="-", color="lightgray")
 
 # Add annotation about clustering
 ax.text(

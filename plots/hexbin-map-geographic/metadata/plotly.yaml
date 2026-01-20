@@ -1,7 +1,7 @@
 library: plotly
 specification_id: hexbin-map-geographic
 created: '2026-01-20T21:16:12Z'
-updated: '2026-01-20T21:28:56Z'
+updated: '2026-01-20T21:36:42Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21187394771
 issue: 3767
@@ -10,87 +10,85 @@ library_version: 6.5.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/hexbin-map-geographic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hexbin-map-geographic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/hexbin-map-geographic/plotly/plot.html
-quality_score: 78
+quality_score: 91
 review:
   strengths:
-  - Excellent use of H3 library for proper hexagonal binning with geographic precision
-  - Good integration of Plotly choropleth_map with custom GeoJSON
-  - Realistic NYC taxi scenario that demonstrates real-world hexbin mapping use case
-  - Interactive HTML export supports hover tooltips as required by spec
-  - Clean visual presentation with appropriate colormap and transparency
+  - Excellent use of H3 library for true hexagonal binning (not approximated)
+  - Well-implemented hover tooltips showing count, mean fare, and total fare with
+    proper formatting
+  - Clean sequential colormap (YlOrRd) with appropriate transparency for base map
+    visibility
+  - Realistic NYC taxi scenario demonstrating practical application
+  - Dark hexagon outlines make cell boundaries clearly visible
+  - Proper GeoJSON construction for Plotly choropleth
   weaknesses:
-  - 'Colorbar label discrepancy: code sets colorbar.title=Pickup Count but image shows
-    Avg Fare ($) - need to ensure code and output match'
-  - Hexagon boundaries are not clearly visible in dense areas - spec requests clearly
-    shows data aggregation boundaries - consider increasing marker_line_width or using
-    contrasting line color
-  - Code structure uses multiple loops which is more complex than typical KISS pattern
-  - Does not demonstrate all three aggregation methods (count, sum, mean) - only count
-    is shown
-  image_description: The plot displays a geographic map of the NYC metropolitan area
-    (including parts of New Jersey, Manhattan, Brooklyn, and surrounding boroughs)
-    with hexagonal bins overlaid representing taxi pickup density. The base map uses
-    Carto Positron styling with subtle gray streets and labeled place names (Newark,
-    Jersey City, New York, Elizabeth, Bayonne, etc.). Hexagons are colored using a
-    yellow-to-red sequential colormap, with pale yellow/cream representing lower values
-    and deep red/orange representing higher values. The hexagons are most densely
-    concentrated in Manhattan and Jersey City areas, showing clear hotspots. The title
-    "NYC Taxi Pickups · hexbin-map-geographic · plotly · pyplots.ai" appears centered
-    at the top. A vertical colorbar on the right side shows the scale labeled "Avg
-    Fare ($)" ranging from approximately 20 to 100+. The overall layout has good proportions
-    with the map taking most of the canvas area.
+  - Title uses "NYC Taxi Fares" instead of more standardized format placing spec-id
+    first
+  - Fixed H3 resolution (9) without demonstrating configurability mentioned in spec
+  - Minor code inefficiency calling cell_to_boundary multiple times per row in GeoJSON
+    construction
+  image_description: The plot displays a hexagonal binning map of NYC taxi pickup
+    locations overlaid on a CARTO Positron base map. The hexagonal cells are colored
+    using a YlOrRd (yellow-orange-red) sequential colormap representing average fare
+    values ranging from approximately $20 to over $100. The title "NYC Taxi Pickups
+    · hexbin-map-geographic · plotly · pyplots.ai" is centered at the top. The colorbar
+    on the right side is labeled "Avg Fare ($)" with tick values from 20 to 100. The
+    geographic area covers the NYC metropolitan region including Manhattan, parts
+    of New Jersey (Jersey City, Newark), Brooklyn, and surrounding areas. Hexagons
+    have dark boundary lines making individual cells clearly distinguishable. Multiple
+    clusters of high-density areas are visible, with some cells showing higher average
+    fares (darker red/orange) scattered throughout. The map background shows street
+    networks, city labels, and geographic features in light gray tones.
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 36
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 9
         max: 10
         passed: true
-        comment: Title readable but slightly small for canvas size. Map labels and
-          colorbar text readable.
+        comment: Title readable at 28pt, colorbar labels clear. Title could be slightly
+          larger.
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping text elements; hexagons do not interfere with labels.
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 8
         max: 8
         passed: true
-        comment: Hexagons visible but boundaries between adjacent hexagons not clearly
-          distinguishable in dense areas
+        comment: Hexagons clearly visible with dark outlines and 0.75 opacity.
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: YlOrRd colormap is colorblind-safe
+        comment: YlOrRd is colorblind-safe sequential colormap.
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Good overall but some empty space on left side due to map framing
+        comment: Good proportions, slight whitespace around edges.
       - id: VQ-06
         name: Axis Labels
         score: 0
         max: 2
-        passed: false
-        comment: Colorbar label says Avg Fare ($) but code maps color=count - mismatch
-          between code and rendered output
+        passed: true
+        comment: N/A for geographic maps - colorbar has proper label with units.
       - id: VQ-07
         name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: Colorbar well positioned and clear
+        comment: Colorbar well-placed on right, no distracting grid.
     spec_compliance:
-      score: 18
+      score: 23
       max: 25
       items:
       - id: SC-01
@@ -98,40 +96,38 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct hexbin map geographic visualization
+        comment: Correct hexagonal binning map using H3 library.
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Lat/lon correctly mapped to hexagonal cells via H3
+        comment: Lat/lon correctly mapped; fare values aggregated per cell.
       - id: SC-03
         name: Required Features
-        score: 2
+        score: 4
         max: 5
-        passed: false
-        comment: Does not demonstrate all aggregation methods (count, sum, mean) mentioned
-          in spec
+        passed: true
+        comment: All three aggregation methods computed. Missing size configurability
+          demonstration.
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data points visible within map bounds
+        comment: All data visible within map bounds.
       - id: SC-05
         name: Legend Accuracy
-        score: 0
-        max: 2
-        passed: false
-        comment: 'Critical: Colorbar label says Avg Fare ($) but code maps color=count
-          with title Pickup Count'
-      - id: SC-06
-        name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: 'Correct format: NYC Taxi Pickups · hexbin-map-geographic · plotly
-          · pyplots.ai'
+        comment: Colorbar accurately represents average fare with dollar prefix.
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: false
+        comment: Uses 'NYC Taxi Fares' instead of standardized spec-id format.
     data_quality:
       score: 18
       max: 20
@@ -141,78 +137,76 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows clustering, density variation, geographic context; missing
-          demonstration of multiple aggregation methods
+        comment: Shows clustering, density variation, fare variation by location.
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: NYC taxi pickups is a perfect real-world scenario for hexbin mapping
+        comment: NYC taxi pickups is perfect real-world scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: 5000 points is appropriate; fare values realistic ($5-$100+ range)
+        comment: Fare values ($20-100+) realistic for NYC. 5000 points appropriate.
     code_quality:
-      score: 6
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 1
+        score: 3
         max: 3
-        passed: false
-        comment: Uses loops for cluster generation and GeoJSON creation - more complex
-          than typical KISS pattern
+        passed: true
+        comment: 'Linear structure: imports → data → H3 → aggregation → GeoJSON →
+          plot → save.'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) correctly set
+        comment: np.random.seed(42) set for reproducibility.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used (h3, numpy, pandas, plotly.express)
+        comment: 'All imports used: h3, numpy, pandas, plotly.express.'
       - id: CQ-04
         name: No Deprecated API
         score: 0
         max: 1
         passed: false
-        comment: hover_data format could be cleaner
+        comment: cell_to_boundary called multiple times per row - inefficient.
       - id: CQ-05
         name: Output Correct
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html
+        comment: Saves as plot.png and plot.html correctly.
     library_features:
-      score: 4
+      score: 5
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Good use of Plotly interactive features (hover, zoom, pan), map styles,
-          GeoJSON integration; HTML export for interactivity
-  verdict: REJECTED
+        comment: Excellent use of choropleth_map, custom GeoJSON, CARTO base map,
+          interactive hover, HTML export.
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - h3
   techniques:
-  - colorbar
   - hover-tooltips
   - html-export
+  - colorbar
   patterns:
   - data-generation
   - groupby-aggregation
-  - iteration-over-groups
   dataprep:
   - binning
   styling:

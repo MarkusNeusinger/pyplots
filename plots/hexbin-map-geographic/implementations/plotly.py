@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 hexbin-map-geographic: Hexagonal Binning Map
 Library: plotly 6.5.2 | Python 3.13.11
-Quality: 78/100 | Created: 2026-01-20
+Quality: 91/100 | Created: 2026-01-20
 """
 
 import h3

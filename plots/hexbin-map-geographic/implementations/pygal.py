@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hexbin-map-geographic: Hexagonal Binning Map
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 75/100 | Created: 2026-01-20
@@ -33,24 +33,28 @@ lon_min, lon_max = -74.02, -73.93
 # Cluster 1: Midtown (Times Square area)
 c1_lat = np.random.normal(40.758, 0.015, n_points // 3)
 c1_lon = np.random.normal(-73.985, 0.01, n_points // 3)
+c1_vals = np.random.exponential(25, n_points // 3)  # Fare amounts
 
 # Cluster 2: Lower Manhattan (Financial District)
 c2_lat = np.random.normal(40.710, 0.012, n_points // 3)
 c2_lon = np.random.normal(-74.010, 0.008, n_points // 3)
+c2_vals = np.random.exponential(35, n_points // 3)  # Higher fares downtown
 
 # Cluster 3: Upper East Side
 c3_lat = np.random.normal(40.775, 0.018, n_points // 3)
 c3_lon = np.random.normal(-73.960, 0.012, n_points // 3)
+c3_vals = np.random.exponential(20, n_points // 3)
 
 # Combine all points
 lat = np.concatenate([c1_lat, c2_lat, c3_lat])
 lon = np.concatenate([c1_lon, c2_lon, c3_lon])
+values = np.concatenate([c1_vals, c2_vals, c3_vals])
 
 # Clip to bounds
 lat = np.clip(lat, lat_min, lat_max)
 lon = np.clip(lon, lon_min, lon_max)
 
-# Compute hexagonal binning (inline - KISS principle)
+# Compute hexagonal binning with aggregation (inline - KISS principle)
 gridsize = 25
 x = np.asarray(lon)
 y = np.asarray(lat)
@@ -64,33 +68,35 @@ x_range = x_max - x_min
 hex_width = x_range / gridsize
 hex_height = hex_width * np.sqrt(3) / 2
 
-# Convert points to hex grid coordinates
-bins = defaultdict(int)
+# Convert points to hex grid coordinates with value aggregation
+bins = defaultdict(lambda: {"count": 0, "sum": 0.0, "values": []})
 
-for xi, yi in zip(x, y, strict=True):
+for xi, yi, vi in zip(x, y, values, strict=True):
     col = (xi - x_min) / hex_width
     row_offset = (int(col) % 2) * 0.5
     row = (yi - y_min) / hex_height - row_offset
     col_idx = int(round(col))
     row_idx = int(round(row))
-    bins[(col_idx, row_idx)] += 1
+    bins[(col_idx, row_idx)]["count"] += 1
+    bins[(col_idx, row_idx)]["sum"] += vi
+    bins[(col_idx, row_idx)]["values"].append(vi)
 
-# Convert bin indices back to coordinates
-hex_lon = []
-hex_lat = []
-counts = []
+# Convert bin indices back to coordinates with full statistics
+hex_data = []
 
-for (col_idx, row_idx), count in bins.items():
+for (col_idx, row_idx), data in bins.items():
     cx = x_min + col_idx * hex_width
     row_offset = (col_idx % 2) * 0.5
     cy = y_min + (row_idx + row_offset) * hex_height
-    hex_lon.append(cx)
-    hex_lat.append(cy)
-    counts.append(count)
+    count = data["count"]
+    total = data["sum"]
+    mean = total / count if count > 0 else 0
+    hex_data.append({"lon": cx, "lat": cy, "count": count, "sum": total, "mean": mean})
 
-hex_lon = np.array(hex_lon)
-hex_lat = np.array(hex_lat)
-counts = np.array(counts)
+# Extract arrays for plotting
+hex_lon = np.array([h["lon"] for h in hex_data])
+hex_lat = np.array([h["lat"] for h in hex_data])
+counts = np.array([h["count"] for h in hex_data])
 
 # Get count statistics for binning
 count_min, count_max = counts.min(), counts.max()
@@ -138,28 +144,27 @@ east_river = [
 ]
 
 # Custom style - YlOrRd colormap for density (5 levels)
-# Use subtle guide stroke with low opacity for grid
+# Hide grid lines completely for cleaner map visualization
 custom_style = Style(
     background="white",
     plot_background="#E8F4F8",  # Light water blue
     foreground="#333333",
     foreground_strong="#111111",
     foreground_subtle="#666666",
-    guide_stroke_color="#88888833",  # More transparent grid lines
-    guide_stroke_dasharray="2,6",  # Subtle dotted pattern
+    guide_stroke_color="transparent",  # Hide grid lines completely
     colors=(
         # 3 boundary/river colors (light gray)
         "#AAAAAA",
         "#8899AA",
         "#8899AA",
-        # 5 density levels (YlOrRd colormap)
-        "#FFFFB2",  # Very low - light yellow
-        "#FECC5C",  # Low - yellow
-        "#FD8D3C",  # Medium - orange
-        "#F03B20",  # High - red-orange
-        "#BD0026",  # Very high - dark red
+        # 5 density levels (YlOrRd colormap with transparency)
+        "#FFFFB2CC",  # Very low - light yellow (80% opacity)
+        "#FECC5CCC",  # Low - yellow
+        "#FD8D3CCC",  # Medium - orange
+        "#F03B20CC",  # High - red-orange
+        "#BD0026CC",  # Very high - dark red
     ),
-    opacity=0.8,
+    opacity=0.75,  # Base transparency for hexagons
     opacity_hover=0.95,
     title_font_size=72,
     label_font_size=48,
@@ -169,7 +174,7 @@ custom_style = Style(
     tooltip_font_size=36,
 )
 
-# Create XY chart
+# Create XY chart - disable grid for clean map background
 chart = pygal.XY(
     width=4800,
     height=2700,
@@ -183,12 +188,12 @@ chart = pygal.XY(
     legend_box_size=28,
     stroke=False,
     dots_size=30,
-    show_x_guides=True,
-    show_y_guides=True,
+    show_x_guides=False,  # Hide x grid lines
+    show_y_guides=False,  # Hide y grid lines
     explicit_size=True,
     print_values=False,
-    xrange=(lon_min - 0.02, lon_max + 0.02),
-    range=(lat_min - 0.01, lat_max + 0.01),
+    xrange=(lon_min - 0.015, lon_max + 0.015),  # Tighter margins
+    range=(lat_min - 0.008, lat_max + 0.008),
 )
 
 # Add geographic boundaries as background lines
@@ -200,22 +205,31 @@ chart.add(None, east_river, stroke=True, dots_size=0, show_dots=False, fill=Fals
 n_bins = 5
 bin_edges = np.linspace(count_min, count_max + 1, n_bins + 1)
 bin_labels = [
-    f"Count: {int(bin_edges[0])}-{int(bin_edges[1])}",
-    f"Count: {int(bin_edges[1])}-{int(bin_edges[2])}",
-    f"Count: {int(bin_edges[2])}-{int(bin_edges[3])}",
-    f"Count: {int(bin_edges[3])}-{int(bin_edges[4])}",
-    f"Count: {int(bin_edges[4])}+",
+    f"Pickups: {int(bin_edges[0])}-{int(bin_edges[1])}",
+    f"Pickups: {int(bin_edges[1])}-{int(bin_edges[2])}",
+    f"Pickups: {int(bin_edges[2])}-{int(bin_edges[3])}",
+    f"Pickups: {int(bin_edges[3])}-{int(bin_edges[4])}",
+    f"Pickups: {int(bin_edges[4])}+",
 ]
 
-# Create series for each density level
+# Create series for each density level with rich tooltips
 series_data = [[] for _ in range(n_bins)]
-for hx, hy, count in zip(hex_lon, hex_lat, counts, strict=True):
+for h in hex_data:
+    hx, hy = h["lon"], h["lat"]
+    count = h["count"]
+    total = h["sum"]
+    mean = h["mean"]
     bin_idx = min(int((count - count_min) / count_range * (n_bins - 0.01)), n_bins - 1)
-    point = {"value": (float(hx), float(hy)), "label": f"Pickups: {int(count)}"}
+    # Rich tooltip with cell statistics as spec requires
+    tooltip = (
+        f"Count: {count} pickups | Fares: ${total:.0f} total, ${mean:.2f} avg | Coords: ({hy:.4f}°N, {abs(hx):.4f}°W)"
+    )
+    point = {"value": (float(hx), float(hy)), "label": tooltip}
     series_data[bin_idx].append(point)
 
 # Add series with varying dot sizes for density visualization
-dot_sizes = [18, 26, 34, 42, 52]
+# Using larger sizes to better represent hexagonal cell areas
+dot_sizes = [24, 32, 40, 50, 62]
 for i in range(n_bins):
     if series_data[i]:
         chart.add(bin_labels[i], series_data[i], dots_size=dot_sizes[i])
@@ -223,7 +237,8 @@ for i in range(n_bins):
 # Save PNG (primary output)
 chart.render_to_png("plot.png")
 
-# Save interactive HTML
+# Save interactive HTML with CSS hexagon styling
+# Use CSS clip-path to transform circles into hexagons in interactive view
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -233,6 +248,10 @@ html_content = f"""<!DOCTYPE html>
         body {{ margin: 0; display: flex; justify-content: center; align-items: center;
                min-height: 100vh; background: #f5f5f5; }}
         .chart {{ max-width: 100%; height: auto; }}
+        /* Transform dots into hexagons using CSS clip-path */
+        .dot {{
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }}
     </style>
 </head>
 <body>

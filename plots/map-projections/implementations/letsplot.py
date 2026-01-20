@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 map-projections: World Map with Different Projections
 Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 71/100 | Created: 2026-01-20
+Quality: 78/100 | Created: 2026-01-20
 """
 
 import numpy as np

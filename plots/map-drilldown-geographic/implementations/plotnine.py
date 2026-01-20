@@ -1,7 +1,8 @@
-""" pyplots.ai
+"""pyplots.ai
 map-drilldown-geographic: Drillable Geographic Map
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 84/100 | Created: 2026-01-20
+Attempt 3: Fixed grid subtlety, legend accuracy, and label positioning
 """
 
 import numpy as np
@@ -118,7 +119,7 @@ states_data = {
             (-91.5, 42.5),
         ],
         "value": 78,
-        "centroid": (-89.4, 40.0),
+        "centroid": (-89.8, 40.8),  # Shifted slightly NW to reduce overlap with IN
         "abbrev": "IL",
     },
     "Washington": {
@@ -159,7 +160,7 @@ states_data = {
     "Ohio": {
         "coords": [(-84.8, 41.7), (-80.5, 42.0), (-80.5, 39.5), (-81.7, 38.9), (-84.8, 39.1), (-84.8, 41.7)],
         "value": 69,
-        "centroid": (-82.9, 40.4),
+        "centroid": (-82.2, 40.8),  # Shifted slightly NE to reduce overlap with IN
         "abbrev": "OH",
     },
     "Pennsylvania": {
@@ -181,7 +182,7 @@ states_data = {
             (-90.4, 46.0),
         ],
         "value": 73,
-        "centroid": (-85.5, 44.0),
+        "centroid": (-85.0, 44.5),  # Shifted N slightly to reduce crowding
         "abbrev": "MI",
     },
     "Nevada": {
@@ -211,7 +212,7 @@ states_data = {
     "Tennessee": {
         "coords": [(-90.3, 35.0), (-81.7, 36.6), (-81.7, 35.0), (-88.0, 35.0), (-90.3, 35.0)],
         "value": 70,
-        "centroid": (-86.5, 35.8),
+        "centroid": (-86.5, 35.4),  # Shifted S slightly to avoid NC overlap
         "abbrev": "TN",
     },
     "Missouri": {
@@ -223,7 +224,7 @@ states_data = {
     "Indiana": {
         "coords": [(-88.1, 41.8), (-84.8, 41.8), (-84.8, 38.0), (-88.1, 37.8), (-88.1, 41.8)],
         "value": 67,
-        "centroid": (-86.2, 39.8),
+        "centroid": (-86.2, 39.0),  # Shifted S to reduce overlap with IL and MI
         "abbrev": "IN",
     },
     "Wisconsin": {
@@ -291,12 +292,14 @@ plot = (
         va="center",
         ha="center",
     )
-    # Color scale - limits match actual data range for legend accuracy
+    # Color scale - limits match actual data range (64-91) for legend accuracy
+    # Using explicit breaks to ensure full range is displayed
     + scale_fill_gradient(
         low="#FEE08B",  # Light yellow
         high="#1A5276",  # Deep blue
         name="Performance\nScore",
         limits=(min_value, max_value),
+        breaks=[64, 70, 76, 82, 88, 91],  # Explicit breaks covering full range
     )
     # Longitude axis - tighter limits to reduce empty space on left
     + scale_x_continuous(
@@ -335,7 +338,7 @@ plot = (
         axis_title=element_text(size=18, color="#444444"),
         axis_text=element_text(size=14, color="#666666"),
         axis_ticks=element_line(color="#CCCCCC", size=0.5),
-        panel_grid_major=element_line(color="#E0E0E0", size=0.3, alpha=0.5),
+        panel_grid_major=element_line(color="#D0D0D0", size=0.2, alpha=0.25),
         panel_grid_minor=element_blank(),
         panel_background=element_rect(fill="#EDF4F7"),
         plot_background=element_rect(fill="white"),

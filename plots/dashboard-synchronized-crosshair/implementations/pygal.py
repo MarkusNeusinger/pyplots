@@ -1,11 +1,14 @@
-""" pyplots.ai
+"""pyplots.ai
 dashboard-synchronized-crosshair: Synchronized Multi-Chart Dashboard
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 62/100 | Created: 2026-01-20
 """
 
+import io
+
 import numpy as np
 import pygal
+from PIL import Image, ImageDraw, ImageFont
 from pygal.style import Style
 
 
@@ -27,46 +30,24 @@ volume = volume * (1 + np.abs(returns) * 10)  # Higher volume on bigger moves
 rsi = 50 + np.cumsum(np.random.randn(n_days) * 2)
 rsi = np.clip(rsi, 0, 100)
 
-# Custom style for pyplots
-custom_style = Style(
+# Style for Price chart (top)
+price_style = Style(
     background="white",
     plot_background="#fafafa",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#306998", "#FFD43B", "#E74C3C"),
-    title_font_size=48,
-    label_font_size=28,
-    major_label_font_size=24,
-    legend_font_size=28,
-    value_font_size=20,
-    stroke_width=3,
+    colors=("#306998",),
+    title_font_size=56,
+    label_font_size=32,
+    major_label_font_size=28,
+    legend_font_size=32,
+    value_font_size=24,
+    stroke_width=4,
     font_family="sans-serif",
 )
 
-# Chart 1: Price Line Chart
-price_chart = pygal.Line(
-    width=4800,
-    height=900,
-    style=custom_style,
-    title="Price",
-    x_title="",
-    y_title="Price ($)",
-    show_x_labels=False,
-    show_legend=True,
-    legend_at_bottom=False,
-    show_y_guides=True,
-    show_x_guides=False,
-    dots_size=0,
-    stroke_style={"width": 3},
-    fill=False,
-    truncate_label=-1,
-    x_label_rotation=0,
-)
-price_chart.add("Price", price.tolist())
-price_chart.x_labels = dates
-
-# Chart 2: Volume Bar Chart
+# Style for Volume chart (middle)
 volume_style = Style(
     background="white",
     plot_background="#fafafa",
@@ -74,32 +55,16 @@ volume_style = Style(
     foreground_strong="#333333",
     foreground_subtle="#666666",
     colors=("#FFD43B",),
-    title_font_size=48,
-    label_font_size=28,
-    major_label_font_size=24,
-    legend_font_size=28,
-    value_font_size=20,
-    stroke_width=1,
+    title_font_size=56,
+    label_font_size=32,
+    major_label_font_size=28,
+    legend_font_size=32,
+    value_font_size=24,
+    stroke_width=2,
     font_family="sans-serif",
 )
 
-volume_chart = pygal.Bar(
-    width=4800,
-    height=700,
-    style=volume_style,
-    title="Volume",
-    x_title="",
-    y_title="Volume",
-    show_x_labels=False,
-    show_legend=True,
-    legend_at_bottom=False,
-    show_y_guides=True,
-    show_x_guides=False,
-    truncate_label=-1,
-)
-volume_chart.add("Volume", (volume / 1000000).tolist())  # In millions
-
-# Chart 3: RSI Indicator
+# Style for RSI chart (bottom)
 rsi_style = Style(
     background="white",
     plot_background="#fafafa",
@@ -107,35 +72,82 @@ rsi_style = Style(
     foreground_strong="#333333",
     foreground_subtle="#666666",
     colors=("#E74C3C",),
-    title_font_size=48,
-    label_font_size=28,
-    major_label_font_size=24,
-    legend_font_size=28,
-    value_font_size=20,
-    stroke_width=3,
+    title_font_size=56,
+    label_font_size=32,
+    major_label_font_size=28,
+    legend_font_size=32,
+    value_font_size=24,
+    stroke_width=4,
     font_family="sans-serif",
 )
 
+# Chart 1: Price Line Chart (top panel)
+price_chart = pygal.Line(
+    width=4800,
+    height=850,
+    style=price_style,
+    title="Price ($)",
+    x_title="",
+    y_title="Price ($)",
+    show_x_labels=False,
+    show_legend=True,
+    legend_at_bottom=False,
+    show_y_guides=True,
+    show_x_guides=True,
+    dots_size=0,
+    stroke_style={"width": 4},
+    fill=False,
+    truncate_label=-1,
+    margin_bottom=5,
+)
+price_chart.add("Stock Price", price.tolist())
+price_chart.x_labels = dates
+
+# Chart 2: Volume Bar Chart (middle panel)
+volume_chart = pygal.Line(
+    width=4800,
+    height=750,
+    style=volume_style,
+    title="Volume (Millions)",
+    x_title="",
+    y_title="Volume (M)",
+    show_x_labels=False,
+    show_legend=True,
+    legend_at_bottom=False,
+    show_y_guides=True,
+    show_x_guides=True,
+    dots_size=0,
+    stroke_style={"width": 3},
+    fill=True,
+    truncate_label=-1,
+    margin_top=5,
+    margin_bottom=5,
+)
+volume_chart.add("Trading Volume", (volume / 1000000).tolist())
+volume_chart.x_labels = dates
+
+# Chart 3: RSI Indicator (bottom panel)
 rsi_chart = pygal.Line(
     width=4800,
-    height=700,
+    height=850,
     style=rsi_style,
-    title="RSI Indicator",
+    title="RSI Indicator (0-100)",
     x_title="Trading Day",
     y_title="RSI",
     show_x_labels=True,
     show_legend=True,
     legend_at_bottom=False,
     show_y_guides=True,
-    show_x_guides=False,
+    show_x_guides=True,
     dots_size=0,
-    stroke_style={"width": 3},
+    stroke_style={"width": 4},
     fill=False,
-    x_labels_major_count=10,
+    x_labels_major_count=12,
     show_minor_x_labels=False,
     truncate_label=-1,
     x_label_rotation=45,
     range=(0, 100),
+    margin_top=5,
 )
 rsi_chart.add("RSI", rsi.tolist())
 rsi_chart.x_labels = dates
@@ -264,55 +276,83 @@ html_content = f"""<!DOCTYPE html>
 with open("plot.html", "w", encoding="utf-8") as f:
     f.write(html_content)
 
-# Save PNG for static preview
-# Create a combined chart view for PNG
-preview_style = Style(
-    background="white",
-    plot_background="#fafafa",
-    foreground="#333333",
-    foreground_strong="#333333",
-    foreground_subtle="#666666",
-    colors=("#306998", "#FFD43B", "#E74C3C"),
-    title_font_size=72,
-    label_font_size=36,
-    major_label_font_size=32,
-    legend_font_size=36,
-    value_font_size=28,
-    stroke_width=4,
-    font_family="sans-serif",
-)
+# Save PNG for static preview - stacked multi-chart dashboard layout
+# Render each chart to PNG bytes and combine vertically using PIL
 
-# For PNG, create a single chart showing all three series normalized
-preview_chart = pygal.Line(
-    width=4800,
-    height=2700,
-    style=preview_style,
-    title="dashboard-synchronized-crosshair · pygal · pyplots.ai",
-    x_title="Trading Day",
-    y_title="Normalized Value",
-    show_x_labels=True,
-    show_legend=True,
-    legend_at_bottom=True,
-    legend_at_bottom_columns=3,
-    show_y_guides=True,
-    show_x_guides=False,
-    dots_size=0,
-    stroke_style={"width": 4},
-    fill=False,
-    x_labels_major_count=10,
-    show_minor_x_labels=False,
-    truncate_label=-1,
-    x_label_rotation=45,
-    secondary_range=(0, 100),
-)
+# Render price chart to PNG bytes
+price_png = price_chart.render_to_png()
+price_img = Image.open(io.BytesIO(price_png))
 
-# Normalize data for combined view
-price_norm = (price - price.min()) / (price.max() - price.min()) * 100
-volume_norm = (volume - volume.min()) / (volume.max() - volume.min()) * 100
+# Render volume chart to PNG bytes
+volume_png = volume_chart.render_to_png()
+volume_img = Image.open(io.BytesIO(volume_png))
 
-preview_chart.add("Price (normalized)", price_norm.tolist())
-preview_chart.add("Volume (normalized)", volume_norm.tolist())
-preview_chart.add("RSI", rsi.tolist(), secondary=True)
-preview_chart.x_labels = dates
+# Render RSI chart to PNG bytes
+rsi_png = rsi_chart.render_to_png()
+rsi_img = Image.open(io.BytesIO(rsi_png))
 
-preview_chart.render_to_png("plot.png")
+# Create title banner
+title_height = 150
+title_img = Image.new("RGB", (4800, title_height), "white")
+draw = ImageDraw.Draw(title_img)
+title_text = "dashboard-synchronized-crosshair · pygal · pyplots.ai"
+try:
+    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 72)
+except OSError:
+    font = ImageFont.load_default()
+bbox = draw.textbbox((0, 0), title_text, font=font)
+text_width = bbox[2] - bbox[0]
+text_x = (4800 - text_width) // 2
+draw.text((text_x, 40), title_text, fill="#333333", font=font)
+
+# Add crosshair annotation
+annotation_text = "← Synchronized Crosshair (interactive in HTML)"
+try:
+    small_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 36)
+except OSError:
+    small_font = ImageFont.load_default()
+draw.text((4800 - 900, 100), annotation_text, fill="#306998", font=small_font)
+
+# Calculate total height
+total_height = title_height + price_img.height + volume_img.height + rsi_img.height
+
+# Create combined image
+combined = Image.new("RGB", (4800, total_height), "white")
+y_offset = 0
+
+# Paste title
+combined.paste(title_img, (0, y_offset))
+y_offset += title_height
+
+# Paste charts vertically
+combined.paste(price_img, (0, y_offset))
+y_offset += price_img.height
+
+combined.paste(volume_img, (0, y_offset))
+y_offset += volume_img.height
+
+combined.paste(rsi_img, (0, y_offset))
+
+# Draw vertical crosshair line across all charts to demonstrate the concept
+crosshair_draw = ImageDraw.Draw(combined)
+crosshair_x = 2400  # Middle of chart
+crosshair_y_start = title_height + 100
+crosshair_y_end = total_height - 200
+crosshair_draw.line([(crosshair_x, crosshair_y_start), (crosshair_x, crosshair_y_end)], fill="#306998", width=4)
+
+# Add small circles at crosshair intersection points
+circle_radius = 12
+chart_positions = [
+    title_height + 400,  # Price chart middle
+    title_height + price_img.height + 350,  # Volume chart middle
+    title_height + price_img.height + volume_img.height + 400,  # RSI chart middle
+]
+for y_pos in chart_positions:
+    crosshair_draw.ellipse(
+        [crosshair_x - circle_radius, y_pos - circle_radius, crosshair_x + circle_radius, y_pos + circle_radius],
+        fill="#306998",
+        outline="#306998",
+    )
+
+# Save combined PNG
+combined.save("plot.png", dpi=(300, 300))

@@ -1,7 +1,7 @@
 library: altair
 specification_id: map-drilldown-geographic
 created: '2026-01-20T07:44:04Z'
-updated: '2026-01-20T07:46:46Z'
+updated: '2026-01-20T07:53:28Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21163297410
 issue: 3770
@@ -10,85 +10,87 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/map-drilldown-geographic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/map-drilldown-geographic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/map-drilldown-geographic/altair/plot.html
-quality_score: 82
+quality_score: 86
 review:
   strengths:
-  - Excellent use of Altair declarative selection mechanism for drill-down filtering
-  - Clean composition using hconcat/vconcat for dashboard-style layout
-  - Good tooltip implementation with formatted values
-  - Proper use of TopoJSON for geographic data
-  - Interactive HTML export alongside PNG
+  - Excellent use of Altair selection_point for cross-filtering between bar chart
+    and map
+  - Clean implementation of US TopoJSON with transform_lookup for data joining
+  - Well-designed sidebar layout with region overview and state detail panels
+  - Professional color scheme using colorblind-safe categorical palette
+  - Proper breadcrumb-style navigation hint in chart titles
   weaknesses:
-  - Missing breadcrumb navigation as specified (e.g., World > United States > California)
-  - No smooth zoom transitions when drilling down - map highlights but does not zoom
-  - Bottom state chart shows ALL states initially rather than filtering to selected
-    region only
-  - Large whitespace around the map - could better utilize canvas space
-  - State labels in the detailed chart are crowded and hard to read with 51 entries
-  image_description: 'The plot displays a US choropleth map on the left showing states
-    colored in a blue gradient based on sales values (0-550). Alaska and Hawaii are
-    shown separately in the upper-left. On the right side, two horizontal bar charts
-    provide drill-down functionality: the top chart "Click to Drill Down by Region"
-    shows four US regions (South in yellow, West in blue, Midwest in olive-green,
-    Northeast in coral-red) with their total sales. The bottom chart "States in Selected
-    Region" lists all 51 states/territories sorted by sales value in descending order
-    (California at top with ~520, Wyoming at bottom with ~25). The title "map-drilldown-geographic
-    · altair · pyplots.ai" appears at the top with a subtitle explaining the interaction.
-    A vertical color legend on the far right shows the Sales Value scale.'
+  - States appear gray in default/static view - choropleth color encoding only activates
+    when region is selected. For static PNG export, map should show colors by default
+  - The conditional color encoding uses empty=False which means nothing is highlighted
+    initially. Consider using empty=True or having default selection so static image
+    shows actual data
+  - Breadcrumb navigation is display-only, not truly interactive for navigating back
+    up hierarchy
+  image_description: 'The visualization displays a US choropleth map with drill-down
+    capability. The main title "map-drilldown-geographic · altair · pyplots.ai" appears
+    at the top with subtitles explaining the interaction. The left side shows a US
+    map rendered via TopoJSON with all 50 states visible in gray (no region selected).
+    A vertical blue color scale legend labeled "Sales ($K)" ranging from 0-500 is
+    positioned at bottom-left. On the right sidebar: a horizontal bar chart titled
+    "📍 USA > Click a Region to Drill Down" displays 4 regions (South ~3200K, West
+    ~1700K, Midwest ~1400K, Northeast ~1300K) with gray bars (unselected). A horizontal
+    color legend shows region colors (West=blue, South=red, Midwest=green, Northeast=yellow).
+    Below is an empty "📊 States in Selected Region" panel with placeholder text "←
+    Click a region bar to view states". White borders separate states clearly. Overall
+    proportions are balanced with the map occupying roughly 60% of the canvas width.'
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 36
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 9
         max: 10
         passed: true
-        comment: Title and most labels readable, but state names in bottom chart are
-          small and crowded
+        comment: Title at 28pt excellent, labels at 14-16pt good but could be slightly
+          larger
       - id: VQ-02
         name: No Overlap
-        score: 6
-        max: 8
-        passed: true
-        comment: State labels in the States in Selected Region chart overlap/truncate
-          due to many entries
-      - id: VQ-03
-        name: Element Visibility
         score: 8
         max: 8
         passed: true
-        comment: Map states and bars are clearly visible with appropriate sizing
+        comment: All text elements clearly separated, no overlap issues
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Map and bars clearly visible, though states lack color encoding in
+          default view
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Good blue color scheme for map, but region colors (yellow, red) could
-          be more colorblind-friendly
+        comment: Colorblind-safe palette (blue, red, green, yellow) for regions
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 4
         max: 5
-        passed: true
-        comment: Map is relatively small compared to canvas; large empty space around
-          it
+        passed: false
+        comment: Good layout but map shows gray states in default view, wasting visual
+          space
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels Total Sales and Sales Value
+        comment: 'Labels include units: Sales ($K), Total Sales ($K)'
       - id: VQ-07
         name: Grid & Legend
         score: 1
         max: 2
         passed: true
-        comment: Legend present but positioned far from map; no grid needed for this
-          type
+        comment: Legend well placed, no grid on bar charts (acceptable for this design)
     spec_compliance:
-      score: 21
+      score: 20
       max: 25
       items:
       - id: SC-01
@@ -96,33 +98,32 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct choropleth map with drill-down interaction
+        comment: Correct choropleth map with drill-down hierarchy
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: States correctly mapped to regions, values displayed appropriately
+        comment: Region/state/value correctly mapped
       - id: SC-03
         name: Required Features
-        score: 3
+        score: 2
         max: 5
         passed: false
-        comment: 'Has drill-down via selection, tooltips, color legend; MISSING: breadcrumb
-          navigation, smooth zoom transitions'
+        comment: 'Missing: breadcrumb not clickable, states should show color in default
+          view'
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Full US coverage with all states visible
+        comment: All data visible, color scale covers 0-550 range
       - id: SC-05
         name: Legend Accuracy
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Legend shows continuous scale but region bar colors have no legend
-          connection
+        passed: true
+        comment: Region colors and sales legend accurate
       - id: SC-06
         name: Title Format
         score: 2
@@ -130,7 +131,7 @@ review:
         passed: true
         comment: 'Correct format: map-drilldown-geographic · altair · pyplots.ai'
     data_quality:
-      score: 17
+      score: 18
       max: 20
       items:
       - id: DQ-01
@@ -138,22 +139,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Shows regional aggregation and state-level detail, but no city-level
-          third tier as spec suggests
+        comment: Shows regional aggregation and state detail concept, but default
+          view doesn't demonstrate choropleth coloring
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Sales data across US regions is a plausible business scenario
+        comment: US sales data by region/state is realistic business scenario
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Values 25-520 are reasonable sales figures; could benefit from units
+        comment: Sales values in $K (25-520) are plausible regional sales figures
     code_quality:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -165,11 +166,10 @@ review:
           save'
       - id: CQ-02
         name: Reproducibility
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Deterministic data (no random seed needed), but relies on external
-          TopoJSON URL
+        comment: Deterministic data (hardcoded values)
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -181,25 +181,24 @@ review:
         score: 1
         max: 1
         passed: true
-        comment: Modern Altair API used
+        comment: Uses current Altair 5.x API
       - id: CQ-05
         name: Output Correct
         score: 0
         max: 1
         passed: false
-        comment: Saves as plot.png AND plot.html, which is appropriate for Altair
+        comment: Saves both plot.png and plot.html
     library_features:
-      score: 4
+      score: 3
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: 'Good use of Altair declarative grammar: selection_point for interaction,
-          transform_lookup for data joining, topo_feature for maps, condition encoding,
-          hconcat/vconcat composition'
+        comment: Good use of selection_point, transform_lookup, topo_feature, but
+          could better leverage Altair's declarative layering
   verdict: REJECTED
 impl_tags:
   dependencies: []
@@ -211,5 +210,5 @@ impl_tags:
   - groupby-aggregation
   dataprep: []
   styling:
-  - custom-colormap
   - edge-highlighting
+  - custom-colormap

@@ -1,7 +1,7 @@
 library: pygal
 specification_id: line-stock-comparison
 created: '2026-01-20T10:21:52Z'
-updated: '2026-01-20T10:24:40Z'
+updated: '2026-01-20T10:29:55Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21167798458
 issue: 3748
@@ -10,83 +10,82 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-stock-comparison/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-stock-comparison/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-stock-comparison/pygal/plot.html
-quality_score: 75
+quality_score: 78
 review:
   strengths:
-  - Correct rebasing calculation normalizing all series to 100 at start
-  - Good use of custom Style for font sizing and color scheme
-  - Realistic simulated stock data with different return characteristics
-  - Clean KISS code structure with clear variable naming
-  - Both PNG and HTML outputs generated
+  - Excellent use of pygal custom Style for colorblind-safe palette and consistent
+    sizing
+  - Rich interactive tooltips showing symbol, date, and value for each data point
+  - Proper rebasing of stock prices to 100 for performance comparison
+  - Clean code structure following KISS principles
+  - 'Uses pygal-specific features: stroke_dasharray, show_only_major_dots, dual output
+    (PNG + HTML)'
   weaknesses:
-  - X-axis date labels are not visible in the output despite being configured
-  - Missing horizontal reference line at 100 (mentioned as consideration in spec)
-  - Legend font size is small relative to the large canvas
-  - No use of pygal distinctive interactive features (tooltips, hover effects, value
-    display)
-  - Color scheme could be more colorblind-friendly (yellow/green combination)
-  image_description: 'The plot displays a multi-line chart comparing four stock price
-    series (AAPL, GOOGL, MSFT, and SPY Benchmark) normalized to a starting value of
-    100. The chart uses a white background with horizontal grid lines at intervals
-    of 10 units. Each series is represented with a distinct color: AAPL in blue (#306998),
-    GOOGL in yellow (#FFD43B), MSFT in red (#E74C3C), and SPY in green (#2ECC71).
-    The legend appears in the top-left corner showing small color boxes with text
-    labels. The y-axis is labeled "Rebased Price (Start = 100)" ranging from approximately
-    80 to 170, and the x-axis is labeled "Date" but shows no visible date labels.
-    The title "line-stock-comparison · pygal · pyplots.ai" is centered at the top.
-    The lines show realistic stock-like volatility with GOOGL performing best (ending
-    around 155), SPY second (ending around 150), AAPL relatively flat (ending around
-    115), and MSFT declining (ending around 85).'
+  - X-axis date labels are not displaying despite being set in code - this is critical
+    for a time series chart
+  - Reference line at 100 (starting point) is not visible in the rendered output despite
+    being added with stroke_dasharray
+  - Legend positioned far from chart in top-left corner
+  image_description: The plot displays a multi-line chart comparing four stock price
+    series (AAPL, GOOGL, MSFT, SPY) normalized to a starting point of 100. AAPL is
+    shown in blue, GOOGL in yellow/gold, MSFT in red/pink, and SPY (Benchmark) in
+    teal/green. The title "line-stock-comparison · pygal · pyplots.ai" appears at
+    the top center. The Y-axis is labeled "Rebased Price (Start = 100)" showing values
+    from approximately 80 to 170. The X-axis is labeled "Date" but the actual date
+    labels are missing/not visible. The legend is positioned in the top-left corner
+    outside the plot area. Horizontal dotted grid lines are visible. The series show
+    different performance trajectories with SPY reaching highest (~170), GOOGL showing
+    strong growth (~155), AAPL fluctuating around 100-115, and MSFT declining to ~80
+    by year end. The reference line at 100 (coded in the implementation) is not visible
+    in the output.
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 32
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 10
         passed: true
-        comment: Title and axis labels readable, legend text is quite small
+        comment: Title and Y-axis labels readable, but legend text is small
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping elements
+        comment: No overlapping text elements
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 8
         passed: true
-        comment: Lines visible but stroke width could be thicker for better visibility
-          at this resolution
+        comment: Lines are visible with appropriate thickness, dots_size=2 is minimal
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Yellow and green can be difficult for colorblind users; red/green
-          combination is suboptimal
+        comment: Uses colorblind-safe palette (blue, orange, pink, teal)
       - id: VQ-05
         name: Layout Balance
         score: 3
         max: 5
         passed: true
-        comment: Good use of canvas but legend placement in top-left is somewhat isolated
+        comment: Good proportions but legend is far from chart, some wasted space
+          on left
       - id: VQ-06
         name: Axis Labels
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: X-axis label is Date but no actual date values are shown on the axis
+        passed: true
+        comment: 'Descriptive labels with context: Rebased Price (Start = 100), Date'
       - id: VQ-07
         name: Grid & Legend
         score: 0
         max: 2
         passed: false
-        comment: No x-axis labels visible despite dates being set; legend is functional
-          but small
+        comment: X-axis date labels are completely missing, only Date label shows
     spec_compliance:
       score: 21
       max: 25
@@ -96,38 +95,38 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct multi-line chart type
+        comment: Correct multi-line chart for stock comparison
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: X/Y correctly mapped with rebased values
+        comment: X=dates, Y=rebased prices correctly assigned
       - id: SC-03
         name: Required Features
         score: 3
         max: 5
         passed: false
-        comment: Missing horizontal reference line at 100 as suggested in spec; no
-          visible date labels on x-axis
+        comment: Reference line at 100 not visible in output; monthly date labels
+          missing
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Y-axis shows full data range
+        comment: Y-axis range (70-180) shows all data appropriately
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Legend correctly identifies all series
+        comment: Legend correctly identifies all series including SPY as benchmark
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: 'Correct format: line-stock-comparison · pygal · pyplots.ai'
+        comment: Correctly uses {spec-id} · {library} · pyplots.ai
     data_quality:
       score: 18
       max: 20
@@ -137,21 +136,22 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows variety in performance (outperformers and underperformers)
+        comment: Shows stocks with different trends (growth, decline, stable), benchmark
+          comparison
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Stock comparison is a real financial analysis scenario
+        comment: Real stock ticker scenario (AAPL, GOOGL, MSFT vs SPY benchmark)
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Values are realistic for rebased stock prices over 1 year
+        comment: Rebased values realistic for 1-year period; 252 trading days appropriate
     code_quality:
-      score: 8
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -159,25 +159,25 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Simple linear flow: imports, data, plot, save'
+        comment: Clean imports -> data -> plot -> save structure
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) is set
+        comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports used (numpy, pandas, pygal, Style)
       - id: CQ-04
         name: No Deprecated API
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: truncate_legend=-1 is unusual usage
+        passed: true
+        comment: Modern pygal API usage
       - id: CQ-05
         name: Output Correct
         score: 1
@@ -185,25 +185,27 @@ review:
         passed: true
         comment: Saves as plot.png and plot.html
     library_features:
-      score: 0
+      score: 5
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 0
+        score: 5
         max: 5
-        passed: false
-        comment: Basic pygal.Line() usage without exploiting pygal interactive features,
-          custom tooltips, or SVG capabilities
+        passed: true
+        comment: Custom Style, custom tooltips with date/value, stroke_dasharray for
+          reference line, x_labels_major_count, show_only_major_dots, HTML export
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
+  - hover-tooltips
   - html-export
   patterns:
   - data-generation
-  - time-series
+  - iteration-over-groups
   dataprep:
+  - time-series
   - normalization
-  - cumulative-sum
-  styling: []
+  styling:
+  - grid-styling

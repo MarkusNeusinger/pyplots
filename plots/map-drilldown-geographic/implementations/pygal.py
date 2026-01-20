@@ -1,8 +1,10 @@
-""" pyplots.ai
+"""pyplots.ai
 map-drilldown-geographic: Drillable Geographic Map
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 75/100 | Created: 2026-01-20
 """
+
+import json
 
 import pygal
 from pygal.style import Style
@@ -115,13 +117,13 @@ tier2 = {"jp": hierarchy["jp"]["value"]}
 tier3 = {"de": hierarchy["de"]["value"], "br": hierarchy["br"]["value"]}
 tier4 = {"au": hierarchy["au"]["value"]}
 
-png_map.add("$1B+ Sales", tier1)
-png_map.add("$500M-$1B Sales", tier2)
-png_map.add("$300M-$500M Sales", tier3)
-png_map.add("<$300M Sales", tier4)
+png_map.add(">$1B", tier1)
+png_map.add("$500M-1B", tier2)
+png_map.add("$300-500M", tier3)
+png_map.add("<$300M", tier4)
 
-# Breadcrumb showing current level
-png_map.x_title = "World Level · Regional Sales Overview (see HTML for interactive drill-down)"
+# Breadcrumb showing current level (static PNG overview)
+png_map.x_title = "Static World Overview · Open HTML for Interactive Drill-Down"
 
 png_map.render_to_png("plot.png")
 
@@ -197,10 +199,8 @@ for node_id, node_data in hierarchy.items():
             chart.x_labels = names
             svg_data[node_id] = chart.render(is_unicode=True)
 
-# Build JSON for JavaScript
-hierarchy_json = (
-    str(hierarchy).replace("'", '"').replace("None", "null").replace("True", "true").replace("False", "false")
-)
+# Build JSON for JavaScript using json module
+hierarchy_json = json.dumps(hierarchy)
 
 # Build HTML content
 html_content = """<!DOCTYPE html>

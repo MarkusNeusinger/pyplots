@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hexbin-map-geographic: Hexagonal Binning Map
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 72/100 | Created: 2026-01-20
@@ -20,59 +20,6 @@ from pygal.style import Style  # noqa: E402
 
 if _cwd:
     sys.path.insert(0, _cwd)
-
-
-def compute_hexbin(x, y, gridsize=20):
-    """Compute hexagonal binning of 2D points.
-
-    Uses flat-topped hexagons with pointy-top arrangement.
-    Returns centers (x, y) and counts for each non-empty bin.
-    """
-    x = np.asarray(x)
-    y = np.asarray(y)
-
-    # Compute data bounds
-    x_min, x_max = x.min(), x.max()
-    y_min = y.min()
-
-    # Hexagon dimensions
-    x_range = x_max - x_min
-    hex_width = x_range / gridsize
-    hex_height = hex_width * np.sqrt(3) / 2
-
-    # Convert points to hex grid coordinates
-    bins = defaultdict(int)
-
-    for xi, yi in zip(x, y, strict=True):
-        # Convert to fractional hex coordinates
-        col = (xi - x_min) / hex_width
-        # Offset rows for hex staggering
-        row_offset = (int(col) % 2) * 0.5
-        row = (yi - y_min) / hex_height - row_offset
-
-        # Round to nearest hex cell
-        col_idx = int(round(col))
-        row_idx = int(round(row))
-
-        bins[(col_idx, row_idx)] += 1
-
-    # Convert bin indices back to coordinates
-    centers_x = []
-    centers_y = []
-    counts = []
-
-    for (col_idx, row_idx), count in bins.items():
-        # Convert back to x, y coordinates
-        cx = x_min + col_idx * hex_width
-        row_offset = (col_idx % 2) * 0.5
-        cy = y_min + (row_idx + row_offset) * hex_height
-
-        centers_x.append(cx)
-        centers_y.append(cy)
-        counts.append(count)
-
-    return np.array(centers_x), np.array(centers_y), np.array(counts)
-
 
 # Data - Simulated NYC taxi pickup locations (Manhattan area)
 np.random.seed(42)
@@ -103,8 +50,47 @@ lon = np.concatenate([c1_lon, c2_lon, c3_lon])
 lat = np.clip(lat, lat_min, lat_max)
 lon = np.clip(lon, lon_min, lon_max)
 
-# Compute hexbin (using lon, lat order for x, y)
-hex_lon, hex_lat, counts = compute_hexbin(lon, lat, gridsize=25)
+# Compute hexagonal binning (inline - KISS principle)
+gridsize = 25
+x = np.asarray(lon)
+y = np.asarray(lat)
+
+# Compute data bounds
+x_min, x_max = x.min(), x.max()
+y_min = y.min()
+
+# Hexagon dimensions
+x_range = x_max - x_min
+hex_width = x_range / gridsize
+hex_height = hex_width * np.sqrt(3) / 2
+
+# Convert points to hex grid coordinates
+bins = defaultdict(int)
+
+for xi, yi in zip(x, y, strict=True):
+    col = (xi - x_min) / hex_width
+    row_offset = (int(col) % 2) * 0.5
+    row = (yi - y_min) / hex_height - row_offset
+    col_idx = int(round(col))
+    row_idx = int(round(row))
+    bins[(col_idx, row_idx)] += 1
+
+# Convert bin indices back to coordinates
+hex_lon = []
+hex_lat = []
+counts = []
+
+for (col_idx, row_idx), count in bins.items():
+    cx = x_min + col_idx * hex_width
+    row_offset = (col_idx % 2) * 0.5
+    cy = y_min + (row_idx + row_offset) * hex_height
+    hex_lon.append(cx)
+    hex_lat.append(cy)
+    counts.append(count)
+
+hex_lon = np.array(hex_lon)
+hex_lat = np.array(hex_lat)
+counts = np.array(counts)
 
 # Get count statistics for binning
 count_min, count_max = counts.min(), counts.max()
@@ -152,14 +138,15 @@ east_river = [
 ]
 
 # Custom style - YlOrRd colormap for density (5 levels)
+# Use subtle guide stroke with low opacity for grid
 custom_style = Style(
     background="white",
     plot_background="#E8F4F8",  # Light water blue
     foreground="#333333",
     foreground_strong="#111111",
     foreground_subtle="#666666",
-    guide_stroke_color="#88888855",
-    guide_stroke_dasharray="4,4",
+    guide_stroke_color="#88888833",  # More transparent grid lines
+    guide_stroke_dasharray="2,6",  # Subtle dotted pattern
     colors=(
         # 3 boundary/river colors (light gray)
         "#AAAAAA",
@@ -187,7 +174,7 @@ chart = pygal.XY(
     width=4800,
     height=2700,
     style=custom_style,
-    title="NYC Taxi Pickups · hexbin-map-geographic · pygal · pyplots.ai",
+    title="hexbin-map-geographic · pygal · pyplots.ai",
     x_title="Longitude (°)",
     y_title="Latitude (°)",
     show_legend=True,
@@ -223,9 +210,7 @@ bin_labels = [
 # Create series for each density level
 series_data = [[] for _ in range(n_bins)]
 for hx, hy, count in zip(hex_lon, hex_lat, counts, strict=True):
-    # Calculate bin index
     bin_idx = min(int((count - count_min) / count_range * (n_bins - 0.01)), n_bins - 1)
-    # Store as (lon, lat) with tooltip showing count
     point = {"value": (float(hx), float(hy)), "label": f"Pickups: {int(count)}"}
     series_data[bin_idx].append(point)
 

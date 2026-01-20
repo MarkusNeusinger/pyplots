@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hexbin-map-geographic: Hexagonal Binning Map
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-20
@@ -20,63 +20,6 @@ from plotnine import (
     theme,
     theme_minimal,
 )
-
-
-# Create hexagonal bin polygons for geographic data
-def hexbin_geo_polygons(lon, lat, gridsize=20):
-    """Create hexagonal bin polygons with counts for geographic coordinates."""
-    lon_min, lon_max = lon.min() - 1, lon.max() + 1
-    lat_min, lat_max = lat.min() - 1, lat.max() + 1
-
-    # Flat-top hexagon geometry adapted for geographic coordinates
-    hex_width = (lon_max - lon_min) / gridsize
-    hex_radius = hex_width / np.sqrt(3)
-    row_height = hex_radius * 1.5
-
-    # Generate hex grid
-    centers = []
-    row = 0
-    y_pos = lat_min
-    while y_pos <= lat_max:
-        x_offset = (hex_width / 2) if row % 2 else 0
-        x_pos = lon_min + x_offset
-        while x_pos <= lon_max:
-            centers.append((x_pos, y_pos))
-            x_pos += hex_width
-        y_pos += row_height
-        row += 1
-
-    # Count points per hexagon
-    points = np.column_stack([lon, lat])
-    records = []
-    hex_id = 0
-
-    for cx, cy in centers:
-        # Point-in-hexagon test (flat-top)
-        dx = np.abs(points[:, 0] - cx)
-        dy = np.abs(points[:, 1] - cy)
-        in_hex = (
-            (dy <= hex_radius)
-            & (dx <= hex_width / 2)
-            & (hex_radius * hex_width / 2 >= dx * hex_radius + dy * hex_width / 4)
-        )
-        count = np.sum(in_hex)
-
-        if count > 0:
-            # Create hexagon vertices (flat-top orientation)
-            angles = np.arange(6) * np.pi / 3 + np.pi / 6
-            for angle in angles:
-                records.append(
-                    {
-                        "lon": cx + hex_radius * np.cos(angle),
-                        "lat": cy + hex_radius * np.sin(angle),
-                        "hex_id": hex_id,
-                        "count": count,
-                    }
-                )
-            hex_id += 1
-
-    return pd.DataFrame(records)
 
 
 # Seed for reproducibility
@@ -107,8 +50,60 @@ residential_lat = np.random.uniform(40.60, 40.85, n_points // 4)
 lon = np.concatenate([downtown_lon, midtown_lon, airport_lon, residential_lon])
 lat = np.concatenate([downtown_lat, midtown_lat, airport_lat, residential_lat])
 
-# Create hexbin data
-hex_df = hexbin_geo_polygons(lon, lat, gridsize=25)
+# Create hexagonal bin polygons inline (no function)
+gridsize = 25
+lon_min, lon_max = lon.min() - 1, lon.max() + 1
+lat_min, lat_max = lat.min() - 1, lat.max() + 1
+
+# Flat-top hexagon geometry adapted for geographic coordinates
+hex_width = (lon_max - lon_min) / gridsize
+hex_radius = hex_width / np.sqrt(3)
+row_height = hex_radius * 1.5
+
+# Generate hex grid centers
+centers = []
+row = 0
+y_pos = lat_min
+while y_pos <= lat_max:
+    x_offset = (hex_width / 2) if row % 2 else 0
+    x_pos = lon_min + x_offset
+    while x_pos <= lon_max:
+        centers.append((x_pos, y_pos))
+        x_pos += hex_width
+    y_pos += row_height
+    row += 1
+
+# Count points per hexagon and create polygon vertices
+points = np.column_stack([lon, lat])
+records = []
+hex_id = 0
+
+for cx, cy in centers:
+    # Point-in-hexagon test (flat-top)
+    dx = np.abs(points[:, 0] - cx)
+    dy = np.abs(points[:, 1] - cy)
+    in_hex = (
+        (dy <= hex_radius)
+        & (dx <= hex_width / 2)
+        & (hex_radius * hex_width / 2 >= dx * hex_radius + dy * hex_width / 4)
+    )
+    count = np.sum(in_hex)
+
+    if count > 0:
+        # Create hexagon vertices (flat-top orientation)
+        angles = np.arange(6) * np.pi / 3 + np.pi / 6
+        for angle in angles:
+            records.append(
+                {
+                    "lon": cx + hex_radius * np.cos(angle),
+                    "lat": cy + hex_radius * np.sin(angle),
+                    "hex_id": hex_id,
+                    "count": count,
+                }
+            )
+        hex_id += 1
+
+hex_df = pd.DataFrame(records)
 
 # Simplified outline of the region (NYC-like coastline)
 coastline_data = []
@@ -173,9 +168,7 @@ plot = (
     + scale_fill_continuous(cmap_name="YlOrRd", name="Pickup Count")
     # Fixed aspect ratio for geographic accuracy
     + coord_fixed(ratio=1.0, xlim=(-74.08, -73.68), ylim=(40.52, 40.92))
-    + labs(
-        title="Taxi Pickup Density · hexbin-map-geographic · plotnine · pyplots.ai", x="Longitude (°)", y="Latitude (°)"
-    )
+    + labs(title="hexbin-map-geographic · plotnine · pyplots.ai", x="Longitude (°)", y="Latitude (°)")
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
@@ -185,11 +178,11 @@ plot = (
         legend_title=element_text(size=18),
         legend_text=element_text(size=14),
         legend_position="right",
-        panel_grid_major=element_line(color="#CCCCCC", size=0.3, alpha=0.5),
+        panel_grid_major=element_line(color="#888888", size=0.5, alpha=0.6),
         panel_grid_minor=element_blank(),
-        panel_background=element_rect(fill="#D4E8F7", alpha=0.4),  # Ocean/water color
+        panel_background=element_rect(fill="#D4E8F7", alpha=0.4),
     )
 )
 
 # Save at 300 DPI for 4800x2700 px output
-plot.save("plot.png", dpi=300, verbose=False)
+plot.save("plot.png", dpi=300)

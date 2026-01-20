@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-marker-clustered: Clustered Marker Map
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-20
@@ -6,7 +6,7 @@ Quality: 88/100 | Created: 2026-01-20
 
 import numpy as np
 from bokeh.io import export_png, save
-from bokeh.models import ColumnDataSource, LabelSet, Legend, LegendItem, WMTSTileSource
+from bokeh.models import ColumnDataSource, LabelSet, Legend, LegendItem
 from bokeh.plotting import figure
 from bokeh.resources import CDN
 
@@ -59,15 +59,10 @@ store_categories = np.array(all_categories)
 store_neighborhoods = np.array(all_neighborhoods)
 
 
-# Convert lat/lon to Web Mercator projection
-def lat_lon_to_mercator(lat, lon):
-    k = 6378137  # Earth radius in meters
-    x = lon * (k * np.pi / 180.0)
-    y = np.log(np.tan((90 + lat) * np.pi / 360.0)) * k
-    return x, y
-
-
-mercator_x, mercator_y = lat_lon_to_mercator(lats, lons)
+# Convert lat/lon to Web Mercator projection (inline calculation)
+k = 6378137  # Earth radius in meters
+mercator_x = lons * (k * np.pi / 180.0)
+mercator_y = np.log(np.tan((90 + lats) * np.pi / 360.0)) * k
 
 # Grid-based clustering for marker aggregation
 # This simulates zoom-level clustering behavior
@@ -125,15 +120,13 @@ p = figure(
     height=2700,
     x_axis_type="mercator",
     y_axis_type="mercator",
-    title="Store Locations · map-marker-clustered · bokeh · pyplots.ai",
+    title="map-marker-clustered · bokeh · pyplots.ai",
     tools="pan,wheel_zoom,box_zoom,reset,hover,save",
     tooltips=[("Stores", "@count"), ("Dominant Type", "@category")],
 )
 
 # Add map tiles (CartoDB Positron for clean basemap)
-tile_url = "https://tiles.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
-tile_source = WMTSTileSource(url=tile_url)
-p.add_tile(tile_source)
+p.add_tile("CartoDB Positron")
 
 # Create cluster data source
 cluster_source = ColumnDataSource(
@@ -227,8 +220,8 @@ p.text(
 # Styling
 p.title.text_font_size = "32pt"
 p.title.text_color = "#306998"
-p.xaxis.axis_label = "Longitude"
-p.yaxis.axis_label = "Latitude"
+p.xaxis.axis_label = "Easting (m)"
+p.yaxis.axis_label = "Northing (m)"
 p.xaxis.axis_label_text_font_size = "24pt"
 p.yaxis.axis_label_text_font_size = "24pt"
 p.xaxis.major_label_text_font_size = "18pt"
@@ -252,4 +245,4 @@ p.outline_line_width = 2
 
 # Save as PNG and HTML
 export_png(p, filename="plot.png")
-save(p, filename="plot.html", title="Store Locations · map-marker-clustered · bokeh", resources=CDN)
+save(p, filename="plot.html", title="map-marker-clustered · bokeh · pyplots.ai", resources=CDN)

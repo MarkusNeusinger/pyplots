@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-drilldown-geographic: Drillable Geographic Map
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-20
@@ -11,6 +11,7 @@ from plotnine import (
     annotate,
     coord_fixed,
     element_blank,
+    element_line,
     element_rect,
     element_text,
     geom_polygon,
@@ -18,6 +19,8 @@ from plotnine import (
     ggplot,
     labs,
     scale_fill_gradient,
+    scale_x_continuous,
+    scale_y_continuous,
     theme,
 )
 
@@ -231,60 +234,73 @@ df_labels = pd.DataFrame(label_rows)
 # Create breadcrumb navigation indicator (static representation)
 breadcrumb_text = "World  >  USA  >  States"
 
-# Build choropleth-style state map
+# Build choropleth-style state map with improved layout
 plot = (
     ggplot()
     # State polygons with value-based fill (choropleth)
     + geom_polygon(
-        aes(x="lon", y="lat", group="state", fill="value"), data=df_states, color="#FFFFFF", size=1.2, alpha=0.9
+        aes(x="lon", y="lat", group="state", fill="value"), data=df_states, color="#FFFFFF", size=1.5, alpha=0.92
     )
-    # State labels with abbreviation and value
+    # State labels with abbreviation and value - larger font
     + geom_text(
         aes(x="lon", y="lat", label="label"),
         data=df_labels,
-        size=9,
+        size=11,
         color="#1a1a1a",
         fontweight="bold",
         va="center",
         ha="center",
     )
-    # Color scale - Python colors
-    + scale_fill_gradient(low="#FFD43B", high="#306998", name="Performance\nScore", limits=(60, 95))
+    # Color scale - more distinct endpoints for better readability
+    + scale_fill_gradient(
+        low="#FEE08B",  # Light yellow
+        high="#1A5276",  # Deep blue
+        name="Performance\nScore",
+        limits=(60, 95),
+    )
+    # Longitude axis with degree labels for geographic context
+    + scale_x_continuous(
+        breaks=[-120, -110, -100, -90, -80], labels=["120°W", "110°W", "100°W", "90°W", "80°W"], limits=(-128, -72)
+    )
+    # Latitude axis with degree labels for geographic context
+    + scale_y_continuous(
+        breaks=[25, 30, 35, 40, 45, 50], labels=["25°N", "30°N", "35°N", "40°N", "45°N", "50°N"], limits=(22, 53)
+    )
     # Fixed aspect ratio for geographic accuracy
     + coord_fixed(ratio=1.3)
-    # Breadcrumb as annotation
-    + annotate("text", x=-122, y=51, label=breadcrumb_text, size=12, color="#306998", fontweight="bold", ha="left")
-    # Click instruction annotation
+    # Breadcrumb as annotation - repositioned
+    + annotate("text", x=-127, y=52, label=breadcrumb_text, size=14, color="#1A5276", fontweight="bold", ha="left")
+    # Click instruction annotation - repositioned
     + annotate(
         "text",
-        x=-122,
-        y=49.5,
+        x=-127,
+        y=50.5,
         label="Click any state to drill down to cities (interactive version)",
-        size=9,
-        color="#666666",
+        size=10,
+        color="#555555",
         ha="left",
         fontstyle="italic",
     )
-    # Title and labels
+    # Title and labels with geographic axis context
     + labs(
         title="map-drilldown-geographic · plotnine · pyplots.ai",
         subtitle="US Regional Performance Scores (Static View - Drill-down requires interactive library)",
-        x="",
-        y="",
+        x="Longitude",
+        y="Latitude",
     )
     + theme(
         figure_size=(16, 9),
-        plot_title=element_text(size=26, weight="bold", ha="center"),
-        plot_subtitle=element_text(size=14, ha="center", color="#666666"),
-        axis_title=element_blank(),
-        axis_text=element_blank(),
-        axis_ticks=element_blank(),
-        panel_grid_major=element_blank(),
+        plot_title=element_text(size=28, weight="bold", ha="center"),
+        plot_subtitle=element_text(size=16, ha="center", color="#555555"),
+        axis_title=element_text(size=18, color="#444444"),
+        axis_text=element_text(size=14, color="#666666"),
+        axis_ticks=element_line(color="#CCCCCC", size=0.5),
+        panel_grid_major=element_line(color="#E0E0E0", size=0.3, alpha=0.5),
         panel_grid_minor=element_blank(),
-        panel_background=element_rect(fill="#E8EEF2"),
+        panel_background=element_rect(fill="#EDF4F7"),
         plot_background=element_rect(fill="white"),
-        legend_title=element_text(size=14, weight="bold"),
-        legend_text=element_text(size=12),
+        legend_title=element_text(size=16, weight="bold"),
+        legend_text=element_text(size=14),
         legend_position="right",
         legend_background=element_rect(fill="white", color="#CCCCCC", size=0.5),
     )

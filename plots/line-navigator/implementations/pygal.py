@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-navigator: Line Chart with Mini Navigator
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 84/100 | Created: 2026-01-20
+Quality: 86/100 | Created: 2026-01-20
 """
 
 import io

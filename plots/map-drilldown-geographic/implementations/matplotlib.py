@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-drilldown-geographic: Drillable Geographic Map
 Library: matplotlib 3.10.8 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-20
@@ -41,95 +41,18 @@ ca_cities = {
     "Santa Monica": 1200,
 }
 
-# Create figure with 3 panels (1 row, 3 columns) for the hierarchy
+# Create figure with 3 panels
 fig = plt.figure(figsize=(16, 9))
 fig.patch.set_facecolor("white")
 
-# Create gridspec for better layout control
-gs = fig.add_gridspec(1, 3, left=0.04, right=0.88, top=0.85, bottom=0.12, wspace=0.15)
+# Create gridspec for better layout control - improved vertical alignment
+gs = fig.add_gridspec(1, 3, left=0.04, right=0.88, top=0.82, bottom=0.15, wspace=0.12)
 axes = [fig.add_subplot(gs[0, i]) for i in range(3)]
 
 # Color setup
 cmap = plt.cm.Blues
 
-
-# Helper function to create tile grid choropleth
-def create_tile_choropleth(ax, data, positions, labels, level_label, breadcrumb, highlight=None):
-    """Create a tile-based choropleth for one hierarchy level."""
-    values = list(data.values())
-    vmin, vmax = min(values), max(values)
-
-    patches = []
-    colors = []
-    names_list = list(positions.keys())
-
-    for name in names_list:
-        col, row = positions[name]
-        rect = mpatches.FancyBboxPatch(
-            (col * 1.2, row * 1.2),
-            1.0,
-            1.0,
-            boxstyle="round,pad=0.02,rounding_size=0.1",
-            linewidth=2,
-            edgecolor="white",
-        )
-        patches.append(rect)
-        value = data.get(name, 0)
-        norm_value = (value - vmin) / (vmax - vmin) if vmax > vmin else 0.5
-        colors.append(cmap(0.2 + norm_value * 0.7))  # Range 0.2-0.9 for better contrast
-
-    collection = PatchCollection(patches, facecolors=colors, edgecolors="white", linewidths=2)
-    ax.add_collection(collection)
-
-    # Add labels
-    for name in names_list:
-        col, row = positions[name]
-        value = data.get(name, 0)
-        norm_value = (value - vmin) / (vmax - vmin) if vmax > vmin else 0.5
-        text_color = "white" if norm_value > 0.4 else "#306998"
-
-        # Abbreviate long names
-        display_name = labels.get(name, name[:3].upper())
-        ax.text(
-            col * 1.2 + 0.5,
-            row * 1.2 + 0.5,
-            display_name,
-            ha="center",
-            va="center",
-            fontsize=12,
-            fontweight="bold",
-            color=text_color,
-        )
-
-    # Highlight the region that drills down (with a border)
-    if highlight and highlight in positions:
-        hcol, hrow = positions[highlight]
-        highlight_rect = mpatches.FancyBboxPatch(
-            (hcol * 1.2 - 0.05, hrow * 1.2 - 0.05),
-            1.1,
-            1.1,
-            boxstyle="round,pad=0.02,rounding_size=0.12",
-            linewidth=4,
-            edgecolor="#FFD43B",
-            facecolor="none",
-            zorder=10,
-        )
-        ax.add_patch(highlight_rect)
-
-    # Styling
-    ax.set_aspect("equal")
-    ax.axis("off")
-
-    # Level indicator at the top
-    ax.set_title(level_label, fontsize=15, fontweight="bold", color="#306998", pad=10)
-
-    # Breadcrumb navigation at the bottom
-    ax.text(0.5, -0.08, breadcrumb, transform=ax.transAxes, ha="center", fontsize=11, color="#555555", style="italic")
-
-    return vmin, vmax
-
-
-# Panel 1: World regions
+# ========== Panel 1: World Regions ==========
 world_positions = {
     "North America": (1, 2),
     "South America": (1, 0),
@@ -147,13 +70,64 @@ world_labels = {
     "Oceania": "OCE",
 }
 
+values1 = list(world_regions.values())
+vmin1, vmax1 = min(values1), max(values1)
+patches1 = []
+colors1 = []
+
+for name in world_positions:
+    col, row = world_positions[name]
+    rect = mpatches.FancyBboxPatch(
+        (col * 1.2, row * 1.2), 1.0, 1.0, boxstyle="round,pad=0.02,rounding_size=0.1", linewidth=2, edgecolor="white"
+    )
+    patches1.append(rect)
+    value = world_regions[name]
+    norm_value = (value - vmin1) / (vmax1 - vmin1)
+    colors1.append(cmap(0.2 + norm_value * 0.7))
+
+collection1 = PatchCollection(patches1, facecolors=colors1, edgecolors="white", linewidths=2)
+axes[0].add_collection(collection1)
+
+for name in world_positions:
+    col, row = world_positions[name]
+    value = world_regions[name]
+    norm_value = (value - vmin1) / (vmax1 - vmin1)
+    text_color = "white" if norm_value > 0.4 else "#306998"
+    axes[0].text(
+        col * 1.2 + 0.5,
+        row * 1.2 + 0.5,
+        world_labels[name],
+        ha="center",
+        va="center",
+        fontsize=15,
+        fontweight="bold",
+        color=text_color,
+    )
+
+# Highlight North America (drill-down target)
+hcol, hrow = world_positions["North America"]
+highlight1 = mpatches.FancyBboxPatch(
+    (hcol * 1.2 - 0.05, hrow * 1.2 - 0.05),
+    1.1,
+    1.1,
+    boxstyle="round,pad=0.02,rounding_size=0.12",
+    linewidth=4,
+    edgecolor="#FFD43B",
+    facecolor="none",
+    zorder=10,
+)
+axes[0].add_patch(highlight1)
+
 axes[0].set_xlim(0.5, 5.5)
 axes[0].set_ylim(-0.5, 4.0)
-create_tile_choropleth(
-    axes[0], world_regions, world_positions, world_labels, "Level 1: Regions", "World", highlight="North America"
+axes[0].set_aspect("equal")
+axes[0].axis("off")
+axes[0].set_title("Level 1: Regions", fontsize=16, fontweight="bold", color="#306998", pad=12)
+axes[0].text(
+    0.5, -0.10, "World", transform=axes[0].transAxes, ha="center", fontsize=12, color="#555555", style="italic"
 )
 
-# Panel 2: US states (drill into North America)
+# ========== Panel 2: US States ==========
 state_positions = {
     "California": (0, 2),
     "Washington": (0, 3),
@@ -179,19 +153,71 @@ state_labels = {
     "Michigan": "MI",
 }
 
+values2 = list(us_states.values())
+vmin2, vmax2 = min(values2), max(values2)
+patches2 = []
+colors2 = []
+
+for name in state_positions:
+    col, row = state_positions[name]
+    rect = mpatches.FancyBboxPatch(
+        (col * 1.2, row * 1.2), 1.0, 1.0, boxstyle="round,pad=0.02,rounding_size=0.1", linewidth=2, edgecolor="white"
+    )
+    patches2.append(rect)
+    value = us_states[name]
+    norm_value = (value - vmin2) / (vmax2 - vmin2)
+    colors2.append(cmap(0.2 + norm_value * 0.7))
+
+collection2 = PatchCollection(patches2, facecolors=colors2, edgecolors="white", linewidths=2)
+axes[1].add_collection(collection2)
+
+for name in state_positions:
+    col, row = state_positions[name]
+    value = us_states[name]
+    norm_value = (value - vmin2) / (vmax2 - vmin2)
+    text_color = "white" if norm_value > 0.4 else "#306998"
+    axes[1].text(
+        col * 1.2 + 0.5,
+        row * 1.2 + 0.5,
+        state_labels[name],
+        ha="center",
+        va="center",
+        fontsize=15,
+        fontweight="bold",
+        color=text_color,
+    )
+
+# Highlight California (drill-down target)
+hcol2, hrow2 = state_positions["California"]
+highlight2 = mpatches.FancyBboxPatch(
+    (hcol2 * 1.2 - 0.05, hrow2 * 1.2 - 0.05),
+    1.1,
+    1.1,
+    boxstyle="round,pad=0.02,rounding_size=0.12",
+    linewidth=4,
+    edgecolor="#FFD43B",
+    facecolor="none",
+    zorder=10,
+)
+axes[1].add_patch(highlight2)
+
 axes[1].set_xlim(-0.5, 4.0)
 axes[1].set_ylim(-0.8, 6.2)
-create_tile_choropleth(
-    axes[1],
-    us_states,
-    state_positions,
-    state_labels,
-    "Level 2: States",
+axes[1].set_aspect("equal")
+axes[1].axis("off")
+axes[1].set_title("Level 2: States", fontsize=16, fontweight="bold", color="#306998", pad=12)
+axes[1].text(
+    0.5,
+    -0.10,
     "World > United States",
-    highlight="California",
+    transform=axes[1].transAxes,
+    ha="center",
+    fontsize=12,
+    color="#555555",
+    style="italic",
 )
 
-# Panel 3: California cities (drill into California)
+# ========== Panel 3: California Cities ==========
 city_positions = {
     "Los Angeles": (1, 1),
     "San Francisco": (0, 3),
@@ -217,49 +243,81 @@ city_labels = {
     "Santa Monica": "SM",
 }
 
+values3 = list(ca_cities.values())
+vmin3, vmax3 = min(values3), max(values3)
+patches3 = []
+colors3 = []
+
+for name in city_positions:
+    col, row = city_positions[name]
+    rect = mpatches.FancyBboxPatch(
+        (col * 1.2, row * 1.2), 1.0, 1.0, boxstyle="round,pad=0.02,rounding_size=0.1", linewidth=2, edgecolor="white"
+    )
+    patches3.append(rect)
+    value = ca_cities[name]
+    norm_value = (value - vmin3) / (vmax3 - vmin3)
+    colors3.append(cmap(0.2 + norm_value * 0.7))
+
+collection3 = PatchCollection(patches3, facecolors=colors3, edgecolors="white", linewidths=2)
+axes[2].add_collection(collection3)
+
+for name in city_positions:
+    col, row = city_positions[name]
+    value = ca_cities[name]
+    norm_value = (value - vmin3) / (vmax3 - vmin3)
+    text_color = "white" if norm_value > 0.4 else "#306998"
+    axes[2].text(
+        col * 1.2 + 0.5,
+        row * 1.2 + 0.5,
+        city_labels[name],
+        ha="center",
+        va="center",
+        fontsize=15,
+        fontweight="bold",
+        color=text_color,
+    )
+
 axes[2].set_xlim(-0.5, 4.0)
 axes[2].set_ylim(-0.8, 6.2)
-create_tile_choropleth(
-    axes[2],
-    ca_cities,
-    city_positions,
-    city_labels,
-    "Level 3: Cities",
+axes[2].set_aspect("equal")
+axes[2].axis("off")
+axes[2].set_title("Level 3: Cities", fontsize=16, fontweight="bold", color="#306998", pad=12)
+axes[2].text(
+    0.5,
+    -0.10,
     "World > United States > California",
-    highlight=None,  # No further drill-down from cities
+    transform=axes[2].transAxes,
+    ha="center",
+    fontsize=12,
+    color="#555555",
+    style="italic",
 )
 
-# Add colorbar for the entire figure
-cbar_ax = fig.add_axes([0.91, 0.20, 0.018, 0.50])
+# ========== Colorbar ==========
+cbar_ax = fig.add_axes([0.91, 0.22, 0.018, 0.45])
 sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(vmin=0, vmax=1))
 sm.set_array([])
 cbar = fig.colorbar(sm, cax=cbar_ax)
 cbar.set_label("Sales Value (relative)", fontsize=14)
-cbar.ax.tick_params(labelsize=11)
+cbar.ax.tick_params(labelsize=12)
 cbar.set_ticks([0, 0.5, 1])
 cbar.set_ticklabels(["Low", "Medium", "High"])
 
-# Add drill-down arrows between panels
+# ========== Drill-down arrows between panels ==========
 arrow_style = {"arrowstyle": "-|>", "color": "#FFD43B", "lw": 4, "mutation_scale": 25}
 for i in range(2):
-    # Get position between panels
     x_start = axes[i].get_position().x1 + 0.01
     x_end = axes[i + 1].get_position().x0 - 0.01
-    x_mid = (x_start + x_end) / 2
     y_mid = 0.48
-
-    # Draw arrow
     fig.patches.append(
         mpatches.FancyArrowPatch((x_start, y_mid), (x_end, y_mid), transform=fig.transFigure, **arrow_style, zorder=100)
     )
 
-# Main title
-fig.suptitle("map-drilldown-geographic · matplotlib · pyplots.ai", fontsize=24, fontweight="bold", y=0.96)
-
-# Subtitle explaining the drill-down concept
+# ========== Title ==========
+fig.suptitle("map-drilldown-geographic · matplotlib · pyplots.ai", fontsize=24, fontweight="bold", y=0.94)
 fig.text(
     0.46,
-    0.90,
+    0.88,
     "Hierarchical drill-down: Click regions to explore finer geographic detail",
     ha="center",
     fontsize=14,

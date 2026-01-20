@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-projections: World Map with Different Projections
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-20
@@ -6,12 +6,16 @@ Quality: 78/100 | Created: 2026-01-20
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 
 
+# Set seaborn theme
+sns.set_theme(style="whitegrid", context="talk", font_scale=1.0)
+
 # Simplified world coastline polygons (major continents outline)
 # Coordinates in degrees (longitude, latitude)
-WORLD_COASTLINES = [
+coastlines_data = [
     # North America
     [
         (-168, 66),
@@ -140,129 +144,172 @@ WORLD_COASTLINES = [
     ],
 ]
 
-
-def mercator_project(lon, lat):
-    """Mercator projection: preserves angles, distorts area at poles."""
-    x = np.radians(lon)
-    # Clamp latitude to avoid infinity at poles
-    lat_clamped = np.clip(lat, -85, 85)
-    y = np.log(np.tan(np.pi / 4 + np.radians(lat_clamped) / 2))
-    return x, y
-
-
-def mollweide_project(lon, lat):
-    """Mollweide projection: equal-area, elliptical shape."""
-    lon_rad = np.radians(lon)
-    lat_rad = np.radians(lat)
-    # Newton-Raphson iteration for theta
-    theta = lat_rad.copy() if isinstance(lat_rad, np.ndarray) else lat_rad
-    for _ in range(10):
-        delta = -(2 * theta + np.sin(2 * theta) - np.pi * np.sin(lat_rad)) / (2 + 2 * np.cos(2 * theta) + 1e-10)
-        theta = theta + delta
-    x = (2 * np.sqrt(2) / np.pi) * lon_rad * np.cos(theta)
-    y = np.sqrt(2) * np.sin(theta)
-    return x, y
-
-
-def robinson_project(lon, lat):
-    """Robinson projection: compromise, visually pleasing."""
-    # Robinson lookup table (latitude in degrees -> scale factors)
-    robinson_table = np.array(
-        [
-            [0, 1.0000, 0.0000],
-            [5, 0.9986, 0.0620],
-            [10, 0.9954, 0.1240],
-            [15, 0.9900, 0.1860],
-            [20, 0.9822, 0.2480],
-            [25, 0.9730, 0.3100],
-            [30, 0.9600, 0.3720],
-            [35, 0.9427, 0.4340],
-            [40, 0.9216, 0.4958],
-            [45, 0.8962, 0.5571],
-            [50, 0.8679, 0.6176],
-            [55, 0.8350, 0.6769],
-            [60, 0.7986, 0.7346],
-            [65, 0.7597, 0.7903],
-            [70, 0.7186, 0.8435],
-            [75, 0.6732, 0.8936],
-            [80, 0.6213, 0.9394],
-            [85, 0.5722, 0.9761],
-            [90, 0.5322, 1.0000],
-        ]
-    )
-    abs_lat = np.abs(lat)
-    # Interpolate X and Y scale factors
-    x_scale = np.interp(abs_lat, robinson_table[:, 0], robinson_table[:, 1])
-    y_scale = np.interp(abs_lat, robinson_table[:, 0], robinson_table[:, 2])
-    x = 0.8487 * np.radians(lon) * x_scale
-    y = 1.3523 * y_scale * np.sign(lat)
-    return x, y
-
-
-def sinusoidal_project(lon, lat):
-    """Sinusoidal projection: equal-area, pointed poles."""
-    lat_rad = np.radians(lat)
-    x = np.radians(lon) * np.cos(lat_rad)
-    y = lat_rad
-    return x, y
-
-
-# Projection configurations
-PROJECTIONS = {
-    "Mercator": {"func": mercator_project, "aspect": 1.5, "ylim": (-3.0, 3.0)},
-    "Mollweide": {"func": mollweide_project, "aspect": 2.0, "ylim": (-1.6, 1.6)},
-    "Robinson": {"func": robinson_project, "aspect": 1.8, "ylim": (-1.5, 1.5)},
-    "Sinusoidal": {"func": sinusoidal_project, "aspect": 2.0, "ylim": (-1.8, 1.8)},
-}
-
-# Set seaborn theme
-sns.set_theme(style="whitegrid", context="talk", font_scale=1.0)
+# Robinson lookup table (latitude in degrees -> scale factors)
+robinson_table = np.array(
+    [
+        [0, 1.0000, 0.0000],
+        [5, 0.9986, 0.0620],
+        [10, 0.9954, 0.1240],
+        [15, 0.9900, 0.1860],
+        [20, 0.9822, 0.2480],
+        [25, 0.9730, 0.3100],
+        [30, 0.9600, 0.3720],
+        [35, 0.9427, 0.4340],
+        [40, 0.9216, 0.4958],
+        [45, 0.8962, 0.5571],
+        [50, 0.8679, 0.6176],
+        [55, 0.8350, 0.6769],
+        [60, 0.7986, 0.7346],
+        [65, 0.7597, 0.7903],
+        [70, 0.7186, 0.8435],
+        [75, 0.6732, 0.8936],
+        [80, 0.6213, 0.9394],
+        [85, 0.5722, 0.9761],
+        [90, 0.5322, 1.0000],
+    ]
+)
 
 # Create 2x2 subplot figure for comparing projections
 fig, axes = plt.subplots(2, 2, figsize=(16, 9))
 axes = axes.flatten()
 
-# Generate graticule (latitude/longitude grid lines)
-lons_grat = np.linspace(-180, 180, 73)  # Every 5 degrees
-lats_grat = np.linspace(-90, 90, 37)  # Every 5 degrees
+# Projection names and their configurations
+projection_names = ["Mercator", "Mollweide", "Robinson", "Sinusoidal"]
+projection_ylims = [(-3.0, 3.0), (-1.6, 1.6), (-1.5, 1.5), (-1.8, 1.8)]
+projection_aspects = [1.5, 2.0, 1.8, 2.0]
 
-for idx, (proj_name, proj_config) in enumerate(PROJECTIONS.items()):
+# Tissot indicatrix positions
+tissot_lons = [-120, -60, 0, 60, 120]
+tissot_lats = [-45, 0, 45]
+
+# Process each projection
+for idx, (proj_name, ylim, aspect) in enumerate(
+    zip(projection_names, projection_ylims, projection_aspects, strict=True)
+):
     ax = axes[idx]
-    proj_func = proj_config["func"]
 
     # Set ocean background
     ax.set_facecolor("#d4e8f7")
 
-    # Draw graticule lines (every 30 degrees)
-    # Longitude lines (meridians)
+    # Prepare data for graticule lines using seaborn
+    graticule_data = []
+
+    # Longitude lines (meridians) - every 30 degrees
     for lon in range(-180, 181, 30):
         lats_line = np.linspace(-85, 85, 100)
-        lons_line = np.full_like(lats_line, lon)
-        x, y = proj_func(lons_line, lats_line)
-        ax.plot(x, y, color="#aaaaaa", linewidth=0.5, alpha=0.7, zorder=1)
+        lons_line = np.full_like(lats_line, float(lon))
 
-    # Latitude lines (parallels)
+        # Apply projection based on projection type
+        if proj_name == "Mercator":
+            x = np.radians(lons_line)
+            lat_clamped = np.clip(lats_line, -85, 85)
+            y = np.log(np.tan(np.pi / 4 + np.radians(lat_clamped) / 2))
+        elif proj_name == "Mollweide":
+            lon_rad = np.radians(lons_line)
+            lat_rad = np.radians(lats_line)
+            theta = lat_rad.copy()
+            for _ in range(10):
+                delta = -(2 * theta + np.sin(2 * theta) - np.pi * np.sin(lat_rad)) / (2 + 2 * np.cos(2 * theta) + 1e-10)
+                theta = theta + delta
+            x = (2 * np.sqrt(2) / np.pi) * lon_rad * np.cos(theta)
+            y = np.sqrt(2) * np.sin(theta)
+        elif proj_name == "Robinson":
+            abs_lat = np.abs(lats_line)
+            x_scale = np.interp(abs_lat, robinson_table[:, 0], robinson_table[:, 1])
+            y_scale = np.interp(abs_lat, robinson_table[:, 0], robinson_table[:, 2])
+            x = 0.8487 * np.radians(lons_line) * x_scale
+            y = 1.3523 * y_scale * np.sign(lats_line)
+        else:  # Sinusoidal
+            lat_rad = np.radians(lats_line)
+            x = np.radians(lons_line) * np.cos(lat_rad)
+            y = lat_rad
+
+        for i in range(len(x)):
+            graticule_data.append({"x": x[i], "y": y[i], "line_id": f"lon_{lon}"})
+
+    # Latitude lines (parallels) - every 30 degrees
     for lat in range(-60, 61, 30):
         lons_line = np.linspace(-180, 180, 200)
-        lats_line = np.full_like(lons_line, lat)
-        x, y = proj_func(lons_line, lats_line)
-        ax.plot(x, y, color="#aaaaaa", linewidth=0.5, alpha=0.7, zorder=1)
+        lats_line = np.full_like(lons_line, float(lat))
+
+        # Apply projection
+        if proj_name == "Mercator":
+            x = np.radians(lons_line)
+            lat_clamped = np.clip(lats_line, -85, 85)
+            y = np.log(np.tan(np.pi / 4 + np.radians(lat_clamped) / 2))
+        elif proj_name == "Mollweide":
+            lon_rad = np.radians(lons_line)
+            lat_rad = np.radians(lats_line)
+            theta = lat_rad.copy()
+            for _ in range(10):
+                delta = -(2 * theta + np.sin(2 * theta) - np.pi * np.sin(lat_rad)) / (2 + 2 * np.cos(2 * theta) + 1e-10)
+                theta = theta + delta
+            x = (2 * np.sqrt(2) / np.pi) * lon_rad * np.cos(theta)
+            y = np.sqrt(2) * np.sin(theta)
+        elif proj_name == "Robinson":
+            abs_lat = np.abs(lats_line)
+            x_scale = np.interp(abs_lat, robinson_table[:, 0], robinson_table[:, 1])
+            y_scale = np.interp(abs_lat, robinson_table[:, 0], robinson_table[:, 2])
+            x = 0.8487 * np.radians(lons_line) * x_scale
+            y = 1.3523 * y_scale * np.sign(lats_line)
+        else:  # Sinusoidal
+            lat_rad = np.radians(lats_line)
+            x = np.radians(lons_line) * np.cos(lat_rad)
+            y = lat_rad
+
+        for i in range(len(x)):
+            graticule_data.append({"x": x[i], "y": y[i], "line_id": f"lat_{lat}"})
+
+    # Draw graticule using seaborn lineplot
+    graticule_df = pd.DataFrame(graticule_data)
+    sns.lineplot(
+        data=graticule_df,
+        x="x",
+        y="y",
+        hue="line_id",
+        palette=["#aaaaaa"] * len(graticule_df["line_id"].unique()),
+        linewidth=0.5,
+        alpha=0.7,
+        legend=False,
+        ax=ax,
+    )
 
     # Draw coastlines with projection
-    for coastline in WORLD_COASTLINES:
+    for coastline in coastlines_data:
         lons = np.array([p[0] for p in coastline])
         lats = np.array([p[1] for p in coastline])
-        x, y = proj_func(lons, lats)
+
+        # Apply projection
+        if proj_name == "Mercator":
+            x = np.radians(lons)
+            lat_clamped = np.clip(lats, -85, 85)
+            y = np.log(np.tan(np.pi / 4 + np.radians(lat_clamped) / 2))
+        elif proj_name == "Mollweide":
+            lon_rad = np.radians(lons)
+            lat_rad = np.radians(lats)
+            theta = lat_rad.copy()
+            for _ in range(10):
+                delta = -(2 * theta + np.sin(2 * theta) - np.pi * np.sin(lat_rad)) / (2 + 2 * np.cos(2 * theta) + 1e-10)
+                theta = theta + delta
+            x = (2 * np.sqrt(2) / np.pi) * lon_rad * np.cos(theta)
+            y = np.sqrt(2) * np.sin(theta)
+        elif proj_name == "Robinson":
+            abs_lat = np.abs(lats)
+            x_scale = np.interp(abs_lat, robinson_table[:, 0], robinson_table[:, 1])
+            y_scale = np.interp(abs_lat, robinson_table[:, 0], robinson_table[:, 2])
+            x = 0.8487 * np.radians(lons) * x_scale
+            y = 1.3523 * y_scale * np.sign(lats)
+        else:  # Sinusoidal
+            lat_rad = np.radians(lats)
+            x = np.radians(lons) * np.cos(lat_rad)
+            y = lat_rad
+
         ax.fill(x, y, color="#c8d8c8", edgecolor="#306998", linewidth=1.2, alpha=0.9, zorder=2)
 
-    # Draw Tissot indicatrices (circles that show distortion)
-    # Place circles at regular intervals
-    tissot_lons = [-120, -60, 0, 60, 120]
-    tissot_lats = [-45, 0, 45]
-
+    # Draw Tissot indicatrices using seaborn scatterplot for centers
+    tissot_centers = []
     for t_lon in tissot_lons:
         for t_lat in tissot_lats:
-            # Skip if latitude too extreme for Mercator
             if proj_name == "Mercator" and abs(t_lat) > 75:
                 continue
 
@@ -271,19 +318,87 @@ for idx, (proj_name, proj_config) in enumerate(PROJECTIONS.items()):
             radius = 8  # degrees
             circle_lons = t_lon + radius * np.cos(angles) / np.cos(np.radians(t_lat))
             circle_lats = t_lat + radius * np.sin(angles)
-
-            # Clip latitude values
             circle_lats = np.clip(circle_lats, -85, 85)
 
-            # Project the circle
-            cx, cy = proj_func(circle_lons, circle_lats)
+            # Apply projection to circle
+            if proj_name == "Mercator":
+                cx = np.radians(circle_lons)
+                cy = np.log(np.tan(np.pi / 4 + np.radians(circle_lats) / 2))
+            elif proj_name == "Mollweide":
+                lon_rad = np.radians(circle_lons)
+                lat_rad = np.radians(circle_lats)
+                theta = lat_rad.copy()
+                for _ in range(10):
+                    delta = -(2 * theta + np.sin(2 * theta) - np.pi * np.sin(lat_rad)) / (
+                        2 + 2 * np.cos(2 * theta) + 1e-10
+                    )
+                    theta = theta + delta
+                cx = (2 * np.sqrt(2) / np.pi) * lon_rad * np.cos(theta)
+                cy = np.sqrt(2) * np.sin(theta)
+            elif proj_name == "Robinson":
+                abs_lat = np.abs(circle_lats)
+                x_scale = np.interp(abs_lat, robinson_table[:, 0], robinson_table[:, 1])
+                y_scale = np.interp(abs_lat, robinson_table[:, 0], robinson_table[:, 2])
+                cx = 0.8487 * np.radians(circle_lons) * x_scale
+                cy = 1.3523 * y_scale * np.sign(circle_lats)
+            else:  # Sinusoidal
+                lat_rad = np.radians(circle_lats)
+                cx = np.radians(circle_lons) * np.cos(lat_rad)
+                cy = lat_rad
+
             ax.fill(cx, cy, color="#FFD43B", edgecolor="#b8940a", linewidth=1.0, alpha=0.5, zorder=3)
+
+            # Collect center point for seaborn scatterplot
+            center_x = np.mean(cx)
+            center_y = np.mean(cy)
+            tissot_centers.append({"x": center_x, "y": center_y})
+
+    # Plot Tissot centers with seaborn scatterplot
+    if tissot_centers:
+        tissot_df = pd.DataFrame(tissot_centers)
+        sns.scatterplot(data=tissot_df, x="x", y="y", color="#b8940a", s=20, marker=".", legend=False, ax=ax, zorder=4)
 
     # Styling
     ax.set_title(proj_name, fontsize=20, fontweight="bold", pad=8)
     ax.set_xlim(-3.5, 3.5)
-    ax.set_ylim(proj_config["ylim"])
-    ax.set_aspect(proj_config["aspect"])
+    ax.set_ylim(ylim)
+    ax.set_aspect(aspect)
+
+    # Add latitude/longitude annotations at edges
+    if proj_name == "Mercator":
+        # Y-axis labels for latitude
+        for lat_val in [-60, -30, 0, 30, 60]:
+            y_pos = np.log(np.tan(np.pi / 4 + np.radians(lat_val) / 2))
+            if ylim[0] <= y_pos <= ylim[1]:
+                ax.text(-3.4, y_pos, f"{lat_val}°", fontsize=8, ha="right", va="center", color="#555555")
+        # X-axis labels for longitude
+        for lon_val in [-120, -60, 0, 60, 120]:
+            x_pos = np.radians(lon_val)
+            ax.text(x_pos, ylim[0] + 0.15, f"{lon_val}°", fontsize=8, ha="center", va="bottom", color="#555555")
+    elif proj_name == "Robinson":
+        # Simplified lat/lon labels for Robinson
+        for lat_val in [-60, -30, 0, 30, 60]:
+            y_scale = np.interp(abs(lat_val), robinson_table[:, 0], robinson_table[:, 2])
+            y_pos = 1.3523 * y_scale * np.sign(lat_val)
+            if ylim[0] <= y_pos <= ylim[1]:
+                ax.text(-3.4, y_pos, f"{lat_val}°", fontsize=8, ha="right", va="center", color="#555555")
+    elif proj_name == "Mollweide":
+        # Lat labels for Mollweide
+        for lat_val in [-60, -30, 0, 30, 60]:
+            lat_rad = np.radians(lat_val)
+            theta = lat_rad
+            for _ in range(10):
+                delta = -(2 * theta + np.sin(2 * theta) - np.pi * np.sin(lat_rad)) / (2 + 2 * np.cos(2 * theta) + 1e-10)
+                theta = theta + delta
+            y_pos = np.sqrt(2) * np.sin(theta)
+            if ylim[0] <= y_pos <= ylim[1]:
+                ax.text(-3.4, y_pos, f"{lat_val}°", fontsize=8, ha="right", va="center", color="#555555")
+    else:  # Sinusoidal
+        for lat_val in [-60, -30, 0, 30, 60]:
+            y_pos = np.radians(lat_val)
+            if ylim[0] <= y_pos <= ylim[1]:
+                ax.text(-3.4, y_pos, f"{lat_val}°", fontsize=8, ha="right", va="center", color="#555555")
+
     ax.set_xticks([])
     ax.set_yticks([])
 

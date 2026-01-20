@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 map-tile-background: Map with Tile Background
-Library: altair | Python 3.13
-Quality: pending | Created: 2026-01-20
+Library: altair 6.0.0 | Python 3.13.11
+Quality: 78/100 | Created: 2026-01-20
 """
 
 import altair as alt

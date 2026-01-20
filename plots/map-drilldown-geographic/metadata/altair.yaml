@@ -1,7 +1,7 @@
 library: altair
 specification_id: map-drilldown-geographic
 created: '2026-01-20T07:44:04Z'
-updated: '2026-01-20T07:59:36Z'
+updated: '2026-01-20T08:05:40Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21163297410
 issue: 3770
@@ -10,41 +10,38 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/map-drilldown-geographic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/map-drilldown-geographic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/map-drilldown-geographic/altair/plot.html
-quality_score: 52
+quality_score: 72
 review:
   strengths:
-  - Correct title format following pyplots.ai convention
-  - Well-structured hierarchical data model with regions and states
-  - Good use of Altair selection_point for interactive drill-down concept
-  - Clean layout with map and sidebar charts composition
-  - Appropriate axis labels with units
-  - TopoJSON integration for US state boundaries works correctly
+  - Excellent use of Altair declarative grammar with geographic projections (albersUsa)
+  - Good layout composition using hconcat/vconcat for multi-panel design
+  - Interactive selection properly implemented for HTML export
+  - Clean code structure following KISS principles
+  - Region-state hierarchy well visualized with color-coded bars
+  - Tooltips provide useful drill-down information
   weaknesses:
-  - 'CRITICAL: Choropleth colors do not render in static PNG - the empty=True selection
-    parameter does not cause colors to appear on the map; the transform_lookup color
-    encoding is not working in the exported PNG'
-  - Regional bar chart colors also render as gray instead of their designated region
-    colors (blue/red/green/yellow)
-  - The States in Selected Region panel is completely empty in static view, wasting
-    ~40% of the right sidebar space
-  - Color legend at bottom-left is misleading since no colors are visible on the map
-  - The drill-down functionality cannot be demonstrated in a static image - the implementation
-    is designed for HTML interactivity but fails to show a meaningful static view
-  image_description: The plot displays a US geographic map with a drill-down navigation
-    concept. The main title "map-drilldown-geographic · altair · pyplots.ai" is prominently
-    shown at the top with subtitles explaining the interaction. The left portion contains
-    a US map showing all state boundaries outlined in white, but all states appear
-    in uniform light gray color - the choropleth coloring is NOT visible in the static
-    PNG export. A color legend appears at bottom-left showing "Sales ($K)" scale from
-    0-500 using a blue gradient scheme. On the right side, there is a horizontal bar
-    chart showing regional sales totals (South, West, Midwest, Northeast) all rendered
-    in gray. A region color legend at the top-right shows 4 colors (blue=West, red=South,
-    green=Midwest, yellow=Northeast), but these colors are not applied to the bars
-    in the static view. Below the region chart is an empty "States in Selected Region"
-    panel with placeholder text "Click a region bar to view states".
+  - Spec calls for country-state-city hierarchy but implementation only shows region-state
+    level
+  - Static PNG cannot demonstrate drill-down functionality (only works in HTML)
+  - Breadcrumb navigation is static text, not truly clickable even in concept
+  - Missing smooth zoom transitions mentioned in spec
+  - Map color legend uses different scale than region bar colors, which may confuse
+    viewers
+  image_description: 'The plot displays a US choropleth map on the left showing sales
+    data by state, colored using a blue sequential color scale (0-500+ in $K). On
+    the right side is a navigation sidebar containing: (1) a breadcrumb "World > USA"
+    at the top, (2) a horizontal bar chart titled "USA > Regions (click to drill down)"
+    showing 4 regions (South, West, Midwest, Northeast) with distinct colors (pink,
+    blue, green, yellow) and a horizontal legend, and (3) a "Top 12 States by Sales"
+    vertical bar chart showing states from California (highest ~520K) to Michigan,
+    colored by their region. The main title reads "map-drilldown-geographic · altair
+    · pyplots.ai" with subtitles explaining the hierarchical navigation. The color
+    legend for the map appears in the bottom-left corner. The layout is well-balanced
+    with the map taking about 60% width and the sidebar panels stacked vertically
+    on the right.'
   criteria_checklist:
     visual_quality:
-      score: 22
+      score: 32
       max: 40
       items:
       - id: VQ-01
@@ -52,132 +49,128 @@ review:
         score: 8
         max: 10
         passed: true
-        comment: Title and axis labels are readable, font sizes are appropriate, though
-          some text is slightly small
+        comment: Title and most labels readable, but some smaller state labels in
+          bar chart could be larger
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text or elements
+        comment: No overlapping text elements
       - id: VQ-03
         name: Element Visibility
-        score: 0
+        score: 6
         max: 8
-        passed: false
-        comment: 'CRITICAL: The main choropleth colors are NOT visible on the map
-          - all states show as light gray. The regional bar colors are also gray instead
-          of their designated colors.'
+        passed: true
+        comment: Map choropleth visible but some lighter states hard to distinguish;
+          bar charts clear
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 5
         passed: true
-        comment: Color scheme would be colorblind-safe if visible; legend colors are
-          fine
+        comment: Blue sequential scale good; region colors include yellow-green that
+          may be challenging for some colorblind users
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 5
         max: 5
-        passed: false
-        comment: Layout is reasonable but the empty state details panel wastes significant
-          space
+        passed: true
+        comment: Good composition with map and sidebar well-proportioned
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Labels include units (Sales $K, Total Sales $K)
+        comment: Sales ($K), Total Sales ($K) with units
       - id: VQ-07
         name: Grid & Legend
         score: 0
         max: 2
         passed: false
-        comment: Map color legend is present but irrelevant since map has no colors;
-          region legend does not match actual bar colors
+        comment: No grid visible on bar charts; color legend placement adequate but
+          map legend title partially cut
     spec_compliance:
-      score: 15
+      score: 18
       max: 25
       items:
       - id: SC-01
         name: Plot Type
-        score: 5
+        score: 6
         max: 8
-        passed: false
-        comment: Choropleth map structure is present but colors not rendering makes
-          it fail as a choropleth
+        passed: true
+        comment: Shows hierarchical map concept but lacks true drill-down in static
+          PNG
       - id: SC-02
         name: Data Mapping
+        score: 4
+        max: 5
+        passed: true
+        comment: State data mapped correctly; region hierarchy shown but not country-state-city
+          as spec requires
+      - id: SC-03
+        name: Required Features
         score: 3
         max: 5
         passed: false
-        comment: Data structure is correct but visual mapping fails in static export
-      - id: SC-03
-        name: Required Features
-        score: 2
-        max: 5
-        passed: false
-        comment: Drill-down concept shown but breadcrumb is minimal, and choropleth
-          coloring fails
+        comment: Missing city-level drill-down; breadcrumb static; no zoom transitions
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Data ranges are appropriate for sales context
+        comment: All US states shown with complete data range
       - id: SC-05
         name: Legend Accuracy
         score: 0
         max: 2
         passed: false
-        comment: Color legend shows blue gradient but map has no colors; region legend
-          colors don't match bars
+        comment: Region legend colors match bars but map uses different color scale
+          creating confusion
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Correct format {spec-id} · {library} · pyplots.ai
+        comment: Correct format map-drilldown-geographic · altair · pyplots.ai
     data_quality:
-      score: 14
+      score: 15
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
         score: 5
         max: 8
-        passed: false
-        comment: Shows hierarchical structure (country→region→state) but missing drill-down
-          visualization
+        passed: true
+        comment: Shows regional hierarchy and state-level data but missing city level
       - id: DQ-02
         name: Realistic Context
-        score: 5
+        score: 7
         max: 7
         passed: true
-        comment: US sales data by state/region is plausible business scenario
+        comment: Sales data scenario is realistic and business-relevant
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: Sales values in $K range (25-520) are reasonable
+        comment: Values range 25-520K which is plausible for state sales
     code_quality:
-      score: 8
+      score: 10
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 2
+        score: 3
         max: 3
-        passed: false
-        comment: Structure is mostly linear but has some complexity with multiple
-          chart compositions
+        passed: true
+        comment: Clean imports-data-plot-save structure, no functions/classes
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Deterministic data (no random seed needed - hardcoded values)
+        comment: Deterministic data (no random seed needed since data is explicit)
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -189,32 +182,32 @@ review:
         score: 1
         max: 1
         passed: true
-        comment: Uses current Altair 6.x API
+        comment: Uses current Altair 5.x API
       - id: CQ-05
         name: Output Correct
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Output file is correct but visual output is broken
+        passed: true
+        comment: Saves as plot.png and plot.html
     library_features:
-      score: 3
+      score: 5
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 3
+        score: 5
         max: 5
-        passed: false
-        comment: Uses Altair's declarative syntax, selections, TopoJSON, and layering.
-          However, the selection parameter configuration fails to produce visible
-          colors in static PNG export.
+        passed: true
+        comment: 'Uses Altair declarative approach: topo_feature for geographic data,
+          selection_point for interactivity, vconcat/hconcat composition, tooltips,
+          HTML export'
   verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
-  - layer-composition
   - hover-tooltips
   - html-export
+  - layer-composition
   patterns:
   - groupby-aggregation
   dataprep: []

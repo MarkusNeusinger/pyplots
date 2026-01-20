@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: map-drilldown-geographic
 created: '2026-01-20T07:42:35Z'
-updated: '2026-01-20T07:50:10Z'
+updated: '2026-01-20T07:56:01Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21163297430
 issue: 3770
@@ -13,79 +13,80 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/map-drilldown-
 quality_score: 85
 review:
   strengths:
-  - 'Excellent use of Bokeh-specific features: CustomJS for drill-down interaction,
-    TapTool, HoverTool with tooltips, ColumnDataSource pattern'
-  - Well-structured hierarchical data with 3 levels (countries → US states → California
-    cities)
-  - Clean breadcrumb navigation implementation with clickable segments
-  - Appropriate color palette (Blues9) that is colorblind-safe
-  - Good instruction text explaining the interaction model
+  - Excellent hierarchical data structure with 3 levels (countries, states, cities)
+  - 'Good use of Bokeh-specific features: ColumnDataSource, patches, HoverTool, TapTool,
+    CustomJS'
+  - Proper breadcrumb navigation implementation
+  - Clean color scale with Blues9 palette
+  - Reproducible with fixed random seed
+  - Correct title format
   weaknesses:
-  - Country name labels and value labels are not visible in the static PNG export
-    - the text glyphs exist in code but do not render visibly (may need larger font
-    sizes or contrasting colors)
-  - Color bar legend title is too small to read comfortably
-  - The color bar appears slightly cramped against the right edge of the figure
-  image_description: The plot displays a hierarchical geographic map of the Americas
-    with 5 countries (Canada, United States, Mexico, Brazil, Argentina) represented
-    as simplified rectangular polygons. Countries are filled with shades of blue from
-    a choropleth color scale based on sales values. The title "map-drilldown-geographic
-    · bokeh · pyplots.ai" appears centered at the top. A breadcrumb navigation "📍
-    World" is shown in the top-left corner with a light gray background. The right
-    side has a color bar legend labeled "Sales ($M)" ranging from 0 to 800. Axes display
-    Longitude (x-axis, -140 to -40) and Latitude (y-axis, -60 to 60+). An instruction
-    note at the bottom reads "Click on a region to drill down into its subdivisions."
-    The background is a light blue (#f0f8ff). Country labels (names and values) that
-    exist in the code are NOT visible in the rendered static PNG output.
+  - Value labels defined in code are not visible in the PNG output
+  - Color bar is partially cut off at the right edge despite min_border_right setting
+  - Significant empty space on the left side of the plot creates unbalanced layout
+  image_description: 'The plot displays a geographic drilldown map showing 5 countries
+    in the Americas (Canada, United States, Mexico, Brazil, Argentina) as simplified
+    rectangular polygons. Each country is colored using a sequential blue color scale
+    based on sales values. Canada appears in dark blue (high value), United States
+    in medium-dark blue, Brazil in medium blue, Mexico in light blue, and Argentina
+    in very light blue/white. The title "map-drilldown-geographic · bokeh · pyplots.ai"
+    is centered at the top. A breadcrumb showing "📍 World" appears in the top-left
+    corner. The color bar legend labeled "Sales ($M)" is positioned on the right side
+    showing values from 0-800. Axis labels show "Longitude" (x-axis) and "Latitude"
+    (y-axis). An instruction text at the bottom reads "Click on a region to drill
+    down into its subdivisions. Currently showing: Countries → States (US) → Cities
+    (California)". Country names are visible inside each polygon but value labels
+    are NOT visible in the static PNG output.'
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 34
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 9
         max: 10
         passed: true
-        comment: Title and axis labels are readable, but country labels/values are
-          missing from static output
+        comment: Title, axis labels, and country names are readable; value labels
+          are missing from visible output
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping elements visible
+        comment: No overlapping text elements
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Country polygons visible but labels within regions not rendered
+        comment: Country polygons clearly visible, but value labels not appearing
+          in PNG
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Blue sequential palette is colorblind-safe
+        comment: Sequential blue palette is colorblind-safe
       - id: VQ-05
         name: Layout Balance
         score: 3
         max: 5
         passed: true
-        comment: Color bar slightly cramped on right edge; good canvas utilization
-          overall
+        comment: Layout is reasonable but significant empty space on the left side
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Longitude and Latitude are descriptive
+        comment: Descriptive labels Longitude and Latitude
       - id: VQ-07
         name: Grid & Legend
         score: 0
         max: 2
         passed: false
-        comment: Color bar title barely visible; legend placement needs work
+        comment: Color bar is partially cut off at the right edge, title not fully
+          visible
     spec_compliance:
       score: 21
       max: 25
@@ -95,7 +96,7 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct hierarchical choropleth map with drill-down capability
+        comment: Correct choropleth map with hierarchical data
       - id: SC-02
         name: Data Mapping
         score: 5
@@ -106,59 +107,60 @@ review:
         name: Required Features
         score: 3
         max: 5
-        passed: false
-        comment: Missing visible region labels/values in static view; breadcrumb and
-          color legend present
+        passed: true
+        comment: Has breadcrumb, color scale, hover tooltips in HTML, but drill-down
+          only works in interactive mode
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axes range
+        comment: All data visible within axes
       - id: SC-05
         name: Legend Accuracy
         score: 0
         max: 2
         passed: false
-        comment: Color bar title Sales ($M) is too small to read clearly
+        comment: Color bar partially cut off, legend title unclear
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: 'Correct format: {spec-id} · {library} · pyplots.ai'
+        comment: Correct format map-drilldown-geographic · bokeh · pyplots.ai
     data_quality:
       score: 18
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: Shows 3-level hierarchy with multiple regions and varying values
+        comment: Shows country level with drill-down data prepared for states and
+          cities, but static view only shows one level
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Sales data in millions USD is a realistic business scenario
+        comment: Sales data scenario is realistic and neutral
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Values 95-850M are plausible, though simplified rectangles less realistic
+        comment: Sales values in millions USD are realistic
     code_quality:
       score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: 'Linear structure: imports → data → plot → save'
+        comment: Code is linear but lengthy with complex CustomJS callbacks
       - id: CQ-02
         name: Reproducibility
         score: 3
@@ -176,33 +178,33 @@ review:
         score: 1
         max: 1
         passed: true
-        comment: Current Bokeh API
+        comment: Current Bokeh API used
       - id: CQ-05
         name: Output Correct
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Saves as plot.png but also plot.html
+        passed: true
+        comment: Saves as plot.png
     library_features:
-      score: 5
+      score: 3
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 5
+        score: 3
         max: 5
         passed: true
-        comment: 'Excellent use of Bokeh: ColumnDataSource, patches, CustomJS callbacks,
-          TapTool, HoverTool, ColorBar, Div'
-  verdict: REJECTED
+        comment: Uses ColumnDataSource, patches, HoverTool, TapTool with CustomJS
+          callbacks; good use of Bokeh interactivity but callbacks only functional
+          in HTML output
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
-  - colorbar
   - patches
-  - hover-tooltips
-  - html-export
+  - colorbar
   - annotations
+  - hover-tooltips
   patterns:
   - data-generation
   - columndatasource

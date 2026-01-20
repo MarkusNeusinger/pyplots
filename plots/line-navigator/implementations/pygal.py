@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-navigator: Line Chart with Mini Navigator
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 86/100 | Created: 2026-01-20
@@ -57,7 +57,7 @@ main_chart = pygal.Line(
     style=custom_style,
     title="line-navigator \u00b7 pygal \u00b7 pyplots.ai",
     x_title="Date",
-    y_title="Sensor Reading",
+    y_title="Sensor Reading (mV)",
     show_x_guides=False,
     show_y_guides=True,
     show_legend=True,
@@ -88,11 +88,11 @@ nav_style = Style(
     foreground_strong="#333",
     foreground_subtle="#666",
     colors=("#306998", "#FFD43B"),
-    title_font_size=36,
-    label_font_size=28,
-    major_label_font_size=26,
-    legend_font_size=28,
-    value_font_size=20,
+    title_font_size=44,
+    label_font_size=36,
+    major_label_font_size=32,
+    legend_font_size=36,
+    value_font_size=28,
     stroke_width=2,
     opacity=".6",
 )
@@ -150,7 +150,7 @@ main_chart_html = pygal.Line(
     style=custom_style,
     title="line-navigator \u00b7 pygal \u00b7 pyplots.ai",
     x_title="Date",
-    y_title="Sensor Reading",
+    y_title="Sensor Reading (mV)",
     show_x_guides=False,
     show_y_guides=True,
     show_legend=True,

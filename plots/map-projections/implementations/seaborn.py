@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 map-projections: World Map with Different Projections
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 78/100 | Created: 2026-01-20
+Quality: 85/100 | Created: 2026-01-20
 """
 
 import matplotlib.pyplot as plt

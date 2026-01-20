@@ -1,9 +1,10 @@
-""" pyplots.ai
+"""pyplots.ai
 map-marker-clustered: Clustered Marker Map
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 82/100 | Created: 2026-01-20
 """
 
+import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -60,6 +61,25 @@ category_palette = dict(zip(category_names, palette, strict=True))
 # Create the plot
 fig, ax = plt.subplots(figsize=(16, 9))
 
+# Add simplified geographic context - stylized NYC region boundaries
+# Hudson River approximation (western boundary)
+hudson_river = [[(-74.05, 40.70), (-74.02, 40.85), (-73.95, 41.00), (-73.90, 41.15)]]
+# Long Island Sound approximation (eastern boundary)
+li_sound = [[(-73.80, 40.85), (-73.70, 40.95), (-73.55, 41.05)]]
+# Atlantic coast approximation (southern boundary)
+coast = [[(-74.20, 40.55), (-74.00, 40.50), (-73.80, 40.58), (-73.60, 40.62)]]
+
+# Draw water boundaries as light blue lines for geographic context
+for boundary in [hudson_river, li_sound, coast]:
+    for segment in boundary:
+        xs, ys = zip(*segment, strict=True)
+        ax.plot(xs, ys, color="#a8d4e6", linewidth=8, alpha=0.4, zorder=0, solid_capstyle="round")
+
+# Add a subtle land area fill
+land_coords = [(-74.45, 40.0), (-74.45, 41.25), (-73.35, 41.25), (-73.35, 40.0)]
+land_patch = mpatches.Polygon(land_coords, facecolor="#f5f5dc", edgecolor="none", alpha=0.3, zorder=-1)
+ax.add_patch(land_patch)
+
 # Plot individual points as background layer using seaborn scatterplot
 sns.scatterplot(
     data=df, x="lon", y="lat", hue="category", palette=category_palette, s=40, alpha=0.3, ax=ax, legend=False
@@ -99,15 +119,15 @@ for _, row in cluster_stats.iterrows():
             zorder=10,
         )
 
-# Create custom legend with seaborn styling
+# Create custom legend using matplotlib patches to avoid seaborn override
 handles = [
-    plt.scatter([], [], s=250, c=[category_palette[cat]], label=cat, edgecolors="white", linewidths=1.5)
+    mpatches.Patch(facecolor=category_palette[cat], edgecolor="white", linewidth=1.5, label=cat)
     for cat in category_names
 ]
 legend = ax.legend(
     handles=handles,
     title="Business Type",
-    loc="lower right",
+    loc="upper left",
     fontsize=14,
     title_fontsize=16,
     framealpha=0.95,

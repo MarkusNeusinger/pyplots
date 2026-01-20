@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 dashboard-synchronized-crosshair: Synchronized Multi-Chart Dashboard
 Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 78/100 | Created: 2026-01-20
+Quality: 90/100 | Created: 2026-01-20
 """
 
 import numpy as np

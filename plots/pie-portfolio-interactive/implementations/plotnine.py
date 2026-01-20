@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-portfolio-interactive: Interactive Portfolio Allocation Chart
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-20
@@ -99,7 +99,7 @@ def create_donut_segment(start_angle, end_angle, inner_radius, outer_radius, cx,
 # Donut chart parameters
 outer_radius = 100
 inner_radius = 55  # Creates donut hole
-center_x_main = -80
+center_x_main = -70
 center_y = 0
 
 # Build main donut chart (left side - asset classes)
@@ -131,9 +131,9 @@ main_df = pd.DataFrame(rows)
 main_label_df = pd.DataFrame(label_rows)
 
 # Build detail donut chart (right side - Equities breakdown as drill-down example)
-detail_center_x = 120
-detail_outer_radius = 70
-detail_inner_radius = 35
+detail_center_x = 110
+detail_outer_radius = 80
+detail_inner_radius = 40
 detail_rows = []
 detail_label_rows = []
 
@@ -179,8 +179,8 @@ arrow_data = pd.DataFrame(
 # Section titles
 section_titles = pd.DataFrame(
     [
-        {"x": center_x_main, "y": 135, "label": "Portfolio Allocation"},
-        {"x": detail_center_x, "y": 105, "label": "Equities Breakdown"},
+        {"x": center_x_main, "y": 130, "label": "Portfolio Allocation"},
+        {"x": detail_center_x, "y": 115, "label": "Equities Breakdown"},
     ]
 )
 
@@ -242,9 +242,9 @@ plot = (
         aes(x="x", y="y", group="segment", fill="fill"), data=detail_df, color="#FFFFFF", size=1.0, alpha=0.95
     )
     # Labels on main donut
-    + geom_text(aes(x="x", y="y", label="label"), data=main_label_df, size=12, fontweight="bold", color="#FFFFFF")
+    + geom_text(aes(x="x", y="y", label="label"), data=main_label_df, size=14, fontweight="bold", color="#FFFFFF")
     # Labels on detail donut
-    + geom_text(aes(x="x", y="y", label="label"), data=detail_label_df, size=10, fontweight="bold", color="#FFFFFF")
+    + geom_text(aes(x="x", y="y", label="label"), data=detail_label_df, size=12, fontweight="bold", color="#FFFFFF")
     # Arrow for drill-down
     + geom_segment(
         aes(x="x", xend="xend", y="y", yend="yend"),
@@ -255,15 +255,15 @@ plot = (
         arrow=arrow(length=0.15, type="closed"),
     )
     # Section titles
-    + geom_text(aes(x="x", y="y", label="label"), data=section_titles, size=14, fontweight="bold", color="#306998")
+    + geom_text(aes(x="x", y="y", label="label"), data=section_titles, size=16, fontweight="bold", color="#306998")
     # Center labels
-    + geom_text(aes(x="x", y="y", label="label"), data=center_labels, size=11, color="#333333")
+    + geom_text(aes(x="x", y="y", label="label"), data=center_labels, size=12, color="#333333")
     # Instruction text
-    + geom_text(aes(x="x", y="y", label="label"), data=instruction_text, size=9, color="#888888", fontstyle="italic")
+    + geom_text(aes(x="x", y="y", label="label"), data=instruction_text, size=10, color="#888888", fontstyle="italic")
     # Legend boxes
     + geom_polygon(aes(x="x", y="y", group="segment", fill="fill"), data=legend_box_df, color="#333333", size=0.5)
     # Legend text
-    + geom_text(aes(x="x", y="y", label="label"), data=legend_df, size=11, ha="left", color="#333333")
+    + geom_text(aes(x="x", y="y", label="label"), data=legend_df, size=12, ha="left", color="#333333")
     # Fill colors directly
     + scale_fill_identity()
     # Fixed aspect ratio

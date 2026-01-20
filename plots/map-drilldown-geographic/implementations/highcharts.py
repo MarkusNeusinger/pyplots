@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 map-drilldown-geographic: Drillable Geographic Map
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2026-01-20
+Library: highcharts unknown | Python 3.13.11
+Quality: 88/100 | Created: 2026-01-20
 """
 
 import tempfile

@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: map-projections
 created: '2026-01-20T02:49:37Z'
-updated: '2026-01-20T02:59:27Z'
+updated: '2026-01-20T03:05:51Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21157678762
 issue: 3771
@@ -10,82 +10,87 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/map-projections/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/map-projections/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 85
+quality_score: 90
 review:
   strengths:
-  - Excellent educational demonstration of projection distortion using Tissot indicatrices
-  - Clean 2x2 comparison layout allows easy side-by-side projection comparison
-  - Good color scheme with colorblind-safe colors for land, ocean, and distortion
-    indicators
-  - Correct mathematical implementations of all four projections (Mercator, Mollweide,
-    Robinson, Sinusoidal)
-  - Explanatory subtitle helps users understand the Tissot indicatrices
+  - Excellent implementation of 4 different map projections with mathematically correct
+    transformations (Mercator, Mollweide, Robinson, Sinusoidal)
+  - Clear visual demonstration of how Tissot indicatrices distort differently in each
+    projection
+  - Effective use of seaborn DataFrame-based plotting with sns.lineplot for graticules
+  - Clean 2x2 comparison layout with informative legend
+  - Proper title format and professional appearance
+  - Good use of seaborn theme and styling for consistent visual quality
   weaknesses:
-  - Latitude/longitude labels are only shown for Mercator; other projections lack
-    coordinate references
-  - Graticule lines are very faint (alpha=0.7, linewidth=0.5) and could be more visible
-  - Continent outlines are highly simplified polygons rather than realistic coastlines
+  - Coordinate labels present but generic axis labels (Latitude, Longitude) would
+    improve clarity
+  - Continent outlines are simplified approximations rather than precise boundaries
   image_description: 'The plot displays a 2x2 grid comparing four different map projections:
     Mercator (top-left), Mollweide (top-right), Robinson (bottom-left), and Sinusoidal
-    (bottom-right). Each subplot shows simplified continental outlines in a muted
-    green color (#c8d8c8) with blue edges (#306998) on a light blue ocean background
-    (#d4e8f7). Gray graticule lines (latitude and longitude) are visible at 30-degree
-    intervals. Yellow ellipses (Tissot indicatrices) with gold borders demonstrate
-    projection distortion patterns at various locations across the globe. The main
-    title "map-projections · seaborn · pyplots.ai" appears at the top in bold, and
-    an explanatory subtitle at the bottom describes the Tissot indicatrices. Each
-    subplot has its projection name as a title. The Mercator projection shows latitude
-    labels on the left and longitude labels at the bottom.'
+    (bottom-right). Each subplot shows simplified continent outlines (North America,
+    South America, Europe, Africa, Asia, and Australia) in a muted sage green color
+    with blue borders, set against a light blue ocean background. Yellow/gold Tissot
+    indicatrices (ellipses showing distortion) are distributed across each projection
+    at various latitudes (-45°, 0°, 45°) and longitudes (-120°, -60°, 0°, 60°, 120°).
+    Gray graticule lines appear at 30° intervals. Each projection is labeled with
+    bold text. The main title follows the correct format "map-projections · seaborn
+    · pyplots.ai". A shared legend at the bottom explains the Tissot Indicatrix, Land,
+    and Graticule elements. The layout is clean with good proportions. Latitude labels
+    (-60° to 60°) appear on the left of each subplot, and longitude labels (-120°
+    to 120°) appear at the bottom.'
   criteria_checklist:
     visual_quality:
-      score: 33
+      score: 35
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 9
         max: 10
         passed: true
-        comment: Title and projection names readable, but latitude labels are small
-          (8pt)
+        comment: All text readable; titles are bold and clear, coordinate labels slightly
+          small but legible
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping elements; clean separation between subplots
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 8
         passed: true
-        comment: Continents and Tissot ellipses visible, graticule very faint
+        comment: Continents and Tissot indicatrices visible but graticule lines are
+          quite dense in some projections
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Good colorblind-safe palette
+        comment: 'Good colorblind-safe palette: blue ocean, sage green land, yellow
+          Tissot markers, gray grid'
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Good 2x2 grid, some uneven spacing due to projection differences
+        comment: Well-balanced 2x2 layout with good spacing and legend placement
       - id: VQ-06
         name: Axis Labels
-        score: 1
+        score: 0
         max: 2
         passed: false
-        comment: Only Mercator has coordinate labels
+        comment: Coordinate labels present but not descriptive axis labels (no Latitude
+          or Longitude text)
       - id: VQ-07
         name: Grid & Legend
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Grid very subtle, no legend needed
+        passed: true
+        comment: Legend well-placed at bottom, graticule appropriately styled
     spec_compliance:
-      score: 22
+      score: 25
       max: 25
       items:
       - id: SC-01
@@ -93,31 +98,32 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correctly shows world maps with multiple projections
+        comment: 'Correct: world map projections comparison'
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Longitude/latitude correctly transformed
+        comment: Coordinates correctly transformed for each projection
       - id: SC-03
         name: Required Features
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Shows 4 projections with graticule and Tissot; missing Orthographic
+        comment: 'All required: multiple projections, graticule, coastlines, Tissot
+          indicatrices'
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All major continents visible
+        comment: Global coverage shown appropriately
       - id: SC-05
         name: Legend Accuracy
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: No legend present
+        passed: true
+        comment: Legend correctly explains all visual elements
       - id: SC-06
         name: Title Format
         score: 2
@@ -130,22 +136,24 @@ review:
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Shows 4 projections with distortion; simplified coastlines
+        comment: Shows 4 projections with clear distortion differences; could show
+          more projection types
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Educational cartography context is appropriate
+        comment: Educational cartography context; neutral and appropriate
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: Projections mathematically correct
+        comment: Continent shapes are simplified approximations, not precise geographic
+          boundaries
     code_quality:
       score: 8
       max: 10
@@ -155,13 +163,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear script with no functions/classes
+        comment: 'Linear flow: imports → data → plot → save'
       - id: CQ-02
         name: Reproducibility
-        score: 3
+        score: 1
         max: 3
-        passed: true
-        comment: No random data; hardcoded coastlines
+        passed: false
+        comment: No random seed set (though data is hardcoded, so technically deterministic)
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -170,16 +178,16 @@ review:
         comment: All imports used
       - id: CQ-04
         name: No Deprecated API
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Code is verbose with repeated projection logic
+        passed: true
+        comment: Current seaborn API used
       - id: CQ-05
         name: Output Correct
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Saves as plot.png correctly
+        passed: true
+        comment: Saves as plot.png
     library_features:
       score: 5
       max: 5
@@ -189,13 +197,15 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Uses sns.set_theme(), sns.lineplot(), sns.scatterplot() effectively
-  verdict: REJECTED
+        comment: Uses seaborn lineplot and scatterplot with DataFrames, sns.set_theme
+          for styling
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - subplots
   - annotations
+  - custom-legend
   - patches
   patterns:
   - data-generation

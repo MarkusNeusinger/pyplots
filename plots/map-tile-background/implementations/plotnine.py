@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-tile-background: Map with Tile Background
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 76/100 | Created: 2026-01-20
@@ -182,10 +182,11 @@ category_colors = {
 top_attractions = df[df["visitors"] >= 10000].copy()
 
 # Create label positions with nudge offsets to prevent overlap
+# Fisherman's Wharf moved left/up, Pier 39 moved right/down for clear separation
 label_positions = {
     "Golden Gate Bridge": {"nudge_x": 0.01, "nudge_y": 0.012},
-    "Fisherman's Wharf": {"nudge_x": -0.035, "nudge_y": 0.01},
-    "Pier 39": {"nudge_x": 0.025, "nudge_y": -0.012},
+    "Fisherman's Wharf": {"nudge_x": -0.045, "nudge_y": 0.015},
+    "Pier 39": {"nudge_x": 0.035, "nudge_y": -0.018},
     "Union Square": {"nudge_x": 0.02, "nudge_y": 0.012},
 }
 
@@ -214,7 +215,7 @@ plot = (
     )
     # Layer 3: Data points with size encoding for visitor counts
     + geom_point(aes(x="lon", y="lat", color="category", size="visitors"), data=df, alpha=0.85, stroke=1.2)
-    + scale_size_continuous(range=(5, 20), name="Visitors (K/yr)")
+    + scale_size_continuous(range=(5, 20), name="Visitors\n(thousands/yr)")
     + scale_color_manual(values=category_colors, name="Category")
     # Layer 4: Labels for top landmarks (positions pre-adjusted in label_df)
     + geom_label(
@@ -234,9 +235,7 @@ plot = (
     )
     # Coordinate system with proper aspect ratio for geographic accuracy
     + coord_fixed(ratio=1.3, xlim=(lon_min, lon_max), ylim=(lat_min, lat_max))
-    + labs(
-        title="SF Bay Area Landmarks · map-tile-background · plotnine · pyplots.ai", x="Longitude (°)", y="Latitude (°)"
-    )
+    + labs(title="map-tile-background · plotnine · pyplots.ai", x="Longitude (°)", y="Latitude (°)")
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
@@ -251,7 +250,7 @@ plot = (
         panel_grid_major=element_blank(),
         panel_grid_minor=element_blank(),
         panel_background=element_rect(fill="none"),
-        plot_margin=0.015,
+        plot_margin=0.05,
     )
 )
 

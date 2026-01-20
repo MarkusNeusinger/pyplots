@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 map-projections: World Map with Different Projections
 Library: bokeh 3.8.2 | Python 3.13.11
-Quality: 85/100 | Created: 2026-01-20
+Quality: 90/100 | Created: 2026-01-20
 """
 
 import numpy as np

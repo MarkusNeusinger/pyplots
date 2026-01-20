@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: map-projections
 created: '2026-01-20T02:50:38Z'
-updated: '2026-01-20T02:53:20Z'
+updated: '2026-01-20T03:00:04Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21157678752
 issue: 3771
@@ -10,84 +10,80 @@ library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/map-projections/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/map-projections/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/map-projections/bokeh/plot.html
-quality_score: 85
+quality_score: 90
 review:
   strengths:
-  - Excellent educational visualization comparing 4 distinct map projections
-  - Tissot indicatrices clearly demonstrate distortion characteristics of each projection
-  - Good use of Bokeh-specific features (gridplot, Div, ColumnDataSource, dual export)
-  - Color scheme is accessible and visually appealing
-  - Well-structured layout with clear subplot labels
+  - Excellent educational demonstration of projection distortion through Tissot indicatrices
+  - Clean 2x2 grid layout comparing four distinct projections effectively
+  - Mathematically correct projection formulas including Newton-Raphson for Mollweide
+  - Good use of Bokeh ColumnDataSource and gridplot for multi-panel layouts
+  - Dual output format (PNG + HTML) leveraging Bokeh interactive capabilities
+  - Clear color scheme with appropriate contrast and colorblind-safe colors
   weaknesses:
-  - Missing coastlines/country boundaries as specified
-  - Uses helper functions violating KISS structure principle
-  - Main title and subtitle text could be larger for better readability at full size
-  - Legend/axis labels not present for coordinate reference
-  image_description: 'The plot displays a 2x2 grid showing four different map projections:
-    Equirectangular (Plate Carrée), Mercator, Sinusoidal, and Mollweide. Each subplot
-    shows blue graticule lines (latitude/longitude grid at 30° intervals) and yellow
-    Tissot indicatrices (circles that become ellipses to show projection distortion).
-    The main title "map-projections · bokeh · pyplots.ai" appears at the top in blue
-    text with a subtitle explaining the yellow circles. The Equirectangular projection
-    shows circles as uniform shapes. The Mercator projection shows circles becoming
-    vertically stretched toward the poles. The Sinusoidal projection shows a characteristic
-    pinched shape at the edges with circles compressed horizontally near the boundaries.
-    The Mollweide projection shows an elliptical globe shape with circles distorted
-    toward the edges. Background is light gray (#f5f5f5) with white borders and blue
-    outline frames around each subplot.'
+  - Missing actual world coastlines/country borders as mentioned in specification
+    (only shows graticule grid)
+  - Legend only appears in first panel, making other panels lack context when viewed
+    individually
+  image_description: |-
+    The plot displays a 2x2 grid of world map projections rendered using Bokeh. The main title "map-projections · bokeh · pyplots.ai" is displayed in blue (#306998) at the top, with a subtitle explaining the visualization. The four projections shown are:
+
+    1. **Equirectangular (Plate Carrée)** - top left: Shows a rectangular grid with uniform spacing, yellow Tissot indicatrices of equal size throughout
+    2. **Mercator** - top right: Shows vertical lines with horizontal lines that become more compressed toward poles, Tissot circles grow dramatically larger toward high latitudes (showing area distortion)
+    3. **Sinusoidal** - bottom left: Shows an oval/elliptical shape with curved meridians converging at poles, Tissot circles maintain consistent size (equal-area) but become more elliptical toward edges (shape distortion)
+    4. **Mollweide** - bottom right: Shows an elliptical projection with curved meridians, Tissot indicatrices show moderate shape distortion while preserving area
+
+    Blue graticule lines (#306998) are drawn at 30° intervals. Yellow Tissot indicatrices (#FFD43B) with semi-transparent fill visualize how each projection distorts circles into ellipses. Background is light gray (#f5f5f5) with white borders. The legend in the first panel explains graticule and Tissot elements.
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 36
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 10
         max: 10
         passed: true
-        comment: Title and subplot labels are readable but the main title and subtitle
-          text appear relatively small for the image size
+        comment: Main title at 52pt, subplot titles at 40pt, legend text at 18pt -
+          all clearly readable
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping elements, all panels well separated
       - id: VQ-03
         name: Element Visibility
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: Graticule lines and Tissot circles are clearly visible, good line
-          widths and alpha values
+        comment: Graticule lines and Tissot circles visible but could be slightly
+          thicker
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Blue/yellow color scheme is colorblind-safe with good contrast
+        comment: Blue/yellow color scheme is colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Good use of 2x2 grid layout, but the overall canvas has significant
-          whitespace around the grid
+        comment: 2x2 grid layout with balanced spacing, good canvas utilization
       - id: VQ-06
         name: Axis Labels
         score: 0
         max: 2
         passed: false
-        comment: No axis labels present (axes are hidden, appropriate for map projections,
-          but no coordinate labels shown)
+        comment: Axes hidden for map projections but no lat/lon degree labels
       - id: VQ-07
         name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: Graticule serves as grid, subtitle serves as legend explanation
+        comment: Graticule at appropriate alpha, legend well placed
     spec_compliance:
-      score: 22
+      score: 23
       max: 25
       items:
       - id: SC-01
@@ -95,32 +91,32 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correctly shows world map projections with graticule and Tissot indicatrices
+        comment: Correct map projection visualization with multiple projections
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Lat/lon correctly mapped through each projection function
+        comment: Latitude/longitude correctly transformed for each projection
       - id: SC-03
         name: Required Features
         score: 4
         max: 5
         passed: true
-        comment: 'Shows multiple projections side-by-side, graticule, and Tissot indicatrices.
-          Missing: actual coastlines/country boundaries'
+        comment: Shows graticule and Tissot indicatrices; lacks coastlines/borders
+          mentioned in spec
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Full world coverage from -180 to 180 longitude, -85 to 85 latitude
+        comment: Full globe coverage -180 to 180 longitude, -85 to 85 latitude
       - id: SC-05
         name: Legend Accuracy
-        score: 0
+        score: 1
         max: 2
-        passed: false
-        comment: No formal legend present beyond subtitle
+        passed: true
+        comment: Legend explains elements but only in first panel
       - id: SC-06
         name: Title Format
         score: 2
@@ -133,35 +129,33 @@ review:
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: Excellent coverage showing 4 distinct projections with clear distortion
-          differences
+        comment: Shows four projection types with clear distortion patterns
       - id: DQ-02
         name: Realistic Context
-        score: 7
+        score: 6
         max: 7
         passed: true
-        comment: Educational cartography context, neutral topic
+        comment: Educational cartography context clear but could use actual geographic
+          features
       - id: DQ-03
         name: Appropriate Scale
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Standard map projection scales, but no country boundaries makes it
-          less realistic
+        comment: Standard graticule intervals at 30 degrees, sensible Tissot positions
     code_quality:
       score: 8
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 1
+        score: 2
         max: 3
-        passed: false
-        comment: Uses functions (projection functions and make_graticule, make_tissot
-          helpers), which violates KISS principle
+        passed: true
+        comment: Mostly flat structure but has some code repetition
       - id: CQ-02
         name: Reproducibility
         score: 3
@@ -179,13 +173,13 @@ review:
         score: 1
         max: 1
         passed: true
-        comment: Uses current Bokeh API
+        comment: Uses current Bokeh 3.x API
       - id: CQ-05
         name: Output Correct
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Saves as plot.png and plot.html
+        passed: false
+        comment: Panel dimensions 2400x1350 instead of 4800x2700 total
     library_features:
       score: 5
       max: 5
@@ -195,13 +189,15 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Good use of Bokeh features: ColumnDataSource, gridplot, Div for
-          HTML title, export_png, HTML export with CDN resources'
-  verdict: REJECTED
+        comment: Uses ColumnDataSource, gridplot, Title model, Legend, Div, export_png,
+          HTML export
+  verdict: APPROVED
 impl_tags:
-  dependencies: []
+  dependencies:
+  - selenium
   techniques:
   - subplots
+  - custom-legend
   - html-export
   - patches
   patterns:
@@ -211,4 +207,4 @@ impl_tags:
   dataprep: []
   styling:
   - alpha-blending
-  - grid-styling
+  - minimal-chrome

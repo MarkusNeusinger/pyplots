@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-projections: World Map with Different Projections
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-20
@@ -6,11 +6,28 @@ Quality: 78/100 | Created: 2026-01-20
 
 import numpy as np
 import pandas as pd
-from lets_plot import *  # noqa: F403
+from lets_plot import (
+    LetsPlot,
+    aes,
+    coord_map,
+    element_blank,
+    element_rect,
+    element_text,
+    geom_path,
+    geom_point,
+    geom_polygon,
+    geom_text,
+    ggplot,
+    ggsize,
+    labs,
+    scale_color_identity,
+    theme,
+    theme_minimal,
+)
 from lets_plot.export import ggsave as export_ggsave
 
 
-LetsPlot.setup_html()  # noqa: F405
+LetsPlot.setup_html()
 
 np.random.seed(42)
 
@@ -18,16 +35,16 @@ np.random.seed(42)
 graticule_rows = []
 line_id = 0
 
-# Latitude lines every 30 degrees
-for lat in range(-60, 61, 30):
+# Latitude lines every 30 degrees (extended to show Antarctica)
+for lat in range(-90, 91, 30):
     lons = np.linspace(-180, 180, 180)
     for lon in lons:
         graticule_rows.append({"lon": lon, "lat": lat, "line_id": line_id})
     line_id += 1
 
-# Longitude lines every 60 degrees
+# Longitude lines every 60 degrees (extended range)
 for lon in range(-180, 181, 60):
-    lats = np.linspace(-60, 60, 120)
+    lats = np.linspace(-90, 90, 180)
     for lat in lats:
         graticule_rows.append({"lon": lon, "lat": lat, "line_id": line_id})
     line_id += 1
@@ -258,90 +275,132 @@ aus_coords = [
 for lon, lat in aus_coords:
     continent_rows.append({"lon": lon, "lat": lat, "continent": "Australia", "type": "Land"})
 
+# Antarctica
+antarctica_coords = [
+    (-60, -62),
+    (-45, -68),
+    (-20, -70),
+    (0, -70),
+    (30, -68),
+    (60, -66),
+    (90, -66),
+    (120, -66),
+    (150, -67),
+    (170, -72),
+    (180, -78),
+    (170, -80),
+    (140, -75),
+    (100, -74),
+    (60, -72),
+    (30, -74),
+    (0, -78),
+    (-30, -76),
+    (-60, -74),
+    (-90, -74),
+    (-120, -72),
+    (-150, -74),
+    (-170, -78),
+    (-180, -76),
+    (-160, -68),
+    (-130, -64),
+    (-100, -66),
+    (-80, -63),
+    (-60, -62),
+]
+for lon, lat in antarctica_coords:
+    continent_rows.append({"lon": lon, "lat": lat, "continent": "Antarctica", "type": "Land"})
+
 continents = pd.DataFrame(continent_rows)
 
-# Data: Tissot indicatrices with proper Mercator distortion
-# In Mercator projection, scale factor = sec(latitude)
-# Circles at the equator remain circles, but become stretched at higher latitudes
+# Data: Tissot indicatrices showing equal-area circles that appear distorted in projection
+# In the Mercator projection, areas are stretched increasingly toward the poles
+# We draw circles of equal true area, which appear as ellipses in the projected view
 tissot_rows = []
 circle_id = 0
-base_radius = 5  # base radius in degrees at equator
+base_radius = 8  # Larger radius for better visibility
 
-for lat in range(-60, 61, 30):
-    for lon in range(-150, 151, 60):
-        # Mercator scale factor: sec(lat) = 1/cos(lat)
-        # The circle stretches in the N-S direction at higher latitudes
-        scale_factor = 1.0 / np.cos(np.radians(lat + 0.01))
-
+# Use latitudes that show clear distortion progression
+for lat in [-60, -30, 0, 30, 60]:
+    for lon in range(-150, 151, 50):
+        # Create circles with equal angular size (appear distorted in Mercator)
+        # In Mercator, the east-west scale factor equals the north-south scale factor
+        # Both equal sec(latitude), so circles remain circles but grow larger toward poles
+        # The key distortion is SIZE increase, not shape change
         angles = np.linspace(0, 2 * np.pi, 72)
+
+        # Circles appear larger at higher latitudes due to Mercator projection
         for angle in angles:
-            # Apply Mercator distortion: stretch in latitude direction
-            # The circle becomes an ellipse stretched vertically
-            dlat = base_radius * np.cos(angle) * scale_factor
-            dlon = base_radius * np.sin(angle)
-            tissot_rows.append(
-                {"lon": lon + dlon, "lat": lat + dlat, "circle_id": circle_id, "type": "Tissot Indicatrix"}
-            )
+            dlat = base_radius * np.cos(angle)
+            dlon = base_radius * np.sin(angle) / max(np.cos(np.radians(lat)), 0.5)
+            tissot_rows.append({"lon": lon + dlon, "lat": lat + dlat, "circle_id": circle_id, "lat_band": abs(lat)})
         circle_id += 1
 
 tissot = pd.DataFrame(tissot_rows)
 
-# Create dummy data for legend
-legend_data = pd.DataFrame({"x": [0, 0], "y": [0, 0], "type": ["Land Masses", "Tissot Indicatrices"]})
+# Data for manual legend (positioned in bottom-left corner)
+legend_data = pd.DataFrame(
+    {
+        "x": [-170, -170],
+        "y": [-60, -75],
+        "label": ["Land Masses", "Tissot Indicatrices"],
+        "color": ["#306998", "#FFD43B"],
+    }
+)
 
 # Plot: World map with Mercator projection showing distortion
 plot = (
-    ggplot()  # noqa: F405
+    ggplot()
     # Graticule lines (lat/lon grid)
-    + geom_path(  # noqa: F405
-        data=graticule,
-        mapping=aes(x="lon", y="lat", group="line_id"),  # noqa: F405
-        color="#888888",
-        size=0.5,
-        linetype="dashed",  # noqa: F405
+    + geom_path(
+        data=graticule, mapping=aes(x="lon", y="lat", group="line_id"), color="#888888", size=0.5, linetype="dashed"
     )
-    # Continent outlines
-    + geom_polygon(  # noqa: F405
+    # Continent outlines (using fixed fill color)
+    + geom_polygon(
         data=continents,
-        mapping=aes(x="lon", y="lat", group="continent", fill="'Land Masses'"),  # noqa: F405
+        mapping=aes(x="lon", y="lat", group="continent"),
+        fill="#306998",
         color="#1a3d5c",
         alpha=0.85,
         size=0.6,
     )
-    # Tissot indicatrices
-    + geom_polygon(  # noqa: F405
+    # Tissot indicatrices (using fixed fill color)
+    + geom_polygon(
         data=tissot,
-        mapping=aes(x="lon", y="lat", group="circle_id", fill="'Tissot Indicatrices'"),  # noqa: F405
+        mapping=aes(x="lon", y="lat", group="circle_id"),
+        fill="#FFD43B",
         color="#8b6914",
         alpha=0.7,
         size=0.5,
     )
-    # Manual fill scale for legend
-    + scale_fill_manual(name="Map Elements", values={"Land Masses": "#306998", "Tissot Indicatrices": "#FFD43B"})  # noqa: F405
-    # Apply Mercator projection
-    + coord_map(xlim=[-180, 180], ylim=[-70, 70])  # noqa: F405
+    # Manual legend - colored markers
+    + geom_point(data=legend_data, mapping=aes(x="x", y="y", color="color"), size=12, shape=15)
+    + scale_color_identity()
+    # Manual legend - text labels
+    + geom_text(
+        data=legend_data, mapping=aes(x="x", y="y", label="label"), hjust=0, nudge_x=8, size=12, color="#333333"
+    )
+    # Apply Mercator projection with ylim extended to show Antarctica
+    + coord_map(xlim=[-180, 180], ylim=[-85, 85])
     # Labels and theme
-    + labs(  # noqa: F405
+    + labs(
         title="map-projections · letsplot · pyplots.ai",
-        x="Longitude (degrees)",
-        y="Latitude (degrees)",
-        caption="Tissot indicatrices demonstrate Mercator distortion: circles stretch into ellipses at higher latitudes",
+        x="Longitude (°)",
+        y="Latitude (°)",
+        caption="Tissot indicatrices: equal-area circles appear stretched in Mercator projection at high latitudes",
     )
-    + theme_minimal()  # noqa: F405
-    + theme(  # noqa: F405
-        plot_title=element_text(size=28, face="bold", hjust=0.5),  # noqa: F405
-        axis_title=element_text(size=18),  # noqa: F405
-        axis_text=element_text(size=14),  # noqa: F405
-        plot_caption=element_text(size=12, hjust=0.5, color="#555555"),  # noqa: F405
-        legend_title=element_text(size=16, face="bold"),  # noqa: F405
-        legend_text=element_text(size=14),  # noqa: F405
-        legend_position="right",
-        panel_grid_major=element_blank(),  # noqa: F405
-        panel_grid_minor=element_blank(),  # noqa: F405
-        plot_background=element_rect(fill="#f8f8f8"),  # noqa: F405
-        panel_background=element_rect(fill="#e6f0f5"),  # noqa: F405
+    + theme_minimal()
+    + theme(
+        plot_title=element_text(size=28, face="bold", hjust=0.5),
+        axis_title=element_text(size=20),
+        axis_text=element_text(size=16),
+        plot_caption=element_text(size=14, hjust=0.5, color="#555555"),
+        legend_position="none",
+        panel_grid_major=element_blank(),
+        panel_grid_minor=element_blank(),
+        plot_background=element_rect(fill="#f8f8f8"),
+        panel_background=element_rect(fill="#e6f0f5"),
     )
-    + ggsize(1600, 900)  # noqa: F405
+    + ggsize(1600, 900)
 )
 
 # Save PNG (scale 3x to get 4800 x 2700 px)

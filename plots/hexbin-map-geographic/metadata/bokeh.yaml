@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: hexbin-map-geographic
 created: '2026-01-20T21:15:52Z'
-updated: '2026-01-20T21:24:53Z'
+updated: '2026-01-20T21:31:17Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21187394872
 issue: 3767
@@ -10,44 +10,50 @@ library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/hexbin-map-geographic/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hexbin-map-geographic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/hexbin-map-geographic/bokeh/plot.html
-quality_score: 78
+quality_score: 62
 review:
   strengths:
-  - Uses Bokeh native hexbin functionality with bokeh.util.hex.hexbin and hex_tile
-  - Good use of viridis-style sequential colormap for density visualization
-  - Proper coordinate transformation from WGS84 to Web Mercator
-  - Includes interactive features (HoverTool) for HTML output
-  - Appropriate alpha transparency (0.75) on hexagons
+  - Correct use of Bokeh hexbin() and hex_tile() for hexagonal binning
+  - Good colormap choice (viridis) for accessibility
+  - Realistic NYC taxi pickup scenario with multiple cluster centers
+  - Includes hover tooltips for interactivity
+  - Proper Web Mercator projection setup for geographic coordinates
   weaknesses:
-  - Base map tiles are not rendering - the CartoDB tile layer is not visible in the
-    output, leaving a plain gray background instead of geographic context
-  - Contains a function definition (wgs84_to_web_mercator) which violates the KISS
-    principle - should be inline code
-  - Color bar title rotation makes it less readable
-  image_description: The plot displays a hexagonal binning visualization of simulated
-    NYC taxi pickup data. The hexagons are rendered over a light gray background without
-    visible base map tiles. The hexagons use a viridis color palette ranging from
-    dark purple (low counts ~1-25) through teal and green to bright yellow (high counts
-    ~250+). The visualization shows clear clustering patterns with two main hotspots
-    - one bright yellow hexagon near the center-left and several green/teal cells
-    forming secondary clusters. Axis ticks show longitude values from approximately
-    -74.1 to -73.85 on the x-axis and latitude values from approximately 40.7 to 40.8+
-    on the y-axis. A color bar on the right shows count values from ~0 to 250+. The
-    overall layout has good proportions with hexagons filling the central portion
-    of the canvas. The title follows the required format. Geographic context from
-    the base map is missing as tiles are not rendering.
+  - 'Critical: Base map tiles not visible - specification requires geographic context
+    overlay but only gray background appears'
+  - Title format incorrect - includes extra NYC Taxi Pickups prefix instead of required
+    format
+  - Axis labels confusing - say Web Mercator meters but tick values show degrees
+  - Text sizes too small for 4800x2700 canvas
+  - PNG export with Bokeh tile layers may not render correctly - tiles may require
+    browser rendering
+  image_description: The plot displays a hexagonal binning map representing NYC taxi
+    pickup density. The visualization uses a viridis colormap ranging from dark purple
+    (low density) through blue-green tones to bright yellow (high density, approximately
+    250 pickups). The hexagons are arranged in a geographic pattern showing the Manhattan
+    area with longitude range approximately -74.1 to -73.85 and latitude range approximately
+    40.7 to 40.8. The x-axis is labeled "Longitude" and y-axis is labeled "Latitude".
+    A color bar on the right indicates "Pickup Count" with a scale from roughly 0
+    to 250. The title reads "NYC Taxi Pickups · hexbin-map-geographic · bokeh · pyplots.ai".
+    The plot shows clear clustering with highest density (bright yellow hexagons)
+    in central Manhattan areas, with density decreasing outward (green, blue, purple
+    hexagons). The hexagonal grid provides clear cell boundaries and the color intensity
+    effectively communicates relative pickup counts. However, NO base map tiles are
+    visible - the hexagons appear on a plain light gray background without any geographic
+    context such as streets, coastlines, or boundaries that would help orient viewers
+    to the NYC location.
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 24
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 5
         max: 10
-        passed: true
-        comment: Title, axis labels, and tick marks are readable but could be larger.
-          Color bar title is rotated vertically which reduces readability.
+        passed: false
+        comment: Text readable but undersized for 4800x2700 canvas; title, axis labels,
+          and color bar text are too small
       - id: VQ-02
         name: No Overlap
         score: 8
@@ -59,35 +65,37 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Hexagons are well-sized with good alpha transparency, but base map
-          tiles are not rendering
+        comment: Hexagons visible with good alpha transparency, density variation
+          clear
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Viridis palette is colorblind-safe
+        comment: Viridis colormap is colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 0
         max: 5
-        passed: true
-        comment: Good proportions but missing base map leaves large gray areas
+        passed: false
+        comment: Tick labels show degrees but axis labels say Web Mercator meters
+          which is contradictory
       - id: VQ-06
         name: Axis Labels
-        score: 1
+        score: 0
         max: 2
-        passed: true
-        comment: Labels say Longitude and Latitude which are descriptive but lack
-          units
+        passed: false
+        comment: Labels say Longitude/Latitude (Web Mercator meters) which is confusing
+          - ticks show degrees not meters
       - id: VQ-07
         name: Grid & Legend
-        score: 1
+        score: 0
         max: 2
-        passed: true
-        comment: Grid disabled appropriately, color bar title placement could be improved
+        passed: false
+        comment: Grid disabled (acceptable for maps), but color bar text/title too
+          small
     spec_compliance:
-      score: 19
+      score: 14
       max: 25
       items:
       - id: SC-01
@@ -95,37 +103,39 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct hexagonal binning visualization
+        comment: Correct hexagonal binning map
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Lat/lon correctly mapped to hexbin positions
+        comment: Lat/lon correctly mapped, counts aggregated
       - id: SC-03
         name: Required Features
-        score: 2
+        score: 0
         max: 5
         passed: false
-        comment: Missing base map overlay - tiles not rendering in output
+        comment: 'MISSING BASE MAP: Spec requires overlay on base map but CartoDB
+          Positron tiles not visible in output'
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Axes show all data with appropriate padding
+        comment: All data visible within bounds
       - id: SC-05
         name: Legend Accuracy
         score: 0
         max: 2
         passed: false
-        comment: Color bar title says Count but context mentions Pickups - inconsistent
+        comment: Color bar title is Pickups but could be more descriptive
       - id: SC-06
         name: Title Format
-        score: 1
+        score: 0
         max: 2
-        passed: true
-        comment: Title format is correct in code
+        passed: false
+        comment: Title includes extra NYC Taxi Pickups prefix instead of required
+          format
     data_quality:
       score: 17
       max: 20
@@ -135,67 +145,68 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows density variation with multiple clusters, good demonstration
-          of hexbin aggregation
+        comment: Shows clear density variation with multiple hotspots demonstrating
+          hexbin aggregation
       - id: DQ-02
         name: Realistic Context
-        score: 5
+        score: 7
         max: 7
         passed: true
-        comment: NYC taxi pickups is plausible scenario
+        comment: NYC taxi pickups is excellent real-world scenario for geographic
+          hexbin
       - id: DQ-03
         name: Appropriate Scale
-        score: 5
+        score: 3
         max: 5
         passed: true
-        comment: Coordinates are accurate for NYC Manhattan area
+        comment: Coordinates correct for NYC, pickup counts reasonable for synthetic
+          data
     code_quality:
       score: 7
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 1
+        score: 3
         max: 3
-        passed: false
-        comment: Has a function definition (wgs84_to_web_mercator) which violates
-          KISS principle
+        passed: true
+        comment: Linear script with imports, data, plot, save
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
-        score: 2
+        score: 0
         max: 2
-        passed: true
-        comment: All imports are used
+        passed: false
+        comment: transform import is used but pattern could be cleaner
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Uses current Bokeh API
+        comment: Using current Bokeh API
       - id: CQ-05
         name: Output Correct
         score: 0
         max: 1
         passed: false
-        comment: Saves to plot.png correctly
+        comment: Saves plot.png but tile rendering fails in PNG export
     library_features:
-      score: 3
+      score: 0
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 3
+        score: 0
         max: 5
-        passed: true
-        comment: Uses Bokeh hex_tile, HoverTool, WMTSTileSource, ColorBar but tile
-          source not rendering
-  verdict: REJECTED
+        passed: false
+        comment: Uses hex_tile but tile server integration for base maps not working
+          in PNG export
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:

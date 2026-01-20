@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: map-marker-clustered
 created: '2026-01-20T18:52:40Z'
-updated: '2026-01-20T18:55:25Z'
+updated: '2026-01-20T19:08:19Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21183361240
 issue: 3766
@@ -10,186 +10,181 @@ library_version: 0.15.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/map-marker-clustered/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/map-marker-clustered/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 72
+quality_score: 75
 review:
   strengths:
-  - Excellent use of hierarchical clustering from scipy to simulate zoom-level aggregation
-  - Clear visual distinction between individual markers and cluster markers using
-    size and color
-  - Good color palette inspired by Python branding
-  - Proper use of plotnine grammar of graphics with layered geoms
-  - Appropriate use of alpha blending for overlapping elements
+  - Effective use of hierarchical clustering (scipy) to create meaningful clusters
+  - Colorblind-friendly palette with good category differentiation
+  - Clean code structure following KISS principle
+  - Good use of plotnine grammar with layered geoms
+  - Realistic store location scenario on US West Coast
+  - Appropriate canvas utilization and layout
   weaknesses:
-  - Missing basemap/geographic context (no boundaries, streets, or terrain as specified)
-  - Significant cluster overlap in dense areas makes count labels difficult to read
-  - The Category legend only shows Retail when all four categories should be represented
-  - Cannot implement interactive features (zoom transitions, click-to-zoom, hover
-    tooltips) that are core to the specification
-  - No convex hull or spider lines to indicate cluster member locations
-  image_description: |-
-    The plot displays a clustered marker map visualization of store locations along the US West Coast region. It uses a coordinate system with Longitude (x-axis, ranging from ~-122 to ~-116) and Latitude (y-axis, ranging from ~32 to ~48). The visualization shows five distinct geographic clusters corresponding to major cities (Seattle, Portland, San Francisco, Los Angeles, San Diego).
-
-    Individual markers appear as small blue dots (labeled "Retail" in the Category legend), while cluster markers are larger circles in four colors: Python blue (#306998) for Retail, Python yellow (#FFD43B) for Restaurant, lighter blue (#4B8BBE) for Service, and gray (#646464) for Entertainment. Each cluster marker displays a white number indicating the count of points within that cluster. The marker sizes vary based on the number of points in each cluster (5 to 20+ points shown in the size legend).
-
-    Three separate legends appear on the right side: "Category" showing individual marker color, "Cluster Category" showing the four category colors for clusters, and "Points in Cluster" showing the size scale. The background is light gray (#f5f5f5) with subtle grid lines. The title "map-marker-clustered · plotnine · pyplots.ai" appears at the top in bold.
+  - Significant cluster overlap in dense regions makes individual cluster counts hard
+    to read
+  - Missing geographic basemap context (streets, boundaries) - though this is a plotnine
+    limitation
+  - 'Legend shows Category: Retail only for individual points, creating confusion
+    with Cluster Category legend'
+  - No units on axis labels (should be Longitude degrees and Latitude degrees)
+  image_description: 'The plot displays a clustered marker map showing US West Coast
+    store locations. The visualization shows four distinct geographic clusters corresponding
+    to Seattle (~47.5°N), Portland (~45°N), San Francisco (~38°N), and Los Angeles/San
+    Diego area (~33-35°N). Clusters are represented as colored circles with white
+    text labels showing the count of points within each cluster. Colors represent
+    four categories: Retail (blue), Restaurant (yellow/gold), Service (light blue),
+    and Entertainment (gray). The cluster sizes vary from small (2-5 points) to larger
+    circles (10-20+ points), with size mapped to count. Individual markers appear
+    as small blue dots for single-point clusters. The plot has a light gray background
+    with subtle grid lines. Three legends appear on the right: "Category" (showing
+    only Retail), "Cluster Category" (showing all four categories), and "Points in
+    Cluster" (showing size scale 5-20). Title follows the correct format at the top.'
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 30
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 10
         passed: true
-        comment: Title and axis labels are readable. Some cluster count labels are
-          small but still legible.
+        comment: Title and axis labels readable, but cluster count labels are small
+          and hard to read at smaller cluster sizes
       - id: VQ-02
         name: No Overlap
         score: 4
         max: 8
         passed: false
-        comment: Significant overlap between cluster markers, especially in the Seattle/Portland
-          and LA/San Diego regions. Count numbers overlap and become difficult to
-          read.
+        comment: Significant overlap between cluster circles in Seattle, Portland,
+          and LA regions
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 8
         passed: true
-        comment: Markers are visible but dense clustering causes visual confusion.
-          Alpha blending helps but doesn't fully resolve overlap issues.
+        comment: Cluster sizes visible and varied, good alpha transparency
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Good use of distinct colors (blue, yellow, gray, light blue). Not
-          perfectly colorblind-safe as blue variants could be confused.
+        comment: Colorblind-friendly palette with blue, yellow, green, gray
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Plot is positioned well but significant white space on the left side
-          due to coordinate system.
+        comment: Good canvas utilization with balanced margins
       - id: VQ-06
         name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels but missing units (degrees)
+      - id: VQ-07
+        name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: Longitude and Latitude are descriptive and appropriate for geographic
-          data.
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
-        passed: false
-        comment: Three separate legends create visual clutter. The Category legend
-          shows only Retail which is misleading.
+        comment: Subtle grid with low alpha, well-organized legends
     spec_compliance:
-      score: 18
+      score: 20
       max: 25
       items:
       - id: SC-01
         name: Plot Type
-        score: 5
+        score: 8
         max: 8
-        passed: false
-        comment: Static approximation of clustered marker map. Missing dynamic zoom,
-          transitions, and click-to-zoom behavior specified.
+        passed: true
+        comment: Correctly implements clustered marker map using hierarchical clustering
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Latitude/Longitude correctly mapped to x/y axes.
+        comment: Latitude/Longitude correctly assigned to Y/X axes
       - id: SC-03
         name: Required Features
         score: 2
         max: 5
         passed: false
-        comment: Missing basemap, convex hull/spider lines, click-to-zoom. Cluster
-          count display is present.
+        comment: Missing basemap/geographic context, no zoom interactivity
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data is visible within the plot area.
+        comment: All data visible with appropriate geographic range
       - id: SC-05
         name: Legend Accuracy
         score: 1
         max: 2
         passed: false
-        comment: Category legend shows only Retail but individual markers exist for
-          all four categories.
+        comment: Category legend only shows Retail, Cluster Category creates confusion
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Correctly uses spec-id · library · pyplots.ai format.
+        comment: 'Correct format: map-marker-clustered · plotnine · pyplots.ai'
     data_quality:
-      score: 16
+      score: 17
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Shows clustering with counts and category coloring. Missing variation
-          between sparse and dense areas.
+        comment: Shows clustering of varying sizes, multiple categories, individual
+          vs cluster markers
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Store locations along US West Coast is a plausible, neutral business
-          scenario.
+        comment: Store locations on US West Coast is plausible business scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 3
         max: 5
         passed: true
-        comment: Coordinates are realistic but random spread creates unnaturally uniform
-          distributions.
+        comment: Coordinates reasonable for US West Coast, 400 points appropriate
     code_quality:
-      score: 8
+      score: 10
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 2
+        score: 3
         max: 3
-        passed: false
-        comment: Code uses loops and lambda functions, slightly more complex but acceptable
-          for data generation needs.
+        passed: true
+        comment: No functions or classes, follows standard pattern
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42) for reproducibility.
+        comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used.
+        comment: All imports are used
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Uses current plotnine API.
+        comment: Uses current plotnine API
       - id: CQ-05
         name: Output Correct
-        score: 0
+        score: 1
         max: 1
         passed: true
-        comment: Uses plot.save() correctly to create plot.png.
+        comment: Saves as plot.png
     library_features:
       score: 3
       max: 5
@@ -199,16 +194,15 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Uses plotnine grammar of graphics with multiple geom layers, scale
-          functions, and theme customization. Doesn't leverage faceting or more advanced
-          ggplot features.
+        comment: Uses ggplot grammar with multiple geom layers, scales, and guides
   verdict: REJECTED
 impl_tags:
   dependencies:
   - scipy
   techniques:
-  - annotations
   - layer-composition
+  - annotations
+  - custom-legend
   patterns:
   - data-generation
   - groupby-aggregation

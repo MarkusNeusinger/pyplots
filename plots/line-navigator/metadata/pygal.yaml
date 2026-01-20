@@ -1,7 +1,7 @@
 library: pygal
 specification_id: line-navigator
 created: '2026-01-20T20:59:13Z'
-updated: '2026-01-20T21:09:24Z'
+updated: '2026-01-20T21:14:17Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21186878226
 issue: 3785
@@ -13,34 +13,28 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/line-navigator
 quality_score: 86
 review:
   strengths:
-  - Creative solution combining two pygal charts using PIL to create the navigator
-    concept
-  - Excellent use of pygal's styling system with custom fonts, colors, and opacity
-    settings
-  - Good visual distinction between full dataset (blue) and selected range (yellow)
-    in navigator
-  - Proper cubic interpolation for smooth lines
-  - Generates both PNG and interactive HTML versions
-  - Realistic 3-year sensor data with trend, seasonality, and noise
+  - Creative solution using two separate pygal charts combined with PIL to achieve
+    the navigator effect
+  - Proper use of fill=True in navigator to highlight selected range vs full data
+  - Custom styling with appropriate font sizes and colors for the large canvas
+  - Good data generation with trend, seasonality, and noise to make the visualization
+    meaningful
+  - HTML version also generated for interactive viewing
   weaknesses:
-  - Main chart legend displays "Detail View" instead of the descriptive date range
-    label (the code creates detail_label but main_chart shows "#Detail View" - review
-    the legend entry)
-  - Navigator panel text is too small relative to the overall image size; increase
-    nav_style font sizes
-  - Missing Y-axis units in labels (e.g., "Sensor Reading (units)" instead of just
-    "Sensor Reading")
-  image_description: 'The plot displays a line chart with mini navigator implementation
-    using pygal. The main chart (top ~80% of image) shows a blue line graph titled
-    "line-navigator · pygal · pyplots.ai" with "Detail View" legend in the upper left.
-    The main chart displays sensor readings (Y-axis: 50-90+) over dates from February
-    2023 to August 2023 (X-axis labels rotated 45°). The line shows oscillating values
-    with peaks around 90 and troughs around 50-55. Below the main chart is a navigator
-    panel (~20% height) with gray background titled "Navigator - Full Data Extent"
-    showing two overlapping filled area charts: a muted blue "Full Dataset" and a
-    yellow/gold "Selected Range" that highlights the portion displayed in the main
-    chart. The selected range appears to be the middle portion of the full 3-year
-    dataset. Font sizes are readable but the navigator legend text appears small.'
+  - Main chart legend is truncated (shows "Sensor Reading..." instead of full label)
+  - Navigator Y-axis labels (30,40,50,60,70,80,90) are too cramped and hard to read
+  - Navigator chart lacks clear visual separation handles for the selection
+  image_description: 'The plot displays a two-panel visualization with a main line
+    chart on top and a smaller navigator chart below. The main chart shows a blue
+    line representing "Sensor Readings (Feb 2023 - Aug 2023)" with Y-axis labeled
+    "Sensor Reading (mV)" ranging from approximately 50 to 90, and X-axis labeled
+    "Date" with rotated date labels showing dates from 2023-02-05 to 2023-07-30. The
+    line shows seasonal variation with visible noise. The navigator chart below has
+    a gray background and shows the "Full Dataset (2022-2024)" with a filled blue
+    area, and the selected range is highlighted in yellow/gold color ("Selected: Feb
+    2023 - Aug 2023"). The main chart title uses the correct format "line-navigator
+    · pygal · pyplots.ai". The navigator shows the full 3-year range with year labels
+    visible.'
   criteria_checklist:
     visual_quality:
       score: 33
@@ -51,50 +45,49 @@ review:
         score: 8
         max: 10
         passed: true
-        comment: Main chart text is readable, but navigator text (axis labels, legend)
+        comment: Title and axis labels are readable, but some text in the navigator
           is quite small
       - id: VQ-02
         name: No Overlap
         score: 7
         max: 8
         passed: true
-        comment: Date labels on main chart rotated to avoid overlap, but some minor
-          crowding exists
+        comment: Main chart x-labels are rotated and mostly readable; Y-axis labels
+          in navigator are cramped
       - id: VQ-03
         name: Element Visibility
         score: 7
         max: 8
         passed: true
-        comment: Line clearly visible in main chart, navigator areas distinguishable
-          but dense
+        comment: Line is clearly visible with appropriate thickness; navigator shows
+          data well
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Blue and yellow/gold colors are colorblind-safe and distinguishable
+        comment: Blue and yellow/gold colors are colorblind-safe with good contrast
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Good use of space overall but navigator could be proportionally better
-          integrated
+        comment: Good proportions between main chart and navigator (~80/20 split)
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Sensor Reading and Date are descriptive labels
+        comment: Y-axis has units 'Sensor Reading (mV)', X-axis labeled 'Date'
       - id: VQ-07
         name: Grid & Legend
-        score: 1
+        score: 0
         max: 2
-        passed: true
-        comment: Grid is subtle on main chart, but navigator legend placement at bottom
-          is cramped
+        passed: false
+        comment: Legend in top-left corner is truncated; navigator Y-axis labels are
+          too cramped
     spec_compliance:
-      score: 22
+      score: 23
       max: 25
       items:
       - id: SC-01
@@ -102,39 +95,38 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct line chart with mini navigator concept
+        comment: Correct line chart type with navigator panel
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Date on X-axis, sensor values on Y-axis correctly mapped
+        comment: Date on X-axis, values on Y-axis correctly mapped
       - id: SC-03
         name: Required Features
         score: 4
         max: 5
         passed: true
-        comment: Has main detail view and navigator overview with selection highlighting,
-          but no draggable handles (static representation)
+        comment: Has main chart with detail view and navigator with selection indicator;
+          no interactive drag/resize (acceptable for static library)
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Shows full 3-year range in navigator, selected subset in main chart
+        comment: Both charts show appropriate data ranges
       - id: SC-05
         name: Legend Accuracy
-        score: 0
+        score: 1
         max: 2
-        passed: false
-        comment: Main chart legend says Detail View but should show the date range
-          label from the code
+        passed: true
+        comment: Navigator legend is accurate; main chart legend truncated
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Uses correct {spec-id} · {library} · pyplots.ai format
+        comment: Correct format 'line-navigator · pygal · pyplots.ai'
     data_quality:
       score: 18
       max: 20
@@ -144,22 +136,21 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows trend, seasonality, and noise in sensor data; demonstrates
-          navigator concept well
+        comment: Shows trend, seasonality, and noise; selection mechanism demonstrated
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Daily sensor readings over 3 years is a realistic, neutral scenario
+        comment: Sensor readings over 3 years is a realistic, neutral scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Sensor values 50-90 are plausible, but Y-axis could show units
+        comment: Values 50-90 mV are plausible for sensor data
     code_quality:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -167,7 +158,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports → data → charts → combine → save'
+        comment: Follows imports → data → plot → save pattern
       - id: CQ-02
         name: Reproducibility
         score: 3
@@ -176,41 +167,40 @@ review:
         comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: PIL imported but could note its for image combining
+        comment: All imports are used (numpy, pandas, pygal, PIL)
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: No deprecated functions used
+        comment: Uses current pygal API
       - id: CQ-05
         name: Output Correct
         score: 0
         max: 1
         passed: false
-        comment: Saves as plot.png but the implementation saves combined image after
-          PIL processing
+        comment: Saves plot.png but also creates plot.html
     library_features:
-      score: 5
+      score: 3
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 5
+        score: 3
         max: 5
         passed: true
-        comment: Good use of pygal Style customization, interpolate cubic, fill option,
-          render_to_png, and SVG rendering for HTML export
-  verdict: REJECTED
+        comment: Uses pygal styling, fill option, interpolation, and SVG rendering
+          with PNG export; combines two charts using PIL
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - pillow
   techniques:
-  - subplots
   - html-export
+  - subplots
   patterns:
   - data-generation
   dataprep:

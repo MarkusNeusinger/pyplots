@@ -1,7 +1,7 @@
 library: pygal
 specification_id: dashboard-synchronized-crosshair
 created: '2026-01-20T19:37:49Z'
-updated: '2026-01-20T19:41:49Z'
+updated: '2026-01-20T20:10:58Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21184663216
 issue: 3784
@@ -10,34 +10,37 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/dashboard-synchronized-crosshair/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/dashboard-synchronized-crosshair/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/dashboard-synchronized-crosshair/pygal/plot.html
-quality_score: 62
+quality_score: 55
 review:
   strengths:
-  - Excellent HTML implementation with functional synchronized crosshairs via JavaScript
-  - Realistic stock data scenario with price, volume, and RSI
-  - Clean code structure following KISS principles
-  - Good color choices that are colorblind accessible
-  - Proper use of pygal Style customization
+  - Excellent HTML implementation with JavaScript-based synchronized crosshairs and
+    tooltips
+  - Realistic financial data scenario with correlated price/volume/RSI
+  - Good color choices that are accessible
+  - Clean code structure with proper random seed
   weaknesses:
-  - PNG preview shows single combined chart instead of stacked multi-chart dashboard
-    layout
-  - Normalization loses meaningful scale information for each series
-  - Spec requires stacked vertical layout with charts sharing a common x-axis - PNG
-    should show 3 separate charts stacked
-  - For static libraries, spec notes to demonstrate the layout structure with annotations
-    - the PNG should show the dashboard structure even if crosshairs cannot be interactive
-  image_description: |-
-    The plot displays a single combined line chart with three normalized series over 200 trading days. The title reads "dashboard-synchronized-crosshair · pygal · pyplots.ai" at the top. There are three line series:
-    - Price (normalized) in blue - shows a peak early around Day 10 followed by a decline and fluctuation
-    - Volume (normalized) in yellow - highly volatile vertical spikes throughout
-    - RSI in red/coral - fluctuates in the 10-60 range
-
-    The X-axis is labeled "Trading Day" with labels at intervals (Day 1, Day 23, Day 45, etc.) rotated at 45 degrees. The Y-axis on the left shows "Normalized Value" from 0-100, and there is a secondary Y-axis on the right also 0-100. The legend appears at the bottom with all three series labeled. The background is light gray (#fafafa) with horizontal grid lines visible.
-
-    CRITICAL ISSUE: The PNG shows a single combined chart with all three series normalized to the same scale, rather than the stacked multi-chart dashboard layout specified. The spec requires "stacked vertical layout with charts sharing a common x-axis" with "independent y-axis scales for each chart." The HTML version does have 3 separate charts stacked vertically with crosshair synchronization, but the PNG preview fundamentally misrepresents the visualization type.
+  - PNG output shows all three series on a single normalized chart instead of the
+    required stacked vertical dashboard layout
+  - The code creates 3 separate charts but the PNG composite appears to have been
+    replaced with a single combined chart
+  - Independent y-axis scales are lost - all data normalized to 0-100 instead of Price
+    ($), Volume (M), RSI (0-100)
+  - The synchronized crosshair annotation in PNG is not visible in the current output
+  - Legend incorrectly labels series as normalized when spec expects actual units
+  image_description: 'The PNG image shows a single combined chart with all three data
+    series (Price, Volume, RSI) overlaid on the same plot area. The title "dashboard-synchronized-crosshair
+    · pygal · pyplots.ai" is displayed at the top. Three line series are visible:
+    blue for "Price (normalized)", yellow/gold for "Volume (normalized)", and red/coral
+    for "RSI". The x-axis shows "Trading Day" with labels from Day 1 to Day 200 (rotated
+    45°). The y-axis on both sides shows "Normalized Value" ranging from 0 to 100.
+    A legend appears at the bottom. The chart uses a white background with a light
+    gray plot area. All three series fluctuate across the 200 trading days, with the
+    price series showing a general downward trend from around 80-100 to 10-30. Critically,
+    this is NOT the stacked vertical dashboard layout specified - all series are on
+    one chart instead of three separate panels with independent y-axes.'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 29
       max: 40
       items:
       - id: VQ-01
@@ -45,47 +48,43 @@ review:
         score: 7
         max: 10
         passed: true
-        comment: Text is readable but x-axis labels are somewhat small and rotated
-          at 45 degrees making them harder to read quickly
+        comment: Text readable but x-axis labels small and rotated 45°
       - id: VQ-02
         name: No Overlap
-        score: 6
-        max: 8
-        passed: true
-        comment: Minor x-axis label overlap visible at some points
-      - id: VQ-03
-        name: Element Visibility
         score: 4
         max: 8
         passed: false
-        comment: Volume series (yellow) creates vertical spikes that dominate the
-          view and obscure other data; lines are thin but visible
+        comment: Three series overlapping on single chart makes trends hard to follow
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 8
+        passed: true
+        comment: Lines visible but volume spikes obscure other data
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Blue, yellow, and red are distinguishable and colorblind-safe
+        comment: Blue, yellow, red distinguishable and colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Plot fills canvas reasonably but single chart does not match spec
-          requirement for stacked dashboard layout
+        passed: true
+        comment: Chart fills canvas but single-chart wastes dashboard potential
       - id: VQ-06
         name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Normalized Value and Trading Day with legend
+      - id: VQ-07
+        name: Grid & Legend
         score: 1
         max: 2
         passed: false
-        comment: Y-axis has Normalized Value but no units; x-axis has Trading Day
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
-        passed: false
-        comment: Grid is visible but legend at bottom with colored squares loses dashboard
-          feel with single chart layout
+        comment: Grid subtle but legend at bottom takes space
     spec_compliance:
       score: 12
       max: 25
@@ -95,120 +94,120 @@ review:
         score: 3
         max: 8
         passed: false
-        comment: Spec requires multi-chart dashboard layout with stacked vertical
-          layout - PNG shows single combined chart with normalized values instead
+        comment: 'CRITICAL: Spec requires stacked vertical layout but PNG shows single
+          combined chart'
       - id: SC-02
         name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X (days) and Y (values) correctly mapped for each series
-      - id: SC-03
-        name: Required Features
-        score: 1
+        score: 3
         max: 5
         passed: false
-        comment: 'PNG does NOT demonstrate: synchronized crosshairs, stacked vertical
-          layout, independent y-axis scales per chart'
+        comment: All series normalized to 0-100 instead of independent y-axes
+      - id: SC-03
+        name: Required Features
+        score: 2
+        max: 5
+        passed: false
+        comment: Missing synchronized crosshair in PNG, independent y-scales, stacked
+          panels
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data visible within range
+        comment: Data range visible 0-100
       - id: SC-05
         name: Legend Accuracy
         score: 0
         max: 2
         passed: false
-        comment: Legend shows normalized versions which lose real scale information
-          (price in $, volume in millions, RSI 0-100)
+        comment: Legend says normalized but spec expects actual units
       - id: SC-06
         name: Title Format
-        score: 0
+        score: 1
         max: 2
         passed: false
-        comment: Title format is correct but overall representation incorrect
+        comment: Title follows format but could clarify dashboard nature
     data_quality:
-      score: 15
+      score: 18
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 7
         max: 8
-        passed: false
-        comment: Shows price, volume, RSI but normalized into same scale loses their
-          individual characteristics; volume spikes look like noise
+        passed: true
+        comment: Shows price trend, volume spikes, RSI variation
       - id: DQ-02
         name: Realistic Context
-        score: 7
+        score: 6
         max: 7
         passed: true
-        comment: Stock data with price, volume, and RSI is a realistic financial scenario
+        comment: Stock trading scenario realistic and neutral
       - id: DQ-03
         name: Appropriate Scale
-        score: 3
+        score: 5
         max: 5
-        passed: false
-        comment: Normalization loses real-world scale context (price should be dollars,
-          RSI should be 0-100 bounded indicator)
+        passed: true
+        comment: 200 trading days with realistic price movement
     code_quality:
-      score: 9
+      score: 8
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
-        passed: true
-        comment: Linear script structure without functions or classes
+        passed: false
+        comment: Code uses PIL Image creation which adds complexity
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports (numpy, pygal, Style)
+        comment: All imports used
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Current pygal API used
+        comment: No deprecated functions
       - id: CQ-05
         name: Output Correct
         score: 0
         max: 1
         passed: false
-        comment: Saves as plot.png but the representation is incorrect for the spec
+        comment: PNG shows wrong layout vs spec requirements
     library_features:
-      score: 0
+      score: 3
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 0
+        score: 3
         max: 5
         passed: false
-        comment: HTML output uses pygal SVG with custom JavaScript for crosshairs,
-          but PNG preview fails to demonstrate pygals capability to create multiple
-          charts stacked vertically
+        comment: Uses pygal Style and multi-chart but PNG composite loses dashboard
+          structure
   verdict: REJECTED
 impl_tags:
-  dependencies: []
+  dependencies:
+  - pillow
   techniques:
   - html-export
+  - subplots
+  - annotations
   - hover-tooltips
   patterns:
   - data-generation
+  - iteration-over-groups
   dataprep:
-  - normalization
   - cumulative-sum
   styling:
   - grid-styling
+  - alpha-blending

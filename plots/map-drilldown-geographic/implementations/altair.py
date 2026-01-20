@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-drilldown-geographic: Drillable Geographic Map
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 82/100 | Created: 2026-01-20
@@ -249,8 +249,8 @@ region_data = (
 )
 region_data["avg_value"] = region_data["total_value"] / region_data["num_states"]
 
-# Selection parameter for drill-down interaction (defined once)
-region_select = alt.selection_point(fields=["region"], name="drill")
+# Selection parameter for drill-down interaction
+region_select = alt.selection_point(fields=["region"], name="drill", empty=False)
 
 # Base US states map with topojson
 states_map = alt.topo_feature(us_states_url, "states")
@@ -266,25 +266,28 @@ choropleth = (
                 "value:Q",
                 scale=alt.Scale(scheme="blues", domain=[0, 550]),
                 legend=alt.Legend(
-                    title="Sales Value",
-                    titleFontSize=18,
+                    title="Sales ($K)",
+                    titleFontSize=16,
                     labelFontSize=14,
-                    orient="right",
-                    gradientLength=400,
-                    gradientThickness=25,
+                    orient="bottom-left",
+                    direction="vertical",
+                    gradientLength=200,
+                    gradientThickness=20,
+                    offset=10,
                 ),
             ),
-            alt.value("lightgray"),
+            alt.value("#e0e0e0"),
         ),
-        opacity=alt.condition(region_select, alt.value(1), alt.value(0.4)),
+        opacity=alt.condition(region_select, alt.value(1), alt.value(0.7)),
         tooltip=[
             alt.Tooltip("state:N", title="State"),
             alt.Tooltip("region:N", title="Region"),
-            alt.Tooltip("value:Q", title="Sales Value", format=",.0f"),
+            alt.Tooltip("value:Q", title="Sales ($K)", format=",.0f"),
         ],
     )
     .transform_lookup(lookup="id", from_=alt.LookupData(states_data, "id", ["state", "value", "region"]))
-    .properties(width=1200, height=700)
+    .project(type="albersUsa")
+    .properties(width=1000, height=600)
 )
 
 # Region bar chart - click to drill down and filter states
@@ -293,60 +296,82 @@ region_bars = (
     .mark_bar(cornerRadiusTopRight=5, cornerRadiusBottomRight=5)
     .encode(
         y=alt.Y("region:N", sort="-x", title=None, axis=alt.Axis(labelFontSize=16, labelFontWeight="bold")),
-        x=alt.X("total_value:Q", title="Total Sales", axis=alt.Axis(labelFontSize=14, titleFontSize=16)),
+        x=alt.X("total_value:Q", title="Total Sales ($K)", axis=alt.Axis(labelFontSize=14, titleFontSize=16)),
         color=alt.condition(
             region_select,
             alt.Color(
                 "region:N",
                 scale=alt.Scale(
-                    domain=["West", "South", "Midwest", "Northeast"], range=["#306998", "#FFD43B", "#6B8E23", "#CD5C5C"]
+                    domain=["West", "South", "Midwest", "Northeast"], range=["#4477AA", "#EE6677", "#228833", "#CCBB44"]
                 ),
-                legend=None,
+                legend=alt.Legend(
+                    title="Region", titleFontSize=14, labelFontSize=12, orient="top", direction="horizontal"
+                ),
             ),
-            alt.value("lightgray"),
+            alt.value("#cccccc"),
         ),
-        opacity=alt.condition(region_select, alt.value(1), alt.value(0.4)),
+        opacity=alt.condition(region_select, alt.value(1), alt.value(0.5)),
         tooltip=[
             alt.Tooltip("region:N", title="Region"),
-            alt.Tooltip("total_value:Q", title="Total Sales", format=",.0f"),
-            alt.Tooltip("num_states:Q", title="States"),
-            alt.Tooltip("avg_value:Q", title="Avg per State", format=",.0f"),
+            alt.Tooltip("total_value:Q", title="Total Sales ($K)", format=",.0f"),
+            alt.Tooltip("num_states:Q", title="Number of States"),
+            alt.Tooltip("avg_value:Q", title="Avg per State ($K)", format=",.0f"),
         ],
     )
     .add_params(region_select)
-    .properties(width=350, height=200, title=alt.Title("Click to Drill Down by Region", fontSize=18))
+    .properties(width=400, height=180, title=alt.Title("📍 USA > Click a Region to Drill Down", fontSize=18))
 )
 
-# State detail chart - shows states when region is selected
+# State detail chart - shows only states from selected region (empty=False ensures filtering)
 state_bars = (
     alt.Chart(states_data)
-    .mark_bar(cornerRadiusTopRight=5, cornerRadiusBottomRight=5)
+    .mark_bar(cornerRadiusTopRight=4, cornerRadiusBottomRight=4)
     .encode(
-        y=alt.Y("state:N", sort="-x", title=None, axis=alt.Axis(labelFontSize=12)),
-        x=alt.X("value:Q", title="Sales Value", axis=alt.Axis(labelFontSize=14, titleFontSize=16)),
-        color=alt.Color("value:Q", scale=alt.Scale(scheme="blues"), legend=None),
+        y=alt.Y("state:N", sort="-x", title=None, axis=alt.Axis(labelFontSize=14, labelLimit=150)),
+        x=alt.X("value:Q", title="Sales ($K)", axis=alt.Axis(labelFontSize=14, titleFontSize=16)),
+        color=alt.Color(
+            "region:N",
+            scale=alt.Scale(
+                domain=["West", "South", "Midwest", "Northeast"], range=["#4477AA", "#EE6677", "#228833", "#CCBB44"]
+            ),
+            legend=None,
+        ),
         tooltip=[
             alt.Tooltip("state:N", title="State"),
-            alt.Tooltip("value:Q", title="Sales", format=",.0f"),
+            alt.Tooltip("value:Q", title="Sales ($K)", format=",.0f"),
             alt.Tooltip("region:N", title="Region"),
         ],
     )
     .transform_filter(region_select)
-    .properties(width=350, height=400, title=alt.Title("States in Selected Region", fontSize=18))
+    .properties(width=400, height=450, title=alt.Title("📊 States in Selected Region", fontSize=18))
 )
 
-# Combine charts with layout
-sidebar = alt.vconcat(region_bars, state_bars, spacing=30)
+# Placeholder text when no region is selected
+placeholder = (
+    alt.Chart(pd.DataFrame({"text": ["← Click a region bar\n   to view states"]}))
+    .mark_text(fontSize=16, align="center", baseline="middle", color="#888", lineBreak="\n")
+    .encode(text="text:N")
+    .properties(width=400, height=450, title=alt.Title("📊 States in Selected Region", fontSize=18))
+)
 
-# Final composition
+# Combine state bars with placeholder using layer
+state_section = alt.layer(placeholder, state_bars)
+
+# Combine charts with layout - sidebar on right
+sidebar = alt.vconcat(region_bars, state_section, spacing=20).resolve_legend(color="independent")
+
+# Final composition - map fills more space
 chart = (
-    alt.hconcat(choropleth, sidebar, spacing=40)
+    alt.hconcat(choropleth, sidebar, spacing=30)
     .properties(
         title=alt.Title(
             "map-drilldown-geographic · altair · pyplots.ai",
             fontSize=28,
             anchor="middle",
-            subtitle="Click a region bar to drill down and highlight states on the map",
+            subtitle=[
+                "Hierarchical US Sales Map with Drill-Down Navigation",
+                "Click a region bar to filter the map and reveal state-level details",
+            ],
             subtitleFontSize=16,
             subtitlePadding=10,
         )

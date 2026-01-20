@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-range-buttons: Line Chart with Range Selector Buttons
-Library: plotnine | Python 3.13
-Quality: pending | Created: 2025-01-20
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 88/100 | Created: 2026-01-20
 """
 
 import numpy as np

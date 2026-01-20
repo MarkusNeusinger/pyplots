@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 map-drilldown-geographic: Drillable Geographic Map
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 86/100 | Created: 2026-01-20
+Quality: 90/100 | Created: 2026-01-20
 """
 
 import matplotlib.pyplot as plt

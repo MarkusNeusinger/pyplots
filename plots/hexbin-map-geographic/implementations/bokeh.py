@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 hexbin-map-geographic: Hexagonal Binning Map
 Library: bokeh 3.8.2 | Python 3.13.11
-Quality: 62/100 | Created: 2026-01-20
+Quality: 68/100 | Created: 2026-01-20
 """
 
 import numpy as np

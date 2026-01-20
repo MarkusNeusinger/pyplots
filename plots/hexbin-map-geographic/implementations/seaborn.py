@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 hexbin-map-geographic: Hexagonal Binning Map
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 85/100 | Created: 2026-01-20
+Quality: 91/100 | Created: 2026-01-20
 """
 
 import matplotlib.patches as mpatches

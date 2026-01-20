@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: hexbin-map-geographic
 created: '2026-01-20T21:16:53Z'
-updated: '2026-01-20T21:19:45Z'
+updated: '2026-01-20T21:27:46Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21187394647
 issue: 3767
@@ -10,92 +10,88 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/hexbin-map-geographic/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hexbin-map-geographic/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 85
+quality_score: 91
 review:
   strengths:
-  - Excellent realistic data scenario using NYC taxi pickups with realistic geographic
-    clustering
-  - Clean code structure following KISS principles with clear data generation
-  - Good use of YlOrRd sequential colormap which is colorblind-accessible
-  - Appropriate hexagon sizing (gridsize=35) for the data density
-  - Well-formatted title following spec requirements
-  - Geographic annotations (Manhattan, Brooklyn, Financial District) provide helpful
-    context
+  - Excellent use of seaborn jointplot for hexbin visualization - very idiomatic
+  - Well-designed synthetic data with realistic NYC clustering patterns (Manhattan,
+    Downtown, Brooklyn)
+  - Good geographic context through simplified map overlays and annotations
+  - Clean, readable code structure following KISS principle
+  - Appropriate colormap choice (YlOrRd) with proper colorbar
   weaknesses:
-  - Missing base map overlay (coastlines, boundaries, or street map) as required by
-    specification - only has reference lines and annotations
-  - Uses matplotlib hexbin function rather than seaborn-specific plotting; seaborn
-    is only used for theme styling
-  - Axis labels lack units (should be Longitude and Latitude with degree symbols)
-  - Canvas utilization could be better - equal aspect ratio leaves whitespace
-  - Tick label fontsize (14pt) is slightly below recommended 16pt
-  image_description: 'The plot displays a hexagonal binning map of NYC taxi pickup
-    locations. The visualization uses a YlOrRd (Yellow-Orange-Red) sequential colormap
-    where light yellow indicates low pickup counts (~10-20) and dark red indicates
-    high counts (~140-150). The hexagons are overlaid on a light gray background (#f5f5f5)
-    with subtle grid lines and two dashed reference lines at latitude 40.75 and longitude
-    -74.0. Three geographic region annotations are visible: "Manhattan" (upper right
-    area), "Financial District" (left-center), and "Brooklyn" (lower center). The
-    X-axis shows Longitude ranging from approximately -74.2 to -73.7, and the Y-axis
-    shows Latitude from about 40.55 to 40.90. A vertical colorbar on the right displays
-    "Pickup Count" with values from ~10 to ~150. The title follows the required format:
-    "NYC Taxi Pickups · hexbin-map-geographic · seaborn · pyplots.ai". The hexagons
-    show clear clustering with highest density in the Manhattan area (around lat 40.78,
-    lon -73.97) and the Financial District (around lat 40.70, lon -74.01), with a
-    secondary cluster for Brooklyn (around lat 40.65-40.68).'
+  - 'Title format should start with spec-id: hexbin-map-geographic · seaborn · pyplots.ai
+    not NYC Taxi Pickups'
+  - Some low-density peripheral hexagons are quite faint and hard to see
+  image_description: 'The plot shows a hexagonal binning map of NYC taxi pickup locations
+    using seaborn''s jointplot with kind="hex". The main visualization displays hexagons
+    colored with a YlOrRd (yellow-orange-red) colormap on a light blue water-like
+    background. Two distinct high-density clusters are visible: one in Midtown Manhattan
+    (around latitude 40.78, longitude -73.97) and another in the Financial District/Downtown
+    area (around latitude 40.71, longitude -74.01). Simplified geographic context
+    is provided through blue line segments representing water boundaries (Hudson River,
+    East River) and rounded rectangles outlining Manhattan and Brooklyn areas. Text
+    annotations label "Manhattan", "Brooklyn", and "Hudson River" in appropriate colors.
+    Marginal histograms on the top and right edges show the univariate distributions
+    of longitude and latitude respectively. A colorbar on the right shows the "Pickup
+    Count" scale ranging from approximately 20 to 180. The title follows the required
+    format: "NYC Taxi Pickups · hexbin-map-geographic · seaborn · pyplots.ai". Axis
+    labels include degree symbols: "Longitude (°W)" and "Latitude (°N)".'
   criteria_checklist:
     visual_quality:
-      score: 34
+      score: 36
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
+        score: 10
         max: 10
         passed: true
-        comment: Title at 22pt is good but could be 24pt; labels at 20pt are excellent;
-          tick labels at 14pt are readable but slightly below recommended 16pt
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt, all clearly
+          readable
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements; annotations are well-positioned
+        comment: No overlapping text elements; annotations, labels, and title all
+          clearly separated
       - id: VQ-03
         name: Element Visibility
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: Hexagons are well-sized with appropriate gridsize=35; alpha=0.85
-          provides good visibility
+        comment: Hexagons are well-sized with appropriate alpha (0.85); density patterns
+          clearly visible, but some peripheral low-count hexagons are quite faint
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: YlOrRd colormap is colorblind-safe sequential palette
+        comment: YlOrRd is a sequential colorblind-safe colormap with good luminance
+          progression
       - id: VQ-05
         name: Layout Balance
         score: 3
         max: 5
         passed: true
-        comment: Equal aspect ratio makes plot narrower than ideal canvas utilization;
-          some wasted horizontal space
+        comment: Jointplot includes marginal histograms which consume space; the main
+          plot area is reasonably utilized but the square aspect ratio with marginals
+          creates some wasted vertical space
       - id: VQ-06
         name: Axis Labels
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Longitude and Latitude are descriptive but lack units (degrees)
+        comment: 'Descriptive labels with units: Longitude (°W) and Latitude (°N)'
       - id: VQ-07
         name: Grid & Legend
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Grid at alpha=0.3 is good; colorbar well-placed but the dashed reference
-          lines add visual clutter
+        comment: Subtle whitegrid style, colorbar well-placed with appropriate label
     spec_compliance:
-      score: 21
+      score: 23
       max: 25
       items:
       - id: SC-01
@@ -103,20 +99,20 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct hexagonal binning map
+        comment: Correct hexbin map visualization
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Longitude/Latitude correctly mapped to X/Y
+        comment: Longitude on X, Latitude on Y, count aggregated in hexagons
       - id: SC-03
         name: Required Features
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Has hexbin with colorbar and transparency; missing base map overlay
-          as required by specification
+        passed: true
+        comment: Has hexagonal binning, sequential colormap (YlOrRd), colorbar, geographic
+          context (simplified). Missing true base map overlay
       - id: SC-04
         name: Data Range
         score: 3
@@ -125,16 +121,17 @@ review:
         comment: Axes show all data with appropriate padding
       - id: SC-05
         name: Legend Accuracy
-        score: 0
-        max: 2
-        passed: false
-        comment: Colorbar serves as legend; only count aggregation shown
-      - id: SC-06
-        name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Correctly formatted title
+        comment: Colorbar correctly labeled Pickup Count
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: false
+        comment: Title starts with NYC Taxi Pickups instead of spec-id; format should
+          be {spec-id} · {library} · pyplots.ai
     data_quality:
       score: 18
       max: 20
@@ -144,21 +141,22 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows density variation with multiple clusters; demonstrates hexagonal
-          aggregation well
+        comment: Shows multiple density clusters (Manhattan, Downtown, Brooklyn),
+          demonstrates hexbin aggregation well
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: NYC taxi data is an excellent realistic scenario directly mentioned
-          in spec applications
+        comment: NYC taxi data is a perfect, neutral, comprehensible scenario for
+          geographic hexbin visualization
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Coordinates are realistic for NYC area; point count of 5000 is appropriate
+        comment: Coordinates are realistic for NYC area; 5000 points is appropriate
+          for demonstrating hexbin
     code_quality:
       score: 9
       max: 10
@@ -168,48 +166,51 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports, data, plot, save'
+        comment: 'Linear script: imports → data → plot → save, no functions/classes'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) used
+        comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports are used (numpy, pandas, matplotlib, seaborn, mpatches)
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Uses current APIs
+        comment: No deprecated functions
       - id: CQ-05
         name: Output Correct
         score: 0
         max: 1
         passed: false
-        comment: Saves as plot.png correctly
+        comment: Saves as plot.png but uses strict=True in zip which is Python 3.10+
+          specific
     library_features:
-      score: 3
+      score: 5
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Uses sns.set_theme() for styling but the actual hexbin is from matplotlib;
-          seaborn statistical strengths are not utilized
-  verdict: REJECTED
+        comment: Excellent use of seaborn's jointplot with kind=hex - this is seaborn's
+          idiomatic approach for 2D density/hexbin visualization, includes marginal
+          histograms automatically, uses sns.set_theme for consistent styling
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - colorbar
   - annotations
+  - patches
   patterns:
   - data-generation
   dataprep:
@@ -217,5 +218,5 @@ impl_tags:
   styling:
   - custom-colormap
   - alpha-blending
-  - grid-styling
   - edge-highlighting
+  - grid-styling

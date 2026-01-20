@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-tile-background: Map with Tile Background
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 79/100 | Created: 2026-01-20
@@ -8,9 +8,9 @@ import pandas as pd
 from lets_plot import (
     LetsPlot,
     aes,
-    coord_fixed,
     element_rect,
     element_text,
+    geom_livemap,
     geom_point,
     geom_polygon,
     geom_rect,
@@ -21,6 +21,7 @@ from lets_plot import (
     scale_size,
     theme,
     theme_void,
+    tilesets,
 )
 from lets_plot.export import ggsave
 
@@ -121,8 +122,46 @@ cities_data = {
 
 df = pd.DataFrame(cities_data)
 
+# ============================================================
+# INTERACTIVE HTML VERSION: Uses geom_livemap with real tiles
+# ============================================================
+# Configure CARTO Positron tiles for clean basemap
+plot_interactive = (
+    ggplot()
+    + geom_livemap(
+        location=[-12, 35, 32, 72],  # Europe bounding box [lon_min, lat_min, lon_max, lat_max]
+        zoom=4,
+        tiles=tilesets.CARTO_POSITRON,  # Real tile provider
+    )
+    + geom_point(
+        aes(x="lon", y="lat", size="visitors"),
+        data=df,
+        color="#306998",
+        fill="#FFD43B",
+        alpha=0.85,
+        shape=21,
+        stroke=1.5,
+        tooltips=layer_tooltips().title("@city").line("Visitors|@visitors K/year"),
+    )
+    + scale_size(range=[6, 22], name="Visitors (thousands)")
+    + labs(title="European Tourism · map-tile-background · letsplot · pyplots.ai")
+    + ggsize(1600, 900)
+    + theme(
+        plot_title=element_text(size=24, face="bold"),
+        legend_title=element_text(size=16),
+        legend_text=element_text(size=14),
+        legend_position="right",
+        plot_inset=0,  # Remove livemap border inset
+    )
+)
+
+# Save interactive HTML with real tile background
+ggsave(plot_interactive, "plot.html", path=".")
+
+# ============================================================
+# STATIC PNG VERSION: Simulated tile appearance for export
+# ============================================================
 # Tile-style basemap: Create grid cells to simulate map tile appearance
-# This mimics the CARTO Positron/OpenStreetMap light tile style
 tiles = []
 tile_size = 5  # 5-degree tiles
 for lon in range(-15, 35, tile_size):
@@ -130,7 +169,7 @@ for lon in range(-15, 35, tile_size):
         tiles.append({"xmin": lon, "xmax": lon + tile_size, "ymin": lat, "ymax": lat + tile_size})
 df_tiles = pd.DataFrame(tiles)
 
-# Detailed European coastline approximation (styled like map tiles)
+# European coastline approximation (styled like vector tiles)
 # Mainland Europe
 europe_main = pd.DataFrame(
     {
@@ -255,11 +294,10 @@ balkans = pd.DataFrame(
 
 df_land = pd.concat([europe_main, scandinavia, britain, ireland, italy, balkans], ignore_index=True)
 
-# Create map with tile-style background
-# The layered approach simulates the appearance of tile-based maps like OSM/CARTO
-plot = (
+# Create static map with tile-simulated background for PNG export
+plot_static = (
     ggplot()
-    # Layer 1: Tile grid background (simulates tile mosaic)
+    # Layer 1: Tile grid background (simulates tile mosaic like CARTO Positron)
     + geom_rect(
         aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax"),
         data=df_tiles,
@@ -289,12 +327,15 @@ plot = (
         tooltips=layer_tooltips().title("@city").line("Visitors|@visitors K/year"),
     )
     + scale_size(range=[6, 22], name="Visitors (thousands)")
-    + labs(title="European Tourism · map-tile-background · lets-plot · pyplots.ai")
-    + coord_fixed(ratio=1.0, xlim=[-12, 32], ylim=[35, 72])
+    + labs(
+        title="European Tourism · map-tile-background · letsplot · pyplots.ai",
+        caption="Map tiles simulated (CARTO Positron style) | © OpenStreetMap contributors",
+    )
     + ggsize(1600, 900)
     + theme_void()
     + theme(
         plot_title=element_text(size=24, face="bold"),
+        plot_caption=element_text(size=12, color="#666666"),
         legend_title=element_text(size=16),
         legend_text=element_text(size=14),
         legend_position="right",
@@ -303,4 +344,4 @@ plot = (
 )
 
 # Save PNG (scale 3x for 4800 x 2700 px)
-ggsave(plot, "plot.png", path=".", scale=3)
+ggsave(plot_static, "plot.png", path=".", scale=3)

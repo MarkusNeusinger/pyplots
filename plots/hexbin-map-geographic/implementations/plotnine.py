@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hexbin-map-geographic: Hexagonal Binning Map
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-20
@@ -178,7 +178,7 @@ plot = (
         legend_title=element_text(size=18),
         legend_text=element_text(size=14),
         legend_position="right",
-        panel_grid_major=element_line(color="#888888", size=0.5, alpha=0.6),
+        panel_grid_major=element_line(color="#888888", size=0.5, alpha=0.3),
         panel_grid_minor=element_blank(),
         panel_background=element_rect(fill="#D4E8F7", alpha=0.4),
     )

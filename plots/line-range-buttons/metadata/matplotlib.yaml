@@ -1,0 +1,211 @@
+library: matplotlib
+specification_id: line-range-buttons
+created: '2026-01-20T09:51:51Z'
+updated: '2026-01-20T09:54:41Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 21166846577
+issue: 3786
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-range-buttons/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-range-buttons/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of range selector buttons using FancyBboxPatch with proper
+    styling
+  - Clean visual hierarchy with active button clearly highlighted
+  - Realistic financial data with trend, noise, and seasonal components
+  - Good use of fill_between for visual appeal
+  - Date range subtitle provides clear context
+  - Proper figure coordinate transforms for button positioning
+  weaknesses:
+  - Buttons partially overlap with the title text at the top
+  - Axis labels lack units (e.g., "Value ($)" or "Price (USD)")
+  image_description: 'The plot displays a time series line chart showing financial-like
+    data over a 3-month period (Oct 02, 2024 - Dec 31, 2024). At the top of the figure
+    are six range selector buttons: 1M, 3M, 6M, YTD, 1Y, and All. The "3M" button
+    is highlighted in a blue color (#306998) with white text, indicating it is the
+    active selection, while the other buttons are styled with a light gray background
+    and darker gray text. Below the buttons, a subtitle shows the current date range.
+    The main chart displays a blue line (same #306998 color) with an area fill beneath
+    it at 15% opacity. The line shows an upward trend from approximately 132 to 145,
+    with realistic price-like fluctuations. The y-axis is labeled "Value" and the
+    x-axis is labeled "Date" with dates formatted as YYYY-MM-DD and rotated at 30
+    degrees. A subtle dashed grid is visible. The title reads "line-range-buttons
+    · matplotlib · pyplots.ai" in the correct format.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt, button text
+          at 14pt - all clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; date labels rotated to avoid overlap
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Line width of 3 is excellent for this data density; fill provides
+          good visual weight
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme (#306998 blue) is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Good layout overall but buttons partially overlap with title text
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels (Date, Value) but no units provided
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha 0.3) which is good; no legend needed for single
+          series
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct time series line chart implementation
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Date on X-axis, value on Y-axis correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: 'All 6 buttons present (1M, 3M, 6M, YTD, 1Y, All) with active button
+          highlighted; missing: smooth animation (static image limitation)'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis appropriately scaled with 10% margins, showing all data
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A for single series, date range subtitle is accurate
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: true
+        comment: Title format is correct but buttons overlap with it slightly
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows upward trend, volatility, and seasonal patterns; good demonstration
+          of the chart type
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Financial/stock-like data is perfectly appropriate for range selector
+          buttons
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values 130-146 are realistic for stock/asset prices
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear script: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: No deprecated functions
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of matplotlib.patches.FancyBboxPatch for buttons, fill_between
+          for area, figure-level transforms for button positioning; could have used
+          more advanced features
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - patches
+  - annotations
+  patterns:
+  - data-generation
+  dataprep:
+  - time-series
+  styling:
+  - alpha-blending
+  - grid-styling

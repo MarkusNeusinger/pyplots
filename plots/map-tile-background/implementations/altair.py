@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-tile-background: Map with Tile Background
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-20
@@ -79,7 +79,7 @@ landmarks = {
         12.4833,
         2.1734,
     ],
-    "visitors": [7.0, 7.6, 4.5, 2.0, 2.7, 3.0, 1.9, 4.0, 9.6, 6.9, 2.7, 0.8, 1.3, 3.0, 1.5, 0.5, 5.5, 12.0, 3.5, 78.0],
+    "visitors": [7.0, 7.6, 4.5, 2.0, 2.7, 3.0, 1.9, 4.0, 9.6, 6.9, 2.7, 0.8, 1.3, 3.0, 1.5, 0.5, 5.5, 12.0, 3.5, 37.0],
     "category": [
         "Monument",
         "Historical",
@@ -110,52 +110,44 @@ df = pd.DataFrame(landmarks)
 zoom = 5
 tile_size = 256
 
-# Tile range for Europe at zoom 5 - using 8x5 grid for 16:10 aspect ratio
-# This covers from Western Portugal/Spain to Eastern Europe/Greece
-tx_min, tx_max = 13, 20  # 8 tiles wide
+# Tile range for Europe at zoom 5 - tighter bounds to reduce unused ocean
+# Focus on Western/Central Europe where most landmarks are
+tx_min, tx_max = 14, 20  # 7 tiles wide (tighter western bound)
 ty_min, ty_max = 9, 13  # 5 tiles tall
 
 # Number of tiles
-n_tiles_x = tx_max - tx_min + 1  # 8 tiles
+n_tiles_x = tx_max - tx_min + 1  # 7 tiles
 n_tiles_y = ty_max - ty_min + 1  # 5 tiles
 
 # Chart dimensions - use aspect ratio matching tile grid
-# 8:5 tiles = 16:10 aspect ratio ≈ 1600x1000
 chart_width = 1600
-chart_height = 1000
-
-
-# Web Mercator projection helpers
-def lon_to_tile_x(lon, z):
-    """Convert longitude to tile x coordinate."""
-    return (lon + 180) / 360 * (2**z)
-
-
-def lat_to_tile_y(lat, z):
-    """Convert latitude to tile y coordinate (Web Mercator)."""
-    lat_rad = np.radians(lat)
-    return (1 - np.log(np.tan(lat_rad) + 1 / np.cos(lat_rad)) / np.pi) / 2 * (2**z)
-
+chart_height = int(1600 * n_tiles_y / n_tiles_x)
 
 # Calculate tile display size
 tile_disp_w = chart_width / n_tiles_x
 tile_disp_h = chart_height / n_tiles_y
+
+# Web Mercator projection: convert lon/lat to tile pixel coordinates (inline)
+# lon_to_tile_x = (lon + 180) / 360 * (2**zoom)
+# lat_to_tile_y = (1 - log(tan(lat_rad) + 1/cos(lat_rad)) / pi) / 2 * (2**zoom)
 
 # Generate tile data - position at pixel coordinates within the chart
 tiles = []
 for tx in range(tx_min, tx_max + 1):
     for ty in range(ty_min, ty_max + 1):
         url = f"https://tile.openstreetmap.org/{zoom}/{tx}/{ty}.png"
-        # Position as pixel coordinates (center of each tile cell)
         x_pix = (tx - tx_min + 0.5) * tile_disp_w
         y_pix = (ty - ty_min + 0.5) * tile_disp_h
         tiles.append({"url": url, "x": x_pix, "y": y_pix})
 
 tiles_df = pd.DataFrame(tiles)
 
-# Convert landmark coordinates to pixel coordinates
-df["x_pix"] = df["lon"].apply(lambda lon: (lon_to_tile_x(lon, zoom) - tx_min) * tile_disp_w)
-df["y_pix"] = df["lat"].apply(lambda lat: (lat_to_tile_y(lat, zoom) - ty_min) * tile_disp_h)
+# Convert landmark coordinates to pixel coordinates using inline Web Mercator projection
+df["tile_x"] = (df["lon"] + 180) / 360 * (2**zoom)
+df["lat_rad"] = np.radians(df["lat"])
+df["tile_y"] = (1 - np.log(np.tan(df["lat_rad"]) + 1 / np.cos(df["lat_rad"])) / np.pi) / 2 * (2**zoom)
+df["x_pix"] = (df["tile_x"] - tx_min) * tile_disp_w
+df["y_pix"] = (df["tile_y"] - ty_min) * tile_disp_h
 
 # Filter data points that fall within the chart bounds
 df = df[(df["x_pix"] >= 0) & (df["x_pix"] <= chart_width) & (df["y_pix"] >= 0) & (df["y_pix"] <= chart_height)]
@@ -189,15 +181,15 @@ points_layer = (
         y=alt.Y("y_pix:Q", scale=alt.Scale(domain=[0, chart_height], nice=False), axis=None),
         size=alt.Size(
             "visitors:Q",
-            scale=alt.Scale(domain=[0.5, 80], range=[200, 2000]),
+            scale=alt.Scale(domain=[0.5, 40], range=[250, 2500]),
             legend=alt.Legend(
-                title="Visitors (M/year)", titleFontSize=18, labelFontSize=14, orient="bottom-left", offset=20
+                title="Visitors (M/year)", titleFontSize=20, labelFontSize=18, orient="bottom-left", offset=30
             ),
         ),
         color=alt.Color(
             "category:N",
             scale=alt.Scale(domain=list(category_colors.keys()), range=list(category_colors.values())),
-            legend=alt.Legend(title="Category", titleFontSize=18, labelFontSize=14, orient="bottom-right", offset=20),
+            legend=alt.Legend(title="Category", titleFontSize=20, labelFontSize=18, orient="bottom-right", offset=30),
         ),
         tooltip=[
             alt.Tooltip("name:N", title="Landmark"),
@@ -209,11 +201,11 @@ points_layer = (
     )
 )
 
-# Text labels for major landmarks (visitors > 5M)
-labels_df = df[df["visitors"] > 5].copy()
+# Text labels for major landmarks (visitors > 6M) - reduced threshold to avoid overlap
+labels_df = df[df["visitors"] > 6].copy()
 labels_layer = (
     alt.Chart(labels_df)
-    .mark_text(align="left", dx=15, dy=-5, fontSize=14, fontWeight="bold", color="#333333")
+    .mark_text(align="left", dx=18, dy=-8, fontSize=16, fontWeight="bold", color="#333333")
     .encode(
         x=alt.X("x_pix:Q", scale=alt.Scale(domain=[0, chart_width], nice=False)),
         y=alt.Y("y_pix:Q", scale=alt.Scale(domain=[0, chart_height], nice=False)),
@@ -228,7 +220,7 @@ attribution_df = pd.DataFrame(
 
 attribution_layer = (
     alt.Chart(attribution_df)
-    .mark_text(align="right", baseline="bottom", fontSize=12, color="#666666")
+    .mark_text(align="right", baseline="bottom", fontSize=14, color="#666666")
     .encode(
         x=alt.X("x:Q", scale=alt.Scale(domain=[0, chart_width], nice=False)),
         y=alt.Y("y:Q", scale=alt.Scale(domain=[0, chart_height], nice=False)),
@@ -243,14 +235,16 @@ chart = (
         width=chart_width,
         height=chart_height,
         title=alt.Title(
-            text="European Landmarks · map-tile-background · altair · pyplots.ai",
+            text="map-tile-background · altair · pyplots.ai",
+            subtitle="European Landmarks by Annual Visitors",
             fontSize=28,
+            subtitleFontSize=20,
             anchor="middle",
             color="#333333",
         ),
     )
     .configure_view(strokeWidth=0)
-    .configure_legend(titleColor="#333333", labelColor="#555555", padding=15, cornerRadius=5)
+    .configure_legend(titleColor="#333333", labelColor="#555555", padding=20, cornerRadius=5)
 )
 
 # Save as PNG (scale 3x for high resolution)

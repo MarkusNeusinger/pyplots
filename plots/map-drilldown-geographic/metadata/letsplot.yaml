@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: map-drilldown-geographic
 created: '2026-01-20T07:45:57Z'
-updated: '2026-01-20T07:48:41Z'
+updated: '2026-01-20T08:42:48Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21163297480
 issue: 3770
@@ -10,169 +10,181 @@ library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/map-drilldown-geographic/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/map-drilldown-geographic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/map-drilldown-geographic/letsplot/plot.html
-quality_score: 72
+quality_score: 82
 review:
   strengths:
-  - Comprehensive hierarchical data structure with 3 levels (country → state → city)
-  - Well-designed HTML version with true interactive drill-down, breadcrumbs, and
-    tooltips
-  - 'Good color scheme using Python-branded colors (#306998, #FFD43B)'
-  - Continent outline polygons provide geographic context effectively
-  - Clean coordinate mapping and proper fixed aspect ratio
+  - Excellent hierarchical data structure prepared for drill-down functionality
+  - Well-designed label positioning with custom offsets to reduce overlap
+  - Clean color gradient from yellow to blue that is colorblind-accessible
+  - Thoughtful continent outlines provide geographic context without cluttering
+  - Good use of lets-plot layer_tooltips for HTML interactivity
+  - Appropriate use of coord_fixed to maintain geographic proportions
+  - Extended xlim prevents Australia from being cut off
   weaknesses:
-  - Australia label is cut off at the edge ("Austra")
-  - European country labels (UK, Germany, France) overlap and are difficult to read
-  - Code contains a function definition (value_to_color) which violates KISS structure
-    requirement
-  - PNG version does not demonstrate lets-plot distinctive features; HTML uses external
-    Leaflet.js library instead of lets-plot native interactivity
-  - Two separate legends for size and fill when they represent the same data dimension
-  image_description: The plot displays a static world map showing global sales data
-    for 8 countries using a bubble marker approach. Simplified continent outlines
-    (North America, South America, Europe, Australia) are rendered as light gray polygons
-    providing geographic context. Each country is represented by a circular marker
-    positioned at approximate geographic coordinates, with both size and fill color
-    encoding sales values in millions of dollars. The United States has the largest,
-    darkest blue bubble (~$4.85M), followed by Germany (~$2.35M) and United Kingdom
-    (~$2.1M). Smaller yellow bubbles represent lower-value countries like Mexico and
-    Australia. Country name labels appear below each marker. A dual legend on the
-    right shows both the color gradient scale (yellow to blue) and size scale for
-    "Sales (Millions $)". The title correctly follows the format "map-drilldown-geographic
-    · letsplot · pyplots.ai" with subtitle "Global Sales · Click to drill down (HTML)".
-    The background is a light blue-gray (#f0f4f8).
+  - European country labels (UK, France, Germany) are still somewhat crowded despite
+    offset adjustments
+  - The static PNG cannot demonstrate the drilldown functionality which is the core
+    feature of the specification
+  - No visual indication of which countries have drill-down capability (the has_children
+    field exists but is not visualized)
+  - Code structure is complex due to extensive hierarchical data definition
+  image_description: 'The plot displays a world map with simplified continent outlines
+    (North America, South America, Europe, and Australia) rendered as light gray polygons
+    on a pale blue-gray background. Eight countries are represented as bubble markers
+    positioned at their approximate geographic locations: United States (large blue
+    bubble), Canada, Mexico, Brazil, UK, Germany, France, and Australia. Each bubble''s
+    color follows a gradient from yellow (lower values around $1M) to blue (higher
+    values around $4.85M) representing sales in millions. The United States has the
+    largest and bluest bubble indicating the highest sales (~$4.85M), while Mexico
+    has a small yellow bubble indicating lower sales (~$0.98M). Country labels are
+    displayed in bold dark gray text near each bubble with custom positioning offsets
+    to reduce overlap. The title "map-drilldown-geographic · letsplot · pyplots.ai"
+    is at the top, with a subtitle "Global Sales by Country · Drill-down available
+    in HTML version". A color scale legend titled "Sales (Millions $)" is positioned
+    in the lower right corner showing the gradient from yellow (1) to blue (4). The
+    continent outlines provide geographic context while tooltips are available in
+    the HTML version for interactivity.'
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 33
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 10
         passed: true
-        comment: Title and labels readable, but some labels could be larger for the
-          canvas size
+        comment: Title and labels readable; European labels somewhat close together;
+          legend text adequate
       - id: VQ-02
         name: No Overlap
-        score: 4
-        max: 8
-        passed: false
-        comment: European country labels (UK, Germany, France) overlap significantly
-      - id: VQ-03
-        name: Element Visibility
         score: 6
         max: 8
         passed: true
-        comment: Bubbles appropriately sized, good alpha blending (0.85)
+        comment: UK and France labels close; minor congestion in European region despite
+          offset adjustments
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Bubbles well-sized with good variation; alpha=0.85 provides good
+          visibility
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Yellow-to-blue gradient is colorblind-safe
+        comment: Yellow-to-blue gradient is colorblind-safe with good contrast
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Australia label is cut off (Austra), significant right-side issues
+        passed: true
+        comment: Good canvas use; xlim extended for Australia; slight imbalance with
+          empty right space
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: N/A for map; uses descriptive legend titles with units
+        comment: N/A for map with theme_void; coordinates used appropriately
       - id: VQ-07
         name: Grid & Legend
         score: 1
         max: 2
-        passed: false
-        comment: Legend well-placed but two separate legends for same data dimension
+        passed: true
+        comment: Legend well-placed; size legend hidden which simplifies but loses
+          information
     spec_compliance:
-      score: 21
+      score: 22
       max: 25
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
+        score: 6
         max: 8
         passed: true
-        comment: Correct hierarchical map with choropleth-style coloring
+        comment: Bubble map is reasonable alternative for static; spec calls for choropleth
+          with clickable regions
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Geographic coordinates and values correctly mapped
+        comment: Geographic positioning correct; value mapped to size and color
       - id: SC-03
         name: Required Features
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: PNG shows static view; drill-down only in HTML; breadcrumb not visible
-          in PNG
+        passed: true
+        comment: Has geographic context, legend, tooltips in HTML; missing breadcrumb
+          visualization
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All countries visible within map bounds
+        comment: All countries visible; expanded xlim ensures Australia not cut off
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Legend accurately reflects data encoding
+        comment: Legend correctly shows Sales (Millions $) with accurate gradient
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: 'Correct format: map-drilldown-geographic · letsplot · pyplots.ai'
+        comment: 'Title uses correct format: map-drilldown-geographic · letsplot ·
+          pyplots.ai'
     data_quality:
-      score: 18
+      score: 17
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: Shows 8 countries across 4 continents with varying sales values
+        comment: 8 countries across 4 continents; hierarchical data in code but only
+          country level shown
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Sales data is a realistic, neutral business scenario
+        comment: Sales data by country is realistic business scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Values in millions are realistic; hierarchy data well-structured
+        comment: Sales values $1M-$4.85M are realistic; coordinates accurate
     code_quality:
-      score: 5
+      score: 8
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 0
+        score: 1
         max: 3
         passed: false
-        comment: Contains function definition (value_to_color), violates KISS principle
+        comment: Extensive dictionary structure for hierarchical data; complexity
+          justified but not KISS
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) is set
       - id: CQ-03
         name: Clean Imports
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: json imported but only used for HTML export
+        passed: true
+        comment: All imports used; no unnecessary imports
       - id: CQ-04
         name: No Deprecated API
         score: 1
@@ -181,29 +193,29 @@ review:
         comment: Uses current lets-plot API
       - id: CQ-05
         name: Output Correct
-        score: 0
+        score: 1
         max: 1
         passed: true
-        comment: Saves to plot.png correctly
+        comment: Saves as plot.png and plot.html
     library_features:
-      score: 0
+      score: 4
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 0
+        score: 4
         max: 5
-        passed: false
-        comment: Implementation creates custom HTML with Leaflet.js rather than using
-          lets-plot native interactive capabilities. PNG uses basic geoms without
-          distinctive lets-plot features.
-  verdict: REJECTED
+        passed: true
+        comment: 'Uses ggplot2-style grammar: geom_polygon, geom_point shape=21, layer_tooltips,
+          scale_fill_gradient, theme_void, coord_fixed'
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - layer-composition
-  - annotations
+  - hover-tooltips
   - html-export
+  - annotations
   patterns:
   - data-generation
   - iteration-over-groups

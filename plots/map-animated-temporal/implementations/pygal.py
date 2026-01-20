@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 map-animated-temporal: Animated Map over Time
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 81/100 | Created: 2026-01-20
+Quality: 85/100 | Created: 2026-01-20
 """
 
 from io import BytesIO

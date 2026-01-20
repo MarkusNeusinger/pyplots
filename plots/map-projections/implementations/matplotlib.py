@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 map-projections: World Map with Different Projections
-Library: matplotlib | Python 3.13
-Quality: pending | Created: 2025-01-20
+Library: matplotlib 3.10.8 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-20
 """
 
 import cartopy.crs as ccrs

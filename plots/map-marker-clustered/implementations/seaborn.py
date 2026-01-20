@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-marker-clustered: Clustered Marker Map
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-20
@@ -11,7 +11,7 @@ import seaborn as sns
 from sklearn.cluster import AgglomerativeClustering
 
 
-# Generate sample geographic data - coffee shop locations across a city region
+# Generate sample geographic data - business locations across NYC region
 np.random.seed(42)
 n_points = 500
 
@@ -50,72 +50,93 @@ cluster_stats = (
     .reset_index()
 )
 
+# Set seaborn context and style for the entire plot
+sns.set_theme(style="whitegrid", context="talk", font_scale=1.2)
+
+# Use colorblind-friendly palette from seaborn
+palette = sns.color_palette("colorblind", n_colors=4)
+category_palette = dict(zip(category_names, palette, strict=True))
+
 # Create the plot
 fig, ax = plt.subplots(figsize=(16, 9))
-sns.set_style("whitegrid")
 
-# Define color palette for categories
-palette = {"Coffee Shop": "#306998", "Restaurant": "#FFD43B", "Bookstore": "#4CAF50", "Gym": "#E91E63"}
-
-# Plot individual points with low alpha (background layer)
-sns.scatterplot(data=df, x="lon", y="lat", hue="category", palette=palette, s=30, alpha=0.2, ax=ax, legend=False)
-
-# Plot cluster markers (foreground layer)
-# Size proportional to count, color by dominant category
-sizes = cluster_stats["count"] * 15  # Scale factor for visibility
-colors = cluster_stats["dominant_category"].map(palette)
-
-ax.scatter(
-    cluster_stats["lon_center"],
-    cluster_stats["lat_center"],
-    s=sizes,
-    c=colors,
-    alpha=0.8,
-    edgecolors="white",
-    linewidths=2,
-    zorder=5,
+# Plot individual points as background layer using seaborn scatterplot
+sns.scatterplot(
+    data=df, x="lon", y="lat", hue="category", palette=category_palette, s=40, alpha=0.3, ax=ax, legend=False
 )
 
-# Add count labels to clusters
+# Create cluster dataframe for seaborn visualization
+cluster_stats["size_scaled"] = cluster_stats["count"] * 20
+cluster_stats["color"] = cluster_stats["dominant_category"].map(category_palette)
+
+# Plot cluster markers using seaborn scatterplot with size encoding
+sns.scatterplot(
+    data=cluster_stats,
+    x="lon_center",
+    y="lat_center",
+    size="count",
+    hue="dominant_category",
+    palette=category_palette,
+    sizes=(100, 800),
+    alpha=0.85,
+    edgecolor="white",
+    linewidth=2,
+    ax=ax,
+    legend=False,
+)
+
+# Add count labels to larger clusters
 for _, row in cluster_stats.iterrows():
-    if row["count"] > 3:  # Only label clusters with more than 3 points
+    if row["count"] > 4:
         ax.annotate(
             str(int(row["count"])),
             (row["lon_center"], row["lat_center"]),
             ha="center",
             va="center",
-            fontsize=10,
+            fontsize=11,
             fontweight="bold",
             color="white",
-            zorder=6,
+            zorder=10,
         )
 
-# Create legend for categories
-legend_elements = [
-    plt.scatter([], [], s=200, c=color, label=cat, edgecolors="white", linewidths=1) for cat, color in palette.items()
+# Create custom legend with seaborn styling
+handles = [
+    plt.scatter([], [], s=250, c=[category_palette[cat]], label=cat, edgecolors="white", linewidths=1.5)
+    for cat in category_names
 ]
-ax.legend(handles=legend_elements, title="Category", loc="upper left", fontsize=14, title_fontsize=16, framealpha=0.9)
+legend = ax.legend(
+    handles=handles,
+    title="Business Type",
+    loc="lower right",
+    fontsize=14,
+    title_fontsize=16,
+    framealpha=0.95,
+    edgecolor="gray",
+)
+legend.get_frame().set_linewidth(1.5)
 
-# Styling
-ax.set_xlabel("Longitude", fontsize=20)
-ax.set_ylabel("Latitude", fontsize=20)
-ax.set_title("map-marker-clustered · seaborn · pyplots.ai", fontsize=24, fontweight="bold")
+# Styling with seaborn-friendly axis formatting
+ax.set_xlabel("Longitude (°)", fontsize=20)
+ax.set_ylabel("Latitude (°)", fontsize=20)
+ax.set_title("map-marker-clustered · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=15)
 ax.tick_params(axis="both", labelsize=16)
 
-# Add subtle grid for geographic reference
-ax.grid(True, alpha=0.3, linestyle="--")
+# Customize grid using seaborn despine and grid settings
+sns.despine(ax=ax, left=False, bottom=False)
+ax.grid(True, alpha=0.3, linestyle="--", color="gray")
 
-# Add note about static visualization
+# Add annotation about clustering
 ax.text(
-    0.98,
+    0.02,
     0.02,
     f"{n_points} locations · {len(cluster_stats)} clusters",
     transform=ax.transAxes,
-    fontsize=12,
-    ha="right",
+    fontsize=13,
+    ha="left",
     va="bottom",
     style="italic",
-    alpha=0.7,
+    color="dimgray",
+    bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "alpha": 0.8, "edgecolor": "lightgray"},
 )
 
 plt.tight_layout()

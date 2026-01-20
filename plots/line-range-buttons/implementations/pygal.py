@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-range-buttons: Line Chart with Range Selector Buttons
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-20
@@ -56,22 +56,23 @@ selected_start = range_presets[selected_range]
 filtered_dates = dates[selected_start:]
 filtered_values = values_list[selected_start:]
 
-# Custom style for main chart - more compact to reduce gap
+# Custom style for main chart - scaled up fonts for 4800x2700 canvas
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
-    foreground_subtle="#666666",
+    foreground_subtle="#999999",  # Lighter subtle color for grid
     colors=("#306998",),
-    title_font_size=72,
-    label_font_size=44,
-    major_label_font_size=40,
-    legend_font_size=44,
-    value_font_size=32,
+    title_font_size=84,  # Increased from 72
+    label_font_size=52,  # Increased from 44
+    major_label_font_size=48,  # Increased from 40
+    legend_font_size=48,  # Increased from 44
+    value_font_size=36,  # Increased from 32
     opacity=1.0,
     opacity_hover=0.8,
-    stroke_width=4,
+    stroke_width=5,  # Increased from 4 for better visibility
+    guide_stroke_color="#dddddd",  # Light gray for subtle grid
 )
 
 # Create x-axis labels - show only at specific intervals
@@ -99,13 +100,13 @@ main_chart = pygal.Line(
     truncate_label=-1,
     truncate_legend=-1,
     show_legend=True,
-    legend_at_bottom=False,
-    legend_box_size=28,
+    legend_at_bottom=True,  # Move legend to bottom to avoid overlap with y-axis
+    legend_box_size=32,  # Increased from 28
     show_x_labels=True,
-    stroke_style={"width": 4, "linecap": "round", "linejoin": "round"},
+    stroke_style={"width": 5, "linecap": "round", "linejoin": "round"},
     margin=80,
     margin_top=150,
-    margin_bottom=160,
+    margin_bottom=200,  # Increased to accommodate legend at bottom
     spacing=30,
 )
 
@@ -118,15 +119,15 @@ mini_style = Style(
     plot_background="#f0f0f0",
     foreground="#555555",
     foreground_strong="#555555",
-    foreground_subtle="#888888",
+    foreground_subtle="#aaaaaa",  # Lighter for less prominent grid
     colors=("#306998",),
-    title_font_size=48,
-    label_font_size=38,
-    major_label_font_size=36,
+    title_font_size=56,  # Increased from 48
+    label_font_size=44,  # Increased from 38
+    major_label_font_size=42,  # Increased from 36
     legend_font_size=0,
     value_font_size=0,
     opacity=0.8,
-    stroke_width=2,
+    stroke_width=3,  # Increased from 2
 )
 
 # Create mini chart showing full range

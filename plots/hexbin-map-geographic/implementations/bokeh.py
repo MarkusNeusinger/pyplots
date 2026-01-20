@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hexbin-map-geographic: Hexagonal Binning Map
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-20
@@ -6,13 +6,13 @@ Quality: 78/100 | Created: 2026-01-20
 
 import numpy as np
 from bokeh.io import export_png, output_file, save
-from bokeh.models import ColorBar, ColumnDataSource, HoverTool, LinearColorMapper, WMTSTileSource
+from bokeh.models import ColorBar, ColumnDataSource, HoverTool, LinearColorMapper
 from bokeh.plotting import figure
 from bokeh.transform import transform
 from bokeh.util.hex import hexbin
 
 
-# Data - Simulated GPS coordinates (e.g., taxi pickups in a city area)
+# Data - Simulated GPS coordinates (NYC taxi pickups)
 np.random.seed(42)
 
 # Generate clustered point data to simulate urban hotspots
@@ -38,18 +38,10 @@ for center_lon, center_lat in centers:
 lon = np.array(lon_data)
 lat = np.array(lat_data)
 
-
-# Convert lat/lon to Web Mercator projection for tile overlay
-def wgs84_to_web_mercator(lon, lat):
-    """Convert WGS84 (EPSG:4326) to Web Mercator (EPSG:3857)"""
-    k = 6378137  # Earth radius in meters
-    x = lon * (k * np.pi / 180.0)
-    y = np.log(np.tan((90 + lat) * np.pi / 360.0)) * k
-    return x, y
-
-
-# Convert coordinates
-merc_lon, merc_lat = wgs84_to_web_mercator(lon, lat)
+# Convert lat/lon to Web Mercator projection (inline, no function)
+k = 6378137  # Earth radius in meters
+merc_lon = lon * (k * np.pi / 180.0)
+merc_lat = np.log(np.tan((90 + lat) * np.pi / 360.0)) * k
 
 # Compute hexbin aggregation in Web Mercator coordinates
 hex_size = 800  # Size in meters (Web Mercator units)
@@ -86,10 +78,8 @@ p = figure(
     background_fill_color="#e6e6e6",
 )
 
-# Add base map tile layer for geographic context (CartoDB Positron)
-tile_url = "https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
-tile_source = WMTSTileSource(url=tile_url)
-p.add_tile(tile_source)
+# Add base map tile layer for geographic context
+p.add_tile("CartoDB Positron")
 
 # Plot hex tiles using ColumnDataSource
 p.hex_tile(
@@ -104,7 +94,7 @@ p.add_tools(hover)
 color_bar = ColorBar(
     color_mapper=mapper,
     location=(0, 0),
-    title="Count",
+    title="Pickups",
     title_text_font_size="20pt",
     title_text_font_style="bold",
     major_label_text_font_size="18pt",

@@ -1,7 +1,7 @@
 library: pygal
 specification_id: map-tile-background
 created: '2026-01-20T22:46:06Z'
-updated: '2026-01-20T23:01:34Z'
+updated: '2026-01-20T23:08:21Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21189771645
 issue: 3756
@@ -10,35 +10,35 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/map-tile-background/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/map-tile-background/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/map-tile-background/pygal/plot.html
-quality_score: 52
+quality_score: 55
 review:
   strengths:
-  - Creative use of OSM-inspired color scheme to simulate map appearance
-  - Well-structured code following KISS principles
-  - Good data quality with real European landmarks and realistic visitor statistics
-  - Effective use of marker size encoding for visitor count ranges
-  - Proper axis labeling with geographic degree notation
+  - Clean, well-structured code with proper KISS pattern
+  - Good use of pygal Custom Style to simulate map-like appearance
+  - Colorblind-accessible palette (orange, teal, purple)
+  - Meaningful data grouping by visitor count ranges
+  - Proper canvas sizing (4800x2700) with appropriate margins
+  - Good axis labels with degree notation
   weaknesses:
-  - 'Fundamental spec mismatch: Pygal cannot render actual tile-based map backgrounds
-    (OpenStreetMap, Stamen, satellite imagery) as required by the specification'
-  - Missing tile provider attribution as required by specification
-  - Title format includes descriptive prefix instead of using spec-id directly
-  - Legend colors are subtle variations of blue that could be more distinguishable
-  image_description: 'The plot displays a scatter chart of 15 European landmarks plotted
-    by geographic coordinates (longitude on X-axis from -2° to 22°, latitude on Y-axis
-    from 36° to 54°). The visualization uses OSM-inspired colors: a light blue/teal
-    outer background (#aad3df) representing ocean and a beige/cream inner plot area
-    (#f2efe9) representing land. Data points are rendered in three shades of blue
-    with varying marker sizes corresponding to visitor count ranges: small dots for
-    1,300K-2,999K visitors/year, medium for 3,000K-5,999K, and large for 6,000K-9,600K.
-    The title correctly follows the format "European Landmarks · map-tile-background
-    · pygal · pyplots.ai". Axis labels include units (degrees North, degrees East/West)
-    with degree notation on ticks. A legend at the bottom identifies the three visitor
-    categories. Notable landmark clusters appear around Paris (Eiffel Tower, Notre-Dame,
-    Louvre) and Amsterdam (Anne Frank House, Rijksmuseum).'
+  - 'Fundamental limitation: Pygal cannot render actual tile-based map backgrounds
+    - the spec requires OpenStreetMap/Stamen/satellite tiles which pygal has no capability
+    to display'
+  - This implementation is essentially a scatter plot with map-inspired colors, not
+    a true tile map
+  image_description: 'The plot displays a scatter chart on a 4800×2700 canvas with
+    an OSM-inspired color scheme: light blue (#aad3df) background representing ocean
+    and beige (#f2efe9) plot area representing land. Fifteen European landmark locations
+    are plotted using longitude (X-axis, -3° to 26°) and latitude (Y-axis, 35° to
+    55°). Data points are grouped into three color-coded series by visitor count:
+    orange dots for 1,300K-2,999K visitors/year, teal/green dots for 3,000K-5,999K
+    visitors/year, and purple dots for 6,000K-9,600K visitors/year. Dot sizes vary
+    by category (16, 22, 28 respectively). The title "map-tile-background · pygal
+    · pyplots.ai" appears at the top. Axis labels include units. A legend at the bottom
+    identifies the three visitor categories. Subtle beige/tan grid lines are visible.
+    The plot uses good canvas utilization with proper margins.'
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 30
       max: 40
       items:
       - id: VQ-01
@@ -46,8 +46,8 @@ review:
         score: 8
         max: 10
         passed: true
-        comment: Title and labels readable, tick labels slightly small for 4800x2700
-          canvas
+        comment: Title and axis labels are readable; tick labels could be slightly
+          larger
       - id: VQ-02
         name: No Overlap
         score: 8
@@ -59,32 +59,32 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Markers visible but some overlap in Paris/Amsterdam landmark clusters
+        comment: Markers visible with appropriate sizing for data density
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Blue shades distinguishable but could be more distinct across series
+        comment: Orange, teal, purple palette is colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: Good canvas utilization with minor whitespace imbalance
+        comment: Good canvas utilization but some empty space in corners
       - id: VQ-06
         name: Axis Labels
-        score: 2
+        score: 0
         max: 2
-        passed: true
-        comment: Descriptive labels with units - Longitude (degrees East/West), Latitude
-          (degrees North)
+        passed: false
+        comment: Labels present but East/West notation is confusing for mostly-Eastern
+          data
       - id: VQ-07
         name: Grid & Legend
         score: 0
         max: 2
         passed: false
-        comment: White grid lines somewhat prominent against beige background
+        comment: Legend text is small relative to canvas size
     spec_compliance:
       score: 10
       max: 25
@@ -94,66 +94,63 @@ review:
         score: 0
         max: 8
         passed: false
-        comment: 'CRITICAL: Pygal cannot render tile-based map backgrounds. This is
-          XY scatter with map colors, not actual tile imagery'
+        comment: 'CRITICAL: Spec requires tile-based map backgrounds (OpenStreetMap,
+          Stamen, satellite). Pygal cannot render actual tiles - this is a color-inspired
+          simulation only'
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Lat/Lon correctly mapped to Y/X axes respectively
+        comment: Lon/Lat correctly mapped to X/Y axes
       - id: SC-03
         name: Required Features
-        score: 3
+        score: 0
         max: 5
         passed: false
-        comment: 'Missing: actual tile backgrounds, tile provider attribution, zoom/pan
-          interactivity'
+        comment: 'Missing: actual tile backgrounds, proper attribution for tile providers'
       - id: SC-04
         name: Data Range
-        score: 0
+        score: 3
         max: 3
-        passed: false
-        comment: Acropolis (Athens) appears at edge of visible range
+        passed: true
+        comment: Axes show all data points with appropriate padding
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Legend correctly describes visitor count ranges
+        comment: Legend correctly identifies visitor count ranges
       - id: SC-06
         name: Title Format
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Title includes 'European Landmarks' prefix instead of spec-id only
-          format
+        passed: true
+        comment: 'Correct format: spec-id · library · pyplots.ai'
     data_quality:
-      score: 18
+      score: 15
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: Good variety of landmarks across Europe with different visitor counts
-          showing range of data
+        comment: Shows variety of visitor counts across Europe
       - id: DQ-02
         name: Realistic Context
-        score: 7
+        score: 5
         max: 7
         passed: true
-        comment: Real European landmarks with plausible visitor statistics - neutral
-          tourism data
+        comment: European landmarks with visitor counts is plausible
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Visitor numbers realistic, geographic coordinates accurate for landmarks
+        comment: Visitor counts in thousands per year are realistic
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -161,31 +158,31 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean structure: imports → data → plot → save, no functions/classes'
+        comment: 'Clean linear flow: imports → data → chart → save'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) set for reproducibility
+        comment: np.random.seed(42) present
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used - numpy, pygal, Style
+        comment: All imports are used
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Uses current pygal API
+        comment: Current pygal API
       - id: CQ-05
         name: Output Correct
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Outputs both plot.png and plot.html - minor issue
+        passed: true
+        comment: Saves as plot.png
     library_features:
       score: 3
       max: 5
@@ -195,13 +192,12 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Uses pygal Style customization, XY chart with tooltips, multi-series
-          with different dot sizes. Does not leverage pygal's built-in map chart types.
+        comment: Uses pygal.XY with custom Style, legend_at_bottom, explicit sizing
   verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
-  - html-export
+  - manual-ticks
   patterns:
   - data-generation
   - iteration-over-groups

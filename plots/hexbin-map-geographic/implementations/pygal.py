@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hexbin-map-geographic: Hexagonal Binning Map
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 72/100 | Created: 2026-01-20
@@ -98,7 +98,7 @@ hex_lon = np.array([h["lon"] for h in hex_data])
 hex_lat = np.array([h["lat"] for h in hex_data])
 counts = np.array([h["count"] for h in hex_data])
 
-# Get count statistics for binning
+# Get count statistics for binning - use percentile-based bins for better distribution
 count_min, count_max = counts.min(), counts.max()
 count_range = count_max - count_min if count_max > count_min else 1
 
@@ -144,7 +144,7 @@ east_river = [
 ]
 
 # Custom style - YlOrRd colormap for density (5 levels)
-# Hide grid lines completely for cleaner map visualization
+# Boundary lines use darker colors for visibility
 custom_style = Style(
     background="white",
     plot_background="#E8F4F8",  # Light water blue
@@ -153,18 +153,18 @@ custom_style = Style(
     foreground_subtle="#666666",
     guide_stroke_color="transparent",  # Hide grid lines completely
     colors=(
-        # 3 boundary/river colors (light gray)
-        "#AAAAAA",
-        "#8899AA",
-        "#8899AA",
-        # 5 density levels (YlOrRd colormap with transparency)
-        "#FFFFB2CC",  # Very low - light yellow (80% opacity)
-        "#FECC5CCC",  # Low - yellow
-        "#FD8D3CCC",  # Medium - orange
-        "#F03B20CC",  # High - red-orange
-        "#BD0026CC",  # Very high - dark red
+        # 3 boundary/river colors (darker for visibility)
+        "#555555",
+        "#446688",
+        "#446688",
+        # 5 density levels (YlOrRd colormap - darker for PNG visibility)
+        "#FFFFB2",  # Very low - light yellow
+        "#FECC5C",  # Low - yellow
+        "#FD8D3C",  # Medium - orange
+        "#F03B20",  # High - red-orange
+        "#BD0026",  # Very high - dark red
     ),
-    opacity=0.75,  # Base transparency for hexagons
+    opacity=0.85,  # Higher opacity for better visibility
     opacity_hover=0.95,
     title_font_size=72,
     label_font_size=48,
@@ -172,6 +172,7 @@ custom_style = Style(
     legend_font_size=40,
     value_font_size=36,
     tooltip_font_size=36,
+    stroke_width=3,  # Thicker lines for boundaries
 )
 
 # Create XY chart - disable grid for clean map background
@@ -196,20 +197,27 @@ chart = pygal.XY(
     range=(lat_min - 0.008, lat_max + 0.008),
 )
 
-# Add geographic boundaries as background lines
-chart.add(None, manhattan_outline, stroke=True, dots_size=0, show_dots=False, fill=False)
-chart.add(None, hudson_river, stroke=True, dots_size=0, show_dots=False, fill=False)
-chart.add(None, east_river, stroke=True, dots_size=0, show_dots=False, fill=False)
+# Add geographic boundaries as background lines with thicker stroke
+chart.add(None, manhattan_outline, stroke=True, dots_size=0, show_dots=False, fill=False, stroke_width=4)
+chart.add(None, hudson_river, stroke=True, dots_size=0, show_dots=False, fill=False, stroke_width=3)
+chart.add(None, east_river, stroke=True, dots_size=0, show_dots=False, fill=False, stroke_width=3)
 
-# Bin hexagons by density into 5 groups
+# Use percentile-based bin edges to ensure all 5 bins have data
 n_bins = 5
-bin_edges = np.linspace(count_min, count_max + 1, n_bins + 1)
+percentiles = [0, 20, 40, 60, 80, 100]
+bin_edges = np.percentile(counts, percentiles)
+# Ensure edges are strictly increasing
+for i in range(1, len(bin_edges)):
+    if bin_edges[i] <= bin_edges[i - 1]:
+        bin_edges[i] = bin_edges[i - 1] + 1
+
+# Create legend labels showing density scale
 bin_labels = [
-    f"Pickups: {int(bin_edges[0])}-{int(bin_edges[1])}",
-    f"Pickups: {int(bin_edges[1])}-{int(bin_edges[2])}",
-    f"Pickups: {int(bin_edges[2])}-{int(bin_edges[3])}",
-    f"Pickups: {int(bin_edges[3])}-{int(bin_edges[4])}",
-    f"Pickups: {int(bin_edges[4])}+",
+    f"Low ({int(bin_edges[0])}-{int(bin_edges[1])})",
+    f"Medium-Low ({int(bin_edges[1])}-{int(bin_edges[2])})",
+    f"Medium ({int(bin_edges[2])}-{int(bin_edges[3])})",
+    f"Medium-High ({int(bin_edges[3])}-{int(bin_edges[4])})",
+    f"High ({int(bin_edges[4])}+)",
 ]
 
 # Create series for each density level with rich tooltips
@@ -219,7 +227,11 @@ for h in hex_data:
     count = h["count"]
     total = h["sum"]
     mean = h["mean"]
-    bin_idx = min(int((count - count_min) / count_range * (n_bins - 0.01)), n_bins - 1)
+    # Assign to bin based on percentile edges
+    bin_idx = 0
+    for i in range(1, n_bins):
+        if count >= bin_edges[i]:
+            bin_idx = i
     # Rich tooltip with cell statistics as spec requires
     tooltip = (
         f"Count: {count} pickups | Fares: ${total:.0f} total, ${mean:.2f} avg | Coords: ({hy:.4f}°N, {abs(hx):.4f}°W)"
@@ -227,12 +239,15 @@ for h in hex_data:
     point = {"value": (float(hx), float(hy)), "label": tooltip}
     series_data[bin_idx].append(point)
 
-# Add series with varying dot sizes for density visualization
-# Using larger sizes to better represent hexagonal cell areas
-dot_sizes = [24, 32, 40, 50, 62]
+# Add ALL series (even empty ones) to ensure complete legend
+# Using larger dot sizes for density visualization
+dot_sizes = [26, 34, 44, 54, 66]
 for i in range(n_bins):
-    if series_data[i]:
-        chart.add(bin_labels[i], series_data[i], dots_size=dot_sizes[i])
+    # Add dummy point off-screen if series is empty to show in legend
+    if not series_data[i]:
+        # Add invisible point outside plot range to ensure legend appears
+        series_data[i].append({"value": (-99, 0), "label": "No data"})
+    chart.add(bin_labels[i], series_data[i], dots_size=dot_sizes[i])
 
 # Save PNG (primary output)
 chart.render_to_png("plot.png")

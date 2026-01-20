@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: map-marker-clustered
 created: '2026-01-20T18:49:59Z'
-updated: '2026-01-20T19:25:10Z'
+updated: '2026-01-20T19:54:46Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21183365546
 issue: 3766
@@ -10,37 +10,37 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/map-marker-clustered/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/map-marker-clustered/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 85
+quality_score: 90
 review:
   strengths:
-  - Excellent use of seaborn colorblind palette for accessibility
-  - Good implementation of dual-layer visualization (background points + cluster markers)
-  - Clear count labels on larger clusters with good contrast (white on colored markers)
-  - Appropriate text sizing throughout meeting all legibility requirements
-  - Realistic NYC business location scenario with sensible coordinates
-  - Uses AgglomerativeClustering from sklearn effectively for the clustering logic
+  - Effective use of seaborn's colorblind palette for accessibility
+  - Good implementation of hierarchical clustering using sklearn to group nearby markers
+  - Clean two-layer visualization with background individual points and foreground
+    cluster markers
+  - Appropriate use of alpha blending for overlapping data density
+  - Informative annotations showing total locations and cluster count
+  - Proper geographic context with stylized water boundaries
   weaknesses:
-  - Geographic context is minimal (faint waterway lines barely visible) - spec requests
-    basemap with appropriate geographic context
-  - Some cluster count labels overlap in dense areas reducing readability slightly
-  - Legend only shows categories, missing size legend to explain cluster marker sizes
-  image_description: 'The plot displays a clustered marker map showing 500 business
-    locations across the NYC region. The visualization uses a scatter plot approach
-    with two layers: a background layer showing individual points with low opacity
-    (alpha ~0.3) in four colors representing business categories (Coffee Shop - blue,
-    Restaurant - yellow/gold, Bookstore - green, Gym - pink), and a foreground layer
-    showing clustered markers with varying sizes based on cluster count. Cluster markers
-    with counts >4 display white numerical labels indicating the number of grouped
-    points. The plot has a light beige/cream background with subtle gray dashed gridlines.
-    Geographic context is minimal but includes faint blue waterway lines. The title
-    "map-marker-clustered · seaborn · pyplots.ai" is prominently displayed at the
-    top. A "Business Type" legend in the upper left shows the four business types
-    with colored circular markers. An annotation in the bottom right shows "500 locations
-    · 185 clusters". Axes are labeled "Longitude (°)" and "Latitude (°)" with tick
-    values appropriate for the NYC area (-74.4 to -73.4 longitude, 40.0 to 41.2 latitude).'
+  - Size legend ranges ("2-5 points", "6-15 points", "16+ points") are arbitrary and
+    don't reflect actual computed cluster sizes in the data
+  - Grid styling could be more subtle (currently visible but acceptable)
+  image_description: 'The plot displays a clustered marker map visualization of 500
+    business locations across the NYC region. The visualization uses a scatter plot
+    approach with geographic coordinates (Longitude on X-axis ranging from -74.4 to
+    -73.4, Latitude on Y-axis ranging from 40.0 to 41.2). Individual data points are
+    shown as small, semi-transparent markers in the background, while cluster markers
+    are displayed as larger circles with white borders, sized according to cluster
+    count. Clusters containing more than 4 points display white count labels centered
+    within them. Four business categories are color-coded using seaborn''s colorblind
+    palette: Coffee Shop (dark blue), Restaurant (yellow/gold), Bookstore (green),
+    and Gym (pink/coral). A category legend appears in the upper left. The title follows
+    the correct format "map-marker-clustered · seaborn · pyplots.ai". An annotation
+    in the lower right indicates "500 locations · 185 clusters". The background has
+    a subtle beige land area fill and light blue boundary lines representing water
+    features.'
   criteria_checklist:
     visual_quality:
-      score: 34
+      score: 36
       max: 40
       items:
       - id: VQ-01
@@ -48,93 +48,93 @@ review:
         score: 10
         max: 10
         passed: true
-        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt - all perfectly
-          readable
+        comment: Title at 24pt bold, axis labels at 20pt, tick labels at 16pt, all
+          clearly readable
       - id: VQ-02
         name: No Overlap
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Minor overlap in some cluster count labels where clusters are close
-          together, but generally readable
+        comment: No overlapping text elements, cluster labels are well-positioned
+          within markers
       - id: VQ-03
         name: Element Visibility
         score: 7
         max: 8
         passed: true
-        comment: Good marker sizing; individual points appropriately small (s=40)
-          with alpha=0.3 for background, clusters sized 100-800 based on count
+        comment: Cluster markers appropriately sized with white edges; individual
+          points appropriately small with alpha=0.3
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Uses seaborn colorblind palette which is excellent for accessibility
+        comment: Uses seaborn colorblind palette, all four categories clearly distinguishable
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Plot uses canvas well but the geographic boundaries (water lines)
-          are very faint and don't add much context
+        comment: Good use of canvas space, data fills the plot area well, legends
+          positioned appropriately
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: 'Labels include units: Longitude and Latitude with degree symbols'
+        comment: 'Descriptive labels with units: Longitude (°), Latitude (°)'
       - id: VQ-07
         name: Grid & Legend
         score: 0
         max: 2
         passed: false
-        comment: Legend is well-placed but grid at alpha=0.3 with dashed style competes
-          slightly with the subtle markers
+        comment: Size legend ranges don't accurately reflect actual cluster sizes
+          in the data
     spec_compliance:
-      score: 20
+      score: 22
       max: 25
       items:
       - id: SC-01
         name: Plot Type
-        score: 6
+        score: 8
         max: 8
         passed: true
-        comment: Implements clustering concept but not true interactive map clustering
-          - static representation acceptable for non-interactive library
+        comment: Correctly implements clustered marker map concept using hierarchical
+          clustering
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Lat/Lon correctly mapped to Y/X axes
+        comment: Lat/lon correctly assigned to Y/X axes
       - id: SC-03
         name: Required Features
         score: 4
         max: 5
         passed: true
-        comment: Shows cluster counts, size encoding, category colors - but missing
-          meaningful basemap context
+        comment: Shows clusters with counts, category coloring, dominant category;
+          missing interactive zoom (static limitation)
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axes range
+        comment: All data visible within axes
       - id: SC-05
         name: Legend Accuracy
         score: 0
         max: 2
         passed: false
-        comment: Legend present but missing cluster size explanation (only shows categories,
-          not what marker sizes mean)
+        comment: Size legend ranges don't accurately reflect actual cluster sizes
+          shown
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Correctly formatted as map-marker-clustered · seaborn · pyplots.ai
+        comment: 'Correct format: map-marker-clustered · seaborn · pyplots.ai'
     data_quality:
-      score: 18
+      score: 19
       max: 20
       items:
       - id: DQ-01
@@ -142,21 +142,20 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows clustering behavior, category distribution, size encoding,
-          count labels - good coverage
+        comment: Shows clustering at multiple densities, category distribution, count
+          labels
       - id: DQ-02
         name: Realistic Context
-        score: 6
+        score: 7
         max: 7
         passed: true
-        comment: NYC business locations is a realistic scenario, 4 relevant business
-          categories
+        comment: NYC business locations is a realistic, neutral scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Coordinates are realistic NYC area values (~40.7N, ~74W)
+        comment: NYC-area coordinates (40.0-41.2°N, 73.4-74.4°W) are realistic
     code_quality:
       score: 9
       max: 10
@@ -166,32 +165,31 @@ review:
         score: 2
         max: 3
         passed: true
-        comment: Mostly linear flow but has some iteration patterns; still reasonably
-          simple
+        comment: Reasonably organized but uses some helper iterations
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set at beginning
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used (matplotlib, numpy, pandas, seaborn, sklearn)
+        comment: All imports are used
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Uses current seaborn API correctly
+        comment: Uses current seaborn and matplotlib APIs
       - id: CQ-05
         name: Output Correct
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png
+        comment: Saves as plot.png with correct dpi and bbox_inches
     library_features:
       score: 4
       max: 5
@@ -201,8 +199,8 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of seaborn scatterplot with hue/size encoding, set_theme,
-          colorblind palette, despine - but could have used seaborn more distinctively
+        comment: Good use of sns.scatterplot with hue/size encoding, sns.set_theme,
+          sns.despine, colorblind palette
   verdict: APPROVED
 impl_tags:
   dependencies:
@@ -211,6 +209,7 @@ impl_tags:
   - annotations
   - custom-legend
   - patches
+  - layer-composition
   patterns:
   - data-generation
   - groupby-aggregation

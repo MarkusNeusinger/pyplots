@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-animated-temporal: Animated Map over Time
 Library: highcharts unknown | Python 3.13.11
 Quality: 83/100 | Created: 2026-01-20
@@ -107,10 +107,6 @@ var chart = Highcharts.mapChart('container', {{
         text: 'Date: ' + dates[0],
         style: {{ fontSize: '36px' }}
     }},
-    legend: {{
-        enabled: true,
-        itemStyle: {{ fontSize: '24px' }}
-    }},
     mapNavigation: {{
         enabled: false
     }},
@@ -119,32 +115,57 @@ var chart = Highcharts.mapChart('container', {{
         max: 120,
         stops: [
             [0, '#306998'],
-            [0.5, '#FFD43B'],
+            [0.5, '#17BECF'],
             [1, '#9467BD']
         ],
-        labels: {{ style: {{ fontSize: '20px' }} }}
+        labels: {{
+            style: {{ fontSize: '24px' }},
+            format: '{{value}}'
+        }},
+        title: {{
+            text: 'Sensor Value',
+            style: {{ fontSize: '28px' }}
+        }},
+        showInLegend: true
+    }},
+    legend: {{
+        enabled: true,
+        layout: 'vertical',
+        align: 'right',
+        verticalAlign: 'middle',
+        floating: false,
+        borderWidth: 1,
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        padding: 20,
+        itemStyle: {{ fontSize: '24px' }},
+        symbolHeight: 400,
+        symbolWidth: 30,
+        y: -50
     }},
     series: [{{
         name: 'Europe',
-        borderColor: '#A0A0A0',
-        nullColor: 'rgba(200, 200, 200, 0.3)',
+        borderColor: '#606060',
+        nullColor: 'rgba(230, 230, 230, 0.5)',
         showInLegend: false
     }}, {{
         type: 'mapbubble',
         name: 'Sensor Readings',
         data: initialData,
-        minSize: 30,
-        maxSize: 100,
-        color: '#306998',
+        minSize: 40,
+        maxSize: 120,
+        colorKey: 'z',
         marker: {{
-            fillOpacity: 0.7
+            fillOpacity: 0.85,
+            lineWidth: 2,
+            lineColor: '#333333'
         }},
         dataLabels: {{
             enabled: false
         }},
         tooltip: {{
             pointFormat: '{{point.name}}<br>Value: {{point.z:.1f}}'
-        }}
+        }},
+        showInLegend: false
     }}]
 }});
 

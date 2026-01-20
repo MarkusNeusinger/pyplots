@@ -1,0 +1,373 @@
+""" pyplots.ai
+line-range-buttons: Line Chart with Range Selector Buttons
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 92/100 | Created: 2026-01-20
+"""
+
+import datetime
+import io
+
+import numpy as np
+import pygal
+from PIL import Image, ImageDraw, ImageFont
+from pygal.style import Style
+
+
+# Data - Generate 2 years of daily time series data
+np.random.seed(42)
+
+# Generate dates for ~2 years (730 days including weekends for continuous data)
+start_date = datetime.date(2024, 1, 1)
+dates = [start_date + datetime.timedelta(days=i) for i in range(730)]
+
+# Generate realistic time series with trend and seasonality
+t = np.arange(len(dates))
+trend = 100 + 0.05 * t  # Gradual upward trend
+seasonality = 15 * np.sin(2 * np.pi * t / 365)  # Yearly cycle
+noise = np.cumsum(np.random.randn(len(dates)) * 0.8)  # Random walk noise
+values = trend + seasonality + noise
+values_list = list(values)
+
+# Calculate range indices for buttons
+total_days = len(dates)
+today_idx = total_days - 1
+
+# YTD - find first date of 2025
+ytd_start = 0
+for i, d in enumerate(dates):
+    if d.year == 2025:
+        ytd_start = i
+        break
+
+range_presets = {
+    "1M": max(0, today_idx - 30),
+    "3M": max(0, today_idx - 90),
+    "6M": max(0, today_idx - 180),
+    "1Y": max(0, today_idx - 365),
+    "YTD": ytd_start,
+    "All": 0,
+}
+
+# Currently selected range (1Y for demonstration)
+selected_range = "1Y"
+selected_start = range_presets[selected_range]
+
+# Filter data to selected range
+filtered_dates = dates[selected_start:]
+filtered_values = values_list[selected_start:]
+
+# Custom style for main chart - scaled up fonts for 4800x2700 canvas
+custom_style = Style(
+    background="white",
+    plot_background="white",
+    foreground="#333333",
+    foreground_strong="#333333",
+    foreground_subtle="#999999",  # Lighter subtle color for grid
+    colors=("#306998",),
+    title_font_size=84,  # Increased from 72
+    label_font_size=52,  # Increased from 44
+    major_label_font_size=48,  # Increased from 40
+    legend_font_size=48,  # Increased from 44
+    value_font_size=36,  # Increased from 32
+    opacity=1.0,
+    opacity_hover=0.8,
+    stroke_width=5,  # Increased from 4 for better visibility
+    guide_stroke_color="#dddddd",  # Light gray for subtle grid
+)
+
+# Create x-axis labels - show only at specific intervals
+x_labels = []
+label_interval = 60  # Every ~60 days for clean display
+for i, d in enumerate(filtered_dates):
+    if i % label_interval == 0:
+        x_labels.append(d.strftime("%b '%y"))
+    else:
+        x_labels.append(None)  # Use None instead of empty string
+
+# Create main line chart - adjusted for proper label display
+main_chart = pygal.Line(
+    width=4800,
+    height=1700,
+    title="line-range-buttons · pygal · pyplots.ai",
+    x_title="Date",
+    y_title="Value",
+    style=custom_style,
+    fill=False,
+    show_dots=False,
+    show_x_guides=False,
+    show_y_guides=True,
+    x_label_rotation=0,
+    truncate_label=-1,
+    truncate_legend=-1,
+    show_legend=True,
+    legend_at_bottom=True,  # Move legend to bottom to avoid overlap with y-axis
+    legend_box_size=32,  # Increased from 28
+    show_x_labels=True,
+    stroke_style={"width": 5, "linecap": "round", "linejoin": "round"},
+    margin=80,
+    margin_top=150,
+    margin_bottom=200,  # Increased to accommodate legend at bottom
+    spacing=30,
+)
+
+main_chart.x_labels = x_labels
+main_chart.add("Daily Values", filtered_values)
+
+# Mini chart style for range navigator - larger labels
+mini_style = Style(
+    background="#fafafa",
+    plot_background="#f0f0f0",
+    foreground="#555555",
+    foreground_strong="#555555",
+    foreground_subtle="#aaaaaa",  # Lighter for less prominent grid
+    colors=("#306998",),
+    title_font_size=56,  # Increased from 48
+    label_font_size=44,  # Increased from 38
+    major_label_font_size=42,  # Increased from 36
+    legend_font_size=0,
+    value_font_size=0,
+    opacity=0.8,
+    stroke_width=3,  # Increased from 2
+)
+
+# Create mini chart showing full range
+mini_chart = pygal.Line(
+    width=4800,
+    height=550,
+    title="Range Navigator — Full History",
+    style=mini_style,
+    fill=False,
+    show_dots=False,
+    show_x_guides=False,
+    show_y_guides=False,
+    show_legend=False,
+    show_x_labels=True,
+    show_y_labels=False,
+    x_label_rotation=0,
+    truncate_label=-1,
+    margin=60,
+    margin_top=100,
+    margin_bottom=90,
+    spacing=15,
+)
+
+# Sparse labels for mini chart - quarterly
+mini_labels = []
+for i, d in enumerate(dates):
+    if i % 90 == 0:  # Every ~3 months
+        mini_labels.append(d.strftime("%b '%y"))
+    else:
+        mini_labels.append("")
+
+mini_chart.x_labels = mini_labels
+mini_chart.add("", values_list)
+
+# Render both charts to PNG bytes
+main_png = main_chart.render_to_png()
+mini_png = mini_chart.render_to_png()
+
+# Load as PIL images
+main_img = Image.open(io.BytesIO(main_png))
+mini_img = Image.open(io.BytesIO(mini_png))
+
+# Create combined image (4800 x 2700)
+combined = Image.new("RGB", (4800, 2700), "white")
+combined.paste(main_img, (0, 0))
+
+# Add range selector buttons area - positioned closer to main chart
+draw = ImageDraw.Draw(combined)
+
+# Draw range button bar - positioned below main chart
+button_bar_y = 1730
+button_bar_height = 130
+
+# Draw button background - wider to encompass all buttons
+draw.rectangle([80, button_bar_y, 1850, button_bar_y + button_bar_height], fill="#f5f5f5", outline="#dddddd", width=3)
+
+# Draw range buttons - larger for better visibility
+button_labels = ["1M", "3M", "6M", "1Y", "YTD", "All"]
+button_width = 220
+button_height = 90
+button_spacing = 25
+start_x = 290
+
+# Try to load a font for better text rendering, fall back to default
+try:
+    button_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 42)
+    label_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 40)
+except OSError:
+    button_font = ImageFont.load_default()
+    label_font = ImageFont.load_default()
+
+for i, label in enumerate(button_labels):
+    x = start_x + i * (button_width + button_spacing)
+    y = button_bar_y + 20
+    is_selected = label == selected_range
+
+    if is_selected:
+        draw.rectangle([x, y, x + button_width, y + button_height], fill="#306998", outline="#306998", width=3)
+        text_color = "white"
+    else:
+        draw.rectangle([x, y, x + button_width, y + button_height], fill="white", outline="#306998", width=3)
+        text_color = "#306998"
+
+    # Center text in button using textbbox
+    bbox = draw.textbbox((0, 0), label, font=button_font)
+    text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
+    text_x = x + (button_width - text_width) // 2
+    text_y = y + (button_height - text_height) // 2 - 5
+    draw.text((text_x, text_y), label, fill=text_color, font=button_font)
+
+# Add "Range:" label with proper font
+draw.text((100, button_bar_y + 42), "Range:", fill="#333333", font=label_font)
+
+# Paste mini chart below button bar - reduced gap
+mini_y = button_bar_y + button_bar_height + 20
+combined.paste(mini_img, (0, mini_y))
+
+# Draw range indicator on mini chart
+chart_left_margin = 140
+chart_right_margin = 140
+chart_width = 4800 - chart_left_margin - chart_right_margin
+indicator_start_pct = selected_start / total_days
+indicator_width_pct = (total_days - selected_start) / total_days
+
+indicator_left = int(chart_left_margin + indicator_start_pct * chart_width)
+indicator_width = int(indicator_width_pct * chart_width)
+indicator_top = mini_y + 110
+indicator_bottom = mini_y + 460
+
+# Create overlay with transparency
+overlay = Image.new("RGBA", combined.size, (255, 255, 255, 0))
+overlay_draw = ImageDraw.Draw(overlay)
+overlay_draw.rectangle(
+    [indicator_left, indicator_top, indicator_left + indicator_width, indicator_bottom],
+    fill=(48, 105, 152, 50),
+    outline=(48, 105, 152, 200),
+    width=4,
+)
+
+# Composite the overlay onto combined image
+combined = combined.convert("RGBA")
+combined = Image.alpha_composite(combined, overlay)
+combined = combined.convert("RGB")
+
+# Save final PNG
+combined.save("plot.png", "PNG")
+
+# Create interactive HTML
+main_svg = main_chart.render().decode("utf-8")
+mini_svg = mini_chart.render().decode("utf-8")
+
+html_content = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>line-range-buttons · pygal · pyplots.ai</title>
+    <style>
+        * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: white;
+            padding: 20px;
+        }}
+        .container {{ max-width: 4800px; margin: 0 auto; }}
+        .range-selector {{
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            align-items: center;
+        }}
+        .range-selector label {{
+            font-size: 32px;
+            font-weight: 600;
+            color: #333;
+            margin-right: 20px;
+        }}
+        .range-btn {{
+            padding: 16px 32px;
+            font-size: 28px;
+            font-weight: 500;
+            border: 2px solid #306998;
+            background: white;
+            color: #306998;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }}
+        .range-btn:hover {{ background: #e8f0f7; }}
+        .range-btn.active {{ background: #306998; color: white; }}
+        .chart {{ border: 1px solid #eee; border-radius: 8px; overflow: hidden; margin-bottom: 20px; }}
+        .chart svg {{ display: block; width: 100%; height: auto; }}
+        .mini-container {{
+            background: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+        }}
+        .mini-label {{ font-size: 24px; color: #666; margin-bottom: 10px; }}
+        .mini-chart {{ position: relative; }}
+        .mini-chart svg {{ display: block; width: 100%; height: auto; }}
+        .range-indicator {{
+            position: absolute;
+            top: 0;
+            height: 100%;
+            background: rgba(48, 105, 152, 0.15);
+            border-left: 3px solid #306998;
+            border-right: 3px solid #306998;
+            pointer-events: none;
+            transition: left 0.3s ease, width 0.3s ease;
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="range-selector">
+            <label>Range:</label>
+            <button class="range-btn" data-range="1M">1M</button>
+            <button class="range-btn" data-range="3M">3M</button>
+            <button class="range-btn" data-range="6M">6M</button>
+            <button class="range-btn active" data-range="1Y">1Y</button>
+            <button class="range-btn" data-range="YTD">YTD</button>
+            <button class="range-btn" data-range="All">All</button>
+        </div>
+        <div class="chart" id="mainChart">{main_svg}</div>
+        <div class="mini-container">
+            <div class="mini-label">Full Date Range (Click buttons above to select range)</div>
+            <div class="mini-chart" id="miniChart">
+                {mini_svg}
+                <div class="range-indicator" id="rangeIndicator"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const rangePresets = {str(range_presets).replace("'", '"')};
+        const totalPoints = {total_days};
+        function updateRangeIndicator(startIdx) {{
+            const indicator = document.getElementById('rangeIndicator');
+            const startPercent = (startIdx / totalPoints) * 100;
+            const widthPercent = ((totalPoints - startIdx) / totalPoints) * 100;
+            indicator.style.left = startPercent + '%';
+            indicator.style.width = widthPercent + '%';
+        }}
+        document.querySelectorAll('.range-btn').forEach(btn => {{
+            btn.addEventListener('click', function() {{
+                document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const range = this.dataset.range;
+                const startIdx = rangePresets[range];
+                updateRangeIndicator(startIdx);
+            }});
+        }});
+        updateRangeIndicator(rangePresets['1Y']);
+    </script>
+</body>
+</html>"""
+
+with open("plot.html", "w", encoding="utf-8") as f:
+    f.write(html_content)

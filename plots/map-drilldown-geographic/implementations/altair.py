@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 map-drilldown-geographic: Drillable Geographic Map
-Library: altair | Python 3.13
-Quality: pending | Created: 2025-01-20
+Library: altair 6.0.0 | Python 3.13.11
+Quality: 82/100 | Created: 2026-01-20
 """
 
 import altair as alt

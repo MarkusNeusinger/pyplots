@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: pie-portfolio-interactive
 created: '2026-01-20T23:07:33Z'
-updated: '2026-01-20T23:10:14Z'
+updated: '2026-01-20T23:17:00Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21190551742
 issue: 3754
@@ -10,78 +10,86 @@ library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-portfolio-interactive/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-portfolio-interactive/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-portfolio-interactive/letsplot/plot.html
-quality_score: 85
+quality_score: 90
 review:
   strengths:
-  - Excellent use of lets-plot interactive features (tooltips, labels)
-  - Clean donut chart design with center label showing total
-  - Good color palette that is colorblind-accessible
-  - Realistic portfolio allocation data
-  - Proper HTML export for interactivity
+  - Excellent use of lets-plot geom_pie with donut hole (hole=0.35) and rich tooltips
+  - Well-structured drill-down capability with ggbunch for HTML export showing all
+    category breakdowns
+  - Realistic portfolio data with meaningful asset names and plausible allocations
+  - Clean visual design with white stroke separating slices and center label
+  - Good use of layer_tooltips with formatted numbers and drill-down hints
   weaknesses:
-  - 'Title format incorrect: includes "Portfolio Allocation" prefix instead of just
-    spec-id format'
-  - Missing drill-down functionality to show individual holdings (spec requirement)
-  - Legend positioned too far from chart with excessive whitespace on left side
-  - Slice percentage labels could be slightly larger for better readability
+  - Legend could be positioned closer to the chart to reduce whitespace
+  - Wildcard imports with noqa comments reduce code clarity
+  - Static PNG does not demonstrate the interactive drill-down capability (only visible
+    in HTML)
   image_description: 'The plot displays a donut chart showing portfolio allocation
-    across four asset classes. The chart uses a 16:9 landscape format with a white
-    background. Colors used are: Python Blue (#306998) for Fixed Income (38.0%), Yellow
-    (#FFD43B) for Equities (37.0%), Red (#DC2626) for Alternatives (21.0%), and Green
-    (#059669) for Cash (4.0%). Each slice displays its percentage label directly on
-    or near the slice. A center label reads "Portfolio 100%" in a white rounded rectangle.
-    The legend is positioned on the right side showing "Asset Class" with four entries.
-    The title "Portfolio Allocation · pie-portfolio-interactive · letsplot · pyplots.ai"
-    appears at the top center. White stroke separates the slices cleanly.'
+    across 4 asset classes. Fixed Income (blue, #306998) takes the largest share at
+    38.0%, followed closely by Equities (yellow, #FFD43B) at 37.0%, Alternatives (red,
+    #DC2626) at 21.0%, and Cash (green, #059669) at 4.0%. The donut has a white center
+    with "Portfolio 100%" label displayed in a semi-transparent white box. Each slice
+    displays its percentage value with clear, readable text (size 20). A legend titled
+    "Asset Class" is positioned on the right side (at x=0.82) listing all four categories
+    with color-coded markers. The title reads "pie-portfolio-interactive · letsplot
+    · pyplots.ai" in bold centered text with a subtitle "Hover for details | Click
+    category to drill down" in gray. White stroke (width 2.5) separates the slices
+    cleanly. The overall layout uses theme_void for a clean, minimal appearance without
+    axes or gridlines.'
   criteria_checklist:
     visual_quality:
-      score: 33
+      score: 36
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 10
         max: 10
         passed: true
-        comment: Title and legend readable, slice labels could be larger
+        comment: Title is large and bold (~28pt), subtitle readable, percentage labels
+          clearly visible at size 20, legend text appropriately sized
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping elements; all labels and legend well separated
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 8
         max: 8
         passed: true
-        comment: Donut well-sized but could fill more canvas; Cash slice quite small
+        comment: Donut slices well-sized (size=45), white stroke provides clear separation,
+          all segments visible including small 4% Cash slice
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Colorblind-safe palette with good contrast
+        comment: Four distinct colors (blue, yellow, red, green) with good contrast
+          and sufficient luminance differences
       - id: VQ-05
         name: Layout Balance
         score: 3
         max: 5
         passed: true
-        comment: Significant empty space on left; legend far from chart
+        comment: Chart well-centered with good proportions, moderate unused whitespace
+          with legend at 0.82
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: N/A for pie charts
+        comment: N/A for pie chart; legend serves this purpose well
       - id: VQ-07
         name: Grid & Legend
-        score: 1
+        score: 0
         max: 2
-        passed: true
-        comment: Legend present but positioned far from chart
+        passed: false
+        comment: Legend functional but could be positioned closer to chart to reduce
+          whitespace
     spec_compliance:
-      score: 21
+      score: 23
       max: 25
       items:
       - id: SC-01
@@ -89,20 +97,20 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct donut/pie chart type
+        comment: Correct donut/pie chart as specified
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Weights correctly mapped to slices
+        comment: Weights correctly mapped to slice sizes, categories properly grouped
       - id: SC-03
         name: Required Features
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Missing drill-down to individual holdings and return-to-overview
-          navigation
+        passed: true
+        comment: Has hover tooltips, drill-down views in HTML, percentage labels,
+          legend, color-coding; drill-down not visible in static PNG
       - id: SC-04
         name: Data Range
         score: 3
@@ -114,13 +122,13 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Legend correctly shows all asset classes
+        comment: Legend correctly lists all 4 asset classes with matching colors
       - id: SC-06
         name: Title Format
-        score: 0
+        score: 1
         max: 2
-        passed: false
-        comment: Title has extra 'Portfolio Allocation' prefix
+        passed: true
+        comment: Uses correct format but subtitle takes secondary position
     data_quality:
       score: 18
       max: 20
@@ -130,42 +138,44 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Shows 4 asset classes but only aggregated view without individual
-          holdings
+        comment: Shows 4 asset classes with 11 holdings; drill-down feature only visible
+          in HTML export
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Realistic portfolio allocation scenario
+        comment: Excellent real-world portfolio scenario with realistic holdings (Apple,
+          Microsoft, US Treasury, etc.)
       - id: DQ-03
         name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Realistic percentages for diversified portfolio
+        comment: Weights are realistic (4-38%) and sum to exactly 100%
     code_quality:
       score: 8
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
+        score: 2
+        max: 3
+        passed: true
+        comment: Mostly linear structure, drill-down loop adds acceptable complexity
+          for interactive spec
+      - id: CQ-02
+        name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Clean linear structure
-      - id: CQ-02
-        name: Reproducibility
-        score: 2
-        max: 3
-        passed: true
-        comment: Deterministic data; individual holdings defined but not visualized
+        comment: Data is deterministic (hardcoded portfolio data), no random elements
       - id: CQ-03
         name: Clean Imports
-        score: 2
+        score: 1
         max: 2
         passed: true
-        comment: All imports used
+        comment: Uses wildcard import with noqa comments; ggbunch imported and used
       - id: CQ-04
         name: No Deprecated API
         score: 1
@@ -174,7 +184,7 @@ review:
         comment: Uses current lets-plot API
       - id: CQ-05
         name: Output Correct
-        score: 0
+        score: 1
         max: 1
         passed: true
         comment: Saves as plot.png and plot.html
@@ -187,17 +197,18 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Excellent use of geom_pie, layer_tooltips, layer_labels, geom_label,
-          theme_void
-  verdict: REJECTED
+        comment: Excellent use of geom_pie with donut hole, layer_tooltips, layer_labels,
+          geom_label for center, ggbunch for multi-panel HTML, theme_void
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - hover-tooltips
   - html-export
-  - annotations
+  - layer-composition
   patterns:
   - groupby-aggregation
+  - iteration-over-groups
   dataprep: []
   styling:
   - minimal-chrome

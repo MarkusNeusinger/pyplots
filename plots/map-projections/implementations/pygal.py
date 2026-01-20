@@ -1,63 +1,69 @@
-""" pyplots.ai
+"""pyplots.ai
 map-projections: World Map with Different Projections
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-20
 """
 
-import numpy as np
 from pygal.style import Style
 from pygal_maps_world.maps import World
 
 
-np.random.seed(42)
+# Pygal's world map uses a Robinson-like pseudo-cylindrical projection
+# This visualization demonstrates how different projections distort areas
+# by showing Mercator distortion factors (sec²(latitude)) for each country
 
-# Mercator projection distortion factor by country
-# Higher values = more area distortion in Mercator projection
-# Based on latitude: sec²(lat) scaling factor for areas near center latitude
+# Mercator projection distortion factor by country latitude
+# Values represent area scaling: 1.0 = true size, 14.0 = appears 14× larger
 country_distortion = {
-    # High latitude - extreme Mercator distortion (appears much larger)
-    "gl": 14.3,  # Greenland at ~72°N: appears 14× larger
-    "ru": 3.5,  # Russia at ~61°N
-    "ca": 3.0,  # Canada at ~56°N
-    "no": 2.8,  # Norway at ~62°N
-    "se": 2.5,  # Sweden at ~62°N
-    "fi": 2.4,  # Finland at ~64°N
-    "is": 2.6,  # Iceland at ~65°N
-    # Mid latitude - moderate distortion
-    "us": 1.4,  # USA at ~40°N
-    "de": 1.3,  # Germany at ~51°N
-    "fr": 1.3,  # France at ~46°N
-    "gb": 1.4,  # UK at ~54°N
-    "jp": 1.2,  # Japan at ~36°N
-    "cn": 1.2,  # China at ~35°N
-    "ar": 1.3,  # Argentina at ~34°S
-    # Equatorial - minimal distortion (Mercator is accurate near equator)
-    "br": 1.0,  # Brazil at ~10°S
-    "co": 1.0,  # Colombia at ~4°N
-    "ke": 1.0,  # Kenya at ~0°
-    "id": 1.0,  # Indonesia at ~5°S
-    "ng": 1.0,  # Nigeria at ~10°N
-    "cd": 1.0,  # DR Congo at ~3°S
-    "ec": 1.0,  # Ecuador at ~0°
-    "ug": 1.0,  # Uganda at ~1°N
-    "my": 1.0,  # Malaysia at ~3°N
-    # Southern hemisphere mid-latitude
-    "au": 1.2,  # Australia at ~25°S
-    "za": 1.1,  # South Africa at ~29°S
-    "nz": 1.3,  # New Zealand at ~41°S
-    "cl": 1.4,  # Chile at ~35°S
+    # 60°-90° latitude: Extreme Mercator distortion (polar regions)
+    "gl": 14.3,  # Greenland ~72°N
+    "ru": 3.5,  # Russia ~61°N
+    "ca": 3.0,  # Canada ~56°N
+    "no": 2.8,  # Norway ~62°N
+    "is": 2.6,  # Iceland ~65°N
+    "se": 2.5,  # Sweden ~62°N
+    "fi": 2.4,  # Finland ~64°N
+    # 30°-60° latitude: High distortion (temperate zones)
+    "us": 1.4,  # USA ~40°N
+    "gb": 1.4,  # UK ~54°N
+    "cl": 1.4,  # Chile ~35°S
+    "de": 1.3,  # Germany ~51°N
+    "fr": 1.3,  # France ~46°N
+    "ar": 1.3,  # Argentina ~34°S
+    "nz": 1.3,  # New Zealand ~41°S
+    "jp": 1.2,  # Japan ~36°N
+    "cn": 1.2,  # China ~35°N
+    "au": 1.2,  # Australia ~25°S
+    # 15°-30° latitude: Moderate distortion (subtropical)
+    "za": 1.1,  # South Africa ~29°S
+    "eg": 1.1,  # Egypt ~27°N
+    "mx": 1.1,  # Mexico ~23°N
+    # 0°-15° latitude: Minimal distortion (equatorial - Mercator accurate here)
+    "br": 1.0,  # Brazil ~10°S
+    "co": 1.0,  # Colombia ~4°N
+    "ke": 1.0,  # Kenya ~0°
+    "id": 1.0,  # Indonesia ~5°S
+    "ng": 1.0,  # Nigeria ~10°N
+    "cd": 1.0,  # DR Congo ~3°S
+    "ec": 1.0,  # Ecuador ~0°
+    "ug": 1.0,  # Uganda ~1°N
+    "my": 1.0,  # Malaysia ~3°N
+    "th": 1.0,  # Thailand ~15°N
+    "vn": 1.0,  # Vietnam ~14°N
+    "ph": 1.0,  # Philippines ~12°N
 }
 
-# Group countries by distortion severity
-extreme_distortion = {k: v for k, v in country_distortion.items() if v >= 2.4}
-high_distortion = {k: v for k, v in country_distortion.items() if 1.3 <= v < 2.4}
-moderate_distortion = {k: v for k, v in country_distortion.items() if 1.1 <= v < 1.3}
-minimal_distortion = {k: v for k, v in country_distortion.items() if v < 1.1}
+# Group countries by latitude bands (similar to graticule intervals)
+# These bands correspond roughly to 30° latitude intervals
+polar_zone = {k: v for k, v in country_distortion.items() if v >= 2.4}  # >60°
+temperate_zone = {k: v for k, v in country_distortion.items() if 1.2 <= v < 2.4}  # 30-60°
+subtropical_zone = {k: v for k, v in country_distortion.items() if 1.05 <= v < 1.2}  # 15-30°
+equatorial_zone = {k: v for k, v in country_distortion.items() if v < 1.05}  # 0-15°
 
-# Color palette: Red (extreme) → Orange → Yellow → Green (minimal distortion)
-colors = ("#c51b7d", "#e9a3c9", "#a1d76a", "#4d9221")
+# Diverging color scheme: purple (high distortion) to green (low distortion)
+colors = ("#762a83", "#c2a5cf", "#a6dba0", "#1b7837")
 
-# Custom style for large canvas with readable fonts
+# Custom style for large canvas
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -67,15 +73,14 @@ custom_style = Style(
     colors=colors,
     title_font_size=72,
     label_font_size=48,
-    legend_font_size=48,
+    legend_font_size=44,
     major_label_font_size=44,
     value_font_size=40,
     tooltip_font_size=36,
     no_data_font_size=36,
 )
 
-# Create world map (pygal uses Robinson-like pseudo-cylindrical projection)
-# Title format: spec-id · library · pyplots.ai
+# Create world map using pygal's built-in Robinson-style projection
 worldmap = World(
     style=custom_style,
     width=4800,
@@ -87,17 +92,13 @@ worldmap = World(
     legend_box_size=40,
     print_values=False,
     print_labels=False,
-    show_data_values=False,
 )
 
-# Add subtitle to explain the visualization
-worldmap.x_title = "Robinson Projection showing Mercator Distortion Factor by Latitude"
-
-# Add series by distortion level - legend shows what Mercator does to each region
-worldmap.add("Extreme (≥2.4×): Polar regions", extreme_distortion)
-worldmap.add("High (1.3-2.4×): Mid-latitude", high_distortion)
-worldmap.add("Moderate (1.1-1.3×)", moderate_distortion)
-worldmap.add("Minimal (<1.1×): Equatorial", minimal_distortion)
+# Add data series by latitude zone - legend shows latitude bands like graticule
+worldmap.add("60°+ latitude (distortion >2.4×)", polar_zone)
+worldmap.add("30°-60° latitude (distortion 1.2-2.4×)", temperate_zone)
+worldmap.add("15°-30° latitude (distortion 1.05-1.2×)", subtropical_zone)
+worldmap.add("0°-15° latitude (distortion <1.05×)", equatorial_zone)
 
 # Save outputs
 worldmap.render_to_file("plot.html")

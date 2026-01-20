@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-animated-temporal: Animated Map over Time
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 81/100 | Created: 2026-01-20
@@ -18,12 +18,13 @@ time_periods = ["T1: Initial", "T2: +6h", "T3: +12h", "T4: +24h", "T5: +48h", "T
 # Countries in Pacific Ring of Fire and nearby regions
 # Activity spreads outward from initial epicenter (Japan region)
 # Values represent seismic intensity index (0-100)
+# Distribute activity levels to ensure all categories are visible in each panel
 activity_by_time = {
-    0: {"jp": 95},
-    1: {"jp": 85, "kr": 55, "ph": 40},
-    2: {"jp": 75, "kr": 70, "ph": 65, "id": 50, "tw": 45},
-    3: {"jp": 60, "kr": 55, "ph": 75, "id": 80, "tw": 50, "my": 35, "nz": 40},
-    4: {"jp": 45, "kr": 40, "ph": 60, "id": 70, "tw": 40, "my": 50, "nz": 65, "au": 35, "cl": 30},
+    0: {"jp": 95, "kr": 15, "ph": 25, "id": 38},
+    1: {"jp": 85, "kr": 55, "ph": 40, "id": 22, "nz": 15},
+    2: {"jp": 75, "kr": 70, "ph": 65, "id": 50, "tw": 45, "my": 18},
+    3: {"jp": 60, "kr": 55, "ph": 75, "id": 80, "tw": 50, "my": 35, "nz": 40, "au": 22},
+    4: {"jp": 45, "kr": 40, "ph": 60, "id": 70, "tw": 40, "my": 50, "nz": 65, "au": 35, "cl": 30, "pe": 18},
     5: {
         "jp": 35,
         "kr": 30,
@@ -50,10 +51,10 @@ activity_bins = [
     ("Extreme (80+)", 80, 101),
 ]
 
-# Sequential red palette - from light (low activity) to dark red (high activity)
-colors = ("#fff5f0", "#fee0d2", "#fcbba1", "#fc9272", "#fb6a4a", "#cb181d")
+# Colorblind-friendly sequential palette (viridis-inspired: yellow to blue/purple)
+colors = ("#fde725", "#7ad151", "#22a884", "#2a788e", "#414487", "#440154")
 
-# Custom style for individual maps (smaller for grid layout)
+# Custom style for individual maps (larger for better visibility)
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -61,19 +62,19 @@ custom_style = Style(
     foreground_strong="#111111",
     foreground_subtle="#666666",
     colors=colors,
-    title_font_size=48,
-    label_font_size=28,
-    legend_font_size=28,
-    major_label_font_size=24,
-    value_font_size=24,
-    tooltip_font_size=24,
-    no_data_font_size=24,
+    title_font_size=56,
+    label_font_size=32,
+    legend_font_size=32,
+    major_label_font_size=28,
+    value_font_size=28,
+    tooltip_font_size=28,
+    no_data_font_size=28,
 )
 
 # Generate small multiples: 2 rows x 3 columns grid for 6 time periods
-# Each individual map: 1600 x 1200 px → Combined: 4800 x 2400 px + title area
-individual_width = 1600
-individual_height = 1200
+# Each individual map: 1550 x 1250 px → Combined: 4650 x 2500 px + title area
+individual_width = 1550
+individual_height = 1250
 grid_cols = 3
 grid_rows = 2
 
@@ -97,23 +98,28 @@ for time_idx in range(6):
         show_legend=True,
         legend_at_bottom=True,
         legend_at_bottom_columns=3,
-        legend_box_size=24,
+        legend_box_size=28,
     )
 
-    # Add all categories for consistent legend across all maps
+    # Only add categories that have data for this time period (avoid empty legend entries)
     for label, _, _ in activity_bins:
         category_data = binned.get(label, {})
-        worldmap.add(label, category_data if category_data else None)
+        if category_data:
+            worldmap.add(label, category_data)
 
     # Render to PNG bytes
     png_bytes = worldmap.render_to_png()
     map_images.append(Image.open(BytesIO(png_bytes)))
 
-# Create combined image with title area
-title_height = 300
-combined_width = individual_width * grid_cols
-combined_height = individual_height * grid_rows + title_height
+# Create combined image: target 4800x2700 for optimal layout
+title_height = 200
+combined_width = 4800
+combined_height = 2700
 combined = Image.new("RGB", (combined_width, combined_height), "white")
+
+# Calculate grid cell size and padding
+cell_width = combined_width // grid_cols
+cell_height = (combined_height - title_height) // grid_rows
 
 # Add title at top center
 draw = ImageDraw.Draw(combined)
@@ -125,28 +131,45 @@ except OSError:
 bbox = draw.textbbox((0, 0), title_text, font=title_font)
 text_width = bbox[2] - bbox[0]
 title_x = (combined_width - text_width) // 2
-draw.text((title_x, 100), title_text, fill="#111111", font=title_font)
+draw.text((title_x, 60), title_text, fill="#111111", font=title_font)
 
-# Paste individual maps in grid
+# Paste individual maps in grid, centered within each cell
 for idx, img in enumerate(map_images):
     row = idx // grid_cols
     col = idx % grid_cols
-    x = col * individual_width
-    y = row * individual_height + title_height
-    combined.paste(img, (x, y))
+    # Resize image to fit cell if needed
+    img_resized = img.resize((cell_width, cell_height), Image.Resampling.LANCZOS)
+    x = col * cell_width
+    y = row * cell_height + title_height
+    combined.paste(img_resized, (x, y))
 
 combined.save("plot.png", dpi=(300, 300))
 
 # Also save individual HTML for interactivity (final snapshot for web viewing)
+final_style = Style(
+    background="white",
+    plot_background="white",
+    foreground="#333333",
+    foreground_strong="#111111",
+    foreground_subtle="#666666",
+    colors=colors,
+    title_font_size=72,
+    label_font_size=48,
+    legend_font_size=48,
+    major_label_font_size=40,
+    value_font_size=40,
+    tooltip_font_size=36,
+    no_data_font_size=36,
+)
 final_map = World(
-    style=custom_style,
+    style=final_style,
     width=4800,
     height=2700,
     title="Seismic Activity (T6: +72h) · map-animated-temporal · pygal · pyplots.ai",
     show_legend=True,
     legend_at_bottom=True,
     legend_at_bottom_columns=6,
-    legend_box_size=36,
+    legend_box_size=48,
 )
 final_data = activity_by_time[5]
 final_binned = {label: {} for label, _, _ in activity_bins}
@@ -157,5 +180,6 @@ for country, value in final_data.items():
             break
 for label, _, _ in activity_bins:
     category_data = final_binned.get(label, {})
-    final_map.add(label, category_data if category_data else None)
+    if category_data:
+        final_map.add(label, category_data)
 final_map.render_to_file("plot.html")

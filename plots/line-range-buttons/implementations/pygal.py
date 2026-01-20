@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-range-buttons: Line Chart with Range Selector Buttons
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-20
@@ -74,19 +74,19 @@ custom_style = Style(
     stroke_width=4,
 )
 
-# Create x-axis labels - show fewer labels to avoid overlap
+# Create x-axis labels - show only at specific intervals
 x_labels = []
-label_interval = 45  # Every ~45 days
+label_interval = 60  # Every ~60 days for clean display
 for i, d in enumerate(filtered_dates):
     if i % label_interval == 0:
-        x_labels.append(d.strftime("%b %Y"))
+        x_labels.append(d.strftime("%b '%y"))
     else:
-        x_labels.append("")
+        x_labels.append(None)  # Use None instead of empty string
 
-# Create main line chart - adjusted height for better layout
+# Create main line chart - adjusted for proper label display
 main_chart = pygal.Line(
     width=4800,
-    height=1750,
+    height=1700,
     title="line-range-buttons · pygal · pyplots.ai",
     x_title="Date",
     y_title="Value",
@@ -95,21 +95,22 @@ main_chart = pygal.Line(
     show_dots=False,
     show_x_guides=False,
     show_y_guides=True,
-    x_label_rotation=35,
+    x_label_rotation=0,
     truncate_label=-1,
+    truncate_legend=-1,
     show_legend=True,
     legend_at_bottom=False,
     legend_box_size=28,
-    show_minor_x_labels=False,
+    show_x_labels=True,
     stroke_style={"width": 4, "linecap": "round", "linejoin": "round"},
     margin=80,
     margin_top=150,
-    margin_bottom=180,
+    margin_bottom=160,
     spacing=30,
 )
 
 main_chart.x_labels = x_labels
-main_chart.add("Daily Values (1Y view)", filtered_values)
+main_chart.add("Daily Values", filtered_values)
 
 # Mini chart style for range navigator - larger labels
 mini_style = Style(
@@ -175,8 +176,8 @@ combined.paste(main_img, (0, 0))
 # Add range selector buttons area - positioned closer to main chart
 draw = ImageDraw.Draw(combined)
 
-# Draw range button bar - reduced gap from main chart
-button_bar_y = 1780
+# Draw range button bar - positioned below main chart
+button_bar_y = 1730
 button_bar_height = 130
 
 # Draw button background - wider to encompass all buttons

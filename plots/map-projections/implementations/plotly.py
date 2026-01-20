@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 map-projections: World Map with Different Projections
-Library: plotly | Python 3.13
-Quality: pending | Created: 2025-01-20
+Library: plotly 6.5.2 | Python 3.13.11
+Quality: 92/100 | Created: 2026-01-20
 """
 
 import plotly.graph_objects as go

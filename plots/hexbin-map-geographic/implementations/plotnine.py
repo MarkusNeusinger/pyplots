@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 hexbin-map-geographic: Hexagonal Binning Map
-Library: plotnine | Python 3.13
-Quality: pending | Created: 2026-01-20
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 78/100 | Created: 2026-01-20
 """
 
 import numpy as np

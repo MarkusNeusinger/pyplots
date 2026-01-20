@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-range-buttons: Line Chart with Range Selector Buttons
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-20
@@ -9,7 +9,7 @@ import io
 
 import numpy as np
 import pygal
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 from pygal.style import Style
 
 
@@ -56,7 +56,7 @@ selected_start = range_presets[selected_range]
 filtered_dates = dates[selected_start:]
 filtered_values = values_list[selected_start:]
 
-# Custom style for large canvas
+# Custom style for main chart - more compact to reduce gap
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -83,10 +83,10 @@ for i, d in enumerate(filtered_dates):
     else:
         x_labels.append("")
 
-# Create main line chart
+# Create main line chart - adjusted height for better layout
 main_chart = pygal.Line(
     width=4800,
-    height=1900,
+    height=1750,
     title="line-range-buttons · pygal · pyplots.ai",
     x_title="Date",
     y_title="Value",
@@ -98,21 +98,20 @@ main_chart = pygal.Line(
     x_label_rotation=35,
     truncate_label=-1,
     show_legend=True,
-    legend_at_bottom=True,
-    legend_at_bottom_columns=1,
+    legend_at_bottom=False,
     legend_box_size=28,
     show_minor_x_labels=False,
     stroke_style={"width": 4, "linecap": "round", "linejoin": "round"},
     margin=80,
     margin_top=150,
-    margin_bottom=200,
+    margin_bottom=180,
     spacing=30,
 )
 
 main_chart.x_labels = x_labels
 main_chart.add("Daily Values (1Y view)", filtered_values)
 
-# Mini chart style for range navigator
+# Mini chart style for range navigator - larger labels
 mini_style = Style(
     background="#fafafa",
     plot_background="#f0f0f0",
@@ -120,9 +119,9 @@ mini_style = Style(
     foreground_strong="#555555",
     foreground_subtle="#888888",
     colors=("#306998",),
-    title_font_size=44,
-    label_font_size=32,
-    major_label_font_size=28,
+    title_font_size=48,
+    label_font_size=38,
+    major_label_font_size=36,
     legend_font_size=0,
     value_font_size=0,
     opacity=0.8,
@@ -132,7 +131,7 @@ mini_style = Style(
 # Create mini chart showing full range
 mini_chart = pygal.Line(
     width=4800,
-    height=500,
+    height=550,
     title="Range Navigator — Full History",
     style=mini_style,
     fill=False,
@@ -143,9 +142,10 @@ mini_chart = pygal.Line(
     show_x_labels=True,
     show_y_labels=False,
     x_label_rotation=0,
+    truncate_label=-1,
     margin=60,
-    margin_top=90,
-    margin_bottom=70,
+    margin_top=100,
+    margin_bottom=90,
     spacing=15,
 )
 
@@ -172,45 +172,56 @@ mini_img = Image.open(io.BytesIO(mini_png))
 combined = Image.new("RGB", (4800, 2700), "white")
 combined.paste(main_img, (0, 0))
 
-# Add range selector buttons area
+# Add range selector buttons area - positioned closer to main chart
 draw = ImageDraw.Draw(combined)
 
-# Draw range button bar between main chart and mini chart
-button_bar_y = 1920
-button_bar_height = 100
+# Draw range button bar - reduced gap from main chart
+button_bar_y = 1780
+button_bar_height = 130
 
-# Draw button background
-draw.rectangle([100, button_bar_y, 4700, button_bar_y + button_bar_height], fill="#f5f5f5", outline="#dddddd", width=2)
+# Draw button background - wider to encompass all buttons
+draw.rectangle([80, button_bar_y, 1850, button_bar_y + button_bar_height], fill="#f5f5f5", outline="#dddddd", width=3)
 
-# Draw range buttons
+# Draw range buttons - larger for better visibility
 button_labels = ["1M", "3M", "6M", "1Y", "YTD", "All"]
-button_width = 200
-button_height = 70
-button_spacing = 30
-start_x = 200
+button_width = 220
+button_height = 90
+button_spacing = 25
+start_x = 290
+
+# Try to load a font for better text rendering, fall back to default
+try:
+    button_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 42)
+    label_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 40)
+except OSError:
+    button_font = ImageFont.load_default()
+    label_font = ImageFont.load_default()
 
 for i, label in enumerate(button_labels):
     x = start_x + i * (button_width + button_spacing)
-    y = button_bar_y + 15
+    y = button_bar_y + 20
     is_selected = label == selected_range
 
     if is_selected:
-        draw.rectangle([x, y, x + button_width, y + button_height], fill="#306998", outline="#306998", width=2)
+        draw.rectangle([x, y, x + button_width, y + button_height], fill="#306998", outline="#306998", width=3)
         text_color = "white"
     else:
-        draw.rectangle([x, y, x + button_width, y + button_height], fill="white", outline="#306998", width=2)
+        draw.rectangle([x, y, x + button_width, y + button_height], fill="white", outline="#306998", width=3)
         text_color = "#306998"
 
-    # Center text in button (approximate)
-    text_x = x + button_width // 2 - len(label) * 12
-    text_y = y + 15
-    draw.text((text_x, text_y), label, fill=text_color)
+    # Center text in button using textbbox
+    bbox = draw.textbbox((0, 0), label, font=button_font)
+    text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
+    text_x = x + (button_width - text_width) // 2
+    text_y = y + (button_height - text_height) // 2 - 5
+    draw.text((text_x, text_y), label, fill=text_color, font=button_font)
 
-# Add "Range:" label
-draw.text((110, button_bar_y + 30), "Range:", fill="#333333")
+# Add "Range:" label with proper font
+draw.text((100, button_bar_y + 42), "Range:", fill="#333333", font=label_font)
 
-# Paste mini chart below button bar
-mini_y = button_bar_y + button_bar_height + 30
+# Paste mini chart below button bar - reduced gap
+mini_y = button_bar_y + button_bar_height + 20
 combined.paste(mini_img, (0, mini_y))
 
 # Draw range indicator on mini chart
@@ -222,8 +233,8 @@ indicator_width_pct = (total_days - selected_start) / total_days
 
 indicator_left = int(chart_left_margin + indicator_start_pct * chart_width)
 indicator_width = int(indicator_width_pct * chart_width)
-indicator_top = mini_y + 100
-indicator_bottom = mini_y + 420
+indicator_top = mini_y + 110
+indicator_bottom = mini_y + 460
 
 # Create overlay with transparency
 overlay = Image.new("RGBA", combined.size, (255, 255, 255, 0))

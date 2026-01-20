@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-drilldown-geographic: Drillable Geographic Map
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-20
@@ -129,13 +129,12 @@ country_patches = p.patches(
     name="countries",
 )
 
-# Country labels
+# Country labels - name
 countries_label_source = ColumnDataSource(
     data={
         "x": countries_data["centroid_x"],
-        "y": countries_data["centroid_y"],
+        "y": [cy + 2 for cy in countries_data["centroid_y"]],  # Offset up for name
         "name": countries_data["name"],
-        "value": [f"${v}M" for v in countries_data["value"]],
     }
 )
 
@@ -150,6 +149,28 @@ p.text(
     text_color="#333333",
     text_font_style="bold",
     name="country_labels",
+)
+
+# Country value labels - displayed below name for static view visibility
+countries_value_source = ColumnDataSource(
+    data={
+        "x": countries_data["centroid_x"],
+        "y": [cy - 3 for cy in countries_data["centroid_y"]],  # Offset down for value
+        "value": [f"${v}M" for v in countries_data["value"]],
+    }
+)
+
+p.text(
+    x="x",
+    y="y",
+    text="value",
+    source=countries_value_source,
+    text_font_size="18pt",
+    text_align="center",
+    text_baseline="middle",
+    text_color="#1a3c5a",
+    text_font_style="bold",
+    name="country_value_labels",
 )
 
 # =============================================================================
@@ -185,9 +206,8 @@ state_patches = p.patches(
 states_label_source = ColumnDataSource(
     data={
         "x": us_states_data["centroid_x"],
-        "y": us_states_data["centroid_y"],
+        "y": [cy + 1 for cy in us_states_data["centroid_y"]],  # Offset up for name
         "name": us_states_data["name"],
-        "value": [f"${v}M" for v in us_states_data["value"]],
     }
 )
 
@@ -203,6 +223,29 @@ state_labels = p.text(
     text_font_style="bold",
     visible=False,
     name="state_labels",
+)
+
+# State value labels
+states_value_source = ColumnDataSource(
+    data={
+        "x": us_states_data["centroid_x"],
+        "y": [cy - 1.5 for cy in us_states_data["centroid_y"]],  # Offset down for value
+        "value": [f"${v}M" for v in us_states_data["value"]],
+    }
+)
+
+state_value_labels = p.text(
+    x="x",
+    y="y",
+    text="value",
+    source=states_value_source,
+    text_font_size="16pt",
+    text_align="center",
+    text_baseline="middle",
+    text_color="#1a3c5a",
+    text_font_style="bold",
+    visible=False,
+    name="state_value_labels",
 )
 
 # =============================================================================
@@ -238,9 +281,8 @@ city_patches = p.patches(
 cities_label_source = ColumnDataSource(
     data={
         "x": ca_cities_data["centroid_x"],
-        "y": ca_cities_data["centroid_y"],
+        "y": [cy + 0.15 for cy in ca_cities_data["centroid_y"]],  # Offset up for name
         "name": ca_cities_data["name"],
-        "value": [f"${v}M" for v in ca_cities_data["value"]],
     }
 )
 
@@ -256,6 +298,29 @@ city_labels = p.text(
     text_font_style="bold",
     visible=False,
     name="city_labels",
+)
+
+# City value labels
+cities_value_source = ColumnDataSource(
+    data={
+        "x": ca_cities_data["centroid_x"],
+        "y": [cy - 0.25 for cy in ca_cities_data["centroid_y"]],  # Offset down for value
+        "value": [f"${v}M" for v in ca_cities_data["value"]],
+    }
+)
+
+city_value_labels = p.text(
+    x="x",
+    y="y",
+    text="value",
+    source=cities_value_source,
+    text_font_size="14pt",
+    text_align="center",
+    text_baseline="middle",
+    text_color="#1a3c5a",
+    text_font_style="bold",
+    visible=False,
+    name="city_value_labels",
 )
 
 # =============================================================================
@@ -279,7 +344,7 @@ breadcrumb_div = Div(
 )
 
 # =============================================================================
-# Color bar legend
+# Color bar legend - positioned with margin to avoid cutoff
 # =============================================================================
 color_bar = ColorBar(
     color_mapper=color_mapper,
@@ -290,8 +355,11 @@ color_bar = ColorBar(
     title_text_font_size="20pt",
     major_label_text_font_size="18pt",
     title_standoff=15,
+    margin=40,
+    padding=20,
 )
 p.add_layout(color_bar, "right")
+p.min_border_right = 150  # Ensure space for color bar
 
 # =============================================================================
 # Hover tool with tooltips
@@ -314,6 +382,8 @@ tap_callback = CustomJS(
         "city_patches": city_patches,
         "state_labels": state_labels,
         "city_labels": city_labels,
+        "state_value_labels": state_value_labels,
+        "city_value_labels": city_value_labels,
         "breadcrumb": breadcrumb_div,
     },
     code="""
@@ -331,6 +401,7 @@ tap_callback = CustomJS(
             country_patches.visible = false;
             state_patches.visible = true;
             state_labels.visible = true;
+            state_value_labels.visible = true;
 
             // Update view bounds to US
             p.x_range.start = -130;
@@ -357,8 +428,10 @@ tap_callback = CustomJS(
             // Drill down to California cities
             state_patches.visible = false;
             state_labels.visible = false;
+            state_value_labels.visible = false;
             city_patches.visible = true;
             city_labels.visible = true;
+            city_value_labels.visible = true;
 
             // Update view bounds to California
             p.x_range.start = -125;

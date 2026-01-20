@@ -1,11 +1,12 @@
-""" pyplots.ai
+"""pyplots.ai
 line-stock-comparison: Stock Price Comparison Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-20
 """
 
+import datetime
+
 import numpy as np
-import pandas as pd
 import pygal
 from pygal.style import Style
 
@@ -13,13 +14,22 @@ from pygal.style import Style
 # Data - Simulated daily stock prices for ~1 year (252 trading days)
 np.random.seed(42)
 n_days = 252
-dates = pd.date_range("2024-01-02", periods=n_days, freq="B")  # Business days
+
+# Generate business days using numpy/datetime (no pandas needed)
+start_date = datetime.date(2024, 1, 2)
+dates = []
+current_date = start_date
+while len(dates) < n_days:
+    if current_date.weekday() < 5:  # Monday=0 to Friday=4
+        dates.append(current_date)
+    current_date += datetime.timedelta(days=1)
 
 # Simulate cumulative returns with different trends
-returns_aapl = np.random.normal(0.0008, 0.018, n_days)  # Strong growth
-returns_googl = np.random.normal(0.0005, 0.020, n_days)  # Moderate growth
-returns_msft = np.random.normal(0.0006, 0.016, n_days)  # Steady growth
-returns_spy = np.random.normal(0.0004, 0.012, n_days)  # Market benchmark
+# Individual stocks should generally outperform the broad market benchmark (SPY)
+returns_aapl = np.random.normal(0.0012, 0.018, n_days)  # Strong growth (tech leader)
+returns_googl = np.random.normal(0.0015, 0.022, n_days)  # Highest growth (volatile tech)
+returns_msft = np.random.normal(-0.0002, 0.016, n_days)  # Underperformer this period
+returns_spy = np.random.normal(0.0004, 0.010, n_days)  # Broad market (lower vol, moderate return)
 
 # Convert to price series (starting at arbitrary prices, then rebase to 100)
 price_aapl = 100 * np.cumprod(1 + returns_aapl)
@@ -33,14 +43,14 @@ rebased_googl = price_googl / price_googl[0] * 100
 rebased_msft = price_msft / price_msft[0] * 100
 rebased_spy = price_spy / price_spy[0] * 100
 
-# Create custom style with colorblind-friendly palette and dashed reference line
+# Create custom style with colorblind-friendly palette
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#0072B2", "#E69F00", "#CC79A7", "#009E73", "#999999"),  # 5th color for reference line
+    colors=("#0072B2", "#E69F00", "#CC79A7", "#009E73"),  # 4 colors for 4 stock series
     title_font_size=56,
     label_font_size=40,
     major_label_font_size=36,
@@ -68,7 +78,7 @@ chart = pygal.Line(
     show_y_guides=True,
     dots_size=3,
     legend_at_bottom=True,
-    legend_at_bottom_columns=5,
+    legend_at_bottom_columns=4,  # 4 columns for 4 stock series (reference line hidden from legend)
     legend_box_size=32,
     x_label_rotation=45,
     truncate_label=-1,
@@ -105,9 +115,8 @@ chart.add("GOOGL", data_googl)
 chart.add("MSFT", data_msft)
 chart.add("SPY (Benchmark)", data_spy)
 
-# Add horizontal reference line at 100 (starting point) with dashed style
-reference_line = [{"value": 100, "label": "Starting Point (100)"} for _ in range(n_days)]
-chart.add("Reference (100)", reference_line, show_dots=False, stroke_dasharray="15,10", formatter=lambda x: "")
+# Note: Reference line at 100 is indicated by the horizontal grid line passing through y=100
+# This is cleaner than adding a separate series that would clutter the legend
 
 # Save outputs
 chart.render_to_png("plot.png")

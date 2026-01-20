@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-marker-clustered: Clustered Marker Map
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 84/100 | Created: 2026-01-20
@@ -18,6 +18,7 @@ from lets_plot import (
     ggsave,
     ggsize,
     labs,
+    layer_tooltips,
     scale_fill_manual,
     scale_size,
     theme,
@@ -85,7 +86,7 @@ categories = np.random.choice(["Retail", "Warehouse", "Service Center"], size=n_
 df_points = pd.DataFrame({"lon": all_lon, "lat": all_lat, "category": categories})
 
 # Grid-based clustering: assign points to grid cells (simulates zoom level)
-grid_size = 4.5  # Degrees - balances readability and clustering granularity
+grid_size = 5.0  # Degrees - larger grid to reduce overlaps
 df_points["grid_lon"] = np.floor(df_points["lon"] / grid_size) * grid_size
 df_points["grid_lat"] = np.floor(df_points["lat"] / grid_size) * grid_size
 df_points["cluster"] = df_points["grid_lon"].astype(str) + "_" + df_points["grid_lat"].astype(str)
@@ -106,9 +107,57 @@ cluster_summary = (
 cluster_counts = df_points.groupby("cluster").size().reset_index(name="count")
 df_clusters = cluster_summary.merge(cluster_counts, on="cluster")
 
-# Separate single points (show individually) from clusters
-df_singles = df_clusters[df_clusters["count"] == 1].copy()
-df_multiples = df_clusters[df_clusters["count"] > 1].copy()
+# Separate single points (show individually) from clusters (count > 3 for visual clarity)
+df_singles = df_clusters[df_clusters["count"] <= 3].copy()
+df_multiples = df_clusters[df_clusters["count"] > 3].copy()
+
+
+# Function to displace overlapping clusters
+def displace_overlapping_clusters(df, min_distance=3.0):
+    """Move clusters that are too close to each other to prevent overlap."""
+    coords = df[["lon", "lat"]].values.copy()
+    n = len(coords)
+    for _ in range(5):  # Multiple passes
+        for i in range(n):
+            for j in range(i + 1, n):
+                dist = np.sqrt((coords[i, 0] - coords[j, 0]) ** 2 + (coords[i, 1] - coords[j, 1]) ** 2)
+                if dist < min_distance and dist > 0:
+                    # Calculate displacement vector
+                    dx = coords[j, 0] - coords[i, 0]
+                    dy = coords[j, 1] - coords[i, 1]
+                    # Normalize and scale
+                    scale = (min_distance - dist) / (2 * dist)
+                    # Move both clusters apart
+                    coords[i, 0] -= dx * scale
+                    coords[i, 1] -= dy * scale
+                    coords[j, 0] += dx * scale
+                    coords[j, 1] += dy * scale
+    df = df.copy()
+    df["lon"] = coords[:, 0]
+    df["lat"] = coords[:, 1]
+    return df
+
+
+# Apply displacement to prevent overlapping clusters
+df_multiples = displace_overlapping_clusters(df_multiples, min_distance=4.0)
+
+# Add region labels for tooltips
+df_multiples["region"] = df_multiples.apply(
+    lambda r: (
+        "West Coast"
+        if r["lon"] < -110
+        else (
+            "Midwest"
+            if -100 < r["lon"] < -80 and r["lat"] > 38
+            else (
+                "Texas"
+                if r["lat"] < 35 and -100 < r["lon"] < -90
+                else ("Florida" if r["lon"] > -85 and r["lat"] < 30 else "East Coast")
+            )
+        )
+    ),
+    axis=1,
+)
 
 # Simplified US boundary polygon
 us_coords = [
@@ -166,12 +215,12 @@ df_us["group"] = 0
 # Color palette for categories
 colors = {"Retail": "#306998", "Warehouse": "#FFD43B", "Service Center": "#DC2626"}
 
-# Create the plot
+# Create the plot with interactive tooltips
 plot = (
     ggplot()
     # US background
     + geom_polygon(data=df_us, mapping=aes(x="x", y="y", group="group"), fill="#E8E8E8", color="#AAAAAA", size=0.5)
-    # Cluster markers (larger circles with count)
+    # Cluster markers (larger circles with count) - with tooltips
     + geom_point(
         data=df_multiples,
         mapping=aes(x="lon", y="lat", size="count", fill="category"),
@@ -179,28 +228,34 @@ plot = (
         alpha=0.85,
         shape=21,
         stroke=1.5,
+        tooltips=layer_tooltips()
+        .title("@region Cluster")
+        .line("@count locations")
+        .line("Type|@category")
+        .line("Click to explore"),
     )
     # Cluster count labels
     + geom_text(
         data=df_multiples, mapping=aes(x="lon", y="lat", label="count"), color="#FFFFFF", size=10, fontface="bold"
     )
-    # Individual markers (single locations)
+    # Individual markers (single locations) - with tooltips
     + geom_point(
         data=df_singles,
         mapping=aes(x="lon", y="lat", fill="category"),
         color="#333333",
-        size=4,
+        size=5,
         alpha=0.9,
         shape=21,
-        stroke=0.8,
+        stroke=1.0,
+        tooltips=layer_tooltips().title("Individual Location").line("Type|@category").line("@count location(s)"),
     )
     # Scales
     + scale_fill_manual(values=colors, name="Store Type")
-    + scale_size(range=[8, 25], name="Locations", breaks=[5, 20, 50, 100])
+    + scale_size(range=[10, 28], name="Locations", breaks=[10, 50, 100, 200])
     # Labels
     + labs(
         title="map-marker-clustered · letsplot · pyplots.ai",
-        caption="Store locations clustered by proximity | 760 total locations",
+        caption="Store locations clustered by proximity | Hover for details | 760 total locations",
     )
     # Theme
     + theme_void()

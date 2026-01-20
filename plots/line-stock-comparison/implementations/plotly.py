@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-stock-comparison: Stock Price Comparison Chart
-Library: plotly | Python 3.13
-Quality: pending | Created: 2026-01-20
+Library: plotly 6.5.2 | Python 3.13.11
+Quality: 92/100 | Created: 2026-01-20
 """
 
 import numpy as np

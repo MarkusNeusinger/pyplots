@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-navigator: Line Chart with Mini Navigator
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 86/100 | Created: 2026-01-20
@@ -30,7 +30,8 @@ selection_end = 600
 # Create descriptive date range label for selected range
 start_date = dates[selection_start].strftime("%b %Y")
 end_date = dates[selection_end - 1].strftime("%b %Y")
-detail_label = f"Sensor Readings ({start_date} - {end_date})"
+# Use shorter label to avoid legend truncation
+detail_label = f"{start_date} - {end_date}"
 
 # Custom style for pyplots
 custom_style = Style(
@@ -61,7 +62,9 @@ main_chart = pygal.Line(
     show_x_guides=False,
     show_y_guides=True,
     show_legend=True,
-    legend_at_bottom=False,
+    legend_at_bottom=True,
+    legend_box_size=24,
+    truncate_legend=-1,
     x_label_rotation=45,
     truncate_label=-1,
     show_dots=False,
@@ -87,14 +90,14 @@ nav_style = Style(
     foreground="#333",
     foreground_strong="#333",
     foreground_subtle="#666",
-    colors=("#306998", "#FFD43B"),
+    colors=("#8AAEC7", "#E67E22"),  # Lighter blue for full data, orange for selection
     title_font_size=44,
     label_font_size=36,
     major_label_font_size=32,
     legend_font_size=36,
     value_font_size=28,
     stroke_width=2,
-    opacity=".6",
+    opacity=".7",
 )
 
 nav_chart = pygal.Line(
@@ -106,8 +109,11 @@ nav_chart = pygal.Line(
     y_title="",
     show_x_guides=False,
     show_y_guides=False,
+    show_y_labels=False,
     show_legend=True,
     legend_at_bottom=True,
+    legend_box_size=20,
+    truncate_legend=-1,
     x_label_rotation=0,
     show_dots=False,
     fill=True,

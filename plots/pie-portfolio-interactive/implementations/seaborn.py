@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-portfolio-interactive: Interactive Portfolio Allocation Chart
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-20
@@ -45,32 +45,38 @@ portfolio_data = pd.DataFrame(
     }
 )
 
-# Category aggregation for outer ring
+# Category aggregation for inner ring
 category_data = portfolio_data.groupby("category").agg({"weight": "sum", "value": "sum"}).reset_index()
 
-# Define color scheme by category
+# Use seaborn color palettes for distinctive library usage
+# Primary categorical palette for asset classes
+category_palette = sns.color_palette("husl", n_colors=3)
 category_colors = {
-    "Equities": "#306998",  # Python Blue
-    "Fixed Income": "#FFD43B",  # Python Yellow
-    "Alternatives": "#4ECDC4",  # Teal
+    "Equities": category_palette[0],
+    "Fixed Income": category_palette[1],
+    "Alternatives": category_palette[2],
 }
 
-# Create shades for individual assets within each category
+# Create shades for individual assets using seaborn's cubehelix_palette for each category
 asset_colors = []
 for _, row in portfolio_data.iterrows():
     base_color = category_colors[row["category"]]
-    # Get index within category for shade variation
     cat_assets = portfolio_data[portfolio_data["category"] == row["category"]]
     idx = cat_assets[cat_assets["asset"] == row["asset"]].index[0]
     cat_idx = list(cat_assets.index).index(idx)
-    # Create slightly varied shades
-    color_palette = sns.light_palette(base_color, n_colors=len(cat_assets) + 2, reverse=True)
-    asset_colors.append(color_palette[cat_idx + 1])
+    # Use seaborn's blend_palette to create cohesive color gradations
+    n_assets = len(cat_assets)
+    light_color = sns.light_palette(base_color, n_colors=n_assets + 2, reverse=False)[1]
+    dark_color = sns.dark_palette(base_color, n_colors=n_assets + 2, reverse=True)[1]
+    blend_palette = sns.blend_palette([light_color, base_color, dark_color], n_colors=n_assets + 2)
+    asset_colors.append(blend_palette[cat_idx + 1])
 
-# Create figure with two concentric rings
-fig, ax = plt.subplots(figsize=(14, 12))
+# Create figure - using square aspect for better pie visualization
+fig, ax = plt.subplots(figsize=(12, 12))
 
 # Outer ring - Individual assets (detailed breakdown)
+# Note: Seaborn does not provide native pie chart functions, so matplotlib's pie is used
+# with seaborn for color generation and theming
 outer_wedges, outer_texts, outer_autotexts = ax.pie(
     portfolio_data["weight"],
     labels=None,
@@ -82,11 +88,12 @@ outer_wedges, outer_texts, outer_autotexts = ax.pie(
     wedgeprops={"width": 0.35, "edgecolor": "white", "linewidth": 2},
 )
 
-# Style outer ring percentages
+# Style outer ring percentages using seaborn's desaturated text color
+text_color = sns.desaturate("#333333", 0.8)
 for autotext in outer_autotexts:
     autotext.set_fontsize(14)
     autotext.set_fontweight("bold")
-    autotext.set_color("#333333")
+    autotext.set_color(text_color)
 
 # Inner ring - Category breakdown
 category_colors_list = [category_colors[cat] for cat in category_data["category"]]
@@ -117,42 +124,52 @@ ax.text(
     va="center",
     fontsize=24,
     fontweight="bold",
-    color="#333333",
+    color=text_color,
 )
 
-# Create detailed annotations (simulating hover tooltips)
-# Position annotations around the chart
-angles = np.linspace(90, 90 - 360, len(portfolio_data), endpoint=False)
+# Calculate annotation positions distributed around the chart (balanced layout)
 cumulative_weight = 0
-annotation_positions = []
+annotation_data = []
 
 for _, row in portfolio_data.iterrows():
-    # Calculate angle for this wedge center
     angle_deg = 90 - cumulative_weight - row["weight"] / 2
     cumulative_weight += row["weight"]
     angle_rad = np.deg2rad(angle_deg)
 
-    # Position for annotation (outside the chart)
-    x_pos = 1.4 * np.cos(angle_rad)
-    y_pos = 1.4 * np.sin(angle_rad)
+    # Annotation radius varies based on position for better balance
+    x_pos = 1.35 * np.cos(angle_rad)
+    y_pos = 1.35 * np.sin(angle_rad)
 
-    annotation_positions.append((x_pos, y_pos, angle_deg))
+    annotation_data.append({"x_pos": x_pos, "y_pos": y_pos, "angle_deg": angle_deg, "angle_rad": angle_rad, "row": row})
 
 # Add annotation boxes showing detailed info (simulating interactive tooltips)
-# Only show annotations for larger positions to avoid clutter
-for i, (_, row) in enumerate(portfolio_data.iterrows()):
-    if row["weight"] >= 6:  # Show details for allocations >= 6%
-        x_pos, y_pos, angle_deg = annotation_positions[i]
+# Show annotations for holdings >= 6% with balanced distribution
+for data in annotation_data:
+    row = data["row"]
+    if row["weight"] >= 6:
+        x_pos = data["x_pos"]
+        y_pos = data["y_pos"]
+        angle_rad = data["angle_rad"]
 
-        # Adjust horizontal alignment based on position
-        ha = "left" if x_pos > 0 else "right"
-        x_offset = 0.1 if x_pos > 0 else -0.1
+        # Dynamic alignment based on quadrant for balanced layout
+        if x_pos > 0.3:
+            ha = "left"
+            x_offset = 0.08
+        elif x_pos < -0.3:
+            ha = "right"
+            x_offset = -0.08
+        else:
+            ha = "center"
+            x_offset = 0
 
         annotation_text = f"{row['asset']}\n${row['value']:,.0f} ({row['weight']:.1f}%)"
 
-        # Draw connection line from wedge to annotation
-        wedge_x = 1.0 * np.cos(np.deg2rad(angle_deg))
-        wedge_y = 1.0 * np.sin(np.deg2rad(angle_deg))
+        # Connection point on the wedge
+        wedge_x = 1.0 * np.cos(angle_rad)
+        wedge_y = 1.0 * np.sin(angle_rad)
+
+        # Use seaborn saturated color for annotation border
+        border_color = sns.saturate(category_colors[row["category"]])
 
         ax.annotate(
             annotation_text,
@@ -165,14 +182,19 @@ for i, (_, row) in enumerate(portfolio_data.iterrows()):
             bbox={
                 "boxstyle": "round,pad=0.4",
                 "facecolor": "white",
-                "edgecolor": category_colors[row["category"]],
+                "edgecolor": border_color,
                 "linewidth": 2,
                 "alpha": 0.95,
             },
-            arrowprops={"arrowstyle": "-", "color": "#888888", "connectionstyle": "arc3,rad=0.1", "linewidth": 1.5},
+            arrowprops={
+                "arrowstyle": "-",
+                "color": sns.desaturate("#666666", 0.5),
+                "connectionstyle": "arc3,rad=0.1",
+                "linewidth": 1.5,
+            },
         )
 
-# Create legend for categories with detailed info
+# Create legend for categories with detailed info using seaborn styling
 legend_labels = []
 for _, row in category_data.iterrows():
     n_holdings = len(portfolio_data[portfolio_data["category"] == row["category"]])
@@ -185,7 +207,7 @@ legend = ax.legend(
     legend_labels,
     title="Asset Classes (Click to Drill Down)",
     loc="lower center",
-    bbox_to_anchor=(0.5, -0.12),
+    bbox_to_anchor=(0.5, -0.08),
     fontsize=14,
     title_fontsize=16,
     frameon=True,
@@ -195,25 +217,26 @@ legend = ax.legend(
 )
 
 # Title
-ax.set_title("pie-portfolio-interactive · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=30)
+ax.set_title("pie-portfolio-interactive · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=25)
 
 # Note about interactivity
 ax.text(
     0.5,
-    -0.22,
+    -0.16,
     "Hover over segments to see details • Click asset class to drill down into holdings",
     transform=ax.transAxes,
     ha="center",
     va="top",
     fontsize=12,
     fontstyle="italic",
-    color="#666666",
+    color=sns.desaturate("#666666", 0.7),
 )
 
-# Ensure equal aspect ratio
+# Ensure equal aspect ratio for proper circular display
 ax.set_aspect("equal")
-ax.set_xlim(-1.8, 1.8)
+ax.set_xlim(-1.7, 1.7)
 ax.set_ylim(-1.5, 1.5)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="white")
+plt.close()

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hexbin-map-geographic: Hexagonal Binning Map
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 62/100 | Created: 2026-01-20
@@ -6,7 +6,7 @@ Quality: 62/100 | Created: 2026-01-20
 
 import numpy as np
 from bokeh.io import export_png, output_file, save
-from bokeh.models import ColorBar, ColumnDataSource, HoverTool, LinearColorMapper
+from bokeh.models import ColorBar, ColumnDataSource, CustomJSTickFormatter, HoverTool, LinearColorMapper
 from bokeh.plotting import figure
 from bokeh.transform import transform
 from bokeh.util.hex import hexbin
@@ -38,7 +38,7 @@ for center_lon, center_lat in centers:
 lon = np.array(lon_data)
 lat = np.array(lat_data)
 
-# Convert lat/lon to Web Mercator projection (inline, no function)
+# Convert lat/lon to Web Mercator projection
 k = 6378137  # Earth radius in meters
 merc_lon = lon * (k * np.pi / 180.0)
 merc_lat = np.log(np.tan((90 + lat) * np.pi / 360.0)) * k
@@ -63,61 +63,137 @@ mapper = LinearColorMapper(palette=colors, low=min(hex_counts), high=max(hex_cou
 x_min, x_max = merc_lon.min() - 2000, merc_lon.max() + 2000
 y_min, y_max = merc_lat.min() - 2000, merc_lat.max() + 2000
 
-# Create figure with Web Mercator projection
+# Simplified Manhattan coastline coordinates (approximate)
+manhattan_coast_lon = np.array(
+    [-74.047, -74.041, -74.019, -74.009, -73.971, -73.968, -73.943, -73.934, -73.921, -73.911, -73.929, -73.942]
+)
+manhattan_coast_lat = np.array(
+    [40.689, 40.701, 40.705, 40.714, 40.728, 40.751, 40.776, 40.794, 40.806, 40.874, 40.879, 40.873]
+)
+manhattan_coast_x = manhattan_coast_lon * (k * np.pi / 180.0)
+manhattan_coast_y = np.log(np.tan((90 + manhattan_coast_lat) * np.pi / 360.0)) * k
+
+# Hudson River west boundary (approximate)
+hudson_lon = np.array([-74.065, -74.055, -74.045, -74.035, -74.025, -74.020, -74.015, -74.010, -74.005])
+hudson_lat = np.array([40.68, 40.72, 40.74, 40.76, 40.78, 40.80, 40.82, 40.84, 40.88])
+hudson_x = hudson_lon * (k * np.pi / 180.0)
+hudson_y = np.log(np.tan((90 + hudson_lat) * np.pi / 360.0)) * k
+
+# East River boundary (approximate)
+east_lon = np.array([-73.90, -73.91, -73.92, -73.93, -73.94, -73.95, -73.96, -73.97, -73.98])
+east_lat = np.array([40.88, 40.84, 40.80, 40.77, 40.74, 40.72, 40.70, 40.69, 40.68])
+east_x = east_lon * (k * np.pi / 180.0)
+east_y = np.log(np.tan((90 + east_lat) * np.pi / 360.0)) * k
+
+# Create figure with standard axes (not mercator axis type to avoid tick format issues)
 p = figure(
     width=4800,
     height=2700,
     title="hexbin-map-geographic · bokeh · pyplots.ai",
-    x_axis_label="Longitude (Web Mercator meters)",
-    y_axis_label="Latitude (Web Mercator meters)",
-    x_axis_type="mercator",
-    y_axis_type="mercator",
+    x_axis_label="Longitude",
+    y_axis_label="Latitude",
     x_range=(x_min, x_max),
     y_range=(y_min, y_max),
     tools="pan,wheel_zoom,box_zoom,reset",
-    background_fill_color="#e6e6e6",
+    background_fill_color="#d4e6f1",  # Light blue for water
 )
 
-# Add base map tile layer for geographic context
-p.add_tile("CartoDB Positron")
+# Draw land mass background (simplified Manhattan/NYC area)
+land_x = [-8250000, -8250000, -8215000, -8215000]
+land_y = [4960000, 5010000, 5010000, 4960000]
+p.patch(land_x, land_y, fill_color="#e8e4d8", fill_alpha=0.8, line_color=None)
+
+# Draw coastline boundaries for geographic context
+p.line(manhattan_coast_x, manhattan_coast_y, line_width=4, line_color="#5d6d7e", alpha=0.7)
+p.line(hudson_x, hudson_y, line_width=4, line_color="#5d6d7e", alpha=0.7, line_dash="dashed")
+p.line(east_x, east_y, line_width=4, line_color="#5d6d7e", alpha=0.7, line_dash="dashed")
 
 # Plot hex tiles using ColumnDataSource
 p.hex_tile(
-    q="q", r="r", size=hex_size, fill_color=transform("counts", mapper), line_color=None, alpha=0.75, source=hex_source
+    q="q",
+    r="r",
+    size=hex_size,
+    fill_color=transform("counts", mapper),
+    line_color="#333333",
+    line_width=0.5,
+    alpha=0.8,
+    source=hex_source,
 )
 
 # Add hover tool for interactivity
 hover = HoverTool(tooltips=[("Pickup Count", "@counts"), ("Cell (q, r)", "(@q, @r)")], mode="mouse")
 p.add_tools(hover)
 
-# Add color bar legend with better visibility
+# Add color bar legend with larger text for 4800x2700 canvas
 color_bar = ColorBar(
     color_mapper=mapper,
     location=(0, 0),
-    title="Pickups",
-    title_text_font_size="20pt",
+    title="Pickup Count",
+    title_text_font_size="28pt",
     title_text_font_style="bold",
-    major_label_text_font_size="18pt",
-    width=40,
-    padding=15,
-    margin=20,
+    major_label_text_font_size="22pt",
+    width=50,
+    padding=20,
+    margin=30,
 )
 p.add_layout(color_bar, "right")
 
-# Style the plot
-p.title.text_font_size = "32pt"
-p.xaxis.axis_label_text_font_size = "24pt"
-p.yaxis.axis_label_text_font_size = "24pt"
-p.xaxis.major_label_text_font_size = "18pt"
-p.yaxis.major_label_text_font_size = "18pt"
+# Style the plot with larger text sizes for 4800x2700 canvas
+p.title.text_font_size = "36pt"
+p.title.text_font_style = "bold"
+p.xaxis.axis_label_text_font_size = "28pt"
+p.yaxis.axis_label_text_font_size = "28pt"
+p.xaxis.major_label_text_font_size = "22pt"
+p.yaxis.major_label_text_font_size = "22pt"
 
-# Grid styling - subtle to not compete with base map
-p.xgrid.grid_line_color = None
-p.ygrid.grid_line_color = None
+# Grid styling - subtle grid for geographic reference
+p.xgrid.grid_line_color = "#999999"
+p.xgrid.grid_line_alpha = 0.3
+p.ygrid.grid_line_color = "#999999"
+p.ygrid.grid_line_alpha = 0.3
+
+# Format axis ticks to show degrees instead of Web Mercator meters
+lon_formatter = CustomJSTickFormatter(code="return (tick / (6378137 * Math.PI / 180)).toFixed(2) + '°'")
+lat_formatter = CustomJSTickFormatter(
+    code="return (Math.atan(Math.exp(tick / 6378137)) * 360 / Math.PI - 90).toFixed(2) + '°'"
+)
+p.xaxis.formatter = lon_formatter
+p.yaxis.formatter = lat_formatter
 
 # Save PNG output
 export_png(p, filename="plot.png")
 
-# Save interactive HTML
+# Save interactive HTML (with tile layer for full interactivity)
 output_file("plot.html")
-save(p)
+p_html = figure(
+    width=4800,
+    height=2700,
+    title="hexbin-map-geographic · bokeh · pyplots.ai",
+    x_axis_label="Longitude",
+    y_axis_label="Latitude",
+    x_axis_type="mercator",
+    y_axis_type="mercator",
+    x_range=(x_min, x_max),
+    y_range=(y_min, y_max),
+    tools="pan,wheel_zoom,box_zoom,reset",
+)
+p_html.add_tile("CartoDB Positron")
+p_html.hex_tile(
+    q="q",
+    r="r",
+    size=hex_size,
+    fill_color=transform("counts", mapper),
+    line_color="#333333",
+    line_width=0.5,
+    alpha=0.8,
+    source=hex_source,
+)
+p_html.add_tools(hover)
+p_html.add_layout(color_bar, "right")
+p_html.title.text_font_size = "36pt"
+p_html.title.text_font_style = "bold"
+p_html.xaxis.axis_label_text_font_size = "28pt"
+p_html.yaxis.axis_label_text_font_size = "28pt"
+p_html.xaxis.major_label_text_font_size = "22pt"
+p_html.yaxis.major_label_text_font_size = "22pt"
+save(p_html)

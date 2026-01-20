@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-drilldown-geographic: Drillable Geographic Map
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 82/100 | Created: 2026-01-20
@@ -33,7 +33,7 @@ np.random.seed(42)
 # Note: plotnine is a static library - interactive drill-down requires
 # libraries like plotly, bokeh, or altair
 
-# Simplified US state boundaries (approximate polygons)
+# Simplified US state boundaries (approximate polygons) - 20 states for better coverage
 states_data = {
     "California": {
         "coords": [
@@ -196,6 +196,42 @@ states_data = {
         "centroid": (-120.5, 44.0),
         "abbrev": "OR",
     },
+    "North Carolina": {
+        "coords": [(-84.3, 36.6), (-75.5, 36.5), (-75.5, 34.0), (-78.5, 33.8), (-84.0, 35.0), (-84.3, 36.6)],
+        "value": 77,
+        "centroid": (-79.5, 35.5),
+        "abbrev": "NC",
+    },
+    "Virginia": {
+        "coords": [(-83.7, 36.6), (-75.2, 37.2), (-75.5, 38.0), (-77.0, 39.0), (-79.5, 39.5), (-83.7, 36.6)],
+        "value": 83,
+        "centroid": (-78.5, 37.5),
+        "abbrev": "VA",
+    },
+    "Tennessee": {
+        "coords": [(-90.3, 35.0), (-81.7, 36.6), (-81.7, 35.0), (-88.0, 35.0), (-90.3, 35.0)],
+        "value": 70,
+        "centroid": (-86.5, 35.8),
+        "abbrev": "TN",
+    },
+    "Missouri": {
+        "coords": [(-95.8, 40.6), (-89.1, 40.6), (-89.1, 36.5), (-94.6, 36.5), (-95.8, 37.0), (-95.8, 40.6)],
+        "value": 74,
+        "centroid": (-92.5, 38.5),
+        "abbrev": "MO",
+    },
+    "Indiana": {
+        "coords": [(-88.1, 41.8), (-84.8, 41.8), (-84.8, 38.0), (-88.1, 37.8), (-88.1, 41.8)],
+        "value": 67,
+        "centroid": (-86.2, 39.8),
+        "abbrev": "IN",
+    },
+    "Wisconsin": {
+        "coords": [(-92.9, 47.0), (-86.8, 46.0), (-86.8, 42.5), (-90.6, 42.5), (-92.9, 44.0), (-92.9, 47.0)],
+        "value": 80,
+        "centroid": (-89.5, 44.5),
+        "abbrev": "WI",
+    },
 }
 
 # Build dataframe for state polygons
@@ -231,6 +267,10 @@ for state_name, state_info in states_data.items():
 
 df_labels = pd.DataFrame(label_rows)
 
+# Calculate actual data range for accurate legend
+min_value = df_labels["value"].min()
+max_value = df_labels["value"].max()
+
 # Create breadcrumb navigation indicator (static representation)
 breadcrumb_text = "World  >  USA  >  States"
 
@@ -245,38 +285,38 @@ plot = (
     + geom_text(
         aes(x="lon", y="lat", label="label"),
         data=df_labels,
-        size=11,
+        size=10,
         color="#1a1a1a",
         fontweight="bold",
         va="center",
         ha="center",
     )
-    # Color scale - more distinct endpoints for better readability
+    # Color scale - limits match actual data range for legend accuracy
     + scale_fill_gradient(
         low="#FEE08B",  # Light yellow
         high="#1A5276",  # Deep blue
         name="Performance\nScore",
-        limits=(60, 95),
+        limits=(min_value, max_value),
     )
-    # Longitude axis with degree labels for geographic context
+    # Longitude axis - tighter limits to reduce empty space on left
     + scale_x_continuous(
-        breaks=[-120, -110, -100, -90, -80], labels=["120°W", "110°W", "100°W", "90°W", "80°W"], limits=(-128, -72)
+        breaks=[-120, -110, -100, -90, -80], labels=["120°W", "110°W", "100°W", "90°W", "80°W"], limits=(-126, -72)
     )
     # Latitude axis with degree labels for geographic context
     + scale_y_continuous(
-        breaks=[25, 30, 35, 40, 45, 50], labels=["25°N", "30°N", "35°N", "40°N", "45°N", "50°N"], limits=(22, 53)
+        breaks=[25, 30, 35, 40, 45, 50], labels=["25°N", "30°N", "35°N", "40°N", "45°N", "50°N"], limits=(22, 51)
     )
     # Fixed aspect ratio for geographic accuracy
     + coord_fixed(ratio=1.3)
-    # Breadcrumb as annotation - repositioned
-    + annotate("text", x=-127, y=52, label=breadcrumb_text, size=14, color="#1A5276", fontweight="bold", ha="left")
-    # Click instruction annotation - repositioned
+    # Breadcrumb as annotation - positioned within tighter bounds
+    + annotate("text", x=-125, y=50, label=breadcrumb_text, size=14, color="#1A5276", fontweight="bold", ha="left")
+    # Click instruction annotation
     + annotate(
         "text",
-        x=-127,
-        y=50.5,
-        label="Click any state to drill down to cities (interactive version)",
-        size=10,
+        x=-125,
+        y=48.8,
+        label="Click any state to drill down (interactive version)",
+        size=9,
         color="#555555",
         ha="left",
         fontstyle="italic",
@@ -301,7 +341,7 @@ plot = (
         plot_background=element_rect(fill="white"),
         legend_title=element_text(size=16, weight="bold"),
         legend_text=element_text(size=14),
-        legend_position="right",
+        legend_position="right",  # Standard right position
         legend_background=element_rect(fill="white", color="#CCCCCC", size=0.5),
     )
 )

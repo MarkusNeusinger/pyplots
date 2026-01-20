@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hexbin-map-geographic: Hexagonal Binning Map
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 72/100 | Created: 2026-01-20
@@ -6,7 +6,7 @@ Quality: 72/100 | Created: 2026-01-20
 
 import numpy as np
 from bokeh.io import export_png, output_file, save
-from bokeh.models import ColorBar, ColumnDataSource, HoverTool, LinearColorMapper
+from bokeh.models import ColorBar, ColumnDataSource, HoverTool, LinearColorMapper, WMTSTileSource
 from bokeh.plotting import figure
 from bokeh.transform import transform
 from bokeh.util.hex import hexbin
@@ -18,7 +18,7 @@ np.random.seed(42)
 # Generate clustered point data to simulate urban hotspots
 n_points = 5000
 
-# Create multiple cluster centers (simulating different neighborhoods)
+# Create multiple cluster centers (simulating different neighborhoods in NYC)
 centers = [
     (-73.98, 40.75),  # Midtown Manhattan
     (-73.96, 40.78),  # Upper East Side
@@ -31,7 +31,6 @@ centers = [
 lon_data = []
 lat_data = []
 for center_lon, center_lat in centers:
-    # Different cluster sizes
     n_cluster = n_points // len(centers) + np.random.randint(-200, 200)
     lon_data.extend(np.random.normal(center_lon, 0.015, n_cluster))
     lat_data.extend(np.random.normal(center_lat, 0.012, n_cluster))
@@ -39,11 +38,22 @@ for center_lon, center_lat in centers:
 lon = np.array(lon_data)
 lat = np.array(lat_data)
 
-# Compute hexbin aggregation
-# Use hexbin utility to compute counts per cell
-# Size parameter controls hexagon size (in data coordinates)
-hex_size = 0.008  # Adjust for balance between detail and aggregation
-bins = hexbin(lon, lat, hex_size)
+
+# Convert lat/lon to Web Mercator projection for tile overlay
+def wgs84_to_web_mercator(lon, lat):
+    """Convert WGS84 (EPSG:4326) to Web Mercator (EPSG:3857)"""
+    k = 6378137  # Earth radius in meters
+    x = lon * (k * np.pi / 180.0)
+    y = np.log(np.tan((90 + lat) * np.pi / 360.0)) * k
+    return x, y
+
+
+# Convert coordinates
+merc_lon, merc_lat = wgs84_to_web_mercator(lon, lat)
+
+# Compute hexbin aggregation in Web Mercator coordinates
+hex_size = 800  # Size in meters (Web Mercator units)
+bins = hexbin(merc_lon, merc_lat, hex_size)
 
 # Extract hexagon coordinates and counts
 hex_q = bins.q
@@ -57,51 +67,63 @@ hex_source = ColumnDataSource(data={"q": hex_q, "r": hex_r, "counts": hex_counts
 colors = ["#440154", "#482878", "#3e4989", "#31688e", "#26828e", "#1f9e89", "#35b779", "#6ece58", "#b5de2b", "#fde725"]
 mapper = LinearColorMapper(palette=colors, low=min(hex_counts), high=max(hex_counts))
 
-# Create figure
+# Calculate bounds for the map (with padding)
+x_min, x_max = merc_lon.min() - 2000, merc_lon.max() + 2000
+y_min, y_max = merc_lat.min() - 2000, merc_lat.max() + 2000
+
+# Create figure with Web Mercator projection
 p = figure(
     width=4800,
     height=2700,
-    title="NYC Taxi Pickups · hexbin-map-geographic · bokeh · pyplots.ai",
-    x_axis_label="Longitude",
-    y_axis_label="Latitude",
+    title="hexbin-map-geographic · bokeh · pyplots.ai",
+    x_axis_label="Longitude (Web Mercator meters)",
+    y_axis_label="Latitude (Web Mercator meters)",
+    x_axis_type="mercator",
+    y_axis_type="mercator",
+    x_range=(x_min, x_max),
+    y_range=(y_min, y_max),
     tools="pan,wheel_zoom,box_zoom,reset",
-    match_aspect=True,
-    background_fill_color="#f0f0f0",
+    background_fill_color="#e6e6e6",
 )
+
+# Add base map tile layer for geographic context (CartoDB Positron)
+tile_url = "https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
+tile_source = WMTSTileSource(url=tile_url)
+p.add_tile(tile_source)
 
 # Plot hex tiles using ColumnDataSource
 p.hex_tile(
-    q="q", r="r", size=hex_size, fill_color=transform("counts", mapper), line_color=None, alpha=0.85, source=hex_source
+    q="q", r="r", size=hex_size, fill_color=transform("counts", mapper), line_color=None, alpha=0.75, source=hex_source
 )
 
 # Add hover tool for interactivity
-hover = HoverTool(tooltips=[("Count", "@counts"), ("Hex (q, r)", "(@q, @r)")], mode="mouse")
+hover = HoverTool(tooltips=[("Pickup Count", "@counts"), ("Cell (q, r)", "(@q, @r)")], mode="mouse")
 p.add_tools(hover)
 
-# Add color bar legend
+# Add color bar legend with better visibility
 color_bar = ColorBar(
     color_mapper=mapper,
     location=(0, 0),
-    title="Pickup Count",
-    title_text_font_size="18pt",
-    major_label_text_font_size="16pt",
-    width=30,
-    padding=10,
+    title="Count",
+    title_text_font_size="20pt",
+    title_text_font_style="bold",
+    major_label_text_font_size="18pt",
+    width=40,
+    padding=15,
+    margin=20,
 )
 p.add_layout(color_bar, "right")
 
 # Style the plot
-p.title.text_font_size = "28pt"
-p.xaxis.axis_label_text_font_size = "22pt"
-p.yaxis.axis_label_text_font_size = "22pt"
+p.title.text_font_size = "32pt"
+p.xaxis.axis_label_text_font_size = "24pt"
+p.yaxis.axis_label_text_font_size = "24pt"
 p.xaxis.major_label_text_font_size = "18pt"
 p.yaxis.major_label_text_font_size = "18pt"
 
-# Grid styling
-p.xgrid.grid_line_color = "#cccccc"
-p.ygrid.grid_line_color = "#cccccc"
-p.xgrid.grid_line_alpha = 0.5
-p.ygrid.grid_line_alpha = 0.5
+# Grid styling - subtle to not compete with base map
+p.xgrid.grid_line_color = None
+p.ygrid.grid_line_color = None
 
 # Save PNG output
 export_png(p, filename="plot.png")

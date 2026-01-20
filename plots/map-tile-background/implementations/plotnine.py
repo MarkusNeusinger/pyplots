@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 map-tile-background: Map with Tile Background
 Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 68/100 | Created: 2026-01-20
+Quality: 76/100 | Created: 2026-01-20
 """
 
 import numpy as np

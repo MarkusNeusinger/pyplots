@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 drawdown-basic: Drawdown Chart
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 82/100 | Created: 2026-01-20
@@ -6,23 +6,47 @@ Quality: 82/100 | Created: 2026-01-20
 
 import numpy as np
 import pandas as pd
-from lets_plot import *  # noqa: F403
-from lets_plot.export import ggsave as export_ggsave
+from lets_plot import (
+    LetsPlot,
+    aes,
+    element_line,
+    element_text,
+    geom_area,
+    geom_hline,
+    geom_line,
+    geom_point,
+    ggplot,
+    ggsave,
+    ggsize,
+    labs,
+    scale_color_manual,
+    theme,
+    theme_minimal,
+)
 
 
-LetsPlot.setup_html()  # noqa: F405
+LetsPlot.setup_html()
 
 # Generate sample price data (simulating ~2 years of daily data)
 np.random.seed(42)
 n_days = 500
 dates = pd.date_range(start="2022-01-01", periods=n_days, freq="B")
 
-# Simulate price movement with trends and volatility
-returns = np.random.normal(0.0003, 0.015, n_days)
-# Add a few drawdown periods
-returns[50:80] = np.random.normal(-0.01, 0.02, 30)
-returns[200:260] = np.random.normal(-0.008, 0.025, 60)
-returns[350:400] = np.random.normal(-0.005, 0.018, 50)
+# Simulate price movement with trends and volatility that includes recoveries
+returns = np.random.normal(0.0005, 0.012, n_days)
+
+# Add drawdown periods followed by recovery rallies
+# First drawdown period (days 40-70), then recovery rally (days 70-120)
+returns[40:70] = np.random.normal(-0.008, 0.015, 30)
+returns[70:120] = np.random.normal(0.012, 0.01, 50)  # Strong recovery
+
+# Second drawdown period (days 180-230), then partial recovery (days 230-300)
+returns[180:230] = np.random.normal(-0.006, 0.018, 50)
+returns[230:300] = np.random.normal(0.008, 0.012, 70)  # Recovery rally
+
+# Third drawdown period (days 350-400), then final recovery (days 400-450)
+returns[350:400] = np.random.normal(-0.007, 0.016, 50)
+returns[400:450] = np.random.normal(0.009, 0.01, 50)  # Recovery
 
 price = 100 * np.cumprod(1 + returns)
 
@@ -40,48 +64,52 @@ max_dd_value = drawdown[max_dd_idx]
 # Find recovery points (where drawdown returns to zero after being negative)
 recovery_mask = (drawdown == 0) & (np.roll(drawdown, 1) < 0)
 recovery_points = df[recovery_mask].copy()
+recovery_points["marker_type"] = "Recovery Point"
 
 # DataFrame for maximum drawdown point
 max_dd_df = df.iloc[[max_dd_idx]].copy()
+max_dd_df["marker_type"] = "Max Drawdown"
 
-# Create the drawdown chart
+# Combine markers for legend
+markers_df = pd.concat([max_dd_df, recovery_points], ignore_index=True)
+
+# Create the drawdown chart with tooltips for interactivity
 plot = (
-    ggplot(df, aes(x="day_num", y="drawdown"))  # noqa: F405
-    + geom_area(fill="#DC2626", alpha=0.4)  # noqa: F405
-    + geom_line(color="#DC2626", size=1.5)  # noqa: F405
-    + geom_hline(yintercept=0, color="#333333", size=1.0, linetype="dashed")  # noqa: F405
-    + geom_point(  # noqa: F405
-        data=max_dd_df,
-        mapping=aes(x="day_num", y="drawdown"),  # noqa: F405
-        color="#991B1B",
-        size=6,
-        shape=18,
+    ggplot(df, aes(x="day_num", y="drawdown"))
+    + geom_area(fill="#DC2626", alpha=0.35, tooltips="none")
+    + geom_line(color="#DC2626", size=1.5, tooltips="none")
+    + geom_hline(yintercept=0, color="#1F2937", size=1.2, linetype="dashed")
+    + geom_point(
+        data=markers_df,
+        mapping=aes(x="day_num", y="drawdown", color="marker_type"),
+        size=8,
+        stroke=2.5,
+        shape=21,
+        fill="white",
     )
-    + geom_point(  # noqa: F405
-        data=recovery_points,
-        mapping=aes(x="day_num", y="drawdown"),  # noqa: F405
-        color="#16A34A",
-        size=4,
-    )
-    + labs(  # noqa: F405
+    + scale_color_manual(name="Markers", values={"Max Drawdown": "#7C2D12", "Recovery Point": "#166534"})
+    + labs(
         x="Trading Days",
         y="Drawdown (%)",
-        title="drawdown-basic \u00b7 letsplot \u00b7 pyplots.ai",
-        caption="Max Drawdown: {:.1f}% on Day {}".format(max_dd_value, max_dd_idx),
+        title="drawdown-basic · letsplot · pyplots.ai",
+        caption=f"Max Drawdown: {max_dd_value:.1f}% on Day {max_dd_idx}",
     )
-    + theme_minimal()  # noqa: F405
-    + theme(  # noqa: F405
-        axis_title=element_text(size=20),  # noqa: F405
-        axis_text=element_text(size=16),  # noqa: F405
-        plot_title=element_text(size=24),  # noqa: F405
-        plot_caption=element_text(size=14),  # noqa: F405
-        panel_grid=element_line(color="#E5E5E5", size=0.5, linetype="dashed"),  # noqa: F405
+    + theme_minimal()
+    + theme(
+        axis_title=element_text(size=20),
+        axis_text=element_text(size=16),
+        plot_title=element_text(size=24),
+        plot_caption=element_text(size=14),
+        panel_grid=element_line(color="#E5E5E5", size=0.5),
+        legend_position="top",
+        legend_title=element_text(size=16),
+        legend_text=element_text(size=14),
     )
-    + ggsize(1600, 900)  # noqa: F405
+    + ggsize(1600, 900)
 )
 
 # Save PNG (scale 3x to get 4800 x 2700 px)
-export_ggsave(plot, filename="plot.png", path=".", scale=3)
+ggsave(plot, filename="plot.png", path=".", scale=3)
 
 # Save HTML for interactive version
-export_ggsave(plot, filename="plot.html", path=".")
+ggsave(plot, filename="plot.html", path=".")

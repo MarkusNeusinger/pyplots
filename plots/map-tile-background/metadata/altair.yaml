@@ -1,7 +1,7 @@
 library: altair
 specification_id: map-tile-background
 created: '2026-01-20T22:45:34Z'
-updated: '2026-01-20T22:48:56Z'
+updated: '2026-01-20T22:55:28Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21189771519
 issue: 3756
@@ -10,88 +10,84 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/map-tile-background/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/map-tile-background/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/map-tile-background/altair/plot.html
-quality_score: 78
+quality_score: 90
 review:
   strengths:
-  - Excellent use of OpenStreetMap tiles with proper attribution
-  - Good data story with real European landmarks
-  - Nice layered composition (tiles → points → labels → attribution)
-  - White stroke on markers provides good contrast against map
-  - Size encoding effectively shows visitor volume variation
-  - Colorblind-safe category colors
+  - Excellent creative solution using mark_image to render OpenStreetMap tiles
+  - Proper Web Mercator projection implementation for accurate point positioning
+  - Good visual hierarchy with size and color encoding
+  - Includes required OSM attribution
+  - Clean layer composition pattern typical of Altair
+  - Both PNG and HTML output generated
   weaknesses:
-  - Contains helper functions which violates KISS structure requirement
-  - Title format should start with spec-id not descriptive title
-  - Legend text appears small in final rendered output
-  - Some label overlap in dense areas (Vatican/Colosseum region)
-  - Large unused ocean area on left side of map
-  - La Rambla visitor count (78M) seems disproportionately high compared to other
-    landmarks
-  image_description: 'The plot displays a map of Europe with OpenStreetMap tile backgrounds
-    showing geographic detail (roads, borders, terrain coloring). Data points representing
-    European landmarks are plotted as circles with white strokes. The points vary
-    in size based on visitor count (from ~0.5M to 78M annually for La Rambla). Points
-    are colored by category: Monument (blue), Historical (yellow), Museum (green),
-    Religious (red), and Street (purple). The largest visible point is La Rambla in
-    Barcelona. Text labels appear for major landmarks with >5M visitors including
-    "La Rambla", "Vatican Museums", "Tower of Pisa", and "Louvre Museum". Two legends
-    appear: a size legend in bottom-left showing visitor counts, and a category color
-    legend in bottom-right. The title "European Landmarks · map-tile-background ·
-    altair · pyplots.ai" appears at the top. OSM attribution is visible in the bottom-right
-    corner. Northern Europe (UK, France, Germany, Netherlands, Belgium, Czech Republic,
-    Austria) and Southern Europe (Spain, Italy, Greece) are covered.'
+  - Title and subtitle appear swapped - main title should be spec-id format, subtitle
+    should be descriptive
+  - Label overlap between Colosseum and Vatican Museums due to close geographic proximity
+  - Missing .interactive() call which would enable zoom/pan for tile maps
+  - Legend font sizes could be slightly larger for better readability
+  image_description: 'The plot displays a map of Western and Central Europe with OpenStreetMap
+    tile backgrounds showing geographic detail including country borders, cities,
+    terrain, and water bodies. European landmarks are plotted as circular markers
+    with size encoding for annual visitors (in millions) - La Rambla appears as the
+    largest marker (37M visitors). Color encoding distinguishes five categories: Monument
+    (Python blue #306998), Historical (yellow), Museum (green), Religious (red), and
+    Street (purple). Text labels appear for major landmarks including La Rambla, Colosseum/Vatican
+    Museums, Tower of Pisa, and others. Two legends are positioned at the bottom corners
+    - a size legend on the bottom-left showing visitor count scale, and a category
+    legend on the bottom-right. The required OpenStreetMap attribution "© OpenStreetMap
+    contributors" is visible in the bottom-right corner. The title "European Landmarks
+    · map-tile-background · altair · pyplots.ai" appears at the top of the chart.'
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 36
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 9
         max: 10
         passed: true
-        comment: Title readable at 28pt, but legend text is quite small at 14-18pt
-          in the final output; labels are legible but could be larger
+        comment: Title and subtitle readable, legend text legible but slightly small,
+          some label overlap with markers
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: 'Minor overlap: Vatican Museums label overlaps with Colosseum area;
-          some legend text crowding'
+        comment: Minor overlap between Colosseum and Vatican Museums labels due to
+          close geographic proximity
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 8
         max: 8
         passed: true
-        comment: Markers are visible with good size variation and white strokes for
-          contrast, but some smaller markers are hard to distinguish
+        comment: Markers well-sized with 0.85 opacity and white stroke outlines for
+          contrast against map tiles
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Good colorblind-safe palette with Python blue, yellow, green, red,
-          purple
+        comment: Uses Python blue/yellow as primary colors with colorblind-safe differentiation
       - id: VQ-05
         name: Layout Balance
-        score: 2
+        score: 5
         max: 5
-        passed: false
-        comment: Map extends well but a lot of blue ocean on left side is unused;
-          data points concentrated in smaller region
+        passed: true
+        comment: Excellent canvas utilization with map tiles covering full chart area
       - id: VQ-06
         name: Axis Labels
         score: 0
         max: 2
-        passed: false
-        comment: No axis labels (appropriate for map, but could have lat/lon scale)
+        passed: true
+        comment: No axis labels - appropriate for map visualization where axes are
+          hidden
       - id: VQ-07
         name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: Legends well-placed in corners, map tiles provide geographic context
+        comment: Legends well-positioned in corners without obstructing data
     spec_compliance:
       score: 23
       max: 25
@@ -101,99 +97,95 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'Correct: map with tile background showing data points'
+        comment: Correct map with tile background showing point data
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Lat/lon correctly converted to pixel coordinates, value mapped to
-          size
+        comment: Lat/lon correctly converted to Web Mercator projection
       - id: SC-03
         name: Required Features
         score: 4
         max: 5
         passed: true
-        comment: Has tile background, data markers with contrast, attribution, tooltips;
-          missing interactive zoom/pan in PNG
+        comment: Has tiles, markers, size/color encoding, labels, tooltips, attribution.
+          Missing .interactive() for zoom/pan
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All 20 landmarks visible within the tile bounds
+        comment: All data points visible within map bounds
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Both legends (size and category) are accurate
+        comment: Both size and category legends are accurate
       - id: SC-06
         name: Title Format
         score: 1
         max: 2
-        passed: false
-        comment: Uses descriptive title first instead of spec-id format
+        passed: true
+        comment: Uses correct format but title/subtitle appear swapped in output
     data_quality:
-      score: 17
+      score: 19
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Shows varied visitor counts, multiple categories, geographic spread;
-          but all points clustered in Europe
+        comment: Good variety of categories, visitor counts (0.5M-37M), geographic
+          spread
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Excellent real-world scenario with actual European landmarks and
-          plausible visitor counts
+        comment: Real European landmarks with plausible visitor numbers
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Most values realistic; La Rambla at 78M seems disproportionately
-          high
+        comment: Realistic annual visitor figures for famous landmarks
     code_quality:
-      score: 7
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 1
+        score: 3
         max: 3
-        passed: false
-        comment: Has helper functions (lon_to_tile_x, lat_to_tile_y) which violates
-          KISS principle
+        passed: true
+        comment: 'Linear flow: imports → data → projection → layers → combine → save'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) set
+        comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'Only necessary imports: altair, numpy, pandas'
+        comment: Only altair, numpy, pandas - all used
       - id: CQ-04
         name: No Deprecated API
-        score: 1
-        max: 1
-        passed: true
-        comment: Uses current Altair API
-      - id: CQ-05
-        name: Output Correct
         score: 0
         max: 1
         passed: false
-        comment: Saves both plot.png and plot.html
+        comment: configure_view(strokeWidth=0) may generate warnings
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
     library_features:
       score: 3
       max: 5
@@ -203,9 +195,9 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Uses mark_image for tiles, tooltips, layered composition; but doesn't
-          use Altair's native geographic projections
-  verdict: REJECTED
+        comment: Uses mark_image for tiles, layered composition, tooltips. Missing
+          .interactive() for zoom/pan
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:

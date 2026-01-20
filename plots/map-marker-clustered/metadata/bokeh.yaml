@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: map-marker-clustered
 created: '2026-01-20T18:50:28Z'
-updated: '2026-01-20T18:53:45Z'
+updated: '2026-01-20T19:04:32Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21183368742
 issue: 3766
@@ -10,41 +10,38 @@ library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/map-marker-clustered/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/map-marker-clustered/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/map-marker-clustered/bokeh/plot.html
-quality_score: 88
+quality_score: 91
 review:
   strengths:
-  - Excellent realistic coffee shop scenario with plausible NYC neighborhoods
-  - Grid-based clustering algorithm effectively simulates zoom-level aggregation
-  - Cluster markers clearly display counts with good contrast (white bold text on
-    colored circles)
-  - Good use of CartoDB Positron basemap for clean geographic context
-  - Proper Web Mercator projection conversion
-  - Interactive HTML export with pan/zoom/hover tools
-  - Category coloring with dominant category determination per cluster
-  - Legend with semi-transparent background is well-styled
+  - Excellent implementation of grid-based clustering algorithm with proper Web Mercator
+    projection
+  - Clear visualization with well-sized cluster markers and legible count labels
+  - 'Good use of Bokeh features: tile basemap, ColumnDataSource, LabelSet, custom
+    Legend'
+  - Realistic coffee shop scenario with 10 NYC neighborhoods
+  - Both PNG and HTML outputs generated for static and interactive viewing
   weaknesses:
-  - Title includes extra "Store Locations" prefix - should be "{spec-id} · {library}
-    · pyplots.ai"
-  - Helper function lat_lon_to_mercator breaks pure KISS structure
-  - p.add_tile() may trigger deprecation warning in newer Bokeh versions
-  - Some cluster overlap in dense Manhattan area
-  image_description: 'The plot displays a clustered marker map of store locations
-    in the New York City area using a CartoDB Positron basemap. The map shows approximately
-    25-30 cluster markers represented as circles of varying sizes. Most clusters are
-    blue (Python Blue #306998) representing "Coffee" as the dominant category, with
-    several yellow clusters (#FFD43B) for "Express" dominant locations. Each cluster
-    marker displays a white number indicating the count of stores in that cluster
-    (ranging from single digits like 3-6 up to larger counts like 35, 45). The clusters
-    are concentrated in Manhattan, Brooklyn, and surrounding areas. Individual store
-    positions are shown as faint blue dots (alpha=0.2) beneath the clusters. The legend
-    on the right side shows "Store Type" with three categories visible: Coffee (dominant),
-    Express (dominant), and Roastery (dominant). The title reads "Store Locations
-    · map-marker-clustered · bokeh · pyplots.ai" in blue text. Axis labels show "Longitude"
-    and "Latitude" with Mercator coordinates. An italic annotation at the bottom left
-    states "Clustered markers show aggregated store counts".'
+  - Title includes extra Store Locations prefix instead of pure spec-id format
+  - Legend only shows categories that appear as dominant in clusters, may not show
+    all 4 store types
+  - Static clustering cannot demonstrate zoom-based expansion (spec mentions smooth
+    zoom transitions)
+  image_description: 'The plot displays a clustered marker map of coffee shop store
+    locations across the New York City metropolitan area. The background is a CartoDB
+    Positron basemap showing street-level detail including neighborhoods like Downtown,
+    Midtown, Brooklyn Heights, and Williamsburg. Cluster markers are rendered as circles
+    with white count labels indicating the number of stores in each cluster (ranging
+    from 4 to 45). Markers are color-coded by dominant store type: blue (#306998)
+    for Coffee-dominant clusters and yellow (#FFD43B) for Express-dominant clusters.
+    A legend on the right side shows "Store Type" with three categories visible. Faint
+    individual store markers (small blue dots with low opacity) are visible underneath
+    the cluster markers. An italicized annotation at the bottom reads "Clustered markers
+    show aggregated store counts." The title "Store Locations · map-marker-clustered
+    · bokeh · pyplots.ai" appears at the top left. Axis labels show "Easting (m)"
+    and "Northing (m)" for the Web Mercator projection.'
   criteria_checklist:
     visual_quality:
-      score: 35
+      score: 36
       max: 40
       items:
       - id: VQ-01
@@ -52,51 +49,48 @@ review:
         score: 9
         max: 10
         passed: true
-        comment: Title at 32pt is excellent, axis labels at 24pt are good, cluster
-          count labels at 24pt are clearly readable. Legend text slightly small relative
-          to canvas size.
+        comment: Title and legend text are readable; count labels on clusters are
+          clear with bold white text; axis labels appropriately sized at 24pt
       - id: VQ-02
         name: No Overlap
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Most cluster markers are well-separated, some clusters in central
-          Manhattan overlap slightly.
+        comment: Cluster markers are well-separated with no overlapping text or elements
       - id: VQ-03
         name: Element Visibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Cluster markers well-sized (45-110px), count labels are bold white
-          text with good contrast. Individual markers intentionally faint.
+        comment: Cluster markers are well-sized (45-110px based on count), clearly
+          visible against the basemap with good contrast
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 5
         passed: true
-        comment: Blue and yellow provide good contrast. Green (Roastery) may be harder
-          to distinguish for some users.
+        comment: Blue/yellow palette is colorblind-safe; good contrast between marker
+          colors and basemap
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Good canvas utilization with map filling most of space. Legend on
-          right creates some empty space.
+        comment: Map fills canvas appropriately; legend positioned on right side without
+          obscuring data; good use of space
       - id: VQ-06
         name: Axis Labels
-        score: 1
-        max: 2
-        passed: false
-        comment: Labels say Longitude/Latitude but show Mercator coordinates, no units
-          specified.
-      - id: VQ-07
-        name: Grid & Legend
-        score: 3
+        score: 2
         max: 2
         passed: true
-        comment: No visible grid (appropriate for maps), legend well-placed with good
-          styling.
+        comment: 'Descriptive labels with units: Easting (m) and Northing (m)'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Legend shows only 3 categories but code defines 4; not all categories
+          represented in legend
     spec_compliance:
       score: 23
       max: 25
@@ -106,39 +100,39 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct clustered marker map implementation
+        comment: Correct clustered marker map implementation with geographic basemap
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Lat/lon correctly converted to Mercator and plotted
+        comment: Lat/lon correctly converted to Web Mercator; cluster positions accurately
+          calculated
       - id: SC-03
         name: Required Features
         score: 4
         max: 5
         passed: true
-        comment: Has clustering, count display, category coloring, basemap, hover
-          tooltips. Missing click-to-zoom and smooth transitions (PNG limitation).
+        comment: Has clustering, count display, color-coding by category, basemap;
+          missing interactive zoom behavior
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Map view shows all clusters in NYC area appropriately
+        comment: All NYC area data visible within the defined view range
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Legend correctly shows store types with (dominant) suffix
+        comment: Legend correctly shows store types with dominant clarification
       - id: SC-06
         name: Title Format
         score: 1
         max: 2
         passed: false
-        comment: Includes extra 'Store Locations' prefix - should be just '{spec-id}
-          · {library} · pyplots.ai'
+        comment: Title has extra Store Locations prefix instead of pure spec-id format
     data_quality:
       score: 19
       max: 20
@@ -148,31 +142,32 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows clustering at different densities, multiple categories, count
-          labels. Good variety of cluster sizes.
+        comment: Shows clustering with varying counts, multiple categories, geographic
+          distribution across neighborhoods
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Coffee shop chain locations in NYC is an excellent, realistic scenario
+        comment: Coffee shop chain in NYC is a realistic, neutral scenario with plausible
+          neighborhood distribution
       - id: DQ-03
         name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: 270 total points across 10 neighborhoods, realistic geographic distribution
+        comment: 270 total stores across 10 neighborhoods with realistic lat/lon coordinates
+          for NYC
     code_quality:
-      score: 8
+      score: 10
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 2
+        score: 3
         max: 3
-        passed: false
-        comment: Defines helper function lat_lon_to_mercator which breaks pure KISS
-          structure
+        passed: true
+        comment: 'Linear script: imports, data generation, clustering, plotting, save'
       - id: CQ-02
         name: Reproducibility
         score: 3
@@ -184,13 +179,13 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports are used (numpy, bokeh components)
       - id: CQ-04
         name: No Deprecated API
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: p.add_tile() is deprecated in Bokeh 3.x
+        passed: true
+        comment: Uses current Bokeh 3.x API
       - id: CQ-05
         name: Output Correct
         score: 1
@@ -206,21 +201,21 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Uses ColumnDataSource, WMTSTileSource, LabelSet, hover tooltips,
-          HTML export. Missing callbacks for interactive clustering.
-  verdict: REJECTED
+        comment: Uses tile providers, ColumnDataSource, LabelSet, Legend customization,
+          hover tooltips, HTML export; could better leverage Bokeh callbacks
+  verdict: APPROVED
 impl_tags:
-  dependencies:
-  - selenium
+  dependencies: []
   techniques:
-  - hover-tooltips
   - annotations
-  - html-export
+  - hover-tooltips
   - custom-legend
+  - html-export
   patterns:
   - data-generation
-  - columndatasource
   - iteration-over-groups
+  - columndatasource
   dataprep: []
   styling:
   - alpha-blending
+  - edge-highlighting

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-stock-comparison: Stock Price Comparison Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-20
@@ -33,14 +33,14 @@ rebased_googl = price_googl / price_googl[0] * 100
 rebased_msft = price_msft / price_msft[0] * 100
 rebased_spy = price_spy / price_spy[0] * 100
 
-# Create custom style with colorblind-friendly palette
+# Create custom style with colorblind-friendly palette and dashed reference line
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#0072B2", "#E69F00", "#CC79A7", "#009E73"),  # Colorblind-safe: blue, orange, pink, teal
+    colors=("#0072B2", "#E69F00", "#CC79A7", "#009E73", "#999999"),  # 5th color for reference line
     title_font_size=56,
     label_font_size=40,
     major_label_font_size=36,
@@ -52,6 +52,10 @@ custom_style = Style(
     font_family="sans-serif",
 )
 
+# Create x-axis labels - select monthly labels as major labels
+x_labels_all = [d.strftime("%b %Y") if i == 0 or d.month != dates[i - 1].month else "" for i, d in enumerate(dates)]
+x_labels_major = [label for label in x_labels_all if label]
+
 # Create line chart with interactive features
 chart = pygal.Line(
     width=4800,
@@ -62,25 +66,20 @@ chart = pygal.Line(
     y_title="Rebased Price (Start = 100)",
     show_x_guides=False,
     show_y_guides=True,
-    dots_size=2,  # Small dots for interactivity
-    stroke_style={"width": 4},
-    legend_at_bottom=False,
+    dots_size=3,
+    legend_at_bottom=True,
+    legend_at_bottom_columns=5,
     legend_box_size=32,
     x_label_rotation=45,
+    truncate_label=-1,
     show_minor_x_labels=False,
-    x_labels_major_count=7,  # Show 7 major labels
-    show_only_major_dots=True,  # Only show dots at major points
-    range=(70, 180),  # Ensure y-axis range includes reference line
+    x_labels_major=x_labels_major,
+    range=(70, 180),
+    margin_bottom=120,
 )
 
-# Create x-axis labels - show monthly labels
-date_labels = []
-for i, d in enumerate(dates):
-    if i == 0 or d.month != dates[i - 1].month:
-        date_labels.append(d.strftime("%b %Y"))
-    else:
-        date_labels.append("")
-chart.x_labels = date_labels
+# Set x-axis labels
+chart.x_labels = x_labels_all
 
 # Create data with custom tooltips for interactivity
 data_aapl = [
@@ -106,9 +105,9 @@ chart.add("GOOGL", data_googl)
 chart.add("MSFT", data_msft)
 chart.add("SPY (Benchmark)", data_spy)
 
-# Add horizontal reference line at 100 (starting point)
+# Add horizontal reference line at 100 (starting point) with dashed style
 reference_line = [{"value": 100, "label": "Starting Point (100)"} for _ in range(n_days)]
-chart.add("Reference (100)", reference_line, stroke_dasharray="10,5", dots_size=0, stroke_width=3)
+chart.add("Reference (100)", reference_line, show_dots=False, stroke_dasharray="15,10", formatter=lambda x: "")
 
 # Save outputs
 chart.render_to_png("plot.png")

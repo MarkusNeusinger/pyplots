@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-projections: World Map with Different Projections
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-20
@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from matplotlib.lines import Line2D
+from matplotlib.patches import Patch
 
 
 # Set seaborn theme
@@ -267,9 +269,9 @@ for idx, (proj_name, ylim, aspect) in enumerate(
         x="x",
         y="y",
         hue="line_id",
-        palette=["#aaaaaa"] * len(graticule_df["line_id"].unique()),
-        linewidth=0.5,
-        alpha=0.7,
+        palette=["#888888"] * len(graticule_df["line_id"].unique()),
+        linewidth=0.8,
+        alpha=0.85,
         legend=False,
         ax=ax,
     )
@@ -364,43 +366,42 @@ for idx, (proj_name, ylim, aspect) in enumerate(
     ax.set_ylim(ylim)
     ax.set_aspect(aspect)
 
-    # Add latitude/longitude annotations at edges
-    if proj_name == "Mercator":
-        # Y-axis labels for latitude
-        for lat_val in [-60, -30, 0, 30, 60]:
+    # Add latitude labels on the left side for all projections
+    for lat_val in [-60, -30, 0, 30, 60]:
+        if proj_name == "Mercator":
             y_pos = np.log(np.tan(np.pi / 4 + np.radians(lat_val) / 2))
-            if ylim[0] <= y_pos <= ylim[1]:
-                ax.text(-3.4, y_pos, f"{lat_val}°", fontsize=8, ha="right", va="center", color="#555555")
-        # X-axis labels for longitude
-        for lon_val in [-120, -60, 0, 60, 120]:
-            x_pos = np.radians(lon_val)
-            ax.text(x_pos, ylim[0] + 0.15, f"{lon_val}°", fontsize=8, ha="center", va="bottom", color="#555555")
-    elif proj_name == "Robinson":
-        # Simplified lat/lon labels for Robinson
-        for lat_val in [-60, -30, 0, 30, 60]:
+        elif proj_name == "Robinson":
             y_scale = np.interp(abs(lat_val), robinson_table[:, 0], robinson_table[:, 2])
             y_pos = 1.3523 * y_scale * np.sign(lat_val)
-            if ylim[0] <= y_pos <= ylim[1]:
-                ax.text(-3.4, y_pos, f"{lat_val}°", fontsize=8, ha="right", va="center", color="#555555")
-    elif proj_name == "Mollweide":
-        # Lat labels for Mollweide
-        for lat_val in [-60, -30, 0, 30, 60]:
+        elif proj_name == "Mollweide":
             lat_rad = np.radians(lat_val)
             theta = lat_rad
             for _ in range(10):
                 delta = -(2 * theta + np.sin(2 * theta) - np.pi * np.sin(lat_rad)) / (2 + 2 * np.cos(2 * theta) + 1e-10)
                 theta = theta + delta
             y_pos = np.sqrt(2) * np.sin(theta)
-            if ylim[0] <= y_pos <= ylim[1]:
-                ax.text(-3.4, y_pos, f"{lat_val}°", fontsize=8, ha="right", va="center", color="#555555")
-    else:  # Sinusoidal
-        for lat_val in [-60, -30, 0, 30, 60]:
+        else:  # Sinusoidal
             y_pos = np.radians(lat_val)
-            if ylim[0] <= y_pos <= ylim[1]:
-                ax.text(-3.4, y_pos, f"{lat_val}°", fontsize=8, ha="right", va="center", color="#555555")
+        if ylim[0] <= y_pos <= ylim[1]:
+            ax.text(-3.4, y_pos, f"{lat_val}°", fontsize=9, ha="right", va="center", color="#444444")
+
+    # Add longitude labels at the bottom for all projections
+    for lon_val in [-120, -60, 0, 60, 120]:
+        if proj_name == "Mercator":
+            x_pos = np.radians(lon_val)
+        elif proj_name == "Robinson":
+            x_scale = np.interp(0, robinson_table[:, 0], robinson_table[:, 1])
+            x_pos = 0.8487 * np.radians(lon_val) * x_scale
+        elif proj_name == "Mollweide":
+            x_pos = (2 * np.sqrt(2) / np.pi) * np.radians(lon_val)
+        else:  # Sinusoidal
+            x_pos = np.radians(lon_val)
+        ax.text(x_pos, ylim[0] + 0.12, f"{lon_val}°", fontsize=9, ha="center", va="bottom", color="#444444")
 
     ax.set_xticks([])
     ax.set_yticks([])
+    ax.set_xlabel("")
+    ax.set_ylabel("")
 
     # Add subtle border
     for spine in ax.spines.values():
@@ -410,15 +411,22 @@ for idx, (proj_name, ylim, aspect) in enumerate(
 # Main title
 fig.suptitle("map-projections · seaborn · pyplots.ai", fontsize=26, fontweight="bold", y=0.98)
 
-# Add subtitle explaining the visualization
-fig.text(
-    0.5,
-    0.02,
-    "Yellow ellipses (Tissot indicatrices) show how each projection distorts area and shape",
-    ha="center",
-    fontsize=14,
-    color="#555555",
+# Add legend for Tissot indicatrices and graticule
+legend_elements = [
+    Patch(facecolor="#FFD43B", edgecolor="#b8940a", alpha=0.5, label="Tissot Indicatrix (distortion)"),
+    Patch(facecolor="#c8d8c8", edgecolor="#306998", alpha=0.9, label="Land"),
+    Line2D([0], [0], color="#888888", linewidth=0.8, alpha=0.85, label="Graticule (30° intervals)"),
+]
+fig.legend(
+    handles=legend_elements,
+    loc="lower center",
+    ncol=3,
+    fontsize=12,
+    frameon=True,
+    fancybox=True,
+    framealpha=0.9,
+    bbox_to_anchor=(0.5, 0.01),
 )
 
-plt.tight_layout(rect=[0, 0.04, 1, 0.95])
+plt.tight_layout(rect=[0, 0.06, 1, 0.95])
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

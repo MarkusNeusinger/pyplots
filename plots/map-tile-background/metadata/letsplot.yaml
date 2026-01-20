@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: map-tile-background
 created: '2026-01-20T22:39:27Z'
-updated: '2026-01-20T22:42:15Z'
+updated: '2026-01-20T22:50:14Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21189771808
 issue: 3756
@@ -10,123 +10,128 @@ library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/map-tile-background/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/map-tile-background/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/map-tile-background/letsplot/plot.html
-quality_score: 72
+quality_score: 79
 review:
   strengths:
-  - Excellent text legibility with appropriately sized fonts for 4800x2700 output
-  - Good use of dual encoding (color + size) for visitor data
-  - Interactive HTML version properly uses geom_livemap with CARTO tiles
-  - Realistic European tourism dataset with recognizable cities
-  - Clean code structure following KISS principles
+  - Creative approach to simulating a tile-style map background with layered rectangles
+    and polygons
+  - Good use of layer_tooltips for interactive hover information
+  - Clean visual design with appropriate color scheme and marker styling
+  - Deterministic data with realistic European tourism context
+  - Proper use of theme_void for map-style visualization
   weaknesses:
-  - PNG does not show actual map tiles - uses polygon approximations instead of tile
-    background (core spec requirement)
-  - Redundant legends showing same Visitors (K) data twice
-  - Axis labels lack degree units (should be Longitude degrees or similar)
-  - Title uses letsplot instead of lets-plot
-  image_description: 'The plot displays a map of European cities with tourism visitor
-    data. The background consists of simplified gray polygon shapes approximating
-    Europe''s outline (mainland Europe, Scandinavia, British Isles, and Ireland) rather
-    than actual map tiles. City locations are shown as circular markers with dual
-    encoding: marker size and border color both represent visitor counts (in thousands).
-    Colors range from blue (#306998) for lower values to yellow (#FFD43B) for higher
-    values. The largest/brightest markers appear for Paris and London (the highest
-    tourism destinations). Two legends appear on the right: a color gradient bar and
-    a size legend, both labeled "Visitors (K)". The title reads "European Tourism
-    · map-tile-background · letsplot · pyplots.ai". Axes show Longitude (-10 to 30)
-    and Latitude (36 to 72).'
+  - Does not use actual tile-based map backgrounds (OSM, Stamen, etc.) as specified
+    - uses manual polygon shapes instead
+  - Title format uses lets-plot with hyphen instead of letsplot without hyphen
+  - No proper tile provider attribution as required by the specification
+  - Does not leverage lets-plots geotools or livemap features for proper map visualization
+  - The landmass polygons are crude approximations, not providing the street-level
+    detail mentioned in the spec
+  image_description: The plot displays a map of Europe showing tourism data for 20
+    major cities. The background consists of a light gray grid (simulating map tiles)
+    overlaid with tan/beige polygon shapes representing European landmasses including
+    mainland Europe, Scandinavia, British Isles (Great Britain and Ireland), Italy,
+    and the Balkans. City locations are marked with circular markers that have a blue
+    (#306998) outline and yellow (#FFD43B) fill. The marker sizes are scaled according
+    to visitor counts, with Paris and London having the largest markers (representing
+    ~38K and ~32K visitors). A size legend on the right shows "Visitors (thousands)"
+    with three reference circles for 10,000, 20,000, and 30,000. The title reads "European
+    Tourism · map-tile-background · lets-plot · pyplots.ai" in bold at the top.
   criteria_checklist:
     visual_quality:
-      score: 31
+      score: 32
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
+        score: 8
         max: 10
         passed: true
-        comment: Title, axis labels, tick marks, and legend text are all clearly readable
-          at full size
+        comment: Title is clearly readable at 24pt. Legend text is well-sized. No
+          axis labels due to theme_void.
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text or elements
+        comment: No overlapping elements, markers are well-spaced across the map
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 8
         passed: true
-        comment: Markers visible but some smaller cities hard to distinguish; alpha
-          and stroke work well
+        comment: Markers are visible with good color contrast, but smallest markers
+          are quite small relative to the large canvas
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Blue-to-yellow gradient is colorblind-friendly, good contrast
+        comment: Blue/yellow color scheme is colorblind-safe with good contrast
       - id: VQ-05
         name: Layout Balance
         score: 3
         max: 5
         passed: true
-        comment: Plot fills ~60% of canvas, reasonable but legends take space
+        comment: Map is reasonably centered but significant whitespace on right side
+          for legend; bottom portion underutilized
       - id: VQ-06
         name: Axis Labels
         score: 0
         max: 2
         passed: false
-        comment: Labels are generic Longitude and Latitude without units (degrees)
+        comment: No axis labels due to theme_void, acceptable for maps but loses coordinate
+          context
       - id: VQ-07
         name: Grid & Legend
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Legend is duplicated - both color and size legends show same data
+        passed: true
+        comment: Legend is well-placed and clear; tile grid is subtle and appropriate
     spec_compliance:
-      score: 15
+      score: 18
       max: 25
       items:
       - id: SC-01
         name: Plot Type
-        score: 4
+        score: 5
         max: 8
         passed: false
-        comment: 'Critical: Spec requires tile-based background. PNG shows polygon
-          approximations, not actual map tiles'
+        comment: Simulated tile background with manual polygons, not actual OSM/Stamen/satellite
+          tiles as specified
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Lat/lon correctly mapped, visitor values encoded in color and size
+        comment: Lat/lon correctly mapped to positions, visitors mapped to size
       - id: SC-03
         name: Required Features
         score: 3
         max: 5
         passed: false
-        comment: Missing attribution for tile providers, no marker clustering demonstrated
+        comment: 'Missing: proper tile provider attribution, no actual geographic
+          context beyond crude shapes'
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All cities visible within axes bounds
+        comment: All European cities visible within coordinate limits
       - id: SC-05
         name: Legend Accuracy
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Two legends showing same data is redundant and confusing
+        passed: true
+        comment: Legend correctly shows Visitors (thousands) with appropriate scale
       - id: SC-06
         name: Title Format
         score: 0
         max: 2
         passed: false
-        comment: Uses letsplot instead of lets-plot in title
+        comment: Uses lets-plot with hyphen instead of required letsplot without hyphen
     data_quality:
-      score: 16
+      score: 17
       max: 20
       items:
       - id: DQ-01
@@ -134,23 +139,23 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Shows range of visitor counts from 3000 to 38000, good geographic
-          spread
+        comment: Shows 20 cities with varying visitor counts (3K-38K). Could use color
+          encoding for additional dimension.
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: European tourism is a real, neutral, comprehensible scenario
+        comment: European tourism is a realistic, neutral scenario with plausible
+          city data
       - id: DQ-03
         name: Appropriate Scale
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Visitor counts plausible but labeling inconsistent (K units vs actual
-          thousands)
+        passed: true
+        comment: Visitor counts are reasonable for major European cities
     code_quality:
-      score: 7
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -158,19 +163,19 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports, data, plot, save'
+        comment: Clean imports → data → plot → save structure, no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: Uses deterministic data (no random generation)
       - id: CQ-03
         name: Clean Imports
-        score: 0
+        score: 1
         max: 2
         passed: false
-        comment: Several unused imports present
+        comment: coord_fixed is imported but may not be necessary with ggsize
       - id: CQ-04
         name: No Deprecated API
         score: 1
@@ -179,10 +184,10 @@ review:
         comment: Uses current lets-plot API
       - id: CQ-05
         name: Output Correct
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Saves both plot.png and plot.html
+        passed: true
+        comment: Saves as plot.png correctly
     library_features:
       score: 3
       max: 5
@@ -192,18 +197,20 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Uses layer_tooltips but geom_livemap only in HTML version
+        comment: Uses layer_tooltips for hover interactivity, theme_void for clean
+          map appearance, but doesn't use lets-plot geotools or livemap features
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - layer-composition
   - hover-tooltips
-  - html-export
+  - patches
   patterns:
   - data-generation
+  - iteration-over-groups
   dataprep: []
   styling:
-  - custom-colormap
+  - minimal-chrome
   - alpha-blending
-  - grid-styling
+  - edge-highlighting

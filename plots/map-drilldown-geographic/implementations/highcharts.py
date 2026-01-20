@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-drilldown-geographic: Drillable Geographic Map
 Library: highcharts unknown | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-20
@@ -27,67 +27,100 @@ with urllib.request.urlopen(drilldown_url, timeout=60) as response:
 with urllib.request.urlopen(us_url, timeout=60) as response:
     us_topo = response.read().decode("utf-8")
 
-# State topology URLs for drilldown (will be fetched dynamically in JS)
-# Using a selection of states with available TopoJSON data
-
-# Build the complete Highcharts Maps configuration with drilldown
+# Build the complete Highcharts Maps configuration with 3-level drilldown
+# Level 1: Regions (West, Midwest, South, Northeast)
+# Level 2: States within each region
+# Level 3: Cities within each state
 chart_config = """
 (function() {
-    // Sales data by state (synthetic data representing regional sales in $M)
-    var statesData = [
-        { 'hc-key': 'us-ca', name: 'California', value: 245, drilldown: 'us-ca' },
-        { 'hc-key': 'us-tx', name: 'Texas', value: 198, drilldown: 'us-tx' },
-        { 'hc-key': 'us-fl', name: 'Florida', value: 156, drilldown: 'us-fl' },
-        { 'hc-key': 'us-ny', name: 'New York', value: 215, drilldown: 'us-ny' },
-        { 'hc-key': 'us-il', name: 'Illinois', value: 98, drilldown: 'us-il' },
-        { 'hc-key': 'us-pa', name: 'Pennsylvania', value: 87, drilldown: 'us-pa' },
-        { 'hc-key': 'us-oh', name: 'Ohio', value: 76, drilldown: 'us-oh' },
-        { 'hc-key': 'us-ga', name: 'Georgia', value: 89, drilldown: 'us-ga' },
-        { 'hc-key': 'us-nc', name: 'North Carolina', value: 72, drilldown: 'us-nc' },
-        { 'hc-key': 'us-mi', name: 'Michigan', value: 68, drilldown: 'us-mi' },
-        { 'hc-key': 'us-nj', name: 'New Jersey', value: 94, drilldown: 'us-nj' },
-        { 'hc-key': 'us-va', name: 'Virginia', value: 65, drilldown: 'us-va' },
-        { 'hc-key': 'us-wa', name: 'Washington', value: 112, drilldown: 'us-wa' },
-        { 'hc-key': 'us-az', name: 'Arizona', value: 58, drilldown: 'us-az' },
-        { 'hc-key': 'us-ma', name: 'Massachusetts', value: 78, drilldown: 'us-ma' },
-        { 'hc-key': 'us-tn', name: 'Tennessee', value: 52, drilldown: 'us-tn' },
-        { 'hc-key': 'us-in', name: 'Indiana', value: 45, drilldown: 'us-in' },
-        { 'hc-key': 'us-mo', name: 'Missouri', value: 42, drilldown: 'us-mo' },
-        { 'hc-key': 'us-md', name: 'Maryland', value: 56, drilldown: 'us-md' },
-        { 'hc-key': 'us-wi', name: 'Wisconsin', value: 48, drilldown: 'us-wi' },
-        { 'hc-key': 'us-co', name: 'Colorado', value: 67, drilldown: 'us-co' },
-        { 'hc-key': 'us-mn', name: 'Minnesota', value: 55, drilldown: 'us-mn' },
-        { 'hc-key': 'us-sc', name: 'South Carolina', value: 38, drilldown: 'us-sc' },
-        { 'hc-key': 'us-al', name: 'Alabama', value: 35, drilldown: 'us-al' },
-        { 'hc-key': 'us-la', name: 'Louisiana', value: 42, drilldown: 'us-la' },
-        { 'hc-key': 'us-ky', name: 'Kentucky', value: 34, drilldown: 'us-ky' },
-        { 'hc-key': 'us-or', name: 'Oregon', value: 52, drilldown: 'us-or' },
-        { 'hc-key': 'us-ok', name: 'Oklahoma', value: 32, drilldown: 'us-ok' },
-        { 'hc-key': 'us-ct', name: 'Connecticut', value: 45, drilldown: 'us-ct' },
-        { 'hc-key': 'us-ut', name: 'Utah', value: 38, drilldown: 'us-ut' },
-        { 'hc-key': 'us-ia', name: 'Iowa', value: 28, drilldown: 'us-ia' },
-        { 'hc-key': 'us-nv', name: 'Nevada', value: 42, drilldown: 'us-nv' },
-        { 'hc-key': 'us-ar', name: 'Arkansas', value: 24, drilldown: 'us-ar' },
-        { 'hc-key': 'us-ms', name: 'Mississippi', value: 22, drilldown: 'us-ms' },
-        { 'hc-key': 'us-ks', name: 'Kansas', value: 26, drilldown: 'us-ks' },
-        { 'hc-key': 'us-nm', name: 'New Mexico', value: 18, drilldown: 'us-nm' },
-        { 'hc-key': 'us-ne', name: 'Nebraska', value: 16, drilldown: 'us-ne' },
-        { 'hc-key': 'us-id', name: 'Idaho', value: 14, drilldown: 'us-id' },
-        { 'hc-key': 'us-wv', name: 'West Virginia', value: 12, drilldown: 'us-wv' },
-        { 'hc-key': 'us-hi', name: 'Hawaii', value: 28, drilldown: 'us-hi' },
-        { 'hc-key': 'us-nh', name: 'New Hampshire', value: 15, drilldown: 'us-nh' },
-        { 'hc-key': 'us-me', name: 'Maine', value: 12, drilldown: 'us-me' },
-        { 'hc-key': 'us-mt', name: 'Montana', value: 10, drilldown: 'us-mt' },
-        { 'hc-key': 'us-ri', name: 'Rhode Island', value: 14, drilldown: 'us-ri' },
-        { 'hc-key': 'us-de', name: 'Delaware', value: 12, drilldown: 'us-de' },
-        { 'hc-key': 'us-sd', name: 'South Dakota', value: 8, drilldown: 'us-sd' },
-        { 'hc-key': 'us-nd', name: 'North Dakota', value: 7, drilldown: 'us-nd' },
-        { 'hc-key': 'us-ak', name: 'Alaska', value: 18, drilldown: 'us-ak' },
-        { 'hc-key': 'us-vt', name: 'Vermont', value: 8, drilldown: 'us-vt' },
-        { 'hc-key': 'us-wy', name: 'Wyoming', value: 6, drilldown: 'us-wy' }
+    // Region-level data (Level 1) - aggregated sales by US region
+    var regionsData = [
+        { name: 'West', value: 595, drilldown: 'west' },
+        { name: 'South', value: 754, drilldown: 'south' },
+        { name: 'Midwest', value: 453, drilldown: 'midwest' },
+        { name: 'Northeast', value: 479, drilldown: 'northeast' }
     ];
 
-    // City-level data for drilldown (top cities by sales in each state)
+    // State-level data by region (Level 2)
+    var statesByRegion = {
+        'west': {
+            name: 'West Region',
+            states: ['us-ca', 'us-wa', 'us-or', 'us-nv', 'us-az', 'us-ut', 'us-co', 'us-nm', 'us-id', 'us-mt', 'us-wy', 'us-ak', 'us-hi']
+        },
+        'south': {
+            name: 'South Region',
+            states: ['us-tx', 'us-fl', 'us-ga', 'us-nc', 'us-va', 'us-tn', 'us-la', 'us-ky', 'us-sc', 'us-al', 'us-ms', 'us-ar', 'us-ok', 'us-wv', 'us-md', 'us-de']
+        },
+        'midwest': {
+            name: 'Midwest Region',
+            states: ['us-il', 'us-oh', 'us-mi', 'us-in', 'us-wi', 'us-mn', 'us-mo', 'us-ia', 'us-ks', 'us-ne', 'us-sd', 'us-nd']
+        },
+        'northeast': {
+            name: 'Northeast Region',
+            states: ['us-ny', 'us-pa', 'us-nj', 'us-ma', 'us-ct', 'us-nh', 'us-me', 'us-ri', 'us-vt']
+        }
+    };
+
+    // All states data with sales values
+    var allStatesData = {
+        'us-ca': { name: 'California', value: 245, drilldown: 'us-ca' },
+        'us-tx': { name: 'Texas', value: 198, drilldown: 'us-tx' },
+        'us-fl': { name: 'Florida', value: 156, drilldown: 'us-fl' },
+        'us-ny': { name: 'New York', value: 215, drilldown: 'us-ny' },
+        'us-il': { name: 'Illinois', value: 98, drilldown: 'us-il' },
+        'us-pa': { name: 'Pennsylvania', value: 87, drilldown: 'us-pa' },
+        'us-oh': { name: 'Ohio', value: 76, drilldown: 'us-oh' },
+        'us-ga': { name: 'Georgia', value: 89, drilldown: 'us-ga' },
+        'us-nc': { name: 'North Carolina', value: 72, drilldown: 'us-nc' },
+        'us-mi': { name: 'Michigan', value: 68, drilldown: 'us-mi' },
+        'us-nj': { name: 'New Jersey', value: 94, drilldown: 'us-nj' },
+        'us-va': { name: 'Virginia', value: 65, drilldown: 'us-va' },
+        'us-wa': { name: 'Washington', value: 112, drilldown: 'us-wa' },
+        'us-az': { name: 'Arizona', value: 58, drilldown: 'us-az' },
+        'us-ma': { name: 'Massachusetts', value: 78, drilldown: 'us-ma' },
+        'us-tn': { name: 'Tennessee', value: 52, drilldown: 'us-tn' },
+        'us-in': { name: 'Indiana', value: 45, drilldown: 'us-in' },
+        'us-mo': { name: 'Missouri', value: 42, drilldown: 'us-mo' },
+        'us-md': { name: 'Maryland', value: 56, drilldown: 'us-md' },
+        'us-wi': { name: 'Wisconsin', value: 48, drilldown: 'us-wi' },
+        'us-co': { name: 'Colorado', value: 67, drilldown: 'us-co' },
+        'us-mn': { name: 'Minnesota', value: 55, drilldown: 'us-mn' },
+        'us-sc': { name: 'South Carolina', value: 38, drilldown: 'us-sc' },
+        'us-al': { name: 'Alabama', value: 35, drilldown: 'us-al' },
+        'us-la': { name: 'Louisiana', value: 42, drilldown: 'us-la' },
+        'us-ky': { name: 'Kentucky', value: 34, drilldown: 'us-ky' },
+        'us-or': { name: 'Oregon', value: 52, drilldown: 'us-or' },
+        'us-ok': { name: 'Oklahoma', value: 32, drilldown: 'us-ok' },
+        'us-ct': { name: 'Connecticut', value: 45, drilldown: 'us-ct' },
+        'us-ut': { name: 'Utah', value: 38, drilldown: 'us-ut' },
+        'us-ia': { name: 'Iowa', value: 28, drilldown: 'us-ia' },
+        'us-nv': { name: 'Nevada', value: 42, drilldown: 'us-nv' },
+        'us-ar': { name: 'Arkansas', value: 24, drilldown: 'us-ar' },
+        'us-ms': { name: 'Mississippi', value: 22, drilldown: 'us-ms' },
+        'us-ks': { name: 'Kansas', value: 26, drilldown: 'us-ks' },
+        'us-nm': { name: 'New Mexico', value: 18, drilldown: 'us-nm' },
+        'us-ne': { name: 'Nebraska', value: 16, drilldown: 'us-ne' },
+        'us-id': { name: 'Idaho', value: 14, drilldown: 'us-id' },
+        'us-wv': { name: 'West Virginia', value: 12, drilldown: 'us-wv' },
+        'us-hi': { name: 'Hawaii', value: 28, drilldown: 'us-hi' },
+        'us-nh': { name: 'New Hampshire', value: 15, drilldown: 'us-nh' },
+        'us-me': { name: 'Maine', value: 12, drilldown: 'us-me' },
+        'us-mt': { name: 'Montana', value: 10, drilldown: 'us-mt' },
+        'us-ri': { name: 'Rhode Island', value: 14, drilldown: 'us-ri' },
+        'us-de': { name: 'Delaware', value: 12, drilldown: 'us-de' },
+        'us-sd': { name: 'South Dakota', value: 8, drilldown: 'us-sd' },
+        'us-nd': { name: 'North Dakota', value: 7, drilldown: 'us-nd' },
+        'us-ak': { name: 'Alaska', value: 18, drilldown: 'us-ak' },
+        'us-vt': { name: 'Vermont', value: 8, drilldown: 'us-vt' },
+        'us-wy': { name: 'Wyoming', value: 6, drilldown: 'us-wy' }
+    };
+
+    // Build states data array for map
+    var statesData = Object.keys(allStatesData).map(function(key) {
+        return Object.assign({ 'hc-key': key }, allStatesData[key]);
+    });
+
+    // City-level data for drilldown (Level 3) - top cities by sales in each state
     var cityDrilldowns = {
         'us-ca': {
             name: 'California',
@@ -184,6 +217,60 @@ chart_config = """
                 { name: 'Boulder', value: 7 },
                 { name: 'Other', value: 3 }
             ]
+        },
+        'us-oh': {
+            name: 'Ohio',
+            data: [
+                { name: 'Columbus', value: 28 },
+                { name: 'Cleveland', value: 22 },
+                { name: 'Cincinnati', value: 18 },
+                { name: 'Other', value: 8 }
+            ]
+        },
+        'us-mi': {
+            name: 'Michigan',
+            data: [
+                { name: 'Detroit', value: 32 },
+                { name: 'Grand Rapids', value: 18 },
+                { name: 'Ann Arbor', value: 12 },
+                { name: 'Other', value: 6 }
+            ]
+        },
+        'us-nc': {
+            name: 'North Carolina',
+            data: [
+                { name: 'Charlotte', value: 32 },
+                { name: 'Raleigh', value: 22 },
+                { name: 'Durham', value: 12 },
+                { name: 'Other', value: 6 }
+            ]
+        },
+        'us-nj': {
+            name: 'New Jersey',
+            data: [
+                { name: 'Newark', value: 35 },
+                { name: 'Jersey City', value: 28 },
+                { name: 'Trenton', value: 18 },
+                { name: 'Other', value: 13 }
+            ]
+        },
+        'us-va': {
+            name: 'Virginia',
+            data: [
+                { name: 'Virginia Beach', value: 22 },
+                { name: 'Richmond', value: 20 },
+                { name: 'Norfolk', value: 15 },
+                { name: 'Other', value: 8 }
+            ]
+        },
+        'us-az': {
+            name: 'Arizona',
+            data: [
+                { name: 'Phoenix', value: 32 },
+                { name: 'Tucson', value: 15 },
+                { name: 'Scottsdale', value: 8 },
+                { name: 'Other', value: 3 }
+            ]
         }
     };
 
@@ -198,14 +285,15 @@ chart_config = """
                 drilldown: function(e) {
                     if (!e.seriesOptions && e.point.drilldown) {
                         var drilldownId = e.point.drilldown;
-                        var drilldownData = cityDrilldowns[drilldownId];
 
-                        if (drilldownData) {
-                            // Add column series for city-level drilldown
+                        // Check if it's a city-level drilldown (state clicked)
+                        var cityData = cityDrilldowns[drilldownId];
+                        if (cityData) {
+                            // Level 3: City drilldown from state
                             chart.addSeriesAsDrilldown(e.point, {
                                 type: 'column',
-                                name: drilldownData.name + ' Cities',
-                                data: drilldownData.data.map(function(item) {
+                                name: cityData.name + ' Cities',
+                                data: cityData.data.map(function(item) {
                                     return {
                                         name: item.name,
                                         y: item.value
@@ -229,7 +317,7 @@ chart_config = """
             }
         },
         title: {
-            text: 'map-drilldown-geographic \\u00b7 highcharts \\u00b7 pyplots.ai',
+            text: 'map-drilldown-geographic · highcharts · pyplots.ai',
             style: {
                 fontSize: '64px',
                 fontWeight: 'bold'
@@ -237,7 +325,7 @@ chart_config = """
             y: 60
         },
         subtitle: {
-            text: 'Regional Sales Performance ($M) \\u2014 Click a state to drill down to cities',
+            text: 'Regional Sales Performance ($M) — Click a state to drill down to cities',
             style: {
                 fontSize: '42px',
                 color: '#666666'
@@ -309,10 +397,16 @@ chart_config = """
                 dataLabels: {
                     enabled: true,
                     format: '{point.name}',
+                    allowOverlap: false,
                     style: {
-                        fontSize: '18px',
+                        fontSize: '16px',
                         fontWeight: 'normal',
                         textOutline: '2px white'
+                    },
+                    filter: {
+                        property: 'value',
+                        operator: '>',
+                        value: 20
                     }
                 },
                 borderColor: '#ffffff',

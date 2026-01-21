@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: map-connection-lines
 created: '2026-01-21T16:30:21Z'
-updated: '2026-01-21T16:33:35Z'
+updated: '2026-01-21T16:39:57Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21217347997
 issue: 3746
@@ -10,82 +10,88 @@ library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/map-connection-lines/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/map-connection-lines/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/map-connection-lines/bokeh/plot.html
-quality_score: 82
+quality_score: 91
 review:
   strengths:
-  - Excellent use of Bokeh's ColumnDataSource and multi_line for efficient arc rendering
-  - Python-themed color scheme (blue lines, yellow markers) is visually appealing
-  - Line thickness and alpha scaling effectively communicates passenger volume
-  - Curved arcs look natural and avoid straight-line crossings
-  - Real airport codes and plausible passenger data create authentic visualization
-  - HTML output enables interactive pan/zoom functionality
+  - Excellent use of Bokeh-specific features including ColumnDataSource, HoverTool
+    with route/traffic tooltips, and multi_line rendering
+  - Variable line width and alpha based on passenger volume effectively communicates
+    connection strength
+  - Clean Python-themed color scheme (blue lines, yellow markers) with good accessibility
+  - Custom manual legend clearly explains the line thickness encoding
+  - Proper curved arc calculation providing visual interest and representing geodesic-like
+    paths
+  - Airport labels with offset positioning to reduce overlap with markers
   weaknesses:
-  - Missing basemap/coastlines makes geographic context difficult to interpret
-  - No legend explaining line thickness represents passenger volume
-  - Uses a function (generate_arc) which violates KISS code structure requirement
-  - European airport labels overlap due to geographic clustering
-  - No HoverTool for interactive tooltips (spec mentions label for route tooltips)
-  image_description: 'The plot displays a geographic map showing flight connections
-    between 12 major international airports. Yellow circular markers with blue outlines
-    represent airport locations (JFK, LHR, CDG, DXB, SIN, HND, SYD, LAX, SFO, ORD,
-    FRA, AMS). Curved blue arcs connect airport pairs, representing flight routes.
-    Line thickness and opacity vary based on passenger volume - thicker, more opaque
-    lines indicate higher traffic routes (e.g., JFK-LHR). The map uses a light gray
-    background (#f5f5f5) with dashed gray gridlines. Axes show Longitude (-180 to
-    180) and Latitude (-60 to 80). Airport labels appear as small text next to each
-    marker. The title uses the correct format: "map-connection-lines · bokeh · pyplots.ai".'
+  - Missing base map with country borders or coastlines as mentioned in the specification
+    notes (Bokeh does support tile sources or shapes for this)
+  - Axis labels lack "(degrees)" unit specification
+  image_description: The plot displays a world map visualization of international
+    flight routes between 12 major airports. Yellow circular markers (with blue outlines)
+    indicate airport locations labeled with 3-letter IATA codes (JFK, LHR, CDG, DXB,
+    SIN, HND, SYD, LAX, SFO, ORD, FRA, AMS). Curved blue connection lines (arcs) link
+    origin-destination airport pairs, with line thickness and opacity varying based
+    on passenger volume. The background is light gray (#f5f5f5) with a subtle dashed
+    grid. The title "map-connection-lines · bokeh · pyplots.ai" appears in the top-left.
+    A custom legend in the upper-left shows three thickness levels representing low
+    (~1M/yr), medium (~2.5M/yr), and high (~4.5M/yr) passenger traffic. Axes are labeled
+    "Longitude" and "Latitude" with degree values. The plot spans from -180 to 180
+    longitude and approximately -60 to 80 latitude.
   criteria_checklist:
     visual_quality:
-      score: 31
+      score: 36
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 9
         max: 10
         passed: true
-        comment: Title and axis labels readable, but airport labels at 14pt are somewhat
-          small. European cluster labels are dense.
+        comment: Title at 32pt, axis labels at 22pt, tick labels at 18pt, airport
+          labels at 14pt - all readable but airport labels could be slightly larger
       - id: VQ-02
         name: No Overlap
-        score: 6
-        max: 8
-        passed: true
-        comment: Minor overlap in European airport labels (AMS/LHR/CDG/FRA cluster).
-          Most labels readable.
-      - id: VQ-03
-        name: Element Visibility
         score: 8
         max: 8
         passed: true
-        comment: Connection lines well-sized (3-12px thickness). Markers visible at
-          size=20. Alpha 0.4-0.7 handles overlaps well.
+        comment: Airport labels use offset to avoid overlapping markers; European
+          cluster labels are close but still readable
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Airport markers at size 20 are clearly visible; connection lines
+          with variable width and alpha work well, though some thin lines are subtle
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Python Blue and Yellow provide excellent contrast. Colorblind-safe.
+        comment: Python Blue for lines and Python Yellow for markers provide excellent
+          contrast; colorblind-safe combination
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Plot fills canvas well but no basemap means limited geographic context.
+        comment: Plot fills canvas appropriately with balanced margins; legend positioned
+          in upper-left without overlapping data
       - id: VQ-06
         name: Axis Labels
         score: 1
         max: 2
         passed: true
-        comment: Labels are descriptive but lack units (degrees).
+        comment: Labels say Longitude and Latitude but missing (degrees) unit specification
       - id: VQ-07
         name: Grid & Legend
         score: 1
         max: 2
         passed: true
-        comment: Grid is subtle. No legend explaining line thickness meaning.
+        comment: Grid is subtle with dashed style; custom legend is functional but
+          hand-drawn lines could be more polished
     spec_compliance:
-      score: 21
+      score: 24
       max: 25
       items:
       - id: SC-01
@@ -93,31 +99,34 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'Correct chart type: connection lines map with curved arcs.'
+        comment: Correct connection lines map with curved arcs between location pairs
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Origin/destination coordinates correctly mapped.
+        comment: Origin/destination coordinates correctly mapped; line properties
+          encode passenger volume
       - id: SC-03
         name: Required Features
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: 'Has curved lines, markers, transparency. Missing: basemap with coastlines/borders.'
+        passed: true
+        comment: Has curved lines, location markers, transparency, line thickness
+          encoding value; missing base map with country borders
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Axes show full range, all airports visible.
+        comment: Full range visible; x_range and y_range capture all airports
       - id: SC-05
         name: Legend Accuracy
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: No legend present explaining line thickness = passenger volume.
+        passed: true
+        comment: Custom legend correctly explains line thickness meaning with three
+          levels
       - id: SC-06
         name: Title Format
         score: 2
@@ -133,77 +142,82 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows 15 routes between 12 airports with varying volumes. Good route
-          variety.
+        comment: Shows variety of route lengths and traffic volumes; missing some
+          Southern Hemisphere diversity
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Real airport codes with plausible annual passenger volumes.
+        comment: Real airports with plausible IATA codes and realistic passenger volumes
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Passenger volumes realistic. Axis ranges could be tighter to focus
-          on data.
+        comment: Coordinates are accurate for named airports; passenger volumes are
+          reasonable but slightly low for major hub routes
     code_quality:
       score: 8
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 1
+        score: 2
         max: 3
-        passed: false
-        comment: Uses generate_arc() function which violates KISS principle.
+        passed: true
+        comment: Mostly flat structure but has some complexity with manual curve calculation
+          inline; no functions/classes used
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Deterministic data with hardcoded coordinates and routes.
+        comment: Deterministic data (hardcoded airports and routes), no random seed
+          needed
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used.
+        comment: All imports are used (numpy, bokeh.io, bokeh.models, bokeh.plotting)
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Uses current Bokeh API.
+        comment: Uses current Bokeh APIs
       - id: CQ-05
         name: Output Correct
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Saves as plot.png and plot.html.
+        passed: false
+        comment: Axis label missing (degrees) unit specification
     library_features:
-      score: 4
+      score: 5
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Uses ColumnDataSource, multi_line, scatter with styling, text labels.
-          HTML output for interactivity. Could add HoverTool for tooltips.
-  verdict: REJECTED
+        comment: Excellent use of ColumnDataSource, HoverTool with custom tooltips,
+          multi_line for connection rendering, proper Bokeh export workflow
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
-  - annotations
+  - hover-tooltips
   - html-export
+  - annotations
+  - custom-legend
   patterns:
-  - data-generation
   - columndatasource
   - iteration-over-groups
-  dataprep: []
+  dataprep:
+  - interpolation
   styling:
   - alpha-blending
   - grid-styling
+  - edge-highlighting

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-connection-lines: Connection Lines Map (Origin-Destination)
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 82/100 | Created: 2026-01-21
@@ -6,7 +6,7 @@ Quality: 82/100 | Created: 2026-01-21
 
 import numpy as np
 from bokeh.io import export_png, output_file, save
-from bokeh.models import ColumnDataSource
+from bokeh.models import ColumnDataSource, HoverTool
 from bokeh.plotting import figure
 
 
@@ -46,45 +46,13 @@ routes = [
     ("CDG", "HND", 1.1),
 ]
 
-
-# Function to generate curved arc points between two coordinates
-def generate_arc(lon1, lat1, lon2, lat2, num_points=50):
-    """Generate points along a curved arc for visual effect."""
-    t = np.linspace(0, 1, num_points)
-
-    # Linear interpolation for base path
-    lons = lon1 + (lon2 - lon1) * t
-    lats = lat1 + (lat2 - lat1) * t
-
-    # Add curvature: calculate perpendicular offset based on distance
-    dist = np.sqrt((lon2 - lon1) ** 2 + (lat2 - lat1) ** 2)
-    mid_offset = dist * 0.15  # 15% of distance as max curve height
-
-    # Parabolic curve for the offset
-    curve = 4 * t * (1 - t) * mid_offset
-
-    # Calculate perpendicular direction (rotate 90 degrees)
-    dx = lon2 - lon1
-    dy = lat2 - lat1
-    length = np.sqrt(dx**2 + dy**2)
-    if length > 0:
-        perp_x = -dy / length
-        perp_y = dx / length
-    else:
-        perp_x, perp_y = 0, 0
-
-    # Apply curve offset perpendicular to the line
-    lons = lons + perp_x * curve
-    lats = lats + perp_y * curve
-
-    return lons, lats
-
-
 # Prepare data for connection lines
 line_xs = []
 line_ys = []
 line_widths = []
 line_alphas = []
+route_labels = []
+passenger_volumes = []
 
 # Scale passenger volume to line widths
 volumes = [r[2] for r in routes]
@@ -94,8 +62,34 @@ for origin, dest, volume in routes:
     o_lat, o_lon = airports[origin]
     d_lat, d_lon = airports[dest]
 
-    # Generate curved arc points
-    arc_lons, arc_lats = generate_arc(o_lon, o_lat, d_lon, d_lat, num_points=50)
+    # Generate curved arc points (inlined for KISS compliance)
+    num_points = 50
+    t = np.linspace(0, 1, num_points)
+
+    # Linear interpolation for base path
+    arc_lons = o_lon + (d_lon - o_lon) * t
+    arc_lats = o_lat + (d_lat - o_lat) * t
+
+    # Add curvature: calculate perpendicular offset based on distance
+    dist = np.sqrt((d_lon - o_lon) ** 2 + (d_lat - o_lat) ** 2)
+    mid_offset = dist * 0.15  # 15% of distance as max curve height
+
+    # Parabolic curve for the offset
+    curve = 4 * t * (1 - t) * mid_offset
+
+    # Calculate perpendicular direction (rotate 90 degrees)
+    dx = d_lon - o_lon
+    dy = d_lat - o_lat
+    length = np.sqrt(dx**2 + dy**2)
+    if length > 0:
+        perp_x = -dy / length
+        perp_y = dx / length
+    else:
+        perp_x, perp_y = 0, 0
+
+    # Apply curve offset perpendicular to the line
+    arc_lons = arc_lons + perp_x * curve
+    arc_lats = arc_lats + perp_y * curve
 
     line_xs.append(arc_lons.tolist())
     line_ys.append(arc_lats.tolist())
@@ -105,13 +99,26 @@ for origin, dest, volume in routes:
     line_widths.append(3 + normalized * 9)
     line_alphas.append(0.4 + normalized * 0.3)
 
+    # Store route info for hover tooltips
+    route_labels.append(f"{origin} → {dest}")
+    passenger_volumes.append(f"{volume}M passengers/year")
+
 # Prepare airport markers data
 airport_names = list(airports.keys())
 airport_lons = [airports[a][1] for a in airport_names]
 airport_lats = [airports[a][0] for a in airport_names]
 
 # Create sources
-line_source = ColumnDataSource(data={"xs": line_xs, "ys": line_ys, "line_width": line_widths, "alpha": line_alphas})
+line_source = ColumnDataSource(
+    data={
+        "xs": line_xs,
+        "ys": line_ys,
+        "line_width": line_widths,
+        "alpha": line_alphas,
+        "route": route_labels,
+        "passengers": passenger_volumes,
+    }
+)
 
 airport_source = ColumnDataSource(data={"x": airport_lons, "y": airport_lats, "name": airport_names})
 
@@ -120,8 +127,8 @@ p = figure(
     width=4800,
     height=2700,
     title="map-connection-lines · bokeh · pyplots.ai",
-    x_axis_label="Longitude",
-    y_axis_label="Latitude",
+    x_axis_label="Longitude (degrees)",
+    y_axis_label="Latitude (degrees)",
     x_range=(-180, 180),
     y_range=(-60, 80),
     tools="pan,wheel_zoom,box_zoom,reset",
@@ -143,7 +150,7 @@ p.grid.grid_line_alpha = 0.5
 p.grid.grid_line_dash = [6, 4]
 
 # Draw connection lines (Python Blue color)
-p.multi_line(
+lines_renderer = p.multi_line(
     xs="xs",
     ys="ys",
     source=line_source,
@@ -153,10 +160,16 @@ p.multi_line(
     line_cap="round",
 )
 
+# Add HoverTool for route information
+hover = HoverTool(
+    renderers=[lines_renderer], tooltips=[("Route", "@route"), ("Traffic", "@passengers")], line_policy="interp"
+)
+p.add_tools(hover)
+
 # Draw airport markers (Python Yellow)
 p.scatter(x="x", y="y", source=airport_source, size=20, color="#FFD43B", line_color="#306998", line_width=3, alpha=0.9)
 
-# Add airport labels
+# Add airport labels with offset to reduce overlap
 p.text(
     x="x",
     y="y",
@@ -168,6 +181,46 @@ p.text(
     text_color="#333333",
     text_font_style="bold",
 )
+
+# Create legend items to explain line thickness
+# Draw example lines for the legend
+legend_source_thin = ColumnDataSource(data={"xs": [[-170, -150]], "ys": [[70, 70]]})
+legend_source_medium = ColumnDataSource(data={"xs": [[-170, -150]], "ys": [[62, 62]]})
+legend_source_thick = ColumnDataSource(data={"xs": [[-170, -150]], "ys": [[54, 54]]})
+
+thin_line = p.multi_line(
+    xs="xs", ys="ys", source=legend_source_thin, line_width=3, line_color="#306998", line_alpha=0.4
+)
+medium_line = p.multi_line(
+    xs="xs", ys="ys", source=legend_source_medium, line_width=7.5, line_color="#306998", line_alpha=0.55
+)
+thick_line = p.multi_line(
+    xs="xs", ys="ys", source=legend_source_thick, line_width=12, line_color="#306998", line_alpha=0.7
+)
+
+# Add text labels for the legend
+p.text(
+    x=[-145], y=[70], text=["Low traffic (~1M/yr)"], text_font_size="16pt", text_color="#333333", text_baseline="middle"
+)
+p.text(
+    x=[-145],
+    y=[62],
+    text=["Medium traffic (~2.5M/yr)"],
+    text_font_size="16pt",
+    text_color="#333333",
+    text_baseline="middle",
+)
+p.text(
+    x=[-145],
+    y=[54],
+    text=["High traffic (~4.5M/yr)"],
+    text_font_size="16pt",
+    text_color="#333333",
+    text_baseline="middle",
+)
+
+# Add legend title
+p.text(x=[-170], y=[78], text=["Passenger Volume"], text_font_size="18pt", text_color="#333333", text_font_style="bold")
 
 # Save outputs
 export_png(p, filename="plot.png")

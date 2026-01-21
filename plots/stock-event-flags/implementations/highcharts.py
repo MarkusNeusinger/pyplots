@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 stock-event-flags: Stock Chart with Event Flags
 Library: highcharts unknown | Python 3.13.11
-Quality: 78/100 | Created: 2026-01-21
+Quality: 91/100 | Created: 2026-01-21
 """
 
 import json

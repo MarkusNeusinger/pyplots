@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 stock-event-flags: Stock Chart with Event Flags
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 74/100 | Created: 2026-01-21
+Quality: 91/100 | Created: 2026-01-21
 """
 
 import numpy as np

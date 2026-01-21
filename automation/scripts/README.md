@@ -13,7 +13,7 @@ from automation.scripts.workflow_utils import (
     extract_sub_issue,      # Extract sub-issue from PR body
     extract_parent_issue,   # Extract parent issue with fallback
     get_attempt_count,      # Count ai-attempt-X labels
-    parse_plot_path,        # Parse plots/{lib}/{type}/{spec}/{variant}.py
+    parse_plot_path,        # Parse plots/{spec-id}/implementations/{library}.py
     is_valid_library,       # Validate library name
 )
 ```

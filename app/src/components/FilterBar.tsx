@@ -1,5 +1,4 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Menu from '@mui/material/Menu';
@@ -12,9 +11,6 @@ import Tooltip from '@mui/material/Tooltip';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
-import ViewAgendaIcon from '@mui/icons-material/ViewAgenda';
-import ViewModuleIcon from '@mui/icons-material/ViewModule';
-import ListIcon from '@mui/icons-material/List';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 
@@ -22,6 +18,7 @@ import type { FilterCategory, ActiveFilters, FilterCounts } from '../types';
 import { FILTER_LABELS, FILTER_TOOLTIPS, FILTER_CATEGORIES } from '../types';
 import type { ImageSize } from '../constants';
 import { getAvailableValues, getAvailableValuesForGroup, getSearchResults, type SearchResult } from '../utils';
+import { ToolbarActions } from './ToolbarActions';
 
 interface FilterBarProps {
   activeFilters: ActiveFilters;
@@ -250,8 +247,18 @@ export function FilterBar({
           return available.length > 0;
         })
         .map((cat) => ({ type: 'category' as const, category: cat }));
+    } else if (selectedCategory && !hasQuery) {
+      // Category selected but no query - show all available values for this category
+      const available = getAvailableValues(filterCounts, activeFilters, selectedCategory);
+      return available.map(([value, count]) => ({
+        type: 'value' as const,
+        category: selectedCategory,
+        value,
+        count,
+        matchType: 'exact' as const,
+      }));
     } else {
-      // Search results or category values
+      // Search results (with query)
       return searchResults.map((r) => ({ type: 'value' as const, ...r }));
     }
   }, [selectedCategory, hasQuery, filterCounts, activeFilters, searchResults]);
@@ -348,73 +355,14 @@ export function FilterBar({
             {scrollPercent}% · {currentTotal}
           </Typography>
         )}
-        {/* Catalog icon + Grid size toggle - absolute right (desktop only) */}
+        {/* Toolbar actions - absolute right (desktop only) */}
         {!isMobile && (
-          <Box
-            sx={{
-              position: 'absolute',
-              right: 0,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 0.5,
-            }}
-          >
-            {/* Catalog icon */}
-            <Tooltip title="catalog">
-              <Box
-                component={Link}
-                to="/catalog"
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 32,
-                  height: 32,
-                  color: '#9ca3af',
-                  '&:hover': { color: '#3776AB' },
-                }}
-              >
-                <ListIcon sx={{ fontSize: '1.25rem' }} />
-              </Box>
-            </Tooltip>
-            {/* Grid size toggle */}
-            <Tooltip title={imageSize === 'normal' ? 'compact view' : 'normal view'}>
-              <Box
-                role="button"
-                tabIndex={0}
-                aria-label={imageSize === 'normal' ? 'Switch to compact view' : 'Switch to normal view'}
-                onClick={() => {
-                  const newSize = imageSize === 'normal' ? 'compact' : 'normal';
-                  onImageSizeChange(newSize);
-                  onTrackEvent('toggle_grid_size', { size: newSize });
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    const newSize = imageSize === 'normal' ? 'compact' : 'normal';
-                    onImageSizeChange(newSize);
-                    onTrackEvent('toggle_grid_size', { size: newSize });
-                  }
-                }}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 32,
-                  height: 32,
-                  cursor: 'pointer',
-                  color: '#9ca3af',
-                  '&:hover': { color: '#3776AB' },
-                  '&:focus': { outline: '2px solid #3776AB', outlineOffset: 2 },
-                }}
-              >
-                {imageSize === 'normal' ? (
-                  <ViewAgendaIcon sx={{ fontSize: '1.25rem' }} />
-                ) : (
-                  <ViewModuleIcon sx={{ fontSize: '1.25rem' }} />
-                )}
-              </Box>
-            </Tooltip>
+          <Box sx={{ position: 'absolute', right: 0 }}>
+            <ToolbarActions
+              imageSize={imageSize}
+              onImageSizeChange={onImageSizeChange}
+              onTrackEvent={onTrackEvent}
+            />
           </Box>
         )}
         {/* Active filter chips */}
@@ -594,64 +542,11 @@ export function FilterBar({
           ) : (
             <Box />
           )}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            {/* Catalog icon */}
-            <Tooltip title="catalog">
-              <Box
-                component={Link}
-                to="/catalog"
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 32,
-                  height: 32,
-                  color: '#9ca3af',
-                  '&:hover': { color: '#3776AB' },
-                }}
-              >
-                <ListIcon sx={{ fontSize: '1.25rem' }} />
-              </Box>
-            </Tooltip>
-            {/* Grid size toggle */}
-            <Tooltip title={imageSize === 'normal' ? 'compact view' : 'normal view'}>
-              <Box
-                role="button"
-                tabIndex={0}
-                aria-label={imageSize === 'normal' ? 'Switch to compact view' : 'Switch to normal view'}
-                onClick={() => {
-                  const newSize = imageSize === 'normal' ? 'compact' : 'normal';
-                  onImageSizeChange(newSize);
-                  onTrackEvent('toggle_grid_size', { size: newSize });
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    const newSize = imageSize === 'normal' ? 'compact' : 'normal';
-                    onImageSizeChange(newSize);
-                    onTrackEvent('toggle_grid_size', { size: newSize });
-                  }
-                }}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 32,
-                  height: 32,
-                  cursor: 'pointer',
-                  color: '#9ca3af',
-                  '&:hover': { color: '#3776AB' },
-                  '&:focus': { outline: '2px solid #3776AB', outlineOffset: 2 },
-                }}
-              >
-                {imageSize === 'normal' ? (
-                  <ViewAgendaIcon sx={{ fontSize: '1.25rem' }} />
-                ) : (
-                  <ViewModuleIcon sx={{ fontSize: '1.25rem' }} />
-                )}
-              </Box>
-            </Tooltip>
-          </Box>
+          <ToolbarActions
+            imageSize={imageSize}
+            onImageSizeChange={onImageSizeChange}
+            onTrackEvent={onTrackEvent}
+          />
         </Box>
       )}
 
@@ -734,85 +629,97 @@ export function FilterBar({
                     <Divider key="divider" />,
                   ]
                 : []),
-              ...(searchResults.length > 0
-                ? (() => {
-                    // Split results into exact and fuzzy matches
-                    const exactResults = searchResults.filter((r) => r.matchType === 'exact');
-                    const fuzzyResults = searchResults.filter((r) => r.matchType === 'fuzzy');
+              ...((() => {
+                // Use searchResults if query exists, otherwise show all available values for selected category
+                const resultsToShow: SearchResult[] = hasQuery
+                  ? searchResults
+                  : selectedCategory
+                    ? getAvailableValues(filterCounts, activeFilters, selectedCategory).map(([value, count]) => ({
+                        category: selectedCategory,
+                        value,
+                        count,
+                        matchType: 'exact' as const,
+                      }))
+                    : [];
 
-                    const renderMenuItem = (result: SearchResult, idx: number) => {
-                      const { category, value, count } = result;
-                      const specTitle = category === 'spec' ? specTitles[value] : undefined;
-                      const menuItem = (
-                        <MenuItem
-                          key={`${category}-${value}`}
-                          onClick={() => handleValueSelect(category, value)}
-                          selected={idx === highlightedIndex}
-                          sx={{ fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace' }}
+                if (resultsToShow.length > 0) {
+                  // Split results into exact and fuzzy matches
+                  const exactResults = resultsToShow.filter((r) => r.matchType === 'exact');
+                  const fuzzyResults = resultsToShow.filter((r) => r.matchType === 'fuzzy');
+
+                  const renderMenuItem = (result: SearchResult, idx: number) => {
+                    const { category, value, count } = result;
+                    const specTitle = category === 'spec' ? specTitles[value] : undefined;
+                    const menuItem = (
+                      <MenuItem
+                        key={`${category}-${value}`}
+                        onClick={() => handleValueSelect(category, value)}
+                        selected={idx === highlightedIndex}
+                        sx={{ fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace' }}
+                      >
+                        <ListItemText
+                          primary={value}
+                          secondary={!selectedCategory ? FILTER_LABELS[category] : undefined}
+                          primaryTypographyProps={{
+                            fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
+                            fontSize: '0.85rem',
+                          }}
+                          secondaryTypographyProps={{
+                            fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
+                            fontSize: '0.7rem',
+                            color: '#9ca3af',
+                          }}
+                        />
+                        <Typography
+                          sx={{
+                            fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
+                            fontSize: '0.75rem',
+                            color: '#9ca3af',
+                            ml: 2,
+                          }}
                         >
-                          <ListItemText
-                            primary={value}
-                            secondary={!selectedCategory ? FILTER_LABELS[category] : undefined}
-                            primaryTypographyProps={{
-                              fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
-                              fontSize: '0.85rem',
-                            }}
-                            secondaryTypographyProps={{
-                              fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
-                              fontSize: '0.7rem',
-                              color: '#9ca3af',
-                            }}
-                          />
-                          <Typography
-                            sx={{
-                              fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
-                              fontSize: '0.75rem',
-                              color: '#9ca3af',
-                              ml: 2,
-                            }}
-                          >
-                            ({count})
-                          </Typography>
-                        </MenuItem>
-                      );
-                      return specTitle ? (
-                        <Tooltip key={`${category}-${value}`} title={specTitle} placement="right" arrow>
-                          <span>{menuItem}</span>
-                        </Tooltip>
-                      ) : (
-                        menuItem
-                      );
-                    };
+                          ({count})
+                        </Typography>
+                      </MenuItem>
+                    );
+                    return specTitle ? (
+                      <Tooltip key={`${category}-${value}`} title={specTitle} placement="right" arrow>
+                        <span>{menuItem}</span>
+                      </Tooltip>
+                    ) : (
+                      menuItem
+                    );
+                  };
 
-                    const items: React.ReactNode[] = [];
-                    // Add exact matches
-                    exactResults.forEach((result, i) => {
-                      items.push(renderMenuItem(result, i));
-                    });
-                    // Add fuzzy label/divider if there are fuzzy results
-                    if (fuzzyResults.length > 0) {
-                      items.push(
-                        <Divider key="exact-fuzzy-divider" sx={{ my: 0.5 }}>
-                          <Typography
-                            sx={{
-                              fontSize: '0.65rem',
-                              color: '#9ca3af',
-                              fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
-                              px: 1,
-                            }}
-                          >
-                            fuzzy
-                          </Typography>
-                        </Divider>
-                      );
-                    }
-                    // Add fuzzy matches
-                    fuzzyResults.forEach((result, i) => {
-                      items.push(renderMenuItem(result, exactResults.length + i));
-                    });
-                    return items;
-                  })()
-                : [
+                  const items: React.ReactNode[] = [];
+                  // Add exact matches
+                  exactResults.forEach((result, i) => {
+                    items.push(renderMenuItem(result, i));
+                  });
+                  // Add fuzzy label/divider if there are fuzzy results
+                  if (fuzzyResults.length > 0) {
+                    items.push(
+                      <Divider key="exact-fuzzy-divider" sx={{ my: 0.5 }}>
+                        <Typography
+                          sx={{
+                            fontSize: '0.65rem',
+                            color: '#9ca3af',
+                            fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
+                            px: 1,
+                          }}
+                        >
+                          fuzzy
+                        </Typography>
+                      </Divider>
+                    );
+                  }
+                  // Add fuzzy matches
+                  fuzzyResults.forEach((result, i) => {
+                    items.push(renderMenuItem(result, exactResults.length + i));
+                  });
+                  return items;
+                } else {
+                  return [
                     <MenuItem key="no-results" disabled>
                       <Typography
                         sx={{
@@ -824,7 +731,9 @@ export function FilterBar({
                         no matches
                       </Typography>
                     </MenuItem>,
-                  ]),
+                  ];
+                }
+              })()),
             ]}
       </Menu>
 

@@ -140,15 +140,14 @@ class TestParsePlotPath:
     """Tests for parse-plot-path command."""
 
     def test_valid_path(self):
-        code, output = run_cmd(cmd_parse_plot_path, path="plots/matplotlib/scatter/scatter-basic/default.py")
+        code, output = run_cmd(cmd_parse_plot_path, path="plots/scatter-basic/implementations/matplotlib.py")
         assert code == 0
         data = json.loads(output)
         assert data["library"] == "matplotlib"
         assert data["spec_id"] == "scatter-basic"
-        assert data["variant"] == "default"
 
     def test_valid_path_different_library(self):
-        code, output = run_cmd(cmd_parse_plot_path, path="plots/seaborn/heatmap/heatmap-correlation/default.py")
+        code, output = run_cmd(cmd_parse_plot_path, path="plots/heatmap-correlation/implementations/seaborn.py")
         assert code == 0
         data = json.loads(output)
         assert data["library"] == "seaborn"
@@ -161,6 +160,12 @@ class TestParsePlotPath:
 
     def test_empty_path(self):
         code, output = run_cmd(cmd_parse_plot_path, path="")
+        assert code == 1
+        assert output == "null"
+
+    def test_old_format_invalid(self):
+        # Old format should no longer work
+        code, output = run_cmd(cmd_parse_plot_path, path="plots/matplotlib/scatter/scatter-basic/default.py")
         assert code == 1
         assert output == "null"
 
@@ -267,12 +272,13 @@ class TestMain:
         assert captured.out.strip() == "3"
 
     def test_parse_plot_path_via_main(self, monkeypatch, capsys):
-        monkeypatch.setattr(sys, "argv", ["workflow_cli", "parse-plot-path", "plots/bokeh/line/line-basic/default.py"])
+        monkeypatch.setattr(sys, "argv", ["workflow_cli", "parse-plot-path", "plots/line-basic/implementations/bokeh.py"])
         code = main()
         assert code == 0
         captured = capsys.readouterr()
         data = json.loads(captured.out.strip())
         assert data["library"] == "bokeh"
+        assert data["spec_id"] == "line-basic"
 
     def test_status_transition_via_main(self, monkeypatch, capsys):
         monkeypatch.setattr(sys, "argv", ["workflow_cli", "status-transition", "generating", "done"])

@@ -1,7 +1,7 @@
 library: pygal
 specification_id: map-connection-lines
 created: '2026-01-21T16:29:42Z'
-updated: '2026-01-21T16:32:40Z'
+updated: '2026-01-21T16:39:38Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21217351602
 issue: 3746
@@ -10,88 +10,86 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/map-connection-lines/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/map-connection-lines/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/map-connection-lines/pygal/plot.html
-quality_score: 82
+quality_score: 88
 review:
   strengths:
-  - Excellent data selection with real-world major airport codes and realistic passenger
-    volumes
-  - Good use of curved lines (Bezier curves) to represent routes as great circle approximations
-  - Volume-based line thickness and color categorization effectively shows traffic
-    intensity
-  - Proper geographic projection with longitude/latitude axes
-  - Well-structured code with clear comments explaining the data
+  - Excellent geographic context with detailed coastline outlines covering all major
+    continents
+  - Clear differentiation of route volumes through both color and line thickness
+  - Well-designed airport markers that stand out against the background
+  - Correct title format following pyplots conventions
+  - Good use of Bezier curves to represent flight paths without visual clutter
   weaknesses:
-  - Coastlines are nearly invisible, failing to provide the geographic context required
-    by the specification
-  - Contains a helper function create_arc_points() which violates the KISS principle
-  - Airport markers could be larger for better visibility at the full canvas resolution
-  image_description: 'The plot displays a world map of flight connection lines between
-    major international airports. The background is a light blue (#E8F4F8) with a
-    subtle grid overlay showing longitude (x-axis, -160° to 160°) and latitude (y-axis,
-    -60° to 80°). Simplified coastlines are shown in very faint gray lines but are
-    barely visible. Routes are displayed as curved lines in three color categories
-    based on passenger volume: teal/green for routes < 2M passengers, gold/yellow
-    for routes 2-3M, and red-orange for routes > 3M. Airport locations are marked
-    with blue circular dots. The title "map-connection-lines · pygal · pyplots.ai"
-    appears at the top, and a legend at the bottom shows five categories: Coastlines,
-    Routes < 2M, Routes 2-3M, Routes > 3M, and Airports. The visualization shows global
-    connectivity with major hubs in Europe (London, Paris, Frankfurt), North America
-    (JFK, LAX, Chicago), Asia (Tokyo, Singapore, Hong Kong, Beijing), Middle East
-    (Dubai), and southern hemisphere (Sydney, São Paulo, Johannesburg).'
+  - Route line colors could have stronger contrast differentiation (teal routes somewhat
+    blend with gray coastlines)
+  - Transparency/alpha on route lines not clearly visible which would help with overlapping
+    routes
+  image_description: 'The plot displays a world map visualization showing international
+    flight routes between major airports. The background is a light blue color representing
+    ocean, with gray coastline outlines providing geographic context for continents
+    and landmasses. Blue circular markers (large, prominent dots) indicate 14 major
+    airport locations worldwide including cities like London, New York, Los Angeles,
+    Tokyo, Sydney, Dubai, Singapore, Hong Kong, Frankfurt, Chicago, Beijing, Sao Paulo,
+    and Johannesburg. Connection lines between airports show flight routes, colored
+    and styled by passenger volume: teal/green thin lines for routes under 2M passengers,
+    yellow/gold medium lines for 2-3M passengers, and red/orange thicker lines for
+    routes over 3M passengers. The lines are curved (Bezier curves) to represent great
+    circle paths. The title "map-connection-lines · pygal · pyplots.ai" appears at
+    the top. Axes show Longitude (°) on x-axis from -160 to 160 and Latitude (°) on
+    y-axis from -60 to 80. A legend at the bottom shows 5 categories: Coastlines,
+    Routes < 2M, Routes 2-3M, Routes > 3M, and Airports.'
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 35
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 9
         max: 10
         passed: true
-        comment: Title and axis labels are readable; font sizes scaled for canvas,
-          but tick labels could be slightly larger
+        comment: Title, axis labels, and legend text are readable. Tick labels could
+          be slightly larger but are acceptable.
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements; legend is well-spaced at bottom
+        comment: No overlapping text elements. Legend items well-spaced.
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 7
         max: 8
-        passed: false
-        comment: Airport markers visible but small; route lines have varying thickness;
-          coastlines are nearly invisible
+        passed: true
+        comment: Airport markers are large and visible. Route lines distinguishable
+          but color differentiation between categories could be stronger.
       - id: VQ-04
         name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Generally colorblind-safe palette. Coastline gray and teal routes
+          have some similarity.
+      - id: VQ-05
+        name: Layout Balance
         score: 5
         max: 5
         passed: true
-        comment: Teal, gold, and red-orange palette is colorblind-friendly with good
-          contrast
-      - id: VQ-05
-        name: Layout Balance
-        score: 3
-        max: 5
-        passed: false
-        comment: Plot uses canvas well but nearly invisible coastlines reduce geographic
-          context
+        comment: Good use of canvas space. Map fills area well with balanced margins.
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: Longitude (°) and Latitude (°)'
+        comment: 'Descriptive axis labels with units: Longitude (°) and Latitude (°).'
       - id: VQ-07
         name: Grid & Legend
-        score: 1
+        score: 0
         max: 2
         passed: false
-        comment: Grid is subtle (good), but legend items are small and far from the
-          plot
+        comment: Grid guides visible, legend functional at bottom but could be improved.
     spec_compliance:
-      score: 22
+      score: 23
       max: 25
       items:
       - id: SC-01
@@ -99,38 +97,39 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'Correct: XY chart showing connection lines between coordinates'
+        comment: Correct map visualization with connection lines between origin-destination
+          pairs.
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Longitude on X, latitude on Y, correctly mapped
+        comment: Longitude/latitude correctly mapped to X/Y axes.
       - id: SC-03
         name: Required Features
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: 'Missing adequate geographic context: coastlines barely visible.
-          Curved lines, transparency, endpoint markers all present'
+        passed: true
+        comment: Has curved lines, location markers, volume-based styling. Transparency
+          on routes not clearly visible.
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Axes show full global range (-180 to 180 longitude, -60 to 80 latitude)
+        comment: All data visible within appropriate range.
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Legend accurately describes all series
+        comment: Legend correctly identifies all series.
       - id: SC-06
         name: Title Format
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Correct format with middle dots but rendering slightly differs
+        passed: true
+        comment: 'Correct format: map-connection-lines · pygal · pyplots.ai'
     data_quality:
       score: 18
       max: 20
@@ -140,54 +139,54 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows multiple volume categories, various route lengths, global coverage
+        comment: Shows routes of varying volumes across different continents.
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Real major airports with plausible passenger volume data
+        comment: Flight routes between major international airports with plausible
+          passenger volumes.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Passenger volumes in thousands (1100-4200K) are realistic for major
-          routes
+        comment: Realistic airport coordinates and passenger volumes.
     code_quality:
-      score: 7
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 1
+        score: 3
         max: 3
-        passed: false
-        comment: Contains helper function create_arc_points() which breaks KISS principle
+        passed: true
+        comment: Linear script structure with no functions or classes.
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) is set
+        comment: Uses np.random.seed(42).
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: Only necessary imports.
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Modern pygal API used
+        comment: Uses current pygal API.
       - id: CQ-05
         name: Output Correct
         score: 0
         max: 1
         passed: false
-        comment: Saves as plot.png correctly
+        comment: Saves both plot.png and plot.html.
     library_features:
       score: 3
       max: 5
@@ -197,14 +196,13 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Uses pygal XY chart, custom Style, stroke_style, legend config; but
-          doesn't fully leverage pygal interactivity
+        comment: Uses pygal XY chart with custom styling and stroke styles, but no
+          advanced pygal-specific features.
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - bezier-curves
-  - layer-composition
   - html-export
   patterns:
   - data-generation

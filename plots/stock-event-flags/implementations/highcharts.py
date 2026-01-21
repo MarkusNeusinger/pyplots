@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 stock-event-flags: Stock Chart with Event Flags
 Library: highcharts unknown | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-21
@@ -100,8 +100,9 @@ for event in events:
     ts = int(event["date"].timestamp() * 1000)
     flags_by_type[etype].append({"x": ts, "title": event["label"], "text": event["title"]})
 
-# Build flag series configuration
+# Build flag series configuration with larger flags and visible connector lines
 flag_series = []
+y_offsets = {"earnings": -100, "dividend": -140, "split": -180, "news": -120}
 for etype, flags in flags_by_type.items():
     style = event_styles[etype]
     series_config = {
@@ -112,10 +113,14 @@ for etype, flags in flags_by_type.items():
         "shape": style["shape"],
         "color": style["color"],
         "fillColor": style["color"],
-        "style": {"color": "#ffffff" if etype != "news" else "#333333"},
-        "width": 60,
-        "height": 40,
-        "y": -60,
+        "style": {"color": "#ffffff" if etype != "news" else "#333333", "fontSize": "22px", "fontWeight": "bold"},
+        "width": 90,
+        "height": 60,
+        "y": y_offsets.get(etype, -100),
+        "lineWidth": 3,
+        "lineColor": style["color"],
+        "allowOverlapX": False,
+        "showInLegend": True,
     }
     flag_series.append(series_config)
 
@@ -130,8 +135,11 @@ Highcharts.stockChart('container', {{
         width: 4800,
         height: 2700,
         backgroundColor: '#ffffff',
-        spacingTop: 60,
-        spacingBottom: 100,
+        spacingTop: 80,
+        spacingBottom: 200,
+        spacingLeft: 100,
+        spacingRight: 100,
+        marginBottom: 350,
         style: {{
             fontFamily: 'Arial, sans-serif'
         }}
@@ -140,15 +148,16 @@ Highcharts.stockChart('container', {{
     title: {{
         text: 'stock-event-flags \\u00b7 highcharts \\u00b7 pyplots.ai',
         style: {{
-            fontSize: '48px',
+            fontSize: '56px',
             fontWeight: 'bold'
-        }}
+        }},
+        y: 50
     }},
 
     subtitle: {{
         text: 'Stock Price with Earnings, Dividends, Splits, and News Events',
         style: {{
-            fontSize: '28px',
+            fontSize: '32px',
             color: '#666666'
         }}
     }},
@@ -171,23 +180,33 @@ Highcharts.stockChart('container', {{
 
     legend: {{
         enabled: true,
+        layout: 'horizontal',
         align: 'center',
         verticalAlign: 'bottom',
-        y: 30,
+        y: 60,
+        floating: false,
         itemStyle: {{
-            fontSize: '24px'
+            fontSize: '28px',
+            fontWeight: 'normal'
         }},
-        symbolHeight: 24,
-        symbolWidth: 24,
-        symbolRadius: 12
+        itemMarginTop: 15,
+        itemMarginBottom: 15,
+        symbolHeight: 28,
+        symbolWidth: 28,
+        symbolRadius: 14,
+        backgroundColor: '#ffffff',
+        borderWidth: 1,
+        borderColor: '#E0E0E0',
+        padding: 20
     }},
 
     yAxis: {{
+        opposite: false,
         labels: {{
             align: 'right',
             x: -10,
             style: {{
-                fontSize: '24px'
+                fontSize: '28px'
             }},
             formatter: function() {{
                 return '$' + this.value.toFixed(0);
@@ -196,8 +215,10 @@ Highcharts.stockChart('container', {{
         title: {{
             text: 'Price (USD)',
             style: {{
-                fontSize: '28px'
-            }}
+                fontSize: '32px'
+            }},
+            margin: 20,
+            rotation: 270
         }},
         lineWidth: 2,
         gridLineWidth: 1,
@@ -206,12 +227,12 @@ Highcharts.stockChart('container', {{
             value: {round(initial_price, 2)},
             color: '#888888',
             dashStyle: 'dash',
-            width: 2,
+            width: 3,
             label: {{
                 text: 'Starting Price',
                 align: 'right',
                 style: {{
-                    fontSize: '18px',
+                    fontSize: '22px',
                     color: '#888888'
                 }}
             }}
@@ -225,8 +246,10 @@ Highcharts.stockChart('container', {{
                 fontSize: '28px'
             }},
             format: '{{value:%b %d}}',
-            y: 40
+            y: 35,
+            rotation: 0
         }},
+        tickInterval: 14 * 24 * 3600 * 1000,
         crosshair: {{
             width: 2,
             color: '#888888',
@@ -234,14 +257,15 @@ Highcharts.stockChart('container', {{
         }},
         gridLineWidth: 1,
         gridLineColor: '#E0E0E0',
-        lineWidth: 2
+        lineWidth: 2,
+        offset: 0
     }},
 
     tooltip: {{
         split: false,
         shared: true,
         style: {{
-            fontSize: '20px'
+            fontSize: '22px'
         }},
         dateTimeLabelFormats: {{
             day: '%A, %b %e, %Y'
@@ -257,7 +281,8 @@ Highcharts.stockChart('container', {{
             lineWidth: 2
         }},
         flags: {{
-            lineWidth: 2,
+            lineWidth: 3,
+            lineColor: '#555555',
             states: {{
                 hover: {{
                     fillColor: '#FCFFC5'

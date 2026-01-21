@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 stock-event-flags: Stock Chart with Event Flags
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 82/100 | Created: 2026-01-21
@@ -18,7 +18,9 @@ from lets_plot import (
     ggsave,
     ggsize,
     labs,
+    layer_tooltips,
     scale_color_manual,
+    scale_x_datetime,
     theme,
     theme_minimal,
 )
@@ -35,9 +37,8 @@ dates = pd.date_range(start="2024-01-02", periods=n_days, freq="B")
 returns = np.random.normal(0.0005, 0.018, n_days)
 close_prices = 150 * np.cumprod(1 + returns)
 
-# Create price dataframe
+# Create price dataframe with datetime for x-axis
 df_price = pd.DataFrame({"date": dates, "close": close_prices})
-df_price["date_num"] = np.arange(n_days)
 
 # Define event data with different types
 events = [
@@ -55,17 +56,17 @@ events = [
 df_events = pd.DataFrame(events)
 df_events["date"] = pd.to_datetime(df_events["date"])
 
-# Find matching prices and positions for events
+# Find matching prices and actual dates for events
 event_prices = []
-event_date_nums = []
+event_dates_matched = []
 for event_date in df_events["date"]:
     # Find closest trading day
     idx = np.abs(df_price["date"] - event_date).argmin()
     event_prices.append(df_price.iloc[idx]["close"])
-    event_date_nums.append(df_price.iloc[idx]["date_num"])
+    event_dates_matched.append(df_price.iloc[idx]["date"])
 
 df_events["price"] = event_prices
-df_events["date_num"] = event_date_nums
+df_events["date_matched"] = event_dates_matched
 
 # Calculate flag positions (alternating heights above price)
 price_range = close_prices.max() - close_prices.min()
@@ -83,35 +84,41 @@ df_events["color"] = df_events["type"].map(color_map)
 # Build the plot
 plot = (
     ggplot()
-    # Stock price line
-    + geom_line(aes(x="date_num", y="close"), data=df_price, color="#306998", size=1.2, alpha=0.9)
+    # Stock price line with tooltips
+    + geom_line(
+        aes(x="date", y="close"),
+        data=df_price,
+        color="#306998",
+        size=1.2,
+        alpha=0.9,
+        tooltips=layer_tooltips().line("@date").line("Price: $@close"),
+    )
     # Vertical connector lines from flags to price
     + geom_segment(
-        aes(x="date_num", y="price", xend="date_num", yend="flag_y"),
+        aes(x="date_matched", y="price", xend="date_matched", yend="flag_y"),
         data=df_events,
         color="#666666",
         size=0.8,
         linetype="dashed",
     )
-    # Flag markers (points at flag position)
+    # Flag markers (points at flag position) with interactive tooltips
     + geom_point(
-        aes(x="date_num", y="flag_y", color="type"),
+        aes(x="date_matched", y="flag_y", color="type"),
         data=df_events,
         size=8,
         shape=18,  # Diamond shape
+        tooltips=layer_tooltips().title("@type").line("@label").line("Date: @date_matched").line("Price: $@{price}"),
     )
     # Event labels
-    + geom_text(aes(x="date_num", y="flag_y", label="label"), data=df_events, vjust=-1.2, size=10, color="#333333")
+    + geom_text(aes(x="date_matched", y="flag_y", label="label"), data=df_events, vjust=-1.2, size=10, color="#333333")
     # Price markers at event dates
-    + geom_point(aes(x="date_num", y="price"), data=df_events, color="#333333", size=3)
+    + geom_point(aes(x="date_matched", y="price"), data=df_events, color="#333333", size=3)
     # Custom colors for event types
     + scale_color_manual(values=["#306998", "#22C55E", "#F59E0B", "#DC2626"], name="Event Type")
-    # Labels and title
-    + labs(
-        x="Trading Days",
-        y="Stock Price ($)",
-        title="Tech Stock 2024 \u00b7 stock-event-flags \u00b7 letsplot \u00b7 pyplots.ai",
-    )
+    # X-axis as datetime for better readability
+    + scale_x_datetime(format="%b %Y")
+    # Labels and title (corrected format per spec)
+    + labs(x="Date", y="Stock Price ($)", title="stock-event-flags · letsplot · pyplots.ai")
     # Theme
     + theme_minimal()
     + theme(

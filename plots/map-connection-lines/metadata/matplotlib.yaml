@@ -1,7 +1,7 @@
 library: matplotlib
 specification_id: map-connection-lines
 created: '2026-01-21T16:32:05Z'
-updated: '2026-01-21T16:35:02Z'
+updated: '2026-01-21T16:42:23Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21217351552
 issue: 3746
@@ -10,62 +10,58 @@ library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/map-connection-lines/matplotlib/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/map-connection-lines/matplotlib/plot_thumb.png
 preview_html: null
-quality_score: 86
+quality_score: 91
 review:
   strengths:
-  - Excellent implementation of great circle geodesic paths with proper spherical
-    interpolation
-  - Good handling of date line crossing by splitting lines
-  - Effective use of line width and alpha transparency to encode passenger volume
-  - Clear, informative legend showing the volume scale
-  - Realistic flight route data with actual major airport locations
-  - Proper title format following the specification
+  - Excellent implementation of great circle arc calculation using spherical interpolation
+  - Smart handling of date line crossing by splitting lines
+  - Custom label offsets prevent text overlap effectively
+  - Good use of line properties (width, alpha) to encode passenger volume
+  - Legend is informative and well-designed with Line2D custom handles
+  - Clean, readable code structure
   weaknesses:
-  - Contains a helper function geodesic_path() which violates the KISS principle (no
-    functions/classes rule)
-  - London and Paris labels overlap slightly due to their geographic proximity
-  - Continent representation is very simplistic (rectangles) - could benefit from
-    more realistic coastlines
-  - Airport label font size (11pt) is slightly small for the 4800x2700 canvas
-  - Axis labels lack degree units (should be Longitude and Latitude with degree symbols)
-  image_description: The plot displays a world map visualization showing major international
-    flight routes as connection lines between 10 airports. The background features
-    a light blue ocean color (#D4E5F7) with simplified gray rectangular continent
-    approximations. Connection lines are rendered in blue (#306998) with varying thickness
-    and alpha transparency based on passenger volume (1.5M to 4.2M passengers/year).
-    Airport markers are yellow circles (#FFD43B) with blue borders, and each is labeled
-    with the city name. The routes show curved great circle paths connecting cities
-    like New York-London, London-Dubai, Singapore-Sydney, etc. The title reads "Major
-    International Flight Routes · map-connection-lines · matplotlib · pyplots.ai"
-    at the top. A legend in the lower left shows three line thicknesses representing
-    passenger volumes plus the airport marker symbol. Axis labels show "Longitude"
-    and "Latitude" with tick marks ranging from -150 to 150 for longitude and -80
-    to 80 for latitude.
+  - File header contains stale quality score (86/100) from previous review
+  - Simplified rectangular continents could benefit from a proper geographic projection
+    library
+  - Some routes with lower passenger volume have quite thin lines that may be less
+    visible at smaller display sizes
+  image_description: The plot displays a world map showing major international flight
+    routes between 10 airports. The background uses a light blue color (#D4E5F7) representing
+    oceans, with simplified gray rectangular continent shapes. Connection lines are
+    rendered as great circle arcs in a blue color (#306998) with varying thickness
+    (2-7px) and transparency (0.4-0.75) based on passenger volume. Airport locations
+    are marked with prominent yellow (#FFD43B) circular markers with blue edges. City
+    labels are placed near each marker with custom offsets to avoid overlap. The legend
+    in the lower-left shows three line thicknesses representing passenger volume ranges
+    (1.5M to 4.2M passengers/year) and an airport marker symbol. The title follows
+    the correct format. Axis labels show "Longitude (°)" and "Latitude (°)" with appropriate
+    tick marks. A subtle gray dashed grid is visible.
   criteria_checklist:
     visual_quality:
-      score: 33
+      score: 36
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 10
         max: 10
         passed: true
-        comment: Title at 24pt is good, labels at 11pt are slightly small for the
-          canvas size, but readable
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt, city labels
+          at 14pt bold - all clearly readable
       - id: VQ-02
         name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: City labels have custom offsets to avoid overlapping with markers
+          and each other
+      - id: VQ-03
+        name: Element Visibility
         score: 6
         max: 8
         passed: true
-        comment: London and Paris labels slightly overlap each other due to proximity
-      - id: VQ-03
-        name: Element Visibility
-        score: 7
-        max: 8
-        passed: true
-        comment: Connection lines and markers are well-sized, good use of varying
-          line widths
+        comment: Airport markers clearly visible; lines vary appropriately; some thinner
+          lines could be more prominent
       - id: VQ-04
         name: Color Accessibility
         score: 5
@@ -74,22 +70,23 @@ review:
         comment: Blue/yellow color scheme is colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: Good canvas utilization, plot fills most of the space
+        comment: Map fills canvas well but equal aspect ratio creates some vertical
+          compression
       - id: VQ-06
         name: Axis Labels
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Longitude and Latitude without degree units
+        comment: Longitude and Latitude with degree units
       - id: VQ-07
         name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: Grid is subtle (alpha 0.3), legend is well-placed and clear
+        comment: Grid subtle at alpha=0.3 with dashed style; legend well-placed
     spec_compliance:
       score: 25
       max: 25
@@ -99,32 +96,33 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct map with connection lines/great circle arcs
+        comment: Correctly implements connection lines map with great circle arcs
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Origin/destination coordinates correctly mapped
+        comment: Origin/destination lat/lon properly mapped; volume encoded in line
+          properties
       - id: SC-03
         name: Required Features
         score: 5
         max: 5
         passed: true
-        comment: Has curved lines, varying thickness by volume, transparency, location
-          markers, base map, labels
+        comment: 'All spec features present: curved lines, markers, transparency,
+          base map, value encoding'
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Full world extent shown (-180 to 180, -90 to 90)
+        comment: Full longitude and latitude range displayed
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Legend correctly shows passenger volume scaling and airport marker
+        comment: Legend accurately represents line thickness and airport marker
       - id: SC-06
         name: Title Format
         score: 2
@@ -137,34 +135,33 @@ review:
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Shows variety of route lengths and volumes, but all routes are similar
+        comment: Shows 15 connections across all continents with variety in route
+          lengths and volumes
       - id: DQ-02
         name: Realistic Context
-        score: 7
+        score: 5
         max: 7
         passed: true
-        comment: Real major airports with plausible passenger volumes for international
-          routes
+        comment: Flight routes between major airports is realistic; volumes are plausible
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Passenger volumes (1.5M-4.2M) are realistic for major routes
+        comment: Passenger volumes 1.5M-4.2M/year are sensible for major routes
     code_quality:
-      score: 7
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 1
+        score: 3
         max: 3
-        passed: false
-        comment: Contains a helper function geodesic_path() which violates the no-functions
-          rule
+        passed: true
+        comment: Follows imports → data → plot → save structure
       - id: CQ-02
         name: Reproducibility
         score: 3
@@ -176,19 +173,19 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: Only necessary imports used
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: No deprecated functions
+        comment: No deprecated functions used
       - id: CQ-05
         name: Output Correct
         score: 0
         max: 1
-        passed: true
-        comment: Saves as plot.png correctly
+        passed: false
+        comment: File header contains stale quality score from previous review
     library_features:
       score: 3
       max: 5
@@ -198,9 +195,9 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Good use of ax methods, annotations, custom legend with Line2D, but
-          map implementation is basic
-  verdict: REJECTED
+        comment: Uses Line2D for custom legend and ax methods well but no advanced
+          features like PathPatch or Cartopy
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
@@ -214,3 +211,4 @@ impl_tags:
   styling:
   - alpha-blending
   - grid-styling
+  - edge-highlighting

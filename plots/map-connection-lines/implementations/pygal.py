@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-connection-lines: Connection Lines Map (Origin-Destination)
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-21
@@ -154,20 +154,20 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#111111",
     foreground_subtle="#666666",
-    guide_stroke_color="#AAAAAA44",
-    guide_stroke_dasharray="4,4",
+    guide_stroke_color="#CCCCCC22",  # Very subtle grid lines (alpha 0.13)
+    guide_stroke_dasharray="2,6",  # Subtle dashed pattern
     colors=(
-        # Coastline - visible dark gray
-        "#555555",
-        # Route volume categories (low to high): teal, gold, red-orange
-        "#1F9E89",
-        "#FFD43B",
-        "#E24A33",
+        # Coastline - light gray (distinct from route colors)
+        "#AAAAAA",
+        # Route volume categories with high contrast (distinct from gray)
+        "#2166AC",  # Low routes: strong blue
+        "#B2182B",  # Medium routes: strong red
+        "#FF7F00",  # High routes: bright orange
         # Airport markers
-        "#306998",
+        "#1A1A1A",  # Dark for visibility
     ),
-    opacity=0.7,
-    opacity_hover=0.9,
+    opacity=0.6,  # Base opacity for transparency on overlapping routes
+    opacity_hover=0.95,
     title_font_size=72,
     label_font_size=52,
     major_label_font_size=44,
@@ -208,7 +208,7 @@ for coastline in coastlines:
         coastline_points.append({"value": (lon, lat), "label": "Coastline"})
     coastline_points.append({"value": (None, None)})  # Break between segments
 
-chart.add("Coastlines", coastline_points, stroke=True, show_dots=False, stroke_style={"width": 4})
+chart.add("Coastlines", coastline_points, stroke=True, show_dots=False, stroke_style={"width": 3, "opacity": 0.5})
 
 # Group routes by volume for different line styles
 low_routes = []  # < 2000
@@ -250,7 +250,13 @@ for route in low_routes:
         low_curves.append({"value": (lon, lat), "label": label})
     low_curves.append({"value": (None, None)})
 
-chart.add("Routes < 2M", low_curves, stroke=True, show_dots=False, stroke_style={"width": 4, "linecap": "round"})
+chart.add(
+    "Routes < 2M",
+    low_curves,
+    stroke=True,
+    show_dots=False,
+    stroke_style={"width": 4, "linecap": "round", "opacity": 0.5},
+)
 
 # Add medium volume routes with inlined curve generation
 medium_curves = []
@@ -278,7 +284,13 @@ for route in medium_routes:
         medium_curves.append({"value": (lon, lat), "label": label})
     medium_curves.append({"value": (None, None)})
 
-chart.add("Routes 2-3M", medium_curves, stroke=True, show_dots=False, stroke_style={"width": 7, "linecap": "round"})
+chart.add(
+    "Routes 2-3M",
+    medium_curves,
+    stroke=True,
+    show_dots=False,
+    stroke_style={"width": 7, "linecap": "round", "opacity": 0.55},
+)
 
 # Add high volume routes with inlined curve generation
 high_curves = []
@@ -306,7 +318,13 @@ for route in high_routes:
         high_curves.append({"value": (lon, lat), "label": label})
     high_curves.append({"value": (None, None)})
 
-chart.add("Routes > 3M", high_curves, stroke=True, show_dots=False, stroke_style={"width": 11, "linecap": "round"})
+chart.add(
+    "Routes > 3M",
+    high_curves,
+    stroke=True,
+    show_dots=False,
+    stroke_style={"width": 11, "linecap": "round", "opacity": 0.6},
+)
 
 # Add airport markers as endpoint layer with larger dots
 airport_points = []

@@ -177,19 +177,19 @@ def extract_issue_reference(text: str) -> int | None:
 
 def parse_plot_path(file_path: str) -> dict[str, str] | None:
     """
-    Parse plot file path to extract library, plot_type, spec_id, and variant.
+    Parse plot file path to extract spec_id and library.
 
-    Expected format: plots/{library}/{plot_type}/{spec_id}/{variant}.py
+    Expected format: plots/{spec-id}/implementations/{library}.py
 
     Args:
         file_path: Path to a plot implementation file
 
     Returns:
-        Dict with library, plot_type, spec_id, variant keys, or None if invalid
+        Dict with spec_id and library keys, or None if invalid
 
     Examples:
-        >>> parse_plot_path('plots/matplotlib/scatter/scatter-basic/default.py')
-        {'library': 'matplotlib', 'plot_type': 'scatter', 'spec_id': 'scatter-basic', 'variant': 'default'}
+        >>> parse_plot_path('plots/scatter-basic/implementations/matplotlib.py')
+        {'spec_id': 'scatter-basic', 'library': 'matplotlib'}
 
         >>> parse_plot_path('invalid/path.py')
         None
@@ -197,14 +197,12 @@ def parse_plot_path(file_path: str) -> dict[str, str] | None:
     if not file_path:
         return None
 
-    # Match: plots/{library}/{plot_type}/{spec_id}/{variant}.py
-    match = re.match(r"plots/([^/]+)/([^/]+)/([^/]+)/([^/]+)\.py$", file_path)
+    # Match: plots/{spec-id}/implementations/{library}.py
+    match = re.match(r"plots/([^/]+)/implementations/([^/]+)\.py$", file_path)
     if match:
         return {
-            "library": match.group(1),
-            "plot_type": match.group(2),
-            "spec_id": match.group(3),
-            "variant": match.group(4),
+            "spec_id": match.group(1),
+            "library": match.group(2),
         }
 
     return None

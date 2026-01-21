@@ -134,23 +134,28 @@ class TestParsePlotPath:
     """Tests for parse_plot_path function."""
 
     def test_valid_path(self):
-        result = parse_plot_path("plots/matplotlib/scatter/scatter-basic/default.py")
+        result = parse_plot_path("plots/scatter-basic/implementations/matplotlib.py")
         assert result == {
-            "library": "matplotlib",
-            "plot_type": "scatter",
             "spec_id": "scatter-basic",
-            "variant": "default",
+            "library": "matplotlib",
         }
 
     def test_complex_spec_id(self):
-        result = parse_plot_path("plots/seaborn/heatmap/heatmap-correlation-annotated/dark_style.py")
-        assert result["library"] == "seaborn"
+        result = parse_plot_path("plots/heatmap-correlation-annotated/implementations/seaborn.py")
         assert result["spec_id"] == "heatmap-correlation-annotated"
-        assert result["variant"] == "dark_style"
+        assert result["library"] == "seaborn"
+
+    def test_all_libraries(self):
+        for lib in VALID_LIBRARIES:
+            result = parse_plot_path(f"plots/bar-grouped/implementations/{lib}.py")
+            assert result is not None
+            assert result["spec_id"] == "bar-grouped"
+            assert result["library"] == lib
 
     def test_invalid_path(self):
         assert parse_plot_path("invalid/path.py") is None
-        assert parse_plot_path("plots/matplotlib/scatter.py") is None
+        assert parse_plot_path("plots/scatter-basic/matplotlib.py") is None  # missing implementations/
+        assert parse_plot_path("plots/matplotlib/scatter.py") is None  # old format
         assert parse_plot_path("") is None
         assert parse_plot_path(None) is None
 

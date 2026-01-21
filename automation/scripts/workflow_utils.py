@@ -200,9 +200,13 @@ def parse_plot_path(file_path: str) -> dict[str, str] | None:
     # Match: plots/{spec-id}/implementations/{library}.py
     match = re.match(r"plots/([^/]+)/implementations/([^/]+)\.py$", file_path)
     if match:
+        library = match.group(2)
+        # Validate library name
+        if library.lower() not in [lib.lower() for lib in SUPPORTED_LIBRARIES]:
+            return None
         return {
             "spec_id": match.group(1),
-            "library": match.group(2),
+            "library": library,
         }
 
     return None

@@ -159,6 +159,11 @@ class TestParsePlotPath:
         assert parse_plot_path("") is None
         assert parse_plot_path(None) is None
 
+    def test_invalid_library(self):
+        # Valid path format but invalid library name
+        assert parse_plot_path("plots/scatter-basic/implementations/invalid-lib.py") is None
+        assert parse_plot_path("plots/scatter-basic/implementations/pandas.py") is None
+
 
 class TestIsValidLibrary:
     """Tests for is_valid_library function."""

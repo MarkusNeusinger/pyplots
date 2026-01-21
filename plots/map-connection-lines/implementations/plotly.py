@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 map-connection-lines: Connection Lines Map (Origin-Destination)
-Library: plotly | Python 3.13
-Quality: pending | Created: 2026-01-21
+Library: plotly 6.5.2 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-21
 """
 
 import numpy as np

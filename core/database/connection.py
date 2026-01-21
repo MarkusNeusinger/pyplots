@@ -36,8 +36,21 @@ _sync_session_factory = None
 _connector = None
 
 # Thread safety locks for lazy initialization
-_async_init_lock = asyncio.Lock()
+# Note: asyncio.Lock is created lazily to avoid event loop binding issues at module import
+_async_init_lock: Optional[asyncio.Lock] = None
 _sync_init_lock = threading.Lock()
+
+
+def _get_async_lock() -> asyncio.Lock:
+    """Get or create the async initialization lock.
+
+    Creates the lock lazily to avoid event loop binding issues
+    when the module is imported before an event loop exists.
+    """
+    global _async_init_lock
+    if _async_init_lock is None:
+        _async_init_lock = asyncio.Lock()
+    return _async_init_lock
 
 
 class Base(DeclarativeBase):
@@ -224,7 +237,7 @@ async def get_db() -> AsyncGenerator[AsyncSession | None, None]:
     """
     # Thread-safe lazy initialization using asyncio.Lock
     if engine is None:
-        async with _async_init_lock:
+        async with _get_async_lock():
             # Double-check after acquiring lock
             if engine is None:
                 await init_db()
@@ -253,7 +266,7 @@ async def get_db_context() -> AsyncGenerator[AsyncSession, None]:
     """
     # Thread-safe lazy initialization using asyncio.Lock
     if engine is None:
-        async with _async_init_lock:
+        async with _get_async_lock():
             # Double-check after acquiring lock
             if engine is None:
                 await init_db()

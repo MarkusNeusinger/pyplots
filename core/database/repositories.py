@@ -7,7 +7,6 @@ Provides abstraction layer between API and database models.
 from typing import Optional
 
 from sqlalchemy import select
-from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -189,7 +188,10 @@ class SpecRepository:
 
     async def upsert(self, spec_data: dict) -> Spec:
         """
-        Create or update a spec atomically using INSERT ... ON CONFLICT.
+        Create or update a spec.
+
+        Uses get-then-update pattern for database compatibility (works with both
+        PostgreSQL and SQLite).
 
         Args:
             spec_data: Dict with spec attributes including 'id'
@@ -208,22 +210,20 @@ class SpecRepository:
         if not spec_id:
             raise ValueError("spec_data must include 'id' field")
 
-        # Build update set with only allowed fields
-        update_set = {k: v for k, v in spec_data.items() if k in SPEC_UPDATABLE_FIELDS}
+        # Try to find existing spec
+        existing = await self.get_by_id(spec_id)
 
-        # Atomic upsert using PostgreSQL INSERT ... ON CONFLICT
-        stmt = (
-            insert(Spec)
-            .values(**spec_data)
-            .on_conflict_do_update(index_elements=["id"], set_=update_set)
-            .returning(Spec)
-        )
-
-        result = await self.session.execute(stmt)
-        await self.session.commit()
-        spec = result.scalar_one()
-        await self.session.refresh(spec)
-        return spec
+        if existing:
+            # Update existing spec with only allowed fields
+            for key, value in spec_data.items():
+                if key in SPEC_UPDATABLE_FIELDS:
+                    setattr(existing, key, value)
+            await self.session.commit()
+            await self.session.refresh(existing)
+            return existing
+        else:
+            # Create new spec
+            return await self.create(spec_data)
 
 
 class LibraryRepository:
@@ -316,7 +316,10 @@ class LibraryRepository:
 
     async def upsert(self, library_data: dict) -> Library:
         """
-        Create or update a library atomically using INSERT ... ON CONFLICT.
+        Create or update a library.
+
+        Uses get-then-update pattern for database compatibility (works with both
+        PostgreSQL and SQLite).
 
         Args:
             library_data: Dict with library attributes including 'id'
@@ -328,22 +331,20 @@ class LibraryRepository:
         if not library_id:
             raise ValueError("library_data must include 'id' field")
 
-        # Build update set with only allowed fields
-        update_set = {k: v for k, v in library_data.items() if k in LIBRARY_UPDATABLE_FIELDS}
+        # Try to find existing library
+        existing = await self.get_by_id(library_id)
 
-        # Atomic upsert using PostgreSQL INSERT ... ON CONFLICT
-        stmt = (
-            insert(Library)
-            .values(**library_data)
-            .on_conflict_do_update(index_elements=["id"], set_=update_set)
-            .returning(Library)
-        )
-
-        result = await self.session.execute(stmt)
-        await self.session.commit()
-        library = result.scalar_one()
-        await self.session.refresh(library)
-        return library
+        if existing:
+            # Update existing library with only allowed fields
+            for key, value in library_data.items():
+                if key in LIBRARY_UPDATABLE_FIELDS:
+                    setattr(existing, key, value)
+            await self.session.commit()
+            await self.session.refresh(existing)
+            return existing
+        else:
+            # Create new library
+            return await self.create(library_data)
 
 
 class ImplRepository:
@@ -467,7 +468,10 @@ class ImplRepository:
 
     async def upsert(self, spec_id: str, library_id: str, impl_data: dict) -> Impl:
         """
-        Create or update an implementation atomically using INSERT ... ON CONFLICT.
+        Create or update an implementation.
+
+        Uses get-then-update pattern for database compatibility (works with both
+        PostgreSQL and SQLite).
 
         Args:
             spec_id: The specification ID
@@ -483,22 +487,18 @@ class ImplRepository:
                 "quality_score": 95
             })
         """
-        # Build the full data with spec_id and library_id
-        full_data = {**impl_data, "spec_id": spec_id, "library_id": library_id}
+        # Try to find existing implementation
+        existing = await self.get_by_spec_and_library(spec_id, library_id)
 
-        # Build update set with only allowed fields
-        update_set = {k: v for k, v in impl_data.items() if k in IMPL_UPDATABLE_FIELDS}
-
-        # Atomic upsert using PostgreSQL INSERT ... ON CONFLICT on the unique constraint
-        stmt = (
-            insert(Impl)
-            .values(**full_data)
-            .on_conflict_do_update(constraint="uq_impl", set_=update_set)
-            .returning(Impl)
-        )
-
-        result = await self.session.execute(stmt)
-        await self.session.commit()
-        impl = result.scalar_one()
-        await self.session.refresh(impl)
-        return impl
+        if existing:
+            # Update existing implementation with only allowed fields
+            for key, value in impl_data.items():
+                if key in IMPL_UPDATABLE_FIELDS:
+                    setattr(existing, key, value)
+            await self.session.commit()
+            await self.session.refresh(existing)
+            return existing
+        else:
+            # Create new implementation
+            full_data = {**impl_data, "spec_id": spec_id, "library_id": library_id}
+            return await self.create(full_data)

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 map-connection-lines: Connection Lines Map (Origin-Destination)
-Library: pygal | Python 3.13
-Quality: pending | Created: 2026-01-21
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 82/100 | Created: 2026-01-21
 """
 
 # Fix module name conflict (this file is named pygal.py)

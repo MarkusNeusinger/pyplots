@@ -124,6 +124,17 @@ async def _send_plausible_event(user_agent: str, client_ip: str, name: str, url:
         logger.debug(f"Plausible tracking failed (non-critical): {e}")
 
 
+def _handle_task_exception(task: asyncio.Task) -> None:
+    """Handle exceptions from fire-and-forget tasks to prevent silent failures."""
+    try:
+        # This will re-raise any exception that occurred in the task
+        task.result()
+    except asyncio.CancelledError:
+        pass  # Task was cancelled, not an error
+    except Exception as e:
+        logger.warning(f"Background analytics task failed: {e}")
+
+
 def track_og_image(
     request: Request,
     page: str,
@@ -170,5 +181,6 @@ def track_og_image(
         for key, value in filters.items():
             props[f"filter_{key}"] = value
 
-    # Fire-and-forget: create task without awaiting
-    asyncio.create_task(_send_plausible_event(user_agent, client_ip, "og_image_view", url, props))
+    # Fire-and-forget: create task without awaiting, but add exception handler
+    task = asyncio.create_task(_send_plausible_event(user_agent, client_ip, "og_image_view", url, props))
+    task.add_done_callback(_handle_task_exception)

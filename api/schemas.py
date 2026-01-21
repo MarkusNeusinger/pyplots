@@ -4,7 +4,7 @@ Pydantic schemas for pyplots API.
 Centralized schema definitions for request/response models.
 """
 
-from typing import Optional
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -14,23 +14,23 @@ class ImplementationResponse(BaseModel):
 
     library_id: str
     library_name: str
-    preview_url: Optional[str] = None
-    preview_thumb: Optional[str] = None
-    preview_html: Optional[str] = None
-    quality_score: Optional[float] = None
-    code: Optional[str] = None
-    generated_at: Optional[str] = None
-    generated_by: Optional[str] = None
-    python_version: Optional[str] = None
-    library_version: Optional[str] = None
+    preview_url: str | None = None
+    preview_thumb: str | None = None
+    preview_html: str | None = None
+    quality_score: float | None = None
+    code: str | None = None
+    generated_at: str | None = None
+    generated_by: str | None = None
+    python_version: str | None = None
+    library_version: str | None = None
     # Review fields
     review_strengths: list[str] = []
     review_weaknesses: list[str] = []
-    review_image_description: Optional[str] = None
-    review_criteria_checklist: Optional[dict] = None
-    review_verdict: Optional[str] = None
+    review_image_description: str | None = None
+    review_criteria_checklist: dict[str, Any] | None = None
+    review_verdict: str | None = None
     # Implementation-level tags (issue #2434)
-    impl_tags: Optional[dict] = None
+    impl_tags: dict[str, Any] | None = None
 
 
 class SpecDetailResponse(BaseModel):
@@ -38,15 +38,15 @@ class SpecDetailResponse(BaseModel):
 
     id: str
     title: str
-    description: Optional[str] = None
+    description: str | None = None
     applications: list[str] = []
     data: list[str] = []
     notes: list[str] = []
-    tags: Optional[dict] = None
-    issue: Optional[int] = None
-    suggested: Optional[str] = None
-    created: Optional[str] = None
-    updated: Optional[str] = None
+    tags: dict[str, Any] | None = None
+    issue: int | None = None
+    suggested: str | None = None
+    created: str | None = None
+    updated: str | None = None
     implementations: list[ImplementationResponse] = []
 
 
@@ -55,8 +55,8 @@ class SpecListItem(BaseModel):
 
     id: str
     title: str
-    description: Optional[str] = None
-    tags: Optional[dict] = None
+    description: str | None = None
+    tags: dict[str, Any] | None = None
     library_count: int = 0
 
 
@@ -65,10 +65,10 @@ class ImageResponse(BaseModel):
 
     spec_id: str
     library: str
-    url: Optional[str] = None
-    thumb: Optional[str] = None
-    html: Optional[str] = None
-    code: Optional[str] = None
+    url: str | None = None
+    thumb: str | None = None
+    html: str | None = None
+    code: str | None = None
 
 
 class FilterCountsResponse(BaseModel):
@@ -93,10 +93,10 @@ class FilteredPlotsResponse(BaseModel):
     """Response for filtered plots endpoint."""
 
     total: int
-    images: list[dict]  # Using dict for flexibility, could be list[ImageResponse]
-    counts: dict
-    globalCounts: dict
-    orCounts: list[dict]
+    images: list[dict[str, Any]]  # Image dicts with spec_id, library, url, thumb, etc.
+    counts: dict[str, dict[str, int]]  # Category -> value -> count
+    globalCounts: dict[str, dict[str, int]]  # Same structure for global counts
+    orCounts: list[dict[str, int]]  # Per-group OR counts
     specTitles: dict[str, str] = {}  # Mapping spec_id -> title for search/tooltips
 
 
@@ -105,9 +105,9 @@ class LibraryInfo(BaseModel):
 
     id: str
     name: str
-    version: Optional[str] = None
-    documentation_url: Optional[str] = None
-    description: Optional[str] = None
+    version: str | None = None
+    documentation_url: str | None = None
+    description: str | None = None
 
 
 class StatsResponse(BaseModel):

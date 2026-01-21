@@ -13,6 +13,43 @@ from sqlalchemy.orm import selectinload
 from core.database.models import Impl, Library, Spec
 
 
+# =============================================================================
+# Field Validation - Allowed fields for update operations
+# =============================================================================
+# These sets define which fields can be updated via the update() methods.
+# This prevents accidental modification of internal fields like 'id'.
+
+SPEC_UPDATABLE_FIELDS = frozenset(
+    {"title", "description", "applications", "data", "notes", "created", "updated", "issue", "suggested", "tags"}
+)
+
+LIBRARY_UPDATABLE_FIELDS = frozenset({"name", "version", "documentation_url", "description"})
+
+IMPL_UPDATABLE_FIELDS = frozenset(
+    {
+        "code",
+        "preview_url",
+        "preview_thumb",
+        "preview_html",
+        "python_version",
+        "library_version",
+        "tested",
+        "quality_score",
+        "generated_at",
+        "updated",
+        "generated_by",
+        "issue",
+        "workflow_run",
+        "review_strengths",
+        "review_weaknesses",
+        "review_image_description",
+        "review_criteria_checklist",
+        "review_verdict",
+        "impl_tags",
+    }
+)
+
+
 class SpecRepository:
     """Repository for Spec operations."""
 
@@ -107,7 +144,7 @@ class SpecRepository:
 
         Args:
             spec_id: The specification ID
-            spec_data: Dict with fields to update
+            spec_data: Dict with fields to update (only allowed fields are updated)
 
         Returns:
             Updated Spec object or None if not found
@@ -122,8 +159,9 @@ class SpecRepository:
         if not spec:
             return None
 
+        # Only update allowed fields to prevent modification of internal fields
         for key, value in spec_data.items():
-            if hasattr(spec, key):
+            if key in SPEC_UPDATABLE_FIELDS:
                 setattr(spec, key, value)
 
         await self.session.commit()
@@ -150,7 +188,10 @@ class SpecRepository:
 
     async def upsert(self, spec_data: dict) -> Spec:
         """
-        Create or update a spec (insert or update).
+        Create or update a spec.
+
+        Uses get-then-update pattern for database compatibility (works with both
+        PostgreSQL and SQLite).
 
         Args:
             spec_data: Dict with spec attributes including 'id'
@@ -169,10 +210,19 @@ class SpecRepository:
         if not spec_id:
             raise ValueError("spec_data must include 'id' field")
 
+        # Try to find existing spec
         existing = await self.get_by_id(spec_id)
+
         if existing:
-            return await self.update(spec_id, spec_data)
+            # Update existing spec with only allowed fields
+            for key, value in spec_data.items():
+                if key in SPEC_UPDATABLE_FIELDS:
+                    setattr(existing, key, value)
+            await self.session.commit()
+            await self.session.refresh(existing)
+            return existing
         else:
+            # Create new spec
             return await self.create(spec_data)
 
 
@@ -228,7 +278,7 @@ class LibraryRepository:
 
         Args:
             library_id: The library ID
-            library_data: Dict with fields to update
+            library_data: Dict with fields to update (only allowed fields are updated)
 
         Returns:
             Updated Library object or None if not found
@@ -237,8 +287,9 @@ class LibraryRepository:
         if not library:
             return None
 
+        # Only update allowed fields to prevent modification of internal fields
         for key, value in library_data.items():
-            if hasattr(library, key):
+            if key in LIBRARY_UPDATABLE_FIELDS:
                 setattr(library, key, value)
 
         await self.session.commit()
@@ -267,6 +318,9 @@ class LibraryRepository:
         """
         Create or update a library.
 
+        Uses get-then-update pattern for database compatibility (works with both
+        PostgreSQL and SQLite).
+
         Args:
             library_data: Dict with library attributes including 'id'
 
@@ -277,10 +331,19 @@ class LibraryRepository:
         if not library_id:
             raise ValueError("library_data must include 'id' field")
 
+        # Try to find existing library
         existing = await self.get_by_id(library_id)
+
         if existing:
-            return await self.update(library_id, library_data)
+            # Update existing library with only allowed fields
+            for key, value in library_data.items():
+                if key in LIBRARY_UPDATABLE_FIELDS:
+                    setattr(existing, key, value)
+            await self.session.commit()
+            await self.session.refresh(existing)
+            return existing
         else:
+            # Create new library
             return await self.create(library_data)
 
 
@@ -365,7 +428,7 @@ class ImplRepository:
 
         Args:
             impl_id: The implementation ID (UUID)
-            impl_data: Dict with fields to update
+            impl_data: Dict with fields to update (only allowed fields are updated)
 
         Returns:
             Updated Impl object or None if not found
@@ -375,8 +438,9 @@ class ImplRepository:
         if not impl:
             return None
 
+        # Only update allowed fields to prevent modification of internal fields
         for key, value in impl_data.items():
-            if hasattr(impl, key):
+            if key in IMPL_UPDATABLE_FIELDS:
                 setattr(impl, key, value)
 
         await self.session.commit()
@@ -404,7 +468,10 @@ class ImplRepository:
 
     async def upsert(self, spec_id: str, library_id: str, impl_data: dict) -> Impl:
         """
-        Create or update an implementation for a specific spec and library.
+        Create or update an implementation.
+
+        Uses get-then-update pattern for database compatibility (works with both
+        PostgreSQL and SQLite).
 
         Args:
             spec_id: The specification ID
@@ -420,17 +487,18 @@ class ImplRepository:
                 "quality_score": 95
             })
         """
+        # Try to find existing implementation
         existing = await self.get_by_spec_and_library(spec_id, library_id)
+
         if existing:
-            # Update existing
+            # Update existing implementation with only allowed fields
             for key, value in impl_data.items():
-                if hasattr(existing, key):
+                if key in IMPL_UPDATABLE_FIELDS:
                     setattr(existing, key, value)
             await self.session.commit()
             await self.session.refresh(existing)
             return existing
         else:
-            # Create new
-            impl_data["spec_id"] = spec_id
-            impl_data["library_id"] = library_id
-            return await self.create(impl_data)
+            # Create new implementation
+            full_data = {**impl_data, "spec_id": spec_id, "library_id": library_id}
+            return await self.create(full_data)

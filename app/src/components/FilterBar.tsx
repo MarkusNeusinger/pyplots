@@ -380,10 +380,21 @@ export function FilterBar({
             {/* Grid size toggle */}
             <Tooltip title={imageSize === 'normal' ? 'compact view' : 'normal view'}>
               <Box
+                role="button"
+                tabIndex={0}
+                aria-label={imageSize === 'normal' ? 'Switch to compact view' : 'Switch to normal view'}
                 onClick={() => {
                   const newSize = imageSize === 'normal' ? 'compact' : 'normal';
                   onImageSizeChange(newSize);
                   onTrackEvent('toggle_grid_size', { size: newSize });
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    const newSize = imageSize === 'normal' ? 'compact' : 'normal';
+                    onImageSizeChange(newSize);
+                    onTrackEvent('toggle_grid_size', { size: newSize });
+                  }
                 }}
                 sx={{
                   display: 'flex',
@@ -394,6 +405,7 @@ export function FilterBar({
                   cursor: 'pointer',
                   color: '#9ca3af',
                   '&:hover': { color: '#3776AB' },
+                  '&:focus': { outline: '2px solid #3776AB', outlineOffset: 2 },
                 }}
               >
                 {imageSize === 'normal' ? (
@@ -457,7 +469,16 @@ export function FilterBar({
       {!maxFiltersReached && (
         <Box
           ref={searchContainerRef}
+          role={isSearchExpanded ? undefined : 'button'}
+          tabIndex={isSearchExpanded ? undefined : 0}
+          aria-label={isSearchExpanded ? undefined : 'Open filter search'}
           onClick={handleSearchExpand}
+          onKeyDown={(e) => {
+            if (!isSearchExpanded && (e.key === 'Enter' || e.key === ' ')) {
+              e.preventDefault();
+              handleSearchExpand();
+            }
+          }}
           sx={{
             display: 'flex',
             alignItems: 'center',
@@ -479,6 +500,7 @@ export function FilterBar({
             '&:hover .search-icon': {
               color: '#3776AB',
             },
+            '&:focus': isSearchExpanded ? {} : { outline: '2px solid #3776AB', outlineOffset: 2 },
           }}
         >
           <Tooltip title={isSearchExpanded ? '' : 'search'}>
@@ -594,10 +616,21 @@ export function FilterBar({
             {/* Grid size toggle */}
             <Tooltip title={imageSize === 'normal' ? 'compact view' : 'normal view'}>
               <Box
+                role="button"
+                tabIndex={0}
+                aria-label={imageSize === 'normal' ? 'Switch to compact view' : 'Switch to normal view'}
                 onClick={() => {
                   const newSize = imageSize === 'normal' ? 'compact' : 'normal';
                   onImageSizeChange(newSize);
                   onTrackEvent('toggle_grid_size', { size: newSize });
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    const newSize = imageSize === 'normal' ? 'compact' : 'normal';
+                    onImageSizeChange(newSize);
+                    onTrackEvent('toggle_grid_size', { size: newSize });
+                  }
                 }}
                 sx={{
                   display: 'flex',
@@ -608,6 +641,7 @@ export function FilterBar({
                   cursor: 'pointer',
                   color: '#9ca3af',
                   '&:hover': { color: '#3776AB' },
+                  '&:focus': { outline: '2px solid #3776AB', outlineOffset: 2 },
                 }}
               >
                 {imageSize === 'normal' ? (

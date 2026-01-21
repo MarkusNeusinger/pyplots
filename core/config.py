@@ -85,6 +85,19 @@ class Settings(BaseSettings):
     """Google AI API key for Gemini"""
 
     # =============================================================================
+    # AI MODEL CONFIGURATION
+    # =============================================================================
+
+    claude_model: str = "claude-sonnet-4-20250514"
+    """Claude model to use for code generation and review"""
+
+    claude_max_tokens: int = 4000
+    """Maximum tokens for Claude code generation responses"""
+
+    claude_review_max_tokens: int = 2000
+    """Maximum tokens for Claude review responses"""
+
+    # =============================================================================
     # CACHE
     # =============================================================================
 

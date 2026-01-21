@@ -6,8 +6,10 @@ Supports two connection modes:
 2. Direct connection via DATABASE_URL (for local development)
 """
 
+import asyncio
 import logging
 import os
+import threading
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager, contextmanager
 from typing import Optional
@@ -32,6 +34,23 @@ engine = None
 AsyncSessionLocal: Optional[async_sessionmaker] = None
 _sync_session_factory = None
 _connector = None
+
+# Thread safety locks for lazy initialization
+# Note: asyncio.Lock is created lazily to avoid event loop binding issues at module import
+_async_init_lock: Optional[asyncio.Lock] = None
+_sync_init_lock = threading.Lock()
+
+
+def _get_async_lock() -> asyncio.Lock:
+    """Get or create the async initialization lock.
+
+    Creates the lock lazily to avoid event loop binding issues
+    when the module is imported before an event loop exists.
+    """
+    global _async_init_lock
+    if _async_init_lock is None:
+        _async_init_lock = asyncio.Lock()
+    return _async_init_lock
 
 
 class Base(DeclarativeBase):
@@ -216,9 +235,12 @@ async def get_db() -> AsyncGenerator[AsyncSession | None, None]:
     Yields:
         AsyncSession if database is configured, None otherwise
     """
-    # Lazy initialization
+    # Thread-safe lazy initialization using asyncio.Lock
     if engine is None:
-        await init_db()
+        async with _get_async_lock():
+            # Double-check after acquiring lock
+            if engine is None:
+                await init_db()
 
     if AsyncSessionLocal is None:
         yield None
@@ -242,8 +264,12 @@ async def get_db_context() -> AsyncGenerator[AsyncSession, None]:
         async with get_db_context() as session:
             # Use session here
     """
+    # Thread-safe lazy initialization using asyncio.Lock
     if engine is None:
-        await init_db()
+        async with _get_async_lock():
+            # Double-check after acquiring lock
+            if engine is None:
+                await init_db()
 
     if AsyncSessionLocal is None:
         raise RuntimeError("Database not configured")
@@ -271,8 +297,12 @@ def get_db_context_sync():
         with get_db_context_sync() as session:
             # Use session here
     """
+    # Thread-safe lazy initialization using threading.Lock
     if engine is None:
-        init_db_sync()
+        with _sync_init_lock:
+            # Double-check after acquiring lock
+            if engine is None:
+                init_db_sync()
 
     if _sync_session_factory is None:
         raise RuntimeError("Database not configured for sync access")

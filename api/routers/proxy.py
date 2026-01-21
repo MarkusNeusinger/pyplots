@@ -1,12 +1,15 @@
 """HTML proxy endpoint for interactive plots with size reporting."""
 
 import json
+import logging
 from urllib.parse import urlparse
 
 import httpx
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import HTMLResponse
 
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["proxy"])
 
@@ -135,7 +138,8 @@ def build_safe_gcs_url(url: str) -> str | None:
         # Reconstruct URL from hardcoded values to prevent SSRF
         # This breaks the taint flow by not using the original URL
         return f"https://{ALLOWED_HOST}/{safe_path}"
-    except Exception:
+    except Exception as e:
+        logger.warning("URL validation failed for %s: %s", url, e)
         return None
 
 

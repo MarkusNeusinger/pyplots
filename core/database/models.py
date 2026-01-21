@@ -5,10 +5,10 @@ Defines database tables for specs, libraries, and impls.
 """
 
 from datetime import datetime
-from typing import Optional
+from typing import Any, Optional
 from uuid import uuid4
 
-from sqlalchemy import BigInteger, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import BigInteger, CheckConstraint, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
@@ -17,14 +17,28 @@ from core.database.connection import Base
 from core.database.types import StringArray, UniversalJSON, UniversalUUID
 
 
+# =============================================================================
+# Model Constants
+# =============================================================================
+
+# Maximum length for spec IDs (e.g., "scatter-regression-linear" = 27 chars)
+MAX_SPEC_ID_LENGTH = 100
+
+# Maximum length for library IDs (e.g., "highcharts" = 10 chars)
+MAX_LIBRARY_ID_LENGTH = 50
+
+# Valid review verdicts
+REVIEW_VERDICTS = ("APPROVED", "REJECTED")
+
+
 class Spec(Base):
     """Plot specification - library-agnostic definition of a plot type."""
 
     __tablename__ = "specs"
 
-    # Identification
-    id: Mapped[str] = mapped_column(String, primary_key=True)  # e.g., "scatter-basic"
-    title: Mapped[str] = mapped_column(String, nullable=False)
+    # Identification - with max length constraint
+    id: Mapped[str] = mapped_column(String(MAX_SPEC_ID_LENGTH), primary_key=True)  # e.g., "scatter-basic"
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
 
     # From spec.md
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Prose text
@@ -36,8 +50,8 @@ class Spec(Base):
     created: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)  # When spec was first created
     updated: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)  # When spec was last modified
     issue: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # GitHub issue number
-    suggested: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # GitHub username
-    tags: Mapped[Optional[dict]] = mapped_column(
+    suggested: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)  # GitHub username
+    tags: Mapped[Optional[dict[str, Any]]] = mapped_column(
         UniversalJSON, nullable=True
     )  # {plot_type, data_type, domain, features}
 
@@ -88,11 +102,11 @@ class Impl(Base):
     # Test matrix: [{"py": "3.11", "lib": "3.8.5", "ok": true}, ...]
     tested: Mapped[Optional[list]] = mapped_column(UniversalJSON, nullable=True)
 
-    # Quality & Generation
+    # Quality & Generation - quality_score constrained to 0-100 range
     quality_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     generated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)  # First generation
     updated: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)  # Last update
-    generated_by: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # Model ID
+    generated_by: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)  # Model ID
     issue: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # GitHub Issue
     workflow_run: Mapped[Optional[int]] = mapped_column(BigInteger, nullable=True)  # GitHub Actions run ID
 
@@ -102,11 +116,13 @@ class Impl(Base):
 
     # Extended review data (from issue #2845)
     review_image_description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # AI's visual description
-    review_criteria_checklist: Mapped[Optional[dict]] = mapped_column(UniversalJSON, nullable=True)  # Detailed scoring
+    review_criteria_checklist: Mapped[Optional[dict[str, Any]]] = mapped_column(
+        UniversalJSON, nullable=True
+    )  # Detailed scoring
     review_verdict: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)  # "APPROVED" or "REJECTED"
 
     # Implementation-level tags (from impl-review)
-    impl_tags: Mapped[Optional[dict]] = mapped_column(
+    impl_tags: Mapped[Optional[dict[str, Any]]] = mapped_column(
         UniversalJSON, nullable=True
     )  # {dependencies, techniques, patterns, dataprep, styling}
 
@@ -117,8 +133,18 @@ class Impl(Base):
     spec: Mapped["Spec"] = relationship("Spec", back_populates="impls")
     library: Mapped["Library"] = relationship("Library", back_populates="impls")
 
-    # Unique constraint
-    __table_args__ = (UniqueConstraint("spec_id", "library_id", name="uq_impl"),)
+    # Unique constraint and check constraints
+    __table_args__ = (
+        UniqueConstraint("spec_id", "library_id", name="uq_impl"),
+        # Quality score must be between 0 and 100
+        CheckConstraint(
+            "quality_score IS NULL OR (quality_score >= 0 AND quality_score <= 100)", name="ck_quality_score_range"
+        ),
+        # Review verdict must be APPROVED or REJECTED if set
+        CheckConstraint(
+            "review_verdict IS NULL OR review_verdict IN ('APPROVED', 'REJECTED')", name="ck_review_verdict_valid"
+        ),
+    )
 
 
 # Seed data for libraries (re-exported from core.constants)

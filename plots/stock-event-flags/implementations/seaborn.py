@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 stock-event-flags: Stock Chart with Event Flags
-Library: seaborn | Python 3.13
-Quality: pending | Created: 2026-01-21
+Library: seaborn 0.13.2 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-21
 """
 
 import matplotlib.pyplot as plt

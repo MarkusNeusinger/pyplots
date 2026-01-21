@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 map-connection-lines: Connection Lines Map (Origin-Destination)
 Library: matplotlib 3.10.8 | Python 3.13.11
 Quality: 86/100 | Created: 2026-01-21
@@ -12,18 +12,19 @@ from matplotlib.lines import Line2D
 # Data - Major international flight routes with passenger volume
 np.random.seed(42)
 
-# Major airports: (name, lat, lon)
+# Major airports: (name, lat, lon, label_offset_x, label_offset_y)
+# Custom offsets to avoid label overlaps
 airports = [
-    ("New York", 40.6413, -73.7781),
-    ("London", 51.4700, -0.4543),
-    ("Tokyo", 35.5494, 139.7798),
-    ("Dubai", 25.2532, 55.3657),
-    ("Singapore", 1.3644, 103.9915),
-    ("Sydney", -33.9399, 151.1753),
-    ("São Paulo", -23.4356, -46.4731),
-    ("Los Angeles", 33.9416, -118.4085),
-    ("Paris", 49.0097, 2.5479),
-    ("Hong Kong", 22.3080, 113.9185),
+    ("New York", 40.6413, -73.7781, 4, 4),
+    ("London", 51.4700, -0.4543, 4, 6),
+    ("Tokyo", 35.5494, 139.7798, -4, 4),
+    ("Dubai", 25.2532, 55.3657, 4, 4),
+    ("Singapore", 1.3644, 103.9915, 4, -8),
+    ("Sydney", -33.9399, 151.1753, 4, 4),
+    ("São Paulo", -23.4356, -46.4731, 4, 4),
+    ("Los Angeles", 33.9416, -118.4085, -4, 4),
+    ("Paris", 49.0097, 2.5479, 4, -10),
+    ("Hong Kong", 22.3080, 113.9185, -4, -8),
 ]
 
 # Define connections: (origin_idx, dest_idx, passenger_volume in millions)
@@ -44,35 +45,6 @@ connections = [
     (3, 9, 2.6),  # Dubai - Hong Kong
     (7, 2, 2.0),  # LA - Tokyo
 ]
-
-
-def geodesic_path(lon1, lat1, lon2, lat2, n_points=50):
-    """Calculate great circle path between two points using spherical interpolation."""
-    # Convert to radians
-    lon1_r, lat1_r = np.radians(lon1), np.radians(lat1)
-    lon2_r, lat2_r = np.radians(lon2), np.radians(lat2)
-
-    # Calculate angular distance
-    d = np.arccos(np.sin(lat1_r) * np.sin(lat2_r) + np.cos(lat1_r) * np.cos(lat2_r) * np.cos(lon2_r - lon1_r))
-
-    # Handle very short distances
-    if d < 1e-10:
-        return np.array([lon1, lon2]), np.array([lat1, lat2])
-
-    # Interpolate along great circle
-    t = np.linspace(0, 1, n_points)
-    a = np.sin((1 - t) * d) / np.sin(d)
-    b = np.sin(t * d) / np.sin(d)
-
-    x = a * np.cos(lat1_r) * np.cos(lon1_r) + b * np.cos(lat2_r) * np.cos(lon2_r)
-    y = a * np.cos(lat1_r) * np.sin(lon1_r) + b * np.cos(lat2_r) * np.sin(lon2_r)
-    z = a * np.sin(lat1_r) + b * np.sin(lat2_r)
-
-    lats = np.degrees(np.arctan2(z, np.sqrt(x**2 + y**2)))
-    lons = np.degrees(np.arctan2(y, x))
-
-    return lons, lats
-
 
 # Extract coordinates and values
 routes = []
@@ -125,17 +97,36 @@ for cont in continents:
 volumes = [r["volume"] for r in routes]
 min_vol, max_vol = min(volumes), max(volumes)
 
-# Draw connection lines using geodesic paths
+# Draw connection lines using geodesic paths (inlined great circle calculation)
+n_points = 100
 for route in routes:
     # Calculate normalized volume for styling
     norm_vol = (route["volume"] - min_vol) / (max_vol - min_vol)
     linewidth = 2 + norm_vol * 5  # Scale from 2 to 7
     alpha = 0.4 + norm_vol * 0.35  # Scale from 0.4 to 0.75
 
-    # Calculate great circle path
-    lons, lats = geodesic_path(
-        route["origin_lon"], route["origin_lat"], route["dest_lon"], route["dest_lat"], n_points=100
-    )
+    # Calculate great circle path using spherical interpolation
+    lon1, lat1 = route["origin_lon"], route["origin_lat"]
+    lon2, lat2 = route["dest_lon"], route["dest_lat"]
+    lon1_r, lat1_r = np.radians(lon1), np.radians(lat1)
+    lon2_r, lat2_r = np.radians(lon2), np.radians(lat2)
+
+    # Angular distance
+    d = np.arccos(np.sin(lat1_r) * np.sin(lat2_r) + np.cos(lat1_r) * np.cos(lat2_r) * np.cos(lon2_r - lon1_r))
+
+    # Handle very short distances
+    if d < 1e-10:
+        lons, lats = np.array([lon1, lon2]), np.array([lat1, lat2])
+    else:
+        # Interpolate along great circle
+        t = np.linspace(0, 1, n_points)
+        a = np.sin((1 - t) * d) / np.sin(d)
+        b = np.sin(t * d) / np.sin(d)
+        x = a * np.cos(lat1_r) * np.cos(lon1_r) + b * np.cos(lat2_r) * np.cos(lon2_r)
+        y = a * np.cos(lat1_r) * np.sin(lon1_r) + b * np.cos(lat2_r) * np.sin(lon2_r)
+        z = a * np.sin(lat1_r) + b * np.sin(lat2_r)
+        lats = np.degrees(np.arctan2(z, np.sqrt(x**2 + y**2)))
+        lons = np.degrees(np.arctan2(y, x))
 
     # Handle date line crossing by splitting the line
     lon_diff = np.abs(np.diff(lons))
@@ -164,35 +155,30 @@ for route in routes:
         ax.plot(lons, lats, color="#306998", linewidth=linewidth, alpha=alpha, solid_capstyle="round", zorder=2)
 
 # Draw airport markers
-for _name, lat, lon in airports:
+for _name, lat, lon, _offset_x, _offset_y in airports:
     ax.plot(
-        lon, lat, marker="o", markersize=12, color="#FFD43B", markeredgecolor="#306998", markeredgewidth=2.5, zorder=3
+        lon, lat, marker="o", markersize=14, color="#FFD43B", markeredgecolor="#306998", markeredgewidth=2.5, zorder=3
     )
 
-# Draw airport labels
-for name, lat, lon in airports:
-    # Offset labels to avoid overlap with markers
-    offset_x = 3
-    offset_y = 3
-    if lon > 100:  # East Asia
-        offset_x = -3
+# Draw airport labels with custom offsets to avoid overlap
+for name, lat, lon, offset_x, offset_y in airports:
     ax.annotate(
         name,
         (lon, lat),
         xytext=(offset_x, offset_y),
         textcoords="offset points",
-        fontsize=11,
+        fontsize=14,
         fontweight="bold",
         color="#333333",
         ha="left" if offset_x > 0 else "right",
-        va="bottom",
+        va="bottom" if offset_y > 0 else "top",
         zorder=4,
     )
 
 # Styling
-ax.set_xlabel("Longitude", fontsize=18)
-ax.set_ylabel("Latitude", fontsize=18)
-ax.tick_params(axis="both", labelsize=14)
+ax.set_xlabel("Longitude (°)", fontsize=20)
+ax.set_ylabel("Latitude (°)", fontsize=20)
+ax.tick_params(axis="both", labelsize=16)
 ax.set_aspect("equal", adjustable="box")
 
 # Add grid
@@ -223,7 +209,7 @@ legend_elements = [
         label="Major Airport",
     ),
 ]
-ax.legend(handles=legend_elements, loc="lower left", fontsize=14, framealpha=0.9)
+ax.legend(handles=legend_elements, loc="lower left", fontsize=16, framealpha=0.9)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

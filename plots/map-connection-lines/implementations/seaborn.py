@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 map-connection-lines: Connection Lines Map (Origin-Destination)
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 83/100 | Created: 2026-01-21
+Quality: 91/100 | Created: 2026-01-21
 """
 
 import matplotlib.pyplot as plt

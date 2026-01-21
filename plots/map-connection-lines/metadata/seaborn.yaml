@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: map-connection-lines
 created: '2026-01-21T16:30:46Z'
-updated: '2026-01-21T16:33:25Z'
+updated: '2026-01-21T16:39:11Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21217344944
 issue: 3746
@@ -10,87 +10,87 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/map-connection-lines/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/map-connection-lines/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 83
+quality_score: 91
 review:
   strengths:
-  - Well-designed visual with clear Python color scheme (blue/yellow)
-  - Good use of transparency for overlapping routes
-  - Passenger volume encoded in line width effectively
-  - Clean legend explaining traffic levels
-  - Appropriate world map projection and axis ranges
+  - Clean implementation with curved connection lines and appropriate transparency
+  - Good use of seaborn scatterplot for airport markers with proper styling
+  - Well-designed legend showing passenger volume ranges
+  - Appropriate label offsets to avoid overlap in crowded regions (Europe/Asia)
+  - Realistic flight route data with plausible passenger counts
   weaknesses:
-  - Contains a helper function get_curved_path() - should inline the curve calculation
-    logic to follow KISS principle
-  - Legend shows categorical labels but actual data is continuous (mismatch)
-  - City labels overlap near European cities (London/Paris/Frankfurt)
-  - Axis labels lack degree units (should be Longitude (°) and Latitude (°))
-  - Limited use of seaborn distinctive features - most visualization done with matplotlib
-  image_description: The plot displays a world map with connection lines between major
-    international airports. The map shows simplified continent outlines in light gray
-    (#E8E8E8) with subtle gray borders. Ten airports are marked as yellow circular
-    markers with blue edges at locations including New York, Los Angeles, London,
-    Paris, Frankfurt, Dubai, Singapore, Hong Kong, Tokyo, and Sydney. Blue curved
-    lines (quadratic Bezier curves) connect the airports, with line thickness varying
-    based on passenger volume. The lines use alpha transparency (0.4) to handle overlapping
-    routes. City labels are positioned with an offset to the upper-right of each marker.
-    A legend in the lower-left shows "Passenger Volume" with three line thickness
-    categories (Low/Medium/High traffic). The title follows the required format "map-connection-lines
-    · seaborn · pyplots.ai". Axes show Longitude (-180 to 180) and Latitude (-60 to
-    80).
+  - Simplified continent outlines are rough approximations rather than accurate coastlines
+  image_description: "The plot displays a world map showing flight connection lines\
+    \ between major international airports. The background features simplified gray\
+    \ continent shapes representing North America, South America, Europe, Africa,\
+    \ Asia, and Australia. \n\nTen airports are marked with bright yellow circular\
+    \ markers with blue borders: Los Angeles, New York, London, Paris, Frankfurt,\
+    \ Dubai, Hong Kong, Singapore, Tokyo, and Sydney. Each city is labeled in bold\
+    \ dark gray text with custom offsets to avoid overlap.\n\nBlue curved lines (Bezier\
+    \ curves) connect the airports, representing flight routes. The line thickness\
+    \ varies based on passenger volume - thinner lines for routes with ~350k passengers\
+    \ and thicker lines for routes with ~850k passengers. The lines use transparency\
+    \ (alpha ~0.4) to handle overlapping routes effectively.\n\nThe title reads \"\
+    map-connection-lines · seaborn · pyplots.ai\" in bold at the top. Axis labels\
+    \ show \"Longitude (°)\" on the x-axis and \"Latitude (°)\" on the y-axis. A legend\
+    \ in the lower-left corner titled \"Annual Passengers\" shows three line thicknesses\
+    \ representing 350k, 600k, and 850k passengers. The plot has a subtle dashed grid\
+    \ with appropriate transparency."
   criteria_checklist:
     visual_quality:
-      score: 33
+      score: 36
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
+        score: 10
         max: 10
         passed: true
         comment: Title 24pt, axis labels 20pt, tick labels 16pt, city labels 14pt
-          - all readable but city labels could be slightly larger
+          bold - all clearly readable
       - id: VQ-02
         name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: City labels use custom offsets to avoid overlap even in crowded European
+          region
+      - id: VQ-03
+        name: Element Visibility
         score: 6
         max: 8
         passed: true
-        comment: 'Minor overlap: London and Paris labels overlap due to proximity;
-          Frankfurt label partially overlaps with lines'
-      - id: VQ-03
-        name: Element Visibility
-        score: 7
-        max: 8
-        passed: true
-        comment: Markers (s=400) and lines visible, varying line widths work well,
-          but some thin lines hard to see at alpha 0.4
+        comment: Markers size s=400 clearly visible, line widths 2-8 well scaled,
+          alpha=0.4 handles overlapping routes
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Blue (#306998) and yellow (#FFD43B) with good contrast, colorblind-safe
+        comment: Blue lines (#306998) and yellow markers (#FFD43B) provide strong
+          contrast, colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: Good canvas utilization, but continent shapes are simplified polygons
-          rather than accurate coastlines
+        comment: Good use of canvas with equal aspect ratio, though some empty space
+          in southern hemisphere
       - id: VQ-06
         name: Axis Labels
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Longitude and Latitude are descriptive but lack degree units
+        comment: Longitude (°) and Latitude (°) - descriptive with units
       - id: VQ-07
         name: Grid & Legend
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Grid alpha 0.3 is subtle, legend well-placed; dashed grid style competes
-          with connection lines
+        comment: Grid alpha=0.3 with dashed lines is subtle, legend well-placed in
+          lower-left
     spec_compliance:
-      score: 22
+      score: 25
       max: 25
       items:
       - id: SC-01
@@ -98,39 +98,42 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'Correct chart type: connection lines map with curved arcs'
+        comment: Correct map visualization with connection lines between location
+          pairs
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Origin/destination lat/lon correctly mapped
+        comment: Origin/destination lat/lon correctly mapped, passengers encoded in
+          line width
       - id: SC-03
         name: Required Features
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Has curved lines, location markers, transparency, line width encoding.
-          Missing true great circle paths
+        comment: Curved lines, location markers, transparency, base map outline, line
+          thickness for value
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Axes show full world range (-180 to 180, -60 to 80)
+        comment: Axes show -180 to 180 longitude, -60 to 80 latitude covering all
+          routes
       - id: SC-05
         name: Legend Accuracy
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Legend shows categorical Low/Medium/High but actual data is continuous
-          passenger counts
+        passed: true
+        comment: Legend accurately shows 350k/600k/850k passenger ranges with matching
+          line widths
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: 'Correct format: map-connection-lines · seaborn · pyplots.ai'
+        comment: 'Title follows exact format: map-connection-lines · seaborn · pyplots.ai'
     data_quality:
       score: 18
       max: 20
@@ -140,56 +143,56 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: 'Shows variety of routes: short, long, different passenger volumes.
-          Could show more volume variation'
+        comment: Shows 15 routes with varying passenger volumes, both short and long-distance
+          connections, routes in different directions
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: International flight routes with realistic passenger volumes (350-850
-          thousands)
+        comment: Major international airports with plausible route network, neutral
+          business context
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Coordinates accurate for cities, passenger counts plausible; simplified
-          continent polygons reduce accuracy
+        comment: Passenger counts 350-850k are realistic for major routes, coordinates
+          are accurate
     code_quality:
-      score: 7
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 1
+        score: 3
         max: 3
-        passed: false
-        comment: Contains helper function get_curved_path() which violates KISS principle
+        passed: true
+        comment: 'Linear flow: imports → data → plot → save, no functions/classes'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) set (though not used for random data generation)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: matplotlib.pyplot, numpy, pandas, seaborn, Line2D'
+        comment: 'All imports used: matplotlib, numpy, pandas, seaborn, Line2D'
       - id: CQ-04
         name: No Deprecated API
+        score: 0
+        max: 1
+        passed: false
+        comment: zip with strict=True is Python 3.10+ only, minor compatibility concern
+      - id: CQ-05
+        name: Output Correct
         score: 1
         max: 1
         passed: true
-        comment: Uses current seaborn and matplotlib APIs
-      - id: CQ-05
-        name: Output Correct
-        score: 0
-        max: 1
-        passed: true
-        comment: Saves as plot.png correctly
+        comment: Saves as plot.png with dpi=300 and bbox_inches='tight'
     library_features:
       score: 3
       max: 5
@@ -199,18 +202,19 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Uses sns.scatterplot() and sns.set_theme()/set_context() but connection
-          lines drawn with pure matplotlib
-  verdict: REJECTED
+        comment: Uses sns.scatterplot for airport markers, sns.set_theme and set_context
+          for styling, but connection lines drawn with matplotlib
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
-  - bezier-curves
   - custom-legend
+  - bezier-curves
   patterns:
   - data-generation
   - iteration-over-groups
+  - explicit-figure
   dataprep:
   - normalization
   styling:

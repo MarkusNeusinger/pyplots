@@ -73,6 +73,29 @@ def parse_timestamp(value) -> datetime | None:
     return None
 
 
+def _validate_quality_score(score) -> float | None:
+    """
+    Validate and normalize a quality score.
+
+    Args:
+        score: Quality score value (int, float, or None)
+
+    Returns:
+        Validated score between 0-100, or None if invalid
+    """
+    if score is None:
+        return None
+    try:
+        score_float = float(score)
+        if 0 <= score_float <= 100:
+            return score_float
+        logger.warning(f"Quality score {score_float} out of range 0-100, setting to None")
+        return None
+    except (ValueError, TypeError):
+        logger.warning(f"Invalid quality score '{score}', setting to None")
+        return None
+
+
 def parse_bullet_points(text: str) -> list[str]:
     """Extract bullet points from a markdown section."""
     bullets = []
@@ -83,6 +106,43 @@ def parse_bullet_points(text: str) -> list[str]:
         elif line.startswith("* "):
             bullets.append(line[2:].strip())
     return bullets
+
+
+def _parse_markdown_section(content: str, section_name: str, as_bullets: bool = False) -> str | list[str]:
+    """
+    Parse a markdown section by name.
+
+    Args:
+        content: Full markdown content
+        section_name: Section heading (e.g., "Description", "Applications")
+        as_bullets: If True, parse as bullet points; if False, return raw text
+
+    Returns:
+        Parsed section content as string or list of bullet points
+    """
+    pattern = rf"## {section_name}\s*\n(.+?)(?=\n##|\Z)"
+    match = re.search(pattern, content, re.DOTALL)
+    if not match:
+        return [] if as_bullets else ""
+
+    section_content = match.group(1).strip()
+    if as_bullets:
+        return parse_bullet_points(section_content)
+    return section_content
+
+
+def _validate_spec_id(spec_id: str) -> bool:
+    """
+    Validate that a spec ID follows the naming convention.
+
+    Args:
+        spec_id: The specification ID to validate
+
+    Returns:
+        True if valid, False otherwise
+    """
+    # Spec IDs should be lowercase alphanumeric with hyphens only
+    return bool(re.match(r"^[a-z0-9]+(-[a-z0-9]+)*$", spec_id))
 
 
 def parse_spec_markdown(file_path: Path) -> dict:
@@ -98,33 +158,19 @@ def parse_spec_markdown(file_path: Path) -> dict:
     content = file_path.read_text(encoding="utf-8")
     spec_id = file_path.parent.name  # Directory name is spec_id
 
+    # Validate spec_id format
+    if not _validate_spec_id(spec_id):
+        logger.warning(f"Spec ID '{spec_id}' does not follow naming convention (lowercase alphanumeric with hyphens)")
+
     # Parse title from first heading: "# scatter-basic: Basic Scatter Plot"
     title_match = re.search(r"^#\s+[\w-]+:\s*(.+)$", content, re.MULTILINE)
     title = title_match.group(1).strip() if title_match else spec_id
 
-    # Parse description section
-    description = ""
-    desc_match = re.search(r"## Description\s*\n(.+?)(?=\n##|\Z)", content, re.DOTALL)
-    if desc_match:
-        description = desc_match.group(1).strip()
-
-    # Parse applications section (bullet points)
-    applications = []
-    apps_match = re.search(r"## Applications\s*\n(.+?)(?=\n##|\Z)", content, re.DOTALL)
-    if apps_match:
-        applications = parse_bullet_points(apps_match.group(1))
-
-    # Parse data section (bullet points)
-    data = []
-    data_match = re.search(r"## Data\s*\n(.+?)(?=\n##|\Z)", content, re.DOTALL)
-    if data_match:
-        data = parse_bullet_points(data_match.group(1))
-
-    # Parse notes section (bullet points, optional)
-    notes = []
-    notes_match = re.search(r"## Notes\s*\n(.+?)(?=\n##|\Z)", content, re.DOTALL)
-    if notes_match:
-        notes = parse_bullet_points(notes_match.group(1))
+    # Parse sections using the unified helper
+    description = _parse_markdown_section(content, "Description", as_bullets=False)
+    applications = _parse_markdown_section(content, "Applications", as_bullets=True)
+    data = _parse_markdown_section(content, "Data", as_bullets=True)
+    notes = _parse_markdown_section(content, "Notes", as_bullets=True)
 
     return {
         "id": spec_id,
@@ -262,6 +308,16 @@ def scan_plot_directory(plot_dir: Path) -> dict | None:
             # Parse review feedback (new structure)
             review = impl_meta.get("review") or {}
 
+            # Validate quality score
+            raw_quality_score = current.get("quality_score") or impl_meta.get("quality_score")
+            quality_score = _validate_quality_score(raw_quality_score)
+
+            # Validate review verdict
+            review_verdict = review.get("verdict")
+            if review_verdict and review_verdict not in ("APPROVED", "REJECTED"):
+                logger.warning(f"Invalid review verdict '{review_verdict}' for {spec_id}/{library_id}, setting to None")
+                review_verdict = None
+
             implementations.append(
                 {
                     "spec_id": spec_id,
@@ -280,14 +336,14 @@ def scan_plot_directory(plot_dir: Path) -> dict | None:
                     "generated_by": current.get("generated_by") or impl_meta.get("generated_by"),
                     "workflow_run": current.get("workflow_run") or impl_meta.get("workflow_run"),
                     "issue": current.get("issue") or impl_meta.get("issue"),
-                    "quality_score": current.get("quality_score") or impl_meta.get("quality_score"),
+                    "quality_score": quality_score,
                     # Review feedback
                     "review_strengths": review.get("strengths") or [],
                     "review_weaknesses": review.get("weaknesses") or [],
                     # Extended review data (issue #2845)
                     "review_image_description": review.get("image_description"),
                     "review_criteria_checklist": review.get("criteria_checklist"),
-                    "review_verdict": review.get("verdict"),
+                    "review_verdict": review_verdict,
                     # Implementation-level tags (issue #2434)
                     "impl_tags": impl_meta.get("impl_tags"),
                 }

@@ -15,6 +15,8 @@ from typing import Callable, Literal, TypeVar
 import anthropic
 from anthropic import APIConnectionError, APIError, RateLimitError
 
+from core.config import settings
+
 
 LibraryType = Literal[
     "matplotlib", "seaborn", "plotly", "bokeh", "altair", "plotnine", "pygal", "highcharts", "letsplot"
@@ -260,7 +262,9 @@ Generate the improved implementation:"""
         current_prompt = prompt  # Capture for lambda
         response = retry_with_backoff(
             lambda p=current_prompt: client.messages.create(
-                model="claude-sonnet-4-20250514", max_tokens=4000, messages=[{"role": "user", "content": p}]
+                model=settings.claude_model,
+                max_tokens=settings.claude_max_tokens,
+                messages=[{"role": "user", "content": p}],
             )
         )
 
@@ -312,7 +316,9 @@ Format your response as:
         current_review_prompt = review_prompt  # Capture for lambda
         review_response = retry_with_backoff(
             lambda p=current_review_prompt: client.messages.create(
-                model="claude-sonnet-4-20250514", max_tokens=2000, messages=[{"role": "user", "content": p}]
+                model=settings.claude_model,
+                max_tokens=settings.claude_review_max_tokens,
+                messages=[{"role": "user", "content": p}],
             )
         )
 

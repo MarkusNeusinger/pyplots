@@ -9,6 +9,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Always write in English** - All output text (code comments, commit messages, PR descriptions, issue comments, documentation) must be in English, even if the user writes in another language.
 - **Update documentation when making changes** - When adding new features, events, or modifying behavior, always check if related documentation needs updating (e.g., `docs/reference/plausible.md` for analytics events, `docs/workflows/` for workflow changes, `docs/contributing.md` for user-facing changes).
 
+## MCP Tools (Serena & Context7)
+
+**Serena** - Prefer for Python/TypeScript code navigation and editing:
+- `jet_brains_find_symbol` / `jet_brains_get_symbols_overview` - Find classes, functions, methods
+- `jet_brains_find_referencing_symbols` - Find all usages of a symbol
+- `replace_symbol_body` / `insert_after_symbol` - Edit entire functions/classes
+- `replace_content` (regex) - Small inline edits
+- `search_for_pattern` / `list_dir` / `find_file` - Non-code files, directory exploration
+
+**Context7** - Use for up-to-date library documentation:
+- `resolve-library-id` → `query-docs` - Get current API docs, code examples
+- Use when working with external libraries (matplotlib, FastAPI, SQLAlchemy, React, etc.)
+
+**When to use:**
+- Serena: Understanding codebase structure, refactoring, finding usages, editing code
+- Context7: Checking correct API usage, finding library-specific patterns, debugging library issues
+
 ## CRITICAL: Mandatory Workflow for New Specs and Implementations
 
 **NEVER bypass the automated workflow!** All specifications and implementations MUST go through the GitHub Actions pipeline.

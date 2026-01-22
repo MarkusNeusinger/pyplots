@@ -13,6 +13,7 @@ Welcome to the pyplots documentation. Start here to find what you're looking for
 | Set up local development | [Development Guide](development.md) |
 | See how automation works | [Workflows](workflows/overview.md) |
 | Look up API endpoints | [API Reference](reference/api.md) |
+| Integrate pyplots into AI workflow | [MCP Server](reference/mcp.md) |
 | Understand the database | [Database Schema](reference/database.md) |
 | Explore repository structure | [Repository Structure](reference/repository.md) |
 
@@ -31,6 +32,7 @@ docs/
 │   └── overview.md       # GitHub Actions automation
 ├── reference/            # Technical details
 │   ├── api.md            # REST API endpoints
+│   ├── mcp.md            # MCP server integration
 │   ├── database.md       # PostgreSQL schema
 │   ├── repository.md     # Directory structure
 │   ├── tagging-system.md # Tag taxonomy reference
@@ -62,6 +64,7 @@ How the automation pipeline works.
 Technical details for development and integration.
 
 - **[API](reference/api.md)** - REST endpoints, request/response formats
+- **[MCP Server](reference/mcp.md)** - Model Context Protocol integration for AI assistants
 - **[Database](reference/database.md)** - PostgreSQL schema and models
 - **[Repository](reference/repository.md)** - Directory structure and file organization
 - **[Tagging System](reference/tagging-system.md)** - Tag taxonomy (used by spec-create workflow)

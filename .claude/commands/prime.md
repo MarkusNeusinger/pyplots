@@ -10,41 +10,25 @@
 
 @pyproject.toml
 
-## Quick Stats
+## Git Status
 
 ```bash
-# Repository overview
-echo "=== Repository Stats ==="
-echo "Plot specifications: $(ls -d plots/*/ 2>/dev/null | wc -l)"
-echo "Python files: $(find api core automation tests -name '*.py' 2>/dev/null | wc -l)"
-echo "Frontend files: $(find app/src -name '*.tsx' -o -name '*.ts' 2>/dev/null | wc -l)"
-echo "Workflows: $(ls .github/workflows/*.yml 2>/dev/null | wc -l)"
-echo "Prompts: $(find prompts -name '*.md' 2>/dev/null | wc -l)"
-```
-
-## Structure
-
-```bash
-# Key directories
-ls -la api/ core/ app/src/ prompts/ .github/workflows/ 2>/dev/null | head -50
-
-# Documentation
-find docs -name "*.md" 2>/dev/null | sort
-```
-
-## Current State
-
-```bash
-# Git status
 git status --short
-
-# Recent activity
-git log --oneline -10
+git log --oneline -5
 ```
+
+## Codebase Exploration
+
+Use Serena MCP tools to explore:
+- `list_dir(".", recursive=false)` - Top-level structure
+- `list_dir("api/", recursive=true)` - Backend API structure
+- `list_dir("core/", recursive=true)` - Core business logic
+- `list_dir("app/src/", recursive=true)` - Frontend structure
+- `jet_brains_get_symbols_overview` on `api/main.py`, `core/database/models.py` for key symbols
 
 ## Summarize
 
-After reading, provide:
+After exploring, provide:
 1. **Purpose**: What does this project do?
 2. **Architecture**: Key components and how they connect
 3. **Workflow**: How specs become implementations

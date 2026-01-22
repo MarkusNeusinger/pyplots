@@ -65,7 +65,7 @@ pyplots is different: **AI curates and maintains, humans discover and choose.**
 
 - **Try with YOUR data**: Upload CSV/Excel/JSON, see all plots with your actual data
 - **Custom styles**: Generate plots matching your brand colors
-- **MCP Server**: Integrate pyplots into your AI workflow
+- **MCP Server**: Integrate pyplots into your AI workflow ([Docs](../reference/mcp.md), [Issue #4129](https://github.com/MarkusNeusinger/pyplots/issues/4129))
 - **API access**: Programmatic access to plot generation
 
 ## Why We'll Win

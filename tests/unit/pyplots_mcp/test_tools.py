@@ -64,6 +64,7 @@ def mock_spec():
     mock_impl.review_criteria_checklist = {"visual_quality": {"score": 36, "max": 40}}
     mock_impl.review_verdict = "APPROVED"
     mock_impl.impl_tags = {"patterns": ["data-generation"], "styling": ["alpha-blending"]}
+    mock_impl.generated_at = None
 
     spec = MagicMock()
     spec.id = "scatter-basic"
@@ -72,7 +73,7 @@ def mock_spec():
     spec.applications = ["Data analysis", "Correlation studies"]
     spec.data = ["x (numeric)", "y (numeric)"]
     spec.notes = ["Use for continuous data"]
-    spec.structured_tags = {
+    spec.tags = {
         "plot_type": ["scatter"],
         "data_type": ["numeric"],
         "domain": ["statistics"],
@@ -82,7 +83,7 @@ def mock_spec():
     spec.suggested = "contributor"
     spec.created = None
     spec.updated = None
-    spec.implementations = [mock_impl]
+    spec.impls = [mock_impl]
 
     return spec
 
@@ -106,7 +107,7 @@ async def test_list_specs(mock_db_context, mock_spec):
 async def test_list_specs_pagination(mock_db_context):
     """Test list_specs pagination."""
     specs = [
-        MagicMock(id=f"spec-{i}", title=f"Spec {i}", description="", structured_tags={}, implementations=[])
+        MagicMock(id=f"spec-{i}", title=f"Spec {i}", description="", tags={}, impls=[])
         for i in range(5)
     ]
 
@@ -194,7 +195,7 @@ async def test_get_implementation(mock_db_context, mock_spec):
     mock_lib.id = "matplotlib"
     mock_lib.name = "Matplotlib"
 
-    mock_impl = mock_spec.implementations[0]
+    mock_impl = mock_spec.impls[0]
 
     mock_spec_repo = MagicMock()
     mock_spec_repo.get_by_id = AsyncMock(return_value=mock_spec)
@@ -301,8 +302,8 @@ async def test_list_libraries(mock_db_context):
 async def test_get_tag_values_spec_level(mock_db_context, mock_spec):
     """Test get_tag_values for spec-level category."""
     mock_spec2 = MagicMock()
-    mock_spec2.structured_tags = {"plot_type": ["bar", "histogram"]}
-    mock_spec2.implementations = []
+    mock_spec2.tags = {"plot_type": ["bar", "histogram"]}
+    mock_spec2.impls = []
 
     mock_repo = MagicMock()
     mock_repo.get_all = AsyncMock(return_value=[mock_spec, mock_spec2])

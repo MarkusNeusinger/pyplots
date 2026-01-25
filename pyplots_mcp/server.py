@@ -38,13 +38,9 @@ async def list_specs(limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
         # Convert to SpecListItem format
         result = []
         for spec in paginated_specs:
-            impl_count = len([impl for impl in spec.implementations if impl.code is not None])
+            impl_count = len([impl for impl in spec.impls if impl.code is not None])
             item = SpecListItem(
-                id=spec.id,
-                title=spec.title,
-                description=spec.description,
-                tags=spec.structured_tags,
-                library_count=impl_count,
+                id=spec.id, title=spec.title, description=spec.description, tags=spec.tags, library_count=impl_count
             )
             result.append(item.model_dump())
 
@@ -115,7 +111,7 @@ async def search_specs_by_tags(
             for spec in specs:
                 # Check if spec has implementations matching impl-level filters
                 matching_impls = []
-                for impl in spec.implementations:
+                for impl in spec.impls:
                     if impl.code is None:
                         continue
 
@@ -149,13 +145,9 @@ async def search_specs_by_tags(
         # Convert to SpecListItem format
         result = []
         for spec in specs:
-            impl_count = len([impl for impl in spec.implementations if impl.code is not None])
+            impl_count = len([impl for impl in spec.impls if impl.code is not None])
             item = SpecListItem(
-                id=spec.id,
-                title=spec.title,
-                description=spec.description,
-                tags=spec.structured_tags,
-                library_count=impl_count,
+                id=spec.id, title=spec.title, description=spec.description, tags=spec.tags, library_count=impl_count
             )
             result.append(item.model_dump())
 
@@ -189,7 +181,7 @@ async def get_spec_detail(spec_id: str) -> dict[str, Any]:
 
         # Build implementations list
         implementations = []
-        for impl in spec.implementations:
+        for impl in spec.impls:
             if impl.code is None:
                 continue
 
@@ -201,7 +193,7 @@ async def get_spec_detail(spec_id: str) -> dict[str, Any]:
                 preview_html=impl.preview_html,
                 quality_score=impl.quality_score,
                 code=impl.code,
-                generated_at=impl.created.isoformat() if impl.created else None,
+                generated_at=impl.generated_at.isoformat() if impl.generated_at else None,
                 generated_by=impl.generated_by,
                 python_version=impl.python_version,
                 library_version=impl.library_version,
@@ -222,7 +214,7 @@ async def get_spec_detail(spec_id: str) -> dict[str, Any]:
             applications=spec.applications or [],
             data=spec.data or [],
             notes=spec.notes or [],
-            tags=spec.structured_tags,
+            tags=spec.tags,
             issue=spec.issue,
             suggested=spec.suggested,
             created=spec.created.isoformat() if spec.created else None,
@@ -285,7 +277,7 @@ async def get_implementation(spec_id: str, library: str) -> dict[str, Any]:
             preview_html=impl.preview_html,
             quality_score=impl.quality_score,
             code=impl.code,
-            generated_at=impl.created.isoformat() if impl.created else None,
+            generated_at=impl.generated_at.isoformat() if impl.generated_at else None,
             generated_by=impl.generated_by,
             python_version=impl.python_version,
             library_version=impl.library_version,
@@ -366,14 +358,14 @@ async def get_tag_values(category: str) -> list[str]:
         if category in spec_categories:
             # Spec-level tags
             for spec in specs:
-                if spec.structured_tags and category in spec.structured_tags:
-                    tag_list = spec.structured_tags[category]
+                if spec.tags and category in spec.tags:
+                    tag_list = spec.tags[category]
                     if isinstance(tag_list, list):
                         values.update(tag_list)
         else:
             # Impl-level tags
             for spec in specs:
-                for impl in spec.implementations:
+                for impl in spec.impls:
                     if impl.impl_tags and category in impl.impl_tags:
                         tag_list = impl.impl_tags[category]
                         if isinstance(tag_list, list):

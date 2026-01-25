@@ -1,0 +1,332 @@
+"""
+Unit tests for MCP server tools.
+
+Tests all 6 MCP tools with mocked database sessions.
+"""
+
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
+
+# Import the tool functions from the module
+# Note: These are FunctionTool objects, we need to access .fn to get the actual callable
+from pyplots_mcp.server import get_implementation as get_implementation_tool
+from pyplots_mcp.server import get_spec_detail as get_spec_detail_tool
+from pyplots_mcp.server import get_tag_values as get_tag_values_tool
+from pyplots_mcp.server import list_libraries as list_libraries_tool
+from pyplots_mcp.server import list_specs as list_specs_tool
+from pyplots_mcp.server import search_specs_by_tags as search_specs_by_tags_tool
+
+
+# Extract the actual functions from the FunctionTool wrappers
+list_specs = list_specs_tool.fn
+search_specs_by_tags = search_specs_by_tags_tool.fn
+get_spec_detail = get_spec_detail_tool.fn
+get_implementation = get_implementation_tool.fn
+list_libraries = list_libraries_tool.fn
+get_tag_values = get_tag_values_tool.fn
+
+
+@pytest.fixture
+def mock_db_context():
+    """Mock database context manager."""
+    mock_session = AsyncMock()
+
+    class MockContextManager:
+        async def __aenter__(self):
+            return mock_session
+
+        async def __aexit__(self, exc_type, exc_val, exc_tb):
+            pass
+
+    with patch("pyplots_mcp.server.get_db_context", return_value=MockContextManager()):
+        yield mock_session
+
+
+@pytest.fixture
+def mock_spec():
+    """Create a mock spec."""
+    mock_impl = MagicMock()
+    mock_impl.library.id = "matplotlib"
+    mock_impl.library.name = "Matplotlib"
+    mock_impl.code = "import matplotlib.pyplot as plt"
+    mock_impl.preview_url = "https://example.com/plot.png"
+    mock_impl.preview_thumb = "https://example.com/plot_thumb.png"
+    mock_impl.preview_html = None
+    mock_impl.quality_score = 92
+    mock_impl.created = None
+    mock_impl.generated_by = "claude-opus-4"
+    mock_impl.python_version = "3.13"
+    mock_impl.library_version = "3.10.0"
+    mock_impl.review_strengths = ["Clean code"]
+    mock_impl.review_weaknesses = ["Could improve"]
+    mock_impl.review_image_description = "A scatter plot"
+    mock_impl.review_criteria_checklist = {"visual_quality": {"score": 36, "max": 40}}
+    mock_impl.review_verdict = "APPROVED"
+    mock_impl.impl_tags = {"patterns": ["data-generation"], "styling": ["alpha-blending"]}
+
+    spec = MagicMock()
+    spec.id = "scatter-basic"
+    spec.title = "Basic Scatter Plot"
+    spec.description = "A simple scatter plot"
+    spec.applications = ["Data analysis", "Correlation studies"]
+    spec.data = ["x (numeric)", "y (numeric)"]
+    spec.notes = ["Use for continuous data"]
+    spec.structured_tags = {
+        "plot_type": ["scatter"],
+        "data_type": ["numeric"],
+        "domain": ["statistics"],
+        "features": ["basic"],
+    }
+    spec.issue = 42
+    spec.suggested = "contributor"
+    spec.created = None
+    spec.updated = None
+    spec.implementations = [mock_impl]
+
+    return spec
+
+
+@pytest.mark.asyncio
+async def test_list_specs(mock_db_context, mock_spec):
+    """Test list_specs tool."""
+    mock_repo = MagicMock()
+    mock_repo.get_all = AsyncMock(return_value=[mock_spec])
+
+    with patch("pyplots_mcp.server.SpecRepository", return_value=mock_repo):
+        result = await list_specs(limit=10, offset=0)
+
+    assert len(result) == 1
+    assert result[0]["id"] == "scatter-basic"
+    assert result[0]["title"] == "Basic Scatter Plot"
+    assert result[0]["library_count"] == 1
+
+
+@pytest.mark.asyncio
+async def test_list_specs_pagination(mock_db_context):
+    """Test list_specs pagination."""
+    specs = [
+        MagicMock(id=f"spec-{i}", title=f"Spec {i}", description="", structured_tags={}, implementations=[])
+        for i in range(5)
+    ]
+
+    mock_repo = MagicMock()
+    mock_repo.get_all = AsyncMock(return_value=specs)
+
+    with patch("pyplots_mcp.server.SpecRepository", return_value=mock_repo):
+        result = await list_specs(limit=2, offset=1)
+
+    assert len(result) == 2
+    assert result[0]["id"] == "spec-1"
+    assert result[1]["id"] == "spec-2"
+
+
+@pytest.mark.asyncio
+async def test_search_specs_by_tags_spec_level(mock_db_context, mock_spec):
+    """Test search_specs_by_tags with spec-level filters."""
+    mock_repo = MagicMock()
+    mock_repo.search_by_tags = AsyncMock(return_value=[mock_spec])
+
+    with patch("pyplots_mcp.server.SpecRepository", return_value=mock_repo):
+        result = await search_specs_by_tags(plot_type=["scatter"], domain=["statistics"])
+
+    mock_repo.search_by_tags.assert_called_once_with({"plot_type": ["scatter"], "domain": ["statistics"]})
+    assert len(result) == 1
+    assert result[0]["id"] == "scatter-basic"
+
+
+@pytest.mark.asyncio
+async def test_search_specs_by_tags_impl_level(mock_db_context, mock_spec):
+    """Test search_specs_by_tags with impl-level filters."""
+    mock_repo = MagicMock()
+    mock_repo.get_all = AsyncMock(return_value=[mock_spec])
+
+    with patch("pyplots_mcp.server.SpecRepository", return_value=mock_repo):
+        result = await search_specs_by_tags(library=["matplotlib"], patterns=["data-generation"])
+
+    assert len(result) == 1
+    assert result[0]["id"] == "scatter-basic"
+
+
+@pytest.mark.asyncio
+async def test_search_specs_by_tags_no_matches(mock_db_context, mock_spec):
+    """Test search_specs_by_tags filtering out non-matching impls."""
+    mock_repo = MagicMock()
+    mock_repo.get_all = AsyncMock(return_value=[mock_spec])
+
+    with patch("pyplots_mcp.server.SpecRepository", return_value=mock_repo):
+        result = await search_specs_by_tags(library=["seaborn"])  # matplotlib impl, not seaborn
+
+    assert len(result) == 0
+
+
+@pytest.mark.asyncio
+async def test_get_spec_detail(mock_db_context, mock_spec):
+    """Test get_spec_detail tool."""
+    mock_repo = MagicMock()
+    mock_repo.get_by_id = AsyncMock(return_value=mock_spec)
+
+    with patch("pyplots_mcp.server.SpecRepository", return_value=mock_repo):
+        result = await get_spec_detail("scatter-basic")
+
+    assert result["id"] == "scatter-basic"
+    assert result["title"] == "Basic Scatter Plot"
+    assert len(result["implementations"]) == 1
+    assert result["implementations"][0]["library_id"] == "matplotlib"
+    assert result["implementations"][0]["code"] == "import matplotlib.pyplot as plt"
+
+
+@pytest.mark.asyncio
+async def test_get_spec_detail_not_found(mock_db_context):
+    """Test get_spec_detail with invalid spec_id."""
+    mock_repo = MagicMock()
+    mock_repo.get_by_id = AsyncMock(return_value=None)
+
+    with patch("pyplots_mcp.server.SpecRepository", return_value=mock_repo):
+        with pytest.raises(ValueError, match="Specification 'invalid' not found"):
+            await get_spec_detail("invalid")
+
+
+@pytest.mark.asyncio
+async def test_get_implementation(mock_db_context, mock_spec):
+    """Test get_implementation tool."""
+    mock_lib = MagicMock()
+    mock_lib.id = "matplotlib"
+    mock_lib.name = "Matplotlib"
+
+    mock_impl = mock_spec.implementations[0]
+
+    mock_spec_repo = MagicMock()
+    mock_spec_repo.get_by_id = AsyncMock(return_value=mock_spec)
+
+    mock_lib_repo = MagicMock()
+    mock_lib_repo.get_by_id = AsyncMock(return_value=mock_lib)
+
+    mock_impl_repo = MagicMock()
+    mock_impl_repo.get_by_spec_and_library = AsyncMock(return_value=mock_impl)
+
+    with (
+        patch("pyplots_mcp.server.SpecRepository", return_value=mock_spec_repo),
+        patch("pyplots_mcp.server.LibraryRepository", return_value=mock_lib_repo),
+        patch("pyplots_mcp.server.ImplRepository", return_value=mock_impl_repo),
+    ):
+        result = await get_implementation("scatter-basic", "matplotlib")
+
+    assert result["library_id"] == "matplotlib"
+    assert result["code"] == "import matplotlib.pyplot as plt"
+    assert result["quality_score"] == 92
+
+
+@pytest.mark.asyncio
+async def test_get_implementation_spec_not_found(mock_db_context):
+    """Test get_implementation with invalid spec_id."""
+    mock_spec_repo = MagicMock()
+    mock_spec_repo.get_by_id = AsyncMock(return_value=None)
+
+    with patch("pyplots_mcp.server.SpecRepository", return_value=mock_spec_repo):
+        with pytest.raises(ValueError, match="Specification 'invalid' not found"):
+            await get_implementation("invalid", "matplotlib")
+
+
+@pytest.mark.asyncio
+async def test_get_implementation_library_not_found(mock_db_context, mock_spec):
+    """Test get_implementation with invalid library."""
+    mock_spec_repo = MagicMock()
+    mock_spec_repo.get_by_id = AsyncMock(return_value=mock_spec)
+
+    mock_lib_repo = MagicMock()
+    mock_lib_repo.get_by_id = AsyncMock(return_value=None)
+    mock_lib_repo.get_all = AsyncMock(return_value=[MagicMock(id="matplotlib")])
+
+    with (
+        patch("pyplots_mcp.server.SpecRepository", return_value=mock_spec_repo),
+        patch("pyplots_mcp.server.LibraryRepository", return_value=mock_lib_repo),
+    ):
+        with pytest.raises(ValueError, match="Library 'invalid' not found"):
+            await get_implementation("scatter-basic", "invalid")
+
+
+@pytest.mark.asyncio
+async def test_get_implementation_not_found(mock_db_context, mock_spec):
+    """Test get_implementation when implementation doesn't exist."""
+    mock_lib = MagicMock()
+    mock_lib.id = "seaborn"
+
+    mock_spec_repo = MagicMock()
+    mock_spec_repo.get_by_id = AsyncMock(return_value=mock_spec)
+
+    mock_lib_repo = MagicMock()
+    mock_lib_repo.get_by_id = AsyncMock(return_value=mock_lib)
+
+    mock_impl_repo = MagicMock()
+    mock_impl_repo.get_by_spec_and_library = AsyncMock(return_value=None)
+
+    with (
+        patch("pyplots_mcp.server.SpecRepository", return_value=mock_spec_repo),
+        patch("pyplots_mcp.server.LibraryRepository", return_value=mock_lib_repo),
+        patch("pyplots_mcp.server.ImplRepository", return_value=mock_impl_repo),
+    ):
+        with pytest.raises(ValueError, match="Implementation for 'scatter-basic' in library 'seaborn' not found"):
+            await get_implementation("scatter-basic", "seaborn")
+
+
+@pytest.mark.asyncio
+async def test_list_libraries(mock_db_context):
+    """Test list_libraries tool."""
+    mock_lib1 = MagicMock()
+    mock_lib1.id = "matplotlib"
+    mock_lib1.name = "Matplotlib"
+    mock_lib1.description = "The classic plotting library"
+
+    mock_lib2 = MagicMock()
+    mock_lib2.id = "seaborn"
+    mock_lib2.name = "Seaborn"
+    mock_lib2.description = "Statistical visualization"
+
+    mock_libs = [mock_lib1, mock_lib2]
+
+    mock_repo = MagicMock()
+    mock_repo.get_all = AsyncMock(return_value=mock_libs)
+
+    with patch("pyplots_mcp.server.LibraryRepository", return_value=mock_repo):
+        result = await list_libraries()
+
+    assert len(result) == 2
+    assert result[0]["id"] == "matplotlib"
+    assert result[0]["name"] == "Matplotlib"
+    assert result[1]["id"] == "seaborn"
+
+
+@pytest.mark.asyncio
+async def test_get_tag_values_spec_level(mock_db_context, mock_spec):
+    """Test get_tag_values for spec-level category."""
+    mock_spec2 = MagicMock()
+    mock_spec2.structured_tags = {"plot_type": ["bar", "histogram"]}
+    mock_spec2.implementations = []
+
+    mock_repo = MagicMock()
+    mock_repo.get_all = AsyncMock(return_value=[mock_spec, mock_spec2])
+
+    with patch("pyplots_mcp.server.SpecRepository", return_value=mock_repo):
+        result = await get_tag_values("plot_type")
+
+    assert sorted(result) == ["bar", "histogram", "scatter"]
+
+
+@pytest.mark.asyncio
+async def test_get_tag_values_impl_level(mock_db_context, mock_spec):
+    """Test get_tag_values for impl-level category."""
+    mock_repo = MagicMock()
+    mock_repo.get_all = AsyncMock(return_value=[mock_spec])
+
+    with patch("pyplots_mcp.server.SpecRepository", return_value=mock_repo):
+        result = await get_tag_values("patterns")
+
+    assert sorted(result) == ["data-generation"]
+
+
+@pytest.mark.asyncio
+async def test_get_tag_values_invalid_category(mock_db_context):
+    """Test get_tag_values with invalid category."""
+    with pytest.raises(ValueError, match="Invalid category 'invalid'"):
+        await get_tag_values("invalid")

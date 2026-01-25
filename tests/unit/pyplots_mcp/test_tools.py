@@ -73,12 +73,7 @@ def mock_spec():
     spec.applications = ["Data analysis", "Correlation studies"]
     spec.data = ["x (numeric)", "y (numeric)"]
     spec.notes = ["Use for continuous data"]
-    spec.tags = {
-        "plot_type": ["scatter"],
-        "data_type": ["numeric"],
-        "domain": ["statistics"],
-        "features": ["basic"],
-    }
+    spec.tags = {"plot_type": ["scatter"], "data_type": ["numeric"], "domain": ["statistics"], "features": ["basic"]}
     spec.issue = 42
     spec.suggested = "contributor"
     spec.created = None
@@ -106,10 +101,7 @@ async def test_list_specs(mock_db_context, mock_spec):
 @pytest.mark.asyncio
 async def test_list_specs_pagination(mock_db_context):
     """Test list_specs pagination."""
-    specs = [
-        MagicMock(id=f"spec-{i}", title=f"Spec {i}", description="", tags={}, impls=[])
-        for i in range(5)
-    ]
+    specs = [MagicMock(id=f"spec-{i}", title=f"Spec {i}", description="", tags={}, impls=[]) for i in range(5)]
 
     mock_repo = MagicMock()
     mock_repo.get_all = AsyncMock(return_value=specs)

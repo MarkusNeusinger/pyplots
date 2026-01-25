@@ -126,7 +126,7 @@ async def add_cache_headers(request: Request, call_next):
 
 
 # Mount MCP server for AI assistant integration
-app.mount("/mcp", mcp_server.streamable_http_app())
+app.mount("/mcp", mcp_server.http_app())
 
 # Register routers
 app.include_router(health_router)

@@ -35,6 +35,7 @@ from api.routers import (  # noqa: E402
     stats_router,
 )
 from core.database import close_db, init_db, is_db_configured  # noqa: E402
+from pyplots_mcp.server import mcp_server  # noqa: E402
 
 
 # Configure logging
@@ -92,6 +93,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["Mcp-Session-Id"],  # MCP session tracking
 )
 
 
@@ -122,6 +124,9 @@ async def add_cache_headers(request: Request, call_next):
 
     return response
 
+
+# Mount MCP server for AI assistant integration
+app.mount("/mcp", mcp_server.http_app())
 
 # Register routers
 app.include_router(health_router)

@@ -18,6 +18,9 @@ dependencies = [
     # Core Framework
     "fastapi>=0.104.0",
     "uvicorn[standard]>=0.24.0",
+    # MCP Server
+    "mcp>=1.0.0",
+    "fastmcp>=0.1.0",
     # Database
     "sqlalchemy[asyncio]>=2.0.0",
     "asyncpg>=0.29.0",
@@ -141,7 +144,7 @@ skip-magic-trailing-comma = true
 [tool.ruff.lint.isort]
 force-single-line = false
 lines-after-imports = 2
-known-first-party = ["api", "core", "automation"]
+known-first-party = ["api", "core", "automation", "pyplots_mcp"]
 split-on-trailing-comma = false
 
 # ===== Pytest Configuration =====
@@ -172,5 +175,5 @@ build-backend = "setuptools.build_meta"
 # ===== Setuptools Configuration =====
 
 [tool.setuptools.packages.find]
-include = ["api*", "core*", "automation*"]
+include = ["api*", "core*", "automation*", "pyplots_mcp*"]
 exclude = ["tests*", "docs*", "app*", "specs*", "rules*", "plots*"]

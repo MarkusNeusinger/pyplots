@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 curve-bias-variance-tradeoff: Bias-Variance Tradeoff Curve
-Library: plotly | Python 3.13
-Quality: pending | Created: 2025-01-26
+Library: plotly 6.5.2 | Python 3.13.11
+Quality: 94/100 | Created: 2026-01-26
 """
 
 import numpy as np

@@ -9,7 +9,7 @@ from typing import Any
 from fastmcp import FastMCP
 
 from api.schemas import ImplementationResponse, SpecDetailResponse, SpecListItem
-from core.database import ImplRepository, LibraryRepository, SpecRepository, get_db_context
+from core.database import ImplRepository, LibraryRepository, SpecRepository, get_db_context, is_db_configured
 
 
 # Initialize FastMCP server
@@ -28,6 +28,9 @@ async def list_specs(limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
     Returns:
         List of spec summaries with id, title, description, tags, and library_count
     """
+    if not is_db_configured():
+        raise ValueError("Database not configured. Check DATABASE_URL or INSTANCE_CONNECTION_NAME.")
+
     async with get_db_context() as db:
         repo = SpecRepository(db)
         specs = await repo.get_all()
@@ -57,6 +60,8 @@ async def search_specs_by_tags(
     dependencies: list[str] | None = None,
     techniques: list[str] | None = None,
     patterns: list[str] | None = None,
+    dataprep: list[str] | None = None,
+    styling: list[str] | None = None,
     limit: int = 100,
 ) -> list[dict[str, Any]]:
     """
@@ -73,6 +78,8 @@ async def search_specs_by_tags(
         - dependencies: External packages used (scipy, sklearn, etc.)
         - techniques: Visualization techniques (colorbar, annotations, etc.)
         - patterns: Code patterns (data-generation, explicit-figure, etc.)
+        - dataprep: Data preparation techniques (normalization, aggregation, etc.)
+        - styling: Visual styling approaches (publication-ready, minimal, etc.)
 
     Args:
         plot_type: Filter by plot type tags
@@ -83,11 +90,16 @@ async def search_specs_by_tags(
         dependencies: Filter by implementation dependencies
         techniques: Filter by visualization techniques
         patterns: Filter by code patterns
+        dataprep: Filter by data preparation techniques
+        styling: Filter by styling approaches
         limit: Maximum number of specs to return (default: 100)
 
     Returns:
         List of matching spec summaries
     """
+    if not is_db_configured():
+        raise ValueError("Database not configured. Check DATABASE_URL or INSTANCE_CONNECTION_NAME.")
+
     async with get_db_context() as db:
         repo = SpecRepository(db)
 
@@ -102,11 +114,14 @@ async def search_specs_by_tags(
         if features:
             filters["features"] = features
 
+        # Flatten filter values into a single tag list for repository search
+        tag_values: list[str] = [tag for tags in filters.values() for tag in tags]
+
         # Search by spec-level tags
-        specs = await repo.search_by_tags(filters) if filters else await repo.get_all()
+        specs = await repo.search_by_tags(tag_values) if tag_values else await repo.get_all()
 
         # Apply impl-level filtering if needed
-        if library or dependencies or techniques or patterns:
+        if library or dependencies or techniques or patterns or dataprep or styling:
             filtered_specs = []
             for spec in specs:
                 # Check if spec has implementations matching impl-level filters
@@ -129,6 +144,10 @@ async def search_specs_by_tags(
                     ):
                         continue
                     if patterns and not any(pat in (impl.impl_tags.get("patterns", []) or []) for pat in patterns):
+                        continue
+                    if dataprep and not any(dp in (impl.impl_tags.get("dataprep", []) or []) for dp in dataprep):
+                        continue
+                    if styling and not any(style in (impl.impl_tags.get("styling", []) or []) for style in styling):
                         continue
 
                     matching_impls.append(impl)
@@ -172,6 +191,9 @@ async def get_spec_detail(spec_id: str) -> dict[str, Any]:
     Raises:
         ValueError: If spec_id not found
     """
+    if not is_db_configured():
+        raise ValueError("Database not configured. Check DATABASE_URL or INSTANCE_CONNECTION_NAME.")
+
     async with get_db_context() as db:
         repo = SpecRepository(db)
         spec = await repo.get_by_id(spec_id)
@@ -246,6 +268,9 @@ async def get_implementation(spec_id: str, library: str) -> dict[str, Any]:
     Raises:
         ValueError: If spec_id or library not found, or implementation doesn't exist
     """
+    if not is_db_configured():
+        raise ValueError("Database not configured. Check DATABASE_URL or INSTANCE_CONNECTION_NAME.")
+
     async with get_db_context() as db:
         spec_repo = SpecRepository(db)
         library_repo = LibraryRepository(db)
@@ -300,6 +325,9 @@ async def list_libraries() -> list[dict[str, Any]]:
     Returns:
         List of libraries with id, name, and description
     """
+    if not is_db_configured():
+        raise ValueError("Database not configured. Check DATABASE_URL or INSTANCE_CONNECTION_NAME.")
+
     async with get_db_context() as db:
         repo = LibraryRepository(db)
         libraries = await repo.get_all()
@@ -347,6 +375,9 @@ async def get_tag_values(category: str) -> list[str]:
 
     if category not in valid_categories:
         raise ValueError(f"Invalid category '{category}'. Valid categories: {', '.join(valid_categories)}")
+
+    if not is_db_configured():
+        raise ValueError("Database not configured. Check DATABASE_URL or INSTANCE_CONNECTION_NAME.")
 
     async with get_db_context() as db:
         repo = SpecRepository(db)

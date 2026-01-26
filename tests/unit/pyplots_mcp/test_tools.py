@@ -39,7 +39,10 @@ def mock_db_context():
         async def __aexit__(self, exc_type, exc_val, exc_tb):
             pass
 
-    with patch("pyplots_mcp.server.get_db_context", return_value=MockContextManager()):
+    with (
+        patch("pyplots_mcp.server.get_db_context", return_value=MockContextManager()),
+        patch("pyplots_mcp.server.is_db_configured", return_value=True),
+    ):
         yield mock_session
 
 
@@ -123,7 +126,9 @@ async def test_search_specs_by_tags_spec_level(mock_db_context, mock_spec):
     with patch("pyplots_mcp.server.SpecRepository", return_value=mock_repo):
         result = await search_specs_by_tags(plot_type=["scatter"], domain=["statistics"])
 
-    mock_repo.search_by_tags.assert_called_once_with({"plot_type": ["scatter"], "domain": ["statistics"]})
+    # Verify repository called with flattened list (order may vary)
+    call_args = mock_repo.search_by_tags.call_args[0][0]
+    assert sorted(call_args) == ["scatter", "statistics"]
     assert len(result) == 1
     assert result[0]["id"] == "scatter-basic"
 
@@ -151,6 +156,23 @@ async def test_search_specs_by_tags_no_matches(mock_db_context, mock_spec):
         result = await search_specs_by_tags(library=["seaborn"])  # matplotlib impl, not seaborn
 
     assert len(result) == 0
+
+
+@pytest.mark.asyncio
+async def test_search_specs_by_tags_dataprep_styling(mock_db_context, mock_spec):
+    """Test search_specs_by_tags with dataprep and styling filters."""
+    mock_repo = MagicMock()
+    mock_repo.get_all = AsyncMock(return_value=[mock_spec])
+
+    with patch("pyplots_mcp.server.SpecRepository", return_value=mock_repo):
+        # Test dataprep filter - should not match (mock_spec has no dataprep tags)
+        result = await search_specs_by_tags(dataprep=["normalization"])
+        assert len(result) == 0
+
+        # Test styling filter - should match (mock_spec has styling: alpha-blending)
+        result = await search_specs_by_tags(styling=["alpha-blending"])
+        assert len(result) == 1
+        assert result[0]["id"] == "scatter-basic"
 
 
 @pytest.mark.asyncio

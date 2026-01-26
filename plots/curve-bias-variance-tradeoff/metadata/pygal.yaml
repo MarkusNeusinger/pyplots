@@ -1,7 +1,7 @@
 library: pygal
 specification_id: curve-bias-variance-tradeoff
 created: '2026-01-26T19:58:47Z'
-updated: '2026-01-26T20:01:30Z'
+updated: '2026-01-26T20:07:38Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21371825972
 issue: 4134
@@ -13,31 +13,32 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/curve-bias-var
 quality_score: 82
 review:
   strengths:
-  - Clean data generation with correct theoretical bias-variance relationships
-  - Good use of pygal custom styling with appropriate font sizes for high-resolution
-    output
-  - Distinct line styles (solid, dashed with different patterns) help differentiate
-    curves
-  - Proper use of XY chart type for continuous curves
-  - Legend correctly identifies optimal complexity point value
+  - Correct mathematical formulation of bias-variance tradeoff curves
+  - Good use of pygal XY chart with distinct line styles (dashed, dotted, solid)
+  - Clean code structure following KISS principles
+  - Appropriate title format and axis labeling
+  - Custom style with good font sizing for the 4800x2700 canvas
   weaknesses:
-  - Optimal point marker (dots_size=20) is not clearly visible on the plot - needs
-    to be more prominent or use different visualization approach
-  - 'Missing formula annotation: Total Error = Bias² + Variance + Irreducible Error
-    (spec requirement)'
-  - Missing shaded regions to indicate underfitting zone (left) and overfitting zone
-    (right) (spec recommendation)
-  - Curves are not labeled directly on the plot as recommended in spec - relies solely
-    on legend
-  image_description: |-
-    The plot displays a bias-variance tradeoff visualization with four curves on a white background. The title "curve-bias-variance-tradeoff · pygal · pyplots.ai" appears at the top in monospace font. The X-axis shows "Model Complexity" ranging from 0.5 to 10, and the Y-axis shows "Prediction Error" ranging from approximately 0 to 4. Four curves are rendered:
-
-    - Bias² (blue dashed line): Decreasing curve starting high (~2.9) at low complexity and asymptotically approaching ~0.5
-    - Variance (yellow line): Increasing curve starting near 0 at low complexity and rising to ~3 at high complexity
-    - Total Error (red line): U-shaped curve showing minimum around complexity ~3.1
-    - Irreducible Error (teal/green solid line): Constant horizontal line at ~0.5
-
-    A legend at the bottom identifies all four curves plus an "Optimal (complexity=3.1)" marker. The curves use dashed line styles for differentiation. Subtle gray grid lines are visible. The optimal point marker is not clearly visible in the plot area (likely too small or obscured).
+  - The formula Total Error = Bias² + Variance + Irreducible Error is not visible
+    in the rendered plot (multiline title may not be fully supported)
+  - Shaded underfitting/overfitting regions are not visible in the output despite
+    being coded
+  - Legend text appears truncated - the descriptive labels are not fully shown
+  - The optimal point vertical line/marker is not clearly visible or distinguishable
+  - The x-axis label shows just Model Complexity without the (Low → High) indicator
+  image_description: 'The plot displays the bias-variance tradeoff with four curves
+    on a white background. The title "curve-bias-variance-tradeoff · pygal · pyplots.ai"
+    is at the top. The X-axis shows "Model Complexity" ranging from 1 to 10, and the
+    Y-axis shows "Prediction Error" ranging from 0 to 4. The curves are: (1) Bias²
+    in blue dashed line, decreasing from ~2.9 at low complexity to near 0.5 at high
+    complexity; (2) Variance in yellow/gold, increasing from near 0 to ~3 at high
+    complexity; (3) Total Error in red solid line showing the characteristic U-shape
+    with minimum around complexity 3; (4) Irreducible Error as a horizontal teal/green
+    line at ~0.5. The legend at the bottom shows Bias², Variance, Total Error, Irreducible
+    Error, and Optimal (complexity=3.1). Grid lines are visible. The formula from
+    the spec is NOT visible in the rendered output (it was intended in the title but
+    got truncated or not displayed). The shaded regions for underfitting/overfitting
+    zones are NOT visible in the plot despite being in the code.'
   criteria_checklist:
     visual_quality:
       score: 32
@@ -48,8 +49,8 @@ review:
         score: 8
         max: 10
         passed: true
-        comment: Title and axis labels readable, but tick labels could be slightly
-          larger for optimal viewing at full resolution
+        comment: Title and axis labels readable but could be larger; legend text is
+          smaller
       - id: VQ-02
         name: No Overlap
         score: 8
@@ -58,38 +59,39 @@ review:
         comment: No overlapping text elements
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Curves are visible with distinct colors, but optimal point marker
-          is essentially invisible (too small or color blends)
+        comment: Lines visible with good stroke width; curves distinguishable with
+          different line styles
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 5
         passed: true
-        comment: Colors are reasonably distinguishable (blue, yellow, red, teal) but
-          could be improved for colorblind users
+        comment: Good color choices (blue, yellow, red, teal); some colorblind users
+          may struggle with red/green
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: Good canvas utilization, plot area fills majority of space
+        comment: Plot area well utilized but formula annotation missing from visual
+          output
       - id: VQ-06
         name: Axis Labels
         score: 1
         max: 2
         passed: true
-        comment: Descriptive labels but no units specified
+        comment: Descriptive labels but lacks (Low → High) descriptor
       - id: VQ-07
         name: Grid & Legend
         score: 1
         max: 2
         passed: true
-        comment: Grid is subtle, legend at bottom is functional but small
+        comment: Grid is subtle; legend at bottom but truncated labels
     spec_compliance:
-      score: 20
+      score: 18
       max: 25
       items:
       - id: SC-01
@@ -97,62 +99,60 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct XY line chart type for curves
+        comment: Correct XY line chart showing multiple curves
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: X/Y correctly mapped (complexity vs error components)
+        comment: X = complexity, Y = error values correctly mapped
       - id: SC-03
         name: Required Features
         score: 2
         max: 5
         passed: false
-        comment: 'Missing: no formula annotation, no shaded underfitting/overfitting
-          regions, optimal point marker barely visible, curves not labeled directly
-          on plot'
+        comment: 'Missing: formula annotation not visible; shaded regions not visible;
+          optimal point not clearly visible'
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axes
+        comment: Full range shown appropriately
       - id: SC-05
         name: Legend Accuracy
-        score: 2
-        max: 2
-        passed: true
-        comment: Legend labels match curve data
-      - id: SC-06
-        name: Title Format
         score: 0
         max: 2
         passed: false
-        comment: Title uses correct format but was initially scored incorrectly
+        comment: Legend shows generic truncated labels without descriptive text
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: {spec-id} · {library} · pyplots.ai'
     data_quality:
-      score: 18
+      score: 20
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 8
         max: 8
         passed: true
-        comment: Shows all four components with correct mathematical relationships,
-          but optimal point not clearly marked
+        comment: Shows all four components with correct mathematical relationships
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Theoretical ML context, appropriate for educational purposes
+        comment: Theoretical ML education plot with appropriate formulations
       - id: DQ-03
         name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Values are sensible for theoretical error decomposition
+        comment: Values sensible for demonstrating the concept
     code_quality:
       score: 9
       max: 10
@@ -162,31 +162,31 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Simple imports → data → plot → save structure, no classes/functions
+        comment: 'Linear script: imports → data → chart config → save'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) set
+        comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports (numpy, pygal, Style)
+        comment: All imports are used
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Current pygal API used
+        comment: Current pygal API
       - id: CQ-05
         name: Output Correct
         score: 0
         max: 1
         passed: false
-        comment: Saves both plot.html and plot.png which is fine
+        comment: Saves both plot.html and plot.png
     library_features:
       score: 3
       max: 5
@@ -196,14 +196,16 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Uses pygal XY chart, custom Style, multiple stroke styles (dasharray),
-          but could leverage more pygal-specific features
-  verdict: REJECTED
+        comment: Uses XY chart, custom Style, line styling with dasharray; shaded
+          fills and annotations did not render as intended
+  verdict: APPROVED
 impl_tags:
   dependencies: []
-  techniques: []
+  techniques:
+  - annotations
   patterns:
   - data-generation
   dataprep: []
   styling:
   - grid-styling
+  - alpha-blending

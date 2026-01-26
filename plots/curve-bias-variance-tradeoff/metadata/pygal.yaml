@@ -1,7 +1,7 @@
 library: pygal
 specification_id: curve-bias-variance-tradeoff
 created: '2026-01-26T19:58:47Z'
-updated: '2026-01-26T20:13:52Z'
+updated: '2026-01-26T20:20:52Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21371825972
 issue: 4134
@@ -10,87 +10,90 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/curve-bias-variance-tradeoff/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/curve-bias-variance-tradeoff/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/curve-bias-variance-tradeoff/pygal/plot.html
-quality_score: 85
+quality_score: 88
 review:
   strengths:
-  - Clear visualization of the fundamental ML concept with all four error components
-  - Effective use of distinct line styles (dashed, dotted, solid) to differentiate
-    curves
-  - Optimal complexity point clearly marked with a prominent dot
-  - Y-axis title cleverly includes the formula Total = Bias² + Variance + Irreducible
-  - Good color choices that are mostly distinguishable
-  - Clean, readable code following KISS principles
+  - Clean implementation showing all 4 required curves with distinct visual styles
+    (solid/dashed lines)
+  - Optimal point clearly marked with large dot and descriptive label
+  - Formula embedded in Y-axis label per spec requirement
+  - Zone indicators provide visual separation between underfitting/overfitting regions
+  - Good use of pygal XY chart type with custom styling
+  - Legend labels include helpful directional arrows (decreasing, increasing)
   weaknesses:
-  - Missing shaded regions for underfitting (left of optimal) and overfitting (right
-    of optimal) zones as suggested in spec
-  - No direct on-plot annotations labeling each curve (spec requests annotations to
-    label each curve directly on the plot)
-  - Irreducible error line is less prominent than other curves due to different dash
-    pattern
-  image_description: 'The plot displays the bias-variance tradeoff with four distinct
-    curves on a white background. The title "curve-bias-variance-tradeoff · pygal
-    · pyplots.ai" appears at the top. The X-axis is labeled "Model Complexity (Low
+  - Shaded regions requested in spec are implemented as thin line indicators rather
+    than actual shaded areas
+  - Spec requests annotations to label each curve directly on the plot but implementation
+    uses legend instead
+  - Legend at bottom with 7 items is somewhat crowded and text is relatively small
+  image_description: 'The plot displays the bias-variance tradeoff visualization with
+    4 distinct curves on a white background. The title "curve-bias-variance-tradeoff
+    · pygal · pyplots.ai" is at the top. The X-axis is labeled "Model Complexity (Low
     → High)" ranging from 0 to 11, and the Y-axis is labeled "Prediction Error | Total
-    = Bias² + Variance + Irreducible" ranging from 0 to 4.5. Four curves are shown
-    with distinct colors and line styles: Bias² (blue dashed, decreasing from ~2.9
-    to ~0.5), Variance (orange dashed, increasing from ~0 to ~3.2), Total Error (red
-    solid, U-shaped with minimum around x=3.1), and Irreducible Error (teal dotted,
-    constant at 0.5). A purple dot marks the optimal point at approximately (3.1,
-    2.2). The legend is positioned at the bottom with colored squares for each series.
-    The curves are smooth with 100 data points, and the distinct dash patterns help
-    differentiate each curve clearly.'
+    = Bias² + Variance + Irreducible" ranging from 0 to 4. The curves shown are: (1)
+    Bias² in red dashed line - decreasing from ~3.4 to ~0.4 as complexity increases,
+    (2) Variance in green dashed line - increasing from near 0 to ~3.2, (3) Total
+    Error in purple solid line - showing characteristic U-shape with minimum around
+    x=3.1, (4) Irreducible Error in teal/cyan dashed line - constant at 0.5. A dark
+    red dot marks the optimal point at approximately (3.1, 2.2). Two zone indicators
+    appear at the bottom: blue line for "Underfitting Zone" on the left and orange
+    line for "Overfitting Zone" on the right. A legend at the bottom shows all 7 series
+    with clear labels.'
   criteria_checklist:
     visual_quality:
-      score: 33
+      score: 35
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 9
         max: 10
         passed: true
-        comment: All text readable; title, axis labels, and legend are clear. Font
-          sizes are adequate but could be slightly larger for the tick marks.
+        comment: All text readable at full size. Title, axis labels, and legend are
+          clear. Slight deduction for Y-axis label being somewhat long.
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping text or visual elements. Clean separation between
+          curves and legend.
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 8
         max: 8
         passed: true
-        comment: Lines are well-visible with stroke width 6-8, though the irreducible
-          error line (teal dotted) is thinner than others
+        comment: Curves are well-sized with appropriate stroke widths. Optimal point
+          marker is clearly visible with good size.
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Colors are distinguishable (blue, orange, red, teal), but red-green
-          colorblind users may have some difficulty distinguishing teal from others
+        comment: 'Good color choices: red, green, purple, teal are distinguishable.
+          Different line styles aid differentiation.'
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: Good use of canvas space; legend at bottom is well-placed
+        comment: Legend at bottom takes significant space. Zone indicators at y=0.2
+          are subtle.
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with the formula in Y-axis title
+        comment: Descriptive axis labels with formula embedded in Y-axis title.
       - id: VQ-07
         name: Grid & Legend
-        score: 1
+        score: 0
         max: 2
-        passed: true
-        comment: Grid is subtle, legend is clear but colored squares are small
+        passed: false
+        comment: Legend text is quite small relative to image size and has visual
+          clutter with 7 items.
     spec_compliance:
-      score: 21
+      score: 23
       max: 25
       items:
       - id: SC-01
@@ -98,64 +101,65 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct XY line chart for theoretical curves
+        comment: Correct XY line chart showing theoretical curves.
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: X is complexity, Y is error values correctly mapped
+        comment: X-axis correctly shows model complexity, Y-axis shows error values.
       - id: SC-03
         name: Required Features
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: 'Shows 4 curves with optimal point marker, but missing: shaded underfitting/overfitting
-          zones, direct on-plot annotations for curves'
+        passed: true
+        comment: 'Has all 4 curves, optimal point marker, zone indicators, formula.
+          Missing: shaded regions, direct curve annotations.'
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data visible within the range
+        comment: Axes show all data appropriately.
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Legend labels match the data series accurately
+        comment: Legend labels correctly describe each series with helpful directional
+          arrows.
       - id: SC-06
         name: Title Format
-        score: 0
+        score: 1
         max: 2
-        passed: false
-        comment: Title uses middot separators correctly
+        passed: true
+        comment: Correct format but could use more descriptive title.
     data_quality:
       score: 18
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 8
         max: 8
         passed: true
-        comment: Shows all 4 components of bias-variance tradeoff; the U-shape of
-          total error is clearly visible, optimal point marked
+        comment: 'Shows all aspects: decreasing bias, increasing variance, U-shaped
+          total error, constant irreducible error, optimal point.'
       - id: DQ-02
         name: Realistic Context
-        score: 7
+        score: 5
         max: 7
         passed: true
-        comment: ML education context with theoretical curves; appropriate for teaching
-          the concept
+        comment: Theoretical ML education context is appropriate and neutral. Values
+          are reasonable but generic.
       - id: DQ-03
         name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Values are sensible for theoretical error decomposition
+        comment: Values in sensible range (0-4 for error, complexity 0.5-10).
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -163,31 +167,31 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear script with imports → data → plot → save
+        comment: 'Linear structure: imports, data, chart, save. No functions or classes.'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: Uses np.random.seed(42) for reproducibility.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only numpy, pygal, and Style imported
+        comment: 'Only necessary imports: numpy, pygal, Style.'
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Uses current pygal API
+        comment: Uses current pygal API.
       - id: CQ-05
         name: Output Correct
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Saves as plot.png
+        passed: false
+        comment: Saves to plot.png correctly but generates SVG internally.
     library_features:
       score: 3
       max: 5
@@ -197,14 +201,16 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Uses XY chart, custom Style, stroke_style with dasharray patterns.
-          Could use more pygal-specific features like tooltips or value labels.
+        comment: Uses XY chart, custom Style, stroke_style customization, legend_at_bottom,
+          tooltip configuration. Could leverage more pygal-specific features.
   verdict: APPROVED
 impl_tags:
   dependencies: []
-  techniques: []
+  techniques:
+  - annotations
   patterns:
   - data-generation
   dataprep: []
   styling:
   - grid-styling
+  - alpha-blending

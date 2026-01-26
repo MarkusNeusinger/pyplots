@@ -1,0 +1,30 @@
+# Specification-level metadata for curve-bias-variance-tradeoff
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: curve-bias-variance-tradeoff
+title: Bias-Variance Tradeoff Curve
+
+# Specification tracking
+created: 2026-01-25T22:32:37Z
+updated: null
+issue: 4134
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - line
+    - curve
+  data_type:
+    - numeric
+    - continuous
+  domain:
+    - machine-learning
+    - statistics
+    - education
+  features:
+    - theoretical
+    - annotated
+    - multi
+    - comparison

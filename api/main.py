@@ -43,6 +43,10 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(level
 logger = logging.getLogger(__name__)
 
 
+# Create MCP HTTP app (needed for lifespan integration)
+mcp_http_app = mcp_server.http_app(path="/mcp")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Manage application lifecycle."""
@@ -56,7 +60,10 @@ async def lifespan(app: FastAPI):
         except Exception as e:
             logger.error(f"Failed to initialize database: {e}")
 
-    yield
+    # Initialize MCP server lifespan (required for session management)
+    async with mcp_http_app.lifespan(app):
+        logger.info("MCP server initialized")
+        yield
 
     # Cleanup database connection
     logger.info("Shutting down pyplots API...")
@@ -126,7 +133,8 @@ async def add_cache_headers(request: Request, call_next):
 
 
 # Mount MCP server for AI assistant integration
-app.mount("/mcp", mcp_server.http_app())
+# Note: mcp_http_app is created earlier with lifespan integration
+app.mount("/mcp", mcp_http_app)
 
 # Register routers
 app.include_router(health_router)

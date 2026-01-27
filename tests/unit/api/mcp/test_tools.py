@@ -10,12 +10,12 @@ import pytest
 
 # Import the tool functions from the module
 # Note: These are FunctionTool objects, we need to access .fn to get the actual callable
-from pyplots_mcp.server import get_implementation as get_implementation_tool
-from pyplots_mcp.server import get_spec_detail as get_spec_detail_tool
-from pyplots_mcp.server import get_tag_values as get_tag_values_tool
-from pyplots_mcp.server import list_libraries as list_libraries_tool
-from pyplots_mcp.server import list_specs as list_specs_tool
-from pyplots_mcp.server import search_specs_by_tags as search_specs_by_tags_tool
+from api.mcp.server import get_implementation as get_implementation_tool
+from api.mcp.server import get_spec_detail as get_spec_detail_tool
+from api.mcp.server import get_tag_values as get_tag_values_tool
+from api.mcp.server import list_libraries as list_libraries_tool
+from api.mcp.server import list_specs as list_specs_tool
+from api.mcp.server import search_specs_by_tags as search_specs_by_tags_tool
 
 
 # Extract the actual functions from the FunctionTool wrappers
@@ -40,8 +40,8 @@ def mock_db_context():
             pass
 
     with (
-        patch("pyplots_mcp.server.get_db_context", return_value=MockContextManager()),
-        patch("pyplots_mcp.server.is_db_configured", return_value=True),
+        patch("api.mcp.server.get_db_context", return_value=MockContextManager()),
+        patch("api.mcp.server.is_db_configured", return_value=True),
     ):
         yield mock_session
 
@@ -92,7 +92,7 @@ async def test_list_specs(mock_db_context, mock_spec):
     mock_repo = MagicMock()
     mock_repo.get_all = AsyncMock(return_value=[mock_spec])
 
-    with patch("pyplots_mcp.server.SpecRepository", return_value=mock_repo):
+    with patch("api.mcp.server.SpecRepository", return_value=mock_repo):
         result = await list_specs(limit=10, offset=0)
 
     assert len(result) == 1
@@ -109,7 +109,7 @@ async def test_list_specs_pagination(mock_db_context):
     mock_repo = MagicMock()
     mock_repo.get_all = AsyncMock(return_value=specs)
 
-    with patch("pyplots_mcp.server.SpecRepository", return_value=mock_repo):
+    with patch("api.mcp.server.SpecRepository", return_value=mock_repo):
         result = await list_specs(limit=2, offset=1)
 
     assert len(result) == 2
@@ -123,7 +123,7 @@ async def test_search_specs_by_tags_spec_level(mock_db_context, mock_spec):
     mock_repo = MagicMock()
     mock_repo.search_by_tags = AsyncMock(return_value=[mock_spec])
 
-    with patch("pyplots_mcp.server.SpecRepository", return_value=mock_repo):
+    with patch("api.mcp.server.SpecRepository", return_value=mock_repo):
         result = await search_specs_by_tags(plot_type=["scatter"], domain=["statistics"])
 
     # Verify repository called with flattened list (order may vary)
@@ -139,7 +139,7 @@ async def test_search_specs_by_tags_impl_level(mock_db_context, mock_spec):
     mock_repo = MagicMock()
     mock_repo.get_all = AsyncMock(return_value=[mock_spec])
 
-    with patch("pyplots_mcp.server.SpecRepository", return_value=mock_repo):
+    with patch("api.mcp.server.SpecRepository", return_value=mock_repo):
         result = await search_specs_by_tags(library=["matplotlib"], patterns=["data-generation"])
 
     assert len(result) == 1
@@ -152,7 +152,7 @@ async def test_search_specs_by_tags_no_matches(mock_db_context, mock_spec):
     mock_repo = MagicMock()
     mock_repo.get_all = AsyncMock(return_value=[mock_spec])
 
-    with patch("pyplots_mcp.server.SpecRepository", return_value=mock_repo):
+    with patch("api.mcp.server.SpecRepository", return_value=mock_repo):
         result = await search_specs_by_tags(library=["seaborn"])  # matplotlib impl, not seaborn
 
     assert len(result) == 0
@@ -164,7 +164,7 @@ async def test_search_specs_by_tags_dataprep_styling(mock_db_context, mock_spec)
     mock_repo = MagicMock()
     mock_repo.get_all = AsyncMock(return_value=[mock_spec])
 
-    with patch("pyplots_mcp.server.SpecRepository", return_value=mock_repo):
+    with patch("api.mcp.server.SpecRepository", return_value=mock_repo):
         # Test dataprep filter - should not match (mock_spec has no dataprep tags)
         result = await search_specs_by_tags(dataprep=["normalization"])
         assert len(result) == 0
@@ -181,7 +181,7 @@ async def test_get_spec_detail(mock_db_context, mock_spec):
     mock_repo = MagicMock()
     mock_repo.get_by_id = AsyncMock(return_value=mock_spec)
 
-    with patch("pyplots_mcp.server.SpecRepository", return_value=mock_repo):
+    with patch("api.mcp.server.SpecRepository", return_value=mock_repo):
         result = await get_spec_detail("scatter-basic")
 
     assert result["id"] == "scatter-basic"
@@ -197,7 +197,7 @@ async def test_get_spec_detail_not_found(mock_db_context):
     mock_repo = MagicMock()
     mock_repo.get_by_id = AsyncMock(return_value=None)
 
-    with patch("pyplots_mcp.server.SpecRepository", return_value=mock_repo):
+    with patch("api.mcp.server.SpecRepository", return_value=mock_repo):
         with pytest.raises(ValueError, match="Specification 'invalid' not found"):
             await get_spec_detail("invalid")
 
@@ -221,9 +221,9 @@ async def test_get_implementation(mock_db_context, mock_spec):
     mock_impl_repo.get_by_spec_and_library = AsyncMock(return_value=mock_impl)
 
     with (
-        patch("pyplots_mcp.server.SpecRepository", return_value=mock_spec_repo),
-        patch("pyplots_mcp.server.LibraryRepository", return_value=mock_lib_repo),
-        patch("pyplots_mcp.server.ImplRepository", return_value=mock_impl_repo),
+        patch("api.mcp.server.SpecRepository", return_value=mock_spec_repo),
+        patch("api.mcp.server.LibraryRepository", return_value=mock_lib_repo),
+        patch("api.mcp.server.ImplRepository", return_value=mock_impl_repo),
     ):
         result = await get_implementation("scatter-basic", "matplotlib")
 
@@ -238,7 +238,7 @@ async def test_get_implementation_spec_not_found(mock_db_context):
     mock_spec_repo = MagicMock()
     mock_spec_repo.get_by_id = AsyncMock(return_value=None)
 
-    with patch("pyplots_mcp.server.SpecRepository", return_value=mock_spec_repo):
+    with patch("api.mcp.server.SpecRepository", return_value=mock_spec_repo):
         with pytest.raises(ValueError, match="Specification 'invalid' not found"):
             await get_implementation("invalid", "matplotlib")
 
@@ -254,8 +254,8 @@ async def test_get_implementation_library_not_found(mock_db_context, mock_spec):
     mock_lib_repo.get_all = AsyncMock(return_value=[MagicMock(id="matplotlib")])
 
     with (
-        patch("pyplots_mcp.server.SpecRepository", return_value=mock_spec_repo),
-        patch("pyplots_mcp.server.LibraryRepository", return_value=mock_lib_repo),
+        patch("api.mcp.server.SpecRepository", return_value=mock_spec_repo),
+        patch("api.mcp.server.LibraryRepository", return_value=mock_lib_repo),
     ):
         with pytest.raises(ValueError, match="Library 'invalid' not found"):
             await get_implementation("scatter-basic", "invalid")
@@ -277,9 +277,9 @@ async def test_get_implementation_not_found(mock_db_context, mock_spec):
     mock_impl_repo.get_by_spec_and_library = AsyncMock(return_value=None)
 
     with (
-        patch("pyplots_mcp.server.SpecRepository", return_value=mock_spec_repo),
-        patch("pyplots_mcp.server.LibraryRepository", return_value=mock_lib_repo),
-        patch("pyplots_mcp.server.ImplRepository", return_value=mock_impl_repo),
+        patch("api.mcp.server.SpecRepository", return_value=mock_spec_repo),
+        patch("api.mcp.server.LibraryRepository", return_value=mock_lib_repo),
+        patch("api.mcp.server.ImplRepository", return_value=mock_impl_repo),
     ):
         with pytest.raises(ValueError, match="Implementation for 'scatter-basic' in library 'seaborn' not found"):
             await get_implementation("scatter-basic", "seaborn")
@@ -303,7 +303,7 @@ async def test_list_libraries(mock_db_context):
     mock_repo = MagicMock()
     mock_repo.get_all = AsyncMock(return_value=mock_libs)
 
-    with patch("pyplots_mcp.server.LibraryRepository", return_value=mock_repo):
+    with patch("api.mcp.server.LibraryRepository", return_value=mock_repo):
         result = await list_libraries()
 
     assert len(result) == 2
@@ -322,7 +322,7 @@ async def test_get_tag_values_spec_level(mock_db_context, mock_spec):
     mock_repo = MagicMock()
     mock_repo.get_all = AsyncMock(return_value=[mock_spec, mock_spec2])
 
-    with patch("pyplots_mcp.server.SpecRepository", return_value=mock_repo):
+    with patch("api.mcp.server.SpecRepository", return_value=mock_repo):
         result = await get_tag_values("plot_type")
 
     assert sorted(result) == ["bar", "histogram", "scatter"]
@@ -334,7 +334,7 @@ async def test_get_tag_values_impl_level(mock_db_context, mock_spec):
     mock_repo = MagicMock()
     mock_repo.get_all = AsyncMock(return_value=[mock_spec])
 
-    with patch("pyplots_mcp.server.SpecRepository", return_value=mock_repo):
+    with patch("api.mcp.server.SpecRepository", return_value=mock_repo):
         result = await get_tag_values("patterns")
 
     assert sorted(result) == ["data-generation"]

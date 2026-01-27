@@ -144,7 +144,7 @@ skip-magic-trailing-comma = true
 [tool.ruff.lint.isort]
 force-single-line = false
 lines-after-imports = 2
-known-first-party = ["api", "core", "automation", "pyplots_mcp"]
+known-first-party = ["api", "core", "automation"]
 split-on-trailing-comma = false
 
 # ===== Pytest Configuration =====
@@ -175,5 +175,5 @@ build-backend = "setuptools.build_meta"
 # ===== Setuptools Configuration =====
 
 [tool.setuptools.packages.find]
-include = ["api*", "core*", "automation*", "pyplots_mcp*"]
+include = ["api*", "core*", "automation*"]
 exclude = ["tests*", "docs*", "app*", "specs*", "rules*", "plots*"]

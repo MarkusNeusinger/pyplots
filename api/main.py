@@ -22,6 +22,7 @@ from api.exceptions import (  # noqa: E402
     http_exception_handler,
     pyplots_exception_handler,
 )
+from api.mcp.server import mcp_server  # noqa: E402
 from api.routers import (  # noqa: E402
     debug_router,
     download_router,
@@ -35,7 +36,6 @@ from api.routers import (  # noqa: E402
     stats_router,
 )
 from core.database import close_db, init_db, is_db_configured  # noqa: E402
-from pyplots_mcp.server import mcp_server  # noqa: E402
 
 
 # Configure logging

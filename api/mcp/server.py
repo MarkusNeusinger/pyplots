@@ -12,6 +12,9 @@ from api.schemas import ImplementationResponse, SpecDetailResponse, SpecListItem
 from core.database import ImplRepository, LibraryRepository, SpecRepository, get_db_context, is_db_configured
 
 
+# Website URL for linking to pyplots.ai
+PYPLOTS_WEBSITE_URL = "https://pyplots.ai"
+
 # Initialize FastMCP server
 mcp_server = FastMCP("pyplots")
 
@@ -45,7 +48,7 @@ async def list_specs(limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
             item = SpecListItem(
                 id=spec.id, title=spec.title, description=spec.description, tags=spec.tags, library_count=impl_count
             )
-            result.append(item.model_dump())
+            result.append({**item.model_dump(), "website_url": f"{PYPLOTS_WEBSITE_URL}/{spec.id}"})
 
         return result
 
@@ -168,7 +171,7 @@ async def search_specs_by_tags(
             item = SpecListItem(
                 id=spec.id, title=spec.title, description=spec.description, tags=spec.tags, library_count=impl_count
             )
-            result.append(item.model_dump())
+            result.append({**item.model_dump(), "website_url": f"{PYPLOTS_WEBSITE_URL}/{spec.id}"})
 
         return result
 
@@ -226,7 +229,9 @@ async def get_spec_detail(spec_id: str) -> dict[str, Any]:
                 review_verdict=impl.review_verdict,
                 impl_tags=impl.impl_tags,
             )
-            implementations.append(impl_response)
+            implementations.append(
+                {**impl_response.model_dump(), "website_url": f"{PYPLOTS_WEBSITE_URL}/{spec_id}/{impl.library.id}"}
+            )
 
         # Build full spec response
         response = SpecDetailResponse(
@@ -244,7 +249,7 @@ async def get_spec_detail(spec_id: str) -> dict[str, Any]:
             implementations=implementations,
         )
 
-        return response.model_dump()
+        return {**response.model_dump(), "website_url": f"{PYPLOTS_WEBSITE_URL}/{spec_id}"}
 
 
 @mcp_server.tool()
@@ -314,7 +319,7 @@ async def get_implementation(spec_id: str, library: str) -> dict[str, Any]:
             impl_tags=impl.impl_tags,
         )
 
-        return response.model_dump()
+        return {**response.model_dump(), "website_url": f"{PYPLOTS_WEBSITE_URL}/{spec_id}/{library}"}
 
 
 @mcp_server.tool()

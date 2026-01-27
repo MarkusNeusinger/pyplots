@@ -4,16 +4,65 @@ FastMCP server for pyplots.
 Provides tools for AI assistants to search plot specifications and fetch implementation code.
 """
 
+import os
 from typing import Any
 
 from fastmcp import FastMCP
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.pool import NullPool
 
 from api.schemas import ImplementationResponse, SpecDetailResponse, SpecListItem
-from core.database import ImplRepository, LibraryRepository, SpecRepository, get_db_context, is_db_configured
+from core.database import ImplRepository, LibraryRepository, SpecRepository, is_db_configured
 
 
 # Website URL for linking to pyplots.ai
 PYPLOTS_WEBSITE_URL = "https://pyplots.ai"
+
+# MCP-specific database engine (created lazily)
+# This is separate from FastAPI's engine to avoid greenlet context issues
+_mcp_engine = None
+_mcp_session_factory = None
+
+
+def _get_mcp_engine():
+    """Create a dedicated engine for MCP handlers."""
+    global _mcp_engine, _mcp_session_factory
+
+    if _mcp_engine is not None:
+        return _mcp_engine
+
+    database_url = os.getenv("DATABASE_URL", "")
+    if not database_url:
+        raise ValueError("DATABASE_URL not configured")
+
+    # Ensure async driver
+    if database_url.startswith("postgresql://"):
+        database_url = database_url.replace("postgresql://", "postgresql+asyncpg://")
+    elif database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql+asyncpg://")
+
+    # Use NullPool for MCP to avoid connection state issues across requests
+    _mcp_engine = create_async_engine(database_url, poolclass=NullPool)
+    _mcp_session_factory = async_sessionmaker(_mcp_engine, class_=AsyncSession, expire_on_commit=False)
+
+    return _mcp_engine
+
+
+async def get_mcp_db_session() -> AsyncSession:
+    """
+    Get database session for MCP handlers.
+
+    Uses a dedicated engine to avoid greenlet context issues
+    that occur when Streamable HTTP transport runs in a different
+    async context than FastAPI's main event loop.
+    """
+    _get_mcp_engine()  # Ensure engine is created
+
+    if _mcp_session_factory is None:
+        raise ValueError("Database not configured. Check DATABASE_URL.")
+
+    return _mcp_session_factory()
+
 
 # Initialize FastMCP server
 mcp_server = FastMCP("pyplots")
@@ -34,8 +83,9 @@ async def list_specs(limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
     if not is_db_configured():
         raise ValueError("Database not configured. Check DATABASE_URL or INSTANCE_CONNECTION_NAME.")
 
-    async with get_db_context() as db:
-        repo = SpecRepository(db)
+    session = await get_mcp_db_session()
+    try:
+        repo = SpecRepository(session)
         specs = await repo.get_all()
 
         # Apply pagination
@@ -51,6 +101,8 @@ async def list_specs(limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
             result.append({**item.model_dump(), "website_url": f"{PYPLOTS_WEBSITE_URL}/{spec.id}"})
 
         return result
+    finally:
+        await session.close()
 
 
 @mcp_server.tool()
@@ -103,8 +155,9 @@ async def search_specs_by_tags(
     if not is_db_configured():
         raise ValueError("Database not configured. Check DATABASE_URL or INSTANCE_CONNECTION_NAME.")
 
-    async with get_db_context() as db:
-        repo = SpecRepository(db)
+    session = await get_mcp_db_session()
+    try:
+        repo = SpecRepository(session)
 
         # Build filter dict (spec-level tags)
         filters: dict[str, list[str]] = {}
@@ -174,6 +227,8 @@ async def search_specs_by_tags(
             result.append({**item.model_dump(), "website_url": f"{PYPLOTS_WEBSITE_URL}/{spec.id}"})
 
         return result
+    finally:
+        await session.close()
 
 
 @mcp_server.tool()
@@ -197,8 +252,9 @@ async def get_spec_detail(spec_id: str) -> dict[str, Any]:
     if not is_db_configured():
         raise ValueError("Database not configured. Check DATABASE_URL or INSTANCE_CONNECTION_NAME.")
 
-    async with get_db_context() as db:
-        repo = SpecRepository(db)
+    session = await get_mcp_db_session()
+    try:
+        repo = SpecRepository(session)
         spec = await repo.get_by_id(spec_id)
 
         if spec is None:
@@ -250,6 +306,8 @@ async def get_spec_detail(spec_id: str) -> dict[str, Any]:
         )
 
         return {**response.model_dump(), "website_url": f"{PYPLOTS_WEBSITE_URL}/{spec_id}"}
+    finally:
+        await session.close()
 
 
 @mcp_server.tool()
@@ -276,10 +334,11 @@ async def get_implementation(spec_id: str, library: str) -> dict[str, Any]:
     if not is_db_configured():
         raise ValueError("Database not configured. Check DATABASE_URL or INSTANCE_CONNECTION_NAME.")
 
-    async with get_db_context() as db:
-        spec_repo = SpecRepository(db)
-        library_repo = LibraryRepository(db)
-        impl_repo = ImplRepository(db)
+    session = await get_mcp_db_session()
+    try:
+        spec_repo = SpecRepository(session)
+        library_repo = LibraryRepository(session)
+        impl_repo = ImplRepository(session)
 
         # Validate spec exists
         spec = await spec_repo.get_by_id(spec_id)
@@ -320,6 +379,8 @@ async def get_implementation(spec_id: str, library: str) -> dict[str, Any]:
         )
 
         return {**response.model_dump(), "website_url": f"{PYPLOTS_WEBSITE_URL}/{spec_id}/{library}"}
+    finally:
+        await session.close()
 
 
 @mcp_server.tool()
@@ -333,8 +394,9 @@ async def list_libraries() -> list[dict[str, Any]]:
     if not is_db_configured():
         raise ValueError("Database not configured. Check DATABASE_URL or INSTANCE_CONNECTION_NAME.")
 
-    async with get_db_context() as db:
-        repo = LibraryRepository(db)
+    session = await get_mcp_db_session()
+    try:
+        repo = LibraryRepository(session)
         libraries = await repo.get_all()
 
         result = []
@@ -342,6 +404,8 @@ async def list_libraries() -> list[dict[str, Any]]:
             result.append({"id": lib.id, "name": lib.name, "description": lib.description})
 
         return result
+    finally:
+        await session.close()
 
 
 @mcp_server.tool()
@@ -384,8 +448,9 @@ async def get_tag_values(category: str) -> list[str]:
     if not is_db_configured():
         raise ValueError("Database not configured. Check DATABASE_URL or INSTANCE_CONNECTION_NAME.")
 
-    async with get_db_context() as db:
-        repo = SpecRepository(db)
+    session = await get_mcp_db_session()
+    try:
+        repo = SpecRepository(session)
         specs = await repo.get_all()
 
         # Collect unique tag values
@@ -408,3 +473,5 @@ async def get_tag_values(category: str) -> list[str]:
                             values.update(tag_list)
 
         return sorted(values)
+    finally:
+        await session.close()

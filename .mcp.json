@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "pyplots": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://api.pyplots.ai/sse/"]
+    }
+  }
+}

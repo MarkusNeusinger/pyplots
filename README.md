@@ -77,6 +77,48 @@ See [docs/reference/](docs/reference/) for details.
 
 ---
 
+## MCP Server
+
+pyplots provides an [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) server for AI assistants to search plot specifications and fetch implementation code.
+
+**Available Tools:**
+- `list_specs` - List all plot specifications
+- `search_specs_by_tags` - Search by plot type, domain, features, library
+- `get_spec_detail` - Get full specification with all implementations
+- `get_implementation` - Get code for a specific library
+- `list_libraries` - List supported plotting libraries
+- `get_tag_values` - Get available tag values by category
+
+### Configuration
+
+Add to your MCP client configuration (e.g., Claude Code `.mcp.json`):
+
+**SSE Transport** (recommended, wider compatibility):
+```json
+{
+  "mcpServers": {
+    "pyplots": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://api.pyplots.ai/sse/"]
+    }
+  }
+}
+```
+
+**Streamable HTTP Transport** (modern, bidirectional):
+```json
+{
+  "mcpServers": {
+    "pyplots": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://api.pyplots.ai/mcp/"]
+    }
+  }
+}
+```
+
+---
+
 ## License Notes
 
 Most plotting libraries are fully open source. Note these exceptions:

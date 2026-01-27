@@ -29,18 +29,12 @@ get_tag_values = get_tag_values_tool.fn
 
 @pytest.fixture
 def mock_db_context():
-    """Mock database context manager."""
+    """Mock database session for MCP handlers."""
     mock_session = AsyncMock()
-
-    class MockContextManager:
-        async def __aenter__(self):
-            return mock_session
-
-        async def __aexit__(self, exc_type, exc_val, exc_tb):
-            pass
+    mock_session.close = AsyncMock()
 
     with (
-        patch("api.mcp.server.get_db_context", return_value=MockContextManager()),
+        patch("api.mcp.server.get_mcp_db_session", AsyncMock(return_value=mock_session)),
         patch("api.mcp.server.is_db_configured", return_value=True),
     ):
         yield mock_session

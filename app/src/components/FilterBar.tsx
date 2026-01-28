@@ -116,7 +116,7 @@ export function FilterBar({
     setIsSearchManuallyExpanded(true);
     setDropdownAnchor(searchContainerRef.current);
     setTimeout(() => inputRef.current?.focus(), 0);
-  }, []);
+  }, [inputRef]);
 
   // Collapse when empty and loses focus (only if there are filters)
   const handleSearchBlur = useCallback(() => {
@@ -133,6 +133,7 @@ export function FilterBar({
     setDropdownAnchor(null);
     setSelectedCategory(null);
     setSearchQuery('');
+    setHighlightedIndex(-1);
     setIsSearchManuallyExpanded(false);
   }, []);
 
@@ -140,8 +141,9 @@ export function FilterBar({
   const handleCategorySelect = useCallback((category: FilterCategory) => {
     setSelectedCategory(category);
     setSearchQuery('');
+    setHighlightedIndex(-1);
     setTimeout(() => inputRef.current?.focus(), 50);
-  }, []);
+  }, [inputRef]);
 
   // Select value (add new filter group)
   const handleValueSelect = useCallback(
@@ -153,6 +155,7 @@ export function FilterBar({
       }
       setSelectedCategory(null);
       setSearchQuery('');
+      setHighlightedIndex(-1);
       // Keep expanded and focused for next filter
       setIsSearchManuallyExpanded(true);
       setTimeout(() => {
@@ -160,7 +163,7 @@ export function FilterBar({
         inputRef.current?.focus();
       }, 50);
     },
-    [onAddFilter, onTrackEvent, searchQuery]
+    [onAddFilter, onTrackEvent, searchQuery, inputRef]
   );
 
   // Chip click - open chip menu
@@ -265,11 +268,6 @@ export function FilterBar({
 
   const dropdownItems = getDropdownItems();
 
-  // Reset highlight when dropdown content changes
-  useEffect(() => {
-    setHighlightedIndex(-1);
-  }, [searchQuery, selectedCategory, dropdownAnchor]);
-
   // Handle keyboard navigation
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
@@ -295,7 +293,7 @@ export function FilterBar({
         inputRef.current?.blur();
       }
     },
-    [dropdownItems, highlightedIndex, handleCategorySelect, handleValueSelect, handleDropdownClose]
+    [dropdownItems, highlightedIndex, handleCategorySelect, handleValueSelect, handleDropdownClose, inputRef]
   );
 
   // Get active group for chip menu
@@ -471,6 +469,7 @@ export function FilterBar({
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
+              setHighlightedIndex(-1);
               if (!dropdownAnchor) {
                 setDropdownAnchor(searchContainerRef.current);
               }
@@ -480,6 +479,7 @@ export function FilterBar({
                 setIsSearchManuallyExpanded(true);
               }
               setDropdownAnchor(searchContainerRef.current);
+              setHighlightedIndex(-1);
             }}
             onBlur={handleSearchBlur}
             onKeyDown={handleKeyDown}

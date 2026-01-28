@@ -341,7 +341,7 @@ Claude: [calls get_implementation("scatter-basic", "seaborn")]
 | Feature | MCP Server | REST API |
 |---------|------------|----------|
 | **Purpose** | AI assistant integration | Web frontend data |
-| **Protocol** | JSON-RPC over SSE | HTTP/JSON |
+| **Protocol** | Streamable HTTP | HTTP/JSON |
 | **Endpoint** | `/mcp` | `/specs`, `/plots`, etc. |
 | **Response Format** | MCP protocol | JSON |
 | **Authentication** | None (public) | None (public) |

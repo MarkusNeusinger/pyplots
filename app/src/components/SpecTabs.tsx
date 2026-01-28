@@ -196,7 +196,7 @@ export function SpecTabs({
     } catch (err) {
       console.error('Copy failed:', err);
     }
-  }, [code, libraryId, onTrackEvent]);
+  }, [code, specId, libraryId, onTrackEvent]);
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     // Toggle: clicking same tab collapses it

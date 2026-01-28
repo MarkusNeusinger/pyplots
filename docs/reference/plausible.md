@@ -43,6 +43,7 @@ https://pyplots.ai/{category}/{value}/{category}/{value}/...
 | `/` | Home page (no filters) |
 | `/catalog` | Catalog page (alphabetical spec list) |
 | `/legal` | Legal notice, privacy policy, transparency |
+| `/mcp` | MCP server documentation (AI assistant integration) |
 | `/{spec_id}` | Spec overview page (grid of all implementations) |
 | `/{spec_id}/{library}` | Spec detail page (single library implementation) |
 | `/interactive/{spec_id}/{library}` | Interactive fullscreen view (HTML plots) |
@@ -115,7 +116,8 @@ https://pyplots.ai/{category}/{value}/{category}/{value}/...
 | `suggest_spec` | - | CatalogPage | User clicks "suggest spec" link |
 | `report_issue` | `spec`, `library`? | SpecPage | User clicks "report issue" link |
 
-**Destinations**: `linkedin`, `github`, `stats`
+**External destinations**: `linkedin`, `github`, `stats`
+**Internal destinations**: `legal`, `mcp`
 
 ---
 
@@ -420,6 +422,8 @@ quality        # Quality score breakdown tab
 linkedin  # LinkedIn profile link
 github    # GitHub repository link
 stats     # Plausible stats dashboard link
+legal     # Legal page (internal link)
+mcp       # MCP documentation page (internal link)
 ```
 
 ### `size` Values

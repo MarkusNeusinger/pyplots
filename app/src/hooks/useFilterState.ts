@@ -9,7 +9,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 
 import type { PlotImage, FilterCategory, ActiveFilters, FilterCounts } from '../types';
 import { FILTER_CATEGORIES } from '../types';
-import { useHomeState } from '../components/Layout';
+import { useHomeState } from './useLayoutContext';
 import { parseUrlFilters, useUrlSync } from './useUrlSync';
 import { useFilterFetch } from './useFilterFetch';
 

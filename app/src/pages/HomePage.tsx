@@ -9,7 +9,7 @@ import type { PlotImage } from '../types';
 import type { ImageSize } from '../constants';
 import { useInfiniteScroll, useAnalytics, useFilterState, isFiltersEmpty } from '../hooks';
 import { Header, Footer, FilterBar, ImagesGrid } from '../components';
-import { useAppData, useHomeState } from '../components/Layout';
+import { useAppData, useHomeState } from '../hooks';
 
 export function HomePage() {
   const navigate = useNavigate();

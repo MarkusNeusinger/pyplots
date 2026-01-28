@@ -10,3 +10,6 @@ $ARGUMENTS
 ## Report
 - Summarize the work you've just done in a concise bullet point list.
 - Report the files and total lines changed with `git diff --stat`
+
+## Final Check
+- Use `mcp__plugin_serena_serena__think_about_whether_you_are_done` to verify all tasks are complete.

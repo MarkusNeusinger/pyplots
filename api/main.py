@@ -43,11 +43,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(level
 logger = logging.getLogger(__name__)
 
 
-# Create MCP HTTP apps (needed for lifespan integration)
-# Streamable HTTP (modern, recommended) - used by newer clients
+# Create MCP HTTP app (needed for lifespan integration)
 mcp_http_app = mcp_server.http_app(path="/")
-# SSE transport (legacy, wider compatibility) - used by mcp-remote, older clients
-mcp_sse_app = mcp_server.http_app(path="/", transport="sse")
 
 
 @asynccontextmanager
@@ -63,11 +60,10 @@ async def lifespan(app: FastAPI):
         except Exception as e:
             logger.error(f"Failed to initialize database: {e}")
 
-    # Initialize MCP server lifespans (required for session management)
+    # Initialize MCP server lifespan
     async with mcp_http_app.lifespan(app):
-        async with mcp_sse_app.lifespan(app):
-            logger.info("MCP server initialized (HTTP + SSE)")
-            yield
+        logger.info("MCP server initialized")
+        yield
 
     # Cleanup database connection
     logger.info("Shutting down pyplots API...")
@@ -136,10 +132,8 @@ async def add_cache_headers(request: Request, call_next):
     return response
 
 
-# Mount MCP servers for AI assistant integration
-# Note: Apps are created earlier with lifespan integration
-app.mount("/mcp", mcp_http_app)  # Streamable HTTP at /mcp
-app.mount("/sse", mcp_sse_app)  # SSE transport at /sse
+# Mount MCP server for AI assistant integration
+app.mount("/mcp", mcp_http_app)
 
 # Register routers
 app.include_router(health_router)

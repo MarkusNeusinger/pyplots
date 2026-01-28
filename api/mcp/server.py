@@ -65,7 +65,8 @@ async def get_mcp_db_session() -> AsyncSession:
 
 
 # Initialize FastMCP server
-mcp_server = FastMCP("pyplots")
+# stateless_http=True allows horizontal scaling without session affinity
+mcp_server = FastMCP("pyplots", stateless_http=True)
 
 
 @mcp_server.tool()

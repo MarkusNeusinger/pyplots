@@ -83,6 +83,9 @@ Execute every command to validate the bug is fixed with zero regressions.
 - `uv run pytest tests/unit` - Run unit tests
 - `uv run pytest tests/integration` - Run integration tests (if applicable)
 
+## Final Check
+- Use `mcp__plugin_serena_serena__think_about_whether_you_are_done` to verify all tasks are complete.
+
 ## Notes
 <optionally list any additional notes or context that are relevant to the bug that will be helpful to the developer>
 ```

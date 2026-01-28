@@ -4,7 +4,7 @@
 
 The pyplots MCP (Model Context Protocol) server enables AI assistants and tools to access pyplots programmatically. It provides a standardized interface for searching specifications, fetching implementation code, and integrating pyplots into AI-powered development workflows.
 
-**Endpoint**: `https://api.pyplots.ai/mcp`
+**Endpoint**: `https://api.pyplots.ai/mcp/`
 
 ---
 
@@ -21,7 +21,7 @@ Add to your Claude Desktop config file:
 {
   "mcpServers": {
     "pyplots": {
-      "url": "https://api.pyplots.ai/mcp"
+      "url": "https://api.pyplots.ai/mcp/"
     }
   }
 }
@@ -35,7 +35,7 @@ Add to `.claude/config.json`:
 {
   "mcp": {
     "pyplots": {
-      "url": "https://api.pyplots.ai/mcp"
+      "url": "https://api.pyplots.ai/mcp/"
     }
   }
 }
@@ -421,7 +421,7 @@ api.pyplots.ai
 Test MCP tools directly in your browser:
 
 ```bash
-npx @anthropic-ai/mcp-inspector https://api.pyplots.ai/mcp
+npx @anthropic-ai/mcp-inspector https://api.pyplots.ai/mcp/
 ```
 
 ### 2. Claude Desktop
@@ -436,7 +436,7 @@ npx @anthropic-ai/mcp-inspector https://api.pyplots.ai/mcp
 ```python
 from mcp.client import Client
 
-async with Client("https://api.pyplots.ai/mcp") as client:
+async with Client("https://api.pyplots.ai/mcp/") as client:
     tools = await client.list_tools()
     print(tools)
 
@@ -450,7 +450,7 @@ async with Client("https://api.pyplots.ai/mcp") as client:
 
 ### "MCP server not responding"
 
-1. Check endpoint is accessible: `curl https://api.pyplots.ai/mcp`
+1. Check endpoint is accessible: `curl https://api.pyplots.ai/mcp/`
 2. Verify config file location and syntax
 3. Restart Claude Desktop
 

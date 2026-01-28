@@ -9,7 +9,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from fastapi.testclient import TestClient
 
-from api.main import app
+from api.main import app, fastapi_app
 from api.routers.plots import (
     _calculate_contextual_counts,
     _calculate_global_counts,
@@ -43,13 +43,13 @@ def db_client():
     async def mock_get_db():
         yield mock_session
 
-    app.dependency_overrides[get_db] = mock_get_db
+    fastapi_app.dependency_overrides[get_db] = mock_get_db
 
     with patch(DB_CONFIG_PATCH, return_value=True):
         client = TestClient(app)
         yield client, mock_session
 
-    app.dependency_overrides.clear()
+    fastapi_app.dependency_overrides.clear()
 
 
 @pytest.fixture

@@ -156,7 +156,7 @@ export function McpPage() {
           <Typography sx={textStyle}>
             <strong>Endpoint</strong>:{' '}
             <code style={{ backgroundColor: '#f3f4f6', padding: '4px 8px', borderRadius: '4px', color: '#3776AB' }}>
-              https://api.pyplots.ai/mcp
+              https://api.pyplots.ai/mcp/
             </code>
           </Typography>
         </Paper>
@@ -179,7 +179,7 @@ export function McpPage() {
               </TableRow>
               <TableRow>
                 <TableCell>URL</TableCell>
-                <TableCell><code>https://api.pyplots.ai/mcp</code></TableCell>
+                <TableCell><code>https://api.pyplots.ai/mcp/</code></TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Transport</TableCell>
@@ -190,7 +190,7 @@ export function McpPage() {
 
           <Typography sx={subheadingStyle}>Claude Code</Typography>
           <Box sx={codeBlockStyle}>
-            {`claude mcp add pyplots --transport http https://api.pyplots.ai/mcp`}
+            {`claude mcp add pyplots --transport http https://api.pyplots.ai/mcp/`}
           </Box>
 
           <Typography sx={{ ...textStyle, mt: 3 }}>
@@ -318,7 +318,7 @@ export function McpPage() {
               <TableRow>
                 <TableCell>MCP Inspector</TableCell>
                 <TableCell>
-                  <code>npx @modelcontextprotocol/inspector https://api.pyplots.ai/mcp</code>
+                  <code>npx @modelcontextprotocol/inspector https://api.pyplots.ai/mcp/</code>
                 </TableCell>
               </TableRow>
             </TableBody>

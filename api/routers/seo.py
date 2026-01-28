@@ -71,6 +71,7 @@ async def get_sitemap(db: AsyncSession | None = Depends(optional_db)):
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
         "  <url><loc>https://pyplots.ai/</loc></url>",
         "  <url><loc>https://pyplots.ai/catalog</loc></url>",
+        "  <url><loc>https://pyplots.ai/mcp</loc></url>",
         "  <url><loc>https://pyplots.ai/legal</loc></url>",
     ]
 

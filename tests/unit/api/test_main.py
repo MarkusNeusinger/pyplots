@@ -12,7 +12,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from fastapi.testclient import TestClient
 
-from api.main import app
+from api.main import app, fastapi_app
 from core.database import get_db
 from tests.conftest import TEST_IMAGE_URL, TEST_THUMB_URL
 
@@ -54,7 +54,7 @@ def mock_db_client():
         yield mock_session
 
     # Override the dependency
-    app.dependency_overrides[get_db] = mock_get_db
+    fastapi_app.dependency_overrides[get_db] = mock_get_db
 
     # Set up the mock to return specs
     mock_result = MagicMock()
@@ -67,7 +67,7 @@ def mock_db_client():
         yield client
 
     # Clean up
-    app.dependency_overrides.clear()
+    fastapi_app.dependency_overrides.clear()
 
 
 class TestRootEndpoint:
@@ -235,16 +235,16 @@ class TestAppConfiguration:
 
     def test_app_title(self) -> None:
         """App should have correct title."""
-        assert app.title == "pyplots API"
+        assert fastapi_app.title == "pyplots API"
 
     def test_app_version(self) -> None:
         """App should have correct version."""
-        assert app.version == "1.0.0"
+        assert fastapi_app.version == "1.0.0"
 
     def test_app_description(self) -> None:
         """App should have description."""
-        assert "pyplots" in app.description.lower()
-        assert "plotting" in app.description.lower()
+        assert "pyplots" in fastapi_app.description.lower()
+        assert "plotting" in fastapi_app.description.lower()
 
 
 class TestSpecsEndpoint:
@@ -324,12 +324,12 @@ class TestSpecImagesEndpoint:
 class TestGZipMiddleware:
     """Tests for GZip compression middleware."""
 
-    def test_gzip_middleware_is_configured(self, client: TestClient) -> None:
+    def test_gzip_middleware_is_configured(self) -> None:
         """GZip middleware should be configured in the app."""
         from starlette.middleware.gzip import GZipMiddleware
 
         # Check that GZipMiddleware is in the middleware stack
-        middleware_classes = [m.cls for m in client.app.user_middleware]
+        middleware_classes = [m.cls for m in fastapi_app.user_middleware]
         assert GZipMiddleware in middleware_classes
 
     def test_gzip_not_used_for_small_responses(self, client: TestClient) -> None:
@@ -342,12 +342,12 @@ class TestGZipMiddleware:
         # Either no encoding or not gzip for small responses
         assert content_encoding is None or content_encoding != "gzip"
 
-    def test_gzip_minimum_size_is_500(self, client: TestClient) -> None:
+    def test_gzip_minimum_size_is_500(self) -> None:
         """GZip middleware should have minimum_size of 500 bytes."""
         from starlette.middleware.gzip import GZipMiddleware
 
         # Find the GZipMiddleware and check its configuration
-        for middleware in client.app.user_middleware:
+        for middleware in fastapi_app.user_middleware:
             if middleware.cls == GZipMiddleware:
                 assert middleware.kwargs.get("minimum_size") == 500
                 break

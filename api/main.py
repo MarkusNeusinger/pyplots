@@ -148,6 +148,29 @@ app.include_router(proxy_router)
 app.include_router(debug_router)
 
 
+# ASGI middleware to handle /mcp without trailing slash
+# This runs BEFORE FastAPI routing, avoiding the 307 redirect
+# MCP clients like Claude CLI don't follow redirects
+class MCPTrailingSlashMiddleware:
+    """Rewrite /mcp to /mcp/ before routing to avoid 307 redirect."""
+
+    def __init__(self, asgi_app):
+        self.asgi_app = asgi_app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http" and scope["path"] == "/mcp":
+            scope = scope.copy()
+            scope["path"] = "/mcp/"
+        await self.asgi_app(scope, receive, send)
+
+
+# Wrap the FastAPI app with the middleware
+# This must be done after all routers are registered
+# Keep reference to FastAPI instance for tests
+fastapi_app = app
+app = MCPTrailingSlashMiddleware(app)
+
+
 if __name__ == "__main__":
     import uvicorn
 

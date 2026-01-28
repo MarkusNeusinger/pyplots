@@ -24,20 +24,6 @@ export function Footer({ onTrackEvent, selectedSpec, selectedLibrary }: FooterPr
         }}
       >
         <Link
-          href="https://www.linkedin.com/in/markus-neusinger/"
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => onTrackEvent?.('external_link', { destination: 'linkedin', spec: selectedSpec, library: selectedLibrary })}
-          sx={{
-            color: '#9ca3af',
-            textDecoration: 'none',
-            '&:hover': { color: '#6b7280' },
-          }}
-        >
-          markus neusinger
-        </Link>
-        <span>·</span>
-        <Link
           href={GITHUB_URL}
           target="_blank"
           rel="noopener noreferrer"
@@ -63,6 +49,33 @@ export function Footer({ onTrackEvent, selectedSpec, selectedLibrary }: FooterPr
           }}
         >
           stats
+        </Link>
+        <span>·</span>
+        <Link
+          href="https://www.linkedin.com/in/markus-neusinger/"
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => onTrackEvent?.('external_link', { destination: 'linkedin', spec: selectedSpec, library: selectedLibrary })}
+          sx={{
+            color: '#9ca3af',
+            textDecoration: 'none',
+            '&:hover': { color: '#6b7280' },
+          }}
+        >
+          markus neusinger
+        </Link>
+        <span>·</span>
+        <Link
+          component={RouterLink}
+          to="/mcp"
+          onClick={() => onTrackEvent?.('internal_link', { destination: 'mcp', spec: selectedSpec, library: selectedLibrary })}
+          sx={{
+            color: '#9ca3af',
+            textDecoration: 'none',
+            '&:hover': { color: '#6b7280' },
+          }}
+        >
+          mcp
         </Link>
         <span>·</span>
         <Link

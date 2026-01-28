@@ -9,7 +9,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 import { API_URL, GITHUB_URL } from '../constants';
 import { useAnalytics } from '../hooks';
-import { useAppData, useHomeState } from '../components/Layout';
+import { useAppData, useHomeState } from '../hooks';
 import { Breadcrumb, Footer } from '../components';
 import type { PlotImage } from '../types';
 

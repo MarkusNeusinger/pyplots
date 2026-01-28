@@ -11,7 +11,7 @@ import BugReportIcon from '@mui/icons-material/BugReport';
 
 import { API_URL, GITHUB_URL } from '../constants';
 import { useAnalytics } from '../hooks';
-import { useAppData } from '../components/Layout';
+import { useAppData } from '../hooks';
 import { LibraryPills } from '../components/LibraryPills';
 import { SpecTabs } from '../components/SpecTabs';
 import { Breadcrumb, Footer, SpecOverview, SpecDetailView } from '../components';

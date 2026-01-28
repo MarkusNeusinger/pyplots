@@ -1,67 +1,16 @@
-import { useState, useEffect, createContext, useContext, useRef, useCallback, type ReactNode } from 'react';
+import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react';
 import { Outlet } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 
 import { API_URL } from '../constants';
-import type { LibraryInfo, SpecInfo, PlotImage, ActiveFilters, FilterCounts } from '../types';
-
-interface AppData {
-  specsData: SpecInfo[];
-  librariesData: LibraryInfo[];
-  stats: { specs: number; plots: number; libraries: number } | null;
-}
-
-// Persistent home state that survives navigation
-interface HomeState {
-  allImages: PlotImage[];
-  displayedImages: PlotImage[];
-  activeFilters: ActiveFilters;
-  filterCounts: FilterCounts | null;
-  globalCounts: FilterCounts | null;
-  orCounts: Record<string, number>[];
-  hasMore: boolean;
-  scrollY: number;
-  initialized: boolean;
-}
-
-interface HomeStateContext {
-  homeState: HomeState;
-  homeStateRef: React.MutableRefObject<HomeState>;
-  setHomeState: React.Dispatch<React.SetStateAction<HomeState>>;
-  saveScrollPosition: () => void;
-}
-
-const initialHomeState: HomeState = {
-  allImages: [],
-  displayedImages: [],
-  activeFilters: [],
-  filterCounts: null,
-  globalCounts: null,
-  orCounts: [],
-  hasMore: false,
-  scrollY: 0,
-  initialized: false,
-};
-
-const AppDataContext = createContext<AppData | null>(null);
-const HomeStateContext = createContext<HomeStateContext | null>(null);
-
-export function useAppData() {
-  const context = useContext(AppDataContext);
-  if (!context) {
-    throw new Error('useAppData must be used within AppDataProvider');
-  }
-  return context;
-}
-
-export function useHomeState() {
-  const context = useContext(HomeStateContext);
-  if (!context) {
-    throw new Error('useHomeState must be used within AppDataProvider');
-  }
-  return context;
-}
+import type { LibraryInfo, SpecInfo } from '../types';
+import {
+  AppDataContext,
+  HomeStateContext,
+  initialHomeState,
+  type HomeState,
+} from '../hooks/useLayoutContext';
 
 // Global provider that wraps the entire router (persists across all pages including InteractivePage)
 export function AppDataProvider({ children }: { children: ReactNode }) {

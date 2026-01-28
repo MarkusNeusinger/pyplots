@@ -8,6 +8,7 @@ import { CatalogPage } from './pages/CatalogPage';
 import { InteractivePage } from './pages/InteractivePage';
 import { DebugPage } from './pages/DebugPage';
 import { LegalPage } from './pages/LegalPage';
+import { McpPage } from './pages/McpPage';
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,7 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: 'catalog', element: <CatalogPage /> },
       { path: 'legal', element: <LegalPage /> },
+      { path: 'mcp', element: <McpPage /> },
       { path: ':specId', element: <SpecPage /> },
       { path: ':specId/:library', element: <SpecPage /> },
     ],

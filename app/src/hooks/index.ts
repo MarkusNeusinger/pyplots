@@ -6,3 +6,5 @@ export { useLocalStorage } from './useLocalStorage';
 export { useFilterState, isFiltersEmpty } from './useFilterState';
 export { useUrlSync, parseUrlFilters, buildFilterUrl } from './useUrlSync';
 export { useFilterFetch } from './useFilterFetch';
+export { useAppData, useHomeState } from './useLayoutContext';
+export type { HomeState, HomeStateContextValue, AppData } from './useLayoutContext';

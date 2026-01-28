@@ -64,6 +64,10 @@ async def get_mcp_db_session() -> AsyncSession:
     return _mcp_session_factory()
 
 
+# Enable stateless HTTP mode via environment variable (recommended approach)
+# This allows horizontal scaling without session affinity
+os.environ.setdefault("FASTMCP_STATELESS_HTTP", "true")
+
 # Initialize FastMCP server
 mcp_server = FastMCP("pyplots")
 

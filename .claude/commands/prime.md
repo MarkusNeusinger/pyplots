@@ -1,36 +1,28 @@
 # Prime
 
-> Quickly understand the pyplots codebase - structure, rules, and current state.
+> Execute the following sections to understand the codebase then summarize your understanding.
 
-## Project Vision
+## Run
 
+git ls-files ':!plots/'
+
+## Read
+
+@docs/ai_docs/project-guide.md
 @docs/concepts/vision.md
-
-## Project Config
-
 @pyproject.toml
 
-## Git Status
+## Serena
 
-```bash
-git status --short
-git log --oneline -5
-```
+- Run `activate_project` with project "pyplots"
+- Run `list_memories` and read relevant ones
+- Run `check_onboarding_performed`
 
-## Codebase Exploration
+Prefer Serena's symbolic tools (`jet_brains_find_symbol`, `jet_brains_get_symbols_overview`,
+`jet_brains_find_referencing_symbols`) over brute-force file scanning.
 
-Use Serena MCP tools to explore:
-- `list_dir(".", recursive=false)` - Top-level structure
-- `list_dir("api/", recursive=true)` - Backend API structure
-- `list_dir("core/", recursive=true)` - Core business logic
-- `list_dir("app/src/", recursive=true)` - Frontend structure
-- `jet_brains_get_symbols_overview` on `api/main.py`, `core/database/models.py` for key symbols
+Use Serena's thinking tools to maintain focus:
 
-## Summarize
-
-After exploring, provide:
-1. **Purpose**: What does this project do?
-2. **Architecture**: Key components and how they connect
-3. **Workflow**: How specs become implementations
-4. **Tech Stack**: Languages, frameworks, infrastructure
-5. **Key Rules**: Critical constraints from CLAUDE.md
+- `think_about_collected_information` - after research/search sequences
+- `think_about_task_adherence` - before making code changes
+- `think_about_whether_you_are_done` - when task seems complete

@@ -16,7 +16,7 @@ from httpx import ASGITransport, AsyncClient
 
 from api.cache import clear_cache
 from api.dependencies import get_db
-from api.main import app
+from api.main import fastapi_app
 
 
 pytestmark = pytest.mark.e2e
@@ -36,14 +36,14 @@ async def client(pg_db_with_data):
     async def override_get_db():
         yield pg_db_with_data
 
-    app.dependency_overrides[get_db] = override_get_db
+    fastapi_app.dependency_overrides[get_db] = override_get_db
 
     # Patch is_db_configured to return True (it checks env vars, not dependencies)
     with patch("api.dependencies.is_db_configured", return_value=True):
-        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+        async with AsyncClient(transport=ASGITransport(app=fastapi_app), base_url="http://test") as ac:
             yield ac
 
-    app.dependency_overrides.clear()
+    fastapi_app.dependency_overrides.clear()
 
 
 class TestSpecsEndpoints:

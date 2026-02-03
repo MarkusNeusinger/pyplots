@@ -4230,15 +4230,15 @@ wheels = [
 
 [[package]]
 name = "vl-convert-python"
-version = "1.9.0"
+version = "1.9.0.post1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/33/44/0f8607bd20b20897342544bb585788551414ef0927452a3d0e68ee77c66c/vl_convert_python-1.9.0.tar.gz", hash = "sha256:bbf4eb9ac9aa9f32f6fdb689391c914dff311846365658ac70bc5b30f30d57cd", size = 4659237, upload-time = "2025-12-27T16:12:39.303Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/93/89/36722344d1758ec2106f4e8eca980f173cfe8f8d0358c1b77cc5d2e035a4/vl_convert_python-1.9.0.post1.tar.gz", hash = "sha256:a5b06b3128037519001166f5341ec7831e19fbd7f3a5f78f73d557ac2d5859ef", size = 4663469, upload-time = "2026-01-21T00:09:55.61Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ce/50/3728e276bf4b9820387f7a0879ea1fcfbed7b913710e01d10c78fa6bfd94/vl_convert_python-1.9.0-cp37-abi3-macosx_10_12_x86_64.whl", hash = "sha256:49c145a6ffb4adced147f91369327f9cd9d0357d11f00dd8882bb2524eab2b3c", size = 30509884, upload-time = "2025-12-27T16:12:22.113Z" },
-    { url = "https://files.pythonhosted.org/packages/f1/71/3f029505159e6960b5a01006c1318e88a86301bd9272e9c5d52b3f9439c7/vl_convert_python-1.9.0-cp37-abi3-macosx_11_0_arm64.whl", hash = "sha256:9a5ca7c88e89ff6338de43cd039b9f0f809b18c661a7e8134ba03a48c04e1c03", size = 29736587, upload-time = "2025-12-27T16:12:25.934Z" },
-    { url = "https://files.pythonhosted.org/packages/ce/49/7ecb1bbb29e5b4bddb35672f9f1a0799894b20d4dc213e2223f35a06ad8b/vl_convert_python-1.9.0-cp37-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:f35bbdc26c4495447c547d10018d967d1eeb20772d5e285a92502277da92e0ac", size = 33363544, upload-time = "2025-12-27T16:12:29.169Z" },
-    { url = "https://files.pythonhosted.org/packages/6f/61/dc6f4a38cf1b8699f64c57d7f021ca42c39bfe782d8a6eaefb7e8418e925/vl_convert_python-1.9.0-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:849e6773a7e05d58ab215386b1065e7713f4846b9ac6b0d743bb3e1b20337231", size = 33517715, upload-time = "2025-12-27T16:12:32.512Z" },
-    { url = "https://files.pythonhosted.org/packages/a6/e5/bb2034f2163245037fb30ecec1a28b4192bb5b6c7cc05a9c11d701e42bf7/vl_convert_python-1.9.0-cp37-abi3-win_amd64.whl", hash = "sha256:42ece4c224ac5331f7e65041b1470688117022f48643976fe1988545792c70c6", size = 32048693, upload-time = "2025-12-27T16:12:36.139Z" },
+    { url = "https://files.pythonhosted.org/packages/9f/59/e5862245972ff467d38b0eb5ad28154685e23ecabb47e14f2b6962da7b56/vl_convert_python-1.9.0.post1-cp37-abi3-macosx_10_12_x86_64.whl", hash = "sha256:43e9515f65bbcd317d1ef328787fd7bf0344c2fde9292eb7a0e64d5d3d29fccb", size = 30512930, upload-time = "2026-01-21T00:09:43.198Z" },
+    { url = "https://files.pythonhosted.org/packages/62/e6/e7d0b538c2f0daaf120901dc113bd5d5d1fa51a9532fa5ffd90234e8c69e/vl_convert_python-1.9.0.post1-cp37-abi3-macosx_11_0_arm64.whl", hash = "sha256:b0e7a3245f32addec7e7abeb1badf72b1513ed71ba1dba7aca853901217b3f4e", size = 29738742, upload-time = "2026-01-21T00:09:46.016Z" },
+    { url = "https://files.pythonhosted.org/packages/b8/e2/5645a1bc174c53ff8cd305ed76a4a76ba36e155302db20b42b7e78daeef8/vl_convert_python-1.9.0.post1-cp37-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e6ecfe4b7e2ea9e8c30fd6d6eaea3ef85475be1ad249407d9796dce4ecdb5b32", size = 33366278, upload-time = "2026-01-21T00:09:48.42Z" },
+    { url = "https://files.pythonhosted.org/packages/a0/18/88e02899b72fa8273ffb32bde12b0e5776ee0fd9fb29559a49c48ec4c5fa/vl_convert_python-1.9.0.post1-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3c1558fa0055e88c465bd3d71760cde9fa2c94a95f776a0ef9178252fd820b1f", size = 33520215, upload-time = "2026-01-21T00:09:50.992Z" },
+    { url = "https://files.pythonhosted.org/packages/2f/db/6e8616587035bf0745d0f10b1791c7e945180ac5d6b28677d2f2b3ca693c/vl_convert_python-1.9.0.post1-cp37-abi3-win_amd64.whl", hash = "sha256:7e263269ac0d304640ca842b44dfe430ed863accd9edecff42e279bfc48ce940", size = 32051516, upload-time = "2026-01-21T00:09:53.47Z" },
 ]
 
 [[package]]

@@ -227,6 +227,9 @@ nul
 # Project-specific
 temp/
 
+# Agentic runs output
+agentic/runs/
+
 # Additional environment files
 .env.local
 .env.production

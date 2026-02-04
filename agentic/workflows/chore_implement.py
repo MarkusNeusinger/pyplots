@@ -3,6 +3,7 @@
 # requires-python = ">=3.10"
 # dependencies = [
 #   "pydantic",
+#   "pydantic-settings",
 #   "python-dotenv",
 #   "click",
 #   "rich",
@@ -24,7 +25,7 @@ Usage:
 
 Examples:
     # Run with specific model
-    ./agentic/workflows/chore_implement.py "Add logging to agent.py" --model sonnet
+    ./agentic/workflows/chore_implement.py "Add logging to agent.py" --model medium
 
     # Run from a different working directory
     ./agentic/workflows/chore_implement.py "Update documentation" --working-dir /path/to/project
@@ -130,9 +131,9 @@ def extract_plan_path(output: str) -> str:
 @click.argument("prompt", required=True)
 @click.option(
     "--model",
-    type=click.Choice(["haiku", "sonnet", "opus"]),
-    default="opus",
-    help="Claude model to use",
+    type=click.Choice(["small", "medium", "large"]),
+    default="large",
+    help="Model tier (maps to CLI-specific models)",
 )
 @click.option(
     "--working-dir",

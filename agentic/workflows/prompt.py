@@ -3,6 +3,7 @@
 # requires-python = ">=3.10"
 # dependencies = [
 #   "pydantic",
+#   "pydantic-settings",
 #   "python-dotenv",
 #   "click",
 #   "rich",
@@ -23,7 +24,7 @@ Usage:
 
 Examples:
     # Run with specific model
-    ./adw_prompt.py "Explain this code" --model opus
+    ./adw_prompt.py "Explain this code" --model large
 
     # Run with custom output file
     ./adw_prompt.py "Create a FastAPI app" --output my_result.jsonl
@@ -71,9 +72,9 @@ SUMMARY_JSON = "cli_summary_output.json"
 @click.argument("prompt", required=True)
 @click.option(
     "--model",
-    type=click.Choice(["haiku", "sonnet", "opus"]),
-    default="sonnet",
-    help="Claude model to use",
+    type=click.Choice(["small", "medium", "large"]),
+    default="medium",
+    help="Model tier (maps to CLI-specific models)",
 )
 @click.option(
     "--output",

@@ -13,6 +13,20 @@ from enum import Enum
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
+# Add project root to path for imports
+_project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+if _project_root not in sys.path:
+    sys.path.insert(0, _project_root)
+
+# Import settings directly from the module file to avoid core/__init__.py
+# which has dependencies (PIL) not available in uv script environments
+import importlib.util
+_config_path = os.path.join(_project_root, "core", "config.py")
+_spec = importlib.util.spec_from_file_location("core_config", _config_path)
+_core_config = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_core_config)
+settings = _core_config.settings
+
 
 # Retry codes for Claude Code execution errors
 class RetryCode(str, Enum):
@@ -29,7 +43,7 @@ class AgentPromptRequest(BaseModel):
     prompt: str
     run_id: str
     agent_name: str = "ops"
-    model: Literal["haiku", "sonnet", "opus"] = "sonnet"
+    model: Literal["small", "medium", "large"] = "medium"
     cli: Literal["claude", "copilot", "gemini"] = "claude"
     dangerously_skip_permissions: bool = False
     output_file: str
@@ -50,7 +64,7 @@ class AgentTemplateRequest(BaseModel):
     slash_command: str
     args: List[str]
     run_id: str
-    model: Literal["haiku", "sonnet", "opus"] = "sonnet"
+    model: Literal["small", "medium", "large"] = "medium"
     cli: Literal["claude", "copilot", "gemini"] = "claude"
     working_dir: Optional[str] = None
 
@@ -485,12 +499,15 @@ def prompt_claude_code(request: AgentPromptRequest) -> AgentPromptResponse:
         if os.path.exists(potential_mcp_path):
             mcp_config_path = potential_mcp_path
 
+    # Resolve model tier to actual model name for the CLI
+    actual_model = settings.resolve_model(request.cli, request.model)
+
     # Build CLI-specific command
     cmd = build_cli_command(
         cli=request.cli,
         cli_path=cli_path,
         prompt=request.prompt,
-        model=request.model,
+        model=actual_model,
         dangerously_skip_permissions=request.dangerously_skip_permissions,
         mcp_config_path=mcp_config_path,
     )
@@ -707,7 +724,7 @@ def execute_template(request: AgentTemplateRequest) -> AgentPromptResponse:
             slash_command="/implement",
             args=["plan.md"],
             run_id="abc12345",
-            model="sonnet"  # Explicitly set model
+            model="medium"  # Model tier (small/medium/large)
         )
         response = execute_template(request)
     """

@@ -14,5 +14,8 @@
       "Bash(git push *)"
     ],
     "deny": []
+  },
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   }
 }

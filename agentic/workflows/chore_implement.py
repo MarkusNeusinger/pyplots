@@ -17,21 +17,17 @@ This script runs two prompts in sequence:
 2. implement.md - Implements the plan created by chore
 
 Usage:
-    # Method 1: Direct execution (requires uv)
-    ./agentic/workflows/chore_implement.py "Add error handling to all API endpoints"
-
-    # Method 2: Using uv run
-    uv run agentic/workflows/chore_implement.py "Refactor database connection logic"
+    uv run agentic/workflows/chore_implement.py "Add error handling to all API endpoints"
 
 Examples:
     # Run with specific model
-    ./agentic/workflows/chore_implement.py "Add logging to agent.py" --model medium
+    uv run agentic/workflows/chore_implement.py "Add logging to agent.py" --model medium
 
     # Run from a different working directory
-    ./agentic/workflows/chore_implement.py "Update documentation" --working-dir /path/to/project
+    uv run agentic/workflows/chore_implement.py "Update documentation" --working-dir /path/to/project
 
     # Use a different CLI tool
-    ./agentic/workflows/chore_implement.py "Refactor code" --cli copilot
+    uv run agentic/workflows/chore_implement.py "Refactor code" --cli copilot
 """
 
 import os

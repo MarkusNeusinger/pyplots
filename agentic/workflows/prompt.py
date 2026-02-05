@@ -13,30 +13,23 @@
 Run an adhoc Claude Code prompt from the command line.
 
 Usage:
-    # Method 1: Direct execution (requires uv)
-    ./adw_prompt.py "Write a hello world Python script"
-
-    # Method 2: Using uv run
-    uv run adw_prompt.py "Write a hello world Python script"
-
-    # Method 3: Using Python directly (requires dependencies installed)
-    python adw_prompt.py "Write a hello world Python script"
+    uv run agentic/workflows/prompt.py "Write a hello world Python script"
 
 Examples:
     # Run with specific model
-    ./adw_prompt.py "Explain this code" --model large
+    uv run agentic/workflows/prompt.py "Explain this code" --model large
 
     # Run with custom output file
-    ./adw_prompt.py "Create a FastAPI app" --output my_result.jsonl
+    uv run agentic/workflows/prompt.py "Create a FastAPI app" --output my_result.jsonl
 
     # Run from a different working directory
-    ./adw_prompt.py "List files here" --working-dir /path/to/project
+    uv run agentic/workflows/prompt.py "List files here" --working-dir /path/to/project
 
     # Disable retry on failure
-    ./adw_prompt.py "Quick test" --no-retry
+    uv run agentic/workflows/prompt.py "Quick test" --no-retry
 
     # Use custom agent name
-    ./adw_prompt.py "Debug this" --agent-name debugger
+    uv run agentic/workflows/prompt.py "Debug this" --agent-name debugger
 """
 
 import os
@@ -114,7 +107,7 @@ def main(
     # Set up output file path
     if not output:
         # Default: write to agentic/runs/<run_id>/<agent_name>/
-        output_dir = Path(f"./agentic/runs/{run_id}/{agent_name}")
+        output_dir = Path(working_dir or os.getcwd()) / f"agentic/runs/{run_id}/{agent_name}"
         output_dir.mkdir(parents=True, exist_ok=True)
         output = str(output_dir / OUTPUT_JSONL)
 

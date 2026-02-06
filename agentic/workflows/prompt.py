@@ -66,7 +66,7 @@ SUMMARY_JSON = "cli_summary_output.json"
 @click.option(
     "--model",
     type=click.Choice(["small", "medium", "large"]),
-    default="medium",
+    default="large",
     help="Model tier (maps to CLI-specific models)",
 )
 @click.option(

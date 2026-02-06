@@ -43,7 +43,7 @@ class AgentPromptRequest(BaseModel):
     prompt: str
     run_id: str
     agent_name: str = "ops"
-    model: Literal["small", "medium", "large"] = "medium"
+    model: Literal["small", "medium", "large"] = "large"
     cli: Literal["claude", "copilot", "gemini"] = "claude"
     dangerously_skip_permissions: bool = False
     output_file: str
@@ -64,7 +64,7 @@ class AgentTemplateRequest(BaseModel):
     slash_command: str
     args: List[str]
     run_id: str
-    model: Literal["small", "medium", "large"] = "medium"
+    model: Literal["small", "medium", "large"] = "large"
     cli: Literal["claude", "copilot", "gemini"] = "claude"
     working_dir: Optional[str] = None
 

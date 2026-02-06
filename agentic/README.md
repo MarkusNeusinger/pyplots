@@ -17,8 +17,23 @@ agentic/
 ## Usage
 
 ```bash
-# Run chore & implement workflow
-uv run agentic/workflows/chore_implement.py "your task description"
+# Plan + Build (replaces chore_implement.py)
+uv run agentic/workflows/plan_build.py "your task description"
+
+# Plan + Build + Test (with auto-fix)
+uv run agentic/workflows/plan_build_test.py "fix the 404 bug"
+
+# Full pipeline: Plan + Build + Test + Review
+uv run agentic/workflows/plan_build_test_review.py "add dark mode toggle"
+
+# Composable individual phases
+uv run agentic/workflows/plan.py "fix bug" --type bug
+uv run agentic/workflows/build.py --run-id abc12345
+uv run agentic/workflows/test.py --run-id abc12345
+uv run agentic/workflows/review.py --run-id abc12345
+
+# Piping between phases
+uv run agentic/workflows/plan.py "fix bug" | uv run agentic/workflows/build.py
 
 # Options
 --model [small|medium|large]   # Default: large

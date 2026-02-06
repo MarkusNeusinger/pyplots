@@ -198,8 +198,8 @@ The agentic workflows use abstract model tiers (`small`, `medium`, `large`) inst
 ### Usage
 
 ```bash
-# Use large tier (default for chore_implement)
-uv run agentic/workflows/chore_implement.py "Add feature X" --model large
+# Use large tier (default for plan_build)
+uv run agentic/workflows/plan_build.py "Add feature X" --model large
 
 # Use medium tier with Copilot
 uv run agentic/workflows/prompt.py "Quick fix" --model medium --cli copilot

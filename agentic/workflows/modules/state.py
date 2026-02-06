@@ -37,7 +37,10 @@ class WorkflowState:
     STATE_FILENAME = "state.json"
 
     # Core fields that are persisted
-    CORE_FIELDS = {"run_id", "prompt", "task_type", "plan_file", "classify_reason"}
+    CORE_FIELDS = {
+        "run_id", "prompt", "task_type", "plan_file", "classify_reason",
+        "test_passed", "test_failed_count", "review_success", "review_blocker_count",
+    }
 
     def __init__(self, run_id: str, prompt: str = ""):
         if not run_id:
@@ -69,6 +72,22 @@ class WorkflowState:
     @property
     def plan_file(self) -> Optional[str]:
         return self.data.get("plan_file")
+
+    @property
+    def test_passed(self) -> Optional[bool]:
+        return self.data.get("test_passed")
+
+    @property
+    def test_failed_count(self) -> Optional[int]:
+        return self.data.get("test_failed_count")
+
+    @property
+    def review_success(self) -> Optional[bool]:
+        return self.data.get("review_success")
+
+    @property
+    def review_blocker_count(self) -> Optional[int]:
+        return self.data.get("review_blocker_count")
 
     def _get_state_path(self, working_dir: str) -> str:
         """Get path to state file."""

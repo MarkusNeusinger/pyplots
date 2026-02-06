@@ -47,7 +47,7 @@ from agent import (
 )
 from state import WorkflowState
 
-# Output file names (matching chore_implement.py conventions)
+# Output file names
 OUTPUT_JSONL = "cli_raw_output.jsonl"
 SUMMARY_JSON = "cli_summary_output.json"
 

@@ -8,7 +8,7 @@ import re
 import logging
 import time
 import uuid
-from typing import Optional, List, Dict, Any, Tuple, Final, Literal
+from typing import Optional, List, Dict, Any, Tuple, Final, Literal, Type, TypeVar
 from enum import Enum
 from pydantic import BaseModel
 from dotenv import load_dotenv
@@ -80,6 +80,66 @@ class ClaudeCodeResultMessage(BaseModel):
     result: str
     session_id: str
     total_cost_usd: float
+
+
+class TestResult(BaseModel):
+    """Individual test result from test.md output."""
+    test_name: str
+    passed: bool
+    execution_command: str
+    test_purpose: str
+    error: Optional[str] = None
+
+
+class ReviewIssue(BaseModel):
+    """Individual review issue from review.md output."""
+    review_issue_number: int
+    screenshot_path: str
+    issue_description: str
+    issue_resolution: str
+    issue_severity: Literal["skippable", "tech_debt", "blocker"]
+
+
+class ReviewResult(BaseModel):
+    """Review result from review.md output."""
+    success: bool
+    review_summary: str
+    review_issues: List[ReviewIssue] = []
+    screenshots: List[str] = []
+
+
+T = TypeVar("T", bound=BaseModel)
+
+
+def parse_json(output: str, target_type: Type[T] = None) -> Any:
+    """Parse JSON from LLM output, handling markdown code fences.
+
+    Args:
+        output: Raw LLM output that may contain JSON wrapped in markdown fences.
+        target_type: Optional Pydantic model class to validate against.
+
+    Returns:
+        Parsed JSON (dict/list), or validated Pydantic model if target_type provided.
+    """
+    cleaned = output.strip()
+
+    # Strip markdown code fences if present
+    if cleaned.startswith("```"):
+        # Remove opening fence (```json, ```, etc.)
+        first_newline = cleaned.index("\n") if "\n" in cleaned else len(cleaned)
+        cleaned = cleaned[first_newline + 1:]
+        # Remove closing fence
+        if cleaned.rstrip().endswith("```"):
+            cleaned = cleaned.rstrip()[:-3].rstrip()
+
+    parsed = json.loads(cleaned)
+
+    if target_type is not None:
+        if isinstance(parsed, list):
+            return [target_type.model_validate(item) for item in parsed]
+        return target_type.model_validate(parsed)
+
+    return parsed
 
 
 def get_safe_subprocess_env() -> Dict[str, str]:

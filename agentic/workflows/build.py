@@ -38,11 +38,7 @@ from rich.rule import Rule
 # Add the modules directory to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "modules"))
 
-from agent import (
-    AgentPromptRequest,
-    prompt_claude_code_with_retry,
-    generate_short_id,
-)
+from agent import AgentPromptRequest, prompt_claude_code_with_retry, generate_short_id
 from state import WorkflowState
 
 # Output file names
@@ -73,9 +69,7 @@ def render_template(template: str, variables: dict) -> str:
     return result
 
 
-def resolve_state(
-    run_id: str, plan_file: str, working_dir: str, console: Console
-) -> WorkflowState:
+def resolve_state(run_id: str, plan_file: str, working_dir: str, console: Console) -> WorkflowState:
     """Resolve state from --run-id, stdin pipe, or --plan-file.
 
     Priority:
@@ -115,17 +109,8 @@ def resolve_state(
 
 
 @click.command()
-@click.option(
-    "--run-id",
-    default=None,
-    help="Run ID from a previous plan.py execution",
-)
-@click.option(
-    "--plan-file",
-    default=None,
-    type=click.Path(),
-    help="Path to plan file directly (creates new run)",
-)
+@click.option("--run-id", default=None, help="Run ID from a previous plan.py execution")
+@click.option("--plan-file", default=None, type=click.Path(), help="Path to plan file directly (creates new run)")
 @click.option(
     "--model",
     type=click.Choice(["small", "medium", "large"]),
@@ -167,16 +152,18 @@ def main(run_id: str, plan_file: str, model: str, working_dir: str, cli: str):
         sys.exit(1)
 
     # ── Configuration ───────────────────────────────────────────────
-    console.print(Panel(
-        f"[bold blue]Build Workflow[/bold blue]\n\n"
-        f"[cyan]Run ID:[/cyan] {state.run_id}\n"
-        f"[cyan]Task Type:[/cyan] {state.task_type or 'unknown'}\n"
-        f"[cyan]Plan:[/cyan] {plan_path}\n"
-        f"[cyan]CLI:[/cyan] {cli}\n"
-        f"[cyan]Model:[/cyan] {model}",
-        title="[bold blue]Build Configuration[/bold blue]",
-        border_style="blue",
-    ))
+    console.print(
+        Panel(
+            f"[bold blue]Build Workflow[/bold blue]\n\n"
+            f"[cyan]Run ID:[/cyan] {state.run_id}\n"
+            f"[cyan]Task Type:[/cyan] {state.task_type or 'unknown'}\n"
+            f"[cyan]Plan:[/cyan] {plan_path}\n"
+            f"[cyan]CLI:[/cyan] {cli}\n"
+            f"[cyan]Model:[/cyan] {model}",
+            title="[bold blue]Build Configuration[/bold blue]",
+            border_style="blue",
+        )
+    )
     console.print()
 
     # ── Implementation ──────────────────────────────────────────────
@@ -225,31 +212,36 @@ def main(run_id: str, plan_file: str, model: str, working_dir: str, cli: str):
         response = prompt_claude_code_with_retry(implement_request)
 
     if response.success:
-        console.print(Panel(
-            response.output,
-            title="[bold green]Implementation Success[/bold green]",
-            border_style="green",
-            padding=(1, 2),
-        ))
+        console.print(
+            Panel(
+                response.output,
+                title="[bold green]Implementation Success[/bold green]",
+                border_style="green",
+                padding=(1, 2),
+            )
+        )
     else:
-        console.print(Panel(
-            response.output,
-            title="[bold red]Implementation Failed[/bold red]",
-            border_style="red",
-            padding=(1, 2),
-        ))
+        console.print(
+            Panel(
+                response.output, title="[bold red]Implementation Failed[/bold red]", border_style="red", padding=(1, 2)
+            )
+        )
 
     # Save summary
     with open(os.path.join(builder_output_dir, SUMMARY_JSON), "w") as f:
-        json.dump({
-            "phase": "implementation",
-            "run_id": state.run_id,
-            "plan_path": plan_path,
-            "model": model,
-            "success": response.success,
-            "session_id": response.session_id,
-            "output": response.output,
-        }, f, indent=2)
+        json.dump(
+            {
+                "phase": "implementation",
+                "run_id": state.run_id,
+                "plan_path": plan_path,
+                "model": model,
+                "success": response.success,
+                "session_id": response.session_id,
+                "output": response.output,
+            },
+            f,
+            indent=2,
+        )
 
     # Save state
     state.save(working_dir, phase="build")

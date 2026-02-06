@@ -35,13 +35,7 @@ from rich.rule import Rule
 # Add the modules directory to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "modules"))
 
-from agent import (
-    AgentPromptRequest,
-    prompt_claude_code_with_retry,
-    generate_short_id,
-    parse_json,
-    TestResult,
-)
+from agent import AgentPromptRequest, prompt_claude_code_with_retry, generate_short_id, parse_json, TestResult
 from state import WorkflowState
 
 # Output file names
@@ -64,9 +58,7 @@ def load_template(template_path: str, working_dir: str) -> str:
         return f.read()
 
 
-def resolve_state(
-    run_id: str, working_dir: str, console: Console
-) -> WorkflowState:
+def resolve_state(run_id: str, working_dir: str, console: Console) -> WorkflowState:
     """Resolve state from --run-id or stdin pipe."""
     # Priority 1: explicit run-id
     if run_id:
@@ -86,32 +78,22 @@ def resolve_state(
     console.print("[bold red]No state source provided.[/bold red]")
     console.print("\nUsage:")
     console.print("  uv run agentic/workflows/test.py --run-id <id>")
-    console.print(
-        '  uv run agentic/workflows/build.py --run-id <id> | uv run agentic/workflows/test.py'
-    )
+    console.print("  uv run agentic/workflows/build.py --run-id <id> | uv run agentic/workflows/test.py")
     sys.exit(1)
 
 
 def run_tests(
-    state: WorkflowState,
-    working_dir: str,
-    model: str,
-    cli: str,
-    console: Console,
-    attempt: int,
+    state: WorkflowState, working_dir: str, model: str, cli: str, console: Console, attempt: int
 ) -> list[TestResult]:
     """Run test.md template and parse results into TestResult objects."""
     template = load_template(TEST_TEMPLATE, working_dir)
 
-    tester_output_dir = os.path.join(
-        working_dir, f"agentic/runs/{state.run_id}/tester"
-    )
+    tester_output_dir = os.path.join(working_dir, f"agentic/runs/{state.run_id}/tester")
     os.makedirs(tester_output_dir, exist_ok=True)
 
     # Use attempt-suffixed output file to preserve history
     output_file = os.path.join(
-        tester_output_dir,
-        f"cli_raw_output_attempt{attempt}.jsonl" if attempt > 0 else OUTPUT_JSONL,
+        tester_output_dir, f"cli_raw_output_attempt{attempt}.jsonl" if attempt > 0 else OUTPUT_JSONL
     )
 
     request = AgentPromptRequest(
@@ -131,11 +113,7 @@ def run_tests(
         response = prompt_claude_code_with_retry(request)
 
     if not response.success:
-        console.print(Panel(
-            response.output,
-            title="[bold red]Test Execution Failed[/bold red]",
-            border_style="red",
-        ))
+        console.print(Panel(response.output, title="[bold red]Test Execution Failed[/bold red]", border_style="red"))
         return []
 
     try:
@@ -144,22 +122,18 @@ def run_tests(
             results = [results]
         return results
     except (json.JSONDecodeError, ValueError) as e:
-        console.print(Panel(
-            f"Failed to parse test output: {e}\n\nRaw output:\n{response.output[:500]}",
-            title="[bold red]Parse Error[/bold red]",
-            border_style="red",
-        ))
+        console.print(
+            Panel(
+                f"Failed to parse test output: {e}\n\nRaw output:\n{response.output[:500]}",
+                title="[bold red]Parse Error[/bold red]",
+                border_style="red",
+            )
+        )
         return []
 
 
 def resolve_failing_test(
-    test: TestResult,
-    state: WorkflowState,
-    working_dir: str,
-    model: str,
-    cli: str,
-    console: Console,
-    fix_index: int,
+    test: TestResult, state: WorkflowState, working_dir: str, model: str, cli: str, console: Console, fix_index: int
 ) -> bool:
     """Attempt to fix a single failing test via inline prompt."""
     resolve_prompt = (
@@ -171,9 +145,7 @@ def resolve_failing_test(
         f"Fix the issue and verify by running: {test.execution_command}"
     )
 
-    fixer_output_dir = os.path.join(
-        working_dir, f"agentic/runs/{state.run_id}/tester/fixes"
-    )
+    fixer_output_dir = os.path.join(working_dir, f"agentic/runs/{state.run_id}/tester/fixes")
     os.makedirs(fixer_output_dir, exist_ok=True)
 
     request = AgentPromptRequest(
@@ -208,11 +180,7 @@ def display_test_results(results: list[TestResult], console: Console) -> tuple[i
         else:
             failed += 1
             error_snippet = (r.error or "")[:80]
-            table.add_row(
-                r.test_name,
-                f"[red]FAIL[/red] {error_snippet}",
-                r.execution_command,
-            )
+            table.add_row(r.test_name, f"[red]FAIL[/red] {error_snippet}", r.execution_command)
 
     console.print(table)
     console.print(f"\n  [green]{passed} passed[/green], [red]{failed} failed[/red]")
@@ -220,11 +188,7 @@ def display_test_results(results: list[TestResult], console: Console) -> tuple[i
 
 
 @click.command()
-@click.option(
-    "--run-id",
-    default=None,
-    help="Run ID from a previous plan/build execution",
-)
+@click.option("--run-id", default=None, help="Run ID from a previous plan/build execution")
 @click.option(
     "--model",
     type=click.Choice(["small", "medium", "large"]),
@@ -252,15 +216,17 @@ def main(run_id: str, model: str, working_dir: str, cli: str):
 
     state = resolve_state(run_id, working_dir, console)
 
-    console.print(Panel(
-        f"[bold blue]Test Workflow[/bold blue]\n\n"
-        f"[cyan]Run ID:[/cyan] {state.run_id}\n"
-        f"[cyan]CLI:[/cyan] {cli}\n"
-        f"[cyan]Model:[/cyan] {model}\n"
-        f"[cyan]Max Retries:[/cyan] {MAX_TEST_RETRY_ATTEMPTS}",
-        title="[bold blue]Test Configuration[/bold blue]",
-        border_style="blue",
-    ))
+    console.print(
+        Panel(
+            f"[bold blue]Test Workflow[/bold blue]\n\n"
+            f"[cyan]Run ID:[/cyan] {state.run_id}\n"
+            f"[cyan]CLI:[/cyan] {cli}\n"
+            f"[cyan]Model:[/cyan] {model}\n"
+            f"[cyan]Max Retries:[/cyan] {MAX_TEST_RETRY_ATTEMPTS}",
+            title="[bold blue]Test Configuration[/bold blue]",
+            border_style="blue",
+        )
+    )
     console.print()
 
     # ── Test retry loop ────────────────────────────────────────────
@@ -269,9 +235,7 @@ def main(run_id: str, model: str, working_dir: str, cli: str):
     fix_index = 0
 
     for attempt in range(MAX_TEST_RETRY_ATTEMPTS):
-        console.print(Rule(
-            f"[bold yellow]Test Run {attempt + 1}/{MAX_TEST_RETRY_ATTEMPTS}[/bold yellow]"
-        ))
+        console.print(Rule(f"[bold yellow]Test Run {attempt + 1}/{MAX_TEST_RETRY_ATTEMPTS}[/bold yellow]"))
         console.print()
 
         results = run_tests(state, working_dir, model, cli, console, attempt)
@@ -300,9 +264,7 @@ def main(run_id: str, model: str, working_dir: str, cli: str):
         failing_tests = [r for r in results if not r.passed]
 
         for test in failing_tests:
-            success = resolve_failing_test(
-                test, state, working_dir, model, cli, console, fix_index
-            )
+            success = resolve_failing_test(test, state, working_dir, model, cli, console, fix_index)
             fix_index += 1
             if success:
                 resolved_count += 1
@@ -310,14 +272,10 @@ def main(run_id: str, model: str, working_dir: str, cli: str):
             else:
                 console.print(f"  [red]Could not resolve:[/red] {test.test_name}")
 
-        console.print(
-            f"\n  Resolved {resolved_count}/{len(failing_tests)} failures"
-        )
+        console.print(f"\n  Resolved {resolved_count}/{len(failing_tests)} failures")
 
         if resolved_count == 0:
-            console.print(
-                "[bold yellow]No tests resolved, stopping retry loop.[/bold yellow]"
-            )
+            console.print("[bold yellow]No tests resolved, stopping retry loop.[/bold yellow]")
             break
 
     # ── Summary ────────────────────────────────────────────────────
@@ -338,9 +296,7 @@ def main(run_id: str, model: str, working_dir: str, cli: str):
     console.print(f"[bold cyan]State saved:[/bold cyan] agentic/runs/{state.run_id}/state.json")
 
     # Save summary
-    tester_output_dir = os.path.join(
-        working_dir, f"agentic/runs/{state.run_id}/tester"
-    )
+    tester_output_dir = os.path.join(working_dir, f"agentic/runs/{state.run_id}/tester")
     os.makedirs(tester_output_dir, exist_ok=True)
 
     summary = {

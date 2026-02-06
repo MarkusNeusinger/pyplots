@@ -29,11 +29,7 @@ WORKFLOWS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def run_phase(
-    script: str,
-    args: list[str],
-    console: Console,
-    phase_name: str,
-    capture_stdout: bool = False,
+    script: str, args: list[str], console: Console, phase_name: str, capture_stdout: bool = False
 ) -> tuple[int, str]:
     """Run a workflow phase script via uv."""
     script_path = os.path.join(WORKFLOWS_DIR, script)
@@ -42,9 +38,7 @@ def run_phase(
     console.print(f"[dim]$ {' '.join(cmd)}[/dim]\n")
 
     if capture_stdout:
-        result = subprocess.run(
-            cmd, stdout=subprocess.PIPE, stderr=None, text=True,
-        )
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=None, text=True)
         return result.returncode, result.stdout
     else:
         result = subprocess.run(cmd)
@@ -63,16 +57,14 @@ def extract_run_id(stdout: str) -> str | None:
 @click.command()
 @click.argument("prompt", required=True)
 @click.option(
-    "--type", "task_type",
+    "--type",
+    "task_type",
     type=click.Choice(["bug", "feature", "chore", "refactor"]),
     default=None,
     help="Skip classifier, use this type directly",
 )
 @click.option(
-    "--model",
-    type=click.Choice(["small", "medium", "large"]),
-    default="large",
-    help="Model tier (default: large)",
+    "--model", type=click.Choice(["small", "medium", "large"]), default="large", help="Model tier (default: large)"
 )
 @click.option(
     "--working-dir",
@@ -93,14 +85,16 @@ def main(prompt: str, task_type: str, model: str, working_dir: str, cli: str):
     if not working_dir:
         working_dir = os.getcwd()
 
-    console.print(Panel(
-        f"[bold blue]Plan + Build + Test Orchestrator[/bold blue]\n\n"
-        f"[cyan]Prompt:[/cyan] {prompt}\n"
-        f"[cyan]Model:[/cyan] {model}\n"
-        f"[cyan]CLI:[/cyan] {cli}",
-        title="[bold blue]Orchestrator[/bold blue]",
-        border_style="blue",
-    ))
+    console.print(
+        Panel(
+            f"[bold blue]Plan + Build + Test Orchestrator[/bold blue]\n\n"
+            f"[cyan]Prompt:[/cyan] {prompt}\n"
+            f"[cyan]Model:[/cyan] {model}\n"
+            f"[cyan]CLI:[/cyan] {cli}",
+            title="[bold blue]Orchestrator[/bold blue]",
+            border_style="blue",
+        )
+    )
     console.print()
 
     common_args = ["--model", model, "--cli", cli]
@@ -115,9 +109,7 @@ def main(prompt: str, task_type: str, model: str, working_dir: str, cli: str):
     if task_type:
         plan_args.extend(["--type", task_type])
 
-    plan_rc, plan_stdout = run_phase(
-        "plan.py", plan_args, console, "Plan", capture_stdout=True
-    )
+    plan_rc, plan_stdout = run_phase("plan.py", plan_args, console, "Plan", capture_stdout=True)
 
     if plan_rc != 0:
         console.print("[bold red]Plan phase failed. Aborting.[/bold red]")
@@ -149,9 +141,7 @@ def main(prompt: str, task_type: str, model: str, working_dir: str, cli: str):
     console.print()
 
     test_args = ["--run-id", run_id] + common_args
-    test_rc, test_stdout = run_phase(
-        "test.py", test_args, console, "Test", capture_stdout=is_piped
-    )
+    test_rc, test_stdout = run_phase("test.py", test_args, console, "Test", capture_stdout=is_piped)
 
     # ── Done ───────────────────────────────────────────────────────
     console.print()

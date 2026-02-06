@@ -40,11 +40,7 @@ from rich.rule import Rule
 # Add the modules directory to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "modules"))
 
-from agent import (
-    AgentPromptRequest,
-    prompt_claude_code_with_retry,
-    generate_short_id,
-)
+from agent import AgentPromptRequest, prompt_claude_code_with_retry, generate_short_id
 from state import WorkflowState
 
 # Output file names
@@ -137,7 +133,8 @@ def extract_plan_path(output: str, date_prefix: str) -> str:
 @click.command()
 @click.argument("prompt", required=True)
 @click.option(
-    "--type", "task_type",
+    "--type",
+    "task_type",
     type=click.Choice(["bug", "feature", "chore", "refactor"]),
     default=None,
     help="Skip classifier, use this type directly",
@@ -173,16 +170,18 @@ def main(prompt: str, task_type: str, model: str, working_dir: str, cli: str):
 
     state = WorkflowState(run_id=run_id, prompt=prompt)
 
-    console.print(Panel(
-        f"[bold blue]Plan Workflow[/bold blue]\n\n"
-        f"[cyan]Run ID:[/cyan] {run_id}\n"
-        f"[cyan]Date:[/cyan] {date_prefix}\n"
-        f"[cyan]CLI:[/cyan] {cli}\n"
-        f"[cyan]Model:[/cyan] {model}\n"
-        f"[cyan]Prompt:[/cyan] {prompt}",
-        title="[bold blue]Plan Configuration[/bold blue]",
-        border_style="blue",
-    ))
+    console.print(
+        Panel(
+            f"[bold blue]Plan Workflow[/bold blue]\n\n"
+            f"[cyan]Run ID:[/cyan] {run_id}\n"
+            f"[cyan]Date:[/cyan] {date_prefix}\n"
+            f"[cyan]CLI:[/cyan] {cli}\n"
+            f"[cyan]Model:[/cyan] {model}\n"
+            f"[cyan]Prompt:[/cyan] {prompt}",
+            title="[bold blue]Plan Configuration[/bold blue]",
+            border_style="blue",
+        )
+    )
     console.print()
 
     # ── Phase 1: Classify ───────────────────────────────────────────
@@ -216,11 +215,9 @@ def main(prompt: str, task_type: str, model: str, working_dir: str, cli: str):
             classify_response = prompt_claude_code_with_retry(classify_request, max_retries=2)
 
         if not classify_response.success:
-            console.print(Panel(
-                classify_response.output,
-                title="[bold red]Classification Failed[/bold red]",
-                border_style="red",
-            ))
+            console.print(
+                Panel(classify_response.output, title="[bold red]Classification Failed[/bold red]", border_style="red")
+            )
             sys.exit(1)
 
         try:
@@ -238,14 +235,18 @@ def main(prompt: str, task_type: str, model: str, working_dir: str, cli: str):
 
         # Save classifier summary
         with open(os.path.join(classify_output_dir, SUMMARY_JSON), "w") as f:
-            json.dump({
-                "phase": "classification",
-                "run_id": run_id,
-                "type": task_type,
-                "reason": classify_reason,
-                "raw_output": classify_response.output,
-                "session_id": classify_response.session_id,
-            }, f, indent=2)
+            json.dump(
+                {
+                    "phase": "classification",
+                    "run_id": run_id,
+                    "type": task_type,
+                    "reason": classify_reason,
+                    "raw_output": classify_response.output,
+                    "session_id": classify_response.session_id,
+                },
+                f,
+                indent=2,
+            )
     else:
         state.update(task_type=task_type)
         console.print(f"[cyan]Skipping classifier, using type:[/cyan] [bold]{task_type}[/bold]\n")
@@ -302,48 +303,55 @@ def main(prompt: str, task_type: str, model: str, working_dir: str, cli: str):
         plan_response = prompt_claude_code_with_retry(plan_request)
 
     if not plan_response.success:
-        console.print(Panel(
-            plan_response.output,
-            title="[bold red]Planning Failed[/bold red]",
-            border_style="red",
-            padding=(1, 2),
-        ))
+        console.print(
+            Panel(
+                plan_response.output, title="[bold red]Planning Failed[/bold red]", border_style="red", padding=(1, 2)
+            )
+        )
         sys.exit(1)
 
     # Extract plan path from output
     try:
         plan_path = extract_plan_path(plan_response.output, date_prefix)
     except ValueError as e:
-        console.print(Panel(
-            f"[bold red]{str(e)}[/bold red]\n\nPlanner output (first 500 chars):\n{plan_response.output[:500]}",
-            title="[bold red]Plan Path Error[/bold red]",
-            border_style="red",
-        ))
+        console.print(
+            Panel(
+                f"[bold red]{str(e)}[/bold red]\n\nPlanner output (first 500 chars):\n{plan_response.output[:500]}",
+                title="[bold red]Plan Path Error[/bold red]",
+                border_style="red",
+            )
+        )
         sys.exit(1)
 
     state.update(plan_file=plan_path)
 
-    console.print(Panel(
-        plan_response.output,
-        title="[bold green]Planning Success[/bold green]",
-        border_style="green",
-        padding=(1, 2),
-    ))
+    console.print(
+        Panel(
+            plan_response.output,
+            title="[bold green]Planning Success[/bold green]",
+            border_style="green",
+            padding=(1, 2),
+        )
+    )
     console.print(f"\n[bold cyan]Plan file:[/bold cyan] {plan_path}")
 
     # Save planner summary
     with open(os.path.join(planner_output_dir, SUMMARY_JSON), "w") as f:
-        json.dump({
-            "phase": "planning",
-            "run_id": run_id,
-            "task_type": task_type,
-            "template": template_path,
-            "model": model,
-            "success": plan_response.success,
-            "session_id": plan_response.session_id,
-            "plan_path": plan_path,
-            "output": plan_response.output,
-        }, f, indent=2)
+        json.dump(
+            {
+                "phase": "planning",
+                "run_id": run_id,
+                "task_type": task_type,
+                "template": template_path,
+                "model": model,
+                "success": plan_response.success,
+                "session_id": plan_response.session_id,
+                "plan_path": plan_path,
+                "output": plan_response.output,
+            },
+            f,
+            indent=2,
+        )
 
     # Save state
     state_path = state.save(working_dir, phase="plan")

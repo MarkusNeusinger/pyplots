@@ -38,8 +38,15 @@ class WorkflowState:
 
     # Core fields that are persisted
     CORE_FIELDS = {
-        "run_id", "prompt", "task_type", "plan_file", "classify_reason",
-        "test_passed", "test_failed_count", "review_success", "review_blocker_count",
+        "run_id",
+        "prompt",
+        "task_type",
+        "plan_file",
+        "classify_reason",
+        "test_passed",
+        "test_failed_count",
+        "review_success",
+        "review_blocker_count",
     }
 
     def __init__(self, run_id: str, prompt: str = ""):

@@ -78,9 +78,7 @@ def render_template(template: str, variables: dict) -> str:
     return result
 
 
-def resolve_state(
-    run_id: str, working_dir: str, console: Console
-) -> WorkflowState:
+def resolve_state(run_id: str, working_dir: str, console: Console) -> WorkflowState:
     """Resolve state from --run-id or stdin pipe."""
     if run_id:
         state = WorkflowState.load(run_id, working_dir)
@@ -97,19 +95,12 @@ def resolve_state(
     console.print("[bold red]No state source provided.[/bold red]")
     console.print("\nUsage:")
     console.print("  uv run agentic/workflows/review.py --run-id <id>")
-    console.print(
-        '  uv run agentic/workflows/test.py --run-id <id> | uv run agentic/workflows/review.py'
-    )
+    console.print("  uv run agentic/workflows/test.py --run-id <id> | uv run agentic/workflows/review.py")
     sys.exit(1)
 
 
 def run_review(
-    state: WorkflowState,
-    working_dir: str,
-    model: str,
-    cli: str,
-    console: Console,
-    attempt: int,
+    state: WorkflowState, working_dir: str, model: str, cli: str, console: Console, attempt: int
 ) -> ReviewResult | None:
     """Run review.md template and parse results into ReviewResult."""
     template = load_template(REVIEW_TEMPLATE, working_dir)
@@ -117,20 +108,13 @@ def run_review(
     # Find spec file from state
     spec_file = state.plan_file or ""
 
-    review_prompt = render_template(template, {
-        "1": state.run_id,
-        "2": spec_file,
-        "3": "reviewer",
-    })
+    review_prompt = render_template(template, {"1": state.run_id, "2": spec_file, "3": "reviewer"})
 
-    reviewer_output_dir = os.path.join(
-        working_dir, f"agentic/runs/{state.run_id}/reviewer"
-    )
+    reviewer_output_dir = os.path.join(working_dir, f"agentic/runs/{state.run_id}/reviewer")
     os.makedirs(reviewer_output_dir, exist_ok=True)
 
     output_file = os.path.join(
-        reviewer_output_dir,
-        f"cli_raw_output_attempt{attempt}.jsonl" if attempt > 0 else OUTPUT_JSONL,
+        reviewer_output_dir, f"cli_raw_output_attempt{attempt}.jsonl" if attempt > 0 else OUTPUT_JSONL
     )
 
     request = AgentPromptRequest(
@@ -150,11 +134,7 @@ def run_review(
         response = prompt_claude_code_with_retry(request)
 
     if not response.success:
-        console.print(Panel(
-            response.output,
-            title="[bold red]Review Execution Failed[/bold red]",
-            border_style="red",
-        ))
+        console.print(Panel(response.output, title="[bold red]Review Execution Failed[/bold red]", border_style="red"))
         return None
 
     try:
@@ -163,28 +143,22 @@ def run_review(
             result = result[0]
         return result
     except (json.JSONDecodeError, ValueError) as e:
-        console.print(Panel(
-            f"Failed to parse review output: {e}\n\nRaw output:\n{response.output[:500]}",
-            title="[bold red]Parse Error[/bold red]",
-            border_style="red",
-        ))
+        console.print(
+            Panel(
+                f"Failed to parse review output: {e}\n\nRaw output:\n{response.output[:500]}",
+                title="[bold red]Parse Error[/bold red]",
+                border_style="red",
+            )
+        )
         return None
 
 
 def resolve_blocker(
-    issue: ReviewIssue,
-    state: WorkflowState,
-    working_dir: str,
-    model: str,
-    cli: str,
-    console: Console,
-    fix_index: int,
+    issue: ReviewIssue, state: WorkflowState, working_dir: str, model: str, cli: str, console: Console, fix_index: int
 ) -> bool:
     """Attempt to fix a blocker issue using implement.md template."""
     fix_prompt = (
-        f"Fix this blocking review issue:\n\n"
-        f"Issue: {issue.issue_description}\n"
-        f"Resolution: {issue.issue_resolution}\n"
+        f"Fix this blocking review issue:\n\nIssue: {issue.issue_description}\nResolution: {issue.issue_resolution}\n"
     )
 
     # Use implement.md template with the fix as $ARGUMENTS
@@ -195,9 +169,7 @@ def resolve_blocker(
         # Fallback to inline prompt if implement.md not available
         full_prompt = fix_prompt
 
-    fixer_output_dir = os.path.join(
-        working_dir, f"agentic/runs/{state.run_id}/reviewer/fixes"
-    )
+    fixer_output_dir = os.path.join(working_dir, f"agentic/runs/{state.run_id}/reviewer/fixes")
     os.makedirs(fixer_output_dir, exist_ok=True)
 
     request = AgentPromptRequest(
@@ -219,17 +191,11 @@ def resolve_blocker(
 def display_review_result(result: ReviewResult, console: Console) -> int:
     """Display review results and return blocker count."""
     if result.success:
-        console.print(Panel(
-            result.review_summary,
-            title="[bold green]Review Passed[/bold green]",
-            border_style="green",
-        ))
+        console.print(
+            Panel(result.review_summary, title="[bold green]Review Passed[/bold green]", border_style="green")
+        )
     else:
-        console.print(Panel(
-            result.review_summary,
-            title="[bold red]Review Failed[/bold red]",
-            border_style="red",
-        ))
+        console.print(Panel(result.review_summary, title="[bold red]Review Failed[/bold red]", border_style="red"))
 
     blocker_count = 0
     if result.review_issues:
@@ -248,11 +214,7 @@ def display_review_result(result: ReviewResult, console: Console) -> int:
             if issue.issue_severity == "blocker":
                 blocker_count += 1
 
-            table.add_row(
-                str(issue.review_issue_number),
-                severity_style,
-                issue.issue_description[:80],
-            )
+            table.add_row(str(issue.review_issue_number), severity_style, issue.issue_description[:80])
 
         console.print(table)
 
@@ -261,11 +223,7 @@ def display_review_result(result: ReviewResult, console: Console) -> int:
 
 
 @click.command()
-@click.option(
-    "--run-id",
-    default=None,
-    help="Run ID from a previous plan/build/test execution",
-)
+@click.option("--run-id", default=None, help="Run ID from a previous plan/build/test execution")
 @click.option(
     "--model",
     type=click.Choice(["small", "medium", "large"]),
@@ -293,16 +251,18 @@ def main(run_id: str, model: str, working_dir: str, cli: str):
 
     state = resolve_state(run_id, working_dir, console)
 
-    console.print(Panel(
-        f"[bold blue]Review Workflow[/bold blue]\n\n"
-        f"[cyan]Run ID:[/cyan] {state.run_id}\n"
-        f"[cyan]Spec:[/cyan] {state.plan_file or '(auto-detect)'}\n"
-        f"[cyan]CLI:[/cyan] {cli}\n"
-        f"[cyan]Model:[/cyan] {model}\n"
-        f"[cyan]Max Retries:[/cyan] {MAX_REVIEW_RETRY_ATTEMPTS}",
-        title="[bold blue]Review Configuration[/bold blue]",
-        border_style="blue",
-    ))
+    console.print(
+        Panel(
+            f"[bold blue]Review Workflow[/bold blue]\n\n"
+            f"[cyan]Run ID:[/cyan] {state.run_id}\n"
+            f"[cyan]Spec:[/cyan] {state.plan_file or '(auto-detect)'}\n"
+            f"[cyan]CLI:[/cyan] {cli}\n"
+            f"[cyan]Model:[/cyan] {model}\n"
+            f"[cyan]Max Retries:[/cyan] {MAX_REVIEW_RETRY_ATTEMPTS}",
+            title="[bold blue]Review Configuration[/bold blue]",
+            border_style="blue",
+        )
+    )
     console.print()
 
     # ── Review retry loop ──────────────────────────────────────────
@@ -311,9 +271,7 @@ def main(run_id: str, model: str, working_dir: str, cli: str):
     fix_index = 0
 
     for attempt in range(MAX_REVIEW_RETRY_ATTEMPTS):
-        console.print(Rule(
-            f"[bold yellow]Review {attempt + 1}/{MAX_REVIEW_RETRY_ATTEMPTS}[/bold yellow]"
-        ))
+        console.print(Rule(f"[bold yellow]Review {attempt + 1}/{MAX_REVIEW_RETRY_ATTEMPTS}[/bold yellow]"))
         console.print()
 
         result = run_review(state, working_dir, model, cli, console, attempt)
@@ -342,9 +300,7 @@ def main(run_id: str, model: str, working_dir: str, cli: str):
         blockers = [i for i in result.review_issues if i.issue_severity == "blocker"]
 
         for issue in blockers:
-            success = resolve_blocker(
-                issue, state, working_dir, model, cli, console, fix_index
-            )
+            success = resolve_blocker(issue, state, working_dir, model, cli, console, fix_index)
             fix_index += 1
             if success:
                 resolved_count += 1
@@ -355,9 +311,7 @@ def main(run_id: str, model: str, working_dir: str, cli: str):
         console.print(f"\n  Resolved {resolved_count}/{len(blockers)} blockers")
 
         if resolved_count == 0:
-            console.print(
-                "[bold yellow]No blockers resolved, stopping retry loop.[/bold yellow]"
-            )
+            console.print("[bold yellow]No blockers resolved, stopping retry loop.[/bold yellow]")
             break
 
     # ── Summary ────────────────────────────────────────────────────
@@ -367,9 +321,7 @@ def main(run_id: str, model: str, working_dir: str, cli: str):
 
     blocker_count = 0
     if final_result:
-        blocker_count = sum(
-            1 for i in final_result.review_issues if i.issue_severity == "blocker"
-        )
+        blocker_count = sum(1 for i in final_result.review_issues if i.issue_severity == "blocker")
 
     if review_success:
         console.print("[bold green]Review passed.[/bold green]")
@@ -382,9 +334,7 @@ def main(run_id: str, model: str, working_dir: str, cli: str):
     console.print(f"[bold cyan]State saved:[/bold cyan] agentic/runs/{state.run_id}/state.json")
 
     # Save summary
-    reviewer_output_dir = os.path.join(
-        working_dir, f"agentic/runs/{state.run_id}/reviewer"
-    )
+    reviewer_output_dir = os.path.join(working_dir, f"agentic/runs/{state.run_id}/reviewer")
     os.makedirs(reviewer_output_dir, exist_ok=True)
 
     summary = {

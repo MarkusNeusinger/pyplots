@@ -21,6 +21,7 @@ if _project_root not in sys.path:
 # Import settings directly from the module file to avoid core/__init__.py
 # which has dependencies (PIL) not available in uv script environments
 import importlib.util
+
 _config_path = os.path.join(_project_root, "core", "config.py")
 _spec = importlib.util.spec_from_file_location("core_config", _config_path)
 _core_config = importlib.util.module_from_spec(_spec)
@@ -31,6 +32,7 @@ settings = _core_config.settings
 # Retry codes for Claude Code execution errors
 class RetryCode(str, Enum):
     """Codes indicating different types of errors that may be retryable."""
+
     CLAUDE_CODE_ERROR = "claude_code_error"  # General Claude Code CLI error
     TIMEOUT_ERROR = "timeout_error"  # Command timed out
     EXECUTION_ERROR = "execution_error"  # Error during execution
@@ -40,6 +42,7 @@ class RetryCode(str, Enum):
 
 class AgentPromptRequest(BaseModel):
     """Claude Code agent prompt configuration."""
+
     prompt: str
     run_id: str
     agent_name: str = "ops"
@@ -52,6 +55,7 @@ class AgentPromptRequest(BaseModel):
 
 class AgentPromptResponse(BaseModel):
     """Claude Code agent response."""
+
     output: str
     success: bool
     session_id: Optional[str] = None
@@ -60,6 +64,7 @@ class AgentPromptResponse(BaseModel):
 
 class AgentTemplateRequest(BaseModel):
     """Claude Code agent template execution request."""
+
     agent_name: str
     slash_command: str
     args: List[str]
@@ -71,6 +76,7 @@ class AgentTemplateRequest(BaseModel):
 
 class ClaudeCodeResultMessage(BaseModel):
     """Claude Code JSONL result message (last line)."""
+
     type: str
     subtype: str
     is_error: bool
@@ -84,6 +90,7 @@ class ClaudeCodeResultMessage(BaseModel):
 
 class TestResult(BaseModel):
     """Individual test result from test.md output."""
+
     test_name: str
     passed: bool
     execution_command: str
@@ -93,6 +100,7 @@ class TestResult(BaseModel):
 
 class ReviewIssue(BaseModel):
     """Individual review issue from review.md output."""
+
     review_issue_number: int
     screenshot_path: str
     issue_description: str
@@ -102,6 +110,7 @@ class ReviewIssue(BaseModel):
 
 class ReviewResult(BaseModel):
     """Review result from review.md output."""
+
     success: bool
     review_summary: str
     review_issues: List[ReviewIssue] = []
@@ -112,10 +121,11 @@ T = TypeVar("T", bound=BaseModel)
 
 
 def parse_json(output: str, target_type: Type[T] = None) -> Any:
-    """Parse JSON from LLM output, handling markdown code fences.
+    """Parse JSON from LLM output, handling markdown code fences and surrounding text.
 
     Args:
-        output: Raw LLM output that may contain JSON wrapped in markdown fences.
+        output: Raw LLM output that may contain JSON wrapped in markdown fences
+            or surrounded by explanatory text.
         target_type: Optional Pydantic model class to validate against.
 
     Returns:
@@ -123,16 +133,56 @@ def parse_json(output: str, target_type: Type[T] = None) -> Any:
     """
     cleaned = output.strip()
 
-    # Strip markdown code fences if present
-    if cleaned.startswith("```"):
-        # Remove opening fence (```json, ```, etc.)
-        first_newline = cleaned.index("\n") if "\n" in cleaned else len(cleaned)
-        cleaned = cleaned[first_newline + 1:]
-        # Remove closing fence
-        if cleaned.rstrip().endswith("```"):
-            cleaned = cleaned.rstrip()[:-3].rstrip()
+    # Strategy 1: Try direct parse
+    try:
+        parsed = json.loads(cleaned)
+        if target_type is not None:
+            if isinstance(parsed, list):
+                return [target_type.model_validate(item) for item in parsed]
+            return target_type.model_validate(parsed)
+        return parsed
+    except (json.JSONDecodeError, ValueError):
+        pass
 
-    parsed = json.loads(cleaned)
+    # Strategy 2: Strip markdown code fences
+    if "```" in cleaned:
+        # Find content between first ``` and last ```
+        fence_start = cleaned.index("```")
+        first_newline = cleaned.index("\n", fence_start) if "\n" in cleaned[fence_start:] else len(cleaned)
+        fence_end = cleaned.rindex("```")
+        if fence_end > fence_start:
+            inner = cleaned[first_newline + 1 : fence_end].strip()
+            try:
+                parsed = json.loads(inner)
+                if target_type is not None:
+                    if isinstance(parsed, list):
+                        return [target_type.model_validate(item) for item in parsed]
+                    return target_type.model_validate(parsed)
+                return parsed
+            except (json.JSONDecodeError, ValueError):
+                pass
+
+    # Strategy 3: Find first JSON array or object in output
+    for start_char, end_char in [("[", "]"), ("{", "}")]:
+        start_idx = cleaned.find(start_char)
+        if start_idx == -1:
+            continue
+        # Find matching closing bracket by scanning from the end
+        end_idx = cleaned.rfind(end_char)
+        if end_idx <= start_idx:
+            continue
+        candidate = cleaned[start_idx : end_idx + 1]
+        try:
+            parsed = json.loads(candidate)
+            if target_type is not None:
+                if isinstance(parsed, list):
+                    return [target_type.model_validate(item) for item in parsed]
+                return target_type.model_validate(parsed)
+            return parsed
+        except (json.JSONDecodeError, ValueError):
+            continue
+
+    raise json.JSONDecodeError("No valid JSON found in output", output, 0)
 
     if target_type is not None:
         if isinstance(parsed, list):
@@ -153,13 +203,9 @@ def get_safe_subprocess_env() -> Dict[str, str]:
     safe_env_vars = {
         # Anthropic Configuration (required)
         "ANTHROPIC_API_KEY": os.getenv("ANTHROPIC_API_KEY"),
-
         # Claude Code Configuration
         "CLAUDE_CODE_PATH": os.getenv("CLAUDE_CODE_PATH", "claude"),
-        "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": os.getenv(
-            "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR", "true"
-        ),
-
+        "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": os.getenv("CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR", "true"),
         # Essential system environment variables
         "HOME": os.getenv("HOME"),
         "USER": os.getenv("USER"),
@@ -168,11 +214,9 @@ def get_safe_subprocess_env() -> Dict[str, str]:
         "TERM": os.getenv("TERM"),
         "LANG": os.getenv("LANG"),
         "LC_ALL": os.getenv("LC_ALL"),
-
         # Python-specific variables that subprocesses might need
         "PYTHONPATH": os.getenv("PYTHONPATH"),
         "PYTHONUNBUFFERED": "1",  # Useful for subprocess output
-
         # Working directory tracking
         "PWD": os.getcwd(),
     }
@@ -271,9 +315,7 @@ def build_cli_command(
     return cmd
 
 
-def truncate_output(
-    output: str, max_length: int = 500, suffix: str = "... (truncated)"
-) -> str:
+def truncate_output(output: str, max_length: int = 500, suffix: str = "... (truncated)") -> str:
     """Truncate output to a reasonable length for display.
 
     Special handling for JSONL data - if the output appears to be JSONL,
@@ -343,21 +385,15 @@ def check_cli_installed(cli: str = "claude") -> Optional[str]:
     """
     cli_path = get_cli_path(cli)
     try:
-        result = subprocess.run(
-            [cli_path, "--version"], capture_output=True, text=True
-        )
+        result = subprocess.run([cli_path, "--version"], capture_output=True, text=True)
         if result.returncode != 0:
-            return (
-                f"Error: CLI tool '{cli}' is not installed. Expected at: {cli_path}"
-            )
+            return f"Error: CLI tool '{cli}' is not installed. Expected at: {cli_path}"
     except FileNotFoundError:
         return f"Error: CLI tool '{cli}' is not installed. Expected at: {cli_path}"
     return None
 
 
-def parse_jsonl_output(
-    output_file: str,
-) -> Tuple[List[Dict[str, Any]], Optional[Dict[str, Any]]]:
+def parse_jsonl_output(output_file: str) -> Tuple[List[Dict[str, Any]], Optional[Dict[str, Any]]]:
     """Parse JSONL output file and return all messages and the result message.
 
     Returns:
@@ -462,9 +498,7 @@ def save_prompt(prompt: str, run_id: str, agent_name: str = "ops") -> None:
     command_name = slash_command[1:]
 
     # Create directory structure at project root
-    project_root = os.path.dirname(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    )
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     prompt_dir = os.path.join(project_root, "agentic", "runs", run_id, agent_name, "prompts")
     os.makedirs(prompt_dir, exist_ok=True)
 
@@ -475,9 +509,7 @@ def save_prompt(prompt: str, run_id: str, agent_name: str = "ops") -> None:
 
 
 def prompt_claude_code_with_retry(
-    request: AgentPromptRequest,
-    max_retries: int = 3,
-    retry_delays: List[int] = None,
+    request: AgentPromptRequest, max_retries: int = 3, retry_delays: List[int] = None
 ) -> AgentPromptResponse:
     """Execute Claude Code with retry logic for certain error types.
 
@@ -594,12 +626,7 @@ def prompt_claude_code(request: AgentPromptRequest) -> AgentPromptResponse:
                 # Read plain text output
                 with open(request.output_file, "r") as f:
                     output_text = f.read().strip()
-                return AgentPromptResponse(
-                    output=output_text,
-                    success=True,
-                    session_id=None,
-                    retry_code=RetryCode.NONE,
-                )
+                return AgentPromptResponse(output=output_text, success=True, session_id=None, retry_code=RetryCode.NONE)
 
             # Parse the JSONL file (claude only)
             messages, result_message = parse_jsonl_output(request.output_file)
@@ -655,9 +682,7 @@ def prompt_claude_code(request: AgentPromptRequest) -> AgentPromptResponse:
                             for line in reversed(last_lines):
                                 try:
                                     data = json.loads(line.strip())
-                                    if data.get("type") == "assistant" and data.get(
-                                        "message"
-                                    ):
+                                    if data.get("type") == "assistant" and data.get("message"):
                                         # Extract text from assistant message
                                         content = data["message"].get("content", [])
                                         if isinstance(content, list) and content:
@@ -713,16 +738,11 @@ def prompt_claude_code(request: AgentPromptRequest) -> AgentPromptResponse:
                         elif messages:
                             # Look for error in last few messages
                             for msg in reversed(messages[-5:]):
-                                if msg.get("type") == "assistant" and msg.get(
-                                    "message", {}
-                                ).get("content"):
+                                if msg.get("type") == "assistant" and msg.get("message", {}).get("content"):
                                     content = msg["message"]["content"]
                                     if isinstance(content, list) and content:
                                         text = content[0].get("text", "")
-                                        if text and (
-                                            "error" in text.lower()
-                                            or "failed" in text.lower()
-                                        ):
+                                        if text and ("error" in text.lower() or "failed" in text.lower()):
                                             error_from_jsonl = text[:500]  # Truncate
                                             break
 
@@ -732,9 +752,7 @@ def prompt_claude_code(request: AgentPromptRequest) -> AgentPromptResponse:
                                 lines = f.readlines()
                                 if lines:
                                     # Just get the last line instead of entire file
-                                    stdout_msg = lines[-1].strip()[
-                                        :200
-                                    ]  # Truncate to 200 chars
+                                    stdout_msg = lines[-1].strip()[:200]  # Truncate to 200 chars
                 except:
                     pass
 
@@ -759,19 +777,11 @@ def prompt_claude_code(request: AgentPromptRequest) -> AgentPromptResponse:
 
     except subprocess.TimeoutExpired:
         error_msg = "Error: CLI command timed out after 5 minutes"
-        return AgentPromptResponse(
-            output=error_msg,
-            success=False,
-            session_id=None,
-            retry_code=RetryCode.TIMEOUT_ERROR,
-        )
+        return AgentPromptResponse(output=error_msg, success=False, session_id=None, retry_code=RetryCode.TIMEOUT_ERROR)
     except Exception as e:
         error_msg = f"Error executing CLI: {e}"
         return AgentPromptResponse(
-            output=error_msg,
-            success=False,
-            session_id=None,
-            retry_code=RetryCode.EXECUTION_ERROR,
+            output=error_msg, success=False, session_id=None, retry_code=RetryCode.EXECUTION_ERROR
         )
 
 
@@ -793,12 +803,8 @@ def execute_template(request: AgentTemplateRequest) -> AgentPromptResponse:
     prompt = f"{request.slash_command} {' '.join(request.args)}"
 
     # Create output directory with run_id at project root
-    project_root = os.path.dirname(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    )
-    output_dir = os.path.join(
-        project_root, "agentic", "runs", request.run_id, request.agent_name
-    )
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    output_dir = os.path.join(project_root, "agentic", "runs", request.run_id, request.agent_name)
     os.makedirs(output_dir, exist_ok=True)
 
     # Build output file path

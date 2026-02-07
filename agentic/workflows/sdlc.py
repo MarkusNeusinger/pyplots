@@ -7,14 +7,15 @@
 # ]
 # ///
 """
-Full pipeline orchestrator: Plan + Build + Test + Review + Document.
+Complete SDLC orchestrator: Plan + Build + Test + Review + Document + Commit + PR.
 
-Chains plan.py, build.py, test.py (with auto-fix), review.py
-(with blocker resolution), and document.py.
+Chains all workflow phases into a single end-to-end pipeline.
+Test, document, and PR failures are non-fatal. Build, commit, and review
+failures abort the pipeline.
 
 Usage:
-    uv run agentic/workflows/plan_build_test_review_document.py "Add dark mode toggle"
-    uv run agentic/workflows/plan_build_test_review_document.py "Fix login bug" --model small
+    uv run agentic/workflows/sdlc.py "Add CSV export to API endpoints"
+    uv run agentic/workflows/sdlc.py "Fix the 404 bug" --type bug --model large
 """
 
 import os
@@ -56,7 +57,7 @@ from orchestrator import extract_run_id, run_phase
     help="CLI tool to use (default: claude)",
 )
 def main(prompt: str, task_type: str, model: str, working_dir: str, cli: str):
-    """Full pipeline: plan, build, test, review, and document."""
+    """Full SDLC: plan, build, test, review, document, commit, and PR."""
     is_piped = not sys.stdout.isatty()
     console = Console(file=sys.stderr if is_piped else None)
 
@@ -65,11 +66,12 @@ def main(prompt: str, task_type: str, model: str, working_dir: str, cli: str):
 
     console.print(
         Panel(
-            f"[bold blue]Plan + Build + Test + Review + Document Orchestrator[/bold blue]\n\n"
+            f"[bold blue]SDLC Orchestrator[/bold blue]\n\n"
+            f"[cyan]Pipeline:[/cyan] Plan → Build → Test → Review → Document → Commit → PR\n"
             f"[cyan]Prompt:[/cyan] {prompt}\n"
             f"[cyan]Model:[/cyan] {model}\n"
             f"[cyan]CLI:[/cyan] {cli}",
-            title="[bold blue]Full Pipeline[/bold blue]",
+            title="[bold blue]Full SDLC Pipeline[/bold blue]",
             border_style="blue",
         )
     )
@@ -78,6 +80,9 @@ def main(prompt: str, task_type: str, model: str, working_dir: str, cli: str):
     common_args = ["--model", model, "--cli", cli]
     if working_dir:
         common_args.extend(["--working-dir", working_dir])
+
+    # Track results for summary
+    phase_results = {}
 
     # ── Phase 1: Plan ──────────────────────────────────────────────
     console.print(Rule("[bold yellow]Phase 1: Plan[/bold yellow]"))
@@ -88,9 +93,11 @@ def main(prompt: str, task_type: str, model: str, working_dir: str, cli: str):
         plan_args.extend(["--type", task_type])
 
     plan_rc, plan_stdout = run_phase("plan.py", plan_args, console, "Plan", capture_stdout=True)
+    phase_results["Plan"] = plan_rc
 
     if plan_rc != 0:
         console.print("[bold red]Plan phase failed. Aborting.[/bold red]")
+        _print_summary(console, phase_results)
         sys.exit(plan_rc)
 
     run_id = extract_run_id(plan_stdout)
@@ -107,9 +114,11 @@ def main(prompt: str, task_type: str, model: str, working_dir: str, cli: str):
 
     build_args = ["--run-id", run_id] + common_args
     build_rc, _ = run_phase("build.py", build_args, console, "Build")
+    phase_results["Build"] = build_rc
 
     if build_rc != 0:
         console.print("[bold red]Build phase failed. Aborting.[/bold red]")
+        _print_summary(console, phase_results)
         sys.exit(build_rc)
 
     console.print()
@@ -120,9 +129,11 @@ def main(prompt: str, task_type: str, model: str, working_dir: str, cli: str):
 
     test_args = ["--run-id", run_id] + common_args
     test_rc, _ = run_phase("test.py", test_args, console, "Test")
+    phase_results["Test"] = test_rc
 
     if test_rc != 0:
         console.print("[bold red]Test phase failed after retries. Aborting.[/bold red]")
+        _print_summary(console, phase_results)
         sys.exit(test_rc)
 
     console.print()
@@ -133,9 +144,11 @@ def main(prompt: str, task_type: str, model: str, working_dir: str, cli: str):
 
     review_args = ["--run-id", run_id] + common_args
     review_rc, _ = run_phase("review.py", review_args, console, "Review")
+    phase_results["Review"] = review_rc
 
     if review_rc != 0:
         console.print("[bold red]Review phase failed after retries. Aborting.[/bold red]")
+        _print_summary(console, phase_results)
         sys.exit(review_rc)
 
     console.print()
@@ -145,19 +158,64 @@ def main(prompt: str, task_type: str, model: str, working_dir: str, cli: str):
     console.print()
 
     doc_args = ["--run-id", run_id] + common_args
-    doc_rc, doc_stdout = run_phase("document.py", doc_args, console, "Document", capture_stdout=is_piped)
+    doc_rc, _ = run_phase("document.py", doc_args, console, "Document")
+    phase_results["Document"] = doc_rc
 
     if doc_rc != 0:
-        console.print("[bold yellow]Documentation generation failed, continuing.[/bold yellow]")
+        console.print("[bold yellow]Documentation failed, continuing.[/bold yellow]")
+
+    console.print()
+
+    # ── Phase 6: Commit ────────────────────────────────────────────
+    console.print(Rule("[bold yellow]Phase 6: Commit[/bold yellow]"))
+    console.print()
+
+    commit_args = ["--run-id", run_id] + common_args
+    commit_rc, _ = run_phase("commit.py", commit_args, console, "Commit")
+    phase_results["Commit"] = commit_rc
+
+    if commit_rc != 0:
+        console.print("[bold red]Commit failed. Skipping PR.[/bold red]")
+        _print_summary(console, phase_results)
+        sys.exit(commit_rc)
+
+    console.print()
+
+    # ── Phase 7: Pull Request ──────────────────────────────────────
+    console.print(Rule("[bold yellow]Phase 7: Pull Request[/bold yellow]"))
+    console.print()
+
+    pr_args = ["--run-id", run_id] + common_args
+    pr_rc, pr_stdout = run_phase("pull_request.py", pr_args, console, "Pull Request", capture_stdout=is_piped)
+    phase_results["PR"] = pr_rc
 
     # ── Summary ────────────────────────────────────────────────────
+    _print_summary(console, phase_results)
+
+    if is_piped and pr_stdout:
+        print(pr_stdout, end="")
+
+    final_rc = commit_rc or pr_rc
+    sys.exit(final_rc)
+
+
+def _print_summary(console: Console, phase_results: dict):
+    """Print pipeline summary with phase statuses."""
     console.print()
-    console.print("[bold green]Pipeline completed successfully.[/bold green]")
+    console.print(Rule("[bold blue]SDLC Pipeline Summary[/bold blue]"))
+    console.print()
 
-    if is_piped and doc_stdout:
-        print(doc_stdout, end="")
+    all_passed = all(rc == 0 for rc in phase_results.values())
 
-    sys.exit(doc_rc)
+    for name, rc in phase_results.items():
+        status = "[green]PASS[/green]" if rc == 0 else "[red]FAIL[/red]"
+        console.print(f"  {name}: {status}")
+
+    console.print()
+    if all_passed:
+        console.print("[bold green]Full SDLC pipeline completed successfully.[/bold green]")
+    else:
+        console.print("[bold red]SDLC pipeline completed with failures.[/bold red]")
 
 
 if __name__ == "__main__":

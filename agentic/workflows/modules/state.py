@@ -48,6 +48,8 @@ class WorkflowState:
         "review_success",
         "review_blocker_count",
         "document_path",
+        "commit_message",
+        "pr_url",
     }
 
     def __init__(self, run_id: str, prompt: str = ""):
@@ -100,6 +102,14 @@ class WorkflowState:
     @property
     def document_path(self) -> Optional[str]:
         return self.data.get("document_path")
+
+    @property
+    def commit_message(self) -> Optional[str]:
+        return self.data.get("commit_message")
+
+    @property
+    def pr_url(self) -> Optional[str]:
+        return self.data.get("pr_url")
 
     def _get_state_path(self, working_dir: str) -> str:
         """Get path to state file."""

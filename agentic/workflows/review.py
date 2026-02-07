@@ -14,7 +14,7 @@ Standalone review workflow with automatic blocker resolution.
 
 Runs the review.md template against a spec file, parses results,
 and for each blocker spawns an inline-prompt agent to fix the issue.
-Retries up to 3 times.
+Retries up to 5 times.
 
 Usage:
     # With run-id from a previous build
@@ -56,7 +56,7 @@ REVIEW_TEMPLATE = "agentic/commands/review.md"
 IMPLEMENT_TEMPLATE = "agentic/commands/implement.md"
 
 # Retry configuration
-MAX_REVIEW_RETRY_ATTEMPTS = 3
+MAX_REVIEW_RETRY_ATTEMPTS = 5
 
 # Usage hint for resolve_state error message
 REVIEW_USAGE_HINT = (

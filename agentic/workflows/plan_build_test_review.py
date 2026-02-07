@@ -122,7 +122,8 @@ def main(prompt: str, task_type: str, model: str, working_dir: str, cli: str):
     test_rc, _ = run_phase("test.py", test_args, console, "Test")
 
     if test_rc != 0:
-        console.print("[bold yellow]Tests failed, continuing to review.[/bold yellow]")
+        console.print("[bold red]Test phase failed after retries. Aborting.[/bold red]")
+        sys.exit(test_rc)
 
     console.print()
 
@@ -133,32 +134,18 @@ def main(prompt: str, task_type: str, model: str, working_dir: str, cli: str):
     review_args = ["--run-id", run_id] + common_args
     review_rc, review_stdout = run_phase("review.py", review_args, console, "Review", capture_stdout=is_piped)
 
+    if review_rc != 0:
+        console.print("[bold red]Review phase failed after retries. Aborting.[/bold red]")
+        sys.exit(review_rc)
+
     # ── Summary ────────────────────────────────────────────────────
     console.print()
-    console.print(Rule("[bold blue]Pipeline Summary[/bold blue]"))
-    console.print()
-
-    phases = [("Plan", plan_rc), ("Build", build_rc), ("Test", test_rc), ("Review", review_rc)]
-
-    all_passed = all(rc == 0 for _, rc in phases)
-
-    for name, rc in phases:
-        status = "[green]PASS[/green]" if rc == 0 else "[red]FAIL[/red]"
-        console.print(f"  {name}: {status}")
-
-    console.print()
-    if all_passed:
-        console.print("[bold green]Full pipeline completed successfully.[/bold green]")
-    else:
-        console.print("[bold red]Pipeline completed with failures.[/bold red]")
+    console.print("[bold green]Full pipeline completed successfully.[/bold green]")
 
     if is_piped and review_stdout:
         print(review_stdout, end="")
 
-    # Exit with non-zero if any critical phase failed
-    # Test failures are non-fatal if review passes
-    final_rc = build_rc or review_rc or test_rc
-    sys.exit(final_rc)
+    sys.exit(0)
 
 
 if __name__ == "__main__":

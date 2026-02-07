@@ -46,7 +46,7 @@ from template import load_template
 TEST_TEMPLATE = "agentic/commands/test.md"
 
 # Retry configuration
-MAX_TEST_RETRY_ATTEMPTS = 4
+MAX_TEST_RETRY_ATTEMPTS = 5
 
 # Usage hint for resolve_state error message
 TEST_USAGE_HINT = (

@@ -65,8 +65,8 @@ export function Footer({ onTrackEvent, selectedSpec, selectedLibrary }: FooterPr
           >
             markus neusinger
           </Link>
-          <span>·</span>
         </Box>
+        <span>·</span>
         <Link
           component={RouterLink}
           to="/mcp"

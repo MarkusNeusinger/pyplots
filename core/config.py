@@ -98,6 +98,39 @@ class Settings(BaseSettings):
     """Maximum tokens for Claude review responses"""
 
     # =============================================================================
+    # CLI MODEL TIER CONFIGURATION
+    # =============================================================================
+    # Model tiers (small/medium/large) map to CLI-specific model names.
+    # Override these to use different models for each tier.
+
+    cli_model_claude_small: str = "haiku"
+    """Claude model for 'small' tier (fast/cheap tasks)"""
+
+    cli_model_claude_medium: str = "sonnet"
+    """Claude model for 'medium' tier (balanced tasks)"""
+
+    cli_model_claude_large: str = "opus"
+    """Claude model for 'large' tier (complex tasks)"""
+
+    cli_model_copilot_small: str = "gpt-4o-mini"
+    """Copilot model for 'small' tier"""
+
+    cli_model_copilot_medium: str = "gpt-4o"
+    """Copilot model for 'medium' tier"""
+
+    cli_model_copilot_large: str = "o1"
+    """Copilot model for 'large' tier"""
+
+    cli_model_gemini_small: str = "gemini-2.0-flash"
+    """Gemini model for 'small' tier"""
+
+    cli_model_gemini_medium: str = "gemini-2.0-flash-thinking"
+    """Gemini model for 'medium' tier"""
+
+    cli_model_gemini_large: str = "gemini-2.5-pro"
+    """Gemini model for 'large' tier"""
+
+    # =============================================================================
     # CACHE
     # =============================================================================
 
@@ -153,6 +186,36 @@ class Settings(BaseSettings):
     def has_google_cloud(self) -> bool:
         """Check if Google Cloud is configured."""
         return bool(self.google_application_credentials or self.instance_connection_name)
+
+    def resolve_model(self, cli: str, tier: str) -> str:
+        """Resolve a model tier (small/medium/large) to the actual model name for a CLI.
+
+        Args:
+            cli: The CLI tool name ("claude", "copilot", or "gemini")
+            tier: The model tier ("small", "medium", or "large")
+
+        Returns:
+            The actual model name for the specified CLI and tier.
+            If the tier is not recognized, returns the tier unchanged (pass-through).
+        """
+        mapping = {
+            "claude": {
+                "small": self.cli_model_claude_small,
+                "medium": self.cli_model_claude_medium,
+                "large": self.cli_model_claude_large,
+            },
+            "copilot": {
+                "small": self.cli_model_copilot_small,
+                "medium": self.cli_model_copilot_medium,
+                "large": self.cli_model_copilot_large,
+            },
+            "gemini": {
+                "small": self.cli_model_gemini_small,
+                "medium": self.cli_model_gemini_medium,
+                "large": self.cli_model_gemini_large,
+            },
+        }
+        return mapping.get(cli, {}).get(tier, tier)
 
 
 # Global settings instance

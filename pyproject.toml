@@ -144,7 +144,7 @@ skip-magic-trailing-comma = true
 [tool.ruff.lint.isort]
 force-single-line = false
 lines-after-imports = 2
-known-first-party = ["api", "core", "automation"]
+known-first-party = ["api", "core", "automation", "agentic"]
 split-on-trailing-comma = false
 
 # ===== Pytest Configuration =====

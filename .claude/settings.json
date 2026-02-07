@@ -6,12 +6,16 @@
       "Bash",
       "WebFetch",
       "mcp__plugin_serena_serena__*",
-      "mcp__plugin_context7_context7__*"
+      "mcp__plugin_context7_context7__*",
+      "mcp__plugin_playwright_playwright__*"
     ],
     "ask": [
       "Bash(git commit *)",
       "Bash(git push *)"
     ],
     "deny": []
+  },
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   }
 }

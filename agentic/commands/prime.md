@@ -8,7 +8,8 @@ git ls-files ':!plots/'
 
 ## Read
 
-@docs/ai_docs/project-guide.md
+@agentic/docs/project-guide.md
+@agentic/commands/context.md
 @docs/concepts/vision.md
 @pyproject.toml
 

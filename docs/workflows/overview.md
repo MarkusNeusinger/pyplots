@@ -182,3 +182,41 @@ gh workflow run bulk-generate.yml -f specification_id=all -f library=matplotlib
 ```
 
 **Concurrency limit**: Max 3 parallel implementations globally.
+
+---
+
+## CLI Model Tiers
+
+The agentic workflows use abstract model tiers (`small`, `medium`, `large`) instead of CLI-specific model names. This allows the same command to work across different AI tools.
+
+| Tier | Purpose | Claude | Copilot | Gemini |
+|------|---------|--------|---------|--------|
+| small | Fast/cheap tasks | haiku | gpt-4o-mini | gemini-2.0-flash |
+| medium | Balanced tasks | sonnet | gpt-4o | gemini-2.0-flash-thinking |
+| large | Complex tasks | opus | o1 | gemini-2.5-pro |
+
+### Usage
+
+```bash
+# Use large tier (default for plan_build)
+uv run agentic/workflows/plan_build.py "Add feature X" --model large
+
+# Use medium tier with Copilot
+uv run agentic/workflows/prompt.py "Quick fix" --model medium --cli copilot
+```
+
+### Override Mappings
+
+Override the default model for any tier via environment variables:
+
+```bash
+# Linux/WSL
+export CLI_MODEL_CLAUDE_LARGE=claude-3-5-sonnet-20240620
+export CLI_MODEL_COPILOT_MEDIUM=gpt-4-turbo
+
+# Windows PowerShell
+$env:CLI_MODEL_CLAUDE_LARGE = "claude-3-5-sonnet-20240620"
+$env:CLI_MODEL_COPILOT_MEDIUM = "gpt-4-turbo"
+```
+
+All environment variable names follow the pattern: `CLI_MODEL_{CLI}_{TIER}`

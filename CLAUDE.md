@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-For detailed project documentation (architecture, commands, workflows, etc.), see [docs/ai_docs/project-guide.md](docs/ai_docs/project-guide.md).
+For detailed project documentation (architecture, commands, workflows, etc.), see [agentic/docs/project-guide.md](agentic/docs/project-guide.md).
 
 ## Important Rules
 

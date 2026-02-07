@@ -31,8 +31,8 @@ uv run agentic/workflows/plan_build_test_review.py "add dark mode toggle"
 # Full pipeline: Plan + Build + Test + Review + Document
 uv run agentic/workflows/plan_build_test_review_document.py "add dark mode toggle"
 
-# Complete SDLC: Plan + Build + Test + Review + Document + Commit + PR
-uv run agentic/workflows/sdlc.py "Add CSV export to API endpoints"
+# Complete pipeline: Plan + Build + Test + Review + Document + Ship
+uv run agentic/workflows/plan_build_test_review_document_ship.py "Add CSV export to API endpoints"
 
 # Composable individual phases
 uv run agentic/workflows/plan.py "fix bug" --type bug
@@ -40,8 +40,7 @@ uv run agentic/workflows/build.py --run-id abc12345
 uv run agentic/workflows/test.py --run-id abc12345
 uv run agentic/workflows/review.py --run-id abc12345
 uv run agentic/workflows/document.py --run-id abc12345
-uv run agentic/workflows/commit.py --run-id abc12345
-uv run agentic/workflows/pull_request.py --run-id abc12345
+uv run agentic/workflows/ship.py --run-id abc12345
 
 # Quick patch (no planning, direct implementation)
 uv run agentic/workflows/patch.py "fix the typo in README.md"

@@ -13,9 +13,8 @@ prompt: $2
 - If the run_id or prompt is not provided, stop and ask the user to provide them.
 - Create a plan to complete the chore described in the `prompt`
 - The plan should be simple, thorough, and precise
-- Create the plan in the `agentic/specs/` directory with filename: `chore-{run_id}-{descriptive-name}.md`
-    - Replace `{descriptive-name}` with a short, descriptive name based on the chore (e.g., "update-readme", "
-      add-logging", "refactor-agent")
+- Create the plan in the `agentic/specs/` directory with filename: `{YYMMDD}-{descriptive-name}.md`
+    - Use today's date as YYMMDD prefix (e.g., "260207-update-readme.md")
 - Research the codebase starting with `README.md`
 - Replace every <placeholder> in the `Plan Format` with the requested value
 

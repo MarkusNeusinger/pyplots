@@ -52,6 +52,7 @@ class AgentPromptRequest(BaseModel):
     dangerously_skip_permissions: bool = False
     output_file: str
     working_dir: Optional[str] = None
+    timeout: Optional[int] = 1800  # seconds (default: 30 min)
 
 
 class AgentPromptResponse(BaseModel):
@@ -343,7 +344,7 @@ def truncate_output(output: str, max_length: int = 500, suffix: str = "... (trun
                         if text:
                             return truncate_output(text, max_length, suffix)
             except Exception:
-                pass
+                pass  # Malformed JSONL line, skip and try next
         # If we couldn't extract anything meaningful, just show that it's JSONL
         return f"[JSONL output with {len(lines)} messages]{suffix}"
 
@@ -598,8 +599,8 @@ def prompt_claude_code(request: AgentPromptRequest) -> AgentPromptResponse:
         mcp_config_path=mcp_config_path,
     )
 
-    # Set up environment with only required variables
-    env = get_claude_env()
+    # Set up environment: filtered env for Claude, full env for other CLIs
+    env = get_claude_env() if request.cli == "claude" else dict(os.environ)
 
     try:
         # Open output file for streaming
@@ -612,6 +613,7 @@ def prompt_claude_code(request: AgentPromptRequest) -> AgentPromptResponse:
                 text=True,
                 env=env,
                 cwd=request.working_dir,  # Use working_dir if provided
+                timeout=request.timeout,
             )
 
         if result.returncode == 0:
@@ -685,9 +687,9 @@ def prompt_claude_code(request: AgentPromptRequest) -> AgentPromptResponse:
                                                 error_msg = f"CLI output: {text[:500]}"  # Truncate
                                                 break
                                 except Exception:
-                                    pass
+                                    pass  # Malformed JSONL line, skip
                 except Exception:
-                    pass
+                    pass  # Output file unreadable, fall through to default error
 
                 return AgentPromptResponse(
                     output=truncate_output(error_msg, max_length=800),
@@ -707,7 +709,7 @@ def prompt_claude_code(request: AgentPromptRequest) -> AgentPromptResponse:
                         with open(request.output_file, "r") as f:
                             stdout_msg = f.read().strip()[:500]  # Truncate
                 except Exception:
-                    pass
+                    pass  # Output file unreadable, use stderr only
 
                 if stdout_msg and not stderr_msg:
                     error_msg = f"CLI error: {stdout_msg}"
@@ -748,7 +750,7 @@ def prompt_claude_code(request: AgentPromptRequest) -> AgentPromptResponse:
                                     # Just get the last line instead of entire file
                                     stdout_msg = lines[-1].strip()[:200]  # Truncate to 200 chars
                 except Exception:
-                    pass
+                    pass  # JSONL parsing failed, fall through to stderr-based error
 
                 if error_from_jsonl:
                     error_msg = f"CLI error: {error_from_jsonl}"

@@ -14,8 +14,8 @@ prompt: $2
 - Understand the refactoring goal from the `prompt`
 - IMPORTANT: A refactor changes structure while preserving behavior. No functional changes allowed.
 - Establish a test baseline BEFORE planning any changes — all tests must pass before and after
-- Create the plan in the `agentic/specs/` directory with filename: `refactor-{run_id}-{descriptive-name}.md`
-    - Replace `{descriptive-name}` with a short name based on the refactor (e.g., "extract-services", "reorganize-models", "split-module")
+- Create the plan in the `agentic/specs/` directory with filename: `{YYMMDD}-{descriptive-name}.md`
+    - Use today's date as YYMMDD prefix (e.g., "260207-extract-services.md")
 - Research the codebase starting with `README.md`
 - Replace every <placeholder> in the `Plan Format` with the requested value
 

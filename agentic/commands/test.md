@@ -87,7 +87,7 @@ TEST_COMMAND_TIMEOUT: 5 minutes
 
 5. **Frontend Build**
    - Preparation Command: Check if `app/` directory exists
-   - Command: `cd app && npm run build`
+   - Command: `cd app && yarn build`
    - test_name: "frontend_build"
    - test_purpose: "Validates the complete frontend build process including bundling, asset optimization, and production compilation"
 

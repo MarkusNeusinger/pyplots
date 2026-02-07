@@ -13,8 +13,8 @@ prompt: $2
 - If the run_id or prompt is not provided, stop and ask the user to provide them.
 - Understand the feature requirements from the `prompt`
 - Research existing patterns in the codebase to ensure consistency
-- Create the plan in the `agentic/specs/` directory with filename: `feature-{run_id}-{descriptive-name}.md`
-    - Replace `{descriptive-name}` with a short name based on the feature (e.g., "add-plot-export", "user-auth")
+- Create the plan in the `agentic/specs/` directory with filename: `{YYMMDD}-{descriptive-name}.md`
+    - Use today's date as YYMMDD prefix (e.g., "260207-add-plot-export.md")
 - Research the codebase starting with `README.md`
 - Replace every <placeholder> in the `Plan Format` with the requested value
 
@@ -97,7 +97,7 @@ Execute these commands to validate the feature:
 
 - `uv run pytest tests/ -v` - Run test suite
 - `uv run python -m py_compile api/**/*.py` - Check Python syntax
-- `cd app && npm run build` - Build frontend
+- `cd app && yarn build` - Build frontend
 - <additional validation commands>
 
 ## Notes

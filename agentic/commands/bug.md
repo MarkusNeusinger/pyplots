@@ -13,8 +13,8 @@ prompt: $2
 - If the run_id or prompt is not provided, stop and ask the user to provide them.
 - Investigate the bug described in the `prompt`
 - Identify the root cause before planning the fix
-- Create the plan in the `agentic/specs/` directory with filename: `bug-{run_id}-{descriptive-name}.md`
-    - Replace `{descriptive-name}` with a short name based on the bug (e.g., "fix-api-timeout", "null-pointer-plots")
+- Create the plan in the `agentic/specs/` directory with filename: `{YYMMDD}-{descriptive-name}.md`
+    - Use today's date as YYMMDD prefix (e.g., "260207-fix-api-timeout.md")
 - Research the codebase starting with `README.md`
 - Replace every <placeholder> in the `Plan Format` with the requested value
 

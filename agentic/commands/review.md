@@ -71,7 +71,7 @@ review_image_dir: `<absolute path to codebase>/agentic/runs/<run_id>/<agent_name
 - `success` should be `true` if there are NO BLOCKING issues (implementation matches spec for critical functionality)
 - `success` should be `false` ONLY if there are BLOCKING issues that prevent the work from being released
 - `review_issues` can contain issues of any severity (skippable, tech_debt, or blocker)
-- `screenshots` should ALWAYS contain paths to screenshots showcasing the new functionality, regardless of success status. Use full absolute paths.
+- `screenshots` should contain paths to screenshots if UI validation was performed, otherwise an empty array []. Use full absolute paths.
 - This allows subsequent agents to quickly identify and resolve blocking errors while documenting all issues
 
 ### Output Structure

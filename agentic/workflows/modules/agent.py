@@ -184,13 +184,6 @@ def parse_json(output: str, target_type: Type[T] = None) -> Any:
 
     raise json.JSONDecodeError("No valid JSON found in output", output, 0)
 
-    if target_type is not None:
-        if isinstance(parsed, list):
-            return [target_type.model_validate(item) for item in parsed]
-        return target_type.model_validate(parsed)
-
-    return parsed
-
 
 def get_safe_subprocess_env() -> Dict[str, str]:
     """Get filtered environment variables safe for subprocess execution.

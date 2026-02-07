@@ -21,14 +21,14 @@ TEST_COMMAND_TIMEOUT: 5 minutes
 - IMPORTANT: Return ONLY the JSON array with test results
   - IMPORTANT: Do not include any additional text, explanations, or markdown formatting
   - We'll immediately run JSON.parse() on the output, so make sure it's valid JSON
+  - Your ENTIRE response must be the JSON array. Start with [ and end with ]. No other text.
 - If a test passes, omit the error field
 - If a test fails, include the error message in the error field
-- Execute all tests even if some fail
+- If a test fails, stop processing and return results gathered so far
 - Error Handling:
   - If a command returns non-zero exit code, mark as failed and immediately stop processing tests
   - Capture stderr output for error field
   - Timeout commands after `TEST_COMMAND_TIMEOUT`
-  - IMPORTANT: If a test fails, stop processing tests and return the results thus far
 - Some tests may have dependencies (e.g., server must be stopped for port availability)
 - Test execution order is important - dependencies should be validated first
 - All file paths are relative to the project root

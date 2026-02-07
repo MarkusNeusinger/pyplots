@@ -3,20 +3,20 @@
 ## Metadata
 
 run_id: `d7e7bdf6`
-prompt: `im footer mein name markus neusinger ist recht lang bei kleinen bildschrimen mobile... sieht das nichtmehr gut, minimal aus, ich möchte das ab der grösse bei der auch auf der startseite die filter zeile mit catolog... steht in 2 zeilen übergeht das mein name nichtmehr im footer zu sehen ist, dafür soll aber im legal tab bei contact links zu meinem linkedin x und github account sein zusätlich zu der email die schon da steht https://x.com/MarkusNeusinger https://github.com/MarkusNeusinger https://www.linkedin.com/in/markus-neusinger/`
+prompt: `In the footer, my full name "markus neusinger" is quite long and on small mobile screens it no longer looks clean or minimal. Starting at the same breakpoint where the filter row on the homepage ("catalog" / filters) wraps to two lines, I want my name to no longer be shown in the footer. Instead, in the Legal page Contact section there should be links to my LinkedIn, X, and GitHub accounts in addition to the existing email: https://x.com/MarkusNeusinger https://github.com/MarkusNeusinger https://www.linkedin.com/in/markus-neusinger/`
 
 ## Feature Description
 
 Two related changes to improve the mobile experience:
 
-1. **Footer**: Hide the "markus neusinger" link on small screens (below `md` / 960px breakpoint) — the same breakpoint where the FilterBar catalog/filter row wraps to 2 lines on the homepage. The name is too long and makes the footer look cramped on mobile. The dot separator before/after the name link should also be hidden.
+1. **Footer**: Hide the "markus neusinger" link on small screens (below `md` / 900px breakpoint) — the same breakpoint where the FilterBar catalog/filter row wraps to 2 lines on the homepage. The name is too long and makes the footer look cramped on mobile. The dot separator before/after the name link should also be hidden.
 
 2. **Legal Page**: Add social/contact links (LinkedIn, X/Twitter, GitHub) to the Contact section in the Legal Notice, alongside the existing email. This ensures the contact information remains discoverable even when the footer name link is hidden on mobile.
 
 ## Requirements
 
-- Hide the "markus neusinger" link (and its surrounding dot separators) in the footer when viewport width is below `md` (960px) — matching the FilterBar's `isMobile` breakpoint
-- On viewports `md` and above (960px+), the footer remains unchanged
+- Hide the "markus neusinger" link (and its surrounding dot separators) in the footer when viewport width is below `md` (900px) — matching the FilterBar's `isMobile` breakpoint
+- On viewports `md` and above (900px+), the footer remains unchanged
 - Add LinkedIn, X (Twitter), and GitHub links to the Contact section of the Legal Notice on LegalPage
 - Social links: LinkedIn (`https://www.linkedin.com/in/markus-neusinger/`), X (`https://x.com/MarkusNeusinger`), GitHub (`https://github.com/MarkusNeusinger`)
 - Maintain consistent styling with existing Legal Page link patterns (color `#3776AB`, monospace font)
@@ -66,7 +66,7 @@ In `app/src/pages/LegalPage.tsx`:
 ### 3. Verify responsive behavior
 
 - Build the frontend to ensure no TypeScript/compilation errors
-- Verify the footer shows 4 links on mobile (<960px) and 5 links on desktop (>=960px)
+- Verify the footer shows 4 links on mobile (<900px) and 5 links on desktop (>=900px)
 - Verify the Legal page Contact section shows email + 3 social links
 
 ### 4. Add Tests
@@ -82,7 +82,7 @@ Execute these commands to validate the feature:
 
 ## Notes
 
-- The `md` breakpoint (960px) was chosen because the user specifically asked for the same breakpoint where the FilterBar wraps to 2 lines, and `FilterBar.tsx` uses `theme.breakpoints.down('md')` for its `isMobile` check
+- The `md` breakpoint (900px) was chosen because the user specifically asked for the same breakpoint where the FilterBar wraps to 2 lines, and `FilterBar.tsx` uses `theme.breakpoints.down('md')` for its `isMobile` check
 - Using MUI responsive `display` (`{ xs: 'none', md: 'inline' }`) is the lightest-weight approach — no JS needed, pure CSS media queries via MUI's system
 - The existing LinkedIn link in the footer (`markus neusinger`) already points to the same URL that will be added to the Legal page — this is intentional redundancy for discoverability
 - The GitHub link uses `GITHUB_URL` constant already imported in LegalPage for the Source Code section; the personal GitHub URL (`https://github.com/MarkusNeusinger`) is different from the project repo URL

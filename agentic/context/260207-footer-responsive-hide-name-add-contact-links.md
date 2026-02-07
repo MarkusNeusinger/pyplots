@@ -6,11 +6,11 @@
 
 ## Overview
 
-The footer's "markus neusinger" link is hidden on mobile viewports (below 960px / `md` breakpoint) to prevent a cramped layout, and social contact links (LinkedIn, X, GitHub) were added to the Legal Notice page's Contact section to keep contact information discoverable.
+The footer's "markus neusinger" link is hidden on mobile viewports (below 900px / `md` breakpoint) to prevent a cramped layout, and social contact links (LinkedIn, X, GitHub) were added to the Legal Notice page's Contact section to keep contact information discoverable.
 
 ## What Was Built
 
-- Responsive hiding of the "markus neusinger" link and its dot separators in the footer on screens below the `md` breakpoint (960px)
+- Responsive hiding of the "markus neusinger" link and its dot separators in the footer on screens below the `md` breakpoint (900px)
 - LinkedIn, X (Twitter), and GitHub contact links added to the Legal Notice page Contact section with analytics tracking
 
 ## Technical Implementation
@@ -29,23 +29,23 @@ The footer's "markus neusinger" link is hidden on mobile viewports (below 960px 
 
 ## How to Use
 
-1. On mobile devices or viewports narrower than 960px, the footer displays: `github · stats · mcp · legal`
-2. On desktop viewports (960px and wider), the footer displays the full set: `github · stats · markus neusinger · mcp · legal`
+1. On mobile devices or viewports narrower than 900px, the footer displays: `github · stats · mcp · legal`
+2. On desktop viewports (900px and wider), the footer displays the full set: `github · stats · markus neusinger · mcp · legal`
 3. Social contact links are always visible on the Legal Notice page (`/legal`) in the Contact section
 
 ## Configuration
 
-No configuration needed. The `md` breakpoint (960px) is defined by the MUI theme and matches the FilterBar's mobile breakpoint.
+No configuration needed. The `md` breakpoint (900px) is defined by the MUI theme and matches the FilterBar's mobile breakpoint.
 
 ## Testing
 
 - `cd app && npx tsc --noEmit` — Verify TypeScript types
 - `cd app && yarn build` — Verify no compilation errors
-- Resize browser below/above 960px to confirm the footer name link hides/shows
+- Resize browser below/above 900px to confirm the footer name link hides/shows
 - Visit `/legal` and verify LinkedIn, X, and GitHub links appear in the Contact section
 
 ## Notes
 
-- The 960px breakpoint was chosen to match where the FilterBar catalog/filter row wraps to 2 lines on the homepage
+- The 900px breakpoint was chosen to match where the FilterBar catalog/filter row wraps to 2 lines on the homepage
 - The LinkedIn URL in the footer and Legal page are intentionally the same — redundancy ensures discoverability
 - The `github_personal` destination in analytics distinguishes the personal GitHub profile link from the project repository link

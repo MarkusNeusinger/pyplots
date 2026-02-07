@@ -57,10 +57,7 @@ SHIP_USAGE_HINT = (
 @click.command()
 @click.option("--run-id", default=None, help="Run ID from a previous workflow execution")
 @click.option(
-    "--model",
-    type=click.Choice(["small", "medium", "large"]),
-    default="large",
-    help="Model tier (default: large)",
+    "--model", type=click.Choice(["small", "medium", "large"]), default="large", help="Model tier (default: large)"
 )
 @click.option(
     "--working-dir",
@@ -133,20 +130,12 @@ def main(run_id: str, model: str, working_dir: str, cli: str):
     if commit_response.success:
         commit_message = commit_response.output.strip()
         console.print(
-            Panel(
-                commit_message,
-                title="[bold green]Commit Created[/bold green]",
-                border_style="green",
-                padding=(1, 2),
-            )
+            Panel(commit_message, title="[bold green]Commit Created[/bold green]", border_style="green", padding=(1, 2))
         )
     else:
         console.print(
             Panel(
-                commit_response.output,
-                title="[bold red]Commit Failed[/bold red]",
-                border_style="red",
-                padding=(1, 2),
+                commit_response.output, title="[bold red]Commit Failed[/bold red]", border_style="red", padding=(1, 2)
             )
         )
         commit_message = None
@@ -213,20 +202,12 @@ def main(run_id: str, model: str, working_dir: str, cli: str):
     if pr_response.success:
         pr_url = pr_response.output.strip()
         console.print(
-            Panel(
-                pr_url,
-                title="[bold green]Pull Request Created[/bold green]",
-                border_style="green",
-                padding=(1, 2),
-            )
+            Panel(pr_url, title="[bold green]Pull Request Created[/bold green]", border_style="green", padding=(1, 2))
         )
     else:
         console.print(
             Panel(
-                pr_response.output,
-                title="[bold red]PR Creation Failed[/bold red]",
-                border_style="red",
-                padding=(1, 2),
+                pr_response.output, title="[bold red]PR Creation Failed[/bold red]", border_style="red", padding=(1, 2)
             )
         )
         pr_url = None

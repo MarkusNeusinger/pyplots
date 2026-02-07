@@ -159,10 +159,7 @@ def main(prompt: str, model: str, working_dir: str, cli: str, run_test: bool, ru
     else:
         console.print(
             Panel(
-                response.output,
-                title="[bold red]Implementation Failed[/bold red]",
-                border_style="red",
-                padding=(1, 2),
+                response.output, title="[bold red]Implementation Failed[/bold red]", border_style="red", padding=(1, 2)
             )
         )
         state.save(working_dir, phase="patch")

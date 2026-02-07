@@ -26,26 +26,26 @@ Usage:
     uv run agentic/workflows/plan.py "Fix bug" | uv run agentic/workflows/build.py
 """
 
-import os
-import sys
 import json
+import os
 import re
+import sys
 import time
+
 import click
 from rich.console import Console
 from rich.panel import Panel
-from rich.table import Table
 from rich.rule import Rule
+from rich.table import Table
+
 
 # Add the modules directory to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "modules"))
 
-from agent import AgentPromptRequest, prompt_claude_code_with_retry, generate_short_id
+from agent import OUTPUT_JSONL, SUMMARY_JSON, AgentPromptRequest, generate_short_id, prompt_claude_code_with_retry
 from state import WorkflowState
+from template import load_template, render_template
 
-# Output file names
-OUTPUT_JSONL = "cli_raw_output.jsonl"
-SUMMARY_JSON = "cli_summary_output.json"
 
 # Template paths (relative to project root)
 CLASSIFY_TEMPLATE = "agentic/commands/classify.md"
@@ -55,26 +55,6 @@ TEMPLATE_MAP = {
     "chore": "agentic/commands/chore.md",
     "refactor": "agentic/commands/refactor.md",
 }
-
-
-def load_template(template_path: str, working_dir: str) -> str:
-    """Load a template file from the working directory."""
-    full_path = os.path.join(working_dir, template_path)
-    if not os.path.exists(full_path):
-        raise FileNotFoundError(f"Template not found: {full_path}")
-    with open(full_path, "r") as f:
-        return f.read()
-
-
-def render_template(template: str, variables: dict) -> str:
-    """Render a template by replacing $1, $2, $ARGUMENTS variables."""
-    result = template
-    for key, value in variables.items():
-        if key.isdigit():
-            result = result.replace(f"${key}", str(value))
-    if "ARGUMENTS" in variables:
-        result = result.replace("$ARGUMENTS", str(variables["ARGUMENTS"]))
-    return result
 
 
 def parse_classify_response(output: str) -> dict:
@@ -186,7 +166,7 @@ def main(prompt: str, task_type: str, model: str, working_dir: str, cli: str):
 
     # ── Phase 1: Classify ───────────────────────────────────────────
     if task_type is None:
-        console.print(Rule("[bold yellow]Phase 1: Classification (small model)[/bold yellow]"))
+        console.print(Rule(f"[bold yellow]Phase 1: Classification ({model} model)[/bold yellow]"))
         console.print()
 
         try:
@@ -354,7 +334,7 @@ def main(prompt: str, task_type: str, model: str, working_dir: str, cli: str):
         )
 
     # Save state
-    state_path = state.save(working_dir, phase="plan")
+    state.save(working_dir, phase="plan")
     console.print(f"[bold cyan]State saved:[/bold cyan] agentic/runs/{run_id}/state.json")
     console.print(f"\n[dim]Next: uv run agentic/workflows/build.py --run-id {run_id}[/dim]")
     console.print()

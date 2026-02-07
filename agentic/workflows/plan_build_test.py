@@ -18,40 +18,17 @@ Usage:
 
 import os
 import sys
-import subprocess
-import json
+
 import click
 from rich.console import Console
 from rich.panel import Panel
 from rich.rule import Rule
 
-WORKFLOWS_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# Add the modules directory to the path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "modules"))
 
-def run_phase(
-    script: str, args: list[str], console: Console, phase_name: str, capture_stdout: bool = False
-) -> tuple[int, str]:
-    """Run a workflow phase script via uv."""
-    script_path = os.path.join(WORKFLOWS_DIR, script)
-    cmd = ["uv", "run", script_path] + args
-
-    console.print(f"[dim]$ {' '.join(cmd)}[/dim]\n")
-
-    if capture_stdout:
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=None, text=True)
-        return result.returncode, result.stdout
-    else:
-        result = subprocess.run(cmd)
-        return result.returncode, ""
-
-
-def extract_run_id(stdout: str) -> str | None:
-    """Extract run_id from piped JSON state output."""
-    try:
-        data = json.loads(stdout.strip())
-        return data.get("run_id")
-    except (json.JSONDecodeError, ValueError):
-        return None
+from orchestrator import extract_run_id, run_phase
 
 
 @click.command()

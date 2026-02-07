@@ -32,27 +32,28 @@ Examples:
     uv run agentic/workflows/prompt.py "Debug this" --agent-name debugger
 """
 
+import json
 import os
 import sys
-import json
 from pathlib import Path
+
 import click
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
-from rich.syntax import Syntax
-from rich.text import Text
+
 
 # Add the modules directory to the path so we can import agent
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "modules"))
 
 from agent import (
-    prompt_claude_code,
     AgentPromptRequest,
     AgentPromptResponse,
-    prompt_claude_code_with_retry,
     generate_short_id,
+    prompt_claude_code,
+    prompt_claude_code_with_retry,
 )
+
 
 # Output file name constants
 OUTPUT_JSONL = "cli_raw_output.jsonl"

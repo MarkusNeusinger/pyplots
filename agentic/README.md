@@ -7,30 +7,45 @@ encode your engineering expertise so that AI agents can operate your codebase au
 
 ```
 agentic/
-├── commands/       # Prompt templates (chore.md, implement.md, ...)
+├── commands/       # Prompt templates (chore.md, implement.md, commit.md, pull_request.md, ...)
 ├── workflows/      # Executable workflows (uv run)
-│   └── modules/    # Shared Python modules (agent.py)
+│   └── modules/    # Shared Python modules (agent.py, state.py)
 ├── specs/          # Generated plans and specifications
+├── context/        # Feature documentation (what was done)
+├── docs/           # Static project documentation
 └── runs/           # Execution output (in .gitignore)
 ```
 
 ## Usage
 
 ```bash
-# Plan + Build (replaces chore_implement.py)
+# Plan + Build
 uv run agentic/workflows/plan_build.py "your task description"
 
 # Plan + Build + Test (with auto-fix)
 uv run agentic/workflows/plan_build_test.py "fix the 404 bug"
 
-# Full pipeline: Plan + Build + Test + Review
+# Plan + Build + Test + Review
 uv run agentic/workflows/plan_build_test_review.py "add dark mode toggle"
+
+# Full pipeline: Plan + Build + Test + Review + Document
+uv run agentic/workflows/plan_build_test_review_document.py "add dark mode toggle"
 
 # Composable individual phases
 uv run agentic/workflows/plan.py "fix bug" --type bug
 uv run agentic/workflows/build.py --run-id abc12345
 uv run agentic/workflows/test.py --run-id abc12345
 uv run agentic/workflows/review.py --run-id abc12345
+uv run agentic/workflows/document.py --run-id abc12345
+
+# Quick patch (no planning, direct implementation)
+uv run agentic/workflows/patch.py "fix the typo in README.md"
+
+# Patch with test + review
+uv run agentic/workflows/patch.py "fix the 404 error" --test --review
+
+# Ad-hoc prompt execution
+uv run agentic/workflows/prompt.py "your ad-hoc prompt"
 
 # Piping between phases
 uv run agentic/workflows/plan.py "fix bug" | uv run agentic/workflows/build.py
@@ -47,9 +62,9 @@ Model tiers abstract away CLI-specific model names, allowing the same command to
 
 | Tier | Purpose | Claude | Copilot | Gemini |
 |------|---------|--------|---------|--------|
-| small | Fast/cheap tasks | haiku | gpt-4o-mini | gemini-2.0-flash |
-| medium | Balanced tasks | sonnet | gpt-4o | gemini-2.0-flash-thinking |
-| large | Complex tasks | opus | o1 | gemini-2.5-pro |
+| small | Fast/cheap tasks | haiku | claude-haiku-4.5 | gemini-2.0-flash |
+| medium | Balanced tasks | sonnet | claude-sonnet-4.5 | gemini-2.0-flash-thinking |
+| large | Complex tasks | opus | claude-opus-4.5 | gemini-2.5-pro |
 
 ### Override Mappings
 

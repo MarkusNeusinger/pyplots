@@ -23,70 +23,32 @@ Usage:
     uv run agentic/workflows/review.py --run-id abc12345 | uv run agentic/workflows/document.py
 """
 
+import json
 import os
 import sys
-import json
+
 import click
 from rich.console import Console
 from rich.panel import Panel
 from rich.rule import Rule
 
+
 # Add the modules directory to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "modules"))
 
-from agent import (
-    AgentPromptRequest,
-    prompt_claude_code_with_retry,
-)
-from state import WorkflowState
+from agent import OUTPUT_JSONL, SUMMARY_JSON, AgentPromptRequest, prompt_claude_code_with_retry
+from state import resolve_state
+from template import load_template, render_template
 
-# Output file names
-OUTPUT_JSONL = "cli_raw_output.jsonl"
-SUMMARY_JSON = "cli_summary_output.json"
 
 # Template path
 DOCUMENT_TEMPLATE = "agentic/commands/dokument.md"
 
-
-def load_template(template_path: str, working_dir: str) -> str:
-    """Load a template file from the working directory."""
-    full_path = os.path.join(working_dir, template_path)
-    if not os.path.exists(full_path):
-        raise FileNotFoundError(f"Template not found: {full_path}")
-    with open(full_path, "r") as f:
-        return f.read()
-
-
-def render_template(template: str, variables: dict) -> str:
-    """Render a template by replacing $1, $2, $ARGUMENTS variables."""
-    result = template
-    for key, value in variables.items():
-        if key.isdigit():
-            result = result.replace(f"${key}", str(value))
-    if "ARGUMENTS" in variables:
-        result = result.replace("$ARGUMENTS", str(variables["ARGUMENTS"]))
-    return result
-
-
-def resolve_state(run_id: str, working_dir: str, console: Console) -> WorkflowState:
-    """Resolve state from --run-id or stdin pipe."""
-    if run_id:
-        state = WorkflowState.load(run_id, working_dir)
-        if not state:
-            console.print(f"[bold red]No state found for run-id: {run_id}[/bold red]")
-            console.print(f"Expected: agentic/runs/{run_id}/state.json")
-            sys.exit(1)
-        return state
-
-    state = WorkflowState.from_stdin()
-    if state:
-        return state
-
-    console.print("[bold red]No state source provided.[/bold red]")
-    console.print("\nUsage:")
-    console.print("  uv run agentic/workflows/document.py --run-id <id>")
-    console.print("  uv run agentic/workflows/review.py --run-id <id> | uv run agentic/workflows/document.py")
-    sys.exit(1)
+# Usage hint for resolve_state error message
+DOCUMENT_USAGE_HINT = (
+    "  uv run agentic/workflows/document.py --run-id <id>\n"
+    "  uv run agentic/workflows/review.py --run-id <id> | uv run agentic/workflows/document.py"
+)
 
 
 @click.command()
@@ -116,7 +78,7 @@ def main(run_id: str, model: str, working_dir: str, cli: str):
     if not working_dir:
         working_dir = os.getcwd()
 
-    state = resolve_state(run_id, working_dir, console)
+    state = resolve_state(run_id, working_dir, console, usage_hint=DOCUMENT_USAGE_HINT)
 
     # Detect screenshots directory from reviewer
     screenshots_dir = ""
@@ -144,11 +106,7 @@ def main(run_id: str, model: str, working_dir: str, cli: str):
 
     template = load_template(DOCUMENT_TEMPLATE, working_dir)
 
-    doc_prompt = render_template(template, {
-        "1": state.run_id,
-        "2": state.plan_file or "",
-        "3": screenshots_dir,
-    })
+    doc_prompt = render_template(template, {"1": state.run_id, "2": state.plan_file or "", "3": screenshots_dir})
 
     documenter_output_dir = os.path.join(working_dir, f"agentic/runs/{state.run_id}/documenter")
     os.makedirs(documenter_output_dir, exist_ok=True)
@@ -168,9 +126,7 @@ def main(run_id: str, model: str, working_dir: str, cli: str):
         response = prompt_claude_code_with_retry(request)
 
     if not response.success:
-        console.print(
-            Panel(response.output, title="[bold red]Documentation Failed[/bold red]", border_style="red")
-        )
+        console.print(Panel(response.output, title="[bold red]Documentation Failed[/bold red]", border_style="red"))
         doc_success = False
         doc_path = None
     else:
@@ -215,12 +171,7 @@ def main(run_id: str, model: str, working_dir: str, cli: str):
     console.print(f"[bold cyan]State saved:[/bold cyan] agentic/runs/{state.run_id}/state.json")
 
     # Save summary
-    summary = {
-        "phase": "document",
-        "run_id": state.run_id,
-        "success": doc_success,
-        "document_path": doc_path,
-    }
+    summary = {"phase": "document", "run_id": state.run_id, "success": doc_success, "document_path": doc_path}
     with open(os.path.join(documenter_output_dir, SUMMARY_JSON), "w") as f:
         json.dump(summary, f, indent=2)
 

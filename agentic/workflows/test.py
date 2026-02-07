@@ -23,24 +23,24 @@ Usage:
     uv run agentic/workflows/build.py --run-id abc12345 | uv run agentic/workflows/test.py
 """
 
+import json
 import os
 import sys
-import json
+
 import click
 from rich.console import Console
 from rich.panel import Panel
-from rich.table import Table
 from rich.rule import Rule
+from rich.table import Table
+
 
 # Add the modules directory to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "modules"))
 
-from agent import AgentPromptRequest, prompt_claude_code_with_retry, generate_short_id, parse_json, TestResult
-from state import WorkflowState
+from agent import OUTPUT_JSONL, SUMMARY_JSON, AgentPromptRequest, TestResult, parse_json, prompt_claude_code_with_retry
+from state import WorkflowState, resolve_state
+from template import load_template
 
-# Output file names
-OUTPUT_JSONL = "cli_raw_output.jsonl"
-SUMMARY_JSON = "cli_summary_output.json"
 
 # Template path
 TEST_TEMPLATE = "agentic/commands/test.md"
@@ -48,38 +48,11 @@ TEST_TEMPLATE = "agentic/commands/test.md"
 # Retry configuration
 MAX_TEST_RETRY_ATTEMPTS = 4
 
-
-def load_template(template_path: str, working_dir: str) -> str:
-    """Load a template file from the working directory."""
-    full_path = os.path.join(working_dir, template_path)
-    if not os.path.exists(full_path):
-        raise FileNotFoundError(f"Template not found: {full_path}")
-    with open(full_path, "r") as f:
-        return f.read()
-
-
-def resolve_state(run_id: str, working_dir: str, console: Console) -> WorkflowState:
-    """Resolve state from --run-id or stdin pipe."""
-    # Priority 1: explicit run-id
-    if run_id:
-        state = WorkflowState.load(run_id, working_dir)
-        if not state:
-            console.print(f"[bold red]No state found for run-id: {run_id}[/bold red]")
-            console.print(f"Expected: agentic/runs/{run_id}/state.json")
-            sys.exit(1)
-        return state
-
-    # Priority 2: piped stdin from build.py
-    state = WorkflowState.from_stdin()
-    if state:
-        return state
-
-    # No state source
-    console.print("[bold red]No state source provided.[/bold red]")
-    console.print("\nUsage:")
-    console.print("  uv run agentic/workflows/test.py --run-id <id>")
-    console.print("  uv run agentic/workflows/build.py --run-id <id> | uv run agentic/workflows/test.py")
-    sys.exit(1)
+# Usage hint for resolve_state error message
+TEST_USAGE_HINT = (
+    "  uv run agentic/workflows/test.py --run-id <id>\n"
+    "  uv run agentic/workflows/build.py --run-id <id> | uv run agentic/workflows/test.py"
+)
 
 
 def run_tests(
@@ -214,7 +187,7 @@ def main(run_id: str, model: str, working_dir: str, cli: str):
     if not working_dir:
         working_dir = os.getcwd()
 
-    state = resolve_state(run_id, working_dir, console)
+    state = resolve_state(run_id, working_dir, console, usage_hint=TEST_USAGE_HINT)
 
     console.print(
         Panel(

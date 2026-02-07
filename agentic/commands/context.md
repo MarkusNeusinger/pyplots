@@ -18,7 +18,7 @@ This prompt helps you determine what documentation you should read based on the 
     - When you want to learn the commands to start or stop the server
     - When setting up the development environment
 
-- docs/ai_docs/project-guide.md
+- agentic/docs/project-guide.md
   - Conditions:
     - When understanding the full project architecture
     - When working on workflows or automation

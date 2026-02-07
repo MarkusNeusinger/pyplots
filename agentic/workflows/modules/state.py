@@ -168,3 +168,50 @@ class WorkflowState:
     def to_stdout(self) -> None:
         """Write state to stdout as JSON (for piping to build.py)."""
         print(json.dumps(self.data, indent=2))
+
+
+def resolve_state(run_id, working_dir, console, *, plan_file=None, usage_hint=""):
+    """Resolve state from --run-id, stdin pipe, or optionally --plan-file.
+
+    Priority:
+        1. --run-id  -> load from agentic/runs/{run_id}/state.json
+        2. stdin     -> piped JSON from previous phase
+        3. --plan-file (only if plan_file provided) -> creates new state
+        4. Error with usage_hint
+
+    Args:
+        run_id: Explicit run ID to load state from.
+        working_dir: Project working directory.
+        console: Rich console for output.
+        plan_file: Optional path to a plan file (creates new state if provided).
+        usage_hint: Additional usage examples to show on error.
+    """
+    # Priority 1: explicit run-id
+    if run_id:
+        state = WorkflowState.load(run_id, working_dir)
+        if not state:
+            console.print(f"[bold red]No state found for run-id: {run_id}[/bold red]")
+            console.print(f"Expected: agentic/runs/{run_id}/state.json")
+            console.print("\nRun plan.py first to create a plan and state.")
+            sys.exit(1)
+        return state
+
+    # Priority 2: piped stdin from previous phase
+    state = WorkflowState.from_stdin()
+    if state:
+        return state
+
+    # Priority 3: direct plan file (no prior state) — build.py only
+    if plan_file:
+        from agent import generate_short_id
+
+        new_run_id = generate_short_id()
+        state = WorkflowState(run_id=new_run_id, prompt="(from plan file)")
+        state.update(plan_file=plan_file)
+        return state
+
+    # No state source
+    console.print("[bold red]No state source provided.[/bold red]")
+    if usage_hint:
+        console.print(f"\nUsage:\n{usage_hint}")
+    sys.exit(1)

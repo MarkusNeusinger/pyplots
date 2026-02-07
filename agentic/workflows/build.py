@@ -26,86 +26,34 @@ Usage:
     uv run agentic/workflows/build.py --plan-file agentic/specs/260205-fix-api.md
 """
 
+import json
 import os
 import sys
-import json
+
 import click
 from rich.console import Console
 from rich.panel import Panel
-from rich.table import Table
 from rich.rule import Rule
+from rich.table import Table
+
 
 # Add the modules directory to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "modules"))
 
-from agent import AgentPromptRequest, prompt_claude_code_with_retry, generate_short_id
-from state import WorkflowState
+from agent import OUTPUT_JSONL, SUMMARY_JSON, AgentPromptRequest, prompt_claude_code_with_retry
+from state import resolve_state
+from template import load_template, render_template
 
-# Output file names
-OUTPUT_JSONL = "cli_raw_output.jsonl"
-SUMMARY_JSON = "cli_summary_output.json"
 
 # Template path
 IMPLEMENT_TEMPLATE = "agentic/commands/implement.md"
 
-
-def load_template(template_path: str, working_dir: str) -> str:
-    """Load a template file from the working directory."""
-    full_path = os.path.join(working_dir, template_path)
-    if not os.path.exists(full_path):
-        raise FileNotFoundError(f"Template not found: {full_path}")
-    with open(full_path, "r") as f:
-        return f.read()
-
-
-def render_template(template: str, variables: dict) -> str:
-    """Render a template by replacing $1, $2, $ARGUMENTS variables."""
-    result = template
-    for key, value in variables.items():
-        if key.isdigit():
-            result = result.replace(f"${key}", str(value))
-    if "ARGUMENTS" in variables:
-        result = result.replace("$ARGUMENTS", str(variables["ARGUMENTS"]))
-    return result
-
-
-def resolve_state(run_id: str, plan_file: str, working_dir: str, console: Console) -> WorkflowState:
-    """Resolve state from --run-id, stdin pipe, or --plan-file.
-
-    Priority:
-        1. --run-id  → load from agentic/runs/{run_id}/state.json
-        2. stdin     → piped JSON from plan.py
-        3. --plan-file → create minimal state with just the plan path
-    """
-    # Priority 1: explicit run-id
-    if run_id:
-        state = WorkflowState.load(run_id, working_dir)
-        if not state:
-            console.print(f"[bold red]No state found for run-id: {run_id}[/bold red]")
-            console.print(f"Expected: agentic/runs/{run_id}/state.json")
-            console.print("\nRun plan.py first to create a plan and state.")
-            sys.exit(1)
-        return state
-
-    # Priority 2: piped stdin from plan.py
-    state = WorkflowState.from_stdin()
-    if state:
-        return state
-
-    # Priority 3: direct plan file (no prior state)
-    if plan_file:
-        new_run_id = generate_short_id()
-        state = WorkflowState(run_id=new_run_id, prompt="(from plan file)")
-        state.update(plan_file=plan_file)
-        return state
-
-    # No state source
-    console.print("[bold red]No state source provided.[/bold red]")
-    console.print("\nUsage:")
-    console.print("  uv run agentic/workflows/build.py --run-id <id>")
-    console.print('  uv run agentic/workflows/plan.py "task" | uv run agentic/workflows/build.py')
-    console.print("  uv run agentic/workflows/build.py --plan-file agentic/specs/260205-fix-api.md")
-    sys.exit(1)
+# Usage hint for resolve_state error message
+BUILD_USAGE_HINT = (
+    "  uv run agentic/workflows/build.py --run-id <id>\n"
+    '  uv run agentic/workflows/plan.py "task" | uv run agentic/workflows/build.py\n'
+    "  uv run agentic/workflows/build.py --plan-file agentic/specs/260205-fix-api.md"
+)
 
 
 @click.command()
@@ -138,7 +86,7 @@ def main(run_id: str, plan_file: str, model: str, working_dir: str, cli: str):
         working_dir = os.getcwd()
 
     # ── Resolve state ───────────────────────────────────────────────
-    state = resolve_state(run_id, plan_file, working_dir, console)
+    state = resolve_state(run_id, working_dir, console, plan_file=plan_file, usage_hint=BUILD_USAGE_HINT)
 
     # Verify plan file
     plan_path = state.plan_file

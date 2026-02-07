@@ -1,17 +1,19 @@
 """Claude Code agent module for executing prompts programmatically."""
 
+import importlib.util
+import json
+import os
+import re
 import subprocess
 import sys
-import os
-import json
-import re
-import logging
 import time
 import uuid
-from typing import Optional, List, Dict, Any, Tuple, Final, Literal, Type, TypeVar
 from enum import Enum
-from pydantic import BaseModel
+from typing import Any, Dict, List, Literal, Optional, Tuple, Type, TypeVar
+
 from dotenv import load_dotenv
+from pydantic import BaseModel
+
 
 # Add project root to path for imports
 _project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -20,7 +22,6 @@ if _project_root not in sys.path:
 
 # Import settings directly from the module file to avoid core/__init__.py
 # which has dependencies (PIL) not available in uv script environments
-import importlib.util
 
 _config_path = os.path.join(_project_root, "core", "config.py")
 _spec = importlib.util.spec_from_file_location("core_config", _config_path)
@@ -341,7 +342,7 @@ def truncate_output(output: str, max_length: int = 500, suffix: str = "... (trun
                         text = content[0].get("text", "")
                         if text:
                             return truncate_output(text, max_length, suffix)
-            except:
+            except Exception:
                 pass
         # If we couldn't extract anything meaningful, just show that it's JSONL
         return f"[JSONL output with {len(lines)} messages]{suffix}"
@@ -405,7 +406,7 @@ def parse_jsonl_output(output_file: str) -> Tuple[List[Dict[str, Any]], Optional
                     break
 
             return messages, result_message
-    except Exception as e:
+    except Exception:
         return [], None
 
 
@@ -683,9 +684,9 @@ def prompt_claude_code(request: AgentPromptRequest) -> AgentPromptResponse:
                                             if text:
                                                 error_msg = f"CLI output: {text[:500]}"  # Truncate
                                                 break
-                                except:
+                                except Exception:
                                     pass
-                except:
+                except Exception:
                     pass
 
                 return AgentPromptResponse(
@@ -705,7 +706,7 @@ def prompt_claude_code(request: AgentPromptRequest) -> AgentPromptResponse:
                     if os.path.exists(request.output_file):
                         with open(request.output_file, "r") as f:
                             stdout_msg = f.read().strip()[:500]  # Truncate
-                except:
+                except Exception:
                     pass
 
                 if stdout_msg and not stderr_msg:
@@ -746,7 +747,7 @@ def prompt_claude_code(request: AgentPromptRequest) -> AgentPromptResponse:
                                 if lines:
                                     # Just get the last line instead of entire file
                                     stdout_msg = lines[-1].strip()[:200]  # Truncate to 200 chars
-                except:
+                except Exception:
                     pass
 
                 if error_from_jsonl:

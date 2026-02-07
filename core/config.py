@@ -112,13 +112,13 @@ class Settings(BaseSettings):
     cli_model_claude_large: str = "opus"
     """Claude model for 'large' tier (complex tasks)"""
 
-    cli_model_copilot_small: str = "gpt-4o-mini"
+    cli_model_copilot_small: str = "claude-haiku-4.5"
     """Copilot model for 'small' tier"""
 
-    cli_model_copilot_medium: str = "gpt-4o"
+    cli_model_copilot_medium: str = "claude-sonnet-4.5"
     """Copilot model for 'medium' tier"""
 
-    cli_model_copilot_large: str = "o1"
+    cli_model_copilot_large: str = "claude-opus-4.5"
     """Copilot model for 'large' tier"""
 
     cli_model_gemini_small: str = "gemini-2.0-flash"

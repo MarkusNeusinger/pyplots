@@ -204,7 +204,7 @@ def main(prompt: str, task_type: str, model: str, working_dir: str, cli: str):
             prompt=classify_prompt,
             run_id=run_id,
             agent_name="classifier",
-            model="small",
+            model=model,
             cli=cli,
             dangerously_skip_permissions=True,
             output_file=os.path.join(classify_output_dir, OUTPUT_JSONL),

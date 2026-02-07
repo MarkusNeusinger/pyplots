@@ -48,6 +48,12 @@ This prompt helps you determine what documentation you should read based on the 
     - When implementing new visualizations
     - When modifying existing plot implementations
 
+- agentic/context/260207-footer-responsive-hide-name-add-contact-links.md
+  - Conditions:
+    - When working with the Footer component responsive behavior
+    - When modifying contact or social links in the Legal page
+    - When adjusting mobile breakpoint visibility of footer elements
+
 - agentic/
   - Conditions:
     - When working with agentic commands or workflows

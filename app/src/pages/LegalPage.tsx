@@ -106,6 +106,39 @@ export function LegalPage() {
             <Link href="mailto:admin@pyplots.ai" sx={{ color: '#3776AB' }}>
               admin@pyplots.ai
             </Link>
+            <br />
+            LinkedIn:{' '}
+            <Link
+              href="https://www.linkedin.com/in/markus-neusinger/"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackEvent('external_link', { destination: 'linkedin' })}
+              sx={{ color: '#3776AB' }}
+            >
+              markus-neusinger
+            </Link>
+            <br />
+            X:{' '}
+            <Link
+              href="https://x.com/MarkusNeusinger"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackEvent('external_link', { destination: 'x' })}
+              sx={{ color: '#3776AB' }}
+            >
+              @MarkusNeusinger
+            </Link>
+            <br />
+            GitHub:{' '}
+            <Link
+              href="https://github.com/MarkusNeusinger"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackEvent('external_link', { destination: 'github_personal' })}
+              sx={{ color: '#3776AB' }}
+            >
+              MarkusNeusinger
+            </Link>
           </Typography>
 
           <Typography sx={textStyle}>

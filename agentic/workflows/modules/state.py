@@ -47,6 +47,7 @@ class WorkflowState:
         "test_failed_count",
         "review_success",
         "review_blocker_count",
+        "document_path",
     }
 
     def __init__(self, run_id: str, prompt: str = ""):
@@ -95,6 +96,10 @@ class WorkflowState:
     @property
     def review_blocker_count(self) -> Optional[int]:
         return self.data.get("review_blocker_count")
+
+    @property
+    def document_path(self) -> Optional[str]:
+        return self.data.get("document_path")
 
     def _get_state_path(self, working_dir: str) -> str:
         """Get path to state file."""

@@ -9,6 +9,7 @@ git ls-files ':!plots/'
 ## Read
 
 @agentic/docs/project-guide.md
+@agentic/commands/context.md
 @docs/concepts/vision.md
 @pyproject.toml
 

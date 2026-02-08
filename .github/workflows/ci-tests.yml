@@ -75,7 +75,7 @@ jobs:
       if: steps.check.outputs.should_test == 'true'
       uses: actions/setup-python@v6
       with:
-        python-version: '3.13'
+        python-version: '3.14'
 
     - name: Install uv
       if: steps.check.outputs.should_test == 'true'

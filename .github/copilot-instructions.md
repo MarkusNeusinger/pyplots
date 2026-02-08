@@ -213,7 +213,7 @@ plt.savefig('plot.png', dpi=300, bbox_inches='tight')
 
 ## Tech Stack
 
-- **Backend**: FastAPI, SQLAlchemy (async), PostgreSQL, Python 3.12+
+- **Backend**: FastAPI, SQLAlchemy (async), PostgreSQL, Python 3.14+
 - **Frontend**: React 19, TypeScript 5, Vite 7, MUI 7
 - **Package Manager**: uv (Python), yarn (Node.js)
 - **Linting**: Ruff (Python), ESLint (TypeScript)

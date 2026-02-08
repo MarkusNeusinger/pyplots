@@ -1,7 +1,7 @@
 # Code Style and Conventions
 
 ## Python (API, Core, Tests)
-- **Linter/Formatter**: Ruff (line-length=120, target=py312)
+- **Linter/Formatter**: Ruff (line-length=120, target=py314)
 - **Rules**: E, F, W, I, C, B (ignores E501, C901, B008)
 - **Excludes**: plots/, scripts/, .git, .venv, __pycache__, dist, temp
 - **Type Hints**: Required for all functions
@@ -10,7 +10,7 @@
 - **Async**: SQLAlchemy async, pytest-asyncio (auto mode)
 
 ## TypeScript (Frontend)
-- **Linter**: ESLint 9 with typescript-eslint
+- **Linter**: ESLint 10 with typescript-eslint
 - **Strict mode**: Enabled in tsconfig
 - **Target**: ES2020, bundler module resolution
 - **Path alias**: `@/` → `./src/`

@@ -316,7 +316,7 @@ gs://pyplots-images/
 
 ## Tech Stack
 
-- **Backend**: FastAPI, SQLAlchemy (async), PostgreSQL, Python 3.12+
+- **Backend**: FastAPI, SQLAlchemy (async), PostgreSQL, Python 3.14+
 - **Frontend**: React 19, Vite 7, TypeScript 5, MUI 7
 - **Plotting**: matplotlib, seaborn, plotly, bokeh, altair, plotnine, pygal, highcharts, lets-plot
 - **Package Manager**: uv (fast Python installer)

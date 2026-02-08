@@ -1,80 +1,64 @@
 # Code Style and Conventions
 
-## Python Style (API, Core, Tests)
-- **Linter/Formatter**: Ruff (enforces PEP 8)
-- **Line Length**: 120 characters
+## Python (API, Core, Tests)
+- **Linter/Formatter**: Ruff (line-length=120, target=py312)
+- **Rules**: E, F, W, I, C, B (ignores E501, C901, B008)
+- **Excludes**: plots/, scripts/, .git, .venv, __pycache__, dist, temp
 - **Type Hints**: Required for all functions
-- **Docstrings**: Google style for all public functions
-- **Import Order**: Standard library → Third-party → Local
+- **Docstrings**: Google style for public functions
+- **Import Order**: stdlib → third-party → local (enforced by ruff I)
+- **Async**: SQLAlchemy async, pytest-asyncio (auto mode)
 
-### Example (for API/core code):
-```python
-def get_spec_by_id(spec_id: str, db: Session) -> Spec:
-    """
-    Retrieve a spec by its ID.
+## TypeScript (Frontend)
+- **Linter**: ESLint 9 with typescript-eslint
+- **Strict mode**: Enabled in tsconfig
+- **Target**: ES2020, bundler module resolution
+- **Path alias**: `@/` → `./src/`
+- **Components**: PascalCase files (e.g., `PlotCard.tsx`), function components only
+- **Hooks**: camelCase with `use` prefix (e.g., `useSpecs.ts`)
+- **Utils/Types**: camelCase files (e.g., `api.ts`)
+- **Exports**: Named exports (no default exports)
+- **Styling**: MUI `sx` prop + Emotion `styled()`, no CSS modules
+- **State**: Local state + custom hooks (no Redux/Zustand)
+- **API calls**: Plain `fetch()` in `utils/api.ts`
 
-    Args:
-        spec_id: The unique spec identifier
-        db: Database session
-
-    Returns:
-        Spec object if found
-
-    Raises:
-        NotFoundError: If spec doesn't exist
-    """
-    pass
-```
+## Agentic Layer Conventions
+- **Script headers**: uv inline script metadata (dependencies declared in-file)
+- **CLI**: Click for all workflow scripts
+- **Console output**: Rich library, stderr for UI, stdout for state JSON
+- **State**: `WorkflowState` persisted at `agentic/runs/{run_id}/state.json`
+- **Templates**: `agentic/commands/*.md` with `$1`, `$2`, `$ARGUMENTS` placeholders
+- **Execution**: `prompt_claude_code_with_retry()` in `agent.py`
+- **Data types**: `TestResult`, `ReviewResult`, `ReviewIssue` in `agent.py`
+- **JSON parsing**: `parse_json()` handles markdown-fenced JSON from LLM output
 
 ## Plot Implementation Style (KISS)
-Plot implementations should be simple, readable scripts - like matplotlib gallery examples:
-
 ```python
 """
-scatter-basic: Basic Scatter Plot
-Library: matplotlib
+spec-id: Plot Title
+Library: library-name
 """
-
 import matplotlib.pyplot as plt
 import numpy as np
 
 # Data
 np.random.seed(42)
 x = np.random.randn(100)
-y = x * 0.8 + np.random.randn(100) * 0.5
 
 # Plot
 fig, ax = plt.subplots(figsize=(16, 9))
-ax.scatter(x, y, alpha=0.7, s=50, color='#306998')
-
-ax.set_xlabel('X Value')
-ax.set_ylabel('Y Value')
-ax.set_title('Basic Scatter Plot')
-ax.grid(True, alpha=0.3)
-
+ax.scatter(x, y)
+ax.set_title('Title')
 plt.tight_layout()
 plt.savefig('plot.png', dpi=300, bbox_inches='tight')
 ```
-
-### Plot Code Rules:
-- No functions, no classes
-- No `if __name__ == '__main__':`
-- No type hints or docstrings (in plot code)
-- Just: imports → data → plot → save
+- No functions, no classes, no `if __name__`
+- No type hints or docstrings in plot code
+- Flow: imports → data → plot → save
 
 ## Naming Conventions
-
-### Spec IDs
-Format: `{plot-type}-{variant}-{modifier}` (lowercase, hyphens only)
-- `scatter-basic` - Simple 2D scatter plot
-- `bar-grouped-horizontal` - Horizontal grouped bars
-- `heatmap-correlation` - Correlation matrix heatmap
-
-### Files
-- Implementation files: `{library}.py` (e.g., `matplotlib.py`)
-- Metadata files: `{library}.yaml`
-
-## General Rules
-- Always write in English
-- Testing coverage target: 90%+
-- Test naming: `test_{what_it_does}`
+- **Spec IDs**: `{plot-type}-{variant}-{modifier}` (lowercase, hyphens)
+- **Implementation files**: `{library}.py`
+- **Metadata files**: `{library}.yaml`
+- **Test naming**: `test_{what_it_does}`
+- **All output**: English only (comments, commits, docs, PRs)

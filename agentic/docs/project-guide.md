@@ -159,15 +159,21 @@ Example: `plots/scatter-basic/` contains everything for the basic scatter plot.
 - **`prompts/`**: AI agent prompts for code generation, quality evaluation, and tagging
   - `templates/`: Spec and metadata templates
   - `library/`: Library-specific generation rules (9 files)
-- **`core/`**: Shared business logic (database, repositories, config)
-- **`api/`**: FastAPI backend (routers, schemas, dependencies)
-- **`app/`**: React frontend (Vite + TypeScript + MUI)
-- **`tests/unit/`**: Unit tests mirroring source structure
+- **`core/`**: Shared business logic (database, repositories, config, utils, images)
+  - **`core/database/types.py`**: Custom SQLAlchemy types (PostgreSQL + SQLite compatibility)
+  - **`core/database/repositories.py`**: Data access layer
+- **`api/`**: FastAPI backend (routers, schemas, dependencies, cache, analytics, MCP server)
+- **`app/`**: React frontend (Vite 7 + TypeScript 5 + MUI 7)
+- **`agentic/`**: AI workflow layer (composable phases, prompt templates, runtime state)
+  - **`agentic/workflows/`**: Click CLI scripts (plan, build, test, review + orchestrators)
+  - **`agentic/commands/`**: Markdown prompt templates
+- **`automation/`**: CI/CD helper scripts (workflow_cli, label_manager, sync_to_postgres)
+- **`tests/`**: Unit, integration, and e2e tests mirroring source structure
 - **`docs/`**: Architecture and workflow documentation
 
 ### Key Architecture Patterns
 
-1. **Repository Pattern**: Data access layer in `core/repositories/`
+1. **Repository Pattern**: Data access layer in `core/database/repositories.py`
 2. **Async Everything**: FastAPI + SQLAlchemy async + asyncpg
 3. **Clean Repo**: Only production code in git. Quality reports -> `metadata/{library}.yaml`. Preview images -> GCS.
 4. **Issue-Based Workflow**: GitHub Issues as state machine for plot lifecycle
@@ -310,8 +316,8 @@ gs://pyplots-images/
 
 ## Tech Stack
 
-- **Backend**: FastAPI, SQLAlchemy (async), PostgreSQL, Python 3.10+
-- **Frontend**: React 19, Vite, TypeScript, MUI 7
+- **Backend**: FastAPI, SQLAlchemy (async), PostgreSQL, Python 3.12+
+- **Frontend**: React 19, Vite 7, TypeScript 5, MUI 7
 - **Plotting**: matplotlib, seaborn, plotly, bokeh, altair, plotnine, pygal, highcharts, lets-plot
 - **Package Manager**: uv (fast Python installer)
 - **Infrastructure**: Google Cloud Run, Cloud SQL, Cloud Storage
@@ -619,9 +625,11 @@ Issue ready for maintainer review
 | Workflow | Purpose |
 |----------|---------|
 | **ci-lint.yml** | Ruff linting on PR |
-| **ci-unittest.yml** | Unit tests on PR |
+| **ci-tests.yml** | Unit tests on PR |
 | **sync-postgres.yml** | Syncs plots/ to database on push to main |
 | **sync-labels.yml** | Auto-syncs labels after manual PR merges (spec-ready, impl:*:done) |
+| **notify-deployment.yml** | Deployment notifications |
+| **util-claude.yml** | Claude utility workflow |
 
 ### Decoupled Architecture
 

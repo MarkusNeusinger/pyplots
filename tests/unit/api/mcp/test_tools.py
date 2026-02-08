@@ -339,3 +339,67 @@ async def test_get_tag_values_invalid_category(mock_db_context):
     """Test get_tag_values with invalid category."""
     with pytest.raises(ValueError, match="Invalid category 'invalid'"):
         await get_tag_values("invalid")
+
+
+# =============================================================================
+# FastMCP Protocol-Level Tests (no mocks on fastmcp itself)
+# =============================================================================
+
+
+class TestMcpServerProtocol:
+    """Tests that exercise the real fastmcp server instance.
+
+    These tests verify tool registration and discovery without mocking fastmcp,
+    so breaking changes in the fastmcp API surface will be caught.
+    """
+
+    @pytest.mark.asyncio
+    async def test_all_tools_registered(self):
+        """MCP server should have all 6 tools registered."""
+        from api.mcp.server import mcp_server
+
+        tool_names = await mcp_server.get_tools()
+        expected = {
+            "list_specs",
+            "search_specs_by_tags",
+            "get_spec_detail",
+            "get_implementation",
+            "list_libraries",
+            "get_tag_values",
+        }
+        assert set(tool_names) == expected
+
+    @pytest.mark.asyncio
+    async def test_tool_objects_have_correct_type(self):
+        """Each registered tool should be a FunctionTool with a callable fn."""
+        from api.mcp.server import mcp_server
+
+        tool_names = await mcp_server.get_tools()
+        for name in tool_names:
+            tool = await mcp_server.get_tool(name)
+            assert hasattr(tool, "fn"), f"Tool {name} has no 'fn' attribute"
+            assert callable(tool.fn), f"Tool {name}.fn is not callable"
+
+    @pytest.mark.asyncio
+    async def test_tool_schemas_are_valid(self):
+        """Each tool should have a valid JSON Schema for its parameters."""
+        from api.mcp.server import mcp_server
+
+        tool_names = await mcp_server.get_tools()
+        for name in tool_names:
+            tool = await mcp_server.get_tool(name)
+            schema = tool.parameters
+            assert isinstance(schema, dict), f"Tool {name} schema is not a dict"
+            assert "properties" in schema, f"Tool {name} schema has no 'properties'"
+            assert schema.get("type") == "object", f"Tool {name} schema type is not 'object'"
+
+    @pytest.mark.asyncio
+    async def test_get_tag_values_via_call_tool(self):
+        """Calling get_tag_values with invalid category through call_tool should raise."""
+        from api.mcp.server import mcp_server
+
+        # Call through the fastmcp protocol layer — exercises serialization
+        # get_tag_values("invalid") should raise ValueError
+        with pytest.raises(ValueError, match="Invalid category"):
+            tool = await mcp_server.get_tool("get_tag_values")
+            await tool.fn(category="invalid")

@@ -108,10 +108,13 @@ Examples: `scatter-basic`, `scatter-color-mapped`, `bar-grouped-horizontal`, `he
 
 - **`plots/{spec-id}/`**: Plot-centric directories (spec + metadata + implementations)
 - **`prompts/`**: AI agent prompts for code generation and quality evaluation
-- **`core/`**: Shared business logic (database, repositories, config)
+- **`core/`**: Shared business logic (database, repositories, config, utils, images)
   - **`core/database/types.py`**: Custom SQLAlchemy types (PostgreSQL + SQLite compatibility)
-- **`api/`**: FastAPI backend (routers, schemas, dependencies)
-- **`app/`**: React frontend (React 19 + TypeScript + Vite 7 + MUI 7)
+  - **`core/database/repositories.py`**: Data access layer
+- **`api/`**: FastAPI backend (routers, schemas, dependencies, cache, analytics, MCP server)
+- **`app/`**: React frontend (React 19 + TypeScript 5 + Vite 7 + MUI 7)
+- **`agentic/`**: AI workflow layer (composable phases, prompt templates, runtime state)
+- **`automation/`**: CI/CD helper scripts (workflow_cli, label_manager, sync_to_postgres)
 - **`tests/unit/`**: Unit tests with mocked dependencies
 - **`tests/integration/`**: Integration tests with SQLite in-memory database
 - **`tests/e2e/`**: End-to-end tests with full FastAPI stack
@@ -210,10 +213,10 @@ plt.savefig('plot.png', dpi=300, bbox_inches='tight')
 
 ## Tech Stack
 
-- **Backend**: FastAPI, SQLAlchemy (async), PostgreSQL, Python 3.10+
-- **Frontend**: React 19, TypeScript, Vite 7, MUI 7
+- **Backend**: FastAPI, SQLAlchemy (async), PostgreSQL, Python 3.12+
+- **Frontend**: React 19, TypeScript 5, Vite 7, MUI 7
 - **Package Manager**: uv (Python), yarn (Node.js)
-- **Linting**: Ruff (Python)
+- **Linting**: Ruff (Python), ESLint (TypeScript)
 
 ## Deployment
 

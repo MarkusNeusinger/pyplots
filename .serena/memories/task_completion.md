@@ -4,46 +4,39 @@
 
 ### 1. Code Quality (REQUIRED)
 ```bash
-# Run on all changed files
+# Python changes
 uv run ruff check <changed_files> && uv run ruff format <changed_files>
+
+# Frontend changes
+cd app && yarn lint
 ```
 
 ### 2. Run Tests (if applicable)
 ```bash
-# Run relevant tests
-uv run pytest tests/unit  # For unit tests
-uv run pytest tests/integration  # For integration tests
+uv run pytest tests/unit       # For backend changes
+uv run pytest tests/integration  # For DB/API changes
+cd app && yarn build           # For frontend (catches TS errors)
+cd app && yarn test            # Frontend unit tests (vitest)
 ```
 
 ### 3. Documentation
-- Check if related documentation needs updating
-- Key docs to check:
-  - `docs/reference/plausible.md` - for analytics events
-  - `docs/workflows/` - for workflow changes
-  - `docs/contributing.md` - for user-facing changes
+Check if related docs need updating:
+- `docs/reference/plausible.md` - analytics events
+- `docs/workflows/` - workflow changes
+- `docs/contributing.md` - user-facing changes
+- `agentic/docs/project-guide.md` - architecture/agentic changes
 
-## CRITICAL Rules
+## Critical Rules
 
-### Do NOT:
+### NEVER do:
 - Commit or push in interactive sessions (let user do it)
-- Manually create `plots/{spec-id}/` directories
-- Manually write `specification.md` files
+- Manually create `plots/{spec-id}/` directories or `specification.md` files
 - Manually merge implementation PRs
 - Upload images to GCS manually
+- Add `approved` label to PRs (add to ISSUES instead)
 
-### Always:
-- Use the GitHub Actions workflow for specs and implementations
-- Add `approved` label to ISSUES (not PRs)
+### ALWAYS do:
+- Use GitHub Actions pipeline for specs and implementations
+- Write everything in English
 - Let `impl-merge.yml` handle PR merging
-- Update documentation when changing features
-
-## For Spec/Implementation Changes
-All specifications and implementations MUST go through the GitHub Actions pipeline:
-
-1. Create GitHub Issue with descriptive title (NO spec-id!)
-2. Add `spec-request` label
-3. Wait for `spec-create.yml` to create PR
-4. Add `approved` label to the ISSUE
-5. Wait for merge and `spec-ready` label
-6. Trigger `bulk-generate.yml` for implementations
-7. DO NOT manually merge - let workflows handle it
+- Update docs when changing features or workflows

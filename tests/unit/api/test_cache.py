@@ -241,3 +241,25 @@ class TestGetCacheStats:
         assert isinstance(stats["size"], int)
         assert isinstance(stats["maxsize"], int)
         assert isinstance(stats["ttl"], (int, float))
+
+
+class TestTTLCacheMaxsizeOverflow:
+    """Tests for TTLCache behavior when maxsize is exceeded."""
+
+    def test_oldest_entry_evicted_on_maxsize_overflow(self) -> None:
+        """When cache exceeds maxsize, oldest entry should be evicted (LRU)."""
+        from cachetools import TTLCache
+
+        cache = TTLCache(maxsize=3, ttl=300)
+        cache["a"] = 1
+        cache["b"] = 2
+        cache["c"] = 3
+
+        # Adding 4th entry should evict oldest ("a")
+        cache["d"] = 4
+
+        assert "a" not in cache
+        assert cache["b"] == 2
+        assert cache["c"] == 3
+        assert cache["d"] == 4
+        assert len(cache) == 3

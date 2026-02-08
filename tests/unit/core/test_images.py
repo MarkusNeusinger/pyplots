@@ -617,6 +617,83 @@ class TestBrandingFunctions:
         assert isinstance(result, bytes)
 
 
+class TestGetMonolisaFontPath:
+    """Tests for _get_monolisa_font_path GCS font download."""
+
+    def test_returns_cached_font_without_gcs_call(self, tmp_path: Path) -> None:
+        """Should return cached font path without calling GCS when file exists."""
+        from unittest.mock import patch
+
+        import core.images
+
+        # Create fake cached font in tmp_path
+        fake_font = tmp_path / "MonoLisaVariableNormal.ttf"
+        fake_font.write_bytes(b"fake font data")
+
+        with patch("core.images.FONT_CACHE_DIR", tmp_path):
+            result = core.images._get_monolisa_font_path()
+
+        assert result == fake_font
+
+    def test_downloads_from_gcs_on_cache_miss(self, tmp_path: Path) -> None:
+        """Should download font from GCS when not cached."""
+        from unittest.mock import MagicMock, patch
+
+        import core.images
+
+        mock_blob = MagicMock()
+        mock_bucket = MagicMock()
+        mock_bucket.blob.return_value = mock_blob
+        mock_client = MagicMock()
+        mock_client.bucket.return_value = mock_bucket
+
+        with (
+            patch.object(type(tmp_path / "MonoLisaVariableNormal.ttf"), "exists", return_value=False),
+            patch("core.images.FONT_CACHE_DIR", tmp_path),
+            patch("google.cloud.storage.Client", return_value=mock_client),
+        ):
+            result = core.images._get_monolisa_font_path()
+
+        # Verify GCS interactions
+        mock_client.bucket.assert_called_once_with("pyplots-static")
+        mock_bucket.blob.assert_called_once_with("fonts/MonoLisaVariableNormal.ttf")
+        mock_blob.download_to_filename.assert_called_once()
+        assert result == tmp_path / "MonoLisaVariableNormal.ttf"
+
+    def test_returns_none_on_gcs_exception(self, tmp_path: Path) -> None:
+        """Should return None gracefully when GCS download fails."""
+        from unittest.mock import patch
+
+        import core.images
+
+        with (
+            patch.object(type(tmp_path / "MonoLisaVariableNormal.ttf"), "exists", return_value=False),
+            patch("core.images.FONT_CACHE_DIR", tmp_path),
+            patch("google.cloud.storage.Client", side_effect=Exception("GCS unavailable")),
+        ):
+            result = core.images._get_monolisa_font_path()
+
+        assert result is None
+
+    def test_creates_cache_dir_on_download(self, tmp_path: Path) -> None:
+        """Should create cache directory if it doesn't exist before downloading."""
+        from unittest.mock import MagicMock, patch
+
+        import core.images
+
+        cache_dir = tmp_path / "nonexistent" / "subdir"
+        mock_client = MagicMock()
+        mock_client.bucket.return_value.blob.return_value = MagicMock()
+
+        with (
+            patch("core.images.FONT_CACHE_DIR", cache_dir),
+            patch("google.cloud.storage.Client", return_value=mock_client),
+        ):
+            core.images._get_monolisa_font_path()
+
+        assert cache_dir.exists()
+
+
 class TestBrandingCLI:
     """Tests for branding CLI commands."""
 

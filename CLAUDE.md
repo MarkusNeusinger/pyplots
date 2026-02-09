@@ -28,6 +28,23 @@ For detailed project documentation (architecture, commands, workflows, etc.), se
 - Serena: Understanding codebase structure, refactoring, finding usages, editing code
 - Context7: Checking correct API usage, finding library-specific patterns, debugging library issues
 
+## Development Workflow
+
+- **Verify working directory** - Always verify the correct working directory before running commands (especially frontend dev servers, package managers). Use `pwd` before executing build/serve commands.
+- **Keep plans simple** - Do not over-scope by adding extra modes, elaborate multi-step processes, or spawning teams when a direct approach is requested. Ask for clarification before expanding scope. Only do exactly what was asked.
+- **Proper lint fixes only** - Always apply proper fixes for lint/code quality issues. Never use disable comments (`eslint-disable`, `noqa`, etc.) unless explicitly approved by the user.
+- **Fix formatting when editing docs** - When formatting or improving markdown files, actually fix formatting issues (headings, lists, code blocks, structure) — don't just analyze the content.
+
+## Package Management
+
+- **Frontend**: Use `yarn` (not npm). Run `cd app && yarn` for installs, `cd app && yarn dev` for dev server.
+- **Backend**: Python dependencies managed via `pyproject.toml`. For transitive dependencies, update the lock file directly — do not add constraints to `pyproject.toml`.
+- **Scripts**: Use `uv run` for running Python scripts.
+
+## Claude Code Configuration
+
+- **Commands directory**: Commands live in `agentic/commands/` (agent-agnostic). A symlink `.claude/commands/ → ../agentic/commands/` ensures Claude Code slash-command resolution works. Do not create commands directly in `.claude/commands/`.
+
 ## CRITICAL: Mandatory Workflow for New Specs and Implementations
 
 **NEVER bypass the automated workflow!** All specifications and implementations MUST go through the GitHub Actions pipeline.

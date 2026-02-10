@@ -76,18 +76,26 @@ All agents run in parallel — each only touches its own library's files.
 
 ### Phase 3: Collect & Present
 
-Agents report back via `SendMessage` (auto-delivered to you). Once all agents have reported:
+Agents report back via `SendMessage` (auto-delivered to you). Agents may report either **completed work** (`STATUS: done`) or **a conflict** (`STATUS: conflict`). Once all agents have reported:
 
-1. **Present a summary to the user** for each library:
-    - What was changed (bullet points from agent)
-    - Local preview image path: `plots/{spec_id}/implementations/.update-preview/{library}/plot.png`
-    - Agent's self-assessment score
-    - Any spec changes the agent made
+1. **Handle conflicts first.** If any agent reports a conflict:
+   - Present the conflict to the user clearly: which rule/spec is violated, what the agent suggests as alternatives
+   - Ask the user to decide:
+     - **Adjust the request** to comply with existing rules
+     - **Update the rule or spec** — the user tells you which file to edit and how, you make the edit, then tell the agent to proceed
+     - **Override** — explicitly tell the agent to proceed despite the conflict
+   - Send the user's decision to the agent via `SendMessage`. The agent will then continue with Step 3.
 
-2. **Ask the user for feedback.** They can:
-    - Give per-library feedback (e.g., "matplotlib looks good, seaborn needs more contrast")
-    - Say **"ship"**, **"ok"**, **"looks good"**, or **"passt"** to proceed to shipping
-    - Say **"abort"** to cancel everything
+2. **Present a summary to the user** for each library that completed successfully:
+   - What was changed (bullet points from agent)
+   - Local preview image path: `plots/{spec_id}/implementations/.update-preview/{library}/plot.png`
+   - Agent's self-assessment score
+   - Any spec changes the agent made
+
+3. **Ask the user for feedback.** They can:
+   - Give per-library feedback (e.g., "matplotlib looks good, seaborn needs more contrast")
+   - Say **"ship"**, **"ok"**, **"looks good"**, or **"passt"** to proceed to shipping
+   - Say **"abort"** to cancel everything
 
 ---
 
@@ -96,9 +104,10 @@ Agents report back via `SendMessage` (auto-delivered to you). Once all agents ha
 For per-library feedback:
 
 1. Send the feedback to the specific idle teammate via `SendMessage` (e.g., to `seaborn-updater`). This wakes them up.
-2. The agent re-modifies, re-generates, reports back, and goes idle again.
-3. Present updated results to the user.
-4. Repeat until the user approves.
+2. The agent runs its conflict check again (Step 2) on the new feedback. If it detects a conflict, it reports back with `STATUS: conflict` instead of making changes — handle as in Phase 3.
+3. If no conflict, the agent re-modifies, re-generates, reports back, and goes idle again.
+4. Present updated results to the user.
+5. Repeat until the user approves.
 
 ---
 
@@ -124,7 +133,7 @@ For each updated library, edit `plots/{spec_id}/metadata/{library}.yaml`:
 | `updated`         | Current UTC timestamp in ISO 8601 (e.g., `2026-02-10T14:30:00+00:00`)     |
 | `generated_by`    | Get from `CLAUDE_MODEL` env var, or detect via `claude --version` / model name |
 | `python_version`  | Get from `uv run python --version`                                        |
-| `library_version` | Get from `uv run python -c "import {library}; print({library}.__version__)"` |
+| `library_version` | Get from `uv run python -c "from importlib.metadata import version; print(version('{package}'))"` where `{package}` is the pip package name. Mapping: `highcharts` → `highcharts-core`, `letsplot` → `lets-plot`, all others → same as `{library}` |
 | `quality_score`   | Set to `null` (CI review will fill this)                                  |
 | All other fields  | **Keep unchanged** (including `review`, `impl_tags`, `preview_url`, etc.) |
 
@@ -188,77 +197,84 @@ Update `preview_url` and `preview_thumb` in the metadata YAML to point to the st
 rm -rf plots/{spec_id}/implementations/.update-preview
 ```
 
-#### 5g. Git Branch & PR
+#### 5g. Per-Library Branches, PRs & Reviews
+
+**IMPORTANT:** The review pipeline (`impl-review.yml`) extracts `SPEC_ID` and `LIBRARY` from the branch name
+pattern `implementation/{spec-id}/{library}`. Therefore, each library MUST get its own branch and PR.
+
+Get `{owner}/{repo}` from `git remote get-url origin`.
+
+**If the spec was changed**, commit that first on main or include it in each branch.
+
+**For each library**, run the following sequentially:
 
 ```bash
-# Create branch
-git checkout -b implementation/{spec_id}/update
+# Ensure we start from main
+git checkout main
 
-# Stage only the changed files (NO images — those are in GCS)
-git add plots/{spec_id}/implementations/*.py
-git add plots/{spec_id}/metadata/*.yaml
-# If spec was changed:
+# Create per-library branch
+git checkout -b implementation/{spec_id}/{library}
+
+# Stage only this library's files
+git add plots/{spec_id}/implementations/{library}.py
+git add plots/{spec_id}/metadata/{library}.yaml
+# If spec was changed (only needed in first library branch):
 git add plots/{spec_id}/specification.md
 
 # Commit
-git commit -m "update({spec_id}): {short description}
+git commit -m "update({spec_id}): {library} — {short description}
 
-Updated libraries: {comma-separated list}
 {description}"
 
 # Push
-git push -u origin implementation/{spec_id}/update
-```
+git push -u origin implementation/{spec_id}/{library}
 
-#### 5h. Create PR
-
-```bash
+# Create PR
 gh pr create \
-  --title "update({spec_id}): {short description}" \
-  --body "$(cat <<'EOF'
+  --title "update({spec_id}): {library} — {short description}" \
+  --body "$(cat <<EOF
 ## Summary
 
-Updated implementation(s) for **{spec_id}**.
+Updated **{library}** implementation for **{spec_id}**.
 
-**Libraries:** {comma-separated list}
 **Changes:** {description}
 
-### Per-Library Changes
-
-{For each library:}
-#### {library}
+### Changes
 {bullet points of changes from agent}
 - Quality self-assessment: {score}/100
 
 ## Test Plan
 
-- [ ] Preview images uploaded to GCS staging
-- [ ] Implementation files pass ruff format/check
-- [ ] Metadata YAML updated with current versions
+- [x] Preview images uploaded to GCS staging
+- [x] Implementation file passes ruff format/check
+- [x] Metadata YAML updated with current versions
 - [ ] Automated review triggered
 
 ---
-Generated with [Claude Code](https://claude.com/claude-code) `/update` command
+Generated with [Claude Code](https://claude.com/claude-code) \`/update\` command
 EOF
 )"
-```
 
-#### 5i. Trigger Review
-
-```bash
+# Trigger review for this PR
 PR_NUMBER=$(gh pr view --json number -q '.number')
 gh api repos/{owner}/{repo}/dispatches \
   -f event_type=review-pr \
   -f 'client_payload[pr_number]='"$PR_NUMBER"
 ```
 
-Get `{owner}/{repo}` from `git remote get-url origin`.
+After all branches are created, return to main:
+
+```bash
+git checkout main
+```
+
+Report all PR URLs to the user.
 
 #### 5j. Cleanup Team
 
 1. `SendMessage` with type `shutdown_request` to all agents
 2. `TeamDelete` to clean up the team
-3. Report the PR URL to the user
+3. Report all PR URLs to the user
 
 ---
 
@@ -292,7 +308,33 @@ Read these files to understand what you're working with:
 If `preview_url` exists in the metadata, view the current preview image to understand what the plot currently looks
 like.
 
-### Step 2: Modify Implementation
+### Step 2: Conflict Check
+
+**Before making any changes**, check whether the user's request conflicts with:
+- **Generation rules** (`prompts/plot-generator.md`, `prompts/library/{LIBRARY}.md`)
+- **Quality criteria** (`prompts/quality-criteria.md`)
+- **The specification** (`plots/{SPEC_ID}/specification.md`)
+
+If you detect a conflict, **DO NOT proceed with the change.** Instead, report the conflict to `update-lead` via `SendMessage`:
+
+```
+LIBRARY: {LIBRARY}
+STATUS: conflict
+
+CONFLICT:
+The requested change "{specific request}" conflicts with:
+- {rule source}: {quote the specific rule}
+- Reason: {explain why this is a conflict}
+
+OPTIONS:
+1. Adjust the request to: {suggest a compliant alternative}
+2. Update the rule/spec to allow this (user must decide)
+3. Proceed anyway (user must explicitly override)
+```
+
+Then go idle and wait for the lead to relay the user's decision. Only proceed once the conflict is resolved.
+
+### Step 3: Modify Implementation
 
 Edit `plots/{SPEC_ID}/implementations/{LIBRARY}.py`:
 
@@ -305,7 +347,7 @@ Edit `plots/{SPEC_ID}/implementations/{LIBRARY}.py`:
 If the specification itself needs changes to make the plot better, also edit `plots/{SPEC_ID}/specification.md` and
 explain what you changed and why.
 
-### Step 3: Generate Locally
+### Step 4: Generate Locally
 
 Run the implementation to generate the plot image. **IMPORTANT**: Each agent MUST run in its own isolated preview
 directory to avoid race conditions with other parallel agents. All agents write `plot.png` — running in the shared
@@ -321,7 +363,7 @@ there directly — no copy step needed, no race condition with other agents.
 
 If the script fails, read the error, fix the implementation, and retry. **Up to 3 retries.**
 
-### Step 4: Process Images
+### Step 5: Process Images
 
 Generate thumbnail and optimize:
 
@@ -332,7 +374,7 @@ uv run python -m core.images process \
   plots/{SPEC_ID}/implementations/.update-preview/{LIBRARY}/plot_thumb.png
 ```
 
-### Step 5: Self-Check
+### Step 6: Self-Check
 
 View the generated image at `plots/{SPEC_ID}/implementations/.update-preview/{LIBRARY}/plot.png`.
 
@@ -348,7 +390,7 @@ Check against the quality criteria from `prompts/quality-criteria.md`:
 
 Fix any obvious issues before reporting.
 
-### Step 6: Report to Lead
+### Step 7: Report to Lead
 
 Send a message to `update-lead` via `SendMessage` with:
 
@@ -373,7 +415,7 @@ Then mark your task as completed via `TaskUpdate`.
 
 **After reporting, go idle. The lead will wake you if the user has feedback for revisions.**
 
-If the lead sends you feedback, repeat Steps 2-6 with the new instructions.
+If the lead sends you feedback, repeat Steps 2-7 with the new instructions (including the conflict check).
 
 ---
 

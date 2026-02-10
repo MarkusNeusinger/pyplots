@@ -1,52 +1,88 @@
 """ pyplots.ai
 scatter-basic: Basic Scatter Plot
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 85/100 | Created: 2025-12-22
+Library: bokeh 3.8.2 | Python 3.14.2
+Quality: /100 | Updated: 2026-02-10
 """
 
 import numpy as np
 from bokeh.io import export_png
 from bokeh.models import ColumnDataSource, HoverTool
 from bokeh.plotting import figure, output_file, save
+from bokeh.transform import factor_cmap
 
 
-# Data - Study hours vs exam scores (realistic scenario)
+# Data - Coffee shop daily metrics: cups sold vs revenue across seasons
 np.random.seed(42)
-study_hours = np.random.uniform(1, 10, 100)
-exam_scores = study_hours * 8 + np.random.randn(100) * 5 + 20
-exam_scores = np.clip(exam_scores, 0, 100)
+n = 120
+seasons = np.random.choice(["Winter", "Spring", "Summer", "Autumn"], size=n, p=[0.28, 0.24, 0.24, 0.24])
+base_cups = {"Winter": 180, "Spring": 140, "Summer": 110, "Autumn": 150}
+cups_sold = np.array([base_cups[s] + np.random.normal(0, 30) for s in seasons]).clip(40, 300)
+revenue = cups_sold * np.random.uniform(3.2, 4.8, n) + np.random.normal(0, 40, n)
+revenue = revenue.clip(100, 1600)
 
-# Create ColumnDataSource
-source = ColumnDataSource(data={"study_hours": study_hours, "exam_scores": exam_scores})
+source = ColumnDataSource(data={"cups": cups_sold, "revenue": revenue, "season": seasons})
 
-# Create figure (4800 x 2700 px for 16:9 aspect ratio)
-p = figure(width=4800, height=2700, title="scatter-basic · bokeh · pyplots.ai")
+season_list = ["Winter", "Spring", "Summer", "Autumn"]
+palette = ["#306998", "#2CA02C", "#FFD43B", "#E25822"]
 
-# Set axis labels explicitly (more reliable than figure parameters)
-p.xaxis.axis_label = "Study Hours (hrs)"
-p.yaxis.axis_label = "Exam Score (%)"
+# Create figure
+p = figure(width=4800, height=2700, title="scatter-basic \u00b7 bokeh \u00b7 pyplots.ai")
+p.xaxis.axis_label = "Cups Sold per Day"
+p.yaxis.axis_label = "Daily Revenue ($)"
 
-# Plot scatter points (size increased for visibility on large canvas)
-p.scatter(x="study_hours", y="exam_scores", source=source, size=50, color="#306998", alpha=0.7)
+# Plot scatter with season-based coloring
+p.scatter(
+    x="cups",
+    y="revenue",
+    source=source,
+    size=30,
+    alpha=0.75,
+    color=factor_cmap("season", palette, season_list),
+    legend_group="season",
+)
 
-# Add HoverTool for interactivity (key Bokeh distinctive feature)
-hover = HoverTool(tooltips=[("Study Hours", "@study_hours{0.1} hrs"), ("Exam Score", "@exam_scores{0.1}%")])
+# HoverTool for interactivity
+hover = HoverTool(tooltips=[("Season", "@season"), ("Cups Sold", "@cups{0}"), ("Revenue", "$@revenue{0.00}")])
 p.add_tools(hover)
 
-# Styling (scaled for 4800x2700 px canvas - larger sizes for readability)
+# Title styling
 p.title.text_font_size = "72pt"
+p.title.text_color = "#2C3E50"
+
+# Axis styling
 p.xaxis.axis_label_text_font_size = "48pt"
 p.yaxis.axis_label_text_font_size = "48pt"
 p.xaxis.major_label_text_font_size = "36pt"
 p.yaxis.major_label_text_font_size = "36pt"
+p.xaxis.axis_label_text_color = "#34495E"
+p.yaxis.axis_label_text_color = "#34495E"
+p.xaxis.axis_line_width = 3
+p.yaxis.axis_line_width = 3
+p.xaxis.major_tick_line_width = 3
+p.yaxis.major_tick_line_width = 3
 
-# Grid styling (subtle, per quality criteria VQ-07: alpha 0.2-0.4)
-p.grid.grid_line_alpha = 0.35
+# Grid
+p.grid.grid_line_alpha = 0.3
 p.grid.grid_line_width = 2
+p.grid.grid_line_dash = [6, 4]
 
-# Save as PNG
+# Legend
+p.legend.label_text_font_size = "36pt"
+p.legend.glyph_width = 50
+p.legend.glyph_height = 50
+p.legend.spacing = 14
+p.legend.padding = 20
+p.legend.background_fill_alpha = 0.85
+p.legend.border_line_alpha = 0.3
+p.legend.location = "top_left"
+
+# Background
+p.background_fill_color = "#FAFBFC"
+p.border_fill_color = "white"
+p.outline_line_color = "#E0E0E0"
+p.outline_line_width = 2
+
+# Save
 export_png(p, filename="plot.png")
-
-# Save as HTML (interactive)
 output_file("plot.html")
 save(p)

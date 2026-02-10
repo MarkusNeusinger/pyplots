@@ -1,29 +1,46 @@
 """ pyplots.ai
 scatter-basic: Basic Scatter Plot
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-22
+Library: matplotlib 3.10.8 | Python 3.14.2
+Quality: /100 | Updated: 2026-02-10
 """
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-# Data - study hours vs exam scores (realistic educational context)
+# Data - coffee shop daily sales: temperature vs iced drinks sold, colored by humidity
 np.random.seed(42)
-study_hours = np.random.uniform(1, 12, 120)
-exam_scores = 45 + study_hours * 4.5 + np.random.randn(120) * 8
-exam_scores = np.clip(exam_scores, 0, 100)
+n_points = 150
+temperature = np.random.uniform(5, 38, n_points)
+base_sales = 10 + temperature * 2.8 + np.random.randn(n_points) * 12
+iced_drinks = np.clip(base_sales, 5, 120).astype(float)
+humidity = 30 + temperature * 0.8 + np.random.randn(n_points) * 15
+humidity = np.clip(humidity, 15, 95)
 
 # Create plot
-fig, ax = plt.subplots(figsize=(16, 9))
-ax.scatter(study_hours, exam_scores, alpha=0.7, s=180, color="#306998", edgecolors="white", linewidths=0.5)
+fig, ax = plt.subplots(figsize=(16, 9), facecolor="#fafafa")
+ax.set_facecolor("#fafafa")
+
+scatter = ax.scatter(
+    temperature, iced_drinks, c=humidity, cmap="YlGnBu", s=90, alpha=0.75, edgecolors="white", linewidths=0.8, zorder=3
+)
+
+# Colorbar as distinctive matplotlib feature
+cbar = fig.colorbar(scatter, ax=ax, pad=0.02, shrink=0.85, aspect=30)
+cbar.set_label("Relative Humidity (%)", fontsize=18)
+cbar.ax.tick_params(labelsize=14)
 
 # Labels and styling
-ax.set_xlabel("Study Hours (per week)", fontsize=20)
-ax.set_ylabel("Exam Score (%)", fontsize=20)
-ax.set_title("scatter-basic · matplotlib · pyplots.ai", fontsize=24)
+ax.set_xlabel("Daily High Temperature (\u00b0C)", fontsize=20)
+ax.set_ylabel("Iced Drinks Sold", fontsize=20)
+ax.set_title("scatter-basic \u00b7 matplotlib \u00b7 pyplots.ai", fontsize=24, pad=15)
 ax.tick_params(axis="both", labelsize=16)
-ax.grid(True, alpha=0.3, linestyle="--")
+ax.grid(True, alpha=0.25, linestyle="--", color="#888888", zorder=0)
+
+# Refine spines
+for spine in ax.spines.values():
+    spine.set_color("#cccccc")
+    spine.set_linewidth(0.8)
 
 plt.tight_layout()
-plt.savefig("plot.png", dpi=300, bbox_inches="tight")
+plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor=fig.get_facecolor())

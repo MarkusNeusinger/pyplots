@@ -1,7 +1,7 @@
 """ pyplots.ai
 scatter-basic: Basic Scatter Plot
-Library: highcharts unknown | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-22
+Library: highcharts 1.10.3 | Python 3.14.2
+Quality: /100 | Updated: 2026-02-10
 """
 
 import tempfile
@@ -17,10 +17,11 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data
+# Data - Daily temperature vs iced coffee sales at a cafe
 np.random.seed(42)
-x = np.random.randn(100) * 2 + 10
-y = x * 0.8 + np.random.randn(100) * 2
+temperature = np.random.normal(22, 8, 120).clip(2, 40)  # Daily temp in Celsius
+iced_sales = temperature * 2.8 + np.random.normal(0, 8, 120)  # Iced drinks sold
+iced_sales = iced_sales.clip(5, None)
 
 # Create chart
 chart = Chart(container="container")
@@ -31,44 +32,120 @@ chart.options.chart = {
     "type": "scatter",
     "width": 4800,
     "height": 2700,
-    "backgroundColor": "#ffffff",
-    "marginBottom": 150,
+    "backgroundColor": "#FAFBFC",
+    "marginBottom": 220,
+    "marginLeft": 200,
+    "marginTop": 200,
+    "style": {"fontFamily": "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"},
 }
 
-# Title (required format: spec-id · library · pyplots.ai)
+# Title
 chart.options.title = {
-    "text": "scatter-basic · highcharts · pyplots.ai",
-    "style": {"fontSize": "72px", "fontWeight": "bold"},
+    "text": "scatter-basic \u00b7 highcharts \u00b7 pyplots.ai",
+    "style": {"fontSize": "64px", "fontWeight": "600", "color": "#2D3748", "letterSpacing": "1px"},
+    "margin": 60,
 }
 
-# Axes (scaled for 4800x2700 px)
-chart.options.x_axis = {
-    "title": {"text": "X Value", "style": {"fontSize": "48px"}},
-    "labels": {"style": {"fontSize": "36px"}},
-    "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.15)",
-    "gridLineDashStyle": "Dash",
+# Subtitle for context
+chart.options.subtitle = {
+    "text": "Daily Temperature vs Iced Coffee Sales \u2014 120 days observed",
+    "style": {"fontSize": "40px", "color": "#718096", "fontWeight": "400"},
 }
-chart.options.y_axis = {
-    "title": {"text": "Y Value", "style": {"fontSize": "48px"}},
-    "labels": {"style": {"fontSize": "36px"}},
+
+# X-axis
+chart.options.x_axis = {
+    "title": {
+        "text": "Daily Temperature (\u00b0C)",
+        "style": {"fontSize": "44px", "color": "#4A5568", "fontWeight": "500"},
+        "margin": 30,
+    },
+    "labels": {"style": {"fontSize": "34px", "color": "#718096"}},
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.15)",
-    "gridLineDashStyle": "Dash",
+    "gridLineColor": "rgba(203, 213, 224, 0.5)",
+    "gridLineDashStyle": "Dot",
+    "lineColor": "#CBD5E0",
+    "lineWidth": 2,
+    "tickColor": "#CBD5E0",
+    "tickWidth": 2,
+    "tickLength": 10,
+}
+
+# Y-axis
+chart.options.y_axis = {
+    "title": {
+        "text": "Iced Drinks Sold",
+        "style": {"fontSize": "44px", "color": "#4A5568", "fontWeight": "500"},
+        "margin": 30,
+    },
+    "labels": {"style": {"fontSize": "34px", "color": "#718096"}},
+    "gridLineWidth": 1,
+    "gridLineColor": "rgba(203, 213, 224, 0.5)",
+    "gridLineDashStyle": "Dot",
+    "lineColor": "#CBD5E0",
+    "lineWidth": 2,
+    "tickColor": "#CBD5E0",
+    "tickWidth": 2,
+    "tickLength": 10,
 }
 
 # Legend and credits
 chart.options.legend = {"enabled": False}
 chart.options.credits = {"enabled": False}
 
-# Create scatter series with Python Blue color and transparency
-series = ScatterSeries()
-series.data = [[float(xi), float(yi)] for xi, yi in zip(x, y, strict=True)]
-series.name = "Data"
-series.color = "rgba(48, 105, 152, 0.7)"  # Python Blue with alpha
-series.marker = {"radius": 18, "symbol": "circle"}  # Larger markers for 4800x2700
+# Tooltip styling for interactive HTML version
+chart.options.tooltip = {
+    "headerFormat": "",
+    "pointFormat": "<b>{point.x:.1f}\u00b0C</b> \u2192 <b>{point.y:.0f}</b> drinks",
+    "style": {"fontSize": "28px"},
+    "backgroundColor": "rgba(255, 255, 255, 0.95)",
+    "borderColor": "#306998",
+    "borderRadius": 8,
+    "shadow": {"color": "rgba(0,0,0,0.1)", "offsetX": 2, "offsetY": 2, "width": 4},
+}
 
-chart.add_series(series)
+# Split data into warm and cool groups for visual interest
+cool_mask = temperature < 18
+warm_mask = ~cool_mask
+
+# Cool days series (blue tones)
+series_cool = ScatterSeries()
+series_cool.data = [
+    [float(xi), float(yi)] for xi, yi in zip(temperature[cool_mask], iced_sales[cool_mask], strict=True)
+]
+series_cool.name = "Cool Days (< 18\u00b0C)"
+series_cool.color = "rgba(48, 105, 152, 0.75)"
+series_cool.marker = {"radius": 16, "symbol": "circle", "lineWidth": 2, "lineColor": "rgba(48, 105, 152, 0.9)"}
+
+# Warm days series (amber/gold tones)
+series_warm = ScatterSeries()
+series_warm.data = [
+    [float(xi), float(yi)] for xi, yi in zip(temperature[warm_mask], iced_sales[warm_mask], strict=True)
+]
+series_warm.name = "Warm Days (\u2265 18\u00b0C)"
+series_warm.color = "rgba(255, 179, 25, 0.75)"
+series_warm.marker = {"radius": 16, "symbol": "circle", "lineWidth": 2, "lineColor": "rgba(214, 138, 0, 0.9)"}
+
+chart.add_series(series_cool)
+chart.add_series(series_warm)
+
+# Enable legend for two series - positioned inside top-left
+chart.options.legend = {
+    "enabled": True,
+    "layout": "vertical",
+    "align": "left",
+    "verticalAlign": "top",
+    "x": 180,
+    "y": 120,
+    "floating": True,
+    "backgroundColor": "rgba(255, 255, 255, 0.85)",
+    "borderColor": "#E2E8F0",
+    "borderWidth": 2,
+    "borderRadius": 8,
+    "padding": 20,
+    "itemStyle": {"fontSize": "34px", "fontWeight": "500", "color": "#4A5568"},
+    "symbolRadius": 8,
+    "itemMarginBottom": 10,
+}
 
 # Download Highcharts JS (required for headless Chrome)
 highcharts_url = "https://code.highcharts.com/highcharts.js"

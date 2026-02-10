@@ -1,27 +1,27 @@
 library: letsplot
 specification_id: scatter-basic
 created: '2025-12-22T23:43:07Z'
-updated: '2025-12-23T00:06:42Z'
-generated_by: claude-opus-4-5-20251101
+updated: '2026-02-10T21:10:18+00:00'
+generated_by: claude-opus-4-6
 workflow_run: 20446960716
 issue: 0
-python_version: 3.13.11
-library_version: 4.8.1
-preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/letsplot/plot.png
-preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/letsplot/plot_thumb.png
+python_version: 3.14.2
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/staging/scatter-basic/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/staging/scatter-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/letsplot/plot.html
-quality_score: 90
+quality_score: null
 impl_tags:
   dependencies: []
   techniques:
-    - hover-tooltips
-    - html-export
+  - hover-tooltips
+  - html-export
   patterns:
-    - data-generation
+  - data-generation
   dataprep: []
   styling:
-    - alpha-blending
-    - grid-styling
+  - alpha-blending
+  - grid-styling
 review:
   strengths:
   - Clean ggplot2-style grammar of graphics implementation

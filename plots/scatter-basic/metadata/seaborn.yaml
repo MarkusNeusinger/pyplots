@@ -1,27 +1,27 @@
 library: seaborn
 specification_id: scatter-basic
 created: '2025-12-22T23:35:25Z'
-updated: '2025-12-22T23:37:37Z'
-generated_by: claude-opus-4-5-20251101
+updated: '2026-02-10T21:10:18+00:00'
+generated_by: claude-opus-4-6
 workflow_run: 20446831329
 issue: 0
-python_version: 3.13.11
+python_version: 3.14.2
 library_version: 0.13.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/seaborn/plot.png
-preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/seaborn/plot_thumb.png
+preview_url: https://storage.googleapis.com/pyplots-images/staging/scatter-basic/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/staging/scatter-basic/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 92
+quality_score: null
 impl_tags:
   dependencies: []
   techniques: []
   patterns:
-    - data-generation
-    - explicit-figure
+  - data-generation
+  - explicit-figure
   dataprep: []
   styling:
-    - alpha-blending
-    - edge-highlighting
-    - grid-styling
+  - alpha-blending
+  - edge-highlighting
+  - grid-styling
 review:
   strengths:
   - Excellent visual presentation with properly sized text elements following the

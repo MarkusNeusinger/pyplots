@@ -1,7 +1,7 @@
 """ pyplots.ai
 scatter-basic: Basic Scatter Plot
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 90/100 | Created: 2025-12-22
+Library: letsplot 4.8.2 | Python 3.14.2
+Quality: /100 | Updated: 2026-02-10
 """
 
 import numpy as np
@@ -12,35 +12,45 @@ from lets_plot.export import ggsave as export_ggsave
 
 LetsPlot.setup_html()  # noqa: F405
 
-# Data - Simulating study hours vs exam scores relationship
+# Data - Daily coffee consumption vs productivity score across office workers
 np.random.seed(42)
-n = 120
-study_hours = np.random.uniform(1, 10, n)
-exam_scores = study_hours * 8 + 20 + np.random.randn(n) * 5
+n = 150
+coffee_cups = np.random.gamma(shape=2.5, scale=1.2, size=n)
+coffee_cups = np.clip(coffee_cups, 0.5, 8.0)
+# Productivity peaks around 3-4 cups, then tapers off slightly
+productivity = 55 + 12 * coffee_cups - 1.2 * coffee_cups**2 + np.random.randn(n) * 6
+productivity = np.clip(productivity, 30, 100)
 
-df = pd.DataFrame({"study_hours": study_hours, "exam_scores": exam_scores})
+df = pd.DataFrame({"coffee_cups": np.round(coffee_cups, 1), "productivity": np.round(productivity, 1)})
 
-# Plot with interactive tooltips
+# Plot
 plot = (
-    ggplot(df, aes(x="study_hours", y="exam_scores"))  # noqa: F405
+    ggplot(df, aes(x="coffee_cups", y="productivity"))  # noqa: F405
     + geom_point(  # noqa: F405
-        color="#306998",
-        size=6,
-        alpha=0.7,
+        color="#2A6F97",
+        fill="#61A5C2",
+        size=7,
+        alpha=0.65,
+        shape=21,
+        stroke=1.2,
         tooltips=layer_tooltips()  # noqa: F405
-        .line("Study Hours|@study_hours")
-        .line("Exam Score|@exam_scores"),
+        .line("Coffee|@coffee_cups cups/day")
+        .line("Productivity|@productivity"),
     )
     + labs(  # noqa: F405
-        x="Study Hours (hrs)", y="Exam Score (points)", title="scatter-basic · letsplot · pyplots.ai"
+        x="Daily Coffee Intake (cups)", y="Productivity Score", title="scatter-basic \u00b7 letsplot \u00b7 pyplots.ai"
     )
     + ggsize(1600, 900)  # noqa: F405
-    + theme_minimal()  # noqa: F405
+    + scale_x_continuous(breaks=[1, 2, 3, 4, 5, 6, 7, 8])  # noqa: F405
     + theme(  # noqa: F405
-        axis_text=element_text(size=16),  # noqa: F405
-        axis_title=element_text(size=20),  # noqa: F405
-        plot_title=element_text(size=24),  # noqa: F405
-        panel_grid=element_line(color="#CCCCCC", size=0.5, linetype="dashed"),  # noqa: F405
+        axis_text=element_text(size=16, color="#4A4A4A"),  # noqa: F405
+        axis_title=element_text(size=20, color="#2D2D2D"),  # noqa: F405
+        plot_title=element_text(size=26, color="#1B1B1B"),  # noqa: F405
+        panel_background=element_rect(fill="#FAFBFC"),  # noqa: F405
+        plot_background=element_rect(fill="white"),  # noqa: F405
+        panel_grid_major=element_line(color="#E0E4E8", size=0.5),  # noqa: F405
+        panel_grid_minor=element_line(color="#EEF0F2", size=0.3),  # noqa: F405
+        axis_line=element_line(color="#CCCCCC", size=0.8),  # noqa: F405
     )
 )
 

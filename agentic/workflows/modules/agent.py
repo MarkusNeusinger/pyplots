@@ -3,6 +3,7 @@
 import importlib.util
 import json
 import os
+import platform
 import re
 import subprocess
 import sys
@@ -190,7 +191,9 @@ def parse_json(output: str, target_type: Type[T] = None) -> Any:
 def get_safe_subprocess_env() -> Dict[str, str]:
     """Get filtered environment variables safe for subprocess execution.
 
-    Returns only the environment variables needed based on .env.sample configuration.
+    Returns platform-appropriate environment variables for subprocess execution.
+    On Windows, maps Windows variables (USERPROFILE, USERNAME, COMSPEC) to
+    their Unix equivalents (HOME, USER, SHELL) for compatibility.
 
     Returns:
         Dictionary containing only required environment variables
@@ -201,20 +204,31 @@ def get_safe_subprocess_env() -> Dict[str, str]:
         # Claude Code Configuration
         "CLAUDE_CODE_PATH": os.getenv("CLAUDE_CODE_PATH", "claude"),
         "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": os.getenv("CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR", "true"),
-        # Essential system environment variables
-        "HOME": os.getenv("HOME"),
-        "USER": os.getenv("USER"),
+        # Universal system variables
         "PATH": os.getenv("PATH"),
-        "SHELL": os.getenv("SHELL"),
-        "TERM": os.getenv("TERM"),
-        "LANG": os.getenv("LANG"),
-        "LC_ALL": os.getenv("LC_ALL"),
-        # Python-specific variables that subprocesses might need
         "PYTHONPATH": os.getenv("PYTHONPATH"),
-        "PYTHONUNBUFFERED": "1",  # Useful for subprocess output
-        # Working directory tracking
+        "PYTHONUNBUFFERED": "1",
         "PWD": os.getcwd(),
     }
+
+    # Platform-specific environment variables
+    if platform.system() == "Windows":
+        # Windows: Map Windows variables to Unix names for CLI compatibility
+        safe_env_vars["HOME"] = os.getenv("USERPROFILE")
+        safe_env_vars["USER"] = os.getenv("USERNAME")
+        safe_env_vars["SHELL"] = os.getenv("COMSPEC")
+        # Keep Windows-specific ones for native compatibility
+        safe_env_vars["USERPROFILE"] = os.getenv("USERPROFILE")
+        safe_env_vars["USERNAME"] = os.getenv("USERNAME")
+        safe_env_vars["COMSPEC"] = os.getenv("COMSPEC")
+    else:
+        # Unix/Linux/macOS
+        safe_env_vars["HOME"] = os.getenv("HOME")
+        safe_env_vars["USER"] = os.getenv("USER")
+        safe_env_vars["SHELL"] = os.getenv("SHELL")
+        safe_env_vars["TERM"] = os.getenv("TERM")
+        safe_env_vars["LANG"] = os.getenv("LANG")
+        safe_env_vars["LC_ALL"] = os.getenv("LC_ALL")
 
     # Filter out None values
     return {k: v for k, v in safe_env_vars.items() if v is not None}

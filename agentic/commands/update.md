@@ -122,9 +122,9 @@ For each updated library, edit `plots/{spec_id}/metadata/{library}.yaml`:
 | Field             | Value                                                                     |
 |-------------------|---------------------------------------------------------------------------|
 | `updated`         | Current UTC timestamp in ISO 8601 (e.g., `2026-02-10T14:30:00+00:00`)     |
-| `generated_by`    | `claude-opus-4-6`                                                         |
-| `python_version`  | Get from `python3 --version`                                              |
-| `library_version` | Get from `python3 -c "import {library}; print({library}.__version__)"`    |
+| `generated_by`    | Get from `CLAUDE_MODEL` env var, or detect via `claude --version` / model name |
+| `python_version`  | Get from `uv run python --version`                                        |
+| `library_version` | Get from `uv run python -c "import {library}; print({library}.__version__)"` |
 | `quality_score`   | Set to `null` (CI review will fill this)                                  |
 | All other fields  | **Keep unchanged** (including `review`, `impl_tags`, `preview_url`, etc.) |
 
@@ -204,9 +204,7 @@ git add plots/{spec_id}/specification.md
 git commit -m "update({spec_id}): {short description}
 
 Updated libraries: {comma-separated list}
-{description}
-
-Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
+{description}"
 
 # Push
 git push -u origin implementation/{spec_id}/update
@@ -309,19 +307,17 @@ explain what you changed and why.
 
 ### Step 3: Generate Locally
 
-Run the implementation to generate the plot image:
+Run the implementation to generate the plot image. **IMPORTANT**: Each agent MUST run in its own isolated preview
+directory to avoid race conditions with other parallel agents. All agents write `plot.png` — running in the shared
+`implementations/` directory causes file conflicts.
 
 ```bash
 mkdir -p plots/{SPEC_ID}/implementations/.update-preview/{LIBRARY}
-cd plots/{SPEC_ID}/implementations && MPLBACKEND=Agg python3 {LIBRARY}.py
-cp plot.png .update-preview/{LIBRARY}/plot.png
+cd plots/{SPEC_ID}/implementations/.update-preview/{LIBRARY} && MPLBACKEND=Agg uv run python ../../{LIBRARY}.py
 ```
 
-For interactive libraries (plotly, bokeh, altair, highcharts, pygal, letsplot), also copy `plot.html` if generated:
-
-```bash
-[ -f plot.html ] && cp plot.html .update-preview/{LIBRARY}/plot.html
-```
+This runs `{LIBRARY}.py` from the isolated `.update-preview/{LIBRARY}/` directory, so `plot.png` and `plot.html` land
+there directly — no copy step needed, no race condition with other agents.
 
 If the script fails, read the error, fix the implementation, and retry. **Up to 3 retries.**
 

@@ -226,6 +226,7 @@ nul
 
 # Project-specific
 temp/
+.update-preview/
 
 # Agentic runs output
 agentic/runs/

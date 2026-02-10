@@ -613,8 +613,13 @@ def prompt_claude_code(request: AgentPromptRequest) -> AgentPromptResponse:
         mcp_config_path=mcp_config_path,
     )
 
-    # Set up environment: filtered env for Claude, full env for other CLIs
-    env = get_claude_env() if request.cli == "claude" else dict(os.environ)
+    # Set up environment
+    # - Windows: Use full environment for all CLIs (Claude Code needs APPDATA, TEMP, etc.)
+    # - Unix/Linux: Use filtered environment for Claude, full for other CLIs
+    if platform.system() == "Windows":
+        env = dict(os.environ)
+    else:
+        env = get_claude_env() if request.cli == "claude" else dict(os.environ)
 
     try:
         # Open output file for streaming

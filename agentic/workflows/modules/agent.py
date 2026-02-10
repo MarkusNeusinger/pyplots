@@ -409,7 +409,7 @@ def parse_jsonl_output(output_file: str) -> Tuple[List[Dict[str, Any]], Optional
         Tuple of (all_messages, result_message) where result_message is None if not found
     """
     try:
-        with open(output_file, "r") as f:
+        with open(output_file, "r", encoding="utf-8") as f:
             # Read all lines and parse each as JSON
             messages = [json.loads(line) for line in f if line.strip()]
 
@@ -442,8 +442,8 @@ def convert_jsonl_to_json(jsonl_file: str) -> str:
     messages, _ = parse_jsonl_output(jsonl_file)
 
     # Write as JSON array
-    with open(json_file, "w") as f:
-        json.dump(messages, f, indent=2)
+    with open(json_file, "w", encoding="utf-8") as f:
+        json.dump(messages, f, indent=2, ensure_ascii=False)
 
     return json_file
 
@@ -459,7 +459,7 @@ def save_last_entry_as_raw_result(json_file: str) -> Optional[str]:
     """
     try:
         # Read the JSON array
-        with open(json_file, "r") as f:
+        with open(json_file, "r", encoding="utf-8") as f:
             messages = json.load(f)
 
         if not messages:
@@ -473,8 +473,8 @@ def save_last_entry_as_raw_result(json_file: str) -> Optional[str]:
         final_object_file = os.path.join(output_dir, FINAL_OBJECT_JSON)
 
         # Write the last entry
-        with open(final_object_file, "w") as f:
-            json.dump(last_entry, f, indent=2)
+        with open(final_object_file, "w", encoding="utf-8") as f:
+            json.dump(last_entry, f, indent=2, ensure_ascii=False)
 
         return final_object_file
     except Exception:
@@ -513,7 +513,7 @@ def save_prompt(prompt: str, run_id: str, agent_name: str = "ops") -> None:
 
     # Save prompt to file
     prompt_file = os.path.join(prompt_dir, f"{command_name}.txt")
-    with open(prompt_file, "w") as f:
+    with open(prompt_file, "w", encoding="utf-8") as f:
         f.write(prompt)
 
 
@@ -623,7 +623,7 @@ def prompt_claude_code(request: AgentPromptRequest) -> AgentPromptResponse:
 
     try:
         # Open output file for streaming
-        with open(request.output_file, "w") as output_f:
+        with open(request.output_file, "w", encoding="utf-8") as output_f:
             # Execute Claude Code and stream output to file
             result = subprocess.run(
                 cmd,
@@ -639,7 +639,7 @@ def prompt_claude_code(request: AgentPromptRequest) -> AgentPromptResponse:
             # For non-claude CLIs, output is plain text, not JSONL
             if request.cli != "claude":
                 # Read plain text output
-                with open(request.output_file, "r") as f:
+                with open(request.output_file, "r", encoding="utf-8") as f:
                     output_text = f.read().strip()
                 return AgentPromptResponse(output=output_text, success=True, session_id=None, retry_code=RetryCode.NONE)
 
@@ -688,7 +688,7 @@ def prompt_claude_code(request: AgentPromptRequest) -> AgentPromptResponse:
 
                 # Try to get the last few lines of output for context
                 try:
-                    with open(request.output_file, "r") as f:
+                    with open(request.output_file, "r", encoding="utf-8") as f:
                         lines = f.readlines()
                         if lines:
                             # Get last 5 lines or less
@@ -725,7 +725,7 @@ def prompt_claude_code(request: AgentPromptRequest) -> AgentPromptResponse:
                 stdout_msg = ""
                 try:
                     if os.path.exists(request.output_file):
-                        with open(request.output_file, "r") as f:
+                        with open(request.output_file, "r", encoding="utf-8") as f:
                             stdout_msg = f.read().strip()[:500]  # Truncate
                 except Exception:
                     pass  # Output file unreadable, use stderr only
@@ -763,7 +763,7 @@ def prompt_claude_code(request: AgentPromptRequest) -> AgentPromptResponse:
 
                         # If no structured error found, get last line only
                         if not error_from_jsonl:
-                            with open(request.output_file, "r") as f:
+                            with open(request.output_file, "r", encoding="utf-8") as f:
                                 lines = f.readlines()
                                 if lines:
                                     # Just get the last line instead of entire file

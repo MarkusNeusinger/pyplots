@@ -1,7 +1,7 @@
 """ pyplots.ai
 area-basic: Basic Area Chart
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: letsplot 4.8.2 | Python 3.14.2
+Quality: 95/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -23,15 +23,23 @@ visitors = base_visitors + trend + weekly_pattern + noise
 visitors = np.clip(visitors, 2000, None).astype(int)
 
 df = pd.DataFrame({"date": days, "visitors": visitors})
-df["day_num"] = np.arange(1, len(df) + 1)
 
 # Plot
 plot = (
-    ggplot(df, aes(x="day_num", y="visitors"))  # noqa: F405
-    + geom_area(fill="#306998", alpha=0.4)  # noqa: F405
+    ggplot(df, aes(x="date", y="visitors"))  # noqa: F405
+    + geom_area(  # noqa: F405
+        fill="#306998",
+        alpha=0.4,
+        tooltips=layer_tooltips()  # noqa: F405
+        .line("@visitors visitors")
+        .format("date", "%b %d, %Y")
+        .line("@date"),
+    )
     + geom_line(color="#306998", size=2)  # noqa: F405
+    + scale_x_datetime(format="%b %d")  # noqa: F405
+    + scale_y_continuous(limits=[0, None])  # noqa: F405
     + labs(  # noqa: F405
-        x="Day of Month", y="Daily Visitors", title="area-basic · letsplot · pyplots.ai"
+        x="Date", y="Daily Visitors", title="area-basic · letsplot · pyplots.ai"
     )
     + ggsize(1600, 900)  # noqa: F405
     + theme_minimal()  # noqa: F405
@@ -39,7 +47,7 @@ plot = (
         axis_text=element_text(size=16),  # noqa: F405
         axis_title=element_text(size=20),  # noqa: F405
         plot_title=element_text(size=24),  # noqa: F405
-        panel_grid=element_line(color="#CCCCCC", size=0.5, linetype="dashed"),  # noqa: F405
+        panel_grid=element_line(color="#CCCCCC", size=0.3, linetype="dashed"),  # noqa: F405
     )
 )
 

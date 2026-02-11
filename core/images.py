@@ -45,7 +45,7 @@ try:
     import subprocess
 
     _HAS_PNGQUANT = subprocess.run(["pngquant", "--version"], capture_output=True).returncode == 0
-except (FileNotFoundError, subprocess.SubprocessError):
+except FileNotFoundError, subprocess.SubprocessError:
     _HAS_PNGQUANT = False
 
 
@@ -196,7 +196,7 @@ def create_comparison_image(
     # Header bar
     header_text = f"{library} · {spec_id}" if library and spec_id else library or spec_id
     if header_text:
-        header_font = _get_font(28, weight=700)
+        header_font = _get_font(28, weight=700, local_only=True)
         bbox = draw.textbbox((0, 0), header_text, font=header_font)
         text_w = bbox[2] - bbox[0]
         text_h = bbox[3] - bbox[1]
@@ -208,7 +208,7 @@ def create_comparison_image(
         )
 
     # Labels
-    label_font = _get_font(22, weight=400)
+    label_font = _get_font(22, weight=400, local_only=True)
     before_label = "BEFORE (current)"
     after_label = "AFTER (updated)"
 
@@ -242,7 +242,7 @@ def create_comparison_image(
         canvas.paste(before_img, (bx, by))
     else:
         # Gray placeholder
-        placeholder_font = _get_font(20, weight=400)
+        placeholder_font = _get_font(20, weight=400, local_only=True)
         placeholder_text = "No previous version"
         pb = draw.textbbox((0, 0), placeholder_text, font=placeholder_font)
         pw = pb[2] - pb[0]
@@ -276,8 +276,11 @@ def _fit_image(img: Image.Image, max_width: int, max_height: int) -> Image.Image
 # =============================================================================
 
 
-def _get_monolisa_font_path() -> Path | None:
+def _get_monolisa_font_path(local_only: bool = False) -> Path | None:
     """Get path to MonoLisa font, downloading from GCS if needed.
+
+    Args:
+        local_only: If True, only return the font if already cached locally.
 
     Returns:
         Path to font file, or None if unavailable.
@@ -287,6 +290,9 @@ def _get_monolisa_font_path() -> Path | None:
     # Return cached font if exists
     if cached_font.exists():
         return cached_font
+
+    if local_only:
+        return None
 
     # Try to download from GCS
     try:
@@ -305,7 +311,9 @@ def _get_monolisa_font_path() -> Path | None:
         return None
 
 
-def _get_font(size: int = 32, weight: int = 700) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
+def _get_font(
+    size: int = 32, weight: int = 700, local_only: bool = False
+) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
     """Get a suitable font for text rendering.
 
     Tries to load MonoLisa from GCS cache, falls back to system fonts.
@@ -313,9 +321,10 @@ def _get_font(size: int = 32, weight: int = 700) -> ImageFont.FreeTypeFont | Ima
     Args:
         size: Font size in pixels
         weight: Font weight (100-900, default 700 for bold like website)
+        local_only: If True, skip GCS download and only use locally cached or system fonts.
     """
-    # Try MonoLisa first (downloaded from GCS)
-    monolisa_path = _get_monolisa_font_path()
+    # Try MonoLisa (from local cache, or download from GCS if allowed)
+    monolisa_path = _get_monolisa_font_path(local_only=local_only)
     if monolisa_path:
         try:
             font = ImageFont.truetype(str(monolisa_path), size)

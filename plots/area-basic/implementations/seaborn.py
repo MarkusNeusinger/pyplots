@@ -1,7 +1,7 @@
 """ pyplots.ai
 area-basic: Basic Area Chart
-Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: seaborn 0.13.2 | Python 3.14.2
+Quality: 98/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
@@ -14,34 +14,48 @@ import seaborn as sns
 np.random.seed(42)
 dates = pd.date_range(start="2024-01-01", periods=30, freq="D")
 
-# Simulate realistic web traffic with weekly pattern and trend
+# Simulate realistic web traffic with weekly pattern, trend, and a traffic spike
 base_visitors = 5000
 trend = np.linspace(0, 1500, 30)
 weekly_pattern = np.array([1.0, 1.1, 1.15, 1.2, 1.1, 0.7, 0.65] * 5)[:30]
 noise = np.random.randn(30) * 300
 visitors = (base_visitors + trend) * weekly_pattern + noise
-visitors = np.maximum(visitors, 1000)  # Ensure positive values
+visitors[17] *= 1.45  # Traffic spike from a viral post on day 18
+visitors = np.maximum(visitors, 1000)
 
 df = pd.DataFrame({"date": dates, "visitors": visitors})
 
-# Plot
+# Plot - seaborn styling and theme
+sns.set_style("whitegrid", {"grid.linestyle": "--", "grid.alpha": 0.3})
+sns.set_context("talk", font_scale=1.1)
+
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Area fill with semi-transparent Python Blue
+# Area chart using seaborn lineplot with fill
+sns.lineplot(data=df, x="date", y="visitors", ax=ax, color="#306998", linewidth=3, label="Daily visitors")
 ax.fill_between(df["date"], df["visitors"], alpha=0.4, color="#306998")
 
-# Line on top using seaborn
-sns.lineplot(data=df, x="date", y="visitors", ax=ax, color="#306998", linewidth=3)
+# Annotate the traffic spike
+spike_idx = 17
+ax.annotate(
+    "Viral post",
+    xy=(df["date"].iloc[spike_idx], df["visitors"].iloc[spike_idx]),
+    xytext=(df["date"].iloc[spike_idx - 6], df["visitors"].iloc[spike_idx] * 1.0),
+    fontsize=16,
+    color="#1a3a5c",
+    arrowprops={"arrowstyle": "->", "color": "#1a3a5c", "lw": 2},
+    ha="center",
+)
 
 # Style
 ax.set_xlabel("Date", fontsize=20)
 ax.set_ylabel("Visitors (count)", fontsize=20)
 ax.set_title("area-basic · seaborn · pyplots.ai", fontsize=24)
 ax.tick_params(axis="both", labelsize=16)
-ax.grid(True, alpha=0.3, linestyle="--")
+ax.legend(fontsize=16, loc="upper left", framealpha=0.9)
 
-# Set y-axis to start at 0 to emphasize area magnitude
-ax.set_ylim(bottom=0)
+# Set y-axis to start at 0, cap top to reduce whitespace
+ax.set_ylim(bottom=0, top=df["visitors"].max() * 1.12)
 
 # Format x-axis dates
 fig.autofmt_xdate(rotation=45)

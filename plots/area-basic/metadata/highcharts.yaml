@@ -1,99 +1,112 @@
 library: highcharts
 specification_id: area-basic
 created: '2025-12-23T00:49:25Z'
-updated: '2025-12-23T01:21:43Z'
-generated_by: claude-opus-4-5-20251101
+updated: '2026-02-11T22:27:44Z'
+generated_by: claude-opus-4-6
 workflow_run: 20447991263
 issue: 0
-python_version: 3.13.11
-library_version: unknown
+python_version: 3.14.2
+library_version: 1.10.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/area-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/area-basic/highcharts/plot.html
-quality_score: 91
+quality_score: 74
 impl_tags:
   dependencies:
-    - selenium
-  techniques: []
+  - selenium
+  techniques:
+  - html-export
   patterns:
-    - data-generation
+  - data-generation
   dataprep: []
   styling:
-    - gradient-fill
+  - gradient-fill
+  - grid-styling
 review:
   strengths:
-  - Excellent implementation of gradient fill from specification notes (alpha 0.3-0.5)
-  - Proper title format exactly matching the required pattern
-  - Clean, readable code following KISS principles with proper seed for reproducibility
-  - Good use of weekly cyclical pattern in data making the visualization interesting
-  - Proper container-based screenshot approach for accurate chart dimensions
+  - Gradient fill implementation using Highcharts linearGradient is well done, creating
+    a visually appealing transition from opaque to transparent
+  - Realistic data generation with growth trend + weekly cyclical pattern + noise
+    creates a convincing website traffic dataset
+  - Proper Selenium-based export pipeline following library best practices (inline
+    JS, headless Chrome)
+  - Good font sizing for the 4800x2700 canvas (72px title, 48px axis titles, 36px
+    labels)
+  - Clean, well-structured code following KISS principles
   weaknesses:
-  - Y-axis starts at 0 creating large empty space below the data (could use min property)
-  - Axis labels lack units (could be "Daily Visitors (count)" or "Day of Month (date)")
-  - Could leverage more Highcharts-specific features like hover tooltips or animation
-  image_description: The plot displays a basic area chart showing website traffic
-    over 30 days. The chart has a blue color scheme (#306998) with a gradient fill
-    that transitions from semi-opaque at the top (~0.5 alpha) to nearly transparent
-    at the bottom (~0.1 alpha). The title "area-basic · highcharts · pyplots.ai" is
-    prominently displayed at the top in bold. The X-axis is labeled "Day of Month"
-    with values from 1-30, and the Y-axis shows "Daily Visitors" ranging from 0 to
-    4000. Small blue circular markers are placed at each data point along the line.
-    The data shows a clear upward trend with weekly cyclical patterns (peaks roughly
-    every 7 days). Grid lines are subtle and visible on both axes. The overall layout
-    is clean with white background.
+  - Y-axis minimum set to 1000 creates excessive wasted vertical space — data starts
+    around 1900, so nearly 1/3 of the vertical axis shows empty area, compressing
+    the actual data visualization
+  - X-axis title Day of Month is not rendering or is cut off in the final PNG output,
+    despite being configured in the code
+  - The plot.html standalone file is generated unnecessarily (not required by spec)
+  image_description: The plot displays a basic area chart titled "area-basic · highcharts
+    · pyplots.ai" centered at the top in bold text. The chart shows daily website
+    visitors (count) over 30 days. The line is drawn in a steel-blue color (#306998)
+    with small circular markers at each data point. The area beneath the line is filled
+    with a vertical linear gradient, transitioning from semi-transparent blue near
+    the line to nearly transparent blue at the bottom. The Y-axis is labeled "Daily
+    Visitors (count)" and ranges from 1,000 to 3,900. The X-axis shows day numbers
+    1 through 30, but the "Day of Month" axis title is not visible in the rendered
+    image (likely cut off or not rendered). The data shows an upward growth trend
+    from ~2,400 to ~3,700 visitors with clear weekly oscillations. Gridlines are present
+    and subtle. There is significant wasted vertical space between Y=1,000 and Y≈1,900
+    where no data exists, reducing the effective visual resolution of the actual data
+    range.
   criteria_checklist:
     visual_quality:
-      score: 36
+      score: 29
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
+        score: 8
         max: 10
         passed: true
-        comment: Title is large and bold (72px), axis labels are clear (48px), tick
-          labels readable (36px)
+        comment: Title and Y-axis label readable with large font sizes. X-axis title
+          not visible in rendered output.
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping text elements anywhere.
       - id: VQ-03
         name: Element Visibility
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: Markers visible, line width good, could use slightly larger markers
-          for 30 data points
+        comment: Markers and line visible. Markers at radius 8 slightly large for
+          30 points but acceptable.
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Single blue color palette, no colorblind issues
+        comment: Single-series blue color scheme, no colorblind issues.
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 0
         max: 5
-        passed: true
-        comment: Good proportions, though Y-axis starts at 0 creating empty space
-          below data
+        passed: false
+        comment: Y-axis min=1000 creates ~30% wasted vertical space below data (data
+          min ~1900). Compresses actual data visualization significantly.
       - id: VQ-06
         name: Axis Labels
         score: 1
         max: 2
-        passed: true
-        comment: Descriptive labels but no units (visitors per day could be clearer)
+        passed: false
+        comment: Y-axis has descriptive label with units. X-axis title not visible
+          in rendered image.
       - id: VQ-07
         name: Grid & Legend
         score: 1
         max: 2
-        passed: true
-        comment: Grid subtle and appropriate, legend disabled but not needed for single
-          series
+        passed: false
+        comment: Grid is subtle and well-configured. Legend disabled appropriately
+          for single series.
     spec_compliance:
-      score: 25
+      score: 23
       max: 25
       items:
       - id: SC-01
@@ -101,37 +114,38 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct area chart type
+        comment: Correct area chart type.
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: X=days, Y=visitors correctly mapped
+        comment: X=days (continuous), Y=visitor count (numeric). Correct mapping.
       - id: SC-03
         name: Required Features
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Filled area, gridlines, axis labels all present per spec
+        comment: Semi-transparent fill, gridlines, gradient fill present. X-axis label
+          missing from output.
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data points visible
+        comment: All 30 data points visible, axes show full range.
       - id: SC-05
         name: Legend Accuracy
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Legend disabled appropriately for single series
+        passed: false
+        comment: Legend disabled. Acceptable for single series but no series identification.
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: 'Uses exact format: "{spec-id} · {library} · pyplots.ai"'
+        comment: 'Uses correct format: area-basic · highcharts · pyplots.ai'
     data_quality:
       score: 18
       max: 20
@@ -141,20 +155,20 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows trend and periodicity well, could show more variation in magnitude
+        comment: Shows growth trend, weekly cyclical pattern, and random noise. Good
+          variety.
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Website visitors scenario is realistic and relatable
+        comment: Website traffic with daily visitors is a real, neutral scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Values (2000-3700 visitors/day) are reasonable, though range could
-          be tighter
+        comment: Values of 1900-3700 daily visitors plausible for mid-sized website.
     code_quality:
       score: 9
       max: 10
@@ -164,40 +178,40 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear script: imports → data → plot → save'
+        comment: 'Linear flow: imports, data, chart config, series, export.'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: Uses np.random.seed(42).
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports are used.
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Uses current highcharts-core API
+        comment: Current highcharts_core API.
       - id: CQ-05
         name: Output Correct
         score: 0
         max: 1
         passed: false
-        comment: Uses container.screenshot() instead of driver.save_screenshot()
+        comment: Saves plot.png correctly but also creates unnecessary plot.html.
     library_features:
-      score: 3
+      score: 4
       max: 5
       items:
       - id: LF-01
-        name: Uses distinctive library features
-        score: 3
+        name: Distinctive Features
+        score: 4
         max: 5
         passed: true
-        comment: Uses gradient fill color, proper Highcharts options structure, but
-          doesn't leverage more advanced features like tooltips or hover effects
-  verdict: APPROVED
+        comment: Uses Highcharts gradient fill, tooltip formatting, AreaSeries, Selenium
+          export pipeline.
+  verdict: REJECTED

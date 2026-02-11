@@ -1,7 +1,7 @@
 """ pyplots.ai
 area-basic: Basic Area Chart
-Library: highcharts unknown | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: highcharts 1.10.3 | Python 3.14.2
+Quality: 74/100 | Created: 2025-12-23
 """
 
 import tempfile
@@ -43,7 +43,7 @@ chart.options.chart = {
 
 # Title
 chart.options.title = {
-    "text": "area-basic · highcharts · pyplots.ai",
+    "text": "area-basic \u00b7 highcharts \u00b7 pyplots.ai",
     "style": {"fontSize": "72px", "fontWeight": "bold"},
 }
 
@@ -55,12 +55,13 @@ chart.options.x_axis = {
     "gridLineColor": "rgba(0, 0, 0, 0.1)",
 }
 
-# Y-axis
+# Y-axis — set min close to data range to avoid wasted whitespace
 chart.options.y_axis = {
-    "title": {"text": "Daily Visitors", "style": {"fontSize": "48px"}},
+    "title": {"text": "Daily Visitors (count)", "style": {"fontSize": "48px"}},
     "labels": {"style": {"fontSize": "36px"}},
     "gridLineWidth": 1,
     "gridLineColor": "rgba(0, 0, 0, 0.1)",
+    "min": 1000,
 }
 
 # Plot options with semi-transparent fill and gradient
@@ -73,6 +74,7 @@ chart.options.plot_options = {
         "lineWidth": 4,
         "marker": {"enabled": True, "radius": 8, "fillColor": "#306998"},
         "color": "#306998",
+        "tooltip": {"headerFormat": "<b>Day {point.x}</b><br/>", "pointFormat": "Visitors: {point.y:,.0f}"},
     }
 }
 
@@ -130,15 +132,13 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=5000,3000")
+chrome_options.add_argument("--window-size=4800,2700")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
 time.sleep(5)  # Wait for chart to render
 
-# Screenshot the chart element specifically for exact 4800x2700
-container = driver.find_element("id", "container")
-container.screenshot("plot.png")
+driver.save_screenshot("plot.png")
 driver.quit()
 
 Path(temp_path).unlink()  # Clean up temp file

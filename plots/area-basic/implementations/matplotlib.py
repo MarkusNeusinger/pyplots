@@ -1,38 +1,64 @@
-""" pyplots.ai
+"""pyplots.ai
 area-basic: Basic Area Chart
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Library: matplotlib 3.10.8 | Python 3.14.2
+Quality: /100 | Updated: 2026-02-11
 """
 
+import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.patches import PathPatch
+from matplotlib.path import Path
 
 
-# Data - daily website visitors over a month
+# Data - daily website visitors over a month with weekend dips
 np.random.seed(42)
 days = np.arange(1, 31)
-base_visitors = 5000 + np.linspace(0, 2000, 30)  # Upward trend
-noise = np.random.randn(30) * 500
-visitors = base_visitors + noise
-visitors = np.clip(visitors, 3000, 10000)  # Realistic bounds
+base_visitors = 5000 + np.linspace(0, 2500, 30)  # Upward trend
+weekend_effect = np.array([-1200 if d % 7 in (0, 6) else 0 for d in days])  # Weekend dips
+noise = np.random.randn(30) * 400
+visitors = base_visitors + weekend_effect + noise
+visitors = np.clip(visitors, 2000, 10000)
 
 # Create plot (4800x2700 px)
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Area chart with semi-transparent fill
-ax.fill_between(days, visitors, alpha=0.4, color="#306998")
-ax.plot(days, visitors, color="#306998", linewidth=3)
+y_max = visitors.max() * 1.15
+
+# Gradient fill using imshow clipped to the area shape
+cmap = mcolors.LinearSegmentedColormap.from_list("area_grad", ["#d6e6f5", "#306998"])
+gradient = np.linspace(0, 1, 256).reshape(-1, 1)
+gradient = np.hstack([gradient, gradient])
+
+# Build clip path manually from fill_between polygon
+verts = [(days[0], 0)]
+for d, v in zip(days, visitors, strict=True):
+    verts.append((d, v))
+verts.append((days[-1], 0))
+verts.append((days[0], 0))
+codes = [Path.MOVETO] + [Path.LINETO] * (len(verts) - 2) + [Path.CLOSEPOLY]
+clip_path = Path(verts, codes)
+
+im = ax.imshow(
+    gradient, aspect="auto", cmap=cmap, alpha=0.6, extent=[days[0], days[-1], 0, y_max], origin="lower", zorder=1
+)
+patch = PathPatch(clip_path, transform=ax.transData, facecolor="none", edgecolor="none")
+ax.add_patch(patch)
+im.set_clip_path(patch)
+
+# Solid line on top
+ax.plot(days, visitors, color="#306998", linewidth=3, zorder=3)
 
 # Labels and styling
 ax.set_xlabel("Day of Month", fontsize=20)
-ax.set_ylabel("Daily Visitors", fontsize=20)
+ax.set_ylabel("Daily Visitors (count)", fontsize=20)
 ax.set_title("area-basic · matplotlib · pyplots.ai", fontsize=24)
 ax.tick_params(axis="both", labelsize=16)
 ax.grid(True, alpha=0.3, linestyle="--")
 
-# Set axis limits for better presentation
+# Set axis limits
 ax.set_xlim(1, 30)
-ax.set_ylim(0, ax.get_ylim()[1] * 1.1)
+ax.set_ylim(0, y_max)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

@@ -92,6 +92,12 @@ Agents report back via `SendMessage` (auto-delivered to you). Agents may report 
    - Agent's self-assessment score
    - Any spec changes the agent made
 
+   **After the summary**, run `eog` to open all previews at once so the user can browse them:
+   ```bash
+   eog plots/{spec_id}/implementations/.update-preview/*/plot.png &
+   ```
+   Run this via `Bash` tool with `run_in_background: true` so it doesn't block the conversation.
+
 3. **Ask the user for feedback.** They can:
    - Give per-library feedback (e.g., "matplotlib looks good, seaborn needs more contrast")
    - Say **"ship"**, **"ok"**, **"looks good"**, or **"passt"** to proceed to shipping

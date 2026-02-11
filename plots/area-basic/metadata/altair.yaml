@@ -1,49 +1,61 @@
 library: altair
 specification_id: area-basic
 created: '2025-12-23T00:47:41Z'
-updated: '2025-12-23T01:21:39Z'
-generated_by: claude-opus-4-5-20251101
+updated: '2026-02-11T22:27:06Z'
+generated_by: claude-opus-4-6
 workflow_run: 20447969752
 issue: 0
-python_version: 3.13.11
+python_version: 3.14.2
 library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/area-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/area-basic/altair/plot.html
-quality_score: 91
+quality_score: 95
 impl_tags:
   dependencies: []
-  techniques: []
+  techniques:
+  - hover-tooltips
+  - html-export
   patterns:
-    - data-generation
-  dataprep: []
+  - data-generation
+  dataprep:
+  - time-series
   styling:
-    - alpha-blending
-    - grid-styling
+  - alpha-blending
+  - grid-styling
 review:
   strengths:
-  - Excellent weekly pattern simulation showing realistic website traffic with weekday
-    peaks and weekend dips
-  - Clean declarative Altair code following the library's grammar of graphics philosophy
-  - Good use of opacity (0.4) and line styling to create visual depth
-  - Proper use of temporal encoding (:T) for dates
-  - Generates both PNG and interactive HTML versions
+  - Excellent data generation with realistic weekly patterns, growth trend, and a
+    traffic spike event that showcases the area chart ability to highlight volume
+    changes
+  - Clean, well-proportioned layout with the plot filling the canvas effectively
+  - Proper use of Altair declarative grammar including typed encodings, tooltip formatting,
+    and scale configuration
+  - Includes both PNG and interactive HTML output, leveraging Altair web-native capabilities
+  - Semi-transparent fill (0.4) with solid line border creates clear visual distinction
+    between the area and the line
   weaknesses:
-  - Y-axis label could include units (e.g., Daily Visitors (count))
-  - Could add tooltip showing exact values for interactive version carried to static
-    aesthetics
+  - The first x-axis tick label shows 2024 instead of a formatted date — a minor Altair
+    temporal axis default that slightly breaks the consistent date label pattern
+  - No gradient fill from line to axis baseline, which the spec suggests considering
+    for visual appeal
+  - Could leverage more distinctive Altair features like selection parameters or layered
+    marks (e.g., a point mark layer for individual data points on hover)
   image_description: The plot displays a basic area chart showing daily website visitors
-    over January 2024 (30 days). The area is filled with a semi-transparent blue color
-    (#306998) with a darker blue line along the top edge. The title "area-basic ·
-    altair · pyplots.ai" is centered at the top in black text. The X-axis shows "Date"
-    with date labels (2024, Wed 03, Fri 05, etc.), and the Y-axis shows "Daily Visitors"
-    ranging from 0 to approximately 8,500. Dashed gridlines are visible throughout.
-    The data shows a clear weekly pattern with dips on weekends (Saturday/Sunday)
-    and higher values on weekdays, plus an overall upward trend from ~6,000 to ~7,500
-    visitors.
+    over January 2024 (30 data points). The area is filled with a semi-transparent
+    blue (#306998, opacity 0.4) with a solid blue line border (strokeWidth 3). The
+    x-axis shows dates labeled with day-of-week abbreviations and day numbers (e.g.,
+    "Wed 03", "Fri 05"), with the first tick showing "2024". The y-axis ranges from
+    0 to approximately 10,000 and is labeled "Daily Visitors (count)". The title "area-basic
+    · altair · pyplots.ai" is displayed at the top in a large font. Subtle dashed
+    gridlines are visible across the chart area. The data shows clear weekly cyclical
+    patterns (weekday highs around 5,500-7,500, weekend dips around 3,500-5,000),
+    a visible upward growth trend across the month, and a prominent traffic spike
+    around January 15 reaching approximately 9,400 visitors. The layout is clean and
+    well-proportioned with balanced margins.
   criteria_checklist:
     visual_quality:
-      score: 36
+      score: 38
       max: 40
       items:
       - id: VQ-01
@@ -51,49 +63,49 @@ review:
         score: 9
         max: 10
         passed: true
-        comment: All text is readable; title at 28pt, axis labels at 22pt, tick labels
-          at 18pt. Slightly conservative sizing but fully legible.
+        comment: 'Title 28pt, axis labels 22pt, ticks 18pt. All clearly readable.
+          Minor: first x-axis tick shows ''2024'' instead of formatted date.'
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements anywhere
+        comment: No overlapping text elements. X-axis date labels well-spaced.
       - id: VQ-03
         name: Element Visibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: Area fill with 0.4 opacity and 3px line width is well-suited for
-          this data density (30 points)
+        comment: Area fill and line clearly visible. Line width of 3 works well for
+          30 data points.
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Single blue color (#306998), no color comparison needed, good contrast
+        comment: Single blue series on white. Fully colorblind-safe.
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Good proportions, slight excess whitespace in lower portion due to
-          Y-axis starting at 0
+        comment: Excellent canvas utilization with balanced margins.
       - id: VQ-06
         name: Axis Labels
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Descriptive labels ("Date", "Daily Visitors") but no units
+        comment: Date on x-axis, Daily Visitors (count) on y-axis. Descriptive with
+          units.
       - id: VQ-07
         name: Grid & Legend
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Grid is subtle with dashed lines and 0.3 opacity; no legend needed
-          for single series
+        comment: Dashed gridlines with opacity 0.3 are subtle and helpful. No legend
+          needed.
     spec_compliance:
-      score: 25
+      score: 24
       max: 25
       items:
       - id: SC-01
@@ -101,40 +113,40 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct area chart with filled area below the line
+        comment: Correct area chart using mark_area().
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: X=datetime (date), Y=numeric (visitors) correctly mapped
+        comment: X is temporal (dates), Y is quantitative (visitors).
       - id: SC-03
         name: Required Features
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Semi-transparent fill (0.4), gridlines, clear axis labels, line visible
-          on top
+        comment: Semi-transparent fill, gridlines, axis labels with units present.
+          Gradient fill not implemented (spec says 'consider').
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Y-axis shows all data with 10% headroom, X-axis shows full date range
+        comment: Y-axis from 0 to max*1.1. All data visible.
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: No legend needed for single series plot
+        comment: No legend needed for single series.
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: 'Uses correct format: "area-basic · altair · pyplots.ai"'
+        comment: area-basic · altair · pyplots.ai matches required format.
     data_quality:
-      score: 18
+      score: 19
       max: 20
       items:
       - id: DQ-01
@@ -142,24 +154,22 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows trend AND cyclical pattern (weekday/weekend); missing extreme
-          peaks/valleys that would show full dynamic range
+        comment: Shows weekly patterns, growth trend, traffic spike, and noise. Good
+          variety.
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Website traffic is a perfect real-world scenario for area charts;
-          weekday/weekend pattern is authentic
+        comment: Daily website visitors is realistic and matches spec example.
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Values 3,500-8,200 visitors/day are realistic; could show more variation
-          in scale
+        comment: 3,500-9,400 daily visitors is plausible for a mid-size website.
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -167,42 +177,40 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear structure: imports → data → plot → save'
+        comment: 'Clean flat structure: imports, data, chart, save.'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses `np.random.seed(42)`
+        comment: np.random.seed(42) ensures deterministic output.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports (altair, numpy, pandas) are used
+        comment: Only altair, numpy, pandas imported. All used.
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Modern Altair API throughout
+        comment: Uses current Altair 6.x API.
       - id: CQ-05
         name: Output Correct
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Saves correctly but comment mentions wrong resolution math (1600×900×3
-          ≠ 4800×2700 correctly explained)
+        passed: true
+        comment: Saves as plot.png.
     library_features:
-      score: 3
+      score: 4
       max: 5
       items:
       - id: LF-01
-        name: Uses distinctive library features
-        score: 3
+        name: Distinctive Features
+        score: 4
         max: 5
         passed: true
-        comment: Uses Altair's declarative grammar with `.encode()`, `.properties()`,
-          `.configure_axis()`, and `.interactive()` for HTML output. Could leverage
-          more Altair-specific features like tooltips in the static version.
+        comment: Good use of declarative grammar, typed encodings, tooltips with formatting,
+          scale config, and interactive HTML export.
   verdict: APPROVED

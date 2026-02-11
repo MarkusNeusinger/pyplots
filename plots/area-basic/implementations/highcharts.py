@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 area-basic: Basic Area Chart
 Library: highcharts 1.10.3 | Python 3.14.2
-Quality: 74/100 | Created: 2025-12-23
+Quality: /100 | Updated: 2026-02-11
 """
 
 import tempfile
@@ -31,14 +31,15 @@ visitors = np.clip(visitors, 500, None).astype(int)
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-# Chart configuration
+# Chart configuration — generous bottom margin to ensure x-axis title renders fully
 chart.options.chart = {
     "type": "area",
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
-    "marginBottom": 200,
-    "marginLeft": 200,
+    "marginBottom": 300,
+    "marginLeft": 220,
+    "spacingBottom": 40,
 }
 
 # Title
@@ -47,21 +48,29 @@ chart.options.title = {
     "style": {"fontSize": "72px", "fontWeight": "bold"},
 }
 
-# X-axis
-chart.options.x_axis = {
-    "title": {"text": "Day of Month", "style": {"fontSize": "48px"}},
-    "labels": {"style": {"fontSize": "36px"}},
-    "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.1)",
+# Subtitle for data context
+chart.options.subtitle = {
+    "text": "Daily Website Visitors Over One Month",
+    "style": {"fontSize": "42px", "color": "#666666"},
 }
 
-# Y-axis — set min close to data range to avoid wasted whitespace
+# X-axis — explicit margin and offset to prevent title clipping
+chart.options.x_axis = {
+    "title": {"text": "Day of Month", "style": {"fontSize": "48px"}, "margin": 30},
+    "labels": {"style": {"fontSize": "36px"}, "y": 45},
+    "gridLineWidth": 1,
+    "gridLineColor": "rgba(0, 0, 0, 0.1)",
+    "tickInterval": 1,
+}
+
+# Y-axis — min near data floor to maximize visual resolution of the data range
 chart.options.y_axis = {
     "title": {"text": "Daily Visitors (count)", "style": {"fontSize": "48px"}},
     "labels": {"style": {"fontSize": "36px"}},
     "gridLineWidth": 1,
     "gridLineColor": "rgba(0, 0, 0, 0.1)",
-    "min": 1000,
+    "min": 1500,
+    "startOnTick": False,
 }
 
 # Plot options with semi-transparent fill and gradient
@@ -69,17 +78,28 @@ chart.options.plot_options = {
     "area": {
         "fillColor": {
             "linearGradient": {"x1": 0, "y1": 0, "x2": 0, "y2": 1},
-            "stops": [[0, "rgba(48, 105, 152, 0.5)"], [1, "rgba(48, 105, 152, 0.1)"]],
+            "stops": [[0, "rgba(48, 105, 152, 0.5)"], [1, "rgba(48, 105, 152, 0.05)"]],
         },
         "lineWidth": 4,
-        "marker": {"enabled": True, "radius": 8, "fillColor": "#306998"},
+        "marker": {"enabled": True, "radius": 6, "fillColor": "#306998"},
         "color": "#306998",
         "tooltip": {"headerFormat": "<b>Day {point.x}</b><br/>", "pointFormat": "Visitors: {point.y:,.0f}"},
     }
 }
 
-# Legend
-chart.options.legend = {"enabled": False}
+# Legend — enabled with styling for single series identification
+chart.options.legend = {
+    "enabled": True,
+    "itemStyle": {"fontSize": "36px", "fontWeight": "normal"},
+    "align": "right",
+    "verticalAlign": "top",
+    "layout": "horizontal",
+    "x": -40,
+    "y": 60,
+}
+
+# Credits off
+chart.options.credits = {"enabled": False}
 
 # Add series
 series = AreaSeries()
@@ -110,22 +130,6 @@ html_content = f"""<!DOCTYPE html>
 with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encoding="utf-8") as f:
     f.write(html_content)
     temp_path = f.name
-
-# Also save HTML for interactive version
-with open("plot.html", "w", encoding="utf-8") as f:
-    # For standalone HTML, use CDN link
-    standalone_html = f"""<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-</head>
-<body style="margin:0;">
-    <div id="container" style="width: 100%; height: 100vh;"></div>
-    <script>{html_str}</script>
-</body>
-</html>"""
-    f.write(standalone_html)
 
 chrome_options = Options()
 chrome_options.add_argument("--headless")

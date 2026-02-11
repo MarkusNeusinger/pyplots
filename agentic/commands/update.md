@@ -88,7 +88,7 @@ Agents report back via `SendMessage` (auto-delivered to you). Agents may report 
 
 2. **Present a summary to the user** for each library that completed successfully:
    - What was changed (bullet points from agent)
-   - Local preview image path: `plots/{spec_id}/implementations/.update-preview/{library}/plot.png`
+   - **Preview:** `{absolute path}/plots/{spec_id}/implementations/.update-preview/{library}/plot.png` (use the absolute path reported by the agent in its `IMAGE:` field — display it on its own line so terminal emulators render it as a clickable link)
    - Agent's self-assessment score
    - Any spec changes the agent made
 
@@ -119,10 +119,16 @@ The lead handles all shipping directly (no delegation to teammates):
 
 #### 5a. Code Quality
 
+Run ruff format and check **sequentially first**, before any parallel version-info commands.
+If parallel Bash calls are used and one fails, all sibling calls get cancelled — so always run ruff alone.
+
 ```bash
 uv run ruff format plots/{spec_id}/implementations/*.py
 uv run ruff check --fix plots/{spec_id}/implementations/*.py
 ```
+
+If there are unfixable errors, fix them manually and re-run. The agents should have already run ruff in their
+lint step, but this is a safety net.
 
 #### 5b. Update Metadata YAML
 
@@ -400,7 +406,19 @@ there directly — no copy step needed, no race condition with other agents.
 
 If the script fails, read the error, fix the implementation, and retry. **Up to 3 retries.**
 
-### Step 5: Process Images
+### Step 5: Lint Fix
+
+Run ruff to format and fix lint issues in the implementation before proceeding:
+
+```bash
+uv run ruff format plots/{SPEC_ID}/implementations/{LIBRARY}.py
+uv run ruff check --fix plots/{SPEC_ID}/implementations/{LIBRARY}.py
+```
+
+If `ruff check` reports unfixable errors (exit code 1), read the error output and fix the code manually, then re-run.
+Common issue: `B905` requires `zip()` calls to include `strict=True` or `strict=False`.
+
+### Step 6: Process Images
 
 Generate thumbnail and optimize:
 
@@ -411,7 +429,7 @@ uv run python -m core.images process \
   plots/{SPEC_ID}/implementations/.update-preview/{LIBRARY}/plot_thumb.png
 ```
 
-### Step 6: Self-Check
+### Step 7: Self-Check
 
 View the generated image at `plots/{SPEC_ID}/implementations/.update-preview/{LIBRARY}/plot.png`.
 
@@ -427,7 +445,7 @@ Check against the quality criteria from `prompts/quality-criteria.md`:
 
 Fix any obvious issues before reporting.
 
-### Step 7: Report to Lead
+### Step 8: Report to Lead
 
 Send a message to `update-lead` via `SendMessage` with:
 
@@ -440,7 +458,7 @@ CHANGES:
 - {bullet point 2}
 - ...
 
-IMAGE: plots/{SPEC_ID}/implementations/.update-preview/{LIBRARY}/plot.png
+IMAGE: {absolute path to plots/{SPEC_ID}/implementations/.update-preview/{LIBRARY}/plot.png — use pwd to resolve}
 SELF_SCORE: {your estimated quality score}/100
 
 SPEC_CHANGES: {none, or describe what you changed in specification.md}
@@ -452,7 +470,7 @@ Then mark your task as completed via `TaskUpdate`.
 
 **After reporting, go idle. The lead will wake you if the user has feedback for revisions.**
 
-If the lead sends you feedback, repeat Steps 2-7 with the new instructions (including the conflict check).
+If the lead sends you feedback, repeat Steps 2-8 with the new instructions (including the conflict check).
 
 ---
 

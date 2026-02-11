@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 area-basic: Basic Area Chart
 Library: altair 6.0.0 | Python 3.14.2
-Quality: /100 | Updated: 2026-02-11
+Quality: 95/100 | Created: 2025-12-23
 """
 
 import altair as alt

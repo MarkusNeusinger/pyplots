@@ -92,9 +92,35 @@ Agents report back via `SendMessage` (auto-delivered to you). Agents may report 
    - Agent's self-assessment score
    - Any spec changes the agent made
 
-   **After the summary**, run `eog` to open all previews at once so the user can browse them:
+   **After the summary**, create before/after comparison images and open them:
+
+   a. **Download current GCS images** for each library:
    ```bash
-   eog plots/{spec_id}/implementations/.update-preview/*/plot.png &
+   curl -sL "https://storage.googleapis.com/pyplots-images/plots/{spec_id}/{library}/plot.png" \
+     -o "plots/{spec_id}/implementations/.update-preview/{library}/before.png"
+   ```
+   If curl fails (non-zero exit or empty file), the library has no previous version — pass `none` as before_path.
+
+   b. **Create comparison images** for each library:
+   ```bash
+   uv run python -m core.images compare \
+     plots/{spec_id}/implementations/.update-preview/{library}/before.png \
+     plots/{spec_id}/implementations/.update-preview/{library}/plot.png \
+     plots/{spec_id}/implementations/.update-preview/{library}/comparison.png \
+     {spec_id} {library}
+   ```
+   If the before image doesn't exist, use `none` instead of the before path:
+   ```bash
+   uv run python -m core.images compare \
+     none \
+     plots/{spec_id}/implementations/.update-preview/{library}/plot.png \
+     plots/{spec_id}/implementations/.update-preview/{library}/comparison.png \
+     {spec_id} {library}
+   ```
+
+   c. **Open comparisons in eog** (instead of raw plot.png files):
+   ```bash
+   eog plots/{spec_id}/implementations/.update-preview/*/comparison.png &
    ```
    Run this via `Bash` tool with `run_in_background: true` so it doesn't block the conversation.
 

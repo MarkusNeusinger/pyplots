@@ -5,12 +5,14 @@ This module provides reusable functions for image manipulation:
 - PNG optimization with pngquant
 - Branded og:image generation for social media
 - Collage generation for spec overview pages
+- Before/after comparison images for update reviews
 
 Usage as CLI:
     python -m core.images thumbnail input.png output.png 400
     python -m core.images process input.png output.png thumb.png
     python -m core.images brand input.png output.png "scatter-basic" "matplotlib"
     python -m core.images collage output.png img1.png img2.png img3.png img4.png
+    python -m core.images compare before.png after.png output.png [spec_id] [library]
 """
 
 import logging
@@ -148,6 +150,125 @@ def process_plot_image(
         result["thumb_size"] = thumb_size
 
     return result
+
+
+# =============================================================================
+# Before/After Comparison Images
+# =============================================================================
+
+# Comparison image dimensions
+COMPARE_WIDTH = 2400
+COMPARE_HEIGHT = 800
+COMPARE_MARGIN = 30
+COMPARE_GAP = 30
+COMPARE_HEADER_HEIGHT = 50
+COMPARE_LABEL_HEIGHT = 40
+
+
+def create_comparison_image(
+    before_path: str | Path | None,
+    after_path: str | Path,
+    output_path: str | Path,
+    spec_id: str = "",
+    library: str = "",
+) -> None:
+    """Create a side-by-side before/after comparison image.
+
+    Layout: [margin] [BEFORE image] [gap] [AFTER image] [margin]
+    with a header bar and labels above each image.
+
+    Args:
+        before_path: Path to the "before" image, or None for new implementations.
+        after_path: Path to the "after" image.
+        output_path: Path where the comparison image will be saved.
+        spec_id: Spec ID for the header label.
+        library: Library name for the header label.
+    """
+    # Canvas
+    canvas = Image.new("RGB", (COMPARE_WIDTH, COMPARE_HEIGHT), PYPLOTS_BG)
+    draw = ImageDraw.Draw(canvas)
+
+    # Available space for each image panel
+    panel_width = (COMPARE_WIDTH - 2 * COMPARE_MARGIN - COMPARE_GAP) // 2
+    panel_top = COMPARE_HEADER_HEIGHT + COMPARE_LABEL_HEIGHT
+    panel_height = COMPARE_HEIGHT - panel_top - COMPARE_MARGIN
+
+    # Header bar
+    header_text = f"{library} · {spec_id}" if library and spec_id else library or spec_id
+    if header_text:
+        header_font = _get_font(28, weight=700)
+        bbox = draw.textbbox((0, 0), header_text, font=header_font)
+        text_w = bbox[2] - bbox[0]
+        text_h = bbox[3] - bbox[1]
+        draw.text(
+            ((COMPARE_WIDTH - text_w) // 2, (COMPARE_HEADER_HEIGHT - text_h) // 2),
+            header_text,
+            fill=PYPLOTS_DARK,
+            font=header_font,
+        )
+
+    # Labels
+    label_font = _get_font(22, weight=400)
+    before_label = "BEFORE (current)"
+    after_label = "AFTER (updated)"
+
+    before_bbox = draw.textbbox((0, 0), before_label, font=label_font)
+    before_label_w = before_bbox[2] - before_bbox[0]
+    draw.text(
+        (COMPARE_MARGIN + (panel_width - before_label_w) // 2, COMPARE_HEADER_HEIGHT + 8),
+        before_label,
+        fill="#6b7280",
+        font=label_font,
+    )
+
+    after_bbox = draw.textbbox((0, 0), after_label, font=label_font)
+    after_label_w = after_bbox[2] - after_bbox[0]
+    after_panel_x = COMPARE_MARGIN + panel_width + COMPARE_GAP
+    draw.text(
+        (after_panel_x + (panel_width - after_label_w) // 2, COMPARE_HEADER_HEIGHT + 8),
+        after_label,
+        fill="#6b7280",
+        font=label_font,
+    )
+
+    # Load and place BEFORE image (or placeholder)
+    if before_path and Path(before_path).exists():
+        before_img = Image.open(before_path)
+        if before_img.mode in ("RGBA", "P"):
+            before_img = before_img.convert("RGB")
+        before_img = _fit_image(before_img, panel_width, panel_height)
+        bx = COMPARE_MARGIN + (panel_width - before_img.width) // 2
+        by = panel_top + (panel_height - before_img.height) // 2
+        canvas.paste(before_img, (bx, by))
+    else:
+        # Gray placeholder
+        placeholder_font = _get_font(20, weight=400)
+        placeholder_text = "No previous version"
+        pb = draw.textbbox((0, 0), placeholder_text, font=placeholder_font)
+        pw = pb[2] - pb[0]
+        ph = pb[3] - pb[1]
+        px = COMPARE_MARGIN + (panel_width - pw) // 2
+        py = panel_top + (panel_height - ph) // 2
+        draw.text((px, py), placeholder_text, fill="#9ca3af", font=placeholder_font)
+
+    # Load and place AFTER image
+    after_img = Image.open(after_path)
+    if after_img.mode in ("RGBA", "P"):
+        after_img = after_img.convert("RGB")
+    after_img = _fit_image(after_img, panel_width, panel_height)
+    ax = after_panel_x + (panel_width - after_img.width) // 2
+    ay = panel_top + (panel_height - after_img.height) // 2
+    canvas.paste(after_img, (ax, ay))
+
+    canvas.save(output_path, "PNG", optimize=True)
+
+
+def _fit_image(img: Image.Image, max_width: int, max_height: int) -> Image.Image:
+    """Scale an image to fit within max_width x max_height, preserving aspect ratio."""
+    scale = min(max_width / img.width, max_height / img.height, 1.0)
+    if scale < 1.0:
+        return img.resize((int(img.width * scale), int(img.height * scale)), Image.Resampling.LANCZOS)
+    return img
 
 
 # =============================================================================
@@ -597,12 +718,14 @@ if __name__ == "__main__":
         print("  python -m core.images process <input> <output> [thumb]")
         print("  python -m core.images brand <input> <output> [spec_id] [library]")
         print("  python -m core.images collage <output> <img1> [img2] [img3] [img4]")
+        print("  python -m core.images compare <before> <after> <output> [spec_id] [library]")
         print("")
         print("Examples:")
         print("  python -m core.images thumbnail plot.png thumb.png 400")
         print("  python -m core.images process plot.png out.png thumb.png")
         print("  python -m core.images brand plot.png og.png scatter-basic matplotlib")
         print("  python -m core.images collage og.png img1.png img2.png img3.png img4.png")
+        print("  python -m core.images compare before.png after.png comparison.png area-basic matplotlib")
         sys.exit(1)
 
     if len(sys.argv) < 2:
@@ -642,6 +765,18 @@ if __name__ == "__main__":
         input_files = sys.argv[3:]
         create_og_collage(input_files, output_file)
         print(f"Collage: {output_file} ({OG_WIDTH}x{OG_HEIGHT}px, {len(input_files)} images)")
+
+    elif command == "compare":
+        if len(sys.argv) < 5:
+            print_usage()
+        before_file = sys.argv[2]
+        after_file = sys.argv[3]
+        output_file = sys.argv[4]
+        spec_id = sys.argv[5] if len(sys.argv) > 5 else ""
+        library = sys.argv[6] if len(sys.argv) > 6 else ""
+        before = None if before_file == "none" else before_file
+        create_comparison_image(before, after_file, output_file, spec_id, library)
+        print(f"Comparison: {output_file} ({COMPARE_WIDTH}x{COMPARE_HEIGHT}px)")
 
     else:
         print(f"Unknown command: {command}")

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 area-basic: Basic Area Chart
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: pygal 3.1.0 | Python 3.14.2
+Quality: /100 | Updated: 2026-02-11
 """
 
 import pygal
@@ -56,6 +56,7 @@ custom_style = Style(
     major_label_font_size=42,
     legend_font_size=42,
     value_font_size=36,
+    tooltip_font_size=36,
     opacity=0.4,
     opacity_hover=0.6,
 )
@@ -64,19 +65,20 @@ custom_style = Style(
 chart = pygal.Line(
     width=4800,
     height=2700,
-    title="area-basic · pygal · pyplots.ai",
+    title="area-basic \u00b7 pygal \u00b7 pyplots.ai",
     x_title="Day of Month",
-    y_title="Visitors",
+    y_title="Visitors (per day)",
     style=custom_style,
     fill=True,
     show_dots=True,
-    dots_size=6,
+    dots_size=8,
     stroke_style={"width": 4},
     show_y_guides=True,
     show_x_guides=False,
     x_label_rotation=0,
     legend_at_bottom=True,
     truncate_legend=-1,
+    value_formatter=lambda x: f"{x:,.0f}",
 )
 
 # Add data - show every 5th day label for readability

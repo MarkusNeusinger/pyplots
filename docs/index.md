@@ -38,7 +38,7 @@ docs/
 │   ├── tagging-system.md # Tag taxonomy reference
 │   ├── plausible.md      # Analytics integration
 │   └── seo.md            # SEO configuration
-└── plot-types-catalog.md # Future plot ideas
+└── (reserved for future docs)
 ```
 
 ---

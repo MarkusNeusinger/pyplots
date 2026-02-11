@@ -48,6 +48,18 @@ fig.write_image('plot.png', width=1600, height=900, scale=3)
 Plotly is interactive by default (hover, zoom, pan).
 For static outputs → `write_image()`.
 
+## Colorblind-Safe Colors
+
+```python
+# Primary pyplots colors (use first)
+colors = ['#306998', '#FFD43B']
+
+# Extended colorblind-safe palette
+colors = ['#306998', '#FFD43B', '#9467BD', '#17BECF', '#8C564B']
+
+# Avoid red-green combinations (hard for deuteranopia/protanopia)
+```
+
 ## Output File
 
 `plots/{spec-id}/implementations/plotly.py`

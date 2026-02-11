@@ -319,12 +319,13 @@ Certain errors limit the maximum score:
 | VQ-02 = 0 (severe overlap) | 49 |
 | VQ-03 = 0 (invisible elements) | 49 |
 | SC-01 = 0 (wrong plot type) | 40 |
+| DQ-02 = 0 (controversial/sensitive data) | 49 |
 
 ---
 
 ## Example Evaluation
 
-A "good" plot (formerly 95%, now 80%):
+A "good" plot (~80%):
 
 ```text
 VISUAL QUALITY (30/40)
@@ -362,51 +363,3 @@ LIBRARY FEATURES (3/5)
 TOTAL: 80/100 = "Good" Tier
 ```
 
----
-
-## Evaluation Checklist
-
-### Stage 1: Auto-Reject
-- [ ] AR-01: Code compiles
-- [ ] AR-02: Code runs without error
-- [ ] AR-03: plot.png exists
-- [ ] AR-04: Image not empty
-- [ ] AR-05: Library is used
-- [ ] AR-06: Library can implement spec
-- [ ] AR-07: Correct file format
-
-### Stage 2: Quality (only if Stage 1 passed)
-
-**Visual Quality (40 pts)**
-- [ ] VQ-01: Text Legibility (10)
-- [ ] VQ-02: No Overlap (8)
-- [ ] VQ-03: Element Visibility (8)
-- [ ] VQ-04: Color Accessibility (5)
-- [ ] VQ-05: Layout Balance (5)
-- [ ] VQ-06: Axis Labels (2)
-- [ ] VQ-07: Grid & Legend (2)
-
-**Spec Compliance (25 pts)**
-- [ ] SC-01: Plot Type (8)
-- [ ] SC-02: Data Mapping (5)
-- [ ] SC-03: Required Features (5)
-- [ ] SC-04: Data Range (3)
-- [ ] SC-05: Legend Accuracy (2)
-- [ ] SC-06: Title Format (2)
-
-**Data Quality (20 pts)**
-- [ ] DQ-01: Feature Coverage (8)
-- [ ] DQ-02: Realistic Context (7)
-- [ ] DQ-03: Appropriate Scale (5)
-
-**Code Quality (10 pts)**
-- [ ] CQ-01: KISS Structure (3)
-- [ ] CQ-02: Reproducibility (3)
-- [ ] CQ-03: Clean Imports (2)
-- [ ] CQ-04: No Deprecated API (1)
-- [ ] CQ-05: Output Correct (1)
-
-**Library Features (5 pts)**
-- [ ] LF-01: Distinctive Features (5)
-
-**Total: ___ / 100**

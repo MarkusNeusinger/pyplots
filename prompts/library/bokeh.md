@@ -70,6 +70,18 @@ p.scatter(..., size=15)        # ~3-4x default
 p.line(..., line_width=3)
 ```
 
+## Colorblind-Safe Colors
+
+```python
+# Primary pyplots colors (use first)
+colors = ['#306998', '#FFD43B']
+
+# Extended colorblind-safe palette
+colors = ['#306998', '#FFD43B', '#9467BD', '#17BECF', '#8C564B']
+
+# Avoid red-green combinations (hard for deuteranopia/protanopia)
+```
+
 ## Output File
 
 `plots/{spec-id}/implementations/bokeh.py`

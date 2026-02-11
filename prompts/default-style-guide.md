@@ -46,10 +46,17 @@ For additional colors: AI chooses appropriate, colorblind-safe colors.
 Since we render at ~13 million pixels, elements must be **visually prominent**:
 
 ### Text
-- **Title**: Large and clearly readable
-- **Axis labels**: Prominent, not tiny
-- **Tick labels**: Readable at full image size
-- **Legend**: Easy to read
+
+Two font size groups exist due to how libraries render (DPI-based vs. pixel-based):
+
+| Element | DPI-based (matplotlib, seaborn, plotnine, letsplot) | Pixel-based (plotly, bokeh, altair, highcharts, pygal) |
+|---------|------------------------------------------------------|--------------------------------------------------------|
+| Title | 24pt | 28px |
+| Axis labels | 20pt | 22px |
+| Tick labels | 16pt | 18px |
+| Legend | 16pt | 16px |
+
+DPI-based libraries use `figsize=(16, 9)` + `dpi=300` = 4800x2700px. Pixel-based libraries set dimensions directly.
 
 ### Data Elements
 - **Points/Markers**: Clearly visible, not tiny dots

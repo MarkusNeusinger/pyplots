@@ -69,6 +69,18 @@ chart = chart.interactive()
 .encode(tooltip=['col_x', 'col_y'])
 ```
 
+## Colorblind-Safe Colors
+
+```python
+# Primary pyplots colors (use first)
+alt.Scale(range=['#306998', '#FFD43B'])
+
+# Extended colorblind-safe palette
+alt.Scale(range=['#306998', '#FFD43B', '#9467BD', '#17BECF', '#8C564B'])
+
+# Avoid red-green combinations (hard for deuteranopia/protanopia)
+```
+
 ## Output File
 
 `plots/{spec-id}/implementations/altair.py`

@@ -78,7 +78,7 @@ geom_density()     # Density
 # Color scales
 + scale_color_brewer(palette='Set2')
 + scale_fill_viridis()
-+ scale_color_manual(values=['#306998', '#FFD43B', '#DC2626'])
++ scale_color_manual(values=['#306998', '#FFD43B', '#9467BD', '#17BECF', '#8C564B'])
 
 # Axis scales
 + scale_x_continuous()
@@ -105,6 +105,18 @@ geom_density()     # Density
 ```python
 + facet_wrap('category', ncol=3)
 + facet_grid(x='row_var', y='col_var')
+```
+
+## Colorblind-Safe Colors
+
+```python
+# Primary pyplots colors (use first)
++ scale_color_manual(values=['#306998', '#FFD43B'])
+
+# Extended colorblind-safe palette
++ scale_color_manual(values=['#306998', '#FFD43B', '#9467BD', '#17BECF', '#8C564B'])
+
+# Avoid red-green combinations (hard for deuteranopia/protanopia)
 ```
 
 ## Output File

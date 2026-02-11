@@ -133,9 +133,23 @@ For each updated library, edit `plots/{spec_id}/metadata/{library}.yaml`:
 | `updated`         | Current UTC timestamp in ISO 8601 (e.g., `2026-02-10T14:30:00+00:00`)     |
 | `generated_by`    | Get from `CLAUDE_MODEL` env var, or detect via `claude --version` / model name |
 | `python_version`  | Get from `uv run python --version`                                        |
-| `library_version` | Get from `uv run python -c "from importlib.metadata import version; print(version('{package}'))"` where `{package}` is the pip package name. Mapping: `highcharts` → `highcharts-core`, `letsplot` → `lets-plot`, all others → same as `{library}` |
+| `library_version` | Get from `uv run python -c "from importlib.metadata import version; print(version('{package}'))"` where `{package}` is the pip package name (see mapping table below) |
 | `quality_score`   | Set to `null` (CI review will fill this)                                  |
 | All other fields  | **Keep unchanged** (including `review`, `impl_tags`, `preview_url`, etc.) |
+
+**Library → Pip Package Mapping:**
+
+| Library | Pip Package Name |
+|---------|-----------------|
+| matplotlib | `matplotlib` |
+| seaborn | `seaborn` |
+| plotly | `plotly` |
+| bokeh | `bokeh` |
+| altair | `altair` |
+| plotnine | `plotnine` |
+| pygal | `pygal` |
+| highcharts | `highcharts-core` |
+| letsplot | `lets-plot` |
 
 #### 5c. Update Implementation Header
 
@@ -186,10 +200,12 @@ if [ -f "plots/{spec_id}/implementations/.update-preview/{library}/plot.html" ];
 fi
 ```
 
-Update `preview_url` and `preview_thumb` in the metadata YAML to point to the staging URLs:
+Update `preview_url` and `preview_thumb` in the metadata YAML to point to the **production** URLs
+(matching `impl-generate.yml` — production URLs are set from the start, `impl-merge.yml` promotes
+GCS files from staging to production on merge):
 
-- `preview_url`: `https://storage.googleapis.com/pyplots-images/staging/{spec_id}/{library}/plot.png`
-- `preview_thumb`: `https://storage.googleapis.com/pyplots-images/staging/{spec_id}/{library}/plot_thumb.png`
+- `preview_url`: `https://storage.googleapis.com/pyplots-images/plots/{spec_id}/{library}/plot.png`
+- `preview_thumb`: `https://storage.googleapis.com/pyplots-images/plots/{spec_id}/{library}/plot_thumb.png`
 
 #### 5f. Clean Up Preview Directory
 
@@ -315,6 +331,20 @@ like.
 - **Quality criteria** (`prompts/quality-criteria.md`)
 - **The specification** (`plots/{SPEC_ID}/specification.md`)
 
+**Common conflict types:**
+
+| Conflict | Example | Rule Source |
+|----------|---------|-------------|
+| KISS violation | "Add a function to generate data" | `plot-generator.md` |
+| Wrong output format | "Save as SVG" | `plot-generator.md` |
+| Cross-library plotting | "Use matplotlib in plotnine" | `plot-generator.md` |
+| Controversial data | "Use election results as data" | `plot-generator.md` |
+| Spec mismatch | "Make it a bar chart" when spec says scatter | `specification.md` |
+| Title format | Custom title without spec-id | `plot-generator.md` |
+| Library-specific | Violates a rule in library file | `library/{LIBRARY}.md` |
+
+If none of these apply, proceed to Step 3.
+
 If you detect a conflict, **DO NOT proceed with the change.** Instead, report the conflict to `update-lead` via `SendMessage`:
 
 ```
@@ -342,10 +372,17 @@ Edit `plots/{SPEC_ID}/implementations/{LIBRARY}.py`:
 - KISS structure: imports → data → plot → save
 - Preserve review strengths, fix weaknesses
 - Address the user's specific request: **{DESCRIPTION}**
-- If no specific request was given, focus on fixing review weaknesses and improving quality score
+- If no specific request was given, perform a comprehensive review across these dimensions:
+  1. **Code Quality** — Cleanliness, variable names, unnecessary complexity, helpful comments
+  2. **Data Choice** — Realistic data that showcases the plot type well, shows ALL features (e.g., outliers for boxplots, multiple trends for line charts), appropriate ranges/scales
+  3. **Visual Design** — Colors, legibility at 4800x2700 canvas, layout balance, grid subtlety, marker sizing for data density
+  4. **Spec Compliance** — Point-by-point check against `specification.md`
+  5. **Library Feature Usage** (LF-01) — Does the code leverage distinctive library strengths? Basic usage is not enough
+  6. **Code Transferability** — Can a user easily adapt this to their own data? Clear separation of data vs. plot logic? Meaningful variable names?
+- **No changes for the sake of changes:** If you find nothing meaningful to improve, report "no improvements needed" and leave the code unchanged. Do not make cosmetic or unnecessary changes just to show activity.
 
-If the specification itself needs changes to make the plot better, also edit `plots/{SPEC_ID}/specification.md` and
-explain what you changed and why.
+If the specification genuinely needs changes to improve the result, edit `plots/{SPEC_ID}/specification.md` and
+explain what you changed and why. Do not edit the spec just for the sake of change.
 
 ### Step 4: Generate Locally
 

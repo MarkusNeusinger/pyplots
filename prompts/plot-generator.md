@@ -18,52 +18,15 @@ Create a Python script for the specified plot type and library. The code should 
 
 ## Available Standard Packages
 
-All plot implementations have access to these standard data science packages:
+All plot implementations have access to: `numpy`, `pandas`, `scipy`, `scikit-learn`, `statsmodels`.
 
-**Core Data & Arrays:**
-- `numpy` - Array operations, random data generation, linear algebra
-- `pandas` - DataFrames, Series, time series operations
+**Built-in datasets** (prefer over synthetic when showing real patterns):
+- `sklearn.datasets`: `load_iris()`, `load_wine()`, `load_breast_cancer()`, `load_digits()`, `make_classification()`, `make_regression()`, `make_blobs()`
+- `sns.load_dataset(name)`: `'tips'`, `'titanic'`, `'iris'`, `'flights'`, `'planets'`, `'penguins'`
 
-**Scientific Computing:**
-- `scipy` - Statistics, clustering, signal processing, optimization, interpolation
-  - `scipy.stats` - Statistical distributions, tests, density estimation (gaussian_kde)
-  - `scipy.cluster.hierarchy` - Hierarchical clustering (linkage, dendrogram)
-  - `scipy.signal` - Signal processing, filtering
-  - `scipy.interpolate` - Interpolation methods
-  - `scipy.optimize` - Optimization algorithms
-
-**Machine Learning:**
-- `scikit-learn` - Clustering, classification, regression, metrics, datasets
-  - `sklearn.datasets` - Built-in datasets and generators
-    - Real datasets: `load_iris()`, `load_wine()`, `load_breast_cancer()`, `load_digits()`
-    - Synthetic generators: `make_classification()`, `make_regression()`, `make_blobs()`
-  - `sklearn.cluster` - Clustering algorithms (KMeans, DBSCAN, etc.)
-  - `sklearn.metrics` - ML metrics (silhouette_score, precision_recall_curve, etc.)
-  - `sklearn.preprocessing` - Data scaling, normalization
-  - `sklearn.model_selection` - Train/test splits, cross-validation
-
-**Statistical Modeling:**
-- `statsmodels` - Statistical models, time series analysis, regression
-  - `statsmodels.api` - Statistical models (OLS, GLM, etc.)
-  - `statsmodels.tsa` - Time series analysis (ARIMA, seasonal decomposition)
-  - `statsmodels.stats` - Statistical tests
-
-**Real-World Datasets (optional):**
-- Seaborn includes curated datasets via `sns.load_dataset(name)`:
-  - `'tips'` - Restaurant tipping data
-  - `'titanic'` - Titanic passenger survival
-  - `'iris'` - Iris flower measurements
-  - `'flights'` - Monthly flight passenger counts
-  - `'planets'` - Exoplanet discoveries
-  - `'penguins'` - Palmer Archipelago penguin data
-- Use when spec requires realistic domain data instead of synthetic
-
-**Usage Guidelines:**
-- Use these packages freely for data preparation, transformations, and statistical computations
-- Always use `np.random.seed(42)` for reproducibility when using synthetic data
-- Prefer built-in datasets (sklearn.datasets, seaborn) over synthetic when showing real patterns
-- Prefer built-in functionality over writing custom implementations
-- Keep code simple - import only what you need
+**Usage guidelines:**
+- Always use `np.random.seed(42)` for reproducibility when using random data
+- Keep code simple — import only what you need
 - Use realistic data with proper domain context (salaries, test scores, measurements, etc.)
 
 ## Regeneration: Learn from Previous Review
@@ -208,43 +171,11 @@ np.fill_diagonal(corr_matrix, 1.0)  # Diagonal = 1
 - **Make data realistic**: Use meaningful variable names, realistic ranges, proper units
 - **No external files**: Never load CSV/JSON - generate everything in-memory
 
-### Data Content Guidelines (IMPORTANT)
+### Data Content Guidelines
 
-**AVOID controversial, divisive, or sensitive topics that could be misinterpreted:**
+**IMPORTANT:** Avoid controversial, divisive, or sensitive topics. See DQ-02 in `prompts/quality-criteria.md` for the full content policy (forbidden vs. safe topics). Violations cap the score at 49.
 
-❌ **Forbidden Topics:**
-- **Politics**: Elections, parties, politicians, voting data, government policies
-- **Religion**: Religious groups, beliefs, practices
-- **Race/Ethnicity**: Racial comparisons, ethnic stereotypes
-- **Gender/Sexuality**: Gender stereotypes, sexual content
-- **Violence/War**: Weapons, casualties, conflicts
-- **Sensitive Health**: Mental illness, stigmatized conditions
-- **Controversial Figures**: Historical or contemporary divisive personalities
-
-✅ **Safe & Neutral Topics:**
-- **Science**: Temperature, measurements, physics, chemistry data
-- **Business**: Sales figures, revenue, generic products (e.g., "Product A", "Product B")
-- **Nature**: Weather, plant growth, animal populations, environmental data
-- **Education**: Test scores, study hours, grades (without stereotyping or demographic comparisons)
-- **Sports**: Generic statistics (avoid politically-charged teams/leagues)
-- **Technology**: Performance metrics, user engagement, response times
-- **Food**: Restaurant data (tips dataset), recipes, nutrition
-- **Demographics**: Age, height, weight (without stereotypes or comparisons)
-
-**Examples of GOOD data contexts:**
-- "Monthly temperature readings for weather station"
-- "Sales performance by product category"
-- "Plant growth under different light conditions"
-- "CPU performance benchmarks"
-- "Restaurant tipping patterns" (seaborn tips dataset)
-
-**Examples of BAD data contexts:**
-- "Presidential election results by party" ❌
-- "Crime rates by ethnicity" ❌
-- "Salary differences by gender" ❌
-- "Religious group population changes" ❌
-
-**When in doubt**: Use generic labels like "Group A", "Group B", "Category 1", "Category 2" or scientific/technical contexts.
+**When in doubt**: Use science, business, nature, or technology contexts. Generic labels ("Group A", "Category 1") are always safe.
 
 ### Docstring Format (filled by workflow after review)
 
@@ -267,17 +198,9 @@ Quality: pending | Created: 2025-12-21
 
 The workflow will update `Quality: {score}/100` and add version numbers after review.
 
-### Rules (Code Quality Criteria)
+### Rules
 
-Must pass criteria from `prompts/quality-criteria.md`:
-
-- **KISS Structure** (CQ-01): Imports → Data → Plot → Save (no functions/classes)
-- **Reproducibility** (CQ-02): Use `np.random.seed(42)` or deterministic data
-- **Library Idioms** (CQ-03): Use best practices (e.g., `fig, ax = plt.subplots()`)
-- **Clean Imports** (CQ-04): Only import what you use
-- **Helpful Comments** (CQ-05): Comments where logic isn't obvious
-- **No Deprecated API** (CQ-06): Use current functions
-- **Output Correct** (CQ-07): Save as `plot.png`
+Must pass all code quality criteria (CQ-01 through CQ-05) from `prompts/quality-criteria.md`.
 
 **Forbidden:**
 - Functions or classes
@@ -293,28 +216,18 @@ Must pass criteria from `prompts/quality-criteria.md`:
 - ✅ Using scipy/numpy functions for data preparation
 - ❌ Using matplotlib plotting functions in non-matplotlib libraries
 - ❌ Using seaborn plotting functions in non-seaborn libraries
+
 ## Visual Quality
 
-Must pass criteria from `prompts/quality-criteria.md`.
+Must pass all visual quality criteria (VQ-01 through VQ-07) from `prompts/quality-criteria.md`.
 
 **IMPORTANT: Large Canvas Size!**
 
-pyplots renders at **4800 × 2700 px** (16:9) or **3600 × 3600 px** (1:1) - standard element sizes are too small!
+pyplots renders at **4800 × 2700 px** (16:9) or **3600 × 3600 px** (1:1) — standard element sizes are too small!
 
 - Elements should be **~3-4x larger** than library defaults
 - See `prompts/default-style-guide.md` for principles
 - See `prompts/library/{library}.md` for library-specific sizes
-
-**Criteria:**
-- **Image Size**: 4800 × 2700 px (16:9) OR 3600 × 3600 px (1:1) - AI decides
-- **Element Clarity** (VQ-03): Points, lines, bars clearly visible - not tiny!
-- **Colors** (VQ-04): Use Python Blue (#306998) and Yellow (#FFD43B) first, colorblind-safe
-- **Text Legibility** (VQ-01): Title, labels, ticks large enough to read
-- **Axis Labels** (VQ-06): Descriptive with units when appropriate
-- **Title** (SC-06): Format `{spec-id} · {library} · pyplots.ai`
-- **No Overlap** (VQ-02): Labels and text must not overlap
-- **Legend** (VQ-07): When multiple series, don't cover data
-- **Layout** (VQ-05): No cut-off content
 
 ## Output File
 

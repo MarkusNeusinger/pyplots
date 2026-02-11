@@ -82,6 +82,25 @@ chart = pygal.Bar(
 )
 ```
 
+## Colorblind-Safe Colors
+
+```python
+custom_style = Style(
+    colors=('#306998', '#FFD43B', '#9467BD', '#17BECF', '#8C564B'),
+    # Avoid red-green combinations (hard for deuteranopia/protanopia)
+)
+```
+
+## Grid Opacity
+
+Pygal does not expose a grid alpha parameter directly. Use subtle foreground colors to keep grids non-dominant:
+
+```python
+custom_style = Style(
+    foreground_subtle='#cccccc',  # Light gray for grid lines
+)
+```
+
 ## Output File
 
 `plots/{spec-id}/implementations/pygal.py`

@@ -96,6 +96,18 @@ geom_histogram() # Histogram
 geom_tile()      # Heatmap
 ```
 
+## Colorblind-Safe Colors
+
+```python
+# Primary pyplots colors (use first)
++ scale_color_manual(values=['#306998', '#FFD43B'])
+
+# Extended colorblind-safe palette
++ scale_color_manual(values=['#306998', '#FFD43B', '#9467BD', '#17BECF', '#8C564B'])
+
+# Avoid red-green combinations (hard for deuteranopia/protanopia)
+```
+
 ## Output File
 
 `plots/{spec-id}/implementations/plotnine.py`

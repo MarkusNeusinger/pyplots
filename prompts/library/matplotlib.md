@@ -71,6 +71,18 @@ ax.boxplot(data, labels=group_names)  # Wrong
 ax.boxplot(data, tick_labels=group_names)  # Right
 ```
 
+## Colorblind-Safe Colors
+
+```python
+# Primary pyplots colors (use first)
+colors = ['#306998', '#FFD43B']
+
+# Extended colorblind-safe palette
+colors = ['#306998', '#FFD43B', '#9467BD', '#17BECF', '#8C564B']
+
+# Avoid red-green combinations (hard for deuteranopia/protanopia)
+```
+
 ## Output File
 
 `plots/{spec-id}/implementations/matplotlib.py`

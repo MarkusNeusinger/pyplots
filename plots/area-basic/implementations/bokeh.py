@@ -1,13 +1,13 @@
-""" pyplots.ai
+"""pyplots.ai
 area-basic: Basic Area Chart
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Library: bokeh 3.8.2 | Python 3.14.2
+Quality: /100 | Updated: 2026-02-11
 """
 
 import numpy as np
 import pandas as pd
 from bokeh.io import export_png, output_file, save
-from bokeh.models import ColumnDataSource
+from bokeh.models import ColumnDataSource, HoverTool
 from bokeh.plotting import figure
 
 
@@ -29,7 +29,7 @@ p = figure(
     height=2700,
     title="area-basic · bokeh · pyplots.ai",
     x_axis_label="Date",
-    y_axis_label="Daily Visitors",
+    y_axis_label="Daily Visitors (count)",
     x_axis_type="datetime",
 )
 
@@ -38,6 +38,17 @@ p.varea(x="date", y1=0, y2="visitors", source=source, fill_color="#306998", fill
 
 # Line on top for clear edge
 p.line(x="date", y="visitors", source=source, line_color="#306998", line_width=5)
+
+# Invisible scatter for hover targets
+p.scatter(x="date", y="visitors", source=source, size=20, fill_alpha=0, line_alpha=0)
+
+# HoverTool for interactive exploration
+hover = HoverTool(
+    tooltips=[("Date", "@date{%b %d, %Y}"), ("Visitors", "@visitors{0,0}")],
+    formatters={"@date": "datetime"},
+    mode="vline",
+)
+p.add_tools(hover)
 
 # Styling for 4800x2700 px - scaled up for large canvas
 p.title.text_font_size = "48pt"

@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 area-basic: Basic Area Chart
 Library: pygal 3.1.0 | Python 3.14.2
+Quality: 83/100 | Created: 2025-12-23
 """
 
 import pygal

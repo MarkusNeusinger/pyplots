@@ -25,6 +25,14 @@ Optional (if regenerating):
 - `plots/{SPEC_ID}/metadata/{LIBRARY}.yaml` - Previous review feedback
 - `plots/{SPEC_ID}/implementations/{LIBRARY}.py` - Previous implementation
 
+### Feasibility Check (Static Libraries Only)
+
+If LIBRARY is **matplotlib**, **seaborn**, or **plotnine**, AND the specification mentions interactive features (hover, zoom, click, brush, animation, streaming):
+
+1. Is the spec's PRIMARY value its interactivity?
+2. If YES → Do NOT generate. Report: `NOT_FEASIBLE: {LIBRARY} cannot provide {required_feature} as static PNG.`
+3. If NO (static chart is still valuable) → Generate only the static-achievable features. Do NOT simulate interactive features.
+
 ## Step 2: CREATE THE FILE (MANDATORY)
 
 **You MUST use the Write tool to create:**

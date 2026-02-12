@@ -1,6 +1,6 @@
 # PyPlots.ai Default Style Guide
 
-Style requirements for consistent visualizations at large canvas sizes.
+Style requirements for consistent, beautiful visualizations at large canvas sizes.
 
 ## Important: Large Canvas Size
 
@@ -28,16 +28,101 @@ Two formats are allowed (similar pixel count for consistent font sizing):
 
 ---
 
-## Color Palette
+## Color Philosophy
 
-Primary colors (always use these first):
+### Primary Color
 
-| #  | Name          | Hex       |
-|----|---------------|-----------|
-| 1  | Python Blue   | #306998   |
-| 2  | Python Yellow | #FFD43B   |
+**Python Blue `#306998`** is the only recommended color for single-series plots. It is the brand anchor for every pyplots visualization.
 
-For additional colors: AI chooses appropriate, colorblind-safe colors.
+### Multi-Series Palettes
+
+For plots with multiple series, the AI chooses a cohesive, colorblind-safe palette **starting with Python Blue**:
+- The first series is always Python Blue `#306998`
+- Additional colors are chosen by the AI to complement Python Blue while maintaining colorblind safety
+- No hardcoded second, third, or fourth color — the AI picks what works best for the specific data and context
+
+### Color Restraint
+
+- **2-3 colors** is ideal for most plots
+- **4-5 colors** is the practical maximum for categorical data
+- **6+ colors** is rare and should only be used when the data demands it (e.g., many categories)
+- When many categories exist, consider grouping or using a sequential colormap instead
+
+### Sequential & Diverging Data
+
+For continuous data, use perceptually-uniform colormaps:
+- **Sequential**: `viridis`, `plasma`, `inferno`, `cividis`, `Blues`, `Greens`
+- **Diverging**: `RdBu`, `PiYG`, `coolwarm` (centered on meaningful midpoint)
+- Avoid rainbow colormaps (`jet`, `hsv`) — they are not perceptually uniform
+
+### Colorblind Safety
+
+All color choices must be distinguishable by people with deuteranopia and protanopia:
+- Avoid red-green as the only distinguishing feature
+- Use luminance differences (light vs dark), not just hue
+- When in doubt, test with a colorblind simulator
+
+---
+
+## Aesthetic Principles
+
+### Minimalism
+
+Every visual element must earn its place. If removing an element doesn't reduce understanding, remove it.
+
+- No chartjunk: decorative borders, unnecessary 3D effects, gradient fills for style
+- No embellishments that don't encode data
+- Favor clean, simple compositions over busy ones
+
+### Spines
+
+- **Default**: Remove top and right spines. Keep only left and bottom (L-shaped frame)
+- **Alternative**: Remove all spines for very clean looks (heatmaps, minimal scatter)
+- **Exception**: Keep all four spines only when the plot type requires it (e.g., enclosed heatmap grid)
+
+### Background
+
+- Clean white (`#FFFFFF`) is the default
+- Very faint warm gray (`#FAFAFA`) is acceptable as an alternative
+- Never use colored or dark backgrounds
+
+### Whitespace
+
+- Generous margins around the plot area
+- Padding between legend and plot, between title and axes
+- Let the data breathe — don't cram elements together
+- `tight_layout()` / `bbox_inches='tight'` to avoid wasted canvas, but don't compress
+
+### Typography Hierarchy
+
+- **Title**: Bold or medium weight, largest size — the first thing readers see
+- **Axis labels**: Regular weight, clearly readable
+- **Tick labels, legend text**: Regular weight, smaller but still legible
+- **Tertiary text** (annotations, source notes): Lighter weight, smallest readable size
+
+### Grid Guidelines
+
+- **Prefer no grid** for simple plots with few data points
+- **When used**: Y-axis grid only for bar/line charts, both axes for scatter plots
+- **Style**: Solid thin lines (not dashed), opacity 15-25%, very subtle
+- **Never**: Bold grid lines, high-contrast grid, grid that competes with data
+
+### Decoration Removal Checklist
+
+Before finalizing any plot, consider removing:
+- Top and right spines (remove by default)
+- Tick marks (keep tick labels, remove the small marks themselves where possible)
+- Unnecessary grid lines (especially for simple plots)
+- Single-series legends (if only one series, the legend is redundant)
+- Redundant axis labels (if the title already explains the axis)
+- Box frames around legends
+
+### Data Element Styling
+
+- **Scatter markers**: White edge (`edgecolors='white'`) for definition, especially with overlapping points
+- **Line thickness**: Moderate (2.5-3.5 for primary lines, thinner for secondary)
+- **Bar edges**: Subtle white or slightly darker edge for definition
+- **Alpha/opacity**: Use density-appropriate alpha — more points need more transparency
 
 ---
 
@@ -70,22 +155,34 @@ DPI-based libraries use `figsize=(16, 9)` + `dpi=300` = 4800x2700px. Pixel-based
 
 ---
 
-## Grid
-
-- Subtle, not dominant
-- Low opacity (around 30%)
-- Should enhance readability, not distract
-
----
-
 ## AI Discretion
 
-The AI decides based on the specific library and visualization:
+The AI makes the following design decisions for each visualization:
 
-- Exact sizes and parameters (library-specific)
+**Color & Palette:**
+- Specific colors beyond Python Blue (for multi-series)
+- Colormap choice for sequential/diverging data
+- Alpha/opacity values based on data density
+
+**Layout & Structure:**
+- Landscape vs. square format
+- Legend placement (or omission for single-series)
+- Spine visibility (L-shaped, none, or all)
+- Margin and padding adjustments
+
+**Typography:**
 - Font family
-- Grid style (on/off, dashed/solid)
-- Legend placement
-- Additional colors beyond the primary two
+- Weight variations within the hierarchy
+- Exact font sizes (within the guidelines)
 
-**Priority:** Clarity and readability at full resolution (~13 million pixels).
+**Grid & Background:**
+- Grid on/off, and which axes
+- Grid opacity (within 15-25% range)
+- Background shade (white or faint gray)
+
+**Data Presentation:**
+- Annotations and callouts
+- Emphasis techniques (bold color, size variation)
+- Data label placement
+
+**Priority:** Clarity, beauty, and readability at full resolution (~13 million pixels).

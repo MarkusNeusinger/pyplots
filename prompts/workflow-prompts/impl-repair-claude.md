@@ -20,6 +20,8 @@ Read both sources to understand what needs to be fixed:
      - SC-XX items for spec compliance
      - CQ-XX items for code quality
 
+**Important:** If the review triggered AR-08 (FAKE_FUNCTIONALITY), this is NOT repairable via repair. The implementation must either be regenerated as a genuine static visualization or marked NOT_FEASIBLE. Do NOT fix by "improving" the fake elements.
+
 ## Step 2: Read reference files
 
 1. `prompts/library/{LIBRARY}.md` - Library-specific rules

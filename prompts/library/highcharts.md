@@ -155,14 +155,15 @@ chart.options.plot_options = {
    - Or add spacingBottom: `chart.options.chart = {'spacingBottom': 80, ...}`
    - Ensure labels have `style: {'fontSize': '24px'}` for visibility at 4800x2700
 
-## Colorblind-Safe Colors
-
-Always use colorblind-safe palettes. **Avoid red-green combinations.**
+## Colors
 
 ```python
-# Good: Colorblind-safe palette
-colors = ["#306998", "#FFD43B", "#9467BD", "#17BECF", "#8C564B"]
+# Single-series: always Python Blue
+colors = ["#306998"]
 
-# Bad: Red-green conflict (hard for deuteranopia/protanopia)
-colors = ["#DC2626", "#059669", ...]  # AVOID
+# Multi-series: AI picks cohesive palette starting with Python Blue
+# No hardcoded second color — choose what works for the data
+colors = ["#306998", ...]  # AI selects additional colors
+
+# Colorblind-safe required. Avoid red-green as only distinguishing feature.
 ```

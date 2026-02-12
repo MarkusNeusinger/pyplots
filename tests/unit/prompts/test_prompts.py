@@ -41,6 +41,8 @@ EXPECTED_LIBRARY_PROMPTS = [
     "letsplot.md",
 ]
 
+STATIC_LIBRARIES = ["matplotlib.md", "seaborn.md", "plotnine.md"]
+
 
 class TestPromptFileExistence:
     """Test that all expected prompt files exist."""
@@ -81,6 +83,11 @@ class TestPromptStructure:
         """Load quality-criteria.md content."""
         return (PROMPTS_DIR / "quality-criteria.md").read_text()
 
+    @pytest.fixture
+    def quality_evaluator_content(self) -> str:
+        """Load quality-evaluator.md content."""
+        return (PROMPTS_DIR / "quality-evaluator.md").read_text()
+
     def test_plot_generator_has_required_sections(self, plot_generator_content: str) -> None:
         """Plot generator should have Role, Task, Output sections."""
         # Core sections at level 2
@@ -94,19 +101,91 @@ class TestPromptStructure:
         """Plot generator should include a code template."""
         assert "```python" in plot_generator_content, "Missing Python code template"
         # KISS style: simple scripts with comments, not functions
-        assert "# Create plot" in plot_generator_content or "plt.savefig" in plot_generator_content, (
-            "Missing plot creation example"
-        )
+        assert "plt.savefig" in plot_generator_content, "Missing plot save example"
+
+    def test_plot_generator_has_fake_functionality_section(self, plot_generator_content: str) -> None:
+        """Plot generator should have Fake Functionality section."""
+        assert "## Fake Functionality is Forbidden" in plot_generator_content
+        assert "NOT_FEASIBLE" in plot_generator_content
+        assert "Feasibility Pre-Check" in plot_generator_content
+
+    def test_plot_generator_has_code_style_section(self, plot_generator_content: str) -> None:
+        """Plot generator should have Code Style section."""
+        assert "## Code Style: Clean and Pythonic" in plot_generator_content
+        assert "Variable Naming" in plot_generator_content
 
     def test_quality_criteria_has_scoring_section(self, quality_criteria_content: str) -> None:
         """Quality criteria should have scoring information."""
         assert "## Stage 2: Quality Scoring" in quality_criteria_content
         assert "90" in quality_criteria_content, "Pass threshold (90) not mentioned"
 
-    def test_quality_criteria_has_visual_and_code_quality(self, quality_criteria_content: str) -> None:
-        """Quality criteria should cover both visual and code quality."""
+    def test_quality_criteria_has_six_categories(self, quality_criteria_content: str) -> None:
+        """Quality criteria should have all 6 scoring categories."""
         assert "## Visual Quality" in quality_criteria_content
+        assert "## Design Excellence" in quality_criteria_content
+        assert "## Spec Compliance" in quality_criteria_content
+        assert "## Data Quality" in quality_criteria_content
         assert "## Code Quality" in quality_criteria_content
+        assert "## Library Mastery" in quality_criteria_content
+
+    def test_quality_criteria_has_ar08(self, quality_criteria_content: str) -> None:
+        """Quality criteria should include AR-08 FAKE_FUNCTIONALITY."""
+        assert "AR-08" in quality_criteria_content
+        assert "FAKE_FUNCTIONALITY" in quality_criteria_content
+
+    def test_quality_criteria_has_design_excellence(self, quality_criteria_content: str) -> None:
+        """Quality criteria should have Design Excellence criteria."""
+        assert "DE-01" in quality_criteria_content
+        assert "DE-02" in quality_criteria_content
+        assert "DE-03" in quality_criteria_content
+        assert "Aesthetic Sophistication" in quality_criteria_content
+        assert "Data Storytelling" in quality_criteria_content
+
+    def test_quality_criteria_has_library_mastery(self, quality_criteria_content: str) -> None:
+        """Quality criteria should have Library Mastery criteria."""
+        assert "LM-01" in quality_criteria_content
+        assert "LM-02" in quality_criteria_content
+        assert "Idiomatic Usage" in quality_criteria_content
+        assert "Distinctive Features" in quality_criteria_content
+
+    def test_quality_criteria_has_score_caps(self, quality_criteria_content: str) -> None:
+        """Quality criteria should include the correct-but-boring cap."""
+        assert "## Score Caps" in quality_criteria_content
+        assert "DE-01" in quality_criteria_content
+        assert "75" in quality_criteria_content
+
+    def test_quality_criteria_has_anti_inflation(self, quality_criteria_content: str) -> None:
+        """Quality criteria should have anti-inflation calibration anchors."""
+        assert "## Anti-Inflation" in quality_criteria_content
+        assert "72-78" in quality_criteria_content
+
+    def test_quality_criteria_points_sum_to_100(self, quality_criteria_content: str) -> None:
+        """Quality criteria point distribution should sum to 100."""
+        # Check that the point distribution table contains 30+20+15+15+10+10=100
+        assert "| Visual Quality | 30 |" in quality_criteria_content
+        assert "| Design Excellence | 20 |" in quality_criteria_content
+        assert "| Spec Compliance | 15 |" in quality_criteria_content
+        assert "| Data Quality | 15 |" in quality_criteria_content
+        assert "| Code Quality | 10 |" in quality_criteria_content
+        assert "| Library Mastery | 10 |" in quality_criteria_content
+        assert "| **Total** | **100** |" in quality_criteria_content
+
+    def test_quality_evaluator_has_six_categories(self, quality_evaluator_content: str) -> None:
+        """Quality evaluator should have all 6 scoring categories."""
+        assert "Design Excellence" in quality_evaluator_content
+        assert "Library Mastery" in quality_evaluator_content
+        assert "design_excellence" in quality_evaluator_content
+        assert "library_mastery" in quality_evaluator_content
+
+    def test_quality_evaluator_has_ar08_check(self, quality_evaluator_content: str) -> None:
+        """Quality evaluator should have AR-08 check step."""
+        assert "AR-08" in quality_evaluator_content
+        assert "Fake Functionality" in quality_evaluator_content or "FAKE_FUNCTIONALITY" in quality_evaluator_content
+
+    def test_quality_evaluator_has_anti_inflation(self, quality_evaluator_content: str) -> None:
+        """Quality evaluator should have anti-inflation rules."""
+        assert "Anti-Inflation" in quality_evaluator_content
+        assert "72-78" in quality_evaluator_content
 
     @pytest.mark.parametrize("filename", EXPECTED_LIBRARY_PROMPTS)
     def test_library_prompt_has_required_sections(self, filename: str) -> None:
@@ -132,6 +211,36 @@ class TestPromptStructure:
         save_patterns = ["## Save", "savefig", "save(", "write_image", "save_screenshot", "export_png"]
         has_save_info = any(pattern in content for pattern in save_patterns)
         assert has_save_info, f"Missing save/output section in {filename}"
+
+    @pytest.mark.parametrize("filename", STATIC_LIBRARIES)
+    def test_static_library_has_interactive_handling(self, filename: str) -> None:
+        """Static library prompts should have Interactive Spec Handling section."""
+        content = (LIBRARY_PROMPTS_DIR / filename).read_text()
+        assert "## Interactive Spec Handling" in content, (
+            f"{filename} missing Interactive Spec Handling section"
+        )
+        assert "NOT_FEASIBLE" in content, f"{filename} missing NOT_FEASIBLE guidance"
+        assert "AR-08" in content, f"{filename} missing AR-08 reference"
+
+    @pytest.mark.parametrize("filename", EXPECTED_LIBRARY_PROMPTS)
+    def test_library_prompt_has_color_section(self, filename: str) -> None:
+        """Each library prompt should have a Colors section with Python Blue."""
+        content = (LIBRARY_PROMPTS_DIR / filename).read_text()
+        assert "## Colors" in content, f"{filename} missing ## Colors section"
+        assert "#306998" in content, f"{filename} missing Python Blue reference"
+
+    @pytest.mark.parametrize("filename", EXPECTED_LIBRARY_PROMPTS)
+    def test_library_prompt_no_hardcoded_yellow(self, filename: str) -> None:
+        """Library prompts should not hardcode Python Yellow as automatic second color."""
+        content = (LIBRARY_PROMPTS_DIR / filename).read_text()
+        # Check that FFD43B is not in the colors section as a recommended color
+        # It may appear in old comments or examples, but should not be in ## Colors
+        colors_section_match = re.search(r"## Colors\n(.*?)(?=\n## |\Z)", content, re.DOTALL)
+        if colors_section_match:
+            colors_section = colors_section_match.group(1)
+            assert "#FFD43B" not in colors_section, (
+                f"{filename} still has hardcoded Python Yellow in Colors section"
+            )
 
 
 class TestNoPlaceholders:
@@ -233,15 +342,14 @@ class TestPromptConsistency:
             structures[lib_file] = sections
 
         # Check that all have at least the common sections
-        common_sections = {"Import"}  # Minimal common section
+        common_sections = {"Import", "Colors"}
         for lib_file, sections in structures.items():
             missing = common_sections - sections
             assert not missing, f"{lib_file} missing common sections: {missing}"
 
     def test_quality_score_threshold_consistent(self) -> None:
-        """Quality threshold (85) should be consistent across prompts."""
+        """Quality threshold (90) should be consistent across scoring prompts."""
         files_to_check = [
-            PROMPTS_DIR / "plot-generator.md",
             PROMPTS_DIR / "quality-criteria.md",
             PROMPTS_DIR / "quality-evaluator.md",
         ]
@@ -249,9 +357,21 @@ class TestPromptConsistency:
         for filepath in files_to_check:
             if filepath.exists():
                 content = filepath.read_text()
-                # If file mentions scoring, it should use 85 as threshold
-                if "score" in content.lower() and "threshold" in content.lower():
-                    assert "85" in content, f"Inconsistent threshold in {filepath.name}"
+                assert ">= 90" in content or "≥ 90" in content, (
+                    f"Approval threshold (90) not found in {filepath.name}"
+                )
+
+    def test_scoring_categories_consistent(self) -> None:
+        """Quality criteria and evaluator should have the same 6 categories."""
+        criteria = (PROMPTS_DIR / "quality-criteria.md").read_text()
+        evaluator = (PROMPTS_DIR / "quality-evaluator.md").read_text()
+
+        categories = ["Visual Quality", "Design Excellence", "Spec Compliance",
+                       "Data Quality", "Code Quality", "Library Mastery"]
+
+        for category in categories:
+            assert category in criteria, f"Missing {category} in quality-criteria.md"
+            assert category in evaluator, f"Missing {category} in quality-evaluator.md"
 
 
 class TestPromptQuality:

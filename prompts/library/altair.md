@@ -69,16 +69,18 @@ chart = chart.interactive()
 .encode(tooltip=['col_x', 'col_y'])
 ```
 
-## Colorblind-Safe Colors
+## Colors
 
 ```python
-# Primary pyplots colors (use first)
-alt.Scale(range=['#306998', '#FFD43B'])
+# Single-series: always Python Blue
+alt.value('#306998')
 
-# Extended colorblind-safe palette
-alt.Scale(range=['#306998', '#FFD43B', '#9467BD', '#17BECF', '#8C564B'])
+# Multi-series: AI picks cohesive palette starting with Python Blue
+# No hardcoded second color — choose what works for the data
+alt.Scale(range=['#306998', ...])  # AI selects additional colors
 
-# Avoid red-green combinations (hard for deuteranopia/protanopia)
+# Colorblind-safe required. Avoid red-green as only distinguishing feature.
+# For sequential data: use perceptually-uniform colormaps (viridis, plasma, cividis)
 ```
 
 ## Output File

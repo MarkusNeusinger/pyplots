@@ -1,5 +1,16 @@
 # seaborn
 
+## Interactive Spec Handling
+
+seaborn produces **static PNG only** (via matplotlib). When implementing specs that mention interactive features:
+
+- Specs with primary interactivity (hover, zoom, click, brush) → **NOT_FEASIBLE**
+- Specs with animation → Use small multiples or faceted grid as static alternative
+- Mixed specs (static + interactive) → Implement static features only, omit interactive silently
+- **NEVER** simulate tooltips, hover states, or controls. See AR-08 in `prompts/quality-criteria.md`
+
+---
+
 ## Import
 
 ```python
@@ -35,7 +46,7 @@ plt.savefig('plot.png', dpi=300, bbox_inches='tight')
 
 ```python
 # Text sizes (seaborn uses matplotlib underneath)
-ax.set_title(title, fontsize=24)
+ax.set_title(title, fontsize=24, fontweight='medium')
 ax.set_xlabel(x_label, fontsize=20)
 ax.set_ylabel(y_label, fontsize=20)
 ax.tick_params(axis='both', labelsize=16)
@@ -46,6 +57,13 @@ sns.set_context("talk", font_scale=1.2)
 # Element sizes in seaborn functions
 sns.scatterplot(..., s=200)           # marker size
 sns.lineplot(..., linewidth=3)        # line width
+
+# Spine removal (default: remove top + right)
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+
+# Grid (subtle, y-axis preferred)
+ax.yaxis.grid(True, alpha=0.2, linewidth=0.8)
 ```
 
 ## API Compatibility (0.14+)
@@ -56,6 +74,20 @@ sns.boxplot(data=df, x='group', y='value', palette='Set2')  # Warning
 
 # CORRECT: hue with palette
 sns.boxplot(data=df, x='group', y='value', hue='group', palette='Set2', legend=False)
+```
+
+## Colors
+
+```python
+# Single-series: always Python Blue
+color = '#306998'
+
+# Multi-series: AI picks cohesive palette starting with Python Blue
+# No hardcoded second color — choose what works for the data
+palette = ['#306998', ...]  # AI selects additional colors
+
+# Colorblind-safe required. Avoid red-green as only distinguishing feature.
+# For sequential data: use perceptually-uniform colormaps (viridis, plasma, cividis)
 ```
 
 ## Recommended Palettes
@@ -77,4 +109,3 @@ palette='RdBu'
 ## Output File
 
 `plots/{spec-id}/implementations/seaborn.py`
-

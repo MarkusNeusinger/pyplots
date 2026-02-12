@@ -54,9 +54,9 @@ A simple Python script with this structure:
 
 ```python
 """ pyplots.ai
-{spec-id}: {Title}
-Library: {library} {lib_version} | Python {py_version}
-Quality: {score}/100 | Created: {YYYY-MM-DD}
+scatter-basic: Basic Scatter Plot
+Library: matplotlib | Python 3.13
+Quality: pending | Created: 2025-12-21
 """
 
 import matplotlib.pyplot as plt
@@ -64,19 +64,23 @@ import numpy as np
 
 # Data
 np.random.seed(42)
-x = np.random.randn(100) * 2 + 10
-y = x * 0.8 + np.random.randn(100) * 2
+study_hours = np.random.normal(6, 2, 80)
+exam_scores = study_hours * 8 + np.random.normal(0, 5, 80) + 30
 
-# Create plot (4800x2700 or 3600x3600 px - AI decides)
-fig, ax = plt.subplots(figsize=(16, 9))  # or (12, 12) for square
-ax.scatter(x, y, alpha=0.7, s=200, color='#306998')  # s=200 for visibility!
+# Plot
+fig, ax = plt.subplots(figsize=(16, 9))
+ax.scatter(study_hours, exam_scores, alpha=0.7, s=200,
+           color='#306998', edgecolors='white', linewidth=0.5)
 
-# Labels and styling (scaled font sizes!)
-ax.set_xlabel('X Value', fontsize=20)
-ax.set_ylabel('Y Value', fontsize=20)
-ax.set_title('scatter-basic · matplotlib · pyplots.ai', fontsize=24)
+# Style
+ax.set_xlabel('Study Hours per Day', fontsize=20)
+ax.set_ylabel('Exam Score (%)', fontsize=20)
+ax.set_title('scatter-basic · matplotlib · pyplots.ai',
+             fontsize=24, fontweight='medium')
 ax.tick_params(axis='both', labelsize=16)
-ax.grid(True, alpha=0.3, linestyle='--')
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.yaxis.grid(True, alpha=0.2, linewidth=0.8)
 
 plt.tight_layout()
 plt.savefig('plot.png', dpi=300, bbox_inches='tight')
@@ -217,17 +221,150 @@ Must pass all code quality criteria (CQ-01 through CQ-05) from `prompts/quality-
 - ❌ Using matplotlib plotting functions in non-matplotlib libraries
 - ❌ Using seaborn plotting functions in non-seaborn libraries
 
+---
+
+## Fake Functionality is Forbidden
+
+**Definition:** Fake functionality is any visual element in a static image that mimics interactive features without providing them.
+
+### Prohibited Patterns
+
+| Pattern | Example | Why it's fake |
+|---------|---------|---------------|
+| Fake hover tooltip | Annotation box styled as tooltip | Viewer cannot hover |
+| Fake click state | One element highlighted as "selected" | Nothing was clicked |
+| Fake zoom | Inset showing magnified region | Viewer cannot zoom |
+| Fake animation | Gradient/progressive sizing to suggest motion | No frames exist |
+| Fake controls | Drawn buttons/sliders | Don't work in PNG |
+| Fake streaming | Opacity gradient for "old vs new" data | No data arriving |
+
+### What Static Libraries Should Do Instead
+
+1. If spec's primary value is interactivity → return `NOT_FEASIBLE` (AR-06)
+2. If mixed spec: implement ONLY static-achievable features honestly, omit interactive silently
+3. If spec provides static alternatives (small multiples for animation): follow those only if legitimate
+
+### Feasibility Pre-Check (Static Libraries Only)
+
+Before generating code for **matplotlib**, **seaborn**, or **plotnine**:
+
+1. Check if the spec requires interactivity (hover, zoom, click, brush, animation, streaming)
+2. If the spec's PRIMARY value is its interactivity → **STOP**
+3. Return: `NOT_FEASIBLE: {library} cannot provide {required_feature} as static PNG.`
+4. If the spec has both static and interactive value → Generate only the static-achievable features. Do NOT simulate interactive features.
+
+### Comment Hygiene
+
+Code MUST NOT contain comments like:
+- "simulating hover tooltip"
+- "mimicking interactive selection"
+- "faking click behavior"
+- "simulating interactivity"
+
+**If you write such a comment, the implementation is fake.** Rethink the approach.
+
+---
+
+## Code Style: Clean and Pythonic
+
+### Variable Naming
+
+Use descriptive, domain-appropriate names:
+
+```python
+# Good
+study_hours = np.random.normal(6, 2, 80)
+exam_scores = study_hours * 8 + np.random.normal(0, 5, 80) + 30
+temperatures = np.array([22.1, 23.5, 25.0, 24.2])
+revenue_by_quarter = [1.2e6, 1.5e6, 1.3e6, 1.8e6]
+
+# Bad
+x = np.random.randn(80)
+y = x * 0.8 + np.random.randn(80)
+data1 = [1, 2, 3, 4]
+```
+
+**Exception:** `x` and `y` are acceptable for actual x/y coordinates in scatter plots or when the mathematical relationship IS the point.
+
+### Section Comments
+
+Short, clear section markers with blank line before each:
+
+```python
+# Data
+np.random.seed(42)
+...
+
+# Plot
+fig, ax = plt.subplots(figsize=(16, 9))
+...
+
+# Style
+ax.set_xlabel(...)
+...
+
+# Save
+plt.savefig('plot.png', dpi=300, bbox_inches='tight')
+```
+
+### Import Organization
+
+```python
+# Standard library
+import json
+from pathlib import Path
+
+# Data and science
+import numpy as np
+import pandas as pd
+from scipy import stats
+
+# Visualization
+import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
+```
+
+Blank line between groups. Only import what you use.
+
+### Readability
+
+- Explicit over implicit
+- One concept per line
+- Break long calls across multiple lines:
+
+```python
+ax.scatter(study_hours, exam_scores,
+           alpha=0.7, s=200,
+           color='#306998', edgecolors='white')
+```
+
+---
+
 ## Visual Quality
 
-Must pass all visual quality criteria (VQ-01 through VQ-07) from `prompts/quality-criteria.md`.
+Must pass all visual quality criteria (VQ-01 through VQ-06) and design excellence criteria (DE-01 through DE-03) from `prompts/quality-criteria.md`.
 
 **IMPORTANT: Large Canvas Size!**
 
 pyplots renders at **4800 × 2700 px** (16:9) or **3600 × 3600 px** (1:1) — standard element sizes are too small!
 
 - Elements should be **~3-4x larger** than library defaults
-- See `prompts/default-style-guide.md` for principles
+- See `prompts/default-style-guide.md` for aesthetic principles and sizing
 - See `prompts/library/{library}.md` for library-specific sizes
+
+**Aesthetic requirements from style guide:**
+- Follow minimalism: every element must earn its place
+- Remove top and right spines by default
+- Use Python Blue `#306998` for single-series; AI picks cohesive palette for multi-series
+- Color restraint: 2-3 colors ideal, 4-5 max
+- Grid: prefer none for simple plots; when used, y-axis only for bar/line, both for scatter; opacity 15-25%
+- White edge on scatter markers for definition
+- Remove decorations: single-series legends, tick marks (keep labels), unnecessary grid lines
+
+**Data storytelling (for DE-03 score):**
+- Consider adding annotations to highlight key data points or trends
+- Use visual emphasis (color, size) to guide the viewer's eye
+- Tell a story, don't just display data
 
 ## Output File
 
@@ -238,7 +375,7 @@ pyplots renders at **4800 × 2700 px** (16:9) or **3600 × 3600 px** (1:1) — s
 plt.savefig('plot.png', dpi=300, bbox_inches='tight')
 
 # plotly
-fig.write_image('plot.png', width=4800, height=2700)
+fig.write_image('plot.png', width=1600, height=900, scale=3)
 
 # bokeh
 export_png(p, filename='plot.png')
@@ -258,5 +395,7 @@ After generating the code:
    - Does it show the expected visualization?
    - Are labels readable and not overlapping?
    - Does it match the spec description?
+   - Are top/right spines removed?
+   - Is the design polished beyond defaults?
 
 If there are issues, fix them and re-run until the plot looks correct.

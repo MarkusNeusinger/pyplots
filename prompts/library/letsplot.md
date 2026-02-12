@@ -78,7 +78,7 @@ geom_density()     # Density
 # Color scales
 + scale_color_brewer(palette='Set2')
 + scale_fill_viridis()
-+ scale_color_manual(values=['#306998', '#FFD43B', '#9467BD', '#17BECF', '#8C564B'])
++ scale_color_manual(values=['#306998', ...])  # AI picks palette
 
 # Axis scales
 + scale_x_continuous()
@@ -107,16 +107,17 @@ geom_density()     # Density
 + facet_grid(x='row_var', y='col_var')
 ```
 
-## Colorblind-Safe Colors
+## Colors
 
 ```python
-# Primary pyplots colors (use first)
-+ scale_color_manual(values=['#306998', '#FFD43B'])
+# Single-series: always Python Blue
++ geom_point(color='#306998')
 
-# Extended colorblind-safe palette
-+ scale_color_manual(values=['#306998', '#FFD43B', '#9467BD', '#17BECF', '#8C564B'])
+# Multi-series: AI picks cohesive palette starting with Python Blue
++ scale_color_manual(values=['#306998', ...])  # AI selects additional colors
 
-# Avoid red-green combinations (hard for deuteranopia/protanopia)
+# Colorblind-safe required. Avoid red-green as only distinguishing feature.
+# For sequential data: use perceptually-uniform colormaps (viridis, plasma, cividis)
 ```
 
 ## Output File

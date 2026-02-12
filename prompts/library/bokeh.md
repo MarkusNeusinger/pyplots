@@ -70,16 +70,18 @@ p.scatter(..., size=15)        # ~3-4x default
 p.line(..., line_width=3)
 ```
 
-## Colorblind-Safe Colors
+## Colors
 
 ```python
-# Primary pyplots colors (use first)
-colors = ['#306998', '#FFD43B']
+# Single-series: always Python Blue
+color = '#306998'
 
-# Extended colorblind-safe palette
-colors = ['#306998', '#FFD43B', '#9467BD', '#17BECF', '#8C564B']
+# Multi-series: AI picks cohesive palette starting with Python Blue
+# No hardcoded second color — choose what works for the data
+colors = ['#306998', ...]  # AI selects additional colors
 
-# Avoid red-green combinations (hard for deuteranopia/protanopia)
+# Colorblind-safe required. Avoid red-green as only distinguishing feature.
+# For sequential data: use perceptually-uniform colormaps (viridis, plasma, cividis)
 ```
 
 ## Output File

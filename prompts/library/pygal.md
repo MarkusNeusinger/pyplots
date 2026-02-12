@@ -61,7 +61,7 @@ custom_style = Style(
     foreground='#333',
     foreground_strong='#333',
     foreground_subtle='#666',
-    colors=('#306998', '#FFD43B'),  # pyplots primary colors
+    colors=('#306998',),  # AI adds more as needed for multi-series
     title_font_size=28,
     label_font_size=18,
     major_label_font_size=16,
@@ -82,13 +82,20 @@ chart = pygal.Bar(
 )
 ```
 
-## Colorblind-Safe Colors
+## Colors
 
 ```python
+# Single-series: always Python Blue
 custom_style = Style(
-    colors=('#306998', '#FFD43B', '#9467BD', '#17BECF', '#8C564B'),
-    # Avoid red-green combinations (hard for deuteranopia/protanopia)
+    colors=('#306998',),
 )
+
+# Multi-series: AI picks cohesive palette starting with Python Blue
+custom_style = Style(
+    colors=('#306998', ...),  # AI selects additional colors
+)
+
+# Colorblind-safe required. Avoid red-green as only distinguishing feature.
 ```
 
 ## Grid Opacity
@@ -104,4 +111,3 @@ custom_style = Style(
 ## Output File
 
 `plots/{spec-id}/implementations/pygal.py`
-

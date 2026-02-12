@@ -1,5 +1,16 @@
 # matplotlib
 
+## Interactive Spec Handling
+
+matplotlib produces **static PNG only**. When implementing specs that mention interactive features:
+
+- Specs with primary interactivity (hover, zoom, click, brush) → **NOT_FEASIBLE**
+- Specs with animation → Use small multiples or faceted grid as static alternative
+- Mixed specs (static + interactive) → Implement static features only, omit interactive silently
+- **NEVER** simulate tooltips, hover states, or controls. See AR-08 in `prompts/quality-criteria.md`
+
+---
+
 ## Import
 
 ```python
@@ -37,18 +48,22 @@ plt.savefig('plot.png', dpi=300, bbox_inches='tight')
 
 ```python
 # Text sizes
-ax.set_title(title, fontsize=24)
+ax.set_title(title, fontsize=24, fontweight='medium')
 ax.set_xlabel(x_label, fontsize=20)
 ax.set_ylabel(y_label, fontsize=20)
 ax.tick_params(axis='both', labelsize=16)
 ax.legend(fontsize=16)
 
 # Element sizes
-ax.scatter(x, y, s=200)      # s=150-300 (not s=50!)
+ax.scatter(x, y, s=200, edgecolors='white', linewidth=0.5)  # s=150-300
 ax.plot(x, y, linewidth=3)   # linewidth=2-4 (not 1!)
 
-# Grid
-ax.grid(True, alpha=0.3, linestyle='--')
+# Grid (subtle, y-axis preferred)
+ax.yaxis.grid(True, alpha=0.2, linewidth=0.8)
+
+# Spine removal (default: remove top + right)
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
 ```
 
 ## Styling
@@ -56,8 +71,8 @@ ax.grid(True, alpha=0.3, linestyle='--')
 ```python
 ax.set_xlabel(x_label, fontsize=20)
 ax.set_ylabel(y_label, fontsize=20)
-ax.set_title(title, fontsize=24)
-ax.legend(fontsize=16)  # if needed
+ax.set_title(title, fontsize=24, fontweight='medium')
+ax.legend(fontsize=16)  # if needed (omit for single-series)
 plt.tight_layout()
 ```
 
@@ -71,19 +86,20 @@ ax.boxplot(data, labels=group_names)  # Wrong
 ax.boxplot(data, tick_labels=group_names)  # Right
 ```
 
-## Colorblind-Safe Colors
+## Colors
 
 ```python
-# Primary pyplots colors (use first)
-colors = ['#306998', '#FFD43B']
+# Single-series: always Python Blue
+color = '#306998'
 
-# Extended colorblind-safe palette
-colors = ['#306998', '#FFD43B', '#9467BD', '#17BECF', '#8C564B']
+# Multi-series: AI picks cohesive palette starting with Python Blue
+# No hardcoded second color — choose what works for the data
+colors = ['#306998', ...]  # AI selects additional colors
 
-# Avoid red-green combinations (hard for deuteranopia/protanopia)
+# Colorblind-safe required. Avoid red-green as only distinguishing feature.
+# For sequential data: use perceptually-uniform colormaps (viridis, plasma, cividis)
 ```
 
 ## Output File
 
 `plots/{spec-id}/implementations/matplotlib.py`
-

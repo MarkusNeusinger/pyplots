@@ -18,9 +18,21 @@ The workflow runs these checks before calling you:
 
 If any fail: Score = 0, no AI review needed.
 
+### Stage 1b: AI Auto-Reject (your responsibility)
+
+Before scoring, check for:
+- **AR-06: NOT_FEASIBLE** — Library cannot implement the spec
+- **AR-08: FAKE_FUNCTIONALITY** — Static library simulates interactive features
+
+**AR-08 triggers:** Simulated tooltips, simulated selection/hover state, simulated UI controls, code comments containing "simulating hover/click/interactivity."
+
+**AR-08 exceptions (NOT auto-reject):** Small multiples for animation, cell annotations in heatmaps, color encoding of time direction, honest notes about interactive alternatives.
+
+If AR-06 or AR-08 triggers: Score = 0, recommendation = "reject", include `auto_reject` field in output.
+
 ### Stage 2: Quality (your task)
 
-You evaluate implementations that passed Stage 1. Focus purely on **quality**.
+You evaluate implementations that passed all auto-reject checks. Focus purely on **quality**.
 
 ## Input
 
@@ -49,77 +61,92 @@ You evaluate implementations that passed Stage 1. Focus purely on **quality**.
 - "Good enough" = maximum 70%
 - Be honest and critical
 
+### Anti-Inflation Rules
+
+- **Median implementation should score 72-78.** If you find yourself scoring most plots 90+, you are too lenient.
+- **DE-01 > 6 is rare.** Most plots look like well-configured defaults (score 4), not publication masterpieces.
+- **DE-03 = 2 is the default.** Unless there are annotations, callouts, or narrative emphasis, score 2.
+- **LM-02 = 1 is the default.** Unless the implementation uses a feature distinctive to this specific library, score 1.
+- **When in doubt, deduct.** The repair loop exists to improve quality.
+- A plot scoring 90+ should genuinely impress a data visualization professional.
+
 ## Point Distribution
 
 | Category | Points |
 |----------|--------|
-| Visual Quality | 40 |
-| Spec Compliance | 25 |
-| Data Quality | 20 |
+| Visual Quality | 30 |
+| Design Excellence | 20 |
+| Spec Compliance | 15 |
+| Data Quality | 15 |
 | Code Quality | 10 |
-| Library Features | 5 |
+| Library Mastery | 10 |
 | **Total** | **100** |
 
 ## Output Format
 
 ```json
 {
-  "score": 82,
+  "score": 76,
   "tier": "Good",
   "pass": false,
 
   "visual_quality": {
-    "total": 32,
-    "vq01_text_legibility": {"score": 7, "max": 10, "note": "Readable but title could be larger"},
-    "vq02_no_overlap": {"score": 8, "max": 8, "note": "No overlap"},
-    "vq03_element_visibility": {"score": 6, "max": 8, "note": "Markers visible but could be larger"},
-    "vq04_color_accessibility": {"score": 5, "max": 5, "note": "Good colorblind-safe palette"},
-    "vq05_layout_balance": {"score": 4, "max": 5, "note": "Slight whitespace imbalance"},
-    "vq06_axis_labels": {"score": 1, "max": 2, "note": "Descriptive but no units"},
-    "vq07_grid_legend": {"score": 1, "max": 2, "note": "Grid slightly too prominent"}
+    "total": 24,
+    "vq01_text_legibility": {"score": 5, "max": 8, "note": "Readable but relying on defaults"},
+    "vq02_no_overlap": {"score": 6, "max": 6, "note": "No overlap"},
+    "vq03_element_visibility": {"score": 5, "max": 6, "note": "Markers visible but could be larger"},
+    "vq04_color_accessibility": {"score": 4, "max": 4, "note": "Good colorblind-safe palette"},
+    "vq05_layout_canvas": {"score": 2, "max": 4, "note": "Some wasted space"},
+    "vq06_axis_labels_title": {"score": 2, "max": 2, "note": "Descriptive with units"}
+  },
+
+  "design_excellence": {
+    "total": 8,
+    "de01_aesthetic_sophistication": {"score": 4, "max": 8, "note": "Well-configured default, not exceptional"},
+    "de02_visual_refinement": {"score": 2, "max": 6, "note": "Library defaults, minimal refinement"},
+    "de03_data_storytelling": {"score": 2, "max": 6, "note": "Data displayed but no storytelling"}
   },
 
   "spec_compliance": {
-    "total": 23,
-    "sc01_plot_type": {"score": 8, "max": 8, "note": "Correct scatter plot"},
-    "sc02_data_mapping": {"score": 5, "max": 5, "note": "X/Y correctly mapped"},
-    "sc03_required_features": {"score": 4, "max": 5, "note": "Missing trend line"},
-    "sc04_data_range": {"score": 3, "max": 3, "note": "Good axis ranges"},
-    "sc05_legend_accuracy": {"score": 2, "max": 2, "note": "Legend correct"},
-    "sc06_title_format": {"score": 1, "max": 2, "note": "Missing pyplots.ai suffix"}
+    "total": 13,
+    "sc01_plot_type": {"score": 5, "max": 5, "note": "Correct chart type"},
+    "sc02_required_features": {"score": 3, "max": 4, "note": "Minor feature missing"},
+    "sc03_data_mapping": {"score": 3, "max": 3, "note": "X/Y correctly mapped"},
+    "sc04_title_legend": {"score": 2, "max": 3, "note": "Title ok, legend not perfect"}
   },
 
   "data_quality": {
-    "total": 16,
-    "dq01_feature_coverage": {"score": 6, "max": 8, "note": "Shows main patterns but no outliers"},
-    "dq02_realistic_context": {"score": 6, "max": 7, "note": "Plausible but generic scenario"},
-    "dq03_appropriate_scale": {"score": 4, "max": 5, "note": "Reasonable values"}
+    "total": 13,
+    "dq01_feature_coverage": {"score": 5, "max": 6, "note": "Shows main patterns but no outliers"},
+    "dq02_realistic_context": {"score": 4, "max": 5, "note": "Plausible scenario"},
+    "dq03_appropriate_scale": {"score": 4, "max": 4, "note": "Reasonable values"}
   },
 
   "code_quality": {
-    "total": 8,
+    "total": 9,
     "cq01_kiss_structure": {"score": 3, "max": 3, "note": "Simple sequential structure"},
-    "cq02_reproducibility": {"score": 3, "max": 3, "note": "Uses np.random.seed(42)"},
-    "cq03_clean_imports": {"score": 1, "max": 2, "note": "Unused pandas import"},
-    "cq04_no_deprecated_api": {"score": 1, "max": 1, "note": "Current API"},
-    "cq05_output_correct": {"score": 0, "max": 1, "note": "Saves as output.png instead of plot.png"}
+    "cq02_reproducibility": {"score": 2, "max": 2, "note": "Uses np.random.seed(42)"},
+    "cq03_clean_imports": {"score": 2, "max": 2, "note": "Only used imports"},
+    "cq04_code_elegance": {"score": 1, "max": 2, "note": "Ok but slightly verbose"},
+    "cq05_output_api": {"score": 1, "max": 1, "note": "Correct output, current API"}
   },
 
-  "library_features": {
-    "total": 3,
-    "lf01_distinctive_features": {"score": 3, "max": 5, "note": "Uses library correctly but no special features"}
+  "library_mastery": {
+    "total": 9,
+    "lm01_idiomatic_usage": {"score": 5, "max": 5, "note": "Uses library's high-level API"},
+    "lm02_distinctive_features": {"score": 4, "max": 5, "note": "Uses some library-specific features"}
   },
 
   "strengths": [
     "Clean code structure with KISS principle",
     "Good colorblind-safe palette",
-    "Data mapping is correct"
+    "Idiomatic library usage"
   ],
 
   "weaknesses": [
-    "Font sizes could be larger for 4800x2700 canvas",
-    "Missing units in axis labels",
-    "Unused import"
+    "Relying on default font sizes instead of explicit settings",
+    "No design refinement beyond library defaults",
+    "No data storytelling - annotations or emphasis would improve the plot"
   ],
 
   "recommendation": "reject"
@@ -128,36 +155,57 @@ You evaluate implementations that passed Stage 1. Focus purely on **quality**.
 
 ## Evaluation Process
 
-### Step 1: Visual Quality (40 pts)
+### Step 0: Check for Fake Functionality (AR-08)
+
+**For static libraries (matplotlib, seaborn, plotnine) only:**
+
+Scan the code and image for:
+- Simulated tooltips, hover states, or selection states
+- Drawn UI controls (buttons, sliders)
+- Comments like "simulating hover/click/interactivity"
+
+If found: `auto_reject: "AR-08"`, score = 0, stop evaluation.
+
+### Step 1: Visual Quality (30 pts)
 
 | ID | Criterion | Max | Key Question |
 |----|-----------|-----|--------------|
-| VQ-01 | Text Legibility | 10 | All text readable at full size? Title ≥24pt, labels ≥20pt? |
-| VQ-02 | No Overlap | 8 | Any overlapping text? Tick labels? Legend on data? |
-| VQ-03 | Element Visibility | 8 | Markers/lines adapted to data density? |
-| VQ-04 | Color Accessibility | 5 | Colorblind-safe? No red-green only? |
-| VQ-05 | Layout Balance | 5 | Good proportions? Nothing cut off? |
-| VQ-06 | Axis Labels | 2 | Descriptive with units? |
-| VQ-07 | Grid & Legend | 2 | Grid subtle? Legend well placed? |
+| VQ-01 | Text Legibility | 8 | All text readable at full size? Font sizes **explicitly set** (not defaults)? |
+| VQ-02 | No Overlap | 6 | Any overlapping text? Tick labels? Legend on data? |
+| VQ-03 | Element Visibility | 6 | Markers/lines adapted to data density? |
+| VQ-04 | Color Accessibility | 4 | Colorblind-safe? No red-green only? |
+| VQ-05 | Layout & Canvas | 4 | Good proportions? Nothing cut off? |
+| VQ-06 | Axis Labels & Title | 2 | Descriptive with units? |
 
-### Step 2: Spec Compliance (25 pts)
-
-| ID | Criterion | Max | Key Question |
-|----|-----------|-----|--------------|
-| SC-01 | Plot Type | 8 | Correct chart type? |
-| SC-02 | Data Mapping | 5 | X/Y correctly assigned? |
-| SC-03 | Required Features | 5 | All spec features present? |
-| SC-04 | Data Range | 3 | All data visible? |
-| SC-05 | Legend Accuracy | 2 | Labels match data? |
-| SC-06 | Title Format | 2 | `{spec-id} · {library} · pyplots.ai`? |
-
-### Step 3: Data Quality (20 pts)
+### Step 2: Design Excellence (20 pts)
 
 | ID | Criterion | Max | Key Question |
 |----|-----------|-----|--------------|
-| DQ-01 | Feature Coverage | 8 | Shows ALL aspects of plot type? |
-| DQ-02 | Realistic Context | 7 | Real-world plausible **AND neutral** scenario? |
-| DQ-03 | Appropriate Scale | 5 | Sensible values for domain? |
+| DE-01 | Aesthetic Sophistication | 8 | Does this look professional? Custom palette? Intentional hierarchy? |
+| DE-02 | Visual Refinement | 6 | Spines removed? Grid subtle? Whitespace generous? Details polished? |
+| DE-03 | Data Storytelling | 6 | Are there annotations? Does the plot guide the viewer? Any narrative? |
+
+**Scoring defaults (start here, adjust up only with evidence):**
+- DE-01 = 4 (configured default). Raise to 6+ only if clearly above-default design.
+- DE-02 = 2 (minimal refinement). Raise only if spines removed, grid tuned, etc.
+- DE-03 = 2 (no storytelling). Raise only if annotations or emphasis present.
+
+### Step 3: Spec Compliance (15 pts)
+
+| ID | Criterion | Max | Key Question |
+|----|-----------|-----|--------------|
+| SC-01 | Plot Type | 5 | Correct chart type? |
+| SC-02 | Required Features | 4 | All spec features present? |
+| SC-03 | Data Mapping | 3 | X/Y correctly assigned? All data visible? |
+| SC-04 | Title & Legend | 3 | `{spec-id} · {library} · pyplots.ai`? Legend labels correct? |
+
+### Step 4: Data Quality (15 pts)
+
+| ID | Criterion | Max | Key Question |
+|----|-----------|-----|--------------|
+| DQ-01 | Feature Coverage | 6 | Shows ALL aspects of plot type? |
+| DQ-02 | Realistic Context | 5 | Real-world plausible **AND neutral** scenario? |
+| DQ-03 | Appropriate Scale | 4 | Sensible values for domain? |
 
 **CRITICAL - Content Policy for DQ-02:**
 Automatically give **0 points** if data uses controversial/sensitive topics:
@@ -165,36 +213,45 @@ Automatically give **0 points** if data uses controversial/sensitive topics:
 - ❌ Religion, race/ethnicity comparisons, gender stereotypes
 - ❌ Violence, war, weapons, sensitive health topics
 
-Only award full points (7/7) for neutral contexts:
+Score **1 point** for abstract labels ("Category A", "Group 1").
+Only award full points (5/5) for real, neutral contexts:
 - ✅ Science, business, nature, technology, food, education
 
-### Step 4: Code Quality (10 pts)
+### Step 5: Code Quality (10 pts)
 
 | ID | Criterion | Max | Key Question |
 |----|-----------|-----|--------------|
 | CQ-01 | KISS Structure | 3 | No functions/classes? |
-| CQ-02 | Reproducibility | 3 | Fixed seed or deterministic? |
-| CQ-03 | Clean Imports | 2 | Only used imports? (data utilities like `sns.load_dataset()` count as used) |
-| CQ-04 | No Deprecated API | 1 | Current functions only? |
-| CQ-05 | Output Correct | 1 | Saves as `plot.png`? |
+| CQ-02 | Reproducibility | 2 | Fixed seed or deterministic? |
+| CQ-03 | Clean Imports | 2 | Only used imports? (data utilities count as used) |
+| CQ-04 | Code Elegance | 2 | Appropriate complexity? No fake UI elements? No over-engineering? |
+| CQ-05 | Output & API | 1 | Saves as `plot.png`? No deprecated functions? |
 
 **Note on cross-library usage:** Using data utilities from other libraries (e.g., `sns.load_dataset()` in a highcharts plot, `sklearn.datasets` in plotly) is allowed and should NOT be penalized. Only using other libraries' **plotting functions** is forbidden.
 
-### Step 5: Library Features (5 pts)
+### Step 6: Library Mastery (10 pts)
 
 | ID | Criterion | Max | Key Question |
 |----|-----------|-----|--------------|
-| LF-01 | Distinctive Features | 5 | Uses library-specific strengths? |
+| LM-01 | Idiomatic Usage | 5 | Uses library's recommended patterns and high-level API? |
+| LM-02 | Distinctive Features | 5 | Uses features unique to this library? |
 
-### Step 6: Apply Score Caps
+**Scoring defaults (start here, adjust up only with evidence):**
+- LM-01 = 3 (correct usage). Raise to 5 only if expertly using high-level API.
+- LM-02 = 1 (generic usage). Raise only if using distinctive features.
+
+### Step 7: Apply Score Caps
 
 | Condition | Max Score |
 |-----------|-----------|
 | VQ-02 = 0 (severe overlap) | 49 |
 | VQ-03 = 0 (invisible elements) | 49 |
 | SC-01 = 0 (wrong plot type) | 40 |
+| DQ-02 = 0 (controversial data) | 49 |
+| DE-01 ≤ 2 AND DE-03 ≤ 2 (generic + no storytelling) | 75 |
+| CQ-04 = 0 (fake functionality / over-engineering) | 70 |
 
-### Step 7: Determine Recommendation
+### Step 8: Determine Recommendation
 
 | Score | Recommendation |
 |-------|----------------|
@@ -206,8 +263,9 @@ Only award full points (7/7) for neutral contexts:
 - **Objective**: Base evaluation on facts, not opinions
 - **Strict**: A "normal good" plot = 70-80, not 95
 - **Specific**: Cite exact issues
-- **Referenced**: Include criterion IDs (VQ-01, SC-02, etc.)
+- **Referenced**: Include criterion IDs (VQ-01, DE-02, etc.)
 - **No improvements field**: Only output `strengths` and `weaknesses`
+- **Start low, justify up**: Begin with default scores and raise only with evidence
 
 ## Image Formats
 
@@ -242,3 +300,14 @@ These features **add significant value** in the HTML output. The PNG is just a s
 
 **Bad evaluation** (don't do this):
 > ~~"HoverTool adds no value to static PNG output"~~
+
+## Static Libraries and Interactive Specs
+
+**For matplotlib, seaborn, plotnine:**
+
+These libraries produce static PNG only. When evaluating their implementations of specs that mention interactive features:
+
+1. **Do NOT penalize** for missing interactivity (hover, zoom, click) — these are static libraries
+2. **DO penalize** (AR-08) for **faking** interactivity — simulated tooltips, drawn buttons, etc.
+3. If the spec's primary value is interactivity, the implementation should have been caught as NOT_FEASIBLE (AR-06)
+4. If the spec has both static and interactive elements, evaluate only the static elements fairly

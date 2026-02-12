@@ -11,6 +11,15 @@ plotnine is a ggplot2-based grammar of graphics library. It does NOT support:
 
 If the specification requires features not available in plotnine's grammar of graphics, the implementation should FAIL rather than fall back to matplotlib or other libraries. Each library implementation should use only that library's native capabilities.
 
+## Interactive Spec Handling
+
+plotnine produces **static PNG only**. When implementing specs that mention interactive features:
+
+- Specs with primary interactivity (hover, zoom, click, brush) → **NOT_FEASIBLE**
+- Specs with animation → Use small multiples or faceted grid as static alternative
+- Mixed specs (static + interactive) → Implement static features only, omit interactive silently
+- **NEVER** simulate tooltips, hover states, or controls. See AR-08 in `prompts/quality-criteria.md`
+
 ---
 
 ## Import
@@ -96,19 +105,19 @@ geom_histogram() # Histogram
 geom_tile()      # Heatmap
 ```
 
-## Colorblind-Safe Colors
+## Colors
 
 ```python
-# Primary pyplots colors (use first)
-+ scale_color_manual(values=['#306998', '#FFD43B'])
+# Single-series: always Python Blue
++ geom_point(color='#306998')
 
-# Extended colorblind-safe palette
-+ scale_color_manual(values=['#306998', '#FFD43B', '#9467BD', '#17BECF', '#8C564B'])
+# Multi-series: AI picks cohesive palette starting with Python Blue
++ scale_color_manual(values=['#306998', ...])  # AI selects additional colors
 
-# Avoid red-green combinations (hard for deuteranopia/protanopia)
+# Colorblind-safe required. Avoid red-green as only distinguishing feature.
+# For sequential data: use perceptually-uniform colormaps
 ```
 
 ## Output File
 
 `plots/{spec-id}/implementations/plotnine.py`
-

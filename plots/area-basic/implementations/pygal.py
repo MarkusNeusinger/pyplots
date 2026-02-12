@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 area-basic: Basic Area Chart
 Library: pygal 3.1.0 | Python 3.14.2
-Quality: 84/100 | Created: 2025-12-23
 """
 
 import pygal
@@ -43,23 +42,32 @@ visitors = [
     1920,
 ]
 
-# Key data points for annotations
-peak_day = visitors.index(max(visitors))
-low_day = visitors.index(min(visitors))
+# Key data points for storytelling
+peak_idx = visitors.index(max(visitors))
+low_idx = visitors.index(min(visitors))
+
+# Trend line (linear regression via two-point approximation)
+n = len(visitors)
+x_mean = (n - 1) / 2.0
+y_mean = sum(visitors) / n
+slope = sum((i - x_mean) * (v - y_mean) for i, v in enumerate(visitors)) / sum((i - x_mean) ** 2 for i in range(n))
+intercept = y_mean - slope * x_mean
+trend = [slope * i + intercept for i in range(n)]
 
 # Custom style for 4800x2700 canvas
 custom_style = Style(
     background="white",
     plot_background="white",
-    foreground="#333",
-    foreground_strong="#333",
-    foreground_subtle="#999",
-    colors=("#306998",),
+    foreground="#333333",
+    foreground_strong="#333333",
+    foreground_subtle="#cccccc",
+    colors=("#306998", "#e8913a", "#cc4444", "#5a9e6f"),
     title_font_size=56,
     label_font_size=40,
     major_label_font_size=36,
     value_font_size=32,
-    opacity=0.35,
+    legend_font_size=34,
+    opacity=0.30,
     opacity_hover=0.5,
 )
 
@@ -73,29 +81,44 @@ chart = pygal.Line(
     style=custom_style,
     fill=True,
     show_dots=True,
-    dots_size=12,
+    dots_size=10,
     stroke_style={"width": 5},
     show_y_guides=True,
     show_x_guides=False,
     x_label_rotation=0,
-    show_legend=False,
+    show_legend=True,
+    legend_at_bottom=True,
+    legend_box_size=28,
     value_formatter=lambda x: f"{x:,.0f}",
     min_scale=4,
+    margin_bottom=120,
+    margin_left=100,
 )
 
-# Add data with annotations on key points
-annotated_visitors = []
-for i, v in enumerate(visitors):
-    if i == peak_day:
-        annotated_visitors.append({"value": v, "label": f"Peak: {v:,} visitors (Day {i + 1})"})
-    elif i == low_day:
-        annotated_visitors.append({"value": v, "label": f"Low: {v:,} visitors (Day {i + 1})"})
-    else:
-        annotated_visitors.append(v)
+# Main area series
+chart.add("Daily Visitors", visitors, fill=True, stroke_style={"width": 5})
+
+# Trend line (dashed, no fill) for storytelling
+chart.add(
+    f"Trend (+{slope:.0f} visitors/day)",
+    [round(t) for t in trend],
+    fill=False,
+    show_dots=False,
+    stroke_style={"width": 4, "dasharray": "20, 12"},
+)
+
+# Peak marker as separate series (visible in PNG)
+peak_series = [None] * n
+peak_series[peak_idx] = {"value": visitors[peak_idx], "label": f"Peak: {visitors[peak_idx]:,} (Day {peak_idx + 1})"}
+chart.add(f"Peak: {visitors[peak_idx]:,}", peak_series, fill=False, show_dots=True, dots_size=22, stroke=False)
+
+# Low marker as separate series (visible in PNG)
+low_series = [None] * n
+low_series[low_idx] = {"value": visitors[low_idx], "label": f"Low: {visitors[low_idx]:,} (Day {low_idx + 1})"}
+chart.add(f"Low: {visitors[low_idx]:,}", low_series, fill=False, show_dots=True, dots_size=22, stroke=False)
 
 # X-axis labels - show every 5th day for readability
 chart.x_labels = [str(d) if d % 5 == 0 or d == 1 else "" for d in days]
-chart.add("Daily Visitors", annotated_visitors)
 
 # Save outputs
 chart.render_to_file("plot.html")

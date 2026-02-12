@@ -1,7 +1,7 @@
 library: altair
 specification_id: area-basic
 created: '2025-12-23T00:47:41Z'
-updated: '2026-02-12T22:17:37+00:00'
+updated: '2026-02-12T22:25:51Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447969752
 issue: 0
@@ -10,10 +10,12 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/area-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/area-basic/altair/plot.html
-quality_score: null
+quality_score: 93
 impl_tags:
   dependencies: []
   techniques:
+  - annotations
+  - layer-composition
   - hover-tooltips
   - html-export
   patterns:
@@ -21,153 +23,164 @@ impl_tags:
   dataprep:
   - time-series
   styling:
-  - alpha-blending
+  - gradient-fill
   - grid-styling
 review:
   strengths:
-  - Excellent data generation with realistic weekly patterns, growth trend, and a
-    traffic spike event that showcases the area chart ability to highlight volume
-    changes
-  - Clean, well-proportioned layout with the plot filling the canvas effectively
-  - Proper use of Altair declarative grammar including typed encodings, tooltip formatting,
-    and scale configuration
-  - Includes both PNG and interactive HTML output, leveraging Altair web-native capabilities
-  - Semi-transparent fill (0.4) with solid line border creates clear visual distinction
-    between the area and the line
+  - Excellent gradient fill using Altair's native alt.Gradient() with GradientStop
+    — a distinctive and visually appealing feature
+  - Strong data storytelling with the marketing campaign spike annotation (red circle
+    + bold label)
+  - Realistic, well-crafted data with weekly patterns, growth trend, and spike — demonstrates
+    area chart capabilities fully
+  - All font sizes explicitly set to appropriate values for the output resolution
+  - Dual output (PNG + interactive HTML) leverages Altair's strength as a Vega-Lite
+    wrapper
+  - Clean, idiomatic Altair code using declarative layer composition
   weaknesses:
-  - The first x-axis tick label shows 2024 instead of a formatted date — a minor Altair
-    temporal axis default that slightly breaks the consistent date label pattern
-  - No gradient fill from line to axis baseline, which the spec suggests considering
-    for visual appeal
-  - Could leverage more distinctive Altair features like selection parameters or layered
-    marks (e.g., a point mark layer for individual data points on hover)
+  - Y-axis label 'Daily Visitors' lacks units (could be 'Daily Visitors (count)' for
+    full VQ-06 marks)
+  - Annotation font size (16pt) is slightly below the recommended minimum for tick
+    text, though still readable at full resolution
+  - Could benefit from additional visual refinement such as custom background color
+    or weekend shading to enhance the weekly pattern narrative
   image_description: The plot displays a basic area chart showing daily website visitors
-    over January 2024 (30 data points). The area is filled with a semi-transparent
-    blue (#306998, opacity 0.4) with a solid blue line border (strokeWidth 3). The
-    x-axis shows dates labeled with day-of-week abbreviations and day numbers (e.g.,
-    "Wed 03", "Fri 05"), with the first tick showing "2024". The y-axis ranges from
-    0 to approximately 10,000 and is labeled "Daily Visitors (count)". The title "area-basic
-    · altair · pyplots.ai" is displayed at the top in a large font. Subtle dashed
-    gridlines are visible across the chart area. The data shows clear weekly cyclical
-    patterns (weekday highs around 5,500-7,500, weekend dips around 3,500-5,000),
-    a visible upward growth trend across the month, and a prominent traffic spike
-    around January 15 reaching approximately 9,400 visitors. The layout is clean and
-    well-proportioned with balanced margins.
+    over January 2024 (30 days). The area is filled with a linear gradient transitioning
+    from nearly transparent at the bottom (rgba 0.05 opacity) to a more opaque blue
+    near the line (rgba 0.45 opacity). The line itself is a solid Python Blue (#306998)
+    with a stroke width of 2.5. The X-axis shows dates from Jan 01 to Jan 29 with
+    labels angled at -30 degrees. The Y-axis shows "Daily Visitors" ranging from 0
+    to approximately 11,000. The title "area-basic · altair · pyplots.ai" appears
+    at the top in large font. A prominent red circle marks the Jan 15 traffic spike
+    (~9,300 visitors) with bold red text "Marketing campaign spike" as an annotation.
+    The data exhibits a clear weekly pattern with dips on weekends, an upward growth
+    trend, and realistic noise. Gridlines are present but subtle (0.2 opacity), and
+    the chart frame/border is removed for a clean look.
   criteria_checklist:
     visual_quality:
-      score: 38
-      max: 40
+      score: 29
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
-        max: 10
-        passed: true
-        comment: 'Title 28pt, axis labels 22pt, ticks 18pt. All clearly readable.
-          Minor: first x-axis tick shows ''2024'' instead of formatted date.'
-      - id: VQ-02
-        name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements. X-axis date labels well-spaced.
+        comment: 'All font sizes explicitly set: title 28pt, axis titles 22pt, tick
+          labels 18pt. All text clearly readable.'
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
+        passed: true
+        comment: No overlapping text. X-axis labels angled at -30° prevent collision.
+          Annotation text offset with dx/dy.
       - id: VQ-03
         name: Element Visibility
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Area fill and line clearly visible. Line width of 3 works well for
-          30 data points.
+        comment: Area fill and line clearly visible, strokeWidth 2.5, annotation point
+          size 120. Appropriate for 30 data points.
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Single blue series on white. Fully colorblind-safe.
+        comment: Single series in Python Blue, annotation in red for contrast. No
+          color differentiation needed between data series.
       - id: VQ-05
         name: Layout Balance
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Excellent canvas utilization with balanced margins.
+        comment: 1600x900 scaled 3x to 4800x2700. Chart fills canvas well with balanced
+          margins.
       - id: VQ-06
-        name: Axis Labels
-        score: 2
+        name: Axis Labels & Title
+        score: 1
         max: 2
+        passed: false
+        comment: Descriptive labels 'Daily Visitors' and 'Date' but lack units.
+    design_excellence:
+      score: 15
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 6
+        max: 8
         passed: true
-        comment: Date on x-axis, Daily Visitors (count) on y-axis. Descriptive with
-          units.
-      - id: VQ-07
-        name: Grid & Legend
-        score: 2
-        max: 2
+        comment: Custom gradient fill, Python Blue scheme, contrasting red annotation,
+          removed view border. Strong design, above defaults.
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
         passed: true
-        comment: Dashed gridlines with opacity 0.3 are subtle and helpful. No legend
-          needed.
+        comment: Subtle grid (opacity 0.2), spines removed (strokeWidth=0), good whitespace.
+          Some further refinement possible.
+      - id: DE-03
+        name: Data Storytelling
+        score: 5
+        max: 6
+        passed: true
+        comment: Excellent marketing campaign spike annotation with red circle and
+          bold label. Weekly patterns and growth trend visible.
     spec_compliance:
-      score: 24
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
-        passed: true
-        comment: Correct area chart using mark_area().
-      - id: SC-02
-        name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: X is temporal (dates), Y is quantitative (visitors).
-      - id: SC-03
+        comment: Correct basic area chart with filled area below line.
+      - id: SC-02
         name: Required Features
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Semi-transparent fill, gridlines, axis labels with units present.
-          Gradient fill not implemented (spec says 'consider').
-      - id: SC-04
-        name: Data Range
+        comment: 'All spec features present: semi-transparent fill, gridlines, clear
+          axis labels, gradient fill.'
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Y-axis from 0 to max*1.1. All data visible.
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X=date (temporal), Y=visitors (quantitative). Correct mapping.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: No legend needed for single series.
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: area-basic · altair · pyplots.ai matches required format.
+        comment: Title 'area-basic · altair · pyplots.ai' in correct format. No legend
+          needed for single series.
     data_quality:
-      score: 19
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows weekly patterns, growth trend, traffic spike, and noise. Good
-          variety.
+        comment: Shows upward trend, weekly cyclical pattern, spike/outlier, and noise.
+          Demonstrates area chart strength.
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Daily website visitors is realistic and matches spec example.
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: 3,500-9,400 daily visitors is plausible for a mid-size website.
+        comment: Daily website visitors with marketing campaign spike. Matches spec
+          application example. Neutral, comprehensible.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: 3,500-9,500 daily visitors is realistic for a mid-sized website.
     code_quality:
       score: 10
       max: 10
@@ -177,40 +190,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean flat structure: imports, data, chart, save.'
+        comment: Follows Imports -> Data -> Plot -> Save. No functions or classes.
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: np.random.seed(42) ensures deterministic output.
+        comment: np.random.seed(42) is set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only altair, numpy, pandas imported. All used.
+        comment: altair, numpy, pandas - all used, no unused imports.
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Uses current Altair 6.x API.
+        comment: Clean, well-organized. Spike annotation adds value without over-engineering.
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png.
+        comment: Saves as plot.png with scale_factor=3.0, plus interactive HTML.
     library_features:
-      score: 4
-      max: 5
+      score: 9
+      max: 10
       items:
-      - id: LF-01
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Expert use of Altair declarative grammar: mark_area(), encode(),
+          alt.layer(), proper encoding types.'
+      - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: Good use of declarative grammar, typed encodings, tooltips with formatting,
-          scale config, and interactive HTML export.
+        comment: Uses alt.Gradient() with GradientStop, alt.layer() composition, tooltips,
+          and .interactive() for HTML.
   verdict: APPROVED

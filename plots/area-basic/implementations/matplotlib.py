@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 area-basic: Basic Area Chart
 Library: matplotlib 3.10.8 | Python 3.14.2
-Quality: 100/100 | Created: 2025-12-23
+Quality: /100 | Updated: 2026-02-12
 """
 
 import matplotlib.colors as mcolors
@@ -67,9 +67,11 @@ ax.annotate(
 # Labels and styling
 ax.set_xlabel("Day of Month", fontsize=20)
 ax.set_ylabel("Daily Visitors (count)", fontsize=20)
-ax.set_title("Website Traffic · area-basic · matplotlib · pyplots.ai", fontsize=24)
+ax.set_title("Website Traffic · area-basic · matplotlib · pyplots.ai", fontsize=24, fontweight="medium")
 ax.tick_params(axis="both", labelsize=16)
-ax.grid(True, alpha=0.3, linestyle="--")
+ax.yaxis.grid(True, alpha=0.2, linewidth=0.8)
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
 
 # Set axis limits
 ax.set_xlim(1, 30)

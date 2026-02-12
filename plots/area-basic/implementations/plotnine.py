@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 area-basic: Basic Area Chart
 Library: plotnine 0.15.3 | Python 3.14.2
-Quality: /100 | Updated: 2026-02-12
+Quality: 86/100 | Created: 2025-12-23
 """
 
 import numpy as np

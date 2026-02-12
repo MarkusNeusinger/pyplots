@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 area-basic: Basic Area Chart
 Library: seaborn 0.13.2 | Python 3.14.2
-Quality: 98/100 | Created: 2025-12-23
+Quality: /100 | Updated: 2026-02-12
 """
 
 import matplotlib.pyplot as plt
@@ -25,14 +25,12 @@ visitors = np.maximum(visitors, 1000)
 
 df = pd.DataFrame({"date": dates, "visitors": visitors})
 
-# Plot - seaborn styling and theme
-sns.set_style("whitegrid", {"grid.linestyle": "--", "grid.alpha": 0.3})
-sns.set_context("talk", font_scale=1.1)
+# Plot
+sns.set_theme(style="white", context="talk", font_scale=1.2)
 
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Area chart using seaborn lineplot with fill
-sns.lineplot(data=df, x="date", y="visitors", ax=ax, color="#306998", linewidth=3, label="Daily visitors")
+sns.lineplot(data=df, x="date", y="visitors", ax=ax, color="#306998", linewidth=3)
 ax.fill_between(df["date"], df["visitors"], alpha=0.4, color="#306998")
 
 # Annotate the traffic spike
@@ -50,9 +48,12 @@ ax.annotate(
 # Style
 ax.set_xlabel("Date", fontsize=20)
 ax.set_ylabel("Visitors (count)", fontsize=20)
-ax.set_title("area-basic · seaborn · pyplots.ai", fontsize=24)
+ax.set_title("area-basic \u00b7 seaborn \u00b7 pyplots.ai", fontsize=24)
 ax.tick_params(axis="both", labelsize=16)
-ax.legend(fontsize=16, loc="upper left", framealpha=0.9)
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
+ax.yaxis.grid(True, alpha=0.2, linewidth=0.8)
+ax.set_axisbelow(True)
 
 # Set y-axis to start at 0, cap top to reduce whitespace
 ax.set_ylim(bottom=0, top=df["visitors"].max() * 1.12)

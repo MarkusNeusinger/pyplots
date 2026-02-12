@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 area-basic: Basic Area Chart
 Library: pygal 3.1.0 | Python 3.14.2
 Quality: 83/100 | Created: 2025-12-23
@@ -43,33 +43,34 @@ visitors = [
     1920,
 ]
 
-# Key data points for storytelling
+# Key data points
 peak_idx = visitors.index(max(visitors))
 low_idx = visitors.index(min(visitors))
 
-# Trend line (linear regression via two-point approximation)
+# Trend line (simple linear fit using endpoint averages)
 n = len(visitors)
-x_mean = (n - 1) / 2.0
-y_mean = sum(visitors) / n
-slope = sum((i - x_mean) * (v - y_mean) for i, v in enumerate(visitors)) / sum((i - x_mean) ** 2 for i in range(n))
-intercept = y_mean - slope * x_mean
-trend = [slope * i + intercept for i in range(n)]
+first_half_avg = sum(visitors[: n // 2]) / (n // 2)
+second_half_avg = sum(visitors[n // 2 :]) / (n // 2)
+slope = (second_half_avg - first_half_avg) / (n // 2)
+trend_start = first_half_avg - slope * (n // 4)
+trend = [trend_start + slope * i for i in range(n)]
 
 # Custom style for 4800x2700 canvas
+# Colorblind-safe palette: Python Blue, dark orange, dark purple, teal
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#cccccc",
-    colors=("#306998", "#e8913a", "#cc4444", "#5a9e6f"),
+    colors=("#306998", "#c45a00", "#7b2d8e", "#0e7c6b"),
     title_font_size=56,
     label_font_size=40,
     major_label_font_size=36,
     value_font_size=32,
     legend_font_size=34,
-    opacity=0.30,
-    opacity_hover=0.5,
+    opacity=0.40,
+    opacity_hover=0.55,
 )
 
 # Create area chart (Line with fill=True)
@@ -78,7 +79,7 @@ chart = pygal.Line(
     height=2700,
     title="Daily Website Visitors \u00b7 area-basic \u00b7 pygal \u00b7 pyplots.ai",
     x_title="Day of Month",
-    y_title="Visitors",
+    y_title="Number of Visitors (count)",
     style=custom_style,
     fill=True,
     show_dots=True,
@@ -99,7 +100,7 @@ chart = pygal.Line(
 # Main area series
 chart.add("Daily Visitors", visitors, fill=True, stroke_style={"width": 5})
 
-# Trend line (dashed, no fill) for storytelling
+# Trend line (dashed, no fill) with contrasting dark orange color
 chart.add(
     f"Trend (+{slope:.0f} visitors/day)",
     [round(t) for t in trend],
@@ -108,12 +109,12 @@ chart.add(
     stroke_style={"width": 4, "dasharray": "20, 12"},
 )
 
-# Peak marker as separate series (visible in PNG)
+# Peak marker (dark purple - colorblind-safe)
 peak_series = [None] * n
 peak_series[peak_idx] = {"value": visitors[peak_idx], "label": f"Peak: {visitors[peak_idx]:,} (Day {peak_idx + 1})"}
 chart.add(f"Peak: {visitors[peak_idx]:,}", peak_series, fill=False, show_dots=True, dots_size=22, stroke=False)
 
-# Low marker as separate series (visible in PNG)
+# Low marker (teal - colorblind-safe)
 low_series = [None] * n
 low_series[low_idx] = {"value": visitors[low_idx], "label": f"Low: {visitors[low_idx]:,} (Day {low_idx + 1})"}
 chart.add(f"Low: {visitors[low_idx]:,}", low_series, fill=False, show_dots=True, dots_size=22, stroke=False)

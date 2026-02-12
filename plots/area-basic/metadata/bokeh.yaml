@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: area-basic
 created: '2025-12-23T00:48:55Z'
-updated: '2026-02-11T22:26:52Z'
+updated: '2026-02-12T22:25:46Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447970023
 issue: 0
@@ -10,10 +10,11 @@ library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/area-basic/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/area-basic/bokeh/plot.html
-quality_score: 92
+quality_score: 90
 impl_tags:
   dependencies: []
   techniques:
+  - annotations
   - hover-tooltips
   - html-export
   patterns:
@@ -26,146 +27,158 @@ impl_tags:
   - grid-styling
 review:
   strengths:
-  - Excellent text scaling for 4800x2700 canvas with font sizes well above minimums
-  - 'Good use of Bokeh-specific features: ColumnDataSource, varea, HoverTool with
-    vline mode, invisible scatter for hover targets'
-  - Realistic data generation with trend + weekly seasonality + noise components
-  - Clean code structure following KISS principle with proper seed for reproducibility
-  - Semi-transparent fill at alpha 0.4 provides good readability while maintaining
-    visual weight
-  - Y-axis properly starts at 0 to avoid misleading area representation
-  - Dual export (PNG + HTML) leverages Bokeh interactive capabilities
+  - Excellent data storytelling with the 'Campaign launch +84%' annotation that provides
+    context and guides the viewer's eye to the key insight
+  - All text sizes explicitly set and well-scaled for 4800x2700 canvas — title 42pt,
+    labels 32pt, ticks 26pt
+  - 'Strong idiomatic Bokeh usage: ColumnDataSource, varea, HoverTool with datetime
+    formatters, Label model, HTML export'
+  - 'Clean visual refinement: subtle grid (alpha 0.2), removed outline, styled axis
+    lines, hidden toolbar'
+  - Realistic data with weekly cyclical pattern, upward trend, and viral spike creating
+    a compelling narrative
+  - Dual output (PNG + HTML) leverages Bokeh's interactive strengths
   weaknesses:
-  - Data could show more dramatic variation or events (e.g., a traffic spike or dip)
-    to better demonstrate the area chart ability to convey magnitude changes
-  - Font sizes exceed the bokeh.md library guide recommendations (48pt vs 28pt title,
-    36pt vs 22pt labels) — while readable, they are larger than the standard
-  image_description: The plot displays a basic area chart titled "area-basic · bokeh
-    · pyplots.ai" showing daily website visitors over January 2024. The x-axis shows
-    dates from Jan 01, 2024 to Feb 01, with major ticks at weekly intervals. The y-axis
-    is labeled "Daily Visitors (count)" and ranges from 0 to approximately 7,000.
-    The area below the line is filled with a semi-transparent blue (#306998, alpha
-    0.4), and a solid blue line (line_width=5) traces the top edge of the filled area.
-    The data exhibits a clear weekly cyclical pattern with an overall upward trend,
-    starting around 5,000 visitors and ending near 7,000. Dashed grid lines are visible
-    at low opacity (alpha 0.3). The layout is well-balanced with the plot filling
-    a large portion of the 4800x2700 canvas. All text is clearly legible with appropriately
-    scaled font sizes (title 48pt, axis labels 36pt, tick labels 28pt). The toolbar
-    is removed for a clean static export.
+  - Y-axis label 'Daily Visitors' lacks explicit units (could be 'Daily Visitors (count)')
+  - '''Date'' x-axis label is somewhat generic'
+  - Slight vertical whitespace above annotation due to y_range padding
+  - Could leverage more distinctive Bokeh features like Band glyph for confidence
+    intervals or CustomJS for richer interactivity
+  image_description: The plot displays a basic area chart titled "Daily Website Traffic
+    · area-basic · bokeh · pyplots.ai". The x-axis shows dates from Jan 01, 2024 to
+    Feb 01, spanning one month with datetime formatting. The y-axis shows "Daily Visitors"
+    ranging from 0 to approximately 10,500. The area is filled with a semi-transparent
+    Python Blue (#306998) at approximately 0.4 alpha, with a solid blue line (width
+    5) tracing the top edge. The data shows a clear upward trend combined with weekly
+    cyclical patterns (peaks and troughs roughly every 7 days). A dramatic spike appears
+    around Jan 18, reaching approximately 9,200 visitors, annotated with bold text
+    reading "Campaign launch +84%". Grid lines are subtle (alpha 0.2). The plot frame
+    outline is removed for a clean look. The toolbar is hidden. Text sizes are generous
+    — title at 42pt, axis labels at 32pt, tick labels at 26pt — all clearly legible
+    at the 4800x2700 canvas size.
   criteria_checklist:
     visual_quality:
-      score: 40
-      max: 40
+      score: 28
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title 48pt, axis labels 36pt, tick labels 28pt — all well above minimums
-          and perfectly readable
+        comment: 'All font sizes explicitly set: title 42pt, axis labels 32pt, tick
+          labels 26pt. Perfectly readable.'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text; date ticks well-spaced at weekly intervals
+        comment: No overlapping text elements anywhere. Title, annotation, axis labels
+          all well separated.
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Area fill clearly visible with good alpha, line_width=5 provides
-          clear edge definition for 31 data points
+        comment: Line width 5 and area alpha 0.4 well adapted for 31 data points.
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Single blue color (#306998), no accessibility concerns
+        comment: Single series using Python Blue (#306998). No color discrimination
+          needed.
       - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Plot fills >50% of canvas, balanced margins with min_border adjustments
+        name: Layout & Canvas
+        score: 3
+        max: 4
+        passed: false
+        comment: Good canvas utilization but slight wasted vertical space at top due
+          to y_range padding for annotation.
       - id: VQ-06
-        name: Axis Labels
-        score: 2
+        name: Axis Labels & Title
+        score: 1
         max: 2
+        passed: false
+        comment: Descriptive labels but 'Daily Visitors' lacks explicit units and
+          'Date' is generic.
+    design_excellence:
+      score: 14
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: false
+        comment: Python Blue, clean frame, removed toolbar, good hierarchy. Above
+          defaults but not FiveThirtyEight-level.
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
         passed: true
-        comment: Date and Daily Visitors (count) — descriptive with units
-      - id: VQ-07
-        name: Grid & Legend
-        score: 2
-        max: 2
+        comment: Subtle grid (alpha 0.2), outline removed, styled axis lines, generous
+          margins.
+      - id: DE-03
+        name: Data Storytelling
+        score: 5
+        max: 6
         passed: true
-        comment: Subtle dashed grid at alpha 0.3, no legend needed for single series
+        comment: Excellent 'Campaign launch +84%' annotation highlights key event
+          with percentage context.
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct area chart with filled region below the line using varea
+        comment: Correct area chart using varea for fill + line for edge.
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X=datetime (dates), Y=numeric (visitors) correctly assigned
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Semi-transparent fill (alpha 0.4), gridlines, clear axis labels with
-          units all present
-      - id: SC-04
-        name: Data Range
+        comment: Semi-transparent fill, gridlines, clear axis labels, HoverTool for
+          interactivity.
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Y-axis starts at 0, all data visible, full date range shown
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X=datetime, Y=numeric visitors. Correctly assigned.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: No legend needed for single-series area chart
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: area-basic · bokeh · pyplots.ai matches required format
+        comment: Title format correct. No legend needed for single series.
     data_quality:
-      score: 19
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
-        passed: true
-        comment: Shows upward trend, weekly cyclical pattern, and noise; could show
-          more dramatic variation
+        score: 5
+        max: 6
+        passed: false
+        comment: Shows upward trend, weekly cycles, viral spike, noise. Could show
+          a trough/dip event for full marks.
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Daily website visitors over a month — matches spec example application
-          exactly
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: 4000-7000 daily visitors is realistic for a mid-sized website
+        comment: Daily website visitors over a month. Matches spec example exactly.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: 5,000-9,200 daily visitors is realistic for a mid-size website.
     code_quality:
       score: 10
       max: 10
@@ -175,40 +188,48 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, plot, save — no functions or classes'
+        comment: 'Linear flow: imports, data, figure, plot, styling, save.'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used (numpy, pandas, bokeh.io, bokeh.models, bokeh.plotting)
+        comment: All imports used.
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: All current Bokeh 3.x API
+        comment: Clean, appropriate complexity. Invisible scatter for hover is legitimate
+          Bokeh pattern.
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via export_png
-    library_features:
-      score: 4
-      max: 5
+        comment: Saves as plot.png and plot.html.
+    library_mastery:
+      score: 9
+      max: 10
       items:
-      - id: LF-01
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: ColumnDataSource, varea, HoverTool with datetime formatters, Label
+          model.
+      - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
-        passed: true
-        comment: ColumnDataSource, varea, HoverTool with datetime formatter, invisible
-          scatter for hover targets, dual HTML+PNG export
+        passed: false
+        comment: HoverTool with vline mode, HTML export, Label model. Distinctly Bokeh
+          but could push further.
   verdict: APPROVED

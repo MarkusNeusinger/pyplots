@@ -1,8 +1,9 @@
-""" pyplots.ai
+"""pyplots.ai
 area-basic: Basic Area Chart
 Library: plotnine 0.15.3 | Python 3.14.2
-Quality: 89/100 | Created: 2025-12-23
 """
+
+import functools
 
 import numpy as np
 import pandas as pd
@@ -13,8 +14,8 @@ from plotnine import (
     element_line,
     element_rect,
     element_text,
-    geom_area,
     geom_line,
+    geom_ribbon,
     geom_smooth,
     ggplot,
     labs,
@@ -48,56 +49,58 @@ peak_val = int(df["visitors"].max())
 dip_idx = 14
 dip_val = int(df.loc[dip_idx, "visitors"])
 
-# Gradient fill effect: layered semi-transparent areas at different y-clip levels
-gradient_layers = []
-n_layers = 6
-max_vis = df["visitors"].max()
-for i in range(n_layers):
-    frac = (i + 1) / n_layers
-    layer_df = df.copy()
-    layer_df["visitors_clipped"] = np.minimum(df["visitors"], max_vis * frac)
-    alpha_val = 0.08 + 0.04 * i  # lighter at bottom, darker near top
-    gradient_layers.append(
-        geom_area(aes(x="date", y="visitors_clipped"), data=layer_df, fill="#306998", alpha=alpha_val)
-    )
+# Y-axis range: start near data minimum to maximize data region usage
+y_min = int(np.floor(df["visitors"].min() / 500) * 500)
+y_max = int(np.ceil(df["visitors"].max() / 500) * 500) + 500
 
-# Build the plot
+# Smooth gradient fill: cumulative geom_ribbon layers create smooth bottom→top gradient
+n_layers = 24
+max_vis = df["visitors"].max()
+gradient_layers = [
+    geom_ribbon(
+        aes(x="date", ymin="y_lower", ymax="y_upper"),
+        data=df.assign(y_lower=y_min, y_upper=np.minimum(visitors, max_vis * (i + 1) / n_layers)),
+        fill="#306998",
+        alpha=0.03,
+    )
+    for i in range(n_layers)
+]
+
+# Compose gradient layers using functools.reduce
+base_plot = ggplot(df, aes(x="date", y="visitors"))
+plot = functools.reduce(lambda p, layer: p + layer, gradient_layers, base_plot)
+
 plot = (
-    ggplot(df, aes(x="date", y="visitors"))
-    + gradient_layers[0]
-    + gradient_layers[1]
-    + gradient_layers[2]
-    + gradient_layers[3]
-    + gradient_layers[4]
-    + gradient_layers[5]
+    plot
     + geom_line(color="#1e4d6d", size=1.8)
     + geom_smooth(method="lowess", color="#FFD43B", size=2.0, se=False, span=0.5)
-    # Peak annotation with value
+    # Peak annotation
     + annotate(
         "text",
         x=dates[peak_idx],
-        y=peak_val + 400,
+        y=peak_val + 300,
         label=f"Peak: {peak_val:,}",
         size=14,
         color="#1e4d6d",
         fontweight="bold",
         ha="right",
     )
-    # Maintenance dip annotation with value
+    # Maintenance dip annotation
     + annotate(
         "text",
-        x=dates[dip_idx],
-        y=dip_val - 600,
+        x=dates[dip_idx + 1],
+        y=dip_val - 200,
         label=f"Maintenance: {dip_val:,}",
         size=11,
-        color="#333333",
+        color="#444444",
         fontstyle="italic",
+        ha="left",
     )
     # Trend label
     + annotate(
         "text",
         x=dates[25],
-        y=df.loc[25, "visitors"] + 700,
+        y=df.loc[25, "visitors"] + 500,
         label="Trend (LOWESS)",
         size=11,
         color="#b8930a",
@@ -110,7 +113,7 @@ plot = (
         subtitle="Upward trend with weekly cycles, a mid-month maintenance dip, and a brief plateau",
     )
     + scale_x_datetime(date_labels="%b %d")
-    + scale_y_continuous(labels=lambda lst: [f"{int(v):,}" for v in lst])
+    + scale_y_continuous(labels=lambda lst: [f"{int(v):,}" for v in lst], limits=(y_min, y_max))
     + theme_minimal()
     + theme(
         figure_size=(16, 9),

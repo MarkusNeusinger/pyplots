@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 area-basic: Basic Area Chart
 Library: pygal 3.1.0 | Python 3.14.2
-Quality: 94/100 | Created: 2025-12-23
+Quality: /100 | Updated: 2026-02-12
 """
 
 import pygal
@@ -43,47 +43,59 @@ visitors = [
     1920,
 ]
 
+# Key data points for annotations
+peak_day = visitors.index(max(visitors))
+low_day = visitors.index(min(visitors))
+
 # Custom style for 4800x2700 canvas
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333",
     foreground_strong="#333",
-    foreground_subtle="#666",
+    foreground_subtle="#999",
     colors=("#306998",),
-    title_font_size=72,
-    label_font_size=48,
-    major_label_font_size=42,
-    legend_font_size=42,
-    value_font_size=36,
-    tooltip_font_size=36,
-    opacity=0.4,
-    opacity_hover=0.6,
+    title_font_size=56,
+    label_font_size=40,
+    major_label_font_size=36,
+    value_font_size=32,
+    opacity=0.35,
+    opacity_hover=0.5,
 )
 
 # Create area chart (Line with fill=True)
 chart = pygal.Line(
     width=4800,
     height=2700,
-    title="area-basic \u00b7 pygal \u00b7 pyplots.ai",
+    title="Daily Website Visitors \u00b7 area-basic \u00b7 pygal \u00b7 pyplots.ai",
     x_title="Day of Month",
-    y_title="Visitors (per day)",
+    y_title="Visitors",
     style=custom_style,
     fill=True,
     show_dots=True,
-    dots_size=8,
-    stroke_style={"width": 4},
+    dots_size=12,
+    stroke_style={"width": 5},
     show_y_guides=True,
     show_x_guides=False,
     x_label_rotation=0,
-    legend_at_bottom=True,
-    truncate_legend=-1,
+    show_legend=False,
     value_formatter=lambda x: f"{x:,.0f}",
+    min_scale=4,
 )
 
-# Add data - show every 5th day label for readability
+# Add data with annotations on key points
+annotated_visitors = []
+for i, v in enumerate(visitors):
+    if i == peak_day:
+        annotated_visitors.append({"value": v, "label": f"Peak: {v:,} visitors (Day {i + 1})"})
+    elif i == low_day:
+        annotated_visitors.append({"value": v, "label": f"Low: {v:,} visitors (Day {i + 1})"})
+    else:
+        annotated_visitors.append(v)
+
+# X-axis labels - show every 5th day for readability
 chart.x_labels = [str(d) if d % 5 == 0 or d == 1 else "" for d in days]
-chart.add("Daily Visitors", visitors)
+chart.add("Daily Visitors", annotated_visitors)
 
 # Save outputs
 chart.render_to_file("plot.html")

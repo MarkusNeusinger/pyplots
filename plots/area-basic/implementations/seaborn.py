@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 area-basic: Basic Area Chart
 Library: seaborn 0.13.2 | Python 3.14.2
 Quality: 88/100 | Created: 2025-12-23
@@ -10,8 +10,6 @@ import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from matplotlib.patches import PathPatch
-from matplotlib.path import Path
 
 
 # Data - daily website visitors over a month
@@ -29,6 +27,9 @@ visitors = np.maximum(visitors, 1000)
 
 df = pd.DataFrame({"date": dates, "visitors": visitors})
 
+# Compute monthly average for storytelling annotation
+avg_visitors = df["visitors"].mean()
+
 # Plot - use seaborn's theme management for coherent styling
 sns.set_theme(
     style="white",
@@ -39,33 +40,19 @@ sns.set_theme(
 
 fig, ax = plt.subplots(figsize=(16, 9))
 
+# Build a layered gradient fill using seaborn's light_palette
+# Multiple fill_between layers at decreasing thresholds create a smooth gradient
+palette_colors = sns.light_palette("#306998", n_colors=6)
+y_max = df["visitors"].max() * 1.08
+n_layers = 5
+for i in range(n_layers):
+    fraction = (i + 1) / n_layers
+    ax.fill_between(df["date"], 0, df["visitors"] * fraction, color=palette_colors[i + 1], alpha=0.12, linewidth=0)
+
 # Use seaborn's lineplot for the area boundary
 sns.lineplot(data=df, x="date", y="visitors", ax=ax, color="#306998", linewidth=3)
 
-# Gradient fill using imshow clipped to the area
-y_max = df["visitors"].max() * 1.12
-x_num = mdates.date2num(df["date"])
-gradient = np.linspace(0, 1, 256).reshape(-1, 1)
-gradient = np.hstack([gradient, gradient])
-ax.imshow(
-    gradient,
-    aspect="auto",
-    extent=[x_num[0], x_num[-1], 0, y_max],
-    origin="lower",
-    cmap=sns.light_palette("#306998", as_cmap=True),
-    alpha=0.5,
-    zorder=1,
-)
-# Clip the gradient to the area under the curve
-vertices = list(zip(x_num, df["visitors"], strict=True)) + [(x_num[-1], 0), (x_num[0], 0)]
-codes = [Path.MOVETO] + [Path.LINETO] * (len(vertices) - 1)
-clip_path = Path(vertices, codes)
-patch = PathPatch(clip_path, transform=ax.transData, facecolor="none", edgecolor="none")
-ax.add_patch(patch)
-for im in ax.images:
-    im.set_clip_path(patch)
-
-# Annotate the traffic spike with deliberate positioning
+# Annotate the traffic spike
 spike_idx = 17
 spike_val = df["visitors"].iloc[spike_idx]
 ax.annotate(
@@ -78,6 +65,20 @@ ax.annotate(
     arrowprops={"arrowstyle": "->", "color": "#1a3a5c", "lw": 2, "connectionstyle": "arc3,rad=-0.2"},
     ha="center",
     va="top",
+)
+
+# Add average line with label for data storytelling
+ax.axhline(y=avg_visitors, color="#306998", linestyle="--", linewidth=1.5, alpha=0.5, zorder=1)
+ax.text(
+    df["date"].iloc[-1],
+    avg_visitors + y_max * 0.015,
+    f"Monthly avg: {avg_visitors:,.0f}",
+    fontsize=14,
+    color="#306998",
+    ha="right",
+    va="bottom",
+    fontstyle="italic",
+    alpha=0.8,
 )
 
 # Style - axis labels and title

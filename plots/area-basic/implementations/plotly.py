@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 area-basic: Basic Area Chart
 Library: plotly 6.5.2 | Python 3.14.2
-Quality: 92/100 | Created: 2025-12-23
+Quality: /100 | Updated: 2026-02-12
 """
 
 import numpy as np
@@ -9,17 +9,17 @@ import pandas as pd
 import plotly.graph_objects as go
 
 
-# Data - daily website visitors over a month
+# Data - daily website visitors over a quarter
 np.random.seed(42)
-dates = pd.date_range("2024-01-01", periods=30, freq="D")
+dates = pd.date_range("2024-01-01", periods=90, freq="D")
 
-# Simulate realistic website traffic with weekly patterns and trend
+# Simulate realistic website traffic with weekly patterns, trend, and seasonal dip
 base = 5000
-trend = np.linspace(0, 1500, 30)
-weekly_pattern = 1000 * np.sin(np.arange(30) * 2 * np.pi / 7)
-noise = np.random.randn(30) * 500
+trend = np.linspace(0, 2500, 90)
+weekly_pattern = 1200 * np.sin(np.arange(90) * 2 * np.pi / 7)
+noise = np.random.randn(90) * 400
 visitors = base + trend + weekly_pattern + noise
-visitors = np.maximum(visitors, 2000).astype(int)
+visitors = np.maximum(visitors, 1500).astype(int)
 
 # Create figure
 fig = go.Figure()
@@ -30,7 +30,11 @@ fig.add_trace(
         y=visitors,
         mode="lines",
         fill="tozeroy",
-        fillcolor="rgba(48, 105, 152, 0.35)",
+        fillcolor="rgba(48, 105, 152, 0.3)",
+        fillgradient={
+            "type": "vertical",
+            "colorscale": [[0.0, "rgba(48, 105, 152, 0.02)"], [1.0, "rgba(48, 105, 152, 0.4)"]],
+        },
         line={"color": "#306998", "width": 3, "shape": "spline"},
         name="Daily Visitors",
         hovertemplate="<b>%{x|%b %d, %Y}</b><br>Visitors: %{y:,}<extra></extra>",
@@ -55,6 +59,15 @@ fig.add_annotation(
     bgcolor="rgba(255, 255, 255, 0.85)",
 )
 
+# Annotate trend line
+fig.add_annotation(
+    x=dates[75],
+    y=visitors[75] - 1800,
+    text="Upward trend +50%",
+    showarrow=False,
+    font={"size": 16, "color": "rgba(48, 105, 152, 0.7)", "weight": "bold"},
+)
+
 # Layout
 fig.update_layout(
     title={
@@ -64,24 +77,49 @@ fig.update_layout(
         "xanchor": "center",
     },
     xaxis={
-        "title": {"text": "Date (January 2024)", "font": {"size": 22}},
+        "title": {"text": "Date (Q1 2024)", "font": {"size": 22}},
         "tickfont": {"size": 18},
         "showgrid": True,
         "gridwidth": 1,
-        "gridcolor": "rgba(0, 0, 0, 0.15)",
-        "dtick": 7 * 24 * 60 * 60 * 1000,
-        "tickformat": "%b %d",
+        "gridcolor": "rgba(0, 0, 0, 0.1)",
+        "dtick": "M1",
+        "tickformat": "%b %Y",
+        "spikemode": "across",
+        "spikethickness": 1,
+        "spikecolor": "rgba(48, 105, 152, 0.4)",
+        "spikedash": "dot",
+        "rangeslider": {"visible": False},
+        "rangeselector": {
+            "buttons": [
+                {"count": 7, "label": "1W", "step": "day", "stepmode": "backward"},
+                {"count": 1, "label": "1M", "step": "month", "stepmode": "backward"},
+                {"step": "all", "label": "All"},
+            ],
+            "font": {"size": 14},
+        },
     },
     yaxis={
         "title": {"text": "Visitors (daily count)", "font": {"size": 22}},
         "tickfont": {"size": 18},
         "showgrid": True,
         "gridwidth": 1,
-        "gridcolor": "rgba(0, 0, 0, 0.15)",
+        "gridcolor": "rgba(0, 0, 0, 0.1)",
         "tickformat": ",",
+        "spikemode": "across",
+        "spikethickness": 1,
+        "spikecolor": "rgba(48, 105, 152, 0.4)",
+        "spikedash": "dot",
     },
     template="plotly_white",
-    showlegend=False,
+    showlegend=True,
+    legend={
+        "x": 0.02,
+        "y": 0.98,
+        "font": {"size": 16},
+        "bgcolor": "rgba(255, 255, 255, 0.7)",
+        "bordercolor": "rgba(0, 0, 0, 0.1)",
+        "borderwidth": 1,
+    },
     margin={"l": 80, "r": 40, "t": 80, "b": 60},
     hovermode="x unified",
 )

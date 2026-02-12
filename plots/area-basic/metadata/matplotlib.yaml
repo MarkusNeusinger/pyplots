@@ -1,7 +1,7 @@
 library: matplotlib
 specification_id: area-basic
 created: '2025-12-23T00:46:12Z'
-updated: '2026-02-12T22:17:37+00:00'
+updated: '2026-02-12T22:25:50Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447957143
 issue: 0
@@ -10,7 +10,7 @@ library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/area-basic/matplotlib/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-basic/matplotlib/plot_thumb.png
 preview_html: null
-quality_score: null
+quality_score: 90
 impl_tags:
   dependencies: []
   techniques:
@@ -21,150 +21,158 @@ impl_tags:
   dataprep: []
   styling:
   - gradient-fill
-  - custom-colormap
   - alpha-blending
   - grid-styling
+  - custom-colormap
 review:
   strengths:
-  - Gradient fill via imshow + PathPatch clipping is a sophisticated, visually striking
-    technique that goes well beyond basic fill_between
-  - Data generation is rich and realistic with upward trend, weekend dips, noise,
-    and a viral spike — all telling a coherent story
-  - The Viral post annotation with arrow adds narrative value and demonstrates matplotlib
-    annotation capabilities
-  - All text sizes follow the library guidelines exactly (24/20/16pt) ensuring perfect
-    legibility at full resolution
-  - Code is clean and well-structured with clear comments explaining each section
-  weaknesses: []
-  image_description: The plot displays a basic area chart titled "Website Traffic
-    · area-basic · matplotlib · pyplots.ai". The X-axis is labeled "Day of Month"
-    (1–30) and the Y-axis is labeled "Daily Visitors (count)" (0–~9000). The area
-    beneath the line is filled with a vertical gradient transitioning from a light
-    sky blue (#d6e6f5) at the bottom to a deep Python blue (#306998) at the top, achieved
-    via an imshow layer clipped to the area polygon. A solid blue line (linewidth
-    3) traces the upper boundary. The data shows an overall upward trend from ~3000
-    to ~5000 visitors with periodic weekend dips and random noise. A dramatic spike
-    on day 18 reaches ~8200 visitors, annotated with a bold "Viral post" label and
-    an arrow pointing to the peak. The grid uses subtle dashed lines at alpha 0.3.
-    The layout is well-balanced with tight_layout applied, and the plot fills the
-    canvas effectively.
+  - Gradient fill using imshow clipped to a PathPatch is a creative, distinctively
+    matplotlib technique that produces a visually appealing result
+  - Viral post annotation with arrow adds genuine data storytelling
+  - Weekend dips and upward trend in synthetic data showcase realistic area chart
+    patterns
+  - All font sizes explicitly set per library guidelines (24/20/16pt hierarchy)
+  - Clean spine removal and subtle gridlines create polished visual refinement
+  weaknesses:
+  - 'Some vertical headroom above the spike creates wasted canvas space (VQ-05: 2/4)'
+  - 'The imshow+PathPatch approach is slightly over-engineered compared to fill_between
+    with a gradient (CQ-04: 1/2)'
+  - Could benefit from one additional annotation (e.g., labeling weekend pattern or
+    overall trend) to reach full storytelling marks
+  image_description: The plot shows a basic area chart titled "Website Traffic · area-basic
+    · matplotlib · pyplots.ai". The x-axis represents "Day of Month" (1–30), and the
+    y-axis represents "Daily Visitors (count)" (0–~8500). The area below the line
+    is filled with a vertical gradient transitioning from light blue (#d6e6f5) at
+    the bottom to dark Python Blue (#306998) near the data line, at alpha 0.6. The
+    solid line on top is dark blue with linewidth 3. The data shows an upward trend
+    from ~3000 visitors to ~5000, with visible weekend dips (around days 6–7, 13–14,
+    20–21, 27–28). A prominent spike reaches ~8200 on day 18, annotated with "Viral
+    post" in bold blue text with an arrow pointing to the peak. Top and right spines
+    are removed. Subtle y-axis gridlines at alpha 0.2 aid value estimation. Layout
+    is clean with balanced margins.
   criteria_checklist:
     visual_quality:
-      score: 40
-      max: 40
+      score: 27
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title 24pt, labels 20pt, ticks 16pt — all perfectly readable at 4800x2700
+        comment: 'All font sizes explicitly set: title 24pt, labels 20pt, ticks 16pt,
+          annotation 16pt'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text; annotation well-positioned away from other elements
+        comment: No overlapping text elements anywhere
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Linewidth 3 is optimal for 30 data points; gradient fill is clearly
-          visible
+        comment: Line width 3 is good, gradient fill clearly visible; area chart doesn't
+          need markers
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Single-series using pyplots blue (#306998); no colorblind concerns
+        comment: Single Python Blue color scheme, no colorblind issues
       - id: VQ-05
         name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Plot fills canvas well with tight_layout; balanced margins
+        score: 2
+        max: 4
+        passed: false
+        comment: Good proportions but noticeable vertical headroom above spike (~12%
+          padding); some wasted space at top
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
         comment: Day of Month and Daily Visitors (count) — descriptive with units
-      - id: VQ-07
-        name: Grid & Legend
-        score: 2
-        max: 2
+    design_excellence:
+      score: 16
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 6
+        max: 8
         passed: true
-        comment: Grid at alpha 0.3 dashed — subtle and helpful; no legend needed for
-          single series
+        comment: Gradient fill via imshow+clip is sophisticated, custom colormap,
+          professional polish, clearly above defaults
+      - id: DE-02
+        name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: Spines removed, subtle gridlines, clean tight_layout; could add faint
+          x-axis grid for day identification
+      - id: DE-03
+        name: Data Storytelling
+        score: 5
+        max: 6
+        passed: true
+        comment: Viral post annotation tells a story, weekend dips and upward trend
+          provide narrative; could annotate one more pattern
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct area chart with filled region below line
+        comment: Correct basic area chart with filled area below line
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X = continuous days, Y = numeric visitor magnitude
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Semi-transparent fill, gridlines, clear axis labels with units, gradient
+        comment: Semi-transparent fill, gridlines, clear labels with units, gradient
           fill from bottom to line
-      - id: SC-04
-        name: Data Range
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Y-axis starts at 0, x-axis spans full 1-30 range
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X=days, Y=visitors correctly assigned
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: No legend needed for single-series area chart
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Website Traffic · area-basic · matplotlib · pyplots.ai matches required
-          format
+        comment: Title format matches required format; no legend needed for single
+          series
     data_quality:
-      score: 20
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 8
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Shows upward trend, weekend dips, noise, and viral spike — demonstrates
-          area chart strengths
+        comment: Shows upward trend, weekend dips, viral spike, noise; good variety
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Website traffic is a perfect neutral real-world scenario matching
-          the spec example
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: 2000-8200 daily visitors with weekend dips is highly realistic
+        comment: Website traffic over a month is a real, neutral, comprehensible scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: 2000-8200 daily visitors is realistic for a medium website
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -172,40 +180,48 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports, data, plot, save flow with no functions/classes
+        comment: Imports → Data → Plot → Save, no functions/classes
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: np.random.seed(42) set at the start
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used (mcolors, plt, np, PathPatch, Path)
+        comment: All imports used (matplotlib.colors, pyplot, numpy, PathPatch, Path)
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
         score: 1
-        max: 1
-        passed: true
-        comment: No deprecated functions
+        max: 2
+        passed: false
+        comment: imshow+PathPatch gradient is clever but slightly over-engineered
+          vs fill_between; visual payoff justifies partial credit
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300
-    library_features:
-      score: 5
-      max: 5
+        comment: Saves as plot.png, dpi=300, no deprecated APIs
+    library_mastery:
+      score: 9
+      max: 10
       items:
-      - id: LF-01
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: Uses axes methods correctly; imshow+clip is lower-level than fill_between
+          but demonstrates deep knowledge
+      - id: LM-02
         name: Distinctive Features
         score: 5
         max: 5
         passed: true
-        comment: Excellent use of imshow with PathPatch clipping for gradient fill,
-          LinearSegmentedColormap, and Path construction
+        comment: Gradient fill via imshow clipped to PathPatch is a distinctively
+          matplotlib technique
   verdict: APPROVED

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 area-basic: Basic Area Chart
 Library: plotnine 0.15.3 | Python 3.14.2
-Quality: 97/100 | Created: 2025-12-23
+Quality: /100 | Updated: 2026-02-12
 """
 
 import numpy as np
@@ -30,13 +30,18 @@ dates = pd.date_range(start="2024-01-01", periods=30, freq="D")
 base_traffic = 5000
 trend = np.linspace(0, 2000, 30)
 weekly_pattern = 1000 * np.sin(np.arange(30) * 2 * np.pi / 7)
-# Increasing amplitude over time for better feature coverage
 amplitude_growth = np.linspace(1.0, 1.8, 30)
 noise = np.random.normal(0, 500, 30) * amplitude_growth
 visitors = base_traffic + trend + weekly_pattern * amplitude_growth + noise
+# Brief dip mid-month (server maintenance) for richer feature coverage
+visitors[14:16] -= np.array([1400, 600])
 visitors = np.maximum(visitors, 1000)
 
 df = pd.DataFrame({"date": dates, "visitors": visitors})
+
+# Identify key points
+peak_idx = df["visitors"].idxmax()
+dip_idx = 14  # deepest point of the maintenance dip
 
 # Plot
 plot = (
@@ -46,14 +51,32 @@ plot = (
     + geom_smooth(method="lowess", color="#FFD43B", size=1.2, se=False, span=0.5)
     + annotate(
         "text",
-        x=dates[df["visitors"].idxmax()],
+        x=dates[peak_idx],
         y=df["visitors"].max() + 300,
         label="Peak",
         size=14,
         color="#306998",
         fontweight="bold",
     )
-    + labs(x="Date (January 2024)", y="Daily Visitors (count)", title="area-basic · plotnine · pyplots.ai")
+    + annotate(
+        "text",
+        x=dates[dip_idx],
+        y=df.loc[dip_idx, "visitors"] - 500,
+        label="Maintenance",
+        size=10,
+        color="#666666",
+        fontstyle="italic",
+    )
+    + annotate(
+        "text",
+        x=dates[24],
+        y=df.loc[24, "visitors"] + 600,
+        label="Trend (LOWESS)",
+        size=10,
+        color="#c9a800",
+        fontweight="bold",
+    )
+    + labs(x="Date (January 2024)", y="Daily Visitors (count)", title="area-basic \u00b7 plotnine \u00b7 pyplots.ai")
     + scale_x_datetime(date_labels="%b %d")
     + scale_y_continuous(labels=lambda lst: [f"{int(v):,}" for v in lst])
     + theme_minimal()

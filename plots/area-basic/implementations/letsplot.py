@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 area-basic: Basic Area Chart
 Library: letsplot 4.8.2 | Python 3.14.2
-Quality: 87/100 | Created: 2025-12-23
+Quality: 88/100 | Created: 2025-12-23
 """
 
 import numpy as np

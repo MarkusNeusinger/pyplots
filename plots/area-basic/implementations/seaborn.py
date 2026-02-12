@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 area-basic: Basic Area Chart
 Library: seaborn 0.13.2 | Python 3.14.2
-Quality: 88/100 | Created: 2025-12-23
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import matplotlib.dates as mdates

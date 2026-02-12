@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 area-basic: Basic Area Chart
 Library: highcharts 1.10.3 | Python 3.14.2
-Quality: 91/100 | Created: 2025-12-23
+Quality: /100 | Updated: 2026-02-12
 """
 
 import tempfile
@@ -27,11 +27,14 @@ noise = np.random.normal(0, 200, len(days))
 visitors = base_traffic + weekly_pattern + noise
 visitors = np.clip(visitors, 500, None).astype(int)
 
+peak_day = int(days[np.argmax(visitors)])
+peak_visitors = int(np.max(visitors))
+
 # Create chart
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-# Chart configuration — generous bottom margin to ensure x-axis title renders fully
+# Chart configuration
 chart.options.chart = {
     "type": "area",
     "width": 4800,
@@ -39,6 +42,7 @@ chart.options.chart = {
     "backgroundColor": "#ffffff",
     "marginBottom": 300,
     "marginLeft": 220,
+    "marginRight": 100,
     "spacingBottom": 40,
 }
 
@@ -50,27 +54,51 @@ chart.options.title = {
 
 # Subtitle for data context
 chart.options.subtitle = {
-    "text": "Daily Website Visitors Over One Month",
+    "text": "Daily Website Visitors Over One Month \u2014 Weekend Dips with Steady Growth",
     "style": {"fontSize": "42px", "color": "#666666"},
 }
 
-# X-axis — explicit margin and offset to prevent title clipping
+# X-axis with weekend plotBands (day 1 = Monday, so days 6-7, 13-14, 20-21, 27-28 are weekends)
+weekend_bands = []
+for d in range(1, 31):
+    weekday = (d - 1) % 7  # 0=Mon, 5=Sat, 6=Sun
+    if weekday in (5, 6):
+        weekend_bands.append({"from": d - 0.5, "to": d + 0.5, "color": "rgba(48, 105, 152, 0.05)"})
+
 chart.options.x_axis = {
     "title": {"text": "Day of Month", "style": {"fontSize": "48px"}, "margin": 30},
     "labels": {"style": {"fontSize": "36px"}, "y": 45},
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.1)",
+    "gridLineColor": "rgba(0, 0, 0, 0.08)",
     "tickInterval": 1,
+    "plotBands": weekend_bands,
+    "crosshair": {"width": 2, "color": "rgba(48, 105, 152, 0.3)", "dashStyle": "Dash"},
 }
 
-# Y-axis — min near data floor to maximize visual resolution of the data range
+# Y-axis with plotLine at peak
 chart.options.y_axis = {
-    "title": {"text": "Daily Visitors (count)", "style": {"fontSize": "48px"}},
+    "title": {"text": "Daily Visitors", "style": {"fontSize": "48px"}},
     "labels": {"style": {"fontSize": "36px"}},
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.1)",
+    "gridLineColor": "rgba(0, 0, 0, 0.08)",
     "min": 1500,
     "startOnTick": False,
+    "plotLines": [
+        {
+            "value": peak_visitors,
+            "color": "rgba(192, 57, 43, 0.5)",
+            "width": 3,
+            "dashStyle": "Dot",
+            "label": {
+                "text": f"\u25b2 Peak: {peak_visitors:,} visitors (Day {peak_day})",
+                "align": "left",
+                "x": 10,
+                "y": -10,
+                "style": {"fontSize": "32px", "color": "rgba(192, 57, 43, 0.8)", "fontWeight": "bold"},
+            },
+            "zIndex": 5,
+        }
+    ],
 }
 
 # Plot options with semi-transparent fill and gradient
@@ -78,16 +106,17 @@ chart.options.plot_options = {
     "area": {
         "fillColor": {
             "linearGradient": {"x1": 0, "y1": 0, "x2": 0, "y2": 1},
-            "stops": [[0, "rgba(48, 105, 152, 0.5)"], [1, "rgba(48, 105, 152, 0.05)"]],
+            "stops": [[0, "rgba(48, 105, 152, 0.5)"], [1, "rgba(48, 105, 152, 0.02)"]],
         },
         "lineWidth": 4,
-        "marker": {"enabled": True, "radius": 6, "fillColor": "#306998"},
+        "marker": {"enabled": True, "radius": 6, "fillColor": "#306998", "lineWidth": 2, "lineColor": "#ffffff"},
         "color": "#306998",
         "tooltip": {"headerFormat": "<b>Day {point.x}</b><br/>", "pointFormat": "Visitors: {point.y:,.0f}"},
+        "states": {"hover": {"lineWidthPlus": 2}},
     }
 }
 
-# Legend — enabled with styling for single series identification
+# Legend
 chart.options.legend = {
     "enabled": True,
     "itemStyle": {"fontSize": "36px", "fontWeight": "normal"},
@@ -100,6 +129,14 @@ chart.options.legend = {
 
 # Credits off
 chart.options.credits = {"enabled": False}
+
+# Tooltip styling
+chart.options.tooltip = {
+    "style": {"fontSize": "28px"},
+    "backgroundColor": "rgba(255, 255, 255, 0.95)",
+    "borderColor": "#306998",
+    "borderRadius": 8,
+}
 
 # Add series
 series = AreaSeries()

@@ -70,7 +70,8 @@ Parse `$ARGUMENTS` using this format:
 
 4. **Assign tasks** to the corresponding agents via `TaskUpdate`
 
-All agents run in parallel — each only touches its own library's files.
+All agents run in parallel — each only touches its own library's files. Agents must NOT create files outside
+their designated directories (see file containment rules in the agent prompt).
 
 ---
 
@@ -258,24 +259,54 @@ pattern `implementation/{spec-id}/{library}`. Therefore, each library MUST get i
 
 Get `{owner}/{repo}` from `git remote get-url origin`.
 
-**If the spec was changed**, commit that first on main or include it in each branch.
+**Why patches?** You cannot simply `git checkout -b` and `git add` because the working tree has modifications
+to ALL libraries at once. Switching branches with uncommitted changes either fails or carries changes across
+branches. Using `git stash` risks losing changes if the stash is dropped or if `git checkout main -- file`
+is used (which overwrites working tree files with main's version). The patch-based approach isolates each
+library's changes cleanly.
 
-**For each library**, run the following sequentially:
+**Step 1: Create per-library patch files**
+
+For each library, create a patch containing only that library's changes:
 
 ```bash
-# Ensure we start from main
+git diff -- plots/{spec_id}/implementations/{library}.py plots/{spec_id}/metadata/{library}.yaml \
+  > /tmp/patch-{spec_id}-{library}.patch
+```
+
+If the spec was changed, include it in the **first** library's patch only:
+
+```bash
+git diff -- plots/{spec_id}/implementations/{library}.py plots/{spec_id}/metadata/{library}.yaml \
+  plots/{spec_id}/specification.md > /tmp/patch-{spec_id}-{library}.patch
+```
+
+**Step 2: Stash all changes**
+
+```bash
+git stash
+```
+
+**Step 3: For each library, create branch → apply patch → commit → push → PR**
+
+Run sequentially for each library:
+
+```bash
+# Start from clean main
 git checkout main
 
 # Create per-library branch
 git checkout -b implementation/{spec_id}/{library}
 
-# Stage only this library's files
+# Apply only this library's patch
+git apply /tmp/patch-{spec_id}-{library}.patch
+
+# Stage and commit
 git add plots/{spec_id}/implementations/{library}.py
 git add plots/{spec_id}/metadata/{library}.yaml
-# If spec was changed (only needed in first library branch):
+# If spec was changed (only in first library branch):
 git add plots/{spec_id}/specification.md
 
-# Commit
 git commit -m "update({spec_id}): {library} — {short description}
 
 {description}"
@@ -316,15 +347,22 @@ gh api repos/{owner}/{repo}/dispatches \
   -f 'client_payload[pr_number]='"$PR_NUMBER"
 ```
 
-After all branches are created, return to main:
+**Step 4: Return to main and restore working tree**
 
 ```bash
 git checkout main
+git stash pop
+```
+
+**Step 5: Clean up patch files**
+
+```bash
+rm -f /tmp/patch-{spec_id}-*.patch
 ```
 
 Report all PR URLs to the user.
 
-#### 5j. Cleanup Team
+#### 5h. Cleanup Team
 
 1. `SendMessage` with type `shutdown_request` to all agents
 2. `TeamDelete` to clean up the team
@@ -427,6 +465,15 @@ explain what you changed and why. Do not edit the spec just for the sake of chan
 Run the implementation to generate the plot image. **IMPORTANT**: Each agent MUST run in its own isolated preview
 directory to avoid race conditions with other parallel agents. All agents write `plot.png` — running in the shared
 `implementations/` directory causes file conflicts.
+
+**FILE CONTAINMENT RULES — CRITICAL:**
+- You may ONLY write files to these locations:
+  - `plots/{SPEC_ID}/implementations/{LIBRARY}.py` (the implementation itself)
+  - `plots/{SPEC_ID}/implementations/.update-preview/{LIBRARY}/` (preview output directory)
+  - `plots/{SPEC_ID}/specification.md` (only if spec changes are needed)
+- **NEVER** create files in the project root, the `implementations/` directory directly, or any other location.
+- **NEVER** download or save images outside `.update-preview/{LIBRARY}/`. If you need to view the current
+  preview from GCS, use the URL directly with `WebFetch` or `Read` — do not download it to a local file.
 
 ```bash
 mkdir -p plots/{SPEC_ID}/implementations/.update-preview/{LIBRARY}

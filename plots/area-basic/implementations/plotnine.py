@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 area-basic: Basic Area Chart
 Library: plotnine 0.15.3 | Python 3.14.2
 Quality: 86/100 | Created: 2025-12-23
@@ -11,6 +11,7 @@ from plotnine import (
     annotate,
     element_blank,
     element_line,
+    element_rect,
     element_text,
     geom_area,
     geom_line,
@@ -26,68 +27,107 @@ from plotnine import (
 
 # Data - daily website visitors over a month
 np.random.seed(42)
-dates = pd.date_range(start="2024-01-01", periods=30, freq="D")
-base_traffic = 5000
-trend = np.linspace(0, 2000, 30)
-weekly_pattern = 1000 * np.sin(np.arange(30) * 2 * np.pi / 7)
-amplitude_growth = np.linspace(1.0, 1.8, 30)
-noise = np.random.normal(0, 500, 30) * amplitude_growth
+dates = pd.date_range(start="2024-01-01", periods=31, freq="D")
+base_traffic = 4800
+trend = np.linspace(0, 2200, 31)
+weekly_pattern = 1000 * np.sin(np.arange(31) * 2 * np.pi / 7)
+amplitude_growth = np.linspace(1.0, 1.8, 31)
+noise = np.random.normal(0, 500, 31) * amplitude_growth
 visitors = base_traffic + trend + weekly_pattern * amplitude_growth + noise
 # Brief dip mid-month (server maintenance) for richer feature coverage
 visitors[14:16] -= np.array([1400, 600])
+# Plateau around days 20-23 to show growth stalling briefly
+visitors[19:23] = np.mean(visitors[19:23]) * np.ones(4) + np.random.normal(0, 100, 4)
 visitors = np.maximum(visitors, 1000)
 
 df = pd.DataFrame({"date": dates, "visitors": visitors})
 
-# Identify key points
-peak_idx = df["visitors"].idxmax()
-dip_idx = 14  # deepest point of the maintenance dip
+# Identify key data points for annotations
+peak_idx = int(df["visitors"].idxmax())
+peak_val = int(df["visitors"].max())
+dip_idx = 14
+dip_val = int(df.loc[dip_idx, "visitors"])
 
-# Plot
+# Gradient fill effect: layered semi-transparent areas at different y-clip levels
+gradient_layers = []
+n_layers = 6
+max_vis = df["visitors"].max()
+for i in range(n_layers):
+    frac = (i + 1) / n_layers
+    layer_df = df.copy()
+    layer_df["visitors_clipped"] = np.minimum(df["visitors"], max_vis * frac)
+    alpha_val = 0.08 + 0.04 * i  # lighter at bottom, darker near top
+    gradient_layers.append(
+        geom_area(aes(x="date", y="visitors_clipped"), data=layer_df, fill="#306998", alpha=alpha_val)
+    )
+
+# Build the plot
 plot = (
     ggplot(df, aes(x="date", y="visitors"))
-    + geom_area(fill="#306998", alpha=0.35)
-    + geom_line(color="#306998", size=1.5)
-    + geom_smooth(method="lowess", color="#FFD43B", size=1.2, se=False, span=0.5)
+    + gradient_layers[0]
+    + gradient_layers[1]
+    + gradient_layers[2]
+    + gradient_layers[3]
+    + gradient_layers[4]
+    + gradient_layers[5]
+    + geom_line(color="#1e4d6d", size=1.8)
+    + geom_smooth(method="lowess", color="#FFD43B", size=2.0, se=False, span=0.5)
+    # Peak annotation with value
     + annotate(
         "text",
         x=dates[peak_idx],
-        y=df["visitors"].max() + 300,
-        label="Peak",
+        y=peak_val + 400,
+        label=f"Peak: {peak_val:,}",
         size=14,
-        color="#306998",
+        color="#1e4d6d",
         fontweight="bold",
+        ha="right",
     )
+    # Maintenance dip annotation with value
     + annotate(
         "text",
         x=dates[dip_idx],
-        y=df.loc[dip_idx, "visitors"] - 500,
-        label="Maintenance",
-        size=10,
-        color="#666666",
+        y=dip_val - 600,
+        label=f"Maintenance: {dip_val:,}",
+        size=11,
+        color="#333333",
         fontstyle="italic",
     )
+    # Trend label
     + annotate(
         "text",
-        x=dates[24],
-        y=df.loc[24, "visitors"] + 600,
+        x=dates[25],
+        y=df.loc[25, "visitors"] + 700,
         label="Trend (LOWESS)",
-        size=10,
-        color="#c9a800",
+        size=11,
+        color="#b8930a",
         fontweight="bold",
     )
-    + labs(x="Date (January 2024)", y="Daily Visitors (count)", title="area-basic \u00b7 plotnine \u00b7 pyplots.ai")
+    + labs(
+        x="Date (January 2024)",
+        y="Daily Visitors (count)",
+        title="area-basic · plotnine · pyplots.ai",
+        subtitle="Upward trend with weekly cycles, a mid-month maintenance dip, and a brief plateau",
+    )
     + scale_x_datetime(date_labels="%b %d")
     + scale_y_continuous(labels=lambda lst: [f"{int(v):,}" for v in lst])
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
-        text=element_text(size=14),
-        axis_title=element_text(size=20),
-        axis_text=element_text(size=16),
-        plot_title=element_text(size=24),
-        panel_grid_major=element_line(color="#cccccc", size=0.5, alpha=0.3),
+        text=element_text(size=14, color="#2d2d2d"),
+        axis_title=element_text(size=20, color="#2d2d2d"),
+        axis_text=element_text(size=16, color="#555555"),
+        plot_title=element_text(size=24, weight="bold", color="#1a1a1a"),
+        plot_subtitle=element_text(size=16, color="#555555", style="italic"),
+        panel_background=element_rect(fill="#f8f9fa", color="none"),
+        plot_background=element_rect(fill="#ffffff", color="none"),
+        panel_grid_major_y=element_line(color="#d0d0d0", size=0.4),
+        panel_grid_major_x=element_line(color="#e0e0e0", size=0.3),
         panel_grid_minor=element_blank(),
+        axis_line_x=element_line(color="#999999", size=0.6),
+        axis_ticks_major_x=element_line(color="#999999", size=0.4),
+        axis_ticks_major_y=element_blank(),
+        plot_margin=0.04,
     )
 )
 

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 histogram-basic: Basic Histogram
 Library: bokeh 3.8.2 | Python 3.14.0
 Quality: 88/100 | Created: 2025-12-23
@@ -6,8 +6,10 @@ Quality: 88/100 | Created: 2025-12-23
 
 import numpy as np
 from bokeh.io import export_png, output_file, save
-from bokeh.models import ColumnDataSource, HoverTool, Label, NumeralTickFormatter, Span
+from bokeh.models import ColumnDataSource, HoverTool, Label, Legend, LegendItem, NumeralTickFormatter
+from bokeh.palettes import Blues256
 from bokeh.plotting import figure
+from bokeh.transform import linear_cmap
 
 
 # Data - Marathon finish times in minutes (right-skewed with bimodal character and outliers)
@@ -26,20 +28,7 @@ mean_val = np.mean(values)
 counts, edges = np.histogram(values, bins=28)
 left_edges = edges[:-1]
 right_edges = edges[1:]
-
-# Color gradient: darker bins near peak for visual emphasis
 max_count = counts.max()
-base_r, base_g, base_b = 0x30, 0x69, 0x98  # #306998
-highlight_r, highlight_g, highlight_b = 0x4A, 0x8B, 0xBE  # lighter complement
-bar_colors = []
-bar_alphas = []
-for c in counts:
-    ratio = c / max_count if max_count > 0 else 0
-    r = int(highlight_r + (base_r - highlight_r) * ratio)
-    g = int(highlight_g + (base_g - highlight_g) * ratio)
-    b = int(highlight_b + (base_b - highlight_b) * ratio)
-    bar_colors.append(f"#{r:02x}{g:02x}{b:02x}")
-    bar_alphas.append(0.65 + 0.30 * ratio)
 
 source = ColumnDataSource(
     data={
@@ -50,12 +39,14 @@ source = ColumnDataSource(
         "count": counts,
         "bin_start": [f"{e:.0f}" for e in left_edges],
         "bin_end": [f"{e:.0f}" for e in right_edges],
-        "bar_color": bar_colors,
-        "bar_alpha": bar_alphas,
     }
 )
 
-# Create figure (4800 x 2700 px) with tighter margins for better canvas use
+# Idiomatic Bokeh color mapping: linear_cmap maps count values to a blue palette
+# Blues256 goes light-to-dark; reverse so higher counts get darker blue (#306998-range)
+fill_mapper = linear_cmap(field_name="top", palette=list(reversed(Blues256)), low=0, high=int(max_count))
+
+# Create figure (4800 x 2700 px)
 p = figure(
     width=4800,
     height=2700,
@@ -63,65 +54,69 @@ p = figure(
     x_axis_label="Finish Time (min)",
     y_axis_label="Number of Runners",
     toolbar_location=None,
-    x_range=(118, 422),
+    x_range=(118, 410),
 )
 
-# Plot histogram as quad glyphs with intensity-mapped colors
-p.quad(
+# Plot histogram as quad glyphs with linear_cmap color mapping
+bars = p.quad(
     left="left",
     right="right",
     top="top",
     bottom="bottom",
     source=source,
-    fill_color="bar_color",
+    fill_color=fill_mapper,
     line_color="white",
     line_width=1.5,
-    fill_alpha="bar_alpha",
+    fill_alpha=0.85,
     hover_fill_color="#FFD43B",
     hover_fill_alpha=0.95,
     hover_line_color="white",
 )
 
-# HoverTool - Bokeh's distinctive interactive feature
-hover = HoverTool(tooltips=[("Range", "@bin_start–@bin_end min"), ("Runners", "@count")], mode="mouse")
+# HoverTool with custom formatters — distinctive Bokeh interactive feature
+hover = HoverTool(
+    renderers=[bars], tooltips=[("Range", "@bin_start–@bin_end min"), ("Runners", "@count")], mode="mouse"
+)
 p.add_tools(hover)
 
 # Annotation: median line (solid red)
-median_span = Span(
-    location=median_val, dimension="height", line_color="#C0392B", line_width=3.5, line_dash="solid", line_alpha=0.8
+median_line = p.line(
+    x=[median_val, median_val], y=[0, max_count * 1.05], line_color="#C0392B", line_width=4, line_alpha=0.85
 )
-p.add_layout(median_span)
 
 # Annotation: mean line (dashed teal)
-mean_span = Span(
-    location=mean_val, dimension="height", line_color="#1A9E76", line_width=3.5, line_dash=[10, 5], line_alpha=0.8
+mean_line = p.line(
+    x=[mean_val, mean_val],
+    y=[0, max_count * 1.05],
+    line_color="#1A9E76",
+    line_width=4,
+    line_dash=[10, 5],
+    line_alpha=0.85,
 )
-p.add_layout(mean_span)
 
-# Place median/mean labels in upper-right clear area away from bars
-median_label = Label(
-    x=330,
-    y=max_count * 0.95,
-    text=f"\u2500\u2500  Median: {median_val:.0f} min",
-    text_font_size="24pt",
-    text_color="#C0392B",
-    text_font_style="bold",
+# Formal legend using Bokeh Legend model — rendered inside the plot area
+legend = Legend(
+    items=[
+        LegendItem(label=f"Median: {median_val:.0f} min", renderers=[median_line]),
+        LegendItem(label=f"Mean: {mean_val:.0f} min", renderers=[mean_line]),
+    ],
+    location="top_right",
+    label_text_font_size="22pt",
+    label_text_color="#333333",
+    glyph_width=60,
+    glyph_height=6,
+    spacing=14,
+    padding=20,
+    background_fill_alpha=0.75,
+    background_fill_color="white",
+    border_line_color="#CCCCCC",
+    border_line_alpha=0.5,
 )
-p.add_layout(median_label)
+p.add_layout(legend, "center")
 
-mean_label = Label(
-    x=330,
-    y=max_count * 0.85,
-    text=f"- -  Mean: {mean_val:.0f} min",
-    text_font_size="24pt",
-    text_color="#1A9E76",
-    text_font_style="bold",
-)
-p.add_layout(mean_label)
-
-# Annotation: label the main peak with an arrow-like callout above the bars
+# Annotation: label the main peak with an arrow-like callout
 peak_label = Label(
-    x=200,
+    x=205,
     y=max_count * 1.02,
     text="\u25bc Main group (~4 hr pace)",
     text_font_size="22pt",
@@ -130,13 +125,15 @@ peak_label = Label(
 )
 p.add_layout(peak_label)
 
-# Annotation: slower group shoulder label above bars
+# Annotation: slower group shoulder — position above the shoulder bars
+slower_bin_idx = np.argmin(np.abs(left_edges - 295))
+slower_peak = counts[max(0, slower_bin_idx - 1) : slower_bin_idx + 2].max()
 shoulder_label = Label(
-    x=300,
-    y=max_count * 0.60,
+    x=288,
+    y=slower_peak + max_count * 0.08,
     text="\u25bc Slower group (~5 hr pace)",
     text_font_size="22pt",
-    text_color="#7BA1BB",
+    text_color="#5B8BA8",
     text_font_style="bold",
 )
 p.add_layout(shoulder_label)
@@ -192,7 +189,7 @@ p.y_range.end = max_count * 1.22
 
 # Balanced margins for full canvas utilization
 p.min_border_left = 140
-p.min_border_right = 80
+p.min_border_right = 60
 p.min_border_bottom = 110
 p.min_border_top = 80
 

@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: histogram-basic
 created: '2025-12-23T00:23:22Z'
-updated: '2026-02-13T22:18:35Z'
+updated: '2026-02-13T22:27:55Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447580999
 issue: 0
@@ -15,114 +15,123 @@ impl_tags:
   dependencies:
   - selenium
   techniques:
+  - annotations
   - html-export
   patterns:
   - data-generation
   dataprep: []
   styling:
-  - edge-highlighting
   - grid-styling
+  - edge-highlighting
 review:
   strengths:
-  - Excellent use of Highcharts native HistogramSeries with base_series pattern —
-    idiomatic and distinctive
-  - All font sizes explicitly set for the 4800x2700 canvas, ensuring perfect legibility
-  - Realistic neutral data scenario with bimodal mixture distribution showing distribution
-    shape variety
-  - Clean linear code structure with proper seed and all spec requirements met
-  - Contiguous bars with border highlighting provide clean histogram appearance
+  - Excellent use of Highcharts native HistogramSeries with base_series pattern for
+    automatic binning
+  - Strong data storytelling with grade-range plotBands, mean/median plotLines, and
+    peak annotations
+  - Publication-quality design with custom typography, subtle shadows, refined borders,
+    and cohesive color palette
+  - Realistic and engaging educational dataset (bimodal exam score distribution)
+  - Correct title format with descriptive context
   weaknesses:
-  - 'No data storytelling: the bimodal distribution (mixture of two normal distributions)
-    is not annotated or highlighted — add mean/median lines, or annotate the two peaks
-    to guide the viewer'
-  - Visual refinement is mostly Highcharts defaults — consider adding plotBands for
-    grade ranges (A/B/C/D/F), or a subtle background gradient, or removing unnecessary
-    gridlines to polish the design
-  - No annotations or callouts to interpret the data for the viewer — the subtitle
-    helps but the chart body has no narrative elements
-  image_description: The plot displays a histogram of university exam score distribution
-    using dark blue bars (#306998) with darker blue border outlines. The x-axis is
-    labeled "Exam Score (points)" ranging from approximately 30 to 98, and the y-axis
-    is labeled "Number of Students" ranging from 0 to 60. The title reads "Exam Score
-    Distribution · histogram-basic · highcharts · pyplots.ai" in bold black text,
-    with a subtitle "500 students — Introduction to Statistics, Fall 2024" in gray.
-    The distribution is slightly right-skewed with a primary peak around 73-80 (reaching
-    ~53 students) and a visible secondary concentration around 85-90 reflecting the
-    bimodal data mixture. Bars are contiguous with no gaps. Light gray horizontal
-    gridlines are present. The background is white. All text is clearly readable at
-    the rendered resolution.
+  - X-axis title Exam Score (points) is not visible in the rendered image — the bottom
+    margin needs to be increased or the axis title margin adjusted
+  - Mean and Median labels (75.3 and 75.8) are very close together and visually crowded
+    — consider offsetting them more or combining into a single annotation
+  - Post-render annotation JavaScript uses hardcoded y=53 and setTimeout(2000) which
+    is brittle — could use chart options annotations instead
+  - The annotations module is loaded via separate download but annotations are applied
+    via raw JavaScript, creating an inconsistency in approach
+  image_description: The plot displays a histogram of university exam scores using
+    deep blue (#306998) bars on a light gray (#fafbfc) background. The title reads
+    "Exam Score Distribution · histogram-basic · highcharts · pyplots.ai" in bold
+    dark text, with a subtitle describing "500 students — Introduction to Statistics,
+    Fall 2024" and the bimodal pattern. The X-axis spans from ~35 to ~95 with tick
+    marks every 5 points, and the Y-axis ("Number of Students") ranges from 0 to 60.
+    Grade-range plotBands (D/F in faint red, C in faint orange, B in faint green,
+    A in faint blue, A+ in faint purple) are visible at the top of the chart area.
+    A red dashed vertical line marks the Mean (75.3) and a blue dotted line marks
+    the Median (75.8), both with labels. Two annotation callouts with connector lines
+    point to the "Primary peak" (~72 pts, main group 80%) and "Secondary peak" (~88
+    pts, high achievers 20%). Bars have dark blue borders and no gaps between them.
+    The bimodal distribution is clearly visible with the main cluster of tall bars
+    around 65-80 and a secondary grouping around 85-95. The x-axis title "Exam Score
+    (points)" is NOT visible in the rendered image — it appears cut off at the bottom
+    margin.
   criteria_checklist:
     visual_quality:
-      score: 29
+      score: 26
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 64px, axis titles 44px, tick
-          labels 36px. All perfectly readable.'
+        comment: All font sizes explicitly set (title 60px, axis labels 44px, ticks
+          36px). All text readable. X-axis title is cut off in rendered image.
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: No overlapping text elements anywhere. Tick labels well-spaced.
+        comment: Mean and Median labels very close together (75.3 vs 75.8) causing
+          slight visual crowding. Grade band labels are clear.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Histogram bars clearly visible, well-sized with 20 bins for 500 data
-          points.
+        comment: Bars well-sized with dark borders. 20 bins for 500 data points is
+          appropriate density.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Single-series Python Blue on white, excellent contrast, colorblind-safe.
+        comment: Single blue series. Red/blue for mean/median is distinguishable.
+          plotBand colors are subtle pastels. Colorblind-safe.
       - id: VQ-05
-        name: Layout Balance
-        score: 3
+        name: Layout & Canvas
+        score: 2
         max: 4
         passed: false
-        comment: Good margins explicitly set, but some wasted vertical space above
-          the tallest bar.
+        comment: Plot fills reasonable portion of canvas but x-axis title is cut off
+          at bottom. marginBottom of 240 is insufficient.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: Exam Score (points) and Number of
-          Students.'
+        comment: Y-axis label 'Number of Students' is clear. X-axis label 'Exam Score
+          (points)' is set in code with units.
     design_excellence:
-      score: 9
+      score: 17
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 7
         max: 8
-        passed: false
-        comment: Clean and professional with custom subtitle and border colors. Looks
-          like a well-configured Highcharts default, not publication-exceptional.
+        passed: true
+        comment: 'Publication-quality design: custom background, typography hierarchy,
+          refined borders, shadow effects, cohesive palette.'
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 5
         max: 6
-        passed: false
-        comment: Subtle gray gridlines, credits disabled, legend hidden appropriately.
-          Some refinement but largely default styling.
+        passed: true
+        comment: Dotted gridlines, generous margins, careful font weights, subtle
+          plotBand shading. Minor axis title clipping.
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 5
         max: 6
-        passed: false
-        comment: Subtitle provides context but no annotations highlight bimodal nature,
-          no mean/median markers.
+        passed: true
+        comment: Annotations highlight bimodal peaks, grade-range plotBands add context,
+          mean/median plotLines with labels, narrative subtitle.
     spec_compliance:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -130,25 +139,29 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct histogram using native Highcharts HistogramSeries.
+        comment: Correct histogram using Highcharts native HistogramSeries with base
+          data series.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Clear bin edges, no gaps, readable labels, y-axis starts at zero.
+        comment: Clear bin edges, no gaps, readable labels, appropriate bin count
+          (20), Y-axis starts at zero.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=exam scores, Y=frequency. Correct mapping.
+        comment: Continuous variable (exam scores) correctly binned and displayed
+          as frequencies.
       - id: SC-04
         name: Title & Legend
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Correct title format. Legend hidden appropriately for single series.
+        comment: Title format correct with spec-id, library, pyplots.ai. Legend hidden
+          (appropriate for single series). Title has extra prefix.
     data_quality:
       score: 14
       max: 15
@@ -157,24 +170,25 @@ review:
         name: Feature Coverage
         score: 5
         max: 6
-        passed: false
-        comment: Bimodal mixture shows distribution shape, spread, and central tendency.
-          Could better emphasize bimodal nature.
+        passed: true
+        comment: Bimodal distribution demonstrates spread, central tendency, and multimodality.
+          Peaks not as distinctly separated visually.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: University exam scores for Introduction to Statistics — real, neutral,
-          comprehensible.
+        comment: University exam scores scenario is realistic, comprehensible, and
+          neutral.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 500 observations, scores 0-100, realistic values.
+        comment: Scores clipped to 0-100, normal distributions at 72 and 88 with appropriate
+          standard deviations.
     code_quality:
-      score: 10
+      score: 8
       max: 10
       items:
       - id: CQ-01
@@ -182,47 +196,49 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear structure: imports, data, chart config, series, export.'
+        comment: Follows Imports → Data → Chart → Series → Export pattern.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) is set.
       - id: CQ-03
         name: Clean Imports
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: All imports used.
+        passed: false
+        comment: Annotations module downloaded separately but used via raw JS rather
+          than through highcharts-core API.
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Clean, well-organized, appropriate complexity.
+        passed: false
+        comment: Post-render annotation script with hardcoded y=53 and setTimeout(2000)
+          is brittle.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png and plot.html.
+        comment: Saves as plot.png via Selenium screenshot. Also saves plot.html.
     library_mastery:
-      score: 9
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 5
-        max: 5
-        passed: true
-        comment: Uses native HistogramSeries with base_series pattern — idiomatic
-          Highcharts approach.
-      - id: LM-02
-        name: Distinctive Features
         score: 4
         max: 5
-        passed: false
-        comment: HistogramSeries + hidden ColumnSeries base_series pattern is distinctive.
-          Could further leverage plotBands or data labels.
-  verdict: REJECTED
+        passed: true
+        comment: Uses native HistogramSeries with base_series, plotBands, plotLines.
+          Annotations via post-render JS rather than options.
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: HistogramSeries with base_series is distinctive. plotBands/plotLines
+          are Highcharts-specific. Annotation approach somewhat hacky.
+  verdict: APPROVED

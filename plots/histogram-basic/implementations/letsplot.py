@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 histogram-basic: Basic Histogram
 Library: letsplot 4.8.2 | Python 3.14.0
 Quality: 86/100 | Created: 2025-12-23
@@ -20,6 +20,7 @@ from lets_plot import (
     ggsize,
     labs,
     layer_tooltips,
+    scale_fill_manual,
     scale_x_continuous,
     scale_y_continuous,
     theme,
@@ -30,47 +31,73 @@ from lets_plot.export import ggsave
 
 LetsPlot.setup_html()
 
-# Data
+# Data — two cherry tree cultivars with distinct trunk diameters
 np.random.seed(42)
-female_heights = np.random.normal(165, 7, 300)
-male_heights = np.random.normal(178, 8, 300)
-heights = np.concatenate([female_heights, male_heights])
-df = pd.DataFrame({"heights": heights})
+cultivar_a = np.random.normal(28.5, 4.2, 350)  # Yoshino cherry (cm)
+cultivar_b = np.random.normal(39.0, 5.5, 250)  # Kwanzan cherry (cm)
 
-# Compute population means for annotation
-female_mean = float(np.mean(female_heights))
-male_mean = float(np.mean(male_heights))
-
-# Annotation data for mean labels
-annotations = pd.DataFrame(
-    {
-        "x": [female_mean, male_mean],
-        "y": [62, 62],
-        "label": [f"Women avg\n{female_mean:.1f} cm", f"Men avg\n{male_mean:.1f} cm"],
-    }
+df = pd.DataFrame(
+    {"diameter": np.concatenate([cultivar_a, cultivar_b]), "cultivar": ["Yoshino"] * 350 + ["Kwanzan"] * 250}
 )
 
-# Plot
+# Population means
+mean_a = float(np.mean(cultivar_a))
+mean_b = float(np.mean(cultivar_b))
+
+# Tighter axis limits using percentiles (clips extreme outliers)
+all_diameters = np.concatenate([cultivar_a, cultivar_b])
+x_min = float(np.floor(np.percentile(all_diameters, 0.5)) - 1)
+x_max = float(np.ceil(np.percentile(all_diameters, 99.5)) + 1)
+
+# Colors
+color_a = "#306998"  # Python Blue for Yoshino cultivar
+color_b = "#B07430"  # Warm amber for Kwanzan cultivar
+
+# Annotation positions — nudged right so text doesn't sit on the dashed line
+annotations_a = pd.DataFrame({"x": [mean_a + 2.5], "y": [60], "label": [f"Yoshino avg {mean_a:.1f} cm"]})
+annotations_b = pd.DataFrame({"x": [mean_b + 2.5], "y": [60], "label": [f"Kwanzan avg {mean_b:.1f} cm"]})
+
+# Plot — two overlapping semi-transparent histograms to reveal bimodality
 plot = (
-    ggplot(df, aes(x="heights"))
+    ggplot(df, aes(x="diameter", fill="cultivar"))
     + geom_histogram(
         bins=30,
-        fill="#306998",
+        alpha=0.65,
+        size=0.2,
         color="white",
-        alpha=0.85,
-        size=0.5,
-        tooltips=layer_tooltips().format("..count..", "d").format("^x", ".1f").line("Count|@..count.."),
+        position="identity",
+        tooltips=layer_tooltips()
+        .format("..count..", "d")
+        .format("^x", ".1f")
+        .line("@|cultivar")
+        .line("Count|@..count.."),
     )
-    # Mean reference lines for each population
-    + geom_vline(xintercept=female_mean, color="#E07B39", size=1.2, linetype="dashed", alpha=0.9)
-    + geom_vline(xintercept=male_mean, color="#E07B39", size=1.2, linetype="dashed", alpha=0.9)
-    # Mean labels
-    + geom_text(data=annotations, mapping=aes(x="x", y="y", label="label"), size=12, color="#C05E20", fontface="bold")
-    + scale_x_continuous(name="Height (cm)", format=".0f", limits=[140, 205])
+    + scale_fill_manual(values={"Yoshino": color_a, "Kwanzan": color_b}, name="Cultivar")
+    # Mean reference lines matching fill colors
+    + geom_vline(xintercept=mean_a, color=color_a, size=1.2, linetype="dashed")
+    + geom_vline(xintercept=mean_b, color=color_b, size=1.2, linetype="dashed")
+    # Mean labels — color-coded to match fills
+    + geom_text(
+        data=annotations_a,
+        mapping=aes(x="x", y="y", label="label"),
+        size=11,
+        color=color_a,
+        fontface="bold",
+        inherit_aes=False,
+    )
+    + geom_text(
+        data=annotations_b,
+        mapping=aes(x="x", y="y", label="label"),
+        size=11,
+        color=color_b,
+        fontface="bold",
+        inherit_aes=False,
+    )
+    + scale_x_continuous(name="Trunk Diameter (cm)", format=".0f", limits=[x_min, x_max])
     + scale_y_continuous(name="Frequency", format="d")
     + labs(
-        title="histogram-basic \u00b7 letsplot \u00b7 pyplots.ai",
-        subtitle="Bimodal distribution of human heights \u2014 two overlapping populations",
+        title="histogram-basic · letsplot · pyplots.ai",
+        subtitle="Bimodal distribution of cherry tree trunk diameters — two cultivars in the same orchard",
     )
     + theme_minimal()
     + theme(
@@ -78,6 +105,9 @@ plot = (
         plot_subtitle=element_text(size=16, color="#666666"),
         axis_title=element_text(size=20),
         axis_text=element_text(size=16),
+        legend_title=element_text(size=16, face="bold"),
+        legend_text=element_text(size=14),
+        legend_position=[0.88, 0.85],
         panel_grid_major_x=element_blank(),
         panel_grid_minor=element_blank(),
         panel_grid_major_y=element_line(color="#E0E0E0", size=0.5),

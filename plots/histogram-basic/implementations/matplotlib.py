@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 histogram-basic: Basic Histogram
 Library: matplotlib 3.10.8 | Python 3.14.0
-Quality: 85/100 | Created: 2025-12-23
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt

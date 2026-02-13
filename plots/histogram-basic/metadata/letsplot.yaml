@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: histogram-basic
 created: '2025-12-23T00:23:20Z'
-updated: '2026-02-13T22:12:47+00:00'
+updated: '2026-02-13T22:18:37Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447581138
 issue: 0
@@ -10,148 +10,166 @@ library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-basic/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-basic/letsplot/plot.html
-quality_score: null
+quality_score: 87
 impl_tags:
   dependencies: []
   techniques:
-    - html-export
+  - hover-tooltips
+  - html-export
   patterns:
-    - data-generation
+  - data-generation
   dataprep: []
   styling:
-    - minimal-chrome
-    - edge-highlighting
+  - alpha-blending
+  - edge-highlighting
+  - grid-styling
 review:
   strengths:
-  - Excellent use of bimodal height data showing male/female distributions - demonstrates
-    histogram capabilities well
-  - Clean, readable code following KISS principles with proper seed for reproducibility
-  - Perfect title format and axis labels with units
-  - Good visual balance with appropriate bin count (30 bins for 600 data points)
-  - White bar borders create clear bin separation as specified
+  - Excellent text legibility with all font sizes explicitly configured to correct
+    values
+  - Clean minimal theme with thoughtful grid removal (no x-grid, no minor grid, subtle
+    y-grid)
+  - Bimodal data (mixed male/female heights) effectively demonstrates histogram distribution
+    features
+  - Idiomatic lets-plot code following KISS structure perfectly
+  - Uses layer_tooltips() for the HTML export — a distinctive lets-plot feature
   weaknesses:
-  - No visible grid lines despite theme_minimal() - could add subtle grid for easier
-    frequency reading
-  - Does not leverage lets-plot distinctive features like interactive tooltips or
-    custom scales
-  image_description: 'The plot shows a histogram of height data in centimeters (x-axis:
-    140-205 cm, y-axis: Frequency 0-60). The bars are filled with a blue color (#306998)
-    with white borders. The distribution shows a slight bimodality with peaks around
-    165 cm and 178 cm, representing combined male and female height distributions.
-    The title "histogram-basic · letsplot · pyplots.ai" appears at the top left. The
-    plot uses a minimal theme with subtle gridlines on a white background. All text
-    is clearly readable, and the layout is well-balanced with good proportions.'
+  - 'No data storytelling: the bimodal nature of the distribution is not highlighted
+    with annotations, mean/median lines, or text labels pointing out the two underlying
+    populations'
+  - Could benefit from a subtitle or annotation explaining the height data context
+  - Minor right-side whitespace from low-frequency tail bins
+  image_description: 'The plot displays a histogram of human height measurements in
+    centimeters. The bars are filled with a muted steel blue (#306998) with white
+    edge lines separating them. The x-axis is labeled "Height (cm)" ranging from approximately
+    140 to 205 cm with tick marks at every 5 cm. The y-axis is labeled "Frequency"
+    ranging from 0 to 60. The distribution is roughly bimodal — a broad peak near
+    165–170 cm with a visible shoulder around 175–180 cm — reflecting the combined
+    male and female height distributions. The title "histogram-basic · letsplot ·
+    pyplots.ai" appears in the upper-left corner. The background is clean with a minimal
+    theme: no vertical grid lines, no minor grid, and only subtle light gray horizontal
+    grid lines. The plot fills the 16:9 canvas well with balanced margins.'
   criteria_checklist:
     visual_quality:
-      score: 38
-      max: 40
+      score: 29
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title, axis labels, and tick marks are all clearly readable at proper
-          sizes
+        comment: 'All font sizes explicitly set: title=24, axis_title=20, axis_text=16.
+          Perfectly readable.'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements anywhere
+        comment: No overlapping text. X-axis ticks at 5cm intervals are well-spaced.
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Histogram bars are well-sized with appropriate bin count (30 bins)
+        comment: 30 bins for 600 data points is appropriate. All bars clearly visible.
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Single blue color scheme is colorblind-safe
+        comment: Single color (#306998), no colorblind concerns.
       - id: VQ-05
         name: Layout Balance
-        score: 5
-        max: 5
+        score: 3
+        max: 4
         passed: true
-        comment: Good proportions, proper whitespace, no cut-off elements
+        comment: Good canvas utilization. Minor whitespace on the right from low-frequency
+          tail bins.
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: X-axis has units "Height (cm)", Y-axis shows "Frequency"
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
+        comment: Height (cm) with units, Frequency is descriptive.
+    design_excellence:
+      score: 11
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: true
+        comment: Python Blue fill with white edges, alpha blending, custom minimal
+          theme. Clearly above defaults but not publication-showcase level.
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Minimal theme with x-grid removed, minor grid removed, subtle y-grid
+          retained. Good refinement.
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
         passed: false
-        comment: No visible grid lines despite specification noting clear bin edges
+        comment: Data displayed without interpretation. No annotations highlighting
+          the bimodal nature, no mean/median lines, no text guiding viewer.
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct histogram chart type
+        comment: Correct histogram chart type.
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Continuous variable correctly mapped to x-axis
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Clear bin edges with white borders, readable axes, Y starts at zero
-      - id: SC-04
-        name: Data Range
+        comment: Clear bin edges, readable labels, appropriate bin count, Y-axis starts
+          at zero.
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axis ranges
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
-        passed: true
-        comment: No legend needed for single-variable histogram
-      - id: SC-06
+        comment: X mapped to height values, Y shows frequency counts.
+      - id: SC-04
         name: Title Format
-        score: 2
-        max: 2
+        score: 3
+        max: 3
         passed: true
-        comment: Correctly formatted as "histogram-basic · letsplot · pyplots.ai"
+        comment: 'Correct format: histogram-basic · letsplot · pyplots.ai. No legend
+          needed.'
     data_quality:
-      score: 19
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Shows bimodal distribution demonstrating histogram capabilities,
-          though subtle
+        comment: Bimodal distribution shows shape, central tendency, and spread. Could
+          more explicitly show outliers.
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Human height data is a realistic, relatable scenario
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Heights 140-205 cm are realistic human measurements
+        comment: Human heights in cm — real, comprehensible, neutral scenario.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Female ~165cm, Male ~178cm — realistic distributions.
     code_quality:
       score: 10
       max: 10
@@ -161,40 +179,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Simple imports → data → plot → save structure
+        comment: Imports → Data → Plot → Save. No functions/classes.
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) present.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports used
+        comment: All imports used.
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Uses current lets-plot API
+        comment: Clean, appropriate complexity.
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html
-    library_features:
-      score: 0
-      max: 5
+        comment: Saves as plot.png, no deprecated APIs.
+    library_mastery:
+      score: 8
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 0
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
         max: 5
-        passed: false
-        comment: Basic ggplot grammar used, but no lets-plot specific features like
-          interactive tooltips or distinctive scales
-  verdict: APPROVED
+        passed: true
+        comment: Proper ggplot grammar, ggsize, scale_*_continuous with format strings,
+          theme_minimal customization.
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses layer_tooltips() with .format() and .line() for HTML export.
+          Tooltips only visible in HTML, not PNG.
+  verdict: REJECTED

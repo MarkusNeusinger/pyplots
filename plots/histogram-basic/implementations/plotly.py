@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 histogram-basic: Basic Histogram
 Library: plotly 6.5.2 | Python 3.14.0
-Quality: /100 | Updated: 2026-02-13
+Quality: 79/100 | Created: 2025-12-23
 """
 
 import numpy as np

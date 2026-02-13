@@ -1,26 +1,28 @@
-""" pyplots.ai
+"""pyplots.ai
 histogram-basic: Basic Histogram
-Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Library: plotnine 0.15.3 | Python 3.14.0
+Quality: /100 | Updated: 2026-02-13
 """
 
 import numpy as np
 import pandas as pd
-from plotnine import aes, element_text, geom_histogram, ggplot, labs, theme, theme_minimal
+from plotnine import aes, element_text, geom_histogram, ggplot, labs, scale_x_continuous, theme, theme_minimal
 
 
 # Data
 np.random.seed(42)
 n_points = 500
-values = np.random.normal(loc=70, scale=12, size=n_points)
+raw_scores = np.random.beta(a=5, b=3, size=n_points) * 100
+scores = np.clip(raw_scores, 0, 100)
 
-df = pd.DataFrame({"values": values})
+df = pd.DataFrame({"score": scores})
 
 # Plot
 plot = (
-    ggplot(df, aes(x="values"))
+    ggplot(df, aes(x="score"))
     + geom_histogram(bins=25, fill="#306998", color="white", alpha=0.85)
-    + labs(x="Test Score", y="Frequency", title="histogram-basic · plotnine · pyplots.ai")
+    + scale_x_continuous(breaks=range(0, 101, 10))
+    + labs(x="Test Score (points)", y="Frequency (count)", title="histogram-basic · plotnine · pyplots.ai")
     + theme_minimal()
     + theme(
         figure_size=(16, 9),

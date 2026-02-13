@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 histogram-basic: Basic Histogram
 Library: highcharts 1.10.3 | Python 3.14.0
 Quality: 86/100 | Created: 2025-12-23
@@ -18,72 +18,179 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data — university exam scores with realistic slight right skew
+# Data — university exam scores with bimodal distribution
 np.random.seed(42)
-exam_scores = np.concatenate(
-    [np.random.normal(loc=72, scale=12, size=400), np.random.normal(loc=88, scale=5, size=100)]
-)
-exam_scores = np.clip(exam_scores, 0, 100)
+main_group = np.random.normal(loc=72, scale=12, size=400)
+high_achievers = np.random.normal(loc=88, scale=5, size=100)
+exam_scores = np.clip(np.concatenate([main_group, high_achievers]), 0, 100)
+
+mean_score = float(np.mean(exam_scores))
+median_score = float(np.median(exam_scores))
 
 # Create chart using native Highcharts histogram series
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-# Chart settings
+# Chart settings — tighter margins for better canvas utilization
 chart.options.chart = {
     "type": "column",
     "width": 4800,
     "height": 2700,
-    "backgroundColor": "#ffffff",
-    "marginBottom": 260,
-    "marginLeft": 200,
-    "marginRight": 120,
+    "backgroundColor": "#fafbfc",
+    "marginBottom": 240,
+    "marginLeft": 220,
+    "marginRight": 200,
+    "marginTop": 220,
+    "style": {"fontFamily": "'Segoe UI', Helvetica, Arial, sans-serif"},
 }
 
 # Title
 chart.options.title = {
     "text": "Exam Score Distribution \u00b7 histogram-basic \u00b7 highcharts \u00b7 pyplots.ai",
-    "style": {"fontSize": "64px", "fontWeight": "bold", "color": "#333333"},
+    "style": {"fontSize": "60px", "fontWeight": "700", "color": "#1a1a2e"},
+    "margin": 30,
 }
 
-# Subtitle
+# Subtitle with narrative context
 chart.options.subtitle = {
-    "text": "500 students \u2014 Introduction to Statistics, Fall 2024",
-    "style": {"fontSize": "40px", "color": "#666666"},
+    "text": (
+        "500 students \u2014 Introduction to Statistics, Fall 2024"
+        " \u00a0|\u00a0 Bimodal pattern: main cluster near 72, high-achiever peak near 88"
+    ),
+    "style": {"fontSize": "36px", "color": "#555555", "fontWeight": "400"},
 }
 
-# X-axis
+# X-axis with grade range plotBands and mean/median plotLines
 chart.options.x_axis = [
     {
-        "title": {"text": "Exam Score (points)", "style": {"fontSize": "44px", "color": "#444444"}},
-        "labels": {"style": {"fontSize": "36px", "color": "#555555"}},
+        "title": {
+            "text": "Exam Score (points)",
+            "style": {"fontSize": "44px", "color": "#333333", "fontWeight": "600"},
+            "margin": 20,
+        },
+        "labels": {"style": {"fontSize": "36px", "color": "#444444"}},
         "tickInterval": 5,
         "alignTicks": False,
+        "plotBands": [
+            {
+                "from": 0,
+                "to": 60,
+                "color": "rgba(231, 76, 60, 0.06)",
+                "label": {
+                    "text": "D/F",
+                    "style": {"fontSize": "30px", "color": "#c0392b", "fontWeight": "600"},
+                    "align": "center",
+                    "y": -10,
+                },
+            },
+            {
+                "from": 60,
+                "to": 70,
+                "color": "rgba(243, 156, 18, 0.06)",
+                "label": {
+                    "text": "C",
+                    "style": {"fontSize": "30px", "color": "#d68910", "fontWeight": "600"},
+                    "align": "center",
+                    "y": -10,
+                },
+            },
+            {
+                "from": 70,
+                "to": 80,
+                "color": "rgba(46, 204, 113, 0.06)",
+                "label": {
+                    "text": "B",
+                    "style": {"fontSize": "30px", "color": "#1e8449", "fontWeight": "600"},
+                    "align": "center",
+                    "y": -10,
+                },
+            },
+            {
+                "from": 80,
+                "to": 90,
+                "color": "rgba(41, 128, 185, 0.06)",
+                "label": {
+                    "text": "A",
+                    "style": {"fontSize": "30px", "color": "#2471a3", "fontWeight": "600"},
+                    "align": "center",
+                    "y": -10,
+                },
+            },
+            {
+                "from": 90,
+                "to": 100,
+                "color": "rgba(142, 68, 173, 0.06)",
+                "label": {
+                    "text": "A+",
+                    "style": {"fontSize": "30px", "color": "#7d3c98", "fontWeight": "600"},
+                    "align": "center",
+                    "y": -10,
+                },
+            },
+        ],
+        "plotLines": [
+            {
+                "value": round(mean_score, 1),
+                "color": "#c0392b",
+                "width": 4,
+                "dashStyle": "Dash",
+                "zIndex": 5,
+                "label": {
+                    "text": f"\u25c6 Mean: {mean_score:.1f}",
+                    "style": {"fontSize": "30px", "color": "#c0392b", "fontWeight": "700"},
+                    "align": "left",
+                    "rotation": 0,
+                    "x": 12,
+                    "y": 50,
+                },
+            },
+            {
+                "value": round(median_score, 1),
+                "color": "#2980b9",
+                "width": 4,
+                "dashStyle": "ShortDot",
+                "zIndex": 5,
+                "label": {
+                    "text": f"\u25cf Median: {median_score:.1f}",
+                    "style": {"fontSize": "30px", "color": "#2980b9", "fontWeight": "700"},
+                    "align": "left",
+                    "rotation": 0,
+                    "x": 12,
+                    "y": 90,
+                },
+            },
+        ],
     },
     {"title": {"text": ""}, "opposite": True, "visible": False},
 ]
 
-# Y-axis
+# Y-axis — subtle dashed gridlines
 chart.options.y_axis = [
     {
-        "title": {"text": "Number of Students", "style": {"fontSize": "44px", "color": "#444444"}},
-        "labels": {"style": {"fontSize": "36px", "color": "#555555"}},
+        "title": {
+            "text": "Number of Students",
+            "style": {"fontSize": "44px", "color": "#333333", "fontWeight": "600"},
+            "margin": 20,
+        },
+        "labels": {"style": {"fontSize": "36px", "color": "#444444"}},
         "min": 0,
         "tickInterval": 10,
-        "gridLineColor": "#e8e8e8",
+        "gridLineColor": "#dcdcdc",
         "gridLineWidth": 1,
+        "gridLineDashStyle": "Dot",
     },
     {"title": {"text": ""}, "opposite": True, "visible": False},
 ]
 
-# Plot options for histogram appearance (no gaps between bars)
+# Histogram appearance — refined borders and no gaps
 chart.options.plot_options = {
     "histogram": {
         "pointPadding": 0,
         "groupPadding": 0,
-        "borderWidth": 2,
+        "borderWidth": 1.5,
         "borderColor": "#1a4a6e",
         "binsNumber": 20,
+        "shadow": {"color": "rgba(0,0,0,0.08)", "offsetX": 2, "offsetY": 2, "width": 4},
         "tooltip": {
             "headerFormat": "",
             "pointFormat": "<b>{point.x:.0f} \u2013 {point.x2:.0f}</b><br/>Students: {point.y}",
@@ -126,18 +233,69 @@ histogram_module_url = "https://code.highcharts.com/modules/histogram-bellcurve.
 with urllib.request.urlopen(histogram_module_url, timeout=30) as response:
     histogram_module_js = response.read().decode("utf-8")
 
-# Generate HTML with inline scripts
+annotations_url = "https://code.highcharts.com/modules/annotations.js"
+with urllib.request.urlopen(annotations_url, timeout=30) as response:
+    annotations_js = response.read().decode("utf-8")
+
+# Generate HTML with inline scripts and peak annotations
 html_str = chart.to_js_literal()
+
+# Post-render annotations via Highcharts Annotations API for the two peaks
+annotation_script = """
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    var chart = Highcharts.charts[0];
+    if (!chart) return;
+    chart.addAnnotation({
+      labels: [{
+        point: { x: 72, y: 53, xAxis: 0, yAxis: 0 },
+        text: 'Primary peak \\u25B2<br/><span style="font-size:24px;color:#555">~72 pts \\u2014 main group (80%)</span>',
+        style: { fontSize: '28px', fontWeight: '700', color: '#1a4a6e' },
+        backgroundColor: 'rgba(255,255,255,0.94)',
+        borderColor: '#306998',
+        borderWidth: 2,
+        borderRadius: 8,
+        padding: 12,
+        y: -120,
+        x: -40,
+        overflow: 'none',
+        crop: false
+      }, {
+        point: { x: 86, y: 53, xAxis: 0, yAxis: 0 },
+        text: 'Secondary peak \\u25B2<br/><span style="font-size:24px;color:#555">~88 pts \\u2014 high achievers (20%)</span>',
+        style: { fontSize: '28px', fontWeight: '700', color: '#1a4a6e' },
+        backgroundColor: 'rgba(255,255,255,0.94)',
+        borderColor: '#306998',
+        borderWidth: 2,
+        borderRadius: 8,
+        padding: 12,
+        y: -180,
+        x: -60,
+        overflow: 'none',
+        crop: false
+      }],
+      labelOptions: {
+        shape: 'connector'
+      }
+    });
+  }, 2000);
+});
+</script>
+"""
+
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
     <script>{highcharts_js}</script>
     <script>{histogram_module_js}</script>
+    <script>{annotations_js}</script>
 </head>
 <body style="margin:0;">
     <div id="container" style="width: 4800px; height: 2700px;"></div>
     <script>{html_str}</script>
+    {annotation_script}
 </body>
 </html>"""
 
@@ -158,7 +316,7 @@ chrome_options.add_argument("--window-size=4800,2700")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
-time.sleep(5)
+time.sleep(8)  # Extra time for annotations to render
 driver.save_screenshot("plot.png")
 driver.quit()
 

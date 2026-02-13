@@ -15,10 +15,11 @@ A histogram displays the distribution of a single continuous variable by dividin
 - `values` (numeric) - The continuous variable to visualize
 - Size: 50-1000 observations recommended
 - Example: Heights, weights, test scores, transaction amounts, or any continuous measurement
+- Choose data that reveals distribution shape (slight skew or natural clustering preferred over perfectly symmetric data)
 
 ## Notes
 
-- Clear bin edges with no gaps between bars
+- Clear bin edges with no gaps between bars; thin visible edges between bars help distinguish bins
 - Readable axis labels showing frequency and value ranges
 - Consider appropriate bin count (too few hides patterns, too many creates noise)
 - Y-axis should start at zero for accurate visual comparison

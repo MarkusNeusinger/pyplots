@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 histogram-basic: Basic Histogram
 Library: seaborn 0.13.2 | Python 3.14.0
-Quality: 83/100 | Created: 2025-12-23
+Quality: 95/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt

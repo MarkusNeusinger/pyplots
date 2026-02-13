@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: histogram-basic
 created: '2025-12-23T00:23:11Z'
-updated: '2026-02-13T22:12:47+00:00'
+updated: '2026-02-13T22:17:32Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447578559
 issue: 0
@@ -10,152 +10,172 @@ library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-basic/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-basic/bokeh/plot.html
-quality_score: null
+quality_score: 82
 impl_tags:
   dependencies: []
-  techniques: []
+  techniques:
+  - hover-tooltips
+  - html-export
   patterns:
-    - data-generation
-    - columndatasource
+  - data-generation
+  - columndatasource
   dataprep:
-    - binning
+  - binning
   styling:
-    - grid-styling
+  - alpha-blending
+  - edge-highlighting
+  - grid-styling
 review:
   strengths:
-  - Excellent realistic data context using human heights with proper statistical parameters
-    (mean=170, sd=10)
-  - Clean KISS code structure following all guidelines
-  - Proper use of quad glyphs for histogram bars with no gaps between bins
-  - Correct title format and axis labels with units
-  - Good visual styling with appropriate font sizes for 4800x2700 canvas
-  - Y-axis correctly starts at zero as specified
+  - Excellent spec compliance — all specification requirements met perfectly (clear
+    bin edges, y-axis at zero, readable labels, appropriate bin count)
+  - 'Strong Bokeh idioms: ColumnDataSource, quad glyphs for histograms, HoverTool
+    with formatted tooltips, dual PNG+HTML export'
+  - Realistic and engaging data scenario (marathon finish times) with bimodal distribution
+    showing histogram capabilities
+  - 'Perfect code quality: clean KISS structure, reproducible seed, all imports used,
+    no over-engineering'
+  - All text sizes explicitly set and well-calibrated for the 4800x2700 canvas
   weaknesses:
-  - Could add HoverTool to display bin range and count on hover, leveraging Bokeh
-    interactivity
-  - Data shows only a perfect normal distribution; adding slight skewness or a few
-    outliers would better demonstrate histogram capabilities
-  image_description: The plot displays a histogram showing the distribution of human
-    heights in centimeters. The bars are rendered in a muted blue color (#306998)
-    with white borders and 0.8 alpha transparency. The distribution follows a clear
-    bell curve (normal distribution) centered around 170 cm, ranging from approximately
-    135 cm to 210 cm. The peak frequency is around 58 observations. The title "histogram-basic
-    · bokeh · pyplots.ai" appears in the top-left corner. The x-axis is labeled "Height
-    (cm)" and the y-axis "Frequency". Dashed grid lines are visible at alpha 0.3.
-    The Y-axis correctly starts at 0. The bars have no gaps between them, showing
-    proper histogram bin edges.
+  - 'No data storytelling: the bimodal distribution (main runners vs slower group)
+    is interesting but not annotated — adding mean/median lines, distribution labels,
+    or callout text would guide the viewer'
+  - Aesthetic sophistication is at well-configured default level — could benefit from
+    a more distinctive color treatment (e.g., gradient fill, or subtle color variation
+    across bins) and a more polished title/subtitle hierarchy
+  - Layout has minor wasted space — the plot could utilize more of the horizontal
+    canvas area for a more impactful presentation
+  image_description: The plot displays a histogram of marathon finish times in minutes
+    using muted steel-blue (#306998) bars with white edge lines separating each bin.
+    The x-axis is labeled "Finish Time (min)" ranging from approximately 130 to 360
+    minutes, and the y-axis shows "Frequency" from 0 to about 53. The title "histogram-basic
+    · bokeh · pyplots.ai" appears in the upper left. The distribution is right-skewed
+    with a primary peak around 240–250 minutes and a visible secondary shoulder around
+    290–310 minutes, reflecting the bimodal data generation (two overlapping normal
+    distributions). The background is clean white with subtle horizontal grid lines
+    on the y-axis only. X-grid is hidden. Bars have no gaps between them. The overall
+    layout is balanced with the plot filling most of the canvas.
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 25
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title and axis labels are readable, though tick labels appear slightly
-          small relative to the large canvas
+        comment: 'All font sizes explicitly set: title 40pt, axis labels 30pt, tick
+          labels 24pt. All perfectly readable.'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping text or elements anywhere.
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Bars are clearly visible with good sizing and appropriate alpha
+        comment: Bars well-sized for 25 bins across ~500 points, alpha 0.85, clear
+          white separators.
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Single blue color, no colorblind issues
+        comment: Single-series Python Blue (#306998), no colorblind issues.
       - id: VQ-05
         name: Layout Balance
-        score: 4
-        max: 5
-        passed: true
-        comment: Good proportions, slight excess whitespace on right side
+        score: 3
+        max: 4
+        passed: false
+        comment: Good layout with explicit border padding, but could use slightly
+          more horizontal space utilization.
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: "Height (cm)" and "Frequency"'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
+        comment: Finish Time (min) and Frequency are descriptive with units.
+    design_excellence:
+      score: 10
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
+        passed: false
+        comment: Clean and professional but reads as well-configured default rather
+          than publication-level design.
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
         passed: true
-        comment: Grid is subtle (alpha 0.3), but no legend needed for single-series
-          histogram
+        comment: 'Good: x-grid hidden, y-grid subtle (alpha 0.2), outline removed,
+          clean white background, axis line widths set.'
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: Data displayed clearly but no annotations for bimodal nature, no
+          mean/median markers, no statistical callouts.
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct histogram chart type
+        comment: Correct histogram using quad glyphs with no gaps between bars.
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Values correctly binned and displayed as frequency
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Clear bin edges, no gaps, readable labels, Y-axis at zero
-      - id: SC-04
-        name: Data Range
+        comment: Clear bin edges, readable labels, appropriate bin count (25), y-axis
+          starts at zero.
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axis range
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
-        passed: true
-        comment: N/A for single-series histogram
-      - id: SC-06
+        comment: Values on x-axis, frequency on y-axis, all data visible.
+      - id: SC-04
         name: Title Format
-        score: 2
-        max: 2
+        score: 3
+        max: 3
         passed: true
-        comment: 'Correct format: "histogram-basic · bokeh · pyplots.ai"'
+        comment: Exact format histogram-basic · bokeh · pyplots.ai. No legend needed.
     data_quality:
-      score: 18
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
-        max: 8
-        passed: true
-        comment: Shows normal distribution well, but could benefit from showing slight
-          skewness or outliers for richer demonstration
+        score: 5
+        max: 6
+        passed: false
+        comment: Shows right-skewed distribution with bimodal character. Could showcase
+          more extreme outlier behavior.
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Human heights in cm is an excellent, relatable real-world scenario
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Heights 135-210 cm with mean 170 cm and SD 10 cm are perfectly realistic
+        comment: Marathon finish times are a realistic, neutral, comprehensible scenario.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Values 130-360 min are realistic for marathon times.
     code_quality:
       score: 10
       max: 10
@@ -165,41 +185,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save structure, no functions/classes
+        comment: 'Clean linear flow: imports, data, figure, plot, style, save.'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports used
+        comment: All imports used.
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
-        passed: true
-        comment: Uses current Bokeh API
-      - id: CQ-05
-        name: Output Correct
-        score: 1
-        max: 1
-        passed: true
-        comment: Saves as plot.png and plot.html
-    library_features:
-      score: 2
-      max: 5
-      items:
-      - id: LF-01
-        name: Uses distinctive library features
+        name: Code Elegance
         score: 2
+        max: 2
+        passed: true
+        comment: Clean, Pythonic, idiomatic ColumnDataSource usage.
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html.
+    library_features:
+      score: 8
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
         max: 5
         passed: false
-        comment: Uses ColumnDataSource and quad glyphs correctly, but doesn't leverage
-          Bokeh's distinctive interactive features like hover tooltips which would
-          enhance the histogram
-  verdict: APPROVED
+        comment: 'Good idiomatic Bokeh: ColumnDataSource, quad glyphs, figure configuration.
+          Manual np.histogram necessary since Bokeh lacks built-in histogram.'
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: HoverTool with custom tooltips, hover fill color change, HTML export
+          — distinctive Bokeh features.
+  verdict: REJECTED

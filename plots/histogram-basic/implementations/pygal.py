@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 histogram-basic: Basic Histogram
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: pygal 3.1.0 | Python 3.14.0
+Quality: /100 | Updated: 2026-02-13
 """
 
 import numpy as np
@@ -9,16 +9,15 @@ import pygal
 from pygal.style import Style
 
 
-# Data - Exam scores with realistic distribution
+# Data - Exam scores with slight right skew (realistic distribution)
 np.random.seed(42)
-values = np.random.normal(loc=72, scale=14, size=500)
-values = np.clip(values, 0, 100)  # Exam scores between 0-100
+raw = np.random.normal(loc=68, scale=12, size=500)
+skew_shift = np.random.exponential(scale=4, size=500)
+values = np.clip(raw + skew_shift, 0, 100)
 
-# Compute histogram bins manually since pygal.Histogram expects bin data
+# Compute histogram bins manually since pygal.Histogram expects (count, start, end) tuples
 n_bins = 20
 counts, bin_edges = np.histogram(values, bins=n_bins)
-
-# Prepare data for pygal.Histogram: list of (count, start, end) tuples
 hist_data = [(int(count), float(bin_edges[i]), float(bin_edges[i + 1])) for i, count in enumerate(counts)]
 
 # Custom style for 4800x2700 canvas
@@ -27,8 +26,9 @@ custom_style = Style(
     plot_background="white",
     foreground="#333",
     foreground_strong="#333",
-    foreground_subtle="#666",
+    foreground_subtle="#ddd",
     colors=("#306998",),
+    opacity=0.9,
     title_font_size=60,
     label_font_size=42,
     major_label_font_size=38,
@@ -47,6 +47,8 @@ chart = pygal.Histogram(
     show_legend=False,
     show_y_guides=True,
     show_x_guides=False,
+    tooltip_border_radius=6,
+    value_formatter=lambda x: f"{x:.0f} students",
 )
 
 # Add histogram data

@@ -1,7 +1,7 @@
 library: pygal
 specification_id: histogram-basic
 created: '2025-12-23T00:23:37Z'
-updated: '2026-02-13T22:30:20Z'
+updated: '2026-02-13T22:39:47Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447580374
 issue: 0
@@ -10,59 +10,59 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-basic/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-basic/pygal/plot.html
-quality_score: 81
+quality_score: 86
 impl_tags:
-  dependencies: []
+  dependencies:
+  - pillow
   techniques:
+  - annotations
   - html-export
   patterns:
   - data-generation
   dataprep:
   - binning
   styling:
-  - alpha-blending
   - grid-styling
+  - alpha-blending
 review:
   strengths:
-  - Excellent use of pygal's native Histogram chart type with the (count, start, end)
-    tuple format — idiomatic and distinctive
-  - Statistical storytelling elements (mean marker, IQR band) add analytical value
-    beyond a basic frequency plot
-  - Well-configured custom Style with explicit font sizes appropriate for 4800×2700
-    canvas
-  - Realistic exam score scenario with right-skewed distribution (normal + exponential)
-    creates plausible data
-  - Colorblind-safe three-color palette with good visual separation between series
+  - Excellent data storytelling with Distribution Summary box, peak callout annotation,
+    mean marker, and IQR band — gives the viewer immediate statistical context
+  - Strong use of pygal's native Histogram chart type with proper (count, lo, hi)
+    tuple format and dual PNG/HTML output
+  - Well-crafted custom Style with intentional typography hierarchy, subtle grid styling,
+    and polished color palette
+  - Realistic exam score scenario using beta distribution for natural-looking left-skewed
+    data
+  - All font sizes explicitly configured for 4800×2700 resolution
   weaknesses:
-  - The np.clip(base + skew, 0, 100) creates an artificial spike in the last bin at
-    score 100 — consider using a distribution that naturally tapers or adjusting bin
-    edges to avoid this artifact
-  - 'Data storytelling is minimal: the mean and IQR are shown but there are no on-chart
-    text annotations explaining insights (e.g., annotating the skew direction, or
-    labeling the peak directly)'
-  - The IQR band at 12% of max height is too subtle — it's easy to miss amid the main
-    histogram bars
-  - Layout has some imbalance with the clipped spike pulling the eye to the far right
-  - Style code is verbose with the same font_family string repeated 7 times — could
-    use a variable
+  - The green IQR band renders as a flat rectangle at ~30% of max height, overlapping
+    and partially obscuring several histogram bars — consider using a lighter opacity
+    or rendering it behind the main bars
+  - The red mean marker extends to full histogram height, visually competing with
+    data bars — a thinner line or shorter reference marker would be less intrusive
+  - PIL-based annotation overlay with hardcoded pixel coordinates (plot_x0=350, plot_x1=4650)
+    is fragile and adds external dependency complexity beyond what pygal natively
+    offers
+  - 25 bins for 500 data points creates somewhat narrow bars in places, making some
+    individual bars harder to distinguish
   image_description: 'The plot displays a histogram of exam scores for 500 students
-    using pygal''s Histogram chart type. The main distribution bars are rendered in
-    a semi-transparent Python Blue (#306998) across 25 bins spanning approximately
-    40–100 points. The distribution is slightly right-skewed with peak frequencies
-    around 40 students in the 65–75 range. A tall, narrow orange/brown bar marks the
-    mean at 71.0 points, standing out clearly against the blue bars. A low green band
-    along the bottom of the chart spans from approximately 63 to 78 points, representing
-    the interquartile range (middle 50%). The background is white with a light gray
-    (#fafafa) plot area. Horizontal dashed grid lines in light gray aid readability.
-    The x-axis is labeled "Exam Score (points)" and the y-axis "Number of Students"
-    with values from 0 to approximately 41. The title "histogram-basic · pygal · pyplots.ai"
-    appears at the top. A legend at the bottom identifies three series: "Score Distribution
-    (n=500)" in blue, "Mean: 71.0 pts" in orange, and "IQR: 63–78 pts (middle 50%)"
-    in green. There is a noticeable spike in the last bin at 100 due to np.clip ceiling
-    effects.'
+    using pygal''s native Histogram chart type. The main distribution is rendered
+    in steel blue (#306998) bars spanning approximately 50 to 95 points on the x-axis,
+    with frequency counts on the y-axis reaching up to about 46 students. The distribution
+    is left-skewed with the bulk of scores concentrated between 70-90 points. A prominent
+    red (#c0392b) narrow vertical bar marks the mean at 77.6 points, extending to
+    the full height of the tallest bin. A green (#27ae60) semi-transparent horizontal
+    band shows the IQR range from 72-85 points at approximately 30% of max height.
+    A white rounded-rectangle annotation box in the upper-left displays "Distribution
+    Summary" with mean (77.6), median (78.8), IQR spread (72-85 pts), peak bin (80-81
+    pts, 46 students), and skew direction. A blue callout "▼ Peak: 80-81 pts" appears
+    above the tallest bar. The legend at the bottom identifies all three series. The
+    title "histogram-basic · pygal · pyplots.ai" is centered at the top. Background
+    is light gray (#fafafa) with subtle dashed horizontal grid lines.'
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 26
       max: 30
       items:
       - id: VQ-01
@@ -70,43 +70,47 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title=56, labels=40, major_labels=36,
-          legend=32, values=30). All text clearly readable.
+        comment: All font sizes explicitly set in Style config (title=56, label=40,
+          major_label=36, legend=32, value=30). All text clearly readable at full
+          resolution.
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 4
         max: 6
-        passed: true
-        comment: No significant text overlap. Legend entries slightly cramped. Overlay
-          series intentionally overlap main bars.
+        passed: false
+        comment: Green IQR band overlaps with histogram bars at fixed height, partially
+          obscuring lower portion of several bins. Red mean marker cuts through bars
+          vertically.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Histogram bars well-sized. IQR band quite short (12% max height),
-          somewhat subtle. Mean marker visible but narrow.
+        comment: Histogram bars well-sized and visible. IQR band at fixed ~30% height
+          partially obscures data bars. Mean marker disproportionately tall.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue, orange/brown, green palette is colorblind-safe with good contrast.
+        comment: Blue, red, green distinguishable for most forms of color blindness.
+          Good contrast against light background.
       - id: VQ-05
-        name: Layout Balance
-        score: 2
+        name: Layout & Canvas
+        score: 3
         max: 4
-        passed: false
-        comment: Reasonable plot area but clipped spike at 100 creates visual imbalance.
-          Some wasted space in upper-right.
+        passed: true
+        comment: Plot fills good portion of canvas with reasonable margins. Legend
+          well-placed at bottom. Slight excess margin on right.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Exam Score (points) and Number of Students — descriptive with units.
+        comment: 'X-axis: ''Exam Score (points)'' with units. Y-axis: ''Number of
+          Students'' is descriptive.'
     design_excellence:
-      score: 12
+      score: 15
       max: 20
       items:
       - id: DE-01
@@ -114,23 +118,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom style with refined palette, explicit typography, subtle dashed
-          grid lines, light plot background. Above defaults but mean/IQR markers somewhat
-          crude.
+        comment: Custom color palette, intentional typography hierarchy, refined plot_background,
+          custom guide stroke styling. Clearly above defaults.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Custom dashed grid guides, subtle guide colors, thoughtful margins.
-          Good refinement but not fully polished.
+        comment: Dashed grid lines with subtle colors, x-guides disabled, spacing
+          configured, margins tuned. Good refinement.
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 5
         max: 6
-        passed: false
-        comment: Mean marker and IQR band add context but storytelling carried entirely
-          by legend labels. No on-chart annotations.
+        passed: true
+        comment: Distribution Summary box, peak callout, mean marker, IQR band. Strong
+          storytelling with statistical context.
     spec_compliance:
       score: 14
       max: 15
@@ -140,26 +143,29 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Correct: pygal.Histogram() produces a proper histogram.'
+        comment: Correct histogram using pygal.Histogram() with (count, lo, hi) tuple
+          format.
       - id: SC-02
         name: Required Features
         score: 3
         max: 4
         passed: true
-        comment: 'Clear bin edges, readable labels, appropriate bin count, Y starts
-          at zero. Minor: clipped spike at 100 is an artifact.'
+        comment: Clear bin edges, readable axis labels, appropriate bin count. Mean/IQR
+          overlays slightly clutter the core histogram.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X correctly maps to exam score, Y to frequency count.
+        comment: X-axis correctly shows exam score ranges, Y-axis shows frequency
+          counts.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend labels descriptive and accurate.
+        comment: Title follows exact format. Legend labels are descriptive with sample
+          size and values.
     data_quality:
       score: 14
       max: 15
@@ -169,21 +175,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows right-skewed distribution with central tendency and spread.
-          Ceiling spike at 100 is slightly artificial.
+        comment: Shows distribution shape with left skew, central tendency, and spread.
+          Beta distribution creates realistic shape.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Exam scores for student performance — realistic, neutral, educational
-          context.
+        comment: Exam scores for 500 students — real, comprehensible, neutral educational
+          scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Scores 40-100, mean ~71, n=500 — all realistic for exam data.
+        comment: Scores range ~50-95, realistic for exam data. 500 observations is
+          appropriate sample size.
     code_quality:
       score: 9
       max: 10
@@ -193,26 +200,27 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → style → chart → save flow. No functions/classes.
+        comment: 'Clean linear flow: imports, data generation, histogram computation,
+          style, chart, annotations, save.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) set at the start.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only numpy, pygal, Style imported — all used.
+        comment: 'All imports used: io, numpy, pygal, PIL, Style.'
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
         passed: false
-        comment: Style verbose with same font_family repeated 7 times. stroke_style
-          on series adds minor clutter.
+        comment: PIL annotation overlay with hardcoded pixel coordinates adds fragility
+          and complexity.
       - id: CQ-05
         name: Output & API
         score: 1
@@ -228,13 +236,13 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of pygal.Histogram() with (count, lower, upper) tuple format,
-          Style class, legend_at_bottom, value_formatter.
+        comment: Good use of pygal.Histogram() with native (count, lo, hi) tuple format,
+          custom Style, stroke_style, tooltip_fancy_mode.
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: Leverages pygal's unique Histogram tuple format, multi-series overlay
-          for markers, tooltip_fancy_mode, dual HTML+PNG output.
-  verdict: REJECTED
+        comment: pygal.Histogram native data format, tooltip_fancy_mode, dual PNG/HTML
+          output, legend_at_bottom are pygal-specific.
+  verdict: APPROVED

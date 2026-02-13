@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 histogram-basic: Basic Histogram
 Library: pygal 3.1.0 | Python 3.14.0
-Quality: 81/100 | Created: 2025-12-23
+Quality: 86/100 | Created: 2025-12-23
 """
 
 import io

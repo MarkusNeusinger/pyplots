@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 histogram-basic: Basic Histogram
 Library: altair 6.0.0 | Python 3.14.0
-Quality: 87/100 | Created: 2025-12-23
+Quality: 95/100 | Created: 2025-12-23
 """
 
 import altair as alt

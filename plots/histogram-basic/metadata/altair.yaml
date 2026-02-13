@@ -1,7 +1,7 @@
 library: altair
 specification_id: histogram-basic
 created: '2025-12-23T00:23:03Z'
-updated: '2026-02-13T22:12:47+00:00'
+updated: '2026-02-13T22:17:52Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447578984
 issue: 0
@@ -10,150 +10,165 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-basic/altair/plot.html
-quality_score: null
+quality_score: 87
 impl_tags:
   dependencies: []
   techniques:
-    - html-export
-    - hover-tooltips
+  - hover-tooltips
+  - html-export
   patterns:
-    - data-generation
+  - data-generation
   dataprep: []
-  styling: []
+  styling:
+  - edge-highlighting
+  - grid-styling
 review:
   strengths:
-  - Excellent use of declarative Altair syntax with proper encoding types
-  - Clean, readable code following KISS principles
-  - Realistic human height data provides an intuitive example
-  - Proper title format and axis labels with units
-  - Tooltips added for interactivity in HTML output
-  - Appropriate bin count (maxbins=30) for the data size
+  - Excellent text legibility with all font sizes explicitly configured
+  - Clean, idiomatic Altair code with proper declarative grammar
+  - Good data choice — bimodal height distribution shows histogram strengths
+  - 'Thoughtful visual refinements: subtle dashed gridlines, bar stroke edges, removed
+    view border'
+  - Perfect spec compliance with all required features present
   weaknesses:
-  - No grid lines to aid in reading frequency values
-  - Could add bar edge/stroke color for better visual definition between bins
-  image_description: The plot displays a histogram showing the distribution of human
-    heights in centimeters. The chart uses a solid blue color (#306998) for the bars.
-    The x-axis is labeled "Height (cm)" ranging from approximately 135 to 210 cm,
-    and the y-axis is labeled "Frequency" ranging from 0 to 110. The distribution
-    follows a clear bell-curve shape centered around 170 cm, with the peak frequency
-    of about 102 observations. The title "histogram-basic · altair · pyplots.ai" appears
-    at the top. The bars are adjacent with no gaps between them, creating a proper
-    histogram appearance. The layout is clean with good proportions.
+  - 'No data storytelling: the bimodal distribution (primary group at 170 cm + taller
+    subgroup at 185 cm) is never annotated or highlighted — this is the most interesting
+    feature of the data and should be called out'
+  - The plot could benefit from annotations marking the two distribution peaks or
+    a vertical rule/text label explaining the subgroups
+  - Could push aesthetic sophistication further with mean/median lines, better color
+    gradients, or more distinctive styling
+  image_description: The plot displays a histogram of human height measurements in
+    centimeters. Bars are rendered in a dark blue (#306998) with thin darker stroke
+    edges (#1e4a6e). The x-axis is labeled "Height (cm)" spanning from approximately
+    144 to 200, and the y-axis is labeled "Frequency" ranging from 0 to about 45.
+    The title reads "histogram-basic · altair · pyplots.ai" centered at the top. The
+    distribution is roughly bell-shaped with a primary mode around 170 cm and a visible
+    secondary bump around 184–186 cm, reflecting the bimodal data generation (400
+    samples at μ=170 + 100 at μ=185). Subtle dashed horizontal gridlines appear on
+    the y-axis with low opacity. The chart border is removed. The overall layout is
+    clean with good canvas utilization.
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 29
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
-        passed: true
-        comment: Title, axis labels, and tick marks are all clearly readable at the
-          output resolution
-      - id: VQ-02
-        name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements anywhere in the plot
+        comment: 'All font sizes explicitly set: title=28, axis labels=22, ticks=18.
+          All text clearly readable'
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
+        passed: true
+        comment: No overlapping text anywhere; tick labels well-spaced
       - id: VQ-03
         name: Element Visibility
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Bars are well-sized and clearly visible; slight deduction as bars
-          could have subtle edge lines for better definition
+        comment: Bars well-sized for 500 data points with 30 bins; stroke distinguishes
+          adjacent bars
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Single blue color is colorblind-safe
-      - id: VQ-05
-        name: Layout Balance
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Good proportions overall, slight excess whitespace on the right side
-          due to x-axis extending to 210
+        comment: Single Python Blue color, no colorblind issues
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 3
+        max: 4
+        passed: false
+        comment: Good canvas fill but slight extra whitespace; output resolution slightly
+          non-standard vs 4800x2700 target
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: X-axis has "Height (cm)" with units, Y-axis has "Frequency"
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
-        passed: true
-        comment: No grid lines present (would improve readability), no legend needed
-          for single series
+        comment: Height (cm) with units, Frequency appropriate for count axis
+    design_excellence:
+      score: 11
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: false
+        comment: Custom Python Blue with stroke, subtle grid styling, removed view
+          border — above defaults but not publication-exceptional
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: false
+        comment: Y-axis grid with dashed lines at 0.2 opacity, view strokeWidth=0,
+          configure_axisY customization — good refinement
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: No annotations or callouts. The bimodal distribution is interesting
+          but never highlighted — viewer must discover the right skew on their own
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct histogram chart type
+        comment: Correct histogram with binned bars
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Single continuous variable correctly binned on x-axis, frequency
-          on y-axis
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Clear bin edges, readable labels, Y-axis starts at zero
-      - id: SC-04
-        name: Data Range
+        comment: Clear bin edges, readable labels, appropriate bin count, y-axis starts
+          at zero
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axes
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X=height values, Y=frequency count — correct
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: N/A for single-series histogram
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Correctly uses "histogram-basic · altair · pyplots.ai"
+        comment: Title format correct; no legend needed for single-series histogram
     data_quality:
-      score: 18
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
-        max: 8
-        passed: true
-        comment: Shows unimodal normal distribution clearly; could demonstrate more
-          features like slight skewness or outliers
+        score: 5
+        max: 6
+        passed: false
+        comment: Bimodal distribution shows spread, skewness, and secondary mode —
+          good but bimodality could be more dramatic
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Human heights in cm is a perfect, relatable real-world scenario
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: 170cm mean with 10cm std dev is realistic for human heights
+        comment: Human heights in cm — neutral, realistic, comprehensible
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Values 144-200 cm realistic for human heights
     code_quality:
       score: 10
       max: 10
@@ -163,40 +178,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save structure with no functions/classes
+        comment: Clean imports → data → plot → save flow
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports (altair, numpy, pandas)
+        comment: Only altair, numpy, pandas — all used
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
-        passed: true
-        comment: Uses current Altair API
-      - id: CQ-05
-        name: Output Correct
-        score: 1
-        max: 1
-        passed: true
-        comment: Saves as plot.png and plot.html
-    library_features:
-      score: 2
-      max: 5
-      items:
-      - id: LF-01
-        name: Uses distinctive library features
+        name: Code Elegance
         score: 2
+        max: 2
+        passed: true
+        comment: Clean Pythonic chain-style Altair code
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves plot.png and plot.html, no deprecated functions
+    library_mastery:
+      score: 8
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
         max: 5
         passed: true
-        comment: Uses declarative encoding and tooltips, but could leverage more Altair
-          features like interactivity
-  verdict: APPROVED
+        comment: 'Proper declarative grammar: mark_bar → encode → properties → configure
+          chain'
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: false
+        comment: Tooltips with binned ranges and dual PNG/HTML export are Altair-specific;
+          alt.Bin() for declarative binning is nice but not exceptional
+  verdict: REJECTED

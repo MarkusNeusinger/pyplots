@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 histogram-basic: Basic Histogram
 Library: highcharts 1.10.3 | Python 3.14.0
 Quality: 86/100 | Created: 2025-12-23
@@ -12,6 +12,7 @@ from pathlib import Path
 import numpy as np
 from highcharts_core.chart import Chart
 from highcharts_core.options import HighchartsOptions
+from highcharts_core.options.annotations import Annotation
 from highcharts_core.options.series.bar import ColumnSeries
 from highcharts_core.options.series.histogram import HistogramSeries
 from selenium import webdriver
@@ -27,17 +28,22 @@ exam_scores = np.clip(np.concatenate([main_group, high_achievers]), 0, 100)
 mean_score = float(np.mean(exam_scores))
 median_score = float(np.median(exam_scores))
 
+# Compute actual bin peak heights for accurate annotation positioning
+counts, bin_edges = np.histogram(exam_scores, bins=20)
+primary_peak_y = int(max(counts[i] for i in range(len(counts)) if (bin_edges[i] + bin_edges[i + 1]) / 2 < 82))
+secondary_peak_y = int(max(counts[i] for i in range(len(counts)) if (bin_edges[i] + bin_edges[i + 1]) / 2 >= 82))
+
 # Create chart using native Highcharts histogram series
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-# Chart settings — tighter margins for better canvas utilization
+# Chart settings — increased marginBottom to ensure x-axis title is visible
 chart.options.chart = {
     "type": "column",
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#fafbfc",
-    "marginBottom": 240,
+    "marginBottom": 320,
     "marginLeft": 220,
     "marginRight": 200,
     "marginTop": 220,
@@ -61,12 +67,13 @@ chart.options.subtitle = {
 }
 
 # X-axis with grade range plotBands and mean/median plotLines
+# Offset mean and median labels vertically to avoid crowding (they are only ~0.5 apart)
 chart.options.x_axis = [
     {
         "title": {
             "text": "Exam Score (points)",
             "style": {"fontSize": "44px", "color": "#333333", "fontWeight": "600"},
-            "margin": 20,
+            "margin": 30,
         },
         "labels": {"style": {"fontSize": "36px", "color": "#444444"}},
         "tickInterval": 5,
@@ -138,10 +145,10 @@ chart.options.x_axis = [
                 "label": {
                     "text": f"\u25c6 Mean: {mean_score:.1f}",
                     "style": {"fontSize": "30px", "color": "#c0392b", "fontWeight": "700"},
-                    "align": "left",
+                    "align": "right",
                     "rotation": 0,
-                    "x": 12,
-                    "y": 50,
+                    "x": -12,
+                    "y": 40,
                 },
             },
             {
@@ -156,7 +163,7 @@ chart.options.x_axis = [
                     "align": "left",
                     "rotation": 0,
                     "x": 12,
-                    "y": 90,
+                    "y": 40,
                 },
             },
         ],
@@ -198,6 +205,49 @@ chart.options.plot_options = {
     }
 }
 
+# Peak annotations via Highcharts Annotations API (declarative, through chart options)
+chart.options.annotations = [
+    Annotation(
+        crop=False,
+        label_options={
+            "shape": "connector",
+            "backgroundColor": "rgba(255,255,255,0.94)",
+            "borderColor": "#306998",
+            "borderWidth": 2,
+            "borderRadius": 8,
+            "padding": 12,
+            "allowOverlap": True,
+            "style": {"fontSize": "28px", "fontWeight": "700", "color": "#1a4a6e"},
+        },
+        labels=[
+            {
+                "point": {"x": 66, "y": primary_peak_y, "xAxis": 0, "yAxis": 0},
+                "text": (
+                    "Primary peak \u25b2<br/>"
+                    '<span style="font-size:24px;color:#555">~72 pts \u2014 main group (80%)</span>'
+                ),
+                "y": -80,
+                "x": -100,
+                "overflow": "none",
+                "crop": False,
+                "allowOverlap": True,
+            },
+            {
+                "point": {"x": 88, "y": secondary_peak_y, "xAxis": 0, "yAxis": 0},
+                "text": (
+                    "Secondary peak \u25b2<br/>"
+                    '<span style="font-size:24px;color:#555">~88 pts \u2014 high achievers (20%)</span>'
+                ),
+                "y": -80,
+                "x": 40,
+                "overflow": "none",
+                "crop": False,
+                "allowOverlap": True,
+            },
+        ],
+    )
+]
+
 # Legend (hide for single series)
 chart.options.legend = {"enabled": False}
 
@@ -237,52 +287,8 @@ annotations_url = "https://code.highcharts.com/modules/annotations.js"
 with urllib.request.urlopen(annotations_url, timeout=30) as response:
     annotations_js = response.read().decode("utf-8")
 
-# Generate HTML with inline scripts and peak annotations
+# Generate HTML with inline scripts — annotations are part of chart options
 html_str = chart.to_js_literal()
-
-# Post-render annotations via Highcharts Annotations API for the two peaks
-annotation_script = """
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  setTimeout(function() {
-    var chart = Highcharts.charts[0];
-    if (!chart) return;
-    chart.addAnnotation({
-      labels: [{
-        point: { x: 72, y: 53, xAxis: 0, yAxis: 0 },
-        text: 'Primary peak \\u25B2<br/><span style="font-size:24px;color:#555">~72 pts \\u2014 main group (80%)</span>',
-        style: { fontSize: '28px', fontWeight: '700', color: '#1a4a6e' },
-        backgroundColor: 'rgba(255,255,255,0.94)',
-        borderColor: '#306998',
-        borderWidth: 2,
-        borderRadius: 8,
-        padding: 12,
-        y: -120,
-        x: -40,
-        overflow: 'none',
-        crop: false
-      }, {
-        point: { x: 86, y: 53, xAxis: 0, yAxis: 0 },
-        text: 'Secondary peak \\u25B2<br/><span style="font-size:24px;color:#555">~88 pts \\u2014 high achievers (20%)</span>',
-        style: { fontSize: '28px', fontWeight: '700', color: '#1a4a6e' },
-        backgroundColor: 'rgba(255,255,255,0.94)',
-        borderColor: '#306998',
-        borderWidth: 2,
-        borderRadius: 8,
-        padding: 12,
-        y: -180,
-        x: -60,
-        overflow: 'none',
-        crop: false
-      }],
-      labelOptions: {
-        shape: 'connector'
-      }
-    });
-  }, 2000);
-});
-</script>
-"""
 
 html_content = f"""<!DOCTYPE html>
 <html>
@@ -295,7 +301,6 @@ html_content = f"""<!DOCTYPE html>
 <body style="margin:0;">
     <div id="container" style="width: 4800px; height: 2700px;"></div>
     <script>{html_str}</script>
-    {annotation_script}
 </body>
 </html>"""
 
@@ -316,7 +321,7 @@ chrome_options.add_argument("--window-size=4800,2700")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
-time.sleep(8)  # Extra time for annotations to render
+time.sleep(5)
 driver.save_screenshot("plot.png")
 driver.quit()
 

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 histogram-basic: Basic Histogram
-Library: highcharts unknown | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: highcharts 1.10.3 | Python 3.14.0
+Quality: /100 | Updated: 2026-02-13
 """
 
 import tempfile
@@ -13,22 +13,19 @@ import numpy as np
 from highcharts_core.chart import Chart
 from highcharts_core.options import HighchartsOptions
 from highcharts_core.options.series.bar import ColumnSeries
+from highcharts_core.options.series.histogram import HistogramSeries
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data
+# Data — university exam scores with realistic slight right skew
 np.random.seed(42)
-values = np.random.normal(loc=65, scale=15, size=500)
+exam_scores = np.concatenate(
+    [np.random.normal(loc=72, scale=12, size=400), np.random.normal(loc=88, scale=5, size=100)]
+)
+exam_scores = np.clip(exam_scores, 0, 100)
 
-# Calculate histogram bins
-num_bins = 15
-counts, bin_edges = np.histogram(values, bins=num_bins)
-
-# Create bin labels (center of each bin for cleaner display)
-bin_labels = [f"{bin_edges[i]:.0f}-{bin_edges[i + 1]:.0f}" for i in range(len(bin_edges) - 1)]
-
-# Create chart
+# Create chart using native Highcharts histogram series
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
@@ -38,60 +35,105 @@ chart.options.chart = {
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
-    "marginBottom": 250,
-    "marginLeft": 150,
+    "marginBottom": 260,
+    "marginLeft": 200,
+    "marginRight": 120,
 }
 
 # Title
 chart.options.title = {
-    "text": "histogram-basic · highcharts · pyplots.ai",
-    "style": {"fontSize": "72px", "fontWeight": "bold"},
+    "text": "Exam Score Distribution \u00b7 histogram-basic \u00b7 highcharts \u00b7 pyplots.ai",
+    "style": {"fontSize": "64px", "fontWeight": "bold", "color": "#333333"},
 }
 
-# X-axis (categories = bin ranges)
-chart.options.x_axis = {
-    "categories": bin_labels,
-    "title": {"text": "Value Range", "style": {"fontSize": "48px"}},
-    "labels": {"style": {"fontSize": "32px"}, "rotation": 315},
+# Subtitle
+chart.options.subtitle = {
+    "text": "500 students \u2014 Introduction to Statistics, Fall 2024",
+    "style": {"fontSize": "40px", "color": "#666666"},
 }
+
+# X-axis
+chart.options.x_axis = [
+    {
+        "title": {"text": "Exam Score (points)", "style": {"fontSize": "44px", "color": "#444444"}},
+        "labels": {"style": {"fontSize": "36px", "color": "#555555"}},
+        "tickInterval": 5,
+        "alignTicks": False,
+    },
+    {"title": {"text": ""}, "opposite": True, "visible": False},
+]
 
 # Y-axis
-chart.options.y_axis = {
-    "title": {"text": "Frequency", "style": {"fontSize": "48px"}},
-    "labels": {"style": {"fontSize": "36px"}},
-    "min": 0,
-    "gridLineColor": "#e0e0e0",
-    "gridLineWidth": 1,
-}
+chart.options.y_axis = [
+    {
+        "title": {"text": "Number of Students", "style": {"fontSize": "44px", "color": "#444444"}},
+        "labels": {"style": {"fontSize": "36px", "color": "#555555"}},
+        "min": 0,
+        "tickInterval": 10,
+        "gridLineColor": "#e8e8e8",
+        "gridLineWidth": 1,
+    },
+    {"title": {"text": ""}, "opposite": True, "visible": False},
+]
 
 # Plot options for histogram appearance (no gaps between bars)
 chart.options.plot_options = {
-    "column": {"pointPadding": 0, "groupPadding": 0, "borderWidth": 1, "borderColor": "#1a4a6e"}
+    "histogram": {
+        "pointPadding": 0,
+        "groupPadding": 0,
+        "borderWidth": 2,
+        "borderColor": "#1a4a6e",
+        "binsNumber": 20,
+        "tooltip": {
+            "headerFormat": "",
+            "pointFormat": "<b>{point.x:.0f} \u2013 {point.x2:.0f}</b><br/>Students: {point.y}",
+        },
+    }
 }
 
 # Legend (hide for single series)
 chart.options.legend = {"enabled": False}
 
-# Create series
-series = ColumnSeries()
-series.name = "Frequency"
-series.data = [int(c) for c in counts]
-series.color = "#306998"
+# Credits
+chart.options.credits = {"enabled": False}
 
-chart.add_series(series)
+# Base data series (hidden — provides data for histogram)
+base_series = ColumnSeries()
+base_series.name = "Raw Scores"
+base_series.data = [round(float(v), 1) for v in exam_scores]
+base_series.id = "exam-data"
+base_series.visible = False
+base_series.show_in_legend = False
 
-# Download Highcharts JS
+# Histogram series derived from base data
+hist_series = HistogramSeries()
+hist_series.name = "Frequency"
+hist_series.base_series = "exam-data"
+hist_series.color = "#306998"
+hist_series.x_axis = 0
+hist_series.y_axis = 0
+hist_series.bins_number = 20
+
+chart.add_series(base_series)
+chart.add_series(hist_series)
+
+# Download Highcharts JS and histogram module
 highcharts_url = "https://code.highcharts.com/highcharts.js"
 with urllib.request.urlopen(highcharts_url, timeout=30) as response:
     highcharts_js = response.read().decode("utf-8")
 
-# Generate HTML with inline script
+histogram_module_url = "https://code.highcharts.com/modules/histogram-bellcurve.js"
+with urllib.request.urlopen(histogram_module_url, timeout=30) as response:
+    histogram_module_js = response.read().decode("utf-8")
+
+# Generate HTML with inline scripts
 html_str = chart.to_js_literal()
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
     <script>{highcharts_js}</script>
+    <script>{histogram_module_js}</script>
 </head>
 <body style="margin:0;">
     <div id="container" style="width: 4800px; height: 2700px;"></div>
@@ -104,7 +146,7 @@ with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encodin
     f.write(html_content)
     temp_path = f.name
 
-# Also save HTML for interactive version
+# Save HTML for interactive version
 Path("plot.html").write_text(html_content, encoding="utf-8")
 
 chrome_options = Options()

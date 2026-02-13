@@ -420,15 +420,27 @@ Report all PR URLs to the user.
 
 ---
 
-### Phase 7: Monitor & Resolve
+### Phase 7: Monitor Pipeline
 
-After shipping PRs, the lead monitors the review pipeline and handles any failures. The team stays alive until
-all PRs are merged.
+After shipping PRs, shut down agents and clean up the team immediately — repairs are handled by the CI pipeline
+(`impl-repair.yml`), not locally. The lead monitors progress until all PRs reach a terminal state.
 
-#### 7a. Poll PR Status
+#### 7a. Shut Down Team
 
-Build a tracking table: `{library} → {pr_number, status}` where status is one of: `reviewing`, `approved`,
-`merged`, `rejected`, `failed`.
+Immediately after Phase 6 completes:
+
+1. `SendMessage` with type `shutdown_request` to all agents
+2. Wait for all agents to confirm shutdown
+3. `TeamDelete` to clean up the team
+4. Clean up preview directory:
+   ```bash
+   rm -rf plots/{spec_id}/implementations/.update-preview
+   ```
+
+#### 7b. Poll PR Status
+
+Build a tracking table: `{library} → {pr_number, score, status}` where status is one of: `reviewing`, `approved`,
+`repairing`, `merged`, `rejected`, `failed`, `not-feasible`.
 
 Present the summary table to the user.
 
@@ -438,109 +450,54 @@ Poll every **90 seconds** using `gh pr view` for each PR:
 gh pr view {pr_number} --json state,labels,mergedAt
 ```
 
-Extract status from labels: `ai-approved`, `ai-rejected`, `quality:{score}`, `quality-poor`.
+Extract status from labels: `ai-approved`, `ai-rejected`, `quality:{score}`, `quality-poor`, `not-feasible`,
+`ai-attempt-{N}`.
 
-Update the table and inform the user when status changes.
+Update the table and inform the user when any status changes.
 
-**Exit conditions**: all PRs are `merged` OR user says `abort`.
+**How the CI repair pipeline works:**
+- `impl-review.yml` scores the PR. If score < 90, it adds `ai-rejected` label.
+- `impl-repair.yml` auto-triggers on `ai-rejected`: reads review feedback, runs Claude to fix, pushes, re-triggers review.
+- Up to 3 attempts. After attempt 3: score >= 50 → `ai-approved` and merge; score < 50 → PR closed + `not-feasible`.
+- `impl-merge.yml` auto-triggers on `ai-approved`: squash-merges, creates metadata, promotes GCS images.
 
-#### 7b. Handle Rejections
+**Exit conditions**: all PRs are `merged`, `not-feasible`, or closed — OR user says `abort`.
 
-**When a PR gets `ai-rejected`:**
+#### 7c. Handle Pipeline Failures
 
-1. **Cancel CI repair** — `impl-repair.yml` auto-triggers on `ai-rejected`. Cancel it since we'll fix locally
-   (agents have context):
+Only intervene if the CI pipeline itself fails (not for normal rejections — those are handled by `impl-repair.yml`).
+
+**Stalled PRs** — if a PR shows no label changes for ~10 minutes:
+
+1. Check workflow run status:
    ```bash
-   gh run list --workflow=impl-repair.yml --branch=implementation/{spec_id}/{library} --status=in_progress --json databaseId -q '.[0].databaseId'
-   # then: gh run cancel {run_id}
+   gh run list --workflow=impl-review.yml --branch=implementation/{spec_id}/{library} --limit 1 --json status,conclusion
+   gh run list --workflow=impl-repair.yml --branch=implementation/{spec_id}/{library} --limit 1 --json status,conclusion
    ```
 
-2. **Read review feedback** from the PR:
+2. If a workflow run failed, read logs:
    ```bash
-   gh pr view {pr_number} --json comments -q '.comments[-1].body'
-   ```
-   Also read the updated metadata on the PR branch for structured review data:
-   ```bash
-   gh api repos/{owner}/{repo}/contents/plots/{spec_id}/metadata/{library}.yaml?ref=implementation/{spec_id}/{library} -q '.content' | base64 -d
+   gh run view {run_id} --log-failed
    ```
 
-3. **Wake the agent** via `SendMessage` with the review feedback. Agent repeats Steps 2-8 (conflict check →
-   modify → generate → lint → process → self-check → report).
+3. Report the failure reason to the user and ask how to proceed:
+   - **Re-trigger**: `gh api repos/{owner}/{repo}/dispatches -f event_type=review-pr -f 'client_payload[pr_number]='"$PR_NUM"`
+   - **Skip**: move on, leave PR open for manual handling
+   - **Abort**: stop monitoring entirely
 
-4. **Push repair to PR branch** — after agent reports back:
-   ```bash
-   # Save current main state
-   git stash
+#### 7d. Final Report
 
-   # Checkout PR branch, pull latest (review may have pushed metadata updates)
-   git checkout implementation/{spec_id}/{library}
-   git pull
-
-   # Stage agent's changes
-   git add plots/{spec_id}/implementations/{library}.py
-   git add plots/{spec_id}/metadata/{library}.yaml
-   git commit -m "repair({spec_id}): {library} — address review feedback"
-   git push
-
-   # Return to main
-   git checkout main
-   git stash pop
-   ```
-
-5. **Re-upload images to GCS staging** (agent regenerated in `.update-preview/`):
-   ```bash
-   # Process images
-   uv run python -m core.images process \
-     plots/{spec_id}/implementations/.update-preview/{library}/plot.png \
-     plots/{spec_id}/implementations/.update-preview/{library}/plot.png \
-     plots/{spec_id}/implementations/.update-preview/{library}/plot_thumb.png
-
-   STAGING_PATH="gs://pyplots-images/staging/{spec_id}/{library}"
-   gsutil cp plots/{spec_id}/implementations/.update-preview/{library}/plot.png "${STAGING_PATH}/plot.png"
-   gsutil cp plots/{spec_id}/implementations/.update-preview/{library}/plot_thumb.png "${STAGING_PATH}/plot_thumb.png"
-   ```
-
-6. **Re-trigger review**:
-   ```bash
-   gh api repos/{owner}/{repo}/dispatches \
-     -f event_type=review-pr \
-     -f 'client_payload[pr_number]='"$PR_NUMBER"
-   ```
-
-7. Continue polling. If rejected again, repeat (up to 2 repair rounds by lead — 3rd attempt handled by CI if
-   needed).
-
-**Workflow failures:**
-
-If a review or merge workflow fails (no labels appear after ~10 minutes):
-
-- Check workflow run status:
-  ```bash
-  gh run list --workflow=impl-review.yml --branch=implementation/{spec_id}/{library} --limit 1 --json status,conclusion
-  ```
-- If failed, read logs:
-  ```bash
-  gh run view {run_id} --log-failed
-  ```
-- Report failure reason to user, ask how to proceed (re-trigger, fix manually, skip).
-
-#### 7c. Final Report & Cleanup
-
-Once all PRs are merged:
+Once all PRs have reached a terminal state:
 
 1. Present final summary table:
 
-   | Library | PR | Quality Score | Status |
-   |---------|-----|--------------|--------|
-   | matplotlib | #1234 | 92 | merged |
-   | seaborn | #1235 | 87 (repair) | merged |
+   | Library | PR | Quality Score | Attempts | Status |
+   |---------|-----|--------------|----------|--------|
+   | matplotlib | #1234 | 92 | 2 | merged |
+   | seaborn | #1235 | 94 | 1 | merged |
+   | pygal | #1236 | 45 | 3 | not-feasible |
 
-2. `SendMessage` with type `shutdown_request` to all agents
-3. `TeamDelete` to clean up the team
-4. Clean up preview directory if still present:
-   ```bash
-   rm -rf plots/{spec_id}/implementations/.update-preview
-   ```
+2. Report any `not-feasible` libraries to the user — these may need manual intervention or a different approach.
 
 ---
 

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 histogram-basic: Basic Histogram
-Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-23
+Library: seaborn 0.13.2 | Python 3.14.0
+Quality: /100 | Updated: 2026-02-13
 """
 
 import matplotlib.pyplot as plt
@@ -9,24 +9,28 @@ import numpy as np
 import seaborn as sns
 
 
-# Data - simulated test scores with realistic distribution
+# Data - simulated exam scores with realistic right skew
 np.random.seed(42)
-values = np.random.normal(loc=75, scale=12, size=500)
+values = np.concatenate(
+    [
+        np.random.normal(loc=72, scale=10, size=400),
+        np.random.normal(loc=90, scale=4, size=80),
+        np.random.uniform(30, 50, size=20),
+    ]
+)
 
-# Create figure (4800x2700 px)
+# Plot
 fig, ax = plt.subplots(figsize=(16, 9))
+sns.histplot(values, bins=30, kde=True, color="#306998", edgecolor="white", linewidth=1.2, alpha=0.85, ax=ax)
 
-# Plot histogram
-sns.histplot(values, bins=25, color="#306998", edgecolor="white", linewidth=1.5, alpha=0.85, ax=ax)
-
-# Labels and styling (scaled for 4800x2700)
-ax.set_xlabel("Test Score (points)", fontsize=20)
+# Style
+ax.set_xlabel("Exam Score (points)", fontsize=20)
 ax.set_ylabel("Frequency (count)", fontsize=20)
-ax.set_title("histogram-basic · seaborn · pyplots.ai", fontsize=24)
+ax.set_title("histogram-basic \u00b7 seaborn \u00b7 pyplots.ai", fontsize=24)
 ax.tick_params(axis="both", labelsize=16)
-ax.grid(True, alpha=0.3, linestyle="--", axis="y")
-
-# Ensure y-axis starts at zero
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
+ax.yaxis.grid(True, alpha=0.2, linewidth=0.8)
 ax.set_ylim(bottom=0)
 
 plt.tight_layout()

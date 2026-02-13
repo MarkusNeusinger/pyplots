@@ -53,7 +53,37 @@ Parse `$ARGUMENTS` using this format:
 
 ---
 
-### Phase 2: Create Team & Spawn Agents
+### Phase 2: Spec Optimization
+
+The lead performs this directly (no extra agent). This ensures agents work against a high-quality spec.
+
+1. **Read references**: Read `plots/{spec_id}/specification.md`, `plots/{spec_id}/specification.yaml`,
+   `prompts/templates/specification.md`, `prompts/templates/specification.yaml`, and `prompts/spec-tags-generator.md`.
+
+2. **Analyse the spec** against these dimensions:
+
+   | Dimension | What to check |
+   |-----------|---------------|
+   | **Wording** | Description clear and concise? Applications realistic? Data fields include types and sizes? Notes actionable? |
+   | **Missing sections** | All sections from `prompts/templates/specification.md` present? |
+   | **Tag completeness** | All 4 tag dimensions (`plot_type`, `data_type`, `domain`, `features`) have at least 1 value? |
+   | **Tag quality** | Naming conventions (lowercase, hyphens)? Values from recommended vocabulary in `prompts/spec-tags-generator.md`? Missing obvious tags? |
+   | **Tag accuracy** | Do existing tags actually match the spec content? |
+
+3. **Present numbered suggestions** to the user (e.g., "1. Add `time-series` to data_type tags", "2. Clarify data size in Data section").
+   If the spec looks good, say so and move on.
+
+4. **User responds** with one of:
+   - `all` — apply all suggestions
+   - `1,3` — apply only listed suggestions
+   - `none` or `skip` — skip spec optimization, proceed as-is
+   - Custom feedback — apply the user's specific instructions
+
+5. **Apply accepted changes** to `specification.md` and/or `specification.yaml`, then proceed to Phase 3.
+
+---
+
+### Phase 3: Create Team & Spawn Agents
 
 1. **Create team**: `TeamCreate` with name `update-{spec_id}`
 
@@ -63,10 +93,36 @@ Parse `$ARGUMENTS` using this format:
 
 3. **Spawn one `general-purpose` opus agent per library** via `Task` tool with:
     - `team_name`: `update-{spec_id}`
-    - `name`: `{library}-updater`
+    - `name`: `{library}`
     - `subagent_type`: `general-purpose`
     - `model`: `opus`
-    - The **library-updater prompt** (see below), with `{SPEC_ID}`, `{LIBRARY}`, and `{DESCRIPTION}` filled in
+    - The **library agent prompt** (see below), with `{SPEC_ID}`, `{LIBRARY}`, `{DESCRIPTION}`, `{CONTEXT7_LIBRARY}`,
+      `{PLOT_TYPE}`, and `{SPEC_TITLE}` filled in
+
+   **Template variable reference** (lead must fill these):
+
+   | Variable | Source |
+   |----------|--------|
+   | `{SPEC_ID}` | From Phase 1 parse |
+   | `{LIBRARY}` | Current library name |
+   | `{DESCRIPTION}` | User's description |
+   | `{CONTEXT7_LIBRARY}` | Mapped library name for Context7 (see mapping below) |
+   | `{PLOT_TYPE}` | Primary `plot_type` tag from `specification.yaml` |
+   | `{SPEC_TITLE}` | Title from `specification.md` |
+
+   **Context7 library name mapping:**
+
+   | Library | Context7 name |
+   |---------|---------------|
+   | `matplotlib` | `matplotlib` |
+   | `seaborn` | `seaborn` |
+   | `plotly` | `plotly` |
+   | `bokeh` | `bokeh` |
+   | `altair` | `altair` |
+   | `plotnine` | `plotnine` |
+   | `pygal` | `pygal` |
+   | `highcharts` | `highcharts-core` |
+   | `letsplot` | `lets-plot` |
 
 4. **Assign tasks** to the corresponding agents via `TaskUpdate`
 
@@ -75,7 +131,7 @@ their designated directories (see file containment rules in the agent prompt).
 
 ---
 
-### Phase 3: Collect & Present
+### Phase 4: Collect & Present
 
 Agents report back via `SendMessage` (auto-delivered to you). Agents may report either **completed work** (`STATUS: done`) or **a conflict** (`STATUS: conflict`). Once all agents have reported:
 
@@ -132,25 +188,25 @@ Agents report back via `SendMessage` (auto-delivered to you). Agents may report 
 
 ---
 
-### Phase 4: Iterate
+### Phase 5: Iterate
 
 For per-library feedback:
 
-1. Send the feedback to the specific idle teammate via `SendMessage` (e.g., to `seaborn-updater`). This wakes them up.
-2. The agent runs its conflict check again (Step 2) on the new feedback. If it detects a conflict, it reports back with `STATUS: conflict` instead of making changes — handle as in Phase 3.
+1. Send the feedback to the specific idle teammate via `SendMessage` (e.g., to `seaborn`). This wakes them up.
+2. The agent runs its conflict check again (Step 2) on the new feedback. If it detects a conflict, it reports back with `STATUS: conflict` instead of making changes — handle as in Phase 4.
 3. If no conflict, the agent re-modifies, re-generates, reports back, and goes idle again.
 4. Present updated results to the user.
 5. Repeat until the user approves.
 
 ---
 
-### Phase 5: Ship
+### Phase 6: Ship
 
 **Only proceed when the user explicitly approves shipping.**
 
 The lead handles all shipping directly (no delegation to teammates):
 
-#### 5a. Code Quality
+#### 6a. Code Quality
 
 Run ruff format and check **sequentially first**, before any parallel version-info commands.
 If parallel Bash calls are used and one fails, all sibling calls get cancelled — so always run ruff alone.
@@ -163,7 +219,7 @@ uv run ruff check --fix plots/{spec_id}/implementations/*.py
 If there are unfixable errors, fix them manually and re-run. The agents should have already run ruff in their
 lint step, but this is a safety net.
 
-#### 5b. Update Metadata YAML
+#### 6b. Update Metadata YAML
 
 For each updated library, edit `plots/{spec_id}/metadata/{library}.yaml`:
 
@@ -190,7 +246,7 @@ For each updated library, edit `plots/{spec_id}/metadata/{library}.yaml`:
 | highcharts | `highcharts-core` |
 | letsplot | `lets-plot` |
 
-#### 5c. Update Implementation Header
+#### 6c. Update Implementation Header
 
 For each updated library, ensure the implementation file starts with:
 
@@ -202,7 +258,7 @@ Quality: /100 | Updated: {YYYY-MM-DD}
 """
 ```
 
-#### 5d. Copy Final Images
+#### 6d. Copy Final Images
 
 For each library, copy the preview images to the implementations directory for GCS upload:
 
@@ -217,7 +273,7 @@ uv run python -m core.images process \
 
 Note: Since we process one library at a time for GCS upload, handle sequentially.
 
-#### 5e. GCS Staging Upload
+#### 6e. GCS Staging Upload
 
 For each library:
 
@@ -246,13 +302,13 @@ GCS files from staging to production on merge):
 - `preview_url`: `https://storage.googleapis.com/pyplots-images/plots/{spec_id}/{library}/plot.png`
 - `preview_thumb`: `https://storage.googleapis.com/pyplots-images/plots/{spec_id}/{library}/plot_thumb.png`
 
-#### 5f. Clean Up Preview Directory
+#### 6f. Clean Up Preview Directory
 
 ```bash
 rm -rf plots/{spec_id}/implementations/.update-preview
 ```
 
-#### 5g. Per-Library Branches, PRs & Reviews
+#### 6g. Per-Library Branches, PRs & Reviews
 
 **IMPORTANT:** The review pipeline (`impl-review.yml`) extracts `SPEC_ID` and `LIBRARY` from the branch name
 pattern `implementation/{spec-id}/{library}`. Therefore, each library MUST get its own branch and PR.
@@ -362,22 +418,140 @@ rm -f /tmp/patch-{spec_id}-*.patch
 
 Report all PR URLs to the user.
 
-#### 5h. Cleanup Team
+---
 
-1. `SendMessage` with type `shutdown_request` to all agents
-2. `TeamDelete` to clean up the team
-3. Report all PR URLs to the user
+### Phase 7: Monitor & Resolve
+
+After shipping PRs, the lead monitors the review pipeline and handles any failures. The team stays alive until
+all PRs are merged.
+
+#### 7a. Poll PR Status
+
+Build a tracking table: `{library} → {pr_number, status}` where status is one of: `reviewing`, `approved`,
+`merged`, `rejected`, `failed`.
+
+Present the summary table to the user.
+
+Poll every **90 seconds** using `gh pr view` for each PR:
+
+```bash
+gh pr view {pr_number} --json state,labels,mergedAt
+```
+
+Extract status from labels: `ai-approved`, `ai-rejected`, `quality:{score}`, `quality-poor`.
+
+Update the table and inform the user when status changes.
+
+**Exit conditions**: all PRs are `merged` OR user says `abort`.
+
+#### 7b. Handle Rejections
+
+**When a PR gets `ai-rejected`:**
+
+1. **Cancel CI repair** — `impl-repair.yml` auto-triggers on `ai-rejected`. Cancel it since we'll fix locally
+   (agents have context):
+   ```bash
+   gh run list --workflow=impl-repair.yml --branch=implementation/{spec_id}/{library} --status=in_progress --json databaseId -q '.[0].databaseId'
+   # then: gh run cancel {run_id}
+   ```
+
+2. **Read review feedback** from the PR:
+   ```bash
+   gh pr view {pr_number} --json comments -q '.comments[-1].body'
+   ```
+   Also read the updated metadata on the PR branch for structured review data:
+   ```bash
+   gh api repos/{owner}/{repo}/contents/plots/{spec_id}/metadata/{library}.yaml?ref=implementation/{spec_id}/{library} -q '.content' | base64 -d
+   ```
+
+3. **Wake the agent** via `SendMessage` with the review feedback. Agent repeats Steps 2-8 (conflict check →
+   modify → generate → lint → process → self-check → report).
+
+4. **Push repair to PR branch** — after agent reports back:
+   ```bash
+   # Save current main state
+   git stash
+
+   # Checkout PR branch, pull latest (review may have pushed metadata updates)
+   git checkout implementation/{spec_id}/{library}
+   git pull
+
+   # Stage agent's changes
+   git add plots/{spec_id}/implementations/{library}.py
+   git add plots/{spec_id}/metadata/{library}.yaml
+   git commit -m "repair({spec_id}): {library} — address review feedback"
+   git push
+
+   # Return to main
+   git checkout main
+   git stash pop
+   ```
+
+5. **Re-upload images to GCS staging** (agent regenerated in `.update-preview/`):
+   ```bash
+   # Process images
+   uv run python -m core.images process \
+     plots/{spec_id}/implementations/.update-preview/{library}/plot.png \
+     plots/{spec_id}/implementations/.update-preview/{library}/plot.png \
+     plots/{spec_id}/implementations/.update-preview/{library}/plot_thumb.png
+
+   STAGING_PATH="gs://pyplots-images/staging/{spec_id}/{library}"
+   gsutil cp plots/{spec_id}/implementations/.update-preview/{library}/plot.png "${STAGING_PATH}/plot.png"
+   gsutil cp plots/{spec_id}/implementations/.update-preview/{library}/plot_thumb.png "${STAGING_PATH}/plot_thumb.png"
+   ```
+
+6. **Re-trigger review**:
+   ```bash
+   gh api repos/{owner}/{repo}/dispatches \
+     -f event_type=review-pr \
+     -f 'client_payload[pr_number]='"$PR_NUMBER"
+   ```
+
+7. Continue polling. If rejected again, repeat (up to 2 repair rounds by lead — 3rd attempt handled by CI if
+   needed).
+
+**Workflow failures:**
+
+If a review or merge workflow fails (no labels appear after ~10 minutes):
+
+- Check workflow run status:
+  ```bash
+  gh run list --workflow=impl-review.yml --branch=implementation/{spec_id}/{library} --limit 1 --json status,conclusion
+  ```
+- If failed, read logs:
+  ```bash
+  gh run view {run_id} --log-failed
+  ```
+- Report failure reason to user, ask how to proceed (re-trigger, fix manually, skip).
+
+#### 7c. Final Report & Cleanup
+
+Once all PRs are merged:
+
+1. Present final summary table:
+
+   | Library | PR | Quality Score | Status |
+   |---------|-----|--------------|--------|
+   | matplotlib | #1234 | 92 | merged |
+   | seaborn | #1235 | 87 (repair) | merged |
+
+2. `SendMessage` with type `shutdown_request` to all agents
+3. `TeamDelete` to clean up the team
+4. Clean up preview directory if still present:
+   ```bash
+   rm -rf plots/{spec_id}/implementations/.update-preview
+   ```
 
 ---
 
-## Library-Updater Agent Prompt
+## Library Agent Prompt
 
-Use this prompt when spawning each per-library agent. Replace `{SPEC_ID}`, `{LIBRARY}`, and `{DESCRIPTION}` with actual
-values.
+Use this prompt when spawning each per-library agent. Replace `{SPEC_ID}`, `{LIBRARY}`, `{DESCRIPTION}`,
+`{CONTEXT7_LIBRARY}`, `{PLOT_TYPE}`, and `{SPEC_TITLE}` with actual values (see Phase 3 template variable reference).
 
 ---
 
-You are the **{LIBRARY}-updater** on the `update-{SPEC_ID}` team. Your job is to update the {LIBRARY} implementation for
+You are **{LIBRARY}** on the `update-{SPEC_ID}` team. Your job is to update the {LIBRARY} implementation for
 **{SPEC_ID}**.
 
 **Task:** {DESCRIPTION}
@@ -396,6 +570,10 @@ Read these files to understand what you're working with:
 4. `prompts/library/{LIBRARY}.md` — library-specific rules (**CRITICAL**: follow these exactly)
 5. `prompts/plot-generator.md` — base generation rules
 6. `prompts/quality-criteria.md` — quality scoring criteria
+7. **Context7 library documentation** — Query up-to-date library docs for idiomatic patterns:
+   - Call `resolve-library-id` with `libraryName: "{CONTEXT7_LIBRARY}"` and `query: "how to create {PLOT_TYPE} chart with {CONTEXT7_LIBRARY}"`
+   - Call `query-docs` with the resolved library ID and `query: "idiomatic patterns for creating {SPEC_TITLE} ({PLOT_TYPE}) with {CONTEXT7_LIBRARY}, including best practices for styling and layout"`
+   - Use the returned documentation **together with** (not instead of) the static library rules from step 4
 
 If `preview_url` exists in the metadata, view the current preview image to understand what the plot currently looks
 like.
@@ -455,6 +633,7 @@ Edit `plots/{SPEC_ID}/implementations/{LIBRARY}.py`:
   4. **Spec Compliance** — Point-by-point check against `specification.md`
   5. **Library Feature Usage** (LF-01) — Does the code leverage distinctive library strengths? Basic usage is not enough
   6. **Code Transferability** — Can a user easily adapt this to their own data? Clear separation of data vs. plot logic? Meaningful variable names?
+- **Respect the spec variant:** If the spec-id contains `basic`, the plot must stay basic. Do NOT add annotations, trendlines, regression lines, callout boxes, or other embellishments. Basic means clean and simple — storytelling comes from well-chosen data and visual clarity, not added elements.
 - **No changes for the sake of changes:** If you find nothing meaningful to improve, report "no improvements needed" and leave the code unchanged. Do not make cosmetic or unnecessary changes just to show activity.
 
 If the specification genuinely needs changes to improve the result, edit `plots/{SPEC_ID}/specification.md` and

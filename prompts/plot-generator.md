@@ -362,9 +362,9 @@ pyplots renders at **4800 × 2700 px** (16:9) or **3600 × 3600 px** (1:1) — s
 - Remove decorations: single-series legends, tick marks (keep labels), unnecessary grid lines
 
 **Data storytelling (for DE-03 score):**
-- Consider adding annotations to highlight key data points or trends
 - Use visual emphasis (color, size) to guide the viewer's eye
-- Tell a story, don't just display data
+- Tell a story through good data choice and clear visual hierarchy
+- **Respect the spec variant:** If the spec-id contains `basic`, storytelling comes from well-chosen data and clean design — NOT from adding annotations, trendlines, or extra visual elements. A basic scatter plot should remain a basic scatter plot.
 
 ## Output File
 

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 histogram-basic: Basic Histogram
 Library: plotnine 0.15.3 | Python 3.14.0
-Quality: 79/100 | Created: 2025-12-23
+Quality: 95/100 | Created: 2025-12-23
 """
 
 import numpy as np

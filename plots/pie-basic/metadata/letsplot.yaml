@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: pie-basic
 created: '2025-12-23T00:36:17Z'
-updated: '2026-02-14T14:47:48Z'
+updated: '2026-02-14T15:00:02Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447777540
 issue: 0
@@ -10,7 +10,7 @@ library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-basic/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-basic/letsplot/plot.html
-quality_score: 77
+quality_score: 88
 impl_tags:
   dependencies: []
   techniques:
@@ -22,103 +22,100 @@ impl_tags:
   - edge-highlighting
 review:
   strengths:
-  - Idiomatic lets-plot usage with geom_pie, layer_labels, and spacer styling — distinctly
-    lets-plot features
-  - Realistic smartphone market share data with plausible proportions
-  - Clean colorblind-safe palette starting with Python Blue
-  - White spacers between slices add visual polish
-  - Deterministic data with clean KISS code structure
+  - Excellent data storytelling with subtitle providing a clear narrative insight
+    about the data
+  - Clean use of lets-plot-specific geom_pie() features (spacers, stroke, explode,
+    layer_labels)
+  - All font sizes explicitly set and well-calibrated for 4800x2700 output
+  - Colorblind-safe custom palette starting with Python Blue
+  - Deterministic, realistic data with a recognizable real-world context
   weaknesses:
-  - Pie chart is too small relative to the 4800x2700 canvas — excessive whitespace
-    above and below reduces visual impact
-  - Title font size is 22pt, below the 24pt minimum for full legibility score
-  - No data storytelling — no annotations highlighting the market leader or key insight,
-    no callouts or narrative elements
-  - The exploded slice choice (OPPO at 8.8%) is valid but could be more impactful
-    if the largest individual company (Apple) were emphasized instead
-  - No visual refinement beyond theme_void — could benefit from a subtitle, annotation,
-    or other polish element
+  - 'Layout imbalance: significant empty space in the bottom third of the canvas;
+    pie is offset left while legend is far right'
+  - Exploded slice is Apple (23.1%) rather than the largest (Others, 35%) or smallest
+    (OPPO, 8.8%) as specified
+  - Canvas utilization could be improved — the pie could be larger or centered better
+    to fill the 16:9 space more effectively
   image_description: 'The plot displays a pie chart titled "Global Smartphone Market
-    Share · pie-basic · letsplot · pyplots.ai" centered on a white canvas. Five slices
-    represent: Apple (dark blue, 23.1%), Samsung (yellow, 19.4%), Xiaomi (green, 13.7%),
-    OPPO (orange/coral, 8.8%), and Others (grey, 35.0%). The OPPO slice is slightly
-    exploded outward from the pie. Each slice has a percentage label positioned inside
-    or near it. White spacers separate the slices. A horizontal legend at the bottom
-    shows colored dots with company names. The pie is moderately sized relative to
-    the 16:9 canvas, with significant whitespace above and below the chart.'
+    Share · pie-basic · letsplot · pyplots.ai" with a subtitle "Apple leads named
+    brands at 23.1% — but ''Others'' hold the largest share at 35%". Five slices represent:
+    Apple (dark blue, 23.1%), Samsung (golden yellow, 19.4%), Xiaomi (green, 13.7%),
+    OPPO (coral/orange, 8.8%), and Others (muted gray, 35.0%). The Apple slice is
+    slightly exploded outward from the center. Each slice has a percentage label positioned
+    inside. A legend titled "Brand" with colored dots sits on the right side. White
+    spacers cleanly separate the slices. The pie is centered slightly left with notable
+    empty space in the bottom third of the canvas. theme_void() provides a clean white
+    background with no axes or grid.'
   criteria_checklist:
     visual_quality:
-      score: 23
+      score: 27
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 6
+        score: 8
         max: 8
         passed: true
-        comment: Title explicitly set to 22pt (below 24pt threshold), legend title
-          18pt, legend text 16pt, percentage labels 16pt. All readable but title undersized.
+        comment: 'All font sizes explicitly set: title 26pt, subtitle 16pt, legend
+          title 20pt, legend text 18pt, slice labels 18pt'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements anywhere.
+        comment: No overlapping text anywhere. Slice labels well-positioned inside
+          each slice
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Slices are clearly visible. OPPO slice is small but readable. Pie
-          could be larger relative to canvas.
+        comment: Pie well-sized. OPPO slice at 8.8% is small but visible and labeled
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue, yellow, green, orange, grey palette is colorblind-safe with
-          good contrast.
+        comment: Blue, yellow, green, orange, gray palette is colorblind-safe
       - id: VQ-05
-        name: Layout & Canvas
-        score: 1
+        name: Layout Balance
+        score: 2
         max: 4
         passed: false
-        comment: Pie chart is small relative to 4800x2700 canvas. Substantial whitespace
-          above and below. Pie fills roughly 35% of vertical space.
+        comment: Significant empty space in bottom third. Legend at [0.85, 0.5] pushes
+          pie off-center
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Descriptive title present; no axis labels needed for pie chart, no
-          units applicable.
+        comment: Descriptive title with context. Subtitle adds narrative. No axes
+          needed for pie chart
     design_excellence:
-      score: 10
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom Python Blue-first palette, white spacers, void theme. Above
-          defaults but not FiveThirtyEight-level.
+        comment: Custom palette, white spacers, void theme. Professional but not FiveThirtyEight-level
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: theme_void removes clutter, spacers add polish. Excessive whitespace
-          and small pie size reduce polished feel.
+        passed: true
+        comment: theme_void removes chrome, white spacers add separation. Excessive
+          empty space below
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 4
         max: 6
-        passed: false
-        comment: Percentages shown on slices but no narrative annotations. No callout
-          highlighting market leader or key insight.
+        passed: true
+        comment: Subtitle provides clear insight. Exploded Apple slice draws attention
     spec_compliance:
-      score: 13
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -126,27 +123,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct pie chart.
+        comment: Correct pie chart type
       - id: SC-02
         name: Required Features
         score: 3
         max: 4
         passed: true
-        comment: Percentage labels, distinct colors, legend present. Exploded slice
-          is OPPO (smallest named company) — valid interpretation.
+        comment: All features present but exploded slice is Apple, not the largest
+          or smallest as spec requires
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Categories and values correctly mapped to slices.
+        comment: Categories and values correctly mapped
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend present with company names. Legend title
-          is generic 'Company'.
+        comment: Title follows required format. Legend labeled Brand with correct
+          names
     data_quality:
       score: 14
       max: 15
@@ -156,23 +153,21 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Five categories with varied proportions, includes Others aggregate.
-          Good range from 8.8% to 35%.
+        comment: Five categories with good size variation. Missing extreme small slices
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Global smartphone market share is a real, neutral, comprehensible
-          scenario with plausible data.
+        comment: Global smartphone market share is real, neutral, recognizable
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values sum to 100%, proportions are realistic.
+        comment: Percentages realistic and sum to 100%
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -180,34 +175,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean Imports → Data → Plot → Save flow, no functions/classes.
+        comment: Clean Imports -> Data -> Plot -> Save structure
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic hardcoded data, no randomness.
+        comment: Fully deterministic with hardcoded values
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only lets_plot imports, all used.
+        comment: Only lets_plot imports used
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Manual percentage calculation is slightly redundant. Explode column
-          as data dict entry is verbose.
+        passed: true
+        comment: Clean, Pythonic, appropriate complexity
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with scale=3 for correct resolution.
+        comment: Saves as plot.png with scale=3
     library_mastery:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: LM-01
@@ -215,13 +209,13 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Expertly uses ggplot grammar: geom_pie, aes, scale_fill_manual,
-          theme_void, ggsize.'
+        comment: Expert use of lets-plot grammar of graphics with geom_pie, layer_labels,
+          scale_fill_manual
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Uses geom_pie (lets-plot exclusive), layer_labels() with .format(),
-          spacer_width/spacer_color, stroke_side — features unique to lets-plot.
+        comment: 'Uses lets-plot-specific geom_pie features: spacer_width, stroke_side,
+          explode aesthetic, layer_labels chain'
   verdict: REJECTED

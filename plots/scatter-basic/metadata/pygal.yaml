@@ -1,7 +1,7 @@
 library: pygal
 specification_id: scatter-basic
 created: '2025-12-22T23:36:06Z'
-updated: '2026-02-14T14:33:11Z'
+updated: '2026-02-14T14:40:16Z'
 generated_by: claude-opus-4-6
 workflow_run: 20446833549
 issue: 0
@@ -10,48 +10,49 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/pygal/plot.html
-quality_score: 78
+quality_score: 87
 impl_tags:
   dependencies: []
   techniques:
   - html-export
   patterns:
   - data-generation
-  dataprep: []
+  dataprep:
+  - regression
   styling:
   - alpha-blending
   - grid-styling
 review:
   strengths:
-  - Perfect spec compliance with correct title format, axis labels with units, and
-    appropriate chart type
-  - Clean KISS code structure with reproducible seed and no over-engineering
-  - Realistic, neutral data scenario (study hours vs exam scores) with appropriate
-    value ranges
-  - Explicit font sizing for the 4800x2700 canvas ensures readability
-  - Good use of pygal dual output capability (PNG + HTML)
+  - Excellent text legibility with all font sizes explicitly configured for the 4800x2700
+    canvas
+  - 'Strong data storytelling: trend line with r-value (0.86), sample size in legend,
+    and deliberate outliers add narrative depth'
+  - Clean, well-structured code following KISS principles with no over-engineering
+  - Realistic educational context (study hours vs exam scores) with appropriate data
+    scale
+  - 'Good use of pygal-specific features: stroke_style dasharray, dual PNG/HTML output,
+    value formatters'
   weaknesses:
-  - 'No data storytelling elements: a trend line, correlation annotation, or callout
-    highlighting the positive relationship would elevate the design significantly'
-  - 'Visual refinement is minimal: the dashed grid lines and default pygal chrome
-    could be improved with subtler grid styling or customized axis appearance'
-  - Dot size could be better tuned for the data density of 120 points — slightly smaller
-    dots would reduce visual clustering
-  - Canvas utilization has room for improvement — the plot area could fill more of
-    the available space
-  image_description: The plot displays a scatter chart of 120 blue data points on
-    a white background with subtle dashed gray grid lines on both axes. The title
-    "scatter-basic · pygal · pyplots.ai" appears at the top in gray sans-serif text.
-    The X-axis is labeled "Study Hours per Week (hrs)" ranging from approximately
-    2 to 13, and the Y-axis is labeled "Exam Score (%)" ranging from about 30% to
-    97%. The data points show a clear positive linear correlation — students who study
-    more hours tend to score higher on exams, with visible scatter/noise around the
-    trend. The points are rendered in Python Blue (#306998) with moderate transparency.
-    No legend is displayed (single series). The overall layout is clean and professional,
-    with the plot area occupying a reasonable portion of the canvas.
+  - The x-axis range starts at 0 while data begins at ~2, wasting canvas space on
+    the left side
+  - Grid lines could be more subtle — the blue dotted grid is functional but slightly
+    dominant against the light background
+  - The trend line is quite faint/thin relative to the scatter dots — increasing stroke
+    width or using a more contrasting style would improve visibility
+  image_description: 'The plot displays a scatter chart titled "scatter-basic · pygal
+    · pyplots.ai" on a 4800x2700 canvas with a white background and light gray (#fafafa)
+    plot area. Blue dots (#306998) represent 120 student data points plotting "Study
+    Hours per Week (hrs)" (x-axis, 0-16) against "Exam Score (%)" (y-axis, 10%-100%).
+    A dashed salmon/red (#c44e52) trend line runs diagonally from lower-left to upper-right,
+    showing a strong positive correlation. The legend at the bottom displays two entries:
+    "Students (n=120)" in blue and "Trend (r = 0.86)" in salmon. Light blue dotted
+    grid lines are visible on both axes. Data points spread from ~2-14 hours and ~20%-95%
+    scores, with deliberate outliers visible (e.g., ~7 hrs at 95%, ~12.5 hrs at 42%).
+    The overall layout is clean and professional with generous margins.'
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -59,65 +60,68 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title=56, labels=42, major_labels=38,
-          legend=36. All perfectly readable.'
+        comment: 'All font sizes explicitly set: title=56, label=42, major_label=38,
+          legend=34. All text perfectly readable.'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements. Tick labels are well-spaced.
+        comment: No overlapping text elements anywhere. Labels, title, and legend
+          well-separated.
       - id: VQ-03
         name: Element Visibility
-        score: 4
+        score: 5
         max: 6
-        passed: false
-        comment: dots_size=14 with 120 points causes some visual clustering in denser
-          areas. Points visible but not optimally sized.
+        passed: true
+        comment: dots_size=10 with opacity=0.6 is appropriate for 120 points. Slightly
+          larger dots would improve sparse region visibility.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Single blue color (#306998), no colorblind issues.
+        comment: Blue (#306998) vs salmon (#c44e52) is colorblind-distinguishable
+          (cool vs warm).
       - id: VQ-05
         name: Layout Balance
-        score: 2
+        score: 3
         max: 4
-        passed: false
-        comment: Reasonable canvas utilization but noticeable unused whitespace around
-          edges. Plot area could be larger.
+        passed: true
+        comment: Good canvas utilization (~60-70%). Minor wasted space on left where
+          x-axis starts at 0 but data begins at ~2.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Both axes have descriptive labels with units.
+        comment: 'Descriptive labels with units: Study Hours per Week (hrs), Exam
+          Score (%).'
     design_excellence:
-      score: 8
+      score: 13
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
-        passed: false
-        comment: Clean white background, Python Blue, good typography. Well-configured
-          default but not exceptional design.
+        passed: true
+        comment: Custom palette, intentional font family, light gray plot background
+          vs white canvas. Clearly above defaults.
       - id: DE-02
         name: Visual Refinement
-        score: 2
+        score: 4
         max: 6
-        passed: false
-        comment: Subtle dashed grid lines, white background. Standard pygal output
-          with minimal refinement beyond defaults.
+        passed: true
+        comment: Styled grid, subtle background differentiation, explicit margins,
+          bottom legend with 2 columns.
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 4
         max: 6
-        passed: false
-        comment: No annotations, trend line, or callouts. Viewer must interpret the
-          correlation pattern themselves.
+        passed: true
+        comment: Trend line with r-value, sample size in legend, deliberate outliers
+          add narrative depth.
     spec_compliance:
       score: 15
       max: 15
@@ -127,26 +131,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Correct chart type: XY scatter with stroke=False.'
+        comment: Correct scatter plot using pygal.XY with stroke=False.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: transparency, axis labels, title, grid
-          lines.'
+        comment: Transparency, axis labels, title, grid lines — all spec features
+          present.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: 'X/Y correctly assigned: study hours on X, exam scores on Y.'
+        comment: X/Y correctly assigned. Study hours on x, exam scores on y.
       - id: SC-04
-        name: Title Format
+        name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend appropriately hidden for single series.
+        comment: Title format correct. Legend labels descriptive and accurate.
     data_quality:
       score: 14
       max: 15
@@ -155,9 +159,9 @@ review:
         name: Feature Coverage
         score: 5
         max: 6
-        passed: false
-        comment: Shows clear positive correlation with noise. Missing isolated outliers
-          or distinct clusters for full feature coverage.
+        passed: true
+        comment: Shows positive correlation, scatter/spread, outliers, trend line.
+          Could show varying density for full marks.
       - id: DQ-02
         name: Realistic Context
         score: 5
@@ -169,7 +173,7 @@ review:
         score: 4
         max: 4
         passed: true
-        comment: 'Realistic values: 2-14 hours, 15-100% scores, appropriately clipped.'
+        comment: Study hours 2-14 and exam scores 15-100 are realistic values.
     code_quality:
       score: 10
       max: 10
@@ -179,7 +183,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear structure: imports, data, style, chart, save.'
+        comment: Clean imports, data, style, chart, save flow. No functions or classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -191,19 +195,19 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: All imports used (numpy, pygal, Style).
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, appropriate complexity. No over-engineering.
+        comment: Clean, well-organized. Not over-engineered.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html.
+        comment: Saves as plot.png and plot.html. No deprecated functions.
     library_mastery:
       score: 7
       max: 10
@@ -212,14 +216,14 @@ review:
         name: Idiomatic Usage
         score: 4
         max: 5
-        passed: false
-        comment: Good use of pygal XY with stroke=False, Style customization, tuple
-          data format, formatters. Could leverage more pygal-specific configuration.
+        passed: true
+        comment: Correct pygal.XY usage, Style configuration, stroke=False for scatter,
+          value_formatter, legend_at_bottom.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: 'Uses pygal-specific features: stroke=False for scatter, dots_size,
-          dual output (PNG + HTML), value_formatter/x_value_formatter.'
+        comment: Uses pygal-specific stroke_style with dasharray, show_dots toggle,
+          dual output (PNG + HTML), value formatters.
   verdict: REJECTED

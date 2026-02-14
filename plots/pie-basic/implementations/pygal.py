@@ -1,35 +1,52 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-basic: Basic Pie Chart
 Library: pygal 3.1.0 | Python 3.14.0
-Quality: 78/100 | Created: 2025-12-23
 """
+
+import math
 
 import pygal
 from pygal.style import Style
 
 
 # Data - Global smartphone market share (2024)
-companies = ["Apple", "Samsung", "Xiaomi", "OPPO", "vivo", "Others"]
-share = [23.3, 19.4, 14.1, 8.7, 7.5, 27.0]
+categories = [("Apple", 23.3), ("Samsung", 19.4), ("Xiaomi", 14.1), ("OPPO", 8.7), ("vivo", 7.5), ("Others", 27.0)]
 
-# Custom style for 3600x3600 px (square format)
+# Identify the largest slice for explosion (spec: "explode largest or smallest")
+values = [v for _, v in categories]
+largest_idx = values.index(max(values))
+
+# Calculate explode offset — pygal draws slices clockwise from top (−π/2).
+# Compute the angular bisector of the largest slice to translate it outward.
+total = sum(values)
+cumulative_before = sum(values[:largest_idx])
+slice_mid_frac = (cumulative_before + values[largest_idx] / 2) / total
+mid_angle = -math.pi / 2 + slice_mid_frac * 2 * math.pi
+explode_px = 30
+explode_dx = math.cos(mid_angle) * explode_px
+explode_dy = math.sin(mid_angle) * explode_px
+
+# Saturated, high-contrast palette — colorblind-safe (no red-green ambiguity)
+palette = ("#2563EB", "#D97706", "#0D9488", "#E11D48", "#7C3AED", "#475569")
+
 custom_style = Style(
     background="white",
     plot_background="white",
-    foreground="#333",
-    foreground_strong="#222",
-    foreground_subtle="#666",
-    colors=("#306998", "#FFD43B", "#4ECDC4", "#FF6B6B", "#95E1D3", "#A78BFA"),
+    foreground="#1E293B",
+    foreground_strong="#0F172A",
+    foreground_subtle="#94A3B8",
+    colors=palette,
     title_font_size=72,
-    label_font_size=48,
-    major_label_font_size=48,
-    legend_font_size=56,
-    value_font_size=48,
+    label_font_size=44,
+    major_label_font_size=44,
+    value_label_font_size=40,
+    legend_font_size=52,
+    value_font_size=52,
     tooltip_font_size=36,
-    value_colors=("#FFFFFF", "#333333", "#FFFFFF", "#FFFFFF", "#333333", "#FFFFFF"),
+    value_colors=("#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF"),
+    stroke_opacity=1,
 )
 
-# Create pie chart
 chart = pygal.Pie(
     width=3600,
     height=3600,
@@ -40,16 +57,29 @@ chart = pygal.Pie(
     legend_at_bottom_columns=3,
     legend_box_size=36,
     print_values=True,
+    print_labels=True,
     print_values_position="center",
     value_formatter=lambda x: f"{x:.1f}%",
     margin=40,
-    margin_bottom=100,
+    margin_bottom=80,
 )
 
-# Add data with per-slice white stroke borders
-for company, value in zip(companies, share, strict=True):
-    chart.add(company, [{"value": value, "style": "stroke: white; stroke-width: 4"}])
+# Storytelling: legend names convey narrative; labels add on-chart annotations
+legend_names = {"Others": "Others (largest share)", "Apple": "Apple (top brand)"}
 
-# Save as PNG and HTML
+for i, (company, value) in enumerate(categories):
+    slice_css = "stroke: white; stroke-width: 5"
+    slice_data = {"value": value, "style": slice_css}
+
+    # Explode the largest slice outward for emphasis
+    if i == largest_idx:
+        slice_data["node"] = {"transform": f"translate({explode_dx:.1f}, {explode_dy:.1f})"}
+        slice_data["label"] = "Largest"
+    elif company == "Apple":
+        slice_data["label"] = "#1 brand"
+
+    name = legend_names.get(company, company)
+    chart.add(name, [slice_data])
+
 chart.render_to_png("plot.png")
 chart.render_to_file("plot.html")

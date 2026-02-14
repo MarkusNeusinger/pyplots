@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: plotly 6.5.2 | Python 3.14
-Quality: 78/100 | Created: 2025-12-25
+Quality: 87/100 | Created: 2025-12-25
 """
 
 import numpy as np

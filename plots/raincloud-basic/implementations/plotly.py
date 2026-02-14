@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-25
+Library: plotly 6.5.2 | Python 3.14
+Quality: /100 | Updated: 2026-02-14
 """
 
 import numpy as np
@@ -14,20 +14,15 @@ np.random.seed(42)
 conditions = ["Control", "Treatment A", "Treatment B", "Treatment C"]
 n_per_group = 80
 
-# Generate realistic reaction time data with different distributions
 data = {
     "Control": np.random.normal(450, 60, n_per_group),
-    "Treatment A": np.random.normal(380, 45, n_per_group),  # Faster, less variable
+    "Treatment A": np.random.normal(380, 45, n_per_group),
     "Treatment B": np.concatenate(
-        [  # Bimodal distribution
-            np.random.normal(350, 30, n_per_group // 2),
-            np.random.normal(480, 35, n_per_group // 2),
-        ]
+        [np.random.normal(350, 30, n_per_group // 2), np.random.normal(480, 35, n_per_group // 2)]
     ),
-    "Treatment C": np.random.normal(400, 80, n_per_group),  # More variable
+    "Treatment C": np.random.normal(400, 80, n_per_group),
 }
 
-# Add some outliers to show box plot whiskers
 data["Control"] = np.append(data["Control"], [620, 650, 280])
 data["Treatment C"] = np.append(data["Treatment C"], [600, 620, 250])
 
@@ -37,25 +32,22 @@ colors = ["#306998", "#4B8BBE", "#FFD43B", "#646464"]
 fig = go.Figure()
 
 # Positioning parameters
-box_width = 0.08
 violin_width = 0.4
 
 for i, (condition, values) in enumerate(data.items()):
     color = colors[i]
-
-    # Calculate statistics for hover info
     median_val = np.median(values)
     q1 = np.percentile(values, 25)
     q3 = np.percentile(values, 75)
     mean_val = np.mean(values)
     std_val = np.std(values)
 
-    # Half-violin (cloud) - positioned on top (positive side) - HORIZONTAL orientation
+    # Cloud (half-violin) - extends UPWARD (positive y-direction)
     fig.add_trace(
         go.Violin(
-            x=values,  # Values on x-axis
-            y=[condition] * len(values),  # Categories on y-axis
-            side="positive",  # Cloud on top
+            x=values,
+            y=[condition] * len(values),
+            side="positive",
             width=violin_width,
             line_color=color,
             fillcolor=color,
@@ -63,99 +55,101 @@ for i, (condition, values) in enumerate(data.items()):
             meanline_visible=False,
             box_visible=False,
             points=False,
-            name=f"{condition} (Cloud)",
+            name=condition,
             legendgroup=condition,
             showlegend=True,
             hoverinfo="x+name",
             hoveron="violins",
-            orientation="h",  # Horizontal orientation
+            orientation="h",
         )
     )
 
-    # Box plot - in the middle with custom hover
+    # Box plot - centered on category baseline
     fig.add_trace(
         go.Box(
-            x=values,  # Values on x-axis
-            y=[condition] * len(values),  # Categories on y-axis
-            width=box_width,
+            x=values,
+            y=[condition] * len(values),
+            width=0.08,
             marker_color=color,
             line_color="#333333",
             fillcolor="white",
             boxpoints=False,
-            name=f"{condition} (Stats)",
+            name=condition,
             legendgroup=condition,
             showlegend=False,
-            orientation="h",  # Horizontal orientation
+            orientation="h",
             hovertemplate=(
                 f"<b>{condition}</b><br>"
                 f"Median: {median_val:.0f} ms<br>"
                 f"Q1-Q3: {q1:.0f}-{q3:.0f} ms<br>"
-                f"Mean: {mean_val:.1f} ± {std_val:.1f} ms"
+                f"Mean: {mean_val:.1f} \u00b1 {std_val:.1f} ms"
                 "<extra></extra>"
             ),
         )
     )
 
-    # Jittered strip points (rain) - on the bottom (negative side)
+    # Rain (jittered points) - falls DOWNWARD (negative y-direction)
     fig.add_trace(
         go.Violin(
-            x=values,  # Values on x-axis
-            y=[condition] * len(values),  # Categories on y-axis
-            side="negative",  # Rain below
+            x=values,
+            y=[condition] * len(values),
+            side="negative",
             width=0,
             points="all",
             pointpos=-0.4,
             jitter=0.15,
-            marker=dict(size=8, color=color, opacity=0.6, line=dict(width=0.5, color="#333333")),
+            marker={"size": 8, "color": color, "opacity": 0.6, "line": {"width": 0.5, "color": "#333333"}},
             line_width=0,
             fillcolor="rgba(0,0,0,0)",
-            name=f"{condition} (Rain)",
+            name=condition,
             legendgroup=condition,
             showlegend=False,
-            orientation="h",  # Horizontal orientation
+            orientation="h",
             hovertemplate=f"<b>{condition}</b><br>Value: %{{x:.0f}} ms<extra></extra>",
         )
     )
 
-# Update layout for 4800x2700 output - HORIZONTAL orientation
+# Layout - HORIZONTAL orientation with categories on y-axis, values on x-axis
 fig.update_layout(
-    title=dict(
-        text="raincloud-basic · plotly · pyplots.ai", font=dict(size=32, color="#333333"), x=0.5, xanchor="center"
-    ),
-    yaxis=dict(  # Categories on y-axis
-        title=dict(text="Experimental Condition", font=dict(size=24)),
-        tickfont=dict(size=20),
-        categoryorder="array",
-        categoryarray=conditions,
-        showgrid=False,
-    ),
-    xaxis=dict(  # Values on x-axis
-        title=dict(text="Reaction Time (ms)", font=dict(size=24)),
-        tickfont=dict(size=20),
-        gridcolor="rgba(0,0,0,0.1)",
-        gridwidth=1,
-        range=[200, 700],
-    ),
+    title={
+        "text": "raincloud-basic \u00b7 plotly \u00b7 pyplots.ai",
+        "font": {"size": 32, "color": "#333333"},
+        "x": 0.5,
+        "xanchor": "center",
+    },
+    yaxis={
+        "title": {"text": "Experimental Condition", "font": {"size": 24}},
+        "tickfont": {"size": 20},
+        "categoryorder": "array",
+        "categoryarray": conditions,
+        "showgrid": False,
+    },
+    xaxis={
+        "title": {"text": "Reaction Time (ms)", "font": {"size": 24}},
+        "tickfont": {"size": 20},
+        "gridcolor": "rgba(0,0,0,0.1)",
+        "gridwidth": 1,
+        "range": [200, 700],
+    },
     template="plotly_white",
     plot_bgcolor="white",
     paper_bgcolor="white",
-    margin=dict(l=180, r=180, t=100, b=100),
+    margin={"l": 180, "r": 80, "t": 100, "b": 100},
     violingap=0,
     violinmode="overlay",
-    legend=dict(
-        title=dict(text="Components", font=dict(size=18)),
-        font=dict(size=16),
-        bgcolor="rgba(255,255,255,0.9)",
-        bordercolor="rgba(0,0,0,0.2)",
-        borderwidth=1,
-        x=1.02,
-        y=0.98,
-        xanchor="left",
-        yanchor="top",
-    ),
-    hoverlabel=dict(bgcolor="white", bordercolor="#333333", font=dict(size=16, color="#333333")),
+    legend={
+        "title": {"text": "Condition", "font": {"size": 18}},
+        "font": {"size": 16},
+        "bgcolor": "rgba(255,255,255,0.9)",
+        "bordercolor": "rgba(0,0,0,0.2)",
+        "borderwidth": 1,
+    },
+    hoverlabel={"bgcolor": "white", "bordercolor": "#333333", "font": {"size": 16, "color": "#333333"}},
 )
 
-# Save as PNG (4800x2700) and HTML
+# Save
 fig.write_image("plot.png", width=1600, height=900, scale=3)
+
+# Add range slider for interactive HTML exploration
+fig.update_xaxes(rangeslider={"visible": True, "thickness": 0.05})
 fig.write_html("plot.html", include_plotlyjs="cdn")

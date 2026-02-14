@@ -1,167 +1,187 @@
 library: highcharts
 specification_id: box-basic
 created: '2025-12-23T00:38:00Z'
-updated: 2026-02-14T22:09:08+00:00
+updated: '2026-02-14T22:14:59Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447784243
 issue: 0
-python_version: "3.14"
-library_version: "1.10.3"
+python_version: '3.14'
+library_version: 1.10.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/box-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/box-basic/highcharts/plot.html
-quality_score: null
+quality_score: 79
 impl_tags:
   dependencies:
-    - selenium
+  - selenium
   techniques:
-    - html-export
-    - manual-ticks
+  - html-export
   patterns:
-    - data-generation
-    - matrix-construction
+  - data-generation
+  - iteration-over-groups
   dataprep: []
-  styling: []
+  styling:
+  - alpha-blending
+  - grid-styling
 review:
   strengths:
-  - Excellent implementation of all box plot components (median, quartiles, whiskers,
-    outliers)
-  - Colorblind-safe palette with distinct colors for each category
-  - Proper 1.5*IQR whisker calculation with outliers displayed separately
-  - Clean separation of box series and outlier scatter series
-  - Good use of highcharts-core Python API with proper container specification
-  - Data shows meaningful variation across groups demonstrating all box plot features
+  - Excellent spec compliance — all required features (median, outliers, whiskers,
+    per-category colors) implemented correctly
+  - Strong data quality with realistic business scenario and varied distributions
+    showing different means and spreads
+  - All font sizes explicitly set for high-resolution rendering, ensuring clear legibility
+    at 4800x2700
+  - Colorblind-safe palette with good color variety across five departments
+  - Clean KISS code structure with proper reproducibility (seed=42)
   weaknesses:
-  - Axis labels are generic (Category, Value) - could use more contextual labels like
-    Department and Score
-  - Legend shows Distribution and Outliers which is functional but takes up space
-    without adding much value for this simple plot
-  image_description: 'The plot displays 5 box-and-whisker plots arranged horizontally
-    for Groups A through E. Each box is colored distinctly: blue (Group A), yellow
-    (Group B), purple (Group C), cyan (Group D), and brown (Group E). The title "box-basic
-    · highcharts · pyplots.ai" appears at the top in bold black text. The X-axis is
-    labeled "Category" with group names below each box. The Y-axis is labeled "Value"
-    ranging from 0 to 125. Each box shows quartile ranges with dark median lines.
-    Outliers are displayed as red circular points - visible for Groups A (one low
-    outlier around 24), B (one high outlier around 105), C (two outliers around 19
-    and 76), and E (one high outlier around 115). The distributions vary noticeably:
-    Group D has the highest median (~70), Group C has the lowest (~45), and Group
-    E shows the widest spread. Grid lines are subtle with light gray coloring. The
-    layout is clean with a white background.'
+  - 'No data storytelling: add annotations highlighting key insights (e.g., Design
+    has highest median, Finance has widest spread, or mark specific outlier values)'
+  - 'Visual refinement could be improved: consider removing axis spines, adjusting
+    box spacing to better fill horizontal space'
+  - The string replacement approach for injecting stemColor and fillColor is fragile
+    — if the Highcharts API output format changes, these replacements will silently
+    fail
+  - Subtitle provides context but could be complemented with visual emphasis (e.g.,
+    highlighting the department with best scores)
+  image_description: 'The plot displays 5 box-and-whisker plots arranged horizontally,
+    one for each department (Engineering, Marketing, Sales, Design, Finance). Each
+    box has a distinct semi-transparent fill color: Engineering in steel blue (#306998),
+    Marketing in golden yellow (#FFD43B), Sales in muted purple (#9467BD), Design
+    in cyan (#17BECF), and Finance in brown (#8C564B). The boxes show 75% opacity
+    fills with dark outlines. Median lines are drawn in near-black (#1a1a1a) with
+    prominent width. Whiskers extend as solid dark gray lines with 50% whisker caps.
+    Outliers appear as red-orange circles (radius 10) — visible near Engineering (~57),
+    above Marketing (~100), and above Sales (~100). The title "box-basic · highcharts
+    · pyplots.ai" is displayed at top in large bold text (64px), with a subtitle "Annual
+    Performance Review Scores by Department" in gray (42px). The Y-axis is labeled
+    "Score (out of 100)" with tick marks every 5 units from ~35 to 105. The X-axis
+    shows department names with "Department" as the axis title. Background is white
+    with very subtle horizontal gridlines (6% opacity). The overall layout is clean
+    with good vertical space usage, though the horizontal distribution of boxes leaves
+    some empty space on the right.'
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 24
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title and axis labels clearly readable, tick labels slightly small
-          but acceptable
+        comment: 'All font sizes explicitly set: title 64px, subtitle 42px, axis titles
+          44px, x-labels 38px, y-labels 34px'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping text elements anywhere
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Boxes well-sized, whiskers and outliers clearly visible
+        comment: Boxes well-sized (pointWidth 350), lines prominent, outlier markers
+          visible. Slightly generous spacing
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Colorblind-safe palette used (blue, yellow, purple, cyan, brown)
+        comment: 'Colorblind-safe palette: blue, yellow, purple, cyan, brown — no
+          red-green confusion'
       - id: VQ-05
         name: Layout Balance
-        score: 4
-        max: 5
+        score: 3
+        max: 4
         passed: true
-        comment: Good proportions, slight excess whitespace at top
+        comment: Decent layout but some wasted horizontal space; boxes could be more
+          evenly distributed
       - id: VQ-06
-        name: Axis Labels
-        score: 1
+        name: Axis Labels & Title
+        score: 2
         max: 2
         passed: true
-        comment: Descriptive labels but no units (generic "Value")
-      - id: VQ-07
-        name: Grid & Legend
-        score: 1
-        max: 2
+        comment: Y-axis 'Score (out of 100)' with units, X-axis 'Department' descriptive
+    design_excellence:
+      score: 10
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
         passed: true
-        comment: Grid subtle and appropriate, legend present but not essential for
-          this plot
+        comment: Thoughtful palette, semi-transparent fills, clean typography hierarchy,
+          whisker styling. Above defaults but not publication-level
+      - id: DE-02
+        name: Visual Refinement
+        score: 3
+        max: 6
+        passed: true
+        comment: Subtle grid (6% opacity), tick marks removed, clean background. Some
+          refinement but spines remain
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: Data displayed without interpretation. No annotations highlighting
+          best/worst performers or spread differences
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct box plot type
+        comment: Correct box-and-whisker plot
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories on X-axis, values on Y-axis correctly mapped
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Median lines, quartile boxes, whiskers at 1.5*IQR, outliers as points,
-          different colors per category
-      - id: SC-04
-        name: Data Range
+        comment: Median line, outliers as points, whiskers at 1.5*IQR, different colors
+          per category
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Y-axis shows all data including outliers (0-125)
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Categories on X, values on Y, correctly mapped
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend shows Distribution and Outliers series
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Correct format: "box-basic · highcharts · pyplots.ai"'
+        comment: Title format correct, categories identified by x-axis labels
     data_quality:
-      score: 18
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 8
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Shows outliers, different medians, varying IQRs, different whisker
-          lengths
+        comment: Different means (68-82), varying spreads (σ=7-18), outliers present.
+          Could include more skewed distribution
       - id: DQ-02
         name: Realistic Context
         score: 5
-        max: 7
-        passed: true
-        comment: Generic groups rather than real-world scenario (e.g., departments,
-          products)
-      - id: DQ-03
-        name: Appropriate Scale
-        score: 5
         max: 5
         passed: true
-        comment: Values in reasonable range (0-115), sensible for generic measurements
+        comment: Annual Performance Review Scores by Department — neutral, real-world
+          business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Scores 0-100, realistic means and sample sizes (50-90 per group)
     code_quality:
       score: 9
       max: 10
@@ -171,11 +191,11 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear structure: imports → data → plot → save'
+        comment: Imports → Data → Chart config → Series → Export
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
         comment: np.random.seed(42) set
       - id: CQ-03
@@ -185,26 +205,34 @@ review:
         passed: true
         comment: All imports used
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
+        score: 1
+        max: 2
+        passed: true
+        comment: String replacement hack for stemColor/fillColor is inelegant but
+          necessary due to API limitations
+      - id: CQ-05
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Current highcharts-core API
-      - id: CQ-05
-        name: Output Correct
-        score: 0
-        max: 1
-        passed: false
-        comment: Saves plot.png but HTML also saved (minor)
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves as plot.png, no deprecated functions
+    library_mastery:
+      score: 7
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of BoxPlotSeries, ScatterSeries for outliers, HighchartsOptions.
+          String replacement detracts slightly
+      - id: LM-02
+        name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses BoxPlotSeries and ScatterSeries for outliers, colorByPoint,
-          proper highcharts-more.js integration; could leverage more interactive features
-  verdict: APPROVED
+        comment: Uses separate series per category for coloring, highcharts-more.js,
+          tooltip formatting
+  verdict: REJECTED

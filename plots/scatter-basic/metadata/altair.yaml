@@ -1,7 +1,7 @@
 library: altair
 specification_id: scatter-basic
 created: '2025-12-22T23:36:19Z'
-updated: '2026-02-14T14:33:22Z'
+updated: '2026-02-14T14:41:05Z'
 generated_by: claude-opus-4-6
 workflow_run: 20446832690
 issue: 0
@@ -10,51 +10,56 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/altair/plot.html
-quality_score: 81
+quality_score: 88
 impl_tags:
   dependencies: []
   techniques:
+  - annotations
+  - layer-composition
   - hover-tooltips
   - html-export
   patterns:
   - data-generation
-  dataprep: []
+  dataprep:
+  - regression
   styling:
   - alpha-blending
   - edge-highlighting
   - grid-styling
 review:
   strengths:
-  - Perfect spec compliance (15/15) with correct title format, all required features,
-    and proper data mapping
-  - Idiomatic Altair usage with declarative encoding, type annotations, and method
-    chaining
-  - Excellent code quality with KISS structure, fixed seed, clean imports
-  - Realistic educational scenario with appropriate data ranges
-  - Tooltips and interactive zoom/pan leverage Altair interactive strengths
-  - Font sizes explicitly set for readability at full resolution
+  - 'Excellent use of Altair declarative grammar: layer composition with +, typed
+    encodings, and alt.Title with subtitle'
+  - Strong data storytelling with trend line, correlation annotation (r=0.92), and
+    descriptive subtitle
+  - All font sizes explicitly configured for readability at target resolution
+  - Clean well-structured code following KISS principle with realistic educational
+    data scenario
+  - Interactive features (.interactive(), tooltips) leverage Altair web-native strengths
   weaknesses:
-  - 'No data storytelling: add a trend line, correlation annotation (r=0.XX), or callout
-    for interesting patterns to guide the viewer'
-  - Design could be elevated beyond well-configured default — consider background
-    color, custom axis formatting, or annotation styling
-  - Some wasted canvas space on the left side where data is sparse (1.0-2.0 range
-    has only one point)
-  - Markers could be slightly smaller to better show individual points in the dense
-    center region
-  image_description: The plot displays a scatter chart with steel-blue filled circular
-    markers (#306998 Python Blue) with white edge strokes, plotting "Study Hours per
-    Day" (x-axis, range ~1.0–8.0) against "Exam Score (%)" (y-axis, range ~40–104).
-    The title "scatter-basic · altair · pyplots.ai" appears centered at the top in
-    a large font. A clear positive correlation is visible — students who study more
-    hours tend to score higher. Grid lines are present but subtle (low opacity). The
-    background is clean white with no view border. Points have moderate transparency
-    (opacity 0.7) revealing some overlap in the denser middle region (4–6 hours).
-    No legend is shown (single series). The layout uses canvas space reasonably well,
-    though there is some empty space on the left side between ~1.0 and ~2.0 hours.
+  - 'Layout has wasted space: y-axis domain extends to 105 when max data is 100 and
+    x-axis padding is generous; tighter axis domains would improve canvas utilization'
+  - The r=0.92 annotation at position (9.2, 38) sits in a visually dead zone; repositioning
+    it closer to the trend line or in a subtitle/caption would be more effective
+  - Trend line and annotation share the same red (#c44e52) which does not maximize
+    the color hierarchy; a softer or contrasting color for the trend line could reduce
+    visual competition with the data points
+  - Grid opacity and dash styling is good but could be further refined (e.g. removing
+    top/right axis domain lines entirely for a cleaner look)
+  image_description: The plot displays a scatter plot with approximately 100 blue
+    filled circular markers (#306998) with white stroke edges on a white background.
+    The x-axis is labeled "Study Hours per Day" (range 0-11) and the y-axis "Exam
+    Score (%)" (range 20-110). The title reads "scatter-basic · altair · pyplots.ai"
+    in dark text (~28pt) with a gray subtitle "Positive correlation between daily
+    study hours and exam performance." A dashed red (#c44e52) trend line runs diagonally
+    from lower-left to upper-right showing the positive linear relationship. A bold
+    red annotation "r = 0.92" appears in the lower-right area. The grid is subtle
+    (dashed, low opacity). Data points cluster along the trend line with natural scatter,
+    showing low hours (~1.5-3.5) corresponding to scores ~35-55, mid hours (~4-7)
+    to scores ~50-85, and high hours (~8-10) to scores ~77-100 with clipping at 100.
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 26
       max: 30
       items:
       - id: VQ-01
@@ -62,8 +67,8 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 28pt, axis labels 22pt, tick
-          labels 18pt. All perfectly readable.'
+        comment: 'All font sizes explicitly set: title 28pt, axis titles 22pt, tick
+          labels 18pt. Perfectly readable.'
       - id: VQ-02
         name: No Overlap
         score: 6
@@ -75,52 +80,54 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: 100 points with size=150, opacity=0.7. Appropriate but markers slightly
-          large.
+        comment: Markers size=120 with opacity 0.7 for 100 points is within guidelines
+          but at the lower edge.
       - id: VQ-04
         name: Color Accessibility
-        score: 4
-        max: 4
-        passed: true
-        comment: Single Python Blue color with good contrast. Colorblind-safe.
-      - id: VQ-05
-        name: Layout Balance
         score: 3
         max: 4
         passed: true
-        comment: Decent canvas utilization. Some wasted space on the left where data
-          is sparse.
+        comment: Blue and red are colorblind-distinguishable, but trend line and annotation
+          both use same red.
+      - id: VQ-05
+        name: Layout Balance
+        score: 2
+        max: 4
+        passed: false
+        comment: Y-axis domain extends to 105 and x-axis to 10.5, leaving unused space
+          at extremes. Annotation placed in low-data region.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: Study Hours per Day, Exam Score (%).'
+        comment: Study Hours per Day and Exam Score (%) are descriptive with contextual
+          units.
     design_excellence:
-      score: 10
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 6
         max: 8
-        passed: false
-        comment: Well-configured default with Python Blue and white edges. Not yet
-          publication-level.
+        passed: true
+        comment: Strong design with custom Python Blue, white marker strokes, custom
+          axis color hierarchy. Above defaults but red trend line slightly harsh.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Grid opacity 0.2, view stroke removed. Some refinement but still
-          default axis styling.
+        comment: 'Good: subtle grid (opacity 0.15, dashed), view stroke removed, custom
+          tick/domain colors.'
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 4
         max: 6
-        passed: false
-        comment: No annotations, trend line, or narrative emphasis. Viewer must find
-          the story.
+        passed: true
+        comment: 'Good: trend line shows relationship, r=0.92 annotation highlights
+          key insight, subtitle provides narrative.'
     spec_compliance:
       score: 15
       max: 15
@@ -130,13 +137,14 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct 2D scatter plot.
+        comment: Correct scatter plot type.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Transparency, axis labels, title, grid lines all present.
+        comment: 'All spec features present: transparency, axis labels, title, grid
+          lines, appropriate point size.'
       - id: SC-03
         name: Data Mapping
         score: 3
@@ -144,11 +152,11 @@ review:
         passed: true
         comment: X/Y correctly assigned.
       - id: SC-04
-        name: Title & Legend
+        name: Title Format
         score: 3
         max: 3
         passed: true
-        comment: Correct title format. No legend needed for single series.
+        comment: scatter-basic · altair · pyplots.ai correct. No legend needed.
     data_quality:
       score: 14
       max: 15
@@ -158,19 +166,20 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows positive correlation with noise. Could use more distinct outliers.
+        comment: Shows correlation, spread, and clustering at extremes. Could show
+          more outlier patterns.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Study hours vs exam scores is a real, neutral educational scenario.
+        comment: Study hours vs exam scores is real, neutral, educational scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Hours 1-10/day and scores 40-100% are realistic values.
+        comment: 'Realistic values: 1.5-9.5 hours/day, scores 25-100%.'
     code_quality:
       score: 10
       max: 10
@@ -180,7 +189,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports, data, plot, save flow.
+        comment: Imports → Data → Plot → Save, no functions/classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -198,15 +207,15 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Clean, Pythonic, appropriate complexity.
+        comment: Clean, appropriate complexity.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html.
+        comment: Saves plot.png and plot.html.
     library_mastery:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: LM-01
@@ -214,12 +223,13 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Declarative encoding with type annotations, method chaining, configure_axis,
-          properties, interactive().
+        comment: Declarative encoding with :Q types, layered composition, alt.Title,
+          configure_axis, alt.Tooltip.
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Tooltips, interactive zoom/pan, HTML export are Altair-specific features.
+        comment: Layer composition, .interactive(), tooltip encoding, alt.Title subtitle
+          — genuinely Altair-specific.
   verdict: REJECTED

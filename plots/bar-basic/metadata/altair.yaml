@@ -1,164 +1,176 @@
 library: altair
 specification_id: bar-basic
 created: '2025-12-23T00:23:22Z'
-updated: 2026-02-14T14:34:56+00:00
+updated: '2026-02-14T14:46:29Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447578467
 issue: 0
-python_version: "3.14"
+python_version: '3.14'
 library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-basic/altair/plot.html
-quality_score: null
+quality_score: 82
 impl_tags:
   dependencies: []
   techniques:
+  - annotations
+  - layer-composition
   - hover-tooltips
   - html-export
   patterns: []
   dataprep: []
-  styling: []
+  styling:
+  - grid-styling
 review:
   strengths:
-  - Excellent declarative Altair syntax with proper encoding types (N for nominal,
-    Q for quantitative)
-  - Clean data-to-visualization mapping using pandas DataFrame
-  - 'Good use of Altair-specific features: cornerRadius for rounded bars, tooltip
-    configuration, sort parameter'
-  - Currency formatting on Y-axis with format=$,.0f
-  - Proper export to both PNG and HTML for interactivity
-  - Bars sorted by value (descending) enhances readability and comparison
+  - Excellent use of Altair declarative API with proper encoding types and layer composition
+    for bars + labels
+  - Text legibility well handled with explicitly set font sizes throughout
+  - Clean data scenario with realistic retail sales values and proper dollar formatting
+    on both axes and value labels
+  - Sorted bars by descending value aids readability and comparison
+  - Rounded top corners on bars add a subtle professional touch
   weaknesses:
-  - Image dimensions (4500x2400) slightly below target specification (4800x2700);
-    should use width=1600 for exact match
-  - No value labels on or above bars as suggested in the specification Notes section
-  image_description: 'The plot displays a vertical bar chart showing product sales
-    by category. Seven blue bars (#306998) with subtle rounded top corners are arranged
-    in descending order from left to right. Categories shown are: Electronics (~$45,200),
-    Clothing (~$32,100), Home & Garden (~$28,400), Sports (~$21,800), Books (~$18,500),
-    Toys (~$15,200), and Food (~$12,300). The Y-axis displays "Sales ($)" with currency
-    formatting from $0 to $50,000. X-axis labels are rotated -45 degrees and show
-    "Product Category". The title reads "bar-basic · altair · pyplots.ai". A subtle
-    dashed grid is visible in the background. All text is clearly readable.'
+  - Y-axis has excessive tick density (25 tick labels from $0 to $50,000 in $2,000
+    increments) — reduce to fewer, rounder intervals (e.g., $0, $10k, $20k, $30k,
+    $40k, $50k)
+  - No data storytelling — no annotations highlighting the top performer or providing
+    context (e.g., Electronics leads with $45.2k)
+  - Missing visual emphasis to guide the viewer eye (e.g., highlight the top bar,
+    add a subtle color gradient, or distinguish top vs. bottom performers)
+  image_description: The plot displays a vertical bar chart titled "bar-basic · altair
+    · pyplots.ai". It shows 7 product categories (Electronics, Clothing, Home & Garden,
+    Sports, Books, Toys, Food) sorted in descending order by sales value on the x-axis,
+    with x-axis labels rotated at approximately -45 degrees. All bars are rendered
+    in Python Blue (#306998) with rounded top corners. Each bar has a dollar-formatted
+    value label centered above it ($45,200 down to $12,300). The y-axis is labeled
+    "Sales ($)" with dollar-formatted ticks at $2,000 intervals from $0 to $50,000.
+    The x-axis is labeled "Product Category". The background is clean white with no
+    border, and subtle dashed horizontal gridlines appear at low opacity. The layout
+    is landscape (16:9 proportions) and the chart fills the canvas reasonably well.
   criteria_checklist:
     visual_quality:
-      score: 37
-      max: 40
+      score: 28
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title, axis labels, and tick marks are all clearly readable with
-          appropriate font sizes (title 28pt, labels 22pt, ticks 18pt)
+        comment: 'All font sizes explicitly set: title 28pt, axis labels 18pt, axis
+          titles 22pt, value labels 16pt'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text; the -45 degree angle on x-axis labels prevents
-          overlap effectively
+        comment: No overlapping text, rotated labels prevent collisions
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Bars are well-sized with good spacing, easily distinguishable
+        comment: Bars well-sized and clearly visible for 7 categories
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Single blue color (#306998) is colorblind-safe
+        comment: Single Python Blue color, no colorblind issues
       - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Good proportions with appropriate whitespace
-      - id: VQ-06
-        name: Axis Labels
-        score: 1
-        max: 2
-        passed: true
-        comment: Y-axis has "Sales ($)" which is descriptive but unit is in the label
-          not separate; X-axis has "Product Category"
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
+        name: Layout & Canvas
+        score: 2
+        max: 4
         passed: false
-        comment: Grid has appropriate opacity (0.3) with dashed styling, but no legend
-          present (not strictly required for single-series bar chart, but could add
-          context)
+        comment: Excessive y-axis tick density (25 ticks from $0-$50k) creates visual
+          noise, some wasted vertical space
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
+        max: 2
+        passed: true
+        comment: Sales ($) and Product Category — descriptive with units
+    design_excellence:
+      score: 10
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: false
+        comment: Good design with Python Blue, rounded corners, clean background,
+          but excessive y-axis ticks reduce polish
+      - id: DE-02
+        name: Visual Refinement
+        score: 3
+        max: 6
+        passed: false
+        comment: Removed view stroke, disabled x-axis grid, dashed y-axis grid with
+          low opacity, but tick density too high
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: Sorted bars and value labels aid reading, but no narrative annotations
+          or emphasis
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct vertical bar chart type
+        comment: Correct vertical bar chart
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories on X-axis, values on Y-axis correctly
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Consistent bar widths, single color, adequate spacing present
-      - id: SC-04
-        name: Data Range
+        comment: 'All spec features present: consistent widths, value labels, single
+          color, adequate spacing'
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axes
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X=category, Y=value correctly assigned
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: N/A for single-series (no legend needed)
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Correctly uses "bar-basic · altair · pyplots.ai"
+        comment: Title in correct format, no legend needed for single series
     data_quality:
-      score: 19
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
-        passed: true
-        comment: Shows good variation in values; bars sorted by height shows ranking
-          well; could benefit from value labels as suggested in spec
+        score: 5
+        max: 6
+        passed: false
+        comment: 7 categories with good variation, sorted by value, could benefit
+          from closer-valued categories
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Product sales by retail category is a real, comprehensible scenario
-          matching spec examples
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Sales values ($12K-$45K) are realistic for retail category data
+        comment: Realistic retail sales scenario with plausible product categories
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Values $12,300-$45,200 realistic for aggregate retail sales
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -166,42 +178,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save structure, no functions/classes
+        comment: Imports -> Data -> Chart -> Labels -> Combine -> Save
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Deterministic data (no random generation)
+        comment: Deterministic hardcoded DataFrame
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only altair and pandas imported, both used
+        comment: Only altair and pandas imported
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
+        score: 2
+        max: 2
+        passed: true
+        comment: Clean, concise Altair code with idiomatic layer composition
+      - id: CQ-05
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Uses current Altair API
-      - id: CQ-05
-        name: Output Correct
-        score: 0
-        max: 1
-        passed: false
-        comment: Saves as plot.png and plot.html correctly, but dimensions (1500×800
-          × 3 = 4500×2400) slightly below target (4800×2700)
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves plot.png and plot.html, no deprecated APIs
+    library_mastery:
+      score: 9
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 3
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
         max: 5
         passed: true
-        comment: Uses Altair's declarative encoding, tooltips, sort parameter, and
-          cornerRadius styling; could leverage more interactive features like selection
-          or conditional encoding
-  verdict: APPROVED
+        comment: 'Expert use of declarative API: encoding types, alt.X/Y, alt.Tooltip,
+          alt.Title, configure_* methods'
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: false
+        comment: Layer composition, declarative tooltips, configure_view/configure_axis
+          separation, HTML export
+  verdict: REJECTED

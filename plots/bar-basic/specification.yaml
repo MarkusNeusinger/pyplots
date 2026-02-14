@@ -17,9 +17,11 @@ tags:
   data_type:
     - categorical
     - numeric
+    - discrete
   domain:
     - general
     - business
   features:
     - basic
     - comparison
+    - ranking

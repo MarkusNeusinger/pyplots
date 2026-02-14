@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bar-basic: Basic Bar Chart
 Library: plotly 6.5.2 | Python 3.14
-Quality: 84/100 | Created: 2026-02-14
+Quality: 92/100 | Created: 2026-02-14
 """
 
 import plotly.graph_objects as go

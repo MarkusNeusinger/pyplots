@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-basic: Basic Scatter Plot
 Library: plotly 6.5.2 | Python 3.14
-Quality: 88/100 | Created: 2025-12-22
+Quality: 92/100 | Created: 2025-12-22
 """
 
 import numpy as np

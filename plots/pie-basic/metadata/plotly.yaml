@@ -1,160 +1,178 @@
 library: plotly
 specification_id: pie-basic
 created: '2025-12-23T00:34:31Z'
-updated: '2026-02-14T14:40:21+00:00'
+updated: '2026-02-14T14:47:21Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447770365
 issue: 0
-python_version: '3.14.0'
+python_version: 3.14.0
 library_version: 6.5.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-basic/plotly/plot.html
-quality_score: null
+quality_score: 82
 impl_tags:
   dependencies: []
   techniques:
+  - hover-tooltips
   - html-export
-  patterns:
-  - explicit-figure
+  patterns: []
   dataprep: []
   styling:
   - edge-highlighting
 review:
   strengths:
-  - 'Excellent use of the spec-required features: percentage labels on slices, distinct
-    colorblind-safe colors, legend, and slight explosion on Engineering slice for
-    emphasis'
-  - Clean, professional appearance with white slice borders adding visual separation
-  - Correct title format following pyplots.ai convention
-  - Realistic budget allocation scenario that clearly demonstrates parts-to-whole
-    relationship
-  - Proper use of plotly graph_objects API with appropriate sizing (4800x2700)
-  - Both PNG and interactive HTML outputs generated
+  - Perfect spec compliance — all four required features (percentage labels, distinct
+    colors, legend, exploded slice) are present
+  - Excellent realistic data context with cloud provider market share
+  - Clean, idiomatic Plotly code with good use of library-specific features (hovertemplate,
+    pull, HTML export)
+  - All font sizes explicitly set at appropriate values for the 4800x2700 canvas
+  - White slice borders add visual polish and help distinguish adjacent slices
   weaknesses:
-  - Layout slightly unbalanced with more whitespace on left side compared to right
-    where legend is positioned
-  - Could use plotly hovertemplate for richer interactivity in the HTML version
-  - Slice size distribution is fairly uniform (35/25/20/12/8) - more extreme variation
-    would better demonstrate the plot type ability to show disparate proportions
-  image_description: The plot displays a pie chart showing "Budget allocation by department"
-    with 5 distinct slices. The Engineering slice (35%) is in Python Blue (#306998)
-    and is slightly exploded/pulled out for emphasis. Marketing (25%) is bright yellow,
-    Sales (20%) is teal, Operations (12%) is coral/salmon, and HR (8%) is light green.
-    Each slice displays both the category name and percentage directly on it. The
-    title "pie-basic · plotly · pyplots.ai" is centered at the top in a clean font.
-    A vertical legend on the right side lists all five departments with their corresponding
-    color squares. White borders cleanly separate each slice. The overall layout is
-    clean with a white background.
+  - Small slices (Alibaba 4%, IBM 3%) have cramped labels that create visual crowding
+    — consider using textposition=outside for small slices or adjusting label placement
+  - Adjacent red (Alibaba) and green (IBM) slices may be problematic for red-green
+    colorblind viewers — swap one color
+  - Design lacks storytelling annotations (e.g., AWS leads with 31% market share callout,
+    or trend indicators)
+  - Visual design reads as a well-configured default rather than publication-quality
+    — could benefit from a donut hole, subtle shadow, or more sophisticated color
+    harmony
+  - Wasted whitespace in the lower-right area of the canvas
+  image_description: The plot displays a pie chart titled "pie-basic · plotly · pyplots.ai"
+    showing cloud provider market share with 6 slices. AWS (31%) is the largest slice
+    in dark blue (Python Blue) and is slightly exploded/pulled out for emphasis. Azure
+    (24%) is golden yellow, Google Cloud (11%) is teal, Alibaba (4%) is coral/red,
+    IBM (3%) is light green, and Others (27%) is light purple. Percentage labels and
+    category names appear on each slice. A vertical legend is positioned to the right
+    of the pie chart. White border lines (2px) separate adjacent slices. The chart
+    uses a clean white background (plotly_white template). The smaller slices (Alibaba
+    4%, IBM 3%) have their labels squeezed into narrow areas, creating visual crowding.
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 24
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 7
+        max: 8
         passed: true
-        comment: Title at 28pt, slice labels at 20pt, legend at 18pt - all perfectly
-          readable
+        comment: Title 28pt, slice text 20pt, legend 18pt — all explicitly set. Minor
+          crowding on small slices (Alibaba, IBM).
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
-        passed: true
-        comment: No overlapping text, all labels fit within slices or are clearly
-          positioned
+        score: 4
+        max: 6
+        passed: false
+        comment: Alibaba (4%) and IBM (3%) labels squeezed into narrow slices, creating
+          visual crowding.
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Pie slices are well-sized and clearly visible with good proportions
+        comment: All slices visible and distinguishable. White borders help. Small
+          slices narrow but identifiable.
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Colorblind-safe palette with distinct hues (blue, yellow, teal, coral,
-          green)
-      - id: VQ-05
-        name: Layout Balance
         score: 3
-        max: 5
+        max: 4
         passed: true
-        comment: Good overall, but slight imbalance with empty space on left vs legend
-          on right
-      - id: VQ-07
-        name: Grid & Legend
+        comment: Generally colorblind-safe palette, but adjacent red (Alibaba) and
+          green (IBM) slices could be problematic.
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 3
+        max: 4
+        passed: true
+        comment: Pie is well-sized with legend on right. Some wasted whitespace in
+          bottom-right.
+      - id: VQ-06
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Legend well-placed on right, clean styling
+        comment: Pie charts have no axes; title correctly formatted.
+    design_excellence:
+      score: 10
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
+        passed: false
+        comment: Custom Python Blue-first palette, white slice borders, plotly_white
+          template. Well-configured default, not exceptional.
+      - id: DE-02
+        name: Visual Refinement
+        score: 3
+        max: 6
+        passed: false
+        comment: Clean template, white borders, adjusted margins. Some refinement
+          but no advanced polish.
+      - id: DE-03
+        name: Data Storytelling
+        score: 3
+        max: 6
+        passed: true
+        comment: Exploded AWS slice draws attention to market leader. No annotations
+          or callouts.
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct pie chart type
+        comment: Correct pie chart implementation.
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories and values correctly mapped to slices
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Has percentage labels, distinct colors, legend, and slight explosion
-          for emphasis
-      - id: SC-04
-        name: Data Range
+        comment: Percentage labels, distinct colors, legend, exploded largest slice
+          — all present.
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible, percentages sum to 100%
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Categories and values correctly mapped to slices.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend correctly shows all 5 categories
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Correct format: "pie-basic · plotly · pyplots.ai"'
+        comment: Title format correct. Legend labels match categories.
     data_quality:
-      score: 18
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Shows 5 categories with varying sizes, but could show more variation
-          in slice sizes
+        comment: Good variation in slice sizes (large, medium, small). Others category
+          is realistic.
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Budget allocation by department is a classic, realistic use case
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Values (35%, 25%, 20%, 12%, 8%) are realistic department budget proportions
+        comment: Cloud provider market share is a real, recognizable, neutral business
+          scenario.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Values sum to 100, proportions are realistic for cloud market.
     code_quality:
       score: 10
       max: 10
@@ -164,41 +182,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Simple linear structure: imports → data → plot → save'
+        comment: 'Clean linear flow: import, data, figure, layout, save.'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Deterministic data (no random values)
+        comment: Deterministic hardcoded data.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only plotly.graph_objects imported
+        comment: Only plotly.graph_objects imported, fully used.
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Using current plotly API
+        comment: Concise, Pythonic, appropriate complexity.
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves as plot.png (4800x2700) and interactive HTML.
+    library_mastery:
+      score: 9
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 3
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
         max: 5
         passed: true
-        comment: Uses go.Pie with pull parameter for explosion, textinfo for labels,
-          and generates interactive HTML. Could leverage more plotly-specific features
-          like hover templates.
-  verdict: APPROVED
+        comment: Proper use of go.Pie with textinfo, hovertemplate, marker dict, pull
+          parameter.
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Uses Plotly-distinctive features: hovertemplate, pull, sort=False,
+          write_html().'
+  verdict: REJECTED

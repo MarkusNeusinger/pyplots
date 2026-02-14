@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 pie-basic: Basic Pie Chart
 Library: plotly 6.5.2 | Python 3.14.0
-Quality: /100 | Updated: 2026-02-14
+Quality: 82/100 | Created: 2025-12-23
 """
 
 import plotly.graph_objects as go

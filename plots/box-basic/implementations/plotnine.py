@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 box-basic: Basic Box Plot
 Library: plotnine 0.15.3 | Python 3.14
-Quality: 85/100 | Created: 2025-12-23
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import numpy as np

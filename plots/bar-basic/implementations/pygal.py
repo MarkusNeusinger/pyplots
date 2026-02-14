@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-basic: Basic Bar Chart
 Library: pygal 3.1.0 | Python 3.14
 Quality: 84/100 | Created: 2025-12-23
@@ -14,11 +14,18 @@ values = [142500, 98700, 87300, 53200, 41800, 72600, 18900]
 
 # Identify the leader for emphasis
 max_idx = values.index(max(values))
+total = sum(values)
 highlight_color = "#306998"
 base_color = "#A8C4D8"
 
 # Build per-bar data — highlight leader, muted for the rest
-bar_data = [{"value": v, "color": highlight_color if i == max_idx else base_color} for i, v in enumerate(values)]
+# Add percentage share as label for the leader bar to tell the data story
+bar_data = []
+for i, v in enumerate(values):
+    entry = {"value": v, "color": highlight_color if i == max_idx else base_color}
+    if i == max_idx:
+        entry["formatter"] = lambda x: f"★ {x:,.0f} ({x / total:.0%} of total)"
+    bar_data.append(entry)
 
 # Custom style — refined for publication quality
 custom_style = Style(
@@ -39,11 +46,11 @@ custom_style = Style(
     value_font_family="sans-serif",
 )
 
-# Create chart
+# Create chart with tighter margins for better canvas utilization
 chart = pygal.Bar(
     width=4800,
     height=2700,
-    title="bar-basic · pygal · pyplots.ai",
+    title="bar-basic · pygal · pyplots.ai\nOrganic Search dominates Q4 2025 traffic at 28% share",
     x_title="Channel",
     y_title="Visits (Q4 2025)",
     style=custom_style,
@@ -53,17 +60,16 @@ chart = pygal.Bar(
     value_formatter=lambda x: f"{x:,.0f}",
     show_y_guides=True,
     show_x_guides=False,
-    margin=50,
-    margin_bottom=100,
+    margin=20,
+    margin_bottom=80,
+    margin_left=30,
+    margin_right=30,
     spacing=18,
     rounded_bars=6,
     truncate_label=-1,
     x_label_rotation=0,
-    dots_size=0,
-    stroke=False,
     show_minor_y_labels=False,
     y_labels_major_every=1,
-    inner_radius=0,
 )
 
 # Y-axis ticks

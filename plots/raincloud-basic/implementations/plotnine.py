@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: plotnine 0.15.3 | Python 3.14
 Quality: 88/100 | Created: 2025-12-25
@@ -8,9 +8,11 @@ import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
+    annotate,
     coord_flip,
     element_blank,
     element_line,
+    element_rect,
     element_text,
     geom_boxplot,
     geom_jitter,
@@ -19,6 +21,7 @@ from plotnine import (
     labs,
     scale_color_manual,
     scale_fill_manual,
+    scale_y_continuous,
     stage,
     theme,
     theme_minimal,
@@ -42,11 +45,11 @@ df = pd.DataFrame(
 )
 df["condition"] = pd.Categorical(df["condition"], categories=["Treatment B", "Treatment A", "Control"], ordered=True)
 
-# Colors
-colors = {"Control": "#306998", "Treatment A": "#FFD43B", "Treatment B": "#5BA85B"}
+# Colors — refined palette with deeper saturation and harmony
+colors = {"Control": "#2B5B8A", "Treatment A": "#E8A838", "Treatment B": "#3A8A5C"}
 
 # Cloud shift (positive = right on pre-flip x-axis = upward after coord_flip)
-cloud_shift = 0.12
+cloud_shift = 0.15
 
 # Plot - horizontal raincloud via coord_flip
 # Before flip: x=condition (categorical), y=reaction_time (numeric)
@@ -59,33 +62,62 @@ plot = (
         style="right",
         trim=True,
         scale="width",
-        size=0.4,
-        alpha=0.85,
+        size=0.3,
+        alpha=0.8,
         show_legend=False,
     )
     # Boxplot - centered on category baseline
-    + geom_boxplot(width=0.08, outlier_shape="", fill="white", color="#333333", size=0.6, alpha=0.95, show_legend=False)
+    + geom_boxplot(width=0.06, outlier_shape="", fill="white", color="#444444", size=0.5, alpha=0.95, show_legend=False)
     # Rain (jittered points) - nudged in negative x-direction = downward after flip
     + geom_jitter(
-        aes(x=stage("condition", after_scale="x-0.18")), width=0.06, height=0, size=1.8, alpha=0.6, show_legend=False
+        aes(x=stage("condition", after_scale="x-0.18")), width=0.06, height=0, size=2.2, alpha=0.55, show_legend=False
+    )
+    # Annotation: highlight bimodal distribution in Treatment B
+    # In pre-flip coordinates: x=category position, y=reaction_time
+    # Treatment B is category index 1 (0-based). Annotation arrow pointing to the two peaks.
+    + annotate(
+        "text",
+        x=0.55,
+        y=425,
+        label="← Bimodal: two distinct\n     response clusters",
+        size=11,
+        color="#2A2A2A",
+        ha="center",
+        fontstyle="italic",
+    )
+    + annotate("segment", x=0.7, xend=0.95, y=370, yend=350, size=0.5, color="#666666", linetype="dashed")
+    + annotate("segment", x=0.7, xend=0.95, y=480, yend=500, size=0.5, color="#666666", linetype="dashed")
+    # Annotation: Treatment A shifted left
+    + annotate(
+        "text",
+        x=1.55,
+        y=290,
+        label="Faster responses\nvs. Control →",
+        size=10,
+        color="#2A2A2A",
+        ha="left",
+        fontstyle="italic",
     )
     + scale_fill_manual(values=colors)
     + scale_color_manual(values=colors)
+    + scale_y_continuous(expand=(0.02, 0, 0.08, 0))
     + coord_flip()
-    + labs(
-        x="Experimental Condition", y="Reaction Time (ms)", title="raincloud-basic \u00b7 plotnine \u00b7 pyplots.ai"
-    )
+    + labs(x="Experimental Condition", y="Reaction Time (ms)", title="raincloud-basic · plotnine · pyplots.ai")
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
-        text=element_text(size=14),
-        axis_title=element_text(size=20),
-        axis_text=element_text(size=16),
-        plot_title=element_text(size=24),
+        text=element_text(size=14, color="#2A2A2A"),
+        axis_title=element_text(size=20, weight="bold"),
+        axis_text=element_text(size=16, color="#444444"),
+        plot_title=element_text(size=24, weight="bold", color="#1A1A1A"),
         panel_grid_major_y=element_blank(),
         panel_grid_minor=element_blank(),
-        panel_grid_major_x=element_line(color="#cccccc", size=0.5),
+        panel_grid_major_x=element_line(color="#E0E0E0", size=0.4),
+        panel_border=element_blank(),
+        plot_background=element_rect(fill="#FAFAFA", color="none"),
+        panel_background=element_rect(fill="#FAFAFA", color="none"),
         legend_position="none",
+        plot_margin=0.02,
     )
 )
 

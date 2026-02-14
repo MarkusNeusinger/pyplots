@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-basic: Basic Scatter Plot
 Library: plotnine 0.15.3 | Python 3.14
-Quality: /100 | Updated: 2026-02-14
+Quality: 85/100 | Created: 2025-12-22
 """
 
 import numpy as np

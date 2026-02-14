@@ -1,163 +1,175 @@
 library: plotnine
 specification_id: scatter-basic
 created: '2025-12-22T23:36:42Z'
-updated: "2026-02-14T14:28:20+00:00"
+updated: '2026-02-14T14:33:27Z'
 generated_by: claude-opus-4-6
 workflow_run: 20446833141
 issue: 0
-python_version: "3.14"
-library_version: "0.15.3"
+python_version: '3.14'
+library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/plotnine/plot_thumb.png
 preview_html: null
-quality_score: null
+quality_score: 85
 impl_tags:
   dependencies: []
   techniques: []
   patterns:
-    - data-generation
+  - data-generation
   dataprep: []
   styling:
-    - alpha-blending
-    - grid-styling
+  - alpha-blending
+  - edge-highlighting
+  - grid-styling
 review:
   strengths:
-  - Excellent text legibility with proper font sizing following library guidelines
-    (title=24, axis_title=20, axis_text=16)
-  - Clean, readable code following KISS principles with proper ggplot2-style grammar
-    of graphics
-  - Realistic educational context (study hours vs exam scores) that is immediately
-    understandable
-  - Proper use of alpha=0.7 for point transparency as recommended in spec
-  - Correct title format and axis labels with units
+  - Perfectly structured plotnine grammar-of-graphics chain with explicit theme customization
+  - All font sizes explicitly set matching the library rules (title 24pt, labels 20pt,
+    ticks 16pt)
+  - Clean fill+stroke marker technique using shape="o" with separate fill and color
+    aesthetics
+  - Realistic and neutral educational data context (study hours vs exam scores)
+  - Spec compliance is flawless — all required features present
   weaknesses:
-  - Does not utilize color or size aesthetics to demonstrate additional plotnine capabilities
-  - Grid configuration uses element_line with alpha parameter which may not fully
-    render as expected in all plotnine versions
-  image_description: The plot displays a 2D scatter plot with "Study Hours (per week)"
-    on the x-axis (ranging from ~1 to 10) and "Exam Score (points)" on the y-axis
-    (ranging from ~20 to 106). The data points are rendered as blue circles (#306998)
-    with moderate transparency (alpha=0.7). The title "scatter-basic · plotnine ·
-    pyplots.ai" appears at the top in a clear font. The plot uses a minimal theme
-    with subtle gray grid lines. The 150 data points show a clear positive correlation
-    between study hours and exam scores, with visible scatter/noise around the trend
-    line. The layout is clean with good proportions in 16:9 aspect ratio.
+  - 'No data storytelling: adding a trend line (stat_smooth), R² annotation, or key-point
+    callouts would elevate the narrative'
+  - Exam scores exceed 100 (up to ~105) which breaks realism for a 0-100 exam scale
+    — clamp or adjust the noise model
+  - Markers could be slightly larger (size=5) for better visual presence at 150 data
+    points
+  - Design stays at well-configured default level — adding a subtitle, refined color
+    palette, or annotation would push toward publication quality
+  image_description: 'The plot displays a scatter chart titled "scatter-basic · plotnine
+    · pyplots.ai" on a white background with subtle gray major grid lines. 150 steel-blue
+    filled circular markers with thin white edge strokes are plotted, showing study
+    hours per week (x-axis, range ~1–10) versus exam scores in points (y-axis, range
+    ~20–105). A clear positive linear correlation is visible with moderate noise.
+    The markers use alpha=0.7 transparency. Font sizes are well-scaled: the title
+    is large and centered at top, axis labels are prominent, and tick labels are clearly
+    readable. The layout is 16:9 landscape with balanced margins. No legend is present
+    (single series). Minor grid lines are suppressed.'
   criteria_checklist:
     visual_quality:
-      score: 37
-      max: 40
+      score: 29
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
-        passed: true
-        comment: Title at 24pt, axis titles at 20pt, tick labels at 16pt - all perfectly
-          readable
-      - id: VQ-02
-        name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements
+        comment: 'All font sizes explicitly set: title 24pt, axis titles 20pt, tick
+          text 16pt, base 14pt. Perfectly readable.'
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
+        passed: true
+        comment: No overlapping text anywhere.
       - id: VQ-03
         name: Element Visibility
-        score: 7
-        max: 8
-        passed: true
-        comment: Markers well-sized for 150 points with appropriate alpha, minor deduction
-          as markers could be slightly larger for this density
+        score: 5
+        max: 6
+        passed: false
+        comment: Markers visible with appropriate alpha for 150 points, but size=4
+          renders slightly small; size=5 would improve visual presence.
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Single blue color (#306998) is colorblind-safe with good contrast
+        comment: Single color (#306998 Python Blue), no colorblind concerns.
       - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
+        name: Layout & Canvas
+        score: 4
+        max: 4
         passed: true
-        comment: Excellent use of 16:9 aspect ratio with balanced margins
+        comment: 16:9 canvas well-utilized, balanced margins, plot fills ~60% of area.
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: "Study Hours (per week)" and "Exam
-          Score (points)"'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
-        passed: true
-        comment: Grid is very subtle (alpha=0.3 for major, 0.2 for minor), but no
-          legend needed for single-series scatter
+        comment: 'Descriptive with units: Study Hours (per week), Exam Score (points).'
+    design_excellence:
+      score: 10
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
+        passed: false
+        comment: Well-configured minimal theme with Python Blue and white edge strokes.
+          Above defaults but not publication-level.
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: false
+        comment: Minor grid removed, major grid subtly styled, theme_minimal removes
+          spines. Good but not every-detail-polished.
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: Data displayed cleanly but no annotations, trend line, or narrative
+          emphasis.
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct 2D scatter plot
+        comment: Correct scatter plot.
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X/Y correctly assigned (study hours → x, exam scores → y)
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Has transparency, grid lines, axis labels, title as specified
-      - id: SC-04
-        name: Data Range
+        comment: Alpha ~0.7, axis labels, title, grid lines, moderate point size —
+          all present.
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data points visible within axes
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X=study hours, Y=exam scores, correctly assigned.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: N/A for single-series, no legend needed
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Uses correct format: "scatter-basic · plotnine · pyplots.ai"'
+        comment: Title format correct. No legend needed for single series.
     data_quality:
-      score: 18
-      max: 20
+      score: 13
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
-        max: 8
-        passed: true
-        comment: Shows positive correlation and scatter well, but doesn't demonstrate
-          outliers explicitly
+        score: 5
+        max: 6
+        passed: false
+        comment: Shows positive correlation with noise and natural outliers. Could
+          benefit from more diversity in scatter patterns.
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: '"Study hours vs exam scores" is a real, comprehensible educational
-          scenario'
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: 'Realistic values: 1-10 hours/week, scores ~20-106 (plausible exam
-          range)'
+        comment: 'Study hours vs exam scores: classic, neutral, immediately comprehensible
+          educational scenario.'
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 3
+        max: 4
+        passed: false
+        comment: Study hours 1-10 realistic, but exam scores exceed 100 (up to ~105)
+          which is unrealistic for a typical 0-100 exam.
     code_quality:
       score: 10
       max: 10
@@ -167,41 +179,46 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean Imports → Data → Plot → Save structure, no functions/classes
+        comment: Clean imports → data → plot → save flow.
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) present.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only used imports present
+        comment: All imports used.
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
-        passed: true
-        comment: Modern plotnine API used
-      - id: CQ-05
-        name: Output Correct
-        score: 1
-        max: 1
-        passed: true
-        comment: Saves as plot.png
-    library_features:
-      score: 2
-      max: 5
-      items:
-      - id: LF-01
-        name: Uses distinctive library features
+        name: Code Elegance
         score: 2
+        max: 2
+        passed: true
+        comment: Clean, Pythonic, appropriate complexity.
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png, dpi=300.
+    library_mastery:
+      score: 8
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
         max: 5
         passed: true
-        comment: Uses plotnine's grammar of graphics (ggplot + geom_point + theme_minimal),
-          but doesn't leverage advanced features like faceting, stats, or aesthetic
-          mappings for color/size
-  verdict: APPROVED
+        comment: Proper ggplot grammar chain with element_text, element_line, element_blank.
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: false
+        comment: Uses fill/color/stroke aesthetic separation on geom_point. Could
+          leverage stat_smooth, scale_*, or coord_* for more distinction.
+  verdict: REJECTED

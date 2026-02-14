@@ -1,158 +1,180 @@
 library: matplotlib
 specification_id: bar-basic
 created: '2025-12-23T00:23:14Z'
-updated: '2025-12-23T00:27:05Z'
-generated_by: claude-opus-4-5-20251101
+updated: '2026-02-14T15:01:58Z'
+generated_by: claude-opus-4-6
 workflow_run: 20447576553
 issue: 0
-python_version: 3.13.11
+python_version: '3.14'
 library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-basic/matplotlib/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-basic/matplotlib/plot_thumb.png
 preview_html: null
-quality_score: 93
+quality_score: 92
 impl_tags:
   dependencies: []
   techniques:
   - annotations
-  - edge-highlighting
+  - manual-ticks
   patterns:
   - explicit-figure
   dataprep: []
-  styling: []
+  styling:
+  - edge-highlighting
+  - grid-styling
 review:
   strengths:
-  - Excellent text readability with appropriate font sizes for high-resolution output
-  - Clean, professional design with removed top/right spines and subtle grid
-  - Value labels above bars enhance data communication
-  - Realistic product sales scenario with plausible dollar amounts
-  - Proper use of matplotlib Axes API (ax.bar, ax.annotate, ax.set_*)
+  - Excellent storytelling with two annotations highlighting top seller and lowest
+    performer, with color-coordinated arrows
+  - 'Professional visual polish: custom background, 3-shade blue hierarchy, white
+    bar edges, path effects on value labels'
+  - 'Strong spec compliance: all specification recommendations addressed (consistent
+    widths, value labels, strategic highlighting, spacing)'
+  - Idiomatic matplotlib usage with bar_label, StrMethodFormatter, and patheffects
+    — distinctive library features well leveraged
   weaknesses:
-  - Data is sorted in descending order which is less visually interesting than a mixed
-    arrangement showing natural category variation
-  - Could use matplotlib FuncFormatter for y-axis tick labels to show dollar signs
-    consistently
-  image_description: 'The plot displays a vertical bar chart showing product sales
-    by category. Six steel-blue bars (#306998) represent different product categories:
-    Electronics ($45,200), Clothing ($32,800), Home & Garden ($28,500), Sports ($21,300),
-    Books ($18,900), and Toys ($15,600). Each bar has a dollar-formatted value label
-    positioned above it. The y-axis shows "Sales ($)" ranging from 0 to ~45,000, and
-    the x-axis shows "Product Category". The title follows the correct format: "bar-basic
-    · matplotlib · pyplots.ai". The plot has a clean design with subtle horizontal
-    grid lines, no top/right spines, and consistent bar widths with adequate spacing.'
+  - The Lowest — Books annotation placement (xytext at x-2.2, y*0.30) creates a long
+    curved arrow that spans across unrelated bars, reducing clarity
+  - Annotation positioning relies on several magic numbers tied to specific data values
+    rather than relative positioning
+  image_description: 'The plot displays a vertical bar chart titled "bar-basic · matplotlib
+    · pyplots.ai" with 6 product categories on the x-axis (Electronics, Clothing,
+    Home & Garden, Sports, Books, Toys) and Sales (USD) on the y-axis. Bars use a
+    blue monochromatic palette: the tallest bar (Electronics, $45,200) is highlighted
+    in dark navy blue with a "Top seller Electronics" annotation and arrow; the shortest
+    bar (Books, $18,900) is in a lighter muted blue with a "Lowest — Books" annotation
+    and curved arrow. The remaining bars (Clothing $32,800, Home & Garden $28,500,
+    Sports $38,700, Toys $24,100) are in a standard medium blue (#306998). Dollar-formatted
+    value labels appear above each bar with white stroke path effects for readability.
+    The background is off-white (#FAFAFA), y-axis has subtle gridlines (alpha=0.15),
+    and only the bottom spine is visible. Layout is clean with well-proportioned margins.'
   criteria_checklist:
     visual_quality:
-      score: 38
-      max: 40
+      score: 28
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt, value annotations
-          at 16pt - all perfectly readable
+        comment: 'All font sizes explicitly set: title 24pt, axis labels 20pt, ticks
+          16pt, bar labels 16pt, annotations 14pt'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text, all category labels clearly separated
+        comment: No overlapping text elements; all labels, annotations, and values
+          are cleanly spaced
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Bars well-sized with good width (0.6), appropriate spacing
+        comment: Bars well-sized at width=0.7 with white edge highlights, clearly
+          distinguishable
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Single color scheme, no colorblind issues
+        comment: Blue monochromatic palette with luminance variation; fully colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Well-proportioned, good use of space with tight_layout
+        score: 2
+        max: 4
+        passed: false
+        comment: Good canvas utilization overall but the Lowest — Books annotation
+          is placed in the lower-left area with somewhat awkward positioning relative
+          to its target bar
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: "Sales ($)" and "Product Category"'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
-        passed: false
-        comment: Grid is subtle (alpha=0.3) but no legend needed; however y-axis grid
-          only is appropriate
+        comment: Product Category and Sales (USD) with units
+    design_excellence:
+      score: 17
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 7
+        max: 8
+        passed: true
+        comment: Custom off-white background, intentional 3-shade blue hierarchy,
+          white bar edges, path effects on value labels, professional polish approaching
+          publication quality
+      - id: DE-02
+        name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: Subtle grid (alpha=0.15), three spines removed, weighted bottom spine,
+          good whitespace; minor deduction for slightly awkward lower annotation placement
+      - id: DE-03
+        name: Data Storytelling
+        score: 5
+        max: 6
+        passed: true
+        comment: Two annotations with arrows highlight top and bottom performers,
+          color differentiation reinforces the narrative; strong storytelling for
+          a basic bar chart
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
         comment: Correct vertical bar chart
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories on x-axis, values as bar heights
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Value labels on bars, consistent bar widths, single color, adequate
-          spacing
-      - id: SC-04
-        name: Data Range
+        comment: Consistent bar widths, value labels above bars, single color with
+          strategic highlights, adequate spacing
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Y-axis starts at 0, shows all data properly
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
-        passed: true
-        comment: No legend needed for single-series bar chart
-      - id: SC-06
+        comment: Categories on X-axis, values on Y-axis, all data visible
+      - id: SC-04
         name: Title Format
-        score: 2
-        max: 2
+        score: 3
+        max: 3
         passed: true
-        comment: 'Correct format: "bar-basic · matplotlib · pyplots.ai"'
+        comment: Correct format bar-basic · matplotlib · pyplots.ai; no legend needed
+          for single-series
     data_quality:
-      score: 18
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Shows 6 categories with clear value differences, though data is monotonically
-          decreasing which is less interesting than mixed ordering
+        comment: Good variation in bar heights with clear leader and laggard, non-monotonic
+          ordering shows natural variation
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Product sales by category is a plausible, real-world scenario
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Sales values in thousands are realistic for category comparisons
+        comment: Product sales by category is a real, neutral business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Values ($18,900-$45,200) are realistic for department-level product
+          sales
     code_quality:
       score: 9
       max: 10
@@ -162,41 +184,48 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Simple linear flow: imports → data → plot → save'
+        comment: Clean Imports → Data → Plot → Save flow, no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
-        max: 3
-        passed: false
-        comment: Data is deterministic (hardcoded), but no random seed comment to
-          indicate intentional reproducibility
+        max: 2
+        passed: true
+        comment: Deterministic hardcoded data, no random generation needed
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only matplotlib.pyplot imported
+        comment: All three imports (pyplot, ticker, patheffects) are used
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
         score: 1
-        max: 1
-        passed: true
-        comment: Uses current matplotlib API
-      - id: CQ-05
-        name: Output Correct
-        score: 1
-        max: 1
-        passed: true
-        comment: Saves as plot.png with dpi=300
-    library_features:
-      score: 3
-      max: 5
-      items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 3
-        max: 5
+        max: 2
         passed: false
-        comment: Good use of Axes methods, spines control, and annotation, but could
-          leverage more matplotlib-specific features like custom formatters
+        comment: Generally clean but annotation positioning uses several magic numbers
+          (0.45, 0.30, -2.2, 0.92, 0.8)
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with dpi=300, no deprecated functions
+    library_mastery:
+      score: 9
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: Consistently uses Axes methods, bar_label API, StrMethodFormatter,
+          proper subplots_adjust
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Uses matplotlib-specific features: bar_label with path_effects (withStroke),
+          ticker.StrMethodFormatter, arrowprops with connectionstyle'
   verdict: APPROVED

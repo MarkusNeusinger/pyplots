@@ -14,9 +14,11 @@ suggested: MarkusNeusinger
 tags:
   plot_type:
     - scatter
+    - point
   data_type:
     - numeric
     - continuous
+    - bivariate
   domain:
     - statistics
     - general

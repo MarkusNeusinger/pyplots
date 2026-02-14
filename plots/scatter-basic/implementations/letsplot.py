@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-basic: Basic Scatter Plot
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 90/100 | Created: 2025-12-22
+Library: letsplot 4.8.2 | Python 3.14
+Quality: /100 | Updated: 2026-02-14
 """
 
 import numpy as np
@@ -24,12 +24,15 @@ df = pd.DataFrame({"study_hours": study_hours, "exam_scores": exam_scores})
 plot = (
     ggplot(df, aes(x="study_hours", y="exam_scores"))  # noqa: F405
     + geom_point(  # noqa: F405
-        color="#306998",
+        fill="#306998",
+        color="white",
         size=6,
         alpha=0.7,
+        stroke=0.8,
+        shape=21,
         tooltips=layer_tooltips()  # noqa: F405
-        .line("Study Hours|@study_hours")
-        .line("Exam Score|@exam_scores"),
+        .line("Study Hours|@{study_hours}{.1f}")
+        .line("Exam Score|@{exam_scores}{.1f}"),
     )
     + labs(  # noqa: F405
         x="Study Hours (hrs)", y="Exam Score (points)", title="scatter-basic · letsplot · pyplots.ai"
@@ -40,7 +43,7 @@ plot = (
         axis_text=element_text(size=16),  # noqa: F405
         axis_title=element_text(size=20),  # noqa: F405
         plot_title=element_text(size=24),  # noqa: F405
-        panel_grid=element_line(color="#CCCCCC", size=0.5, linetype="dashed"),  # noqa: F405
+        panel_grid=element_line(color="#D9D9D9", size=0.4),  # noqa: F405
     )
 )
 

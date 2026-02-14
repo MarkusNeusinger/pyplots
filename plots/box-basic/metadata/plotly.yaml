@@ -1,7 +1,7 @@
 library: plotly
 specification_id: box-basic
 created: '2025-12-23T00:35:23Z'
-updated: '2026-02-14T22:13:42Z'
+updated: '2026-02-14T22:20:22Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447776078
 issue: 0
@@ -10,10 +10,11 @@ library_version: 6.5.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/box-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/box-basic/plotly/plot.html
-quality_score: 78
+quality_score: 94
 impl_tags:
   dependencies: []
   techniques:
+  - annotations
   - hover-tooltips
   - html-export
   patterns:
@@ -21,43 +22,42 @@ impl_tags:
   - iteration-over-groups
   dataprep: []
   styling:
+  - alpha-blending
   - grid-styling
 review:
   strengths:
-  - Perfect spec compliance — all required features (median, outliers, whiskers, per-category
-    colors) are present
-  - Excellent code quality — clean KISS structure, seed set, no unnecessary imports,
-    elegant dict comprehension for clipping
-  - Realistic salary data with appropriate sample sizes and natural variation between
-    departments
-  - Good use of Plotly-specific features (hovertemplate, HTML export)
-  - All font sizes explicitly set meeting legibility requirements
+  - Excellent data storytelling with three well-placed annotations (highest/lowest
+    median callouts and salary gap insight) that guide the viewer through the key
+    findings
+  - Strong visual quality with all font sizes explicitly set well above minimums,
+    no overlapping elements, and a polished off-white background
+  - 'Good data design: five departments with meaningfully different distributions
+    (varying means, spreads, and sample sizes) plus a visible outlier in Sales'
+  - 'Effective use of Plotly-specific features: interactive hover templates with currency
+    formatting, HTML export alongside static PNG, and the native annotation system'
+  - Clean, well-structured code following the KISS pattern with appropriate complexity
   weaknesses:
-  - 'Two similar blue tones (#306998 Engineering, #4B8BBE Sales) reduce color distinctiveness
-    — replace one with a more contrasting color'
-  - No data storytelling — add annotations highlighting key insights (e.g., median
-    salary differences, the high outlier in Sales, Engineering premium over other
-    departments)
-  - Significant empty vertical whitespace above the data — tighten the y-axis range
-    or let it auto-scale more efficiently
-  - Visual refinement is minimal beyond plotly_white defaults — consider adding subtle
-    enhancements like box fill opacity variation or styled whisker caps
-  - No visual emphasis or hierarchy among the departments to guide the viewer eye
-  image_description: 'The plot displays 5 box-and-whisker plots arranged horizontally,
-    one for each department: Engineering, Marketing, Sales, HR, and Finance. Each
-    box is a distinct color — Engineering in muted steel blue (#306998), Marketing
-    in peach/orange (#E07B42), Sales in light blue (#4B8BBE), HR in soft purple (#8B6DAF),
-    and Finance in sage green (#2D9B6E). The y-axis shows "Annual Salary ($)" ranging
-    from $20,000 to $140,000 with dollar-formatted tick labels. The x-axis shows "Department".
-    Median lines are clearly visible within each box. Whiskers extend from each box
-    to the data range. Two outliers are visible: one below Engineering (~$57,000)
-    and one well above Sales (~$147,000). The title "box-basic · plotly · pyplots.ai"
-    is centered at the top. The background uses plotly_white template with subtle
-    horizontal gridlines. The layout is clean with no legend (category names serve
-    as x-axis labels).'
+  - Legend is hidden (showlegend=False) — while categories are identifiable from x-axis
+    labels, a compact legend could reinforce the color-category mapping
+  - Annotation arrow for Lowest median points slightly away from the actual median
+    line position on HR, making it look like it points between the box and the annotation
+    rather than precisely at the median
+  image_description: 'The plot displays five box-and-whisker plots arranged horizontally,
+    one for each department: Engineering (steel blue), Marketing (orange), Sales (pink/rose),
+    HR (purple), and Finance (green). The y-axis shows "Annual Salary ($)" with dollar-formatted
+    ticks from $20,000 to $140,000+ at $20,000 intervals. The x-axis shows "Department".
+    The title "box-basic · plotly · pyplots.ai" is centered at the top in a large
+    bold font. Each box shows a distinct distribution: Engineering has a high median
+    (~$93k) with moderate spread; Marketing clusters around $75k; Sales has the widest
+    spread reaching from ~$25k to ~$117k with one outlier near $148k; HR has the narrowest
+    box centered around $65k; Finance shows a higher median (~$85k) with moderate
+    spread. Two annotation callouts with arrows highlight the highest median (Engineering,
+    $93,096 in blue) and lowest median (HR, $64,846 in pink/rose). A summary box in
+    the upper-right corner reads "Median salary gap: $28,249". The background is a
+    very light off-white with subtle horizontal gridlines.'
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 30
       max: 30
       items:
       - id: VQ-01
@@ -65,68 +65,67 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 32pt, axis labels 24pt, ticks
-          20pt'
+        comment: 'All font sizes explicitly set: title 32pt, axis titles 24pt, tick
+          fonts 20pt, annotation fonts 17-18pt'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text anywhere
+        comment: No overlapping text; annotations well-positioned with ax/ay offsets
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Box elements well-sized with line width 2; outlier markers could
-          be slightly larger
+        comment: Boxes well-sized with opacity 0.85, outlier markers size=12 with
+          edge lines
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
-        passed: false
-        comment: 'Two blues (#306998 and #4B8BBE) for Engineering and Sales are too
-          similar'
+        passed: true
+        comment: Five distinct hues (blue, orange, pink, purple, green) all distinguishable
       - id: VQ-05
         name: Layout & Canvas
-        score: 2
+        score: 4
         max: 4
-        passed: false
-        comment: Significant empty vertical space above data; boxes use only ~60%
-          of vertical range
+        passed: true
+        comment: Good canvas utilization with balanced margins, plot fills majority
+          of canvas
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Department and Annual Salary ($) — descriptive with units
+        comment: Annual Salary ($) with unit, Department descriptive
     design_excellence:
-      score: 8
+      score: 16
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 6
         max: 8
-        passed: false
-        comment: Well-configured plotly_white with custom palette, but looks like
-          a configured default
+        passed: true
+        comment: Custom cohesive 5-color palette, consistent Arial typography, plotly_white
+          with custom background
       - id: DE-02
         name: Visual Refinement
-        score: 2
+        score: 5
         max: 6
-        passed: false
-        comment: plotly_white removes some chrome, subtle gridlines, but mostly library
-          defaults
+        passed: true
+        comment: Subtle grid at 6% opacity, custom axis lines, removed zeroline, polished
+          annotation boxes
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 5
         max: 6
-        passed: false
-        comment: Data displayed without interpretation; no annotations highlighting
-          salary insights
+        passed: true
+        comment: 'Three annotations guide viewer: highest/lowest median callouts and
+          salary gap insight box'
     spec_compliance:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -134,51 +133,50 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct box plot chart type
+        comment: Correct box plot using go.Box
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Median line, outliers, whiskers at 1.5*IQR, different colors per
+        comment: Median line, outliers, whiskers at 1.5xIQR, different colors per
           category
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Categories on x-axis, values on y-axis
+        comment: Categories on X, salary values on Y
       - id: SC-04
         name: Title & Legend
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Correct title format; legend hidden since x-axis labels serve the
-          purpose
+        comment: Title format correct; legend hidden but categories clear from x-axis
+          labels
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Shows varying spreads and outliers; could have more dramatic distribution
-          differences
+        comment: Different means, spreads, sample sizes, visible outlier in Sales
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Salary distributions across departments — realistic neutral business
+        comment: Salary distributions across company departments — neutral business
           scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Realistic salary values ($25K-$147K), appropriate sample sizes (60-120)
+        comment: Salary ranges 25k-150k realistic for US corporate departments
     code_quality:
       score: 10
       max: 10
@@ -188,13 +186,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → layout → save
+        comment: Clean imports-data-plot-save flow, no functions/classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) present
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -206,29 +204,28 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Clean Pythonic code with elegant dict comprehension for clipping
+        comment: Clean iteration, appropriate annotation complexity
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Correct output format and dimensions (1600x900 scale 3)
+        comment: Saves plot.png at 1600x900 scale=3 and plot.html
     library_mastery:
-      score: 7
+      score: 9
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: Proper go.Figure/go.Box pattern, add_trace loop, update_layout, add_annotation
+      - id: LM-02
+        name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: Good use of go.Box with proper parameters; px.box could be more idiomatic
-          but go.Figure is valid
-      - id: LM-02
-        name: Distinctive Features
-        score: 3
-        max: 5
-        passed: true
-        comment: Custom hovertemplate with dollar formatting and HTML export with
-          CDN are Plotly-specific
-  verdict: REJECTED
+        comment: Interactive hover templates with currency formatting, HTML export,
+          native annotation system
+  verdict: APPROVED

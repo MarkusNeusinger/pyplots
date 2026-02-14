@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 box-basic: Basic Box Plot
 Library: plotly 6.5.2 | Python 3.14
-Quality: 78/100 | Created: 2025-12-23
+Quality: 94/100 | Created: 2025-12-23
 """
 
 import numpy as np

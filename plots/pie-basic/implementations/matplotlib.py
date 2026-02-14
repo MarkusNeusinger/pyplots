@@ -1,15 +1,15 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-basic: Basic Pie Chart
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Library: matplotlib 3.10.8 | Python 3.14.0
+Quality: /100 | Updated: 2026-02-14
 """
 
 import matplotlib.pyplot as plt
 
 
-# Data - Market share distribution
-categories = ["Product A", "Product B", "Product C", "Product D", "Product E"]
-values = [35, 25, 20, 12, 8]
+# Data - Global cloud infrastructure market share (2024)
+companies = ["AWS", "Azure", "Google Cloud", "Alibaba Cloud", "Others"]
+market_share = [31, 25, 11, 4, 29]
 
 # Colors - Python Blue first, then harmonious colorblind-safe colors
 colors = ["#306998", "#FFD43B", "#4ECDC4", "#FF6B6B", "#95A5A6"]
@@ -21,28 +21,38 @@ explode = [0.05, 0, 0, 0, 0]
 fig, ax = plt.subplots(figsize=(12, 12))
 
 wedges, texts, autotexts = ax.pie(
-    values,
-    labels=categories,
+    market_share,
+    labels=companies,
     autopct="%1.1f%%",
     explode=explode,
     colors=colors,
     startangle=90,
-    textprops={"fontsize": 20},
-    wedgeprops={"linewidth": 2, "edgecolor": "white"},
+    shadow=True,
+    textprops={"fontsize": 22},
+    wedgeprops={"linewidth": 2.5, "edgecolor": "white"},
+    pctdistance=0.55,
 )
 
 # Style percentage labels
 for autotext in autotexts:
-    autotext.set_fontsize(18)
+    autotext.set_fontsize(20)
     autotext.set_fontweight("bold")
     autotext.set_color("white")
 
-# Add title
-ax.set_title("pie-basic · matplotlib · pyplots.ai", fontsize=28, pad=20)
+# Title
+ax.set_title("pie-basic · matplotlib · pyplots.ai", fontsize=28, fontweight="medium", pad=30)
 
-# Add legend
+# Legend with contextual title
 ax.legend(
-    wedges, categories, title="Categories", loc="center left", bbox_to_anchor=(1, 0.5), fontsize=18, title_fontsize=20
+    wedges,
+    [f"{c} ({s}%)" for c, s in zip(companies, market_share, strict=True)],
+    title="Cloud Providers",
+    loc="lower center",
+    bbox_to_anchor=(0.5, -0.05),
+    fontsize=18,
+    title_fontsize=20,
+    ncol=3,
+    framealpha=0.9,
 )
 
 plt.tight_layout()

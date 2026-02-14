@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-basic: Basic Pie Chart
 Library: altair 6.0.0 | Python 3.14.0
 Quality: 81/100 | Created: 2025-12-23
@@ -8,24 +8,29 @@ import altair as alt
 import pandas as pd
 
 
-# Data - Market share of cloud providers
+# Data - Cloud infrastructure market share
 data = pd.DataFrame(
     {"category": ["AWS", "Azure", "Google Cloud", "Alibaba", "Oracle", "Others"], "value": [31, 24, 11, 4, 3, 27]}
 )
 
-# Calculate percentages and labels
-data["percentage"] = data["value"] / data["value"].sum() * 100
+total = data["value"].sum()
+data["percentage"] = data["value"] / total * 100
 data["label"] = data["percentage"].apply(lambda x: f"{x:.0f}%")
+data["order"] = range(len(data))
 
-# Color palette - Python Blue first, then cohesive colorblind-safe colors
+# Color palette - Python Blue first, cohesive colorblind-safe
 colors = ["#306998", "#FFD43B", "#4ECDC4", "#FF6B6B", "#95E1D3", "#A8A8A8"]
+domain = data["category"].tolist()
 
-# Base chart with shared encodings
+color_scale = alt.Scale(domain=domain, range=colors)
+
+# Shared encodings for the main chart (includes legend)
 base = alt.Chart(data).encode(
     theta=alt.Theta("value:Q", stack=True),
+    order=alt.Order("order:O"),
     color=alt.Color(
         "category:N",
-        scale=alt.Scale(domain=data["category"].tolist(), range=colors),
+        scale=color_scale,
         legend=alt.Legend(
             title="Provider",
             titleFontSize=20,
@@ -39,17 +44,43 @@ base = alt.Chart(data).encode(
     ),
 )
 
-# Pie slices with padAngle for separation and cornerRadius for polish
+# Main pie slices
 pie = base.mark_arc(
-    outerRadius=320, innerRadius=0, stroke="#ffffff", strokeWidth=2.5, padAngle=0.02, cornerRadius=3
+    outerRadius=380, innerRadius=0, stroke="#ffffff", strokeWidth=2.5, padAngle=0.02, cornerRadius=3
 ).encode(tooltip=[alt.Tooltip("category:N", title="Provider"), alt.Tooltip("value:Q", title="Market Share (%)")])
 
-# Percentage labels outside slices
-text = base.mark_text(radius=380, fontSize=21, fontWeight="bold").encode(text="label:N")
+# Exploded AWS slice (largest) — larger radius + inner gap for visual emphasis
+exploded_aws = (
+    alt.Chart(data)
+    .transform_filter(alt.datum.category == "AWS")
+    .mark_arc(outerRadius=410, innerRadius=14, stroke="#ffffff", strokeWidth=3, padAngle=0.04, cornerRadius=3)
+    .encode(
+        theta=alt.Theta("value:Q", stack=True),
+        order=alt.Order("order:O"),
+        color=alt.Color("category:N", scale=color_scale, legend=None),
+    )
+)
 
-# Combine pie and labels
+# Percentage labels outside slices
+text = base.mark_text(radius=440, fontSize=21, fontWeight="bold").encode(text="label:N")
+
+# Annotation: AWS callout as market leader (positioned upper-right, near AWS slice)
+aws_note = (
+    alt.Chart(pd.DataFrame({"text": ["AWS leads at 31% — largest single provider"]}))
+    .mark_text(fontSize=16, fontStyle="italic", color="#306998", align="left")
+    .encode(x=alt.value(730), y=alt.value(80), text="text:N")
+)
+
+# Annotation: "Others" insight (positioned lower-left, near Others slice)
+others_note = (
+    alt.Chart(pd.DataFrame({"text": ['"Others" at 27% collectively outpace all but AWS']}))
+    .mark_text(fontSize=16, fontStyle="italic", color="#777777", align="right")
+    .encode(x=alt.value(470), y=alt.value(1020), text="text:N")
+)
+
+# Combine all layers
 chart = (
-    alt.layer(pie, text)
+    alt.layer(pie, exploded_aws, text, aws_note, others_note)
     .properties(
         width=1200,
         height=1200,
@@ -63,9 +94,10 @@ chart = (
         ),
     )
     .configure_view(strokeWidth=0)
+    .configure_legend(padding=10, offset=0)
 )
 
-# Save as PNG (scale_factor=3 gives us 3600x3600 for square format)
+# Save as PNG (scale_factor=3 → 3600x3600 square format)
 chart.save("plot.png", scale_factor=3.0)
 
 # Save interactive HTML

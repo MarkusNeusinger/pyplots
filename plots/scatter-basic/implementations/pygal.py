@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-basic: Basic Scatter Plot
 Library: pygal 3.1.0 | Python 3.14
 Quality: 87/100 | Created: 2025-12-22
@@ -16,7 +16,7 @@ study_hours = np.random.uniform(2, 14, n)
 exam_scores = study_hours * 4.5 + np.random.normal(0, 5.5, n) + 25
 exam_scores = np.clip(exam_scores, 15, 100)
 
-# Add a few deliberate outliers to showcase scatter diversity
+# Add deliberate outliers showcasing scatter diversity (high/low performers)
 outlier_hours = np.array([3.0, 12.5, 7.0, 11.0, 4.5])
 outlier_scores = np.array([82.0, 42.0, 95.0, 48.0, 78.0])
 study_hours = np.concatenate([study_hours, outlier_hours])
@@ -32,14 +32,16 @@ trend_y = slope * trend_x + intercept
 # Shared font family
 font = "DejaVu Sans, Helvetica, Arial, sans-serif"
 
-# Refined style for 4800x2700 px canvas
+# Refined style for 4800x2700 px canvas — subtle, professional palette
 custom_style = Style(
     background="white",
-    plot_background="#fafafa",
+    plot_background="#f7f7f7",
     foreground="#2a2a2a",
     foreground_strong="#2a2a2a",
-    foreground_subtle="#d8d8d8",
-    colors=("#306998", "#c44e52"),
+    foreground_subtle="#e0e0e0",
+    guide_stroke_color="#e0e0e0",
+    guide_stroke_dasharray="4, 4",
+    colors=("#306998", "#d64541"),
     font_family=font,
     title_font_family=font,
     title_font_size=56,
@@ -50,11 +52,13 @@ custom_style = Style(
     value_font_size=28,
     tooltip_font_size=28,
     tooltip_font_family=font,
-    opacity=0.6,
-    opacity_hover=0.9,
+    opacity=0.65,
+    opacity_hover=0.95,
+    stroke_opacity=1,
+    stroke_opacity_hover=1,
 )
 
-# Create XY chart (stroke=False for scatter behavior)
+# Create XY chart — xrange tightened to data range for better canvas usage
 chart = pygal.XY(
     width=4800,
     height=2700,
@@ -65,8 +69,9 @@ chart = pygal.XY(
     show_legend=True,
     legend_at_bottom=True,
     legend_at_bottom_columns=2,
+    legend_box_size=24,
     stroke=False,
-    dots_size=10,
+    dots_size=12,
     show_x_guides=True,
     show_y_guides=True,
     x_value_formatter=lambda x: f"{x:.0f}",
@@ -78,19 +83,34 @@ chart = pygal.XY(
     x_label_rotation=0,
     truncate_legend=-1,
     range=(10, 105),
-    xrange=(0, 16),
+    xrange=(1, 15),
+    x_labels_major_count=7,
+    y_labels_major_count=9,
+    print_values=False,
+    print_zeroes=False,
+    dynamic_print_values=True,
+    js=[],
 )
 
 # Add scatter data as list of (x, y) tuples
 points = [(float(h), float(s)) for h, s in zip(study_hours, exam_scores, strict=True)]
-chart.add("Students (n=120)", points, stroke=False)
-
-# Add trend line for data storytelling (r annotation in label)
-trend_points = [(float(x), float(y)) for x, y in zip(trend_x, trend_y, strict=True)]
 chart.add(
-    f"Trend (r = {r:.2f})", trend_points, stroke=True, show_dots=False, stroke_style={"width": 5, "dasharray": "12, 6"}
+    f"Students (n={len(points)})",
+    points,
+    stroke=False,
+    formatter=lambda x: f"({x[0]:.1f} hrs, {x[1]:.0f}%)" if isinstance(x, (tuple, list)) else f"{x:.0f}",
 )
 
-# Save outputs
+# Add trend line — thicker stroke for better visibility
+trend_points = [(float(x), float(y)) for x, y in zip(trend_x, trend_y, strict=True)]
+chart.add(
+    f"Trend (r = {r:.2f})",
+    trend_points,
+    stroke=True,
+    show_dots=False,
+    stroke_style={"width": 16, "dasharray": "32, 14", "linecap": "round", "linejoin": "round"},
+)
+
+# Save outputs — dual format leverages pygal's SVG-native + PNG capability
 chart.render_to_png("plot.png")
 chart.render_to_file("plot.html")

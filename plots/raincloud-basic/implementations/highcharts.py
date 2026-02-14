@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: highcharts 1.10.3 | Python 3.14
 Quality: 5/100 | Created: 2025-12-25
@@ -23,6 +23,12 @@ from selenium.webdriver.chrome.options import Options
 np.random.seed(42)
 categories = ["Control", "Treatment A", "Treatment B", "Treatment C"]
 colors = ["#306998", "#FFD43B", "#9467BD", "#17BECF"]
+colors_fill = [
+    "rgba(48, 105, 152, 0.55)",
+    "rgba(255, 212, 59, 0.55)",
+    "rgba(148, 103, 189, 0.55)",
+    "rgba(23, 190, 207, 0.55)",
+]
 
 # Generate realistic reaction time data with different distributions
 control = np.random.normal(450, 60, 80)  # Normal distribution
@@ -56,66 +62,78 @@ for data in all_data:
         }
     )
 
-# Create chart using highcharts_core
+# Create chart - HORIZONTAL orientation using inverted chart
+# In inverted mode: x-axis (vertical, categories on left), y-axis (horizontal, values on bottom)
+# x increases DOWNWARD, so negative offset = UPWARD (clouds), positive offset = DOWNWARD (rain)
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-# Chart configuration - HORIZONTAL orientation
-# inverted=True swaps axes: x-axis (categories) on left, y-axis (values) on bottom
-# In inverted mode, x-axis increases DOWNWARD, so:
-#   - negative x offset = UPWARD on screen (for clouds)
-#   - positive x offset = DOWNWARD on screen (for rain)
 chart.options.chart = {
-    "type": "boxplot",
+    "type": "scatter",
     "inverted": True,
     "width": 4800,
     "height": 2700,
-    "backgroundColor": "#ffffff",
+    "backgroundColor": "#fafafa",
     "marginBottom": 200,
-    "marginLeft": 280,
+    "marginLeft": 320,
     "marginRight": 200,
-    "spacingBottom": 80,
+    "marginTop": 180,
 }
 
 # Title
 chart.options.title = {
     "text": "raincloud-basic \u00b7 highcharts \u00b7 pyplots.ai",
-    "style": {"fontSize": "56px", "fontWeight": "bold"},
+    "style": {"fontSize": "60px", "fontWeight": "bold", "color": "#2c3e50"},
 }
 
-# X-axis (categories - shown on left due to inverted)
+# Subtitle for context
+chart.options.subtitle = {
+    "text": "Reaction Time Distributions Across Experimental Conditions",
+    "style": {"fontSize": "38px", "color": "#7f8c8d"},
+}
+
+# X-axis: categories with explicit min/max to accommodate cloud/rain offsets
+# Setting min/max on a category axis allows fractional x-coordinates for polygon/scatter
 chart.options.x_axis = {
-    "title": {"text": "Experimental Condition", "style": {"fontSize": "44px"}},
-    "labels": {"style": {"fontSize": "36px"}},
+    "title": {"text": "Experimental Condition", "style": {"fontSize": "44px", "color": "#34495e"}},
+    "labels": {"style": {"fontSize": "36px", "color": "#34495e"}},
     "categories": categories,
+    "tickPositions": [0, 1, 2, 3],
+    "min": -0.6,
+    "max": 3.6,
     "lineWidth": 2,
-    "tickWidth": 2,
+    "lineColor": "#bdc3c7",
+    "tickWidth": 0,
+    "gridLineWidth": 0,
 }
 
-# Y-axis (values - shown on bottom due to inverted)
+# Y-axis: values (Reaction Time ms) - shown horizontally at bottom
 chart.options.y_axis = {
-    "title": {"text": "Reaction Time (ms)", "style": {"fontSize": "44px"}},
-    "labels": {"style": {"fontSize": "36px"}},
+    "title": {"text": "Reaction Time (ms)", "style": {"fontSize": "44px", "color": "#34495e"}},
+    "labels": {"style": {"fontSize": "36px", "color": "#34495e"}},
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.08)",
-    "gridLineDashStyle": "Dot",
+    "gridLineColor": "rgba(0, 0, 0, 0.06)",
+    "gridLineDashStyle": "Dash",
     "tickInterval": 50,
-    "min": 250,
-    "max": 650,
+    "min": 220,
+    "max": 660,
+    "lineWidth": 2,
+    "lineColor": "#bdc3c7",
 }
 
-# Legend - consolidated to show only condition names
+# Legend
 chart.options.legend = {
     "enabled": True,
-    "itemStyle": {"fontSize": "36px"},
+    "itemStyle": {"fontSize": "36px", "fontWeight": "normal", "color": "#34495e"},
     "align": "right",
     "verticalAlign": "top",
     "layout": "vertical",
-    "x": -50,
+    "x": -60,
     "y": 100,
-    "backgroundColor": "rgba(255, 255, 255, 0.9)",
+    "backgroundColor": "rgba(255, 255, 255, 0.92)",
     "borderWidth": 1,
-    "borderColor": "#cccccc",
+    "borderColor": "#dcdde1",
+    "borderRadius": 8,
     "padding": 20,
     "symbolWidth": 40,
     "symbolHeight": 24,
@@ -124,94 +142,92 @@ chart.options.legend = {
 # Plot options
 chart.options.plot_options = {
     "boxplot": {
-        "medianColor": "#000000",
+        "medianColor": "#1a1a1a",
         "medianWidth": 8,
-        "medianDashStyle": "Solid",
-        "stemColor": "#1a1a1a",
-        "stemWidth": 4,
-        "whiskerColor": "#1a1a1a",
-        "whiskerWidth": 5,
+        "stemColor": "#333333",
+        "stemWidth": 3,
+        "whiskerColor": "#333333",
+        "whiskerWidth": 4,
         "whiskerLength": "50%",
-        "lineWidth": 4,
-        "pointWidth": 70,
+        "lineWidth": 3,
+        "pointWidth": 55,
+        "fillOpacity": 0.9,
     },
-    "scatter": {"marker": {"radius": 16, "symbol": "circle"}},
-    "polygon": {"fillOpacity": 0.6, "lineWidth": 2},
+    "scatter": {"marker": {"radius": 12, "symbol": "circle"}, "zIndex": 5},
+    "polygon": {"fillOpacity": 0.55, "lineWidth": 2, "zIndex": 2},
 }
 
-# Create polygon data for half-violin (the "cloud") ABOVE category baseline
-# In inverted chart, x-axis goes downward, so NEGATIVE x offset = UPWARD on screen
+# Add half-violin "cloud" shapes ABOVE each category baseline (negative x offset = upward on screen)
 for i, data in enumerate(all_data):
-    # Inline KDE computation (Gaussian kernel)
+    # Inline KDE using Gaussian kernel (Silverman's rule of thumb for bandwidth)
     data_arr = np.array(data)
     n = len(data_arr)
     std = np.std(data_arr)
     iqr_val = np.percentile(data_arr, 75) - np.percentile(data_arr, 25)
     bandwidth = 0.9 * min(std, iqr_val / 1.34) * (n ** (-0.2))
-    y_range = np.linspace(min(data_arr) - 20, max(data_arr) + 20, 50)
-    density = np.zeros(50)
+    y_range = np.linspace(data_arr.min() - 15, data_arr.max() + 15, 80)
+    density = np.zeros(80)
     for point in data_arr:
         density += np.exp(-0.5 * ((y_range - point) / bandwidth) ** 2)
     density = density / (n * bandwidth * np.sqrt(2 * np.pi))
-    density = density / density.max() * 0.35
+    density_norm = density / density.max() * 0.35  # Scale to fit
 
-    # Cloud extends UPWARD (negative x offset in inverted chart)
+    # Cloud polygon: extends upward (negative x offset in inverted mode)
+    # Start from baseline, trace the KDE shape upward, return along baseline
     polygon_points = []
-    for y, d in zip(y_range, density, strict=True):
-        polygon_points.append([float(i - d - 0.05), float(y)])
-    # Close polygon along baseline
-    for y in reversed(y_range):
-        polygon_points.append([float(i - 0.05), float(y)])
+    for y_val, d in zip(y_range, density_norm, strict=True):
+        polygon_points.append([float(i - d - 0.05), float(y_val)])
+    # Close polygon back along baseline
+    for y_val in reversed(y_range):
+        polygon_points.append([float(i - 0.05), float(y_val)])
 
     series = PolygonSeries()
     series.data = polygon_points
     series.name = categories[i]
     series.color = colors[i]
-    series.fill_color = colors[i]
-    series.fill_opacity = 0.6
+    series.fill_color = colors_fill[i]
+    series.fill_opacity = 0.55
     series.line_width = 2
     series.line_color = colors[i]
-    series.enable_mouse_tracking = False
+    series.z_index = 2
     chart.add_series(series)
 
-# Box plot series - one point per category
+# Box plot series - single series, white fill with dark outlines for clarity
 box_series = BoxPlotSeries()
 box_series_data = []
 for i, box in enumerate(box_data):
     box_series_data.append(
-        {
-            "low": box["low"],
-            "q1": box["q1"],
-            "median": box["median"],
-            "q3": box["q3"],
-            "high": box["high"],
-            "color": "#1a1a1a",
-            "fillColor": f"rgba({int(colors[i][1:3], 16)},{int(colors[i][3:5], 16)},{int(colors[i][5:7], 16)},0.85)",
-        }
+        {"x": i, "low": box["low"], "q1": box["q1"], "median": box["median"], "q3": box["q3"], "high": box["high"]}
     )
 box_series.data = box_series_data
 box_series.name = "Box Plot"
-box_series.color = "#1a1a1a"
-box_series.color_by_point = True
+box_series.color = "#2c3e50"
+box_series.fill_color = "rgba(255, 255, 255, 0.92)"
 box_series.show_in_legend = False
+box_series.z_index = 8
 chart.add_series(box_series)
 
-# Create jittered scatter data (the "rain") BELOW category baseline
-# In inverted chart, POSITIVE x offset = DOWNWARD on screen
+# Jittered scatter "rain" points BELOW each category baseline (positive x offset = downward)
 for i, data in enumerate(all_data):
     scatter_points = []
     for val in data:
-        jitter = np.random.uniform(-0.08, 0.08)
-        # Rain falls downward (positive x offset in inverted chart)
-        scatter_points.append([float(i + 0.25 + jitter), float(val)])
+        jitter = np.random.uniform(-0.06, 0.06)
+        scatter_points.append([float(i + 0.2 + jitter), float(val)])
 
     scatter_series = ScatterSeries()
     scatter_series.data = scatter_points
     scatter_series.name = categories[i]
     scatter_series.color = colors[i]
-    scatter_series.opacity = 0.65
-    scatter_series.marker = {"radius": 16, "lineWidth": 2, "lineColor": "rgba(0,0,0,0.4)", "fillColor": colors[i]}
+    scatter_series.marker = {
+        "radius": 10,
+        "lineWidth": 1,
+        "lineColor": "rgba(0,0,0,0.25)",
+        "fillColor": colors[i],
+        "states": {"hover": {"enabled": False}},
+    }
+    scatter_series.opacity = 0.6
     scatter_series.show_in_legend = False
+    scatter_series.z_index = 5
     chart.add_series(scatter_series)
 
 # Download Highcharts JS and required modules
@@ -225,6 +241,7 @@ with urllib.request.urlopen(highcharts_more_url, timeout=30) as response:
 
 # Generate HTML with inline scripts
 html_str = chart.to_js_literal()
+
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -243,18 +260,37 @@ with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encodin
     f.write(html_content)
     temp_path = f.name
 
+# Save standalone HTML for interactive viewing
+with open("plot.html", "w", encoding="utf-8") as f:
+    standalone_html = f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+</head>
+<body style="margin:0;">
+    <div id="container" style="width: 100%; height: 100vh;"></div>
+    <script>{html_str}</script>
+</body>
+</html>"""
+    f.write(standalone_html)
+
 # Setup Chrome for screenshot
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=4800,2700")
+chrome_options.add_argument("--window-size=5000,3000")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
 time.sleep(5)  # Wait for chart to render
-driver.save_screenshot("plot.png")
+
+# Screenshot the container element for tighter framing
+container = driver.find_element("id", "container")
+container.screenshot("plot.png")
 driver.quit()
 
 Path(temp_path).unlink()  # Clean up temp file

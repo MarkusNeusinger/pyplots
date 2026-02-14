@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 90/100 | Created: 2025-12-25
+Library: altair 6.0.0 | Python 3.14
+Quality: /100 | Updated: 2026-02-14
 """
 
 import altair as alt
@@ -12,9 +12,8 @@ import pandas as pd
 # Data: Reaction times (ms) for different treatment conditions
 np.random.seed(42)
 
-# Create realistic reaction time data with different distributions
 control = np.random.normal(450, 60, 80)
-treatment_a = np.random.normal(380, 50, 80)  # Faster responses
+treatment_a = np.random.normal(380, 50, 80)
 treatment_b = np.concatenate(
     [
         np.random.normal(350, 30, 50),  # Bimodal distribution
@@ -29,26 +28,26 @@ data = pd.DataFrame(
     }
 )
 
-# Map conditions to numeric positions - HORIZONTAL: y=categories, x=values
+# Map conditions to numeric y positions (HORIZONTAL: categories on y-axis, values on x-axis)
 condition_order = ["Control", "Treatment A", "Treatment B"]
 condition_map = {c: i for i, c in enumerate(condition_order)}
 data["condition_num"] = data["condition"].map(condition_map)
 
-# Create jittered y positions for strip plot (rain BELOW the cloud)
+# Jitter positions for rain — BELOW the category baseline (negative y offset)
 np.random.seed(42)
-data["jitter"] = np.random.uniform(-0.35, -0.15, len(data))
+data["jitter"] = np.random.uniform(-0.35, -0.12, len(data))
 data["jitter_pos"] = data["condition_num"] + data["jitter"]
 
-# Half-violin (cloud) - positioned on TOP (positive y offset from center)
+# Color palette
+colors = ["#306998", "#FFD43B", "#4CAF50"]
+
+# Half-violin cloud — extends ABOVE baseline (positive y offset)
 violin = (
     alt.Chart(data)
     .transform_density(
         "reaction_time", as_=["reaction_time", "density"], groupby=["condition", "condition_num"], extent=[200, 600]
     )
-    .transform_calculate(
-        # Scale density and offset to create half-violin on TOP (positive y direction)
-        violin_pos="datum.condition_num + 0.05 + datum.density * 180"
-    )
+    .transform_calculate(violin_pos="datum.condition_num + 0.05 + datum.density * 200")
     .mark_area(orient="vertical", opacity=0.7)
     .encode(
         x=alt.X("reaction_time:Q"),
@@ -56,7 +55,7 @@ violin = (
         y2="violin_pos:Q",
         color=alt.Color(
             "condition:N",
-            scale=alt.Scale(domain=condition_order, range=["#306998", "#FFD43B", "#4CAF50"]),
+            scale=alt.Scale(domain=condition_order, range=colors),
             legend=alt.Legend(
                 title="Condition",
                 titleFontSize=20,
@@ -75,7 +74,7 @@ violin = (
     )
 )
 
-# Box plot - HORIZONTAL orientation (values on x, categories on y)
+# Box plot — centered on category baseline
 boxplot = (
     alt.Chart(data)
     .transform_calculate(box_pos="datum.condition_num + 0.02")
@@ -84,27 +83,23 @@ boxplot = (
         orient="horizontal",
         median={"color": "white", "strokeWidth": 3},
         box={"strokeWidth": 2},
-        outliers={"opacity": 0},  # Hide outliers, shown as jittered points
+        outliers={"opacity": 0},
     )
     .encode(
         x=alt.X("reaction_time:Q", title="Reaction Time (ms)", scale=alt.Scale(domain=[200, 600])),
         y=alt.Y("box_pos:Q", axis=None),
-        color=alt.Color(
-            "condition:N", scale=alt.Scale(domain=condition_order, range=["#306998", "#FFD43B", "#4CAF50"])
-        ),
+        color=alt.Color("condition:N", scale=alt.Scale(domain=condition_order, range=colors)),
     )
 )
 
-# Jittered strip plot (rain) - positioned clearly BELOW the center
+# Jittered strip — rain BELOW baseline
 strip = (
     alt.Chart(data)
-    .mark_circle(size=40, opacity=0.6)
+    .mark_circle(size=55, opacity=0.6)
     .encode(
         x=alt.X("reaction_time:Q"),
         y=alt.Y("jitter_pos:Q", axis=None),
-        color=alt.Color(
-            "condition:N", scale=alt.Scale(domain=condition_order, range=["#306998", "#FFD43B", "#4CAF50"])
-        ),
+        color=alt.Color("condition:N", scale=alt.Scale(domain=condition_order, range=colors)),
         tooltip=[
             alt.Tooltip("condition:N", title="Condition"),
             alt.Tooltip("reaction_time:Q", title="Reaction Time (ms)", format=".1f"),
@@ -112,12 +107,10 @@ strip = (
     )
 )
 
-# Main chart layer with raincloud elements
-main_chart = (
-    alt.layer(violin, boxplot, strip).properties(width=1600, height=850).interactive()  # Enable zoom and pan
-)
+# Compose layers
+main_chart = alt.layer(violin, boxplot, strip).properties(width=1600, height=850).interactive()
 
-# Y-axis labels as a separate chart on the left
+# Y-axis labels
 y_axis_data = pd.DataFrame({"condition": condition_order, "y_pos": [0, 1, 2]})
 
 y_axis_labels = (
@@ -127,14 +120,14 @@ y_axis_labels = (
     .properties(width=120, height=850)
 )
 
-# Combine using horizontal concatenation
+# Final chart
 chart = (
     alt.hconcat(y_axis_labels, main_chart, spacing=5)
     .properties(title=alt.Title("raincloud-basic · altair · pyplots.ai", fontSize=28, anchor="middle"))
-    .configure_axis(labelFontSize=18, titleFontSize=22, gridOpacity=0.3)
+    .configure_axis(labelFontSize=18, titleFontSize=22, gridOpacity=0.4)
     .configure_view(strokeWidth=0)
 )
 
-# Save outputs
+# Save
 chart.save("plot.png", scale_factor=3.0)
 chart.save("plot.html")

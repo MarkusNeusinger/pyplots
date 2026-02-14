@@ -1,8 +1,10 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: pygal 3.1.0 | Python 3.14
 Quality: 85/100 | Created: 2025-12-25
 """
+
+import re
 
 import cairosvg
 import numpy as np
@@ -25,13 +27,11 @@ data["Treatment B"] = np.append(data["Treatment B"], [480, 180])
 
 # Group colors - colorblind-safe palette
 group_colors = ["#306998", "#FFD43B", "#4CAF50"]
-group_names = list(data.keys())
 
-# Build color sequence: per group = cloud, rain, box_outline, median_line
-box_color = "#333333"
+# Build color sequence: per group = rain, box_outline, median_line
 series_colors = []
 for gc in group_colors:
-    series_colors.extend([gc, gc, box_color, box_color])
+    series_colors.extend([gc, gc, gc])
 
 # Custom style
 custom_style = Style(
@@ -49,11 +49,11 @@ custom_style = Style(
     legend_font_size=48,
     value_font_size=40,
     tooltip_font_size=36,
-    opacity=0.80,
-    opacity_hover=0.95,
+    opacity=0.60,
+    opacity_hover=0.85,
 )
 
-# Create HORIZONTAL XY chart
+# Create HORIZONTAL XY chart (fill=False; clouds rendered via SVG post-processing)
 chart = pygal.XY(
     width=4800,
     height=2700,
@@ -63,7 +63,7 @@ chart = pygal.XY(
     y_title="",
     show_legend=False,
     stroke=True,
-    fill=True,
+    fill=False,
     dots_size=0,
     show_x_guides=True,
     show_y_guides=False,
@@ -81,13 +81,17 @@ chart = pygal.XY(
 cloud_height = 0.30
 rain_offset = -0.35
 n_kde_points = 80
-box_hw = 0.10  # box half-width (vertical extent each side of center)
+box_hw = 0.14  # box half-width — thicker for visibility
+
+# Store cloud polygon and box data for SVG injection
+cloud_polygons = []
+box_rects = []
 
 for i, (category, values) in enumerate(data.items()):
     center_y = i + 1
     values = np.array(values)
 
-    # --- Half-Violin (cloud) - extends UPWARD from category line ---
+    # --- Half-Violin KDE (cloud) - compute for later SVG injection ---
     n = len(values)
     std = np.std(values)
     iqr_val = np.percentile(values, 75) - np.percentile(values, 25)
@@ -103,17 +107,20 @@ for i, (category, values) in enumerate(data.items()):
         density += np.exp(-0.5 * ((x_kde - v) / bandwidth) ** 2)
     density /= n * bandwidth * np.sqrt(2 * np.pi)
 
-    # Normalize and place cloud ABOVE category line
+    # Trim KDE tails where density < 5% of peak for clean cloud edges
+    peak = density.max()
+    above = np.where(density > peak * 0.05)[0]
+    x_kde = x_kde[above[0] : above[-1] + 1]
+    density = density[above[0] : above[-1] + 1]
+
+    # Normalize density to cloud_height
     density_scaled = density / density.max() * cloud_height
 
-    # Half-violin shape: baseline at center_y, cloud rises upward
-    cloud_points = [(float(x_kde[0]), center_y)]
-    cloud_points += [
-        {"value": (float(x), center_y + float(d)), "label": f"{category} density"}
-        for x, d in zip(x_kde, density_scaled, strict=True)
-    ]
-    cloud_points += [(float(x_kde[-1]), center_y), (float(x_kde[0]), center_y)]
-    chart.add(f"{category} cloud", cloud_points, stroke=True, fill=True)
+    # Store polygon data points (data coords) for SVG injection
+    poly_data = [(float(x_kde[0]), float(center_y))]
+    poly_data += [(float(x), float(center_y + d)) for x, d in zip(x_kde, density_scaled, strict=True)]
+    poly_data.append((float(x_kde[-1]), float(center_y)))
+    cloud_polygons.append((group_colors[i], poly_data))
 
     # --- Jittered Points (rain) - falls DOWNWARD from category line ---
     np.random.seed(42 + i)
@@ -132,36 +139,34 @@ for i, (category, values) in enumerate(data.items()):
     whisker_low = float(max(values.min(), q1 - 1.5 * iqr))
     whisker_high = float(min(values.max(), q3 + 1.5 * iqr))
 
-    # Box + whiskers + caps as single path
+    # Store box rectangle data for SVG fill injection
+    box_rects.append((group_colors[i], q1, q3, center_y - box_hw, center_y + box_hw))
+
+    # Box body + whiskers as single path
     box_path = [
-        # Left cap
-        (whisker_low, center_y - box_hw),
-        (whisker_low, center_y + box_hw),
+        (whisker_low, center_y - box_hw * 0.6),
+        (whisker_low, center_y + box_hw * 0.6),
         (whisker_low, center_y),
-        # Left whisker → box
         (q1, center_y),
-        # Box perimeter
         (q1, center_y - box_hw),
         (q3, center_y - box_hw),
         (q3, center_y + box_hw),
         (q1, center_y + box_hw),
         (q1, center_y - box_hw),
         (q1, center_y),
-        # Right side
         (q3, center_y),
         (q3, center_y + box_hw),
         (q3, center_y - box_hw),
         (q3, center_y),
-        # Right whisker → cap
         (whisker_high, center_y),
-        (whisker_high, center_y - box_hw),
-        (whisker_high, center_y + box_hw),
+        (whisker_high, center_y - box_hw * 0.6),
+        (whisker_high, center_y + box_hw * 0.6),
     ]
-    chart.add("", box_path, stroke=True, fill=False, show_dots=False, stroke_style={"width": 6})
+    chart.add("", box_path, stroke=True, fill=False, show_dots=False, stroke_style={"width": 10})
 
-    # Median line (separate, thicker series for emphasis)
-    median_line = [(median, center_y - box_hw * 1.2), (median, center_y + box_hw * 1.2)]
-    chart.add("", median_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 9})
+    # Median line (thicker for emphasis)
+    median_line = [(median, center_y - box_hw * 1.1), (median, center_y + box_hw * 1.1)]
+    chart.add("", median_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 12})
 
 # Y-axis labels for treatment groups
 chart.y_labels = [
@@ -172,91 +177,123 @@ chart.y_labels = [
     {"value": 4, "label": ""},
 ]
 
-# Render base SVG, then inject annotations for data storytelling
+# Render base SVG
 base_svg = chart.render().decode("utf-8")
 
-# Compute stats for annotations
-annotations_svg = '<g id="annotations">'
+# --- SVG post-processing ---
 
-# Compute median for each group
-medians = {}
-for name, vals in data.items():
-    medians[name] = float(np.median(vals))
+# Extract plot group's translate transform for absolute positioning
 
-# Annotation: highlight median difference between Control and Treatment B
+
+tx_match = re.search(r'translate\((\d+),\s*(\d+)\).*?class="plot"', base_svg)
+plot_tx = int(tx_match.group(1)) if tx_match else 706
+plot_ty = int(tx_match.group(2)) if tx_match else 214
+
+
+# Coordinate mapping: data space → plot-local SVG pixel space
+# Coefficients derived from pygal's internal scaling for this chart configuration
+def sx(dx):
+    return 5.907692 * dx - 513.969231
+
+
+def sy(dy):
+    return -482.517483 * dy + 2069.034965
+
+
+# Absolute SVG coords (for elements injected outside plot group)
+def ax(dx):
+    return sx(dx) + plot_tx
+
+
+def ay(dy):
+    return sy(dy) + plot_ty
+
+
+# Inject cloud polygons as SVG shapes (drawn first, behind everything else)
+clouds_svg = '<g id="clouds">'
+for color, poly in cloud_polygons:
+    points = " ".join(f"{sx(px):.1f},{sy(py):.1f}" for px, py in poly)
+    clouds_svg += f'<polygon points="{points}" fill="{color}" opacity="0.75" stroke="none"/>'
+clouds_svg += "</g>"
+
+# Insert clouds inside the plot group after the plot-area background rect
+# The second background rect is inside the plot group (first is canvas-level)
+bg_marker = 'class="background"'
+first_bg = base_svg.find(bg_marker)
+second_bg = base_svg.find(bg_marker, first_bg + 1)
+if second_bg > 0:
+    bg_end = base_svg.find("/>", second_bg) + 2
+    base_svg = base_svg[:bg_end] + clouds_svg + base_svg[bg_end:]
+
+# Compute medians for annotations
+medians = {name: float(np.median(vals)) for name, vals in data.items()}
 diff = medians["Control"] - medians["Treatment B"]
 
-# Map data coordinates to SVG pixel positions
-# Chart area: x from margin_left to (4800 - margin_right), y from margin_top to (2700 - margin_bottom)
-# Data range: x = 100..750, y = -0.2..4.2
-svg_ml, svg_mr, svg_mt, svg_mb = 340, 100, 120, 120
-plot_x0, plot_x1 = svg_ml + 160, 4800 - svg_mr - 40  # approximate pygal inner offsets
-plot_y0, plot_y1 = svg_mt + 100, 2700 - svg_mb - 60
-data_x0, data_x1 = 100.0, 750.0
-data_y0, data_y1 = -0.2, 4.2
+# Build box fill rectangles (drawn on top of clouds)
+# Injected outside the plot group, so use absolute SVG coordinates
+box_fills_svg = '<g id="box-fills">'
+for color, q1, q3, y_lo, y_hi in box_rects:
+    bx, by = ax(q1), ay(y_hi)
+    bw, bh = sx(q3) - sx(q1), sy(y_lo) - sy(y_hi)
+    box_fills_svg += (
+        f'<rect x="{bx:.1f}" y="{by:.1f}" width="{bw:.1f}" height="{bh:.1f}"'
+        f' fill="white" fill-opacity="0.75" stroke="{color}" stroke-width="5"/>'
+    )
+box_fills_svg += "</g>"
 
+# Build annotation SVG elements
+annotations_svg = '<g id="annotations">'
 
-def data_to_svg_x(dx):
-    return plot_x0 + (dx - data_x0) / (data_x1 - data_x0) * (plot_x1 - plot_x0)
-
-
-def data_to_svg_y(dy):
-    # SVG y is inverted
-    return plot_y1 - (dy - data_y0) / (data_y1 - data_y0) * (plot_y1 - plot_y0)
-
-
-# Add annotation: median markers with values
+# Median value labels above each cloud with dashed leader lines
 for i, name in enumerate(data):
     med = medians[name]
     center_y = i + 1
-    sx = data_to_svg_x(med)
-    sy = data_to_svg_y(center_y)
+    mx, my = ax(med), ay(center_y)
+    label_y = ay(center_y + 0.42)
+    annotations_svg += (
+        f'<line x1="{mx:.0f}" y1="{my:.0f}" x2="{mx:.0f}" y2="{label_y + 10:.0f}"'
+        f' stroke="{group_colors[i]}" stroke-width="2" stroke-dasharray="6,4" opacity="0.6"/>'
+        f'<text x="{mx:.0f}" y="{label_y:.0f}" text-anchor="middle"'
+        f' font-size="38" font-weight="bold" font-family="DejaVu Sans, sans-serif"'
+        f' fill="{group_colors[i]}">{med:.0f} ms</text>'
+    )
 
-    # Median value label above the cloud
-    label_y = data_to_svg_y(center_y + 0.42)
-    annotations_svg += f"""
-    <line x1="{sx:.0f}" y1="{sy:.0f}" x2="{sx:.0f}" y2="{label_y + 10:.0f}"
-          stroke="{group_colors[i]}" stroke-width="2" stroke-dasharray="6,4" opacity="0.6"/>
-    <text x="{sx:.0f}" y="{label_y:.0f}" text-anchor="middle"
-          font-size="38" font-weight="bold" font-family="DejaVu Sans, sans-serif"
-          fill="{group_colors[i]}">{med:.0f} ms</text>"""
+# Insight callout: Treatment B faster than Control
+cx, cy = ax(580), ay(3.8)
+annotations_svg += (
+    f'<rect x="{cx - 200:.0f}" y="{cy - 42:.0f}" width="400" height="90"'
+    f' rx="12" ry="12" fill="white" stroke="#4CAF50" stroke-width="3" opacity="0.92"/>'
+    f'<text x="{cx:.0f}" y="{cy + 12:.0f}" text-anchor="middle"'
+    f' font-size="34" font-weight="bold" font-family="DejaVu Sans, sans-serif"'
+    f' fill="#333333">&#x25BC; {diff:.0f} ms faster</text>'
+)
 
-# Add insight callout: Treatment B faster than Control
-callout_x = data_to_svg_x(580)
-callout_y = data_to_svg_y(3.8)
-annotations_svg += f"""
-    <rect x="{callout_x - 200:.0f}" y="{callout_y - 42:.0f}" width="400" height="90"
-          rx="12" ry="12" fill="white" stroke="#4CAF50" stroke-width="3" opacity="0.92"/>
-    <text x="{callout_x:.0f}" y="{callout_y + 12:.0f}" text-anchor="middle"
-          font-size="34" font-weight="bold" font-family="DejaVu Sans, sans-serif"
-          fill="#333333">&#x25BC; {diff:.0f} ms faster</text>"""
+# Dashed arrow from callout to Treatment B median
+tb_x, tb_y = ax(medians["Treatment B"]), ay(3 + 0.42)
+annotations_svg += (
+    f'<line x1="{cx - 200:.0f}" y1="{cy + 10:.0f}"'
+    f' x2="{tb_x + 50:.0f}" y2="{tb_y - 5:.0f}"'
+    f' stroke="#4CAF50" stroke-width="2.5" stroke-dasharray="8,5" opacity="0.7"/>'
+)
 
-# Arrow from callout to Treatment B median
-tb_med_x = data_to_svg_x(medians["Treatment B"])
-tb_med_y = data_to_svg_y(3 + 0.42)
-annotations_svg += f"""
-    <line x1="{callout_x - 200:.0f}" y1="{callout_y + 10:.0f}"
-          x2="{tb_med_x + 50:.0f}" y2="{tb_med_y - 5:.0f}"
-          stroke="#4CAF50" stroke-width="2.5" stroke-dasharray="8,5" opacity="0.7"/>"""
+# Y-axis label (rotated SVG text avoids pygal clipping)
+y_lx, y_ly = 70, (ay(1) + ay(3)) / 2
+annotations_svg += (
+    f'<text x="{y_lx:.0f}" y="{y_ly:.0f}" text-anchor="middle"'
+    f' font-size="54" font-family="DejaVu Sans, sans-serif" fill="#333333"'
+    f' transform="rotate(-90, {y_lx:.0f}, {y_ly:.0f})">Treatment Group</text>'
+)
 
-# Y-axis label as custom SVG text (avoids pygal's rotation clipping)
-y_label_x = 70
-y_label_y = (plot_y0 + plot_y1) / 2
-annotations_svg += f"""
-    <text x="{y_label_x:.0f}" y="{y_label_y:.0f}" text-anchor="middle"
-          font-size="54" font-family="DejaVu Sans, sans-serif" fill="#333333"
-          transform="rotate(-90, {y_label_x:.0f}, {y_label_y:.0f})">Treatment Group</text>"""
+annotations_svg += "</g>"
 
-annotations_svg += "\n</g>"
-
-# Inject annotations before closing </svg> tag
-svg_with_annotations = base_svg.replace("</svg>", f"{annotations_svg}\n</svg>")
+# Inject box fills and annotations before closing </svg> tag
+svg_out = base_svg.replace("</svg>", f"{box_fills_svg}\n{annotations_svg}\n</svg>")
 
 # Save outputs
 with open("plot.svg", "w") as f:
-    f.write(svg_with_annotations)
+    f.write(svg_out)
 
-cairosvg.svg2png(bytestring=svg_with_annotations.encode("utf-8"), write_to="plot.png")
+cairosvg.svg2png(bytestring=svg_out.encode("utf-8"), write_to="plot.png")
 
 with open("plot.html", "w") as f:
     f.write("""<!DOCTYPE html>

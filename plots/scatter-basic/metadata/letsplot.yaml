@@ -1,158 +1,188 @@
 library: letsplot
 specification_id: scatter-basic
 created: '2025-12-22T23:43:07Z'
-updated: '2025-12-23T00:06:42Z'
-generated_by: claude-opus-4-5-20251101
+updated: '2026-02-14T14:41:18Z'
+generated_by: claude-opus-4-6
 workflow_run: 20446960716
 issue: 0
-python_version: 3.13.11
-library_version: 4.8.1
+python_version: '3.14'
+library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/letsplot/plot.html
-quality_score: 90
+quality_score: 91
 impl_tags:
   dependencies: []
   techniques:
-    - hover-tooltips
-    - html-export
+  - annotations
+  - layer-composition
+  - html-export
   patterns:
-    - data-generation
-  dataprep: []
+  - data-generation
+  dataprep:
+  - correlation-matrix
   styling:
-    - alpha-blending
-    - grid-styling
+  - alpha-blending
+  - edge-highlighting
+  - grid-styling
 review:
   strengths:
-  - Clean ggplot2-style grammar of graphics implementation
-  - Proper use of theme_minimal() with customized text sizes for readability
-  - Correct 16:9 aspect ratio with 3x scale export for high-resolution output
-  - Exports both PNG and interactive HTML versions
-  - Good transparency (alpha=0.7) for revealing overlapping points
-  - Subtle dashed grid lines that do not overwhelm the data
+  - 'Excellent visual polish with publication-ready aesthetics: custom color palette,
+    edge-highlighted markers, subtle grid, and unified background'
+  - Strong data storytelling with correlation annotation, outlier callout, trend line
+    with confidence band, and explanatory caption
+  - Idiomatic lets-plot usage with layer_tooltips() for interactive HTML output alongside
+    static PNG
+  - Realistic educational scenario with thoughtful data generation including dense
+    clusters and outliers
+  - All font sizes explicitly set for consistent readability at the target resolution
   weaknesses:
-  - Data labels use generic X Value/Y Value instead of a realistic scenario (e.g.,
-    Study Hours vs Exam Score)
-  - Title text could be slightly larger for better visibility at full resolution
-  image_description: The plot displays a 2D scatter chart with approximately 150 data
-    points in a muted blue color (#306998) with transparency (alpha 0.7). The title
-    "scatter-basic · lets-plot · pyplots.ai" appears at the top-left in gray text.
-    The X-axis is labeled "X Value" ranging from approximately 4.5 to 15, and the
-    Y-axis is labeled "Y Value" ranging from approximately 1 to 18. The points show
-    a clear positive linear correlation with moderate scatter/noise around the trend.
-    A subtle dashed gray grid provides reference lines. The plot uses a 16:9 aspect
-    ratio with a clean minimal theme and white background.
+  - Point markers could be slightly larger (size 6-7) for better visibility at 130
+    data points
+  - The r=0.89 annotation placement at (8.3, 38) is in a relatively empty area but
+    disconnected from the trend line it describes
+  - Annotation DataFrames for geom_text are verbose — each requires a separate DataFrame
+    construction
+  image_description: The plot displays a scatter plot of Study Hours (x-axis, ranging
+    from ~1 to 10 hrs) versus Exam Score (y-axis, ranging from ~28 to 106 points)
+    on a light gray (#FAFAFA) background. Blue filled circles with white edge strokes
+    (shape 21) are scattered across the plot showing a clear positive linear relationship.
+    An orange linear trend line runs diagonally from lower-left to upper-right, accompanied
+    by a semi-transparent orange 95% confidence band. The correlation coefficient
+    "r = 0.89" is displayed in monospace font in the lower-right area of the plot.
+    An italic gray "outliers →" annotation appears in the upper-left portion of the
+    plot, pointing toward high-score/low-study-hour data points. The title "scatter-basic
+    · letsplot · pyplots.ai" is displayed in bold at the top-left. A subtle italic
+    caption "Linear trend with 95% confidence band" sits at the bottom-right. Grid
+    lines are very subtle light gray with minor grid removed. Overall the plot looks
+    polished and publication-ready with thoughtful color choices and clear data storytelling.
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 28
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
         score: 8
-        max: 10
+        max: 8
         passed: true
-        comment: all text readable, font sizes appropriate but could be slightly larger
+        comment: 'All font sizes explicitly set: title 24pt, axis titles 20pt, tick
+          text 16pt, caption 13pt. All perfectly readable.'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: no overlapping text elements
+        comment: No overlapping text anywhere. Annotations, labels, and data points
+          are well-separated.
       - id: VQ-03
         name: Element Visibility
-        score: 7
-        max: 8
-        passed: true
-        comment: markers well-sized for 150 points with good alpha
+        score: 5
+        max: 6
+        passed: false
+        comment: Points at size=5 with alpha=0.65 for 130 data points. Visible but
+          slightly small; could benefit from marginally larger markers.
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: single blue color, colorblind-safe
+        comment: Single blue series with white edge highlights and orange trend line.
+          No red-green issues, good contrast.
       - id: VQ-05
         name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: good 16:9 proportions, data fills space well
+        score: 3
+        max: 4
+        passed: false
+        comment: Good overall canvas utilization. Minor issue with r=0.89 annotation
+          placement disconnected from the trend line.
       - id: VQ-06
-        name: Axis Labels
-        score: 1
-        max: 2
-        passed: true
-        comment: descriptive labels but missing units
-      - id: VQ-07
-        name: Grid & Legend
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: subtle dashed grid, no legend needed
+        comment: 'Descriptive labels with units: Study Hours (hrs) and Exam Score
+          (points).'
+    design_excellence:
+      score: 16
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 7
+        max: 8
+        passed: false
+        comment: Strong publication-ready design with custom palette, edge-highlighted
+          markers, themed background, customized grid. Clearly above defaults.
+      - id: DE-02
+        name: Visual Refinement
+        score: 5
+        max: 6
+        passed: false
+        comment: Subtle grid, minor grid removed, custom margins, tick styling, unified
+          background. Missing full spine removal.
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: false
+        comment: Correlation annotation, outlier callout, caption explaining confidence
+          band provide good narrative. Outlier annotation could be more precisely
+          targeted.
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: correct 2D scatter plot
+        comment: Correct 2D scatter plot with trend line enhancement.
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X/Y correctly assigned
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: transparency, axis labels, title, grid all present
-      - id: SC-04
-        name: Data Range
+        comment: 'All spec features present: transparency, axis labels, title, grid
+          lines, point sizing.'
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: all data visible within axes
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X/Y correctly assigned. Axes show full data range.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: N/A for single-series scatter
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: uses "scatter-basic · lets-plot · pyplots.ai" format
+        comment: Title format correct. No legend needed for single-series scatter.
     data_quality:
-      score: 15
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
-        passed: true
-        comment: shows positive correlation with scatter noise
+        score: 5
+        max: 6
+        passed: false
+        comment: Shows positive correlation, varying density, and outliers. Good variety,
+          though outlier patterns could be more distinct.
       - id: DQ-02
         name: Realistic Context
-        score: 3
-        max: 7
-        passed: false
-        comment: generic "X Value"/"Y Value" lacks real-world context
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: sensible numeric ranges
+        comment: Study hours vs exam scores is a realistic, neutral educational scenario.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: 'Realistic values: 1-10 study hours, ~28-106 exam scores.'
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -160,40 +190,48 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: clean imports → data → plot → save structure
+        comment: 'Clean flow: imports, data, correlation, plot, save.'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: uses np.random.seed(42)
+        comment: np.random.seed(42) set at the start.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: all imports used
+        comment: 'All imports used: numpy, pandas, lets_plot, export_ggsave.'
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
         score: 1
-        max: 1
-        passed: true
-        comment: current API usage
+        max: 2
+        passed: false
+        comment: Slightly verbose with separate np.concatenate blocks and individual
+          DataFrames for annotations.
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: saves as plot.png
-    library_features:
-      score: 4
-      max: 5
+        comment: Saves as plot.png via export_ggsave with correct scale=3.
+    library_mastery:
+      score: 9
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 4
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
         max: 5
         passed: true
-        comment: ggplot grammar, theme_minimal(), element_text customization, ggsize(),
-          exports PNG with scale and interactive HTML
+        comment: 'Expert use of lets-plot grammar: ggplot + aes + geom layering +
+          labs + scales + theme.'
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: false
+        comment: 'Uses lets-plot specific features: layer_tooltips(), shape=21 with
+          stroke, ggsize(), export_ggsave with scale. Tooltips are distinctive.'
   verdict: APPROVED

@@ -1,159 +1,183 @@
 library: letsplot
 specification_id: box-basic
 created: '2025-12-23T00:36:22Z'
-updated: 2026-02-14T22:09:08+00:00
+updated: '2026-02-14T22:15:08Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447786735
 issue: 0
-python_version: "3.14"
-library_version: "4.8.2"
+python_version: '3.14'
+library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/box-basic/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/box-basic/letsplot/plot.html
-quality_score: null
+quality_score: 83
 impl_tags:
   dependencies: []
   techniques:
-    - html-export
+  - html-export
   patterns:
-    - data-generation
-    - iteration-over-groups
+  - data-generation
+  - iteration-over-groups
   dataprep: []
-  styling: []
+  styling:
+  - alpha-blending
+  - grid-styling
 review:
   strengths:
-  - Excellent use of realistic salary data with appropriate distributions per department
-  - Outliers properly generated and clearly visible as distinct points
-  - Perfect title format following pyplots.ai convention
-  - Clean ggplot2-style grammar implementation
-  - Proper sizing for 4800x2700 output with scale=3
-  - Different colors make categories easily distinguishable
-  - Appropriate text sizes (24pt title, 20pt labels, 16pt ticks)
+  - Excellent use of as_discrete(order_by="..middle..") to order departments by median
+    salary — a distinctive lets-plot feature that adds implicit storytelling
+  - Clean, colorblind-safe palette derived from Okabe-Ito colors
+  - 'Well-tuned theme: minimal chrome with only horizontal grid lines, no ticks, suppressed
+    legend'
+  - Realistic salary data with intentional variation in distribution parameters (different
+    means and standard deviations per department)
+  - Explicit outlier injection via 3.5σ and -2.5σ values ensures outliers are visible
   weaknesses:
-  - Grid lines could be slightly more visible (currently very subtle with theme_minimal)
-  image_description: 'The plot displays 5 box plots showing salary distributions across
-    departments: Engineering (blue), Marketing (yellow), Sales (red), HR (green),
-    and Finance (purple). Each box clearly shows the median line, IQR (box), and whiskers
-    extending to 1.5*IQR. Outliers are displayed as large black dots - visible above
-    Engineering (~125K, ~137K), Marketing (~107K), Sales (~125K, ~131K), HR (~30K,
-    ~90K), and Finance (~120K, ~122K). The title "box-basic · letsplot · pyplots.ai"
-    appears at the top in appropriate size. X-axis labeled "Department" and Y-axis
-    labeled "Salary ($)" with values ranging from ~20,000 to 140,000. Clean minimal
-    theme with subtle grid lines. Layout is well-balanced with good proportions.'
+  - 'No data storytelling: add annotations for median values, or highlight the highest/lowest
+    department to guide the viewer interpretation'
+  - Outlier markers use dark gray fill (#555555) which reduces their visual prominence
+    — consider using the category color or a contrasting accent color
+  - Layout has horizontal whitespace imbalance — boxes could be wider or the canvas
+    better utilized
+  - Department axis label scores lower on units criterion — a subtitle or contextual
+    note could compensate
+  image_description: 'The plot displays five box-and-whisker plots representing salary
+    distributions across departments: HR, Marketing, Sales, Finance, and Engineering
+    — ordered left to right by ascending median salary. Each department has a distinct
+    fill color: HR in teal/green, Marketing in amber/orange, Sales in light blue,
+    Finance in pink, and Engineering in steel blue. Outliers are rendered as dark
+    gray filled circles. The title "box-basic · letsplot · pyplots.ai" appears at
+    the top left in bold. The Y-axis is labeled "Salary ($)" with values from ~20,000
+    to ~140,000, and the X-axis is labeled "Department". The background is clean with
+    a minimal theme — only horizontal major grid lines in light gray, no vertical
+    grid lines, no axis ticks. The legend is suppressed since the x-axis labels identify
+    each category. Boxes have semi-transparent fill (alpha=0.85) with visible median
+    lines. The distributions show different spreads: Sales has the widest IQR while
+    HR is the narrowest. Multiple outliers are visible above the whiskers for Sales,
+    Finance, and Engineering departments.'
   criteria_checklist:
     visual_quality:
-      score: 38
-      max: 40
+      score: 26
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title ~24pt, axis labels ~20pt, tick labels ~16pt - all perfectly
-          readable
+        comment: 'All font sizes explicitly set: title=24pt bold, axis_title=20pt,
+          axis_text=16pt. All text clearly readable.'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text, category labels well spaced
+        comment: No overlapping elements. Category labels well-spaced.
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Box sizes optimal, outliers clearly visible with size=4
+        comment: Boxes well-sized (width=0.65), outliers visible (size=4). Outlier
+          fill dark gray blends slightly with background.
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Five distinct colors (blue, yellow, red, green, purple) with good
-          contrast
+        comment: Colorblind-safe palette (Okabe-Ito-derived). No red-green as sole
+          distinguishing feature.
       - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Perfect proportions, no cut-off, good use of space
-      - id: VQ-06
-        name: Axis Labels
+        name: Layout & Canvas
         score: 2
-        max: 2
-        passed: true
-        comment: 'Descriptive with units: "Salary ($)", "Department"'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
+        max: 4
+        passed: false
+        comment: Noticeable whitespace on right side. Boxes somewhat compressed horizontally
+          relative to canvas width.
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 1
         max: 2
         passed: false
-        comment: Grid is subtle and good, legend correctly hidden (not needed) - but
-          grid could be slightly more visible
+        comment: Salary ($) includes units. Department is descriptive but categorical
+          with no unit.
+    design_excellence:
+      score: 10
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: false
+        comment: Custom palette, suppressed legend, clean minimal theme. Above default
+          but not publication-level.
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: 'Good refinement: minor grid removed, major x-grid removed, ticks
+          removed, only horizontal y-grid retained.'
+      - id: DE-03
+        name: Data Storytelling
+        score: 1
+        max: 6
+        passed: false
+        comment: No annotations or callouts. Ascending median ordering provides implicit
+          structure but no textual narrative.
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct box-and-whisker plot
+        comment: Correct box-and-whisker plot.
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories on X, values on Y correctly assigned
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Median line ✓, outliers as points ✓, whiskers at 1.5*IQR ✓, different
-          colors
-      - id: SC-04
-        name: Data Range
+        comment: Median line, outliers as points, whiskers at 1.5*IQR, different colors
+          per category.
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible including outliers
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Categories on X, values on Y, correctly assigned.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend hidden appropriately (colors explained by x-axis)
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Correct format: "box-basic · letsplot · pyplots.ai"'
+        comment: Title follows spec format. Legend hidden appropriately.
     data_quality:
-      score: 20
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 8
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Shows outliers, different spreads (Sales widest, HR narrowest), different
-          medians
+        comment: Shows outliers, different medians, different spreads. Could show
+          more extreme variation.
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Salary by department is a real, comprehensible scenario
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Realistic salary values ($20K-$140K range appropriate for US salaries)
+        comment: Salary by department is a classic, neutral business scenario.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Realistic salary values with plausible outlier extremes.
     code_quality:
       score: 10
       max: 10
@@ -163,33 +187,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Simple imports → data → plot → save structure
+        comment: Clean Imports → Data → Plot → Save structure.
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) set at start.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: All imports used, no unused imports.
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Current lets-plot API
+        comment: Appropriately complex, clean Pythonic data generation loop.
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html
+        comment: Saves as plot.png with ggsave. No deprecated functions.
     library_features:
-      score: 5
-      max: 5
-      items: []
-  verdict: APPROVED
+      score: 8
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Expert grammar of graphics usage: ggplot + aes + geom + scale +
+          theme.'
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses as_discrete with order_by='..middle..' for statistical category
+          ordering.
+  verdict: REJECTED

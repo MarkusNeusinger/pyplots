@@ -1,7 +1,7 @@
 library: plotly
 specification_id: pie-basic
 created: '2025-12-23T00:34:31Z'
-updated: '2026-02-14T14:47:21Z'
+updated: '2026-02-14T14:56:35Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447770365
 issue: 0
@@ -10,11 +10,11 @@ library_version: 6.5.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-basic/plotly/plot.html
-quality_score: 82
+quality_score: 91
 impl_tags:
   dependencies: []
   techniques:
-  - hover-tooltips
+  - annotations
   - html-export
   patterns: []
   dataprep: []
@@ -22,104 +22,107 @@ impl_tags:
   - edge-highlighting
 review:
   strengths:
-  - Perfect spec compliance — all four required features (percentage labels, distinct
-    colors, legend, exploded slice) are present
-  - Excellent realistic data context with cloud provider market share
-  - Clean, idiomatic Plotly code with good use of library-specific features (hovertemplate,
-    pull, HTML export)
-  - All font sizes explicitly set at appropriate values for the 4800x2700 canvas
-  - White slice borders add visual polish and help distinguish adjacent slices
+  - Professional donut chart design with center annotation providing context — a signature
+    Plotly technique
+  - Excellent data storytelling with the AWS callout annotation and exploded slice
+    drawing attention to the market leader
+  - Custom colorblind-safe palette starting with Python Blue, with white slice borders
+    for clean separation
+  - 'Perfect spec compliance: all four requirements (percentages, distinct colors,
+    legend, exploded slice) are present'
+  - Clean, well-structured code with explicit font sizing throughout and correct output
+    dimensions
+  - 'Good use of Plotly-specific features: hovertemplate, donut hole, HTML export,
+    domain positioning'
   weaknesses:
-  - Small slices (Alibaba 4%, IBM 3%) have cramped labels that create visual crowding
-    — consider using textposition=outside for small slices or adjusting label placement
-  - Adjacent red (Alibaba) and green (IBM) slices may be problematic for red-green
-    colorblind viewers — swap one color
-  - Design lacks storytelling annotations (e.g., AWS leads with 31% market share callout,
-    or trend indicators)
-  - Visual design reads as a well-configured default rather than publication-quality
-    — could benefit from a donut hole, subtle shadow, or more sophisticated color
-    harmony
-  - Wasted whitespace in the lower-right area of the canvas
-  image_description: The plot displays a pie chart titled "pie-basic · plotly · pyplots.ai"
-    showing cloud provider market share with 6 slices. AWS (31%) is the largest slice
-    in dark blue (Python Blue) and is slightly exploded/pulled out for emphasis. Azure
-    (24%) is golden yellow, Google Cloud (11%) is teal, Alibaba (4%) is coral/red,
-    IBM (3%) is light green, and Others (27%) is light purple. Percentage labels and
-    category names appear on each slice. A vertical legend is positioned to the right
-    of the pie chart. White border lines (2px) separate adjacent slices. The chart
-    uses a clean white background (plotly_white template). The smaller slices (Alibaba
-    4%, IBM 3%) have their labels squeezed into narrow areas, creating visual crowding.
+  - The callout annotation arrow points upward rather than directly at the AWS slice,
+    weakening the visual connection between the annotation and the data it references
+  - The bright yellow (Azure) slice creates a slight contrast imbalance against the
+    pale off-white background
+  - Legend is positioned somewhat far from the chart, creating excess whitespace in
+    the right portion of the canvas
+  image_description: 'The plot displays a donut chart (pie chart with center hole)
+    showing cloud computing market share for 2024. Six slices represent: AWS (31%,
+    dark navy blue, slightly exploded outward), Azure (24%, golden yellow), Google
+    Cloud (11%, teal), Alibaba (4%, light purple), IBM (3%, coral/orange), and Others
+    (27%, light blue). Percentage labels with category names are positioned outside
+    each slice with connector lines. A vertical legend on the right side lists all
+    six categories with colored markers. Inside the donut hole, bold blue text reads
+    "Cloud Market 2024". A callout annotation box in the bottom-right corner reads
+    "AWS leads with 31% market share" with an upward-pointing arrow. White borders
+    (3px) separate each slice. The title "pie-basic · plotly · pyplots.ai" is centered
+    at the top. The background is a subtle off-white (#FAFAFA).'
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 29
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Title 28pt, slice text 20pt, legend 18pt — all explicitly set. Minor
-          crowding on small slices (Alibaba, IBM).
+        comment: 'All font sizes explicitly set: title 28pt, slice labels 20pt, legend
+          18pt, center annotation 22pt, callout 16pt'
       - id: VQ-02
         name: No Overlap
-        score: 4
+        score: 6
         max: 6
-        passed: false
-        comment: Alibaba (4%) and IBM (3%) labels squeezed into narrow slices, creating
-          visual crowding.
+        passed: true
+        comment: No overlapping text. Outside label positioning with adequate spacing
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: All slices visible and distinguishable. White borders help. Small
-          slices narrow but identifiable.
+        comment: All slices visible including small IBM (3%) and Alibaba (4%). White
+          borders provide separation
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Generally colorblind-safe palette, but adjacent red (Alibaba) and
-          green (IBM) slices could be problematic.
+        comment: Palette avoids red-green adjacency. Navy, yellow, teal, purple, coral,
+          light blue are distinguishable
       - id: VQ-05
-        name: Layout & Canvas
+        name: Layout Balance
         score: 3
         max: 4
         passed: true
-        comment: Pie is well-sized with legend on right. Some wasted whitespace in
-          bottom-right.
+        comment: Pie offset left for legend. ~55% canvas use. Legend somewhat isolated
+          with noticeable empty space
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Pie charts have no axes; title correctly formatted.
+        comment: Correct title format. Center annotation provides additional context.
+          N/A for axis labels on pie
     design_excellence:
-      score: 10
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 6
         max: 8
-        passed: false
-        comment: Custom Python Blue-first palette, white slice borders, plotly_white
-          template. Well-configured default, not exceptional.
+        passed: true
+        comment: 'Strong design: donut with center annotation, custom palette, off-white
+          bg, white borders. Bright yellow creates slight contrast imbalance'
       - id: DE-02
         name: Visual Refinement
-        score: 3
-        max: 6
-        passed: false
-        comment: Clean template, white borders, adjusted margins. Some refinement
-          but no advanced polish.
-      - id: DE-03
-        name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Exploded AWS slice draws attention to market leader. No annotations
-          or callouts.
+        comment: 'Good refinement: plotly_white template, off-white bg, subtle legend
+          border. Legend box functional not elegant'
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: AWS callout annotation and exploded slice highlight market leader.
+          Center label anchors narrative. Arrow direction imprecise
     spec_compliance:
       score: 15
       max: 15
@@ -129,26 +132,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct pie chart implementation.
+        comment: Donut chart is a universally accepted modern variant of pie chart
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Percentage labels, distinct colors, legend, exploded largest slice
-          — all present.
+        comment: Percentages, distinct colors, legend, exploded largest slice — all
+          present
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Categories and values correctly mapped to slices.
+        comment: 6 categories within spec range, positive values summing to 100
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend labels match categories.
+        comment: Title matches required format exactly. Legend labels match categories
     data_quality:
       score: 14
       max: 15
@@ -158,21 +161,21 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Good variation in slice sizes (large, medium, small). Others category
-          is realistic.
+        comment: Good slice size variation from 3% to 31%. Could include a very small
+          slice (<2%) to test edge case
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Cloud provider market share is a real, recognizable, neutral business
-          scenario.
+        comment: Cloud computing market share — real-world, neutral, well-known business
+          scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values sum to 100, proportions are realistic for cloud market.
+        comment: Values sum to 100, proportions plausible for 2024 cloud market data
     code_quality:
       score: 10
       max: 10
@@ -182,31 +185,31 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: import, data, figure, layout, save.'
+        comment: 'Clean linear flow: import, data, figure, annotations, layout, save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic hardcoded data.
+        comment: Fully deterministic with hardcoded data
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only plotly.graph_objects imported, fully used.
+        comment: 'Single import: plotly.graph_objects. No unused imports'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Concise, Pythonic, appropriate complexity.
+        comment: Appropriate complexity, clean Pythonic code
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png (4800x2700) and interactive HTML.
+        comment: Saves plot.png at 4800x2700 and plot.html. No deprecated API
     library_mastery:
       score: 9
       max: 10
@@ -216,13 +219,13 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Proper use of go.Pie with textinfo, hovertemplate, marker dict, pull
-          parameter.
+        comment: Expert go.Pie() usage with textinfo, hovertemplate, pull, hole, domain,
+          sort, direction, rotation
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: 'Uses Plotly-distinctive features: hovertemplate, pull, sort=False,
-          write_html().'
-  verdict: REJECTED
+        comment: Donut hole, center annotation, hovertemplate, HTML export are distinctively
+          Plotly. Could use texttemplate for more advanced formatting
+  verdict: APPROVED

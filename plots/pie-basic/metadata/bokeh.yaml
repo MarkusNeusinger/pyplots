@@ -1,171 +1,180 @@
 library: bokeh
 specification_id: pie-basic
 created: '2025-12-23T00:36:23Z'
-updated: '2026-02-14T14:40:21+00:00'
+updated: '2026-02-14T14:47:15Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447773542
 issue: 0
-python_version: '3.14.0'
+python_version: 3.14.0
 library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-basic/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-basic/bokeh/plot.html
-quality_score: null
+quality_score: 78
 impl_tags:
   dependencies: []
   techniques:
-  - patches
   - annotations
   - custom-legend
   - html-export
   patterns:
-  - data-generation
   - iteration-over-groups
-  - matrix-construction
   dataprep: []
   styling:
+  - minimal-chrome
   - edge-highlighting
 review:
   strengths:
-  - Correct title format following pyplots.ai convention
-  - 'All spec requirements implemented: percentage labels on slices, distinct colors,
-    legend, and explosion effect on the largest slice'
-  - Smart color contrast handling (dark text on yellow slice, white text on darker
-    slices)
-  - Clean pie chart appearance with hidden axes/grid and white slice borders
-  - Generates both static PNG and interactive HTML output
-  - Realistic budget allocation scenario with appropriate category names
+  - 'All spec requirements fully met: percentage labels, distinct colors, legend,
+    and exploded largest slice'
+  - Cloud infrastructure market share is an excellent, realistic, and neutral data
+    context
+  - All text sizes explicitly set at appropriate scales for the 3600x3600 canvas
+  - 'Clean visual refinement: axes/grid hidden, white separators, exploded slice for
+    emphasis'
+  - Dual output (PNG + HTML) leverages bokeh web-native strengths
   weaknesses:
-  - Legend appears relatively small compared to the large canvas size; legend text
-    could be scaled up for better readability at full resolution
-  - Code uses manual loops instead of ColumnDataSource which is more idiomatic Bokeh
-  image_description: The plot shows a pie chart with 5 slices representing budget
-    allocation by department. The largest slice (Engineering, 35%) is in Python blue
-    (#306998) and is slightly exploded/separated from the center. The second largest
-    is Marketing (25%) in bright yellow (#FFD43B), followed by Sales (20%) in red,
-    Operations (12%) in purple, and HR (8%) in green. Each slice has a percentage
-    label displayed on it - white text for darker slices and dark text for the yellow
-    slice. The title "pie-basic · bokeh · pyplots.ai" appears at the top. A legend
-    on the right side lists all categories with their percentages. The pie chart is
-    centered in a square 3600x3600 canvas with clean white background and no axes/grid
-    (appropriate for pie charts).
+  - No data storytelling or annotations — add callouts highlighting key insights (e.g.,
+    AWS leading, Others category being surprisingly large)
+  - Red and green slices are adjacent — swap to a fully colorblind-safe palette avoiding
+    red-green adjacency
+  - Layout has wasted space between pie and legend — tighten vertical spacing or reposition
+    legend closer
+  - Code is verbose with manual per-wedge loops — consider using ColumnDataSource
+    for more idiomatic bokeh
+  - Visual design is competent but generic — could benefit from subtle gradient effects,
+    shadow, or stronger visual hierarchy to elevate beyond a standard pie chart
+  image_description: 'The plot displays a basic pie chart on a square (3600x3600 px)
+    canvas with the title "pie-basic · bokeh · pyplots.ai" centered at the top. There
+    are 5 wedge slices representing cloud infrastructure market share: AWS (31%, deep
+    blue #306998), Azure (25%, yellow #FFD43B), Google Cloud (11%, red #E74C3C), Alibaba
+    (4%, green #27AE60), and Others (29%, purple #9B59B6). The AWS slice is slightly
+    exploded outward for emphasis. Each slice has a bold percentage label — white
+    text on darker slices and dark text on the yellow Azure slice. White separator
+    lines (5px) divide the slices. A horizontal legend at the bottom displays category
+    names with percentages. The background is white with no axes or grid visible.
+    There is noticeable empty space between the bottom of the pie and the legend area.'
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 24
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title at 40pt, percentage labels at 32pt, legend at 28pt - all clearly
-          readable, though legend text could be slightly larger
+        comment: 'All font sizes explicitly set: title 40pt, labels 36pt, legend 30pt.
+          All perfectly readable.'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements, all labels well-positioned within slices
+        comment: No overlapping text elements anywhere.
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Wedges are clearly visible with good sizing, white borders separate
-          slices well
+        comment: Wedges clearly visible with radius=0.88, good proportions.
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Distinct colors that work for colorblind users (blue, yellow, red,
-          purple, green - no red-green only distinction)
+        score: 3
+        max: 4
+        passed: false
+        comment: Red (#E74C3C) and green (#27AE60) are adjacent slices. Suboptimal
+          for colorblind viewers.
       - id: VQ-05
-        name: Layout Balance
-        score: 4
-        max: 5
-        passed: true
-        comment: Good proportions, pie centered well, though legend placement creates
-          some asymmetry
+        name: Layout & Canvas
+        score: 3
+        max: 4
+        passed: false
+        comment: Pie fills canvas adequately but noticeable gap between pie bottom
+          and legend. Legend feels isolated.
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: N/A for pie charts, handled correctly by hiding axes
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
+        comment: Title follows correct format. No axes needed for pie chart.
+    design_excellence:
+      score: 10
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
+        passed: false
+        comment: Clean and intentional but essentially a well-configured default pie
+          chart, not publication-level.
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
         passed: true
-        comment: Legend is functional but appears small relative to the large canvas,
-          could be better integrated
+        comment: Axes hidden, grid hidden, outline removed, clean white separators.
+          Good attention to detail.
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: No annotations or callouts. Viewer must interpret data themselves.
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct pie chart implementation
+        comment: 'Correct chart type: pie chart with wedge slices.'
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories and values correctly mapped to slices
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
         comment: 'All spec features present: percentage labels, distinct colors, legend,
-          slight explosion on key slice'
-      - id: SC-04
-        name: Data Range
+          exploded largest slice.'
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible, slices properly sized
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Categories map to slices, values map to angles correctly.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend correctly shows all categories with percentages
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Uses correct format: "pie-basic · bokeh · pyplots.ai"'
+        comment: Title format correct. Legend labels include category names and percentages.
     data_quality:
-      score: 18
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
-        passed: true
-        comment: Shows 5 categories with varied proportions, explosion effect on largest
-          slice; could show more variation in smaller slices
+        score: 5
+        max: 6
+        passed: false
+        comment: Shows varied slice sizes with Others catch-all. Good range but no
+          extreme contrast.
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
+        score: 5
+        max: 5
         passed: true
-        comment: Budget allocation by department is a realistic, comprehensible scenario
+        comment: Cloud infrastructure market share is a real, neutral, widely understood
+          scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Percentages are reasonable (35%, 25%, 20%, 12%, 8% = 100%), though
-          distribution is somewhat standard
+        comment: Values are realistic and sum to 100%.
     code_quality:
       score: 9
       max: 10
@@ -175,42 +184,48 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Follows imports → data → plot → save structure, no functions/classes
+        comment: 'Linear flow: imports, data, compute, plot, save.'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
-        passed: true
-        comment: Uses deterministic hardcoded data, no random elements
-      - id: CQ-03
-        name: Clean Imports
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Most imports used, though `output_file` and `save` are only used
-          for HTML output
+        comment: Deterministic hardcoded data.
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports used.
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
         score: 1
-        max: 1
-        passed: true
-        comment: Uses current Bokeh API
+        max: 2
+        passed: false
+        comment: Functional but verbose with manual angle calculations and per-wedge
+          loops.
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png correctly
+        comment: Saves as plot.png and plot.html.
     library_features:
-      score: 3
-      max: 5
+      score: 6
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 3
+        max: 5
+        passed: false
+        comment: Uses wedge, Label, Legend correctly but does not use ColumnDataSource.
+          Draws wedges in explicit loop rather than vectorized.
+      - id: LM-02
+        name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses Bokeh wedge glyphs and Label annotations correctly, generates
-          both PNG and interactive HTML; however, could leverage ColumnDataSource
-          for more idiomatic Bokeh code
-  verdict: APPROVED
+        comment: Uses bokeh-specific wedge glyphs with direction param, Label layout
+          model, Legend model, and dual PNG+HTML output.
+  verdict: REJECTED

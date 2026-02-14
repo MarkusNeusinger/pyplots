@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-basic: Basic Scatter Plot
 Library: altair 6.0.0 | Python 3.14
 Quality: 88/100 | Created: 2025-12-22
@@ -29,18 +29,18 @@ trend_df = pd.DataFrame({"hours": x_ends, "score": slope * x_ends + intercept})
 # Scatter points
 points = (
     alt.Chart(df)
-    .mark_point(filled=True, size=120, opacity=0.7, color="#306998", stroke="white", strokeWidth=0.8)
+    .mark_point(filled=True, size=150, opacity=0.7, color="#306998", stroke="white", strokeWidth=0.8)
     .encode(
         x=alt.X(
             "hours:Q",
             title="Study Hours per Day",
-            scale=alt.Scale(domain=[0.5, 10.5]),
+            scale=alt.Scale(domain=[0.5, 10.5], nice=False),
             axis=alt.Axis(
                 tickCount=10,
                 labelFontWeight="normal",
                 titleColor="#333333",
                 labelColor="#555555",
-                domainColor="#999999",
+                domainColor="#bbbbbb",
                 tickColor="#cccccc",
                 gridDash=[3, 3],
             ),
@@ -48,13 +48,13 @@ points = (
         y=alt.Y(
             "score:Q",
             title="Exam Score (%)",
-            scale=alt.Scale(domain=[20, 105]),
+            scale=alt.Scale(domain=[20, 105], nice=False),
             axis=alt.Axis(
                 tickCount=9,
                 labelFontWeight="normal",
                 titleColor="#333333",
                 labelColor="#555555",
-                domainColor="#999999",
+                domainColor="#bbbbbb",
                 tickColor="#cccccc",
                 gridDash=[3, 3],
             ),
@@ -66,18 +66,20 @@ points = (
     )
 )
 
-# Trend line
+# Trend line — muted steel color to avoid competing with data points
 trend = (
     alt.Chart(trend_df)
-    .mark_line(strokeDash=[8, 6], strokeWidth=2.5, color="#c44e52", opacity=0.8)
+    .mark_line(strokeDash=[8, 6], strokeWidth=2.5, color="#7a7a7a", opacity=0.7)
     .encode(x="hours:Q", y="score:Q")
 )
 
-# Correlation annotation
-annotation_df = pd.DataFrame({"x": [9.2], "y": [38], "label": [f"r = {r:.2f}"]})
+# Correlation annotation — positioned near the trend line midpoint for visual coherence
+mid_x = float(study_hours.mean())
+mid_y = float(slope * mid_x + intercept + 8)
+annotation_df = pd.DataFrame({"x": [mid_x], "y": [mid_y], "label": [f"r = {r:.2f}"]})
 annotation = (
     alt.Chart(annotation_df)
-    .mark_text(fontSize=20, fontWeight="bold", color="#c44e52", align="right")
+    .mark_text(fontSize=20, fontWeight="bold", color="#555555", align="center")
     .encode(x="x:Q", y="y:Q", text="label:N")
 )
 

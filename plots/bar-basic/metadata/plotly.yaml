@@ -1,26 +1,222 @@
 library: plotly
 specification_id: bar-basic
 created: 2025-12-13 23:14:18+00:00
-updated: 2026-02-14T14:34:56+00:00
+updated: '2026-02-14T14:45:49Z'
 generated_by: claude-opus-4-6
 workflow_run: 20199224291
 issue: 612
-python_version: "3.14"
+python_version: '3.14'
 library_version: 6.5.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-basic/plotly/plot.html
-quality_score: null
+quality_score: 84
 impl_tags:
   dependencies: []
   techniques:
-  - html-export
-  patterns:
-  - explicit-figure
+  - annotations
+  patterns: []
   dataprep: []
-  styling: []
+  styling:
+  - grid-styling
 review:
-  strengths: []
-  weaknesses: []
+  strengths:
+  - Excellent text legibility with all font sizes explicitly configured for 4800x2700
+    output
+  - Clean plotly_white template with subtle gridlines produces a professional uncluttered
+    look
+  - Data sorted in descending order aids readability and implies ranking narrative
+  - Dollar-formatted value labels above bars with texttemplate provide precise reading
+  - Realistic business scenario with plausible sales figures
+  - HTML export leverages Plotly native interactivity strength
+  weaknesses:
+  - 'No data storytelling: add an annotation highlighting a key insight (e.g. top
+    performer gap between categories or a threshold line)'
+  - Aesthetic sophistication is well-configured default level — consider subtle enhancements
+    like rounded bar corners a gradient effect or a more refined color treatment to
+    elevate beyond standard template
+  - Could highlight one specific bar with a different color or opacity to draw attention
+    as the spec suggests
   improvements: []
-  verdict: APPROVED
+  verdict: REJECTED
+  image_description: The plot displays a vertical bar chart with 8 product categories
+    on the x-axis (Electronics, Clothing, Home & Garden, Sports, Books, Toys, Automotive,
+    Health) sorted in descending order by sales value. All bars use a single dark
+    blue color (#306998 — Python Blue). Each bar has a dollar-formatted value label
+    positioned above it (ranging from $45,200 for Electronics down to $15,400 for
+    Health). The y-axis shows "Sales ($)" with dollar-formatted tick labels from $0
+    to $45,000 and subtle gray gridlines. The x-axis is labeled "Product Category."
+    The title "bar-basic · plotly · pyplots.ai" is centered at the top. The background
+    is clean white (plotly_white template) with good spacing between bars.
+  criteria_checklist:
+    visual_quality:
+      score: 29
+      max: 30
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 8
+        max: 8
+        passed: true
+        comment: 'All font sizes explicitly set: title=28pt, axis labels=22pt, ticks=18pt,
+          value labels=22pt'
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
+        passed: true
+        comment: No overlapping text elements, categories well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 6
+        passed: true
+        comment: Bars well-sized with bargap=0.3, all clearly visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 4
+        passed: true
+        comment: Single Python Blue color, no colorblind concerns
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 3
+        max: 4
+        passed: true
+        comment: Good layout with explicit margins, some vertical wasted space above
+          tallest value label
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
+        max: 2
+        passed: true
+        comment: Sales ($) includes units, Product Category is descriptive
+    design_excellence:
+      score: 10
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
+        passed: false
+        comment: Well-configured plotly_white template, clean but standard configured
+          default level
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: plotly_white removes clutter, subtle gridlines, explicit margins
+          show refinement
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: Sorted descending implies ranking but no annotations or callouts
+          highlighting key insights
+    spec_compliance:
+      score: 15
+      max: 15
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 5
+        max: 5
+        passed: true
+        comment: Correct vertical bar chart
+      - id: SC-02
+        name: Required Features
+        score: 4
+        max: 4
+        passed: true
+        comment: Value labels, consistent widths, adequate spacing, single color
+      - id: SC-03
+        name: Data Mapping
+        score: 3
+        max: 3
+        passed: true
+        comment: Categories on X, values on Y, correctly assigned
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
+        passed: true
+        comment: Title format correct, no legend needed for single-series
+    data_quality:
+      score: 14
+      max: 15
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 5
+        max: 6
+        passed: true
+        comment: 8 categories with good value range, sorted descending shows ranking
+          well
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 5
+        passed: true
+        comment: Product sales by department is a real, neutral business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Sales figures in $15k-$45k range are realistic for department-level
+          retail
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports, data, figure, layout, save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 2
+        passed: true
+        comment: Deterministic hardcoded data
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only plotly.graph_objects imported and used
+      - id: CQ-04
+        name: Code Elegance
+        score: 1
+        max: 2
+        passed: true
+        comment: Clean and readable, slightly verbose
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves plot.png at correct dimensions plus HTML
+    library_mastery:
+      score: 7
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: Uses go.Figure() + go.Bar() correctly with plotly idioms like texttemplate
+          and textposition
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Plotly-distinctive texttemplate format string, write_html, plotly_white
+          template

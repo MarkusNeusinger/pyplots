@@ -23,4 +23,5 @@ tags:
   features:
     - basic
     - distribution
-    - quartiles
+    - comparison
+    - outliers

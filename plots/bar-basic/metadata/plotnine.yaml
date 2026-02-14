@@ -1,161 +1,180 @@
 library: plotnine
 specification_id: bar-basic
 created: '2025-12-23T00:23:09Z'
-updated: 2026-02-14T14:34:56+00:00
+updated: '2026-02-14T14:46:38Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447579088
 issue: 0
-python_version: "3.14"
+python_version: '3.14'
 library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-basic/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-basic/plotnine/plot_thumb.png
 preview_html: null
-quality_score: null
+quality_score: 82
 impl_tags:
   dependencies: []
   techniques:
+  - annotations
   - layer-composition
   patterns: []
   dataprep: []
   styling:
-  - minimal-chrome
+  - grid-styling
 review:
   strengths:
-  - Excellent use of ggplot2 grammar with clean layered syntax (ggplot + geom_bar
-    + geom_text + labs + theme)
-  - Value labels with dollar formatting using format_string add significant readability
-  - Text sizing follows library guidelines perfectly (title 24pt, axis 20pt, ticks
-    16pt)
-  - Realistic business scenario with plausible sales data across product categories
-  - Clean minimal theme with appropriate figure size (16:9)
+  - Clean grammar-of-graphics composition with well-layered plotnine idioms
+  - Explicit font sizing at all levels (title 24pt, axis titles 20pt, tick text 16pt)
+    ensures legibility at 4800x2700
+  - Smart use of pd.Categorical with descending sort to create an implicit ranking
+    narrative
+  - Dollar formatting on both value labels (format_string) and y-axis (scale_y_continuous
+    lambda) provides consistent professional number presentation
+  - 'Thoughtful theme customization: removed x-gridlines, subtle y-gridlines (alpha=0.2),
+    removed ticks'
   weaknesses:
-  - Grid lines use default plotnine styling; could be more subtle with explicit alpha
-    setting
-  - Could use scale_y_continuous to add dollar formatting to y-axis tick labels for
-    consistency with value labels
-  image_description: 'The plot displays a vertical bar chart showing sales data across
-    6 product categories. The bars are rendered in a consistent blue color (#306998).
-    The x-axis shows "Product Category" with labels: Books, Clothing, Electronics,
-    Home & Garden, Sports, and Toys. The y-axis shows "Sales ($)" ranging from 0 to
-    approximately 45,000. Each bar has a value label positioned above it showing the
-    exact sales figure with dollar formatting (e.g., $45,200, $32,800, etc.). The
-    title reads "bar-basic · plotnine · pyplots.ai" in the correct format. The plot
-    uses a clean minimal theme with a light gray background and subtle gridlines.
-    The layout is well-balanced with a 16:9 aspect ratio.'
+  - Y-axis label 'Sales' lacks units — should be 'Sales (USD)' or 'Sales ($)' for
+    full clarity
+  - 'No data storytelling beyond sorting: could benefit from annotations highlighting
+    the top category or percentage differences'
+  - No bar highlighting or color differentiation to draw attention to key findings
+    as the spec suggests
+  - Slight over-extension of y-axis above the tallest bar creates unnecessary whitespace
+  image_description: 'The plot shows a vertical bar chart titled "bar-basic · plotnine
+    · pyplots.ai" displaying product category sales data. Six blue bars (#306998 Python
+    Blue) are arranged in descending order from left to right: Electronics ($45,200),
+    Clothing ($32,800), Home & Garden ($28,500), Sports ($19,700), Books ($15,300),
+    and Toys ($12,400). Each bar has a dollar-formatted value label positioned just
+    above it. The y-axis is labeled "Sales" with formatted tick labels ($0K through
+    $40K). The x-axis is labeled "Product Category" with category names centered beneath
+    each bar. The background is clean with a minimal theme — no vertical gridlines,
+    subtle horizontal gridlines, and no axis ticks. The layout uses a 16:9 landscape
+    aspect ratio with good use of canvas space.'
   criteria_checklist:
     visual_quality:
-      score: 38
-      max: 40
+      score: 26
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title at 24pt, axis titles at 20pt, tick labels at 16pt - all perfectly
-          readable
+        comment: 'All font sizes explicitly set: title 24pt, axis titles 20pt, axis
+          text 16pt. All text clearly readable at full resolution.'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements, all labels clear and separated
+        comment: No overlapping text elements. Category labels well-spaced, value
+          labels don't collide.
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Bars are well-sized with appropriate width (0.7), clearly visible
+        comment: Bar widths (0.7) well-proportioned for 6 categories with good spacing.
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Single blue color, no colorblind issues
+        comment: Single color (#306998) for all bars — no colorblind issues possible.
       - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Good proportions, 16:9 aspect ratio, balanced whitespace
-      - id: VQ-06
-        name: Axis Labels
+        name: Layout & Canvas
         score: 2
-        max: 2
-        passed: true
-        comment: 'Descriptive labels with units: "Sales ($)" and "Product Category"'
-      - id: VQ-07
-        name: Grid & Legend
+        max: 4
+        passed: false
+        comment: Noticeable empty space above tallest bar; y-axis extends well beyond
+          max value. Adequate but not perfectly balanced.
+      - id: VQ-06
+        name: Axis Labels & Title
         score: 0
         max: 2
         passed: false
-        comment: No legend needed, but grid is default plotnine style (could be more
-          subtle)
-    spec_compliance:
-      score: 25
-      max: 25
-      items:
-      - id: SC-01
-        name: Plot Type
-        score: 8
-        max: 8
-        passed: true
-        comment: Correct vertical bar chart
-      - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories on x-axis, values on y-axis correctly mapped
-      - id: SC-03
-        name: Required Features
-        score: 5
-        max: 5
-        passed: true
-        comment: Consistent bar widths, value labels above bars, single color, adequate
-          spacing
-      - id: SC-04
-        name: Data Range
-        score: 3
-        max: 3
-        passed: true
-        comment: Y-axis shows full data range from 0 to beyond max value
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
-        passed: true
-        comment: No legend needed for single-color bar chart
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Correct format: "bar-basic · plotnine · pyplots.ai"'
-    data_quality:
-      score: 17
+        comment: Y-axis label 'Sales' lacks units. Should be 'Sales (USD)' or 'Sales
+          ($)'. X-axis 'Product Category' is descriptive but generic without units.
+    design_excellence:
+      score: 12
       max: 20
       items:
-      - id: DQ-01
-        name: Feature Coverage
+      - id: DE-01
+        name: Aesthetic Sophistication
         score: 6
         max: 8
         passed: true
-        comment: Shows 6 categories with varying heights, good range of values, but
-          all positive (no variation in direction)
-      - id: DQ-02
-        name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Product sales by category is a real, comprehensible business scenario
-      - id: DQ-03
-        name: Appropriate Scale
+        comment: 'Strong design: intentional Python Blue, minimal theme with removed
+          gridlines/ticks, dollar formatting. Above defaults but not FiveThirtyEight-level.'
+      - id: DE-02
+        name: Visual Refinement
         score: 4
+        max: 6
+        passed: true
+        comment: 'Good refinement: x-grid removed, minor grid removed, major y-grid
+          at alpha=0.2, ticks removed. Clearly customized beyond defaults.'
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: Data sorted descending provides implicit ranking. Value labels help
+          reading. But no annotations, callouts, or emphasis on key findings.
+    spec_compliance:
+      score: 15
+      max: 15
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 5
         max: 5
         passed: true
-        comment: Sales values are realistic ($12K-$45K range), though slightly round
-          numbers
+        comment: Correct vertical bar chart with rectangular bars proportional to
+          values.
+      - id: SC-02
+        name: Required Features
+        score: 4
+        max: 4
+        passed: true
+        comment: Consistent bar widths, value labels above bars, single color, adequate
+          spacing.
+      - id: SC-03
+        name: Data Mapping
+        score: 3
+        max: 3
+        passed: true
+        comment: Categories on x-axis, values on y-axis, correctly mapped.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
+        passed: true
+        comment: Title format 'bar-basic · plotnine · pyplots.ai' is correct. No legend
+          needed for single series.
+    data_quality:
+      score: 13
+      max: 15
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 5
+        max: 6
+        passed: true
+        comment: 6 categories with good value variation ($12K-$45K). Sorted descending
+          shows ranking. Missing highlighted bar as spec suggests.
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 5
+        passed: true
+        comment: Product sales by category is a real, comprehensible business scenario
+          with realistic neutral categories.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 3
+        max: 4
+        passed: true
+        comment: Values plausible for retail context, reasonable for small-to-medium
+          business.
     code_quality:
       score: 9
       max: 10
@@ -165,40 +184,49 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save structure, no functions/classes
+        comment: Clean Imports → Data → Plot → Save structure with no functions or
+          classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
-        max: 3
-        passed: false
-        comment: Data is deterministic (hardcoded), but no explicit seed for any randomness
+        max: 2
+        passed: true
+        comment: Deterministic hardcoded data, no random generation needed.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports are used, no unused imports.
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
         score: 1
-        max: 1
+        max: 2
         passed: true
-        comment: Using current plotnine API
+        comment: Clean and Pythonic. pd.Categorical sorting is slightly verbose but
+          functional.
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as "plot.png"
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves as plot.png with dpi=300.
+    library_mastery:
+      score: 8
+      max: 10
       items:
-      - id: LF-01
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Excellent grammar-of-graphics layering: ggplot + aes + geom + scale
+          + labs + theme. pd.Categorical for ordering is standard plotnine pattern.'
+      - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
-        passed: false
-        comment: Uses ggplot grammar correctly with geom_bar + geom_text, theme_minimal,
-          but could leverage more plotnine features like scale_y_continuous for formatting
-  verdict: APPROVED
+        passed: true
+        comment: Uses format_string in geom_text, scale_y_continuous with custom lambda,
+          grammar-of-graphics layering. Somewhat distinctive but not deeply unique.
+  verdict: REJECTED

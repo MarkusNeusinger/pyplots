@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 box-basic: Basic Box Plot
 Library: seaborn 0.13.2 | Python 3.14
-Quality: 82/100 | Created: 2025-12-23
+Quality: 94/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-basic: Basic Pie Chart
 Library: altair 6.0.0 | Python 3.14.0
 Quality: 85/100 | Created: 2025-12-23
@@ -24,7 +24,7 @@ domain = data["category"].tolist()
 
 color_scale = alt.Scale(domain=domain, range=colors)
 
-# Shared encodings for the main chart (includes legend)
+# Shared base with encodings
 base = alt.Chart(data).encode(
     theta=alt.Theta("value:Q", stack=True),
     order=alt.Order("order:O"),
@@ -44,46 +44,56 @@ base = alt.Chart(data).encode(
     ),
 )
 
-# Main pie slices
-pie = base.mark_arc(
-    outerRadius=380, innerRadius=0, stroke="#ffffff", strokeWidth=2.5, padAngle=0.02, cornerRadius=3
-).encode(tooltip=[alt.Tooltip("category:N", title="Provider"), alt.Tooltip("value:Q", title="Market Share (%)")])
-
-# Exploded AWS slice (largest) — larger radius + inner gap for visual emphasis
-exploded_aws = (
-    alt.Chart(data)
-    .transform_filter(alt.datum.category == "AWS")
-    .mark_arc(outerRadius=410, innerRadius=14, stroke="#ffffff", strokeWidth=3, padAngle=0.04, cornerRadius=3)
-    .encode(
-        theta=alt.Theta("value:Q", stack=True),
-        order=alt.Order("order:O"),
-        color=alt.Color("category:N", scale=color_scale, legend=None),
-    )
+# Main pie slices (non-AWS)
+pie = (
+    base.transform_filter(alt.datum.category != "AWS")
+    .mark_arc(outerRadius=370, innerRadius=0, stroke="#ffffff", strokeWidth=2.5, padAngle=0.02, cornerRadius=3)
+    .encode(tooltip=[alt.Tooltip("category:N", title="Provider"), alt.Tooltip("value:Q", title="Market Share (%)")])
 )
 
-# Percentage labels outside slices
-text = base.mark_text(radius=440, fontSize=21, fontWeight="bold").encode(text="label:N")
+# Exploded AWS slice — offset via radiusOffset for visible displacement
+exploded_aws = (
+    base.transform_filter(alt.datum.category == "AWS")
+    .mark_arc(
+        outerRadius=370, innerRadius=0, radiusOffset=22, stroke="#ffffff", strokeWidth=3, padAngle=0.04, cornerRadius=3
+    )
+    .encode(tooltip=[alt.Tooltip("category:N", title="Provider"), alt.Tooltip("value:Q", title="Market Share (%)")])
+)
 
-# Annotation: AWS callout as market leader (positioned upper-right, near AWS slice)
+# Percentage labels outside slices — larger radius for better separation
+text_main = (
+    base.transform_filter(alt.datum.category != "AWS")
+    .mark_text(radius=420, fontSize=21, fontWeight="bold")
+    .encode(text="label:N")
+)
+
+# AWS label with matching offset
+text_aws = (
+    base.transform_filter(alt.datum.category == "AWS")
+    .mark_text(radius=420, radiusOffset=22, fontSize=21, fontWeight="bold")
+    .encode(text="label:N")
+)
+
+# Annotation: AWS callout as market leader
 aws_note = (
     alt.Chart(pd.DataFrame({"text": ["AWS leads at 31% — largest single provider"]}))
     .mark_text(fontSize=16, fontStyle="italic", color="#306998", align="left")
-    .encode(x=alt.value(730), y=alt.value(80), text="text:N")
+    .encode(x=alt.value(720), y=alt.value(100), text="text:N")
 )
 
-# Annotation: "Others" insight (positioned lower-left, near Others slice)
+# Annotation: "Others" insight (positioned below chart, left-aligned)
 others_note = (
     alt.Chart(pd.DataFrame({"text": ['"Others" at 27% collectively outpace all but AWS']}))
-    .mark_text(fontSize=16, fontStyle="italic", color="#777777", align="right")
-    .encode(x=alt.value(470), y=alt.value(1020), text="text:N")
+    .mark_text(fontSize=16, fontStyle="italic", color="#777777", align="left")
+    .encode(x=alt.value(100), y=alt.value(980), text="text:N")
 )
 
-# Combine all layers
+# Combine all layers — compact layout with legend closer to chart
 chart = (
-    alt.layer(pie, exploded_aws, text, aws_note, others_note)
+    alt.layer(pie, exploded_aws, text_main, text_aws, aws_note, others_note)
     .properties(
         width=1200,
-        height=1200,
+        height=1000,
         title=alt.Title(
             text="pie-basic · altair · pyplots.ai",
             subtitle="Global Cloud Infrastructure Market Share",
@@ -94,10 +104,10 @@ chart = (
         ),
     )
     .configure_view(strokeWidth=0)
-    .configure_legend(padding=10, offset=0)
+    .configure_legend(padding=20, offset=10)
 )
 
-# Save as PNG (scale_factor=3 → 3600x3600 square format)
+# Save as PNG (scale_factor=3 → ~3300x3150 square-ish format)
 chart.save("plot.png", scale_factor=3.0)
 
 # Save interactive HTML

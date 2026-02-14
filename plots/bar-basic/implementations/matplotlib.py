@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bar-basic: Basic Bar Chart
 Library: matplotlib 3.10.8 | Python 3.14
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-basic: Basic Bar Chart
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-13
+Library: plotly 6.5.2 | Python 3.14
+Quality: /100 | Updated: 2026-02-14
 """
 
 import plotly.graph_objects as go
@@ -21,23 +21,25 @@ fig.add_trace(
         marker_color="#306998",
         text=values,
         textposition="outside",
-        texttemplate="%{text:,.0f}",
-        textfont={"size": 32},
+        texttemplate="$%{text:,.0f}",
+        textfont={"size": 22},
     )
 )
 
 # Layout
 fig.update_layout(
-    title={"text": "bar-basic · plotly · pyplots.ai", "font": {"size": 40}, "x": 0.5, "xanchor": "center"},
-    xaxis={"title": {"text": "Product Category", "font": {"size": 40}}, "tickfont": {"size": 32}},
+    title={"text": "bar-basic \u00b7 plotly \u00b7 pyplots.ai", "font": {"size": 28}, "x": 0.5, "xanchor": "center"},
+    xaxis={"title": {"text": "Product Category", "font": {"size": 22}}, "tickfont": {"size": 18}},
     yaxis={
-        "title": {"text": "Sales ($)", "font": {"size": 40}},
-        "tickfont": {"size": 32},
+        "title": {"text": "Sales ($)", "font": {"size": 22}},
+        "tickfont": {"size": 18},
+        "tickprefix": "$",
+        "tickformat": ",.0f",
         "gridcolor": "rgba(0,0,0,0.1)",
     },
     template="plotly_white",
     bargap=0.3,
-    margin={"t": 120, "b": 80, "l": 100, "r": 50},
+    margin={"t": 100, "b": 80, "l": 100, "r": 50},
 )
 
 # Save

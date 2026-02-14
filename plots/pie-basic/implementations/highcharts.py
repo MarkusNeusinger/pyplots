@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-basic: Basic Pie Chart
 Library: highcharts 1.10.3 | Python 3.14.0
 Quality: 88/100 | Created: 2025-12-23
@@ -12,21 +12,19 @@ from pathlib import Path
 from highcharts_core.chart import Chart
 from highcharts_core.options import HighchartsOptions
 from highcharts_core.options.series.pie import PieSeries
-from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
 # Data — Cloud infrastructure market share (5 categories, realistic business context)
-# No random data — fully deterministic
 categories = ["AWS", "Azure", "Google Cloud", "Alibaba", "Others"]
 values = [31, 25, 11, 4, 29]
-total = sum(values)
 
 # Colorblind-safe palette (Python Blue first, then complementary)
-colors = ["#306998", "#FFD43B", "#E07B54", "#17BECF", "#9467BD"]
+# Replaced cyan (#17BECF) with softer teal (#2CA089) for better palette harmony
+colors = ["#306998", "#FFD43B", "#E07B54", "#2CA089", "#9467BD"]
 
-# Compute top-3 share for annotation
+# Compute top-3 share for subtitle storytelling
 top3_share = sum(values[:3])
 
 # Chart
@@ -35,13 +33,13 @@ chart.options = HighchartsOptions()
 
 chart.options.chart = {
     "type": "pie",
-    "width": 3600,
-    "height": 3600,
+    "width": 4800,
+    "height": 2700,
     "backgroundColor": "#ffffff",
-    "spacingTop": 50,
-    "spacingBottom": 30,
-    "spacingLeft": 80,
-    "spacingRight": 80,
+    "spacingTop": 30,
+    "spacingBottom": 25,
+    "spacingLeft": 60,
+    "spacingRight": 60,
     "style": {"fontFamily": "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"},
 }
 
@@ -52,10 +50,15 @@ chart.options.title = {
     "margin": 10,
 }
 
-# Subtitle with storytelling context
+# Subtitle with storytelling context and insight callout
 chart.options.subtitle = {
-    "text": (f"Global cloud spending by provider, 2024 — Top 3 providers control {top3_share}% of the market"),
-    "style": {"fontSize": "34px", "color": "#555555", "fontWeight": "normal"},
+    "text": (
+        f"Global cloud spending by provider, 2024 \u2014 Top 3 providers control {top3_share}% of the market"
+        '<br><span style="font-style: italic; color: #1a1a2e; font-weight: 600;">'
+        "AWS leads with nearly \u2153 of global cloud revenue</span>"
+    ),
+    "useHTML": True,
+    "style": {"fontSize": "34px", "color": "#555555", "fontWeight": "normal", "textAlign": "center"},
 }
 
 # Colors
@@ -83,16 +86,16 @@ chart.options.plot_options = {
             "connectorShape": "crookedLine",
         },
         "showInLegend": True,
-        "slicedOffset": 45,
+        "slicedOffset": 40,
         "size": "75%",
-        "center": ["50%", "46%"],
-        "startAngle": -20,
+        "center": ["50%", "55%"],
+        "startAngle": -45,
         "innerSize": "0%",
         "states": {"hover": {"halo": {"size": 15, "opacity": 0.25}}, "inactive": {"opacity": 0.5}},
     }
 }
 
-# Legend — bottom horizontal, refined styling
+# Legend — bottom horizontal
 chart.options.legend = {
     "enabled": True,
     "align": "center",
@@ -103,8 +106,8 @@ chart.options.legend = {
     "symbolRadius": 8,
     "symbolHeight": 20,
     "symbolWidth": 20,
-    "margin": 15,
-    "padding": 12,
+    "margin": 8,
+    "padding": 8,
 }
 
 # Tooltip
@@ -118,7 +121,6 @@ chart.options.tooltip = {
 }
 
 # Series — largest slice (AWS) exploded for emphasis
-# Use point-level custom styling for the leader slice
 series = PieSeries()
 series.name = "Market Share"
 
@@ -126,7 +128,6 @@ series_data = []
 for i, (cat, val) in enumerate(zip(categories, values, strict=True)):
     point = {"name": cat, "y": val, "sliced": i == 0, "selected": i == 0}
     if i == 0:
-        # Highlight leader with slightly brighter variant and thicker border
         point["borderWidth"] = 3
         point["borderColor"] = "#1e4060"
     series_data.append(point)
@@ -139,30 +140,6 @@ highcharts_url = "https://code.highcharts.com/highcharts.js"
 with urllib.request.urlopen(highcharts_url, timeout=30) as response:
     highcharts_js = response.read().decode("utf-8")
 
-# Callout annotation as an overlay (positioned with CSS for precise control)
-callout_html = """
-<div style="
-    position: absolute;
-    bottom: 215px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    color: #ffffff;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 34px;
-    font-weight: 600;
-    padding: 22px 44px;
-    border-radius: 12px;
-    line-height: 1.5;
-    text-align: center;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-    letter-spacing: 0.3px;
-    border-left: 5px solid #306998;
-">
-    AWS leads with nearly &frac13; of global cloud revenue
-</div>
-"""
-
 # Generate HTML with inline scripts
 html_str = chart.to_js_literal()
 html_content = f"""<!DOCTYPE html>
@@ -171,9 +148,8 @@ html_content = f"""<!DOCTYPE html>
     <meta charset="utf-8">
     <script>{highcharts_js}</script>
 </head>
-<body style="margin:0; position: relative;">
-    <div id="container" style="width: 3600px; height: 3600px;"></div>
-    {callout_html}
+<body style="margin:0;">
+    <div id="container" style="width: 4800px; height: 2700px;"></div>
     <script>{html_str}</script>
 </body>
 </html>"""
@@ -192,18 +168,18 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=3600,3800")
+chrome_options.add_argument("--window-size=4800,2700")
 
 driver = webdriver.Chrome(options=chrome_options)
+
+# Adjust window to get exact 4800x2700 viewport (compensate for browser chrome)
+inner_h = driver.execute_script("return window.innerHeight")
+outer_h = driver.get_window_size()["height"]
+driver.set_window_size(4800, 2700 + (outer_h - inner_h))
+
 driver.get(f"file://{temp_path}")
 time.sleep(5)
-driver.save_screenshot("plot_raw.png")
+driver.save_screenshot("plot.png")
 driver.quit()
-
-# Crop to exact 3600x3600
-img = Image.open("plot_raw.png")
-img_cropped = img.crop((0, 0, 3600, 3600))
-img_cropped.save("plot.png")
-Path("plot_raw.png").unlink()
 
 Path(temp_path).unlink()

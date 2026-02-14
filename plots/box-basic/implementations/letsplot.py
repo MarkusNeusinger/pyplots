@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 box-basic: Basic Box Plot
 Library: letsplot 4.8.2 | Python 3.14
 Quality: 88/100 | Created: 2025-12-23
@@ -72,14 +72,17 @@ overall_mean = df["salary"].mean()
 insight_df = pd.DataFrame(
     {
         "department": [high_dept["department"]],
-        "y": [high_dept["median_salary"] + 20000],
-        "lbl": [f"Eng. +{pct_diff:.0%} vs HR"],
+        "y": [high_dept["median_salary"] + 22000],
+        "lbl": [f"{high_dept['department'][:3]}. {insight_text}"],
     }
 )
-mean_label_df = pd.DataFrame({"department": ["HR"], "y": [overall_mean - 4000], "lbl": [f"Avg: ${overall_mean:,.0f}"]})
+mean_label_df = pd.DataFrame(
+    {"department": [high_dept["department"]], "y": [overall_mean + 3000], "lbl": [f"Avg: ${overall_mean:,.0f}"]}
+)
 
 # Plot
-colors = ["#306998", "#E69F00", "#56B4E9", "#009E73", "#CC79A7"]
+# Wong colorblind-safe palette (no two similar blues)
+colors = ["#0072B2", "#E69F00", "#D55E00", "#009E73", "#CC79A7"]
 
 plot = (
     ggplot(df, aes(x=as_discrete("department", order=1, order_by="..middle.."), y="salary", fill="department"))
@@ -117,7 +120,7 @@ plot = (
         size=10,
         color="#666666",
         fontface="italic",
-        hjust=0.0,
+        hjust=0.5,
         inherit_aes=False,
     )
     # Key insight annotation
@@ -127,7 +130,6 @@ plot = (
         size=11,
         color="#1E4F72",
         fontface="bold italic",
-        nudge_x=-0.5,
         inherit_aes=False,
     )
     + scale_y_continuous(format="${,.0f}")
@@ -149,7 +151,7 @@ plot = (
         panel_grid_major_y=element_line(color="#DDDDDD", size=0.5),
         legend_position="none",
         plot_background=element_rect(fill="white", color="white"),
-        plot_margin=[10, 60, 10, 10],
+        plot_margin=[10, 35, 10, 10],
     )
     + ggsize(1600, 900)
 )

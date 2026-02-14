@@ -315,49 +315,31 @@ pattern `implementation/{spec-id}/{library}`. Therefore, each library MUST get i
 
 Get `{owner}/{repo}` from `git remote get-url origin`.
 
-**Why patches?** You cannot simply `git checkout -b` and `git add` because the working tree has modifications
-to ALL libraries at once. Switching branches with uncommitted changes either fails or carries changes across
-branches. Using `git stash` risks losing changes if the stash is dropped or if `git checkout main -- file`
-is used (which overwrites working tree files with main's version). The patch-based approach isolates each
-library's changes cleanly.
+**Why worktrees?** The main working tree contains modifications to ALL libraries (and potentially from other
+parallel `/update` instances for different specs). Using `git stash`/`git checkout` would conflict with parallel
+instances sharing the same stash stack and HEAD. `git worktree` creates an isolated working copy per branch —
+each has its own HEAD, index, and working tree. Only the specific library's files are copied in, making it
+physically impossible to accidentally commit another spec's changes.
 
-**Step 1: Create per-library patch files**
-
-For each library, create a patch containing only that library's changes:
-
-```bash
-git diff -- plots/{spec_id}/implementations/{library}.py plots/{spec_id}/metadata/{library}.yaml \
-  > /tmp/patch-{spec_id}-{library}.patch
-```
-
-If the spec was changed, include it in the **first** library's patch only:
-
-```bash
-git diff -- plots/{spec_id}/implementations/{library}.py plots/{spec_id}/metadata/{library}.yaml \
-  plots/{spec_id}/specification.md > /tmp/patch-{spec_id}-{library}.patch
-```
-
-**Step 2: Stash all changes**
-
-```bash
-git stash
-```
-
-**Step 3: For each library, create branch → apply patch → commit → push → PR**
+**Step 1: For each library, create worktree → copy files → commit → push → PR**
 
 Run sequentially for each library:
 
 ```bash
-# Start from clean main
-git checkout main
+WORKTREE=".worktrees/{spec_id}-{library}"
 
-# Create per-library branch
-git checkout -b implementation/{spec_id}/{library}
+# Create worktree with new branch based on main
+git worktree add -b implementation/{spec_id}/{library} "$WORKTREE" main
 
-# Apply only this library's patch
-git apply /tmp/patch-{spec_id}-{library}.patch
+# Copy only this library's changed files into the worktree
+cp plots/{spec_id}/implementations/{library}.py "$WORKTREE/plots/{spec_id}/implementations/{library}.py"
+cp plots/{spec_id}/metadata/{library}.yaml "$WORKTREE/plots/{spec_id}/metadata/{library}.yaml"
+# If spec was changed (only for the first library):
+cp plots/{spec_id}/specification.md "$WORKTREE/plots/{spec_id}/specification.md"
 
-# Stage and commit
+# Commit and push from the worktree
+cd "$WORKTREE"
+
 git add plots/{spec_id}/implementations/{library}.py
 git add plots/{spec_id}/metadata/{library}.yaml
 # If spec was changed (only in first library branch):
@@ -367,10 +349,9 @@ git commit -m "update({spec_id}): {library} — {short description}
 
 {description}"
 
-# Push
 git push -u origin implementation/{spec_id}/{library}
 
-# Create PR
+# Create PR (gh works in worktree context)
 gh pr create \
   --title "update({spec_id}): {library} — {short description}" \
   --body "$(cat <<EOF
@@ -401,19 +382,21 @@ PR_NUMBER=$(gh pr view --json number -q '.number')
 gh api repos/{owner}/{repo}/dispatches \
   -f event_type=review-pr \
   -f 'client_payload[pr_number]='"$PR_NUMBER"
+
+# Return to repo root
+cd -
 ```
 
-**Step 4: Return to main and restore working tree**
+**Step 2: Clean up worktrees**
+
+After all libraries are processed:
 
 ```bash
-git checkout main
-git stash pop
-```
+# Remove each worktree
+git worktree remove .worktrees/{spec_id}-{library} --force
 
-**Step 5: Clean up patch files**
-
-```bash
-rm -f /tmp/patch-{spec_id}-*.patch
+# After all worktrees removed, prune stale entries
+git worktree prune
 ```
 
 Report all PR URLs to the user.
@@ -498,6 +481,13 @@ Once all PRs have reached a terminal state:
    | pygal | #1236 | 45 | 3 | not-feasible |
 
 2. Report any `not-feasible` libraries to the user — these may need manual intervention or a different approach.
+
+3. Pull main to sync the merged changes:
+   ```bash
+   git checkout main
+   git pull origin main
+   ```
+   This ensures the working tree is clean and up-to-date with all merged PRs.
 
 ---
 

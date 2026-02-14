@@ -227,6 +227,7 @@ nul
 # Project-specific
 temp/
 .update-preview/
+.worktrees/
 
 # Agentic runs output
 agentic/runs/

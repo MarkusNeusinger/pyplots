@@ -1,165 +1,169 @@
 library: seaborn
 specification_id: scatter-basic
 created: '2025-12-22T23:35:25Z'
-updated: "2026-02-14T14:28:20+00:00"
+updated: '2026-02-14T14:32:46Z'
 generated_by: claude-opus-4-6
 workflow_run: 20446831329
 issue: 0
-python_version: "3.14"
-library_version: "0.13.2"
+python_version: '3.14'
+library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/seaborn/plot_thumb.png
 preview_html: null
-quality_score: null
+quality_score: 82
 impl_tags:
   dependencies: []
   techniques: []
   patterns:
-    - data-generation
-    - explicit-figure
+  - data-generation
+  - explicit-figure
   dataprep: []
   styling:
-    - alpha-blending
-    - edge-highlighting
-    - grid-styling
+  - alpha-blending
+  - edge-highlighting
+  - grid-styling
 review:
   strengths:
-  - Excellent visual presentation with properly sized text elements following the
-    library guidelines exactly
-  - Realistic data scenario (study hours vs exam scores) that demonstrates clear correlation
-    with appropriate noise
-  - Clean KISS code structure with proper seaborn axes-level API usage
-  - Good use of alpha transparency and white edge colors to handle point overlap
-  - Correct title format and descriptive axis labels with units
+  - Perfect spec compliance with correct title format, axis labels with units, and
+    all required features
+  - Clean KISS code structure with reproducible seed and idiomatic seaborn API usage
+  - 'Good visual refinement: despine, subtle dashed grid, white marker edges, appropriate
+    alpha'
+  - Realistic education context with plausible data ranges
   weaknesses:
-  - Does not leverage seaborn distinctive statistical features (e.g., regplot, jointplot,
-    or hue parameter for additional dimension)
-  - Marker size s=200 is at the upper end of the recommended range for 150 points
-  image_description: The plot displays a 2D scatter plot with 150 blue circular markers
-    (#306998 color) with white edge borders. The X-axis shows "Study Hours (per week)"
-    ranging from approximately 1 to 10, and the Y-axis shows "Exam Score (points)"
-    ranging from about 10 to 120. The title correctly follows the format "scatter-basic
-    · seaborn · pyplots.ai". The data demonstrates a clear positive linear correlation
-    between study hours and exam scores with realistic noise/variance. Points have
-    moderate transparency (alpha 0.7) allowing overlapping points to be distinguished.
-    Subtle dashed grid lines (alpha 0.3) aid in value estimation. The layout is well-balanced
-    with proper use of the 16:9 aspect ratio.
+  - 'No data storytelling: adding a trend/regression line or annotating key insights
+    (e.g., correlation coefficient, outlier callout) would guide the viewer'
+  - Marker size s=120 is slightly large for 150 data points — reducing to s=80-90
+    would reduce clumping in dense regions
+  - The design stays within well-configured default territory; a more distinctive
+    color treatment, secondary visual element, or stylistic refinement would elevate
+    it
+  image_description: The plot displays a 2D scatter plot with 150 data points showing
+    the relationship between "Study Hours (per week)" on the x-axis (ranging from
+    ~1 to 10) and "Exam Score (points)" on the y-axis (ranging from ~10 to 120). All
+    markers use a single muted blue color (#306998 Python Blue) with white edge highlights
+    and moderate transparency (alpha=0.7). The title "scatter-basic · seaborn · pyplots.ai"
+    appears at the top in medium-weight font. A clear positive linear correlation
+    is visible — students who study more tend to score higher. The top and right spines
+    are removed (seaborn despine), and a subtle dashed grid with low opacity aids
+    value estimation. The layout is landscape 16:9 with balanced margins and good
+    canvas utilization.
   criteria_checklist:
     visual_quality:
-      score: 37
-      max: 40
+      score: 26
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
-        passed: true
-        comment: Title 24pt, labels 20pt, ticks 16pt - all perfectly readable
-      - id: VQ-02
-        name: No Overlap
         score: 8
         max: 8
+        passed: true
+        comment: 'All font sizes explicitly set: title 24pt, labels 20pt, ticks 16pt'
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
         passed: true
         comment: No overlapping text elements
       - id: VQ-03
         name: Element Visibility
-        score: 7
-        max: 8
-        passed: true
-        comment: Markers s=200 with alpha 0.7 is slightly large for 150 points (guideline
-          suggests 100-200 for 100-300 points), but still visible and distinguishable
+        score: 5
+        max: 6
+        passed: false
+        comment: s=120 slightly oversized for 150 points; guidelines recommend s=50-100
+          for 100-300 pts
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Single blue color, excellent contrast, colorblind-safe
+        comment: Single Python Blue with white edges, fully colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Perfect 16:9 layout, good proportions, no cut-off
+        comment: Good 16:9 proportions, tight_layout fills canvas well
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive with units: "Study Hours (per week)", "Exam Score (points)"'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
+        comment: Descriptive with units on both axes
+    design_excellence:
+      score: 10
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
         passed: false
-        comment: Grid is subtle at alpha 0.3 with dashed style (good), but no legend
-          present (not needed for single-series scatter, but spec doesn't explicitly
-          exclude it)
+        comment: Well-configured seaborn default with Python Blue and despine; pleasant
+          but not publication-exceptional
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Spines removed, subtle dashed grid at 0.2 alpha, good whitespace
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: Data displayed without annotations, trend lines, or narrative emphasis
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
         comment: Correct 2D scatter plot
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X=study hours (independent), Y=exam scores (dependent) correctly
-          assigned
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: 'All spec features present: transparency (alpha 0.7), axis labels,
-          title, grid lines'
-      - id: SC-04
-        name: Data Range
+        comment: Alpha transparency, axis labels, title, grid lines all present
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All 150 data points visible within axis range
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X/Y correctly assigned
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: No legend needed for single-series, N/A gives full points
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Correct format: "scatter-basic · seaborn · pyplots.ai"'
+        comment: 'Correct format: scatter-basic · seaborn · pyplots.ai'
     data_quality:
-      score: 20
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 8
-        max: 8
-        passed: true
-        comment: Shows correlation, scatter/noise, potential outliers (low score ~10
-          at ~1.5 hours), demonstrates typical scatter patterns as specified
+        score: 5
+        max: 6
+        passed: false
+        comment: Shows positive correlation with noise but uniformly linear; no distinct
+          clusters or outliers
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Study hours vs exam scores is a real, comprehensible scenario directly
-          from spec applications
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Study hours 1-10 per week and exam scores ~10-120 are realistic values
+        comment: 'Study hours vs exam scores: classic neutral education scenario'
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Realistic ranges for both variables
     code_quality:
       score: 10
       max: 10
@@ -169,11 +173,11 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Imports → Data → Plot → Save, no functions/classes
+        comment: Clean imports → data → plot → style → save
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
         comment: np.random.seed(42) set
       - id: CQ-03
@@ -181,29 +185,35 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Only matplotlib.pyplot, numpy, seaborn - all used
+        comment: All imports used
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Uses current seaborn API correctly
+        comment: Clean, Pythonic, appropriate complexity
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as "plot.png"
-    library_features:
-      score: 0
-      max: 5
+        comment: Saves as plot.png, no deprecated functions
+    library_mastery:
+      score: 7
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 0
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
         max: 5
         passed: false
-        comment: Uses sns.scatterplot which is basic seaborn. Could have used seaborn-specific
-          features like regplot for regression line, or leveraged seaborn's statistical
-          capabilities. Currently equivalent to matplotlib with seaborn styling.
-  verdict: APPROVED
+        comment: Uses sns.scatterplot with DataFrame, set_theme, despine; could leverage
+          more seaborn parameters
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: false
+        comment: set_theme and despine are seaborn-distinctive but core scatter is
+          easily replicable in matplotlib
+  verdict: REJECTED

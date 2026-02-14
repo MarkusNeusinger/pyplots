@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: pygal 3.1.0 | Python 3.14
-Quality: 85/100 | Created: 2025-12-25
+Quality: 84/100 | Created: 2025-12-25
 """
 
 import re

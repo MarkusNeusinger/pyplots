@@ -1,7 +1,7 @@
 library: pygal
 specification_id: raincloud-basic
 created: '2025-12-25T08:21:24Z'
-updated: '2026-02-14T20:45:41Z'
+updated: '2026-02-14T21:08:35Z'
 generated_by: claude-opus-4-6
 workflow_run: 20501866165
 issue: 0
@@ -10,13 +10,13 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/pygal/plot.html
-quality_score: 85
+quality_score: 84
 impl_tags:
   dependencies:
   - cairosvg
   techniques:
   - annotations
-  - layer-composition
+  - html-export
   patterns:
   - data-generation
   - iteration-over-groups
@@ -27,43 +27,42 @@ impl_tags:
   - grid-styling
 review:
   strengths:
-  - 'Excellent raincloud metaphor execution: cloud above, rain below, box centered
-    — all three components correctly layered'
-  - Strong data storytelling with median annotations and '100 ms faster' callout box
-    with connecting arrow
-  - Colorblind-safe palette with good luminance differentiation (blue, yellow, green)
-  - Well-structured data with realistic reaction time scenario, appropriate outliers,
-    and distinct group characteristics
-  - Creative use of pygal's native SVG output for post-processing annotations
+  - 'The raincloud metaphor is clearly executed: clouds rise above, rain falls below,
+    box plots sit centered — exactly matching the specification'
+  - Excellent data storytelling with median annotations, leader lines, and an insight
+    callout comparing Treatment B to Control
+  - Colorblind-safe palette (blue, yellow, green) with intentional opacity choices
+  - Creative use of pygal's SVG output for post-processing to achieve a visualization
+    type pygal doesn't natively support
+  - Realistic clinical trial context with appropriate data characteristics (different
+    distributions, outliers, varying sample sizes)
   weaknesses:
-  - Box plots are too thin and hard to distinguish — the gray outlined boxes blend
-    into the background. Consider increasing box_hw or using a fill color with slight
-    alpha
-  - Horizontal stroke line runs across each category center spanning the full x-range
-    (pygal XY artifact from the cloud series baseline points) — this is visually distracting
-  - Rain point opacity is 0.80 (style-level) rather than the spec's recommended 0.5-0.7
-    — points in dense areas overlap without enough transparency
-  - The cloud fill extends along the baseline creating a visible horizontal line because
-    the first and last points of the cloud polygon sit at the x-axis extremes of the
-    KDE — the tails extend too far creating a visible flat base
-  image_description: 'The plot displays a horizontal raincloud visualization with
-    three treatment groups (Control, Treatment A, Treatment B) on the y-axis and Reaction
-    Time (ms) on the x-axis ranging from 100 to 700. Each group features three layered
-    elements: a half-violin density "cloud" extending upward from the category baseline
-    (blue for Control, golden yellow for Treatment A, green for Treatment B), jittered
-    scatter "rain" dots below the baseline in matching colors, and a thin outlined
-    box plot centered on the baseline with whiskers. Median value annotations appear
-    above each cloud (432 ms for Control, 378 ms for Treatment A, 331 ms for Treatment
-    B) with dashed leader lines. A green-bordered callout box in the upper-right reads
-    "▼ 100 ms faster" with a dashed arrow pointing toward Treatment B''s median. The
-    y-axis is labeled "Treatment Group" (rendered via SVG injection, rotated). The
-    title reads "raincloud-basic · pygal · pyplots.ai" at the top. The overall layout
-    is clean with a white background, subtle dashed grid lines, and good use of canvas
-    space. A faint horizontal stroke line runs across each category center (artifact
-    of the pygal XY series baseline connection).'
+  - The SVG post-processing approach (regex parsing, coordinate mapping functions,
+    polygon injection) makes the code fragile and overly complex — hardcoded coordinate
+    coefficients will break if chart dimensions change
+  - Treatment A's whisker/KDE tail extends very far to the right, creating visual
+    noise
+  - Box plots with white fill on white background could use slightly more visual contrast
+  - The y_title is set to empty string and Treatment Group is injected as raw SVG
+    text, which is a workaround that could be avoided
+  image_description: 'The plot displays a horizontal raincloud chart titled "raincloud-basic
+    · pygal · pyplots.ai" on a white background at 4800×2700 px. Three treatment groups
+    (Control, Treatment A, Treatment B) are arranged vertically on the y-axis, with
+    "Reaction Time (ms)" on the x-axis ranging from 100 to 700. Each group features
+    the classic raincloud layout: a half-violin KDE "cloud" rising above the category
+    baseline, a white-filled box plot with colored outline centered on the baseline,
+    and jittered "rain" dots falling below the baseline. Colors are blue (#306998)
+    for Control, yellow (#FFD43B) for Treatment A, and green (#4CAF50) for Treatment
+    B — a colorblind-safe palette. Median values are annotated with dashed leader
+    lines: 432 ms (Control), 378 ms (Treatment A), 331 ms (Treatment B). An insight
+    callout box in the upper-right reads "▼ 100 ms faster" with a dashed arrow pointing
+    toward Treatment B''s cloud. The y-axis is labeled "Treatment Group" via rotated
+    SVG text. Clouds have 0.75 opacity fill. Rain points show appropriate jitter and
+    transparency. Box plots have white fill with colored outlines and visible median
+    lines. The layout uses the canvas well with adequate margins.'
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 25
       max: 30
       items:
       - id: VQ-01
@@ -71,66 +70,71 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title=84, labels=54, ticks=48). All
-          text perfectly readable.
+        comment: All font sizes explicitly set (title 84, labels 54, major labels
+          48, value 40). All text clearly readable at full resolution.
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: No overlapping text elements. Median labels, category labels, and
-          title are well-separated.
+        comment: Mostly clean. Treatment A's KDE tail extends very far right creating
+          slight visual noise, but no text overlap.
       - id: VQ-03
         name: Element Visibility
-        score: 4
+        score: 5
         max: 6
-        passed: false
-        comment: Rain dots are well-sized but box plots are thin and hard to distinguish.
-          Gray outlined boxes blend into background.
+        passed: true
+        comment: Rain dots well-sized (dots_size=28) with good alpha. Clouds clearly
+          visible. Box plots with white fill on white background could be more prominent.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue, yellow, green palette is colorblind-safe with good luminance
-          variation.
+        comment: Blue, yellow, green palette is colorblind-safe with good contrast
+          against white background.
       - id: VQ-05
-        name: Layout Balance
-        score: 4
+        name: Layout & Canvas
+        score: 2
         max: 4
         passed: true
-        comment: Plot fills ~65-70% of canvas with balanced margins.
+        comment: Plot fills canvas reasonably (~45%) but substantial empty space at
+          top and x-axis range extends beyond data range.
       - id: VQ-06
         name: Axis Labels & Title
-        score: 2
+        score: 1
         max: 2
         passed: true
-        comment: Reaction Time (ms) with units on x-axis, Treatment Group on y-axis.
+        comment: X-axis has 'Reaction Time (ms)' with units. Y-axis label 'Treatment
+          Group' is descriptive but injected via SVG rather than native pygal.
     design_excellence:
-      score: 15
+      score: 17
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
         score: 6
         max: 8
-        passed: false
-        comment: Custom colorblind-safe palette, clean styling. Horizontal stroke
-          lines through each category center detract slightly from polish.
+        passed: true
+        comment: Strong design with custom colorblind-safe palette, intentional visual
+          hierarchy, white-filled boxes with colored outlines, dashed guide lines.
+          Above defaults but extended KDE tails detract slightly.
       - id: DE-02
         name: Visual Refinement
-        score: 4
-        max: 6
-        passed: false
-        comment: Subtle dashed grid lines, clean background. Baseline stroke lines
-          spanning each category width are a visual distraction.
-      - id: DE-03
-        name: Data Storytelling
         score: 5
         max: 6
         passed: true
-        comment: Strong storytelling with median annotations and '100 ms faster' callout
-          box with connecting arrow.
+        comment: 'Good refinement: subtle dashed grid, y-guides hidden, generous margins,
+          careful opacity choices, leader lines. Minor imperfection with Treatment
+          A whisker extension.'
+      - id: DE-03
+        name: Data Storytelling
+        score: 6
+        max: 6
+        passed: true
+        comment: 'Excellent: median annotations with dashed leader lines, insight
+          callout highlighting 100ms faster for Treatment B, dashed arrow connecting
+          callout to data. Clear narrative about treatment effectiveness.'
     spec_compliance:
       score: 14
       max: 15
@@ -140,105 +144,114 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct raincloud plot with half-violin, jittered points, and box
-          plot. Horizontal orientation.
+        comment: 'Correct raincloud plot with all three required elements: half-violin
+          cloud, box plot, jittered rain points.'
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 4
         max: 4
-        passed: false
-        comment: All major features present. Rain point transparency is 0.80 rather
-          than spec's recommended 0.5-0.7.
+        passed: true
+        comment: Horizontal orientation, clouds above, rain below, box plots centered,
+          half-violin clipping, jitter applied, transparency on rain, median and quartile
+          markers present.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Categories on y-axis, continuous values on x-axis. Correct horizontal
-          orientation.
+        comment: Categories on y-axis, continuous values on x-axis. All data visible
+          and correctly mapped.
       - id: SC-04
-        name: Title Format
-        score: 3
+        name: Title & Legend
+        score: 2
         max: 3
         passed: true
-        comment: 'Correct format: raincloud-basic · pygal · pyplots.ai. Legend appropriately
-          hidden.'
+        comment: Title format correct. No legend shown (acceptable since groups identified
+          by y-axis labels) but individual component identification lost.
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Three groups with distinct means, different spreads, and realistic
-          outliers.
+        comment: Shows different distribution shapes, outliers in all groups, different
+          sample sizes. Could benefit from a more clearly multimodal distribution
+          to fully showcase raincloud advantages.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Reaction times for control vs treatment groups — neutral scientific
-          scenario.
+        comment: Reaction times in ms for control vs treatment groups in clinical/psychology
+          experiment. Realistic scenario with plausible values.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Reaction times of 180-680 ms are realistic for human response studies.
+        comment: Reaction time values realistic (250-680ms), sample sizes appropriate
+          (50-63 per group), plausible outliers.
     code_quality:
-      score: 8
+      score: 7
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
         score: 2
         max: 3
-        passed: false
-        comment: Includes helper functions for SVG coordinate mapping. Understandable
-          but breaks pure KISS.
+        passed: true
+        comment: Generally follows imports-data-plot-save flow but extensive SVG post-processing
+          with coordinate mapping functions adds complexity. Helper functions break
+          no-functions guideline.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set at top plus per-group seeds for jitter.
+        comment: np.random.seed(42) set with additional per-group seeds for jitter
+          consistency.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: cairosvg, numpy, pygal, Style.'
+        comment: 'All imports used: re, cairosvg, numpy, pygal, Style.'
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 0
         max: 2
         passed: false
-        comment: SVG injection is creative but adds complexity. Box plot path construction
-          is verbose.
+        comment: 'Heavily over-engineered: uses pygal.XY as a canvas then performs
+          extensive SVG post-processing with regex parsing, coordinate mapping functions,
+          polygon injection, box fill injection, and annotation injection. Four coordinate-mapping
+          helper functions and hardcoded coefficients.'
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png, plot.svg, plot.html. No deprecated functions.
-    library_mastery:
-      score: 5
+        comment: Saves plot.png and plot.svg correctly via cairosvg.
+    library_features:
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
         score: 3
         max: 5
-        passed: false
-        comment: Uses pygal.XY with fill/stroke, custom Style. Relies heavily on manual
-          calculations for KDE and box plot.
+        passed: true
+        comment: Uses pygal.XY with Style customization and series addition correctly,
+          but core visualization achieved through SVG post-processing rather than
+          pygal's own capabilities.
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 4
         max: 5
-        passed: false
-        comment: SVG post-processing of pygal output is a distinctive pattern, but
-          most visualization logic is manual.
-  verdict: REJECTED
+        passed: true
+        comment: Leverages pygal's native SVG output for post-processing — a technique
+          specific to pygal's architecture. Uses XY chart with custom value dicts,
+          Style system, and y_labels with value/label dicts.
+  verdict: APPROVED

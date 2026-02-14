@@ -1,179 +1,188 @@
 library: plotnine
 specification_id: raincloud-basic
 created: '2025-12-25T07:17:07Z'
-updated: '2025-12-25T07:34:53Z'
-generated_by: claude-opus-4-5-20251101
+updated: '2026-02-14T20:40:33Z'
+generated_by: claude-opus-4-6
 workflow_run: 20500986130
 issue: 0
-python_version: 3.13.11
-library_version: 0.15.2
+python_version: '3.14'
+library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 91
+quality_score: 94
 impl_tags:
-  dependencies:
-  - scipy
+  dependencies: []
   techniques:
-  - manual-ticks
+  - annotations
+  - layer-composition
   patterns:
   - data-generation
-  - iteration-over-groups
-  dataprep:
-  - kde
+  dataprep: []
   styling:
   - alpha-blending
+  - grid-styling
 review:
   strengths:
-  - Correct raincloud layout with cloud on top, boxplot centered, and rain points
-    below
-  - Excellent bimodal distribution in Treatment B demonstrating the power of raincloud
-    plots over simple boxplots
-  - Clean colorblind-safe color palette with good contrast
-  - Professional appearance with well-sized text elements
-  - Creative plotnine solution using geom_ribbon for half-violins
+  - Excellent use of plotnine stage() function with after_scale for precise positional
+    nudging of cloud and rain layers — a distinctive grammar-of-graphics technique
+  - 'Strong data storytelling with two well-placed annotations: bimodal distribution
+    callout with dashed leader lines, and treatment comparison note'
+  - Bimodal distribution in Treatment B is a smart data design choice that demonstrates
+    the raincloud plot key advantage over boxplots
+  - Clean publication-quality aesthetic with custom color palette, refined typography
+    hierarchy, and minimal chrome
+  - 'Perfect raincloud metaphor: cloud (half-violin) rises above, rain (jitter) falls
+    below each category baseline'
   weaknesses:
-  - No legend showing color-to-condition mapping (relies solely on y-axis labels)
-  - Uses scipy for KDE instead of native plotnine density geoms (geom_violin with
-    half-violin trimming would be more idiomatic)
-  image_description: 'The plot shows a horizontal raincloud visualization with three
-    experimental conditions (Control, Treatment A, Treatment B) displayed vertically.
-    Each condition has three components arranged from top to bottom:
-
-    - **Cloud (half-violin/KDE)**: Blue for Control, Yellow for Treatment A, Green
-    for Treatment B - positioned above the boxplot showing distribution density
-
-    - **Boxplot**: White-filled narrow boxplots centered on each row showing median,
-    quartiles, and whiskers
-
-    - **Rain (jittered points)**: Scattered points below the boxplot in matching colors
-    with moderate transparency
-
-
-    The title "raincloud-basic · plotnine · pyplots.ai" appears at the top. X-axis
-    shows "Reaction Time (ms)" ranging from ~300-600, Y-axis shows "Experimental Condition"
-    with the three group labels. Treatment B clearly shows a bimodal distribution
-    in both the cloud and rain points. The visual metaphor of "rain falling from clouds"
-    is achieved correctly.'
+  - Annotation text sizes (10-11pt) are slightly small relative to the axis text (16pt);
+    increasing to 12-13pt would improve readability at full resolution
+  - The jittered points could be marginally larger (size 2.5-3.0) for better visibility,
+    especially for Treatment B where points are more spread out
+  image_description: 'The plot displays a horizontal raincloud plot with three experimental
+    conditions (Control, Treatment A, Treatment B) on the y-axis and Reaction Time
+    (ms) on the x-axis, rendered on a light gray (#FAFAFA) background. Each condition
+    has three layered components: a half-violin (cloud) extending upward from the
+    category baseline, a thin white boxplot centered on the baseline, and jittered
+    scatter points (rain) below the baseline. Control uses a deep blue (#2B5B8A) with
+    a unimodal distribution centered around 450ms. Treatment A uses golden amber (#E8A838),
+    shifted left to ~380ms. Treatment B uses muted green (#3A8A5C) with a visible
+    bimodal shape showing peaks near 350ms and 500ms. Two italic annotations provide
+    narrative: "Faster responses vs. Control →" near Treatment A, and "← Bimodal:
+    two distinct response clusters" near Treatment B with dashed guide lines pointing
+    to both peaks. Title reads "raincloud-basic · plotnine · pyplots.ai" in bold at
+    the top. Axis labels are bold: "Experimental Condition" (y) and "Reaction Time
+    (ms)" (x). Grid shows only subtle horizontal lines. Overall layout is clean, well-proportioned,
+    and publication-ready.'
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 28
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
-        passed: true
-        comment: Title, axis labels, and tick labels are all clearly readable with
-          appropriate sizes
-      - id: VQ-02
-        name: No Overlap
-        score: 8
-        max: 8
-        passed: true
-        comment: No overlapping text elements, all labels clearly separated
-      - id: VQ-03
-        name: Element Visibility
         score: 7
         max: 8
         passed: true
-        comment: Rain points are visible with good alpha; could be slightly larger
-          for optimal visibility
+        comment: All font sizes explicitly set (title 24pt, axis titles 20pt bold,
+          tick labels 16pt). Annotation text at size 10-11 is slightly small but still
+          legible.
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
+        passed: true
+        comment: No overlapping text elements. Annotations, labels, and data are well
+          separated.
+      - id: VQ-03
+        name: Element Visibility
+        score: 5
+        max: 6
+        passed: true
+        comment: Violins, boxplots, and jittered points all clearly visible. Points
+          at size 2.2 could be slightly more prominent.
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Blue, yellow, green palette is colorblind-safe with excellent contrast
+        comment: Blue/amber/green palette is colorblind-safe with strong contrast
+          differentiation.
       - id: VQ-05
         name: Layout Balance
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Good use of canvas space; minor extra whitespace on left side
+        comment: Good 16:9 proportions, plot fills canvas well, balanced margins.
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: "Reaction Time (ms)" and "Experimental
-          Condition"'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
-        passed: false
-        comment: No legend present (colors are not labeled in a legend, though category
-          labels on y-axis help)
+        comment: Reaction Time (ms) includes units, Experimental Condition is descriptive.
+    design_excellence:
+      score: 17
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 7
+        max: 8
+        passed: true
+        comment: Custom refined palette, intentional typographic hierarchy, light
+          background. Approaching publication quality.
+      - id: DE-02
+        name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: Spines removed, subtle grid lines, customized panel background, generous
+          whitespace.
+      - id: DE-03
+        name: Data Storytelling
+        score: 5
+        max: 6
+        passed: true
+        comment: 'Two annotations guide interpretation: bimodal callout with leader
+          lines, and treatment comparison note.'
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct raincloud plot with all three components (half-violin, boxplot,
-          jittered points)
+        comment: Correct raincloud plot with half-violin, boxplot, and jittered points
+          in horizontal orientation.
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories on Y-axis, values on X-axis correctly mapped
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: 'All required features present: cloud on top, boxplot centered, rain
-          below'
-      - id: SC-04
-        name: Data Range
+        comment: Half-violin clipped, moderate jitter, transparency on points, boxplot
+          with median/quartiles, correct spatial layout.
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Axes show full data range appropriately
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Categories on y-axis, reaction time values on x-axis. All data visible.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Category labels on Y-axis serve as legend; colors consistently matched
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Correctly formatted as "raincloud-basic · plotnine · pyplots.ai"
+        comment: Title format correct. Legend appropriately hidden since category
+          labels serve the purpose.
     data_quality:
-      score: 20
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: 'Excellent: shows unimodal (Control, Treatment A) AND bimodal (Treatment
-          B) distributions'
+        comment: 'Three conditions with distinct distributions: unimodal, shifted
+          unimodal, and bimodal.'
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Reaction time experiment is a real, comprehensible psychological
-          research scenario
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Reaction times in 300-600ms range are realistic for cognitive tasks
+        comment: Reaction times in a psychology experiment — real, neutral scientific
+          scenario.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Values 250-600ms for reaction times are realistic. 80 observations
+          per group.
     code_quality:
-      score: 7
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -181,44 +190,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear script: imports → data → plot → save, no functions/classes'
+        comment: Clean Imports → Data → Plot → Save flow. No functions or classes.
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42) and np.random.seed(123) for deterministic
-          output
+        comment: np.random.seed(42) set at the start.
       - id: CQ-03
         name: Clean Imports
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: All imports used, but scipy is an additional dependency beyond core
-          plotnine
+        passed: true
+        comment: All imports are used.
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
+        score: 2
+        max: 2
+        passed: true
+        comment: Clean and Pythonic. The stage() usage for position nudging is elegant.
+      - id: CQ-05
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Uses current plotnine API
-      - id: CQ-05
-        name: Output Correct
-        score: 0
-        max: 1
-        passed: false
-        comment: 'Minor: header shows Quality: 86/100 which is outdated'
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves as plot.png at dpi=300.
+    library_mastery:
+      score: 9
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 3
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
         max: 5
         passed: true
-        comment: Good use of plotnine grammar (ggplot, geom_ribbon, geom_boxplot,
-          geom_point, coord_flip, theme system). Creative use of geom_ribbon for half-violin.
-          However, relies on scipy for KDE calculation rather than native plotnine
-          density estimation.
+        comment: 'Expert use of plotnine grammar of graphics: layered geoms, aesthetic
+          mappings, coord_flip(), theme customization.'
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Uses stage() with after_scale for position shifting, geom_violin(style=right)
+          for half-violins.
   verdict: APPROVED

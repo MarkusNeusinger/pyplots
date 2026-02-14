@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: bar-basic
 created: '2025-12-23T00:23:09Z'
-updated: '2026-02-14T14:46:38Z'
+updated: '2026-02-14T14:55:00Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447579088
 issue: 0
@@ -10,45 +10,45 @@ library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-basic/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-basic/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 82
+quality_score: 87
 impl_tags:
   dependencies: []
   techniques:
   - annotations
-  - layer-composition
+  - manual-ticks
   patterns: []
   dataprep: []
   styling:
   - grid-styling
 review:
   strengths:
-  - Clean grammar-of-graphics composition with well-layered plotnine idioms
-  - Explicit font sizing at all levels (title 24pt, axis titles 20pt, tick text 16pt)
-    ensures legibility at 4800x2700
-  - Smart use of pd.Categorical with descending sort to create an implicit ranking
-    narrative
-  - Dollar formatting on both value labels (format_string) and y-axis (scale_y_continuous
-    lambda) provides consistent professional number presentation
-  - 'Thoughtful theme customization: removed x-gridlines, subtle y-gridlines (alpha=0.2),
-    removed ticks'
+  - Excellent text legibility with all font sizes explicitly configured to spec requirements
+  - 'Strong data storytelling: highlight color on leading bar + 38% ahead annotation
+    + dollar-formatted value labels create a clear narrative'
+  - Very idiomatic plotnine code with clean grammar of graphics layering
+  - Realistic business context with plausible sales figures
+  - 'Clean visual refinement: removed unnecessary grid lines, subtle y-grid, no ticks,
+    white background'
+  - Perfect spec compliance across all criteria
   weaknesses:
-  - Y-axis label 'Sales' lacks units — should be 'Sales (USD)' or 'Sales ($)' for
-    full clarity
-  - 'No data storytelling beyond sorting: could benefit from annotations highlighting
-    the top category or percentage differences'
-  - No bar highlighting or color differentiation to draw attention to key findings
-    as the spec suggests
-  - Slight over-extension of y-axis above the tallest bar creates unnecessary whitespace
-  image_description: 'The plot shows a vertical bar chart titled "bar-basic · plotnine
-    · pyplots.ai" displaying product category sales data. Six blue bars (#306998 Python
-    Blue) are arranged in descending order from left to right: Electronics ($45,200),
-    Clothing ($32,800), Home & Garden ($28,500), Sports ($19,700), Books ($15,300),
-    and Toys ($12,400). Each bar has a dollar-formatted value label positioned just
-    above it. The y-axis is labeled "Sales" with formatted tick labels ($0K through
-    $40K). The x-axis is labeled "Product Category" with category names centered beneath
-    each bar. The background is clean with a minimal theme — no vertical gridlines,
-    subtle horizontal gridlines, and no axis ticks. The layout uses a 16:9 landscape
-    aspect ratio with good use of canvas space.'
+  - The annotation text is positioned at y = top_val + 2800 which places it very close
+    to the top of the chart area and cramped near the y-axis, creating a slightly
+    unbalanced layout
+  - Data values follow a strictly monotonic decrease which is somewhat predictable;
+    introducing variation (e.g., two categories with similar values) would better
+    demonstrate comparison capabilities
+  - Could leverage more distinctive plotnine features to push library mastery higher
+  image_description: The plot displays a vertical bar chart titled "bar-basic · plotnine
+    · pyplots.ai" showing sales (USD) across 6 product categories sorted in descending
+    order. The leading category (Electronics, $45,200) is highlighted in dark navy
+    blue (#306998), while the remaining 5 bars (Clothing $32,800, Home & Garden $28,500,
+    Sports $19,700, Books $15,300, Toys $12,400) use a lighter steel blue (#7BA7C9).
+    Each bar has a dollar-formatted value label positioned just above it. An italic
+    annotation in dark blue reads "▲ 38% ahead of 2nd place" near the top of the Electronics
+    bar. The y-axis displays "$0K" through "$50K" with 10K increments, and the x-axis
+    lists category names horizontally. The background is clean white with subtle horizontal
+    gridlines (alpha=0.2). No vertical gridlines or axis ticks are shown. The layout
+    is 16:9 landscape format.
   criteria_checklist:
     visual_quality:
       score: 26
@@ -59,43 +59,42 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 24pt, axis titles 20pt, axis
-          text 16pt. All text clearly readable at full resolution.'
+        comment: 'All font sizes explicitly set: title 24pt bold, axis titles 20pt,
+          axis text 16pt. All text clearly readable.'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
         comment: No overlapping text elements. Category labels well-spaced, value
-          labels don't collide.
+          labels sit cleanly above bars.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Bar widths (0.7) well-proportioned for 6 categories with good spacing.
+        comment: Bars well-sized at 0.7 width with good spacing, all clearly visible.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Single color (#306998) for all bars — no colorblind issues possible.
+        comment: Two-tone blue palette is colorblind-safe. No red-green reliance.
       - id: VQ-05
-        name: Layout & Canvas
+        name: Layout Balance
         score: 2
         max: 4
         passed: false
-        comment: Noticeable empty space above tallest bar; y-axis extends well beyond
-          max value. Adequate but not perfectly balanced.
+        comment: Annotation positioned at top-left is cramped near y-axis area. Noticeable
+          whitespace above annotation before title.
       - id: VQ-06
         name: Axis Labels & Title
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Y-axis label 'Sales' lacks units. Should be 'Sales (USD)' or 'Sales
-          ($)'. X-axis 'Product Category' is descriptive but generic without units.
+        passed: true
+        comment: 'Descriptive with units: Sales (USD) and Product Category.'
     design_excellence:
-      score: 12
+      score: 14
       max: 20
       items:
       - id: DE-01
@@ -103,22 +102,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: 'Strong design: intentional Python Blue, minimal theme with removed
-          gridlines/ticks, dollar formatting. Above defaults but not FiveThirtyEight-level.'
+        comment: Strong design with two-tone color hierarchy, clean minimal theme,
+          Python Blue primary. Above defaults but not FiveThirtyEight-level.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: 'Good refinement: x-grid removed, minor grid removed, major y-grid
-          at alpha=0.2, ticks removed. Clearly customized beyond defaults.'
+        comment: 'Good: x-grid removed, minor grid removed, y-grid at alpha=0.2, ticks
+          removed, white background.'
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 4
         max: 6
-        passed: false
-        comment: Data sorted descending provides implicit ranking. Value labels help
-          reading. But no annotations, callouts, or emphasis on key findings.
+        passed: true
+        comment: 'Good: highlight color on leader, value labels, 38% ahead annotation
+          adds narrative context.'
     spec_compliance:
       score: 15
       max: 15
@@ -135,23 +134,21 @@ review:
         score: 4
         max: 4
         passed: true
-        comment: Consistent bar widths, value labels above bars, single color, adequate
-          spacing.
+        comment: Consistent bar widths, value labels, highlight, adequate spacing.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Categories on x-axis, values on y-axis, correctly mapped.
+        comment: X=category, Y=value correctly assigned. 6 categories within range.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format 'bar-basic · plotnine · pyplots.ai' is correct. No legend
-          needed for single series.
+        comment: Title format correct. Legend appropriately suppressed.
     data_quality:
-      score: 13
+      score: 14
       max: 15
       items:
       - id: DQ-01
@@ -159,24 +156,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: 6 categories with good value variation ($12K-$45K). Sorted descending
-          shows ranking. Missing highlighted bar as spec suggests.
+        comment: Good variation with descending pattern but strictly monotonic; could
+          show closer values for richer comparison.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Product sales by category is a real, comprehensible business scenario
-          with realistic neutral categories.
+        comment: Realistic retail/e-commerce scenario with plausible product categories.
       - id: DQ-03
         name: Appropriate Scale
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Values plausible for retail context, reasonable for small-to-medium
-          business.
+        comment: Values $12K-$45K realistic for product category sales.
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -184,33 +179,31 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean Imports → Data → Plot → Save structure with no functions or
-          classes.
+        comment: Clean imports, data, plot, save flow. No functions/classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic hardcoded data, no random generation needed.
+        comment: Deterministic hardcoded data, no randomness needed.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used, no unused imports.
+        comment: All imports are used.
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Clean and Pythonic. pd.Categorical sorting is slightly verbose but
-          functional.
+        comment: Clean, Pythonic. Highlight logic and annotation calculation appropriate.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300.
+        comment: Saves as plot.png, no deprecated functions.
     library_mastery:
       score: 8
       max: 10
@@ -220,13 +213,13 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Excellent grammar-of-graphics layering: ggplot + aes + geom + scale
-          + labs + theme. pd.Categorical for ordering is standard plotnine pattern.'
+        comment: 'Expert grammar of graphics usage: ggplot + aes + geom_bar + scale_fill_manual
+          + guides + geom_text + annotate + scale_y_continuous with lambda.'
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses format_string in geom_text, scale_y_continuous with custom lambda,
-          grammar-of-graphics layering. Somewhat distinctive but not deeply unique.
+        comment: Uses pd.Categorical ordering, boolean fill mapping, format_string
+          in geom_text. Plotnine patterns but not deeply unique.
   verdict: REJECTED

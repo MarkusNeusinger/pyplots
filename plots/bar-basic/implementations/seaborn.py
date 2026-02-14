@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-basic: Basic Bar Chart
 Library: seaborn 0.13.2 | Python 3.14
 Quality: 89/100 | Created: 2025-12-23
@@ -13,7 +13,7 @@ import seaborn as sns
 data = pd.DataFrame(
     {
         "category": ["Electronics", "Clothing", "Home & Garden", "Sports", "Books", "Toys", "Groceries", "Automotive"],
-        "sales": [218, 156, 73, 134, 41, 95, 187, 62],
+        "sales": [218, 164, 89, 137, 41, 112, 187, 58],
     }
 )
 
@@ -28,7 +28,7 @@ data["emphasis"] = data["sales"].apply(
 )
 
 # Palette mapped to emphasis groups — Python Blue base with storytelling accents
-emphasis_palette = {"top": "#306998", "default": "#7BAFD4", "bottom": "#C0D6E4"}
+emphasis_palette = {"top": "#306998", "default": "#7BAFD4", "bottom": "#A3BFCF"}
 
 # Create plot (4800x2700 px)
 sns.set_context("talk", font_scale=1.1)
@@ -95,5 +95,5 @@ ax.spines["right"].set_visible(False)
 y_max = data["sales"].max()
 ax.set_ylim(0, y_max * 1.22)
 
-plt.tight_layout()
-plt.savefig("plot.png", dpi=300, bbox_inches="tight")
+fig.subplots_adjust(left=0.08, right=0.96, top=0.92, bottom=0.10)
+plt.savefig("plot.png", dpi=300)

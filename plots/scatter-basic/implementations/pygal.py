@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-basic: Basic Scatter Plot
 Library: pygal 3.1.0 | Python 3.14
 Quality: 88/100 | Created: 2025-12-22
@@ -29,6 +29,11 @@ r = np.corrcoef(study_hours, exam_scores)[0, 1]
 trend_x = np.linspace(study_hours.min(), study_hours.max(), 50)
 trend_y = slope * trend_x + intercept
 
+# Identify notable outliers for annotation
+residuals = exam_scores - (slope * study_hours + intercept)
+top_outlier_idx = int(np.argmax(residuals))
+bottom_outlier_idx = int(np.argmin(residuals))
+
 # Shared font family
 font = "DejaVu Sans, Helvetica, Arial, sans-serif"
 
@@ -41,7 +46,7 @@ custom_style = Style(
     foreground_subtle="#e0e0e0",
     guide_stroke_color="#e0e0e0",
     guide_stroke_dasharray="4, 4",
-    colors=("#306998", "#d64541"),
+    colors=("#306998", "#d64541", "#e8a838"),
     font_family=font,
     title_font_family=font,
     title_font_size=56,
@@ -58,20 +63,25 @@ custom_style = Style(
     stroke_opacity_hover=1,
 )
 
-# Create XY chart — xrange tightened to data range for better canvas usage
+# Axis range tightened to data bounds for better canvas utilization
+x_min, x_max = float(np.floor(study_hours.min())), float(np.ceil(study_hours.max()))
+y_min = float(max(0, np.floor(exam_scores.min() / 5) * 5))
+y_max = float(min(100, np.ceil(exam_scores.max() / 5) * 5 + 5))
+
+# Create XY chart
 chart = pygal.XY(
     width=4800,
     height=2700,
     style=custom_style,
-    title="scatter-basic · pygal · pyplots.ai",
+    title="scatter-basic \u00b7 pygal \u00b7 pyplots.ai",
     x_title="Study Hours per Week (hrs)",
     y_title="Exam Score (%)",
     show_legend=True,
     legend_at_bottom=True,
-    legend_at_bottom_columns=2,
+    legend_at_bottom_columns=3,
     legend_box_size=24,
     stroke=False,
-    dots_size=12,
+    dots_size=9,
     show_x_guides=True,
     show_y_guides=True,
     x_value_formatter=lambda x: f"{x:.0f}",
@@ -82,13 +92,12 @@ chart = pygal.XY(
     margin_top=50,
     x_label_rotation=0,
     truncate_legend=-1,
-    range=(10, 105),
-    xrange=(1, 15),
+    range=(y_min, y_max),
+    xrange=(x_min, x_max),
     x_labels_major_count=7,
     y_labels_major_count=9,
     print_values=False,
     print_zeroes=False,
-    dynamic_print_values=True,
     js=[],
 )
 
@@ -101,14 +110,30 @@ chart.add(
     formatter=lambda x: f"({x[0]:.1f} hrs, {x[1]:.0f}%)" if isinstance(x, (tuple, list)) else f"{x:.0f}",
 )
 
-# Add trend line — thicker stroke for better visibility
+# Add trend line — dashed stroke for visual contrast
 trend_points = [(float(x), float(y)) for x, y in zip(trend_x, trend_y, strict=True)]
 chart.add(
     f"Trend (r = {r:.2f})",
     trend_points,
     stroke=True,
     show_dots=False,
-    stroke_style={"width": 16, "dasharray": "32, 14", "linecap": "round", "linejoin": "round"},
+    stroke_style={"width": 14, "dasharray": "32, 14", "linecap": "round", "linejoin": "round"},
+)
+
+# Annotate notable outliers — pygal per-point metadata with label styling
+oh = float(study_hours[top_outlier_idx])
+os_ = float(exam_scores[top_outlier_idx])
+bh = float(study_hours[bottom_outlier_idx])
+bs = float(exam_scores[bottom_outlier_idx])
+chart.add(
+    "Outliers",
+    [
+        {"value": (oh, os_), "label": f"High performer ({oh:.0f}h \u2192 {os_:.0f}%)"},
+        {"value": (bh, bs), "label": f"Low performer ({bh:.0f}h \u2192 {bs:.0f}%)"},
+    ],
+    stroke=False,
+    dots_size=16,
+    formatter=lambda x: f"{x[1]:.0f}%" if isinstance(x, (tuple, list)) else f"{x:.0f}",
 )
 
 # Save outputs — dual format leverages pygal's SVG-native + PNG capability

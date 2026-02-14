@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
-Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-25
+Library: letsplot 4.8.2 | Python 3.14
+Quality: /100 | Updated: 2026-02-14
 """
 
 import numpy as np
@@ -36,13 +36,13 @@ df = pd.DataFrame(
 
 # Create raincloud plot: half-violin (cloud) + box plot + jittered points (rain)
 # HORIZONTAL orientation: x=values, y=categories
-# Layout: cloud on TOP, boxplot slightly below center, rain BELOW
+# Layout: cloud ABOVE (positive y), boxplot on baseline, rain BELOW (negative y)
 plot = (
     ggplot(df, aes(x="reaction_time", y="condition", fill="condition", color="condition"))
-    # Half-violin (cloud) - nudged to top (positive y direction)
+    # Half-violin (cloud) - nudged upward (positive y direction = above category)
     + geom_violin(
         trim=False,
-        show_half=1,  # Show only upper half (the "cloud" on TOP)
+        show_half=1,
         size=0.8,
         alpha=0.7,
         position=position_nudge(y=0.15),
@@ -51,7 +51,7 @@ plot = (
         .line("Distribution of reaction times")
         .format("@..density..", ".3f"),
     )
-    # Box plot - slightly below center
+    # Box plot - centered on category baseline
     + geom_boxplot(
         width=0.1,
         outlier_shape=None,
@@ -60,22 +60,21 @@ plot = (
         size=0.8,
         alpha=0.95,
         show_legend=False,
-        position=position_nudge(y=-0.02),
         tooltips=layer_tooltips()
         .title("Summary Statistics")
         .line("Median: @..middle..")
         .line("Q1: @..lower..")
         .line("Q3: @..upper.."),
     )
-    # Jittered points (rain) - clearly positioned BELOW (negative y from category)
+    # Jittered points (rain) - positioned BELOW (negative y = downward from category)
+    # Using condition colors for visual cohesion
     + geom_jitter(
         width=0,
-        height=0.04,
+        height=0.06,
         size=2.5,
         alpha=0.6,
-        shape=21,  # Filled circle with border
-        fill="#1a1a1a",
-        color="#1a1a1a",
+        shape=21,
+        stroke=0.3,
         show_legend=False,
         position=position_nudge(y=-0.2),
         tooltips=layer_tooltips().line("Reaction Time|@reaction_time ms"),
@@ -84,8 +83,10 @@ plot = (
     + scale_fill_manual(values=["#306998", "#FFD43B", "#5BA85B"])
     + scale_color_manual(values=["#306998", "#FFD43B", "#5BA85B"])
     # Labels and title
-    + labs(x="Reaction Time (ms)", y="Experimental Condition", title="raincloud-basic · letsplot · pyplots.ai")
-    # Legend positioned at bottom-right to not cover data
+    + labs(
+        x="Reaction Time (ms)", y="Experimental Condition", title="raincloud-basic \u00b7 letsplot \u00b7 pyplots.ai"
+    )
+    # Theme
     + theme_minimal()
     + theme(
         plot_title=element_text(size=24, face="bold"),
@@ -95,8 +96,8 @@ plot = (
         axis_text_y=element_text(size=16),
         legend_title=element_blank(),
         legend_text=element_text(size=14),
-        legend_position=[0.92, 0.15],
-        legend_justification=[1, 0],
+        legend_position=[0.92, 0.92],
+        legend_justification=[1, 1],
         panel_grid_major_y=element_blank(),
         panel_grid_minor=element_blank(),
         panel_grid_major_x=element_line(color="rgba(0, 0, 0, 0.15)", size=0.5),

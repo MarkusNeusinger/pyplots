@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-basic: Basic Bar Chart
-Library: highcharts unknown | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Library: highcharts 1.10.3 | Python 3.14
+Quality: /100 | Updated: 2026-02-14
 """
 
 import json
@@ -14,11 +14,11 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data - Product sales by category (realistic retail scenario)
+# Data - Product sales by category (realistic retail scenario with clear ranking)
 categories = ["Electronics", "Clothing", "Home & Garden", "Sports", "Books", "Toys"]
-values = [4200, 3100, 2800, 2400, 1900, 1500]
+values = [4800, 3100, 2200, 1700, 950, 480]
 
-# Chart options for Highcharts
+# Chart options
 chart_options = {
     "chart": {
         "type": "column",
@@ -30,7 +30,7 @@ chart_options = {
         "style": {"fontFamily": "Arial, sans-serif"},
     },
     "title": {
-        "text": "bar-basic · highcharts · pyplots.ai",
+        "text": "bar-basic \u00b7 highcharts \u00b7 pyplots.ai",
         "style": {"fontSize": "52px", "fontWeight": "bold", "color": "#333333"},
     },
     "xAxis": {
@@ -43,8 +43,10 @@ chart_options = {
     "yAxis": {
         "title": {"text": "Sales (Units)", "style": {"fontSize": "38px", "color": "#444444"}},
         "labels": {"style": {"fontSize": "30px", "color": "#444444"}},
-        "gridLineColor": "#e0e0e0",
-        "gridLineWidth": 1,
+        "gridLineColor": "#eeeeee",
+        "gridLineWidth": 0.5,
+        "gridLineDashStyle": "Dot",
+        "tickInterval": 1000,
     },
     "legend": {"enabled": False},
     "plotOptions": {"column": {"pointPadding": 0.15, "borderWidth": 0, "groupPadding": 0.1, "borderRadius": 4}},
@@ -56,7 +58,7 @@ chart_options = {
             "dataLabels": {
                 "enabled": True,
                 "format": "{y:,.0f}",
-                "style": {"fontSize": "26px", "fontWeight": "bold", "color": "#333333"},
+                "style": {"fontSize": "28px", "fontWeight": "bold", "color": "#333333"},
             },
         }
     ],
@@ -91,7 +93,7 @@ with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encodin
     f.write(html_content)
     temp_path = f.name
 
-# Also save HTML for interactive viewing
+# Save HTML for interactive viewing
 with open("plot.html", "w", encoding="utf-8") as f:
     f.write(html_content)
 

@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: highcharts 1.10.3 | Python 3.14
+Quality: 85/100 | Created: 2025-12-25
 """
 
 import tempfile

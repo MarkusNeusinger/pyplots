@@ -54,6 +54,12 @@ This prompt helps you determine what documentation you should read based on the 
     - When modifying contact or social links in the Legal page
     - When adjusting mobile breakpoint visibility of footer elements
 
+- agentic/context/260214-batch-sync-to-postgres.md
+  - Conditions:
+    - When working with the PostgreSQL sync script (`automation/scripts/sync_to_postgres.py`)
+    - When modifying batched upsert logic or chunk sizes for database sync
+    - When troubleshooting sync-postgres workflow performance
+
 - agentic/
   - Conditions:
     - When working with agentic commands or workflows

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 pie-basic: Basic Pie Chart
 Library: altair 6.0.0 | Python 3.14.0
-Quality: 81/100 | Created: 2025-12-23
+Quality: 85/100 | Created: 2025-12-23
 """
 
 import altair as alt

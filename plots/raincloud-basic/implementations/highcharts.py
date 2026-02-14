@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
-Library: highcharts unknown | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-25
+Library: highcharts 1.10.3 | Python 3.14
+Quality: /100 | Updated: 2026-02-14
 """
 
 import tempfile
@@ -61,9 +61,13 @@ chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
 # Chart configuration - HORIZONTAL orientation
+# inverted=True swaps axes: x-axis (categories) on left, y-axis (values) on bottom
+# In inverted mode, x-axis increases DOWNWARD, so:
+#   - negative x offset = UPWARD on screen (for clouds)
+#   - positive x offset = DOWNWARD on screen (for rain)
 chart.options.chart = {
     "type": "boxplot",
-    "inverted": True,  # Swap axes for horizontal orientation
+    "inverted": True,
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
@@ -75,11 +79,11 @@ chart.options.chart = {
 
 # Title
 chart.options.title = {
-    "text": "raincloud-basic · highcharts · pyplots.ai",
+    "text": "raincloud-basic \u00b7 highcharts \u00b7 pyplots.ai",
     "style": {"fontSize": "56px", "fontWeight": "bold"},
 }
 
-# X-axis (categories - but shown on left due to inverted)
+# X-axis (categories - shown on left due to inverted)
 chart.options.x_axis = {
     "title": {"text": "Experimental Condition", "style": {"fontSize": "44px"}},
     "labels": {"style": {"fontSize": "36px"}},
@@ -93,14 +97,14 @@ chart.options.y_axis = {
     "title": {"text": "Reaction Time (ms)", "style": {"fontSize": "44px"}},
     "labels": {"style": {"fontSize": "36px"}},
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.15)",
-    "gridLineDashStyle": "Dash",
+    "gridLineColor": "rgba(0, 0, 0, 0.08)",
+    "gridLineDashStyle": "Dot",
     "tickInterval": 50,
     "min": 250,
     "max": 650,
 }
 
-# Legend
+# Legend - consolidated to show only condition names
 chart.options.legend = {
     "enabled": True,
     "itemStyle": {"fontSize": "36px"},
@@ -135,8 +139,8 @@ chart.options.plot_options = {
     "polygon": {"fillOpacity": 0.6, "lineWidth": 2},
 }
 
-# Create polygon data for half-violin (the "cloud") on TOP
-# With inverted=True, "positive" x offset becomes TOP visually
+# Create polygon data for half-violin (the "cloud") ABOVE category baseline
+# In inverted chart, x-axis goes downward, so NEGATIVE x offset = UPWARD on screen
 for i, data in enumerate(all_data):
     # Inline KDE computation (Gaussian kernel)
     data_arr = np.array(data)
@@ -151,19 +155,17 @@ for i, data in enumerate(all_data):
     density = density / (n * bandwidth * np.sqrt(2 * np.pi))
     density = density / density.max() * 0.35
 
-    # Create polygon points for filled half-violin on TOP
+    # Cloud extends UPWARD (negative x offset in inverted chart)
     polygon_points = []
-    # With inverted chart: x=category position, y=value
-    # Cloud extends in positive x direction from category center
     for y, d in zip(y_range, density, strict=True):
-        polygon_points.append([float(i + d + 0.05), float(y)])
-    # Close polygon by going back along the baseline
+        polygon_points.append([float(i - d - 0.05), float(y)])
+    # Close polygon along baseline
     for y in reversed(y_range):
-        polygon_points.append([float(i + 0.05), float(y)])
+        polygon_points.append([float(i - 0.05), float(y)])
 
     series = PolygonSeries()
     series.data = polygon_points
-    series.name = f"{categories[i]} (Cloud)"
+    series.name = categories[i]
     series.color = colors[i]
     series.fill_color = colors[i]
     series.fill_opacity = 0.6
@@ -191,22 +193,25 @@ box_series.data = box_series_data
 box_series.name = "Box Plot"
 box_series.color = "#1a1a1a"
 box_series.color_by_point = True
+box_series.show_in_legend = False
 chart.add_series(box_series)
 
-# Create jittered scatter data (the "rain") BELOW
+# Create jittered scatter data (the "rain") BELOW category baseline
+# In inverted chart, POSITIVE x offset = DOWNWARD on screen
 for i, data in enumerate(all_data):
     scatter_points = []
     for val in data:
         jitter = np.random.uniform(-0.08, 0.08)
-        # Rain on negative side (BELOW with inverted chart)
-        scatter_points.append([float(i - 0.25 + jitter), float(val)])
+        # Rain falls downward (positive x offset in inverted chart)
+        scatter_points.append([float(i + 0.25 + jitter), float(val)])
 
     scatter_series = ScatterSeries()
     scatter_series.data = scatter_points
-    scatter_series.name = f"{categories[i]} (Points)"
+    scatter_series.name = categories[i]
     scatter_series.color = colors[i]
     scatter_series.opacity = 0.65
     scatter_series.marker = {"radius": 16, "lineWidth": 2, "lineColor": "rgba(0,0,0,0.4)", "fillColor": colors[i]}
+    scatter_series.show_in_legend = False
     chart.add_series(scatter_series)
 
 # Download Highcharts JS and required modules
@@ -237,22 +242,6 @@ html_content = f"""<!DOCTYPE html>
 with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encoding="utf-8") as f:
     f.write(html_content)
     temp_path = f.name
-
-# Save HTML for interactive viewing
-with open("plot.html", "w", encoding="utf-8") as f:
-    standalone_html = f"""<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/highcharts-more.js"></script>
-</head>
-<body style="margin:0;">
-    <div id="container" style="width: 100%; height: 100vh;"></div>
-    <script>{html_str}</script>
-</body>
-</html>"""
-    f.write(standalone_html)
 
 # Setup Chrome for screenshot
 chrome_options = Options()

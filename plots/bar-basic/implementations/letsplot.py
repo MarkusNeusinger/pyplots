@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-basic: Basic Bar Chart
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 99/100 | Created: 2025-12-23
+Library: letsplot 4.8.2 | Python 3.14
+Quality: /100 | Updated: 2026-02-14
 """
 
 import pandas as pd
@@ -17,9 +17,6 @@ values = [45200, 32800, 28500, 21300, 18900, 15600]
 
 df = pd.DataFrame({"category": categories, "value": values})
 
-# Preserve category order
-df["category"] = pd.Categorical(df["category"], categories=categories, ordered=True)
-
 # Plot
 plot = (
     ggplot(df, aes(x="category", y="value"))  # noqa: F405
@@ -28,12 +25,17 @@ plot = (
         aes(label="value"),  # noqa: F405
         position=position_nudge(y=1500),  # noqa: F405
         size=14,
-        label_format="${,}",
+        label_format="${,d}",
     )
     + labs(  # noqa: F405
         x="Product Category", y="Sales ($)", title="bar-basic · letsplot · pyplots.ai"
     )
-    + scale_y_continuous(limits=[0, 55000])  # noqa: F405
+    + scale_x_discrete(limits=categories)  # noqa: F405
+    + scale_y_continuous(  # noqa: F405
+        limits=[0, 55000],
+        breaks=[0, 10000, 20000, 30000, 40000, 50000],
+        labels=["$0K", "$10K", "$20K", "$30K", "$40K", "$50K"],
+    )
     + ggsize(1600, 900)  # noqa: F405
     + theme_minimal()  # noqa: F405
     + theme(  # noqa: F405

@@ -1,16 +1,16 @@
 library: letsplot
 specification_id: bar-basic
 created: '2025-12-23T00:23:43Z'
-updated: '2025-12-23T00:28:24Z'
-generated_by: claude-opus-4-5-20251101
+updated: 2026-02-14T14:34:56+00:00
+generated_by: claude-opus-4-6
 workflow_run: 20447581463
 issue: 0
-python_version: 3.13.11
-library_version: 4.8.1
+python_version: "3.14"
+library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-basic/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-basic/letsplot/plot.html
-quality_score: 99
+quality_score: null
 impl_tags:
   dependencies: []
   techniques:

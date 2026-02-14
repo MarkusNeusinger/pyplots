@@ -1,7 +1,7 @@
 library: pygal
 specification_id: box-basic
 created: '2025-12-23T00:36:15Z'
-updated: '2026-02-14T22:14:21Z'
+updated: '2026-02-14T22:24:14Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447783616
 issue: 0
@@ -10,10 +10,12 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/box-basic/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/box-basic/pygal/plot.html
-quality_score: 80
+quality_score: 90
 impl_tags:
-  dependencies: []
+  dependencies:
+  - cairosvg
   techniques:
+  - annotations
   - html-export
   patterns:
   - data-generation
@@ -23,109 +25,108 @@ impl_tags:
   - grid-styling
 review:
   strengths:
-  - 'Perfect spec compliance: all required box plot features (median, quartiles, whiskers,
-    outliers, per-category colors) are present and correct'
-  - 'Excellent data quality: realistic salary scenario with intentional outliers and
-    varying distribution spreads'
-  - Clean KISS code structure with proper reproducibility seed
-  - Good use of pygal-specific features (tukey box mode, legend bottom columns, dual
-    SVG+PNG output)
-  - Colorblind-safe palette selection
+  - Excellent data storytelling with subtitle annotation showing highest/lowest median
+    and salary gap — provides immediate narrative context
+  - Colorblind-safe Okabe-Ito inspired palette with strong visual distinction between
+    departments
+  - Creative SVG post-processing to overcome pygal hardcoded limitations (box opacity
+    increased to 0.7, outlier dots enlarged)
+  - 'Comprehensive feature coverage: different distribution widths, centers, and outliers
+    across multiple categories'
+  - Full spec compliance with all required features (median, outliers, whiskers, distinct
+    colors)
+  - Clean KISS code structure with proper seed for reproducibility
   weaknesses:
-  - Box fill colors appear extremely washed-out/pastel, reducing visual impact and
-    making distributions harder to distinguish at a glance
-  - Outlier dots are too small to be easily visible at the rendered resolution
-  - Y-axis starts at 0 which wastes significant vertical space and compresses the
-    data range where all the interesting variation occurs
-  - No annotations or storytelling elements — the plot displays data without guiding
-    the viewer to any insights
-  - No category labels directly beneath each box (only identifiable via bottom legend),
-    which makes the chart harder to read than necessary
+  - Outlier dots, while enlarged from r=3 to r=10, still appear relatively small on
+    the 4800x2700 canvas — could benefit from being larger (r=14-16)
+  - Regex-based SVG manipulation is fragile and could break with pygal version updates
+  - Some unused vertical space in the lower portion of the plot area below the 20000
+    gridline
   image_description: 'The plot displays 5 box-and-whisker plots arranged horizontally,
-    showing salary distributions across departments (Engineering, Marketing, Sales,
-    Operations, HR). Each box uses a distinctly different pastel/light color: light
-    blue for Engineering, light yellow-orange for Marketing, light green-teal for
-    Sales, light peach-orange for Operations, and light lavender-purple for HR. The
-    title "box-basic · pygal · pyplots.ai" appears centered at the top in dark gray
-    text. The Y-axis is labeled "Salary ($)" and ranges from 0 to ~135,000. The X-axis
-    is labeled "Department" at the bottom. A horizontal legend at the bottom shows
-    all 5 department names with matching color swatches. Median lines are visible
-    within each box, whiskers extend to show the data range, and outlier points appear
-    as small dots beyond the whiskers (notably for Engineering at ~135,000 and ~45,000,
-    and for Sales at ~120,000 and ~25,000). The background is white with very subtle
-    dotted horizontal grid lines. The boxes appear quite washed-out/pastel due to
-    the opacity rendering, and the Y-axis starting at 0 compresses the data into the
-    upper portion of the chart, leaving significant unused vertical space.'
+    one for each department (Engineering, Marketing, Sales, Operations, HR). The y-axis
+    shows "Salary ($)" ranging from 20,000 to 140,000, and the x-axis shows "Department".
+    Each box is rendered with a distinct color at approximately 70% opacity: Engineering
+    in steel blue (#306998), Marketing in gold/amber (#E69F00), Sales in teal/green
+    (#009E73), Operations in dark orange (#D55E00), and HR in medium purple (#7B68EE).
+    Median lines are visible within each box. Whiskers extend from each box, and outlier
+    dots are visible — Engineering has 2 high outliers (~130k, 135k) and 2 low outliers
+    (~40k, 45k), Marketing has 1 high outlier (~105k), Sales has 1 high outlier (~138k)
+    and 1 low outlier (~12k), and HR has 1 high outlier (~83k). The title "box-basic
+    · pygal · pyplots.ai" is centered at the top in large font. Below the title, an
+    italic subtitle annotation reads "Highest median: Engineering ($83,265) · Lowest
+    median: HR ($57,393) · Gap: $25,872". The background is white with a very light
+    gray (#FAFAFA) plot area. Horizontal y-axis grid lines are visible in subtle gray.
+    A legend with colored squares and department names is positioned at the bottom,
+    spanning the full width in a single row.'
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 28
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title=72, labels=44, major_label=40, legend=44,
-          value=32). All text readable, though axis titles are slightly small relative
-          to the 4800x2700 canvas.
+        comment: All font sizes explicitly set (title=72, label=48, major_label=44,
+          legend=44, value=36). All text clearly readable.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements anywhere.
+        comment: No overlapping text. Labels, title, subtitle, and legend well-separated.
       - id: VQ-03
         name: Element Visibility
-        score: 3
+        score: 5
         max: 6
-        passed: false
-        comment: Outlier dots are very small and hard to see. Box fill colors are
-          extremely washed-out/pastel, reducing visual distinctiveness.
+        passed: true
+        comment: 'Boxes well-sized at 0.7 opacity. Outlier dots enlarged to r=10.
+          Minor: dots still relatively small on 4800x2700 canvas.'
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Colorblind-safe palette (blue, orange, green, red-orange, purple).
-          No red-green ambiguity.
+        comment: Okabe-Ito inspired colorblind-safe palette.
       - id: VQ-05
-        name: Layout & Canvas
-        score: 2
+        name: Layout Balance
+        score: 3
         max: 4
-        passed: false
-        comment: Y-axis starts at 0, wasting ~30% of vertical space. Data range (25k-135k)
-          is compressed.
+        passed: true
+        comment: Good proportions. Legend at bottom well-positioned. Minor unused
+          vertical space below 20000 mark.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Salary ($) with units and Department - descriptive labels.
+        comment: Salary ($) with units, Department is descriptive.
     design_excellence:
-      score: 9
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 6
         max: 8
-        passed: false
-        comment: Custom palette and styled elements are above defaults, but extreme
-          pastel rendering makes the plot look washed out.
+        passed: true
+        comment: Custom colorblind-safe palette, intentional typography hierarchy,
+          white/FAFAFA background contrast. Above defaults but not quite publication-level.
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: White background, subtle grid, bottom legend show some refinement.
-          Wasted vertical space and pale colors detract.
+        passed: true
+        comment: Vertical grid removed, subtle horizontal guides, SVG post-processing
+          for box opacity. Clean background.
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 5
         max: 6
-        passed: false
-        comment: Data displayed without annotations, callouts, or narrative emphasis.
+        passed: true
+        comment: Subtitle annotation with highest/lowest median and salary gap provides
+          genuine narrative context.
     spec_compliance:
       score: 15
       max: 15
@@ -135,27 +136,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct box plot with Tukey mode showing median, quartiles, whiskers,
-          and outliers.
+        comment: Correct box plot using pygal.Box() with box_mode=tukey.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Median lines, outliers as individual points, whiskers at 1.5xIQR,
-          different colors per category - all present.
+        comment: Median lines, outliers as points, whiskers at 1.5xIQR, different
+          colors per category.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Categories on x-axis, salary values on y-axis, all data visible.
+        comment: Categories on x-axis, salary values on y-axis.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend labels match department names.
+        comment: Title matches required format. Legend labels match department names.
     data_quality:
       score: 15
       max: 15
@@ -165,23 +165,23 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows different distributions (varying means and spreads) plus explicit
-          outliers for Engineering and Sales.
+        comment: Different distribution widths, centers, outliers in multiple categories,
+          varying IQR sizes.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Salary distributions across departments - real, neutral business
+        comment: Salary distributions across departments — realistic neutral business
           scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Salary values realistic (means 58k-85k, spreads 8k-18k).
+        comment: Salary ranges ($40k-$135k) are realistic for the described departments.
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -189,33 +189,34 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports, data, plot, save structure with no functions/classes.
+        comment: Clean Imports > Data > Plot > Save flow. No functions or classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) set at the start.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used (numpy, pygal, Style).
+        comment: All imports used (re, cairosvg, numpy, pygal, Style).
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
         passed: true
-        comment: Clean, Pythonic, appropriate complexity.
+        comment: SVG post-processing via regex is necessary but fragile. Annotation
+          injection creative but brittle.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html.
+        comment: Saves plot.png via cairosvg and plot.html.
     library_mastery:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: LM-01
@@ -223,13 +224,14 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of pygal.Box() with custom Style, box_mode=tukey, legend
-          configuration.
+        comment: Uses pygal.Box() with box_mode=tukey, custom Style, legend_at_bottom,
+          chart.add() pattern. SVG post-processing shows deep knowledge but isn't
+          strictly idiomatic.
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Uses box_mode=tukey, legend_at_bottom_columns, dots_size, truncate_legend=-1,
-          dual output formats.
-  verdict: REJECTED
+        comment: Leverages pygal box_mode=tukey, SVG-native rendering pipeline, legend_at_bottom_columns,
+          truncate settings.
+  verdict: APPROVED

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bar-basic: Basic Bar Chart
 Library: bokeh 3.8.2 | Python 3.14
-Quality: /100 | Updated: 2026-02-14
+Quality: 90/100 | Created: 2025-12-23
 """
 
 from bokeh.io import export_png

@@ -1,161 +1,173 @@
 library: bokeh
 specification_id: bar-basic
 created: '2025-12-23T00:23:36Z'
-updated: 2026-02-14T14:34:56+00:00
+updated: '2026-02-14T14:46:00Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447578616
 issue: 0
-python_version: "3.14"
+python_version: '3.14'
 library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-basic/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-basic/bokeh/plot.html
-quality_score: null
+quality_score: 90
 impl_tags:
   dependencies: []
   techniques:
+  - annotations
   - html-export
   patterns:
   - columndatasource
-  - explicit-figure
   dataprep: []
   styling:
+  - edge-highlighting
   - grid-styling
 review:
   strengths:
-  - Excellent text sizing for high-resolution output (36pt title, 28pt labels, 24pt
-    ticks)
-  - Proper use of ColumnDataSource for data management
-  - Value labels using LabelSet add precision reading capability
-  - Clean grid styling with dashed lines and low alpha
-  - Correct y-axis starting at 0
-  - Dual output (PNG + HTML) leverages Bokeh interactivity strength
+  - Excellent text sizing with all font sizes explicitly set well above minimums for
+    4800x2700 canvas
+  - 'Clean visual refinement: L-shaped frame, removed spines/ticks, subtle grid lines
+    at alpha=0.2'
+  - 'Strong Bokeh idioms: ColumnDataSource, LabelSet, NumeralTickFormatter, dual PNG+HTML
+    export'
+  - Well-formatted value labels ($38.2K) that aid quick reading
+  - Deterministic, realistic business data with good variation across categories
+  - Perfect spec compliance — all specification notes addressed
   weaknesses:
-  - Data values are monotonically decreasing which does not showcase varied comparisons
-    typical in real bar charts
-  image_description: The plot displays a vertical bar chart showing product sales
-    by category. Six blue bars (#306998) represent Electronics ($42,500), Clothing
-    ($31,200), Home & Garden ($28,700), Sports ($19,800), Books ($15,400), and Toys
-    ($12,600). Value labels appear above each bar. The title "bar-basic · bokeh ·
-    pyplots.ai" is centered at the top. The x-axis is labeled "Product Category" and
-    the y-axis "Sales ($)". A subtle dashed horizontal grid aids value reading. The
-    y-axis correctly starts at 0. Bars have consistent widths with adequate spacing
-    between them.
+  - No storytelling annotations (e.g., callout for highest/lowest department) — data
+    is displayed clearly but not interpreted
+  - Slight canvas imbalance with some wasted space on the right side
+  - Could benefit from a more distinctive color scheme or subtle gradient to elevate
+    beyond well-configured default
+  image_description: 'The plot shows a vertical bar chart titled "bar-basic · bokeh
+    · pyplots.ai" displaying quarterly revenue by department. Six blue bars (#306998
+    Python Blue) represent departments: Engineering ($38.2K), Marketing ($21.5K),
+    Sales ($45.8K), Support ($14.3K), Design ($27.6K), and Operations ($19.1K). Each
+    bar has a formatted dollar value label positioned above it in dark gray text.
+    The y-axis shows "Revenue ($)" with dollar-formatted ticks from $0 to $50,000.
+    The x-axis shows "Department" with category labels beneath each bar. The chart
+    uses a clean L-shaped frame with top and right spines removed, subtle horizontal
+    grid lines at low opacity, white bar edge lines for definition, and a white background.
+    The layout fills the 4800×2700 canvas well with balanced proportions.'
   criteria_checklist:
     visual_quality:
-      score: 37
-      max: 40
+      score: 29
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title at 36pt, axis labels at 28pt, tick labels at 24pt - all clearly
-          readable
+        comment: 'All font sizes explicitly set: title 36pt, axis labels 28pt, tick
+          labels 24pt, value labels 28pt'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping text; 6 categories with adequate spacing
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Bars well-sized with good alpha (0.9), clear visibility
+        comment: Bars well-sized with width=0.7, alpha=0.9, white edge lines for definition
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Single blue color, no colorblind concerns
-      - id: VQ-05
-        name: Layout Balance
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Good proportions, slight right margin imbalance
+        comment: Single Python Blue color, no accessibility concern
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 3
+        max: 4
+        passed: true
+        comment: Good layout but slight wasted space on right side
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: '"Product Category" and "Sales ($)" with unit'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
+        comment: Department and Revenue ($) — descriptive with units
+    design_excellence:
+      score: 13
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
         passed: true
-        comment: Grid is good (alpha 0.3, dashed), but no legend needed for single-series
+        comment: Clean design with Python Blue, white edges, removed spines — above
+          defaults but not FiveThirtyEight-level
+      - id: DE-02
+        name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: Top/right spines removed, tick marks removed, subtle grid at alpha=0.2
+      - id: DE-03
+        name: Data Storytelling
+        score: 3
+        max: 6
+        passed: true
+        comment: Value labels formatted as $XX.XK aid reading but no annotations highlighting
+          insights
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
         comment: Correct vertical bar chart
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories on x-axis, values as bar heights
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Value labels present, consistent bar widths, single color, adequate
-          spacing
-      - id: SC-04
-        name: Data Range
+        comment: Consistent bar widths, value labels, single color, adequate spacing
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Y-axis shows all data, starts at 0
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Categories on X, values on Y, correctly assigned
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: No legend needed for single-series bar chart
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Correct format: "bar-basic · bokeh · pyplots.ai"'
+        comment: Title format correct, no legend needed for single series
     data_quality:
-      score: 18
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Shows variation in values across categories, but data is monotonically
-          decreasing (could show more varied pattern)
+        comment: 6 categories with non-monotonic pattern, good variation $14.3K to
+          $45.8K
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Product sales by category is a real, comprehensible business scenario
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Sales values in $12K-$42K range are realistic for category-level
-          retail data
+        comment: Quarterly revenue by department — plausible neutral business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Revenue values $14K-$46K realistic for department quarterly figures
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -163,34 +175,46 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Simple linear flow: imports → data → plot → save'
+        comment: Imports → Data → Plot → Style → Save, no functions/classes
       - id: CQ-02
         name: Reproducibility
         score: 2
-        max: 3
-        passed: false
-        comment: Data is deterministic (hardcoded), no random elements, but could
-          include seed comment for clarity
+        max: 2
+        passed: true
+        comment: Deterministic hardcoded data, no randomness
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports used
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Uses current Bokeh API
+        comment: Clean, Pythonic, appropriate complexity
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html
-    library_features:
-      score: 3
-      max: 5
-      items: []
+        comment: Saves as plot.png, no deprecated functions
+    library_mastery:
+      score: 9
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: ColumnDataSource, categorical x_range, vbar, LabelSet, NumeralTickFormatter
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: ColumnDataSource data model, LabelSet, NumeralTickFormatter, dual
+          PNG+HTML output
   verdict: APPROVED

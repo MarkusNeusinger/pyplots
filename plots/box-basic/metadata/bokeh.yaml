@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: box-basic
 created: '2025-12-23T00:37:08Z'
-updated: '2026-02-14T22:13:46Z'
+updated: '2026-02-14T22:21:54Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447779440
 issue: 0
@@ -10,11 +10,11 @@ library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/box-basic/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/box-basic/bokeh/plot.html
-quality_score: 76
+quality_score: 92
 impl_tags:
   dependencies: []
   techniques:
-  - hover-tooltips
+  - annotations
   - html-export
   patterns:
   - data-generation
@@ -27,106 +27,101 @@ impl_tags:
   - edge-highlighting
 review:
   strengths:
-  - Clean code structure with proper seed and well-organized statistics calculation
-  - 'Good use of Bokeh-specific features: ColumnDataSource, factor_cmap, Whisker model'
-  - 'All spec requirements met: median, outliers at 1.5xIQR, different colors per
-    category'
-  - Explicit font sizing for 4800x2700 canvas with appropriate sizes
-  - Realistic educational context (test scores across classes) with varied distributions
-  - Dual output (PNG + HTML) leveraging Bokeh web-native strength
+  - 'Excellent use of Bokeh-specific features: factor_cmap, Whisker model, LabelSet,
+    and ColumnDataSource pattern'
+  - Data storytelling annotations highlighting tightest and widest spread with IQR
+    values
+  - Clean visual design with subtle grid, removed spines/ticks, and transparent background
+  - Comprehensive data variety across the four classes (different medians, spreads,
+    outlier patterns)
+  - Dual output (PNG + HTML) leveraging Bokeh web-native capabilities
   weaknesses:
-  - 'Canvas utilization is poor: narrow boxes with excessive horizontal whitespace
-    on a wide 16:9 canvas. Either widen boxes (width=0.7+) or consider square format'
-  - Median line rendered as p.rect(height=0.5) creates an overly thick chunky black
-    bar instead of a clean thin median line — visually distracting and imprecise
-  - 'No data storytelling: no annotations highlighting Class C extreme spread, Class
-    B tight clustering, or any interpretive guidance for the viewer'
-  - HoverTool is added but serves no purpose in the static PNG output — dead functionality
-    in the reviewed artifact
-  image_description: The plot displays four box-and-whisker plots comparing test score
-    distributions across Class A, Class B, Class C, and Class D. The boxes are colored
-    blue (#306998), light blue (#4B8BBE), orange/gold (#E5A03A), and olive green (#7A9E3D)
-    respectively. Each box shows the interquartile range with a thick black median
-    line rendered as a rectangle. Whiskers extend to 1.5xIQR fences with horizontal
-    caps, and outliers appear as open white circles with dark outlines. The title
-    "box-basic · bokeh · pyplots.ai" is positioned in the top-left. The x-axis is
-    labeled "Class" and y-axis "Test Score (points)". Horizontal dashed grid lines
-    are subtle, vertical grid is removed, and top/right spines are removed. There
-    is significant horizontal whitespace between the relatively narrow boxes. Class
-    B has a tight, high distribution (~85); Class C has the widest spread (~68 center)
-    with an extreme low outlier near y=10; Class A is moderate (~75); Class D is moderate
-    (~78) with outliers both above 100 and below 45.
+  - 'The two blue shades (Class A #306998 and Class B #4B8BBE) are somewhat close
+    and may be difficult to distinguish for some color vision deficiencies'
+  - Some vertical whitespace above the data could be reduced for tighter canvas utilization
+  image_description: 'The plot displays 4 box-and-whisker plots arranged horizontally
+    on a white background representing test score distributions for Class A (dark
+    blue, #306998), Class B (light blue, #4B8BBE), Class C (orange/gold, #E5A03A),
+    and Class D (olive green, #7A9E3D). The title "box-basic · bokeh · pyplots.ai"
+    appears in the top-left. The Y-axis is labeled "Test Score (points)" ranging from
+    ~40 to ~120, and the X-axis is labeled "Class" with the four category names. Each
+    box shows the interquartile range with a dark median line. Whiskers extend to
+    1.5×IQR with horizontal caps. Outliers are displayed as hollow circles with dark
+    borders. Two text annotations provide data insights: "Tightest spread (IQR = 7.0)"
+    in blue above Class B and "Widest spread (IQR = 19.3)" in gold/brown above Class
+    C. The grid consists of subtle dashed horizontal lines. The overall layout is
+    clean with no axis spines on top/right and no tick marks.'
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 27
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 36pt, axis labels 28pt, tick
-          labels 22pt — all clearly readable at 4800x2700'
+        comment: 'All font sizes explicitly set (title 36pt, labels 28pt, ticks 22pt,
+          annotations 20pt). All clearly readable. Minor: annotation text slightly
+          small relative to canvas.'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements; 4 categories fit well on x-axis
+        comment: No overlapping text anywhere. Annotations well-positioned above boxes.
       - id: VQ-03
         name: Element Visibility
-        score: 4
+        score: 6
         max: 6
-        passed: false
-        comment: Boxes narrow (width=0.5) relative to wide category spacing. Median
-          rendered as p.rect with height=0.5 creates overly thick black bar rather
-          than clean line
+        passed: true
+        comment: Boxes well-sized (width=0.7), outlier markers (size=18) clearly visible,
+          whisker heads (size=40) prominent.
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: Four distinct hues (blue, light blue, orange, green) with sufficient
-          contrast; no red-green reliance
+        comment: 'Four distinct colors, no red-green pair. Minor: two blues somewhat
+          close for some CVD types.'
       - id: VQ-05
-        name: Layout & Canvas
-        score: 0
+        name: Layout Balance
+        score: 3
         max: 4
-        passed: false
-        comment: Narrow boxes on wide 16:9 canvas with enormous horizontal whitespace.
-          Boxes occupy roughly 25-30% of horizontal canvas area — well below 40% threshold
+        passed: true
+        comment: Good horizontal fill with range_padding=0.12. Some vertical whitespace
+          above/below data range.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Y-axis has 'Test Score (points)' with units, X-axis has 'Class'
+        comment: Test Score (points) includes units, Class is descriptive.
     design_excellence:
-      score: 8
+      score: 16
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 6
         max: 8
-        passed: false
-        comment: Thoughtful color palette, clean styling with removed spines and subtle
-          grid. Chunky median rectangles and poor canvas use prevent publication quality
+        passed: true
+        comment: Custom 4-color palette, clean typography hierarchy, professional
+          appearance clearly above defaults.
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
-        passed: false
-        comment: 'Good: spines removed, grid dashed/subtle, tick marks removed, transparent
-          background. Excessive whitespace and heavy median detract'
+        passed: true
+        comment: Subtle dashed grid (alpha=0.2), removed outline/spines/ticks, transparent
+          background.
       - id: DE-03
         name: Data Storytelling
-        score: 0
+        score: 5
         max: 6
-        passed: false
-        comment: No annotations, no narrative emphasis, no callouts for interesting
-          features. Viewer must find their own story entirely
+        passed: true
+        comment: Two annotations highlight key distribution insights (tightest vs
+          widest spread with IQR values).
     spec_compliance:
       score: 15
       max: 15
@@ -136,53 +131,51 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct box-and-whisker plot type
+        comment: Correct box-and-whisker plot with all components.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Median line, outliers as individual points, whiskers at 1.5xIQR,
-          different colors per category — all present
+        comment: Median line, outliers as points, whiskers at 1.5xIQR, different colors
+          per category.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Categories on X-axis, numerical values on Y-axis, correctly assigned
+        comment: Categories on X-axis, numerical values on Y-axis.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. No legend needed for box plot with labeled
-          categories
+        comment: Title format correct. X-axis labels with colored boxes serve as legend.
     data_quality:
-      score: 13
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: 'Shows different distributions: tight (B), wide (C), moderate (A,
-          D), with outliers on multiple classes'
+        comment: 'Varied distributions: tight (Class B), wide (Class C), outliers
+          on multiple classes, different medians.'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Test scores across classes is a plausible, neutral educational scenario
+        comment: Test scores across classes - clear, neutral educational scenario.
       - id: DQ-03
         name: Appropriate Scale
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Most values realistic. Class C extreme low outlier near 10 borderline
-          implausible for test scores; y-axis extends very low
+        comment: Scores in realistic 40-120 range for academic context.
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -190,49 +183,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Follows Imports -> Data -> Plot -> Save with no functions or classes
+        comment: Clean imports, data, plot, save structure.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) is set
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: HoverTool imported and added but serves no purpose in static PNG
-          output
+        passed: true
+        comment: All imports used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, well-organized code with necessarily verbose but clean statistics
-          calculation
+        comment: Appropriate complexity, manual box stats necessary for Bokeh.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via export_png, no deprecated functions
-    library_mastery:
-      score: 7
+        comment: Saves plot.png and plot.html.
+    library_features:
+      score: 9
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses ColumnDataSource, factor_cmap, Whisker model, LabelSet - idiomatic
+          Bokeh patterns.
+      - id: LM-02
+        name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: Good use of ColumnDataSource, Whisker model, factor_cmap. Using p.rect
-          for median lines is not ideal — segment would be more idiomatic
-      - id: LM-02
-        name: Distinctive Features
-        score: 3
-        max: 5
-        passed: true
-        comment: Uses factor_cmap (Bokeh categorical color mapping), Whisker model,
-          and HoverTool. HTML export is genuine Bokeh distinctive feature
-  verdict: REJECTED
+        comment: factor_cmap, Whisker model, LabelSet, HTML export - distinctive Bokeh
+          features.
+  verdict: APPROVED

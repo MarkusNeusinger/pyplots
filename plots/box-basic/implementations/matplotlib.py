@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 box-basic: Basic Box Plot
 Library: matplotlib 3.10.8 | Python 3.14
-Quality: 82/100 | Created: 2025-12-23
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import matplotlib.patheffects as pe

@@ -1,7 +1,7 @@
 library: pygal
 specification_id: pie-basic
 created: '2025-12-23T00:35:27Z'
-updated: '2026-02-14T14:47:21Z'
+updated: '2026-02-14T15:01:38Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447776548
 issue: 0
@@ -10,10 +10,11 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-basic/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-basic/pygal/plot.html
-quality_score: 78
+quality_score: 86
 impl_tags:
   dependencies: []
   techniques:
+  - annotations
   - html-export
   patterns:
   - iteration-over-groups
@@ -22,32 +23,40 @@ impl_tags:
   - edge-highlighting
 review:
   strengths:
-  - Realistic smartphone market share data with plausible values summing to 100%
-  - Correct title format following pyplots.ai conventions
-  - Good use of pygal-specific features (value_formatter, print_values_position, per-slice
-    SVG styling)
-  - Clean KISS code structure with explicit font sizing
-  - White stroke borders between slices add visual polish
+  - Excellent spec compliance — all required features (percentages, legend, distinct
+    colors, exploded slice) are present and working
+  - Thoughtful data storytelling with narrative legend names and on-slice annotations
+    (#1 brand, Largest)
+  - Creative use of pygal SVG node manipulation for slice explosion — a library-distinctive
+    technique
+  - Colorblind-safe palette with good contrast between all six slices
+  - Realistic, neutral data scenario (smartphone market share) with accurate values
   weaknesses:
-  - Missing exploded slice — spec explicitly requires slightly explode the largest
-    or smallest slice for emphasis
-  - 'No data storytelling: add an annotation or visual emphasis highlighting key insight
-    such as Others dominance or market leader'
-  - value_colors in Style is not a valid pygal attribute — remove this dead code
-  - Design could be elevated with a more intentional color narrative or annotation
-    pointing out the key insight
-  image_description: 'The plot displays a pie chart titled "Smartphone Market Share
-    · pie-basic · pygal · pyplots.ai" on a white background. Six slices represent
-    global smartphone market share: Apple (23.3%, steel blue), Samsung (19.4%, soft
-    gold/yellow), Xiaomi (14.1%, light teal), OPPO (8.7%, coral/salmon), vivo (7.5%,
-    mint green), and Others (27.0%, light lavender/purple). Percentage labels are
-    centered on each slice in white or dark text. A legend at the bottom arranges
-    all six categories in a 3-column layout. White stroke borders separate the slices.
-    No slice is exploded. The pie fills most of the square canvas (3600x3600 px).
-    The rendered colors appear more pastel than the hex values defined in code.'
+  - The trigonometric explosion calculation (~10 lines of math) is over-engineered
+    — consider simplifying the approach or using a fixed translate offset
+  - The exploded Others slice creates a visible gap that makes the pie chart feel
+    off-center within the canvas
+  - Legend text at the bottom appears somewhat small relative to the 3600px canvas
+    despite explicit font sizing
+  - The Largest annotation on the Others slice is generic — a more descriptive label
+    would strengthen the storytelling
+  - Smaller slices (OPPO at 8.7%, vivo at 7.5%) could benefit from slightly larger
+    label text for better readability
+  image_description: 'The plot is a 3600x3600 px pie chart on a white background.
+    The title "Smartphone Market Share · pie-basic · pygal · pyplots.ai" appears at
+    the top in dark text. Six slices represent smartphone brands: Apple (blue, 23.3%),
+    Samsung (orange, 19.4%), Xiaomi (teal, 14.1%), OPPO (pink/rose, 8.7%), vivo (purple,
+    7.5%), and Others (slate gray, 27.0%). The "Others" slice is exploded outward
+    for emphasis via an SVG transform, creating a visible gap. White stroke borders
+    separate each slice. Percentage labels appear in white text centered on each slice.
+    The Apple slice carries a "#1 brand" annotation and the Others slice shows "Largest."
+    A legend at the bottom is arranged in 3 columns with narrative names: "Apple (top
+    brand)", "Samsung", "Xiaomi", "OPPO", "vivo", "Others (largest share)." The color
+    palette uses saturated, high-contrast hues (blue, orange, teal, pink, purple,
+    gray) that avoid red-green ambiguity.'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 27
       max: 30
       items:
       - id: VQ-01
@@ -55,69 +64,67 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set; all text readable. Legend text slightly
-          small relative to chart size.
+        comment: Font sizes explicitly set (title 72, labels 44, legend 52, values
+          52). All text readable. Legend at bottom slightly small relative to canvas.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements.
+        comment: No overlapping text elements anywhere.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: All slices visible; white stroke borders aid separation. Smaller
-          slices are narrow but readable.
+        comment: Slices well-sized; OPPO and vivo slices are small but still clearly
+          visible.
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Distinguishable palette with no red-green confusion. Pastel rendering
-          slightly reduces contrast.
+        comment: Colorblind-safe palette with no red-green ambiguity.
       - id: VQ-05
         name: Layout Balance
         score: 3
         max: 4
         passed: true
-        comment: Pie fills canvas well; legend at bottom. Some unused whitespace below
-          legend.
+        comment: Pie fills good portion of canvas but exploded slice creates off-center
+          appearance.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive title with proper format. No axis labels needed for pie
-          chart.
+        comment: Descriptive title with context. Pie charts have no axes.
     design_excellence:
-      score: 9
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 6
         max: 8
-        passed: false
-        comment: Custom palette with white stroke borders; looks polished but like
-          a well-configured default, not publication-level.
+        passed: true
+        comment: Custom saturated palette, white stroke borders, narrative legend
+          names. Clearly above defaults.
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: White stroke borders, clean background, bottom legend in columns.
-          Some refinement but not heavily polished.
+        passed: true
+        comment: Clean white background, stroke separators, tidy legend. Explosion
+          gap is somewhat distracting.
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 4
         max: 6
-        passed: false
-        comment: Data displayed clearly but no annotations, callouts, or emphasis
-          guiding the viewer to key insights.
+        passed: true
+        comment: Narrative legend names and on-slice annotations guide the reader.
+          Could be stronger with more context.
     spec_compliance:
-      score: 13
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -128,11 +135,11 @@ review:
         comment: Correct pie chart type.
       - id: SC-02
         name: Required Features
-        score: 2
+        score: 4
         max: 4
-        passed: false
-        comment: Has percentage labels, distinct colors, and legend. Missing exploded
-          slice as required by spec.
+        passed: true
+        comment: 'All spec features present: percentage labels, distinct colors, legend,
+          exploded slice.'
       - id: SC-03
         name: Data Mapping
         score: 3
@@ -144,7 +151,8 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Title follows correct format. Legend labels match data.
+        comment: Title follows correct format. Legend labels match data with narrative
+          enhancements.
     data_quality:
       score: 14
       max: 15
@@ -154,57 +162,58 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: 'Good variety of slice sizes: large, medium, and small slices represented.'
+        comment: Shows variety in slice sizes, includes Others aggregation, and has
+          exploded emphasis.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Global smartphone market share is a real, neutral, comprehensible
-          business scenario.
+        comment: Global smartphone market share is a real, recognizable, neutral business
+          scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values sum to 100% and reflect plausible 2024 market share figures.
+        comment: Values are realistic and sum to 100%.
     code_quality:
-      score: 9
+      score: 8
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: 'Clean flow: imports, data, style, chart, save.'
+        comment: Flat script structure but manual trigonometric explosion calculation
+          adds complexity.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic hardcoded data.
+        comment: Deterministic hardcoded data, no randomness.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only pygal and Style, both used.
+        comment: All imports (math, pygal, Style) are used.
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
-        passed: false
-        comment: value_colors in Style is not a valid pygal Style attribute — dead
-          code.
+        passed: true
+        comment: Angular bisector calculation for SVG explosion is clever but over-engineered.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html.
+        comment: Saves plot.png and plot.html correctly.
     library_mastery:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: LM-01
@@ -213,12 +222,12 @@ review:
         max: 5
         passed: true
         comment: Good use of pygal Pie class, Style, print_values, value_formatter,
-          legend options.
+          legend_at_bottom.
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: 'Uses pygal-specific features: print_values_position, value_formatter
-          lambda, legend_at_bottom_columns, per-slice SVG style strings.'
+        comment: Uses pygal-specific SVG node manipulation for explosion, value_colors,
+          print_values_position.
   verdict: REJECTED

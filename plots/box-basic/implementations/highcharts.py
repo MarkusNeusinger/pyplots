@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 box-basic: Basic Box Plot
 Library: highcharts 1.10.3 | Python 3.14
-Quality: 79/100 | Created: 2025-12-23
+Quality: 88/100 | Created: 2025-12-23
 """
 
 import json

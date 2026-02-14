@@ -1,149 +1,176 @@
 library: letsplot
 specification_id: pie-basic
 created: '2025-12-23T00:36:17Z'
-updated: '2026-02-14T14:40:21+00:00'
+updated: '2026-02-14T14:47:48Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447777540
 issue: 0
-python_version: '3.14.0'
+python_version: 3.14.0
 library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-basic/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-basic/letsplot/plot.html
-quality_score: null
+quality_score: 77
 impl_tags:
   dependencies: []
   techniques:
   - html-export
-  patterns:
-  - data-generation
+  patterns: []
   dataprep: []
   styling:
   - minimal-chrome
+  - edge-highlighting
 review:
   strengths:
-  - Excellent use of lets-plot geom_pie() with layer_labels() for percentage formatting
-  - Clean, colorblind-safe color palette with Python Blue as the primary color
-  - Proper use of theme_void() for clean pie chart presentation
-  - Correct title format and legend configuration
-  - Well-structured, readable code following KISS principles
+  - Idiomatic lets-plot usage with geom_pie, layer_labels, and spacer styling — distinctly
+    lets-plot features
+  - Realistic smartphone market share data with plausible proportions
+  - Clean colorblind-safe palette starting with Python Blue
+  - White spacers between slices add visual polish
+  - Deterministic data with clean KISS code structure
   weaknesses:
-  - No slice explosion for emphasis on key slice as suggested in spec notes
-  - Layout slightly unbalanced with pie shifted left relative to legend
-  image_description: 'The plot displays a pie chart showing market share distribution
-    across 5 companies. Company A (Python Blue #306998) dominates with 35%, followed
-    by Company B (Yellow #FFD43B) at 25%, Company C (Green #4CAF50) at 20%, Company
-    D (Orange #FF7043) at 12%, and Company E (Purple #AB47BC) at 8%. Each slice is
-    labeled with its percentage value. A vertical legend on the right identifies each
-    company by color. The title "pie-basic · letsplot · pyplots.ai" is centered at
-    the top in a readable font size.'
+  - Pie chart is too small relative to the 4800x2700 canvas — excessive whitespace
+    above and below reduces visual impact
+  - Title font size is 22pt, below the 24pt minimum for full legibility score
+  - No data storytelling — no annotations highlighting the market leader or key insight,
+    no callouts or narrative elements
+  - The exploded slice choice (OPPO at 8.8%) is valid but could be more impactful
+    if the largest individual company (Apple) were emphasized instead
+  - No visual refinement beyond theme_void — could benefit from a subtitle, annotation,
+    or other polish element
+  image_description: 'The plot displays a pie chart titled "Global Smartphone Market
+    Share · pie-basic · letsplot · pyplots.ai" centered on a white canvas. Five slices
+    represent: Apple (dark blue, 23.1%), Samsung (yellow, 19.4%), Xiaomi (green, 13.7%),
+    OPPO (orange/coral, 8.8%), and Others (grey, 35.0%). The OPPO slice is slightly
+    exploded outward from the pie. Each slice has a percentage label positioned inside
+    or near it. White spacers separate the slices. A horizontal legend at the bottom
+    shows colored dots with company names. The pie is moderately sized relative to
+    the 16:9 canvas, with significant whitespace above and below the chart.'
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 23
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
-        passed: true
-        comment: Title is large and readable, percentage labels are clear, legend
-          text is appropriately sized
-      - id: VQ-02
-        name: No Overlap
-        score: 8
-        max: 8
-        passed: true
-        comment: No overlapping text elements; percentage labels are well-positioned
-          on slices
-      - id: VQ-03
-        name: Element Visibility
-        score: 8
-        max: 8
-        passed: true
-        comment: Pie slices are well-sized with good proportions, all slices visible
-      - id: VQ-04
-        name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Colors are distinct and colorblind-safe; no red-green confusion
-      - id: VQ-05
-        name: Layout Balance
-        score: 3
-        max: 5
-        passed: true
-        comment: Good overall layout, but pie is shifted slightly left creating some
-          imbalance with the legend on the right
-      - id: VQ-07
-        name: Grid & Legend
-        score: 2
-        max: 2
-        passed: true
-        comment: Legend is clear and well-positioned
-    spec_compliance:
-      score: 25
-      max: 25
-      items:
-      - id: SC-01
-        name: Plot Type
-        score: 8
-        max: 8
-        passed: true
-        comment: Correct pie chart implementation
-      - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories and values correctly mapped to slices
-      - id: SC-03
-        name: Required Features
-        score: 5
-        max: 5
-        passed: true
-        comment: Includes percentage labels, distinct colors, and legend as specified
-      - id: SC-04
-        name: Data Range
-        score: 3
-        max: 3
-        passed: true
-        comment: All data visible, percentages sum to 100%
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
-        passed: true
-        comment: Legend correctly shows all 5 categories with matching colors
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Uses correct format "pie-basic · letsplot · pyplots.ai"
-    data_quality:
-      score: 18
-      max: 20
-      items:
-      - id: DQ-01
-        name: Feature Coverage
         score: 6
         max: 8
         passed: true
-        comment: Shows variation in slice sizes; however, no slice explosion for emphasis
-          as suggested in spec notes
-      - id: DQ-02
-        name: Realistic Context
-        score: 7
-        max: 7
+        comment: Title explicitly set to 22pt (below 24pt threshold), legend title
+          18pt, legend text 16pt, percentage labels 16pt. All readable but title undersized.
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
         passed: true
-        comment: Market share by company is a realistic, comprehensible scenario
-      - id: DQ-03
-        name: Appropriate Scale
+        comment: No overlapping text elements anywhere.
+      - id: VQ-03
+        name: Element Visibility
+        score: 5
+        max: 6
+        passed: true
+        comment: Slices are clearly visible. OPPO slice is small but readable. Pie
+          could be larger relative to canvas.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 4
+        passed: true
+        comment: Blue, yellow, green, orange, grey palette is colorblind-safe with
+          good contrast.
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 1
+        max: 4
+        passed: false
+        comment: Pie chart is small relative to 4800x2700 canvas. Substantial whitespace
+          above and below. Pie fills roughly 35% of vertical space.
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive title present; no axis labels needed for pie chart, no
+          units applicable.
+    design_excellence:
+      score: 10
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: true
+        comment: Custom Python Blue-first palette, white spacers, void theme. Above
+          defaults but not FiveThirtyEight-level.
+      - id: DE-02
+        name: Visual Refinement
+        score: 3
+        max: 6
+        passed: false
+        comment: theme_void removes clutter, spacers add polish. Excessive whitespace
+          and small pie size reduce polished feel.
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: Percentages shown on slices but no narrative annotations. No callout
+          highlighting market leader or key insight.
+    spec_compliance:
+      score: 13
+      max: 15
+      items:
+      - id: SC-01
+        name: Plot Type
         score: 5
         max: 5
         passed: true
-        comment: Values are realistic market share percentages totaling 100%
+        comment: Correct pie chart.
+      - id: SC-02
+        name: Required Features
+        score: 3
+        max: 4
+        passed: true
+        comment: Percentage labels, distinct colors, legend present. Exploded slice
+          is OPPO (smallest named company) — valid interpretation.
+      - id: SC-03
+        name: Data Mapping
+        score: 3
+        max: 3
+        passed: true
+        comment: Categories and values correctly mapped to slices.
+      - id: SC-04
+        name: Title & Legend
+        score: 2
+        max: 3
+        passed: true
+        comment: Title format correct. Legend present with company names. Legend title
+          is generic 'Company'.
+    data_quality:
+      score: 14
+      max: 15
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 5
+        max: 6
+        passed: true
+        comment: Five categories with varied proportions, includes Others aggregate.
+          Good range from 8.8% to 35%.
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 5
+        passed: true
+        comment: Global smartphone market share is a real, neutral, comprehensible
+          scenario with plausible data.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Values sum to 100%, proportions are realistic.
     code_quality:
       score: 9
       max: 10
@@ -153,40 +180,48 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Simple imports → data → plot → save structure
+        comment: Clean Imports → Data → Plot → Save flow, no functions/classes.
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Deterministic data (no random generation)
+        comment: Deterministic hardcoded data, no randomness.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: Only lets_plot imports, all used.
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
+        score: 1
+        max: 2
+        passed: false
+        comment: Manual percentage calculation is slightly redundant. Explode column
+          as data dict entry is verbose.
+      - id: CQ-05
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Uses current lets-plot API
-      - id: CQ-05
-        name: Output Correct
-        score: 0
-        max: 1
-        passed: false
-        comment: Uses export_ggsave instead of ggsave (minor issue, but works correctly)
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves as plot.png with scale=3 for correct resolution.
+    library_mastery:
+      score: 8
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Expertly uses ggplot grammar: geom_pie, aes, scale_fill_manual,
+          theme_void, ggsize.'
+      - id: LM-02
+        name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses geom_pie with layer_labels() which is lets-plot specific, but
-          could leverage more interactive features
-  verdict: APPROVED
+        comment: Uses geom_pie (lets-plot exclusive), layer_labels() with .format(),
+          spacer_width/spacer_color, stroke_side — features unique to lets-plot.
+  verdict: REJECTED

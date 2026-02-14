@@ -66,6 +66,7 @@ jobs:
         DB_PASS: ${{ secrets.DB_PASS }}
         DB_NAME: ${{ secrets.DB_NAME }}
         GCS_BUCKET: ${{ vars.GCS_BUCKET || 'pyplots-images' }}
+        ENVIRONMENT: production
 
     - name: Summary
       run: |

@@ -1,18 +1,18 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-basic: Basic Pie Chart
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Library: plotly 6.5.2 | Python 3.14.0
+Quality: /100 | Updated: 2026-02-14
 """
 
 import plotly.graph_objects as go
 
 
-# Data - Budget allocation by department
-categories = ["Engineering", "Marketing", "Sales", "Operations", "HR"]
-values = [35, 25, 20, 12, 8]
+# Data - Market share of cloud providers
+categories = ["AWS", "Azure", "Google Cloud", "Alibaba", "IBM", "Others"]
+values = [31, 24, 11, 4, 3, 27]
 
 # Colors - Python Blue first, then colorblind-safe palette
-colors = ["#306998", "#FFD43B", "#4ECDC4", "#FF6B6B", "#95E1A3"]
+colors = ["#306998", "#FFD43B", "#4ECDC4", "#FF6B6B", "#95E1A3", "#C5A3FF"]
 
 # Create pie chart
 fig = go.Figure(
@@ -20,11 +20,12 @@ fig = go.Figure(
         go.Pie(
             labels=categories,
             values=values,
-            hole=0,
             textinfo="percent+label",
             textfont={"size": 20},
+            hovertemplate="%{label}<br>%{value}% market share<br>(%{percent})<extra></extra>",
             marker={"colors": colors, "line": {"color": "white", "width": 2}},
-            pull=[0.05, 0, 0, 0, 0],  # Slight explosion on first slice for emphasis
+            pull=[0.05, 0, 0, 0, 0, 0],
+            sort=False,
         )
     ]
 )
@@ -34,7 +35,7 @@ fig.update_layout(
     title={"text": "pie-basic · plotly · pyplots.ai", "font": {"size": 28}, "x": 0.5, "xanchor": "center"},
     legend={"font": {"size": 18}, "orientation": "v", "yanchor": "middle", "y": 0.5, "xanchor": "left", "x": 1.02},
     template="plotly_white",
-    margin={"t": 100, "b": 50, "l": 50, "r": 150},
+    margin={"t": 100, "b": 50, "l": 20, "r": 180},
 )
 
 # Save as PNG (4800x2700 px)

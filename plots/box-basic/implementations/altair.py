@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 box-basic: Basic Box Plot
 Library: altair 6.0.0 | Python 3.14
-Quality: 89/100 | Created: 2025-12-23
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import altair as alt

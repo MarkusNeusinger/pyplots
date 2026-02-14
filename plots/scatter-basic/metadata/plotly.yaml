@@ -1,164 +1,177 @@
 library: plotly
 specification_id: scatter-basic
 created: '2025-12-22T23:36:07Z'
-updated: '2025-12-22T23:38:17Z'
-generated_by: claude-opus-4-5-20251101
+updated: '2026-02-14T14:47:56Z'
+generated_by: claude-opus-4-6
 workflow_run: 20446831781
 issue: 0
-python_version: 3.13.11
-library_version: 6.5.0
+python_version: '3.14'
+library_version: 6.5.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/plotly/plot.html
-quality_score: 93
+quality_score: 92
 impl_tags:
   dependencies: []
   techniques:
-    - hover-tooltips
-    - html-export
+  - annotations
+  - hover-tooltips
+  - html-export
   patterns:
-    - data-generation
-  dataprep: []
+  - data-generation
+  dataprep:
+  - regression
   styling:
-    - alpha-blending
+  - alpha-blending
+  - edge-highlighting
+  - grid-styling
 review:
   strengths:
-  - Excellent text legibility with properly sized fonts for 4800x2700 output
-  - Perfect title format following the spec-id · library · pyplots.ai convention
-  - Realistic educational data scenario (study hours vs exam scores) that is immediately
-    relatable
-  - Clean KISS code structure with proper reproducibility via seed
-  - Good use of hovertemplate for interactive tooltips
-  - Appropriate marker transparency (0.7) for showing overlapping points
+  - Excellent data storytelling with three annotated outliers and correlation coefficient
+    — goes well beyond just plotting points
+  - 'Professional aesthetic: custom blue/orange palette, white marker edges, subtle
+    grid, off-white paper background'
+  - All font sizes explicitly set and well-calibrated for 4800×2700 output
+  - Plotly-distinctive features used effectively (hovertemplate, HTML export, hoverlabel
+    styling)
+  - Clean, well-structured code with elegant annotation dict-spread pattern
   weaknesses:
-  - Grid alpha is 0.1 which is quite faint - could be slightly more visible (0.2-0.3
-    recommended)
-  - Does not fully leverage Plotly distinctive interactive features beyond basic hover
-  - Data could include a few more obvious outliers to better demonstrate scatter plot
-    use cases
-  image_description: The plot displays a scatter plot with 100 data points showing
-    the relationship between Study Hours (x-axis, ranging from 1-10) and Exam Score
-    in percentage (y-axis, ranging from ~40-100). Points are rendered in a muted blue
-    color (#306998) with moderate transparency (0.7 opacity). The title "scatter-basic
-    · plotly · pyplots.ai" is centered at the top. Both axes have clear labels with
-    units ("Study Hours (h)" and "Exam Score (%)"). The background is clean white
-    with subtle gray gridlines. The data shows a clear positive correlation - as study
-    hours increase, exam scores tend to increase, with natural scatter/noise around
-    the trend.
+  - Minor annotation congestion in the bottom-right between 'High effort, low score'
+    (8.5, 52) and 'Underperformer' (9.2, 55) — arrows nearly overlap
+  - Layout margins asymmetric (L=80 vs R=40) leading to slightly unbalanced whitespace
+    distribution
+  image_description: 'The plot displays a scatter plot of "Study Hours (h)" (x-axis,
+    range 0–11) vs "Exam Score (%)" (y-axis, range ~35–105) with 120 blue circular
+    markers (#306998) at opacity 0.6 with white edge outlines on a white background
+    with very subtle gray grid lines. A dashed blue trend line shows the positive
+    correlation. Three orange (#D4782F) diamond markers highlight outliers: "Low effort,
+    high score" at (~2h, 78%), "High effort, low score" at (~8.5h, 52%), and "Underperformer"
+    at (~9.2h, 55%). Each outlier has a bordered orange annotation box with an arrow
+    pointing to the marker. The correlation coefficient "r = 0.79" is displayed in
+    blue near the upper portion of the trend line. The title "scatter-basic · plotly
+    · pyplots.ai" is centered at the top in dark bold text. The paper background is
+    a light off-white (#FAFBFC). Overall the plot has a clean, professional appearance
+    with clear data storytelling.'
   criteria_checklist:
     visual_quality:
-      score: 38
-      max: 40
+      score: 27
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
-        passed: true
-        comment: Title at 28pt, axis labels at 22pt, tick labels at 18pt - all perfectly
-          readable
-      - id: VQ-02
-        name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements anywhere
+        comment: 'All font sizes explicitly set: title 28pt, axis labels 22pt, ticks
+          18pt, annotations 16-17pt'
+      - id: VQ-02
+        name: No Overlap
+        score: 5
+        max: 6
+        passed: true
+        comment: Minor congestion between bottom-right annotations — arrows nearly
+          overlap
       - id: VQ-03
         name: Element Visibility
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Marker size 16 with 100 points is appropriate, though slightly on
-          the larger side for this density
+        comment: 120 points at size 11 with opacity 0.6, outlier diamonds at size
+          15 — well adapted to density
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Single blue color with good contrast against white background
+        comment: Blue/orange pair is colorblind-safe with good contrast
       - id: VQ-05
         name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Well-proportioned margins, good use of space
+        score: 2
+        max: 4
+        passed: false
+        comment: Asymmetric margins (L=80, R=40); slightly unbalanced whitespace distribution
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: "Study Hours (h)" and "Exam Score
-          (%)"'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 1
-        max: 2
+        comment: 'Descriptive labels with units: Study Hours (h), Exam Score (%)'
+    design_excellence:
+      score: 17
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 7
+        max: 8
         passed: true
-        comment: Grid is subtle (alpha 0.1), no legend needed for single series
+        comment: Custom palette, intentional typography hierarchy, white marker edges,
+          subtle grid, off-white paper
+      - id: DE-02
+        name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: plotly_white template, 0.06 opacity grid, zeroline removed, generous
+          standoff
+      - id: DE-03
+        name: Data Storytelling
+        score: 5
+        max: 6
+        passed: true
+        comment: Three annotated outliers with descriptive labels, trend line with
+          r=0.79 guides interpretation
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
         comment: Correct 2D scatter plot
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X/Y correctly assigned (independent → dependent)
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Transparency (0.7), axis labels, title, grid lines all present
-      - id: SC-04
-        name: Data Range
+        comment: Transparency, axis labels, title, grid lines, appropriate point size
+          all present
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axes
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
-        passed: true
-        comment: N/A for single series, correctly omitted
-      - id: SC-06
+        comment: X=study hours, Y=exam scores correctly assigned
+      - id: SC-04
         name: Title Format
-        score: 2
-        max: 2
+        score: 3
+        max: 3
         passed: true
-        comment: 'Correct format: "scatter-basic · plotly · pyplots.ai"'
+        comment: scatter-basic · plotly · pyplots.ai correct format
     data_quality:
-      score: 18
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows positive correlation with scatter, but could benefit from some
-          outliers
+        comment: Shows correlation, scatter distribution, outliers, and trend line
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
+        score: 5
+        max: 5
         passed: true
-        comment: Study hours vs exam scores is a perfect educational scenario
+        comment: Study hours vs exam scores — neutral educational scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Hours 1-10 and scores 40-100 are realistic, though the linear relationship
-          is slightly too clean
+        comment: Hours 1-10, scores 0-100% — perfectly realistic ranges
     code_quality:
       score: 10
       max: 10
@@ -168,40 +181,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save structure, no functions/classes
+        comment: Imports → Data → Plot → Save, no functions/classes
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only numpy and plotly.graph_objects imported
+        comment: Only numpy and plotly.graph_objects
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
-        passed: true
-        comment: Uses current Plotly API
-      - id: CQ-05
-        name: Output Correct
-        score: 1
-        max: 1
-        passed: true
-        comment: Saves as plot.png at correct resolution
-    library_features:
-      score: 2
-      max: 5
-      items:
-      - id: LF-01
-        name: Uses distinctive library features
+        name: Code Elegance
         score: 2
+        max: 2
+        passed: true
+        comment: Clean dict-spread pattern for annotations, appropriate complexity
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves plot.png at 4800×2700 via write_image
+    library_features:
+      score: 8
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
         max: 5
-        passed: false
-        comment: Has hovertemplate which is good, but doesn't generate HTML output
-          or leverage more advanced Plotly interactivity features
+        passed: true
+        comment: Good Graph Objects API usage with proper modes, hovertemplate, and
+          update_layout
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: hovertemplate, write_html, hoverlabel styling — Plotly-distinctive
+          features
   verdict: APPROVED

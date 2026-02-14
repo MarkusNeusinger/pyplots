@@ -1,165 +1,181 @@
 library: highcharts
 specification_id: scatter-basic
 created: '2025-12-22T23:43:32Z'
-updated: '2025-12-23T00:06:43Z'
-generated_by: claude-opus-4-5-20251101
+updated: '2026-02-14T14:53:29Z'
+generated_by: claude-opus-4-6
 workflow_run: 20446960278
 issue: 0
-python_version: 3.13.11
-library_version: unknown
+python_version: '3.14'
+library_version: 1.10.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/highcharts/plot.html
-quality_score: 92
+quality_score: 91
 impl_tags:
   dependencies:
-    - selenium
+  - selenium
   techniques:
-    - html-export
+  - annotations
+  - html-export
   patterns:
-    - data-generation
-  dataprep: []
+  - data-generation
+  dataprep:
+  - regression
   styling:
-    - alpha-blending
-    - grid-styling
+  - alpha-blending
+  - edge-highlighting
+  - grid-styling
 review:
   strengths:
-  - Excellent text sizing scaled appropriately for 4800x2700 resolution (72px title,
-    48px axis titles, 36px labels)
-  - Clean implementation following library rules with inline Highcharts JS for headless
-    Chrome compatibility
-  - Proper use of Python Blue color with transparency (rgba 0.7) for overlapping point
-    visibility
-  - Correct title format following the spec-id · library · pyplots.ai convention
-  - Both PNG and interactive HTML outputs generated
-  - Subtle dashed grid lines enhance readability without distraction
+  - Excellent data storytelling with regression equation annotation, R-squared display,
+    outlier highlighting, and quartile plot bands
+  - Publication-quality typography and color scheme with intentional hierarchy (title,
+    subtitle, axis, tick labels)
+  - 'Strong use of Highcharts-distinctive features: rich HTML tooltips, annotations
+    module, plot bands, marker hover states, shadow tooltips'
+  - Dual output (static PNG + interactive HTML) showcasing Highcharts interactive
+    capability
+  - Realistic health/biometric dataset with plausible values and meaningful statistical
+    overlay
   weaknesses:
-  - Axis labels are generic (X Value, Y Value) rather than contextual with units
-  - Marker radius (18) could be slightly smaller for better distinction between nearby
-    points
-  - Does not leverage Highcharts tooltip/hover interactivity features visible in the
-    static image
-  image_description: The plot displays a scatter plot on a white background with approximately
-    100 data points. The points are rendered as filled circles in a muted blue color
-    (Python Blue) with transparency (alpha ~0.7). The title "scatter-basic · highcharts
-    · pyplots.ai" appears at the top in bold black text. The X-axis is labeled "X
-    Value" (ranging from ~4.8 to ~13.6) and the Y-axis is labeled "Y Value" (ranging
-    from ~2 to ~15). Both axes have subtle gray dashed grid lines. The data shows
-    a clear positive correlation pattern with some scatter/noise. The overall layout
-    is clean and professional with good proportions.
+  - 'Margins are generous (especially marginBottom: 310) leading to slightly suboptimal
+    canvas utilization'
+  - Some chart options are set as raw dicts rather than using Highcharts-Core typed
+    objects consistently
+  image_description: 'The plot displays a scatter chart of Height (cm) vs Weight (kg)
+    on a light gray (#fafbfc) background. Blue circular markers with white outlines
+    represent 100 "Subjects" data points, while orange diamond markers highlight statistical
+    outliers. An orange dashed trend line runs diagonally from lower-left to upper-right,
+    showing the positive correlation. The title reads "scatter-basic · highcharts
+    · pyplots.ai" in dark text with a subtitle "Height vs Weight — positive correlation
+    across 100 subjects" in gray. A floating legend in the upper-right lists three
+    series: Subjects (blue circle), Outliers (orange diamond), and Trend (R² = 0.55).
+    An annotation box near the lower-left displays the regression equation "y = 0.58x
+    -27.8 | R² = 0.55" with an orange border. Subtle light-blue horizontal plot bands
+    mark the "Lower quartile" and "Upper quartile" regions with labeled text. Both
+    axes have dotted grid lines, labeled ticks at 5-unit intervals, and descriptive
+    titles with units.'
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 27
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
-        passed: true
-        comment: Title, axis labels, and tick marks are all clearly readable at the
-          high resolution
-      - id: VQ-02
-        name: No Overlap
         score: 8
         max: 8
+        passed: true
+        comment: 'All font sizes explicitly set: title 64px, axis titles 44px, tick
+          labels 34px, legend 30px, annotations 34px'
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
         passed: true
         comment: No overlapping text elements anywhere
       - id: VQ-03
         name: Element Visibility
+        score: 5
+        max: 6
+        passed: true
+        comment: Markers radius 12 with alpha 0.65 well-sized for 100 points; outliers
+          distinguished with larger diamonds
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 4
+        passed: true
+        comment: Blue and orange are colorblind-safe with strong luminance contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 2
+        max: 4
+        passed: false
+        comment: Large explicit margins (marginBottom 310, marginLeft 220) consume
+          significant canvas space
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: Height (cm) and Weight (kg)'
+    design_excellence:
+      score: 16
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
         score: 7
         max: 8
         passed: true
-        comment: Markers are appropriately sized for 100 data points with good transparency
-      - id: VQ-04
-        name: Color Accessibility
+        comment: Custom palette, refined typography, white marker outlines, dotted
+          grid, styled tooltips — approaching publication quality
+      - id: DE-02
+        name: Visual Refinement
         score: 5
-        max: 5
+        max: 6
         passed: true
-        comment: Single color (Python Blue) is colorblind-safe
-      - id: VQ-05
-        name: Layout Balance
+        comment: Dotted grid with low opacity, subtle borders, rounded corners, generous
+          whitespace
+      - id: DE-03
+        name: Data Storytelling
         score: 4
-        max: 5
+        max: 6
         passed: true
-        comment: Good proportions, though slight extra whitespace at top
-      - id: VQ-06
-        name: Axis Labels
-        score: 1
-        max: 2
-        passed: true
-        comment: Labels are descriptive ("X Value", "Y Value") but lack units
-      - id: VQ-07
-        name: Grid & Legend
-        score: 1
-        max: 2
-        passed: true
-        comment: Grid is subtle with dashed style and appropriate alpha; legend disabled
-          (appropriate for single series)
+        comment: Regression annotation with equation and R-squared, outlier highlighting,
+          quartile bands, subtitle context
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct scatter plot type
+        comment: Correct scatter plot chart type
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X/Y correctly mapped to axes
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: 'All spec features present: transparency, axis labels, title, grid
-          lines'
-      - id: SC-04
-        name: Data Range
+        comment: Transparency, axis labels, title, grid lines, appropriate point sizing
+          all present
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Axes show all data points with appropriate padding
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X=Height, Y=Weight correctly mapped with tight axis bounds
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend appropriately disabled for single-series scatter
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Correct format: "scatter-basic · highcharts · pyplots.ai"'
+        comment: Title format correct, legend labels descriptive and match data
     data_quality:
-      score: 18
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows correlation pattern with noise, demonstrates typical scatter
-          behavior
+        comment: Shows correlation, outliers, trend line, density variation, quartile
+          distribution
       - id: DQ-02
         name: Realistic Context
-        score: 6
-        max: 7
-        passed: true
-        comment: Plausible data range, shows meaningful positive correlation
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Sensible numeric values
+        comment: Height vs Weight health/biometric context is real and neutral
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Heights 140-190cm, weights 54-90kg are realistic human measurements
     code_quality:
       score: 10
       max: 10
@@ -169,13 +185,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear script: imports → data → chart config → export'
+        comment: 'Linear flow: imports, data, config, series, export'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -183,27 +199,33 @@ review:
         passed: true
         comment: All imports are used
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Uses current highcharts-core API
+        comment: Clean, well-organized, appropriate complexity
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html
+        comment: Saves as plot.png via container.screenshot()
     library_features:
-      score: 3
-      max: 5
+      score: 8
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 3
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
         max: 5
         passed: true
-        comment: Uses highcharts-core properly with ScatterSeries, but doesn't leverage
-          advanced Highcharts features like tooltips or interactive hover states in
-          the static output
+        comment: Typed API (ScatterSeries, SplineSeries), chart.options pattern, add_series(),
+          to_js_literal()
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Rich HTML tooltips, Annotation module, plot bands, marker hover states,
+          shadow config, interactive HTML export
   verdict: APPROVED

@@ -1,7 +1,7 @@
 library: altair
 specification_id: raincloud-basic
 created: '2025-12-25T08:23:10Z'
-updated: '2026-02-14T20:46:53Z'
+updated: '2026-02-14T20:54:37Z'
 generated_by: claude-opus-4-6
 workflow_run: 20501865366
 issue: 0
@@ -10,17 +10,17 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/altair/plot.html
-quality_score: 82
+quality_score: 94
 impl_tags:
   dependencies: []
   techniques:
-  - layer-composition
   - annotations
-  - hover-tooltips
+  - layer-composition
+  - custom-legend
   - html-export
   patterns:
   - data-generation
-  - groupby-aggregation
+  - iteration-over-groups
   dataprep:
   - kde
   styling:
@@ -29,38 +29,40 @@ impl_tags:
   - edge-highlighting
 review:
   strengths:
-  - 'Correct raincloud metaphor: clouds extend upward, rain falls downward from each
-    category baseline'
-  - Bimodal distribution annotation on Treatment B adds genuine data storytelling
-  - All font sizes explicitly set with large, readable values
-  - Three distinct distribution shapes showcase the plot type strengths
-  - Clean layered composition using Altair declarative approach
-  - Interactive HTML output alongside PNG leverages Altair web-native strength
+  - 'Excellent raincloud metaphor execution: cloud rises above, rain falls below,
+    box sits on baseline — exactly as specified'
+  - Strong data storytelling with bimodal distribution annotations (Peak 1/Peak 2
+    labels, connecting arrow, explanatory note) and median value callouts
+  - 'Publication-quality aesthetics: custom palette, white box plots with dark outlines
+    for contrast, subtle dashed grid, clean typography hierarchy'
+  - Treatment B bimodal distribution (mixed normals) is an excellent data choice that
+    showcases what raincloud plots reveal vs plain box plots
+  - All font sizes explicitly set with a clear hierarchy (title 28pt > axis 22pt >
+    y-labels 20pt > ticks 18pt > annotations 14-16pt)
   weaknesses:
-  - Box plot IQR rectangles are hard to distinguish from the cloud fill because they
-    share the same color; consider making the box fill white or a lighter shade with
-    a darker stroke
-  - 'Yellow (#FFD43B) has poor contrast against white background; consider a darker/more
-    saturated alternative like #D4A017 or #E8A317'
-  - The x-axis domain extends to 200-220 where no data exists, wasting horizontal
-    space; tightening the domain would improve data-ink ratio
-  - Legend is positioned far from the data in the top-right corner; placing it closer
-    to the plot area or integrating labels would improve readability
-  image_description: 'The plot displays a horizontal raincloud visualization with
-    three conditions: Control (steel blue, #306998), Treatment A (warm gold/yellow,
-    #FFD43B), and Treatment B (fresh green, #4CAF50). Each condition shows three stacked
-    elements: a half-violin KDE curve extending upward (the "cloud"), a box plot with
-    dark-outlined IQR box and red median tick centered on the category baseline, and
-    jittered strip points scattered below the baseline (the "rain"). The x-axis is
-    labeled "Reaction Time (ms)" ranging from ~200 to ~580, with light gray grid lines.
-    Category labels ("Control", "Treatment A", "Treatment B") are rendered as bold
-    text on the left. Treatment B includes italic annotations highlighting its bimodal
-    distribution with "Peak 1" and "Peak 2" labels connected by a dashed line, and
-    a "Bimodal distribution" note above. A legend in the top-right corner shows condition-color
-    mapping. The title reads "raincloud-basic · altair · pyplots.ai" at the top center.'
+  - Code is verbose due to manual box plot statistics and whisker cap construction
+    — could potentially be simplified if Altair supported a native box-plot layer
+    that aligns within the raincloud layout
+  - Legend is positioned with absolute pixel coordinates (legendX=1350, legendY=50)
+    which is fragile and may not adapt well to different rendering contexts
+  image_description: 'The plot displays a horizontal raincloud plot with three conditions
+    (Control, Treatment A, Treatment B) stacked vertically. Each condition shows three
+    layered components: a semi-transparent half-violin (KDE cloud) extending upward
+    above the category baseline, a white-filled box plot with dark outlines centered
+    on the baseline (with whiskers, caps, and a red median tick), and jittered strip
+    points (rain) scattered below the baseline. Colors are blue (#306998) for Control,
+    dark gold (#D4A017) for Treatment A, and green (#4CAF50) for Treatment B. The
+    x-axis reads "Reaction Time (ms)" spanning approximately 250 to 600. Red median
+    value annotations (442, 383, 361) sit above each box plot. Treatment B''s bimodal
+    distribution is highlighted with italic "Peak 1" and "Peak 2" labels connected
+    by a dashed line, plus a "Bimodal distribution" note above. A legend in the upper-right
+    corner lists all three conditions with color swatches. The title reads "raincloud-basic
+    · altair · pyplots.ai" in bold at the top center. The overall aesthetic is clean
+    with a subtle dashed grid at low opacity, no view border, and generous spacing
+    between categories.'
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 30
       max: 30
       items:
       - id: VQ-01
@@ -68,36 +70,35 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 28pt, axis labels 22pt, tick
-          labels 18pt, y-labels 20pt, legend title 20pt, legend labels 18pt'
+        comment: 'All font sizes explicitly set: title 28pt, axis title 22pt, ticks
+          18pt, y-labels 20pt — perfectly readable'
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: 'Minor: rain points from adjacent conditions get close; bimodal annotation
-          text is light but readable'
+        comment: No overlapping text; annotations, median labels, and y-labels all
+          clearly separated
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Rain points and clouds visible, but box plot IQR rectangles blend
-          into cloud fill due to matching colors
+        comment: Strip points size=45 with alpha=0.5 appropriate for 80 pts/group;
+          violins and box plots clearly visible
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Blue and green distinguishable for most colorblind types, but bright
-          yellow (#FFD43B) has low contrast against white background
+        comment: Blue/gold/green palette is colorblind-safe with good luminance contrast
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Good canvas use with left padding, but x-axis extends to 200-220
-          where no data exists, wasting space
+        comment: Plot fills canvas well, balanced margins, left padding accommodates
+          y-labels
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
@@ -106,32 +107,32 @@ review:
         comment: Reaction Time (ms) with units on x-axis, descriptive condition names
           on y-axis
     design_excellence:
-      score: 14
+      score: 17
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Strong design with custom palette, intentional hierarchy, styled
-          grid, removed view strokes. Above defaults but not publication-level
+        comment: Custom palette, white-filled box plots with dark outlines, red median
+          ticks, dashed grid, removed view strokes — publication-ready
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Subtle grid opacity 0.35, view stroke removed, custom axis colors,
-          generous padding
+        comment: Subtle dashed grid at low opacity, no view border, generous whitespace,
+          whisker caps, white box fill separating from violin
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Bimodal annotation on Treatment B with labels, dashed line, and note
-          guides viewer to key insight
+        comment: Bimodal annotation with Peak 1/Peak 2 labels and connecting dashed
+          line; median value annotations guide the viewer
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -139,30 +140,29 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct raincloud with half-violin cloud, box plot, and jittered
-          strip rain
+        comment: 'Correct raincloud with all three components: half-violin, box plot,
+          jittered strip'
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Horizontal orientation, cloud above, rain below, box plot centered,
-          median/quartile markers, jitter, alpha
+        comment: Horizontal orientation, cloud above, box on baseline, rain below,
+          half-violin, moderate jitter, transparency, median/quartile markers
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Categories on y-axis, continuous values on x-axis as specified
+        comment: Categories on y-axis, values on x-axis — correct horizontal layout
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend present but positioned far from data
-          in top-right corner
+        comment: Title format correct, legend with proper condition labels
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
@@ -170,24 +170,24 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Three conditions with distinct distributions: normal, shifted normal,
-          bimodal'
+        comment: 'Three groups with distinct distributions: normal, narrower normal,
+          and bimodal'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Reaction times for treatment conditions - real, neutral scientific
-          scenario
+        comment: Reaction times for treatment conditions — plausible psychology/clinical
+          trial scenario
       - id: DQ-03
         name: Appropriate Scale
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Realistic reaction time range (300-550ms), though Treatment B second
-          peak overlaps with Control center
+        comment: Reaction times 250-600ms realistic for cognitive tasks; 80 obs/group
+          reasonable
     code_quality:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -195,34 +195,34 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, plot, save. No functions or classes'
+        comment: 'Linear flow: imports, data, box stats, layers, compose, save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) used
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only altair, numpy, pandas imported and all used
+        comment: 'All imports used: altair, numpy, pandas'
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
         passed: false
-        comment: Verbose manual box plot computation and manual y-axis labels add
-          complexity; necessary for Altair but could be streamlined
+        comment: Verbose with manual box stats, whisker caps, and multiple annotation
+          layers; partly necessary for Altair
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png and plot.html correctly
+        comment: Saves plot.png and plot.html, no deprecated functions
     library_mastery:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: LM-01
@@ -230,13 +230,14 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of layered composition, transform_density, transform_calculate,
-          and declarative encoding. Manual box stats less idiomatic but necessary
+        comment: 'Good use of declarative grammar: transform_density, transform_calculate,
+          mark_area with y2, alt.layer, .interactive()'
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: 'Uses Altair-specific features: transform_density, layer composition,
-          interactive(), tooltip encoding, HTML export'
-  verdict: REJECTED
+        comment: transform_density for in-spec KDE, transform_calculate for computed
+          positions, declarative layer composition — distinctive Vega-Lite/Altair
+          patterns
+  verdict: APPROVED

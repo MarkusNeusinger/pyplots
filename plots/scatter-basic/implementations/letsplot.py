@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-basic: Basic Scatter Plot
 Library: letsplot 4.8.2 | Python 3.14
-Quality: 86/100 | Created: 2025-12-22
+Quality: 91/100 | Created: 2025-12-22
 """
 
 import numpy as np

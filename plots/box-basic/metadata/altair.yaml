@@ -1,160 +1,177 @@
 library: altair
 specification_id: box-basic
 created: '2025-12-23T00:35:59Z'
-updated: 2026-02-14T22:09:08+00:00
+updated: '2026-02-14T22:14:03Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447781641
 issue: 0
-python_version: "3.14"
-library_version: "6.0.0"
+python_version: '3.14'
+library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/box-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/box-basic/altair/plot.html
-quality_score: null
+quality_score: 89
 impl_tags:
   dependencies: []
   techniques:
-    - html-export
+  - hover-tooltips
+  - html-export
   patterns:
-    - data-generation
-    - iteration-over-groups
+  - data-generation
+  - iteration-over-groups
   dataprep: []
-  styling: []
+  styling:
+  - grid-styling
 review:
   strengths:
-  - Excellent use of Altair declarative syntax with proper encoding types (N for nominal,
-    Q for quantitative)
-  - 'Well-customized box plot with styled median line (white, strokeWidth: 3) and
-    outlier sizing'
-  - 'Good color palette using Python colors (#306998, #FFD43B) plus colorblind-safe
-    additions'
-  - Proper currency formatting on y-axis using format specification
-  - Clean, readable code structure following KISS principles
+  - Perfect spec compliance with all required features (median, outliers, whiskers,
+    distinct colors)
+  - Excellent realistic data scenario with meaningful variation across departments
+  - Clean, idiomatic Altair code with well-structured data generation
+  - Strong text legibility with all font sizes explicitly configured
+  - Good use of Altair-specific features (aggregate tooltips, interactive zoom/pan,
+    HTML export)
   weaknesses:
-  - Does not include tooltips which are a key Altair feature for data exploration
-  - Legend is explicitly hidden (legend=None) when it could aid readability
-  - Grid opacity configured but not showing strongly in the visualization
-  image_description: 'The plot displays 5 box plots comparing salary distributions
-    across departments (Engineering, Finance, HR, Marketing, Sales). Each department
-    has a distinct color: blue for Engineering, yellow for Finance, light blue for
-    HR, gray for Marketing, and green for Sales. The boxes show quartiles with white
-    median lines, whiskers extend to show data range, and outliers appear as hollow
-    circles. The y-axis displays "Salary ($)" with currency formatting ($0 to $180,000),
-    and the x-axis shows "Department" with angled labels. The title "box-basic · altair
-    · pyplots.ai" appears at the top. A subtle grid is present in the background.'
+  - 'No data storytelling: add annotations highlighting key insights (e.g., annotate
+    the highest-paid department or the largest salary spread)'
+  - 'Visual refinement could be improved: consider adding a subtle background color
+    or further customizing tick marks'
+  - 'Minor layout issue: some unused vertical space above the data range'
+  image_description: 'The plot displays 5 vertical box-and-whisker plots comparing
+    salary distributions across departments (Engineering, Marketing, Sales, HR, Finance).
+    Each department has a distinct color: Engineering in dark blue (#306998), Marketing
+    in golden/amber, Sales in lighter blue, HR in muted purple, and Finance in teal.
+    White median lines are visible within each box. Outliers appear as individual
+    colored dots — Engineering has one low outlier (~$55k), Marketing has 3 high outliers
+    (~$95-101k), Sales has one very high outlier (~$137k), and HR has one low outlier
+    (~$33k). The y-axis is labeled "Salary ($)" with dollar-formatted tick labels
+    ranging from $30,000 to $140,000. The x-axis is labeled "Department". The title
+    reads "box-basic · altair · pyplots.ai" at the top. A subtle light gray grid is
+    present. The distributions vary meaningfully: Engineering is high and moderately
+    spread, Sales is wide, HR is compact and low, Marketing is mid-range and tight,
+    Finance is high with moderate spread.'
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 29
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
-        max: 10
-        passed: true
-        comment: Title and axis labels are clearly readable, tick labels well-sized
-      - id: VQ-02
-        name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements
+        comment: 'All font sizes explicitly set: title 28pt, axis titles 22pt, tick
+          labels 18pt. Perfectly readable.'
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
+        passed: true
+        comment: No overlapping text elements anywhere.
       - id: VQ-03
         name: Element Visibility
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Box plots well-sized, outliers visible but could be slightly larger
+        comment: Boxes well-sized (size=80), outliers visible (size=120, filled, opacity
+          0.7).
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Good color differentiation, colorblind-friendly palette
+        comment: 'Colorblind-safe palette: dark blue, amber, light blue, purple, teal.
+          No red-green pair.'
       - id: VQ-05
         name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Good proportions, no cut-off content
+        score: 3
+        max: 4
+        passed: false
+        comment: Good canvas utilization but some unused vertical space above $140k.
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with units ("Salary ($)")
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
-        passed: true
-        comment: Grid is subtle (good), but legend is hidden when it could help identify
-          departments
+        comment: Salary ($) includes units, Department is descriptive.
+    design_excellence:
+      score: 11
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: false
+        comment: Custom palette, white median lines, formatted dollar axis, removed
+          view border. Above defaults but not publication-level exceptional.
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: false
+        comment: Subtle grid (opacity 0.2), view stroke removed, clean look. Could
+          improve tick styling further.
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: Data displayed clearly but no annotations, callouts, or narrative
+          elements guide the viewer.
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct box plot type
+        comment: Correct box-and-whisker plot.
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories on X, values on Y correctly
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Median line, outliers, whiskers all present
-      - id: SC-04
-        name: Data Range
+        comment: Median line, outliers, whiskers at 1.5xIQR, different colors per
+          category.
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible including outliers
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Categories on X-axis, values on Y-axis.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Colors match categories (legend hidden but consistent)
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Correct format: "box-basic · altair · pyplots.ai"'
+        comment: Correct title format. Legend hidden since colors map to x-axis labels.
     data_quality:
-      score: 18
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows outliers and different distributions, varied spreads across
-          departments
+        comment: Shows outliers, different distribution widths, different medians,
+          varied sample sizes.
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
+        score: 5
+        max: 5
         passed: true
-        comment: Salary distributions across departments is a real, comprehensible
-          scenario
+        comment: Salary distributions across departments — real, neutral business
+          scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Salaries are realistic but some outliers seem extreme (e.g., $170k
-          in Sales seems high relative to base)
+        comment: Realistic salary values ($30k-$140k). Engineering highest, HR lowest.
     code_quality:
       score: 10
       max: 10
@@ -164,40 +181,48 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save structure
+        comment: Clean imports, data, plot, save flow. No functions/classes.
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports (altair, numpy, pandas)
+        comment: All imports used (altair, numpy, pandas).
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
-        passed: true
-        comment: Uses current Altair API
-      - id: CQ-05
-        name: Output Correct
-        score: 1
-        max: 1
-        passed: true
-        comment: Saves as plot.png and plot.html
-    library_features:
-      score: 2
-      max: 5
-      items:
-      - id: LF-01
-        name: Uses distinctive library features
+        name: Code Elegance
         score: 2
+        max: 2
+        passed: true
+        comment: Clean dict-based parameter definition, appropriate complexity.
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves plot.png and plot.html.
+    library_mastery:
+      score: 9
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: Declarative grammar, proper encoding types, tooltips with aggregate
+          functions.
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
         max: 5
         passed: false
-        comment: Uses mark_boxplot with customization but doesn't leverage Altair's
-          interactive features or tooltips
-  verdict: APPROVED
+        comment: mark_boxplot with median/outlier customization, aggregate tooltips,
+          .interactive(), HTML export. Could leverage more (e.g., selection, layered
+          composition).
+  verdict: REJECTED

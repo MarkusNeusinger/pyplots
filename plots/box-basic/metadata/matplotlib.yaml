@@ -1,166 +1,181 @@
 library: matplotlib
 specification_id: box-basic
 created: '2025-12-23T00:35:11Z'
-updated: 2026-02-14T22:09:08+00:00
+updated: '2026-02-14T22:13:37Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447776148
 issue: 0
-python_version: "3.14"
-library_version: "3.10.8"
+python_version: '3.14'
+library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/box-basic/matplotlib/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-basic/matplotlib/plot_thumb.png
 preview_html: null
-quality_score: null
+quality_score: 82
 impl_tags:
   dependencies: []
-  techniques:
-  - edge-highlighting
+  techniques: []
   patterns:
   - data-generation
-  - explicit-figure
   dataprep: []
   styling:
+  - alpha-blending
   - grid-styling
+  - edge-highlighting
 review:
   strengths:
-  - Excellent text sizing with proper font hierarchy (24/20/16pt)
-  - Clean KISS code structure following matplotlib best practices
-  - Uses tick_labels parameter correctly (avoiding deprecated API)
-  - Good customization of box elements (patch_artist, custom line widths, alpha transparency)
-  - Realistic department performance context with varied distributions
-  - Proper outlier display with styled flierprops
-  - Subtle grid enhances readability without distraction
+  - Excellent data design with deliberately varied distributions and injected outliers
+    showing all box plot features
+  - Clean, well-structured code following KISS principle with good comments
+  - Proper font sizing and visual proportions for the output resolution
+  - Cohesive color palette with alpha-blending and consistent styling of all box elements
+  - Correct use of modern matplotlib API (tick_labels, patch_artist, axes methods)
   weaknesses:
-  - Engineering (#306998) and Sales (#4B8BBE) colors are both blue shades - could
-    use more distinct colors for better differentiation
-  - Performance scores exceed 100 for some outliers which is slightly inconsistent
-    if interpreting as percentage scores
-  image_description: 'The plot displays a box-and-whisker chart with 4 departments
-    (Engineering, Marketing, Sales, Support) on the x-axis and Performance Score on
-    the y-axis (ranging from ~20 to ~130). Each department has a distinct colored
-    box: Engineering in steel blue (#306998), Marketing in yellow (#FFD43B), Sales
-    in lighter blue (#4B8BBE), and Support in orange (#E8A838). The boxes show median
-    lines, quartile boxes, and whiskers extending to 1.5*IQR. Outliers are visible
-    as gray circular points - Engineering has one low outlier (~43), Marketing has
-    one high outlier (~104), and Sales has three outliers (one very high at ~127,
-    one at ~104, and one very low at ~21). The title "box-basic · matplotlib · pyplots.ai"
-    appears at the top. A subtle horizontal grid with dashed lines aids readability.'
+  - 'No data storytelling: annotations or callouts highlighting key insights (e.g.
+    Marketing tightest distribution, Sales widest spread with low outliers) would
+    elevate the plot significantly'
+  - Library mastery is generic — the implementation does not leverage any distinctive
+    matplotlib features beyond the standard boxplot API
+  - Color palette could be improved for maximum colorblind safety — the amber/yellow
+    pair is close in the warm spectrum
+  image_description: 'The plot displays 5 vertical box-and-whisker plots arranged
+    side by side, one per department: Engineering (steel blue), Marketing (golden
+    yellow), Sales (amber/orange), Support (purple), and Design (teal). Each box shows
+    the interquartile range with a dark median line and a white diamond mean marker.
+    Whiskers extend from the boxes, and gray circle outliers are visible — Engineering
+    has two outliers (one low ~38, one high ~99), Sales has two low outliers (~22,
+    ~25) and one high (~100), and Support has one low outlier (~49). The y-axis is
+    labeled "Score (0–100)" ranging from ~10 to ~105, and the x-axis is labeled "Department".
+    The title reads "box-basic · matplotlib · pyplots.ai" in a clean medium-weight
+    font. Top and right spines are removed, a subtle y-axis grid is present. Distributions
+    vary meaningfully: Marketing is tight and high-scoring, Sales is wide and lower,
+    Engineering and Design show moderate spread. The overall layout is clean with
+    good proportions, and colors are distinct and colorblind-friendly.'
   criteria_checklist:
     visual_quality:
-      score: 37
-      max: 40
+      score: 27
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt - all perfectly
-          readable
+        comment: 'All font sizes explicitly set: title 24pt, axis labels 20pt, tick
+          labels 16pt. All perfectly readable.'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping text elements. Category labels well-spaced.
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Boxes well-sized, outliers clearly visible with appropriate marker
-          size
+        comment: Box widths appropriate (0.55), outlier markers sized well (8pt),
+          mean diamonds visible (9pt), whiskers prominent (linewidth 2).
       - id: VQ-04
         name: Color Accessibility
-        score: 4
-        max: 5
+        score: 3
+        max: 4
         passed: true
-        comment: Colors are distinguishable but blue shades (Engineering/Sales) are
-          somewhat similar
+        comment: Five distinct hues generally colorblind-safe. Amber/yellow pair could
+          be challenging for deuteranopia viewers.
       - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
+        name: Layout & Canvas
+        score: 4
+        max: 4
         passed: true
-        comment: Good proportions, proper use of tight_layout
+        comment: Good 16:9 proportions, plot fills canvas well, balanced margins via
+          tight_layout.
       - id: VQ-06
-        name: Axis Labels
-        score: 1
+        name: Axis Labels & Title
+        score: 2
         max: 2
         passed: true
-        comment: Descriptive labels but no units (Performance Score could have units)
-      - id: VQ-07
-        name: Grid & Legend
-        score: 1
-        max: 2
+        comment: Y-axis 'Score (0-100)' includes scale, x-axis 'Department' is descriptive.
+          Both appropriate for the context.
+    design_excellence:
+      score: 11
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
         passed: true
-        comment: Grid subtle at alpha=0.3, y-axis only which is appropriate; no legend
-          needed for this plot type
+        comment: Thoughtful custom palette, alpha-blended boxes, dark edges, styled
+          whiskers. Above defaults but not FiveThirtyEight-level.
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Spines removed, subtle grid, generous layout. Good but not every
+          detail polished.
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: No annotations, callouts, or narrative elements. Viewer must discover
+          insights independently.
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct box-and-whisker plot
+        comment: Correct box-and-whisker plot type.
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories on X, values on Y correctly assigned
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Median line, quartile boxes, whiskers at 1.5*IQR, outliers shown,
-          different colors per category
-      - id: SC-04
-        name: Data Range
+        comment: 'All spec features present: median, outliers, whiskers at 1.5*IQR,
+          different colors per category. Also adds mean markers.'
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible including outliers
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Categories on x-axis, values on y-axis, correctly mapped.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: No legend needed; category labels serve this purpose
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Uses exact format "box-basic · matplotlib · pyplots.ai"
+        comment: Title uses correct format. No legend needed — colors identified by
+          tick labels.
     data_quality:
-      score: 18
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows outliers, different distributions (narrow for Marketing, wide
-          for Sales), varying medians; could show more extreme differences
+        comment: Varied distributions, different central tendencies, injected outliers
+          on both ends, varying sample sizes.
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Department performance scores is a realistic, comprehensible scenario
-      - id: DQ-03
-        name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Scores in 20-130 range; some outliers above 100 are slightly unrealistic
-          for a 0-100 score context
+        comment: Department performance scores is plausible. Concrete department names.
+          Somewhat generic but not abstract.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Scores clamped to 0-100, realistic means (68-85) and standard deviations
+          (6-14).
     code_quality:
       score: 10
       max: 10
@@ -170,41 +185,49 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Simple linear flow: imports → data → plot → save'
+        comment: 'Clean linear flow: imports, data, plot, style, save. No functions
+          or classes.'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set at the top.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only matplotlib and numpy imported, both used
+        comment: Only matplotlib.pyplot and numpy imported, both used.
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
-        passed: true
-        comment: Uses tick_labels instead of deprecated labels parameter
-      - id: CQ-05
-        name: Output Correct
-        score: 1
-        max: 1
-        passed: true
-        comment: Saves as plot.png
-    library_features:
-      score: 2
-      max: 5
-      items:
-      - id: LF-01
-        name: Distinctive Features
+        name: Code Elegance
         score: 2
+        max: 2
+        passed: true
+        comment: Clean, well-commented. Outlier injection explicit and purposeful.
+          zip with strict=True is Pythonic.
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png at 300 DPI. Uses tick_labels (not deprecated labels).
+    library_features:
+      score: 5
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of patch_artist=True, axes methods, comprehensive prop dictionaries.
+          Could use boxprops in initial call instead of loop.
+      - id: LM-02
+        name: Distinctive Features
+        score: 1
         max: 5
         passed: false
-        comment: Uses patch_artist for filled boxes and customizes flierprops/medianprops/whiskerprops,
-          but does not use more advanced matplotlib features like violin overlays
-          or swarm points
-  verdict: APPROVED
+        comment: Standard boxplot pattern. Nothing distinctive to matplotlib — could
+          be replicated in any library with minor changes.
+  verdict: REJECTED

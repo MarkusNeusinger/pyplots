@@ -1,7 +1,7 @@
 library: plotly
 specification_id: raincloud-basic
 created: '2025-12-25T08:25:05Z'
-updated: '2026-02-14T20:42:05Z'
+updated: '2026-02-14T20:49:56Z'
 generated_by: claude-opus-4-6
 workflow_run: 20501864541
 issue: 0
@@ -10,7 +10,7 @@ library_version: 6.5.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/plotly/plot.html
-quality_score: 87
+quality_score: 90
 impl_tags:
   dependencies: []
   techniques:
@@ -24,44 +24,44 @@ impl_tags:
   dataprep: []
   styling:
   - alpha-blending
-  - edge-highlighting
   - grid-styling
+  - edge-highlighting
 review:
   strengths:
-  - Excellent data diversity showing normal, bimodal, tight, and wide distributions
-    with outliers — demonstrates all advantages of raincloud plots
-  - Three well-crafted annotations with category-matching border colors create a clear
-    data narrative
-  - Cohesive blue-teal-purple palette is colorblind-safe and visually harmonious
-  - All font sizes explicitly set with intentional hierarchy (32/24/20/15/14pt)
-  - Dual output (PNG + interactive HTML with range slider) leverages Plotly interactive
-    strengths
-  - Clean raincloud metaphor with cloud above, box centered, rain below — correct
-    orientation throughout
+  - Excellent data storytelling with three well-placed annotations highlighting bimodality,
+    tight clustering, and outliers
+  - Cohesive blue-teal color palette that is both aesthetically pleasing and colorblind-safe
+  - Rich variety of distribution shapes across groups (normal, tight, bimodal, wide
+    with outliers) making full use of the raincloud plot strengths
+  - Clean horizontal orientation with proper cloud-above, rain-below metaphor as specified
+  - Professional subtitle and annotation styling with matched border colors
   weaknesses:
-  - Legend overlaps with Treatment C violin area — should be repositioned (e.g., below
-    the plot or in a less crowded area)
-  - Rain point markers (size 7) are slightly small for this canvas resolution; increasing
-    to 8-9 would improve visibility
-  - Annotation blocks are repetitive — a loop with a config list would reduce verbosity
-  - The explicit x-axis range [210, 700] may crop a few data points near the boundaries
+  - Vertical spacing between groups is generous, leaving some unused canvas space
+    that could be tightened
+  - Rain points implemented via zero-width Violin trace rather than a more idiomatic
+    scatter approach
+  - Point markers (size 9) cause some visual clumping in the dense Treatment A group
   image_description: 'The plot displays a horizontal raincloud plot with four experimental
-    conditions (Control, Treatment A, Treatment B, Treatment C) on the y-axis and
-    Reaction Time (ms) on the x-axis (range ~210–700). Each condition features three
-    layered components: a half-violin (cloud) extending upward from the category baseline,
-    a narrow white-filled box plot centered on the baseline with dark edges, and jittered
-    scatter points (rain) falling below the baseline. The color palette uses a cohesive
-    blue-teal scheme: deep blue (#306998) for Control, medium blue (#4B8BBE) for Treatment
-    A, teal (#2A9D8F) for Treatment B, and soft purple (#7B68AE) for Treatment C.
-    Three annotations with bordered callout boxes highlight key data features: "Outliers"
-    pointing to high values in Control, "Tight cluster (low variance)" for Treatment
-    A''s narrow distribution, and "Bimodal: two distinct response clusters" for Treatment
-    B''s dual-peaked shape. The title "raincloud-basic · plotly · pyplots.ai" is centered
-    at the top. A legend labeled "Condition" sits in the upper right. The background
-    is white with subtle vertical gridlines.'
+    conditions (Control, Treatment A, Treatment B, Treatment C) arranged on the y-axis
+    and Reaction Time (ms) on the x-axis, ranging from approximately 150 to 660 ms.
+    Each condition features three layered components: a semi-transparent half-violin
+    (cloud) extending upward above the category baseline, a thin white box plot with
+    dark outlines centered on the baseline showing median and quartiles, and jittered
+    strip points (rain) scattered below the baseline. The color palette is a cohesive
+    blue-teal scheme: dark blue (#306998) for Control, medium blue (#4B8BBE) for Treatment
+    A, teal (#2A9D8F) for Treatment B, and purple (#7B68AE) for Treatment C. Three
+    annotations with arrows highlight key distributional features: "Outliers" pointing
+    to the Control group''s high-value points near 620-650 ms, "Tight cluster (low
+    variance)" pointing to Treatment A''s concentrated distribution, and "Bimodal:
+    two distinct response clusters" pointing to Treatment B''s double-peaked violin.
+    The title reads "raincloud-basic · plotly · pyplots.ai" in large text with a smaller
+    subtitle "Distribution shape, summary stats, and individual observations in one
+    view." A horizontal legend labeled "Condition" sits below the plot. The background
+    is clean white with subtle vertical gridlines. Overall the layout is well-proportioned
+    with generous margins and clear visual hierarchy.'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 27
       max: 30
       items:
       - id: VQ-01
@@ -70,42 +70,43 @@ review:
         max: 8
         passed: true
         comment: 'All font sizes explicitly set: title 32pt, axis labels 24pt, ticks
-          20pt, annotations 14-15pt. Perfectly readable.'
+          20pt, annotations 14-15pt. All perfectly readable at 4800x2700.'
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Mostly clean layout. Treatment A annotation arrow positioning slightly
-          tight. No significant readability issues.
+        comment: No overlapping text elements. Annotations positioned with appropriate
+          offsets.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Rain points (size 7, opacity 0.6) visible but slightly small for
-          80-point groups. Violin and box elements well-sized.
+        comment: Violin shapes, box plots, and jittered points clearly visible. Slight
+          clumping in Treatment A due to marker size.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue-teal-purple palette is colorblind-safe with good luminance contrast.
+        comment: Blue-teal-purple palette is colorblind-safe with good luminance variation.
       - id: VQ-05
-        name: Layout Balance
+        name: Layout & Canvas
         score: 2
         max: 4
-        passed: false
-        comment: Legend overlaps Treatment C violin area. Top category extends close
-          to title, cramped feel at top.
+        passed: true
+        comment: Good margins but generous vertical spacing between groups leaves
+          some wasted canvas space.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Reaction Time (ms) includes units, Experimental Condition is descriptive.
+        comment: Reaction Time (ms) with units on x-axis, Experimental Condition on
+          y-axis.
     design_excellence:
-      score: 16
+      score: 18
       max: 20
       items:
       - id: DE-01
@@ -113,22 +114,22 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Custom cohesive palette, intentional typography hierarchy, white-fill
-          boxplots with dark edges, annotation borders matching category colors.
+        comment: Custom cohesive blue-teal palette, intentional color hierarchy, refined
+          grid styling. Approaching publication quality.
       - id: DE-02
         name: Visual Refinement
         score: 5
         max: 6
         passed: true
-        comment: plotly_white template, y-grid removed, subtle x-grid, clean spines.
-          Range slider on HTML shows attention to detail.
+        comment: Subtle gridlines (opacity 0.06), clean white background, polished
+          hover labels. Could be more vertically compact.
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 6
         max: 6
         passed: true
-        comment: Three annotations narrate outliers, low variance, and bimodality.
-          Above default display-only approach.
+        comment: Three targeted annotations highlight bimodality, tight clustering,
+          and outliers. Guides viewer effectively.
     spec_compliance:
       score: 14
       max: 15
@@ -138,29 +139,30 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct raincloud plot with half-violin, box plot, and jittered points.
+        comment: Correct raincloud plot with half-violin, box plot, and jittered strip
+          points.
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: 'All key features present: horizontal orientation, half-violin above,
-          box centered, rain below, jitter 0.08, alpha 0.6. Box whiskers appear quite
-          wide.'
+        comment: Horizontal orientation, half-violin, box plot with median/quartiles,
+          jittered points with alpha and jitter.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Categories on y-axis, values on x-axis, correct horizontal orientation.
+        comment: Categories on y-axis, values on x-axis with proper range padding.
       - id: SC-04
         name: Title & Legend
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Title matches required format. Legend labels match condition names.
+        comment: Title format correct. Legend present with correct labels. Legend
+          title could be more descriptive.
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
@@ -168,22 +170,21 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Excellent variety: normal, bimodal, tight cluster, wide variance
-          with outliers.'
+        comment: 'Excellent variety: normal with outliers, tight clustering, bimodal,
+          and wide distributions.'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Reaction times for experimental conditions is a realistic, neutral
+        comment: Reaction times for experimental conditions is a classic, realistic
           psychology scenario.
       - id: DQ-03
         name: Appropriate Scale
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Reaction times 250-650ms are plausible. Explicit x-range may slightly
-          clip extreme values.
+        comment: Reaction times 250-650ms are realistic for cognitive psychology experiments.
     code_quality:
       score: 9
       max: 10
@@ -193,34 +194,34 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports, data, plot, save flow with no functions or classes.
+        comment: Clean Imports, Data, Plot, Save structure with no functions or classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) is set.
+        comment: np.random.seed(42) set at the top.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only numpy and plotly.graph_objects, both used.
+        comment: Only numpy and plotly.graph_objects imported, both used.
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
         passed: true
-        comment: go.Violin(width=0) trick for rain is clever but hacky. Annotation
-          blocks repetitive.
+        comment: Clean loop-based approach. Zero-width Violin trick for rain is functional
+          but not the cleanest.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png at 1600x900 scale 3. Also generates HTML.
-    library_features:
-      score: 8
+        comment: Saves as plot.png at correct dimensions. Also generates plot.html.
+    library_mastery:
+      score: 7
       max: 10
       items:
       - id: LM-01
@@ -228,13 +229,13 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of go.Violin side parameter, go.Box, legendgroup, violingap/violinmode
-          overlay.
+        comment: Good use of go.Violin side parameter, violinmode overlay, legendgroup.
+          Zero-width Violin for rain is not the most idiomatic.
       - id: LM-02
         name: Distinctive Features
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: Half-violin via side parameter, violinmode overlay, rangeslider for
-          HTML, custom hovertemplate, hoveron.
-  verdict: REJECTED
+        comment: Range slider for HTML, hover templates, Violin side parameter are
+          Plotly-specific.
+  verdict: APPROVED

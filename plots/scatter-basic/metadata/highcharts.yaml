@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: scatter-basic
 created: '2025-12-22T23:43:32Z'
-updated: '2026-02-14T14:33:20Z'
+updated: '2026-02-14T14:44:27Z'
 generated_by: claude-opus-4-6
 workflow_run: 20446960278
 issue: 0
@@ -10,52 +10,57 @@ library_version: 1.10.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/highcharts/plot.html
-quality_score: 73
+quality_score: 87
 impl_tags:
   dependencies:
   - selenium
   techniques:
+  - annotations
   - html-export
   patterns:
   - data-generation
-  dataprep: []
+  dataprep:
+  - regression
   styling:
   - alpha-blending
   - edge-highlighting
   - grid-styling
 review:
   strengths:
-  - Correct title format and clean spec compliance
-  - Realistic height-vs-weight data scenario with appropriate scales
-  - Explicit font sizing ensures legibility at 4800x2700 resolution
-  - White marker edges provide visual separation between overlapping points
-  - Alpha transparency at 0.7 as specified in the spec
-  - Clean KISS code structure with proper seed for reproducibility
+  - Excellent data storytelling with outlier detection, trend line + R-squared annotation,
+    and quartile plot bands
+  - Strong Highcharts-idiomatic code using typed API (ScatterSeries, SplineSeries,
+    Annotation.from_dict)
+  - Rich tooltip formatting with HTML pointFormat is a distinctive Highcharts feature
+  - Clean, well-structured code with no unnecessary complexity
+  - Realistic height vs weight scenario with appropriate data generation
+  - 'Professional visual polish: custom typography, marker hover states, subtle grid
+    styling'
   weaknesses:
-  - Y-axis extends far beyond data range (to 100 when max is ~92), creating wasted
-    space at the top of the chart — should use auto-scaling or set explicit min/max
-    closer to data bounds
-  - 'No storytelling elements: add a trend line, R-squared annotation, or callouts
-    for outliers to guide the viewer'
-  - Y-axis gridlines every 2 kg are too dense, creating visual noise — increase the
-    tick interval
-  - Marker radius=18 is slightly too large for 100 points — causes overlap in dense
-    regions around 165-175 cm
-  - Does not leverage Highcharts-distinctive features — consider using plotLines,
-    plotBands, or data labels for a few key points
-  - Design is a well-configured default rather than publication-quality — needs more
-    visual refinement
-  image_description: The plot displays a scatter chart of Height (cm) on the x-axis
-    versus Weight (kg) on the y-axis, with approximately 100 data points. Points are
-    rendered as medium-sized blue circles (Python Blue rgba(48,105,152,0.7)) with
-    white edge borders against a clean white background. The title "scatter-basic
-    · highcharts · pyplots.ai" appears at the top in bold. Both axes have descriptive
-    labels with units. Light gray gridlines run horizontally and vertically. The data
-    shows a clear positive correlation — taller individuals tend to weigh more, with
-    heights ranging from ~143-186 cm and weights from ~50-92 kg. There is notable
-    empty space at the top of the y-axis (which extends to 100) above the data. No
-    legend is shown (single series). The design is clean and functional but visually
-    straightforward with no annotations or storytelling elements.
+  - X-axis title Height (cm) is partially clipped at the bottom of the canvas — increase
+    marginBottom or spacingBottom
+  - The 190 X-axis tick label is slightly cut off at the right edge — increase marginRight
+  - Quartile plot band labels (Lower quartile, Upper quartile) are too faint at rgba
+    alpha 0.3 and 26px font size — increase opacity to at least 0.5 and font size
+    to 30px+
+  - Blue vs red color scheme for subjects/outliers relies partly on hue distinction
+    — consider using orange or a more colorblind-distinguishable color for outliers
+    while keeping diamond shape
+  image_description: The plot displays a scatter chart on a light gray (#fafbfc) background
+    titled "scatter-basic · highcharts · pyplots.ai" with a subtitle "Height vs Weight
+    — positive correlation across 100 subjects." The X-axis shows "Height (cm)" ranging
+    from approximately 142 to 190, and the Y-axis shows "Weight (kg)" ranging from
+    approximately 50 to 96. The main data points are semi-transparent blue circles
+    with white edge outlines (labeled "Subjects" in the legend). Approximately 6-7
+    outlier points are shown as dark red/crimson diamond markers (labeled "Outliers").
+    An orange long-dashed trend line runs from lower-left to upper-right showing the
+    positive correlation. An annotation box near the lower-left displays "y = 0.54x
+    -20.5 | R² = 0.29" with an orange border. The legend is positioned in the upper-right
+    corner with a white semi-transparent background and rounded corners. Very faint
+    "Lower quartile" and "Upper quartile" plot band labels appear on the left edge
+    with subtle blue-tinted background bands. Dotted grid lines provide reference
+    throughout. The X-axis title "Height (cm)" appears slightly clipped at the bottom
+    edge of the canvas.
   criteria_checklist:
     visual_quality:
       score: 24
@@ -63,68 +68,69 @@ review:
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 6
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 72px, axis titles 48px, tick
-          labels 36px — all clearly readable'
+        comment: All font sizes explicitly set (title 64px, axis titles 44px, ticks
+          34px). All readable, but X-axis title partially clipped at bottom edge.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text or data elements
+        comment: No overlapping text elements. Legend doesn't overlap data.
       - id: VQ-03
         name: Element Visibility
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Markers visible with radius=18 and alpha=0.7, but slightly too large
-          for 100 points causing overlap in dense regions
+        comment: Marker radius 14 with alpha 0.65 for 100 points is appropriate, though
+          slightly large causing some visual crowding.
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: Single-series Python Blue, good contrast, colorblind-safe
+        comment: Blue vs red with different shapes (circle vs diamond) helps colorblind
+          users, but blue-red hue distinction alone is not ideal.
       - id: VQ-05
         name: Layout & Canvas
-        score: 0
+        score: 2
         max: 4
-        passed: false
-        comment: Y-axis extends to 100 while highest data point is ~92, creating significant
-          empty white space at top (~20% of plot area unused)
+        passed: true
+        comment: Plot fills good portion of canvas, but X-axis title clipped at bottom
+          and 190 tick label cut off at right edge.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: Height (cm) and Weight (kg)'
+        comment: Height (cm) and Weight (kg) are descriptive with units.
     design_excellence:
-      score: 8
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
         passed: true
-        comment: Clean white background, Python Blue markers with white edge borders.
-          Looks like a well-configured default rather than truly refined design.
+        comment: Custom palette, refined typography, plot bands, subtle background.
+          Above defaults but quartile band labels too faint to serve purpose.
       - id: DE-02
         name: Visual Refinement
-        score: 2
+        score: 5
         max: 6
         passed: true
-        comment: Grid lines styled with light opacity but y-axis has too many gridlines
-          every 2 kg creating visual noise. Default Highcharts chrome preserved.
+        comment: Dotted grid lines, custom tick styling, white marker edges, hover
+          states. Well-polished details.
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 5
         max: 6
         passed: true
-        comment: Data displayed without annotations, trend lines, or narrative emphasis.
-          Viewer must discover the correlation on their own.
+        comment: Trend line with R-squared annotation, outlier highlighting, quartile
+          bands, informative subtitle. Guides viewer through data.
     spec_compliance:
       score: 15
       max: 15
@@ -134,25 +140,25 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct scatter plot type
+        comment: Correct scatter plot type.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Transparency, axis labels, title, grid lines all present
+        comment: Transparency, axis labels, title, grid lines all present per spec.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X/Y correctly assigned (height to x, weight to y)
+        comment: X=Height, Y=Weight correctly assigned.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, legend appropriately disabled for single series
+        comment: Title format correct. Legend labels clear and descriptive.
     data_quality:
       score: 14
       max: 15
@@ -162,22 +168,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows positive correlation with noise and some outliers. Could benefit
-          from wider range of patterns.
+        comment: Shows correlation, outliers, trend line, quartile regions. R-squared=0.29
+          is weak for demonstrating positive correlation.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Height vs weight is a classic, neutral, real-world scenario
+        comment: Height vs Weight is a classic, universally understood, neutral scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Heights 143-186 cm and weights 50-92 kg are realistic human measurements
+        comment: Heights 140-190cm and weights 50-96kg are realistic human measurements.
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -185,48 +191,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, chart config, series, export, HTML save'
+        comment: 'Flat structure: imports, data, chart config, series, export.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports are used.
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Clean but slightly verbose; window-size mismatch 4800x2800 vs 2700
-          chart height
+        comment: Clean, well-organized. Appropriate complexity.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html
-    library_mastery:
-      score: 3
+        comment: Saves as plot.png via container screenshot.
+    library_features:
+      score: 9
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 2
+        score: 5
         max: 5
         passed: true
-        comment: Uses highcharts-core API correctly but configures via dicts rather
-          than typed Python classes
+        comment: 'Uses typed Python API: ScatterSeries, SplineSeries, HighchartsOptions,
+          Annotation.from_dict.'
       - id: LM-02
         name: Distinctive Features
-        score: 1
+        score: 4
         max: 5
         passed: true
-        comment: Generic scatter plot that could be replicated in any library. No
-          Highcharts-distinctive features used.
+        comment: plotBands, rich HTML tooltip, Annotation objects, marker hover states,
+          SplineSeries for trend.
   verdict: REJECTED

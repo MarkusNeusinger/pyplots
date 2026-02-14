@@ -1,16 +1,16 @@
 library: altair
 specification_id: pie-basic
 created: '2025-12-23T00:35:02Z'
-updated: '2025-12-23T00:37:08Z'
-generated_by: claude-opus-4-5-20251101
+updated: '2026-02-14T14:40:21+00:00'
+generated_by: claude-opus-4-6
 workflow_run: 20447773724
 issue: 0
-python_version: 3.13.11
+python_version: '3.14.0'
 library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-basic/altair/plot.html
-quality_score: 92
+quality_score: null
 impl_tags:
   dependencies: []
   techniques:

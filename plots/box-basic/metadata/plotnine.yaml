@@ -1,161 +1,181 @@
 library: plotnine
 specification_id: box-basic
 created: '2025-12-23T00:36:35Z'
-updated: 2026-02-14T22:09:08+00:00
+updated: '2026-02-14T22:14:00Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447781993
 issue: 0
-python_version: "3.14"
-library_version: "0.15.3"
+python_version: '3.14'
+library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/box-basic/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-basic/plotnine/plot_thumb.png
 preview_html: null
-quality_score: null
+quality_score: 85
 impl_tags:
   dependencies: []
   techniques: []
   patterns:
-    - data-generation
-    - iteration-over-groups
+  - data-generation
+  - iteration-over-groups
   dataprep: []
-  styling: []
+  styling:
+  - alpha-blending
+  - grid-styling
 review:
   strengths:
-  - Excellent use of plotnine grammar of graphics with clean ggplot syntax
-  - Realistic salary distribution scenario with meaningful department differences
-  - 'Proper display of all boxplot components: median, quartiles, whiskers, and outliers'
-  - Good text sizing with element_text customizations for readability
-  - Clean KISS code structure following library conventions
+  - 'Excellent spec compliance: all four spec requirements (median, outliers, whiskers,
+    colors) implemented perfectly'
+  - Strong data generation with varied distributions showing different spreads, medians,
+    and deliberate outlier injection for Sales
+  - Idiomatic plotnine usage with proper grammar-of-graphics layering and pd.Categorical
+    ordering
+  - 'Clean visual refinement: removed unnecessary gridlines, subtle axis styling,
+    appropriate alpha on outliers'
+  - All font sizes explicitly set matching library guidelines exactly
   weaknesses:
-  - Default color palette could be improved with scale_fill_brewer for better colorblind
-    accessibility
-  - No subtle grid lines to aid value reading (theme_minimal removes them by default)
-  - Y-axis starting at 0 creates unnecessary whitespace since no salaries are near
-    zero
-  image_description: 'The plot displays a box-and-whisker chart showing salary distributions
-    across four departments (Engineering, Marketing, Sales, Support). Each department
-    has a distinctly colored box: Engineering (coral/salmon), Marketing (olive green),
-    Sales (cyan/turquoise), and Support (purple/violet). The boxes show median lines,
-    quartiles, and whiskers extending to 1.5×IQR. Outliers are visible as individual
-    gray points above several boxes (Engineering, Marketing, Sales, Support). The
-    title "box-basic · plotnine · pyplots.ai" appears at the top. X-axis labeled "Department"
-    and Y-axis labeled "Salary ($)" with values ranging from 0 to 150000.'
+  - 'No data storytelling: no annotations highlighting the salary gap between departments,
+    no callouts to the Sales outlier cluster, no contextual insight for the reader'
+  - Outlier points could be slightly larger or more distinctly colored for better
+    emphasis
+  - coord_cartesian y-range extends to 155k but data maxes around 145k, creating some
+    dead space at top
+  - Library mastery is generic — no distinctive plotnine features beyond standard
+    grammar-of-graphics patterns
+  image_description: 'The plot displays a box-and-whisker chart of salary distributions
+    across five departments: Support, Marketing, Sales, Research, and Engineering,
+    ordered from lowest to highest median salary. Each department box is colored differently
+    using the Set2 qualitative palette — teal (Support), salmon/orange (Marketing),
+    lavender/blue (Sales), pink (Research), and yellow-green (Engineering). The y-axis
+    is labeled "Salary ($)" ranging from approximately 30,000 to 160,000. The x-axis
+    is labeled "Department." The title "box-basic · plotnine · pyplots.ai" appears
+    in bold at the top. Median lines are clearly visible within each box. Outliers
+    appear as gray dots: Support has one high outlier near $80k, Sales has a notable
+    cluster of 5-6 outliers between $125k-$140k, and Engineering has one outlier near
+    $128k. The background is clean with a minimal theme, subtle horizontal gridlines,
+    and no vertical gridlines. No legend is shown since colors correspond directly
+    to x-axis labels.'
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 28
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title, axis labels, and tick labels are all clearly readable at appropriate
-          sizes
+        comment: 'All font sizes explicitly set: title 24pt bold, axis titles 20pt,
+          tick text 16pt, base 14pt'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping text elements, department labels well-spaced
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Box plots are well-sized, outliers visible with appropriate alpha
+        comment: Boxes well-sized, outlier points visible at size 2.5 but could be
+          slightly larger
       - id: VQ-04
         name: Color Accessibility
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Colors are distinguishable but not from a standard colorblind-safe
-          palette
+        comment: Set2 colorblind-safe qualitative palette with good contrast
       - id: VQ-05
         name: Layout Balance
-        score: 4
-        max: 5
+        score: 3
+        max: 4
         passed: true
-        comment: Good proportions, minor whitespace at bottom left
+        comment: Good canvas usage with balanced margins, some unused vertical space
+          at extremes
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with units ("Salary ($)", "Department")
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
+        comment: Y-axis 'Salary ($)' includes units, x-axis 'Department' is descriptive
+    design_excellence:
+      score: 11
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
         passed: true
-        comment: No visible grid, legend hidden (acceptable since categories on x-axis)
+        comment: Thoughtful Set2 palette, good typography hierarchy, above defaults
+          but not publication-level
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Removed X gridlines, reduced Y grid opacity, removed ticks, subtle
+          axis lines
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: Ordered departments provide implicit narrative but no annotations
+          or callouts
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
         comment: Correct box-and-whisker plot
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories on X, values on Y correctly
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Median lines, quartiles, whiskers at 1.5×IQR, outliers as points,
-          different colors per category
-      - id: SC-04
-        name: Data Range
+        comment: Median, outliers, whiskers at 1.5xIQR, different colors per category
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axes
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Categories on x-axis, values on y-axis, all data visible
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend appropriately hidden (categories shown on x-axis)
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Correct format "box-basic · plotnine · pyplots.ai"
+        comment: Title in correct format, legend hidden appropriately
     data_quality:
-      score: 18
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows different distributions, outliers present, varying spreads;
-          could show more outlier variety
+        comment: Varied distributions with different spreads, medians, and outlier
+          patterns
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Salary by department is a real, comprehensible business scenario
-      - id: DQ-03
-        name: Appropriate Scale
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Salary values are realistic; y-axis starting at 0 creates some empty
-          space
+        comment: Salary by department is a real, plausible, neutral business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 3
+        max: 4
+        passed: true
+        comment: Realistic salary values, injected Sales outliers feel slightly artificial
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -163,11 +183,11 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Simple imports → data → plot → save structure
+        comment: Clean imports-data-plot-save structure
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
         comment: np.random.seed(42) set
       - id: CQ-03
@@ -175,28 +195,35 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports used
+        comment: All imports used, no unnecessary imports
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
+        score: 2
+        max: 2
+        passed: true
+        comment: Clean, Pythonic, appropriate complexity
+      - id: CQ-05
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Modern plotnine API
-      - id: CQ-05
-        name: Output Correct
-        score: 0
-        max: 1
-        passed: false
-        comment: verbose=False is non-standard parameter
+        comment: Saves as plot.png with dpi=300
     library_features:
-      score: 3
-      max: 5
+      score: 7
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 3
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
         max: 5
         passed: true
-        comment: Uses ggplot grammar correctly with geom_boxplot, theme_minimal, element_text
-          customization; could leverage scale_fill_brewer for better palettes
-  verdict: APPROVED
+        comment: Expert grammar-of-graphics usage with ggplot + aes + geom + scale
+          + labs + theme
+      - id: LM-02
+        name: Distinctive Features
+        score: 2
+        max: 5
+        passed: false
+        comment: Standard grammar-of-graphics patterns, could be replicated in other
+          GoG libraries
+  verdict: REJECTED

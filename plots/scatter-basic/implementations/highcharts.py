@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-basic: Basic Scatter Plot
 Library: highcharts 1.10.3 | Python 3.14
 Quality: 87/100 | Created: 2025-12-22
@@ -23,7 +23,7 @@ from selenium.webdriver.chrome.options import Options
 np.random.seed(42)
 n_points = 100
 height_cm = np.random.normal(170, 10, n_points)
-weight_kg = height_cm * 0.65 + np.random.normal(0, 8, n_points) - 40
+weight_kg = height_cm * 0.65 + np.random.normal(0, 5, n_points) - 40
 
 # Compute linear regression for trend line
 slope, intercept = np.polyfit(height_cm, weight_kg, 1)
@@ -57,9 +57,9 @@ chart.options.chart = {
     "backgroundColor": "#fafbfc",
     "style": {"fontFamily": "'Segoe UI', Helvetica, Arial, sans-serif"},
     "marginTop": 160,
-    "marginBottom": 200,
+    "marginBottom": 310,
     "marginLeft": 220,
-    "marginRight": 140,
+    "marginRight": 200,
 }
 
 # Title with refined typography
@@ -124,7 +124,7 @@ chart.options.y_axis = {
             "color": "rgba(48, 105, 152, 0.03)",
             "label": {
                 "text": "Lower quartile",
-                "style": {"fontSize": "26px", "color": "rgba(48, 105, 152, 0.3)"},
+                "style": {"fontSize": "32px", "color": "rgba(48, 105, 152, 0.55)"},
                 "align": "left",
                 "x": 20,
                 "y": 16,
@@ -136,7 +136,7 @@ chart.options.y_axis = {
             "color": "rgba(48, 105, 152, 0.03)",
             "label": {
                 "text": "Upper quartile",
-                "style": {"fontSize": "26px", "color": "rgba(48, 105, 152, 0.3)"},
+                "style": {"fontSize": "32px", "color": "rgba(48, 105, 152, 0.55)"},
                 "align": "left",
                 "x": 20,
                 "y": 16,
@@ -188,7 +188,7 @@ scatter.data = [[float(h), float(w)] for h, w in zip(height_cm, weight_kg, stric
 scatter.name = "Subjects"
 scatter.color = "rgba(48, 105, 152, 0.65)"
 scatter.marker = {
-    "radius": 14,
+    "radius": 12,
     "symbol": "circle",
     "lineWidth": 2,
     "lineColor": "#ffffff",
@@ -200,12 +200,12 @@ scatter.z_index = 2
 outlier_series = ScatterSeries()
 outlier_series.data = [[float(h), float(w)] for h, w in zip(outlier_heights, outlier_weights, strict=True)]
 outlier_series.name = "Outliers"
-outlier_series.color = "rgba(192, 57, 43, 0.75)"
+outlier_series.color = "rgba(211, 84, 0, 0.80)"
 outlier_series.marker = {
-    "radius": 16,
+    "radius": 15,
     "symbol": "diamond",
     "lineWidth": 2,
-    "lineColor": "#c0392b",
+    "lineColor": "#d35400",
     "states": {"hover": {"radiusPlus": 4}},
 }
 outlier_series.z_index = 3

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 box-basic: Basic Box Plot
 Library: bokeh 3.8.2 | Python 3.14
 Quality: 76/100 | Created: 2025-12-23
@@ -6,7 +6,7 @@ Quality: 76/100 | Created: 2025-12-23
 
 import numpy as np
 from bokeh.io import export_png, output_file, save
-from bokeh.models import ColumnDataSource, HoverTool, Whisker
+from bokeh.models import ColumnDataSource, LabelSet, Whisker
 from bokeh.plotting import figure
 from bokeh.transform import factor_cmap
 
@@ -17,9 +17,9 @@ categories = ["Class A", "Class B", "Class C", "Class D"]
 
 scores = {
     "Class A": np.random.normal(75, 10, 100),
-    "Class B": np.concatenate([np.random.normal(85, 5, 90), np.array([45, 50, 52])]),
-    "Class C": np.random.normal(68, 18, 100),
-    "Class D": np.concatenate([np.random.normal(78, 8, 95), np.array([105, 108, 42, 40])]),
+    "Class B": np.concatenate([np.random.normal(85, 5, 90), np.array([65, 68, 70])]),
+    "Class C": np.clip(np.random.normal(68, 14, 100), 30, None),
+    "Class D": np.concatenate([np.random.normal(78, 8, 95), np.array([100, 102, 50, 52])]),
 }
 
 # Box plot statistics
@@ -67,42 +67,43 @@ p = figure(
     tools="",
 )
 
-# Boxes (q1 to q3) with factor_cmap
+# Boxes (q1 to q3) with factor_cmap - wider boxes for better canvas utilization
 cmap = factor_cmap("cat", palette=colors, factors=categories)
+box_width = 0.7
 
-box_upper = p.vbar(
+p.vbar(
     x="cat",
     top="q3",
     bottom="q2",
     source=source,
-    width=0.5,
+    width=box_width,
     fill_color=cmap,
     line_color="#333333",
     line_width=2,
     fill_alpha=0.85,
 )
-box_lower = p.vbar(
+p.vbar(
     x="cat",
     top="q2",
     bottom="q1",
     source=source,
-    width=0.5,
+    width=box_width,
     fill_color=cmap,
     line_color="#333333",
     line_width=2,
     fill_alpha=0.85,
 )
 
-# Median lines
+# Median lines - thin rect for crisp appearance on categorical axis
 median_source = ColumnDataSource(data={"x": box_data["cat"], "y": box_data["q2"]})
-p.rect(x="x", y="y", width=0.5, height=0.5, source=median_source, fill_color="#1a1a1a", line_color="#1a1a1a")
+p.rect(x="x", y="y", width=box_width, height=0.08, source=median_source, fill_color="#1a1a1a", line_color="#1a1a1a")
 
 # Whiskers
 whisker = Whisker(
     base="cat", upper="upper", lower="lower", source=source, level="annotation", line_width=3, line_color="#333333"
 )
-whisker.upper_head.size = 35
-whisker.lower_head.size = 35
+whisker.upper_head.size = 40
+whisker.lower_head.size = 40
 whisker.upper_head.line_width = 3
 whisker.lower_head.line_width = 3
 p.add_layout(whisker)
@@ -122,19 +123,29 @@ if outlier_x:
         alpha=0.9,
     )
 
-# Hover tool on boxes - Bokeh distinctive interactive feature
-hover = HoverTool(
-    renderers=[box_upper, box_lower],
-    tooltips=[
-        ("Class", "@cat"),
-        ("Median", "@q2{0.1}"),
-        ("Q1", "@q1{0.1}"),
-        ("Q3", "@q3{0.1}"),
-        ("IQR", "@iqr{0.1}"),
-        ("Whisker range", "@lower{0.1} \u2013 @upper{0.1}"),
-    ],
+# Data storytelling - annotations highlighting key insights
+class_b_iqr = box_data["iqr"][1]
+class_c_iqr = box_data["iqr"][2]
+
+annotation_source = ColumnDataSource(
+    data={
+        "x": ["Class B", "Class C"],
+        "y": [box_data["upper"][1] + 6, box_data["upper"][2] + 6],
+        "text": [f"Tightest spread (IQR = {class_b_iqr})", f"Widest spread (IQR = {class_c_iqr})"],
+        "color": ["#3a6f94", "#c0820a"],
+    }
 )
-p.add_tools(hover)
+labels = LabelSet(
+    x="x",
+    y="y",
+    text="text",
+    text_color="color",
+    source=annotation_source,
+    text_font_size="20pt",
+    text_font_style="bold",
+    text_align="center",
+)
+p.add_layout(labels)
 
 # Styling for 4800x2700 px
 p.title.text_font_size = "36pt"
@@ -143,6 +154,9 @@ p.xaxis.axis_label_text_font_size = "28pt"
 p.yaxis.axis_label_text_font_size = "28pt"
 p.xaxis.major_label_text_font_size = "22pt"
 p.yaxis.major_label_text_font_size = "22pt"
+
+# Reduce x_range padding so boxes fill more of the canvas
+p.x_range.range_padding = 0.12
 
 # Grid
 p.xgrid.grid_line_color = None

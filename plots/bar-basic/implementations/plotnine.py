@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bar-basic: Basic Bar Chart
 Library: plotnine 0.15.3 | Python 3.14
-Quality: 87/100 | Created: 2025-12-23
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import pandas as pd

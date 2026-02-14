@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: bar-basic
 created: '2025-12-23T00:23:09Z'
-updated: '2026-02-14T14:55:00Z'
+updated: '2026-02-14T15:02:14Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447579088
 issue: 0
@@ -10,48 +10,49 @@ library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-basic/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-basic/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 87
+quality_score: 91
 impl_tags:
   dependencies: []
   techniques:
   - annotations
-  - manual-ticks
+  - layer-composition
   patterns: []
   dataprep: []
   styling:
   - grid-styling
 review:
   strengths:
-  - Excellent text legibility with all font sizes explicitly configured to spec requirements
-  - 'Strong data storytelling: highlight color on leading bar + 38% ahead annotation
-    + dollar-formatted value labels create a clear narrative'
-  - Very idiomatic plotnine code with clean grammar of graphics layering
-  - Realistic business context with plausible sales figures
-  - 'Clean visual refinement: removed unnecessary grid lines, subtle y-grid, no ticks,
-    white background'
-  - Perfect spec compliance across all criteria
+  - Excellent data storytelling with highlighted leader bar and 44% ahead annotation
+    guiding the viewer to the key insight
+  - 'Very clean visual refinement: subtle gridlines at alpha=0.15, removed ticks/spines,
+    white background, well-proportioned bars at width=0.7'
+  - Highly idiomatic plotnine code using grammar of graphics patterns (boolean fill
+    mapping, coord_cartesian, scale expand)
+  - Value labels on all bars with proper dollar formatting enable precise comparison
+  - Non-monotonic data with close rivals (Clothing vs Home and Garden) adds realism
   weaknesses:
-  - The annotation text is positioned at y = top_val + 2800 which places it very close
-    to the top of the chart area and cramped near the y-axis, creating a slightly
-    unbalanced layout
-  - Data values follow a strictly monotonic decrease which is somewhat predictable;
-    introducing variation (e.g., two categories with similar values) would better
-    demonstrate comparison capabilities
-  - Could leverage more distinctive plotnine features to push library mastery higher
-  image_description: The plot displays a vertical bar chart titled "bar-basic · plotnine
-    · pyplots.ai" showing sales (USD) across 6 product categories sorted in descending
-    order. The leading category (Electronics, $45,200) is highlighted in dark navy
-    blue (#306998), while the remaining 5 bars (Clothing $32,800, Home & Garden $28,500,
-    Sports $19,700, Books $15,300, Toys $12,400) use a lighter steel blue (#7BA7C9).
-    Each bar has a dollar-formatted value label positioned just above it. An italic
-    annotation in dark blue reads "▲ 38% ahead of 2nd place" near the top of the Electronics
-    bar. The y-axis displays "$0K" through "$50K" with 10K increments, and the x-axis
-    lists category names horizontally. The background is clean white with subtle horizontal
-    gridlines (alpha=0.2). No vertical gridlines or axis ticks are shown. The layout
-    is 16:9 landscape format.
+  - Minor whitespace imbalance — some unused space to the right of the last bar could
+    be tighter
+  - The guides(fill=none) call is redundant since show_legend=False is already set
+    on geom_bar
+  - Annotation placement could be more tightly integrated with the leading bar rather
+    than floating in open space
+  image_description: 'The plot shows a vertical bar chart titled "bar-basic · plotnine
+    · pyplots.ai" in bold black text at the top. Six product categories are displayed
+    along the x-axis: Electronics, Clothing, Home & Garden, Sports, Books, and Toys,
+    ordered by descending sales value. The y-axis is labeled "Sales (USD)" with tick
+    marks at $0K, $10K, $20K, $30K, and $40K. Each bar has a dollar-formatted value
+    label positioned just above it ($45,200 down to $12,400). The leading bar (Electronics)
+    is rendered in a darker steel blue (#306998), while the remaining five bars use
+    a lighter blue (#7BA7C9), creating a visual highlight on the top-performing category.
+    A dark blue italic annotation reading "▲ 44% ahead of 2nd place" appears near
+    the top of the chart, positioned above the Clothing bar area. The background is
+    clean white, horizontal gridlines are very subtle (low alpha), vertical gridlines
+    are absent, and there are no visible axis spines or tick marks. The overall layout
+    is 16:9 landscape format with balanced whitespace and clear visual hierarchy.'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -59,42 +60,43 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 24pt bold, axis titles 20pt,
-          axis text 16pt. All text clearly readable.'
+        comment: 'All font sizes explicitly set: title 24pt, axis titles 20pt, axis
+          text 16pt, geom_text 14pt. All perfectly readable.'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements. Category labels well-spaced, value
-          labels sit cleanly above bars.
+        comment: No overlapping text. 6 categories fit cleanly, value labels well-spaced,
+          annotation positioned without overlap.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Bars well-sized at 0.7 width with good spacing, all clearly visible.
+        comment: Bars at width=0.7 with good spacing, well-adapted to 6 categories.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Two-tone blue palette is colorblind-safe. No red-green reliance.
+        comment: Two-tone blue palette (#306998/#7BA7C9) is colorblind-safe. No red-green
+          distinction.
       - id: VQ-05
-        name: Layout Balance
+        name: Layout & Canvas
         score: 2
         max: 4
         passed: false
-        comment: Annotation positioned at top-left is cramped near y-axis area. Noticeable
-          whitespace above annotation before title.
+        comment: Plot fills reasonable canvas area but some unused whitespace on right
+          side; annotation floats in open space.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive with units: Sales (USD) and Product Category.'
+        comment: 'Descriptive labels with units: Sales (USD), Product Category.'
     design_excellence:
-      score: 14
+      score: 16
       max: 20
       items:
       - id: DE-01
@@ -102,22 +104,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Strong design with two-tone color hierarchy, clean minimal theme,
-          Python Blue primary. Above defaults but not FiveThirtyEight-level.
+        comment: Strong design with custom two-tone blue highlight palette, clean
+          typography, intentional hierarchy. Above defaults but not quite FiveThirtyEight-level.
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: 'Good: x-grid removed, minor grid removed, y-grid at alpha=0.2, ticks
-          removed, white background.'
+        comment: 'Excellent: x-grid removed, y-grid at alpha=0.15, ticks removed,
+          spines removed, white background, generous whitespace.'
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: 'Good: highlight color on leader, value labels, 38% ahead annotation
-          adds narrative context.'
+        comment: 'Good storytelling: leading bar highlighted, 44% ahead annotation
+          provides narrative context, value labels on all bars.'
     spec_compliance:
       score: 15
       max: 15
@@ -127,26 +129,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct vertical bar chart with rectangular bars proportional to
-          values.
+        comment: Correct vertical bar chart with rectangular bars.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Consistent bar widths, value labels, highlight, adequate spacing.
+        comment: 'All spec features present: consistent widths, value labels, highlight,
+          adequate spacing.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=category, Y=value correctly assigned. 6 categories within range.
+        comment: Categories on x-axis, values on y-axis, correctly assigned.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend appropriately suppressed.
+        comment: 'Title format correct: bar-basic · plotnine · pyplots.ai. No legend
+          needed.'
     data_quality:
       score: 14
       max: 15
@@ -156,22 +159,23 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Good variation with descending pattern but strictly monotonic; could
-          show closer values for richer comparison.
+        comment: Non-monotonic data with close rivals (Clothing vs Home & Garden)
+          and clear leader. Good variation.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Realistic retail/e-commerce scenario with plausible product categories.
+        comment: 'Real scenario: product sales by retail category with plausible dollar
+          amounts.'
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values $12K-$45K realistic for product category sales.
+        comment: Realistic values for product category sales ($12K-$45K range).
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -179,7 +183,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports, data, plot, save flow. No functions/classes.
+        comment: Clean imports → data → plot → save. No functions or classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -188,16 +192,17 @@ review:
         comment: Deterministic hardcoded data, no randomness needed.
       - id: CQ-03
         name: Clean Imports
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: All imports are used.
+        passed: false
+        comment: All imports used, but guides(fill=none) is redundant with show_legend=False
+          on geom_bar.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, Pythonic. Highlight logic and annotation calculation appropriate.
+        comment: Clean, Pythonic, appropriate complexity. Good use of lambda and f-strings.
       - id: CQ-05
         name: Output & API
         score: 1
@@ -205,7 +210,7 @@ review:
         passed: true
         comment: Saves as plot.png, no deprecated functions.
     library_mastery:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: LM-01
@@ -213,13 +218,13 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Expert grammar of graphics usage: ggplot + aes + geom_bar + scale_fill_manual
-          + guides + geom_text + annotate + scale_y_continuous with lambda.'
+        comment: 'Expertly uses plotnine grammar of graphics: aes mapping, scale_fill_manual,
+          geom_text with nudge, annotate, coord_cartesian, custom scale labels.'
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Uses pd.Categorical ordering, boolean fill mapping, format_string
-          in geom_text. Plotnine patterns but not deeply unique.
-  verdict: REJECTED
+        comment: 'Uses distinctly plotnine/ggplot2 patterns: pd.Categorical ordering,
+          boolean fill mapping, coord_cartesian, expand parameter on scales.'
+  verdict: APPROVED

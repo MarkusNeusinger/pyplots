@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: bar-basic
 created: '2025-12-23T00:23:43Z'
-updated: '2026-02-14T14:47:19Z'
+updated: '2026-02-14T14:56:42Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447581463
 issue: 0
@@ -10,48 +10,45 @@ library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-basic/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-basic/letsplot/plot.html
-quality_score: 83
+quality_score: 90
 impl_tags:
   dependencies: []
   techniques:
   - annotations
-  - manual-ticks
+  - layer-composition
+  - html-export
   patterns: []
   dataprep: []
   styling:
-  - minimal-chrome
   - grid-styling
 review:
   strengths:
-  - Excellent text sizing with all font sizes explicitly configured for 4800x2700
-    output
-  - Clean idiomatic lets-plot grammar-of-graphics code with proper KISS structure
-  - Good data context with realistic product sales scenario and value labels formatted
-    as currency
-  - Smart use of label_format for dollar-formatted value annotations
-  - Removal of vertical grid lines for a cleaner bar chart presentation
+  - 'Excellent data storytelling: the +38% vs. next leader annotation and mean reference
+    line guide the viewer through the data narrative effectively'
+  - Strong idiomatic lets-plot usage with expert application of the grammar of graphics,
+    including layer_tooltips, flavor_high_contrast_light, and dollar-formatted scales
+  - Clean, well-structured code with deterministic data and logical annotation preparation
+  - Intentional color hierarchy using Python Blue with a darker variant to highlight
+    the leader bar
   weaknesses:
-  - 'No data storytelling: sorted bars are helpful but lack annotations highlighting
-    key comparisons or insights (e.g., percentage differences, a highlighted leader
-    bar)'
-  - Aesthetic sophistication is at well-configured default level — consider adding
-    subtle color gradation, edge highlighting, or a more distinctive visual identity
-  - Y-axis limit of 55000 creates unnecessary whitespace above the tallest bar at
-    45200 — tighter limits would improve canvas utilization
-  - Monotonically decreasing data misses opportunity to show categories with similar
-    values for richer comparison
-  - Limited use of lets-plot distinctive features — could leverage library-specific
-    capabilities more creatively
-  image_description: 'The plot displays a vertical bar chart showing product sales
-    across 6 categories: Electronics ($45,200), Clothing ($32,800), Home & Garden
-    ($28,500), Sports ($21,300), Books ($18,900), and Toys ($15,600). All bars are
-    filled with Python Blue (#306998) and arranged in descending order. Dollar-formatted
-    value labels sit above each bar. The y-axis is labeled "Sales ($)" with tick marks
-    at $0K–$50K increments of $10K. The x-axis is labeled "Product Category" with
-    category names rotated 45 degrees. The title "bar-basic · letsplot · pyplots.ai"
-    is centered at the top. The background uses a minimal theme with only horizontal
-    grid lines (vertical grid lines removed). The overall canvas is landscape (4800×2700
-    px).'
+  - The +38% vs. next annotation crowds the $45,200 value label on the Electronics
+    bar — consider increasing the vertical offset between the two text layers
+  - Y-axis upper limit of $50,000 leaves unused space above the tallest bar while
+    compressing lower values — consider a tighter y-axis max to improve proportions
+  - Layout could be tighter — rotated x-labels consume significant bottom margin and
+    overall canvas utilization is around 50%
+  image_description: 'The plot displays a vertical bar chart titled "bar-basic · letsplot
+    · pyplots.ai" showing quarterly revenue by department. Six steel-blue bars represent
+    Electronics ($45,200), Clothing ($32,800), Home & Garden ($28,500), Sports ($31,400),
+    Books ($18,900), and Toys & Games ($19,800). The Electronics bar is rendered in
+    a darker navy shade (#1E4F72) to highlight it as the leader, with a bold italic
+    annotation "+38% vs. next" positioned above it in matching dark blue. Every bar
+    carries a bold currency-formatted value label just above its top. A dashed gray
+    horizontal reference line at approximately $29,433 spans the full width, labeled
+    "Avg: $29,433" near the right edge in gray italic. X-axis category labels are
+    rotated 45 degrees for readability. The y-axis runs from $0 to $50,000 with dollar-formatted
+    ticks. The chart uses the lets-plot high-contrast light flavor with only subtle
+    horizontal grid lines, creating a clean, professional appearance.'
   criteria_checklist:
     visual_quality:
       score: 27
@@ -63,66 +60,67 @@ review:
         max: 8
         passed: true
         comment: 'All font sizes explicitly set: title 24pt, axis titles 20pt, tick
-          text 16pt. Perfectly readable.'
+          labels 16pt, value labels 13pt bold. All perfectly readable at 4800x2700.'
       - id: VQ-02
         name: No Overlap
-        score: 6
-        max: 6
-        passed: true
-        comment: No overlapping text. 45-degree rotation on x-axis labels works well,
-          value labels well-spaced.
-      - id: VQ-03
-        name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Bars well-sized with width=0.6 and good spacing. Could be slightly
-          wider for more visual impact.
+        comment: Nearly clean; the +38% vs. next annotation and $45,200 value label
+          on Electronics are close together, creating slight visual crowding though
+          both remain legible.
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 6
+        passed: true
+        comment: Bars well-proportioned at width=0.7, consistent spacing, data clearly
+          distinguishable.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Single Python Blue color, no colorblind concerns.
+        comment: Single blue hue family, fully colorblind-safe.
       - id: VQ-05
-        name: Layout Balance
+        name: Layout & Canvas
         score: 2
         max: 4
         passed: false
-        comment: Noticeable whitespace above tallest bar (y-limit 55000 vs max value
-          45200). Right side has some wasted space.
+        comment: Functional but not optimal. Y-axis extends to $50K while data tops
+          at $45K. Rotated x-labels consume significant bottom margin. Plot fills
+          roughly 50% of canvas.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Sales ($) is descriptive with unit, Product Category is descriptive.
+        comment: Department and Quarterly Revenue ($) are descriptive with unit indicator.
     design_excellence:
-      score: 10
+      score: 16
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 6
         max: 8
-        passed: false
-        comment: Clean Python Blue with minimal theme looks like a well-configured
-          default. No custom palette variation or design elements that elevate beyond
-          standard.
+        passed: true
+        comment: Strong design with intentional color hierarchy, high-contrast light
+          flavor, bold value labels. Above defaults, approaching publication quality.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Minimal theme applied, major x-grid removed, some intentional refinement
-          visible.
+        comment: Horizontal x-grid removed, subtle y-grid with custom color/size,
+          minor grid blanked. Good but spines still present.
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 6
         max: 6
-        passed: false
-        comment: Data sorted descending which aids readability, but no annotations
-          highlighting insights or visual emphasis guiding the viewer.
+        passed: true
+        comment: 'Excellent: leader annotation quantifies the gap, mean reference
+          line contextualizes performance, value labels enable precise comparison.'
     spec_compliance:
       score: 15
       max: 15
@@ -132,26 +130,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct vertical bar chart.
+        comment: Correct vertical bar chart with rectangular bars proportional to
+          values.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Consistent bar widths, value labels above bars, single color, adequate
-          spacing.
+        comment: 'All spec features present: consistent bar widths, value labels,
+          highlighted bar, adequate spacing.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Categories on x-axis, values on y-axis, correct assignment.
+        comment: Categories on x-axis, values on y-axis, all 6 data points visible.
       - id: SC-04
-        name: Title Format
+        name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: bar-basic · letsplot · pyplots.ai format correct, no legend needed.
+        comment: Title follows exact format bar-basic · letsplot · pyplots.ai. No
+          legend needed, show_legend=False correctly set.
     data_quality:
       score: 14
       max: 15
@@ -161,21 +161,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Good variation in bar heights ($15K-$45K range). All values monotonically
-          decreasing — no similar-valued categories for comparison nuance.
+        comment: 'Good variety: non-monotonic ordering, clear leader, middle pack,
+          and laggards. Minor deduction: no near-tie pair.'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Product sales by category is a real, neutral business scenario with
-          realistic category names.
+        comment: Quarterly revenue by department is a neutral, plausible business
+          scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values $15K-$45K are realistic for product category sales.
+        comment: Revenue values in $18K-$45K range are realistic for quarterly department
+          figures.
     code_quality:
       score: 10
       max: 10
@@ -185,33 +186,36 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean Imports → Data → Plot → Save flow.
+        comment: 'Clean linear flow: imports, data, annotation prep, plot, save. No
+          functions or classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic hardcoded data, no randomness needed.
+        comment: Fully deterministic with hardcoded data.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Wildcard import is idiomatic for lets-plot per library rules.
+        comment: Wildcard import follows library recommended pattern. pandas is used.
+          No unused imports.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, Pythonic, appropriate complexity.
+        comment: Clean and Pythonic. Annotation dataframes are idiomatic lets-plot
+          approach.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with correct export_ggsave API.
+        comment: Saves as plot.png with scale=3 for 4800x2700, also exports HTML.
     library_mastery:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: LM-01
@@ -219,14 +223,13 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Expertly uses ggplot2-style grammar: ggplot(), geom_bar(), labs(),
-          scale_*, theme_minimal(), theme(), ggsize(), export_ggsave().'
+        comment: Expert ggplot grammar with geom_bar, scale_fill_identity, position_nudge,
+          scale_x_discrete, dollar formatting.
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Uses label_format and position_nudge which are somewhat lets-plot-specific,
-          but overall implementation could be replicated in plotnine with minor syntax
-          changes.
-  verdict: REJECTED
+        passed: true
+        comment: Uses layer_tooltips with title/line, flavor_high_contrast_light,
+          and label_format. Lets-plot specific but not dramatically unique.
+  verdict: APPROVED

@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: raincloud-basic
 created: '2025-12-25T08:22:11Z'
-updated: '2026-02-14T20:33:35Z'
+updated: '2026-02-14T21:18:01Z'
 generated_by: claude-opus-4-6
 workflow_run: 20501867092
 issue: 0
@@ -10,7 +10,7 @@ library_version: 1.10.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/highcharts/plot.html
-quality_score: 82
+quality_score: 5
 impl_tags:
   dependencies:
   - selenium
@@ -27,159 +27,158 @@ impl_tags:
   - grid-styling
 review:
   strengths:
-  - 'Perfect raincloud metaphor: cloud above, box on baseline, rain below — exactly
-    as specified'
-  - Excellent data diversity showing normal, shifted, bimodal, and high-variance distributions
-  - Bimodal distribution in Treatment B clearly visible in the KDE, demonstrating
-    the plot type's value
-  - Colorblind-safe palette with good contrast between all four conditions
-  - Clean, well-structured code with proper seed and linear flow
+  - Code architecture is well-organized with clear sections for KDE clouds, box plots,
+    and rain scatter
+  - 'Correct raincloud metaphor: clouds above (negative offset), rain below (positive
+    offset) in inverted chart logic'
+  - 'Good data generation: 4 experimental conditions with different distribution shapes
+    (normal, bimodal, high-variance)'
+  - Title format and legend configuration are properly set up in the code
+  - Uses appropriate Highcharts series types (PolygonSeries for KDE, BoxPlotSeries,
+    ScatterSeries)
   weaknesses:
-  - X-axis title Reaction Time (ms) is not visible in the rendered image — likely
-    cut off despite margin settings; needs further margin/spacing adjustment
-  - Box plots render with white fills instead of group-colored fills, breaking the
-    visual color connection between the three components of each category
-  - No annotations or storytelling — the bimodal distribution in Treatment B and the
-    faster responses in Treatment A deserve callouts
-  - KDE clouds could have slightly more visual polish (e.g., subtle edge color differentiation
-    from fill)
-  image_description: 'The plot displays a horizontal raincloud plot with 4 categories
-    (Control, Treatment A, Treatment B, Treatment C) on the y-axis and reaction time
-    values (250–650 ms) on the x-axis. Each category features three layered components:
-    a half-violin KDE (cloud) extending above the category baseline, a box plot centered
-    on the baseline, and jittered scatter points (rain) below the baseline. Colors
-    are blue (Control), yellow (Treatment A), purple (Treatment B), and cyan (Treatment
-    C). The title reads "raincloud-basic · highcharts · pyplots.ai" at the top. A
-    legend in the upper right lists the four conditions. The bimodal distribution
-    of Treatment B is clearly visible in its KDE. Box plots appear with white fills
-    and black outlines. Dotted grid lines run horizontally. The x-axis title "Reaction
-    Time (ms)" appears to be cut off or missing at the bottom of the chart.'
+  - 'CRITICAL: Chart renders blank — The entire visualization fails to display. The
+    4800x2561 output is essentially empty (42KB, >99% white pixels). Only a thin line
+    at the bottom is visible'
+  - The inverted chart with PolygonSeries coordinates likely causes the data to render
+    outside the visible viewport — the polygon x-coordinates (category indices with
+    fractional offsets like -0.4 to 0.25) may not map correctly to the inverted axis
+    system
+  - The x-axis uses string categories but polygon/scatter data uses numeric x-coordinates
+    — this axis type mismatch may be the root cause of the blank render. Consider
+    using numeric x-axis with manual category labels instead
+  - The chart height is set to 2700 but screenshot is 2561 — dimension mismatch suggests
+    viewport/rendering issues
+  - Manual KDE implementation is verbose; verify whether Highcharts PolygonSeries
+    can properly render these shapes in an inverted coordinate system
+  image_description: The plot image is essentially blank/empty. The 4800x2561 PNG
+    is only 42KB (expected ~35MB uncompressed for a full chart), confirming near-total
+    whitespace. The only visible element is a thin horizontal gray line near the very
+    bottom of the canvas. No title, no axis labels, no category names, no violin/KDE
+    shapes, no box plots, no scatter points, and no legend are visible. The Highcharts
+    chart has completely failed to render its content into the visible viewport area.
+    The intended visualization was a horizontal raincloud plot with 4 experimental
+    conditions (Control, Treatment A, Treatment B, Treatment C) showing reaction time
+    distributions via half-violin KDE clouds, box plots, and jittered scatter rain
+    points.
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 0
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 6
+        score: 0
         max: 8
-        passed: true
-        comment: Font sizes explicitly set (56px title, 44px axis titles, 36px labels).
-          X-axis title 'Reaction Time (ms)' appears cut off at the bottom of the rendered
-          image.
+        passed: false
+        comment: No text visible at all — chart renders blank
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 0
         max: 6
-        passed: true
-        comment: No overlapping text; elements well-separated with ample spacing between
-          categories.
+        passed: false
+        comment: N/A, nothing rendered
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 0
         max: 6
-        passed: true
-        comment: Scatter markers and KDE polygons clearly visible. Box plots render
-          with white fills instead of group-colored fills.
+        passed: false
+        comment: No chart elements visible — entire plot is blank white
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 0
         max: 4
-        passed: true
-        comment: Blue, yellow, purple, cyan palette is colorblind-safe with good contrast.
+        passed: false
+        comment: No colors visible
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 0
         max: 4
-        passed: true
-        comment: Good proportions overall. Minor bottom area issue where x-axis title
-          is cut off.
+        passed: false
+        comment: Plot fills <1% of canvas, effectively blank
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 0
         max: 2
-        passed: true
-        comment: Y-axis has descriptive label. X-axis title with units defined in
-          code but not visible in rendered image.
+        passed: false
+        comment: No labels or title visible in output
     design_excellence:
-      score: 11
+      score: 0
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 0
         max: 8
-        passed: true
-        comment: Intentional 4-color palette, transparency on KDE clouds, dotted grid
-          lines. Above defaults but box plots lack colored fills.
+        passed: false
+        comment: Nothing to evaluate — blank image
       - id: DE-02
         name: Visual Refinement
-        score: 4
-        max: 6
-        passed: true
-        comment: Dotted grid lines, generous spacing, clean background. Some refinement
-          visible.
-      - id: DE-03
-        name: Data Storytelling
-        score: 2
+        score: 0
         max: 6
         passed: false
-        comment: No annotations or storytelling. Bimodal distribution and treatment
-          differences left for viewer to discover.
+        comment: Nothing to evaluate — blank image
+      - id: DE-03
+        name: Data Storytelling
+        score: 0
+        max: 6
+        passed: false
+        comment: Nothing to evaluate — blank image
     spec_compliance:
-      score: 15
+      score: 5
       max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 5
+        score: 2
         max: 5
-        passed: true
-        comment: Correct raincloud plot with half-violin, box plot, and jittered scatter.
+        passed: false
+        comment: Code constructs raincloud components (polygon KDE, boxplot, scatter)
+          but they do not render visibly
       - id: SC-02
         name: Required Features
-        score: 4
+        score: 1
         max: 4
-        passed: true
-        comment: 'All spec features present: horizontal orientation, correct cloud/rain
-          placement, jitter, transparency, median/quartile markers.'
+        passed: false
+        comment: Code attempts all required features but rendering completely fails
       - id: SC-03
         name: Data Mapping
-        score: 3
+        score: 1
         max: 3
-        passed: true
-        comment: Categories on y-axis, values on x-axis. All data visible.
+        passed: false
+        comment: Code maps data correctly in theory but nothing displays on screen
       - id: SC-04
         name: Title & Legend
-        score: 3
+        score: 1
         max: 3
-        passed: true
-        comment: Correct title format and legend labels with proper color coding.
+        passed: false
+        comment: Title format correct in code but not visible in output
     data_quality:
-      score: 15
+      score: 0
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 0
         max: 6
-        passed: true
-        comment: 'Excellent variety: normal, shifted, bimodal, and high-variance distributions.'
+        passed: false
+        comment: Cannot evaluate — nothing visible. Code generates 4 groups with different
+          distributions including bimodal
       - id: DQ-02
         name: Realistic Context
-        score: 5
+        score: 0
         max: 5
-        passed: true
-        comment: Reaction times for experimental conditions — neutral, scientific,
-          comprehensible.
+        passed: false
+        comment: Cannot visually confirm — code uses reaction time experiment context
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 0
         max: 4
-        passed: true
-        comment: Reaction times of 300-600ms realistic for cognitive experiments.
+        passed: false
+        comment: Cannot evaluate — values (250-650ms reaction times) look reasonable
+          in code
     code_quality:
-      score: 9
+      score: 5
       max: 10
       items:
       - id: CQ-01
@@ -187,47 +186,49 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, KDE, chart config, series, export.'
+        comment: Follows Imports → Data → Plot → Save pattern without functions/classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
-        score: 2
+        score: 0
         max: 2
-        passed: true
-        comment: All imports used.
+        passed: false
+        comment: Imports are used but the rendering failure means the code is fundamentally
+          broken
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 0
         max: 2
-        passed: true
-        comment: Inline KDE computation is verbose with nested loops.
+        passed: false
+        comment: Manual KDE computation is verbose; fundamental API misuse causes
+          blank output
       - id: CQ-05
         name: Output & API
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Saves as plot.png via Selenium.
+        passed: false
+        comment: Output is effectively blank — not a valid plot.png
     library_mastery:
-      score: 7
+      score: 0
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 0
         max: 5
-        passed: true
-        comment: Proper use of highcharts_core API with inverted chart, multiple series
-          types, plot_options.
+        passed: false
+        comment: PolygonSeries for KDE clouds is creative but does not work — inverted
+          chart with category axis and numeric polygon coordinates fails to render
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 0
         max: 5
-        passed: true
-        comment: Uses inverted chart mode, PolygonSeries for KDE, color_by_point on
-          box plots.
+        passed: false
+        comment: Cannot evaluate since nothing renders; the approach of combining
+          multiple series types is library-appropriate but broken
   verdict: REJECTED

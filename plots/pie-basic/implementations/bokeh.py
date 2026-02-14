@@ -1,137 +1,173 @@
 """ pyplots.ai
 pie-basic: Basic Pie Chart
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: bokeh 3.8.2 | Python 3.14.0
+Quality: 90/100 | Created: 2025-12-23
 """
 
 import math
 
 from bokeh.io import export_png, output_file, save
-from bokeh.models import Label, Legend, LegendItem
+from bokeh.models import ColumnDataSource, Label, Legend, LegendItem
 from bokeh.plotting import figure
 
 
-# Data - Budget allocation by department
-categories = ["Engineering", "Marketing", "Sales", "Operations", "HR"]
-values = [35, 25, 20, 12, 8]
+# Data - Cloud infrastructure market share (2024)
+categories = ["AWS", "Azure", "Google Cloud", "Alibaba", "Others"]
+values = [33, 23, 11, 4, 29]
 
-# Calculate angles and percentages
+# Compute angles and percentages
 total = sum(values)
 percentages = [v / total * 100 for v in values]
 angles = [v / total * 2 * math.pi for v in values]
 
-# Calculate start and end angles for each slice (counter-clockwise from top)
+# Start/end angles (clockwise from top)
 start_angles = []
 end_angles = []
-current_angle = math.pi / 2  # Start from top (90 degrees)
-for angle in angles:
-    end_angle = current_angle
-    start_angle = current_angle - angle
-    start_angles.append(start_angle)
-    end_angles.append(end_angle)
-    current_angle = start_angle
+current = math.pi / 2
+for a in angles:
+    start_angles.append(current)
+    current -= a
+    end_angles.append(current)
 
-# Colors - Python Blue and Yellow first, then colorblind-safe palette
-colors = ["#306998", "#FFD43B", "#E74C3C", "#9B59B6", "#27AE60"]
+mid_angles = [(s + e) / 2 for s, e in zip(start_angles, end_angles, strict=True)]
 
-# Calculate label positions (middle of each slice)
-mid_angles = [(start_angles[i] + end_angles[i]) / 2 for i in range(len(categories))]
-radius = 0.85
-label_radius = radius * 0.65
+# Explode the largest slice (AWS) for emphasis
+explode_idx = 0
+explode_r = 0.06
+offsets_x = [0.0] * len(categories)
+offsets_y = [0.0] * len(categories)
+offsets_x[explode_idx] = explode_r * math.cos(mid_angles[explode_idx])
+offsets_y[explode_idx] = explode_r * math.sin(mid_angles[explode_idx])
 
-# Explosion offset for the largest slice (Engineering)
-explode_radius = 0.05
-explode_index = 0
+# Colors - Python Blue first, colorblind-safe palette (no red-green adjacency)
+colors = ["#306998", "#FFD43B", "#8E44AD", "#E67E22", "#2980B9"]
 
-# Create figure (3600 x 3600 px - square for pie chart)
+# Create figure (3600 x 3600 px square)
+radius = 0.88
 p = figure(
     width=3600,
     height=3600,
     title="pie-basic · bokeh · pyplots.ai",
-    x_range=(-1.4, 1.8),
-    y_range=(-1.3, 1.3),
+    x_range=(-1.3, 1.3),
+    y_range=(-1.1, 1.1),
     tools="",
     toolbar_location=None,
 )
 
-# Draw pie wedges and collect renderers for legend
-renderers = []
+# Draw wedges using ColumnDataSource for idiomatic bokeh
+source = ColumnDataSource(
+    data={"x": offsets_x, "y": offsets_y, "start": start_angles, "end": end_angles, "color": colors}
+)
+renderers = p.wedge(
+    x="x",
+    y="y",
+    radius=radius,
+    start_angle="start",
+    end_angle="end",
+    direction="clock",
+    fill_color="color",
+    line_color="white",
+    line_width=5,
+    source=source,
+)
+
+# Percentage labels on each slice
+label_r = radius * 0.6
 for i in range(len(categories)):
-    # Apply explosion offset to the largest slice
-    if i == explode_index:
-        offset_x = explode_radius * math.cos(mid_angles[i])
-        offset_y = explode_radius * math.sin(mid_angles[i])
-    else:
-        offset_x = 0
-        offset_y = 0
-
-    r = p.wedge(
-        x=offset_x,
-        y=offset_y,
-        radius=radius,
-        start_angle=start_angles[i],
-        end_angle=end_angles[i],
-        fill_color=colors[i],
-        line_color="white",
-        line_width=4,
-    )
-    renderers.append(r)
-
-# Add percentage labels on slices
-for i in range(len(categories)):
-    if i == explode_index:
-        offset_x = explode_radius * math.cos(mid_angles[i])
-        offset_y = explode_radius * math.sin(mid_angles[i])
-    else:
-        offset_x = 0
-        offset_y = 0
-
-    x = label_radius * math.cos(mid_angles[i]) + offset_x
-    y = label_radius * math.sin(mid_angles[i]) + offset_y
-    # Use dark text for yellow slice, white for others
+    lx = label_r * math.cos(mid_angles[i]) + offsets_x[i]
+    ly = label_r * math.sin(mid_angles[i]) + offsets_y[i]
     text_color = "#333333" if colors[i] == "#FFD43B" else "white"
-    label = Label(
-        x=x,
-        y=y,
-        text=f"{percentages[i]:.1f}%",
-        text_font_size="32pt",
-        text_color=text_color,
+    p.add_layout(
+        Label(
+            x=lx,
+            y=ly,
+            text=f"{percentages[i]:.0f}%",
+            text_font_size="36pt",
+            text_color=text_color,
+            text_font_style="bold",
+            text_align="center",
+            text_baseline="middle",
+        )
+    )
+
+# Annotation: callout for AWS as market leader
+aws_callout_angle = mid_angles[0]
+aws_callout_r = radius + 0.18
+p.add_layout(
+    Label(
+        x=aws_callout_r * math.cos(aws_callout_angle) + offsets_x[0],
+        y=aws_callout_r * math.sin(aws_callout_angle) + offsets_y[0],
+        text="▲ Market Leader",
+        text_font_size="24pt",
+        text_color="#306998",
         text_font_style="bold",
         text_align="center",
-        text_baseline="middle",
+        text_baseline="bottom",
     )
-    p.add_layout(label)
+)
 
-# Create legend items
+# Annotation: callout for 'Others' being surprisingly large
+others_callout_angle = mid_angles[4]
+others_callout_r = radius + 0.16
+p.add_layout(
+    Label(
+        x=others_callout_r * math.cos(others_callout_angle) + offsets_x[4],
+        y=others_callout_r * math.sin(others_callout_angle) + offsets_y[4],
+        text="Long-tail rivals ≈ Azure",
+        text_font_size="22pt",
+        text_color="#666666",
+        text_font_style="italic",
+        text_align="center",
+        text_baseline="top",
+    )
+)
+
+# Subtitle annotation for context
+p.add_layout(
+    Label(
+        x=0,
+        y=-1.0,
+        text="Top 4 providers control 71% of the $280B global cloud market",
+        text_font_size="22pt",
+        text_color="#777777",
+        text_align="center",
+        text_baseline="top",
+    )
+)
+
+# Legend with category names and percentages
 legend_items = [
-    LegendItem(label=f"{categories[i]} ({percentages[i]:.1f}%)", renderers=[renderers[i]])
+    LegendItem(label=f"{categories[i]} ({percentages[i]:.0f}%)", renderers=[renderers], index=i)
     for i in range(len(categories))
 ]
 legend = Legend(
     items=legend_items,
-    location="center_right",
+    location="center",
+    orientation="horizontal",
     label_text_font_size="28pt",
-    glyph_width=50,
-    glyph_height=50,
-    spacing=25,
-    padding=40,
-    background_fill_alpha=0.9,
-    border_line_color="#cccccc",
+    glyph_width=45,
+    glyph_height=45,
+    spacing=40,
+    padding=20,
+    background_fill_alpha=0.0,
+    border_line_color=None,
 )
-p.add_layout(legend, "right")
+p.add_layout(legend, "below")
 
 # Styling
 p.title.text_font_size = "40pt"
 p.title.align = "center"
-
-# Hide axes and grid for pie chart
+p.title.text_color = "#2C3E50"
 p.axis.visible = False
 p.grid.visible = False
 p.outline_line_color = None
+p.background_fill_color = "#FAFBFC"
+p.border_fill_color = "#FAFBFC"
+p.min_border_top = 20
+p.min_border_bottom = 10
 
-# Save outputs
+# Save
 export_png(p, filename="plot.png")
 
-# Save interactive HTML
 output_file("plot.html")
 save(p)

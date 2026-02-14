@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 pie-basic: Basic Pie Chart
 Library: pygal 3.1.0 | Python 3.14.0
-Quality: 86/100 | Created: 2025-12-23
+Quality: 90/100 | Created: 2025-12-23
 """
 
 import pygal

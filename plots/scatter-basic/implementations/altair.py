@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-basic: Basic Scatter Plot
 Library: altair 6.0.0 | Python 3.14
 Quality: 87/100 | Created: 2025-12-22
@@ -18,13 +18,8 @@ study_hours = np.concatenate(
 exam_scores = study_hours * 7 + np.random.normal(0, 7, n) + 28
 exam_scores = np.clip(exam_scores, 25, 100)
 
-df = pd.DataFrame({"hours": study_hours, "score": exam_scores})
-
-# Compute correlation and trend line
 r = np.corrcoef(study_hours, exam_scores)[0, 1]
-slope, intercept = np.polyfit(study_hours, exam_scores, 1)
-x_ends = np.array([study_hours.min(), study_hours.max()])
-trend_df = pd.DataFrame({"hours": x_ends, "score": slope * x_ends + intercept})
+df = pd.DataFrame({"hours": study_hours, "score": exam_scores})
 
 # Scatter points
 points = (
@@ -33,16 +28,16 @@ points = (
     .encode(
         x=alt.X(
             "hours:Q",
-            title="Study Hours per Day",
-            scale=alt.Scale(domain=[0.5, 10.5], nice=False),
+            title="Study Hours per Day (hrs)",
+            scale=alt.Scale(domain=[1, 10.5], nice=False),
             axis=alt.Axis(
                 tickCount=10,
                 labelFontWeight="normal",
                 titleColor="#333333",
                 labelColor="#555555",
-                domainColor="#bbbbbb",
                 tickColor="#cccccc",
                 gridDash=[3, 3],
+                domain=False,
             ),
         ),
         y=alt.Y(
@@ -54,9 +49,9 @@ points = (
                 labelFontWeight="normal",
                 titleColor="#333333",
                 labelColor="#555555",
-                domainColor="#bbbbbb",
                 tickColor="#cccccc",
                 gridDash=[3, 3],
+                domain=False,
             ),
         ),
         tooltip=[
@@ -66,19 +61,19 @@ points = (
     )
 )
 
-# Trend line — muted steel color to avoid competing with data points
+# Trend line using Altair's built-in transform_regression
 trend = (
-    alt.Chart(trend_df)
+    alt.Chart(df)
+    .transform_regression("hours", "score")
     .mark_line(strokeDash=[8, 6], strokeWidth=2.5, color="#7a7a7a", opacity=0.7)
     .encode(x="hours:Q", y="score:Q")
 )
 
-# Correlation annotation — positioned near the trend line midpoint for visual coherence
+# Correlation annotation
 mid_x = float(study_hours.mean())
-mid_y = float(slope * mid_x + intercept + 8)
-annotation_df = pd.DataFrame({"x": [mid_x], "y": [mid_y], "label": [f"r = {r:.2f}"]})
+mid_y = float(np.polyval(np.polyfit(study_hours, exam_scores, 1), mid_x) + 8)
 annotation = (
-    alt.Chart(annotation_df)
+    alt.Chart(pd.DataFrame({"x": [mid_x], "y": [mid_y], "label": [f"r = {r:.2f}"]}))
     .mark_text(fontSize=20, fontWeight="bold", color="#555555", align="center")
     .encode(x="x:Q", y="y:Q", text="label:N")
 )

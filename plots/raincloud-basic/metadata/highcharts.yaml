@@ -1,172 +1,183 @@
 library: highcharts
 specification_id: raincloud-basic
 created: '2025-12-25T08:22:11Z'
-updated: 2026-02-14T20:28:11+00:00
+updated: '2026-02-14T20:33:35Z'
 generated_by: claude-opus-4-6
 workflow_run: 20501867092
 issue: 0
-python_version: "3.14"
-library_version: "1.10.3"
+python_version: '3.14'
+library_version: 1.10.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/highcharts/plot.html
-quality_score: null
+quality_score: 82
 impl_tags:
   dependencies:
   - selenium
   techniques:
   - html-export
-  - hover-tooltips
-  - manual-ticks
+  - layer-composition
   patterns:
   - data-generation
   - iteration-over-groups
-  dataprep: []
+  dataprep:
+  - kde
   styling:
   - alpha-blending
+  - grid-styling
 review:
   strengths:
-  - Excellent raincloud metaphor with cloud (KDE) clearly on right, boxplot centered,
-    rain (points) on left - matching the spec layout requirement
-  - Bimodal distribution in Treatment B is clearly visible in the KDE curve, demonstrating
-    the advantage of raincloud plots
-  - Clean colorblind-safe palette with distinct colors for each condition
-  - Proper inline KDE computation with Gaussian kernel for the half-violin clouds
-  - High-resolution output (4800x2700) with appropriately scaled text elements
+  - 'Perfect raincloud metaphor: cloud above, box on baseline, rain below — exactly
+    as specified'
+  - Excellent data diversity showing normal, shifted, bimodal, and high-variance distributions
+  - Bimodal distribution in Treatment B clearly visible in the KDE, demonstrating
+    the plot type's value
+  - Colorblind-safe palette with good contrast between all four conditions
+  - Clean, well-structured code with proper seed and linear flow
   weaknesses:
-  - Legend is overly cluttered with 9 entries (Cloud, Box Plot, and Points for each
-    category) - could consolidate to show just the 4 condition names
-  - Grid line styling could be more subtle to reduce visual noise
-  image_description: 'The plot displays a raincloud visualization for four experimental
-    conditions (Control, Treatment A, Treatment B, Treatment C). Each condition features
-    three elements arranged horizontally: jittered scatter points ("rain") on the
-    left in lighter shades, white boxplots with black outlines in the center showing
-    median lines and whiskers, and half-violin KDE curves ("clouds") on the right
-    in solid colors. The colorblind-safe palette uses blue for Control, yellow for
-    Treatment A, purple for Treatment B, and cyan for Treatment C. Treatment B clearly
-    shows a bimodal distribution in its cloud shape. The title "raincloud-basic ·
-    highcharts · pyplots.ai" appears at the top, with axis labels "Experimental Condition"
-    (x-axis) and "Reaction Time (ms)" (y-axis). A legend on the right categorizes
-    all series.'
+  - X-axis title Reaction Time (ms) is not visible in the rendered image — likely
+    cut off despite margin settings; needs further margin/spacing adjustment
+  - Box plots render with white fills instead of group-colored fills, breaking the
+    visual color connection between the three components of each category
+  - No annotations or storytelling — the bimodal distribution in Treatment B and the
+    faster responses in Treatment A deserve callouts
+  - KDE clouds could have slightly more visual polish (e.g., subtle edge color differentiation
+    from fill)
+  image_description: 'The plot displays a horizontal raincloud plot with 4 categories
+    (Control, Treatment A, Treatment B, Treatment C) on the y-axis and reaction time
+    values (250–650 ms) on the x-axis. Each category features three layered components:
+    a half-violin KDE (cloud) extending above the category baseline, a box plot centered
+    on the baseline, and jittered scatter points (rain) below the baseline. Colors
+    are blue (Control), yellow (Treatment A), purple (Treatment B), and cyan (Treatment
+    C). The title reads "raincloud-basic · highcharts · pyplots.ai" at the top. A
+    legend in the upper right lists the four conditions. The bimodal distribution
+    of Treatment B is clearly visible in its KDE. Box plots appear with white fills
+    and black outlines. Dotted grid lines run horizontally. The x-axis title "Reaction
+    Time (ms)" appears to be cut off or missing at the bottom of the chart.'
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 25
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 6
+        max: 8
         passed: true
-        comment: Title, axis labels, and tick marks are all clearly readable at large
-          size
+        comment: Font sizes explicitly set (56px title, 44px axis titles, 36px labels).
+          X-axis title 'Reaction Time (ms)' appears cut off at the bottom of the rendered
+          image.
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements; all components well-separated
+        comment: No overlapping text; elements well-separated with ample spacing between
+          categories.
       - id: VQ-03
         name: Element Visibility
-        score: 7
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: 'Markers well-sized with good alpha, clouds visible; minor: jitter
-          points slightly overlap within groups'
+        comment: Scatter markers and KDE polygons clearly visible. Box plots render
+          with white fills instead of group-colored fills.
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Blue/yellow/purple/cyan palette is colorblind-safe, no red-green
-          conflicts
-      - id: VQ-05
-        name: Layout Balance
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Good proportions, though legend area creates some empty space on
-          right
+        comment: Blue, yellow, purple, cyan palette is colorblind-safe with good contrast.
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 3
+        max: 4
+        passed: true
+        comment: Good proportions overall. Minor bottom area issue where x-axis title
+          is cut off.
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
+        score: 1
+        max: 2
+        passed: true
+        comment: Y-axis has descriptive label. X-axis title with units defined in
+          code but not visible in rendered image.
+    design_excellence:
+      score: 11
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: true
+        comment: Intentional 4-color palette, transparency on KDE clouds, dotted grid
+          lines. Above defaults but box plots lack colored fills.
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Dotted grid lines, generous spacing, clean background. Some refinement
+          visible.
+      - id: DE-03
+        name: Data Storytelling
         score: 2
-        max: 2
-        passed: true
-        comment: Both axes have descriptive labels with units (ms)
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
-        passed: true
-        comment: Legend is overly detailed (9 entries for 4 groups), creates visual
-          noise
+        max: 6
+        passed: false
+        comment: No annotations or storytelling. Bimodal distribution and treatment
+          differences left for viewer to discover.
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct raincloud plot with all three components (cloud, boxplot,
-          rain)
+        comment: Correct raincloud plot with half-violin, box plot, and jittered scatter.
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories on X-axis, reaction times on Y-axis correctly mapped
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: 'All three elements present: half-violin, boxplot with median/quartiles,
-          jittered points'
-      - id: SC-04
-        name: Data Range
+        comment: 'All spec features present: horizontal orientation, correct cloud/rain
+          placement, jitter, transparency, median/quartile markers.'
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Y-axis range (250-650) shows all data appropriately
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Categories on y-axis, values on x-axis. All data visible.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend correctly identifies all series
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Uses correct "{spec-id} · {library} · pyplots.ai" format
+        comment: Correct title format and legend labels with proper color coding.
     data_quality:
-      score: 18
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows unimodal (Control, Treatment A, C) and bimodal (Treatment B)
-          distributions; good variety
+        comment: 'Excellent variety: normal, shifted, bimodal, and high-variance distributions.'
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
+        score: 5
+        max: 5
         passed: true
-        comment: Reaction time experiment with control and treatment conditions is
-          realistic
+        comment: Reaction times for experimental conditions — neutral, scientific,
+          comprehensible.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Reaction times 250-650ms are plausible, though some variation seems
-          extreme
+        comment: Reaction times of 300-600ms realistic for cognitive experiments.
     code_quality:
       score: 9
       max: 10
@@ -176,40 +187,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear script structure without functions/classes
+        comment: 'Linear flow: imports, data, KDE, chart config, series, export.'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports used.
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
+        score: 1
+        max: 2
+        passed: true
+        comment: Inline KDE computation is verbose with nested loops.
+      - id: CQ-05
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Uses current Highcharts Core API
-      - id: CQ-05
-        name: Output Correct
-        score: 0
-        max: 1
-        passed: false
-        comment: Saves as plot.png but also creates plot.html
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves as plot.png via Selenium.
+    library_mastery:
+      score: 7
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: Proper use of highcharts_core API with inverted chart, multiple series
+          types, plot_options.
+      - id: LM-02
+        name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses PolygonSeries for KDE, BoxPlotSeries, ScatterSeries; could leverage
-          more interactive features
-  verdict: APPROVED
+        comment: Uses inverted chart mode, PolygonSeries for KDE, color_by_point on
+          box plots.
+  verdict: REJECTED

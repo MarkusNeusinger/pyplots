@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-basic: Basic Scatter Plot
 Library: pygal 3.1.0 | Python 3.14
 Quality: 78/100 | Created: 2025-12-22
@@ -9,35 +9,48 @@ import pygal
 from pygal.style import Style
 
 
-# Data — study hours vs exam scores with realistic positive correlation (r~0.7)
+# Data — study hours vs exam scores with realistic positive correlation
 np.random.seed(42)
-n = 120
+n = 115
 study_hours = np.random.uniform(2, 14, n)
 exam_scores = study_hours * 4.5 + np.random.normal(0, 5.5, n) + 25
 exam_scores = np.clip(exam_scores, 15, 100)
 
+# Add a few deliberate outliers to showcase scatter diversity
+outlier_hours = np.array([3.0, 12.5, 7.0, 11.0, 4.5])
+outlier_scores = np.array([82.0, 42.0, 95.0, 48.0, 78.0])
+study_hours = np.concatenate([study_hours, outlier_hours])
+exam_scores = np.concatenate([exam_scores, outlier_scores])
+
+# Compute trend line (linear regression) for data storytelling
+coeffs = np.polyfit(study_hours, exam_scores, 1)
+slope, intercept = coeffs
+r = np.corrcoef(study_hours, exam_scores)[0, 1]
+trend_x = np.linspace(study_hours.min(), study_hours.max(), 50)
+trend_y = slope * trend_x + intercept
+
 # Shared font family
 font = "DejaVu Sans, Helvetica, Arial, sans-serif"
 
-# Custom style for 4800x2700 px canvas
+# Refined style for 4800x2700 px canvas
 custom_style = Style(
     background="white",
-    plot_background="white",
-    foreground="#333333",
-    foreground_strong="#333333",
-    foreground_subtle="#e0e0e0",
-    colors=("#306998",),
+    plot_background="#fafafa",
+    foreground="#2a2a2a",
+    foreground_strong="#2a2a2a",
+    foreground_subtle="#d8d8d8",
+    colors=("#306998", "#c44e52"),
     font_family=font,
     title_font_family=font,
     title_font_size=56,
     label_font_size=42,
     major_label_font_size=38,
-    legend_font_size=36,
+    legend_font_size=34,
     legend_font_family=font,
-    value_font_size=30,
-    tooltip_font_size=30,
+    value_font_size=28,
+    tooltip_font_size=28,
     tooltip_font_family=font,
-    opacity=0.7,
+    opacity=0.6,
     opacity_hover=0.9,
 )
 
@@ -49,22 +62,34 @@ chart = pygal.XY(
     title="scatter-basic · pygal · pyplots.ai",
     x_title="Study Hours per Week (hrs)",
     y_title="Exam Score (%)",
-    show_legend=False,
+    show_legend=True,
+    legend_at_bottom=True,
+    legend_at_bottom_columns=2,
     stroke=False,
-    dots_size=14,
+    dots_size=10,
     show_x_guides=True,
     show_y_guides=True,
     x_value_formatter=lambda x: f"{x:.0f}",
     value_formatter=lambda y: f"{y:.0f}%",
-    margin_bottom=80,
-    margin_left=80,
-    margin_right=60,
-    margin_top=60,
+    margin_bottom=100,
+    margin_left=60,
+    margin_right=40,
+    margin_top=50,
+    x_label_rotation=0,
+    truncate_legend=-1,
+    range=(10, 105),
+    xrange=(0, 16),
 )
 
-# Add data as list of (x, y) tuples
+# Add scatter data as list of (x, y) tuples
 points = [(float(h), float(s)) for h, s in zip(study_hours, exam_scores, strict=True)]
-chart.add("Students", points)
+chart.add("Students (n=120)", points, stroke=False)
+
+# Add trend line for data storytelling (r annotation in label)
+trend_points = [(float(x), float(y)) for x, y in zip(trend_x, trend_y, strict=True)]
+chart.add(
+    f"Trend (r = {r:.2f})", trend_points, stroke=True, show_dots=False, stroke_style={"width": 5, "dasharray": "12, 6"}
+)
 
 # Save outputs
 chart.render_to_png("plot.png")

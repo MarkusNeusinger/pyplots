@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: seaborn 0.13.2 | Python 3.14
-Quality: /100 | Updated: 2026-02-14
+Quality: 80/100 | Created: 2025-12-25
 """
 
 import matplotlib.pyplot as plt

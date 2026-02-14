@@ -1,167 +1,188 @@
 library: seaborn
 specification_id: raincloud-basic
 created: '2025-12-25T08:28:01Z'
-updated: 2026-02-14T20:28:11+00:00
+updated: '2026-02-14T20:33:08Z'
 generated_by: claude-opus-4-6
 workflow_run: 20501959789
 issue: 0
-python_version: "3.14"
-library_version: "0.13.2"
+python_version: '3.14'
+library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/seaborn/plot_thumb.png
 preview_html: null
-quality_score: null
+quality_score: 80
 impl_tags:
   dependencies: []
   techniques:
-  - annotations
-  - manual-ticks
+  - layer-composition
   patterns:
   - data-generation
   - iteration-over-groups
+  - explicit-figure
   dataprep: []
   styling:
   - alpha-blending
+  - edge-highlighting
   - grid-styling
 review:
   strengths:
-  - Excellent raincloud structure with correct cloud-right, rain-left layout matching
-    spec requirements
-  - Bimodal distribution in Treatment B effectively demonstrates the advantage of
-    rainclouds over boxplots
-  - Colorblind-accessible palette with good contrast between conditions
-  - Realistic experimental context with appropriate reaction time values
-  - Clean, readable code with proper random seed for reproducibility
+  - Correct raincloud layout with cloud above, box on baseline, rain below — matches
+    the visual metaphor perfectly
+  - Bimodal Treatment B distribution effectively demonstrates the advantage of raincloud
+    plots over simple box plots
+  - Well-chosen colorblind-safe palette with good contrast between blue, yellow, and
+    green
+  - Explicit font sizing throughout ensures readability at target resolution
+  - Clean code structure following KISS principle with good use of seaborn modern
+    API
   weaknesses:
-  - Violin clipping approach uses direct vertex manipulation rather than seaborn-native
-    methods
-  - Legend overlaps slightly with data points in the upper left corner
-  image_description: 'The plot displays a raincloud visualization comparing reaction
-    times across three experimental conditions (Control, Treatment A, Treatment B).
-    Each condition is represented with a colorblind-accessible color scheme: blue
-    (#306998) for Control, yellow/gold (#E6A800) for Treatment A, and green (#4DAF4A)
-    for Treatment B. The raincloud structure is correctly implemented with half-violins
-    (clouds) on the right side of each category, white boxplots with black borders
-    in the middle showing median and quartiles, and jittered strip points (rain) on
-    the left side. The title "raincloud-basic · seaborn · pyplots.ai" is displayed
-    at the top. The Y-axis shows "Reaction Time (ms)" ranging from about 300-575ms,
-    and the X-axis shows "Condition". The Treatment B distribution clearly shows bimodality
-    in its half-violin, demonstrating the advantage of rainclouds over traditional
-    boxplots. A legend is positioned in the upper left corner. Grid lines are subtle
-    and dashed on the y-axis only.'
+  - 'No data storytelling: the bimodal distribution in Treatment B is the most interesting
+    finding but has no annotation or callout to guide the viewer'
+  - No visual emphasis or narrative — the plot displays data without interpretation
+  - Box plot whisker and cap colors are all black rather than matching category colors,
+    reducing visual cohesion
+  - The violin clipping approach via direct vertex manipulation is fragile and could
+    break with different seaborn versions
+  - Some wasted vertical space in the layout
+  image_description: 'The plot displays a horizontal raincloud plot with three experimental
+    conditions (Control, Treatment A, Treatment B) on the y-axis and Reaction Time
+    (ms) on the x-axis ranging from approximately 280 to 580 ms. Each condition features
+    three layered elements: (1) a filled half-violin ("cloud") extending above the
+    category baseline showing distribution shape, (2) a narrow white box plot with
+    black edges centered on the baseline showing median and quartiles, and (3) jittered
+    scatter points ("rain") below the baseline showing individual observations. Colors
+    are dark blue (#306998) for Control, golden yellow (#E6A800) for Treatment A,
+    and green (#4DAF4A) for Treatment B. The Treatment B cloud clearly reveals a bimodal
+    distribution with two visible humps around 350ms and 480ms. Rain points have white
+    edge highlights and moderate transparency (alpha=0.6). The title reads "raincloud-basic
+    · seaborn · pyplots.ai" in large font at the top. Dashed grid lines appear on
+    the x-axis, and top/right spines are removed. The layout fills the 16:9 canvas
+    reasonably well with some extra vertical space at top and bottom.'
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 27
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
-        passed: true
-        comment: Title 24pt, axis labels 20pt, tick labels 16pt - all perfectly readable
-      - id: VQ-02
-        name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements
+        comment: 'All font sizes explicitly set: title 24pt, labels 20pt, ticks 16pt
+          — all clearly readable'
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
+        passed: true
+        comment: No overlapping elements; violins, boxes, and rain are well-separated
+          vertically
       - id: VQ-03
         name: Element Visibility
-        score: 7
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Points visible with appropriate size and alpha, slight overlap in
-          dense areas
+        comment: Scatter points visible with alpha=0.6 and white edges; s=70 slightly
+          large for 80 points per group but acceptable
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Blue/yellow/green palette is colorblind-safe
-      - id: VQ-05
-        name: Layout Balance
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Good proportions, slight extra whitespace on right
+        comment: Blue, yellow, green distinguishable for most colorblind types; no
+          red-green dependency
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 2
+        max: 4
+        passed: false
+        comment: Good 16:9 usage but noticeable wasted vertical space at top and bottom;
+          ylim leaves moderate empty regions
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: '"Reaction Time (ms)" includes units'
-      - id: VQ-07
-        name: Grid & Legend
+        comment: Reaction Time (ms) includes units, Condition is descriptive
+    design_excellence:
+      score: 8
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
+        passed: false
+        comment: Custom palette with Python blue + complementary colors, white-filled
+          boxes — above defaults but not publication-stunning
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: false
+        comment: Top/right spines removed, dashed grid, alpha on points, white edges
+          — good refinement beyond defaults
+      - id: DE-03
+        name: Data Storytelling
         score: 0
-        max: 2
-        passed: true
-        comment: Grid is subtle (alpha 0.3), but legend placement in upper left overlaps
-          with the data area slightly
+        max: 6
+        passed: false
+        comment: No annotations or callouts; bimodal Treatment B goes unhighlighted;
+          pure data display without narrative
     spec_compliance:
-      score: 23
-      max: 25
+      score: 14
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
-        passed: true
-        comment: Correct raincloud plot with all three elements
-      - id: SC-02
-        name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Categories on X, continuous values on Y
-      - id: SC-03
+        comment: Correct raincloud with half-violin, box plot, and jittered points
+      - id: SC-02
         name: Required Features
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Half-violin, boxplot, jittered points all present; layout follows
-          cloud-right, rain-left convention
-      - id: SC-04
-        name: Data Range
+        comment: Horizontal orientation, cloud above, box on baseline, rain below,
+          clipped violin, jitter, transparency
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axis limits
-      - id: SC-05
-        name: Legend Accuracy
+        comment: Categories on y-axis, values on x-axis — correct horizontal orientation
+      - id: SC-04
+        name: Title & Legend
         score: 2
-        max: 2
-        passed: true
-        comment: Legend labels match conditions
-      - id: SC-06
-        name: Title Format
-        score: 1
-        max: 2
-        passed: true
-        comment: Format is correct but uses middot (·) character consistently
+        max: 3
+        passed: false
+        comment: Title format correct; no explicit legend but categories on y-axis
+          is acceptable; minor deduction for no color legend
     data_quality:
-      score: 20
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 8
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Shows normal distribution (Control), tighter distribution (Treatment
-          A), and bimodal distribution (Treatment B)
+        comment: Bimodal Treatment B shows raincloud advantage; different means and
+          spreads; could include outlier group
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Reaction time experiment is a plausible psychology research scenario
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Values 280-575ms are realistic for human reaction times
+        comment: Reaction times for experimental conditions is a classic neutral psychology
+          experiment scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Reaction times of 300-580ms are realistic for cognitive tasks
     code_quality:
       score: 9
       max: 10
@@ -171,11 +192,12 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear script structure without functions/classes
+        comment: 'Linear flow: imports → data → figure → violin → clip → box → scatter
+          → styling → save'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
         comment: np.random.seed(42) set
       - id: CQ-03
@@ -183,21 +205,36 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports used (matplotlib, numpy, pandas, seaborn)
+        comment: 'All imports used: matplotlib, numpy, pandas, seaborn'
       - id: CQ-04
-        name: No Deprecated API
-        score: 0
-        max: 1
-        passed: true
-        comment: Uses legacy approach for violin manipulation
+        name: Code Elegance
+        score: 1
+        max: 2
+        passed: false
+        comment: Violin clipping via direct vertex manipulation is fragile; relies
+          on collection ordering matching categories
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png
-    library_features:
-      score: 3
-      max: 5
-      items: []
-  verdict: APPROVED
+        comment: Saves as plot.png with dpi=300, bbox_inches=tight
+    library_mastery:
+      score: 8
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: false
+        comment: Uses seaborn violinplot and boxplot axes-level APIs correctly with
+          hue parameter for modern API. Manual clipping is low-level matplotlib work.
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: false
+        comment: 'Uses seaborn-specific params: inner=None, density_norm=width, cut=0,
+          showfliers=False; distinctive composition pattern'
+  verdict: REJECTED

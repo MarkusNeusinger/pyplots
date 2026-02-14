@@ -1,160 +1,184 @@
 library: seaborn
 specification_id: box-basic
 created: '2025-12-23T00:35:01Z'
-updated: 2026-02-14T22:09:08+00:00
+updated: '2026-02-14T22:13:30Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447775826
 issue: 0
-python_version: "3.14"
-library_version: "0.13.2"
+python_version: '3.14'
+library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/box-basic/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-basic/seaborn/plot_thumb.png
 preview_html: null
-quality_score: null
+quality_score: 82
 impl_tags:
   dependencies: []
-  techniques: []
+  techniques:
+  - layer-composition
   patterns:
-    - data-generation
-    - iteration-over-groups
+  - data-generation
+  - iteration-over-groups
+  - explicit-figure
   dataprep: []
-  styling: []
+  styling:
+  - alpha-blending
+  - grid-styling
 review:
   strengths:
-  - Excellent realistic data scenario with salary distributions across departments
-  - 'Perfect spec compliance: median, quartiles, whiskers, outliers all present'
-  - Good handling of seaborn 0.14+ API compatibility with hue parameter
-  - Clean currency formatting on y-axis improves readability
-  - Each department has visually distinct characteristics (different medians, spreads,
-    outlier counts)
+  - Excellent strip plot overlay on box plots showing individual data points — a seaborn-idiomatic
+    pattern
+  - Well-chosen realistic salary scenario with meaningful variation across departments
+  - Clean, modern seaborn API usage (hue parameter, legend=False)
+  - Professional formatting with currency-formatted y-axis labels
+  - All text sizes explicitly set for the target resolution
   weaknesses:
-  - Does not leverage seaborn distinctive features like stripplot overlay, violin
-    plots, or statistical annotations
-  - Yellow color for Marketing category could have slightly better contrast
-  image_description: 'The plot displays a box-and-whisker chart showing salary distributions
-    across 5 departments (Engineering, Marketing, Sales, HR, Finance). Each department
-    has a distinctly colored box: Engineering (blue), Marketing (yellow/gold), Sales
-    (green), HR (orange), and Finance (purple). The y-axis shows "Salary ($)" ranging
-    from approximately $20K to $160K with currency formatting. The x-axis shows "Department"
-    labels. Each box clearly displays the median line, quartile boundaries, whiskers
-    extending to 1.5*IQR, and outliers shown as hollow circles. The title correctly
-    reads "box-basic · seaborn · pyplots.ai". A subtle dashed horizontal grid helps
-    with value reading. The layout is clean with good proportions.'
+  - 'No data storytelling: could add annotations highlighting key insights (e.g.,
+    highest median, widest spread, summary statistics)'
+  - Strip plot points are slightly small (size=4) — increasing to 5-6 would improve
+    visibility
+  - Notable empty space in upper canvas region; y-axis range extends well beyond data
+    density
+  - Per-category data generation uses verbose if/elif chain instead of a cleaner dictionary
+    mapping
+  - Could use more distinctive seaborn features (e.g., sns.set_context, sns.despine
+    instead of manual spine removal)
+  image_description: 'The plot displays five box-and-whisker plots arranged horizontally,
+    one for each department: Engineering (dark blue), Marketing (golden/amber), Sales
+    (green), HR (coral/orange), and Finance (purple). Each box shows the median as
+    a horizontal black line, with the box spanning Q1 to Q3. Whiskers extend to approximately
+    1.5×IQR. Individual data points are overlaid as a semi-transparent strip plot
+    (jittered) in matching colors, making outliers and the full distribution visible.
+    The y-axis is labeled "Salary ($)" with formatted tick labels ($40K–$160K). The
+    x-axis is labeled "Department". The title reads "box-basic · seaborn · pyplots.ai"
+    in medium weight. Top and right spines are removed, and a subtle horizontal grid
+    assists value reading. The layout is clean with good use of canvas space.'
   criteria_checklist:
     visual_quality:
-      score: 38
-      max: 40
+      score: 26
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title at 24pt, labels at 20pt, ticks at 16pt - all perfectly readable
+        comment: 'All font sizes explicitly set: title 24pt, labels 20pt, ticks 16pt.
+          All text clearly readable.'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements, all labels clear
+        comment: No overlapping text elements. Five categories fit comfortably on
+          x-axis.
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Boxes well-sized (width=0.6), outliers clearly visible (fliersize=10)
+        comment: Boxes well-sized (width=0.6). Strip plot points slightly small (size=4),
+          alpha=0.35 appropriate for density.
       - id: VQ-04
         name: Color Accessibility
-        score: 4
-        max: 5
+        score: 3
+        max: 4
         passed: true
-        comment: Distinct colors for each category, though yellow may be slightly
-          harder to see
+        comment: Five distinct hues with good separation. Green and orange could be
+          slightly challenging in some CVD cases.
       - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
+        name: Layout & Canvas
+        score: 2
+        max: 4
         passed: true
-        comment: Good proportions, proper use of tight_layout
+        comment: Good horizontal fill but notable empty space in upper canvas region
+          ($120K-$170K sparsely populated).
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: '"Salary ($)" with unit indicator, "Department" descriptive'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 1
-        max: 2
+        comment: Salary ($) with $XK formatted ticks. Department is descriptive.
+    design_excellence:
+      score: 12
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 6
+        max: 8
         passed: true
-        comment: Grid subtle (alpha=0.3), but y-axis only; no legend needed as colors
-          are self-explanatory
+        comment: Custom 5-color palette, clean spine removal, formatted currency axis.
+          Above defaults, strip plot overlay is a nice touch.
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Spines removed, subtle grid (alpha=0.2), good whitespace. Well-refined
+          but not exceptional.
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: No annotations, callouts, or narrative emphasis. Viewer must find
+          own insights.
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct box plot implementation
+        comment: Correct box plot type with all standard elements.
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories on X, values on Y correctly assigned
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Median line, quartile box, whiskers at 1.5*IQR, outliers as points,
-          different colors per category
-      - id: SC-04
-        name: Data Range
+        comment: Median line, outliers visible via strip plot, whiskers at 1.5xIQR,
+          different colors per category.
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Y-axis shows all data including outliers
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Categories on x-axis, values on y-axis, correctly mapped.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: No legend needed; category colors match x-axis labels
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Correct format "box-basic · seaborn · pyplots.ai"
+        comment: Title follows exact format. No legend needed as categories are on
+          x-axis.
     data_quality:
-      score: 20
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 8
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Shows different distributions (Engineering high/tight, Sales wide
-          spread, HR lower/tight), multiple outliers visible
+        comment: Different distribution widths, different medians, outliers visible.
+          Good variation but could show skewed distribution.
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Salary by department is a real, comprehensible scenario
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Salary ranges $40K-$160K are realistic for US corporate salaries
+        comment: Salary distributions across departments — classic, neutral, real-world
+          scenario.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Salary ranges ($30K-$170K) realistic for the departments shown.
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -162,40 +186,48 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Imports → Data → Plot → Save structure, no functions/classes
+        comment: 'Clean flat structure: imports, data, plot, style, save.'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) is set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only matplotlib, numpy, pandas, seaborn - all used
+        comment: All four imports (plt, np, pd, sns) are used.
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
         score: 1
-        max: 1
+        max: 2
         passed: true
-        comment: Uses hue with palette to avoid seaborn 0.14+ warning
+        comment: Verbose if/elif chain for per-category parameters. Dictionary mapping
+          would be cleaner.
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png
-    library_features:
-      score: 0
-      max: 5
+        comment: Saves as plot.png, uses correct seaborn 0.14+ API with hue parameter.
+    library_mastery:
+      score: 6
+      max: 10
       items:
-      - id: LF-01
-        name: Distinctive Features
-        score: 0
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
         max: 5
-        passed: false
-        comment: Uses sns.boxplot which is basic; could have used violin overlay,
-          swarmplot, or statistical annotations
-  verdict: APPROVED
+        passed: true
+        comment: Uses seaborn axes-level API with DataFrame, hue parameter, proper
+          palette handling.
+      - id: LM-02
+        name: Distinctive Features
+        score: 2
+        max: 5
+        passed: true
+        comment: stripplot overlay is seaborn-specific but relies heavily on matplotlib
+          for styling. Could use sns.despine(), sns.set_context().
+  verdict: REJECTED

@@ -1,173 +1,194 @@
 library: altair
 specification_id: raincloud-basic
 created: '2025-12-25T08:23:10Z'
-updated: 2026-02-14T20:28:11+00:00
+updated: '2026-02-14T20:33:14Z'
 generated_by: claude-opus-4-6
 workflow_run: 20501865366
 issue: 0
-python_version: "3.14"
-library_version: "6.0.0"
+python_version: '3.14'
+library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/altair/plot.html
-quality_score: null
+quality_score: 77
 impl_tags:
   dependencies: []
   techniques:
   - layer-composition
-  - html-export
   - hover-tooltips
+  - html-export
+  - custom-legend
   patterns:
   - data-generation
-  - iteration-over-groups
-  dataprep: []
+  dataprep:
+  - kde
   styling:
   - alpha-blending
+  - grid-styling
 review:
   strengths:
-  - Excellent raincloud visualization with all three components (half-violin, boxplot,
-    jittered points) correctly positioned
-  - 'Outstanding data quality: includes bimodal distribution (Treatment B) that demonstrates
-    the key advantage of raincloud plots over simple boxplots'
-  - Colorblind-safe color palette (blue, yellow, green)
-  - Correct title format following the specification
-  - Clean, reproducible code with proper random seed
-  - Interactive features enabled for HTML output
-  - Realistic reaction time data that tells a coherent scientific story
+  - 'Correct raincloud orientation: cloud above, box on baseline, rain below — matching
+    the spec visual metaphor'
+  - Good use of Altair declarative transforms (transform_density, transform_calculate)
+    to build the half-violin
+  - Colorblind-safe palette with good perceptual separation between blue, yellow,
+    and green
+  - Clean data setup with realistic bimodal distribution for Treatment B
+  - Interactive HTML export alongside static PNG
   weaknesses:
-  - Grid lines are quite subtle (alpha 0.3) making them barely visible
-  - Jittered points could be slightly larger for better visibility at full resolution
-  image_description: 'The plot displays a raincloud visualization comparing reaction
-    times across three conditions: Control (blue), Treatment A (yellow), and Treatment
-    B (green). Each condition shows the classic raincloud components: half-violin
-    density curves (clouds) extending to the right, boxplots with white median lines
-    in the center, and jittered individual data points (rain) scattered to the left.
-    The title "raincloud-basic · altair · pyplots.ai" appears at the top. The Y-axis
-    shows "Reaction Time (ms)" ranging from 200-600ms. X-axis labels identify each
-    condition clearly. A legend in the top-right corner identifies the three conditions
-    with colored circles. Treatment B notably shows a bimodal distribution in its
-    density curve. The colors are colorblind-friendly (blue, yellow, green).'
+  - Violin clouds overlap significantly between adjacent categories, reducing visual
+    clarity — the density scaling factor (200) is too large relative to the 1-unit
+    category spacing
+  - Box plots are hard to distinguish from violin fills due to matching colors — consider
+    darker outlines or contrasting median color that is more visible
+  - No annotations or storytelling elements to highlight the bimodal distribution
+    in Treatment B or the treatment effect
+  - The hconcat workaround for y-axis labels creates a somewhat disjointed layout
+    with potential alignment issues
+  - Rain jitter range (-0.35 to -0.12) is too wide, causing rain from upper categories
+    to encroach on lower categories violin space
+  image_description: 'The plot displays a horizontal raincloud chart titled "raincloud-basic
+    · altair · pyplots.ai" with three conditions (Control, Treatment A, Treatment
+    B) arranged vertically from bottom to top. Each condition has: a half-violin KDE
+    cloud extending upward from the category baseline, a small box plot centered on
+    the baseline, and jittered strip points (rain) falling below the baseline. Colors
+    are steel blue (#306998) for Control, gold/yellow (#FFD43B) for Treatment A, and
+    green (#4CAF50) for Treatment B. The x-axis shows "Reaction Time (ms)" from 200
+    to 600. A legend labeled "Condition" is placed in the upper-right corner with
+    a white background. Category labels (Control, Treatment A, Treatment B) appear
+    on the left side as bold text. The grid is faint with low opacity. The violins
+    are quite tall with 0.7 opacity and extend significantly, overlapping into adjacent
+    categories'' vertical space. The rain points have moderate transparency (0.6)
+    and are scattered below each category line. Box plots with white median lines
+    sit on each baseline but are somewhat obscured by the matching violin color. The
+    overall layout is horizontal landscape format.'
   criteria_checklist:
     visual_quality:
-      score: 35
-      max: 40
+      score: 24
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
-        max: 10
+        score: 7
+        max: 8
         passed: true
-        comment: 'All text is readable; title and axis labels are appropriately sized.
-          Minor: could be slightly larger for optimal viewing'
+        comment: 'Font sizes explicitly set: title 28pt, axis labels 18-22pt, legend
+          18-20pt, category labels 20pt bold. All readable.'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 4
+        max: 6
         passed: true
-        comment: No overlapping text elements; all labels and data clearly separated
+        comment: Violin clouds from adjacent categories overlap significantly into
+          each other's vertical space, reducing clarity.
       - id: VQ-03
         name: Element Visibility
-        score: 6
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Points and boxplots visible, though some jittered points are small;
-          the half-violins are well-rendered
+        comment: Rain points visible and sized well. Box plots somewhat obscured by
+          matching violin fill color.
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Blue/yellow/green palette is colorblind-safe and provides good contrast
-      - id: VQ-05
-        name: Layout Balance
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Good use of canvas space; minor asymmetry with legend placement but
-          overall well-balanced
+        comment: Blue, yellow, green palette is colorblind-safe.
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 2
+        max: 4
+        passed: true
+        comment: hconcat layout with separate y-label panel creates some wasted space.
+          Plot fills canvas reasonably.
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Y-axis has descriptive label with units "Reaction Time (ms)"
-      - id: VQ-07
-        name: Grid & Legend
-        score: 1
-        max: 2
+        comment: X-axis labeled 'Reaction Time (ms)' with units. Y-axis has descriptive
+          category names.
+    design_excellence:
+      score: 9
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
         passed: true
-        comment: Legend is well-placed and clear; subtle grid lines present but could
-          be more visible
+        comment: Thoughtful palette starting with Python Blue, custom legend styling,
+          configured grid. Above defaults but not publication-exceptional.
+      - id: DE-02
+        name: Visual Refinement
+        score: 2
+        max: 6
+        passed: false
+        comment: Grid opacity reduced, view stroke removed, but inter-category overlap
+          detracts from polish. Mostly default Altair aesthetics.
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: No annotations highlighting bimodal distribution or treatment effects.
+          Viewer must discover patterns.
     spec_compliance:
-      score: 24
-      max: 25
+      score: 14
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct raincloud plot with all three required components (half-violin,
-          boxplot, jittered points)
+        comment: Correct raincloud with half-violin, box plot, and jittered strip.
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories on X-axis, continuous values on Y-axis correctly mapped
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: 'All spec features present: half-violin cloud, boxplot with median,
-          jittered rain points'
-      - id: SC-04
-        name: Data Range
+        comment: 'All spec features present: horizontal orientation, half-violin above,
+          box centered, rain below, transparency, jitter.'
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Axes show all data appropriately (200-600ms range)
-      - id: SC-05
-        name: Legend Accuracy
+        comment: Categories on y-axis, values on x-axis as specified.
+      - id: SC-04
+        name: Title & Legend
         score: 2
-        max: 2
+        max: 3
         passed: true
-        comment: Legend correctly identifies all three conditions
-      - id: SC-06
-        name: Title Format
-        score: 1
-        max: 2
-        passed: true
-        comment: Uses correct format "raincloud-basic · altair · pyplots.ai" but uses
-          regular dot instead of middot character
+        comment: Title format correct. Legend present but somewhat redundant with
+          y-axis labels.
     data_quality:
-      score: 20
-      max: 20
+      score: 13
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 8
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: 'Excellent: shows unimodal (Control, Treatment A) AND bimodal (Treatment
-          B) distributions demonstrating the power of rainclouds to reveal hidden
-          patterns'
+        comment: Three distinct distributions including bimodal Treatment B. Bimodality
+          visible as shoulder but not fully pronounced.
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Reaction times for treatment conditions is a perfect, realistic psychology
-          experiment scenario
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Reaction times of 300-550ms are realistic for cognitive tasks
+        comment: Reaction times for treatment conditions — realistic clinical/psych
+          scenario.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 3
+        max: 4
+        passed: true
+        comment: Realistic reaction time values. Extent slightly wider than needed.
     code_quality:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -175,42 +196,48 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear script structure: imports → data → plot → save'
+        comment: 'Flat structure: imports, data, layers, compose, save.'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42) for reproducible random data
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports (altair, numpy, pandas)
+        comment: Only altair, numpy, pandas — all used.
       - id: CQ-04
-        name: No Deprecated API
-        score: 0
-        max: 1
+        name: Code Elegance
+        score: 1
+        max: 2
         passed: true
-        comment: Using transform_calculate and manual positioning is acceptable but
-          not the cleanest approach
+        comment: Verbose hconcat workaround, duplicate seed setting. Clever but complex
+          transform_calculate.
       - id: CQ-05
-        name: Output Correct
-        score: 0
+        name: Output & API
+        score: 1
         max: 1
         passed: true
-        comment: Saves both plot.png and plot.html correctly
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves plot.png and plot.html.
+    library_mastery:
+      score: 8
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 3
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
         max: 5
         passed: true
-        comment: Uses Altair's layering, transform_density, and interactive() features.
-          However, the implementation is complex with manual positioning rather than
-          leveraging Altair's more declarative strengths
-  verdict: APPROVED
+        comment: Uses transform_density, transform_calculate, alt.layer, alt.hconcat
+          — idiomatic Altair patterns.
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Declarative transform_density for KDE, layer composition, interactive(),
+          tooltip encoding — distinctive to Vega-Lite/Altair.
+  verdict: REJECTED

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-basic: Basic Pie Chart
-Library: highcharts unknown | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Library: highcharts 1.10.3 | Python 3.14.0
+Quality: /100 | Updated: 2026-02-14
 """
 
 import tempfile
@@ -17,40 +17,49 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data - Market share distribution (5 categories, realistic business context)
-categories = ["Product A", "Product B", "Product C", "Product D", "Product E"]
-values = [35, 25, 20, 12, 8]
+# Data — Cloud infrastructure market share (5 categories, realistic business context)
+# No random data — fully deterministic
+categories = ["AWS", "Azure", "Google Cloud", "Alibaba", "Others"]
+values = [31, 25, 11, 4, 29]
 
-# Colorblind-safe colors (Python Blue first, then complementary)
-colors = ["#306998", "#FFD43B", "#9467BD", "#17BECF", "#8C564B"]
+# Colorblind-safe palette (Python Blue first, then complementary)
+colors = ["#306998", "#FFD43B", "#E07B54", "#17BECF", "#9467BD"]
 
-# Create chart with container specified
+# Chart
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-# Chart configuration for 3600x3600 square (ideal for pie charts)
 chart.options.chart = {
     "type": "pie",
     "width": 3600,
     "height": 3600,
     "backgroundColor": "#ffffff",
-    "spacingTop": 80,
-    "spacingBottom": 80,
-    "spacingLeft": 80,
-    "spacingRight": 80,
+    "spacingTop": 60,
+    "spacingBottom": 40,
+    "spacingLeft": 100,
+    "spacingRight": 100,
 }
 
 # Title
 chart.options.title = {
-    "text": "pie-basic · highcharts · pyplots.ai",
-    "style": {"fontSize": "48px", "fontWeight": "bold"},
-    "margin": 40,
+    "text": "Cloud Infrastructure Market Share · pie-basic · highcharts · pyplots.ai",
+    "style": {"fontSize": "52px", "fontWeight": "bold"},
+    "margin": 20,
+}
+
+# Subtitle
+chart.options.subtitle = {
+    "text": "Global cloud spending by provider, 2024",
+    "style": {"fontSize": "36px", "color": "#666666"},
 }
 
 # Colors
 chart.options.colors = colors
 
-# Plot options for pie with percentage labels and legend
+# Credits
+chart.options.credits = {"enabled": False}
+
+# Plot options
 chart.options.plot_options = {
     "pie": {
         "allowPointSelect": True,
@@ -58,33 +67,37 @@ chart.options.plot_options = {
         "dataLabels": {
             "enabled": True,
             "format": "<b>{point.name}</b>: {point.percentage:.1f}%",
-            "style": {"fontSize": "32px", "textOutline": "none"},
-            "distance": 40,
-            "connectorWidth": 2,
+            "style": {"fontSize": "38px", "textOutline": "none", "fontWeight": "normal"},
+            "distance": 50,
+            "connectorWidth": 3,
+            "connectorColor": "#aaaaaa",
+            "softConnector": True,
         },
         "showInLegend": True,
-        "slicedOffset": 25,
+        "slicedOffset": 35,
         "size": "70%",
-        "center": ["40%", "50%"],
+        "center": ["50%", "50%"],
+        "startAngle": -20,
     }
 }
 
-# Legend on the right side
+# Legend — bottom horizontal
 chart.options.legend = {
     "enabled": True,
-    "align": "right",
-    "verticalAlign": "middle",
-    "layout": "vertical",
-    "itemStyle": {"fontSize": "36px", "fontWeight": "normal"},
-    "itemMarginTop": 20,
-    "itemMarginBottom": 20,
+    "align": "center",
+    "verticalAlign": "bottom",
+    "layout": "horizontal",
+    "itemStyle": {"fontSize": "38px", "fontWeight": "normal"},
     "symbolRadius": 10,
-    "symbolHeight": 20,
-    "symbolWidth": 20,
-    "x": -80,
+    "symbolHeight": 22,
+    "symbolWidth": 22,
+    "margin": 20,
 }
 
-# Create pie series with data - first slice (largest) is exploded for emphasis
+# Tooltip
+chart.options.tooltip = {"pointFormat": "<b>{point.percentage:.1f}%</b> market share", "style": {"fontSize": "28px"}}
+
+# Series — largest slice (AWS) exploded for emphasis
 series = PieSeries()
 series.name = "Market Share"
 series.data = [
@@ -113,16 +126,15 @@ html_content = f"""<!DOCTYPE html>
 </body>
 </html>"""
 
-# Write temp HTML and take screenshot
+# Write temp HTML and save interactive version
 with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encoding="utf-8") as f:
     f.write(html_content)
     temp_path = f.name
 
-# Also save the HTML for interactive version
 with open("plot.html", "w", encoding="utf-8") as f:
     f.write(html_content)
 
-# Setup Chrome for screenshot
+# Screenshot via headless Chrome
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
@@ -132,14 +144,14 @@ chrome_options.add_argument("--window-size=3600,3800")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
-time.sleep(5)  # Wait for chart to render
+time.sleep(5)
 driver.save_screenshot("plot_raw.png")
 driver.quit()
 
-# Crop to exact 3600x3600 dimensions
+# Crop to exact 3600x3600
 img = Image.open("plot_raw.png")
 img_cropped = img.crop((0, 0, 3600, 3600))
 img_cropped.save("plot.png")
 Path("plot_raw.png").unlink()
 
-Path(temp_path).unlink()  # Clean up temp file
+Path(temp_path).unlink()

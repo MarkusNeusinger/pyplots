@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-basic: Basic Scatter Plot
-Library: highcharts unknown | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-22
+Library: highcharts 1.10.3 | Python 3.14
+Quality: /100 | Updated: 2026-02-14
 """
 
 import tempfile
@@ -17,10 +17,10 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data
+# Data — height vs weight with moderate positive correlation (r~0.7)
 np.random.seed(42)
-x = np.random.randn(100) * 2 + 10
-y = x * 0.8 + np.random.randn(100) * 2
+height_cm = np.random.normal(170, 10, 100)
+weight_kg = height_cm * 0.65 + np.random.normal(0, 8, 100) - 40
 
 # Create chart
 chart = Chart(container="container")
@@ -32,41 +32,47 @@ chart.options.chart = {
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
-    "marginBottom": 150,
+    "marginBottom": 200,
 }
 
-# Title (required format: spec-id · library · pyplots.ai)
+# Title
 chart.options.title = {
-    "text": "scatter-basic · highcharts · pyplots.ai",
+    "text": "scatter-basic \u00b7 highcharts \u00b7 pyplots.ai",
     "style": {"fontSize": "72px", "fontWeight": "bold"},
 }
 
-# Axes (scaled for 4800x2700 px)
+# Axes
 chart.options.x_axis = {
-    "title": {"text": "X Value", "style": {"fontSize": "48px"}},
+    "title": {"text": "Height (cm)", "style": {"fontSize": "48px"}},
     "labels": {"style": {"fontSize": "36px"}},
+    "tickInterval": 5,
     "gridLineWidth": 1,
     "gridLineColor": "rgba(0, 0, 0, 0.15)",
-    "gridLineDashStyle": "Dash",
 }
 chart.options.y_axis = {
-    "title": {"text": "Y Value", "style": {"fontSize": "48px"}},
+    "title": {"text": "Weight (kg)", "style": {"fontSize": "48px"}},
     "labels": {"style": {"fontSize": "36px"}},
     "gridLineWidth": 1,
     "gridLineColor": "rgba(0, 0, 0, 0.15)",
-    "gridLineDashStyle": "Dash",
 }
 
 # Legend and credits
 chart.options.legend = {"enabled": False}
 chart.options.credits = {"enabled": False}
 
-# Create scatter series with Python Blue color and transparency
+# Tooltip for interactive HTML version
+chart.options.tooltip = {
+    "headerFormat": "",
+    "pointFormat": "<b>{point.x:.1f} cm</b>, <b>{point.y:.1f} kg</b>",
+    "style": {"fontSize": "28px"},
+}
+
+# Scatter series with Python Blue and transparency
 series = ScatterSeries()
-series.data = [[float(xi), float(yi)] for xi, yi in zip(x, y, strict=True)]
-series.name = "Data"
-series.color = "rgba(48, 105, 152, 0.7)"  # Python Blue with alpha
-series.marker = {"radius": 18, "symbol": "circle"}  # Larger markers for 4800x2700
+series.data = [[float(h), float(w)] for h, w in zip(height_cm, weight_kg, strict=True)]
+series.name = "Subjects"
+series.color = "rgba(48, 105, 152, 0.7)"
+series.marker = {"radius": 18, "symbol": "circle", "lineWidth": 2, "lineColor": "#ffffff"}
 
 chart.add_series(series)
 
@@ -112,7 +118,7 @@ driver.quit()
 
 Path(temp_path).unlink()
 
-# Also save HTML for interactive version
+# Save HTML for interactive version
 with open("plot.html", "w", encoding="utf-8") as f:
     interactive_html = f"""<!DOCTYPE html>
 <html>

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-basic: Basic Bar Chart
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: pygal 3.1.0 | Python 3.14
+Quality: /100 | Updated: 2026-02-14
 """
 
 import pygal
@@ -10,21 +10,21 @@ from pygal.style import Style
 
 # Data - Quarterly sales by product category
 categories = ["Electronics", "Clothing", "Home & Garden", "Sports", "Books", "Toys"]
-values = [45200, 32800, 28500, 19700, 15300, 12400]
+values = [52400, 34100, 28500, 17600, 11200, 6800]
 
-# Custom style using PyPlots color palette
+# Custom style
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
-    foreground_subtle="#666666",
-    colors=("#306998",),  # Python Blue for all bars
+    foreground_subtle="#cccccc",
+    colors=("#306998",),
     title_font_size=48,
-    label_font_size=38,
-    major_label_font_size=38,
-    value_font_size=32,
-    value_label_font_size=32,
+    label_font_size=40,
+    major_label_font_size=40,
+    value_font_size=34,
+    value_label_font_size=34,
     legend_font_size=38,
 )
 
@@ -44,12 +44,12 @@ chart = pygal.Bar(
     show_x_guides=False,
     margin=50,
     spacing=30,
+    rounded_bars=2,
 )
 
 # Add data
 chart.x_labels = categories
 chart.add("Sales", values)
 
-# Save outputs
+# Save
 chart.render_to_png("plot.png")
-chart.render_to_file("plot.html")

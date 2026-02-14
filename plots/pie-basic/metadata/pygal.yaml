@@ -1,16 +1,16 @@
 library: pygal
 specification_id: pie-basic
 created: '2025-12-23T00:35:27Z'
-updated: '2026-02-14T14:40:21+00:00'
+updated: '2026-02-14T14:47:21Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447776548
 issue: 0
-python_version: '3.14.0'
+python_version: 3.14.0
 library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-basic/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-basic/pygal/plot.html
-quality_score: null
+quality_score: 78
 impl_tags:
   dependencies: []
   techniques:
@@ -18,137 +18,156 @@ impl_tags:
   patterns:
   - iteration-over-groups
   dataprep: []
-  styling: []
+  styling:
+  - edge-highlighting
 review:
   strengths:
-  - Clean, readable code following KISS principles with clear section comments
-  - Excellent color palette with good contrast and colorblind accessibility
-  - Proper use of pygal Style class for comprehensive customization
-  - Percentage labels are well-positioned and clearly readable inside slices
+  - Realistic smartphone market share data with plausible values summing to 100%
   - Correct title format following pyplots.ai conventions
-  - Generates both PNG and HTML outputs for flexibility
+  - Good use of pygal-specific features (value_formatter, print_values_position, per-slice
+    SVG styling)
+  - Clean KISS code structure with explicit font sizing
+  - White stroke borders between slices add visual polish
   weaknesses:
-  - Legend at bottom appears relatively small compared to the pie chart; could increase
-    legend_font_size for better readability
-  - Missing slight explosion for emphasis on key slice as suggested in the specification
-    notes
-  image_description: 'The plot displays a pie chart showing market share distribution
-    across 5 products. The chart uses a square format (3600x3600px) with distinct
-    colors: blue (#306998) for Product A (35%), yellow (#FFD43B) for Product B (25%),
-    teal (#4ECDC4) for Product C (20%), coral/red (#FF6B6B) for Product D (12%), and
-    mint green (#95E1D3) for Product E (8%). Each slice displays its percentage value
-    centered within the slice. The title "pie-basic · pygal · pyplots.ai" appears
-    at the top in dark gray text. A horizontal legend at the bottom identifies all
-    5 products with their corresponding color indicators arranged in 5 columns.'
+  - Missing exploded slice — spec explicitly requires slightly explode the largest
+    or smallest slice for emphasis
+  - 'No data storytelling: add an annotation or visual emphasis highlighting key insight
+    such as Others dominance or market leader'
+  - value_colors in Style is not a valid pygal attribute — remove this dead code
+  - Design could be elevated with a more intentional color narrative or annotation
+    pointing out the key insight
+  image_description: 'The plot displays a pie chart titled "Smartphone Market Share
+    · pie-basic · pygal · pyplots.ai" on a white background. Six slices represent
+    global smartphone market share: Apple (23.3%, steel blue), Samsung (19.4%, soft
+    gold/yellow), Xiaomi (14.1%, light teal), OPPO (8.7%, coral/salmon), vivo (7.5%,
+    mint green), and Others (27.0%, light lavender/purple). Percentage labels are
+    centered on each slice in white or dark text. A legend at the bottom arranges
+    all six categories in a 3-column layout. White stroke borders separate the slices.
+    No slice is exploded. The pie fills most of the square canvas (3600x3600 px).
+    The rendered colors appear more pastel than the hex values defined in code.'
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 26
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 7
+        max: 8
         passed: true
-        comment: Title and percentage labels are clearly readable at the large canvas
-          size
+        comment: Font sizes explicitly set; all text readable. Legend text slightly
+          small relative to chart size.
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements; percentages are well-positioned within
-          slices
+        comment: No overlapping text elements.
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Pie slices are well-proportioned and clearly visible
+        comment: All slices visible; white stroke borders aid separation. Smaller
+          slices are narrow but readable.
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 3
+        max: 4
         passed: true
-        comment: Colors are distinct and colorblind-friendly (no red-green as only
-          difference)
+        comment: Distinguishable palette with no red-green confusion. Pastel rendering
+          slightly reduces contrast.
       - id: VQ-05
         name: Layout Balance
         score: 3
-        max: 5
+        max: 4
         passed: true
-        comment: Good overall layout, but legend at bottom appears small relative
-          to chart
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
+        comment: Pie fills canvas well; legend at bottom. Some unused whitespace below
+          legend.
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
         max: 2
+        passed: true
+        comment: Descriptive title with proper format. No axis labels needed for pie
+          chart.
+    design_excellence:
+      score: 9
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
         passed: false
-        comment: Legend text appears quite small compared to the chart; could be more
-          prominent
+        comment: Custom palette with white stroke borders; looks polished but like
+          a well-configured default, not publication-level.
+      - id: DE-02
+        name: Visual Refinement
+        score: 3
+        max: 6
+        passed: false
+        comment: White stroke borders, clean background, bottom legend in columns.
+          Some refinement but not heavily polished.
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: Data displayed clearly but no annotations, callouts, or emphasis
+          guiding the viewer to key insights.
     spec_compliance:
-      score: 25
-      max: 25
+      score: 13
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct pie chart type
+        comment: Correct pie chart type.
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories and values correctly mapped to slices
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
-        passed: true
-        comment: Includes percentage labels, distinct colors, and legend as specified
-      - id: SC-04
-        name: Data Range
+        score: 2
+        max: 4
+        passed: false
+        comment: Has percentage labels, distinct colors, and legend. Missing exploded
+          slice as required by spec.
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible, percentages sum to 100%
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Categories and values correctly mapped.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend correctly identifies all categories
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Uses correct format: "pie-basic · pygal · pyplots.ai"'
+        comment: Title follows correct format. Legend labels match data.
     data_quality:
-      score: 18
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Shows different sized slices demonstrating proportions, but missing
-          "explosion" feature mentioned in spec notes
+        comment: 'Good variety of slice sizes: large, medium, and small slices represented.'
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Market share distribution is a realistic, comprehensible scenario
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Values (35%, 25%, 20%, 12%, 8%) are realistic for market share
+        comment: Global smartphone market share is a real, neutral, comprehensible
+          business scenario.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Values sum to 100% and reflect plausible 2024 market share figures.
     code_quality:
       score: 9
       max: 10
@@ -158,40 +177,48 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Simple imports → data → plot → save structure, no functions/classes
+        comment: 'Clean flow: imports, data, style, chart, save.'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Deterministic data (no random elements)
+        comment: Deterministic hardcoded data.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only pygal and Style imported, both used
+        comment: Only pygal and Style, both used.
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
+        score: 1
+        max: 2
+        passed: false
+        comment: value_colors in Style is not a valid pygal Style attribute — dead
+          code.
+      - id: CQ-05
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Uses current pygal API
-      - id: CQ-05
-        name: Output Correct
-        score: 0
-        max: 0
-        passed: false
-        comment: Saves as plot.png correctly
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves as plot.png and plot.html.
+    library_mastery:
+      score: 7
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of pygal Pie class, Style, print_values, value_formatter,
+          legend options.
+      - id: LM-02
+        name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses pygal's Style customization and render_to_png/render_to_file,
-          but doesn't use unique features like hover interactivity or half-pie mode
-  verdict: APPROVED
+        comment: 'Uses pygal-specific features: print_values_position, value_formatter
+          lambda, legend_at_bottom_columns, per-slice SVG style strings.'
+  verdict: REJECTED

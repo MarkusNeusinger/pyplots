@@ -1,155 +1,174 @@
 library: seaborn
 specification_id: bar-basic
 created: '2025-12-23T00:22:51Z'
-updated: '2025-12-23T00:25:26Z'
-generated_by: claude-opus-4-5-20251101
+updated: '2026-02-14T15:07:59Z'
+generated_by: claude-opus-4-6
 workflow_run: 20447576718
 issue: 0
-python_version: 3.13.11
+python_version: '3.14'
 library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-basic/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-basic/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 92
+quality_score: 89
 impl_tags:
   dependencies: []
   techniques:
   - annotations
-  - edge-highlighting
   patterns:
   - explicit-figure
   dataprep: []
-  styling: []
+  styling:
+  - grid-styling
 review:
   strengths:
-  - Excellent text sizing with all elements clearly legible at full resolution
-  - Clean, professional styling with removed spines and subtle gridlines
-  - Value labels above bars enhance readability and follow spec recommendation
-  - Proper use of seaborn DataFrame integration with pandas
-  - Correct title format and descriptive axis labels with units
+  - Strong data storytelling with two meaningful annotations (top/bottom performers)
+    and arrow callouts that guide the viewer
+  - Thoughtful three-tier color hierarchy (dark Python Blue, lighter blue, muted grey)
+    that visually reinforces the ranking
+  - 'Clean visual refinement: removed spines, subtle grid, explicit font sizing, well-calibrated
+    margins'
+  - Correct seaborn 0.14+ API usage with hue parameter and legend=False
+  - Descriptive axis labels with units and correct title format
   weaknesses:
-  - Could demonstrate more variation in data values to better showcase comparison
-    capabilities
-  - Does not leverage seaborn-specific features beyond basic barplot (e.g., error
-    bars, hue encoding for highlighting)
-  image_description: 'The plot displays a vertical bar chart showing product sales
-    by category. Six blue bars (#306998) represent categories: Electronics (145),
-    Clothing (98), Home & Garden (76), Sports (112), Books (54), and Toys (89). Bold
-    value labels appear above each bar. The title "bar-basic · seaborn · pyplots.ai"
-    is positioned at the top. The y-axis shows "Sales (units)" and x-axis shows "Product
-    Category". The chart has a clean design with removed top/right spines and subtle
-    dashed gridlines on the y-axis. All text is clearly legible and well-sized.'
+  - The color distinction between the lighter blue (#7BAFD4) middle bars and the muted
+    grey (#A3BFCF) bottom bar is subtle and may not be immediately perceptible
+  - The Lowest annotation arrow is quite long, spanning from upper-right area down
+    to the Books bar, creating visual tension
+  - Annotation positioning uses hardcoded pixel coordinates that are fragile if data
+    changes
+  image_description: 'The plot displays a vertical bar chart titled "bar-basic · seaborn
+    · pyplots.ai" showing product sales across 8 categories in descending order: Electronics
+    (218), Groceries (195), Clothing (164), Sports (142), Toys (112), Home & Garden
+    (89), Automotive (58), and Books (41). The top bar (Electronics) is dark Python
+    Blue (#306998), the middle 6 bars are lighter blue (#7BAFD4), and the bottom bar
+    (Books) is a muted grey-blue (#A3BFCF). Bold value labels appear above each bar.
+    Two arrow annotations provide storytelling: "Top seller 218 units" points to the
+    Electronics bar from the upper-right, and "Lowest 41 units" points down to the
+    Books bar from the upper-right area. The x-axis is labeled "Product Category",
+    the y-axis "Sales (units)". Top and right spines are removed, with a subtle y-axis
+    grid (alpha=0.2). Layout uses white background with clean spacing.'
   criteria_checklist:
     visual_quality:
-      score: 37
-      max: 40
+      score: 27
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title 24pt, labels 20pt, ticks 16pt, value labels 18pt - all perfectly
-          readable
+        comment: 'All font sizes explicitly set: title=24, labels=20, ticks=16, annotations=15/13,
+          bar labels=15'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text, all elements clearly separated
+        comment: All text elements well-positioned with no overlap
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Bar widths appropriate, good spacing between bars
+        comment: Bars well-sized with width=0.7, appropriate spacing for 8 categories
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Single blue color, no colorblind issues
-      - id: VQ-05
-        name: Layout Balance
-        score: 4
-        max: 5
-        passed: true
-        comment: Good proportions, slight extra whitespace on right
-      - id: VQ-06
-        name: Axis Labels
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Descriptive labels with units: "Sales (units)", "Product Category"'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
-        passed: true
-        comment: Grid is subtle (alpha 0.3), but no legend needed for single-color
-          bars
-    spec_compliance:
-      score: 25
-      max: 25
-      items:
-      - id: SC-01
-        name: Plot Type
-        score: 8
-        max: 8
-        passed: true
-        comment: Correct vertical bar chart
-      - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories on X, values on Y correctly assigned
-      - id: SC-03
-        name: Required Features
-        score: 5
-        max: 5
-        passed: true
-        comment: Value labels on bars, consistent bar widths, adequate spacing
-      - id: SC-04
-        name: Data Range
         score: 3
-        max: 3
-        passed: true
-        comment: Y-axis shows full range from 0 to beyond max value
-      - id: SC-05
-        name: Legend Accuracy
+        max: 4
+        passed: false
+        comment: Blue palette is colorblind-safe but distinction between lighter blue
+          and muted grey for last bar is subtle
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 3
+        max: 4
+        passed: false
+        comment: Good layout with explicit margins, but Lowest annotation arrow is
+          long and creates visual tension
+      - id: VQ-06
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: No legend needed, single color used appropriately
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Correct format: "bar-basic · seaborn · pyplots.ai"'
-    data_quality:
-      score: 18
+        comment: Sales (units) and Product Category are descriptive with units
+    design_excellence:
+      score: 16
       max: 20
       items:
-      - id: DQ-01
-        name: Feature Coverage
+      - id: DE-01
+        name: Aesthetic Sophistication
         score: 6
         max: 8
         passed: true
-        comment: Shows variation in bar heights, but all values in similar range (54-145)
-      - id: DQ-02
-        name: Realistic Context
-        score: 7
-        max: 7
+        comment: Thoughtful color hierarchy (dark to light to muted), clean typography,
+          clearly above defaults
+      - id: DE-02
+        name: Visual Refinement
+        score: 5
+        max: 6
         passed: true
-        comment: Product sales by category is a real, comprehensible scenario
-      - id: DQ-03
-        name: Appropriate Scale
+        comment: Spines removed, subtle grid, generous whitespace, set_axisbelow,
+          explicit margins
+      - id: DE-03
+        name: Data Storytelling
+        score: 5
+        max: 6
+        passed: true
+        comment: Two annotations highlight top and bottom performers with arrows,
+          color encoding reinforces ranking narrative
+    spec_compliance:
+      score: 15
+      max: 15
+      items:
+      - id: SC-01
+        name: Plot Type
         score: 5
         max: 5
         passed: true
-        comment: Values are realistic for unit sales (54-145 units)
+        comment: Correct vertical bar chart
+      - id: SC-02
+        name: Required Features
+        score: 4
+        max: 4
+        passed: true
+        comment: Value labels on bars, highlighted specific bars, consistent widths,
+          adequate spacing
+      - id: SC-03
+        name: Data Mapping
+        score: 3
+        max: 3
+        passed: true
+        comment: Categories on x-axis, values on y-axis, all data visible
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
+        passed: true
+        comment: Correct format bar-basic · seaborn · pyplots.ai, no legend needed
+    data_quality:
+      score: 14
+      max: 15
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 5
+        max: 6
+        passed: true
+        comment: 8 categories with good descending spread; could benefit from closer-valued
+          pairs
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 5
+        passed: true
+        comment: Product sales by category is a realistic neutral business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Sales values 41-218 units are plausible
     code_quality:
       score: 9
       max: 10
@@ -159,33 +178,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports → data → plot → save'
+        comment: Clean imports, data, plot, save flow
       - id: CQ-02
         name: Reproducibility
         score: 2
-        max: 3
-        passed: false
-        comment: Deterministic data (no randomness), but no explicit seed comment
+        max: 2
+        passed: true
+        comment: Fully deterministic data, no randomness
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only matplotlib, pandas, seaborn - all used
+        comment: 'All imports used: matplotlib, pandas, seaborn'
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
         score: 1
-        max: 1
-        passed: true
-        comment: Uses current seaborn API correctly
+        max: 2
+        passed: false
+        comment: Annotation positioning uses hardcoded coordinates that are fragile
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with correct dpi and bbox_inches
+        comment: Saves as plot.png, no deprecated functions
     library_features:
-      score: 3
-      max: 5
-      items: []
+      score: 8
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of sns.barplot() with DataFrame, set_context(), set_style(),
+          hue parameter
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: sns.set_context(talk), sns.set_style(whitegrid, ...) override, hue+legend=False
+          are idiomatic seaborn
   verdict: APPROVED

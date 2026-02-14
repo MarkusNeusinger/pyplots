@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: plotly 6.5.2 | Python 3.14
 Quality: 87/100 | Created: 2025-12-25
@@ -25,6 +25,12 @@ data = {
 
 data["Control"] = np.append(data["Control"], [620, 650, 280])
 data["Treatment C"] = np.append(data["Treatment C"], [600, 620, 250])
+
+# Compute x-axis range from actual data with padding
+all_values = np.concatenate(list(data.values()))
+x_min, x_max = all_values.min(), all_values.max()
+x_padding = (x_max - x_min) * 0.05
+x_range = [x_min - x_padding, x_max + x_padding]
 
 # Cohesive blue-teal palette: good contrast on white, colorblind-safe
 colors = ["#306998", "#4B8BBE", "#2A9D8F", "#7B68AE"]
@@ -85,7 +91,7 @@ for i, (condition, values) in enumerate(data.items()):
             points="all",
             pointpos=-0.4,
             jitter=0.08,
-            marker={"size": 7, "color": color, "opacity": 0.6, "line": {"width": 0.5, "color": "#2D2D2D"}},
+            marker={"size": 9, "color": color, "opacity": 0.6, "line": {"width": 0.5, "color": "#2D2D2D"}},
             line_width=0,
             fillcolor="rgba(0,0,0,0)",
             name=condition,
@@ -97,64 +103,55 @@ for i, (condition, values) in enumerate(data.items()):
     )
 
 # Annotations for data storytelling
-fig.add_annotation(
-    x=415,
-    y="Treatment B",
-    text="Bimodal: two distinct<br>response clusters",
-    showarrow=True,
-    arrowhead=2,
-    arrowsize=1,
-    arrowwidth=1.5,
-    arrowcolor="#555555",
-    ax=0,
-    ay=-55,
-    font={"size": 15, "color": "#2D2D2D"},
-    bgcolor="rgba(255,255,255,0.85)",
-    bordercolor="#2A9D8F",
-    borderwidth=1.5,
-    borderpad=4,
-)
+annotations = [
+    {
+        "x": 415,
+        "y": "Treatment B",
+        "text": "Bimodal: two distinct<br>response clusters",
+        "ax": 0,
+        "ay": -55,
+        "font_size": 15,
+        "bordercolor": "#2A9D8F",
+    },
+    {"x": 640, "y": "Control", "text": "Outliers", "ax": -50, "ay": -40, "font_size": 14, "bordercolor": "#306998"},
+    {
+        "x": 380,
+        "y": "Treatment A",
+        "text": "Tight cluster<br>(low variance)",
+        "ax": -80,
+        "ay": -45,
+        "font_size": 14,
+        "bordercolor": "#4B8BBE",
+    },
+]
 
-fig.add_annotation(
-    x=650,
-    y="Control",
-    text="Outliers",
-    showarrow=True,
-    arrowhead=2,
-    arrowsize=1,
-    arrowwidth=1.5,
-    arrowcolor="#555555",
-    ax=30,
-    ay=-35,
-    font={"size": 14, "color": "#2D2D2D"},
-    bgcolor="rgba(255,255,255,0.85)",
-    bordercolor="#306998",
-    borderwidth=1.5,
-    borderpad=4,
-)
-
-fig.add_annotation(
-    x=380,
-    y="Treatment A",
-    text="Tight cluster (low variance)",
-    showarrow=True,
-    arrowhead=2,
-    arrowsize=1,
-    arrowwidth=1.5,
-    arrowcolor="#555555",
-    ax=-80,
-    ay=-45,
-    font={"size": 14, "color": "#2D2D2D"},
-    bgcolor="rgba(255,255,255,0.85)",
-    bordercolor="#4B8BBE",
-    borderwidth=1.5,
-    borderpad=4,
-)
+for ann in annotations:
+    fig.add_annotation(
+        x=ann["x"],
+        y=ann["y"],
+        text=ann["text"],
+        showarrow=True,
+        arrowhead=2,
+        arrowsize=1,
+        arrowwidth=1.5,
+        arrowcolor="#555555",
+        ax=ann["ax"],
+        ay=ann["ay"],
+        font={"size": ann["font_size"], "color": "#2D2D2D"},
+        bgcolor="rgba(255,255,255,0.85)",
+        bordercolor=ann["bordercolor"],
+        borderwidth=1.5,
+        borderpad=4,
+    )
 
 # Layout - HORIZONTAL orientation with categories on y-axis, values on x-axis
 fig.update_layout(
     title={
-        "text": "raincloud-basic \u00b7 plotly \u00b7 pyplots.ai",
+        "text": (
+            "raincloud-basic · plotly · pyplots.ai"
+            '<br><span style="font-size:17px;color:#666666;">'
+            "Distribution shape, summary stats, and individual observations in one view</span>"
+        ),
         "font": {"size": 32, "color": "#2D2D2D", "family": "Arial, sans-serif"},
         "x": 0.5,
         "xanchor": "center",
@@ -172,7 +169,7 @@ fig.update_layout(
         "tickfont": {"size": 20, "color": "#333333"},
         "gridcolor": "rgba(0,0,0,0.06)",
         "gridwidth": 1,
-        "range": [210, 700],
+        "range": x_range,
         "zeroline": False,
         "showline": True,
         "linecolor": "rgba(0,0,0,0.15)",
@@ -181,7 +178,7 @@ fig.update_layout(
     template="plotly_white",
     plot_bgcolor="white",
     paper_bgcolor="white",
-    margin={"l": 170, "r": 60, "t": 85, "b": 75},
+    margin={"l": 170, "r": 40, "t": 110, "b": 90},
     violingap=0,
     violinmode="overlay",
     legend={
@@ -190,6 +187,11 @@ fig.update_layout(
         "bgcolor": "rgba(255,255,255,0.9)",
         "bordercolor": "rgba(0,0,0,0.15)",
         "borderwidth": 1,
+        "orientation": "h",
+        "x": 0.5,
+        "y": -0.15,
+        "xanchor": "center",
+        "yanchor": "top",
     },
     hoverlabel={"bgcolor": "white", "bordercolor": "#2D2D2D", "font": {"size": 16, "color": "#2D2D2D"}},
 )

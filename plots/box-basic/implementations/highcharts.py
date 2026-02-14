@@ -1,7 +1,7 @@
 """ pyplots.ai
 box-basic: Basic Box Plot
-Library: highcharts unknown | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: highcharts 1.10.3 | Python 3.14
+Quality: /100 | Updated: 2026-02-14
 """
 
 import tempfile
@@ -18,113 +18,152 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data - generate sample data for 5 categories with different distributions
+# Data - employee performance scores across 5 departments
 np.random.seed(42)
-categories = ["Group A", "Group B", "Group C", "Group D", "Group E"]
+departments = ["Engineering", "Marketing", "Sales", "Design", "Finance"]
 colors = ["#306998", "#FFD43B", "#9467BD", "#17BECF", "#8C564B"]
 
-# Generate raw data (100 points each with different means and spreads)
-raw_data = [
-    np.random.normal(50, 10, 100),  # Group A: moderate mean, moderate spread
-    np.random.normal(65, 15, 100),  # Group B: higher mean, larger spread
-    np.random.normal(45, 8, 100),  # Group C: lower mean, tighter spread
-    np.random.normal(70, 12, 100),  # Group D: highest mean
-    np.random.normal(55, 20, 100),  # Group E: moderate mean, widest spread
+scores = [
+    np.random.normal(78, 8, 80),  # Engineering: high, tight
+    np.random.normal(72, 14, 60),  # Marketing: moderate, wide spread
+    np.random.normal(68, 9, 90),  # Sales: lower mean, moderate
+    np.random.normal(82, 7, 50),  # Design: highest, tight
+    np.random.normal(75, 18, 70),  # Finance: moderate, widest spread
 ]
 
-# Calculate box plot statistics (inline, no functions)
-box_data = []
+# Calculate box plot statistics
+box_stats = []
 outlier_data = []
 
-for i, data in enumerate(raw_data):
+for i, data in enumerate(scores):
+    data = np.clip(data, 0, 100)
     q1 = float(np.percentile(data, 25))
     median = float(np.percentile(data, 50))
     q3 = float(np.percentile(data, 75))
     iqr = q3 - q1
-    whisker_low = max(float(data.min()), q1 - 1.5 * iqr)
-    whisker_high = min(float(data.max()), q3 + 1.5 * iqr)
+    whisker_low = float(max(data[data >= q1 - 1.5 * iqr].min(), data.min()))
+    whisker_high = float(min(data[data <= q3 + 1.5 * iqr].max(), data.max()))
 
-    # Box data: [low, q1, median, q3, high]
-    box_data.append(
-        {"low": whisker_low, "q1": q1, "median": median, "q3": q3, "high": whisker_high, "color": colors[i]}
+    box_stats.append(
+        {
+            "low": round(whisker_low, 1),
+            "q1": round(q1, 1),
+            "median": round(median, 1),
+            "q3": round(q3, 1),
+            "high": round(whisker_high, 1),
+        }
     )
 
-    # Find and add outliers
-    outliers = data[(data < whisker_low) | (data > whisker_high)]
-    for outlier in outliers:
-        outlier_data.append([i, float(outlier)])
+    outliers = data[(data < q1 - 1.5 * iqr) | (data > q3 + 1.5 * iqr)]
+    for val in outliers:
+        outlier_data.append({"x": i, "y": round(float(val), 1)})
+
+# Build fill colors (75% opacity)
+fill_colors = []
+for c in colors:
+    r, g, b = int(c[1:3], 16), int(c[3:5], 16), int(c[5:7], 16)
+    fill_colors.append(f"rgba({r}, {g}, {b}, 0.75)")
 
 # Create chart
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-# Chart configuration
 chart.options.chart = {
     "type": "boxplot",
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
-    "marginBottom": 280,
-    "spacingBottom": 80,
+    "marginBottom": 260,
+    "spacingBottom": 60,
+    "spacingLeft": 40,
+    "style": {"fontFamily": "Arial, Helvetica, sans-serif"},
 }
 
-# Title
 chart.options.title = {
-    "text": "box-basic · highcharts · pyplots.ai",
-    "style": {"fontSize": "72px", "fontWeight": "bold"},
+    "text": "box-basic \u00b7 highcharts \u00b7 pyplots.ai",
+    "style": {"fontSize": "64px", "fontWeight": "600", "color": "#2c3e50"},
+    "margin": 60,
 }
 
-# X-axis
+chart.options.subtitle = {
+    "text": "Annual Performance Review Scores by Department",
+    "style": {"fontSize": "42px", "color": "#7f8c8d"},
+}
+
 chart.options.x_axis = {
-    "categories": categories,
-    "title": {"text": "Category", "style": {"fontSize": "48px"}},
-    "labels": {"style": {"fontSize": "40px"}},
+    "categories": departments,
+    "title": {"text": "Department", "style": {"fontSize": "44px", "color": "#34495e"}},
+    "labels": {"style": {"fontSize": "38px", "color": "#34495e"}},
+    "lineColor": "#bdc3c7",
+    "lineWidth": 2,
+    "tickWidth": 0,
 }
 
-# Y-axis
 chart.options.y_axis = {
-    "title": {"text": "Value", "style": {"fontSize": "48px"}},
-    "labels": {"style": {"fontSize": "36px"}},
+    "title": {"text": "Score (out of 100)", "style": {"fontSize": "44px", "color": "#34495e"}},
+    "labels": {"style": {"fontSize": "34px", "color": "#7f8c8d"}},
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.1)",
+    "gridLineColor": "rgba(0, 0, 0, 0.06)",
+    "tickInterval": 5,
 }
 
-# Legend
-chart.options.legend = {"enabled": True, "itemStyle": {"fontSize": "36px"}}
+chart.options.legend = {"enabled": False}
+chart.options.credits = {"enabled": False}
 
-# Plot options for box styling
 chart.options.plot_options = {
     "boxplot": {
         "lineWidth": 4,
         "medianWidth": 6,
         "medianColor": "#1a1a1a",
         "stemWidth": 3,
+        "stemDashStyle": "Solid",
         "whiskerWidth": 4,
         "whiskerLength": "50%",
-        "colorByPoint": True,
+        "whiskerColor": "#555555",
+        "pointWidth": 350,
+        "tooltip": {
+            "headerFormat": "<b>{point.key}</b><br/>",
+            "pointFormat": (
+                "Max: {point.high}<br/>"
+                "Q3: {point.q3}<br/>"
+                "Median: {point.median}<br/>"
+                "Q1: {point.q1}<br/>"
+                "Min: {point.low}<br/>"
+            ),
+        },
     }
 }
 
-# Box plot series with individual colors per box
-box_series = BoxPlotSeries()
-box_series.name = "Distribution"
-box_series.data = box_data
-box_series.colors = colors
+# One series per department for distinct colors
+for i, dept in enumerate(departments):
+    series = BoxPlotSeries()
+    series.name = dept
+    series.data = [
+        {
+            "x": i,
+            "low": box_stats[i]["low"],
+            "q1": box_stats[i]["q1"],
+            "median": box_stats[i]["median"],
+            "q3": box_stats[i]["q3"],
+            "high": box_stats[i]["high"],
+        }
+    ]
+    series.color = colors[i]
+    chart.add_series(series)
 
-chart.add_series(box_series)
-
-# Outliers as scatter series
+# Outlier series
 if outlier_data:
     outlier_series = ScatterSeries()
     outlier_series.name = "Outliers"
     outlier_series.data = outlier_data
     outlier_series.marker = {
-        "fillColor": "#E74C3C",
+        "fillColor": "rgba(231, 76, 60, 0.7)",
         "lineWidth": 2,
-        "lineColor": "#C0392B",
-        "radius": 12,
+        "lineColor": "#c0392b",
+        "radius": 10,
         "symbol": "circle",
     }
+    outlier_series.tooltip = {"pointFormat": "Score: {point.y}"}
     chart.add_series(outlier_series)
 
 # Download Highcharts JS files (required for headless Chrome)
@@ -132,13 +171,23 @@ highcharts_url = "https://code.highcharts.com/highcharts.js"
 with urllib.request.urlopen(highcharts_url, timeout=30) as response:
     highcharts_js = response.read().decode("utf-8")
 
-# BoxPlot requires highcharts-more.js
 highcharts_more_url = "https://code.highcharts.com/highcharts-more.js"
 with urllib.request.urlopen(highcharts_more_url, timeout=30) as response:
     highcharts_more_js = response.read().decode("utf-8")
 
-# Generate HTML with inline scripts
+# Generate JS and inject properties not supported by highcharts-core API
 html_str = chart.to_js_literal()
+
+# Inject stemColor into plotOptions (stripped by Python API)
+html_str = html_str.replace("stemDashStyle: 'Solid'", "stemColor: '#555555',\n  stemDashStyle: 'Solid'")
+
+# Inject fillColor per series
+for i in range(len(departments)):
+    html_str = html_str.replace(
+        f"color: '{colors[i]}',\n  type: 'boxplot'",
+        f"color: '{colors[i]}',\n  fillColor: '{fill_colors[i]}',\n  type: 'boxplot'",
+    )
+
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -157,10 +206,6 @@ with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encodin
     f.write(html_content)
     temp_path = f.name
 
-# Save HTML file for interactive viewing
-with open("plot.html", "w", encoding="utf-8") as f:
-    f.write(html_content)
-
 # Take screenshot with Selenium
 chrome_options = Options()
 chrome_options.add_argument("--headless")
@@ -171,9 +216,9 @@ chrome_options.add_argument("--window-size=4800,2700")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
-time.sleep(5)  # Wait for chart to render
+time.sleep(5)
 driver.save_screenshot("plot.png")
 driver.quit()
 
-# Clean up temp file
+# Clean up
 Path(temp_path).unlink()

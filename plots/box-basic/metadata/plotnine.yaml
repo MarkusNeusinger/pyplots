@@ -1,16 +1,16 @@
 library: plotnine
 specification_id: box-basic
 created: '2025-12-23T00:36:35Z'
-updated: '2025-12-23T00:40:39Z'
-generated_by: claude-opus-4-5-20251101
+updated: 2026-02-14T22:09:08+00:00
+generated_by: claude-opus-4-6
 workflow_run: 20447781993
 issue: 0
-python_version: 3.13.11
-library_version: 0.15.2
+python_version: "3.14"
+library_version: "0.15.3"
 preview_url: https://storage.googleapis.com/pyplots-images/plots/box-basic/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-basic/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 91
+quality_score: null
 impl_tags:
   dependencies: []
   techniques: []

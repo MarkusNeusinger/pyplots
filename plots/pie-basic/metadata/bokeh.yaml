@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: pie-basic
 created: '2025-12-23T00:36:23Z'
-updated: '2026-02-14T14:47:15Z'
+updated: '2026-02-14T14:56:19Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447773542
 issue: 0
@@ -10,7 +10,7 @@ library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-basic/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-basic/bokeh/plot.html
-quality_score: 78
+quality_score: 90
 impl_tags:
   dependencies: []
   techniques:
@@ -18,45 +18,42 @@ impl_tags:
   - custom-legend
   - html-export
   patterns:
-  - iteration-over-groups
+  - columndatasource
   dataprep: []
   styling:
   - minimal-chrome
   - edge-highlighting
 review:
   strengths:
-  - 'All spec requirements fully met: percentage labels, distinct colors, legend,
-    and exploded largest slice'
-  - Cloud infrastructure market share is an excellent, realistic, and neutral data
-    context
-  - All text sizes explicitly set at appropriate scales for the 3600x3600 canvas
-  - 'Clean visual refinement: axes/grid hidden, white separators, exploded slice for
-    emphasis'
-  - Dual output (PNG + HTML) leverages bokeh web-native strengths
+  - Excellent data storytelling with two targeted callout annotations and a contextual
+    subtitle providing market size
+  - All text sizes explicitly and generously set for the 3600x3600 canvas — highly
+    readable
+  - Colorblind-safe palette with Python Blue as primary, good visual hierarchy
+  - Clean idiomatic Bokeh code using ColumnDataSource and proper Legend construction
+  - Dual output (PNG + HTML) leveraging Bokeh's web-native strengths
+  - Exploded largest slice draws immediate attention to AWS as market leader
   weaknesses:
-  - No data storytelling or annotations — add callouts highlighting key insights (e.g.,
-    AWS leading, Others category being surprisingly large)
-  - Red and green slices are adjacent — swap to a fully colorblind-safe palette avoiding
-    red-green adjacency
-  - Layout has wasted space between pie and legend — tighten vertical spacing or reposition
-    legend closer
-  - Code is verbose with manual per-wedge loops — consider using ColumnDataSource
-    for more idiomatic bokeh
-  - Visual design is competent but generic — could benefit from subtle gradient effects,
-    shadow, or stronger visual hierarchy to elevate beyond a standard pie chart
-  image_description: 'The plot displays a basic pie chart on a square (3600x3600 px)
-    canvas with the title "pie-basic · bokeh · pyplots.ai" centered at the top. There
-    are 5 wedge slices representing cloud infrastructure market share: AWS (31%, deep
-    blue #306998), Azure (25%, yellow #FFD43B), Google Cloud (11%, red #E74C3C), Alibaba
-    (4%, green #27AE60), and Others (29%, purple #9B59B6). The AWS slice is slightly
-    exploded outward for emphasis. Each slice has a bold percentage label — white
-    text on darker slices and dark text on the yellow Azure slice. White separator
-    lines (5px) divide the slices. A horizontal legend at the bottom displays category
-    names with percentages. The background is white with no axes or grid visible.
-    There is noticeable empty space between the bottom of the pie and the legend area.'
+  - Minor excess whitespace above the pie chart between title and chart top could
+    be reduced
+  - The subtitle text at the bottom is relatively small (22pt) compared to other elements
+    and may not draw enough attention
+  - Alibaba slice (4%) is quite thin — could benefit from slightly larger explode
+    or callout
+  image_description: 'The plot displays a pie chart titled "pie-basic · bokeh · pyplots.ai"
+    showing cloud infrastructure market share (2024) with five slices: AWS (33%, dark
+    navy blue, slightly exploded outward for emphasis), Azure (23%, golden yellow),
+    Google Cloud (11%, purple), Alibaba (4%, orange), and Others (29%, teal blue).
+    Each slice has a bold percentage label centered within it — white text on dark
+    backgrounds, dark text on the yellow slice. Two callout annotations appear: "▲
+    Market Leader" in blue near the AWS slice and "Long-tail rivals ≈ Azure" in gray
+    italic near the Others slice. A subtitle at the bottom reads "Top 4 providers
+    control 71% of the $280B global cloud market". A horizontal legend at the bottom
+    lists all five categories with their percentages. The background is a subtle off-white
+    (#FAFBFC). White separator lines clearly delineate each wedge.'
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -64,64 +61,68 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 40pt, labels 36pt, legend 30pt.
-          All perfectly readable.'
+        comment: 'All font sizes explicitly set: title 40pt, slice labels 36pt, callouts
+          22-24pt, legend 28pt. All perfectly readable.'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements anywhere.
+        comment: No overlapping text anywhere. Labels fit within slices, callouts
+          positioned cleanly outside.
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Wedges clearly visible with radius=0.88, good proportions.
+        comment: Wedges well-sized overall. The Alibaba slice (4%) is quite thin but
+          still visible with its label.
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
-        passed: false
-        comment: Red (#E74C3C) and green (#27AE60) are adjacent slices. Suboptimal
-          for colorblind viewers.
+        passed: true
+        comment: 'Colorblind-safe palette: blue, yellow, purple, orange, teal. No
+          red-green adjacency.'
       - id: VQ-05
-        name: Layout & Canvas
+        name: Layout Balance
         score: 3
         max: 4
-        passed: false
-        comment: Pie fills canvas adequately but noticeable gap between pie bottom
-          and legend. Legend feels isolated.
+        passed: true
+        comment: Good canvas utilization on 3600x3600 square format. Minor excess
+          whitespace above the pie.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Title follows correct format. No axes needed for pie chart.
+        comment: Title follows required format. Axes appropriately hidden for pie
+          chart.
     design_excellence:
-      score: 10
+      score: 16
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 6
         max: 8
-        passed: false
-        comment: Clean and intentional but essentially a well-configured default pie
-          chart, not publication-level.
+        passed: true
+        comment: Custom Python Blue-first palette, intentional color harmony, white
+          wedge separators, subtle background. Clearly above defaults.
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Axes hidden, grid hidden, outline removed, clean white separators.
-          Good attention to detail.
+        comment: Axes/grid hidden, outline removed, clean background, white line separators,
+          generous spacing.
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 5
         max: 6
-        passed: false
-        comment: No annotations or callouts. Viewer must interpret data themselves.
+        passed: true
+        comment: Market Leader callout on AWS, Long-tail rivals insight annotation,
+          contextual subtitle with market size ($280B).
     spec_compliance:
       score: 15
       max: 15
@@ -131,7 +132,7 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Correct chart type: pie chart with wedge slices.'
+        comment: Correct pie chart implementation.
       - id: SC-02
         name: Required Features
         score: 4
@@ -144,13 +145,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Categories map to slices, values map to angles correctly.
+        comment: Categories and values correctly mapped to proportional wedge angles.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend labels include category names and percentages.
+        comment: Title matches format. Legend labels include category names and percentages.
     data_quality:
       score: 14
       max: 15
@@ -159,24 +160,24 @@ review:
         name: Feature Coverage
         score: 5
         max: 6
-        passed: false
-        comment: Shows varied slice sizes with Others catch-all. Good range but no
-          extreme contrast.
+        passed: true
+        comment: 'Shows varied slice sizes: large (33%), medium (23%, 29%), small
+          (11%), tiny (4%).'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Cloud infrastructure market share is a real, neutral, widely understood
-          scenario.
+        comment: Cloud infrastructure market share with real company names — neutral
+          business scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values are realistic and sum to 100%.
+        comment: Values sum to 100%, realistic market share percentages.
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -184,48 +185,49 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, compute, plot, save.'
+        comment: 'Linear flow: imports, data, angles, figure, wedges, labels, styling,
+          save. No functions/classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic hardcoded data.
+        comment: Deterministic hardcoded data, no randomness.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: All imports used (math, bokeh.io, bokeh.models, bokeh.plotting).
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Functional but verbose with manual angle calculations and per-wedge
-          loops.
+        passed: true
+        comment: Clean and appropriate. Manual angle math is necessary for Bokeh pie
+          charts.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html.
-    library_features:
-      score: 6
+        comment: Saves plot.png via export_png and plot.html. No deprecated functions.
+    library_mastery:
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Uses wedge, Label, Legend correctly but does not use ColumnDataSource.
-          Draws wedges in explicit loop rather than vectorized.
+        passed: true
+        comment: Proper use of ColumnDataSource, figure.wedge(), Label, Legend/LegendItem
+          with index parameter.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses bokeh-specific wedge glyphs with direction param, Label layout
-          model, Legend model, and dual PNG+HTML output.
-  verdict: REJECTED
+        comment: ColumnDataSource pattern, LegendItem with renderer index, dual output
+          (PNG + HTML export).
+  verdict: APPROVED

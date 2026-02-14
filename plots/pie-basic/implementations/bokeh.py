@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 pie-basic: Basic Pie Chart
 Library: bokeh 3.8.2 | Python 3.14.0
-Quality: 78/100 | Created: 2025-12-23
+Quality: 90/100 | Created: 2025-12-23
 """
 
 import math

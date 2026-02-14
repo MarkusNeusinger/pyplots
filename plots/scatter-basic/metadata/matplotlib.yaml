@@ -1,168 +1,182 @@
 library: matplotlib
 specification_id: scatter-basic
 created: '2025-12-22T23:24:09Z'
-updated: "2026-02-14T14:28:20+00:00"
+updated: '2026-02-14T14:33:12Z'
 generated_by: claude-opus-4-6
 workflow_run: 20446633390
 issue: 0
-python_version: "3.14"
-library_version: "3.10.8"
+python_version: '3.14'
+library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/matplotlib/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/matplotlib/plot_thumb.png
 preview_html: null
-quality_score: null
+quality_score: 85
 impl_tags:
   dependencies: []
-  techniques: []
+  techniques:
+  - colorbar
   patterns:
-    - data-generation
-    - explicit-figure
+  - data-generation
+  - explicit-figure
   dataprep: []
   styling:
-    - alpha-blending
-    - edge-highlighting
-    - grid-styling
+  - custom-colormap
+  - alpha-blending
+  - edge-highlighting
+  - grid-styling
 review:
   strengths:
-  - Excellent educational context (study hours vs exam scores) that is immediately
-    relatable
-  - Perfect title format following the required convention
-  - Good use of transparency (alpha=0.7) and white edgecolors to distinguish overlapping
-    points
-  - Clean KISS code structure without unnecessary complexity
-  - Appropriate marker size for data density
-  - Subtle grid styling (alpha=0.3, dashed) aids readability without distraction
+  - Excellent text legibility with all font sizes explicitly and appropriately set
+  - Viridis colormap mapping exam scores to color adds a meaningful visual dimension
+    beyond basic scatter
+  - 'Clean visual refinement: spine removal, subtle dashed grid, white marker edges,
+    well-proportioned layout'
+  - Realistic, neutral educational data context with plausible values
+  - Perfect KISS code structure with fixed seed for reproducibility
   weaknesses:
-  - Does not leverage distinctive matplotlib features (e.g., annotations, colorbar,
-    secondary elements)
-  - Marker size s=180 slightly exceeds guidelines for this data density
-  image_description: 'The plot displays a 2D scatter plot with a clear positive correlation
-    between study hours (x-axis, ranging from 1 to 12 hours per week) and exam scores
-    (y-axis, ranging from approximately 45% to 100%). The data points are rendered
-    as medium blue circles (#306998) with white edge outlines, using appropriate transparency
-    (alpha=0.7) that reveals overlapping points. The title "scatter-basic · matplotlib
-    · pyplots.ai" appears at the top in large text. Axis labels are clear: "Study
-    Hours (per week)" on x-axis and "Exam Score (%)" on y-axis. A subtle dashed grid
-    with low opacity helps with value estimation. The 16:9 landscape layout is well-balanced
-    with good use of the plotting area. There are approximately 120 data points showing
-    natural scatter around a linear trend, with some clustering visible at the score
-    ceiling (100%).'
+  - 'No data storytelling: the positive correlation and ceiling effect at 100% are
+    visible but not highlighted with annotations, a trend line, or callouts'
+  - Marker size (s=80) could be increased to s=100-120 for better visual impact at
+    this data density
+  - Layout balance is slightly off — the colorbar adds right-side asymmetry and there
+    is unused space in the lower-right area
+  - Could leverage more distinctive matplotlib features to push library mastery score
+    higher
+  image_description: The plot displays a scatter plot of 120 data points showing the
+    relationship between "Study Hours (per week)" (x-axis, range ~1–12) and "Exam
+    Score (%)" (y-axis, range ~40–100). Each point is colored using the viridis colormap
+    mapped to its exam score value, transitioning from dark purple (low scores ~40%)
+    to yellow (high scores ~100%). A vertical colorbar on the right edge shows this
+    color-to-score mapping. The data shows a clear positive correlation—students who
+    study more tend to score higher—with natural scatter/noise. A ceiling effect is
+    visible as several high-study-hour points cluster at 100%. The title reads "scatter-basic
+    · matplotlib · pyplots.ai" in medium weight. Top and right spines are removed.
+    Subtle dashed grid lines (alpha ~0.2) aid value estimation. Markers have white
+    edge highlights (linewidth 0.5) which gives them a polished, separated appearance.
+    All text is clearly legible with explicit font sizes.
   criteria_checklist:
     visual_quality:
-      score: 37
-      max: 40
+      score: 26
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
-        passed: true
-        comment: Title at 24pt, labels at 20pt, ticks at 16pt - all perfectly readable
-      - id: VQ-02
-        name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements
+        comment: 'All font sizes explicitly set: title 24pt, axis labels 20pt, ticks
+          16pt, colorbar label 18pt, colorbar ticks 14pt'
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
+        passed: true
+        comment: No overlapping text elements anywhere
       - id: VQ-03
         name: Element Visibility
-        score: 7
-        max: 8
-        passed: true
-        comment: Markers s=180 appropriate for 120 points, alpha=0.7 reveals overlaps
-          well, though slightly large per guidelines (100-200 recommended for 30-100
-          pts)
+        score: 4
+        max: 6
+        passed: false
+        comment: s=80 for 120 points is functional but on the smaller side; markers
+          could be s=100-120 for better visual impact
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Single color scheme, Python blue (#306998) with white edges, good
-          contrast
+        comment: Viridis colormap is perceptually uniform and colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Excellent use of 16:9 canvas, good margins, tight_layout applied
+        score: 2
+        max: 4
+        passed: false
+        comment: Colorbar adds right-side asymmetry; some dead space in lower-right
+          area
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive with units: "Study Hours (per week)" and "Exam Score
-          (%)"'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
+        comment: 'Descriptive labels with units: Study Hours (per week), Exam Score
+          (%)'
+    design_excellence:
+      score: 12
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
         passed: false
-        comment: Grid is subtle (alpha=0.3, dashed), but no legend present - not required
-          for single-series scatter
+        comment: Good choices (viridis, white edges, spine removal) elevate above
+          defaults but not editorial level
+      - id: DE-02
+        name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: 'Well-polished: spines removed, subtle dashed grid at alpha=0.2,
+          white edge highlights, tight_layout'
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: Data displayed but not interpreted; no trend line, annotations, or
+          callouts for the positive correlation or ceiling effect
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct 2D scatter plot
+        comment: 'Correct chart type: 2D scatter plot'
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X=independent variable (study hours), Y=dependent variable (exam
-          scores)
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Transparency (alpha=0.7), axis labels, title, grid lines all present
-      - id: SC-04
-        name: Data Range
+        comment: 'All spec features present: transparency, axis labels, title, grid
+          lines, appropriate point size'
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All 120 points visible within axes
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
-        passed: true
-        comment: N/A for single series, no legend needed
-      - id: SC-06
+        comment: 'X/Y correctly assigned: study hours on x, exam scores on y'
+      - id: SC-04
         name: Title Format
-        score: 2
-        max: 2
+        score: 3
+        max: 3
         passed: true
-        comment: Uses exact format "{spec-id} · {library} · pyplots.ai"
+        comment: 'Correct format: scatter-basic · matplotlib · pyplots.ai'
     data_quality:
-      score: 20
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 8
-        max: 8
-        passed: true
-        comment: Shows correlation pattern, scatter/noise, ceiling effect at 100%,
-          range of values
+        score: 5
+        max: 6
+        passed: false
+        comment: Shows positive correlation with noise and ceiling effect; could benefit
+          from a few more obvious outliers
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Study hours vs exam scores is a classic, relatable educational scenario
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Hours 1-12 per week and scores 0-100% are realistic ranges
+        comment: Study hours vs exam scores is a neutral, comprehensible educational
+          scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: 'Realistic values: 1-12 hours/week, scores 40-100%'
     code_quality:
       score: 10
       max: 10
@@ -172,40 +186,46 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Simple linear structure: imports → data → plot → save'
+        comment: 'Clean structure: imports, data, plot, style, save'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: np.random.seed(42) ensures deterministic results
+        comment: Fixed seed with np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only matplotlib.pyplot and numpy, both used
+        comment: Only matplotlib and numpy imported, both used
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Uses current ax.scatter() syntax
+        comment: Clean, concise, no over-engineering
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png
-    library_features:
-      score: 0
-      max: 5
+        comment: Saves as plot.png with dpi=300, bbox_inches=tight
+    library_mastery:
+      score: 8
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 0
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Idiomatic matplotlib: Axes methods, fig/ax pattern, tight_layout'
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
         max: 5
         passed: false
-        comment: Basic scatter usage without advanced matplotlib features like edgecolors
-          pattern fills, annotations, or secondary axes
-  verdict: APPROVED
+        comment: Colorbar with colormap-mapped scatter is a good matplotlib feature;
+          could push further
+  verdict: REJECTED

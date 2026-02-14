@@ -16,10 +16,12 @@ A pie chart showing proportions of categorical data as slices of a circle. Each 
 - `category` (string) - category labels
 - `value` (numeric) - values for each category
 - Size: 3-8 categories (too many becomes unreadable)
+- Values must be positive and sum to a meaningful whole
+- Example: Market share of 5-6 tech companies
 
 ## Notes
 
 - Include percentage labels on slices
 - Use distinct colors for each category
 - Add a legend for category identification
-- Consider slight explosion for emphasis on key slice
+- Slightly explode the largest or smallest slice for emphasis

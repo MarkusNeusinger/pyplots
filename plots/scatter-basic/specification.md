@@ -15,7 +15,7 @@ A fundamental 2D scatter plot that displays the relationship between two numeric
 - `x` (numeric) - Independent variable values plotted on the horizontal axis
 - `y` (numeric) - Dependent variable values plotted on the vertical axis
 - Size: 50-500 points recommended for clear visualization
-- Example: Random correlated data with noise to demonstrate typical scatter patterns
+- Example: Random correlated data with moderate positive correlation (r~0.7) and noise to demonstrate typical scatter patterns
 
 ## Notes
 

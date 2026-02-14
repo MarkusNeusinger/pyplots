@@ -16,6 +16,7 @@ A box plot (box-and-whisker plot) showing the distribution of numerical data thr
 - `category` (string) - group labels for comparison
 - `value` (numeric) - numerical values to plot
 - Size: 20-500 points per category, 2-8 categories
+- Example: Test scores across 5 classes with 50-100 students each
 
 ## Notes
 

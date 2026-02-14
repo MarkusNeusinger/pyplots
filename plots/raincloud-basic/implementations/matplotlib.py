@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: matplotlib 3.10.8 | Python 3.13.11
 Quality: 91/100 | Created: 2025-12-25

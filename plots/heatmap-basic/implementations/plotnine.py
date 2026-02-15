@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-basic: Basic Heatmap
 Library: plotnine 0.15.3 | Python 3.14.3
-Quality: 86/100 | Updated: 2026-02-15
 """
 
 import numpy as np
@@ -29,43 +28,41 @@ np.random.seed(42)
 departments = ["Engineering", "Marketing", "Sales", "Finance", "Operations", "HR", "Research", "Support"]
 quarters = ["Q1 '23", "Q2 '23", "Q3 '23", "Q4 '23", "Q1 '24", "Q2 '24", "Q3 '24", "Q4 '24"]
 
-# Growth rates with a recovery trend and departmental variation
-# Include a wider range with a few extreme outliers for feature coverage
+# Vectorized growth rates with recovery trend and departmental variation
 base_trend = np.linspace(-18, 22, 8)
 dept_offsets = np.array([-6, 10, 14, -3, 4, -10, 8, -5])
-values = np.zeros((8, 8))
-for i in range(8):
-    for j in range(8):
-        values[i, j] = round(base_trend[j] + dept_offsets[i] + np.random.normal(0, 4), 1)
+values = np.round(base_trend[np.newaxis, :] + dept_offsets[:, np.newaxis] + np.random.normal(0, 4, (8, 8)), 1)
 
-# Inject a few distinctive extreme values for storytelling
+# Inject distinctive extreme values for storytelling focal points
 values[5, 0] = -32.5  # HR deep crisis in Q1 '23
 values[2, 7] = 38.2  # Sales strong recovery in Q4 '24
 values[6, 6] = 33.7  # Research surge in Q3 '24
 
-# Long-form DataFrame
-records = []
-for i, dept in enumerate(departments):
-    for j, qtr in enumerate(quarters):
-        records.append({"Department": dept, "Quarter": qtr, "Growth (%)": values[i, j]})
+# Build long-form DataFrame via meshgrid indexing
+dept_idx, qtr_idx = np.meshgrid(np.arange(8), np.arange(8), indexing="ij")
+df = pd.DataFrame(
+    {
+        "Department": pd.Categorical(
+            [departments[i] for i in dept_idx.ravel()], categories=departments[::-1], ordered=True
+        ),
+        "Quarter": pd.Categorical([quarters[j] for j in qtr_idx.ravel()], categories=quarters, ordered=True),
+        "Growth (%)": values.ravel(),
+    }
+)
 
-df = pd.DataFrame(records)
-df["Quarter"] = pd.Categorical(df["Quarter"], categories=quarters, ordered=True)
-df["Department"] = pd.Categorical(df["Department"], categories=departments[::-1], ordered=True)
+# Conditional text color: white on dark blue, dark gray on mid, dark brown on gold
+df["text_color"] = np.where(df["Growth (%)"] < -12, "white", np.where(df["Growth (%)"] < 18, "#3a3a3a", "#4a2e00"))
 
-# Conditional text color for optimal contrast on all cell backgrounds
-df["text_color"] = df["Growth (%)"].apply(lambda v: "white" if v < -12 else ("#444444" if v < 18 else "#5a3e00"))
-
-# Format labels with sign
-df["label"] = df["Growth (%)"].apply(lambda v: f"{v:+.1f}")
+# Signed annotation labels
+df["label"] = [f"{v:+.1f}" for v in df["Growth (%)"]]
 
 # Plot
 plot = (
     ggplot(df, aes(x="Quarter", y="Department"))
-    + geom_tile(aes(fill="Growth (%)"), color="white", size=1.0)
+    + geom_tile(aes(fill="Growth (%)"), color="white", size=1.2)
     + geom_text(aes(label="label", color="text_color"), size=10, fontweight="bold", show_legend=False)
     + scale_fill_gradient2(
-        low="#1a4971", mid="#f0eeeb", high="#cc8400", midpoint=0, name="Growth (%)", limits=(-35, 40)
+        low="#14405e", mid="#ede8e3", high="#c47d00", midpoint=0, name="Growth (%)", limits=(-35, 40)
     )
     + scale_color_identity()
     + scale_x_discrete(expand=(0, 0.5))
@@ -80,20 +77,20 @@ plot = (
     + theme(
         figure_size=(16, 9),
         text=element_text(family="sans-serif"),
-        plot_title=element_text(size=22, ha="center", weight="bold", margin={"b": 4}),
-        plot_subtitle=element_text(size=15, ha="center", color="#666666", margin={"b": 12}),
-        axis_title_x=element_text(size=18, margin={"t": 10}),
-        axis_title_y=element_text(size=18, margin={"r": 8}),
-        axis_text_x=element_text(size=15, rotation=45, ha="right", margin={"t": 5}),
-        axis_text_y=element_text(size=15, ha="right", margin={"r": 5}),
-        legend_title=element_text(size=15, weight="bold"),
-        legend_text=element_text(size=13),
+        plot_title=element_text(size=24, ha="center", weight="bold", margin={"b": 2}),
+        plot_subtitle=element_text(size=16, ha="center", color="#555555", margin={"b": 8}),
+        axis_title_x=element_text(size=20, margin={"t": 10}),
+        axis_title_y=element_text(size=20, margin={"r": 8}),
+        axis_text_x=element_text(size=16, rotation=45, ha="right", margin={"t": 4}),
+        axis_text_y=element_text(size=16, ha="right", margin={"r": 4}),
+        legend_title=element_text(size=16, weight="bold"),
+        legend_text=element_text(size=14),
         legend_position="right",
         legend_key_height=40,
         panel_grid_major=element_blank(),
         panel_grid_minor=element_blank(),
         panel_background=element_rect(fill="white", color="none"),
-        plot_background=element_rect(fill="#fafafa", color="none"),
+        plot_background=element_rect(fill="#f7f7f7", color="none"),
         plot_margin=0.02,
     )
 )

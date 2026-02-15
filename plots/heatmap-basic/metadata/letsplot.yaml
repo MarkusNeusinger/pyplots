@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: heatmap-basic
 created: '2025-12-23T00:49:09Z'
-updated: '2026-02-15T21:25:00+00:00'
+updated: '2026-02-15T21:31:59Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447989671
 issue: 0
@@ -10,157 +10,184 @@ library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/letsplot/plot.html
-quality_score: null
+quality_score: 84
 impl_tags:
   dependencies: []
   techniques:
-  - colorbar
   - annotations
+  - hover-tooltips
   - html-export
   - layer-composition
   patterns:
   - data-generation
-  - wide-to-long
+  - iteration-over-groups
+  - matrix-construction
   dataprep: []
-  styling: []
+  styling:
+  - custom-colormap
+  - minimal-chrome
+  - edge-highlighting
 review:
   strengths:
-  - Excellent use of diverging color scale (blue-yellow-red) that clearly shows low,
-    medium, and high performance
-  - Value annotations in each cell make the exact scores easily readable
-  - Clean, professional layout with proper title format
-  - Good realistic data scenario (department performance by quarter)
-  - Proper use of pd.Categorical to maintain axis ordering
+  - Adaptive text color (dark on light cells, white on dark) ensures all 72 cell annotations
+    are readable — a thoughtful accessibility detail
+  - Realistic energy consumption scenario with plausible seasonal patterns and zone-specific
+    baselines
+  - 'Good use of lets-plot distinctive features: layer_tooltips() for interactive
+    hover and HTML export'
+  - Clean minimal theme with grid removed and subtle tile gaps create professional
+    appearance
+  - All font sizes explicitly set following the library rules (title=24, axis_title=20,
+    axis_text=16)
   weaknesses:
-  - X-axis department labels at 45-degree angle could be more readable if horizontal
-    or using a different layout
-  - White text on yellow cells (mid-range values) has slightly reduced contrast
-  - The data does not show any clear patterns or clustering as mentioned in the spec
-    notes
-  image_description: The heatmap displays a 6×8 matrix showing department performance
-    scores by quarter. The x-axis shows 6 departments (Sales, Marketing, R&D, Operations,
-    Finance, HR) with labels rotated at 45 degrees. The y-axis shows 8 quarters (Q1-Q8)
-    from top to bottom. Each cell contains a numerical score value displayed in bold
-    white text. The color scale uses a diverging gradient from blue (low ~20-30) through
-    yellow (mid ~50-60) to red (high ~80-90), with a color bar legend on the right
-    labeled "Performance Score". The title "heatmap-basic · letsplot · pyplots.ai"
-    appears at the top. Cell values range from approximately 23.4 to 89.6.
+  - Y-axis label is missing — 'Month' should be present, not set to element_blank
+  - Uses scale_fill_gradient2 (diverging) with a median midpoint for purely sequential
+    positive data — a standard sequential scale would be more semantically appropriate
+  - The light_data/dark_data splitting via manual dict-of-lists loop is verbose —
+    a more elegant approach would reduce code complexity
+  - 'Data storytelling could be stronger: no visual emphasis on key patterns (e.g.,
+    highlighting the Server Room peak or seasonal extremes)'
+  - Colorbar legend has a line break in the title ('Energy\n(kWh)') which looks slightly
+    awkward
+  image_description: 'The plot displays a 12×6 heatmap of monthly energy consumption
+    (kWh) across six building zones (Lobby, Offices, Lab, Server Room, Cafeteria,
+    Warehouse). Months run vertically from January at top to December at bottom. The
+    color gradient runs from very light blue/white (low values ~49 kWh) to dark navy
+    blue (high values ~699 kWh). Every cell contains a bold numeric annotation with
+    adaptive text color — dark text on light cells, white text on dark cells — all
+    clearly readable. The Server Room column is visibly the darkest (highest consumption),
+    while Warehouse is the lightest. Seasonal patterns are apparent: winter months
+    (Jan, Feb, Nov, Dec) are darker across all zones than summer months (May, Jun).
+    The title reads "heatmap-basic · letsplot · pyplots.ai" in bold at top-left. A
+    colorbar on the right shows "Energy (kWh)" ranging from ~100 to ~600+. The x-axis
+    is labeled "Building Zone". The y-axis has no label. Overall layout is clean with
+    minimal theme, no grid lines, and subtle gaps between tiles.'
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 26
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title and axis labels are readable, cell annotations are clear white
-          bold text
+        comment: 'All font sizes explicitly set: title=24, axis_title=20, axis_text=16,
+          legend_text=14, legend_title=16. Annotations bold and readable.'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping text. Tiles have 0.92 width/height creating clean
+          gaps.
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Tiles are well-sized with clear color differentiation
+        comment: Tiles perfectly sized, fill grid well with visible separation.
       - id: VQ-04
         name: Color Accessibility
-        score: 4
-        max: 5
-        passed: true
-        comment: Diverging color scale is good but uses red which may be problematic
-          for some colorblind users
-      - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Good proportions, well-balanced layout
-      - id: VQ-06
-        name: Axis Labels
-        score: 1
-        max: 2
-        passed: true
-        comment: Labels are descriptive but lack units (Score is unitless so acceptable)
-      - id: VQ-07
-        name: Grid & Legend
-        score: 1
-        max: 2
-        passed: true
-        comment: Legend is clear but positioned a bit far from the plot
-    spec_compliance:
-      score: 25
-      max: 25
-      items:
-      - id: SC-01
-        name: Plot Type
-        score: 8
-        max: 8
-        passed: true
-        comment: Correct heatmap using geom_tile
-      - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X=Department, Y=Quarter, Fill=Score correctly mapped
-      - id: SC-03
-        name: Required Features
-        score: 5
-        max: 5
-        passed: true
-        comment: Has value annotations, colorbar legend, diverging colormap
-      - id: SC-04
-        name: Data Range
         score: 3
-        max: 3
+        max: 4
         passed: true
-        comment: All data visible within the plot area
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
+        comment: 'Blue sequential gradient is colorblind-safe. Minor: uses gradient2
+          (diverging scale) for sequential data.'
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 3
+        max: 4
+        passed: true
+        comment: Good overall, plot fills canvas well. Some empty space between plot
+          and colorbar.
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 1
         max: 2
-        passed: true
-        comment: Legend correctly shows "Performance Score" with accurate scale
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Uses correct format "heatmap-basic · letsplot · pyplots.ai"
-    data_quality:
-      score: 17
+        passed: false
+        comment: X-axis says 'Building Zone' but Y-axis is element_blank — missing
+          'Month' label.
+    design_excellence:
+      score: 13
       max: 20
       items:
-      - id: DQ-01
-        name: Feature Coverage
+      - id: DE-01
+        name: Aesthetic Sophistication
         score: 6
         max: 8
         passed: true
-        comment: Shows variation across departments and quarters, but no clear clustering
-          or extreme outliers
+        comment: Adaptive text color is a strong design touch. Custom blue gradient
+          is cohesive. Clearly above defaults.
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Grid removed, minimal theme, subtle tile gaps. Good refinement, missing
+          some polish.
+      - id: DE-03
+        name: Data Storytelling
+        score: 3
+        max: 6
+        passed: true
+        comment: Server Room dominance and seasonal patterns are visible. Adaptive
+          text helps. No explicit visual hierarchy.
+    spec_compliance:
+      score: 14
+      max: 15
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Correct: heatmap via geom_tile.'
+      - id: SC-02
+        name: Required Features
+        score: 4
+        max: 4
+        passed: true
+        comment: Color gradient, cell annotations, colorbar legend, logical ordering
+          all present.
+      - id: SC-03
+        name: Data Mapping
+        score: 3
+        max: 3
+        passed: true
+        comment: X=zones, Y=months, fill=kWh. Correctly mapped.
+      - id: SC-04
+        name: Title & Legend
+        score: 2
+        max: 3
+        passed: true
+        comment: Title format correct. Colorbar legend line break slightly inelegant.
+    data_quality:
+      score: 14
+      max: 15
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 5
+        max: 6
+        passed: true
+        comment: Shows seasonal variation, zone differentiation, realistic noise.
+          Could show counter-seasonal patterns.
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
+        score: 5
+        max: 5
         passed: true
-        comment: Department performance scores by quarter is a real, comprehensible
-          scenario
+        comment: Monthly energy consumption by building zone — real, neutral business
+          scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Scores 15-95 are realistic for performance metrics, though some values
-          seem arbitrary
+        comment: Values 49-699 kWh are realistic for building zones.
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -168,40 +195,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Simple imports → data → plot → save structure
+        comment: Clean imports → data → plot → save flow.
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) present.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports used, explicit named imports.
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
         score: 1
-        max: 1
-        passed: true
-        comment: Uses current lets-plot API
+        max: 2
+        passed: false
+        comment: The light_data/dark_data dict-splitting loop is verbose.
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves plot.png and plot.html correctly.
+    library_mastery:
+      score: 8
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: Proper ggplot grammar, geom_tile, scale_fill_gradient2, ggsave with
+          scale=3.
+      - id: LM-02
+        name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses ggplot grammar with geom_tile and geom_text, scale_fill_gradient2
-          for diverging colors, but nothing particularly unique to lets-plot
-  verdict: APPROVED
+        comment: Uses layer_tooltips() for interactive hover and HTML export — lets-plot
+          distinctive features.
+  verdict: REJECTED

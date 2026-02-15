@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-basic: Basic Heatmap
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: altair 6.0.0 | Python 3.14.3
+Quality: /100 | Updated: 2026-02-15
 """
 
 import altair as alt
@@ -9,55 +9,90 @@ import numpy as np
 import pandas as pd
 
 
-# Data - create a matrix with patterns
+# Data - correlation matrix with realistic variables
 np.random.seed(42)
-rows = ["Row A", "Row B", "Row C", "Row D", "Row E", "Row F", "Row G", "Row H"]
-cols = ["Col 1", "Col 2", "Col 3", "Col 4", "Col 5", "Col 6", "Col 7", "Col 8"]
+variables = [
+    "Temperature",
+    "Humidity",
+    "Wind Speed",
+    "Pressure",
+    "Visibility",
+    "Cloud Cover",
+    "Precipitation",
+    "UV Index",
+]
 
-# Generate values with some patterns (diagonal pattern + noise)
-values = []
-for i, row in enumerate(rows):
-    for j, col in enumerate(cols):
-        # Create pattern: higher values near diagonal, add noise
-        base = 100 - abs(i - j) * 12
-        noise = np.random.randn() * 10
-        values.append({"x": col, "y": row, "value": base + noise})
+n_samples = 200
+raw = np.random.randn(n_samples, len(variables))
 
-df = pd.DataFrame(values)
+# Inject realistic correlations
+raw[:, 1] += raw[:, 0] * 0.6  # Humidity ~ Temperature
+raw[:, 5] += raw[:, 1] * 0.7  # Cloud Cover ~ Humidity
+raw[:, 6] += raw[:, 5] * 0.5  # Precipitation ~ Cloud Cover
+raw[:, 4] -= raw[:, 5] * 0.8  # Visibility inversely ~ Cloud Cover
+raw[:, 7] -= raw[:, 5] * 0.6  # UV Index inversely ~ Cloud Cover
+raw[:, 3] -= raw[:, 0] * 0.3  # Pressure inversely ~ Temperature
 
-# Plot - heatmap base
+corr = np.corrcoef(raw.T)
+
+# Build long-form dataframe
+records = []
+for i, row_var in enumerate(variables):
+    for j, col_var in enumerate(variables):
+        records.append({"x": col_var, "y": row_var, "value": round(corr[i, j], 2)})
+
+df = pd.DataFrame(records)
+
+# Axis ordering
+axis_order = list(variables)
+
+# Plot - heatmap with diverging color centered at 0
 heatmap = (
     alt.Chart(df)
-    .mark_rect()
+    .mark_rect(stroke="#ffffff", strokeWidth=1.5)
     .encode(
-        x=alt.X("x:N", title="Column", axis=alt.Axis(labelFontSize=16, titleFontSize=20)),
-        y=alt.Y("y:N", title="Row", axis=alt.Axis(labelFontSize=16, titleFontSize=20)),
+        x=alt.X("x:N", title=None, sort=axis_order, axis=alt.Axis(labelFontSize=16, labelAngle=0, orient="top")),
+        y=alt.Y("y:N", title=None, sort=axis_order, axis=alt.Axis(labelFontSize=16)),
         color=alt.Color(
             "value:Q",
-            scale=alt.Scale(scheme="blueorange", domainMid=50),
-            legend=alt.Legend(title="Value", titleFontSize=18, labelFontSize=16),
+            scale=alt.Scale(scheme="redblue", domain=[-1, 1], domainMid=0),
+            legend=alt.Legend(
+                title="Correlation", titleFontSize=18, labelFontSize=16, gradientLength=300, gradientThickness=16
+            ),
         ),
-        tooltip=["x:N", "y:N", "value:Q"],
+        tooltip=[
+            alt.Tooltip("x:N", title="Variable X"),
+            alt.Tooltip("y:N", title="Variable Y"),
+            alt.Tooltip("value:Q", title="Correlation", format=".2f"),
+        ],
     )
 )
 
-# Add text annotations
+# Text annotations with adaptive color
 text = (
     alt.Chart(df)
-    .mark_text(fontSize=18)
+    .mark_text(fontSize=16, fontWeight="bold")
     .encode(
-        x=alt.X("x:N"),
-        y=alt.Y("y:N"),
-        text=alt.Text("value:Q", format=".0f"),
-        color=alt.condition(alt.datum.value > 70, alt.value("white"), alt.value("black")),
+        x=alt.X("x:N", sort=axis_order),
+        y=alt.Y("y:N", sort=axis_order),
+        text=alt.Text("value:Q", format=".2f"),
+        color=alt.when((alt.datum.value > 0.6) | (alt.datum.value < -0.6))
+        .then(alt.value("white"))
+        .otherwise(alt.value("#333333")),
     )
 )
 
-# Combine heatmap and text, then apply configuration
+# Combine and configure
 chart = (
     (heatmap + text)
-    .properties(width=1400, height=800, title=alt.Title("heatmap-basic · altair · pyplots.ai", fontSize=28))
-    .configure_axis(labelFontSize=16, titleFontSize=20, grid=False)
+    .properties(
+        width=1200,
+        height=1200,
+        title=alt.Title(
+            "Weather Metrics Correlation · heatmap-basic · altair · pyplots.ai", fontSize=28, anchor="start", offset=20
+        ),
+    )
+    .configure_axis(grid=False)
     .configure_view(strokeWidth=0)
 )
 

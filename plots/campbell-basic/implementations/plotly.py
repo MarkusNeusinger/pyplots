@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 campbell-basic: Campbell Diagram
 Library: plotly 6.5.2 | Python 3.14.3
-Quality: 82/100 | Created: 2026-02-15
+Quality: 88/100 | Created: 2026-02-15
 """
 
 import numpy as np

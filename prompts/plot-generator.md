@@ -115,7 +115,10 @@ The middot (·) separator is required. No color or style requirements - the AI d
 
 ### Structure
 
-1. **Docstring** - 4 lines: pyplots.ai, spec-id:title, library+versions, quality+created
+1. **Docstring** - 4 lines: pyplots.ai, spec-id:title, library+versions, quality+date
+   - New implementation: `Quality: pending | Created: {YYYY-MM-DD}`
+   - After first review: `Quality: {score}/100 | Created: {YYYY-MM-DD}`
+   - After update + review: `Quality: {score}/100 | Updated: {YYYY-MM-DD}`
 2. **Imports** - Only what's needed
 3. **Data** - Prepare/generate data (use spec example if provided, or create realistic sample)
 4. **Plot** - Create figure and plot data
@@ -364,6 +367,8 @@ pyplots renders at **4800 × 2700 px** (16:9) or **3600 × 3600 px** (1:1) — s
 **Data storytelling (for DE-03 score):**
 - Use visual emphasis (color, size) to guide the viewer's eye
 - Tell a story through good data choice and clear visual hierarchy
+- **Annotation restraint (DEFAULT):** Do NOT add text annotations, callout boxes, arrows, or labeled data points unless the specification explicitly asks for them (e.g., spec-id contains "annotated"). Good storytelling comes from visual design — color contrast, size variation, strategic data choice — not text overlays.
+- **When annotations ARE appropriate:** Only when spec-id contains "annotated" or the spec explicitly describes annotations as a required feature. Even then, use sparingly.
 - **Respect the spec variant:** If the spec-id contains `basic`, storytelling comes from well-chosen data and clean design — NOT from adding annotations, trendlines, or extra visual elements. A basic scatter plot should remain a basic scatter plot.
 
 ## Output File

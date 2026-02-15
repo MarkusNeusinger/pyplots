@@ -65,7 +65,7 @@ You evaluate implementations that passed all auto-reject checks. Focus purely on
 
 - **Median implementation should score 72-78.** If you find yourself scoring most plots 90+, you are too lenient.
 - **DE-01 > 6 is rare.** Most plots look like well-configured defaults (score 4), not publication masterpieces.
-- **DE-03 = 2 is the default.** Unless there are annotations, callouts, or narrative emphasis, score 2.
+- **DE-03 = 2 is the default.** Unless there is intentional visual hierarchy — through color contrast, size variation, strategic data choice, or clear focal points — score 2. Annotations are NOT required.
 - **LM-02 = 1 is the default.** Unless the implementation uses a feature distinctive to this specific library, score 1.
 - **When in doubt, deduct.** The repair loop exists to improve quality.
 - A plot scoring 90+ should genuinely impress a data visualization professional.
@@ -146,7 +146,7 @@ You evaluate implementations that passed all auto-reject checks. Focus purely on
   "weaknesses": [
     "Relying on default font sizes instead of explicit settings",
     "No design refinement beyond library defaults",
-    "No data storytelling - annotations or emphasis would improve the plot"
+    "No data storytelling - visual emphasis or hierarchy would improve the plot"
   ],
 
   "recommendation": "reject"
@@ -183,12 +183,12 @@ If found: `auto_reject: "AR-08"`, score = 0, stop evaluation.
 |----|-----------|-----|--------------|
 | DE-01 | Aesthetic Sophistication | 8 | Does this look professional? Custom palette? Intentional hierarchy? |
 | DE-02 | Visual Refinement | 6 | Spines removed? Grid subtle? Whitespace generous? Details polished? |
-| DE-03 | Data Storytelling | 6 | Are there annotations? Does the plot guide the viewer? Any narrative? |
+| DE-03 | Data Storytelling | 6 | Does the plot guide the viewer through visual hierarchy? Is there a clear focal point? |
 
 **Scoring defaults (start here, adjust up only with evidence):**
 - DE-01 = 4 (configured default). Raise to 6+ only if clearly above-default design.
 - DE-02 = 2 (minimal refinement). Raise only if spines removed, grid tuned, etc.
-- DE-03 = 2 (no storytelling). Raise only if annotations or emphasis present.
+- DE-03 = 2 (no storytelling). Raise if visual hierarchy guides the viewer. Annotations not required.
 
 ### Step 3: Spec Compliance (15 pts)
 
@@ -248,7 +248,7 @@ Only award full points (5/5) for real, neutral contexts:
 | VQ-03 = 0 (invisible elements) | 49 |
 | SC-01 = 0 (wrong plot type) | 40 |
 | DQ-02 = 0 (controversial data) | 49 |
-| DE-01 ≤ 2 AND DE-03 ≤ 2 (generic + no storytelling) | 75 |
+| DE-01 ≤ 2 AND DE-02 ≤ 2 (generic + no visual refinement) | 75 |
 | CQ-04 = 0 (fake functionality / over-engineering) | 70 |
 
 ### Step 8: Determine Recommendation

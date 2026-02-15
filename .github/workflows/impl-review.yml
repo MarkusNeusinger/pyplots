@@ -502,7 +502,16 @@ jobs:
             # Get library and python versions from metadata
             LIBRARY_VERSION=$(python3 -c "import yaml; print(yaml.safe_load(open('$METADATA_FILE'))['library_version'])" 2>/dev/null || echo "unknown")
             PYTHON_VERSION=$(python3 -c "import yaml; print(yaml.safe_load(open('$METADATA_FILE'))['python_version'])" 2>/dev/null || echo "3.13")
-            CREATED_DATE=$(python3 -c "import yaml; print(yaml.safe_load(open('$METADATA_FILE'))['created'][:10])" 2>/dev/null || echo "$(date +%Y-%m-%d)")
+            DATE_INFO=$(python3 -c "
+          import yaml
+          data = yaml.safe_load(open('$METADATA_FILE'))
+          created = data['created'][:10]
+          updated = data.get('updated', '')[:10] if data.get('updated') else ''
+          if updated and updated != created:
+              print(f'Updated: {updated}')
+          else:
+              print(f'Created: {created}')
+          " 2>/dev/null || echo "Created: $(date +%Y-%m-%d)")
 
             # Get title from specification.yaml
             TITLE=$(python3 -c "import yaml; print(yaml.safe_load(open('plots/${SPEC_ID}/specification.yaml'))['title'])" 2>/dev/null || echo "${SPEC_ID}")
@@ -518,12 +527,12 @@ jobs:
           lib_version = '${LIBRARY_VERSION}'
           py_version = '${PYTHON_VERSION}'
           score = '${SCORE}'
-          created = '${CREATED_DATE}'
+          date_info = '${DATE_INFO}'
 
           new_header = f'''\"\"\" pyplots.ai
           {spec_id}: {title}
           Library: {library} {lib_version} | Python {py_version}
-          Quality: {score}/100 | Created: {created}
+          Quality: {score}/100 | {date_info}
           \"\"\"'''
 
           with open(impl_file, 'r') as f:

@@ -59,7 +59,7 @@ Read `prompts/quality-criteria.md` and evaluate:
 |----|-----------|-----|-------|
 | DE-01 | Aesthetic Sophistication | 8 | Professional polish? Custom palette? Intentional hierarchy? |
 | DE-02 | Visual Refinement | 6 | Spines removed? Grid subtle? Whitespace generous? |
-| DE-03 | Data Storytelling | 6 | Annotations? Narrative emphasis? Guides the viewer? |
+| DE-03 | Data Storytelling | 6 | Visual hierarchy? Clear focal point? Guides the viewer? |
 
 **Defaults:** DE-01=4, DE-02=2, DE-03=2. Raise only with evidence.
 
@@ -103,7 +103,7 @@ Read `prompts/quality-criteria.md` and evaluate:
 | VQ-03 = 0 (invisible elements) | 49 |
 | SC-01 = 0 (wrong plot type) | 40 |
 | DQ-02 = 0 (controversial data) | 49 |
-| DE-01 ≤ 2 AND DE-03 ≤ 2 (generic + no storytelling) | 75 |
+| DE-01 ≤ 2 AND DE-02 ≤ 2 (generic + no visual refinement) | 75 |
 | CQ-04 = 0 (fake functionality) | 70 |
 
 ### 8. Post Verdict to Sub-Issue #${SUB_ISSUE_NUMBER}
@@ -136,7 +136,7 @@ Use this EXACT format:
 ### Design Excellence (XX/20)
 - [ ] DE-01: Aesthetic Sophistication (X/8) - Generic defaults
 - [ ] DE-02: Visual Refinement (X/6) - Minimal customization
-- [ ] DE-03: Data Storytelling (X/6) - No annotations or narrative
+- [ ] DE-03: Data Storytelling (X/6) - No visual hierarchy or emphasis
 
 ### Spec Compliance (XX/15)
 - [x] SC-01: Plot Type (X/5)
@@ -166,11 +166,11 @@ Use this EXACT format:
 ### Issues Found
 1. **DE-01 LOW**: Generic styling with default colors and no design thought
    - Fix: Custom palette, remove top/right spines, refine typography
-2. **DE-03 LOW**: No annotations or data storytelling
-   - Fix: Add annotations highlighting key data points or trends
+2. **DE-03 LOW**: No visual hierarchy or data storytelling
+   - Fix: Use color contrast, size variation, or strategic data choice to create a clear focal point
 
 ### AI Feedback for Next Attempt
-> Improve design excellence: remove top/right spines, use subtle y-axis-only grid, add annotations to highlight key patterns. Consider a more refined color palette.
+> Improve design excellence: remove top/right spines, use subtle y-axis-only grid, create visual hierarchy through color contrast or emphasis. Consider a more refined color palette.
 
 ### Verdict: APPROVED / REJECTED
 ```

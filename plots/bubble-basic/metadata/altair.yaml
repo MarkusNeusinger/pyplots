@@ -1,27 +1,230 @@
 library: altair
 specification_id: bubble-basic
 created: 2025-12-14 11:07:38+00:00
-updated: '2026-02-15T12:00:00+00:00'
+updated: '2026-02-15T21:45:20Z'
 generated_by: claude-opus-4-6
 workflow_run: 20207009427
 issue: 755
-python_version: '3.14.3'
-library_version: '6.0.0'
+python_version: 3.14.3
+library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/altair/plot.html
-quality_score: null
+quality_score: 86
 impl_tags:
   dependencies: []
   techniques:
-    - html-export
+  - hover-tooltips
+  - html-export
   patterns:
-    - data-generation
+  - data-generation
   dataprep: []
   styling:
-    - alpha-blending
+  - alpha-blending
+  - edge-highlighting
+  - grid-styling
 review:
-  strengths: []
-  weaknesses: []
+  strengths:
+  - Perfect spec compliance with all required features (x/y/size, transparency, size
+    legend, correct title format)
+  - 'Excellent code quality: clean KISS structure, reproducible seed, idiomatic Altair
+    usage with declarative encoding'
+  - Well-chosen realistic data context (tech startups) with appropriate value ranges
+  - Explicitly set font sizes at all levels ensure text legibility at output resolution
+  - White stroke on bubbles aids visual separation of overlapping elements
+  weaknesses:
+  - Data distribution is heavily right-skewed (lognormal), causing most bubbles to
+    cluster in the lower-left quadrant while the upper-right has only a few sparse
+    outliers — a more spread-out distribution or log-scale axis would improve visual
+    balance
+  - Design lacks visual sophistication to reach publication quality — consider adding
+    color as a fourth dimension (e.g., categorical grouping or continuous gradient),
+    custom color palette, or background styling
+  - No explicit data storytelling through visual hierarchy — highlighting notable
+    data points or adding subtle reference lines could guide the viewer to insights
+  - The size legend starts at 0 employees which is unrealistic given the data minimum
+    is 20 — adjusting legend range would improve accuracy
   improvements: []
-  verdict: APPROVED
+  verdict: REJECTED
+  image_description: The plot displays a bubble chart with "Funding ($M)" on the x-axis
+    (range 0–54) and "Revenue ($M)" on the y-axis (range 0–80). Bubble sizes represent
+    "Employees" (0–800) as shown by a size legend in the upper-right corner. All bubbles
+    are Python Blue (#306998) with white stroke borders and approximately 0.6 opacity.
+    The data depicts 40 tech startups, showing a positive correlation between funding
+    and revenue, with larger companies (more employees) clustering in the upper-right
+    quadrant. The title reads "bubble-basic · altair · pyplots.ai" centered at the
+    top. The grid is very subtle (low opacity). Data is heavily clustered in the lower-left
+    (funding < $25M) with only 3–4 high-value outliers spread across the $38–54M funding
+    range, leaving noticeable empty space in the middle-right portion of the chart.
+  criteria_checklist:
+    visual_quality:
+      score: 28
+      max: 30
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 8
+        max: 8
+        passed: true
+        comment: 'All font sizes explicitly set: title=28, axis labels=22, ticks=18,
+          legend title=18, legend labels=16'
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 5
+        max: 6
+        passed: true
+        comment: Bubble sizes appropriate for 40 points with 0.6 opacity; some clustering
+          in lower-left
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 4
+        passed: true
+        comment: Single Python Blue color, no colorblind issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 4
+        passed: true
+        comment: Good canvas utilization but lognormal data creates visual imbalance
+          with heavy left clustering
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: Funding ($M), Revenue ($M)'
+    design_excellence:
+      score: 11
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
+        passed: false
+        comment: Well-configured Altair chart above defaults but not publication-ready
+          level
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: false
+        comment: Grid opacity reduced, white stroke on bubbles, good typography —
+          some refinement visible
+      - id: DE-03
+        name: Data Storytelling
+        score: 3
+        max: 6
+        passed: false
+        comment: Implicit storytelling through correlation and size variation but
+          no explicit visual hierarchy or emphasis
+    spec_compliance:
+      score: 15
+      max: 15
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 5
+        max: 5
+        passed: true
+        comment: Correct bubble chart type
+      - id: SC-02
+        name: Required Features
+        score: 4
+        max: 4
+        passed: true
+        comment: x/y/size encoding, transparency, size legend all present
+      - id: SC-03
+        name: Data Mapping
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes correctly assigned, all data visible
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
+        passed: true
+        comment: Correct format and legend labels match data
+    data_quality:
+      score: 14
+      max: 15
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 5
+        max: 6
+        passed: true
+        comment: Good variation in all three variables; lognormal creates clustering
+          in lower-left
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 5
+        passed: true
+        comment: Tech startup metrics — real, comprehensible, neutral scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: 'Realistic values: funding $1-54M, revenue $2-71M, employees 20-800'
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → chart → save flow
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 2
+        passed: true
+        comment: np.random.seed(42) present
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only altair, numpy, pandas
+      - id: CQ-04
+        name: Code Elegance
+        score: 2
+        max: 2
+        passed: true
+        comment: Clean, concise Pythonic method chaining
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_mastery:
+      score: 8
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: Declarative encoding, type annotations, method chaining, proper Scale/Legend
+          configuration
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Tooltip encoding, declarative size legend, configure_* system, html
+          export

@@ -1,7 +1,7 @@
 library: altair
 specification_id: campbell-basic
 created: '2026-02-15T21:10:25Z'
-updated: '2026-02-15T21:21:21Z'
+updated: '2026-02-15T21:28:46Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22043026897
 issue: 4241
@@ -10,44 +10,44 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/altair/plot.html
-quality_score: 86
+quality_score: 85
 review:
   strengths:
-  - 'Excellent spec compliance: all required Campbell Diagram elements present (engine
-    order lines, natural frequency curves, critical speed markers, mode labels, operating
-    range band)'
-  - 'Strong data storytelling: operating range band and critical speed annotations
-    create clear narrative for engineering analysis'
-  - 'Good Altair idiom usage: layered composition, independent color scale resolution,
-    and declarative encoding'
-  - 'Visually polished: custom color palette, subtle grid, diamond markers with white
-    stroke, dashed engine order lines differentiated from solid mode curves'
-  - Realistic rotordynamic data with physically plausible mode frequencies and engine
-    order intersections
+  - 'Comprehensive Campbell Diagram with all spec-required features: 5 modes, 3 engine
+    orders, critical speed markers, and operating range shading'
+  - Strong data storytelling through size-differentiated critical speed markers (larger
+    in operating range) and targeted text annotations
+  - Clean colorblind-safe palette with good perceptual distinction between mode curves
+    and engine order lines
+  - Effective use of Altair layer composition and independent scale resolution for
+    dual legends
+  - Realistic rotordynamic data with plausible gyroscopic effects (modes increasing
+    and decreasing with speed)
   weaknesses:
-  - 'Layout balance: legends on the right consume too much space, reducing effective
-    plot area; consider making the legend more compact or repositioning'
-  - Blue (#306998) and purple (#8172B2) mode lines are somewhat hard to distinguish,
-    especially for colorblind viewers; consider increasing color distance between
-    these two
-  - The 1st Bending / 1x annotation near RPM 4400 is slightly crowded near the data;
-    annotation placement could be refined
-  - The dummy chart for the engine order legend entry adds code complexity; could
-    explore cleaner approach for custom legend entries
+  - The 1st Bending / 1x and 2nd Bending / 1x annotation labels are very close together
+    and partially overlap, reducing readability
+  - Canvas utilization could be improved — the legend consumes significant right-side
+    space and the upper plot region is largely empty
+  - Engine order legend entries are all identical gray, making the legend somewhat
+    redundant (though direct labels on the right edge mitigate this)
+  - Per-annotation DataFrame creation in the code is verbose; a single DataFrame with
+    dx/dy columns and a single mark_text layer would be cleaner
   image_description: 'The plot displays a Campbell Diagram titled "campbell-basic
-    · altair · pyplots.ai" at the top left. The X-axis is "Rotational Speed (RPM)"
-    (0–6000) and the Y-axis is "Frequency (Hz)" (0–310). Five solid colored lines
-    represent natural frequency modes: 1st Bending (blue, ~45 Hz rising), 2nd Bending
-    (orange, ~95 Hz slightly decreasing), 1st Torsional (green, ~130 Hz rising), Axial
-    (purple, ~175 Hz nearly flat), and 3rd Bending (red, ~220 Hz decreasing). Three
-    dashed gray diagonal lines from the origin represent engine orders labeled "1x",
-    "2x", and "3x" near the right edge. Red diamond markers with white stroke highlight
-    critical speed intersections. Three text annotations in dark red label "1st Bending
-    / 3x", "1st Bending / 2x", and "1st Bending / 1x" near their respective intersections.
-    A light blue semi-transparent vertical band marks the "Operating Range" (3000–5000
-    RPM) with an italic label at the bottom. Two separate legends on the right distinguish
-    Natural Frequencies (5 colored lines) and Excitation (dashed engine order line).
-    The grid is subtle with low opacity. Overall layout is clean and professional.'
+    · altair · pyplots.ai" with subtitle "Natural Frequency Modes vs Engine Order
+    Excitations". The X-axis shows "Rotational Speed (RPM)" ranging from 0 to approximately
+    6200, and the Y-axis shows "Frequency (Hz)" from 0 to 310. Five natural frequency
+    mode curves are drawn as thick solid lines in distinct colors: blue (1st Bending),
+    orange (2nd Bending), green (1st Torsional), purple (Axial), and red (3rd Bending).
+    Three dashed gray engine order lines (1x, 2x, 3x) emanate diagonally from the
+    origin, with text labels at the right edge. Red diamond markers identify critical
+    speed intersections where engine order lines cross natural frequency curves —
+    larger diamonds highlight intersections within the operating range. A translucent
+    light-blue shaded band marks the "Operating Range" (3000–5000 RPM) with an italic
+    label at the bottom. Three text annotations in dark red identify key critical
+    speeds: "1st Bending / 3x", "1st Bending / 1x", and "2nd Bending / 1x". Two separate
+    legends on the right distinguish "Engine Orders" (dashed gray lines) from "Natural
+    Frequencies" (colored solid lines). The grid is very subtle and the overall design
+    is clean and professional.'
   criteria_checklist:
     visual_quality:
       score: 26
@@ -58,42 +58,42 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 28pt, axis title 22pt, tick
-          labels 18pt, legend 14-16pt, annotations 12-16pt'
+        comment: 'All font sizes explicitly set: title 28pt, axis titles 22pt, tick
+          labels 18pt, legend 13-14pt. All text clearly readable.'
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
-        passed: true
-        comment: 'Minor: 1st Bending / 1x annotation slightly crowded near data lines;
-          mostly clean'
+        passed: false
+        comment: The '1st Bending / 1x' and '2nd Bending / 1x' annotations are very
+          close together and partially overlap.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Lines at strokeWidth=3, engine orders dashed at 1.5, diamond markers
-          size=280 with white stroke
+        comment: Mode lines at strokeWidth=3, engine order lines at 1.5 with dashing,
+          critical diamonds at 200-380 size — all well visible.
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Blue and purple may be hard to distinguish for colorblind viewers;
-          other colors well separated
+        comment: Colorblind-safe palette with good perceptual separation. Engine orders
+          use neutral gray.
       - id: VQ-05
         name: Layout & Canvas
         score: 2
         max: 4
         passed: false
-        comment: Right-side legends consume significant space, plot area doesn't fill
-          canvas optimally
+        comment: Legend occupies considerable right-side space. Upper region largely
+          empty. Acceptable but not optimal.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Rotational Speed (RPM) and Frequency (Hz) - descriptive with units
+        comment: Rotational Speed (RPM) and Frequency (Hz) — descriptive with units.
     design_excellence:
       score: 14
       max: 20
@@ -102,25 +102,25 @@ review:
         name: Aesthetic Sophistication
         score: 6
         max: 8
-        passed: true
-        comment: Custom palette, dashed engine orders, diamond markers with white
-          stroke, operating range band - above defaults
+        passed: false
+        comment: Custom palette, dashed/solid distinction, size-differentiated markers,
+          operating range band. Above defaults but not publication-level.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
-        passed: true
-        comment: Subtle grid opacity 0.12, removed view stroke, clean axis styling
-          with light domain/tick colors
+        passed: false
+        comment: Subtle grid opacity 0.10, view stroke removed, subdued axis styling.
+          Legend layout could be tighter.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Operating range band and critical speed annotations create narrative;
-          visual hierarchy guides reader
+        comment: Operating range band draws attention, larger diamonds highlight in-range
+          critical speeds, text annotations identify key intersections.
     spec_compliance:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -128,28 +128,29 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct Campbell Diagram with frequency vs RPM, engine order overlay,
-          critical speed identification
+        comment: Correct Campbell Diagram with natural frequency curves overlaid with
+          engine order excitation lines.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: engine order lines, frequency curves,
-          critical speed markers, mode labels, EO labels, operating range, legend'
+        comment: 'All spec features present: EO lines from origin, mode curves with
+          gyroscopic variation, critical markers, labels, legend, operating range
+          shading.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=RPM, Y=Frequency(Hz), correctly mapped
+        comment: X=RPM, Y=Hz, correctly mapped.
       - id: SC-04
         name: Title & Legend
-        score: 3
+        score: 2
         max: 3
-        passed: true
-        comment: Title format correct; two legends properly distinguish natural frequencies
-          from excitation lines
+        passed: false
+        comment: Title format correct. Dual legends correct but engine order legend
+          entries are all identical gray, slightly redundant.
     data_quality:
       score: 14
       max: 15
@@ -158,22 +159,23 @@ review:
         name: Feature Coverage
         score: 5
         max: 6
-        passed: true
-        comment: 5 modes with varying behavior, 3 engine orders, multiple intersections;
-          could show more pronounced gyroscopic effects
+        passed: false
+        comment: Five modes with varied gyroscopic behavior, three engine orders,
+          critical speeds in and out of operating range. Good coverage.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Plausible rotordynamic scenario with realistic mode names
+        comment: Realistic rotordynamic scenario with correct terminology for mode
+          shapes.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Frequencies 45-220 Hz, RPM 0-6000, engine orders 1x-3x - all physically
-          plausible
+        comment: Frequency range, speed range, and gyroscopic curvature are realistic
+          for rotating machinery.
     code_quality:
       score: 9
       max: 10
@@ -183,33 +185,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Imports → data generation → plot → save, no functions/classes
+        comment: 'Linear flow: imports, data, chart layers, compose, save.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only altair, numpy, pandas imported - all used
+        comment: 'All imports used: altair, numpy, pandas.'
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
-        passed: true
-        comment: Well-organized but verbose with multiple DataFrames and dummy chart
-          for EO legend entry
+        passed: false
+        comment: Generally clean but verbose with per-annotation DataFrame creation
+          and offset handling.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png and plot.html
-    library_features:
+        comment: Saves plot.png and plot.html, no deprecated functions.
+    library_mastery:
       score: 8
       max: 10
       items:
@@ -217,23 +219,22 @@ review:
         name: Idiomatic Usage
         score: 4
         max: 5
-        passed: true
-        comment: Good use of declarative encoding, layered composition, resolve_scale,
-          configure_* chains
+        passed: false
+        comment: Good declarative grammar with layered composition, encoding types,
+          resolve_scale for separate legends.
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: resolve_scale(color=independent) for separate legends, layered composition
-          operator, mark_rect for band, tooltips, dual export
-  verdict: REJECTED
+        comment: Uses layer composition, resolve_scale(color=independent), alt.Title
+          with subtitle, mark_rect for bands, tooltips.
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
   - layer-composition
-  - custom-legend
   - html-export
   patterns:
   - data-generation
@@ -241,4 +242,3 @@ impl_tags:
   dataprep: []
   styling:
   - grid-styling
-  - alpha-blending

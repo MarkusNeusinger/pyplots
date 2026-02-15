@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: heatmap-basic
 created: '2025-12-23T00:49:15Z'
-updated: '2026-02-15T21:25:00+00:00'
+updated: '2026-02-15T21:31:40Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447986506
 issue: 0
@@ -10,7 +10,7 @@ library_version: 1.10.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/highcharts/plot.html
-quality_score: null
+quality_score: 78
 impl_tags:
   dependencies:
   - selenium
@@ -23,143 +23,166 @@ impl_tags:
   - matrix-construction
   - iteration-over-groups
   dataprep: []
-  styling: []
+  styling:
+  - custom-colormap
+  - edge-highlighting
 review:
   strengths:
-  - Clean heatmap visualization with excellent cell color differentiation
-  - Value annotations in each cell enhance readability
-  - Realistic website traffic scenario with logical patterns (lower weekend, higher
-    midday)
-  - Proper use of Highcharts heatmap module with colorAxis configuration
-  - Colorblind-safe single-hue blue colormap
-  - Correct title format following pyplots conventions
+  - Explicit font sizing throughout ensures excellent text legibility at 4800x2700
+  - Adaptive data label colors (white on dark cells, dark on light) demonstrate good
+    attention to readability
+  - Realistic website traffic scenario with logical day/time organization
+  - Clean white cell borders provide clear visual separation
+  - Proper use of Highcharts heatmap module with colorAxis stops
   weaknesses:
-  - Legend/colorbar could have a title (e.g., Activity Level)
-  - Data only shows positive values; spec mentions diverging colormap for +/- values
-    (not implemented, though not strictly required for basic)
-  - Total and Avg rows/columns semantically unclear in the context of the data
-  image_description: 'The heatmap displays a 6x8 matrix of website traffic data by
-    time period (rows: Morning, Midday, Afternoon, Evening, Night, Total) and day
-    of week (columns: Mon-Sun plus Avg). Colors range from white (low values ~0) to
-    deep blue (#306998, high values ~100). Each cell contains a numeric annotation
-    showing the exact value. The colorbar legend on the right shows the scale from
-    0-100. Notable patterns include: Thursday Afternoon shows the maximum value (100),
-    while Thursday Night and Midday show lower values (12, 14). Weekend columns (Sat,
-    Sun) show generally lower values as expected. Cell borders are white, providing
-    clear separation. Title uses the correct format at the top.'
+  - Layout has excessive whitespace — the right margin (420px) and vertical spacing
+    between rows reduce canvas utilization
+  - The blue sequential palette lacks sufficient contrast in the mid-range, making
+    it hard to visually distinguish cells with values between ~30 and ~60
+  - No axis titles ("Day of Week", "Time Period") to provide explicit context
+  - The data pattern (weekday business hours peak) could be more pronounced to better
+    demonstrate heatmap pattern-detection capability
+  - No visual storytelling — annotations, highlighted regions, or stronger color contrast
+    could guide the viewer to key insights
+  - Color stops could use a wider color range or a more perceptually uniform palette
+    for better value discrimination
+  image_description: The plot displays a heatmap titled "Website Traffic · heatmap-basic
+    · highcharts · pyplots.ai". It shows an 8×7 matrix with days of the week (Mon–Sun)
+    on the x-axis and time periods (6–9 AM through 3–6 AM) on the y-axis. Each cell
+    contains a numeric value annotation representing visits per hour. The color scheme
+    is a sequential blue palette ranging from very light blue/white (low values near
+    0) to dark blue (high values near 100). White borders (3px) separate each cell
+    cleanly. A vertical color bar legend on the right side is labeled "Visits/hr"
+    with a scale from 0 to 100. Data labels adapt their color — white text on darker
+    cells (values >60) and dark text on lighter cells — ensuring readability. Late-night
+    rows (Mid–3 AM, 3–6 AM) are consistently light, indicating low traffic. Some weekday
+    business-hour peaks are visible (e.g., Mon 3–6 PM = 91). The overall layout has
+    generous margins, particularly on the right for the legend.
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 25
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title, axis labels, and cell annotations are clearly readable. Tick
-          labels could be slightly larger but still legible.
+        comment: 'All font sizes explicitly set: title 56px, x-axis 36px, y-axis 32px,
+          data labels 28px, colorbar 28px. All clearly readable.'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text anywhere
+        comment: No overlapping text anywhere. Clean spacing between all elements.
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Cells are well-sized, color intensity clearly distinguishes values
+        comment: Cells well-sized with clear white borders. Slightly generous vertical
+          spacing between rows.
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 3
+        max: 4
         passed: true
-        comment: Single-hue blue colormap is colorblind-safe
+        comment: Blue sequential palette is colorblind-safe, but low-to-mid range
+          blues are quite similar, making mid-range distinctions harder.
       - id: VQ-05
-        name: Layout Balance
-        score: 4
-        max: 5
-        passed: true
-        comment: Good proportions, slight extra whitespace at bottom
-      - id: VQ-06
-        name: Axis Labels
+        name: Layout & Canvas
         score: 2
+        max: 4
+        passed: false
+        comment: Right margin very large (~420px) for legend. Noticeable vertical
+          whitespace between rows. Heatmap doesn't fill canvas tightly.
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 1
         max: 2
         passed: true
-        comment: Descriptive labels "Day of Week" and "Time Period"
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
+        comment: Day and time labels present and descriptive, but no explicit axis
+          titles. Colorbar title provides unit context.
+    design_excellence:
+      score: 10
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
         passed: false
-        comment: No grid lines (heatmap uses cell borders instead which is appropriate),
-          but legend title is missing
+        comment: Clean blue palette with adaptive label colors, but essentially a
+          well-configured default. No exceptional typography or color harmony.
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: White cell borders, clean background, credits disabled, no unnecessary
+          grid. Good refinement but not exceptional.
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: Traffic patterns exist but plot doesn't guide viewer to see them.
+          No visual emphasis or hierarchy.
     spec_compliance:
-      score: 25
-      max: 25
+      score: 14
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct heatmap chart type
+        comment: Correct heatmap chart type.
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X=days, Y=time periods, color=values correctly mapped
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Has colorbar, value annotations, meaningful patterns
-      - id: SC-04
-        name: Data Range
+        comment: Matrix format with color intensity, value annotations, colorbar legend,
+          logically ordered rows/columns.
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Shows full 0-100 range appropriately
-      - id: SC-05
-        name: Legend Accuracy
+        comment: Days on X, time periods on Y. Y-axis reversed to put early morning
+          at top.
+      - id: SC-04
+        name: Title & Legend
         score: 2
-        max: 2
+        max: 3
         passed: true
-        comment: Color scale accurate
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Uses correct format: heatmap-basic · highcharts · pyplots.ai'
+        comment: Title format correct. Legend title present. Series name is generic.
     data_quality:
-      score: 18
-      max: 20
+      score: 13
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Shows variation across cells, patterns (weekends lower, midday higher),
-          but no diverging data (all positive)
+        comment: Shows variation with high (91), mid, and low (8) values. Business-hour
+          patterns visible but clusters could be more pronounced.
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Website traffic by day/time is a real, comprehensible scenario
-      - id: DQ-03
-        name: Appropriate Scale
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: 0-100 scale for activity percentages is sensible, though "Total"
-          row semantics are unclear
+        comment: Website traffic by day/time is a realistic, neutral, comprehensible
+          scenario.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 3
+        max: 4
+        passed: true
+        comment: Values 0-100 for visits/hr is reasonable as a normalized metric.
     code_quality:
       score: 9
       max: 10
@@ -169,41 +192,48 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports → data → chart config → export'
+        comment: Imports -> Data -> Config -> HTML -> Screenshot. No functions/classes.
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports used.
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
+        score: 1
+        max: 2
+        passed: true
+        comment: Clean overall but f-string with full Highcharts JS inline and double-brace
+          JavaScript formatter is slightly awkward.
+      - id: CQ-05
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Uses current highcharts_core API
-      - id: CQ-05
-        name: Output Correct
-        score: 0
-        max: 1
-        passed: false
-        comment: Saves as plot.png ✓ but also outputs plot.html (acceptable)
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves as plot.png, no deprecated functions.
+    library_mastery:
+      score: 7
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of Highcharts heatmap module, colorAxis with stops, dataLabels,
+          tooltip formatting.
+      - id: LM-02
+        name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses Highcharts heatmap module, dataLabels, colorAxis, and tooltip.
-          Could leverage more advanced features like custom formatters or click handlers
-          for interactivity.
-  verdict: APPROVED
+        comment: Uses Highcharts-specific colorAxis with custom stops, JavaScript
+          dataLabels formatter for adaptive label colors, heatmap module.
+  verdict: REJECTED

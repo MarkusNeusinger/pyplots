@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 heatmap-basic: Basic Heatmap
 Library: highcharts 1.10.3 | Python 3.14.3
-Quality: /100 | Updated: 2026-02-15
+Quality: 78/100 | Updated: 2026-02-15
 """
 
 import json

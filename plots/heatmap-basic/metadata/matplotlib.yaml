@@ -1,7 +1,7 @@
 library: matplotlib
 specification_id: heatmap-basic
 created: '2025-12-23T00:46:03Z'
-updated: '2026-02-15T21:30:42Z'
+updated: '2026-02-15T21:37:45Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447951294
 issue: 0
@@ -20,45 +20,45 @@ impl_tags:
   patterns:
   - matrix-construction
   - iteration-over-groups
+  - explicit-figure
   dataprep: []
   styling:
   - custom-colormap
   - edge-highlighting
 review:
   strengths:
-  - Excellent use of TwoSlopeNorm for proper diverging color normalization centered
-    at zero
-  - Adaptive text color (white/black) based on cell value magnitude ensures all annotations
-    are readable
-  - Realistic department correlation data with plausible relationships (Sales-Marketing
-    high, Dev-Finance negative)
-  - Clean white grid lines provide clear cell separation
-  - All font sizes explicitly configured for the target resolution
+  - Adaptive text color (white on dark cells, black on light) ensures readability
+    across all correlation values
+  - TwoSlopeNorm provides proper centering of the diverging colormap at zero, a distinctive
+    matplotlib feature
+  - Realistic department correlation data with meaningful patterns (e.g., Sales-Marketing
+    positive, Dev-Finance negative)
+  - All spines removed and colorbar outline hidden for a clean, modern aesthetic
+  - White cell edges via pcolormesh edgecolors provide clear cell separation
   weaknesses:
-  - 'Layout balance could improve: the title overlaps with the colorbar area, and
-    the square format creates some wasted canvas space in the upper-right corner'
-  - The matrix frame/spines around the heatmap are still visible — removing them would
-    give a cleaner, more modern look
-  - The grid line loop adds borders separately from the heatmap; a cleaner approach
-    might use matshow parameters or pcolormesh with edgecolors
-  - Negative correlation range is underrepresented (minimum is only -0.25); more extreme
-    negative values would better showcase the diverging colormap
-  - The colorbar shrink parameter does not perfectly align with the matrix height
-  image_description: 'The plot displays an 8×8 department correlation matrix heatmap
-    using the RdBu_r diverging colormap. Colors range from dark blue (-1.0) through
-    white (0.0) to dark red (+1.0). All 64 cells contain bold numeric annotations
-    with adaptive text color — white text on strongly colored cells (|value| > 0.55)
-    and black text on lighter cells. The diagonal shows perfect correlation (1.00,
-    dark red). Notable patterns: Sales-Marketing shows high positive correlation (0.82),
-    Dev-Finance shows negative correlation (-0.25), HR-Legal has moderate positive
-    correlation (0.52). White grid lines cleanly separate cells. Both axes are labeled
-    "Department" with department names as tick labels. The colorbar on the right is
-    labeled "Correlation Coefficient" ranging from -1.00 to 1.00. The title reads
-    "Department Correlation · heatmap-basic · matplotlib · pyplots.ai". The layout
-    uses a square format appropriate for a correlation matrix.'
+  - Figure dimensions (14x12 at 300dpi = 4200x3600) do not match either standard format
+    — should be 16x9 for 4800x2700 or 12x12 for 3600x3600
+  - RdBu_r colormap is not optimally colorblind-safe — consider coolwarm or a perceptually-uniform
+    diverging alternative
+  - Data storytelling could be stronger — no visual emphasis on notable correlations
+    beyond colormap encoding
+  - The [::-1] data reversal for pcolormesh adds unnecessary complexity; imshow with
+    origin parameter could simplify
+  image_description: The plot displays an 8x8 correlation heatmap showing inter-department
+    relationships (Sales, Marketing, Support, Dev, HR, Finance, Ops, Legal). A diverging
+    RdBu_r colormap is used, centered at zero via TwoSlopeNorm, with deep red for
+    strong positive correlations (e.g., Sales-Marketing 0.82) and deep blue for strong
+    negative correlations (e.g., Dev-Finance -0.65). Each cell contains a bold numeric
+    annotation with adaptive text color — white on dark cells, black on light cells.
+    Cells are separated by white edge lines (1.5px). The diagonal displays 1.00 (self-correlation).
+    A vertical colorbar on the right is labeled "Correlation Coefficient" spanning
+    -1.0 to 1.0. X-axis labels are rotated 45 degrees for readability. Both axes are
+    labeled "Department". The title reads "heatmap-basic · matplotlib · pyplots.ai"
+    in the correct format. All spines are removed for a clean, modern look. The layout
+    is near-square with some extra whitespace.
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 26
       max: 30
       items:
       - id: VQ-01
@@ -73,33 +73,34 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text; 8 department labels fit cleanly with rotation
+        comment: No overlapping text; rotated x-axis labels fit cleanly, cell annotations
+          well-spaced
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Cells well-sized and annotations clear; slightly dense at 8x8 but
-          fully readable
+        comment: Cells large and clearly visible, appropriate for 8x8 matrix density
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 2
         max: 4
-        passed: true
-        comment: RdBu_r is a standard colorblind-safe diverging colormap
+        passed: false
+        comment: RdBu_r diverging colormap works but red-blue can be problematic for
+          some colorblind viewers
       - id: VQ-05
         name: Layout & Canvas
         score: 2
         max: 4
         passed: false
-        comment: Square 12x12 figure works for matrix but colorbar and title create
-          slight imbalance; title crowds colorbar area
+        comment: figsize (14, 12) produces 4200x3600px at dpi=300, does not match
+          standard formats (4800x2700 or 3600x3600)
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Department on both axes, Correlation Coefficient on colorbar
+        comment: Descriptive labels and colorbar labeled Correlation Coefficient
     design_excellence:
       score: 14
       max: 20
@@ -109,24 +110,24 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: 'Strong design: diverging palette centered at zero, adaptive text
-          colors, clean white grid lines, polished colorbar'
+        comment: 'Strong design: diverging colormap, white cell edges, removed spines,
+          adaptive text color. Above defaults but not publication-level polish'
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: 'Good: tick length zeroed, colorbar outline removed, white cell borders.
-          Could remove frame/spines'
+        comment: All spines removed, colorbar outline hidden, clean cell edges, good
+          padding. Minor extra whitespace
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 3
         max: 6
-        passed: true
-        comment: 'Data tells a story through color intensity: Sales-Marketing cluster,
-          Dev-Finance opposition visible immediately'
+        passed: false
+        comment: Data tells a story via diverging colormap drawing attention to extremes,
+          but no additional visual hierarchy or emphasis on key findings
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -134,27 +135,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct heatmap type
+        comment: Correct heatmap chart type
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features: diverging colormap, cell annotations, colorbar
-          legend, logically ordered labels'
+        comment: 'All spec features present: diverging colormap, value annotations,
+          colorbar legend, logical ordering'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Symmetric matrix with correct diagonal
+        comment: X/Y correctly assigned to department labels, values correctly color-mapped
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: 'Title format includes spec-id, library, pyplots.ai. Minor: descriptive
-          prefix before required format'
+        comment: Title exactly matches required format; colorbar serves as legend
     data_quality:
       score: 14
       max: 15
@@ -164,20 +164,20 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows positive, negative, near-zero, and strong correlations. Could
-          use more extreme negatives
+        comment: Shows positive, negative, and near-zero correlations; perfect diagonal;
+          good magnitude variety
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Department correlation — real, neutral business scenario
+        comment: Real business scenario with plausible department correlations
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: All values in [-1, 1]; relationships are plausible
+        comment: All values within [-1, 1], symmetric matrix, perfect diagonal
     code_quality:
       score: 9
       max: 10
@@ -187,45 +187,48 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Flat imports, data, plot, save structure
+        comment: Clean imports, data, plot, save flow with no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic hardcoded matrix
+        comment: Fully deterministic with hardcoded matrix
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: plt, np, TwoSlopeNorm'
+        comment: All three imports used
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
-        passed: true
-        comment: Clean overall but separate loop for grid lines is slightly verbose
+        passed: false
+        comment: Clean overall but [::-1] reversal pattern for pcolormesh adds complexity;
+          annotation loop slightly verbose
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png, dpi=300, bbox_inches=tight, no deprecated API
+        comment: Saves as plot.png at dpi=300 with bbox_inches=tight
     library_mastery:
       score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Idiomatic matshow, TwoSlopeNorm, fig.colorbar, ax.text annotations
+        comment: Good use of axes methods, pcolormesh with edgecolors, TwoSlopeNorm.
+          Could use imshow for simplicity
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: TwoSlopeNorm and matshow are distinctive matplotlib features
+        comment: TwoSlopeNorm and pcolormesh edgecolors are distinctive matplotlib
+          features
   verdict: REJECTED

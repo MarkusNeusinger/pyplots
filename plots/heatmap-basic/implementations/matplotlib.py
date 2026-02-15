@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 heatmap-basic: Basic Heatmap
 Library: matplotlib 3.10.8 | Python 3.14.3
+Quality: 86/100 | Updated: 2026-02-15
 """
 
 import matplotlib.pyplot as plt

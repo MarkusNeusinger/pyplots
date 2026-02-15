@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-basic: Basic Heatmap
 Library: highcharts 1.10.3 | Python 3.14.3
-Quality: 85/100 | Updated: 2026-02-15
 """
 
 import json
@@ -21,26 +20,17 @@ days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 time_periods = ["6–9 AM", "9 AM–Noon", "Noon–3 PM", "3–6 PM", "6–9 PM", "9 PM–Mid", "Mid–3 AM", "3–6 AM"]
 
 # Generate realistic traffic patterns (visits per hour)
-base = np.random.randint(15, 55, size=(len(time_periods), len(days)))
+base = np.random.randint(15, 55, size=(len(time_periods), len(days))).astype(float)
 
-# Weekday business hours: strong peak (9 AM–6 PM, Mon–Fri)
-base[1:4, 0:5] = np.clip(base[1:4, 0:5] * 2.0, 60, 100).astype(int)
+# Shape traffic by time-of-day multipliers applied to all days
+multipliers = np.array([1.3, 2.0, 2.0, 2.0, 1.0, 0.6, 0.25, 0.25]).reshape(-1, 1)
+base *= multipliers
 
-# Weekday early morning ramp-up (6–9 AM)
-base[0, 0:5] = np.clip(base[0, 0:5] * 1.3, 30, 55).astype(int)
+# Reduce weekday peaks for weekends, boost weekend evenings
+base[0:4, 5:7] *= 0.5  # weekend daytime + morning lower
+base[4:6, 5:7] *= 1.5  # weekend evenings higher
 
-# Weekend leisure browsing: evenings higher
-base[4:6, 5:7] = np.clip(base[4:6, 5:7] * 1.5, 40, 75).astype(int)
-
-# Weekend daytime: moderate
-base[1:4, 5:7] = np.clip(base[1:4, 5:7] * 0.9, 25, 50).astype(int)
-
-# Late night universally low
-base[6:8, :] = np.clip(base[6:8, :] * 0.25, 2, 18).astype(int)
-
-# Evening wind-down
-base[5, :] = np.clip(base[5, :] * 0.6, 10, 35).astype(int)
-
+# Clamp to realistic visit range
 traffic = np.clip(base, 0, 100).astype(int)
 
 # Build heatmap data in Highcharts format: [x_index, y_index, value]
@@ -58,7 +48,7 @@ chart_options = {
         "backgroundColor": "#fafafa",
         "marginTop": 180,
         "marginBottom": 180,
-        "marginRight": 280,
+        "marginRight": 380,
         "marginLeft": 300,
         "style": {"fontFamily": "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"},
     },
@@ -99,14 +89,13 @@ chart_options = {
         "min": 0,
         "max": 100,
         "stops": [
-            [0, "#f7fbff"],
-            [0.10, "#dae8f5"],
-            [0.20, "#b0d2e8"],
-            [0.35, "#6baed6"],
-            [0.50, "#3182bd"],
-            [0.65, "#1a5276"],
-            [0.80, "#6c3483"],
-            [1, "#c0392b"],
+            [0, "#ffffcc"],
+            [0.15, "#ffeda0"],
+            [0.30, "#fed976"],
+            [0.45, "#feb24c"],
+            [0.60, "#fd8d3c"],
+            [0.75, "#f03b20"],
+            [1, "#bd0026"],
         ],
         "labels": {"style": {"fontSize": "26px", "color": "#34495e"}},
     },
@@ -118,7 +107,8 @@ chart_options = {
         "symbolHeight": 900,
         "symbolWidth": 36,
         "itemStyle": {"fontSize": "24px", "color": "#34495e"},
-        "x": -20,
+        "x": -60,
+        "margin": 40,
     },
     "tooltip": {
         "style": {"fontSize": "32px"},
@@ -170,7 +160,7 @@ html_content = f"""<!DOCTYPE html>
         var opts = {options_json};
         opts.series[0].dataLabels.formatter = function() {{
             var v = this.point.value;
-            var color = v > 50 ? '#ffffff' : '#1a1a2e';
+            var color = v > 55 ? '#ffffff' : '#333333';
             return '<span style="color:' + color + ';font-size:28px;font-weight:bold">' + v + '</span>';
         }};
         opts.series[0].dataLabels.useHTML = true;

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bubble-basic: Basic Bubble Chart
-Library: seaborn 0.13.2 | Python 3.14
-Quality: /100 | Updated: 2026-02-15
+Library: seaborn 0.13.2 | Python 3.14.3
+Quality: 84/100 | Updated: 2026-02-15
 """
 
 import matplotlib.pyplot as plt

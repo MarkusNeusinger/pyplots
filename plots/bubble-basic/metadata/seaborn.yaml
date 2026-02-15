@@ -1,163 +1,181 @@
 library: seaborn
 specification_id: bubble-basic
 created: '2025-12-23T01:30:31Z'
-updated: '2026-02-15T12:00:00+00:00'
+updated: '2026-02-15T21:42:23Z'
 generated_by: claude-opus-4-6
 workflow_run: 20448650307
 issue: 0
-python_version: '3.14.3'
-library_version: '0.13.2'
+python_version: 3.14.3
+library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/seaborn/plot_thumb.png
 preview_html: null
-quality_score: null
+quality_score: 84
 impl_tags:
   dependencies: []
-  techniques:
-  - custom-legend
+  techniques: []
   patterns:
   - data-generation
   - explicit-figure
   dataprep: []
   styling:
   - alpha-blending
+  - edge-highlighting
+  - grid-styling
 review:
   strengths:
-  - Excellent size legend implementation with proxy bubbles showing three reference
-    sizes
-  - Proper area-based scaling for bubble sizes (meeting spec requirement)
-  - Good transparency (alpha=0.6) for handling overlapping bubbles as spec recommends
-  - Clean KISS code structure with proper DataFrame usage
-  - Title format exactly matches required format with middle dots
+  - Excellent realistic data context (GDP vs life expectancy vs population) with plausible
+    ranges
+  - Clean code structure following KISS principle with proper seed and all explicitly
+    set font sizes
+  - Good use of seaborn size parameter for bubble mapping with appropriate alpha and
+    white edge highlights
+  - 'Professional visual styling: spine removal, subtle y-grid, Python Blue color'
   weaknesses:
-  - Axis labels are generic (X Value, Y Value) rather than having real-world context
-    with units
-  - Could leverage seaborn hue parameter to add color as optional fourth dimension
-    per spec suggestion
-  - Data context is synthetic without a compelling real-world scenario
-  image_description: 'The plot displays a bubble chart with 50 semi-transparent blue
-    bubbles (#306998) on a white background with subtle dashed grid lines. The bubbles
-    vary in size from small (Size: 20) to large (Size: 80), representing a third variable.
-    The X-axis is labeled "X Value" and ranges from approximately 20 to 80, while
-    the Y-axis is labeled "Y Value" and ranges from approximately 15 to 70. The data
-    shows a clear positive correlation between X and Y values. A size legend titled
-    "Bubble Size" appears in the upper-left corner with three reference bubbles (20,
-    50, 80). The title "bubble-basic · seaborn · pyplots.ai" is displayed at the top
-    in the correct format.'
+  - Size legend in upper-left overlaps with data points in the low-GDP/high-life-expectancy
+    cluster, reducing readability
+  - No visual storytelling emphasis — the correlation trend is visible but nothing
+    guides the viewer to a specific insight (e.g., highlighted outliers, trend line,
+    or regional grouping via color)
+  - Extensive manual matplotlib legend customization reduces seaborn API advantage;
+    consider using seaborn built-in legend handling more effectively
+  - Smallest bubbles are quite small relative to the canvas, making some low-population
+    data points harder to distinguish
+  image_description: The plot displays a bubble chart with 40 data points on a 16:9
+    landscape canvas. The x-axis shows "GDP per Capita ($ thousands)" ranging from
+    roughly 5 to 85, and the y-axis shows "Life Expectancy (years)" ranging from about
+    58 to 84. All bubbles are rendered in a muted steel-blue color (#306998) with
+    white edges and moderate transparency (alpha ~0.55). Bubble sizes vary substantially
+    — from small dots representing cities under 5M population to large circles for
+    cities around 30M. A size legend in the upper-left corner displays reference bubbles
+    for 5, 10, 15, 20, 25, and 30 million population. The title reads "bubble-basic
+    · seaborn · pyplots.ai" in medium weight. Top and right spines are removed, and
+    a subtle horizontal y-axis grid (alpha=0.2) provides reference lines. The data
+    shows a clear positive correlation between GDP per capita and life expectancy,
+    with natural scatter. The overall aesthetic is clean and professional.
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 27
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
-        passed: true
-        comment: Title at 24pt, labels at 20pt, ticks at 16pt - all clearly readable
-      - id: VQ-02
-        name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements, legend well-placed
+        comment: 'All font sizes explicitly set: title 24pt, labels 20pt, ticks 16pt'
+      - id: VQ-02
+        name: No Overlap
+        score: 4
+        max: 6
+        passed: false
+        comment: Size legend in upper-left partially overlaps with data points in
+          the low-GDP/high-life-expectancy region
       - id: VQ-03
         name: Element Visibility
-        score: 7
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Bubbles are well-sized with good alpha (0.6) for 50 points; minor
-          deduction for some dense overlap areas
+        comment: Good size range (120-2000) and alpha (0.55) for 40 points; smallest
+          bubbles could be slightly larger
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Single color scheme, good contrast against white background
+        comment: Single-hue blue with white edges; fully colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Good proportions, 16:9 aspect ratio, no cut-off content
+        comment: Plot fills canvas well, balanced margins via tight_layout
       - id: VQ-06
-        name: Axis Labels
-        score: 1
-        max: 2
-        passed: false
-        comment: Labels are "X Value" and "Y Value" - descriptive but without units
-          or real-world context
-      - id: VQ-07
-        name: Grid & Legend
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Grid subtle with alpha=0.3 and dashed style, legend well-positioned
-          with framealpha
+        comment: Both axes have descriptive labels with units
+    design_excellence:
+      score: 12
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: false
+        comment: Thoughtful Python Blue color, white edge highlights, clean spine
+          removal; above defaults but not publication-exceptional
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: false
+        comment: Top/right spines removed, subtle y-grid at alpha=0.2, white edgecolor
+          on bubbles; good but could benefit from more polish
+      - id: DE-03
+        name: Data Storytelling
+        score: 3
+        max: 6
+        passed: false
+        comment: Positive GDP-life expectancy correlation visible, bubble sizes create
+          some hierarchy; no focal point or emphasis guides the viewer
     spec_compliance:
-      score: 25
-      max: 25
+      score: 14
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct bubble chart showing three variables (x, y, size)
+        comment: Correct bubble chart
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X/Y correctly assigned with size as third dimension
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
-        passed: true
-        comment: 'All spec features present: size legend, transparency, proper scaling'
-      - id: SC-04
-        name: Data Range
+        score: 3
+        max: 4
+        passed: false
+        comment: Three variables mapped, transparency and size legend present; optional
+          fourth dimension via color not implemented
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All 50 data points visible within axes
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X/Y correctly assigned, all data visible
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Size legend correctly shows scaling from 20 to 80
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Correctly uses "bubble-basic · seaborn · pyplots.ai"
+        comment: Title format correct, legend titled Population (M) with clear size
+          reference
     data_quality:
-      score: 17
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Shows varied bubble sizes, positive correlation, overlapping bubbles;
-          minor deduction as data could show more diverse size distribution patterns
+        comment: Shows varied bubble sizes via lognormal distribution, positive correlation,
+          overlapping bubbles demonstrating alpha
       - id: DQ-02
         name: Realistic Context
         score: 5
-        max: 7
-        passed: true
-        comment: Synthetic data with plausible correlation, but generic "X Value/Y
-          Value" rather than real-world scenario like market analysis
-      - id: DQ-03
-        name: Appropriate Scale
-        score: 5
         max: 5
         passed: true
-        comment: 'Values are sensible (X: 20-80, Y: 15-70, Size: 20-100)'
+        comment: World cities GDP per capita vs life expectancy vs population; classic
+          neutral scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: GDP 5-90K, life expectancy 58-84 years, population 0.8-30M; all realistic
+          ranges
     code_quality:
       score: 10
       max: 10
@@ -167,41 +185,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean Imports → Data → Plot → Save structure, no functions/classes
+        comment: Clean imports-data-plot-save structure, no functions or classes
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used (matplotlib, numpy, pandas, seaborn)
+        comment: All four imports used
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Uses current seaborn API
+        comment: Clean, appropriate complexity
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as 'plot.png'
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves as plot.png at dpi=300
+    library_mastery:
+      score: 7
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: false
+        comment: Uses sns.scatterplot with size/sizes parameter idiomatically; but
+          legend customization is heavily manual via matplotlib
+      - id: LM-02
+        name: Distinctive Features
         score: 3
         max: 5
-        passed: true
-        comment: Uses seaborn's scatterplot with DataFrame integration and size parameter,
-          but doesn't leverage seaborn's advanced features like hue/style or statistical
-          annotations
-  verdict: APPROVED
+        passed: false
+        comment: size/sizes tuple and legend=brief are seaborn-specific; extensive
+          matplotlib manual legend manipulation diminishes advantage
+  verdict: REJECTED

@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: heatmap-basic
 created: '2025-12-23T00:46:00Z'
-updated: '2026-02-15T21:30:48Z'
+updated: '2026-02-15T21:38:23Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447949053
 issue: 0
@@ -10,7 +10,7 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 82
+quality_score: 92
 impl_tags:
   dependencies: []
   techniques:
@@ -25,35 +25,38 @@ impl_tags:
   - edge-highlighting
 review:
   strengths:
-  - Excellent use of sns.clustermap for hierarchical row-clustering, showcasing a
-    distinctive seaborn capability
-  - Well-crafted synthetic data with intentional patterns that create a meaningful
-    story (Sales strong early, Engineering strong late, Finance stable)
-  - All font sizes explicitly set with good readability at target resolution
-  - Realistic business context with sensible performance score range
+  - Excellent use of sns.clustermap — a distinctive seaborn feature that integrates
+    hierarchical clustering with heatmap visualization
+  - Intentional data patterns (Sales first-half, Engineering second-half, Finance
+    stability, HR mid-year dip) create genuine visual storytelling
+  - 'Strong visual refinement: custom colorbar positioning, spine removal, #fafafa
+    background, white cell borders, and styled dendrogram'
+  - All font sizes explicitly set and well-calibrated for the output resolution
+  - Clean, well-organized code following KISS principles
   weaknesses:
-  - Missing Y-axis label (Department) — the ylabel is set to empty string
-  - Manual colorbar creation via ScalarMappable after disabling built-in cbar (cbar_pos=None)
-    is unnecessarily verbose — could use the built-in colorbar support
-  - Custom diverging palette via sns.diverging_palette(240, 10) is not a standard
-    colorblind-safe colormap — consider using RdBu_r or coolwarm for better accessibility
-  - 'Could push design further: no spine removal, no background color refinement,
-    annotation font could be larger'
-  image_description: 'The plot displays a clustered heatmap of monthly department
-    performance scores (0-100) for seven departments (Sales, Finance, Engineering,
-    Operations, Marketing, Support, HR) across twelve months (Jan-Dec). A diverging
-    blue-to-red colormap is used, centered at 50 — blue indicates low scores, red
-    indicates high scores. Each cell contains a white-text integer annotation of the
-    performance value. A dendrogram on the left groups departments by similarity via
-    hierarchical row-clustering (columns are not clustered). A vertical colorbar on
-    the right is labeled "Performance Score" with a 0-100 range. White gridlines separate
-    each cell. The title "heatmap-basic · seaborn · pyplots.ai" appears at the top
-    center. The X-axis is labeled "Month" and department names appear on the right
-    Y-axis. Clear patterns are visible: Sales strong first half fading later, Engineering
-    strong second half, Finance consistently high (~80-90), HR with lower scores mid-year.'
+  - Coolwarm colormap could be replaced with a more colorblind-friendly diverging
+    palette (e.g., RdBu or a custom perceptually-uniform option)
+  - The Department axis label appears on the far right due to clustermap layout, slightly
+    detached from the row labels
+  - Data patterns could be slightly more varied — an additional extreme outlier or
+    department with a sharp trend reversal would better demonstrate the heatmap full
+    potential
+  image_description: 'The plot displays a clustered heatmap showing monthly performance
+    scores (0-100) across 7 departments (Sales, Finance, Engineering, Operations,
+    Marketing, Support, HR). A coolwarm diverging colormap is used, centered at 50
+    — red cells indicate high performance, blue cells low performance. Each cell contains
+    a white numeric annotation showing the exact score. A row dendrogram on the left
+    groups departments by similarity via hierarchical clustering (columns are not
+    clustered). The colorbar on the far left is labeled "Performance Score" with ticks
+    at 0, 25, 50, 75, 100. Axis labels read "Month" (x-axis) and "Department" (y-axis,
+    on right side). The title "heatmap-basic · seaborn · pyplots.ai" appears at the
+    top. The background is a subtle off-white (#fafafa), cells are separated by white
+    gridlines, and spines are removed for a clean look. Clear patterns are visible:
+    Sales is strong in the first half, Engineering ramps up in the second half, Finance
+    is consistently high (80-91), and HR shows a mid-year dip.'
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -61,43 +64,44 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 24pt, xlabel 20pt, ticks 16pt,
-          annotations 14pt'
+        comment: 'All font sizes explicitly set: title 24pt, axis labels 20pt, ticks
+          16pt, annotations 16pt. All perfectly readable'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text anywhere
+        comment: No overlapping text anywhere; annotations fit cleanly within cells
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Annotations readable; could be slightly larger for cell size
+        comment: Cell sizes well-proportioned for a 7x12 matrix; colors and annotations
+          clearly distinguishable
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Custom diverging blue-red palette functional but not a standard colorblind-safe
-          option
+        comment: Coolwarm diverging palette is acceptable but not optimal for deuteranopia;
+          not a red-green issue though
       - id: VQ-05
         name: Layout Balance
         score: 3
         max: 4
         passed: true
-        comment: Decent layout; dendrogram and colorbar well-placed but some wasted
-          vertical space
+        comment: Good canvas utilization; minor issue with dendrogram and colorbar
+          taking space on the left, Department label on the far right
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: X-axis labeled Month but Y-axis label is empty string — missing Department
-          label
+        passed: true
+        comment: Month, Department, Performance Score are descriptive and appropriate
+          for this context
     design_excellence:
-      score: 12
+      score: 15
       max: 20
       items:
       - id: DE-01
@@ -105,24 +109,24 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Clustermap with custom diverging palette, white gridlines, and hierarchical
-          clustering shows design thought above defaults
+        comment: Customized colorbar position, facecolor refinement, white cell borders,
+          spine removal, dendrogram styling — clearly above defaults
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: White cell gridlines, custom colorbar placement, controlled dendrogram
-          ratio; some defaults remain
+        comment: 'Spines removed, subtle #fafafa background, white linewidths, dendrogram
+          custom facecolor, medium fontweight annotations'
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: 'Injected patterns create a story: Sales strong early, Engineering
-          strong late, Finance stable, HR dip mid-year'
+        comment: Data patterns are intentional and visible (Sales first-half, Engineering
+          second-half, Finance stability, HR dip); clustering groups similar departments
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -130,26 +134,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct heatmap type via seaborn clustermap
+        comment: Correct heatmap using seaborn clustermap variant
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
         comment: Diverging colormap, cell annotations, colorbar legend, logical row
-          ordering via clustering
+          ordering via clustering — all present
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Departments as rows, months as columns, performance scores as values
+        comment: X=months (columns), Y=departments (rows), values mapped to color
+          intensity
       - id: SC-04
-        name: Title & Legend
-        score: 2
+        name: Title Format
+        score: 3
         max: 3
         passed: true
-        comment: Title format correct; colorbar serves as legend; Y-axis label absent
+        comment: heatmap-basic · seaborn · pyplots.ai correct; colorbar serves as
+          legend
     data_quality:
       score: 14
       max: 15
@@ -159,22 +165,23 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows variation, patterns, clustering — but could include more extreme
-          outliers
+        comment: Shows variation, patterns, high/low values, and clustering; could
+          show a few more extreme outlier patterns
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: 'Genuine business scenario: department performance by month'
+        comment: Monthly department performance metrics — plausible business scenario
+          with real department names
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Performance scores 5-95 are realistic
+        comment: Performance scores 5-95 are realistic for a 0-100 metric
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -182,7 +189,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save flow
+        comment: Clean Imports → Data → Plot → Save flow, no functions/classes
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -194,36 +201,35 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Only matplotlib, numpy, seaborn imported
+        comment: Only matplotlib.pyplot, numpy, seaborn — all used
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Manual ScalarMappable colorbar after setting cbar_pos=None is slightly
-          verbose
+        comment: Appropriate complexity, intentional data patterns, clean organization
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png, no deprecated functions
+        comment: Saves as plot.png with dpi=300, bbox_inches=tight
     library_features:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Good use of sns.clustermap and sns.diverging_palette; manual colorbar
-          handling is less idiomatic
+        comment: Expert use of sns.clustermap with annot, fmt, cmap, center, cbar_kws,
+          cbar_pos, dendrogram_ratio
       - id: LM-02
         name: Distinctive Features
         score: 5
         max: 5
         passed: true
-        comment: sns.clustermap with hierarchical clustering is a distinctive seaborn
-          feature not easily replicated elsewhere
-  verdict: REJECTED
+        comment: sns.clustermap integrates hierarchical clustering + heatmap + dendrogram
+          — a feature unique to seaborn
+  verdict: APPROVED

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 campbell-basic: Campbell Diagram
-Library: matplotlib | Python 3.13
-Quality: pending | Created: 2026-02-15
+Library: matplotlib 3.10.8 | Python 3.14.3
+Quality: 79/100 | Created: 2026-02-15
 """
 
 import matplotlib.pyplot as plt

@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-basic: Basic Heatmap
 Library: plotly 6.5.2 | Python 3.14.3
-Quality: 89/100 | Updated: 2026-02-15
 """
 
 import numpy as np
@@ -29,6 +28,9 @@ for i, cat in enumerate(categories):
         base[i, 8:10] += 10  # Back-to-school
 values = np.round(base, 1)
 
+# Font family for publication-quality typography
+font_family = "Palatino, Georgia, serif"
+
 # Plot
 fig = go.Figure(
     data=go.Heatmap(
@@ -38,49 +40,56 @@ fig = go.Figure(
         colorscale="RdBu_r",
         zmid=0,
         colorbar={
-            "title": {"text": "Sales Growth (%)", "font": {"size": 20}},
-            "tickfont": {"size": 16},
+            "title": {"text": "Sales Growth (%)", "font": {"size": 20, "family": font_family}},
+            "tickfont": {"size": 16, "family": font_family},
             "ticksuffix": "%",
-            "thickness": 22,
-            "len": 0.85,
-            "x": 1.01,
-            "xpad": 8,
+            "thickness": 20,
+            "len": 0.75,
+            "x": 1.005,
+            "xpad": 4,
+            "outlinewidth": 0,
         },
         text=values,
-        texttemplate="%{text:+.0f}",
-        textfont={"size": 16},
+        texttemplate="%{text:+.1f}",
+        textfont={"size": 15, "family": font_family},
         hovertemplate="<b>%{y}</b> · %{x}<br>Growth: %{z:+.1f}%<extra></extra>",
         xgap=2,
         ygap=2,
     )
 )
 
-# Layout — subtitle guides reader to seasonal story in the data
+# Layout — tighter margins maximise heatmap area; serif font elevates polish
 fig.update_layout(
     title={
         "text": (
             "Monthly Sales Growth · heatmap-basic · plotly · pyplots.ai"
-            "<br><sup style='color:#666; font-size:17px'>"
+            "<br><sup style='color:#555; font-size:17px; letter-spacing:0.3px'>"
             "Retail categories show clear seasonal surges — "
             "summer outdoor/leisure peaks and Q4 holiday gift spikes"
             "</sup>"
         ),
-        "font": {"size": 28},
+        "font": {"size": 28, "family": font_family, "color": "#1a1a1a"},
         "x": 0.5,
         "xanchor": "center",
         "y": 0.97,
         "yanchor": "top",
     },
-    xaxis={"title": {"text": "Month", "font": {"size": 22}}, "tickfont": {"size": 18}, "side": "bottom"},
+    xaxis={
+        "title": {"text": "Month", "font": {"size": 22, "family": font_family, "color": "#333"}},
+        "tickfont": {"size": 18, "family": font_family, "color": "#444"},
+        "side": "bottom",
+    },
     yaxis={
-        "title": {"text": "Product Category", "font": {"size": 22}},
-        "tickfont": {"size": 18},
+        "title": {"text": "Product Category", "font": {"size": 22, "family": font_family, "color": "#333"}},
+        "tickfont": {"size": 18, "family": font_family, "color": "#444"},
         "autorange": "reversed",
     },
     template="plotly_white",
-    margin={"l": 160, "r": 80, "t": 120, "b": 70},
+    margin={"l": 140, "r": 60, "t": 120, "b": 65},
     width=1600,
     height=900,
+    paper_bgcolor="#fafafa",
+    plot_bgcolor="#fafafa",
 )
 
 # Save

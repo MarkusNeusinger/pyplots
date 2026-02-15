@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 campbell-basic: Campbell Diagram
-Library: plotnine | Python 3.13
-Quality: pending | Created: 2026-02-15
+Library: plotnine 0.15.3 | Python 3.14.3
+Quality: 86/100 | Created: 2026-02-15
 """
 
 import numpy as np

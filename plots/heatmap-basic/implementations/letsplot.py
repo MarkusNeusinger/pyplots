@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-basic: Basic Heatmap
 Library: letsplot 4.8.2 | Python 3.14.3
 Quality: 84/100 | Updated: 2026-02-15
@@ -16,7 +16,8 @@ from lets_plot import (
     ggsize,
     labs,
     layer_tooltips,
-    scale_fill_gradient2,
+    scale_color_identity,
+    scale_fill_gradient,
     scale_x_discrete,
     scale_y_discrete,
     theme,
@@ -40,7 +41,7 @@ values = np.outer(seasonal, baselines)
 noise = np.random.normal(0, 15, (len(months), len(zones)))
 values = np.round(values + noise, 0).astype(int)
 
-# Build long-form data as dict lists
+# Build long-form data with adaptive text color computed per cell
 zone_col, month_col, kwh_col = [], [], []
 for i, month in enumerate(months):
     for j, zone in enumerate(zones):
@@ -48,33 +49,32 @@ for i, month in enumerate(months):
         month_col.append(month)
         kwh_col.append(int(values[i, j]))
 
-data = {"Zone": zone_col, "Month": month_col, "kWh": kwh_col}
-
-# Split for adaptive text color (dark on light cells, white on dark)
 median_val = int(np.median(kwh_col))
-light_data = {"Zone": [], "Month": [], "kWh": []}
-dark_data = {"Zone": [], "Month": [], "kWh": []}
-for z, m, v in zip(zone_col, month_col, kwh_col, strict=True):
-    target = dark_data if v > median_val else light_data
-    target["Zone"].append(z)
-    target["Month"].append(m)
-    target["kWh"].append(v)
+text_color = ["white" if v > median_val else "#1a1a2e" for v in kwh_col]
 
-# Heatmap with interactive tooltips
+data = {"Zone": zone_col, "Month": month_col, "kWh": kwh_col, "label_color": text_color}
+
+# Heatmap with interactive tooltips and adaptive annotations
 plot = (
     ggplot(data, aes(x="Zone", y="Month", fill="kWh"))
-    + geom_tile(width=0.92, height=0.92, tooltips=layer_tooltips().line("@Zone | @Month").line("Energy: @kWh kWh"))
-    + geom_text(aes(label="kWh"), data=light_data, size=12, fontface="bold", color="#1a1a2e")
-    + geom_text(aes(label="kWh"), data=dark_data, size=12, fontface="bold", color="white")
-    + scale_fill_gradient2(low="#f0f4ff", mid="#4a90d9", high="#1a1a2e", midpoint=median_val, name="Energy\n(kWh)")
+    + geom_tile(
+        width=0.92,
+        height=0.92,
+        tooltips=layer_tooltips()
+        .line("@Zone | @Month")
+        .line("Energy: @kWh kWh")
+        .line("Median: " + str(median_val) + " kWh"),
+    )
+    + geom_text(aes(label="kWh", color="label_color"), size=12, fontface="bold")
+    + scale_color_identity()
+    + scale_fill_gradient(low="#e8f0fe", high="#0d1b3e", name="Energy (kWh)")
     + scale_x_discrete(limits=zones)
     + scale_y_discrete(limits=months[::-1])
-    + labs(x="Building Zone", y="", title="heatmap-basic · letsplot · pyplots.ai")
+    + labs(x="Building Zone", y="Month", title="heatmap-basic · letsplot · pyplots.ai")
     + theme_minimal()
     + theme(
         plot_title=element_text(size=24, face="bold"),
-        axis_title_x=element_text(size=20),
-        axis_title_y=element_blank(),
+        axis_title=element_text(size=20),
         axis_text=element_text(size=16),
         legend_text=element_text(size=14),
         legend_title=element_text(size=16),

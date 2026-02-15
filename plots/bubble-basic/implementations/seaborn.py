@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bubble-basic: Basic Bubble Chart
-Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: seaborn 0.13.2 | Python 3.14
+Quality: /100 | Updated: 2026-02-15
 """
 
 import matplotlib.pyplot as plt
@@ -10,50 +10,63 @@ import pandas as pd
 import seaborn as sns
 
 
-# Data
+# Data — World cities: GDP per capita vs life expectancy, bubble = population
 np.random.seed(42)
-n_points = 50
+n_cities = 40
 
-x = np.random.randn(n_points) * 15 + 50
-y = x * 0.6 + np.random.randn(n_points) * 10 + 20
-size_values = np.random.rand(n_points) * 80 + 20  # Range 20-100
+gdp_per_capita = np.linspace(5, 85, n_cities) + np.random.normal(0, 5, n_cities)
+gdp_per_capita = np.clip(gdp_per_capita, 5, 90)
 
-df = pd.DataFrame({"x": x, "y": y, "size": size_values})
+life_expectancy = 60 + 0.22 * gdp_per_capita + np.random.normal(0, 2.5, n_cities)
+life_expectancy = np.clip(life_expectancy, 58, 84)
+
+population_millions = np.random.lognormal(mean=1.0, sigma=1.0, size=n_cities)
+population_millions = np.clip(population_millions, 0.8, 30)
+
+df = pd.DataFrame(
+    {
+        "gdp_per_capita": np.round(gdp_per_capita, 1),
+        "life_expectancy": np.round(life_expectancy, 1),
+        "population": np.round(population_millions, 1),
+    }
+)
 
 # Plot
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Scale sizes for visibility at 4800x2700 - map to area range 100-2000
-size_scaled = (df["size"] - df["size"].min()) / (df["size"].max() - df["size"].min())
-sizes = size_scaled * 1900 + 100
-
-sns.scatterplot(data=df, x="x", y="y", size=sizes, sizes=(100, 2000), alpha=0.6, color="#306998", legend=False, ax=ax)
-
-# Size legend - create proxy bubbles for legend
-legend_sizes = [20, 50, 80]
-legend_markers = []
-for s in legend_sizes:
-    scaled = (s - df["size"].min()) / (df["size"].max() - df["size"].min())
-    marker_size = scaled * 1900 + 100
-    marker = ax.scatter([], [], s=marker_size, c="#306998", alpha=0.6)
-    legend_markers.append(marker)
-
-ax.legend(
-    legend_markers,
-    [f"Size: {s}" for s in legend_sizes],
-    title="Bubble Size",
-    loc="upper left",
-    fontsize=14,
-    title_fontsize=16,
-    framealpha=0.9,
+sns.scatterplot(
+    data=df,
+    x="gdp_per_capita",
+    y="life_expectancy",
+    size="population",
+    sizes=(120, 2000),
+    alpha=0.55,
+    color="#306998",
+    edgecolor="white",
+    linewidth=0.8,
+    legend="brief",
+    ax=ax,
 )
 
-# Labels and styling
-ax.set_xlabel("X Value", fontsize=20)
-ax.set_ylabel("Y Value", fontsize=20)
-ax.set_title("bubble-basic · seaborn · pyplots.ai", fontsize=24)
+# Adjust legend
+legend = ax.get_legend()
+legend.set_title("Population (M)")
+legend.get_title().set_fontsize(16)
+for text in legend.get_texts():
+    text.set_fontsize(14)
+legend.set_loc("upper left")
+legend.set_frame_on(True)
+legend.get_frame().set_alpha(0.9)
+legend.get_frame().set_edgecolor("#cccccc")
+
+# Style
+ax.set_xlabel("GDP per Capita ($ thousands)", fontsize=20)
+ax.set_ylabel("Life Expectancy (years)", fontsize=20)
+ax.set_title("bubble-basic · seaborn · pyplots.ai", fontsize=24, fontweight="medium")
 ax.tick_params(axis="both", labelsize=16)
-ax.grid(True, alpha=0.3, linestyle="--")
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
+ax.yaxis.grid(True, alpha=0.2, linewidth=0.8)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

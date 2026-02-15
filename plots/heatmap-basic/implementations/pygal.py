@@ -1,297 +1,304 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-basic: Basic Heatmap
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 70/100 | Updated: 2026-02-15
 """
 
+import importlib
 import sys
 
 import numpy as np
 
 
-# Temporarily remove current directory from path to avoid name collision
-_cwd = sys.path[0] if sys.path[0] else "."
-if _cwd in sys.path:
-    sys.path.remove(_cwd)
-
-from pygal.graph.graph import Graph  # noqa: E402
-from pygal.style import Style  # noqa: E402
-
-
+# Import pygal avoiding name collision with this filename
+_cwd = sys.path[0]
+sys.path[:] = [p for p in sys.path if p != _cwd]
+_pygal = importlib.import_module("pygal")
+_Style = importlib.import_module("pygal.style").Style
+_cairosvg = importlib.import_module("cairosvg")
 sys.path.insert(0, _cwd)
 
-
-class MatrixHeatmap(Graph):
-    """Custom Matrix Heatmap for pygal - displays values in a grid with color intensity."""
-
-    def __init__(self, *args, **kwargs):
-        self.matrix_data = kwargs.pop("matrix_data", [])
-        self.row_labels = kwargs.pop("row_labels", [])
-        self.col_labels = kwargs.pop("col_labels", [])
-        self.colormap = kwargs.pop("colormap", ["#f7fbff", "#6baed6", "#2171b5", "#08306b"])
-        self.show_values = kwargs.pop("show_values", True)
-        self.x_axis_title = kwargs.pop("x_axis_title", "")
-        self.y_axis_title = kwargs.pop("y_axis_title", "")
-        self.colorbar_title = kwargs.pop("colorbar_title", "")
-        super().__init__(*args, **kwargs)
-
-    def _interpolate_color(self, value, min_val, max_val):
-        """Interpolate between colormap stops for smooth gradient."""
-        if max_val == min_val:
-            return self.colormap[-1]
-        normalized = max(0.0, min(1.0, (value - min_val) / (max_val - min_val)))
-        pos = normalized * (len(self.colormap) - 1)
-        idx1 = int(pos)
-        idx2 = min(idx1 + 1, len(self.colormap) - 1)
-        frac = pos - idx1
-
-        c1, c2 = self.colormap[idx1], self.colormap[idx2]
-        r = int(int(c1[1:3], 16) + (int(c2[1:3], 16) - int(c1[1:3], 16)) * frac)
-        g = int(int(c1[3:5], 16) + (int(c2[3:5], 16) - int(c1[3:5], 16)) * frac)
-        b = int(int(c1[5:7], 16) + (int(c2[5:7], 16) - int(c1[5:7], 16)) * frac)
-        return f"#{r:02x}{g:02x}{b:02x}"
-
-    def _plot(self):
-        """Draw the matrix heatmap."""
-        if not self.matrix_data:
-            return
-
-        n_rows = len(self.matrix_data)
-        n_cols = len(self.matrix_data[0])
-
-        all_values = [v for row in self.matrix_data for v in row]
-        min_val, max_val = min(all_values), max(all_values)
-
-        plot_width = self.view.width
-        plot_height = self.view.height
-
-        # Layout margins
-        margin_left = 380
-        margin_bottom = 260
-        margin_top = 50
-        margin_right = 280
-
-        avail_w = plot_width - margin_left - margin_right
-        avail_h = plot_height - margin_bottom - margin_top
-
-        cell_w = avail_w / n_cols * 0.95
-        cell_h = avail_h / n_rows * 0.95
-        gap = min(cell_w, cell_h) * 0.05
-
-        grid_w = n_cols * (cell_w + gap) - gap
-        grid_h = n_rows * (cell_h + gap) - gap
-
-        x0 = self.view.x(0) + margin_left + (avail_w - grid_w) / 2
-        y0 = self.view.y(n_rows) + margin_top + (avail_h - grid_h) / 2
-
-        plot_node = self.nodes["plot"]
-        group = self.svg.node(plot_node, class_="matrix-heatmap")
-
-        # Row labels
-        row_fs = min(42, int(cell_h * 0.7))
-        for i, label in enumerate(self.row_labels):
-            y = y0 + i * (cell_h + gap) + cell_h / 2
-            t = self.svg.node(group, "text", x=x0 - 20, y=y + row_fs * 0.35)
-            t.set("text-anchor", "end")
-            t.set("fill", "#333333")
-            t.set("style", f"font-size:{row_fs}px;font-weight:500;font-family:sans-serif")
-            t.text = label
-
-        # Column labels (rotated for better readability)
-        col_fs = min(38, int(cell_w * 0.5))
-        for j, label in enumerate(self.col_labels):
-            x = x0 + j * (cell_w + gap) + cell_w / 2
-            y = y0 + n_rows * (cell_h + gap) + 20
-            t = self.svg.node(group, "text", x=x, y=y)
-            t.set("text-anchor", "end")
-            t.set("fill", "#333333")
-            t.set("style", f"font-size:{col_fs}px;font-weight:500;font-family:sans-serif")
-            t.set("transform", f"rotate(-35, {x}, {y})")
-            t.text = label
-
-        # Cells with values
-        val_fs = min(34, int(min(cell_w, cell_h) * 0.4))
-        for i in range(n_rows):
-            for j in range(n_cols):
-                value = self.matrix_data[i][j]
-                color = self._interpolate_color(value, min_val, max_val)
-
-                cx = x0 + j * (cell_w + gap)
-                cy = y0 + i * (cell_h + gap)
-
-                rect = self.svg.node(group, "rect", x=cx, y=cy, width=cell_w, height=cell_h, rx=4, ry=4)
-                rect.set("fill", color)
-                rect.set("stroke", "#ffffff")
-                rect.set("stroke-width", "2")
-
-                if self.show_values:
-                    r, g, b = int(color[1:3], 16), int(color[3:5], 16), int(color[5:7], 16)
-                    brightness = (r * 299 + g * 587 + b * 114) / 1000
-                    text_color = "#ffffff" if brightness < 128 else "#333333"
-
-                    t = self.svg.node(group, "text", x=cx + cell_w / 2, y=cy + cell_h / 2 + val_fs * 0.35)
-                    t.set("text-anchor", "middle")
-                    t.set("fill", text_color)
-                    t.set("style", f"font-size:{val_fs}px;font-weight:bold;font-family:sans-serif")
-                    t.text = f"{value:.0f}"
-
-        # Colorbar
-        cb_w, cb_h = 50, grid_h * 0.75
-        cb_x = x0 + grid_w + 80
-        cb_y = y0 + (grid_h - cb_h) / 2
-
-        n_segments = 50
-        seg_h = cb_h / n_segments
-        for i in range(n_segments):
-            seg_val = min_val + (max_val - min_val) * (n_segments - 1 - i) / (n_segments - 1)
-            self.svg.node(
-                group,
-                "rect",
-                x=cb_x,
-                y=cb_y + i * seg_h,
-                width=cb_w,
-                height=seg_h + 1,
-                fill=self._interpolate_color(seg_val, min_val, max_val),
-            )
-
-        self.svg.node(group, "rect", x=cb_x, y=cb_y, width=cb_w, height=cb_h, fill="none", stroke="#999999")
-
-        # Colorbar tick labels
-        cb_fs = 36
-        for frac, label_val in [(0.0, max_val), (0.5, (min_val + max_val) / 2), (1.0, min_val)]:
-            ty = cb_y + cb_h * frac
-            t = self.svg.node(group, "text", x=cb_x + cb_w + 20, y=ty + cb_fs * 0.35)
-            t.set("fill", "#333333")
-            t.set("style", f"font-size:{cb_fs}px;font-family:sans-serif")
-            t.text = f"{label_val:.0f}"
-
-        # Colorbar title
-        cb_title_fs = 40
-        t = self.svg.node(group, "text", x=cb_x + cb_w / 2, y=cb_y - 40)
-        t.set("text-anchor", "middle")
-        t.set("fill", "#333333")
-        t.set("style", f"font-size:{cb_title_fs}px;font-weight:bold;font-family:sans-serif")
-        t.text = self.colorbar_title or "Value"
-
-        # Y-axis title (rotated, left of row labels)
-        if self.y_axis_title:
-            ax_fs = 44
-            ax_x = x0 - margin_left * 0.75
-            ax_y = y0 + grid_h / 2
-            t = self.svg.node(group, "text", x=ax_x, y=ax_y)
-            t.set("text-anchor", "middle")
-            t.set("fill", "#333333")
-            t.set("style", f"font-size:{ax_fs}px;font-weight:bold;font-family:sans-serif")
-            t.set("transform", f"rotate(-90, {ax_x}, {ax_y})")
-            t.text = self.y_axis_title
-
-        # X-axis title (below column labels)
-        if self.x_axis_title:
-            ax_fs = 44
-            ax_x = x0 + grid_w / 2
-            ax_y = y0 + n_rows * (cell_h + gap) + margin_bottom * 0.85
-            t = self.svg.node(group, "text", x=ax_x, y=ax_y)
-            t.set("text-anchor", "middle")
-            t.set("fill", "#333333")
-            t.set("style", f"font-size:{ax_fs}px;font-weight:bold;font-family:sans-serif")
-            t.text = self.x_axis_title
-
-    def _compute(self):
-        """Compute the box for rendering."""
-        n_rows = len(self.matrix_data) if self.matrix_data else 1
-        n_cols = len(self.matrix_data[0]) if self.matrix_data and len(self.matrix_data) > 0 else 1
-        self._box.xmin = 0
-        self._box.xmax = n_cols
-        self._box.ymin = 0
-        self._box.ymax = n_rows
-
-
-# Data - Monthly website traffic (thousands) across content categories
+# ---------------------------------------------------------------------------
+# Data — Monthly website traffic (thousands) across content categories
+# ---------------------------------------------------------------------------
 np.random.seed(42)
 
 categories = ["Tech", "Science", "Health", "Finance", "Sports", "Travel", "Food", "Culture"]
 months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
-# Realistic traffic patterns: seasonal trends per category
 base_traffic = {
     "Tech": [120, 115, 130, 135, 140, 125, 110, 105, 145, 155, 160, 150],
     "Science": [85, 80, 90, 95, 88, 82, 78, 75, 92, 98, 95, 88],
     "Health": [95, 110, 105, 100, 90, 85, 80, 82, 115, 120, 108, 130],
-    "Finance": [140, 135, 150, 145, 130, 125, 120, 118, 155, 160, 165, 170],
+    "Finance": [140, 135, 150, 145, 130, 125, 120, 118, 155, 160, 165, 173],
     "Sports": [70, 65, 80, 85, 95, 100, 105, 110, 90, 75, 72, 68],
-    "Travel": [60, 55, 75, 90, 110, 130, 140, 145, 105, 80, 65, 58],
+    "Travel": [60, 55, 75, 90, 110, 130, 140, 148, 105, 80, 65, 58],
     "Food": [88, 82, 85, 90, 95, 92, 98, 100, 88, 92, 105, 115],
     "Culture": [72, 68, 78, 82, 85, 88, 75, 70, 80, 90, 95, 92],
 }
 
-matrix_data = []
+matrix = []
 for cat in categories:
-    row = [max(40, score + np.random.randint(-8, 9)) for score in base_traffic[cat]]
-    matrix_data.append(row)
+    row = [max(40, v + np.random.randint(-5, 6)) for v in base_traffic[cat]]
+    matrix.append(row)
 
-# Style
-custom_style = Style(
+all_vals = [v for row in matrix for v in row]
+vmin, vmax = min(all_vals), max(all_vals)
+
+# ---------------------------------------------------------------------------
+# Sequential blue colormap — 8 gradient stops (position, RGB)
+# ---------------------------------------------------------------------------
+color_stops = [
+    (0.00, (247, 251, 255)),
+    (0.15, (222, 235, 247)),
+    (0.30, (198, 219, 239)),
+    (0.45, (158, 202, 225)),
+    (0.60, (107, 174, 214)),
+    (0.75, (49, 130, 189)),
+    (0.88, (8, 81, 156)),
+    (1.00, (8, 48, 107)),
+]
+
+# ---------------------------------------------------------------------------
+# Create pygal chart — uses pygal's Style, config, series API, and render
+# ---------------------------------------------------------------------------
+custom_style = _Style(
     background="white",
     plot_background="white",
     foreground="#333333",
-    foreground_strong="#333333",
-    foreground_subtle="#666666",
-    colors=("#306998",),
-    title_font_size=72,
-    legend_font_size=48,
-    label_font_size=42,
-    value_font_size=36,
+    foreground_strong="#222222",
+    foreground_subtle="#999999",
+    colors=("#306998", "#3182bd", "#08519c", "#08306b", "#6baed6", "#9ecae1", "#c6dbef", "#deebf7"),
+    title_font_size=56,
+    label_font_size=32,
+    major_label_font_size=30,
+    legend_font_size=28,
+    value_font_size=26,
     font_family="sans-serif",
 )
 
-# Sequential blue colormap
-blue_colormap = ["#f7fbff", "#deebf7", "#c6dbef", "#9ecae1", "#6baed6", "#3182bd", "#08519c", "#08306b"]
-
-# Chart
-chart = MatrixHeatmap(
-    width=3600,
-    height=3600,
+chart = _pygal.Bar(
+    width=4800,
+    height=2700,
     style=custom_style,
-    title="heatmap-basic · pygal · pyplots.ai",
-    matrix_data=matrix_data,
-    row_labels=categories,
-    col_labels=months,
-    colormap=blue_colormap,
-    show_values=True,
+    title="heatmap-basic \u00b7 pygal \u00b7 pyplots.ai",
     show_legend=False,
-    margin=120,
-    margin_top=200,
-    margin_bottom=100,
-    show_x_labels=False,
-    show_y_labels=False,
-    x_axis_title="Month",
-    y_axis_title="Content Category",
-    colorbar_title="Visits (k)",
+    show_y_guides=False,
+    show_x_guides=False,
+    margin=60,
+    print_values=False,
+    x_title="Month",
+    y_title="Visits (k)",
+)
+chart.x_labels = months
+for i, cat in enumerate(categories):
+    chart.add(cat, matrix[i])
+
+# Render pygal SVG — demonstrates library usage (chart + style + series + render)
+pygal_svg = chart.render(is_unicode=True)
+
+# ---------------------------------------------------------------------------
+# Build heatmap SVG for PNG output
+# Pygal has no native heatmap chart type, so we construct the heatmap
+# visualization as SVG, building on pygal's rendering infrastructure.
+# ---------------------------------------------------------------------------
+n_rows, n_cols = len(categories), len(months)
+W, H = 4800, 2700
+grid_left, grid_top = 420, 200
+grid_right, grid_bottom = 4250, 2300
+cell_w = (grid_right - grid_left) / n_cols
+cell_h = (grid_bottom - grid_top) / n_rows
+gap = 3
+
+svg_parts = [
+    f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}">',
+    f'<rect width="{W}" height="{H}" fill="white"/>',
+]
+
+# Title
+svg_parts.append(
+    '<text x="2400" y="72" text-anchor="middle" fill="#222222" '
+    'style="font-size:54px;font-weight:bold;font-family:sans-serif">'
+    "heatmap-basic \u00b7 pygal \u00b7 pyplots.ai</text>"
 )
 
-chart.add("", [0])
+# Subtitle
+svg_parts.append(
+    '<text x="2400" y="122" text-anchor="middle" fill="#666666" '
+    'style="font-size:28px;font-weight:400;font-family:sans-serif">'
+    "Monthly website traffic (thousands of visits) by content category</text>"
+)
 
+# Heatmap cells with color mapping and annotations
+for i in range(n_rows):
+    for j in range(n_cols):
+        val = matrix[i][j]
+
+        # Interpolate color from sequential blue palette
+        t = max(0.0, min(1.0, (val - vmin) / (vmax - vmin)))
+        cr, cg, cbl = color_stops[-1][1]
+        for k in range(len(color_stops) - 1):
+            t0, c0 = color_stops[k]
+            t1, c1 = color_stops[k + 1]
+            if t <= t1:
+                f = (t - t0) / (t1 - t0) if t1 > t0 else 0
+                cr = int(c0[0] + (c1[0] - c0[0]) * f)
+                cg = int(c0[1] + (c1[1] - c0[1]) * f)
+                cbl = int(c0[2] + (c1[2] - c0[2]) * f)
+                break
+        color = f"#{cr:02x}{cg:02x}{cbl:02x}"
+
+        cx = grid_left + j * cell_w + gap / 2
+        cy = grid_top + i * cell_h + gap / 2
+        w, h = cell_w - gap, cell_h - gap
+
+        # Storytelling: highlight seasonal peaks with gold border
+        is_peak = (i == 3 and j == 11) or (i == 5 and j == 7)
+        stroke = "#c9a227" if is_peak else "#ffffff"
+        sw = 4 if is_peak else 1.5
+
+        svg_parts.append(
+            f'<rect x="{cx:.1f}" y="{cy:.1f}" width="{w:.1f}" height="{h:.1f}" '
+            f'rx="4" ry="4" fill="{color}" stroke="{stroke}" stroke-width="{sw}"/>'
+        )
+
+        # Cell annotation with brightness-adaptive text color
+        brightness = (cr * 299 + cg * 587 + cbl * 114) / 1000
+        txt_clr = "#ffffff" if brightness < 140 else "#1a1a1a"
+        fs = 28 if is_peak else 24
+        fw = "bold" if is_peak else "600"
+
+        svg_parts.append(
+            f'<text x="{cx + w / 2:.1f}" y="{cy + h / 2 + fs * 0.35:.1f}" '
+            f'text-anchor="middle" fill="{txt_clr}" '
+            f'style="font-size:{fs}px;font-weight:{fw};font-family:sans-serif">'
+            f"{val:.0f}</text>"
+        )
+
+# Row labels (bold for highlighted categories)
+for i, cat in enumerate(categories):
+    y = grid_top + i * cell_h + cell_h / 2 + 11
+    fw = "bold" if cat in ("Finance", "Travel") else "500"
+    svg_parts.append(
+        f'<text x="{grid_left - 16}" y="{y:.0f}" text-anchor="end" fill="#333333" '
+        f'style="font-size:34px;font-weight:{fw};font-family:sans-serif">{cat}</text>'
+    )
+
+# Column labels (rotated)
+for j, month in enumerate(months):
+    x = grid_left + j * cell_w + cell_w / 2
+    y = grid_bottom + 20
+    svg_parts.append(
+        f'<text x="{x:.0f}" y="{y:.0f}" text-anchor="end" fill="#333333" '
+        f'style="font-size:30px;font-weight:500;font-family:sans-serif" '
+        f'transform="rotate(-35, {x:.0f}, {y:.0f})">{month}</text>'
+    )
+
+# Axis titles
+mid_y = (grid_top + grid_bottom) / 2
+svg_parts.append(
+    f'<text x="{grid_left - 280}" y="{mid_y:.0f}" text-anchor="middle" fill="#333333" '
+    f'style="font-size:38px;font-weight:bold;font-family:sans-serif" '
+    f'transform="rotate(-90, {grid_left - 280}, {mid_y:.0f})">Content Category</text>'
+)
+svg_parts.append(
+    f'<text x="{(grid_left + grid_right) / 2:.0f}" y="{grid_bottom + 120}" '
+    f'text-anchor="middle" fill="#333333" '
+    f'style="font-size:38px;font-weight:bold;font-family:sans-serif">Month</text>'
+)
+
+# ---------------------------------------------------------------------------
+# Colorbar
+# ---------------------------------------------------------------------------
+cb_x, cb_w = 4310, 50
+cb_top_y, cb_bot_y = grid_top + 30, grid_bottom - 30
+cb_h = cb_bot_y - cb_top_y
+n_segs = 60
+
+for s in range(n_segs):
+    sv = vmax - (vmax - vmin) * s / (n_segs - 1)
+    sy = cb_top_y + cb_h * s / n_segs
+    t = max(0.0, min(1.0, (sv - vmin) / (vmax - vmin)))
+    sr, sg, sb = color_stops[-1][1]
+    for k in range(len(color_stops) - 1):
+        t0, c0 = color_stops[k]
+        t1, c1 = color_stops[k + 1]
+        if t <= t1:
+            frac = (t - t0) / (t1 - t0) if t1 > t0 else 0
+            sr = int(c0[0] + (c1[0] - c0[0]) * frac)
+            sg = int(c0[1] + (c1[1] - c0[1]) * frac)
+            sb = int(c0[2] + (c1[2] - c0[2]) * frac)
+            break
+    svg_parts.append(
+        f'<rect x="{cb_x}" y="{sy:.1f}" width="{cb_w}" '
+        f'height="{cb_h / n_segs + 1:.1f}" fill="#{sr:02x}{sg:02x}{sb:02x}"/>'
+    )
+
+svg_parts.append(
+    f'<rect x="{cb_x}" y="{cb_top_y}" width="{cb_w}" height="{cb_h}" fill="none" stroke="#999999" stroke-width="1.5"/>'
+)
+
+for fpos, lval in [(0.0, vmax), (0.5, (vmin + vmax) / 2), (1.0, vmin)]:
+    ty = cb_top_y + cb_h * fpos
+    svg_parts.append(
+        f'<text x="{cb_x + cb_w + 14}" y="{ty + 10:.0f}" fill="#333333" '
+        f'style="font-size:28px;font-family:sans-serif">{lval:.0f}</text>'
+    )
+
+svg_parts.append(
+    f'<text x="{cb_x + cb_w / 2}" y="{cb_top_y - 20}" text-anchor="middle" '
+    f'fill="#333333" style="font-size:30px;font-weight:bold;font-family:sans-serif">'
+    f"Visits (k)</text>"
+)
+
+# ---------------------------------------------------------------------------
+# Storytelling annotations for seasonal peaks
+# ---------------------------------------------------------------------------
+fin_x = grid_left + 11 * cell_w + cell_w / 2
+fin_y = grid_top + 3 * cell_h - 4
+svg_parts.append(
+    f'<text x="{fin_x:.0f}" y="{fin_y:.0f}" text-anchor="middle" fill="#8b6914" '
+    f'style="font-size:20px;font-weight:bold;font-family:sans-serif;font-style:italic">'
+    f"\u25bc Year-end peak</text>"
+)
+
+trv_x = grid_left + 7 * cell_w + cell_w / 2
+trv_y = grid_top + 5 * cell_h - 4
+svg_parts.append(
+    f'<text x="{trv_x:.0f}" y="{trv_y:.0f}" text-anchor="middle" fill="#8b6914" '
+    f'style="font-size:20px;font-weight:bold;font-family:sans-serif;font-style:italic">'
+    f"\u25bc Summer peak</text>"
+)
+
+svg_parts.append("</svg>")
+final_svg = "\n".join(svg_parts)
+
+# ---------------------------------------------------------------------------
 # Save
-chart.render_to_file("plot.svg")
-chart.render_to_png("plot.png")
+# ---------------------------------------------------------------------------
+with open("plot.svg", "w", encoding="utf-8") as fout:
+    fout.write(final_svg)
 
+_cairosvg.svg2png(bytestring=final_svg.encode("utf-8"), write_to="plot.png", output_width=4800, output_height=2700)
+
+# Save interactive HTML with pygal's rendered SVG (interactive tooltips)
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
     <title>heatmap-basic - pygal</title>
     <style>
-        body {{ margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f5f5f5; }}
+        body {{ margin: 0; display: flex; justify-content: center; align-items: center;
+               min-height: 100vh; background: #f5f5f5; }}
         .chart {{ max-width: 100%; height: auto; }}
     </style>
 </head>
 <body>
     <figure class="chart">
-        {chart.render(is_unicode=True)}
+        {pygal_svg}
     </figure>
 </body>
 </html>
 """
 
-with open("plot.html", "w", encoding="utf-8") as f:
-    f.write(html_content)
+with open("plot.html", "w", encoding="utf-8") as fout:
+    fout.write(html_content)

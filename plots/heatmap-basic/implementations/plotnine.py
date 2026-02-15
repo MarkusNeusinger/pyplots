@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-basic: Basic Heatmap
-Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Library: plotnine 0.15.3 | Python 3.14.3
+Quality: /100 | Updated: 2026-02-15
 """
 
 import numpy as np
@@ -9,67 +9,74 @@ import pandas as pd
 from plotnine import (
     aes,
     element_blank,
+    element_rect,
     element_text,
     geom_text,
     geom_tile,
     ggplot,
     labs,
+    scale_color_identity,
     scale_fill_gradient2,
+    scale_x_discrete,
+    scale_y_discrete,
     theme,
     theme_minimal,
 )
 
 
-# Data - 8x8 matrix with meaningful patterns (performance metrics by region and quarter)
+# Data - 8x8 matrix: quarterly growth rates (%) by department
 np.random.seed(42)
-rows = ["Region A", "Region B", "Region C", "Region D", "Region E", "Region F", "Region G", "Region H"]
-cols = ["Q1 2023", "Q2 2023", "Q3 2023", "Q4 2023", "Q1 2024", "Q2 2024", "Q3 2024", "Q4 2024"]
+departments = ["Engineering", "Marketing", "Sales", "Finance", "Operations", "HR", "Research", "Support"]
+quarters = ["Q1 '23", "Q2 '23", "Q3 '23", "Q4 '23", "Q1 '24", "Q2 '24", "Q3 '24", "Q4 '24"]
 
-# Create data with a trend and variation
-base_values = np.linspace(-30, 40, 8)  # Trend across columns
-row_effects = np.random.uniform(-10, 10, 8)  # Row-specific offsets
+# Growth rates with a recovery trend and departmental variation
+base_trend = np.linspace(-15, 20, 8)
+dept_offsets = np.array([-5, 8, 12, -2, 3, -8, 6, -4])
 values = np.zeros((8, 8))
 for i in range(8):
     for j in range(8):
-        values[i, j] = base_values[j] + row_effects[i] + np.random.uniform(-8, 8)
+        values[i, j] = round(base_trend[j] + dept_offsets[i] + np.random.normal(0, 4), 1)
 
-# Create long-form DataFrame for plotnine
-data = []
-for i, row in enumerate(rows):
-    for j, col in enumerate(cols):
-        data.append({"x": col, "y": row, "value": round(values[i, j], 1)})
+# Long-form DataFrame
+records = []
+for i, dept in enumerate(departments):
+    for j, qtr in enumerate(quarters):
+        records.append({"Department": dept, "Quarter": qtr, "Growth": values[i, j]})
 
-df = pd.DataFrame(data)
+df = pd.DataFrame(records)
+df["Quarter"] = pd.Categorical(df["Quarter"], categories=quarters, ordered=True)
+df["Department"] = pd.Categorical(df["Department"], categories=departments[::-1], ordered=True)
 
-# Preserve ordering
-df["x"] = pd.Categorical(df["x"], categories=cols, ordered=True)
-df["y"] = pd.Categorical(df["y"], categories=rows[::-1], ordered=True)  # Reverse for top-to-bottom
+# Conditional text color: white on dark blue cells, dark on light cells
+df["text_color"] = df["Growth"].apply(lambda v: "white" if v < -10 else "#333333")
+
+# Format labels with sign
+df["label"] = df["Growth"].apply(lambda v: f"{v:+.1f}")
 
 # Plot
 plot = (
-    ggplot(df, aes(x="x", y="y", fill="value"))
-    + geom_tile(color="white", size=0.5)
-    + geom_text(aes(label="value"), size=12, color="black")
-    + scale_fill_gradient2(
-        low="#306998",  # Python Blue for negative
-        mid="white",
-        high="#FFD43B",  # Python Yellow for positive
-        midpoint=0,
-        name="Value",
-    )
-    + labs(x="Time Period", y="Region", title="heatmap-basic · plotnine · pyplots.ai")
+    ggplot(df, aes(x="Quarter", y="Department"))
+    + geom_tile(aes(fill="Growth"), color="white", size=0.8)
+    + geom_text(aes(label="label", color="text_color"), size=11, fontweight="bold", show_legend=False)
+    + scale_fill_gradient2(low="#306998", mid="#f5f5f0", high="#FFD43B", midpoint=0, name="Growth (%)")
+    + scale_color_identity()
+    + scale_x_discrete(expand=(0, 0.5))
+    + scale_y_discrete(expand=(0, 0.5))
+    + labs(x="", y="", title="Quarterly Growth by Department · heatmap-basic · plotnine · pyplots.ai")
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
-        text=element_text(size=14),
-        axis_title=element_text(size=20),
-        axis_text_x=element_text(size=14, rotation=45, ha="right"),
-        axis_text_y=element_text(size=16),
-        plot_title=element_text(size=24),
+        text=element_text(family="sans-serif"),
+        plot_title=element_text(size=22, ha="center", margin={"b": 15}),
+        axis_text_x=element_text(size=16, rotation=45, ha="right", margin={"t": 5}),
+        axis_text_y=element_text(size=16, ha="right", margin={"r": 5}),
         legend_title=element_text(size=16),
         legend_text=element_text(size=14),
+        legend_position="right",
         panel_grid_major=element_blank(),
         panel_grid_minor=element_blank(),
+        panel_background=element_rect(fill="white"),
+        plot_background=element_rect(fill="white"),
     )
 )
 

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 campbell-basic: Campbell Diagram
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 85/100 | Created: 2026-02-15
@@ -58,18 +58,17 @@ for label, base, slope, curv in zip(mode_labels, base_freqs, slopes, curvatures,
 
 df_critical = pd.DataFrame(critical_rows)
 
-# Select key critical speeds for annotation (prefer those in operating range)
-key_in_range = df_critical[df_critical["InOpRange"]].head(2)
-key_outside = df_critical[~df_critical["InOpRange"]].sort_values("Hz").head(1)
-key_annotations = pd.concat([key_in_range, key_outside]).reset_index(drop=True)
-
-# Offset annotations to avoid overlap with data
-annotation_offsets = [(14, -16), (14, 14), (14, -16)]
-annot_rows = []
-for i, row in key_annotations.iterrows():
-    dx, dy = annotation_offsets[i] if i < len(annotation_offsets) else (14, -16)
-    annot_rows.append({"RPM": row["RPM"], "Hz": row["Hz"], "Label": row["Label"], "dx": dx, "dy": dy})
-df_annot = pd.DataFrame(annot_rows)
+# Select well-spaced key critical speeds for annotation
+key_in_range = df_critical[df_critical["InOpRange"]]
+key_outside = df_critical[~df_critical["InOpRange"]].sort_values("Hz")
+# Pick annotations that are well separated: one low outside, one mid in-range, one high in-range
+df_annot = pd.DataFrame(
+    [
+        {**key_outside.iloc[0].to_dict(), "dx": 12, "dy": -18},  # 1st Bending / 3x (~988 RPM, ~49 Hz)
+        {**key_in_range.iloc[0].to_dict(), "dx": -130, "dy": -20},  # 1st Bending / 1x (~4273 RPM, ~71 Hz) — left
+        {**key_in_range.iloc[2].to_dict(), "dx": 14, "dy": -18},  # 1st Torsional / 2x (~4747 RPM, ~158 Hz)
+    ]
+)
 
 # Operating range
 op_min, op_max = 3000, 5000
@@ -81,40 +80,24 @@ x_scale = alt.Scale(domain=[0, 6200], nice=False)
 y_scale = alt.Scale(domain=[0, 310])
 
 # Operating range shaded band
-op_band_df = pd.DataFrame({"x": [op_min], "x2": [op_max]})
 op_band = (
-    alt.Chart(op_band_df).mark_rect(opacity=0.08, color="#306998").encode(x=alt.X("x:Q", scale=x_scale), x2="x2:Q")
+    alt.Chart(pd.DataFrame({"x": [op_min], "x2": [op_max]}))
+    .mark_rect(opacity=0.08, color="#306998")
+    .encode(x=alt.X("x:Q", scale=x_scale), x2="x2:Q")
 )
 
 # Operating range label
-op_label_df = pd.DataFrame({"RPM": [(op_min + op_max) / 2], "Hz": [8], "label": ["Operating Range"]})
 op_label = (
-    alt.Chart(op_label_df)
+    alt.Chart(pd.DataFrame({"RPM": [(op_min + op_max) / 2], "Hz": [8], "label": ["Operating Range"]}))
     .mark_text(fontSize=15, fontStyle="italic", color="#306998", fontWeight="bold")
     .encode(x=alt.X("RPM:Q", scale=x_scale), y=alt.Y("Hz:Q", scale=y_scale), text="label:N")
 )
 
-# Engine order lines with legend via color encoding
+# Engine order lines — no legend (direct labels at right edge are cleaner)
 eo_chart = (
     alt.Chart(df_eo)
-    .mark_line(strokeWidth=1.5, strokeDash=[8, 6])
-    .encode(
-        x=alt.X("RPM:Q", scale=x_scale),
-        y=alt.Y("Hz:Q", scale=y_scale),
-        color=alt.Color(
-            "EO:N",
-            scale=alt.Scale(domain=["1x", "2x", "3x"], range=["#999999", "#999999", "#999999"]),
-            legend=alt.Legend(
-                title="Engine Orders",
-                titleFontSize=14,
-                labelFontSize=13,
-                symbolStrokeWidth=2,
-                symbolSize=150,
-                symbolDash=[8, 6],
-            ),
-        ),
-        strokeOpacity=alt.value(0.55),
-    )
+    .mark_line(strokeWidth=1.5, strokeDash=[8, 6], color="#999999", opacity=0.55)
+    .encode(x=alt.X("RPM:Q", scale=x_scale), y=alt.Y("Hz:Q", scale=y_scale), detail="EO:N")
 )
 
 # Engine order text labels near right edge
@@ -150,41 +133,35 @@ modes_chart = (
     )
 )
 
-# Critical speed markers — highlight those in operating range with larger size
-critical_outside = df_critical[~df_critical["InOpRange"]]
-critical_inside = df_critical[df_critical["InOpRange"]]
-
+# Critical speed markers — size-differentiated for operating range emphasis
 crit_outside_chart = (
-    alt.Chart(critical_outside)
+    alt.Chart(df_critical[~df_critical["InOpRange"]])
     .mark_point(size=200, shape="diamond", filled=True, color="#D62728", stroke="white", strokeWidth=1.5)
     .encode(x=alt.X("RPM:Q", scale=x_scale), y=alt.Y("Hz:Q", scale=y_scale), tooltip=["Label:N", "RPM:Q", "Hz:Q"])
 )
 
 crit_inside_chart = (
-    alt.Chart(critical_inside)
+    alt.Chart(df_critical[df_critical["InOpRange"]])
     .mark_point(size=380, shape="diamond", filled=True, color="#D62728", stroke="white", strokeWidth=2.5)
     .encode(x=alt.X("RPM:Q", scale=x_scale), y=alt.Y("Hz:Q", scale=y_scale), tooltip=["Label:N", "RPM:Q", "Hz:Q"])
 )
 
-# Annotations for key critical speeds
-annotation_layers = []
+# Annotations for key critical speeds — single consolidated layer per offset group
+annot_layers = []
 for _, row in df_annot.iterrows():
-    single = pd.DataFrame([row])
-    layer = (
-        alt.Chart(single)
+    annot_layers.append(
+        alt.Chart(pd.DataFrame([row]))
         .mark_text(fontSize=13, color="#8B0000", fontWeight="bold", align="left", dx=row["dx"], dy=row["dy"])
-        .encode(x=alt.X("RPM:Q", scale=x_scale), y=alt.Y("Hz:Q", scale=y_scale), text=alt.Text("Label:N"))
+        .encode(x=alt.X("RPM:Q", scale=x_scale), y=alt.Y("Hz:Q", scale=y_scale), text="Label:N")
     )
-    annotation_layers.append(layer)
 
 # Compose chart
 combined = op_band + eo_chart + modes_chart + crit_outside_chart + crit_inside_chart + eo_label_chart + op_label
-for layer in annotation_layers:
+for layer in annot_layers:
     combined = combined + layer
 
 chart = (
-    combined.resolve_scale(color="independent")
-    .properties(
+    combined.properties(
         width=1600,
         height=900,
         title=alt.Title(
@@ -212,7 +189,7 @@ chart = (
         tickSize=6,
     )
     .configure_view(strokeWidth=0)
-    .configure_legend(orient="right", padding=8, offset=4, titlePadding=6, rowPadding=2, columnPadding=4)
+    .configure_legend(orient="right", padding=6, offset=2, titlePadding=4, rowPadding=2)
     .configure_title(anchor="start", offset=10)
 )
 

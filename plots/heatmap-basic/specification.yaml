@@ -6,7 +6,7 @@ title: Basic Heatmap
 
 # Specification tracking
 created: 2025-12-14T09:02:34Z
-updated: 2025-12-14T09:02:34Z
+updated: 2026-02-15T12:00:00Z
 issue: 691
 suggested: MarkusNeusinger
 
@@ -18,6 +18,7 @@ tags:
   data_type:
     - numeric
     - categorical
+    - matrix
   domain:
     - statistics
     - general

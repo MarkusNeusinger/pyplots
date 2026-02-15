@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bubble-basic: Basic Bubble Chart
-Library: highcharts unknown | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: highcharts 1.10.3 | Python 3.14
+Quality: /100 | Updated: 2026-02-15
 """
 
 import tempfile
@@ -106,7 +106,12 @@ z_scaled = 20 + (market_cap - min_cap) / (max_cap - min_cap) * 80
 
 # Format data for Highcharts bubble chart
 bubble_data = [
-    {"x": float(revenue[i]), "y": float(growth[i]), "z": float(z_scaled[i]), "marketCap": float(market_cap[i])}
+    {
+        "x": round(float(revenue[i]), 1),
+        "y": round(float(growth[i]), 1),
+        "z": round(float(z_scaled[i]), 1),
+        "marketCap": round(float(market_cap[i]), 0),
+    }
     for i in range(n)
 ]
 
@@ -119,15 +124,15 @@ chart.options.chart = {
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
-    "plotBorderWidth": 1,
-    "plotBorderColor": "#cccccc",
-    "spacingBottom": 120,
-    "spacingRight": 100,
+    "marginBottom": 320,
+    "marginLeft": 250,
+    "spacingTop": 50,
+    "spacingRight": 380,
 }
 
 chart.options.title = {
-    "text": "bubble-basic · highcharts · pyplots.ai",
-    "style": {"fontSize": "64px", "fontWeight": "bold"},
+    "text": "bubble-basic \u00b7 highcharts \u00b7 pyplots.ai",
+    "style": {"fontSize": "60px", "fontWeight": "bold", "color": "#333333"},
 }
 
 chart.options.subtitle = {
@@ -136,37 +141,42 @@ chart.options.subtitle = {
 }
 
 chart.options.x_axis = {
-    "title": {"text": "Revenue (Billion USD)", "style": {"fontSize": "48px"}, "margin": 30},
-    "labels": {"style": {"fontSize": "36px"}},
+    "title": {"text": "Revenue (Billion USD)", "style": {"fontSize": "44px", "color": "#444444"}, "margin": 30},
+    "labels": {"style": {"fontSize": "36px", "color": "#555555"}},
     "gridLineWidth": 1,
-    "gridLineColor": "#e6e6e6",
+    "gridLineColor": "rgba(0, 0, 0, 0.08)",
+    "lineColor": "#cccccc",
+    "tickColor": "#cccccc",
     "min": 0,
+    "tickInterval": 100,
 }
 
 chart.options.y_axis = {
-    "title": {"text": "Growth Rate (%)", "style": {"fontSize": "48px"}},
-    "labels": {"style": {"fontSize": "36px"}},
+    "title": {"text": "Growth Rate (%)", "style": {"fontSize": "44px", "color": "#444444"}, "margin": 30},
+    "labels": {"style": {"fontSize": "36px", "color": "#555555"}},
     "gridLineWidth": 1,
-    "gridLineColor": "#e6e6e6",
+    "gridLineColor": "rgba(0, 0, 0, 0.08)",
+    "lineColor": "#cccccc",
     "min": 0,
+    "tickInterval": 5,
 }
 
 chart.options.legend = {
     "enabled": True,
-    "itemStyle": {"fontSize": "36px"},
+    "align": "right",
+    "verticalAlign": "middle",
+    "layout": "vertical",
+    "itemStyle": {"fontSize": "34px", "color": "#444444"},
     "bubbleLegend": {
         "enabled": True,
         "borderColor": "#306998",
         "borderWidth": 2,
         "color": "rgba(48, 105, 152, 0.5)",
         "connectorColor": "#306998",
-        "labels": {"style": {"fontSize": "28px"}},
-        "legendIndex": 0,
-        "ranges": [
-            {"value": 20, "borderColor": "#306998", "color": "rgba(48, 105, 152, 0.5)"},
-            {"value": 60, "borderColor": "#306998", "color": "rgba(48, 105, 152, 0.5)"},
-            {"value": 100, "borderColor": "#306998", "color": "rgba(48, 105, 152, 0.5)"},
-        ],
+        "connectorWidth": 2,
+        "labels": {"style": {"fontSize": "30px", "color": "#555555"}},
+        "minSize": 40,
+        "maxSize": 140,
     },
 }
 
@@ -181,10 +191,10 @@ chart.options.tooltip = {
 
 chart.options.plot_options = {
     "bubble": {
-        "minSize": 50,
-        "maxSize": 200,
-        "color": "#306998",
-        "marker": {"fillOpacity": 0.6, "lineWidth": 3, "lineColor": "#1e4f7a"},
+        "minSize": 40,
+        "maxSize": 180,
+        "color": "rgba(48, 105, 152, 0.6)",
+        "marker": {"lineWidth": 3, "lineColor": "#1e4f7a"},
         "dataLabels": {"enabled": False},
         "sizeBy": "area",
     }
@@ -194,7 +204,7 @@ chart.options.plot_options = {
 series = BubbleSeries()
 series.name = "Market Cap"
 series.data = bubble_data
-series.color = "#306998"
+series.color = "rgba(48, 105, 152, 0.6)"
 
 chart.add_series(series)
 

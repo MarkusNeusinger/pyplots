@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 heatmap-basic: Basic Heatmap
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: /100 | Updated: 2026-02-15
+Quality: 70/100 | Updated: 2026-02-15
 """
 
 import sys

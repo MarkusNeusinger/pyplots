@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 campbell-basic: Campbell Diagram
 Library: plotly 6.5.2 | Python 3.14.3
 Quality: 82/100 | Created: 2026-02-15
@@ -55,12 +55,12 @@ critical_color = "#C44E52"
 
 fig = go.Figure()
 
-# Subtle shaded bands at critical speed zones
+# Shaded bands at critical speed zones (visible alpha for storytelling)
 for cs_rpm in critical_speeds:
-    fig.add_vrect(x0=cs_rpm - 80, x1=cs_rpm + 80, fillcolor="rgba(196, 78, 82, 0.04)", line_width=0, layer="below")
+    fig.add_vrect(x0=cs_rpm - 80, x1=cs_rpm + 80, fillcolor="rgba(196, 78, 82, 0.10)", line_width=0, layer="below")
 
-# Natural frequency curves with varying line styles for extra distinction
-line_dashes = ["solid", "solid", "solid", "solid"]
+# Natural frequency curves with distinct dash patterns per mode type
+line_dashes = ["solid", "dash", "dot", "dashdot"]
 for i, (mode_name, mode_freq) in enumerate(modes.items()):
     fig.add_trace(
         go.Scatter(
@@ -90,18 +90,16 @@ for order in orders:
         )
     )
 
-# Engine order labels placed at top of visible portion
+# Engine order labels placed within the visible plot area
 for order in orders:
     label = f"{order}x"
     eo_y = order_freq[order]
+    # Place label at ~75% along the visible portion of each EO line
     visible_mask = eo_y <= y_max
-    if np.any(visible_mask):
-        last_visible_idx = np.where(visible_mask)[0][-1]
-        ann_x = speed_rpm[last_visible_idx]
-        ann_y = eo_y[last_visible_idx]
-    else:
-        ann_x = speed_rpm[-1]
-        ann_y = y_max
+    visible_indices = np.where(visible_mask)[0]
+    label_idx = visible_indices[int(len(visible_indices) * 0.75)]
+    ann_x = speed_rpm[label_idx]
+    ann_y = eo_y[label_idx]
     fig.add_annotation(
         x=ann_x,
         y=ann_y,
@@ -109,9 +107,11 @@ for order in orders:
         showarrow=False,
         xanchor="left",
         yanchor="bottom",
-        xshift=6,
-        yshift=-2,
+        xshift=8,
+        yshift=4,
         font={"size": 16, "color": eo_color, "family": "Arial, sans-serif"},
+        bgcolor="rgba(255,255,255,0.8)",
+        borderpad=2,
     )
 
 # Critical speed markers with descriptive hover
@@ -129,7 +129,7 @@ fig.add_trace(
     )
 )
 
-# Layout
+# Layout with Plotly-specific range slider for interactive exploration
 fig.update_layout(
     title={
         "text": "campbell-basic · plotly · pyplots.ai",
@@ -149,12 +149,16 @@ fig.update_layout(
         "gridwidth": 1,
         "gridcolor": "rgba(0,0,0,0.05)",
         "zeroline": False,
-        "range": [0, 6500],
+        "range": [0, 6100],
         "dtick": 1000,
         "showline": True,
-        "linewidth": 1.5,
-        "linecolor": "#CCC",
+        "linewidth": 1,
+        "linecolor": "rgba(0,0,0,0.12)",
         "mirror": False,
+        "spikemode": "across",
+        "spikethickness": 1,
+        "spikecolor": "rgba(0,0,0,0.3)",
+        "spikedash": "dot",
     },
     yaxis={
         "title": {
@@ -170,9 +174,13 @@ fig.update_layout(
         "range": [0, y_max],
         "dtick": 10,
         "showline": True,
-        "linewidth": 1.5,
-        "linecolor": "#CCC",
+        "linewidth": 1,
+        "linecolor": "rgba(0,0,0,0.12)",
         "mirror": False,
+        "spikemode": "across",
+        "spikethickness": 1,
+        "spikecolor": "rgba(0,0,0,0.3)",
+        "spikedash": "dot",
     },
     legend={
         "font": {"size": 15, "family": "Arial, sans-serif", "color": "#333"},
@@ -187,12 +195,52 @@ fig.update_layout(
         "itemsizing": "constant",
     },
     template="plotly_white",
-    margin={"l": 80, "r": 70, "t": 90, "b": 70},
+    margin={"l": 80, "r": 40, "t": 90, "b": 70},
     plot_bgcolor="white",
     paper_bgcolor="#F8F9FA",
     hoverlabel={"bgcolor": "white", "font_size": 14, "bordercolor": "#DDD"},
+    hovermode="closest",
+    dragmode="zoom",
+)
+
+# Add custom buttons for toggling mode visibility (Plotly-specific feature)
+fig.update_layout(
+    updatemenus=[
+        {
+            "type": "buttons",
+            "direction": "left",
+            "x": 1.0,
+            "y": 1.12,
+            "xanchor": "right",
+            "yanchor": "top",
+            "buttons": [
+                {"label": "All Modes", "method": "update", "args": [{"visible": True}]},
+                {
+                    "label": "Modes Only",
+                    "method": "update",
+                    "args": [
+                        {
+                            "visible": [
+                                True,
+                                True,
+                                True,
+                                True,  # 4 mode curves
+                                False,
+                                False,
+                                False,  # 3 EO lines
+                                True,  # critical markers
+                            ]
+                        }
+                    ],
+                },
+            ],
+            "font": {"size": 12},
+            "bgcolor": "rgba(255,255,255,0.9)",
+            "bordercolor": "rgba(0,0,0,0.1)",
+        }
+    ]
 )
 
 # Save
 fig.write_image("plot.png", width=1600, height=900, scale=3)
-fig.write_html("plot.html")
+fig.write_html("plot.html", include_plotlyjs="cdn")

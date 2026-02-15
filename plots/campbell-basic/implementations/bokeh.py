@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 campbell-basic: Campbell Diagram
 Library: bokeh 3.8.2 | Python 3.14.3
-Quality: 80/100 | Created: 2026-02-15
+Quality: 86/100 | Created: 2026-02-15
 """
 
 import numpy as np

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 campbell-basic: Campbell Diagram
 Library: letsplot 4.8.2 | Python 3.14.3
 Quality: 86/100 | Created: 2026-02-15
@@ -31,29 +31,30 @@ modes_df = pd.DataFrame(
     {
         "Speed": np.tile(speed_rpm, 4),
         "Frequency": np.concatenate(mode_data),
-        "Series": np.repeat(mode_names, len(speed_rpm)),
+        "Mode": np.repeat(mode_names, len(speed_rpm)),
     }
 )
 
 # Engine order lines: frequency = order * speed_rpm / 60
-# Clip to max_freq range for cleaner display
 orders = [1, 2, 3]
 order_labels = ["1×", "2×", "3×"]
 
 eo_rows = []
-for order, label in zip(orders, order_labels):
+for order, label in zip(orders, order_labels, strict=True):
     max_speed_for_order = min(6000, max_freq * 60 / order)
-    eo_speed = np.array([0, max_speed_for_order])
+    eo_speed = np.linspace(0, max_speed_for_order, 80)
     eo_freq = order * eo_speed / 60
-    eo_rows.append(pd.DataFrame({"Speed": eo_speed, "Frequency": eo_freq, "Series": label}))
-eo_df = pd.concat(eo_rows, ignore_index=True)
+    for s, f in zip(eo_speed, eo_freq, strict=True):
+        eo_rows.append({"Speed": s, "Frequency": f, "Engine Order": label, "order_num": order})
+eo_df = pd.DataFrame(eo_rows)
 
 # Find critical speed intersections (where EO lines cross mode curves)
 critical_speeds = []
 critical_freqs = []
-for order in orders:
+critical_labels = []
+for order, olabel in zip(orders, order_labels, strict=True):
     eo_freq_at_speeds = order * speed_rpm / 60
-    for mode_freq in mode_data:
+    for mode_freq, mname in zip(mode_data, mode_names, strict=True):
         diff = eo_freq_at_speeds - mode_freq
         sign_changes = np.where(np.diff(np.sign(diff)))[0]
         for idx in sign_changes:
@@ -63,54 +64,99 @@ for order in orders:
             if crit_freq <= max_freq:
                 critical_speeds.append(crit_speed)
                 critical_freqs.append(crit_freq)
+                critical_labels.append(f"{mname} × {olabel}")
 
-crit_df = pd.DataFrame({"Speed": critical_speeds, "Frequency": critical_freqs})
+crit_df = pd.DataFrame({"Speed": critical_speeds, "Frequency": critical_freqs, "Intersection": critical_labels})
 
 # EO label positions (near the end of each EO line, offset slightly)
 eo_label_rows = []
-for order, label in zip(orders, order_labels):
-    label_speed = min(5600, (max_freq - 3) * 60 / order)
-    label_freq = order * label_speed / 60 + 2
+for order, label in zip(orders, order_labels, strict=True):
+    label_speed = min(5600, (max_freq - 5) * 60 / order)
+    label_freq = order * label_speed / 60 + 2.5
     eo_label_rows.append({"Speed": label_speed, "Frequency": label_freq, "Label": label})
 eo_label_df = pd.DataFrame(eo_label_rows)
 
-# Color palette
-mode_colors = ["#306998", "#2CA02C", "#8C564B", "#7F7F7F"]
-eo_color = "#B0B0B0"
+# Colorblind-safe palette: blue, orange, teal, purple (avoids green-brown confusion)
+mode_colors = ["#306998", "#E67E22", "#17A589", "#8E44AD"]
+# Build highlight zones around critical speeds using geom_rect
+zone_rows = []
+for spd, frq in zip(critical_speeds, critical_freqs, strict=True):
+    zone_rows.append({"xmin": spd - 120, "xmax": spd + 120, "ymin": frq - 2.5, "ymax": frq + 2.5})
+zone_df = pd.DataFrame(zone_rows)
 
 # Plot
 plot = (
     ggplot()
-    + geom_line(data=modes_df, mapping=aes(x="Speed", y="Frequency", color="Series"), size=2.5)
-    + geom_line(
-        data=eo_df, mapping=aes(x="Speed", y="Frequency", group="Series"), color=eo_color, size=1.0, linetype="dashed"
+    # Subtle highlight zones around critical speed intersections
+    + geom_rect(
+        data=zone_df,
+        mapping=aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax"),
+        fill="#D62728",
+        alpha=0.08,
+        color="transparent",
     )
-    + geom_point(data=crit_df, mapping=aes(x="Speed", y="Frequency"), color="#D62728", fill="#D62728", size=6, shape=18)
+    # Engine order lines as mapped aesthetics so they appear in legend
+    + geom_line(
+        data=eo_df,
+        mapping=aes(x="Speed", y="Frequency", group="Engine Order"),
+        color="#AAAAAA",
+        size=0.8,
+        linetype="dashed",
+    )
+    # Natural frequency mode curves with interactive tooltips
+    + geom_line(
+        data=modes_df,
+        mapping=aes(x="Speed", y="Frequency", color="Mode"),
+        size=2.5,
+        tooltips=layer_tooltips()
+        .line("@{Mode}")
+        .line("Speed|@{Speed} RPM")
+        .line("Freq|@{Frequency} Hz")
+        .format("Speed", ",.0f")
+        .format("Frequency", ".1f"),
+    )
+    # Critical speed intersection markers with rich tooltips
+    + geom_point(
+        data=crit_df,
+        mapping=aes(x="Speed", y="Frequency"),
+        color="#D62728",
+        fill="#D62728",
+        size=8,
+        shape=18,
+        tooltips=layer_tooltips()
+        .title("Critical Speed")
+        .line("@{Intersection}")
+        .line("Speed|@{Speed} RPM")
+        .line("Freq|@{Frequency} Hz")
+        .format("Speed", ",.0f")
+        .format("Frequency", ".1f"),
+    )
+    # Engine order labels
     + geom_text(
         data=eo_label_df,
         mapping=aes(x="Speed", y="Frequency", label="Label"),
-        color="#888888",
-        size=14,
+        color="#666666",
+        size=15,
         fontface="bold",
     )
     + scale_color_manual(values=mode_colors)
-    + scale_y_continuous(limits=[0, max_freq])
-    + scale_x_continuous(limits=[0, 6000])
+    + scale_y_continuous(limits=[0, max_freq], expand=[0, 2])
+    + scale_x_continuous(limits=[0, 6200], format=",d")
     + labs(
         title="campbell-basic · letsplot · pyplots.ai",
         x="Rotational Speed (RPM)",
         y="Frequency (Hz)",
         color="Mode Shape",
     )
-    + theme_minimal()
+    + flavor_high_contrast_light()
     + theme(
-        plot_title=element_text(size=28, hjust=0.5),
+        plot_title=element_text(size=28, hjust=0.5, face="bold"),
         axis_title=element_text(size=22),
         axis_text=element_text(size=18),
-        legend_title=element_text(size=20),
+        legend_title=element_text(size=20, face="bold"),
         legend_text=element_text(size=18),
         legend_position="right",
-        panel_grid_major=element_line(color="#E0E0E0", size=0.4),
+        panel_grid_major=element_line(color="#E8E8E8", size=0.3),
         panel_grid_minor=element_blank(),
     )
     + ggsize(1600, 900)

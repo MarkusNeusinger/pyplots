@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: campbell-basic
 created: '2026-02-15T21:08:58Z'
-updated: '2026-02-15T21:23:06Z'
+updated: '2026-02-15T21:32:06Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22043026984
 issue: 4241
@@ -10,40 +10,42 @@ library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/letsplot/plot.html
-quality_score: 83
+quality_score: 86
 review:
   strengths:
-  - 'Excellent spec compliance: all required Campbell Diagram elements (mode curves,
-    EO lines, critical speed markers, highlight zones) are present and correctly implemented'
-  - Strong colorblind-safe palette with good contrast between all four mode curves
-  - Rich use of lets-plot tooltips with formatted speed/frequency values and intersection
-    labels
-  - Realistic rotordynamics data with physically plausible gyroscopic effects on mode
-    frequencies
-  - Clean font sizing with all text explicitly set to readable sizes
+  - 'Complete spec compliance with all required elements: 5 labeled mode curves, 3
+    labeled EO lines, critical speed markers, and highlight zones'
+  - 'Strong visual hierarchy: bold colored mode lines clearly distinguished from light
+    gray dashed EO lines; red diamonds draw immediate attention to resonance points'
+  - 'Effective use of lets-plot distinctive features: layer_tooltips() with rich formatting
+    for both mode curves and critical speed markers, flavor_high_contrast_light()
+    for professional appearance'
+  - Descriptive subtitle provides context about what the critical speed markers represent,
+    aiding data storytelling
+  - Realistic rotordynamic data with proper mode names, appropriate frequency ranges,
+    and physically plausible gyroscopic effects
   weaknesses:
-  - Layout wastes space on the right side near the legend; canvas utilization could
-    be improved by adjusting legend placement or axis limits
-  - Engine order lines are not included in the legend, missing the spec's request
-    for a clean legend distinguishing natural frequency curves from engine order lines
-  - 'Visual refinement could be improved: consider removing or minimizing axis spines,
-    adding more whitespace, or using a cleaner background'
-  - Data storytelling is limited — critical speed intersections could benefit from
-    annotations or a subtitle explaining their engineering significance
-  - Only 4 modes shown when spec suggests 4-5; adding a 5th mode would demonstrate
-    fuller feature coverage
-  image_description: 'The plot displays a Campbell Diagram with four natural frequency
-    mode curves plotted against rotational speed (0–6,000 RPM) on the x-axis and frequency
-    (0–115 Hz) on the y-axis. The mode curves are: 1st Bending (blue, ~25 Hz, rising
-    slightly), 1st Torsional (orange, ~48 Hz, decreasing slightly), 2nd Bending (teal,
-    ~72 Hz, rising), and Axial (purple, ~95 Hz, nearly flat with slight decrease).
-    Three gray dashed diagonal engine order lines (1×, 2×, 3×) extend from the origin,
-    with bold gray labels near their upper ends. Red diamond markers highlight critical
-    speed intersections where EO lines cross mode curves. Subtle pink/red rectangular
-    highlight zones surround each intersection point. The legend on the right shows
-    "Mode Shape" with all four modes. The title "campbell-basic · letsplot · pyplots.ai"
-    is centered and bold at the top. The layout is clean with a light gray grid, white
-    background, and good overall proportions.'
+  - 'The 2nd Torsional (red #C0392B) and 1st Torsional (orange #E67E22) could be difficult
+    to distinguish for deuteranopia viewers; a blue-purple-teal-yellow-gray palette
+    would be more universally accessible'
+  - Legend placement in bottom-right data area causes minor visual crowding near the
+    lower mode curves and the 1x EO label
+  - The intersection-finding code is verbose; the multiple DataFrame constructions
+    add code complexity that slightly reduces elegance
+  image_description: 'The plot displays a Campbell Diagram with five natural frequency
+    mode curves plotted against rotational speed (0-6,000 RPM) on the x-axis and frequency
+    (0-120 Hz) on the y-axis. The five modes are: 1st Bending (blue, ~25 Hz, rising
+    slightly), 1st Torsional (orange, ~48 Hz, decreasing slightly), 2nd Bending (teal/green,
+    ~72 Hz, rising), 2nd Torsional (red, ~88 Hz, rising slightly), and Axial (purple,
+    ~105 Hz, decreasing slightly). Three gray dashed engine order lines (1x, 2x, 3x)
+    extend diagonally from the origin with increasing slope. Red diamond markers clearly
+    indicate critical speed intersections where EO lines cross mode curves. Subtle
+    pink/red rectangular highlight zones surround each intersection point. The legend
+    is positioned in the bottom-right corner with two sections: Engine Order (dashed
+    lines) and Natural Frequency (colored solid lines). The title reads "campbell-basic
+    · letsplot · pyplots.ai" in bold, with a descriptive subtitle explaining the red
+    diamonds. The overall layout is clean with a light background, subtle gray gridlines,
+    and good use of color contrast between bold mode lines and light EO lines.'
   criteria_checklist:
     visual_quality:
       score: 26
@@ -54,69 +56,68 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title=28, axis_title=22, axis_text=18,
-          legend_title=20, legend_text=18'
+        comment: 'All font sizes explicitly set: title=28, subtitle=16, axis_title=22,
+          axis_text=18, legend_title=18, legend_text=16'
       - id: VQ-02
         name: No Overlap
-        score: 6
-        max: 6
-        passed: true
-        comment: No overlapping text elements anywhere
-      - id: VQ-03
-        name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Mode curves visible at size=2.5, critical markers at size=8. Lower
-          modes could use slightly more weight
+        comment: Minor overlap risk between 1x EO label and legend area; otherwise
+          clean
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 6
+        passed: true
+        comment: Mode lines at size=2.5 are clear; diamond markers at size=8 are prominent
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: 'Colorblind-safe palette: blue, orange, teal, purple with no red-green
-          confusion'
+        comment: Good palette avoids pure red-green pairing, but 2nd Torsional (red)
+          and 1st Torsional (orange) may be hard for deuteranopia viewers
       - id: VQ-05
-        name: Layout & Canvas
-        score: 2
+        name: Layout Balance
+        score: 3
         max: 4
-        passed: false
-        comment: Wasted space near legend on right side; x-axis extends beyond data
-          range to 6500
+        passed: true
+        comment: Good proportions; legend in data area takes some space but does not
+          severely obscure data
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: Rotational Speed (RPM) and Frequency
-          (Hz)'
+        comment: Rotational Speed (RPM) and Frequency (Hz) with proper units
     design_excellence:
-      score: 12
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom palette, high-contrast-light flavor, styled EO labels. Above
-          defaults but not publication-grade
+        comment: Custom palette, flavor_high_contrast_light(), intentional hierarchy
+          with bold mode lines vs light dashed EO lines, red highlight zones
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Subtle grid styling, minor grid removed. Could improve with spine
-          removal and whitespace tuning
+        comment: Subtle grid (light gray, 0.3), minor grid removed, clean axis lines,
+          legend with border
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Red highlight zones and diamond markers create focal points at critical
-          speeds, but no textual explanation
+        comment: Subtitle explains what to look for; red diamonds and highlight zones
+          create focal points; color weight contrast guides interpretation
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -124,26 +125,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct Campbell Diagram with mode curves and engine order lines
+        comment: Correct Campbell Diagram with frequency curves overlaid with EO excitation
+          lines
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: mode curves, EO lines, critical speed markers,
-          highlight zones, labels'
+        comment: 'All spec features present: 5 labeled modes, 3 labeled EO lines,
+          critical speed markers, highlight zones, dual-section legend'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=RPM, Y=Hz correctly mapped
+        comment: X=RPM, Y=Hz correctly assigned; EO lines computed as order*speed/60
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
-        passed: false
-        comment: Title format correct but EO lines not in legend as spec suggests
+        passed: true
+        comment: Title format correct; legend separates Engine Order and Natural Frequency
+          with correct labels
     data_quality:
       score: 14
       max: 15
@@ -153,22 +156,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: 4 modes with realistic behaviors, 3 engine orders, multiple intersections.
-          Spec suggests 4-5 modes
+        comment: Shows 5 modes with realistic speed-dependent variation, multiple
+          intersection types; could show more dramatic variation
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Authentic rotordynamics scenario with plausible mode names and frequency
-          ranges
+        comment: Authentic rotordynamic scenario with proper mode names and realistic
+          frequency ranges
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 'Realistic values: 0-6000 RPM, 25-95 Hz base frequencies, appropriate
-          gyroscopic slopes'
+        comment: Frequencies 25-105 Hz and 0-6000 RPM are realistic for industrial
+          rotating equipment
     code_quality:
       score: 9
       max: 10
@@ -178,32 +181,32 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear structure: imports, data, plot, save'
+        comment: 'Linear flow: imports, data, plot, save with no functions/classes'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) set at top
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only numpy, pandas, lets_plot imported
+        comment: Only numpy, pandas, lets_plot used
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
-        passed: false
-        comment: Verbose loop-based DataFrame construction; strict=True in zip overly
-          cautious
+        passed: true
+        comment: Well-structured but verbose intersection-finding logic and multiple
+          DataFrames
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with scale=3
+        comment: Saves plot.png with scale=3 and plot.html
     library_mastery:
       score: 8
       max: 10
@@ -213,16 +216,16 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Proper ggplot grammar with aes, geom layers, scales, themes, ggsize,
-          ggsave
+        comment: Expert grammar-of-graphics layering, scale_manual, guides with override_aes,
+          flavor themes
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses flavor_high_contrast_light(), layer_tooltips() with rich formatting,
-          HTML export
-  verdict: REJECTED
+        comment: Uses lets-plot-specific layer_tooltips() with formatted fields and
+          .title(), flavor_high_contrast_light() theme; HTML export
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
@@ -233,9 +236,7 @@ impl_tags:
   patterns:
   - data-generation
   - iteration-over-groups
-  - wide-to-long
   dataprep:
   - interpolation
   styling:
   - grid-styling
-  - alpha-blending

@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: campbell-basic
 created: '2026-02-15T21:08:00Z'
-updated: '2026-02-15T21:23:35Z'
+updated: '2026-02-15T21:30:55Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22043026955
 issue: 4241
@@ -10,40 +10,42 @@ library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 85
+quality_score: 86
 review:
   strengths:
-  - Colorblind-safe custom palette with strong color differentiation across all four
-    modes
-  - Critical speed intersection calculation using sign-change interpolation is mathematically
-    sound
-  - 1127 RPM annotation creates effective data storytelling with a clear focal point
-  - Clean legend design consolidating 3 engine order lines into one entry
-  - Idiomatic plotnine grammar-of-graphics composition with proper aes mapping and
-    scale layering
+  - 'Excellent spec compliance: all required Campbell Diagram features are present
+    (5 modes, 3 EO lines, critical speed markers, labels, legend)'
+  - Strong colorblind-safe palette with good color choices that are easily distinguishable
+  - Effective data storytelling with the 1127 RPM critical speed annotation highlighting
+    the most significant resonance
+  - Realistic rotordynamic data with proper mode names and physically plausible frequency
+    behavior
+  - Expert use of plotnine grammar of graphics with proper layering, scale mappings,
+    and theme customization
   weaknesses:
-  - Right-edge mode labels push x-axis to 7200 creating asymmetric layout; consider
-    positioning labels within the plot area or using a secondary legend
-  - Engine order labels (3x, 2x) partially overlap with mode lines making them hard
-    to read
-  - Legend title suppression uses a hack (size=1, white color) rather than a clean
-    approach
-  - Only 4 modes when spec suggests 4-5; adding a 5th mode would improve feature coverage
-  image_description: 'The plot displays a Campbell Diagram for rotating machinery
-    analysis. Four natural frequency mode curves are drawn as thick solid lines: 1st
-    Bending (dark blue, ~18-23 Hz), 2nd Bending (amber/gold, ~42-39 Hz declining),
-    1st Torsional (purple, ~65-72 Hz rising), and Axial (teal/green, ~88-90 Hz nearly
-    flat). Three gray dashed engine order lines (1x, 2x, 3x) radiate from the origin
-    with increasing slopes. Red diamond markers with pink fill highlight critical
-    speed intersections where engine order lines cross natural frequency curves (~10
-    intersection points visible). Mode names are labeled in bold matching colors at
-    the right edge of the plot. Engine order labels (1x, 2x, 3x) appear in gray italic
-    along each diagonal line. A dotted red vertical line drops from the 1x/1st Bending
-    intersection down to the x-axis with an annotation reading "1127 RPM" in red italic,
-    highlighting the most operationally significant critical speed. The background
-    is light gray (#FAFAFA) with subtle grid lines. A horizontal legend at the bottom
-    lists all four modes with colored solid line swatches plus one dashed gray "Engine
-    Order (1x, 2x, 3x)" entry.'
+  - 'Layout has some wasted vertical space: Y-axis range extends to -5 Hz mainly for
+    one annotation, leaving dead space below 0'
+  - Legend at bottom is functional but could be more compact or integrated (e.g.,
+    direct labels on curves)
+  - Critical speed markers cluster in the lower-left region where multiple EO lines
+    converge with 1st Bending mode
+  - Code complexity around legend construction (breaks/labels mapping) is somewhat
+    verbose for a KISS script
+  image_description: 'The plot displays a Campbell Diagram plotting natural frequency
+    (Hz) on the Y-axis against rotational speed (RPM) on the X-axis, ranging from
+    0-6000 RPM and 0-110 Hz. Five solid-colored natural frequency mode curves are
+    shown: 1st Bending (blue, ~18-23 Hz, slightly increasing), 2nd Bending (amber/yellow,
+    ~42-39 Hz, slightly decreasing), 1st Torsional (purple, ~55-62 Hz, increasing),
+    2nd Torsional (orange, ~72-76 Hz, slightly increasing), and Axial (teal/green,
+    ~88-90 Hz, nearly flat). Three dashed gray engine order lines (1x, 2x, 3x) radiate
+    from the origin with increasing slopes, labeled in bold italic text along the
+    lines. Red diamond markers highlight approximately 10+ critical speed intersections
+    where engine order lines cross natural frequency curves. A dotted vertical red
+    line at approximately 1127 RPM with a red italic label annotates the most significant
+    critical speed (1x crossing 1st Bending). The title "campbell-basic · plotnine
+    · pyplots.ai" is centered and bold at the top. A horizontal legend at the bottom
+    lists all five modes and a consolidated "Engine Order (1x, 2x, 3x)" entry in a
+    white-bordered box. The background is light gray (#FAFAFA) with subtle major gridlines.'
   criteria_checklist:
     visual_quality:
       score: 26
@@ -54,42 +56,42 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 24pt, axis titles 20pt bold,
+        comment: 'All font sizes explicitly set: title 24pt, axis labels 20pt bold,
           tick labels 16pt, legend 14pt'
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
-        passed: false
-        comment: 3x engine order label partially overlaps with Axial mode line near
-          1300 RPM
+        passed: true
+        comment: 'Very minor near-overlap: 3x label approaches upper boundary; some
+          critical speed marker clustering in lower-left'
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
-        passed: false
-        comment: Lines thick at 1.8, diamond markers visible. Engine order labels
-          slightly faint against gray dashed lines
+        passed: true
+        comment: Lines thick at 1.8, diamond markers visible at size 5. Some marker
+          clustering near origin
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: 'Colorblind-safe palette: blue, amber, purple, teal. No red-green
-          distinction issues'
+        comment: 'Excellent colorblind-safe palette close to Wong palette: blue, amber,
+          purple, vermilion, green'
       - id: VQ-05
         name: Layout Balance
         score: 2
         max: 4
         passed: false
-        comment: x-axis extended to 7200 for right-edge labels creates asymmetric
-          whitespace
+        comment: Negative Y-axis range (-5 to 0) mostly dead space; bottom legend
+          takes vertical space
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Rotational Speed (RPM) and Frequency (Hz) - descriptive with units
+        comment: Rotational Speed (RPM) and Frequency (Hz) with units
     design_excellence:
       score: 14
       max: 20
@@ -99,24 +101,24 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom palette, styled panel, intentional typography hierarchy, solid/dashed
-          distinction
+        comment: Strong design with custom colorblind-safe palette, intentional typography
+          hierarchy, styled panel background
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Minor grid disabled, subtle major grid, panel background customized.
-          Legend title hack inelegant
+        comment: 'Minor grid removed, panel background #FAFAFA, legend styled with
+          border/alpha, axis lines added'
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: 1127 RPM annotation creates focal point. Diamond markers and right-edge
-          labels build visual hierarchy
+        comment: 1127 RPM annotation highlights most significant critical speed; red
+          diamonds create visual hierarchy
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -124,28 +126,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct Campbell diagram with frequency curves, engine order lines,
-          and critical speed markers
+        comment: Correct Campbell Diagram with natural frequency curves and engine
+          order excitation lines
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 4
         max: 4
-        passed: false
-        comment: All major features present. Only 4 modes vs suggested 4-5. Optional
-          zone shading not implemented
+        passed: true
+        comment: 'All spec features: 5 modes, 3 EO lines, critical speed markers,
+          mode labels, EO labels, clean legend'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=Speed (RPM), Y=Frequency (Hz) correctly assigned
+        comment: X=RPM, Y=Hz correctly assigned, all data visible
       - id: SC-04
-        name: Title Format
+        name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: campbell-basic · plotnine · pyplots.ai correct. Legend consolidates
-          EO lines cleanly
+        comment: Title format correct, legend clear with consolidated Engine Order
+          entry
     data_quality:
       score: 14
       max: 15
@@ -154,22 +156,23 @@ review:
         name: Feature Coverage
         score: 5
         max: 6
-        passed: false
-        comment: Shows modes with different speed behaviors. Could show a 5th mode
-          for fuller coverage
+        passed: true
+        comment: Shows 5 modes with varying speed dependence, 3 engine orders, many
+          critical speed intersections
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real rotating machinery scenario with proper mode names
+        comment: Real rotordynamic scenario with proper mode names and realistic frequency
+          ranges
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Frequencies 18-90 Hz, speed 0-6000 RPM - realistic turbomachinery
-          values
+        comment: 'Realistic: 0-6000 RPM, 18-90 Hz frequencies, appropriate gyroscopic
+          effects'
     code_quality:
       score: 9
       max: 10
@@ -179,7 +182,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, plot, save. No functions or classes'
+        comment: Linear imports-data-plot-save structure, no functions/classes
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -196,15 +199,15 @@ review:
         name: Code Elegance
         score: 1
         max: 2
-        passed: false
-        comment: Loop-based record construction verbose. Legend title hidden via size=1/white
-          hack
+        passed: true
+        comment: Clear but somewhat verbose legend construction with breaks/labels
+          mapping
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png, dpi=300
+        comment: Saves as plot.png, no deprecated functions
     library_features:
       score: 8
       max: 10
@@ -214,16 +217,16 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Excellent ggplot grammar: aes mapping, scale_manual, guide_legend,
-          annotate layers, theme composition'
+        comment: 'Expert grammar of graphics: aes mapping, layer composition, scale_color/linetype_manual,
+          guide_legend, annotate'
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses guide_legend override_aes, scale_linetype_manual, annotate segment,
-          element_blank/rect layering
-  verdict: REJECTED
+        comment: Uses ggplot-style layer composition, guide_legend(override_aes),
+          element theming system
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:

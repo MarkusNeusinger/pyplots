@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bubble-basic: Basic Bubble Chart
-Library: bokeh 3.8.2 | Python 3.14
-Quality: /100 | Updated: 2026-02-15
+Library: bokeh 3.8.2 | Python 3.14.3
+Quality: 86/100 | Created: 2026-02-15
 """
 
 import numpy as np

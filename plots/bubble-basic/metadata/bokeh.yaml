@@ -1,29 +1,232 @@
 library: bokeh
 specification_id: bubble-basic
 created: 2025-12-14 11:09:30+00:00
-updated: '2026-02-15T12:00:00+00:00'
+updated: '2026-02-15T21:44:50Z'
 generated_by: claude-opus-4-6
 workflow_run: 20207008979
 issue: 755
-python_version: '3.14.3'
-library_version: '3.8.2'
+python_version: 3.14.3
+library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/bokeh/plot.html
-quality_score: null
+quality_score: 86
 impl_tags:
   dependencies: []
   techniques:
-  - annotations
+  - custom-legend
   - html-export
-  - columndatasource
   patterns:
   - data-generation
-  dataprep: []
+  - columndatasource
+  dataprep:
+  - normalization
   styling:
   - alpha-blending
+  - edge-highlighting
+  - grid-styling
 review:
-  strengths: []
-  weaknesses: []
+  strengths:
+  - Excellent spec compliance — all specification notes addressed (area-based scaling,
+    transparency, size legend)
+  - Clean, professional visual design with subtle grid, removed tick marks, and white
+    edge highlighting on bubbles
+  - Realistic city metrics scenario with plausible data ranges
+  - Dual output (PNG + HTML) leverages Bokeh interactive capability
+  - Well-structured, readable code following KISS principle
+  weaknesses:
+  - Data storytelling is weak — the plot displays data without guiding the viewer
+    to an insight; consider adding visual emphasis (e.g., color gradient for a fourth
+    dimension, highlighted outlier cities, or size-based opacity variation) to create
+    a focal point
+  - The size legend is placed in data coordinate space, which extends the x_range
+    to 13000 and creates empty space in the lower-right quadrant; positioning it outside
+    the data area or using a Bokeh Legend/annotation box would be cleaner
+  - Visual refinement could be improved — axis spines are still visible, and the overall
+    design, while clean, does not reach publication-quality polish
   improvements: []
-  verdict: APPROVED
+  verdict: REJECTED
+  image_description: The plot displays a bubble chart with 40 data points representing
+    cities, plotted on a 4800x2700 canvas. The X-axis shows "Population Density (people/km²)"
+    ranging from 0 to ~12000, and the Y-axis shows "Median Income (thousands USD)"
+    ranging from ~27 to ~65. All bubbles are a muted steel blue (#306998) with ~55%
+    transparency and thin white edge lines, varying in size to represent green space
+    per capita (the third dimension). A clear positive correlation between population
+    density and median income is visible. A manually constructed size legend in the
+    bottom-right data area shows three reference bubbles labeled "Green Space" with
+    values "5 m²/capita" (smallest), "31 m²/capita" (medium), and "56 m²/capita" (largest).
+    The title "bubble-basic · bokeh · pyplots.ai" appears in the top-left corner.
+    Grid lines are subtle (low alpha), tick marks are removed, and the overall appearance
+    is clean and professional.
+  criteria_checklist:
+    visual_quality:
+      score: 29
+      max: 30
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 8
+        max: 8
+        passed: true
+        comment: 'All font sizes explicitly set: title 30pt, axis labels 22pt, tick
+          labels 18pt. All perfectly readable.'
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
+        passed: true
+        comment: No overlapping text elements anywhere in the plot.
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 6
+        passed: true
+        comment: Bubble sizes 25-110px well-adapted for 40 data points with 0.55 alpha.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 4
+        passed: true
+        comment: Single color Python Blue with white edges; no colorblind concerns.
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 3
+        max: 4
+        passed: true
+        comment: 'Plot fills most of the canvas well. Minor issue: x_range extends
+          to 13000 to accommodate size legend in data coordinates, creating some empty
+          space.'
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
+        max: 2
+        passed: true
+        comment: Both axes have descriptive labels with units.
+    design_excellence:
+      score: 11
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: true
+        comment: Python Blue with white edge highlighting, removed tick marks, subtle
+          grid. Clearly above defaults but not publication-level.
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Tick marks removed, subtle grid alpha 0.18, outline removed. Good
+          refinement but spines still present.
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: Displays data without guiding viewer to insight. No visual hierarchy,
+          emphasis, or focal points.
+    spec_compliance:
+      score: 15
+      max: 15
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 5
+        max: 5
+        passed: true
+        comment: Correct bubble chart implementation.
+      - id: SC-02
+        name: Required Features
+        score: 4
+        max: 4
+        passed: true
+        comment: Transparency, size legend, and area-based size scaling all present.
+      - id: SC-03
+        name: Data Mapping
+        score: 3
+        max: 3
+        passed: true
+        comment: X (density), Y (income), size (green space) all correctly assigned.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
+        passed: true
+        comment: Title format correct. Size legend with reference bubbles and labels
+          present.
+    data_quality:
+      score: 14
+      max: 15
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 5
+        max: 6
+        passed: true
+        comment: Good variation in all three dimensions. Could benefit from clusters
+          or outliers.
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 5
+        passed: true
+        comment: City metrics scenario is realistic, neutral, and comprehensible.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: All values realistic for their respective measures.
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Flat script: imports, data, plot, save. No functions or classes.'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 2
+        passed: true
+        comment: np.random.seed(42) set.
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used.
+      - id: CQ-04
+        name: Code Elegance
+        score: 2
+        max: 2
+        passed: true
+        comment: Clean, readable code. Manual legend is necessarily verbose for Bokeh.
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png via export_png.
+    library_mastery:
+      score: 7
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of ColumnDataSource, figure API, scatter, Label, Range1d.
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses ColumnDataSource, Label model, and HTML export. Bokeh-distinctive
+          but not deeply unique.

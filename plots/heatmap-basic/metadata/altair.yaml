@@ -1,7 +1,7 @@
 library: altair
 specification_id: heatmap-basic
 created: '2025-12-23T00:48:16Z'
-updated: '2026-02-15T21:31:02Z'
+updated: '2026-02-15T21:39:54Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447968624
 issue: 0
@@ -10,7 +10,7 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/altair/plot.html
-quality_score: 85
+quality_score: 87
 impl_tags:
   dependencies: []
   techniques:
@@ -28,41 +28,42 @@ impl_tags:
   - edge-highlighting
 review:
   strengths:
-  - Excellent use of Altair declarative API with layer composition (heatmap + text)
-    for annotations
-  - Adaptive text color via alt.when().then().otherwise() conditional encoding — a
-    distinctive Altair 5.x+ feature
-  - Realistic weather correlation data with injected correlations producing meaningful
-    patterns
-  - Clean KISS code structure with appropriate complexity
-  - White cell borders add visual polish and separation
-  - Interactive tooltips and HTML export leverage Altair interactive capabilities
+  - Excellent use of Altair conditional encoding (alt.when().then().otherwise()) for
+    adaptive text color — distinctively Altair feature that enhances readability
+  - Strong-correlation border highlighting (dark borders on |r| >= 0.7) adds meaningful
+    visual hierarchy and guides reader to important relationships
+  - Well-crafted data with realistic injected correlations creating a believable weather
+    scenario with both positive and negative relationships
+  - White cell borders with rounded corners and clean grid-free design create a polished
+    modern look
+  - Informative subtitle contextualizes the data being displayed
   weaknesses:
-  - Color scheme redblue is not ideal for colorblind accessibility — consider switching
-    to blueorange or a perceptually-uniform diverging scheme
-  - Title prepends Weather Metrics Correlation before the required format — should
-    be exactly heatmap-basic · altair · pyplots.ai
-  - Layout has some wasted space especially around the colorbar area on the right
-    side
-  - No explicit visual emphasis or storytelling beyond the diverging color — strongest
-    correlations could be highlighted more prominently
-  - Axis titles are set to None; even for a correlation matrix a subtle axis label
-    or subtitle could provide context
-  image_description: The plot displays an 8x8 correlation heatmap of weather metrics
-    (Temperature, Humidity, Wind Speed, Pressure, Visibility, Cloud Cover, Precipitation,
-    UV Index). A diverging blue-white-red color scheme is used, centered at zero —
-    dark blue represents strong positive correlations (e.g., diagonal = 1.00) and
-    dark red represents strong negative correlations (e.g., Visibility vs Cloud Cover
-    = -0.73). Each cell contains a bold numeric annotation showing the correlation
-    coefficient to two decimal places. Text color adapts — white on saturated cells,
-    dark gray on lighter cells. X-axis labels appear at the top, Y-axis labels on
-    the left. White borders separate cells cleanly. A vertical colorbar on the right
-    labeled "Correlation" ranges from -1.0 to 1.0. The title reads "Weather Metrics
-    Correlation · heatmap-basic · altair · pyplots.ai" at the top-left. The overall
-    layout is square (3600x3600 px).
+  - Canvas utilization could be improved — noticeable empty space around the heatmap,
+    and the colorbar legend floats somewhat isolated to the right
+  - Both axes labeled Weather Variable is redundant — consider differentiating or
+    removing one axis title
+  - Aesthetic sophistication could be elevated with more refined design choices (e.g.,
+    subtle background tint, more intentional spacing) to push DE-01 from 6 to 7-8
+  - Minor label cramping on some angled x-axis labels at the edges
+  image_description: 'The plot displays an 8x8 pairwise Pearson correlation matrix
+    heatmap for weather variables: Temperature, Humidity, Wind Speed, Pressure, Visibility,
+    Cloud Cover, Precipitation, and UV Index. The color scheme uses a blue-orange
+    diverging palette (Altair''s "blueorange") centered at 0, where orange/brown indicates
+    positive correlations and blue indicates negative correlations. Each cell contains
+    a numeric annotation showing the correlation coefficient to two decimal places.
+    Cells with strong correlations (|r| >= 0.7) are highlighted with darker borders.
+    Text color adapts — white on dark cells, dark gray on light cells. The diagonal
+    shows 1.00 values. X-axis labels are positioned at the top at a -30 degree angle;
+    Y-axis labels are on the left. Both axes are labeled "Weather Variable." A vertical
+    color gradient legend labeled "Correlation" appears on the right side ranging
+    from -1.0 to 1.0. The title reads "heatmap-basic · altair · pyplots.ai" with subtitle
+    "Pairwise Pearson correlation coefficients for 8 weather metrics." White cell
+    borders with rounded corners separate the cells. Notable correlations include
+    Cloud Cover and Visibility (-0.77), Cloud Cover and Precipitation (0.63), and
+    Humidity and Cloud Cover (0.54).'
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 26
       max: 30
       items:
       - id: VQ-01
@@ -70,43 +71,43 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 28pt, axis labels 16pt, annotations
-          16pt bold, legend title 18pt/labels 16pt'
+        comment: 'All font sizes explicitly set: title 28pt, axis title 20pt, tick
+          labels 16pt, annotations 16pt bold, legend title 18pt, legend labels 16pt'
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: No overlapping text anywhere, cells well-sized for annotations
+        comment: X-axis labels angled at -30 degrees mostly avoid overlap but slight
+          cramping on end labels
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Cells optimally sized for 8x8 matrix with white border separation
+        comment: All 64 cells clearly visible with strong color differentiation
       - id: VQ-04
         name: Color Accessibility
-        score: 2
+        score: 4
         max: 4
-        passed: false
-        comment: redblue scheme problematic for red-green colorblind users; blueorange
-          or brownbluegreen would be more accessible
+        passed: true
+        comment: Blue-orange diverging scheme is colorblind-safe with good contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 2
         max: 4
         passed: false
-        comment: Square layout suits correlation matrix but some wasted space near
-          colorbar, slightly unbalanced
+        comment: Noticeable empty space around heatmap, colorbar legend somewhat isolated
+          to the right
       - id: VQ-06
         name: Axis Labels & Title
         score: 1
         max: 2
         passed: false
-        comment: Axis titles set to None; variable names are descriptive but no axis
-          title context provided
+        comment: Weather Variable is descriptive but redundant on both axes, no units
+          (though not applicable for correlation)
     design_excellence:
-      score: 13
+      score: 14
       max: 20
       items:
       - id: DE-01
@@ -114,24 +115,25 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: 'Strong design: diverging palette effective, white cell borders add
-          polish, clean typography hierarchy'
+        comment: Strong design with blue-orange scheme, white cell borders with rounded
+          corners, border highlighting, adaptive text color. Above defaults but not
+          publication-level.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Grid disabled, view stroke removed, explicit font sizing, white cell
-          borders
+        comment: Grid removed, view stroke removed, white cell borders, rounded corners,
+          generous padding. Good refinement visible.
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: Meaningful correlation patterns created but no explicit visual emphasis
-          on strongest correlations beyond color
+        passed: true
+        comment: Strong-correlation highlighting creates visual hierarchy. Correlation
+          clusters visible. Subtitle provides context.
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -139,27 +141,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Correct chart type: heatmap via mark_rect()'
+        comment: Correct heatmap using mark_rect()
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
         comment: 'All spec features present: diverging colormap, value annotations,
-          colorbar, logical ordering'
+          colorbar legend, logical ordering'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X/Y correctly assigned, all 64 cells visible
+        comment: X/Y correctly mapped as column/row variables
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
-        passed: false
-        comment: Title prepends Weather Metrics Correlation before required format;
-          legend label Correlation is appropriate
+        passed: true
+        comment: Title format correct, colorbar legend labeled Correlation
     data_quality:
       score: 14
       max: 15
@@ -169,23 +170,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows positive, negative, near-zero correlations and perfect diagonal;
-          good range
+        comment: Shows positive, negative, and near-zero correlations. Diagonal 1.00
+          values. Good range but could have stronger negatives.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Weather metrics correlation is realistic, neutral, scientifically
-          meaningful
+        comment: Weather metrics correlation is a real, neutral, comprehensible scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Correlation values properly bounded [-1, 1] with realistic magnitudes
+        comment: All values in [-1, 1] range, realistic for weather data correlations
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -193,25 +193,26 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean flow: imports, data generation, plot, save'
+        comment: 'Clean flow: imports, data generation, plot, save. No functions/classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) used
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports (altair, numpy, pandas) are used
+        comment: All imports used (altair, numpy, pandas)
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Clean, well-structured, appropriate complexity
+        passed: false
+        comment: 'Slightly verbose: abs_value column only used for highlight filter,
+          records list-append loop could be more concise'
       - id: CQ-05
         name: Output & API
         score: 1
@@ -227,13 +228,13 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Expertly uses Altair declarative grammar: encoding types, alt.Scale,
-          alt.Legend, alt.Title, alt.Tooltip, layer composition'
+        comment: 'Expert use of Altair declarative grammar: proper encoding types,
+          alt.X/Y with axis config, alt.Color with Scale, alt.Legend, alt.Title'
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: Uses alt.when().then().otherwise() conditional encoding for adaptive
-          text color (Altair 5.x+ feature), tooltips, HTML export
+        comment: 'Uses Altair-specific features: layer composition, alt.when().then().otherwise()
+          conditional encoding, tooltip encoding, declarative mark composition'
   verdict: REJECTED

@@ -1,50 +1,235 @@
 library: highcharts
 specification_id: bubble-basic
 created: '2025-12-23T01:31:13Z'
-updated: '2026-02-15T12:00:00+00:00'
+updated: '2026-02-15T21:44:07Z'
 generated_by: claude-opus-4-6
 workflow_run: 20448653527
 issue: 0
-python_version: '3.14.3'
-library_version: '1.10.3'
+python_version: 3.14.3
+library_version: 1.10.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/highcharts/plot.html
-quality_score: null
+quality_score: 79
 impl_tags:
   dependencies:
   - selenium
   techniques:
   - html-export
-  - annotations
   patterns:
   - data-generation
-  dataprep: []
+  dataprep:
+  - normalization
   styling:
   - alpha-blending
+  - edge-highlighting
+  - grid-styling
 review:
   strengths:
-  - Correct bubble chart implementation with three data dimensions clearly represented
-  - Excellent title and subtitle formatting with bubble size explanation
-  - Good use of transparency (0.6 opacity) for handling overlapping bubbles
-  - Realistic tech company comparison scenario with sensible data ranges
-  - Clean code structure following KISS principles with proper random seed
-  - Good use of Highcharts tooltip with custom HTML formatting showing all three data
-    values
+  - Correct title format and comprehensive subtitle explaining bubble size encoding
+  - Bubble legend (bubbleLegend) is a distinctive Highcharts feature well-utilized
+  - Realistic tech company scenario with plausible revenue/growth/market cap data
+  - All font sizes explicitly configured for the 4800x2700 canvas
+  - Good use of transparency (alpha 0.6) and border highlighting on bubbles
+  - Clean linear code structure with proper seed for reproducibility
   weaknesses:
-  - X-axis tick labels are very dense (every 10 units from 0-660), could use larger
-    intervals
-  - Bubble size legend appears to be cut off or not fully visible at the bottom
-  - No categorical color dimension shown (optional per spec but would enhance demonstration)
-  image_description: The plot displays a bubble chart with 30 data points representing
-    tech company comparisons. The bubbles are rendered in a muted blue color (#306998)
-    with semi-transparent fill. The title "bubble-basic · highcharts · pyplots.ai"
-    appears at the top in bold, followed by a subtitle "Bubble size represents Market
-    Capitalization". The x-axis shows "Revenue (Billion USD)" ranging from 0 to 660,
-    and the y-axis shows "Growth Rate (%)" ranging from 0 to 54. Bubbles vary in size
-    from small (representing lower market cap) to large (representing higher market
-    cap). The data shows a general negative correlation between revenue and growth
-    rate - smaller companies have higher growth rates while larger companies have
-    lower growth rates. A subtle grid is visible, and there appears to be a legend
-    entry at the bottom (partially visible).
-  verdict: APPROVED
+  - 'Excessive right margin (spacingRight: 380) and bottom margin (marginBottom: 320)
+    waste canvas space, pushing the plot area below the 40% utilization threshold'
+  - Single color for all bubbles — adding a categorical color dimension (e.g., sector
+    grouping) would enhance data storytelling and spec compliance (spec mentions color
+    as optional fourth dimension)
+  - The z_scaled normalization creates artificial values (20-100) that appear in the
+    bubble legend instead of actual market cap values, making the legend less informative
+  - Could leverage more Highcharts-specific typed Python classes instead of raw dict
+    configuration
+  image_description: The plot displays a bubble chart with 30 data points on a white
+    background. The x-axis shows "Revenue (Billion USD)" ranging from 0 to approximately
+    700, and the y-axis shows "Growth Rate (%)" ranging from 0 to 55. All bubbles
+    are a semi-transparent steel blue (rgba(48,105,152,0.6)) with darker blue borders.
+    Bubble sizes vary significantly — smaller bubbles cluster in the upper-left (low
+    revenue, high growth) while larger bubbles appear in the lower-right (high revenue,
+    low growth), clearly showing an inverse relationship. A Highcharts bubble legend
+    appears on the right side with three reference circles labeled 20.0, 60.0, and
+    100.0, along with a "Market Cap" series label. The title "bubble-basic · highcharts
+    · pyplots.ai" is bold and prominent at the top, with subtitle "Bubble size represents
+    Market Capitalization" below it. Grid lines are very subtle. The overall layout
+    is clean with the plot occupying the majority of the canvas, though the right
+    margin is generous to accommodate the bubble legend.
+  verdict: REJECTED
+  criteria_checklist:
+    visual_quality:
+      score: 25
+      max: 30
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 8
+        max: 8
+        passed: true
+        comment: 'All font sizes explicitly set: title 60px, subtitle 40px, axis titles
+          44px, axis labels 36px, legend 34px. All clearly readable.'
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
+        passed: true
+        comment: No overlapping text elements. Bubbles have natural overlap expected
+          for bubble charts.
+      - id: VQ-03
+        name: Element Visibility
+        score: 5
+        max: 6
+        passed: true
+        comment: Bubbles well-sized with minSize 40 and maxSize 180. Good alpha at
+          0.6 with border highlights. Smallest bubbles slightly small.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 4
+        passed: true
+        comment: Single-color scheme using Python Blue. Colorblind-safe by nature.
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 0
+        max: 4
+        passed: false
+        comment: 'Excessive right margin (spacingRight: 380) and bottom margin (marginBottom:
+          320) waste canvas space. Plot area fills roughly 35-40% of canvas.'
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
+        max: 2
+        passed: true
+        comment: Revenue (Billion USD) and Growth Rate (%) are descriptive with units.
+    design_excellence:
+      score: 12
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: true
+        comment: Thoughtful Python Blue, border highlighting, subtle grid. Above defaults
+          but not publication-level.
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Subtle grid lines (0.08 opacity), clean background, generous spacing.
+          Excessive margins hurt composition.
+      - id: DE-03
+        name: Data Storytelling
+        score: 3
+        max: 6
+        passed: true
+        comment: Data shows inverse revenue-growth relationship. Subtitle explains
+          size encoding. No visual hierarchy or grouping to guide viewer.
+    spec_compliance:
+      score: 15
+      max: 15
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 5
+        max: 5
+        passed: true
+        comment: Correct bubble chart type.
+      - id: SC-02
+        name: Required Features
+        score: 4
+        max: 4
+        passed: true
+        comment: 'All spec features: x/y positioning, size dimension, transparency,
+          area scaling, bubble legend, min/max bounds.'
+      - id: SC-03
+        name: Data Mapping
+        score: 3
+        max: 3
+        passed: true
+        comment: X=Revenue, Y=Growth, Size=Market Cap correctly mapped.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
+        passed: true
+        comment: Title follows exact format. Legend label Market Cap is descriptive.
+    data_quality:
+      score: 13
+      max: 15
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 5
+        max: 6
+        passed: true
+        comment: Shows variation in all three dimensions. Good range of bubble sizes.
+          No categorical grouping for fourth dimension.
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 5
+        passed: true
+        comment: Tech companies with revenue, growth rate, and market cap. Real, neutral
+          business scenario.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 3
+        max: 4
+        passed: true
+        comment: Revenue 5-650B and growth 5-50% generally plausible. Random multiplier
+          creates some unrealistic market cap combinations.
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear flow: imports, data, chart config, series, export.'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 2
+        passed: true
+        comment: np.random.seed(42) is set.
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used.
+      - id: CQ-04
+        name: Code Elegance
+        score: 1
+        max: 2
+        passed: true
+        comment: Clear but slightly verbose z_scaled normalization and data formatting.
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves plot.png and interactive plot.html. No deprecated functions.
+    library_mastery:
+      score: 5
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses BubbleSeries and HighchartsOptions correctly. Configuration
+          via raw dicts rather than typed Python objects.
+      - id: LM-02
+        name: Distinctive Features
+        score: 2
+        max: 5
+        passed: true
+        comment: Uses bubbleLegend which is distinctive to Highcharts. HTML tooltip
+          with pointFormat. Does not leverage zones, data grouping, or other distinctive
+          features.

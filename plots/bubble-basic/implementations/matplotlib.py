@@ -1,45 +1,128 @@
 """ pyplots.ai
 bubble-basic: Basic Bubble Chart
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: matplotlib 3.10.8 | Python 3.14.3
+Quality: 86/100 | Updated: 2026-02-15
 """
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-# Data - three correlated variables representing company metrics
+# Data - tech company metrics: revenue vs growth with market cap as bubble size
 np.random.seed(42)
-n_points = 50
+n_companies = 35
 
-x = np.random.uniform(10, 100, n_points)
-y = x * 0.6 + np.random.randn(n_points) * 15 + 20
-size_values = np.random.uniform(50, 500, n_points)
+revenue = np.random.uniform(5, 120, n_companies)  # billions USD
+growth_rate = 0.4 * (100 - revenue) / 100 + np.random.randn(n_companies) * 0.08 + 0.05
+growth_rate = np.clip(growth_rate, -0.10, 0.55)
+market_cap = revenue * (1 + growth_rate * 3) * np.random.uniform(0.6, 1.8, n_companies)
+market_cap = np.clip(market_cap, 5, 400)
 
-# Scale sizes for visual perception (area-based scaling)
-# Map size_values to reasonable bubble sizes for 4800x2700 canvas
-size_scaled = (size_values / size_values.max()) * 2000 + 200
+# Add a few distinctive outlier companies for visual interest
+# High-growth unicorn: modest revenue but explosive growth
+revenue = np.append(revenue, [18, 12])
+growth_rate = np.append(growth_rate, [0.48, 0.44])
+market_cap = np.append(market_cap, [280, 220])
+
+# Mature giant: massive revenue, low growth, huge market cap
+revenue = np.append(revenue, [118])
+growth_rate = np.append(growth_rate, [0.02])
+market_cap = np.append(market_cap, [380])
+
+# Mid-tier standout
+revenue = np.append(revenue, [55])
+growth_rate = np.append(growth_rate, [0.30])
+market_cap = np.append(market_cap, [260])
+
+n_total = len(revenue)
+
+# Sector assignment for color encoding (4th variable)
+sectors = np.array(
+    ["Cloud/SaaS"] * 12
+    + ["E-Commerce"] * 8
+    + ["Semiconductors"] * 8
+    + ["Social Media"] * 7
+    + ["Cloud/SaaS", "Cloud/SaaS", "Semiconductors", "E-Commerce"]
+)
+sector_names = ["Cloud/SaaS", "E-Commerce", "Semiconductors", "Social Media"]
+sector_colors = ["#306998", "#E07B39", "#5BA58B", "#8B6BAE"]
+
+# Scale bubble sizes by area for accurate visual perception
+size_scaled = (market_cap / market_cap.max()) * 2200 + 120
 
 # Plot
 fig, ax = plt.subplots(figsize=(16, 9))
 
-ax.scatter(x, y, s=size_scaled, alpha=0.6, c="#306998", edgecolors="#1a3d5c", linewidths=1.5)
+# Plot each sector separately for legend
+for sector, color in zip(sector_names, sector_colors, strict=True):
+    mask = sectors == sector
+    ax.scatter(
+        revenue[mask],
+        growth_rate[mask] * 100,
+        s=size_scaled[mask],
+        alpha=0.6,
+        color=color,
+        edgecolors="white",
+        linewidths=1.2,
+        label=sector,
+        zorder=3,
+    )
 
-# Create size legend
-size_legend_values = [100, 250, 500]
-size_legend_scaled = [(v / size_values.max()) * 2000 + 200 for v in size_legend_values]
+# Annotate notable outliers to guide the viewer
+annotations = [
+    (n_companies, "High-Growth\nUnicorn", (0, 20)),  # first added unicorn
+    (n_companies + 2, "Market\nLeader", (-55, 30)),  # mature giant — offset left+up to clear legend
+    (n_companies + 3, "Breakout\nPerformer", (0, 20)),  # mid-tier standout
+]
+for idx, label, offset in annotations:
+    ax.annotate(
+        label,
+        (revenue[idx], growth_rate[idx] * 100),
+        fontsize=13,
+        fontweight="bold",
+        color="#333333",
+        ha="center",
+        va="bottom",
+        xytext=offset,
+        textcoords="offset points",
+        arrowprops={"arrowstyle": "-", "color": "#999999", "lw": 0.8},
+    )
 
-for val, scaled in zip(size_legend_values, size_legend_scaled, strict=True):
-    ax.scatter([], [], s=scaled, c="#306998", alpha=0.6, edgecolors="#1a3d5c", linewidths=1.5, label=f"{val}")
+# Size legend with representative bubble sizes — placed upper left to balance layout
+legend_caps = [25, 100, 300]
+legend_handles = [
+    ax.scatter(
+        [], [], s=(v / market_cap.max()) * 2200 + 120, c="#888888", alpha=0.5, edgecolors="white", linewidths=1.2
+    )
+    for v in legend_caps
+]
+size_legend = ax.legend(
+    legend_handles,
+    [f"${v}B" for v in legend_caps],
+    title="Market Cap",
+    title_fontsize=16,
+    fontsize=14,
+    loc="upper left",
+    framealpha=0.9,
+    scatterpoints=1,
+    labelspacing=1.8,
+    borderpad=1.2,
+)
+ax.add_artist(size_legend)
 
-ax.legend(title="Size Value", title_fontsize=18, fontsize=16, loc="upper left", framealpha=0.9, scatterpoints=1)
+# Sector color legend — placed center right where there is open space
+sector_legend = ax.legend(
+    fontsize=14, loc="center right", framealpha=0.9, title="Sector", title_fontsize=16, markerscale=0.5
+)
 
-# Labels and styling
-ax.set_xlabel("X Value", fontsize=20)
-ax.set_ylabel("Y Value", fontsize=20)
-ax.set_title("bubble-basic · matplotlib · pyplots.ai", fontsize=24)
+# Style
+ax.set_xlabel("Annual Revenue ($B)", fontsize=20)
+ax.set_ylabel("Revenue Growth Rate (%)", fontsize=20)
+ax.set_title("bubble-basic · matplotlib · pyplots.ai", fontsize=24, fontweight="medium")
 ax.tick_params(axis="both", labelsize=16)
-ax.grid(True, alpha=0.3, linestyle="--")
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
+ax.grid(True, alpha=0.2, linewidth=0.8, linestyle="--", zorder=0)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

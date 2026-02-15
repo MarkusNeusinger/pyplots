@@ -6,7 +6,7 @@ title: Basic Bubble Chart
 
 # Specification tracking
 created: 2025-12-14T11:02:58Z
-updated: 2025-12-14T11:02:58Z
+updated: 2026-02-15T12:00:00Z
 issue: 755
 suggested: MarkusNeusinger
 
@@ -24,3 +24,5 @@ tags:
   features:
     - basic
     - size-encoded
+    - correlation
+    - proportional

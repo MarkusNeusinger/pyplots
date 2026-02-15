@@ -24,5 +24,5 @@ A bubble chart extending scatter plots by adding a third dimension through bubbl
 - Scale bubble sizes by area (not radius) for accurate visual perception
 - Use transparency (alpha ~0.5-0.7) to handle overlapping bubbles
 - Include a size legend to explain bubble scaling
-- Consider adding color as an optional fourth dimension for categorical grouping
+- Color can optionally distinguish categories but is not required for the basic variant
 - Ensure minimum bubble size is visible and maximum doesn't overwhelm the chart

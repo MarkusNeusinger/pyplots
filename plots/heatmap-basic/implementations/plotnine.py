@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-basic: Basic Heatmap
 Library: plotnine 0.15.3 | Python 3.14.3
-Quality: 89/100 | Updated: 2026-02-15
 """
 
 import numpy as np
@@ -62,12 +61,14 @@ plot = (
     + scale_color_identity()
     + scale_x_discrete(expand=(0, 0.5))
     + scale_y_discrete(expand=(0, 0.5))
-    + labs(x="", y="", title="Quarterly Growth by Department · heatmap-basic · plotnine · pyplots.ai")
+    + labs(x="Quarter", y="Department", title="Quarterly Growth by Department · heatmap-basic · plotnine · pyplots.ai")
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
         text=element_text(family="sans-serif"),
-        plot_title=element_text(size=22, ha="center", margin={"b": 15}),
+        plot_title=element_text(size=24, ha="center", weight="bold", margin={"b": 15}),
+        axis_title_x=element_text(size=20, margin={"t": 10}),
+        axis_title_y=element_text(size=20, margin={"r": 10}),
         axis_text_x=element_text(size=16, rotation=45, ha="right", margin={"t": 5}),
         axis_text_y=element_text(size=16, ha="right", margin={"r": 5}),
         legend_title=element_text(size=16),

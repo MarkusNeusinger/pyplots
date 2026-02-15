@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: heatmap-basic
 created: '2025-12-23T00:49:09Z'
-updated: '2026-02-15T21:31:59Z'
+updated: '2026-02-15T21:39:16Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447989671
 issue: 0
@@ -10,58 +10,49 @@ library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/letsplot/plot.html
-quality_score: 84
+quality_score: 86
 impl_tags:
   dependencies: []
   techniques:
   - annotations
+  - layer-composition
   - hover-tooltips
   - html-export
-  - layer-composition
   patterns:
   - data-generation
   - iteration-over-groups
-  - matrix-construction
   dataprep: []
   styling:
   - custom-colormap
   - minimal-chrome
-  - edge-highlighting
 review:
   strengths:
-  - Adaptive text color (dark on light cells, white on dark) ensures all 72 cell annotations
-    are readable — a thoughtful accessibility detail
-  - Realistic energy consumption scenario with plausible seasonal patterns and zone-specific
-    baselines
-  - 'Good use of lets-plot distinctive features: layer_tooltips() for interactive
-    hover and HTML export'
-  - Clean minimal theme with grid removed and subtle tile gaps create professional
-    appearance
-  - All font sizes explicitly set following the library rules (title=24, axis_title=20,
-    axis_text=16)
+  - Adaptive text color (white on dark, charcoal on light) ensures annotation readability
+    across the full value range
+  - Realistic building energy consumption scenario with seasonal patterns and zone-specific
+    baselines creates meaningful data storytelling
+  - 'Full spec compliance: colorbar, annotations, logical ordering, correct title
+    format'
+  - Interactive tooltips via layer_tooltips showcase lets-plot distinctive capabilities
+    (visible in HTML export)
+  - Clean minimal theme with grid removed and tile gaps for visual separation
   weaknesses:
-  - Y-axis label is missing — 'Month' should be present, not set to element_blank
-  - Uses scale_fill_gradient2 (diverging) with a median midpoint for purely sequential
-    positive data — a standard sequential scale would be more semantically appropriate
-  - The light_data/dark_data splitting via manual dict-of-lists loop is verbose —
-    a more elegant approach would reduce code complexity
-  - 'Data storytelling could be stronger: no visual emphasis on key patterns (e.g.,
-    highlighting the Server Room peak or seasonal extremes)'
-  - Colorbar legend has a line break in the title ('Energy\n(kWh)') which looks slightly
-    awkward
-  image_description: 'The plot displays a 12×6 heatmap of monthly energy consumption
+  - Color gradient uses custom hex values rather than a perceptually-uniform colormap
+    — switching to a recognized sequential palette would improve color accessibility
+  - Annotation text size=12 is adequate but could be increased for better visibility
+    at full resolution
+  - Some wasted margin space could be reclaimed for a tighter layout
+  - Long-form data construction loop is verbose compared to vectorized alternatives
+  image_description: 'The plot displays a 12x6 heatmap showing monthly energy consumption
     (kWh) across six building zones (Lobby, Offices, Lab, Server Room, Cafeteria,
-    Warehouse). Months run vertically from January at top to December at bottom. The
-    color gradient runs from very light blue/white (low values ~49 kWh) to dark navy
-    blue (high values ~699 kWh). Every cell contains a bold numeric annotation with
-    adaptive text color — dark text on light cells, white text on dark cells — all
-    clearly readable. The Server Room column is visibly the darkest (highest consumption),
-    while Warehouse is the lightest. Seasonal patterns are apparent: winter months
-    (Jan, Feb, Nov, Dec) are darker across all zones than summer months (May, Jun).
-    The title reads "heatmap-basic · letsplot · pyplots.ai" in bold at top-left. A
-    colorbar on the right shows "Energy (kWh)" ranging from ~100 to ~600+. The x-axis
-    is labeled "Building Zone". The y-axis has no label. Overall layout is clean with
-    minimal theme, no grid lines, and subtle gaps between tiles.'
+    Warehouse). Months run top-to-bottom on the Y-axis (Jan-Dec, reversed so Jan is
+    at top). A sequential blue color gradient maps values: light blue/white for low
+    consumption (~49 kWh) through to dark navy for high consumption (~699 kWh). Each
+    cell contains bold numeric annotations with adaptive text color — white text on
+    dark cells, dark charcoal text on light cells — ensuring readability across the
+    full range. The title "heatmap-basic · letsplot · pyplots.ai" appears at the top
+    left. A colorbar legend labeled "Energy (kWh)" sits on the right. The panel grid
+    is removed, giving a clean minimal appearance with slight gaps between tiles.'
   criteria_checklist:
     visual_quality:
       score: 26
@@ -73,43 +64,42 @@ review:
         max: 8
         passed: true
         comment: 'All font sizes explicitly set: title=24, axis_title=20, axis_text=16,
-          legend_text=14, legend_title=16. Annotations bold and readable.'
+          legend sizes 14-16. Perfectly readable.'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text. Tiles have 0.92 width/height creating clean
-          gaps.
+        comment: No overlapping text anywhere. Cell annotations well-spaced within
+          tiles.
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Tiles perfectly sized, fill grid well with visible separation.
+        comment: Tiles well-sized with 0.92 gaps. Annotations bold but at size=12
+          could be marginally larger.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: 'Blue sequential gradient is colorblind-safe. Minor: uses gradient2
-          (diverging scale) for sequential data.'
+        comment: Sequential blue gradient is colorblind-safe but not a perceptually-uniform
+          colormap.
       - id: VQ-05
-        name: Layout & Canvas
+        name: Layout Balance
         score: 3
         max: 4
         passed: true
-        comment: Good overall, plot fills canvas well. Some empty space between plot
-          and colorbar.
+        comment: Good layout overall, some unused margin space on sides.
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: X-axis says 'Building Zone' but Y-axis is element_blank — missing
-          'Month' label.
+        passed: true
+        comment: Descriptive categorical labels; units appropriately on colorbar.
     design_excellence:
-      score: 13
+      score: 14
       max: 20
       items:
       - id: DE-01
@@ -117,24 +107,24 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Adaptive text color is a strong design touch. Custom blue gradient
-          is cohesive. Clearly above defaults.
+        comment: Custom blue gradient, adaptive text colors, bold annotations, clean
+          theme. Above defaults, approaching publication quality.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Grid removed, minimal theme, subtle tile gaps. Good refinement, missing
-          some polish.
+        comment: Grid removed, minimal theme, tile gaps. Good refinement but could
+          push further.
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Server Room dominance and seasonal patterns are visible. Adaptive
-          text helps. No explicit visual hierarchy.
+        comment: Server Room dominates consumption, seasonal winter peaks visible.
+          Adaptive text color creates visual hierarchy.
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -142,26 +132,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Correct: heatmap via geom_tile.'
+        comment: Correct heatmap using geom_tile.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Color gradient, cell annotations, colorbar legend, logical ordering
-          all present.
+        comment: 'All spec features present: color intensity, annotations, colorbar,
+          logical ordering.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=zones, Y=months, fill=kWh. Correctly mapped.
+        comment: X/Y correctly assigned, all 72 data points visible.
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Title format correct. Colorbar legend line break slightly inelegant.
+        comment: Correct title format. Colorbar labeled Energy (kWh).
     data_quality:
       score: 14
       max: 15
@@ -171,21 +161,21 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows seasonal variation, zone differentiation, realistic noise.
-          Could show counter-seasonal patterns.
+        comment: Shows variation across zones and months, seasonal patterns visible.
+          Could show more distinct clusters.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Monthly energy consumption by building zone — real, neutral business
-          scenario.
+        comment: 'Real neutral business scenario: monthly building energy consumption
+          by zone.'
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values 49-699 kWh are realistic for building zones.
+        comment: Values realistic for monthly kWh (49-699 kWh per zone).
     code_quality:
       score: 9
       max: 10
@@ -195,31 +185,31 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save flow.
+        comment: Clean imports, data, plot, save structure.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) present.
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used, explicit named imports.
+        comment: All imports used.
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
         passed: false
-        comment: The light_data/dark_data dict-splitting loop is verbose.
+        comment: Manual loop for long-form data is verbose; could use np.repeat/tile.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png and plot.html correctly.
+        comment: Correct ggsave with scale=3.
     library_mastery:
       score: 8
       max: 10
@@ -229,13 +219,13 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Proper ggplot grammar, geom_tile, scale_fill_gradient2, ggsave with
-          scale=3.
+        comment: Proper ggplot grammar, geom_tile, scale_fill_gradient, theme_minimal,
+          ggsave idioms.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses layer_tooltips() for interactive hover and HTML export — lets-plot
-          distinctive features.
+        comment: Uses layer_tooltips, scale_color_identity for adaptive text, HTML
+          export alongside PNG.
   verdict: REJECTED

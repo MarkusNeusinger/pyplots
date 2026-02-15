@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-basic: Basic Heatmap
 Library: plotly 6.5.2 | Python 3.14.3
-Quality: 88/100 | Updated: 2026-02-15
 """
 
 import numpy as np
@@ -41,25 +40,35 @@ fig = go.Figure(
             "title": {"text": "Sales Growth (%)", "font": {"size": 20}},
             "tickfont": {"size": 16},
             "ticksuffix": "%",
-            "thickness": 28,
-            "len": 0.75,
+            "thickness": 22,
+            "len": 0.85,
+            "x": 1.01,
+            "xpad": 8,
         },
         text=values,
         texttemplate="%{text:+.0f}",
-        textfont={"size": 14},
-        hovertemplate=("<b>%{y}</b> · %{x}<br>Growth: %{z:+.1f}%<extra></extra>"),
+        textfont={"size": 16},
+        hovertemplate="<b>%{y}</b> · %{x}<br>Growth: %{z:+.1f}%<extra></extra>",
         xgap=2,
         ygap=2,
     )
 )
 
-# Layout
+# Layout — subtitle guides reader to seasonal story in the data
 fig.update_layout(
     title={
-        "text": "Monthly Sales Growth · heatmap-basic · plotly · pyplots.ai",
+        "text": (
+            "Monthly Sales Growth · heatmap-basic · plotly · pyplots.ai"
+            "<br><sup style='color:#666; font-size:17px'>"
+            "Retail categories show clear seasonal surges — "
+            "summer outdoor/leisure peaks and Q4 holiday gift spikes"
+            "</sup>"
+        ),
         "font": {"size": 28},
         "x": 0.5,
         "xanchor": "center",
+        "y": 0.97,
+        "yanchor": "top",
     },
     xaxis={"title": {"text": "Month", "font": {"size": 22}}, "tickfont": {"size": 18}, "side": "bottom"},
     yaxis={
@@ -68,7 +77,9 @@ fig.update_layout(
         "autorange": "reversed",
     },
     template="plotly_white",
-    margin={"l": 140, "r": 110, "t": 100, "b": 80},
+    margin={"l": 160, "r": 80, "t": 120, "b": 70},
+    width=1600,
+    height=900,
 )
 
 # Save

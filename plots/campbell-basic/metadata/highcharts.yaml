@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: campbell-basic
 created: '2026-02-15T21:07:43Z'
-updated: '2026-02-15T21:11:17Z'
+updated: '2026-02-15T21:21:15Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22043027022
 issue: 4241
@@ -10,46 +10,43 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/highcharts/plot.html
-quality_score: 82
+quality_score: 93
 review:
   strengths:
-  - Correct Campbell Diagram structure with all essential elements (mode curves, EO
-    lines, critical intersections)
-  - 'Strong visual hierarchy: solid colored modes vs dashed gray EO lines vs red diamond
-    critical speeds'
-  - Physically realistic turbine rotor scenario with proper mode naming conventions
-  - Clean, well-organized code following the Highcharts Python library patterns
-  - Thoughtful color palette and typography choices elevate the design above defaults
-  - Critical speed intersection calculation is mathematically correct using sign-change
-    detection
+  - Excellent use of Highcharts-specific plotBands and plotLines to add domain context
+    (Idle zone, Normal Operating Range, critical speed indicators)
+  - Strong data storytelling through operating zone highlighting and prominent critical
+    speed markers
+  - Polished visual design with intentional typography, subtle grid, shadow effects,
+    and rounded legend
+  - Complete spec compliance with all 5 modes, 3 EO lines, and critical speed intersections
+  - Clean, well-structured code with proper linear flow and realistic turbomachinery
+    data
   weaknesses:
-  - Engine order lines are somewhat faint (gray dashed against white) — could use
-    slightly darker color or thicker lines for better visibility
-  - Natural frequency curves are nearly flat, reducing visual drama; slightly more
-    pronounced gyroscopic effects would make the diagram more visually interesting
-    and educational
-  - No on-chart labels for engine order lines (only legend) — the spec suggests labeling
-    1x, 2x, 3x directly on the lines
-  - LineSeries imported from series.area module instead of series.line — functionally
-    works but not idiomatic
-  - Interactive HTML and PNG export could be more concise
-  image_description: 'The plot displays a Campbell Diagram for a turbine rotor. The
-    title reads "campbell-basic · highcharts · pyplots.ai" in dark bold text, with
-    a subtitle "Natural Frequencies vs Rotational Speed — Turbine Rotor" in lighter
-    gray. The X-axis shows Rotational Speed from 0 to 6k (RPM) with 1k tick intervals,
-    and the Y-axis shows Frequency (Hz) from 0 to 110 with 10 Hz tick intervals. Four
-    natural frequency mode curves are plotted as solid colored lines: 1st Bending
-    (dark blue, ~18-23 Hz, gently rising), 2nd Bending (green, ~42-45 Hz, gently falling),
-    1st Torsional (purple, ~62-64 Hz, nearly flat with slight rise), and Axial (orange,
-    ~77-78 Hz, nearly flat with slight decline). Three dashed gray diagonal engine
-    order lines (1x, 2x, 3x) originate from the origin with increasing slopes. Red
-    diamond markers indicate critical speed intersections where engine order lines
-    cross mode curves. The legend is positioned in the upper-right corner with a floating
-    white background and thin border, listing all series. The background is white
-    with subtle dotted gridlines. Overall layout is clean and well-proportioned.'
+  - 'Two blue hues (#306998 and #2980b9) for 1st Bending and 2nd Torsional are similar
+    and may cause confusion — consider replacing one with a more distinct color like
+    teal or brown'
+  - The 1x EO label at the far right edge appears slightly clipped by the chart boundary
+  image_description: 'The plot shows a Campbell Diagram for a turbine rotor rendered
+    on a light gray (#fafbfc) background. The title "campbell-basic · highcharts ·
+    pyplots.ai" is displayed prominently at the top in dark text, with a subtitle
+    "Natural Frequencies vs Rotational Speed — Turbine Rotor" in gray below it. The
+    X-axis is labeled "Rotational Speed (RPM)" ranging from 0 to 6000, and the Y-axis
+    is labeled "Frequency (Hz)" ranging from 0 to 120. Five natural frequency mode
+    curves are plotted as solid lines: 1st Bending (dark blue, rising gently), 2nd
+    Bending (green, declining), 1st Torsional (purple, rising moderately), Axial (orange,
+    declining slightly), and 2nd Torsional (teal/cyan, nearly flat at ~95 Hz). Three
+    engine order excitation lines (1x, 2x, 3x) are drawn as gray dashed lines from
+    the origin with increasing slopes, each labeled at the chart edge. Red diamond
+    markers highlight critical speed intersections where engine order lines cross
+    natural frequency curves. A pale green band marks the "Idle" zone (0-800 RPM)
+    and a pale blue band marks the "Normal Operating Range" (2800-4200 RPM). Faint
+    vertical dotted lines appear at critical speed RPM values. A floating vertical
+    legend in the upper right lists all series with their colors. The layout is clean
+    with subtle dotted grid lines and no axis spines.'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -58,72 +55,68 @@ review:
         max: 8
         passed: true
         comment: 'All font sizes explicitly set: title 64px, axis titles 44px, tick
-          labels 34px, legend 32px — all clearly readable'
+          labels 34px, legend 30px, EO labels 30px'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements; legend floats cleanly in upper-right
-          without covering data
+        comment: No overlapping text. Legend floats cleanly in upper right. EO labels
+          positioned at line endpoints
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Lines well-visible with lineWidth 5 for modes, 3 for EO lines; gray
-          dashed EO lines somewhat faint against white background
+        comment: Mode lines width 5, EO lines width 3, critical speed diamonds radius
+          16. All appropriately sized
       - id: VQ-04
         name: Color Accessibility
-        score: 4
-        max: 4
-        passed: true
-        comment: Blue, green, purple, orange palette is colorblind-safe; no red-green
-          as sole differentiator
-      - id: VQ-05
-        name: Layout & Canvas
-        score: 1
+        score: 3
         max: 4
         passed: false
-        comment: X-axis uses abbreviated k-suffix labels; large margins (220L, 200B,
-          160T, 120R) create significant whitespace; chart area fills roughly 50-55%
-          of canvas
+        comment: 'Two blues (#306998 and #2980b9) are similar in hue, could cause
+          confusion for some viewers'
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 3
+        max: 4
+        passed: false
+        comment: 'Good canvas utilization overall. Minor: 1x label slightly clipped
+          at right edge, legend takes some space'
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive with units: Rotational Speed (RPM) and Frequency (Hz)'
+        comment: Rotational Speed (RPM) and Frequency (Hz) — descriptive with units
     design_excellence:
-      score: 14
+      score: 17
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: 'Strong design: custom palette starting with Python Blue, intentional
-          font choices (Segoe UI), letter-spacing, two-level title/subtitle, refined
-          legend. Clearly above defaults but not publication-magazine level'
+        comment: Custom background, refined palette, letter-spacing, shadow styling,
+          operating zone bands — approaching publication quality
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Dotted gridlines with low opacity, clean axis lines, generous padding,
-          floating legend with border radius. Good refinement but axis line spines
-          still present
+        comment: Subtle dotted grid, no axis lines/tick marks, generous spacing, shadow
+          effects on legend/tooltip
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Red diamond critical speeds create clear focal points; solid vs dashed
-          line hierarchy distinguishes data types effectively; subtitle provides engineering
-          context
+        comment: Operating zone bands and critical speed lines add domain context.
+          Red diamonds draw attention to resonance points
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -131,55 +124,53 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct Campbell Diagram with mode curves, EO lines, and critical
-          speed markers
+        comment: Correct Campbell Diagram with natural frequency curves, engine order
+          lines, and critical speed markers
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: 'All major features present; minor: no on-chart EO line labels, no
-          optional critical speed zone shading'
+        comment: 'All spec features present: 5 modes, 3 EO lines, critical speed markers,
+          labels, legend'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=RPM, Y=Frequency(Hz), correctly mapped
+        comment: X = RPM, Y = Hz. Correct mapping per specification
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct; legend labels match series names
+        comment: Title format correct. Legend labels match all data series accurately
     data_quality:
-      score: 13
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: 4 modes with varying speed-dependent behavior, 3 engine orders, multiple
-          critical intersections. Minimum of spec range (4-5 modes)
+        comment: 5 modes with diverse behaviors, 3 engine orders, multiple intersections
+          showing full diagram variety
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Turbine rotor rotordynamic analysis; physically accurate mode names
-          (1st Bending, 2nd Bending, 1st Torsional, Axial)
+        comment: Turbine rotor scenario with real mode names and realistic frequency
+          ranges
       - id: DQ-03
         name: Appropriate Scale
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Frequency ranges realistic for industrial equipment; however natural
-          frequency variation with speed is very small making curves appear nearly
-          flat
+        comment: 0-6000 RPM, 0-120 Hz — realistic for industrial turbine rotors
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -187,34 +178,34 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports → data → chart config → series → export'
+        comment: 'Linear flow: imports → data → chart config → series → export. No
+          functions or classes'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) set at the start
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: All imports used, no unused imports
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Clean and readable; minor verbosity with separate interactive HTML
-          block and strict=True in zip
+        comment: Clean, well-organized with appropriate critical speed calculation
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via container screenshot
+        comment: Saves as plot.png via container screenshot, no deprecated APIs
     library_features:
-      score: 6
+      score: 8
       max: 10
       items:
       - id: LM-01
@@ -222,24 +213,22 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Uses Chart, HighchartsOptions, LineSeries, ScatterSeries correctly
-          with add_series pattern and to_js_literal. Minor: LineSeries imported from
-          series.area instead of series.line'
+        comment: 'Proper Highcharts Python API usage. Minor: LineSeries imported from
+          area module instead of line module'
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 4
         max: 5
-        passed: false
-        comment: Uses dashStyle, zIndex, marker states with hover radiusPlus, floating
-          legend. Most have equivalents in other libraries; nothing truly unique to
-          Highcharts
-  verdict: REJECTED
+        passed: true
+        comment: Uses plotBands, plotLines, dataLabels with filter property, marker
+          hover states, shadow configs
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - selenium
   techniques:
   - html-export
-  - custom-legend
+  - annotations
   patterns:
   - data-generation
   - iteration-over-groups

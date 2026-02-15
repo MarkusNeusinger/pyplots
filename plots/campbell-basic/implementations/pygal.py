@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 campbell-basic: Campbell Diagram
 Library: pygal 3.1.0 | Python 3.14.3
+Quality: 92/100 | Created: 2026-02-15
 """
 
 import numpy as np

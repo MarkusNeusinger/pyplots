@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: heatmap-basic
 created: '2025-12-23T00:47:36Z'
-updated: '2026-02-15T21:25:00+00:00'
+updated: '2026-02-15T21:30:56Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447967616
 issue: 0
@@ -10,163 +10,171 @@ library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/plotnine/plot_thumb.png
 preview_html: null
-quality_score: null
+quality_score: 89
 impl_tags:
   dependencies: []
   techniques:
-  - colorbar
   - annotations
+  - colorbar
   - layer-composition
   patterns:
   - data-generation
-  - wide-to-long
+  - matrix-construction
+  - iteration-over-groups
   dataprep: []
   styling:
+  - custom-colormap
   - edge-highlighting
+  - minimal-chrome
 review:
   strengths:
-  - Excellent diverging color scheme using Python brand colors (blue/yellow) that
-    is colorblind-safe
-  - Clear value annotations in each cell make exact values easy to read
-  - Well-structured data with meaningful trend pattern showing performance improvement
-    over time
-  - Clean use of plotnine grammar of graphics with proper layering (geom_tile + geom_text)
-  - Correct categorical ordering preserves temporal sequence on x-axis and intuitive
-    top-to-bottom region ordering
-  - Title follows exact specification format
+  - Excellent use of Python Blue (#306998) and Python Yellow (#FFD43B) as a thematic
+    diverging palette — on-brand and colorblind-safe
+  - Conditional text color (white on dark blue, dark on light) ensures readability
+    across the entire range
+  - Data tells a clear recovery story that is immediately apparent from the color
+    gradient progression
+  - Clean, idiomatic plotnine code with appropriate use of scale_fill_gradient2 and
+    scale_color_identity
+  - Bold value annotations with +/- signs make precise values easy to read
   weaknesses:
-  - Axis labels lack units or additional context (e.g., Value could specify Performance
-    Index or similar)
-  - Cell annotation text color is always black, which reduces contrast on darker blue
-    cells (e.g., Region G, Q1 2023 at -45.4)
-  image_description: The heatmap displays an 8x8 matrix showing performance metrics
-    across 8 regions (A-H on the y-axis) and 8 time periods (Q1 2023 through Q4 2024
-    on the x-axis). The color scheme uses a diverging palette with Python Blue (#306998)
-    for negative values and Python Yellow (#FFD43B) for positive values, with white
-    at the midpoint (0). Each cell contains its numerical value as a text annotation.
-    The colorbar legend on the right shows the "Value" scale ranging from approximately
-    -25 to +25. The title "heatmap-basic · plotnine · pyplots.ai" appears at the top.
-    The plot clearly shows a trend pattern where earlier quarters have predominantly
-    negative values (blue) and later quarters show positive values (yellow), demonstrating
-    regional performance improvement over time.
+  - Title font size is 22pt, below the recommended 24pt minimum for the output resolution
+  - Axis labels are empty strings — for a standalone visualization, even minimal labels
+    like Quarter and Department would improve clarity
+  - Layout has some extra whitespace at the bottom due to rotated x-axis labels; tighter
+    margins could improve canvas utilization
+  image_description: 'The plot displays an 8x8 heatmap titled "Quarterly Growth by
+    Department · heatmap-basic · plotnine · pyplots.ai". Eight departments (Engineering,
+    Marketing, Sales, Finance, Operations, HR, Research, Support) are on the Y-axis
+    and eight quarters (Q1 ''23 through Q4 ''24) on the X-axis. Each cell is colored
+    using a diverging blue-white-yellow gradient: blue (#306998) for negative growth,
+    cream/white near zero, and yellow (#FFD43B) for positive growth. Every cell contains
+    a bold annotation showing the growth percentage with a +/- sign. Text color adapts
+    — white on dark blue cells, dark gray (#333) on lighter cells. White borders separate
+    tiles. A colorbar on the right labeled "Growth (%)" ranges from approximately
+    -20 to +20. X-axis labels are rotated 45 degrees. The data tells a clear recovery
+    story: left columns (2023) are predominantly blue (negative), transitioning to
+    yellow (positive) on the right (2024), with varying recovery rates across departments.'
   criteria_checklist:
     visual_quality:
-      score: 37
-      max: 40
+      score: 26
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 6
+        max: 8
         passed: true
-        comment: Title at 24pt, axis labels at 20pt, tick labels at 14-16pt, cell
-          annotations at size 12 - all clearly readable
+        comment: All text readable; title is 22pt (below recommended 24pt), axis text
+          16pt meets tick label standard
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements, x-axis labels rotated 45° to avoid
-          collision
+        comment: No overlapping text elements anywhere
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Tiles are well-sized with clear white borders, annotations visible
-          on all backgrounds
+        comment: Tiles well-sized, annotations clearly visible in every cell
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Blue-white-yellow diverging palette is colorblind-safe (avoids red-green)
+        comment: Blue-to-yellow diverging scheme is colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 4
-        max: 5
+        score: 3
+        max: 4
         passed: true
-        comment: Good proportions, slight white space on right side near colorbar
-          but acceptable
+        comment: Good proportions, slight extra whitespace at bottom from rotated
+          labels
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
         score: 1
         max: 2
         passed: true
-        comment: '"Time Period" and "Region" are descriptive but lack units'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 1
-        max: 2
+        comment: Axes use empty string labels; colorbar has units but axes lack labels
+    design_excellence:
+      score: 15
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 6
+        max: 8
         passed: true
-        comment: 'Grid removed for clean heatmap look, legend well placed; minor:
-          panel_grid_major=element_blank removes subtle structure'
+        comment: Custom Python Blue/Yellow diverging palette, conditional text coloring,
+          white tile borders
+      - id: DE-02
+        name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: Grid removed, minimal theme, white backgrounds, tile borders provide
+          clean structure
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Clear temporal recovery narrative visible through color progression
+          left-to-right
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
         comment: Correct heatmap using geom_tile
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X=time periods, Y=regions, fill=value correctly assigned
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Diverging colormap for +/- values ✓, value annotations ✓, colorbar
-          legend
-      - id: SC-04
-        name: Data Range
+        comment: Diverging colormap, value annotations, colorbar legend, logical ordering
+          all present
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible, axes show complete range
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Quarters on X, departments on Y, growth as fill
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: '"Value" legend label correct with proper scale'
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Uses exact format "heatmap-basic · plotnine · pyplots.ai"
+        comment: Title format correct, colorbar labeled with units
     data_quality:
-      score: 18
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Shows both positive and negative values, trend patterns, regional
-          variation; could show more extreme outliers
+        comment: Shows positive and negative values, varying magnitudes, clear temporal
+          and departmental patterns
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
+        score: 5
+        max: 5
         passed: true
-        comment: Performance metrics by region and quarter is a real, comprehensible
-          business scenario
+        comment: Quarterly departmental growth rates — realistic business scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Values range from ~-45 to ~+47, plausible for performance metrics
-          but units undefined
+        comment: Growth rates -22% to +29% are plausible for quarterly metrics
     code_quality:
       score: 10
       max: 10
@@ -176,41 +184,46 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save structure, no unnecessary functions/classes
+        comment: Clean imports, data, plot, save structure
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports used
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
-        passed: true
-        comment: Uses current plotnine API
-      - id: CQ-05
-        name: Output Correct
-        score: 1
-        max: 1
-        passed: true
-        comment: Saves as plot.png
-    library_features:
-      score: 2
-      max: 5
-      items:
-      - id: LF-01
-        name: Uses distinctive library features
+        name: Code Elegance
         score: 2
+        max: 2
+        passed: true
+        comment: Clean, Pythonic, appropriate complexity
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png, no deprecated functions
+    library_mastery:
+      score: 9
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
         max: 5
-        passed: false
-        comment: Good use of ggplot grammar with geom_tile + geom_text layering, but
-          scale_fill_gradient2 is basic; could leverage faceting or more advanced
-          theming
-  verdict: APPROVED
+        passed: true
+        comment: Excellent ggplot2 grammar composition with layers, scales, and themes
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: scale_fill_gradient2, scale_color_identity, pd.Categorical ordering
+          — distinctively ggplot2-style
+  verdict: REJECTED

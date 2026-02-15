@@ -1,7 +1,7 @@
 library: plotly
 specification_id: campbell-basic
 created: '2026-02-15T21:07:54Z'
-updated: '2026-02-15T21:11:29Z'
+updated: '2026-02-15T21:19:21Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22043026911
 issue: 4241
@@ -10,43 +10,45 @@ library_version: 6.5.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/plotly/plot.html
-quality_score: 85
+quality_score: 82
 review:
   strengths:
-  - Clean, well-structured intersection-finding algorithm that correctly identifies
-    critical speeds using sign changes
-  - Good visual hierarchy with subdued gray dashed engine order lines and prominent
-    red diamond critical speed markers
-  - 'Properly uses Plotly-specific features: custom hovertemplates, annotations, and
-    dual PNG/HTML export'
-  - Realistic rotordynamic data with appropriate mode names, frequency ranges, and
-    gyroscopic speed-dependent behavior
-  - All font sizes explicitly set for consistent readability at target resolution
+  - Excellent text sizing with all font sizes explicitly configured for the 4800x2700
+    output
+  - Colorblind-safe palette with good visual separation between mode curves and engine
+    order lines
+  - Critical speed markers with white-edged red diamonds are visually distinctive
+    and immediately draw attention
+  - Interactive features (hovertemplate with mode x EO cross-reference, HTML export)
+    leverage Plotly strengths
+  - Realistic rotordynamic scenario with plausible mode names and frequency ranges
   weaknesses:
-  - The 2x and 3x engine order labels are not visible because the annotation positions
-    are placed at the line endpoints which exceed the y-axis range (110 Hz); these
-    labels need to be repositioned within the visible plot area or the y-axis range
-    needs to be extended
-  - Legend overlaps slightly with the upper-left data area where mode curves and EO
-    lines intersect; consider repositioning or making it more compact
-  - Color palette could be more colorblind-safe; the combination of green (2nd Bending)
-    and red (critical speed markers) may be difficult for deuteranopia viewers
-  image_description: 'The plot displays a Campbell Diagram with four natural frequency
-    mode curves plotted against rotational speed (0-6000 RPM) on the x-axis and frequency
-    (0-110 Hz) on the y-axis. The four modes are: 1st Bending (blue, rising slowly
-    from ~18 Hz), 2nd Bending (green, declining from ~43 Hz), 1st Torsional (purple,
-    nearly flat at ~55 Hz), and Axial (orange, declining from ~73 Hz). Three engine
-    order excitation lines (EO 1x, 2x, 3x) are drawn as dashed gray diagonals from
-    the origin. Red diamond markers with white borders indicate critical speed intersections
-    where engine order lines cross mode curves. The legend is positioned in the upper-left
-    corner listing all modes, EO lines, and critical speed markers. The title reads
-    "campbell-basic · plotly · pyplots.ai" centered at top. The background is white
-    with a light gray paper background (#FAFBFC) and very subtle grid lines. Only
-    the "1x" engine order label is visible at the right edge — the "2x" and "3x" labels
-    are clipped because their line endpoints exceed the y-axis maximum of 110 Hz.'
+  - Engine order labels 2x and 3x are not visible in the rendered static image — they
+    are placed at coordinates outside or at the edge of the visible area
+  - All four natural frequency mode curves use identical solid line style despite
+    line_dashes being defined — using distinct dash patterns would improve visual
+    distinction
+  - The line_dashes variable is defined but serves no purpose since all values are
+    solid — dead configuration
+  - Critical speed shaded bands are nearly invisible at alpha 0.04 — increasing to
+    0.08-0.12 would make them meaningful
+  image_description: 'The plot displays a Campbell Diagram with "campbell-basic ·
+    plotly · pyplots.ai" as the centered title. The X-axis reads "Rotational Speed
+    (RPM)" ranging from 0 to 6000, and the Y-axis reads "Frequency (Hz)" from 0 to
+    110. Four natural frequency mode curves are plotted as solid lines: 1st Bending
+    (dark blue, gently rising from ~18 Hz), 2nd Bending (green, gradually declining
+    from ~43 Hz), 1st Torsional (purple, nearly flat at ~55 Hz), and Axial (orange,
+    declining from ~73 Hz). Three dashed gray engine order lines (EO 1x, EO 2x, EO
+    3x) extend diagonally from the origin. The "1x" label is visible at the upper-right
+    portion of the plot, but the "2x" and "3x" labels appear to be cut off or outside
+    the visible axis range. Red diamond markers with white edges indicate critical
+    speed intersections (approximately 10-12 markers). Very faint vertical shaded
+    bands appear around critical speeds. A legend in the top-left corner lists all
+    series clearly. The background is light gray (#F8F9FA) with a white plot area
+    and very subtle gridlines.'
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 26
       max: 30
       items:
       - id: VQ-01
@@ -55,69 +57,66 @@ review:
         max: 8
         passed: true
         comment: 'All font sizes explicitly set: title 28pt, axis labels 22pt, ticks
-          18pt, legend 16pt, annotations 16pt. All text clearly readable.'
+          18pt, legend 15pt, annotations 16pt'
       - id: VQ-02
         name: No Overlap
-        score: 4
-        max: 6
-        passed: false
-        comment: The 2x and 3x engine order annotation labels are clipped by the y-axis
-          range (max 110 Hz), making them invisible. Legend slightly overlaps the
-          upper data region.
-      - id: VQ-03
-        name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Line widths of 3, diamond markers size 14 with white edge borders
-          — all elements clearly visible and well-sized.
+        comment: No overlapping text or data elements; legend in low-data-density
+          region
+      - id: VQ-03
+        name: Element Visibility
+        score: 5
+        max: 6
+        passed: true
+        comment: Lines and markers well-sized; all mode lines use same solid dash
+          reducing distinction
       - id: VQ-04
         name: Color Accessibility
-        score: 3
-        max: 4
-        passed: false
-        comment: Mode colors generally distinguishable, but green (2nd Bending) and
-          red (critical speed diamonds) could be problematic for red-green colorblind
-          viewers.
-      - id: VQ-05
-        name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Plot fills canvas well with balanced margins. Good use of space.
+        comment: 'Colorblind-safe palette: blue, green, purple, orange with gray EO
+          lines'
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 1
+        max: 4
+        passed: false
+        comment: EO labels 2x and 3x not visible in rendered image; x-axis extends
+          to 6500 but data ends at 6000 wasting space
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Rotational Speed (RPM) and Frequency (Hz) — descriptive with units.
+        comment: 'Both axes have descriptive labels with units: RPM and Hz'
     design_excellence:
-      score: 13
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
-        passed: false
-        comment: Clean plotly_white template, custom color palette starting with Python
-          Blue, intentional font choices. Above default but not publication-showcase
-          level.
+        passed: true
+        comment: Custom palette, explicit font families, white-edged diamond markers,
+          subtle paper background
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
-        passed: false
-        comment: Subtle grid (rgba 0.06 opacity), zeroline removed, custom background
-          colors, generous margins. Good refinement visible.
+        passed: true
+        comment: Subtle gridlines at 0.05 opacity, removed zeroline, light axis lines,
+          generous margins
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Red diamond critical speed markers create clear focal points drawing
-          attention to resonance conditions. Engine order lines intentionally subdued
-          in gray dashes. Visual hierarchy guides the viewer.
+        comment: Red diamond critical markers create focal points; faint shaded zones
+          add context; hovertemplate provides interactive storytelling
     spec_compliance:
       score: 14
       max: 15
@@ -127,55 +126,53 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct Campbell Diagram with natural frequency curves, engine order
-          lines, and critical speed markers.
+        comment: Correct Campbell Diagram with mode curves and engine order lines
       - id: SC-02
         name: Required Features
         score: 3
         max: 4
-        passed: false
-        comment: All features present but 2x/3x engine order labels not visible due
-          to clipping beyond y-axis range.
+        passed: true
+        comment: Has all major features but 2x and 3x EO labels not visible in static
+          output
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X-axis = rotational speed in RPM, Y-axis = frequency in Hz. Correct
-          mapping.
+        comment: RPM on X, Hz on Y, correct throughout
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend labels are descriptive and accurate.
+        comment: Title follows exact format, legend clearly labels all series
     data_quality:
-      score: 14
+      score: 13
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
         score: 5
         max: 6
-        passed: false
-        comment: Four modes with realistic speed-dependent behavior, three engine
-          orders, multiple critical speed intersections. Good but could show more
-          dramatic frequency variation.
+        passed: true
+        comment: Modes show varying behavior (increasing, decreasing, flat); multiple
+          EO lines and critical intersections shown
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real rotordynamic scenario with proper mode names and plausible frequency
-          ranges.
+        comment: Rotordynamic scenario with realistic mode names and plausible frequency
+          ranges
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: 0-6000 RPM and 0-110 Hz are realistic ranges for turbomachinery analysis.
+        comment: Realistic ranges; 1st Bending somewhat low causing clustered intersections
+          at low RPM
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -183,56 +180,56 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Flat script: imports, data generation, plot construction, save.
-          No functions or classes.'
+        comment: 'Flat script: imports, data, figure, save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only numpy and plotly.graph_objects imported, both used.
+        comment: Only numpy and plotly.graph_objects imported, both used
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Clean, well-structured code. Intersection-finding algorithm is clear
-          and efficient.
+        passed: false
+        comment: line_dashes defined but all solid — dead configuration; EO label
+          placement results in invisible labels
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png at 1600x900 with scale=3. Also exports HTML.
+        comment: Saves plot.png at 1600x900 scale=3 and plot.html
     library_mastery:
-      score: 7
+      score: 6
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
         score: 4
         max: 5
-        passed: false
-        comment: Uses go.Figure(), go.Scatter(), add_trace(), update_layout(), add_annotation()
-          — all idiomatic Plotly Graph Objects patterns.
+        passed: true
+        comment: Good use of go.Scatter, add_vrect, add_annotation, hovertemplate
+          with customdata
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 2
         max: 5
-        passed: false
-        comment: Custom hovertemplate with HTML formatting, add_annotation for edge
-          labels, HTML export alongside PNG — Plotly-distinctive features.
+        passed: true
+        comment: Uses add_vrect and hovertemplate with customdata; core visualization
+          still replicable in matplotlib
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
+  - hover-tooltips
   - html-export
   patterns:
   - data-generation
@@ -240,3 +237,4 @@ impl_tags:
   dataprep: []
   styling:
   - grid-styling
+  - edge-highlighting

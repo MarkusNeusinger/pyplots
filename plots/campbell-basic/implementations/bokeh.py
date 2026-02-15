@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 campbell-basic: Campbell Diagram
 Library: bokeh 3.8.2 | Python 3.14.3
 Quality: 86/100 | Created: 2026-02-15
@@ -11,16 +11,15 @@ from bokeh.plotting import figure
 
 
 # Data
-np.random.seed(42)
 speeds = np.linspace(0, 6000, 100)
 
-# Natural frequency modes (Hz) with realistic rotordynamic behavior
-# Gyroscopic stiffening raises forward-whirl modes, lowers backward-whirl modes
-mode_1_bending = 22 + 0.003 * speeds + 1.2 * np.sin(speeds / 3000 * np.pi)
-mode_2_bending = 55 - 0.0015 * speeds + 0.8 * np.sin(speeds / 2500 * np.pi)
-mode_1_torsional = 78 + 0.002 * speeds
-mode_axial = 105 + 0.0008 * speeds - 0.5 * np.sin(speeds / 4000 * np.pi)
-mode_3_bending = 140 - 0.003 * speeds + 1.5 * np.cos(speeds / 3500 * np.pi)
+# Natural frequency modes (Hz) with pronounced rotordynamic behavior
+# Gyroscopic stiffening raises forward-whirl modes; backward-whirl modes decrease with speed
+mode_1_bending = 25 + 0.008 * speeds + 3.5 * np.sin(speeds / 2800 * np.pi)
+mode_2_bending = 62 - 0.006 * speeds + 2.0 * np.sin(speeds / 2200 * np.pi)
+mode_1_torsional = 85 + 0.005 * speeds
+mode_axial = 110 - 0.004 * speeds + 2.5 * np.cos(speeds / 3200 * np.pi)
+mode_3_bending = 130 + 0.010 * speeds - 4.0 * np.cos(speeds / 2600 * np.pi)
 
 modes = {
     "1st Bending": mode_1_bending,
@@ -38,6 +37,7 @@ eo_frequencies = {order: order * speeds / 60 for order in engine_orders}
 critical_speeds_rpm = []
 critical_speeds_freq = []
 critical_speed_labels = []
+critical_in_operating = []
 
 for order in engine_orders:
     eo_freq = eo_frequencies[order]
@@ -55,6 +55,12 @@ for order in engine_orders:
                 critical_speeds_rpm.append(rpm_interp)
                 critical_speeds_freq.append(freq_interp)
                 critical_speed_labels.append(f"{order}x × {mode_name}")
+                critical_in_operating.append(3000 <= rpm_interp <= 5000)
+
+# Compute y-range: tight fit around actual data with padding
+all_freqs = np.concatenate(list(modes.values()))
+y_max_data = max(np.max(all_freqs), max(critical_speeds_freq) if critical_speeds_freq else 0)
+y_max = min(int(np.ceil(y_max_data / 10) * 10) + 15, 200)
 
 # Plot
 p = figure(
@@ -64,7 +70,7 @@ p = figure(
     x_axis_label="Rotational Speed (RPM)",
     y_axis_label="Frequency (Hz)",
     x_range=Range1d(-100, 6300),
-    y_range=Range1d(0, 200),
+    y_range=Range1d(0, y_max),
 )
 
 # Operating range shading (typical continuous operating range: 3000-5000 RPM)
@@ -72,38 +78,40 @@ operating_zone = BoxAnnotation(
     left=3000,
     right=5000,
     fill_color="#306998",
-    fill_alpha=0.06,
+    fill_alpha=0.07,
     line_color="#306998",
-    line_alpha=0.25,
+    line_alpha=0.35,
     line_dash="dotted",
-    line_width=2,
+    line_width=3,
 )
 p.add_layout(operating_zone)
 
-# Operating range label
+# Operating range label — prominent and clearly visible
 op_label = Label(
     x=4000,
-    y=5,
-    text="Operating Range",
-    text_font_size="16pt",
+    y=y_max * 0.08,
+    text="Operating Range (3000–5000 RPM)",
+    text_font_size="20pt",
     text_color="#306998",
-    text_alpha=0.6,
+    text_alpha=0.85,
     text_align="center",
-    text_font_style="italic",
+    text_font_style="bold italic",
 )
 p.add_layout(op_label)
 
 # Danger zone highlighting around critical speeds within operating range
-for rpm_val, freq_val in zip(critical_speeds_rpm, critical_speeds_freq, strict=False):
-    if 3000 <= rpm_val <= 5000:
+for rpm_val, freq_val, in_op in zip(critical_speeds_rpm, critical_speeds_freq, critical_in_operating, strict=True):
+    if in_op:
         danger = BoxAnnotation(
-            left=rpm_val - 120,
-            right=rpm_val + 120,
-            bottom=freq_val - 4,
-            top=freq_val + 4,
+            left=rpm_val - 150,
+            right=rpm_val + 150,
+            bottom=freq_val - 5,
+            top=freq_val + 5,
             fill_color="#D62728",
-            fill_alpha=0.10,
-            line_color=None,
+            fill_alpha=0.12,
+            line_color="#D62728",
+            line_alpha=0.3,
+            line_width=1,
         )
         p.add_layout(danger)
 
@@ -117,12 +125,12 @@ for i, (mode_name, mode_freq) in enumerate(modes.items()):
     line = p.line(x="speed", y="freq", source=source, line_width=5, line_color=mode_colors[i], line_alpha=0.95)
     legend_items.append(LegendItem(label=mode_name, renderers=[line]))
 
-# Engine order lines (stronger visibility)
+# Engine order lines
 eo_color = "#444444"
 
 for order in engine_orders:
     eo_freq = eo_frequencies[order]
-    mask = eo_freq <= 200
+    mask = eo_freq <= y_max
     clipped_speeds = speeds[mask]
     clipped_freq = eo_freq[mask]
 
@@ -135,9 +143,9 @@ for order in engine_orders:
 # Engine order labels positioned clearly along each line
 for order in engine_orders:
     freq_at_max = order * 6000 / 60
-    if freq_at_max > 195:
-        label_rpm = 193 * 60 / order
-        label_freq = 190
+    if freq_at_max > y_max - 5:
+        label_rpm = (y_max - 10) * 60 / order
+        label_freq = y_max - 8
     else:
         label_rpm = 5800
         label_freq = freq_at_max
@@ -162,6 +170,7 @@ if critical_speeds_rpm:
             "label": critical_speed_labels,
             "rpm_display": [f"{r:.0f}" for r in critical_speeds_rpm],
             "freq_display": [f"{f:.1f}" for f in critical_speeds_freq],
+            "in_operating": ["YES — CAUTION" if op else "No" for op in critical_in_operating],
         }
     )
     crit_scatter = p.scatter(
@@ -177,15 +186,43 @@ if critical_speeds_rpm:
     )
     legend_items.append(LegendItem(label="Critical Speed", renderers=[crit_scatter]))
 
-    # HoverTool for critical speed details (Bokeh distinctive feature)
+    # HoverTool with enriched tooltips (Bokeh distinctive feature)
     hover = HoverTool(
         renderers=[crit_scatter],
-        tooltips=[("Intersection", "@label"), ("RPM", "@rpm_display"), ("Frequency", "@freq_display Hz")],
+        tooltips=[
+            ("Intersection", "@label"),
+            ("RPM", "@rpm_display"),
+            ("Frequency", "@freq_display Hz"),
+            ("In Operating Range?", "@in_operating"),
+        ],
         mode="mouse",
     )
     p.add_tools(hover)
 
-# Legend inside the plot for balanced layout
+    # Annotate the most critical intersection in the operating range
+    op_crits = [
+        (r, f, lbl)
+        for r, f, lbl, op in zip(
+            critical_speeds_rpm, critical_speeds_freq, critical_speed_labels, critical_in_operating, strict=True
+        )
+        if op
+    ]
+    if op_crits:
+        # Pick the lowest-frequency critical speed in operating range (most dangerous for startup)
+        op_crits.sort(key=lambda x: x[1])
+        worst_rpm, worst_freq, worst_label = op_crits[0]
+        annotation = Label(
+            x=worst_rpm + 200,
+            y=worst_freq + 6,
+            text=f"⚠ {worst_label} @ {worst_rpm:.0f} RPM",
+            text_font_size="16pt",
+            text_color="#D62728",
+            text_font_style="bold",
+            text_alpha=0.9,
+        )
+        p.add_layout(annotation)
+
+# Legend — positioned to avoid overlapping data
 legend = Legend(
     items=legend_items,
     location="top_left",

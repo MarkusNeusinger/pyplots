@@ -1,167 +1,186 @@
 library: matplotlib
 specification_id: bubble-basic
 created: '2025-12-23T01:30:44Z'
-updated: '2026-02-15T12:00:00+00:00'
+updated: '2026-02-15T21:42:42Z'
 generated_by: claude-opus-4-6
 workflow_run: 20448650412
 issue: 0
-python_version: '3.14.3'
-library_version: '3.10.8'
+python_version: 3.14.3
+library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/matplotlib/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/matplotlib/plot_thumb.png
 preview_html: null
-quality_score: null
+quality_score: 86
 impl_tags:
   dependencies: []
   techniques:
+  - colorbar
   - custom-legend
   patterns:
   - data-generation
   - explicit-figure
   dataprep: []
   styling:
+  - custom-colormap
   - alpha-blending
+  - edge-highlighting
+  - grid-styling
 review:
   strengths:
-  - Excellent implementation of area-based size scaling as spec requires
-  - Size legend clearly communicates bubble size meaning with three reference values
-  - Good use of transparency (alpha=0.6) and edge colors to distinguish overlapping
-    bubbles
-  - Clean KISS code structure following matplotlib best practices
-  - Proper font sizes for 4800x2700 canvas
+  - 'Excellent spec compliance: all required features (area-scaled sizes, alpha transparency,
+    size legend) are present'
+  - Clean, professional appearance with cividis colormap, white edge highlighting,
+    and removed spines
+  - Realistic data scenario with plausible tech company metrics showing a meaningful
+    negative correlation
+  - 'Perfect code quality: KISS structure, reproducible seed, clean imports, no over-engineering'
+  - 'Strong font sizing: all text sizes explicitly set per library guidelines'
   weaknesses:
-  - Axis labels are generic (X Value, Y Value) without contextual units despite code
-    comments mentioning company metrics
-  - Size distribution appears somewhat random rather than showing interesting patterns
-    across the X-Y space
-  image_description: The plot shows a bubble chart with approximately 50 data points
-    displayed as semi-transparent blue circles (#306998) with darker blue edges (#1a3d5c).
-    The bubbles vary significantly in size, representing a third variable. The X axis
-    ranges from ~10 to 100, labeled "X Value", and the Y axis ranges from ~10 to 100,
-    labeled "Y Value". There is a clear positive correlation between X and Y values.
-    A size legend in the upper left corner shows three reference bubble sizes (100,
-    250, 500) with title "Size Value". The title reads "bubble-basic · matplotlib
-    · pyplots.ai" in the correct format. A subtle dashed grid (alpha ~0.3) is visible
-    in the background. The bubbles use alpha=0.6 transparency which allows overlapping
-    bubbles to be distinguished.
+  - Dual encoding of market cap using both color AND size is redundant — color could
+    encode a 4th variable (e.g., sector) or be a single fixed color to let size carry
+    the message alone
+  - 'Layout balance is suboptimal: the colorbar and size legend compete for space
+    on the right, creating visual congestion'
+  - 'Data storytelling is weak: no focal point, annotation of notable companies, or
+    visual emphasis to guide the viewer interpretation'
+  - Bubble overlap in the dense lower-revenue/higher-growth cluster reduces readability
+    of individual data points
+  image_description: 'The plot displays a bubble chart with approximately 40 data
+    points representing tech company metrics. The x-axis shows "Annual Revenue ($B)"
+    ranging from ~5 to ~120, and the y-axis shows "Revenue Growth Rate (%)" ranging
+    from about -10% to 45%. Bubble sizes represent Market Cap, with a size legend
+    in the upper right corner showing three reference sizes: $25B, $100B, and $300B.
+    The bubbles are colored using the cividis colormap (dark blue-gray to yellow),
+    also mapped to Market Cap, with a vertical colorbar on the right side showing
+    values from ~25 to ~225. Top and right spines are removed. Subtle dashed grid
+    lines are present. All bubbles have white edge highlighting. The title reads "bubble-basic
+    · matplotlib · pyplots.ai". The data shows a clear negative correlation — higher-revenue
+    companies tend to have lower growth rates, with smaller high-growth companies
+    clustered in the upper-left and larger low-growth companies in the lower-right.'
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 26
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
-        passed: true
-        comment: Title 24pt, axis labels 20pt, tick labels 16pt - all clearly readable
-      - id: VQ-02
-        name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No text overlaps, legend well-positioned in upper left away from
-          data
+        comment: 'All font sizes explicitly set: title 24pt, labels 20pt, ticks 16pt,
+          legend 16pt, colorbar label 18pt'
+      - id: VQ-02
+        name: No Overlap
+        score: 5
+        max: 6
+        passed: true
+        comment: Minor bubble overlap in dense cluster around revenue 70-80B, but
+          all text is clean and readable
       - id: VQ-03
         name: Element Visibility
-        score: 7
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Bubble sizes are well-adapted with good alpha (0.6) for 50 points,
-          though some bubble overlap in the lower-left region makes individual bubbles
-          harder to distinguish
+        comment: Bubble sizes reasonable for 40 data points with good alpha. Some
+          smaller bubbles partially obscured in dense areas
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Single color scheme (blue) with darker edge, colorblind-safe
+        comment: Cividis colormap is perceptually uniform and colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Good proportions, well-balanced whitespace
+        score: 2
+        max: 4
+        passed: false
+        comment: Right side congested with colorbar and size legend competing for
+          space; some wasted space on left
       - id: VQ-06
-        name: Axis Labels
-        score: 1
-        max: 2
-        passed: true
-        comment: Labels are descriptive ("X Value", "Y Value") but generic without
-          units or context
-      - id: VQ-07
-        name: Grid & Legend
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Grid is subtle (alpha=0.3, dashed), size legend clearly shows bubble
-          scale reference
+        comment: 'Descriptive labels with units: Annual Revenue ($B), Revenue Growth
+          Rate (%)'
+    design_excellence:
+      score: 13
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 6
+        max: 8
+        passed: true
+        comment: Strong design with cividis colormap, white edge highlighting, removed
+          spines. Dual encoding of market cap is slightly redundant
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: 'Good refinement: spines removed, subtle dashed grid, white edges.
+          Minor congestion on right side'
+      - id: DE-03
+        name: Data Storytelling
+        score: 3
+        max: 6
+        passed: false
+        comment: Negative correlation is visible and color/size create some hierarchy,
+          but no focal point or emphasis to guide interpretation
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct bubble chart type
+        comment: Correct bubble chart with three quantitative dimensions
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X/Y correctly assigned, size variable mapped to bubble size
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: 'All spec features present: 3 variables, transparency for overlap
-          handling, size legend included'
-      - id: SC-04
-        name: Data Range
+        comment: 'All spec features present: area-scaled sizes, alpha transparency,
+          size legend, colorbar'
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axes
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X/Y correctly assigned, axes show full data range
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Size legend accurately represents bubble scaling with three reference
-          values
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Correct format: "bubble-basic · matplotlib · pyplots.ai"'
+        comment: Title format correct, size legend labels match data
     data_quality:
-      score: 17
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Shows variation in all three variables with positive X-Y correlation.
-          Could show more diverse size distribution across the X-Y space
+        comment: Good variety in sizes/positions showing negative correlation, but
+          no distinctive clusters or outliers
       - id: DQ-02
         name: Realistic Context
-        score: 6
-        max: 7
-        passed: true
-        comment: Data is labeled as "company metrics" in comments but axis labels
-          are generic. Plausible scenario but could be more specific
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Values are sensible (10-100 range for X/Y, 50-500 for size)
+        comment: 'Plausible tech company metrics: revenue, growth rate, market cap'
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: 'Realistic values: revenue 5-120B, growth -10% to 45%, market caps
+          up to ~300B'
     code_quality:
       score: 10
       max: 10
@@ -171,41 +190,45 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save structure, no functions/classes
+        comment: Clean imports → data → plot → save flow
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: np.random.seed(42) used
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only matplotlib.pyplot and numpy imported
+        comment: Only matplotlib and numpy
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: No deprecated functions
+        comment: Clean, Pythonic, appropriate complexity
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves as plot.png, no deprecated functions
+    library_mastery:
+      score: 8
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: Proper fig/ax pattern, Axes methods, colorbar, scatter kwargs
+      - id: LM-02
+        name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses ax.scatter with proper size scaling and edge colors. Basic but
-          correct matplotlib usage. Could leverage colormap or additional matplotlib
-          features
-  verdict: APPROVED
+        comment: Uses colorbar, custom legend with phantom scatter handles, cmap parameter
+  verdict: REJECTED

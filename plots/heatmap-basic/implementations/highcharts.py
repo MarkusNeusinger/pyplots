@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-basic: Basic Heatmap
 Library: highcharts 1.10.3 | Python 3.14.3
-Quality: 78/100 | Updated: 2026-02-15
 """
 
 import json
@@ -21,16 +20,25 @@ days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 time_periods = ["6–9 AM", "9 AM–Noon", "Noon–3 PM", "3–6 PM", "6–9 PM", "9 PM–Mid", "Mid–3 AM", "3–6 AM"]
 
 # Generate realistic traffic patterns (visits per hour)
-base = np.random.randint(20, 70, size=(len(time_periods), len(days)))
+base = np.random.randint(15, 55, size=(len(time_periods), len(days)))
 
-# Weekday business hours peak
-base[1:4, 0:5] = np.clip(base[1:4, 0:5] * 1.6, 0, 100).astype(int)
+# Weekday business hours: strong peak (9 AM–6 PM, Mon–Fri)
+base[1:4, 0:5] = np.clip(base[1:4, 0:5] * 2.0, 60, 100).astype(int)
 
-# Weekend mornings and evenings higher (leisure browsing)
-base[4:6, 5:7] = np.clip(base[4:6, 5:7] * 1.4, 0, 100).astype(int)
+# Weekday early morning ramp-up (6–9 AM)
+base[0, 0:5] = np.clip(base[0, 0:5] * 1.3, 30, 55).astype(int)
+
+# Weekend leisure browsing: evenings higher
+base[4:6, 5:7] = np.clip(base[4:6, 5:7] * 1.5, 40, 75).astype(int)
+
+# Weekend daytime: moderate
+base[1:4, 5:7] = np.clip(base[1:4, 5:7] * 0.9, 25, 50).astype(int)
 
 # Late night universally low
-base[6:8, :] = np.clip(base[6:8, :] * 0.4, 0, 100).astype(int)
+base[6:8, :] = np.clip(base[6:8, :] * 0.25, 2, 18).astype(int)
+
+# Evening wind-down
+base[5, :] = np.clip(base[5, :] * 0.6, 10, 35).astype(int)
 
 traffic = np.clip(base, 0, 100).astype(int)
 
@@ -46,53 +54,89 @@ chart_options = {
         "type": "heatmap",
         "width": 4800,
         "height": 2700,
-        "backgroundColor": "#ffffff",
-        "marginTop": 120,
-        "marginBottom": 200,
-        "marginRight": 420,
+        "backgroundColor": "#fafafa",
+        "marginTop": 180,
+        "marginBottom": 180,
+        "marginRight": 280,
+        "marginLeft": 300,
+        "style": {"fontFamily": "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"},
     },
     "title": {
         "text": "Website Traffic · heatmap-basic · highcharts · pyplots.ai",
-        "style": {"fontSize": "56px", "fontWeight": "bold"},
+        "style": {"fontSize": "52px", "fontWeight": "600", "color": "#2c3e50"},
+        "y": 30,
     },
-    "xAxis": {"categories": days, "title": {"text": None}, "labels": {"style": {"fontSize": "36px"}}},
+    "subtitle": {
+        "text": "Visits per hour — weekday business hours show clear peak activity",
+        "style": {"fontSize": "30px", "fontWeight": "normal", "color": "#7f8c8d"},
+        "y": 75,
+    },
+    "xAxis": {
+        "categories": days,
+        "title": {
+            "text": "Day of Week",
+            "style": {"fontSize": "32px", "fontWeight": "600", "color": "#34495e"},
+            "margin": 16,
+        },
+        "labels": {"style": {"fontSize": "34px", "color": "#34495e"}, "y": 40},
+        "lineWidth": 0,
+        "tickLength": 0,
+    },
     "yAxis": {
         "categories": time_periods,
-        "title": {"text": None},
-        "labels": {"style": {"fontSize": "32px"}},
+        "title": {
+            "text": "Time Period",
+            "style": {"fontSize": "32px", "fontWeight": "600", "color": "#34495e"},
+            "margin": 16,
+        },
+        "labels": {"style": {"fontSize": "30px", "color": "#34495e"}},
         "reversed": True,
+        "lineWidth": 0,
+        "gridLineWidth": 0,
     },
     "colorAxis": {
         "min": 0,
         "max": 100,
-        "stops": [[0, "#f0f6fc"], [0.3, "#b3d4ea"], [0.6, "#5a9fcf"], [1, "#1a6fad"]],
-        "labels": {"style": {"fontSize": "28px"}},
+        "stops": [
+            [0, "#f7fbff"],
+            [0.10, "#dae8f5"],
+            [0.20, "#b0d2e8"],
+            [0.35, "#6baed6"],
+            [0.50, "#3182bd"],
+            [0.65, "#1a5276"],
+            [0.80, "#6c3483"],
+            [1, "#c0392b"],
+        ],
+        "labels": {"style": {"fontSize": "26px", "color": "#34495e"}},
     },
     "legend": {
-        "title": {"text": "Visits/hr", "style": {"fontSize": "28px", "fontWeight": "normal"}},
+        "title": {"text": "Visits / hr", "style": {"fontSize": "28px", "fontWeight": "600", "color": "#34495e"}},
         "align": "right",
         "layout": "vertical",
         "verticalAlign": "middle",
-        "symbolHeight": 700,
-        "symbolWidth": 40,
-        "itemStyle": {"fontSize": "26px"},
-        "x": -40,
+        "symbolHeight": 900,
+        "symbolWidth": 36,
+        "itemStyle": {"fontSize": "24px", "color": "#34495e"},
+        "x": -20,
     },
     "tooltip": {
         "style": {"fontSize": "32px"},
         "headerFormat": "",
-        "pointFormat": "<b>{series.yAxis.categories.(point.y)}</b><br>"
-        "<b>{series.xAxis.categories.(point.x)}</b><br>"
-        "Visits/hr: <b>{point.value}</b>",
+        "pointFormat": (
+            "<b>{series.yAxis.categories.(point.y)}</b><br>"
+            "<b>{series.xAxis.categories.(point.x)}</b><br>"
+            "Visits/hr: <b>{point.value}</b>"
+        ),
     },
     "credits": {"enabled": False},
+    "plotOptions": {"heatmap": {"colsize": 1, "rowsize": 1}},
     "series": [
         {
             "type": "heatmap",
-            "name": "Traffic",
+            "name": "Website Traffic",
             "data": heatmap_data,
             "borderWidth": 3,
-            "borderColor": "#ffffff",
+            "borderColor": "#fafafa",
             "dataLabels": {"enabled": True, "style": {"fontSize": "28px", "fontWeight": "bold", "textOutline": "none"}},
         }
     ],
@@ -119,13 +163,14 @@ html_content = f"""<!DOCTYPE html>
     <script>{highcharts_js}</script>
     <script>{heatmap_js}</script>
 </head>
-<body style="margin:0;">
-    <div id="container" style="width: 4800px; height: 2700px;"></div>
+<body style="margin:0; padding:0; overflow:hidden; background:#fafafa;">
+    <div id="container" style="width:4800px; height:2700px;"></div>
     <script>
         var opts = {options_json};
         opts.series[0].dataLabels.formatter = function() {{
-            var color = this.point.value > 60 ? '#ffffff' : '#333333';
-            return '<span style="color:' + color + '">' + this.point.value + '</span>';
+            var v = this.point.value;
+            var color = v > 50 ? '#ffffff' : '#1a1a2e';
+            return '<span style="color:' + color + ';font-size:28px;font-weight:bold">' + v + '</span>';
         }};
         opts.series[0].dataLabels.useHTML = true;
         Highcharts.chart('container', opts);
@@ -143,13 +188,16 @@ with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encodin
     temp_path = f.name
 
 chrome_options = Options()
-chrome_options.add_argument("--headless")
+chrome_options.add_argument("--headless=new")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=4800,2700")
+chrome_options.add_argument("--window-size=4800,2840")
+chrome_options.add_argument("--force-device-scale-factor=1")
+chrome_options.add_argument("--hide-scrollbars")
 
 driver = webdriver.Chrome(options=chrome_options)
+driver.set_window_size(4800, 2840)
 driver.get(f"file://{temp_path}")
 time.sleep(5)
 driver.save_screenshot("plot.png")

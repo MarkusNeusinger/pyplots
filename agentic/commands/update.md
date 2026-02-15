@@ -81,6 +81,8 @@ The lead performs this directly (no extra agent). This ensures agents work again
 
 5. **Apply accepted changes** to `specification.md` and/or `specification.yaml`, then proceed to Phase 3.
 
+   > If any changes were made to `specification.md` or `specification.yaml` (tags, wording, etc.), update the `updated` field in `specification.yaml` to the current UTC timestamp in ISO 8601 format (e.g., `2026-02-15T10:30:00Z`).
+
 ---
 
 ### Phase 3: Create Team & Spawn Agents
@@ -124,7 +126,9 @@ The lead performs this directly (no extra agent). This ensures agents work again
    | `highcharts` | `highcharts-core` |
    | `letsplot` | `lets-plot` |
 
-4. **Assign tasks** to the corresponding agents via `TaskUpdate`
+4. **Assign tasks immediately after spawning** — For each agent, call `TaskUpdate` with `owner: "{library}"` on the
+   corresponding task right after spawning it. Do NOT skip this step — if tasks are left unassigned, agents will
+   create their own duplicate tasks, leading to orphaned entries in the task list.
 
 All agents run in parallel — each only touches its own library's files. Agents must NOT create files outside
 their designated directories (see file containment rules in the agent prompt).
@@ -336,6 +340,7 @@ cp plots/{spec_id}/implementations/{library}.py "$WORKTREE/plots/{spec_id}/imple
 cp plots/{spec_id}/metadata/{library}.yaml "$WORKTREE/plots/{spec_id}/metadata/{library}.yaml"
 # If spec was changed (only for the first library):
 cp plots/{spec_id}/specification.md "$WORKTREE/plots/{spec_id}/specification.md"
+cp plots/{spec_id}/specification.yaml "$WORKTREE/plots/{spec_id}/specification.yaml"
 
 # Commit and push from the worktree
 cd "$WORKTREE"
@@ -344,6 +349,7 @@ git add plots/{spec_id}/implementations/{library}.py
 git add plots/{spec_id}/metadata/{library}.yaml
 # If spec was changed (only in first library branch):
 git add plots/{spec_id}/specification.md
+git add plots/{spec_id}/specification.yaml
 
 git commit -m "update({spec_id}): {library} — {short description}
 

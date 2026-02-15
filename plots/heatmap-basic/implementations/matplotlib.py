@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-basic: Basic Heatmap
 Library: matplotlib 3.10.8 | Python 3.14.3
 Quality: 86/100 | Updated: 2026-02-15
@@ -13,7 +13,6 @@ from matplotlib.colors import TwoSlopeNorm
 departments = ["Sales", "Marketing", "Support", "Dev", "HR", "Finance", "Ops", "Legal"]
 n = len(departments)
 
-# Craft realistic correlations with stronger negative values to showcase diverging colormap
 data = np.array(
     [
         [1.00, 0.82, 0.35, 0.12, -0.15, 0.61, 0.44, 0.08],  # Sales
@@ -27,44 +26,53 @@ data = np.array(
     ]
 )
 
-# Plot - use wider figure to accommodate colorbar without crowding
-fig, ax = plt.subplots(figsize=(14, 12))
+# Plot - square figure for 3600x3600 at 300 dpi
+fig, ax = plt.subplots(figsize=(12, 12))
 
-# Heatmap with pcolormesh for built-in edge colors (cleaner than separate grid lines)
+# Heatmap with imshow - idiomatic for grid-aligned data
 norm = TwoSlopeNorm(vmin=-1, vcenter=0, vmax=1)
-im = ax.pcolormesh(data[::-1], cmap="RdBu_r", norm=norm, edgecolors="white", linewidth=1.5)
+im = ax.imshow(data, cmap="coolwarm", norm=norm, aspect="equal")
 
 # Remove all spines for a modern, clean look
 for spine in ax.spines.values():
     spine.set_visible(False)
 
-# Tick labels - pcolormesh uses edge-based coordinates, center ticks in cells
-ax.set_xticks(np.arange(n) + 0.5)
-ax.set_yticks(np.arange(n) + 0.5)
+# Cell edges via grid lines for clean separation
+ax.set_xticks(np.arange(n + 1) - 0.5, minor=True)
+ax.set_yticks(np.arange(n + 1) - 0.5, minor=True)
+ax.grid(which="minor", color="white", linewidth=2)
+ax.tick_params(which="minor", bottom=False, left=False)
+
+# Tick labels centered on cells
+ax.set_xticks(np.arange(n))
+ax.set_yticks(np.arange(n))
 ax.set_xticklabels(departments, fontsize=16, rotation=45, ha="right")
-ax.set_yticklabels(departments[::-1], fontsize=16)
+ax.set_yticklabels(departments, fontsize=16)
 ax.tick_params(axis="both", length=0)
 
-# Colorbar - use fraction/pad for better alignment with matrix
+# Colorbar with clean styling
 cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.03, aspect=30)
 cbar.ax.tick_params(labelsize=16)
 cbar.set_label("Correlation Coefficient", fontsize=18, labelpad=12)
 cbar.outline.set_visible(False)
 
-# Cell value annotations with adaptive text color
+# Cell annotations with adaptive text color and emphasis on strong correlations
 for i in range(n):
     for j in range(n):
         value = data[i, j]
-        text_color = "white" if abs(value) > 0.55 else "black"
+        # Adaptive text color for readability
+        text_color = "white" if abs(value) > 0.55 else "#333333"
+        # Emphasize strong off-diagonal correlations (|r| >= 0.6) with larger, bolder text
+        is_strong = abs(value) >= 0.6 and i != j
         ax.text(
-            j + 0.5,
-            n - 1 - i + 0.5,
+            j,
+            i,
             f"{value:.2f}",
             ha="center",
             va="center",
-            fontsize=14,
+            fontsize=16 if is_strong else 13,
             color=text_color,
-            fontweight="bold",
+            fontweight="bold" if is_strong else "medium",
         )
 
 # Labels and title

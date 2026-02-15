@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 campbell-basic: Campbell Diagram
 Library: plotnine 0.15.3 | Python 3.14.3
-Quality: 86/100 | Created: 2026-02-15
 """
 
 import numpy as np
@@ -9,12 +8,14 @@ import pandas as pd
 from plotnine import (
     aes,
     annotate,
+    coord_cartesian,
     element_blank,
     element_line,
     element_rect,
     element_text,
     geom_line,
     geom_point,
+    geom_rect,
     geom_text,
     ggplot,
     guide_legend,
@@ -22,6 +23,7 @@ from plotnine import (
     labs,
     scale_color_manual,
     scale_linetype_manual,
+    scale_size_identity,
     scale_x_continuous,
     scale_y_continuous,
     theme,
@@ -29,30 +31,26 @@ from plotnine import (
 )
 
 
-# Data - Natural frequencies vs rotational speed for a rotating machine
+# Data — Natural frequencies vs rotational speed for rotating machinery
 np.random.seed(42)
 speed = np.linspace(0, 6000, 80)
 
-# Natural frequency modes (Hz) - slight variation with speed due to gyroscopic effects
+# Natural frequency modes with pronounced gyroscopic speed dependence
 modes = {
-    "1st Bending": 18 + speed * 0.0008 + np.random.normal(0, 0.15, len(speed)),
-    "2nd Bending": 42 - speed * 0.0005 + np.random.normal(0, 0.15, len(speed)),
-    "1st Torsional": 55 + speed * 0.0012 + np.random.normal(0, 0.15, len(speed)),
-    "2nd Torsional": 72 + speed * 0.0006 + np.random.normal(0, 0.15, len(speed)),
-    "Axial": 88 + speed * 0.0003 + np.random.normal(0, 0.15, len(speed)),
+    "1st Bending": 18 + speed * 0.0015 + np.random.normal(0, 0.12, len(speed)),
+    "2nd Bending": 45 - speed * 0.002 + np.random.normal(0, 0.12, len(speed)),
+    "1st Torsional": 52 + speed * 0.0025 + np.random.normal(0, 0.12, len(speed)),
+    "2nd Torsional": 75 + speed * 0.001 + np.random.normal(0, 0.12, len(speed)),
+    "Axial": 90 - speed * 0.0004 + np.random.normal(0, 0.12, len(speed)),
 }
 
-# Colorblind-safe palette (blue, amber, purple, teal, brown) - all distinguishable
-mode_colors = {
-    "1st Bending": "#306998",
-    "2nd Bending": "#E69F00",
-    "1st Torsional": "#882D9E",
-    "2nd Torsional": "#D55E00",
-    "Axial": "#009E73",
-}
-eo_color = "#555555"
+# Colorblind-safe palette starting with Python Blue
+palette = ["#306998", "#E69F00", "#882D9E", "#D55E00", "#009E73"]
+mode_names = list(modes.keys())
+mode_colors = dict(zip(mode_names, palette, strict=True))
+eo_color = "#888888"
 
-# Build long-format DataFrame for natural frequency curves
+# Long-format DataFrame for natural frequency curves
 df_modes = pd.DataFrame(
     [
         {"Speed": s, "Frequency": f, "Mode": name}
@@ -61,122 +59,138 @@ df_modes = pd.DataFrame(
     ]
 )
 
-# Engine order lines: frequency = order * speed / 60
+# Engine order lines: frequency = order × speed / 60
 engine_orders = [1, 2, 3]
-eo_speed = np.linspace(0, 6000, 80)
+eo_names = [f"{o}x EO" for o in engine_orders]
 df_eo = pd.DataFrame(
-    [
-        {"Speed": s, "Frequency": order * s / 60, "Mode": f"{order}x Engine Order"}
-        for order in engine_orders
-        for s in eo_speed
-    ]
+    [{"Speed": s, "Frequency": order * s / 60, "Mode": f"{order}x EO"} for order in engine_orders for s in speed]
 )
 
-# Calculate critical speed intersections (engine order line meets natural freq curve)
+# Critical speed intersections (EO line crosses natural frequency curve)
 critical_points = []
 for order in engine_orders:
     eo_freq = order * speed / 60
-    for mode_name, freq_values in modes.items():
+    for _mode_name, freq_values in modes.items():
         diff = eo_freq - freq_values
         sign_changes = np.where(np.diff(np.sign(diff)))[0]
         for idx in sign_changes:
             s0, s1 = speed[idx], speed[idx + 1]
             f0_eo, f1_eo = eo_freq[idx], eo_freq[idx + 1]
-            f0_mode, f1_mode = freq_values[idx], freq_values[idx + 1]
-            t = (f0_mode - f0_eo) / ((f1_eo - f0_eo) - (f1_mode - f0_mode))
-            crit_speed = s0 + t * (s1 - s0)
-            crit_freq = f0_eo + t * (f1_eo - f0_eo)
-            if 0 < crit_speed < 6000 and 0 < crit_freq < 105:
-                critical_points.append(
-                    {"Speed": crit_speed, "Frequency": crit_freq, "order": f"{order}x", "mode_name": mode_name}
-                )
-
+            f0_m, f1_m = freq_values[idx], freq_values[idx + 1]
+            t = (f0_m - f0_eo) / ((f1_eo - f0_eo) - (f1_m - f0_m))
+            cs, cf = s0 + t * (s1 - s0), f0_eo + t * (f1_eo - f0_eo)
+            if 0 < cs < 6000 and 0 < cf < 110:
+                critical_points.append({"Speed": cs, "Frequency": cf})
 df_critical = pd.DataFrame(critical_points)
 
-# Engine order labels positioned along the lines - place in clear areas
-eo_label_data = pd.DataFrame(
+# Storytelling: 1x / 1st Bending critical speed (most operationally significant)
+eo1_freq = speed / 60
+diff_1b = eo1_freq - modes["1st Bending"]
+sc_idx = np.where(np.diff(np.sign(diff_1b)))[0]
+annot_speed = annot_freq = None
+if len(sc_idx) > 0:
+    idx = sc_idx[0]
+    t = (modes["1st Bending"][idx] - eo1_freq[idx]) / (
+        (eo1_freq[idx + 1] - eo1_freq[idx]) - (modes["1st Bending"][idx + 1] - modes["1st Bending"][idx])
+    )
+    annot_speed = speed[idx] + t * (speed[idx + 1] - speed[idx])
+    annot_freq = eo1_freq[idx] + t * (eo1_freq[idx + 1] - eo1_freq[idx])
+
+# Combine all line data and add line weight column for size differentiation
+df_lines = pd.concat([df_modes, df_eo], ignore_index=True)
+df_lines["_lw"] = df_lines["Mode"].apply(lambda m: 2.0 if "EO" not in m else 1.0)
+
+# Legend mappings — consolidated EO into one entry
+color_map = {**mode_colors, **dict.fromkeys(eo_names, eo_color)}
+ltype_map = {**dict.fromkeys(mode_names, "solid"), **dict.fromkeys(eo_names, "dashed")}
+breaks = mode_names + eo_names[:1]
+labels = mode_names + ["Engine Order (1×, 2×, 3×)"]
+
+# Operating range band (nominal: 2000–4500 RPM)
+df_band = pd.DataFrame([{"xmin": 2000, "xmax": 4500, "ymin": 0, "ymax": 110}])
+
+# EO labels positioned along lines
+eo_labels = pd.DataFrame(
     [
-        {"Speed": 4800, "Frequency": 1 * 4800 / 60 + 3, "label": "1x"},
-        {"Speed": 2400, "Frequency": 2 * 2400 / 60 + 3, "label": "2x"},
-        {"Speed": 1600, "Frequency": 3 * 1600 / 60 + 3, "label": "3x"},
+        {"Speed": 4500, "Frequency": 4500 / 60 + 3, "label": "1×"},
+        {"Speed": 2200, "Frequency": 2 * 2200 / 60 + 3, "label": "2×"},
+        {"Speed": 1500, "Frequency": 3 * 1500 / 60 + 3, "label": "3×"},
     ]
 )
 
-# Storytelling: find the 1x/1st Bending critical speed (most operationally significant)
-annot_speed = annot_freq = None
-if len(df_critical) > 0:
-    annot_row = df_critical[(df_critical["order"] == "1x") & (df_critical["mode_name"] == "1st Bending")]
-    if len(annot_row) > 0:
-        annot_speed = annot_row.iloc[0]["Speed"]
-        annot_freq = annot_row.iloc[0]["Frequency"]
-
-# Build legend mappings (modes + one representative EO entry)
-all_mode_names = list(mode_colors.keys())
-eo_names = [f"{o}x Engine Order" for o in engine_orders]
-
-color_values = {**mode_colors, **dict.fromkeys(eo_names, eo_color)}
-linetype_values = {**dict.fromkeys(all_mode_names, "solid"), **dict.fromkeys(eo_names, "dashed")}
-
-legend_breaks = all_mode_names + eo_names[:1]
-legend_labels = all_mode_names + ["Engine Order (1x, 2x, 3x)"]
-
-# Combine mode and EO data for unified legend via scale_color_manual
-df_all_lines = pd.concat([df_modes, df_eo], ignore_index=True)
-
-# Plot
+# Plot — grammar of graphics layer composition
 plot = (
-    ggplot(df_all_lines, aes(x="Speed", y="Frequency", color="Mode", linetype="Mode", group="Mode"))
-    + geom_line(size=1.8)
+    ggplot(df_lines, aes("Speed", "Frequency", color="Mode", linetype="Mode", group="Mode"))
+    # Operating range shading
+    + geom_rect(
+        df_band,
+        aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax"),
+        fill="#306998",
+        alpha=0.04,
+        color="none",
+        inherit_aes=False,
+    )
+    # Natural frequency + EO lines with size-identity for weight differentiation
+    + geom_line(aes(size="_lw"))
+    + scale_size_identity()
     # Critical speed markers
     + geom_point(
         df_critical,
-        aes(x="Speed", y="Frequency"),
+        aes("Speed", "Frequency"),
         color="#C62828",
         fill="#EF5350",
-        size=5,
+        size=4.5,
         shape="D",
-        stroke=0.8,
+        stroke=0.7,
         inherit_aes=False,
+        show_legend=False,
     )
-    # Engine order labels - larger and darker for better visibility
+    # EO line labels
     + geom_text(
-        eo_label_data,
-        aes(x="Speed", y="Frequency", label="label"),
-        color="#333333",
-        size=12,
+        eo_labels,
+        aes("Speed", "Frequency", label="label"),
+        color="#555555",
+        size=11,
         fontstyle="italic",
         fontweight="bold",
         inherit_aes=False,
+        show_legend=False,
     )
-    # Scales for legend
-    + scale_color_manual(values=color_values, breaks=legend_breaks, labels=legend_labels)
-    + scale_linetype_manual(values=linetype_values, breaks=legend_breaks, labels=legend_labels)
-    + guides(color=guide_legend(override_aes={"size": 1.5}), linetype=guide_legend())
-    + scale_x_continuous(breaks=range(0, 7000, 1000), limits=(0, 6200))
-    + scale_y_continuous(breaks=range(0, 111, 10), limits=(-5, 108))
-    + labs(x="Rotational Speed (RPM)", y="Frequency (Hz)", title="campbell-basic \u00b7 plotnine \u00b7 pyplots.ai")
+    # Unified legend via scale_manual with custom breaks/labels
+    + scale_color_manual(values=color_map, breaks=breaks, labels=labels)
+    + scale_linetype_manual(values=ltype_map, breaks=breaks, labels=labels)
+    + guides(color=guide_legend(override_aes={"size": [1.8] * 5 + [1.0]}), linetype=guide_legend())
+    # coord_cartesian for zoom without data removal
+    + scale_x_continuous(breaks=range(0, 7000, 1000))
+    + scale_y_continuous(breaks=range(0, 111, 10))
+    + coord_cartesian(xlim=(0, 6200), ylim=(0, 108))
+    + labs(x="Rotational Speed (RPM)", y="Natural Frequency (Hz)", title="campbell-basic · plotnine · pyplots.ai")
+    # Publication-quality theme
     + theme_minimal(base_size=14)
     + theme(
         figure_size=(16, 9),
-        text=element_text(size=14, color="#333333"),
-        axis_title=element_text(size=20, face="bold", color="#222222"),
-        axis_text=element_text(size=16, color="#555555"),
+        text=element_text(family="sans-serif", color="#333333"),
         plot_title=element_text(size=24, ha="center", face="bold", color="#1a1a1a"),
-        legend_text=element_text(size=14),
+        axis_title_x=element_text(size=20, face="bold", color="#222222"),
+        axis_title_y=element_text(size=20, face="bold", color="#222222"),
+        axis_text=element_text(size=16, color="#555555"),
+        legend_text=element_text(size=13),
         legend_title=element_blank(),
         legend_position="bottom",
         legend_direction="horizontal",
-        legend_background=element_rect(fill="white", alpha=0.85, color="#DDDDDD", size=0.3),
-        legend_key_width=40,
-        panel_grid_major=element_line(color="#E0E0E0", size=0.3),
+        legend_background=element_rect(fill="white", alpha=0.9, color="#CCCCCC", size=0.4),
+        legend_key_width=35,
+        legend_key_height=18,
+        panel_grid_major=element_line(color="#E5E5E5", size=0.25),
         panel_grid_minor=element_blank(),
         plot_background=element_rect(fill="white", color="white"),
-        panel_background=element_rect(fill="#FAFAFA", color="#EEEEEE", size=0.3),
-        axis_line=element_line(color="#BBBBBB", size=0.5),
+        panel_background=element_rect(fill="#FAFAFA", color="#E0E0E0", size=0.3),
+        axis_line=element_line(color="#CCCCCC", size=0.4),
+        plot_margin=0.02,
     )
 )
 
-# Add critical speed annotation for storytelling
+# Storytelling: annotate the most significant critical speed
 if annot_speed is not None:
     plot = (
         plot
@@ -188,21 +202,25 @@ if annot_speed is not None:
             yend=annot_freq,
             color="#C62828",
             linetype="dotted",
-            size=0.6,
-            alpha=0.5,
+            size=0.7,
+            alpha=0.6,
         )
         + annotate(
             "text",
-            x=annot_speed,
-            y=-3,
-            label=f"{int(round(annot_speed))} RPM",
+            x=annot_speed + 180,
+            y=annot_freq + 5,
+            label=f"Critical: {int(round(annot_speed))} RPM",
             color="#C62828",
             size=9,
-            ha="center",
+            ha="left",
             fontstyle="italic",
             fontweight="bold",
         )
     )
 
-# Save
+# Operating range label
+plot = plot + annotate(
+    "text", x=3250, y=104, label="Operating Range", color="#306998", size=8, alpha=0.5, fontweight="bold"
+)
+
 plot.save("plot.png", dpi=300, verbose=False)

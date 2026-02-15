@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-basic: Basic Heatmap
-Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-23
+Library: seaborn 0.13.2 | Python 3.14.3
+Quality: /100 | Updated: 2026-02-15
 """
 
 import matplotlib.pyplot as plt
@@ -24,35 +24,39 @@ data[5, 3:9] -= 15  # HR dip mid-year
 # Clip to valid performance range
 data = np.clip(data, 5, 95)
 
-# Plot - using square format for heatmap
-fig, ax = plt.subplots(figsize=(12, 12))
-sns.heatmap(
+# Plot - clustermap groups similar departments via hierarchical clustering
+cmap = sns.diverging_palette(240, 10, as_cmap=True)
+g = sns.clustermap(
     data,
     annot=True,
     fmt=".0f",
-    cmap="RdBu",
+    cmap=cmap,
     center=50,
     xticklabels=months,
     yticklabels=departments,
     linewidths=1,
     linecolor="white",
-    cbar_kws={"label": "Performance Score", "shrink": 0.75},
-    annot_kws={"fontsize": 16},
-    ax=ax,
+    annot_kws={"fontsize": 14},
+    figsize=(16, 10),
+    row_cluster=True,
+    col_cluster=False,
+    dendrogram_ratio=0.08,
+    cbar_pos=None,
     vmin=0,
     vmax=100,
 )
 
-# Style
-ax.set_xlabel("Month", fontsize=20)
-ax.set_ylabel("Department", fontsize=20)
-ax.set_title("heatmap-basic · seaborn · pyplots.ai", fontsize=24, pad=20)
-ax.tick_params(axis="both", labelsize=16)
-
-# Adjust colorbar label size
-cbar = ax.collections[0].colorbar
+# Colorbar with proper placement
+sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(0, 100))
+cbar = g.fig.colorbar(sm, ax=g.ax_heatmap, location="right", shrink=0.7, pad=0.12)
+cbar.set_label("Performance Score", fontsize=18)
 cbar.ax.tick_params(labelsize=14)
-cbar.ax.set_ylabel("Performance Score", fontsize=18)
 
-plt.tight_layout()
+# Style
+g.ax_heatmap.set_xlabel("Month", fontsize=20)
+g.ax_heatmap.set_ylabel("")
+g.ax_heatmap.tick_params(axis="x", labelsize=16)
+g.ax_heatmap.tick_params(axis="y", labelsize=16, rotation=0)
+g.fig.suptitle("heatmap-basic · seaborn · pyplots.ai", fontsize=24, y=1.02)
+
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

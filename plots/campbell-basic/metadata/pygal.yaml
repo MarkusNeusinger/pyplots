@@ -1,7 +1,7 @@
 library: pygal
 specification_id: campbell-basic
 created: '2026-02-15T21:09:18Z'
-updated: '2026-02-15T21:12:50Z'
+updated: '2026-02-15T21:27:12Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22043026953
 issue: 4241
@@ -10,45 +10,41 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/pygal/plot.html
-quality_score: 72
+quality_score: 68
 review:
   strengths:
-  - Correct Campbell Diagram structure with all required elements (5 modes, 3 EO lines,
-    critical speed markers)
-  - Realistic rotor dynamics data with plausible frequency ranges and mode names
-  - Proper critical speed intersection calculation using sign-change detection with
-    linear interpolation
-  - Clean code structure following KISS principle with reproducible seed
-  - Explicit font sizing throughout ensures readability at target resolution
+  - Comprehensive data generation with realistic rotordynamic parameters and gyroscopic
+    effects
+  - Excellent critical speed intersection calculation using sign-change detection
+    with linear interpolation
+  - Well-structured code following KISS principles with reproducible random seed
+  - All font sizes explicitly configured for the 4800x2700 canvas
+  - Custom Style with intentional color palette and grid styling
   weaknesses:
-  - 'Engine order (EO) dashed lines use three nearly identical gray shades (#777,
-    #999, #bbb) that are indistinguishable from each other and blend into the grid
-    lines — this is the most significant visual defect'
-  - Critical speed markers lack visual emphasis — they should be the focal point of
-    a Campbell Diagram but use a muted dark red that does not stand out against the
-    mode curves
-  - No visual hierarchy or storytelling — the viewer is not guided to the key insight
-    (where resonance occurs)
-  - Legend with 9 entries in 2 small rows at the bottom is hard to parse quickly
-  - Library usage is generic — does not leverage pygal-distinctive features
-  image_description: 'The plot displays a Campbell Diagram rendered by pygal as an
-    XY chart at 4800x2700 px on a white background. The title "campbell-basic · pygal
-    · pyplots.ai" is centered at the top in a dark font. The X-axis is labeled "Rotational
-    Speed (RPM)" ranging from 0 to 6000, and the Y-axis is labeled "Frequency (Hz)"
-    ranging from 0 to 120, both with "Hz" suffix on Y tick labels and whole-number
-    RPM ticks on X. Five natural frequency mode curves are drawn as solid lines: 1st
-    Bending (blue, rising gently), 2nd Bending (teal, rising moderately), 1st Torsional
-    (purple, decreasing slightly), Axial (orange, decreasing), and 2nd Torsional (dark
-    green, rising). Three engine order excitation lines (1x, 2x, 3x EO) are drawn
-    as dashed diagonals from the origin in three very similar light-gray shades. Red/maroon
-    dots mark approximately 15 critical speed intersections. A two-row legend at the
-    bottom lists all 9 series. Grid lines are subtle light gray. The EO lines are
-    difficult to distinguish from the grid due to their similar gray tones. Overall
-    the plot is legible and correctly structured but the visual differentiation between
-    EO lines and grid is poor, and the color palette for the EO lines lacks contrast.'
+  - Engine order lines are nearly invisible in the rendered PNG — they appear as extremely
+    faint, washed-out dashed lines, making the core Campbell diagram feature (EO/mode
+    intersections) impossible to visually trace
+  - Mode curves are also quite thin and lack visual weight — increasing stroke width
+    or ensuring stroke_opacity renders properly would help
+  - No direct labels on mode curves or EO lines (spec requests mode shapes and engine
+    order lines should be labeled) — currently only in legend
+  - Legend colors for EO lines are tiny squares that are hard to distinguish from
+    each other
+  image_description: 'The plot displays a Campbell Diagram with the title "campbell-basic
+    · pygal · pyplots.ai" centered at the top. The X-axis is labeled "Rotational Speed
+    (RPM)" ranging from 0 to 6,000, and the Y-axis is labeled "Frequency (Hz)" ranging
+    from 0.0 to 120.0. Five natural frequency mode curves are rendered as smooth,
+    gently sloping lines in distinct colors: blue (1st Bending), teal (2nd Bending),
+    purple (1st Torsional), orange (Axial), and green (2nd Torsional). Three engine
+    order excitation lines (1x, 2x, 3x EO) are drawn as dashed diagonals from the
+    origin, but they appear extremely faint — nearly invisible against the white background,
+    with very low contrast in light pastel shades. Bright red circular markers denote
+    critical speed intersections, which are the most prominent visual element. A legend
+    at the bottom uses 3 columns listing all 9 series. Overall the layout fills the
+    canvas reasonably well but the faint EO lines are a major readability issue.'
   criteria_checklist:
     visual_quality:
-      score: 22
+      score: 20
       max: 30
       items:
       - id: VQ-01
@@ -56,68 +52,72 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 56, labels 42, major labels
-          38, legend 32). Text is readable.
+        comment: All font sizes explicitly set (title=56, labels=42, major_labels=38,
+          legend=30). Text is clearly readable.
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Legend slightly cramped with 9 entries in 2 rows, but generally readable.
+        comment: No overlapping text elements anywhere in the plot.
       - id: VQ-03
         name: Element Visibility
-        score: 4
+        score: 2
         max: 6
-        passed: true
-        comment: Mode curves visible but thin. EO dashed lines blend with grid due
-          to similar gray tones.
+        passed: false
+        comment: Engine order lines are nearly invisible — extremely faint dashed
+          lines despite explicit stroke width. Mode curves are also thinner than expected.
+          Only critical speed markers are well-visible.
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 2
         max: 4
-        passed: true
-        comment: 'Mode curves use colorblind-friendly palette. EO lines (#777, #999,
-          #bbb) are near-identical grays.'
+        passed: false
+        comment: Mode curves use a reasonably distinguishable palette, but EO lines
+          are nearly invisible in practice. Red critical markers vs red-ish 1x EO
+          line is also a concern.
       - id: VQ-05
         name: Layout & Canvas
         score: 2
         max: 4
-        passed: false
-        comment: Moderate wasted space. Y-axis label tight against left edge. Bottom
-          legend takes significant space.
+        passed: true
+        comment: Plot area fills roughly 50-60% of canvas, decent margins. Some space
+          used for bottom legend.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Both axes have descriptive labels with units.
+        comment: 'Both axes have descriptive labels with units: Rotational Speed (RPM)
+          and Frequency (Hz).'
     design_excellence:
       score: 10
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
-        passed: false
-        comment: Custom style with intentional palette but looks like well-configured
-          default. Gray EO lines are a poor aesthetic choice.
+        passed: true
+        comment: Custom color palette, explicit typography, white background with
+          subtle grid. Clearly above defaults but invisible EO lines prevent higher
+          score.
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 3
         max: 6
-        passed: false
-        comment: Subtle grid, explicit margins, legend positioned at bottom. EO lines
-          blending with grid undermines polish.
+        passed: true
+        comment: Subtle grid styling with custom dash patterns, guide_stroke_color
+          set. But mode curves and EO lines lack visual weight.
       - id: DE-03
         name: Data Storytelling
         score: 2
         max: 6
         passed: false
-        comment: Data displayed correctly but critical speed markers lack emphasis.
-          No visual hierarchy guides viewer to key intersections.
+        comment: Critical speed markers serve as focal points, but invisible EO lines
+          mean the intersection story (core purpose of Campbell diagram) is lost.
     spec_compliance:
-      score: 14
+      score: 12
       max: 15
       items:
       - id: SC-01
@@ -125,28 +125,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct XY line chart with mode curves, diagonal EO lines, and intersection
-          markers.
+        comment: 'Correct: Campbell diagram with mode curves, EO lines, and critical
+          speed markers.'
       - id: SC-02
         name: Required Features
-        score: 4
+        score: 2
         max: 4
-        passed: true
-        comment: 'All spec features present: 5 modes, 3 EO lines, critical speed markers,
-          proper labels.'
+        passed: false
+        comment: Mode labels and EO labels exist only in legend, not on curves/lines
+          as spec requests. No shading of critical zones.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=RPM, Y=Hz correctly assigned. All data visible within range.
+        comment: X=RPM, Y=Frequency(Hz), correctly mapped.
       - id: SC-04
         name: Title & Legend
         score: 2
         max: 3
         passed: true
-        comment: Title format correct. Legend labels correct but hard to parse with
-          9 small entries.
+        comment: Title format correct. Legend labels are descriptive but small and
+          crowded in 3 columns.
     data_quality:
       score: 14
       max: 15
@@ -156,23 +156,23 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows 5 modes with different behaviors (rising, falling, near-constant),
-          3 EO lines, multiple critical intersections.
+        comment: 5 mode curves with varying gyroscopic effects, 3 EO lines, multiple
+          critical speed intersections. Good variety.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Rotor dynamics scenario with realistic mode names and plausible frequency
-          ranges.
+        comment: Realistic rotordynamic scenario with plausible mode names and sensible
+          operating range.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: RPM 0-6000 and Hz 0-120 are realistic for rotating machinery analysis.
+        comment: 0-6000 RPM and 0-120 Hz are realistic for rotating machinery.
     code_quality:
-      score: 9
+      score: 8
       max: 10
       items:
       - id: CQ-01
@@ -180,54 +180,56 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, style, chart, series, save. No functions
-          or classes.'
+        comment: 'Linear flow: imports → data → style → chart → add series → save.
+          No functions/classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) set at the start.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only numpy, pygal, and Style imported — all used.
+        comment: Only numpy, pygal, and pygal.style.Style — all used.
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
         passed: true
-        comment: Generally clean but intersection calculation is somewhat verbose.
+        comment: Slightly verbose critical speed interpolation logic but generally
+          clean. strict=True in zip is a nice touch.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via render_to_png.
+        comment: Saves both plot.html and plot.png correctly. No deprecated functions.
     library_mastery:
-      score: 3
+      score: 4
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Uses pygal.XY correctly with add() and stroke_style. Basic but correct
-          usage without leveraging advanced features.
+        passed: true
+        comment: Uses pygal.XY correctly with Style customization, stroke_style, interpolate=cubic,
+          value_formatter. Reasonable but invisible EO lines suggest rendering issues.
       - id: LM-02
         name: Distinctive Features
         score: 1
         max: 5
         passed: false
-        comment: Generic XY chart usage. Does not leverage pygal-distinctive features
-          like built-in interpolation or custom tooltips.
+        comment: Uses pygal cubic interpolation and tooltip_fancy_mode but these are
+          fairly generic. SVG nature of pygal not leveraged distinctively.
   verdict: REJECTED
 impl_tags:
   dependencies: []
-  techniques: []
+  techniques:
+  - html-export
   patterns:
   - data-generation
   - iteration-over-groups

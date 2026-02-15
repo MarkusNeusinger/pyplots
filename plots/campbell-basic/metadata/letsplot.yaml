@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: campbell-basic
 created: '2026-02-15T21:08:58Z'
-updated: '2026-02-15T21:12:44Z'
+updated: '2026-02-15T21:23:06Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22043026984
 issue: 4241
@@ -10,41 +10,43 @@ library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/letsplot/plot.html
-quality_score: 86
+quality_score: 83
 review:
   strengths:
-  - Excellent data quality with realistic rotordynamics scenario, correct gyroscopic
-    effects, and comprehensive feature coverage
-  - Clean code structure with well-organized data generation and intersection-finding
-    logic
-  - Good visual hierarchy separating mode curves (solid, colored, thick) from engine
-    order lines (dashed, gray, thin)
-  - Critical speed markers are correctly computed and visually distinct as red diamonds
-  - All font sizes explicitly set for consistent readability at target resolution
+  - 'Excellent spec compliance: all required Campbell Diagram elements (mode curves,
+    EO lines, critical speed markers, highlight zones) are present and correctly implemented'
+  - Strong colorblind-safe palette with good contrast between all four mode curves
+  - Rich use of lets-plot tooltips with formatted speed/frequency values and intersection
+    labels
+  - Realistic rotordynamics data with physically plausible gyroscopic effects on mode
+    frequencies
+  - Clean font sizing with all text explicitly set to readable sizes
   weaknesses:
-  - Engine order lines are not represented in the legend, making it harder for unfamiliar
-    viewers to understand the distinction between solid and dashed lines
-  - Color palette could be more colorblind-safe — consider replacing green with a
-    more distinct color like orange or teal
-  - Critical speed markers could benefit from being slightly larger or having a subtle
-    highlight zone around them to increase visual impact
-  - Could leverage more distinctive lets-plot features (e.g., interactive tooltips
-    in HTML export, custom theme elements) to score higher on Library Mastery
+  - Layout wastes space on the right side near the legend; canvas utilization could
+    be improved by adjusting legend placement or axis limits
+  - Engine order lines are not included in the legend, missing the spec's request
+    for a clean legend distinguishing natural frequency curves from engine order lines
+  - 'Visual refinement could be improved: consider removing or minimizing axis spines,
+    adding more whitespace, or using a cleaner background'
+  - Data storytelling is limited — critical speed intersections could benefit from
+    annotations or a subtitle explaining their engineering significance
+  - Only 4 modes shown when spec suggests 4-5; adding a 5th mode would demonstrate
+    fuller feature coverage
   image_description: 'The plot displays a Campbell Diagram with four natural frequency
-    mode curves plotted as solid colored lines against rotational speed (0–6000 RPM)
-    on the x-axis and frequency (0–120 Hz) on the y-axis. The modes are: 1st Bending
-    (blue, ~25 Hz baseline, slightly rising), 1st Torsional (green, ~48 Hz baseline,
-    slightly falling), 2nd Bending (brown, ~72 Hz baseline, slightly rising), and
-    Axial (gray, ~95 Hz baseline, slightly falling). Three dashed gray engine order
-    lines (1×, 2×, 3×) radiate from the origin with bold gray labels near their upper
-    ends. Red diamond markers are placed at each intersection of an engine order line
-    with a natural frequency curve, indicating critical speeds. The title "campbell-basic
-    · letsplot · pyplots.ai" is centered at the top. A legend titled "Mode Shape"
-    appears on the right side. The background uses a minimal theme with light gray
-    major gridlines and no minor gridlines. Overall the layout is clean and well-proportioned.'
+    mode curves plotted against rotational speed (0–6,000 RPM) on the x-axis and frequency
+    (0–115 Hz) on the y-axis. The mode curves are: 1st Bending (blue, ~25 Hz, rising
+    slightly), 1st Torsional (orange, ~48 Hz, decreasing slightly), 2nd Bending (teal,
+    ~72 Hz, rising), and Axial (purple, ~95 Hz, nearly flat with slight decrease).
+    Three gray dashed diagonal engine order lines (1×, 2×, 3×) extend from the origin,
+    with bold gray labels near their upper ends. Red diamond markers highlight critical
+    speed intersections where EO lines cross mode curves. Subtle pink/red rectangular
+    highlight zones surround each intersection point. The legend on the right shows
+    "Mode Shape" with all four modes. The title "campbell-basic · letsplot · pyplots.ai"
+    is centered and bold at the top. The layout is clean with a light gray grid, white
+    background, and good overall proportions.'
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 26
       max: 30
       items:
       - id: VQ-01
@@ -53,43 +55,43 @@ review:
         max: 8
         passed: true
         comment: 'All font sizes explicitly set: title=28, axis_title=22, axis_text=18,
-          legend=18/20. All text clearly readable.'
+          legend_title=20, legend_text=18'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements. EO labels well-positioned, legend doesn't
-          overlap data.
+        comment: No overlapping text elements anywhere
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Lines at size=2.5 clearly visible, critical markers distinct at size=6.
-          Markers could be slightly larger for stronger emphasis.
+        comment: Mode curves visible at size=2.5, critical markers at size=8. Lower
+          modes could use slightly more weight
       - id: VQ-04
         name: Color Accessibility
-        score: 3
-        max: 4
-        passed: true
-        comment: Blue/green/brown/gray palette reasonably distinguishable. Green and
-          brown could be slightly challenging for deuteranopia.
-      - id: VQ-05
-        name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Plot fills canvas well at 1600x900, balanced margins, legend positioned
-          appropriately.
+        comment: 'Colorblind-safe palette: blue, orange, teal, purple with no red-green
+          confusion'
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 2
+        max: 4
+        passed: false
+        comment: Wasted space near legend on right side; x-axis extends beyond data
+          range to 6500
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Rotational Speed (RPM) and Frequency (Hz) — descriptive with units.
+        comment: 'Descriptive labels with units: Rotational Speed (RPM) and Frequency
+          (Hz)'
     design_excellence:
-      score: 13
+      score: 12
       max: 20
       items:
       - id: DE-01
@@ -97,22 +99,22 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Custom palette, dashed vs solid distinction, minimal theme. Above
-          defaults but not publication-stunning.
+        comment: Custom palette, high-contrast-light flavor, styled EO labels. Above
+          defaults but not publication-grade
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: theme_minimal applied, minor grid removed, major grid styled, good
-          whitespace.
+        comment: Subtle grid styling, minor grid removed. Could improve with spine
+          removal and whitespace tuning
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 3
         max: 6
         passed: true
-        comment: Visual hierarchy with bold mode curves vs subtle EO lines, red diamonds
-          draw attention to critical speeds.
+        comment: Red highlight zones and diamond markers create focal points at critical
+          speeds, but no textual explanation
     spec_compliance:
       score: 14
       max: 15
@@ -122,55 +124,53 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct Campbell Diagram with natural frequency curves, engine order
-          lines, and critical speed markers.
+        comment: Correct Campbell Diagram with mode curves and engine order lines
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All required features present: 4 mode shapes, 3 engine orders, critical
-          speed markers, labels.'
+        comment: 'All features present: mode curves, EO lines, critical speed markers,
+          highlight zones, labels'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=RPM, Y=Hz correctly assigned.
+        comment: X=RPM, Y=Hz correctly mapped
       - id: SC-04
         name: Title & Legend
         score: 2
         max: 3
-        passed: true
-        comment: Title format correct. Legend shows modes correctly but engine order
-          lines not formally in legend.
+        passed: false
+        comment: Title format correct but EO lines not in legend as spec suggests
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Shows 4 modes with gyroscopic effects, 3 engine orders, multiple
-          critical speed intersections.
+        comment: 4 modes with realistic behaviors, 3 engine orders, multiple intersections.
+          Spec suggests 4-5 modes
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Rotordynamics scenario with realistic mode names and typical RPM
-          range.
+        comment: Authentic rotordynamics scenario with plausible mode names and frequency
+          ranges
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Frequency ranges, speed range, and gyroscopic effects are realistic
-          for rotating machinery.
+        comment: 'Realistic values: 0-6000 RPM, 25-95 Hz base frequencies, appropriate
+          gyroscopic slopes'
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -178,59 +178,64 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean Imports → Data → Plot → Save flow, no functions/classes.
+        comment: 'Linear structure: imports, data, plot, save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: numpy, pandas, lets_plot.'
+        comment: Only numpy, pandas, lets_plot imported
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Appropriate complexity. Intersection finder and EO clipping well-structured.
+        passed: false
+        comment: Verbose loop-based DataFrame construction; strict=True in zip overly
+          cautious
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with scale=3, plus HTML export.
-    library_features:
-      score: 6
+        comment: Saves as plot.png with scale=3
+    library_mastery:
+      score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: 'Good use of lets-plot grammar: layered geoms, aes mappings, scale_color_manual,
-          theme customization.'
+        comment: Proper ggplot grammar with aes, geom layers, scales, themes, ggsize,
+          ggsave
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: HTML export is a lets-plot feature, but overall usage is fairly generic
-          ggplot-style replicable in plotnine.
+        passed: true
+        comment: Uses flavor_high_contrast_light(), layer_tooltips() with rich formatting,
+          HTML export
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - layer-composition
   - annotations
+  - hover-tooltips
+  - html-export
   patterns:
   - data-generation
   - iteration-over-groups
+  - wide-to-long
   dataprep:
   - interpolation
   styling:
   - grid-styling
+  - alpha-blending

@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: campbell-basic
 created: '2026-02-15T21:10:18Z'
-updated: '2026-02-15T21:21:30Z'
+updated: '2026-02-15T21:29:39Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22043026932
 issue: 4241
@@ -10,39 +10,41 @@ library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/bokeh/plot.html
-quality_score: 86
+quality_score: 87
 review:
   strengths:
-  - 'Comprehensive Campbell Diagram with all spec-required elements: 5 modes, 3 engine
-    orders, critical speed markers, operating range shading'
-  - Excellent visual refinement with polished typography, subtle grid, and removed
-    chart chrome
-  - Good data storytelling through operating range zone and danger zone highlighting
-  - Strong color palette with good accessibility
-  - Interactive HoverTool on critical speed markers leverages Bokeh distinctive capabilities
-  - Dual output (PNG + HTML) maximizes Bokeh web-native strengths
+  - Full spec compliance with all required features including critical speed zones
+    and mode labels
+  - Effective data storytelling through operating range shading, danger zone highlighting,
+    and the warning annotation on the most critical intersection
+  - 'Strong Bokeh-distinctive feature usage: HoverTool with custom tooltips, BoxAnnotation,
+    dual HTML+PNG export'
+  - Deterministic, physically realistic data with proper rotordynamic behavior (gyroscopic
+    stiffening/softening effects)
+  - Clean, professional aesthetic with explicitly set font sizes and subtle grid styling
   weaknesses:
-  - Natural frequency curves appear nearly flat — gyroscopic effects should be more
-    visually pronounced to make the diagram more dramatic and educational
-  - Upper portion of the plot (150-200 Hz) is largely empty, wasting canvas space
-    — the y-range could be tightened or the data could extend higher
-  - Operating Range label at y=5 with alpha=0.6 is too subtle and easily overlooked
-  - The seed(42) is set but no random data is actually generated, which is harmless
-    but unnecessary
-  image_description: 'The plot displays a Campbell Diagram with the title "campbell-basic
-    · bokeh · pyplots.ai" centered at the top. The X-axis shows "Rotational Speed
-    (RPM)" ranging from 0 to 6000, and the Y-axis shows "Frequency (Hz)" from 0 to
-    200. Five natural frequency mode curves are plotted in distinct colors: 1st Bending
-    (blue), 2nd Bending (gold/orange), 1st Torsional (red/coral), Axial (purple),
-    and 3rd Bending (teal/cyan). Three dashed diagonal engine order lines (1x, 2x,
-    3x) in dark gray extend from the origin, labeled with bold text at their upper
-    endpoints. Red diamond markers indicate critical speed intersections where engine
-    order lines cross natural frequency curves. A light blue shaded region between
-    approximately 3000-5000 RPM marks the "Operating Range" with an italic label near
-    the bottom. Small pink/red danger zone rectangles highlight critical speeds that
-    fall within the operating range. A legend in the top-left corner lists all nine
-    elements (5 modes, 3 EO lines, critical speed). The background is light gray (#FAFAFA)
-    with subtle grid lines.'
+  - Minor visual clutter where 8 lines (5 modes + 3 EO) overlap in the mid-range,
+    making individual curves harder to trace
+  - The red critical speed markers share the same color (#D62728) as the 1st Torsional
+    mode line, reducing marker distinction
+  - Annotation text near danger zone boxes creates minor overlap in the 3000 RPM region
+  - Code is somewhat verbose in the intersection-finding section
+  image_description: 'The plot displays a Campbell Diagram (interference diagram)
+    with "campbell-basic · bokeh · pyplots.ai" as the centered title. The X-axis shows
+    "Rotational Speed (RPM)" ranging from 0 to 6000, and the Y-axis shows "Frequency
+    (Hz)" from 0 to 200. Five natural frequency mode curves are plotted as solid colored
+    lines: 1st Bending (blue, rising), 2nd Bending (orange/yellow, declining), 1st
+    Torsional (red, rising), Axial (purple, slightly declining), and 3rd Bending (teal/cyan,
+    rising). Three dashed gray engine order lines (1x, 2x, 3x) extend diagonally from
+    the origin with increasing slopes, labeled at the right edge. Red diamond markers
+    indicate critical speed intersections where engine order lines cross natural frequency
+    curves. A light blue shaded vertical band from 3000-5000 RPM marks the operating
+    range, with a bold italic label "Operating Range (3000-5000 RPM)" at the bottom.
+    Light red/pink rectangular boxes highlight danger zones around critical speeds
+    within the operating range. A warning annotation marks the most critical intersection
+    at 2x x 1st Torsional at 3000 RPM. The legend in the top-left lists all modes,
+    engine orders, and critical speed markers with a semi-transparent white background.
+    The overall aesthetic is clean with subtle gray gridlines and a light gray background.'
   criteria_checklist:
     visual_quality:
       score: 26
@@ -54,44 +56,44 @@ review:
         max: 8
         passed: true
         comment: 'All font sizes explicitly set: title 28pt, axis labels 22pt, tick
-          labels 18pt, legend 18pt, EO labels 22pt'
+          labels 18pt, legend labels 18pt'
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: Legend slightly overlaps 3rd Bending curve area; a couple of critical
-          speed markers are very close together
+        comment: Minor overlap between annotation text and danger zone boxes; EO labels
+          slightly crowded near markers at right edge
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Mode curves thick and visible, markers prominent. Operating Range
-          label at y=5 with alpha=0.6 is too faint
+        comment: Good line widths and marker size, but 8 overlapping lines create
+          some visual density
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: 'Well-differentiated colors: blue, gold, red, purple, teal. No red-green-only
-          distinction'
+        comment: Distinguishable palette but red mode line and red critical markers
+          share the same color
       - id: VQ-05
-        name: Layout & Canvas
-        score: 2
+        name: Layout Balance
+        score: 3
         max: 4
-        passed: false
-        comment: Upper portion of plot (150-200 Hz) is largely empty. Data concentrated
-          in lower-middle of y-axis range
+        passed: true
+        comment: Good canvas utilization, legend positioned reasonably though it overlaps
+          some data area
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: Rotational Speed (RPM) and Frequency
+        comment: 'Descriptive labels with units: Rotational Speed (RPM), Frequency
           (Hz)'
     design_excellence:
-      score: 16
+      score: 14
       max: 20
       items:
       - id: DE-01
@@ -99,22 +101,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Strong design with intentional palette, custom typography, subtle
-          background. Danger zone and operating range shading add sophistication
+        comment: Strong design with intentional color palette, operating range shading,
+          danger zone highlights, custom styling throughout
       - id: DE-02
         name: Visual Refinement
-        score: 6
+        score: 4
         max: 6
         passed: true
-        comment: Subtle grid, no outline, minor ticks removed, custom axis colors,
-          light background with white border fill
+        comment: Subtle grid with alpha 0.5, minor ticks hidden, outline removed,
+          custom background colors
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Operating range zone and danger boxes guide viewer to critical intersections
-          within operating envelope
+        comment: Operating range shading and danger zone boxes create visual hierarchy;
+          warning annotation guides viewer to key insight
     spec_compliance:
       score: 15
       max: 15
@@ -124,31 +126,30 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct Campbell Diagram with natural frequency curves overlaid with
-          engine order excitation lines
+        comment: Correct Campbell Diagram with natural frequency curves and engine
+          order excitation lines
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: 5 modes, 3 EO lines, critical speed markers,
-          mode labels, EO labels, legend, operating range shading'
+        comment: 'All spec features: 5 modes, 3 EO lines, critical speed markers,
+          mode labels, EO labels, legend, shaded zones'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=RPM, Y=Hz correctly assigned. Engine order slopes = order/60 matching
-          spec formula
+        comment: X=RPM, Y=Frequency(Hz) correctly mapped
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend clearly distinguishes all 5 modes, 3
-          EO lines, and critical speed markers
+        comment: Title format correct, legend labels match data with clear distinction
+          between modes, EO lines, and critical speeds
     data_quality:
-      score: 13
+      score: 14
       max: 15
       items:
       - id: DQ-01
@@ -156,22 +157,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: 5 modes with varying speed-dependency, 3 engine orders, multiple
-          critical speed intersections. Frequency variations could be more pronounced
+        comment: Shows modes with increasing and decreasing trends, multiple intersections,
+          operating range context
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Rotordynamic scenario with realistic mode names, plausible frequency
-          ranges (22-140 Hz), realistic speed range (0-6000 RPM)
+        comment: Authentic rotordynamic scenario with proper engineering terminology
+          and mode shape names
       - id: DQ-03
         name: Appropriate Scale
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Values plausible for rotating machinery. Natural frequency variations
-          with speed are quite small, making curves appear nearly flat
+        comment: 'Realistic values: 0-6000 RPM, 25-190 Hz frequency range, correct
+          EO slopes'
     code_quality:
       score: 9
       max: 10
@@ -181,13 +182,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, plot, save. No functions or classes'
+        comment: 'Linear flow: imports, data, plot, save — no functions or classes'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set, though all data is deterministic
+        comment: Fully deterministic data using linspace, sin, cos — no randomness
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -199,44 +200,44 @@ review:
         score: 1
         max: 2
         passed: true
-        comment: Generally clean but somewhat verbose. strict=False in zip is unnecessary
-          noise
+        comment: Generally clean but somewhat verbose intersection-finding and danger
+          zone loops
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via export_png and plot.html via save
+        comment: Saves as plot.png via export_png, no deprecated functions
     library_features:
-      score: 7
+      score: 9
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Expert Bokeh patterns: ColumnDataSource, figure(), Legend/LegendItem,
+          BoxAnnotation, Label'
+      - id: LM-02
+        name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: Good use of ColumnDataSource, explicit Legend construction, BoxAnnotation,
-          Label placement
-      - id: LM-02
-        name: Distinctive Features
-        score: 3
-        max: 5
-        passed: true
-        comment: HoverTool for interactive tooltips on critical speed markers, HTML
-          output alongside PNG
+        comment: HoverTool with enriched tooltips, BoxAnnotation for zones, dual PNG+HTML
+          export
   verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
-  - hover-tooltips
   - annotations
+  - hover-tooltips
   - custom-legend
   - html-export
   patterns:
   - data-generation
-  - columndatasource
   - iteration-over-groups
+  - columndatasource
   dataprep:
   - interpolation
   styling:

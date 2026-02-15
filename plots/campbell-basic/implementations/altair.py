@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 campbell-basic: Campbell Diagram
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 85/100 | Created: 2026-02-15

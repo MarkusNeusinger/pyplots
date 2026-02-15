@@ -1,171 +1,190 @@
 library: plotly
 specification_id: bubble-basic
 created: '2025-12-23T01:30:54Z'
-updated: '2026-02-15T12:00:00+00:00'
+updated: '2026-02-15T21:44:51Z'
 generated_by: claude-opus-4-6
 workflow_run: 20448650104
 issue: 0
-python_version: '3.14.3'
-library_version: '6.5.2'
+python_version: 3.14.3
+library_version: 6.5.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/plotly/plot.html
-quality_score: null
+quality_score: 87
 impl_tags:
   dependencies: []
   techniques:
+  - colorbar
+  - custom-legend
   - hover-tooltips
   - html-export
-  - custom-legend
   patterns:
   - data-generation
+  - iteration-over-groups
   dataprep: []
   styling:
+  - custom-colormap
   - alpha-blending
+  - edge-highlighting
+  - grid-styling
 review:
   strengths:
-  - Excellent title and axis labeling with proper units following spec format exactly
-  - Well-implemented size legend with representative market share values (5%, 15%,
-    30%)
-  - Professional business context (company metrics) matching spec applications
-  - Area-based bubble scaling as spec recommends (normalized size calculation)
-  - Clean, readable code structure with good transparency (0.6) for overlapping bubbles
-  - Rich hover templates showing all three variables
+  - Excellent use of Plotly sizeref/sizemode for idiomatic area-based bubble scaling
+  - Dual encoding of market share via both size and color creates rich visual information
+    density
+  - Custom hovertemplate with formatted HTML tooltips and write_html for interactive
+    version alongside static PNG
+  - Size legend with three representative bubble sizes (5%, 15%, 30%) helps reader
+    decode the visualization
+  - All font sizes explicitly set and appropriately scaled for 4800x2700 output
+  - Realistic business context with sensible data ranges
   weaknesses:
-  - Size legend bubbles in Plotly appear slightly misaligned visually (all same visual
-    size in legend due to scaling)
-  - Could use color gradient based on a fourth variable to showcase Plotly color mapping
-    capabilities
-  - Grid lines at 0.1 alpha are barely visible - could be slightly more prominent
-    (0.2-0.3)
-  image_description: The plot displays a bubble chart with 40 data points representing
-    company performance metrics. The bubbles are rendered in a muted blue color (#306998)
-    with darker blue outlines and 60% opacity. The x-axis shows "Revenue ($ millions)"
-    ranging from approximately 20 to 80, and the y-axis shows "Growth Rate (%)" ranging
-    from 0 to about 42. Bubble sizes vary significantly, representing market share
-    values. A size legend in the upper right shows three reference bubbles for 5%,
-    15%, and 30% market share with a white background and subtle border. The title
-    "bubble-basic · plotly · pyplots.ai" is centered at the top. The background uses
-    a clean white template with subtle gray gridlines.
+  - Lightest bubbles (low market share ~2-5%) are nearly white against the white background,
+    reducing visibility and contrast — consider a colorscale where the lightest value
+    still has sufficient contrast
+  - Right side of the chart is crowded with both a size legend and a colorbar, pushing
+    the data area leftward and creating layout imbalance
+  - Data storytelling could be stronger — the chart displays data without guiding
+    the viewer to specific insights or creating clear focal points
+  - No distinct clusters or notable outliers in the synthetic data to make the visualization
+    more engaging
+  image_description: The plot displays a bubble chart titled "bubble-basic · plotly
+    · pyplots.ai" centered at the top. Approximately 40 bubbles are scattered across
+    the chart area. The x-axis shows "Revenue ($ millions)" ranging from ~15 to ~82,
+    and the y-axis shows "Growth Rate (%)" ranging from ~0 to ~42. Bubble sizes represent
+    market share (with a size legend in the top-right showing reference bubbles at
+    5%, 15%, and 30%). Bubble color is also mapped to market share via a sequential
+    blue colorscale — very light/nearly white for low values (~3-5%) through medium
+    steel blue to dark navy for high values (~30%+). A vertical colorbar on the right
+    displays "Market Share (%)" from ~5 to ~30+. Bubbles have white edge borders (line
+    width 1.5) and ~75% opacity. The background is clean white (plotly_white template)
+    with subtle gray gridlines. The right margin accommodates both the size legend
+    and colorbar. Data shows a general positive correlation between revenue and growth
+    rate, with good variation in bubble sizes across the chart.
   criteria_checklist:
     visual_quality:
-      score: 37
-      max: 40
+      score: 26
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title at 32pt, axis labels at 24pt, tick labels at 18pt - all excellently
-          readable
+        comment: 'All font sizes explicitly set: title 32pt, axis labels 24pt, ticks
+          18pt, colorbar/legend 16-18pt'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements, bubbles have good transparency for
-          overlapping areas
+        comment: No overlapping text elements; labels, ticks, legends all well-separated
       - id: VQ-03
         name: Element Visibility
-        score: 7
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Bubble sizes well-adapted for 40 data points, good alpha of 0.6,
-          though a few central bubbles cluster
+        comment: Good size variation with sizemin:6; smallest bubbles somewhat small
+          but visible
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Single blue color scheme is colorblind-safe
+        score: 3
+        max: 4
+        passed: false
+        comment: Blue sequential scale is colorblind-safe but lightest bubbles have
+          poor contrast against white background
       - id: VQ-05
         name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Perfect layout with appropriate margins, legend well-positioned outside
-          plot area
-      - id: VQ-06
-        name: Axis Labels
         score: 2
-        max: 2
-        passed: true
-        comment: 'Descriptive labels with units: "Revenue ($ millions)" and "Growth
-          Rate (%)"'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
+        max: 4
         passed: false
-        comment: Grid is very subtle (good), but legend could use better visual differentiation
-          between size levels
-    spec_compliance:
-      score: 25
-      max: 25
-      items:
-      - id: SC-01
-        name: Plot Type
-        score: 8
-        max: 8
-        passed: true
-        comment: Correct bubble chart with three dimensions mapped
-      - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X=Revenue, Y=Growth Rate, Size=Market Share correctly assigned
-      - id: SC-03
-        name: Required Features
-        score: 5
-        max: 5
-        passed: true
-        comment: 'All spec features present: transparency for overlaps, size legend,
-          area-based scaling'
-      - id: SC-04
-        name: Data Range
-        score: 3
-        max: 3
-        passed: true
-        comment: All data visible within axis ranges
-      - id: SC-05
-        name: Legend Accuracy
+        comment: Right margin at 220px for dual legends creates unbalanced layout;
+          data area pushed left
+      - id: VQ-06
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Size legend with "Market Share" title and representative values
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Uses exact format "{spec-id} · {library} · pyplots.ai"
-    data_quality:
-      score: 18
+        comment: Both axes have descriptive labels with units
+    design_excellence:
+      score: 13
       max: 20
       items:
-      - id: DQ-01
-        name: Feature Coverage
+      - id: DE-01
+        name: Aesthetic Sophistication
         score: 6
         max: 8
         passed: true
-        comment: Shows variety of bubble sizes and positions, though size distribution
-          could show more extreme variation
-      - id: DQ-02
-        name: Realistic Context
-        score: 7
-        max: 7
+        comment: Custom blue colorscale, white edge highlighting, clean template;
+          strong but not exceptional
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
         passed: true
-        comment: 'Excellent business scenario: companies by revenue vs growth with
-          market share - directly from spec applications'
-      - id: DQ-03
-        name: Appropriate Scale
+        comment: plotly_white template, subtle gridlines, zeroline disabled, bubble
+          edges; some refinement visible
+      - id: DE-03
+        name: Data Storytelling
+        score: 3
+        max: 6
+        passed: false
+        comment: Color+size dual encoding creates some visual hierarchy but no explicit
+          focal points or emphasis
+    spec_compliance:
+      score: 15
+      max: 15
+      items:
+      - id: SC-01
+        name: Plot Type
         score: 5
         max: 5
         passed: true
-        comment: Revenue 20-80M, Growth 0-42%, Market Share 2-35% - all realistic
-          business values
+        comment: Correct bubble chart using go.Scatter with size-mapped markers
+      - id: SC-02
+        name: Required Features
+        score: 4
+        max: 4
+        passed: true
+        comment: 'All spec features: area-based sizing, transparency, size legend,
+          color as 4th dimension, minimum bubble size'
+      - id: SC-03
+        name: Data Mapping
+        score: 3
+        max: 3
+        passed: true
+        comment: x=revenue, y=growth, size=market_share correctly assigned
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
+        passed: true
+        comment: Title format correct; size legend with percentage labels; colorbar
+          titled
+    data_quality:
+      score: 14
+      max: 15
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 5
+        max: 6
+        passed: true
+        comment: Good range of bubble sizes, positive correlation visible; could show
+          more distinct clusters or outliers
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Real business scenario: company revenue vs growth rate with market
+          share'
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Revenue $10-100M, growth -5% to 45%, market share 2-35% all realistic
     code_quality:
       score: 10
       max: 10
@@ -175,40 +194,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean flow: imports → data → plot → save, no functions/classes'
+        comment: Clean imports → data → plot → layout → save
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only numpy and plotly.graph_objects imported and used
+        comment: Only numpy and plotly.graph_objects, both used
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
-        passed: true
-        comment: Uses current plotly API
-      - id: CQ-05
-        name: Output Correct
-        score: 1
-        max: 1
-        passed: true
-        comment: Saves as plot.png and plot.html
-    library_features:
-      score: 2
-      max: 5
-      items:
-      - id: LF-01
-        name: Uses distinctive library features
+        name: Code Elegance
         score: 2
+        max: 2
+        passed: true
+        comment: Clean, well-organized; size legend loop is elegant
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves plot.png at 4800x2700, also writes HTML
+    library_mastery:
+      score: 9
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
         max: 5
-        passed: false
-        comment: Uses graph_objects correctly with hover templates, but could leverage
-          more Plotly-specific features like color gradients or annotations
-  verdict: APPROVED
+        passed: true
+        comment: Uses go.Scatter with sizemode/sizeref, hovertemplate, update_layout
+          pattern
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Plotly-specific: sizeref area-based scaling, hovertemplate with
+          HTML, write_html for interactivity, colorbar config'
+  verdict: REJECTED

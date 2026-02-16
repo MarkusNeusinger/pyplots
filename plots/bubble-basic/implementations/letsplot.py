@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bubble-basic: Basic Bubble Chart
 Library: letsplot 4.8.2 | Python 3.14.3
-Quality: 88/100 | Updated: 2026-02-16
+Quality: 86/100 | Updated: 2026-02-16
 """
 
 import numpy as np

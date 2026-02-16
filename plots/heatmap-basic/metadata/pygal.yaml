@@ -1,7 +1,7 @@
 library: pygal
 specification_id: heatmap-basic
 created: '2025-12-23T00:50:51Z'
-updated: '2026-02-15T21:46:42Z'
+updated: '2026-02-16T20:51:50Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447985371
 issue: 0
@@ -10,13 +10,14 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/pygal/plot.html
-quality_score: 89
+quality_score: 87
 impl_tags:
   dependencies:
   - cairosvg
   techniques:
   - colorbar
   - annotations
+  - html-export
   patterns:
   - data-generation
   - matrix-construction
@@ -28,38 +29,35 @@ impl_tags:
   - edge-highlighting
 review:
   strengths:
-  - Exceptional visual quality with perfect text legibility, no overlaps, and optimal
-    layout utilization (30/30 on Visual Quality)
-  - Sophisticated design with custom 8-stop blue gradient, brightness-adaptive text
-    colors, rounded cell corners, and gold-highlighted seasonal peaks
-  - Strong data storytelling through peak annotations and bold category labels that
-    guide the viewer to key insights
-  - Realistic, neutral data scenario (website traffic by content category) with plausible
-    values
-  - Clean code structure with proper seed and all spec requirements met
+  - 'Perfect visual quality: all text legible with explicitly set font sizes, no overlap,
+    excellent layout balance'
+  - Creative approach to heatmap using HorizontalStackedBar with per-cell color mapping
+    — clever workaround for pygal lacking native heatmap
+  - Brightness-adaptive text colors (white on dark, dark on light) show strong attention
+    to readability
+  - Gold peak annotations add effective data storytelling beyond just displaying values
+  - Custom colorbar with labeled scale provides proper reference for the color encoding
+  - Realistic neutral data scenario with clear seasonal patterns
   weaknesses:
-  - The main PNG output is hand-built SVG rather than pygal-generated rendering —
-    pygal lacks a native heatmap type, so library mastery is inherently limited
-  - Color interpolation logic is duplicated between the cell-drawing loop and the
-    colorbar-drawing loop — could be extracted into a helper
-  - The pygal Bar chart is created solely for the interactive HTML output and does
-    not contribute to the primary PNG deliverable
-  - The Year-end peak annotation text is slightly hard to read at its small size (20px
-    italic) and may be partially clipped near the cell edge
-  image_description: 'The plot displays a heatmap with 8 content categories (Tech,
-    Science, Health, Finance, Sports, Travel, Food, Culture) on the Y-axis and 12
-    months (Jan-Dec) on the X-axis. A sequential blue colormap maps cell values from
-    light blue (~51) to dark navy (~177), representing monthly website traffic in
-    thousands. Every cell contains a numeric annotation with brightness-adaptive text
-    color (white on dark cells, dark on light cells). A vertical colorbar on the right
-    is labeled "Visits (k)" with tick marks at 51, 114, and 177. Two cells are highlighted
-    with gold borders and italic annotations: Finance/Dec ("Year-end peak") and Travel/Aug
-    ("Summer peak"). The title reads "heatmap-basic · pygal · pyplots.ai" with a subtitle
-    "Monthly website traffic (thousands of visits) by content category". Month labels
-    are rotated at -35 degrees. The Y-axis title is "Content Category" and the X-axis
-    title is "Month". Cells have rounded corners with small gaps. Finance and Travel
-    row labels appear in bold. The overall layout is clean with a white background,
-    good margins, and professional typography.'
+  - Row spacing creates visual gaps between categories, reducing the dense grid appearance
+    expected of a traditional heatmap
+  - Heavy SVG regex post-processing is fragile and complex — necessary but adds code
+    maintenance risk
+  - Multiple function definitions break KISS flat-script structure
+  - The colorbar midpoint label position could be better aligned
+  image_description: The plot displays a horizontal heatmap with 8 content categories
+    (Culture, Food, Travel, Sports, Finance, Health, Science, Tech) along the y-axis
+    and 12 months (Jan–Dec) as column headers across the top. Each cell is colored
+    with a sequential blue gradient — lighter blues for lower traffic values (~51k)
+    and darker blues for higher values (~177k). Every cell contains a numeric annotation
+    showing the exact traffic value. A colorbar on the right labeled "Visits (k)"
+    indicates the scale from 51 to 177. The title "heatmap-basic · pygal · pyplots.ai"
+    appears at the top, with a subtitle "Monthly website traffic (thousands of visits)
+    by content category." A rotated y-axis label "Content Category" is on the left.
+    Two gold italic annotations highlight "Summer peak" near Travel/Aug and "Year-end
+    peak" near Finance/Dec. Text colors adapt to cell brightness — white text on dark
+    cells, dark text on light cells. The overall layout is clean with a white background,
+    no grid lines, and well-balanced margins.
   criteria_checklist:
     visual_quality:
       score: 30
@@ -70,93 +68,98 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 54px, subtitle 28px, cell annotations
-          24-28px, row labels 34px, column labels 30px, axis titles 38px, colorbar
-          labels 28px'
+        comment: All font sizes explicitly set (title 54px, labels 34px, values 26px);
+          all text clearly readable
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text. Month labels rotated, cell annotations fit within
-          cells
+        comment: No overlapping text anywhere; month headers, category labels, and
+          cell values cleanly separated
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Cells well-sized with gaps, distinctly colored and annotated
+        comment: Cells well-sized with values clearly visible within each cell
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Sequential blue palette is colorblind-safe
+        comment: Sequential blue colormap is colorblind-safe; no red-green dependency
       - id: VQ-05
         name: Layout Balance
         score: 4
         max: 4
         passed: true
-        comment: Grid spans ~80% width and ~78% height with balanced margins
+        comment: Chart fills canvas well with balanced margins for labels, colorbar,
+          and title
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive axis titles with colorbar showing units Visits (k)
+        comment: Content Category y-axis label, subtitle with units, colorbar labeled
+          Visits (k)
     design_excellence:
-      score: 17
+      score: 16
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: Custom 8-stop blue gradient, brightness-adaptive text, rounded corners,
-          gold-highlighted peaks, publication-quality
+        comment: Custom blue gradient palette, brightness-adaptive text colors, clean
+          typography; slight gaps between rows reduce heatmap cohesion
       - id: DE-02
         name: Visual Refinement
         score: 5
         max: 6
         passed: true
-        comment: Clean white background, no grid, cell gaps, rounded corners, clean
-          colorbar
+        comment: Grids hidden, white background, subtitle, rotated axis label, custom
+          colorbar, rounded bars; row spacing slightly large
       - id: DE-03
         name: Data Storytelling
         score: 5
         max: 6
         passed: true
-        comment: Gold-bordered peak cells with annotations guide viewer to seasonal
-          patterns
+        comment: Gold peak annotations guide viewer; color gradient naturally highlights
+          high-traffic cells; subtitle provides clear context
     spec_compliance:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Correct heatmap with cells colored by value magnitude
+        comment: Pygal lacks native heatmap; creative HorizontalStackedBar workaround
+          that visually functions as a heatmap
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Color mapping, annotations, colorbar, logical ordering all present
+        comment: Value annotations, colorbar legend, logical ordering, sequential
+          colormap all present
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=months, Y=categories, value=traffic correctly mapped
+        comment: Months on x-axis, categories on y-axis, values correctly mapped to
+          colors
       - id: SC-04
         name: Title Format
         score: 3
         max: 3
         passed: true
-        comment: Title matches required format heatmap-basic · pygal · pyplots.ai
+        comment: Correct heatmap-basic · pygal · pyplots.ai format; colorbar replaces
+          legend appropriately
     data_quality:
       score: 14
       max: 15
@@ -166,71 +169,73 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Good variation across categories and months with seasonal patterns,
-          could show more extreme contrasts
+        comment: Good variation across categories and months with seasonal patterns
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Website traffic by content category is a realistic neutral business
+        comment: Website traffic by content category is a realistic, neutral business
           scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values 51-177k visits plausible for website traffic
+        comment: Values 51-177k visits are realistic for content site traffic analytics
     code_quality:
-      score: 9
+      score: 7
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 1
         max: 3
-        passed: true
-        comment: Imports, Data, Plot, Save structure with no functions or classes
+        passed: false
+        comment: Defines multiple functions (interpolate_color, recolor_series_texts,
+          recolor_overlay) rather than flat structure
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used including workaround for pygal name collision
+        comment: All imports used; namespace collision workaround is necessary
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
         passed: false
-        comment: Color interpolation logic duplicated for cells and colorbar
+        comment: Regex-heavy SVG post-processing is fragile but necessary given pygal
+          limitations
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png via cairosvg
+        comment: Saves plot.png, plot.svg, and plot.html correctly
     library_mastery:
-      score: 4
+      score: 6
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 2
+        score: 3
         max: 5
         passed: false
-        comment: Creates pygal Bar chart with Style and series API but main PNG output
-          is hand-built SVG not pygal-rendered
+        comment: Uses pygal HorizontalStackedBar, per-value color dicts, formatter
+          lambdas, custom Style; but significant SVG post-processing bypasses pygal
+          API
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
         passed: false
-        comment: Uses pygal Style, config, render for HTML interactive output but
-          primary PNG deliverable bypasses pygal entirely
-  verdict: REJECTED
+        comment: Per-value color dict and formatter lambda are distinctive pygal features;
+          interactive HTML export leverages pygal native tooltip system
+  verdict: APPROVED

@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bubble-basic: Basic Bubble Chart
 Library: highcharts 1.10.3 | Python 3.14.3
+Quality: 91/100 | Updated: 2026-02-16
 """
 
 import tempfile

@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 bubble-basic: Basic Bubble Chart
 Library: letsplot 4.8.2 | Python 3.14.3
-Quality: 85/100 | Updated: 2026-02-16
 """
 
 import numpy as np
@@ -30,42 +29,37 @@ from lets_plot import (
 
 LetsPlot.setup_html()
 
-# Data - market analysis: companies across sectors by revenue, growth, and market share
+# Data - market analysis: companies by revenue, growth rate, and market share
 np.random.seed(42)
-n = 45
 
-sectors = ["Technology", "Healthcare", "Finance", "Energy", "Consumer Goods"]
-sector_props = {
-    "Technology": {"rev_range": (20, 180), "growth_base": 22, "growth_slope": -0.06},
-    "Healthcare": {"rev_range": (15, 150), "growth_base": 18, "growth_slope": -0.05},
-    "Finance": {"rev_range": (30, 200), "growth_base": 12, "growth_slope": -0.03},
-    "Energy": {"rev_range": (25, 190), "growth_base": 10, "growth_slope": -0.02},
-    "Consumer Goods": {"rev_range": (10, 160), "growth_base": 15, "growth_slope": -0.04},
-}
+# (sector, count, rev_low, rev_high, growth_base, growth_slope, share_mean)
+# Distinct sector profiles: Tech = high-growth startups, Energy = large stable firms
+sector_specs = [
+    ("Technology", 10, 15, 120, 28, -0.10, 10),
+    ("Healthcare", 10, 20, 140, 18, -0.04, 14),
+    ("Finance", 9, 50, 200, 10, -0.02, 20),
+    ("Energy", 8, 60, 195, 7, -0.01, 22),
+    ("Consumer Goods", 8, 10, 130, 15, -0.05, 12),
+]
 
-data = {"revenue": [], "growth_rate": [], "market_share": [], "sector": []}
-counts = [10, 10, 9, 8, 8]
+rows = []
+for sector, count, r_lo, r_hi, g_base, g_slope, s_mean in sector_specs:
+    rev = np.random.uniform(r_lo, r_hi, count)
+    growth = g_base + g_slope * rev + np.random.randn(count) * 2.5
+    share = np.clip(np.random.randn(count) * 5 + s_mean, 2, 30)
+    for r, g, s in zip(rev, growth, share, strict=True):
+        rows.append({"revenue": r, "growth_rate": g, "market_share": s, "sector": sector})
 
-for sector, count in zip(sectors, counts, strict=True):
-    props = sector_props[sector]
-    rev = np.random.uniform(*props["rev_range"], count)
-    growth = props["growth_base"] + props["growth_slope"] * rev + np.random.randn(count) * 4
-    share = np.abs(np.random.randn(count) * 7 + 13)
-    data["revenue"].extend(rev)
-    data["growth_rate"].extend(growth)
-    data["market_share"].extend(share)
-    data["sector"].extend([sector] * count)
+df = pd.DataFrame(rows)
 
-df = pd.DataFrame(data)
-
-# Palette: Python Blue first, then cohesive complementary colors (colorblind-safe)
+# Palette: Python Blue first, colorblind-safe complementary colors
 palette = ["#306998", "#E5883E", "#2A9D8F", "#8B5CF6", "#E63946"]
 
 # Plot
 plot = (
     ggplot(df, aes(x="revenue", y="growth_rate", size="market_share", color="sector"))
     + geom_point(
-        alpha=0.65,
+        alpha=0.7,
         tooltips=layer_tooltips()
         .format("revenue", "${.1f}M")
         .format("growth_rate", "{.1f}%")
@@ -78,16 +72,16 @@ plot = (
     + geom_smooth(
         aes(x="revenue", y="growth_rate"),
         method="loess",
-        color="#555555",
-        size=1.2,
-        alpha=0.15,
+        color="#444444",
+        size=1.5,
+        alpha=0.12,
         inherit_aes=False,
         show_legend=False,
     )
-    + scale_size_area(max_size=22, name="Market Share (%)", breaks=[5, 10, 15, 20, 25])
+    + scale_size_area(max_size=24, name="Market Share (%)", breaks=[5, 10, 15, 20, 25])
     + scale_color_manual(values=palette, name="Sector")
     + guides(
-        color=guide_legend(override_aes={"size": 8}), size=guide_legend(override_aes={"color": "#306998", "alpha": 0.7})
+        color=guide_legend(override_aes={"size": 7}), size=guide_legend(override_aes={"color": "#306998", "alpha": 0.7})
     )
     + labs(x="Revenue (Million USD)", y="Growth Rate (%)", title="bubble-basic · letsplot · pyplots.ai")
     + theme_minimal()
@@ -95,11 +89,14 @@ plot = (
         axis_title=element_text(size=20),
         axis_text=element_text(size=16),
         plot_title=element_text(size=24),
-        legend_title=element_text(size=18),
+        legend_title=element_text(size=16),
         legend_text=element_text(size=14),
-        panel_grid_major=element_line(size=0.4, color="#E8E8E8"),
+        panel_grid_major=element_line(size=0.3, color="#E0E0E0"),
         panel_grid_minor=element_blank(),
-        legend_position="right",
+        legend_position="bottom",
+        legend_direction="horizontal",
+        legend_box="horizontal",
+        legend_box_spacing=5,
     )
     + ggsize(1600, 900)
 )

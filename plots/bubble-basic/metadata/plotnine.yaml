@@ -1,164 +1,181 @@
 library: plotnine
 specification_id: bubble-basic
 created: '2025-12-23T01:31:30Z'
-updated: '2025-12-23T06:56:00Z'
-generated_by: claude-opus-4-5-20251101
+updated: '2026-02-16T20:34:32Z'
+generated_by: claude-opus-4-6
 workflow_run: 20448652486
 issue: 0
-python_version: 3.13.11
-library_version: 0.15.2
+python_version: 3.14.3
+library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 90
+quality_score: 91
 impl_tags:
   dependencies: []
-  techniques: []
+  techniques:
+  - layer-composition
   patterns:
   - data-generation
   dataprep: []
   styling:
   - alpha-blending
+  - grid-styling
 review:
   strengths:
-  - Excellent use of scale_size_area() for perceptually accurate bubble sizing (scales
-    by area, not radius)
-  - Clean implementation following KISS principles with proper ggplot grammar
-  - Good text sizing throughout with explicit element_text() specifications matching
-    library guidelines
-  - Appropriate alpha transparency (0.6) handles overlapping bubbles well
-  - Proper title format following spec requirements
+  - Excellent spec compliance — all notes addressed including area scaling, transparency,
+    size legend, and color as 4th dimension
+  - Strong realistic data scenario with GDP/life expectancy/population across world
+    regions
+  - Well-crafted typography hierarchy with all font sizes explicitly set
+  - Idiomatic plotnine grammar of graphics usage with clean code structure
+  - Custom palette starting with Python Blue (#306998) as required by library rules
   weaknesses:
-  - Axis labels are generic (X Value, Y Value) without context or units - could use
-    a more realistic scenario
-  - Could showcase more plotnine features like adding a color aesthetic for a fourth
-    dimension as suggested in spec notes
-  image_description: The plot displays a bubble chart with approximately 50 data points
-    on a clean minimal theme background. The x-axis ranges from 6 to 14 (labeled "X
-    Value") and the y-axis from approximately 7 to 14 (labeled "Y Value"). All bubbles
-    are rendered in a consistent blue color (#306998) with transparency (alpha ~0.6).
-    Bubble sizes vary noticeably, representing the third dimension. A size legend
-    on the right side shows three reference bubbles for sizes 25, 50, and 75. The
-    title "bubble-basic · plotnine · pyplots.ai" is displayed at the top. The overall
-    layout is well-proportioned with a 16:9 aspect ratio. The data shows a positive
-    correlation between X and Y values with good variation in bubble sizes.
+  - Minor crowding in the lower-left cluster where Middle East & Africa and some Asia-Pacific/Americas
+    points overlap
+  - Right side of plot area has some unused space that could be better utilized
+  - Could benefit from slightly more visual storytelling emphasis (e.g., stronger
+    color contrast between regions)
+  image_description: 'The plot displays a bubble chart titled "bubble-basic · plotnine
+    · pyplots.ai" on a white background with a light gray (#fafafa) panel. The x-axis
+    shows "GDP per Capita (USD thousands)" formatted as $10k–$70k, and the y-axis
+    shows "Life Expectancy (years)" ranging from ~60 to ~88. Forty bubbles are plotted,
+    colored by four regions: Asia-Pacific (steel blue), Europe (salmon/orange), Americas
+    (green), and Middle East & Africa (purple/lavender). Bubble sizes represent population
+    in millions, with a size legend showing 5, 25, and 75M breakpoints. There is a
+    clear positive correlation — higher GDP correlates with higher life expectancy.
+    Middle East & Africa clusters in the lower-left (low GDP, low life expectancy),
+    while Europe points are distributed toward higher GDP and life expectancy. The
+    layout is 16:9 landscape with subtle major gridlines and no minor grid. Typography
+    is well-sized with bold title and clear axis labels.'
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 28
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
-        passed: true
-        comment: Title at 24pt, axis titles at 20pt, axis text at 16pt, legend text
-          at 14-18pt - all clearly readable
-      - id: VQ-02
-        name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements, bubbles have good alpha transparency
-          to handle visual overlap
+        comment: 'All font sizes explicitly set: title 24pt bold, axis titles 20pt,
+          tick labels 16pt, legend title 18pt bold, legend text 16pt'
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
+        passed: true
+        comment: No overlapping text elements; x-axis labels well-spaced, legend clear
+          of data
       - id: VQ-03
         name: Element Visibility
-        score: 7
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: 'Bubbles are well-sized with scale_size_area(max_size=20), good visibility.
-          Minor deduction: some small bubbles could be slightly more prominent'
+        comment: Good size variation with max_size=24 and alpha=0.65; slight crowding
+          in lower-left cluster but transparency handles it
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Single color scheme (#306998 blue) is colorblind-safe
+        comment: Blue/orange/green/purple palette distinguishable for most color vision
+          deficiencies
       - id: VQ-05
         name: Layout Balance
-        score: 4
-        max: 5
+        score: 3
+        max: 4
         passed: true
-        comment: 'Good proportions, minimal background with theme_minimal(). Small
-          deduction: legend could be positioned slightly better'
+        comment: Good 16:9 canvas usage; slight wasted space on right side of plot
+          area
       - id: VQ-06
-        name: Axis Labels
-        score: 1
+        name: Axis Labels & Title
+        score: 2
         max: 2
         passed: true
-        comment: Descriptive labels "X Value" and "Y Value" but no units
-      - id: VQ-07
-        name: Grid & Legend
-        score: 1
-        max: 2
+        comment: GDP per Capita (USD thousands) and Life Expectancy (years) with proper
+          units
+    design_excellence:
+      score: 15
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 6
+        max: 8
         passed: true
-        comment: Grid is subtle from theme_minimal(), legend is present and clear
-          but positioned on plot area
+        comment: Custom palette starting with Python Blue, intentional typography
+          hierarchy, subtle grid, light panel background — clearly above defaults
+      - id: DE-02
+        name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: Minor grid removed, major grid subtle, theme_minimal with no heavy
+          spines, styled legend keys
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Clear positive GDP-life expectancy correlation visible, regional
+          clustering provides narrative, bubble sizes add population context
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
         comment: Correct bubble chart using geom_point with size aesthetic
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X, Y, and size correctly mapped to aesthetics
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: 'All spec features present: size legend, transparency (alpha=0.6),
-          scale_size_area for area-based scaling'
-      - id: SC-04
-        name: Data Range
+        comment: Area-scaled bubbles, transparency, size legend with breaks, color
+          as 4th dimension for categorical grouping
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axes
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X=GDP per capita, Y=Life expectancy, Size=Population, Color=Region
+          — all correctly mapped
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Size legend correctly shows scale with values 25, 50, 75
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Correct format: "bubble-basic · plotnine · pyplots.ai"'
+        comment: Title in correct format, legends descriptive with Population (M)
+          and Region
     data_quality:
-      score: 17
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: 'Shows good variation in all three dimensions (x, y, size). Minor
-          deduction: could show more extreme size variation'
+        comment: Good size variation, spread across GDP range, different life expectancies
+          and regional clusters
       - id: DQ-02
         name: Realistic Context
-        score: 6
-        max: 7
-        passed: true
-        comment: Plausible synthetic data with correlation between x and y, generic
-          but acceptable
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Values are reasonable and sensible
+        comment: Cities across 4 world regions with GDP per capita, life expectancy,
+          and population
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: GDP $3k-$85k, life expectancy 52-88 years, population in millions
+          — all realistic ranges
     code_quality:
       score: 10
       max: 10
@@ -171,38 +188,45 @@ review:
         comment: Clean imports → data → plot → save structure, no functions/classes
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: np.random.seed(42) ensures reproducibility
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports used, no extras
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
-        passed: true
-        comment: Uses current plotnine API
-      - id: CQ-05
-        name: Output Correct
-        score: 1
-        max: 1
-        passed: true
-        comment: Saves as "plot.png"
-    library_features:
-      score: 2
-      max: 5
-      items:
-      - id: LF-01
-        name: Uses distinctive library features
+        name: Code Elegance
         score: 2
+        max: 2
+        passed: true
+        comment: Clean, Pythonic; data generation appropriately complex for realistic
+          scenario
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png, dpi=300
+    library_mastery:
+      score: 9
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
         max: 5
         passed: true
-        comment: Uses ggplot grammar with geom_point and scale_size_area, theme_minimal,
-          element_text customization. This is standard plotnine usage but doesn't
-          showcase advanced features like faceting or additional aesthetics
+        comment: 'Textbook plotnine grammar of graphics: ggplot + aes + geom + scale
+          + labs + theme chain; pd.Categorical for ordered legend'
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: scale_size_area for perceptually-correct area scaling, custom lambda
+          formatters, element-based theme customization
   verdict: APPROVED

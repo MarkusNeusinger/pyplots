@@ -1,99 +1,110 @@
 """ pyplots.ai
 heatmap-basic: Basic Heatmap
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Library: bokeh 3.8.2 | Python 3.14.3
+Quality: 91/100 | Updated: 2026-02-15
 """
 
 import numpy as np
+import pandas as pd
 from bokeh.io import export_png, save
-from bokeh.models import BasicTicker, ColorBar, ColumnDataSource, LabelSet, LinearColorMapper
-from bokeh.palettes import Viridis256
+from bokeh.models import BasicTicker, ColumnDataSource, HoverTool, LabelSet
 from bokeh.plotting import figure
 from bokeh.resources import CDN
+from bokeh.transform import linear_cmap
 
 
-# Data - Monthly sales performance by product category
+# Data - Monthly temperature anomalies (°C) by city
 np.random.seed(42)
-x_labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"]
-y_labels = ["Product A", "Product B", "Product C", "Product D", "Product E", "Product F"]
+months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct"]
+cities = ["Oslo", "Berlin", "Madrid", "Cairo", "Mumbai", "Tokyo", "Sydney"]
 
-# Generate heatmap values (sales performance 0-100)
-values = np.random.rand(len(y_labels), len(x_labels)) * 100
+# Generate realistic temperature anomalies with geographic patterns
+base_anomalies = np.random.randn(len(cities), len(months)) * 0.6
+# Northern cities: colder winters, warmer summers
+for i, city in enumerate(cities):
+    seasonal = np.sin(np.linspace(-np.pi / 2, 3 * np.pi / 4, len(months)))
+    if city in ("Oslo", "Berlin"):
+        base_anomalies[i] += seasonal * 1.5 - 0.3
+    elif city in ("Madrid", "Cairo"):
+        base_anomalies[i] += seasonal * 1.2 + 0.4
+    elif city == "Mumbai":
+        base_anomalies[i] += 0.8
+    elif city == "Sydney":
+        base_anomalies[i] -= seasonal * 0.9
+    elif city == "Tokyo":
+        base_anomalies[i] += seasonal * 0.7
 
-# Flatten data for ColumnDataSource
-x_data = []
-y_data = []
-value_data = []
-text_data = []
-text_color_data = []
+values = np.round(base_anomalies, 1)
 
-for i, y in enumerate(y_labels):
-    for j, x in enumerate(x_labels):
-        x_data.append(x)
-        y_data.append(y)
+# Flatten to DataFrame for ColumnDataSource
+records = []
+for i, city in enumerate(cities):
+    for j, month in enumerate(months):
         val = values[i, j]
-        value_data.append(val)
-        text_data.append(f"{val:.0f}")
-        # Use white text on dark cells, black on light cells
-        text_color_data.append("white" if val > 50 else "black")
+        records.append(
+            {
+                "month": month,
+                "city": city,
+                "anomaly": val,
+                "label": f"{val:+.1f}",
+                "text_color": "white" if abs(val) > 1.2 else "#333333",
+            }
+        )
 
-source = ColumnDataSource(
-    data={"x": x_data, "y": y_data, "value": value_data, "text": text_data, "text_color": text_color_data}
-)
+source = ColumnDataSource(pd.DataFrame(records))
 
-# Color mapper
-color_mapper = LinearColorMapper(palette=Viridis256, low=0, high=100)
+# Color mapping — diverging palette for positive/negative anomalies
+blues = ["#2166ac", "#4393c3", "#92c5de", "#d1e5f0"]
+reds = ["#fddbc7", "#f4a582", "#d6604d", "#b2182b"]
+diverging_palette = blues[::-1] + ["#f7f7f7"] + reds
 
-# Create figure with categorical axes
+# Create figure
 p = figure(
     width=4800,
     height=2700,
-    x_range=x_labels,
-    y_range=y_labels,
+    x_range=months,
+    y_range=list(reversed(cities)),
     title="heatmap-basic · bokeh · pyplots.ai",
-    x_axis_label="Month",
-    y_axis_label="Product",
+    x_axis_label="Month (2024)",
+    y_axis_label="City",
     toolbar_location=None,
     tools="",
 )
 
-# Plot heatmap rectangles
-p.rect(
-    x="x",
-    y="y",
-    width=1,
-    height=1,
-    source=source,
-    fill_color={"field": "value", "transform": color_mapper},
-    line_color=None,
-)
+# Plot heatmap rectangles with linear_cmap
+cmap = linear_cmap("anomaly", diverging_palette, low=-2.5, high=2.5)
+r = p.rect(x="month", y="city", width=1, height=1, source=source, fill_color=cmap, line_color="white", line_width=2)
 
-# Add value annotations in cells
+# Add value annotations
 labels = LabelSet(
-    x="x",
-    y="y",
-    text="text",
+    x="month",
+    y="city",
+    text="label",
     text_color="text_color",
     source=source,
     text_align="center",
     text_baseline="middle",
-    text_font_size="24pt",
+    text_font_size="22pt",
 )
 p.add_layout(labels)
 
-# Add color bar
-color_bar = ColorBar(
-    color_mapper=color_mapper,
+# Color bar from renderer (idiomatic Bokeh pattern)
+color_bar = r.construct_color_bar(
+    width=40,
     ticker=BasicTicker(desired_num_ticks=10),
     label_standoff=16,
     major_label_text_font_size="18pt",
     border_line_color=None,
-    location=(0, 0),
-    width=40,
-    title="Sales Score",
+    padding=10,
+    title="Anomaly (°C)",
     title_text_font_size="20pt",
+    title_standoff=20,
 )
 p.add_layout(color_bar, "right")
+
+# HoverTool for interactive HTML version
+hover = HoverTool(tooltips=[("City", "@city"), ("Month", "@month"), ("Anomaly", "@anomaly{+0.0} °C")], renderers=[r])
+p.add_tools(hover)
 
 # Styling for 4800x2700 px
 p.title.text_font_size = "28pt"
@@ -102,21 +113,20 @@ p.yaxis.axis_label_text_font_size = "22pt"
 p.xaxis.major_label_text_font_size = "18pt"
 p.yaxis.major_label_text_font_size = "18pt"
 
-# Grid styling - disabled for heatmap
+# Grid and axes
 p.xgrid.grid_line_color = None
 p.ygrid.grid_line_color = None
-
-# Axis styling
-p.axis.axis_line_color = "#cccccc"
-p.axis.major_tick_line_color = "#cccccc"
+p.axis.axis_line_color = None
+p.axis.major_tick_line_color = None
+p.outline_line_color = None
 
 # Background
-p.background_fill_color = "#f8f8f8"
+p.min_border_right = 120
+p.background_fill_color = "#fafafa"
 p.border_fill_color = "white"
-p.outline_line_color = None
 
 # Save PNG
 export_png(p, filename="plot.png")
 
-# Save HTML for interactive version
+# Save HTML with interactive hover
 save(p, filename="plot.html", resources=CDN, title="heatmap-basic · bokeh · pyplots.ai")

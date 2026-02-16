@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bubble-basic: Basic Bubble Chart
 Library: altair 6.0.0 | Python 3.14.3
-Quality: 86/100 | Created: 2026-02-15
+Quality: 93/100 | Created: 2026-02-16
 """
 
 import altair as alt

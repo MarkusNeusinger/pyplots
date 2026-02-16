@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-basic: Basic Heatmap
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 87/100 | Updated: 2026-02-16
@@ -60,28 +60,10 @@ color_stops = [
     (1.00, (8, 48, 107)),
 ]
 
-
-def interpolate_color(val):
-    """Map a data value to an RGB color using the sequential blue palette."""
-    t = max(0.0, min(1.0, (val - vmin) / (vmax - vmin)))
-    r, g, b = color_stops[-1][1]
-    for k in range(len(color_stops) - 1):
-        t0, c0 = color_stops[k]
-        t1, c1 = color_stops[k + 1]
-        if t <= t1:
-            f = (t - t0) / (t1 - t0) if t1 > t0 else 0
-            r = int(c0[0] + (c1[0] - c0[0]) * f)
-            g = int(c0[1] + (c1[1] - c0[1]) * f)
-            b = int(c0[2] + (c1[2] - c0[2]) * f)
-            break
-    return f"#{r:02x}{g:02x}{b:02x}", (r, g, b)
-
-
 # ---------------------------------------------------------------------------
 # Build heatmap using pygal HorizontalStackedBar
 # Each month is a series (column), each category is a row (x_label).
 # Per-value color dicts give each cell its heatmap color.
-# pygal renders the chart grid, axis labels, value annotations, and legend.
 # ---------------------------------------------------------------------------
 custom_style = _Style(
     background="white",
@@ -114,20 +96,31 @@ chart = _pygal.HorizontalStackedBar(
     margin_left=400,
     margin_right=440,
     range=(0, 12),
-    spacing=10,
-    rounded_bars=4,
+    spacing=0,
+    rounded_bars=1,
 )
 chart.x_labels = categories
 
-# Track cell colors for brightness-adaptive text
+# Map value to RGB color using sequential blue palette (inline, no function)
 cell_rgb = {}
-
 for j, month in enumerate(months):
     series_data = []
     for i in range(len(categories)):
         v = matrix[i][j]
-        hex_color, rgb = interpolate_color(v)
-        cell_rgb[(i, j)] = rgb
+        # Interpolate color inline
+        t = max(0.0, min(1.0, (v - vmin) / (vmax - vmin)))
+        r, g, b = color_stops[-1][1]
+        for k in range(len(color_stops) - 1):
+            t0, c0 = color_stops[k]
+            t1, c1 = color_stops[k + 1]
+            if t <= t1:
+                f = (t - t0) / (t1 - t0) if t1 > t0 else 0
+                r = int(c0[0] + (c1[0] - c0[0]) * f)
+                g = int(c0[1] + (c1[1] - c0[1]) * f)
+                b = int(c0[2] + (c1[2] - c0[2]) * f)
+                break
+        hex_color = f"#{r:02x}{g:02x}{b:02x}"
+        cell_rgb[(i, j)] = (r, g, b)
         series_data.append({"value": 1, "color": hex_color, "formatter": lambda x, val=v: str(val)})
     chart.add(month, series_data)
 
@@ -136,52 +129,39 @@ svg = chart.render(is_unicode=True)
 
 # ---------------------------------------------------------------------------
 # Post-process SVG: brightness-adaptive text colors for value annotations
-# pygal renders value texts in the text-overlay section grouped by series.
-# Within each series (month j), texts are ordered by y-position; pygal
-# reverses category order so highest-y = first category (Tech, index 0).
+# pygal renders value texts grouped by series (month). Within each series,
+# texts are ordered by y-position; pygal reverses category order so highest-y
+# = first category (Tech, index 0). We recolor each value text based on cell
+# background brightness for optimal readability.
 # ---------------------------------------------------------------------------
-serie_text_pattern = re.compile(r'(<g class="series serie-(\d+)[^"]*">)(.*?)(</g>)', re.DOTALL)
-value_text_pattern = re.compile(
-    r'(<text\s+text-anchor="middle"\s+x="[^"]+"\s+y="([^"]+)"\s+class="value">)(\d+)(</text>)'
+overlay_match = re.search(
+    r'(<g[^>]*class="plot text-overlay">)(.*?)(</g>\s*<g[^>]*class="plot tooltip-overlay")', svg, re.DOTALL
 )
-
-
-def recolor_series_texts(match):
-    prefix, serie_idx_str, content, suffix = match.groups()
-    j = int(serie_idx_str)
-
-    texts_with_y = []
-    for tm in value_text_pattern.finditer(content):
-        texts_with_y.append((float(tm.group(2)), tm))
-
-    texts_with_y.sort(key=lambda x: x[0], reverse=True)
-
-    new_content = content
-    for rank, (_, tm) in enumerate(texts_with_y):
-        i = rank
-        r, g, b = cell_rgb.get((i, j), (200, 200, 200))
-        brightness = (r * 299 + g * 587 + b * 114) / 1000
-        txt_color = "#ffffff" if brightness < 140 else "#1a1a1a"
-        old_text = tm.group(0)
-        new_text = tm.group(1).replace('class="value"', f'class="value" fill="{txt_color}"') + tm.group(3) + tm.group(4)
-        new_content = new_content.replace(old_text, new_text, 1)
-
-    return prefix + new_content + suffix
-
-
-# Only apply to the text-overlay section
-text_overlay_pattern = re.compile(
-    r'(<g[^>]*class="plot text-overlay">)(.*?)(</g>\s*<g[^>]*class="plot tooltip-overlay")', re.DOTALL
-)
-
-
-def recolor_overlay(match):
-    prefix, content, suffix = match.groups()
-    new_content = serie_text_pattern.sub(recolor_series_texts, content)
-    return prefix + new_content + suffix
-
-
-svg = text_overlay_pattern.sub(recolor_overlay, svg)
+if overlay_match:
+    overlay_content = overlay_match.group(2)
+    # Process each series group within the text overlay
+    for serie_match in re.finditer(r'(<g class="series serie-(\d+)[^"]*">)(.*?)(</g>)', overlay_content, re.DOTALL):
+        j = int(serie_match.group(2))
+        serie_content = serie_match.group(3)
+        # Find all value texts, sort by y-position (descending = category order)
+        value_texts = [
+            (float(m.group(2)), m)
+            for m in re.finditer(
+                r'(<text\s+text-anchor="middle"\s+x="[^"]+"\s+y="([^"]+)"\s+class="value">)(\d+)(</text>)',
+                serie_content,
+            )
+        ]
+        value_texts.sort(key=lambda x: x[0], reverse=True)
+        new_serie = serie_content
+        for rank, (_, m) in enumerate(value_texts):
+            r, g, b = cell_rgb.get((rank, j), (200, 200, 200))
+            brightness = (r * 299 + g * 587 + b * 114) / 1000
+            txt_color = "#ffffff" if brightness < 140 else "#1a1a1a"
+            old_tag = m.group(0)
+            new_tag = m.group(1).replace('class="value"', f'class="value" fill="{txt_color}"') + m.group(3) + m.group(4)
+            new_serie = new_serie.replace(old_tag, new_tag, 1)
+        overlay_content = overlay_content.replace(serie_match.group(3), new_serie, 1)
+    svg = svg[: overlay_match.start(2)] + overlay_content + svg[overlay_match.end(2) :]
 
 # ---------------------------------------------------------------------------
 # Inject subtitle, month column headers, colorbar, and peak annotations
@@ -210,7 +190,7 @@ cell_h = plot_h / n_rows
 
 extra_svg = []
 
-# Subtitle (positioned between title and month headers)
+# Subtitle
 extra_svg.append(
     f'<text x="{W / 2}" y="{grid_top - 76}" text-anchor="middle" fill="#666666" '
     f'style="font-size:28px;font-weight:400;font-family:sans-serif">'
@@ -244,15 +224,26 @@ n_segs = 60
 for s in range(n_segs):
     sv = vmax - (vmax - vmin) * s / (n_segs - 1)
     sy = cb_top + cb_h * s / n_segs
-    hex_c, _ = interpolate_color(sv)
+    t = max(0.0, min(1.0, (sv - vmin) / (vmax - vmin)))
+    cr, cg, cb_val = color_stops[-1][1]
+    for k in range(len(color_stops) - 1):
+        t0, c0 = color_stops[k]
+        t1, c1 = color_stops[k + 1]
+        if t <= t1:
+            frac = (t - t0) / (t1 - t0) if t1 > t0 else 0
+            cr = int(c0[0] + (c1[0] - c0[0]) * frac)
+            cg = int(c0[1] + (c1[1] - c0[1]) * frac)
+            cb_val = int(c0[2] + (c1[2] - c0[2]) * frac)
+            break
+    hex_c = f"#{cr:02x}{cg:02x}{cb_val:02x}"
     extra_svg.append(f'<rect x="{cb_x}" y="{sy:.1f}" width="{cb_w}" height="{cb_h / n_segs + 1:.1f}" fill="{hex_c}"/>')
 
 extra_svg.append(
     f'<rect x="{cb_x}" y="{cb_top}" width="{cb_w}" height="{cb_h}" fill="none" stroke="#999999" stroke-width="1.5"/>'
 )
 
-for frac, label_val in [(0.0, vmax), (0.5, (vmin + vmax) / 2), (1.0, vmin)]:
-    ty = cb_top + cb_h * frac
+for frac_pos, label_val in [(0.0, vmax), (0.5, (vmin + vmax) / 2), (1.0, vmin)]:
+    ty = cb_top + cb_h * frac_pos
     extra_svg.append(
         f'<text x="{cb_x + cb_w + 14}" y="{ty + 10:.0f}" fill="#333333" '
         f'style="font-size:28px;font-family:sans-serif">{label_val:.0f}</text>'
@@ -266,8 +257,6 @@ extra_svg.append(
 
 # Storytelling: peak annotations with gold highlight
 # pygal renders rows bottom-to-top: row 0 (Tech) at bottom, row 7 (Culture) at top
-# Finance = categories index 3 → SVG row = n_rows - 1 - 3 = 4 from top
-# Travel = categories index 5 → SVG row = n_rows - 1 - 5 = 2 from top
 for row_i, col_j, label in [(3, 11, "Year-end peak"), (5, 7, "Summer peak")]:
     svg_row = n_rows - 1 - row_i
     ax = grid_left + col_j * cell_w + cell_w / 2

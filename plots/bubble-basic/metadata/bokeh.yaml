@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: bubble-basic
 created: 2025-12-14 11:09:30+00:00
-updated: '2026-02-15T21:44:50Z'
+updated: '2026-02-16T20:34:48Z'
 generated_by: claude-opus-4-6
 workflow_run: 20207008979
 issue: 755
@@ -10,10 +10,11 @@ library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/bokeh/plot.html
-quality_score: 86
+quality_score: 93
 impl_tags:
   dependencies: []
   techniques:
+  - hover-tooltips
   - custom-legend
   - html-export
   patterns:
@@ -22,42 +23,43 @@ impl_tags:
   dataprep:
   - normalization
   styling:
+  - custom-colormap
   - alpha-blending
   - edge-highlighting
   - grid-styling
+  - minimal-chrome
 review:
   strengths:
-  - Excellent spec compliance — all specification notes addressed (area-based scaling,
-    transparency, size legend)
-  - Clean, professional visual design with subtle grid, removed tick marks, and white
-    edge highlighting on bubbles
-  - Realistic city metrics scenario with plausible data ranges
-  - Dual output (PNG + HTML) leverages Bokeh interactive capability
-  - Well-structured, readable code following KISS principle
+  - Excellent dual encoding of green space via both bubble size and Viridis color
+    — reinforces the third variable clearly
+  - 'Publication-quality visual polish: removed spines, subtle dashed grid, white
+    bubble edges, light background'
+  - HoverTool with formatted tooltips and HTML export showcase Bokeh's interactive
+    capabilities
+  - Custom size legend with semi-transparent BoxAnnotation background and reference
+    bubbles is well-executed
+  - Realistic city metrics scenario with plausible data ranges across all three variables
+  - All font sizes explicitly set and scaled for 4800×2700 canvas
   weaknesses:
-  - Data storytelling is weak — the plot displays data without guiding the viewer
-    to an insight; consider adding visual emphasis (e.g., color gradient for a fourth
-    dimension, highlighted outlier cities, or size-based opacity variation) to create
-    a focal point
-  - The size legend is placed in data coordinate space, which extends the x_range
-    to 13000 and creates empty space in the lower-right quadrant; positioning it outside
-    the data area or using a Bokeh Legend/annotation box would be cleaner
-  - Visual refinement could be improved — axis spines are still visible, and the overall
-    design, while clean, does not reach publication-quality polish
+  - X-range padding is asymmetric (x_pad*4 on right vs x_pad*2 on left) to fit legend,
+    creating wasted space on the right side
+  - Green space variable is independently random from position variables — correlating
+    it with density would create richer data storytelling
   improvements: []
-  verdict: REJECTED
-  image_description: The plot displays a bubble chart with 40 data points representing
-    cities, plotted on a 4800x2700 canvas. The X-axis shows "Population Density (people/km²)"
-    ranging from 0 to ~12000, and the Y-axis shows "Median Income (thousands USD)"
-    ranging from ~27 to ~65. All bubbles are a muted steel blue (#306998) with ~55%
-    transparency and thin white edge lines, varying in size to represent green space
-    per capita (the third dimension). A clear positive correlation between population
-    density and median income is visible. A manually constructed size legend in the
-    bottom-right data area shows three reference bubbles labeled "Green Space" with
-    values "5 m²/capita" (smallest), "31 m²/capita" (medium), and "56 m²/capita" (largest).
-    The title "bubble-basic · bokeh · pyplots.ai" appears in the top-left corner.
-    Grid lines are subtle (low alpha), tick marks are removed, and the overall appearance
-    is clean and professional.
+  verdict: APPROVED
+  image_description: 'The plot displays a bubble chart titled "bubble-basic · bokeh
+    · pyplots.ai" showing 40 city data points. The x-axis represents "Population Density
+    (people/km²)" ranging from 0 to ~14,000, and the y-axis shows "Median Income (thousands
+    USD)" ranging from ~28 to ~63. Bubble sizes vary from very small to large, representing
+    green space per capita (5–56 m²/capita). Colors follow the Viridis colormap: dark
+    purple for low green space, through teal/green to bright yellow for high green
+    space. This dual encoding (size + color) effectively communicates the third variable.
+    A size legend in the lower-right corner displays three reference bubbles (5, 31,
+    56 m²/capita) on a semi-transparent white background box. The chart has a clean,
+    minimal aesthetic: spines are removed, grid lines are subtle dashed lines with
+    low alpha, the background is light gray (#fafafa), and all bubbles have white
+    edge highlights. There is a clear positive trend between population density and
+    median income.'
   criteria_checklist:
     visual_quality:
       score: 29
@@ -68,65 +70,67 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 30pt, axis labels 22pt, tick
-          labels 18pt. All perfectly readable.'
+        comment: 'All font sizes explicitly set: title 30pt, axis labels 22pt, ticks
+          18pt. All text clearly readable.'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements anywhere in the plot.
+        comment: No overlapping text elements. Legend cleanly separated from data.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Bubble sizes 25-110px well-adapted for 40 data points with 0.55 alpha.
+        comment: 40 data points with sizes 25-110px, alpha=0.7. Well-adapted to density
+          with good size variation.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Single color Python Blue with white edges; no colorblind concerns.
+        comment: Viridis colormap is perfectly colorblind-safe. White edges provide
+          excellent contrast.
       - id: VQ-05
-        name: Layout & Canvas
+        name: Layout Balance
         score: 3
         max: 4
         passed: true
-        comment: 'Plot fills most of the canvas well. Minor issue: x_range extends
-          to 13000 to accommodate size legend in data coordinates, creating some empty
-          space.'
+        comment: Good overall layout, but x-range padded extra on right (x_pad*4)
+          to accommodate legend, creating some wasted space.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Both axes have descriptive labels with units.
+        comment: 'Descriptive labels with units: Population Density (people/km²),
+          Median Income (thousands USD).'
     design_excellence:
-      score: 11
+      score: 16
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 7
         max: 8
         passed: true
-        comment: Python Blue with white edge highlighting, removed tick marks, subtle
-          grid. Clearly above defaults but not publication-level.
+        comment: Viridis colormap, custom typography, white edge highlights, removed
+          spines, subtle dashed grid. Publication-level polish.
       - id: DE-02
         name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: 'Spines removed, tick marks removed, grid dashed at alpha 0.15, outline
+          removed, #fafafa background. High refinement.'
+      - id: DE-03
+        name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Tick marks removed, subtle grid alpha 0.18, outline removed. Good
-          refinement but spines still present.
-      - id: DE-03
-        name: Data Storytelling
-        score: 2
-        max: 6
-        passed: false
-        comment: Displays data without guiding viewer to insight. No visual hierarchy,
-          emphasis, or focal points.
+        comment: Clear positive trend between density and income. Dual encoding of
+          green space via size and color creates visual hierarchy.
     spec_compliance:
       score: 15
       max: 15
@@ -136,26 +140,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct bubble chart implementation.
+        comment: Correct bubble chart type.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Transparency, size legend, and area-based size scaling all present.
+        comment: 'All spec features present: transparency, area-based size scaling,
+          size legend, color as 4th dimension.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X (density), Y (income), size (green space) all correctly assigned.
+        comment: X/Y correctly assigned, axes show full data range.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Size legend with reference bubbles and labels
-          present.
+        comment: Title format correct. Size legend with labeled reference bubbles.
     data_quality:
       score: 14
       max: 15
@@ -165,20 +169,21 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Good variation in all three dimensions. Could benefit from clusters
-          or outliers.
+        comment: Good variation in all three dimensions. Green space is independently
+          random from position — missed opportunity for richer relationships.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: City metrics scenario is realistic, neutral, and comprehensible.
+        comment: City metrics scenario is real-world plausible and neutral.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: All values realistic for their respective measures.
+        comment: Population density 500-12,000/km², income 28-63k USD, green space
+          5-60 m²/capita — all realistic.
     code_quality:
       score: 10
       max: 10
@@ -188,45 +193,46 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Flat script: imports, data, plot, save. No functions or classes.'
+        comment: 'Clean linear flow: imports, data, plot, styling, save.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) present.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used.
+        comment: All imports used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, readable code. Manual legend is necessarily verbose for Bokeh.
+        comment: Clean, well-organized. Legend loop is appropriate.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via export_png.
+        comment: Saves as plot.png via export_png. Also saves HTML.
     library_mastery:
-      score: 7
+      score: 9
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: ColumnDataSource, transform() for color mapping, LinearColorMapper,
+          HoverTool — all idiomatic Bokeh patterns.
+      - id: LM-02
+        name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: Good use of ColumnDataSource, figure API, scatter, Label, Range1d.
-      - id: LM-02
-        name: Distinctive Features
-        score: 3
-        max: 5
-        passed: true
-        comment: Uses ColumnDataSource, Label model, and HTML export. Bokeh-distinctive
-          but not deeply unique.
+        comment: HoverTool with formatted tooltips, HTML export, BoxAnnotation, ColumnDataSource
+          + transform pattern.

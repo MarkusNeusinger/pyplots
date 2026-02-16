@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bubble-basic: Basic Bubble Chart
 Library: plotly 6.5.2 | Python 3.14.3
-Quality: 87/100 | Updated: 2026-02-15
+Quality: 94/100 | Updated: 2026-02-16
 """
 
 import numpy as np

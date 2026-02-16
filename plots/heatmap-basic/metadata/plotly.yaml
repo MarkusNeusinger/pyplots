@@ -1,12 +1,12 @@
 library: plotly
 specification_id: heatmap-basic
 created: '2025-12-23T00:46:03Z'
-updated: '2025-12-23T00:49:55Z'
-generated_by: claude-opus-4-5-20251101
+updated: '2026-02-15T21:46:06Z'
+generated_by: claude-opus-4-6
 workflow_run: 20447950554
 issue: 0
-python_version: 3.13.11
-library_version: 6.5.0
+python_version: 3.14.3
+library_version: 6.5.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/plotly/plot.html
@@ -14,154 +14,167 @@ quality_score: 92
 impl_tags:
   dependencies: []
   techniques:
-    - colorbar
-    - annotations
-    - html-export
+  - colorbar
+  - annotations
+  - hover-tooltips
+  - html-export
   patterns:
-    - data-generation
-    - matrix-construction
+  - data-generation
+  - iteration-over-groups
   dataprep: []
   styling:
-    - custom-colormap
+  - custom-colormap
+  - edge-highlighting
 review:
   strengths:
-  - Excellent text legibility with well-chosen font sizes for all elements
-  - 'Perfect implementation of spec requirements: diverging colormap, cell annotations,
-    and colorbar'
-  - Realistic business scenario with seasonal patterns visible in the data
-  - Clean KISS code structure following plotly library guidelines exactly
-  - Good use of RdBu_r colormap which is colorblind-accessible
+  - Excellent data storytelling with realistic seasonal retail patterns that make
+    the heatmap informative and engaging
+  - Publication-quality typography using serif fonts (Palatino/Georgia) with carefully
+    set font sizes at every level
+  - Diverging RdBu colorscale centered at zero with signed numeric annotations in
+    every cell — clear and informative
+  - Clean code structure with appropriate data generation complexity for realistic
+    seasonal patterns
+  - Plotly-idiomatic usage of hovertemplate, texttemplate, and HTML export alongside
+    static PNG
   weaknesses:
-  - Axis labels could be more descriptive (e.g., "Product Category" instead of just
-    "Category")
-  - Colorbar title could include more context (e.g., "Monthly Sales ($K)")
-  - Could leverage additional Plotly features like custom hover templates for enhanced
-    interactivity
-  image_description: The plot displays a heatmap showing monthly sales data across
-    8 product categories (Electronics, Clothing, Food, Books, Sports, Home, Beauty,
-    Toys) for all 12 months (Jan-Dec). The heatmap uses a red-blue diverging colorscale
-    (RdBu_r), where deep red indicates high values (~100+ $K) and deep blue indicates
-    low values (near 0 or negative). Each cell contains a numeric annotation showing
-    the exact value. The title "heatmap-basic · plotly · pyplots.ai" is centered at
-    the top. The x-axis shows "Month" and the y-axis shows "Category". A colorbar
-    on the right indicates "Sales ($K)" with values ranging from approximately 0 to
-    100. The layout is clean with good proportions, and all text is clearly readable.
+  - Right margin slightly tight — colorbar Sales Growth title is close to the canvas
+    edge; increasing right margin or adjusting colorbar position would improve balance
+  - Could leverage more distinctive Plotly features (e.g., custom hoverinfo with category-specific
+    details, or zmin/zmax for symmetric range)
+  image_description: 'The plot displays an 8×12 heatmap of monthly sales growth percentages
+    across retail product categories (Electronics, Clothing, Food & Beverage, Books,
+    Sports, Home & Garden, Beauty, Toys) over 12 months (Jan–Dec). A diverging RdBu
+    colorscale is used, centered at zero: deep red cells indicate strong positive
+    growth (up to ~30%), deep blue cells indicate strong negative growth (down to
+    ~-21%), and near-white cells are close to zero. Every cell contains a signed numeric
+    annotation (e.g., "+20.2", "-15.3"). The title reads "Monthly Sales Growth · heatmap-basic
+    · plotly · pyplots.ai" with a gray subtitle describing seasonal patterns. Axes
+    are labeled "Month" (x) and "Product Category" (y). A vertical colorbar on the
+    right shows "Sales Growth (%)" with percentage tick marks. Cells are separated
+    by small gaps. The background is a light off-white (#fafafa), and the typography
+    uses a serif font (Palatino/Georgia). The layout is landscape format at 1600×900
+    (scaled 3×).'
   criteria_checklist:
     visual_quality:
-      score: 37
-      max: 40
+      score: 28
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title at 32pt, axis labels at 24pt, tick labels at 18pt, cell annotations
-          at 14pt - all perfectly readable
+        comment: 'All font sizes explicitly set: title 28pt, axis titles 22pt, ticks
+          18pt, annotations 15pt, colorbar title 20pt, colorbar ticks 16pt'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements anywhere
+        comment: No overlapping text; cell gaps separate annotations cleanly
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Cell sizes are well-proportioned, annotations clearly visible within
-          cells
+        comment: Heatmap cells well-sized for 8x12 matrix, all clearly visible
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: RdBu_r is a colorblind-safe diverging colormap with good contrast
+        comment: RdBu diverging colormap is colorblind-distinguishable
       - id: VQ-05
         name: Layout Balance
-        score: 4
-        max: 5
-        passed: true
-        comment: Good proportions, slight room for improvement in margins
+        score: 2
+        max: 4
+        passed: false
+        comment: Heatmap fills canvas well but colorbar label slightly tight against
+          right edge
       - id: VQ-06
-        name: Axis Labels
-        score: 1
-        max: 2
-        passed: true
-        comment: '"Month" and "Category" are descriptive but lack units (though units
-          aren''t really applicable here)'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 1
-        max: 2
-        passed: true
-        comment: Colorbar is well-placed with title and readable ticks; no grid lines
-          (appropriate for heatmap)
-    spec_compliance:
-      score: 24
-      max: 25
-      items:
-      - id: SC-01
-        name: Plot Type
-        score: 8
-        max: 8
-        passed: true
-        comment: Correct heatmap visualization
-      - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X=months (columns), Y=categories (rows), color=values - correctly
-          implemented
-      - id: SC-03
-        name: Required Features
-        score: 5
-        max: 5
-        passed: true
-        comment: Uses diverging colormap ✓, value annotations ✓, colorbar legend
-      - id: SC-04
-        name: Data Range
-        score: 3
-        max: 3
-        passed: true
-        comment: All data visible within axes
-      - id: SC-05
-        name: Legend Accuracy
-        score: 1
-        max: 2
-        passed: true
-        comment: Colorbar title "Sales ($K)" is accurate but could be more descriptive
-      - id: SC-06
-        name: Title Format
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Correctly uses "heatmap-basic · plotly · pyplots.ai"
-    data_quality:
-      score: 18
+        comment: Descriptive labels with units on colorbar
+    design_excellence:
+      score: 16
       max: 20
       items:
-      - id: DQ-01
-        name: Feature Coverage
+      - id: DE-01
+        name: Aesthetic Sophistication
         score: 7
         max: 8
         passed: true
-        comment: Shows variation across categories and months with seasonal patterns
-          (summer/holiday boosts); includes one negative value (-2 in Beauty/Mar)
+        comment: Publication-quality serif typography, intentional diverging colormap,
+          cell gaps, muted background, styled colorbar
+      - id: DE-02
+        name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: plotly_white template, cell gaps, styled subtitle with hierarchy,
+          generous whitespace
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Seasonal patterns visually evident; subtitle states insight; color
+          intensity guides viewer
+    spec_compliance:
+      score: 15
+      max: 15
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 5
+        max: 5
+        passed: true
+        comment: Correct heatmap with matrix format and color intensity mapping
+      - id: SC-02
+        name: Required Features
+        score: 4
+        max: 4
+        passed: true
+        comment: Diverging colormap, value annotations, colorbar legend, logically
+          ordered categories
+      - id: SC-03
+        name: Data Mapping
+        score: 3
+        max: 3
+        passed: true
+        comment: X=months, Y=categories, values mapped to color correctly
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
+        passed: true
+        comment: Title format correct; colorbar serves as legend
+    data_quality:
+      score: 15
+      max: 15
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 6
+        passed: true
+        comment: Full range of positive and negative values, clear seasonal patterns,
+          varying magnitudes
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
+        score: 5
+        max: 5
         passed: true
-        comment: Monthly retail sales by category is a plausible real-world scenario
+        comment: Retail sales growth with plausible seasonal patterns
       - id: DQ-03
         name: Appropriate Scale
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Values 0-106 $K are reasonable for retail sales, though some randomness
-          leads to slight inconsistencies
+        comment: Growth percentages -21% to +30% realistic for retail
     code_quality:
       score: 10
       max: 10
@@ -171,41 +184,46 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Simple imports → data → plot → save structure, no functions/classes
+        comment: Clean Imports, Data, Plot, Save structure
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only numpy and plotly.graph_objects used
+        comment: Only numpy and plotly.graph_objects imported
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Uses current Plotly API
+        comment: Clean Pythonic code with appropriate complexity
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves plot.png with correct dimensions and scale=3
+    library_mastery:
+      score: 8
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: Expert use of go.Heatmap with colorscale, zmid, texttemplate, hovertemplate
+      - id: LM-02
+        name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses go.Heatmap with proper configuration, texttemplate for annotations,
-          plotly_white template; could leverage more Plotly-specific features like
-          hover customization
+        comment: Uses hovertemplate, HTML export, texttemplate formatting; standard
+          Plotly patterns
   verdict: APPROVED

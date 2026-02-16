@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bubble-basic: Basic Bubble Chart
 Library: matplotlib 3.10.8 | Python 3.14.3
+Quality: 96/100 | Updated: 2026-02-16
 """
 
 import matplotlib.patheffects as pe

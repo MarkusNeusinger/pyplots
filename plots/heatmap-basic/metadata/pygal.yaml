@@ -1,7 +1,7 @@
 library: pygal
 specification_id: heatmap-basic
 created: '2025-12-23T00:50:51Z'
-updated: '2026-02-16T20:51:50Z'
+updated: '2026-02-16T21:00:00Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447985371
 issue: 0
@@ -10,7 +10,7 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/pygal/plot.html
-quality_score: 87
+quality_score: 82
 impl_tags:
   dependencies:
   - cairosvg
@@ -29,38 +29,45 @@ impl_tags:
   - edge-highlighting
 review:
   strengths:
-  - 'Perfect visual quality: all text legible with explicitly set font sizes, no overlap,
-    excellent layout balance'
-  - Creative approach to heatmap using HorizontalStackedBar with per-cell color mapping
-    — clever workaround for pygal lacking native heatmap
-  - Brightness-adaptive text colors (white on dark, dark on light) show strong attention
-    to readability
-  - Gold peak annotations add effective data storytelling beyond just displaying values
-  - Custom colorbar with labeled scale provides proper reference for the color encoding
-  - Realistic neutral data scenario with clear seasonal patterns
+  - 'Creative approach: repurposes pygal HorizontalStackedBar with per-cell color
+    dictionaries to simulate a heatmap, the best available approach given pygal limitations'
+  - Brightness-adaptive text colors via SVG post-processing ensure every value annotation
+    is readable regardless of background darkness
+  - Peak annotations (Summer peak, Year-end peak) add data storytelling highlighting
+    meaningful seasonal patterns
+  - Custom 8-stop sequential blue colormap with properly labeled colorbar provides
+    clear value-to-color mapping
+  - Realistic website traffic dataset with natural seasonal variation creates engaging
+    visualization
+  - Produces all three output formats (PNG, SVG, interactive HTML with native pygal
+    tooltips)
   weaknesses:
-  - Row spacing creates visual gaps between categories, reducing the dense grid appearance
-    expected of a traditional heatmap
-  - Heavy SVG regex post-processing is fragile and complex — necessary but adds code
-    maintenance risk
-  - Multiple function definitions break KISS flat-script structure
-  - The colorbar midpoint label position could be better aligned
-  image_description: The plot displays a horizontal heatmap with 8 content categories
-    (Culture, Food, Travel, Sports, Finance, Health, Science, Tech) along the y-axis
-    and 12 months (Jan–Dec) as column headers across the top. Each cell is colored
-    with a sequential blue gradient — lighter blues for lower traffic values (~51k)
-    and darker blues for higher values (~177k). Every cell contains a numeric annotation
-    showing the exact traffic value. A colorbar on the right labeled "Visits (k)"
-    indicates the scale from 51 to 177. The title "heatmap-basic · pygal · pyplots.ai"
-    appears at the top, with a subtitle "Monthly website traffic (thousands of visits)
-    by content category." A rotated y-axis label "Content Category" is on the left.
-    Two gold italic annotations highlight "Summer peak" near Travel/Aug and "Year-end
-    peak" near Finance/Dec. Text colors adapt to cell brightness — white text on dark
-    cells, dark text on light cells. The overall layout is clean with a white background,
-    no grid lines, and well-balanced margins.
+  - Color interpolation logic is duplicated between cell coloring and colorbar rendering
+    — could be simplified
+  - SVG post-processing with complex regex patterns is fragile and hard to maintain
+  - No explicit x-axis title (e.g. Month) — subtitle partially compensates but formal
+    axis labeling would be more complete
+  - Peak annotation text at 20px is quite small relative to other text elements and
+    harder to read within cells
+  - Some wasted whitespace at the bottom of the canvas and colorbar could be positioned
+    more tightly
+  image_description: 'The plot displays a heatmap of monthly website traffic (thousands
+    of visits) across 8 content categories (Culture, Food, Travel, Sports, Finance,
+    Health, Science, Tech) over 12 months (Jan–Dec). Each cell is colored using a
+    sequential blue colormap — lighter blues represent lower traffic values, darker
+    blues represent higher values. Every cell contains a numeric annotation showing
+    the exact visit count. The title reads "heatmap-basic · pygal · pyplots.ai" centered
+    at the top, with a subtitle "Monthly website traffic (thousands of visits) by
+    content category" below it. Month column headers (Jan–Dec) appear above the grid.
+    A rotated "Content Category" label is on the left axis. A vertical colorbar on
+    the right side shows the value scale from 51 to 177 labeled "Visits (k)". Two
+    gold italic peak annotations appear: "▼ Summer peak" on Travel/Aug (144) and "▼
+    Year-end peak" on Finance/Dec (177). Text colors adapt to cell brightness — white
+    text on dark cells, dark text on light cells. The overall design is clean with
+    a white background, no grid lines, and professional typography.'
   criteria_checklist:
     visual_quality:
-      score: 30
+      score: 27
       max: 30
       items:
       - id: VQ-01
@@ -68,43 +75,45 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 54px, labels 34px, values 26px);
-          all text clearly readable
+        comment: 'All font sizes explicitly set: title 54px, labels 34px, values 26px,
+          month headers 30px, colorbar 28px. All clearly readable.'
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: No overlapping text anywhere; month headers, category labels, and
-          cell values cleanly separated
+        comment: No overlap among main elements. Gold peak annotation text is very
+          small (20px) and slightly hard to read within cells.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Cells well-sized with values clearly visible within each cell
+        comment: All 96 cells clearly visible with good sizing for the 8x12 grid.
+          Numeric values legible in every cell.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Sequential blue colormap is colorblind-safe; no red-green dependency
+        comment: Sequential blue colormap is colorblind-safe. Brightness-adaptive
+          text ensures readability across all cells.
       - id: VQ-05
-        name: Layout Balance
-        score: 4
+        name: Layout & Canvas
+        score: 3
         max: 4
         passed: true
-        comment: Chart fills canvas well with balanced margins for labels, colorbar,
-          and title
+        comment: Grid fills canvas well with deliberate margins. Colorbar slightly
+          separated; minor wasted space at bottom.
       - id: VQ-06
         name: Axis Labels & Title
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Content Category y-axis label, subtitle with units, colorbar labeled
-          Visits (k)
+        passed: false
+        comment: Has rotated Content Category y-axis label and descriptive subtitle,
+          but no explicit x-axis title.
     design_excellence:
-      score: 16
+      score: 14
       max: 20
       items:
       - id: DE-01
@@ -112,54 +121,52 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom blue gradient palette, brightness-adaptive text colors, clean
-          typography; slight gaps between rows reduce heatmap cohesion
+        comment: Custom 8-stop sequential blue palette, brightness-adaptive text,
+          gold annotations, professional typography. Clearly above defaults.
       - id: DE-02
         name: Visual Refinement
-        score: 5
+        score: 4
         max: 6
         passed: true
-        comment: Grids hidden, white background, subtitle, rotated axis label, custom
-          colorbar, rounded bars; row spacing slightly large
+        comment: No grid lines, no visible spines, clean whitespace, custom-built
+          colorbar. Some rough edges in annotation placement.
       - id: DE-03
         name: Data Storytelling
-        score: 5
+        score: 4
         max: 6
         passed: true
-        comment: Gold peak annotations guide viewer; color gradient naturally highlights
-          high-traffic cells; subtitle provides clear context
+        comment: Peak annotations highlight seasonal patterns. Color gradient reveals
+          traffic patterns. Subtitle provides context.
     spec_compliance:
       score: 14
       max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Pygal lacks native heatmap; creative HorizontalStackedBar workaround
-          that visually functions as a heatmap
+        comment: Correct heatmap displayed as color-coded matrix using HorizontalStackedBar
+          with per-cell coloring.
       - id: SC-02
         name: Required Features
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: Value annotations, colorbar legend, logical ordering, sequential
-          colormap all present
+        comment: Color mapping, value annotations, colorbar all present. Row ordering
+          logical but not strictly alphabetical or by magnitude.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Months on x-axis, categories on y-axis, values correctly mapped to
-          colors
+        comment: X (months) and Y (categories) correctly assigned. All data visible.
       - id: SC-04
-        name: Title Format
+        name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct heatmap-basic · pygal · pyplots.ai format; colorbar replaces
-          legend appropriately
+        comment: Title in correct format. Colorbar serves as legend for heatmap.
     data_quality:
       score: 14
       max: 15
@@ -169,56 +176,58 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Good variation across categories and months with seasonal patterns
+        comment: Good variation across categories and months. Shows seasonal patterns.
+          Could benefit from more extreme outliers.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Website traffic by content category is a realistic, neutral business
-          scenario
+        comment: Website traffic by content category is a plausible, neutral, comprehensible
+          business scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values 51-177k visits are realistic for content site traffic analytics
+        comment: Values in 51-177k range for monthly website visits are realistic.
     code_quality:
       score: 7
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 1
+        score: 2
         max: 3
-        passed: false
-        comment: Defines multiple functions (interpolate_color, recolor_series_texts,
-          recolor_overlay) rather than flat structure
+        passed: true
+        comment: Follows imports-data-plot-save pattern, but sys.path manipulation
+          and importlib workaround add complexity.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) used.
       - id: CQ-03
         name: Clean Imports
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: All imports used; namespace collision workaround is necessary
+        passed: false
+        comment: Uses importlib, re, sys for workarounds and SVG post-processing.
+          Import collision avoidance is pragmatic but adds noise.
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
         passed: false
-        comment: Regex-heavy SVG post-processing is fragile but necessary given pygal
-          limitations
+        comment: Color interpolation logic duplicated between cell colors and colorbar.
+          SVG regex post-processing is verbose and fragile.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png, plot.svg, and plot.html correctly
+        comment: Saves plot.png, plot.svg, and plot.html correctly.
     library_mastery:
       score: 6
       max: 10
@@ -227,15 +236,14 @@ review:
         name: Idiomatic Usage
         score: 3
         max: 5
-        passed: false
-        comment: Uses pygal HorizontalStackedBar, per-value color dicts, formatter
-          lambdas, custom Style; but significant SVG post-processing bypasses pygal
-          API
+        passed: true
+        comment: Creative use of HorizontalStackedBar with per-value color dicts and
+          formatters. Not truly idiomatic since pygal lacks native heatmap type.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
-        passed: false
-        comment: Per-value color dict and formatter lambda are distinctive pygal features;
-          interactive HTML export leverages pygal native tooltip system
-  verdict: APPROVED
+        passed: true
+        comment: Per-value color styling, print_values with formatters, native interactive
+          SVG tooltips in HTML, HorizontalStackedBar repurposed creatively.
+  verdict: REJECTED

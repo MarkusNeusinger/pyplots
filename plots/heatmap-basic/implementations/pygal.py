@@ -1,10 +1,10 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-basic: Basic Heatmap
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 89/100 | Updated: 2026-02-15
 """
 
 import importlib
+import re
 import sys
 
 import numpy as np
@@ -46,7 +46,7 @@ all_vals = [v for row in matrix for v in row]
 vmin, vmax = min(all_vals), max(all_vals)
 
 # ---------------------------------------------------------------------------
-# Sequential blue colormap — 8 gradient stops (position, RGB)
+# Sequential blue colormap — 8 gradient stops
 # ---------------------------------------------------------------------------
 color_stops = [
     (0.00, (247, 251, 255)),
@@ -59,229 +59,237 @@ color_stops = [
     (1.00, (8, 48, 107)),
 ]
 
+
+def interpolate_color(val):
+    """Map a data value to an RGB color using the sequential blue palette."""
+    t = max(0.0, min(1.0, (val - vmin) / (vmax - vmin)))
+    r, g, b = color_stops[-1][1]
+    for k in range(len(color_stops) - 1):
+        t0, c0 = color_stops[k]
+        t1, c1 = color_stops[k + 1]
+        if t <= t1:
+            f = (t - t0) / (t1 - t0) if t1 > t0 else 0
+            r = int(c0[0] + (c1[0] - c0[0]) * f)
+            g = int(c0[1] + (c1[1] - c0[1]) * f)
+            b = int(c0[2] + (c1[2] - c0[2]) * f)
+            break
+    return f"#{r:02x}{g:02x}{b:02x}", (r, g, b)
+
+
 # ---------------------------------------------------------------------------
-# Create pygal chart — uses pygal's Style, config, series API, and render
+# Build heatmap using pygal HorizontalStackedBar
+# Each month is a series (column), each category is a row (x_label).
+# Per-value color dicts give each cell its heatmap color.
+# pygal renders the chart grid, axis labels, value annotations, and legend.
 # ---------------------------------------------------------------------------
 custom_style = _Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#222222",
-    foreground_subtle="#999999",
-    colors=("#306998", "#3182bd", "#08519c", "#08306b", "#6baed6", "#9ecae1", "#c6dbef", "#deebf7"),
-    title_font_size=56,
-    label_font_size=32,
+    foreground_subtle="#aaaaaa",
+    colors=("#306998",) * 12,
+    title_font_size=54,
+    label_font_size=34,
     major_label_font_size=30,
     legend_font_size=28,
     value_font_size=26,
     font_family="sans-serif",
 )
 
-chart = _pygal.Bar(
+chart = _pygal.HorizontalStackedBar(
     width=4800,
     height=2700,
     style=custom_style,
     title="heatmap-basic \u00b7 pygal \u00b7 pyplots.ai",
     show_legend=False,
+    print_values=True,
+    value_font_size=26,
     show_y_guides=False,
     show_x_guides=False,
-    margin=60,
-    print_values=False,
-    x_title="Month",
-    y_title="Visits (k)",
+    show_x_labels=False,
+    margin_top=220,
+    margin_bottom=80,
+    margin_left=400,
+    margin_right=440,
+    range=(0, 12),
+    spacing=10,
+    rounded_bars=4,
 )
-chart.x_labels = months
-for i, cat in enumerate(categories):
-    chart.add(cat, matrix[i])
+chart.x_labels = categories
 
-# Render pygal SVG — demonstrates library usage (chart + style + series + render)
-pygal_svg = chart.render(is_unicode=True)
+# Track cell colors for brightness-adaptive text
+cell_rgb = {}
 
-# ---------------------------------------------------------------------------
-# Build heatmap SVG for PNG output
-# Pygal has no native heatmap chart type, so we construct the heatmap
-# visualization as SVG, building on pygal's rendering infrastructure.
-# ---------------------------------------------------------------------------
-n_rows, n_cols = len(categories), len(months)
-W, H = 4800, 2700
-grid_left, grid_top = 420, 200
-grid_right, grid_bottom = 4250, 2300
-cell_w = (grid_right - grid_left) / n_cols
-cell_h = (grid_bottom - grid_top) / n_rows
-gap = 3
-
-svg_parts = [
-    f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}">',
-    f'<rect width="{W}" height="{H}" fill="white"/>',
-]
-
-# Title
-svg_parts.append(
-    '<text x="2400" y="72" text-anchor="middle" fill="#222222" '
-    'style="font-size:54px;font-weight:bold;font-family:sans-serif">'
-    "heatmap-basic \u00b7 pygal \u00b7 pyplots.ai</text>"
-)
-
-# Subtitle
-svg_parts.append(
-    '<text x="2400" y="122" text-anchor="middle" fill="#666666" '
-    'style="font-size:28px;font-weight:400;font-family:sans-serif">'
-    "Monthly website traffic (thousands of visits) by content category</text>"
-)
-
-# Heatmap cells with color mapping and annotations
-for i in range(n_rows):
-    for j in range(n_cols):
-        val = matrix[i][j]
-
-        # Interpolate color from sequential blue palette
-        t = max(0.0, min(1.0, (val - vmin) / (vmax - vmin)))
-        cr, cg, cbl = color_stops[-1][1]
-        for k in range(len(color_stops) - 1):
-            t0, c0 = color_stops[k]
-            t1, c1 = color_stops[k + 1]
-            if t <= t1:
-                f = (t - t0) / (t1 - t0) if t1 > t0 else 0
-                cr = int(c0[0] + (c1[0] - c0[0]) * f)
-                cg = int(c0[1] + (c1[1] - c0[1]) * f)
-                cbl = int(c0[2] + (c1[2] - c0[2]) * f)
-                break
-        color = f"#{cr:02x}{cg:02x}{cbl:02x}"
-
-        cx = grid_left + j * cell_w + gap / 2
-        cy = grid_top + i * cell_h + gap / 2
-        w, h = cell_w - gap, cell_h - gap
-
-        # Storytelling: highlight seasonal peaks with gold border
-        is_peak = (i == 3 and j == 11) or (i == 5 and j == 7)
-        stroke = "#c9a227" if is_peak else "#ffffff"
-        sw = 4 if is_peak else 1.5
-
-        svg_parts.append(
-            f'<rect x="{cx:.1f}" y="{cy:.1f}" width="{w:.1f}" height="{h:.1f}" '
-            f'rx="4" ry="4" fill="{color}" stroke="{stroke}" stroke-width="{sw}"/>'
-        )
-
-        # Cell annotation with brightness-adaptive text color
-        brightness = (cr * 299 + cg * 587 + cbl * 114) / 1000
-        txt_clr = "#ffffff" if brightness < 140 else "#1a1a1a"
-        fs = 28 if is_peak else 24
-        fw = "bold" if is_peak else "600"
-
-        svg_parts.append(
-            f'<text x="{cx + w / 2:.1f}" y="{cy + h / 2 + fs * 0.35:.1f}" '
-            f'text-anchor="middle" fill="{txt_clr}" '
-            f'style="font-size:{fs}px;font-weight:{fw};font-family:sans-serif">'
-            f"{val:.0f}</text>"
-        )
-
-# Row labels (bold for highlighted categories)
-for i, cat in enumerate(categories):
-    y = grid_top + i * cell_h + cell_h / 2 + 11
-    fw = "bold" if cat in ("Finance", "Travel") else "500"
-    svg_parts.append(
-        f'<text x="{grid_left - 16}" y="{y:.0f}" text-anchor="end" fill="#333333" '
-        f'style="font-size:34px;font-weight:{fw};font-family:sans-serif">{cat}</text>'
-    )
-
-# Column labels (rotated)
 for j, month in enumerate(months):
-    x = grid_left + j * cell_w + cell_w / 2
-    y = grid_bottom + 20
-    svg_parts.append(
-        f'<text x="{x:.0f}" y="{y:.0f}" text-anchor="end" fill="#333333" '
-        f'style="font-size:30px;font-weight:500;font-family:sans-serif" '
-        f'transform="rotate(-35, {x:.0f}, {y:.0f})">{month}</text>'
+    series_data = []
+    for i in range(len(categories)):
+        v = matrix[i][j]
+        hex_color, rgb = interpolate_color(v)
+        cell_rgb[(i, j)] = rgb
+        series_data.append({"value": 1, "color": hex_color, "formatter": lambda x, val=v: str(val)})
+    chart.add(month, series_data)
+
+# Render SVG via pygal
+svg = chart.render(is_unicode=True)
+
+# ---------------------------------------------------------------------------
+# Post-process SVG: brightness-adaptive text colors for value annotations
+# pygal renders value texts in the text-overlay section grouped by series.
+# Within each series (month j), texts are ordered by y-position; pygal
+# reverses category order so highest-y = first category (Tech, index 0).
+# ---------------------------------------------------------------------------
+serie_text_pattern = re.compile(r'(<g class="series serie-(\d+)[^"]*">)(.*?)(</g>)', re.DOTALL)
+value_text_pattern = re.compile(
+    r'(<text\s+text-anchor="middle"\s+x="[^"]+"\s+y="([^"]+)"\s+class="value">)(\d+)(</text>)'
+)
+
+
+def recolor_series_texts(match):
+    prefix, serie_idx_str, content, suffix = match.groups()
+    j = int(serie_idx_str)
+
+    texts_with_y = []
+    for tm in value_text_pattern.finditer(content):
+        texts_with_y.append((float(tm.group(2)), tm))
+
+    texts_with_y.sort(key=lambda x: x[0], reverse=True)
+
+    new_content = content
+    for rank, (_, tm) in enumerate(texts_with_y):
+        i = rank
+        r, g, b = cell_rgb.get((i, j), (200, 200, 200))
+        brightness = (r * 299 + g * 587 + b * 114) / 1000
+        txt_color = "#ffffff" if brightness < 140 else "#1a1a1a"
+        old_text = tm.group(0)
+        new_text = tm.group(1).replace('class="value"', f'class="value" fill="{txt_color}"') + tm.group(3) + tm.group(4)
+        new_content = new_content.replace(old_text, new_text, 1)
+
+    return prefix + new_content + suffix
+
+
+# Only apply to the text-overlay section
+text_overlay_pattern = re.compile(
+    r'(<g[^>]*class="plot text-overlay">)(.*?)(</g>\s*<g[^>]*class="plot tooltip-overlay")', re.DOTALL
+)
+
+
+def recolor_overlay(match):
+    prefix, content, suffix = match.groups()
+    new_content = serie_text_pattern.sub(recolor_series_texts, content)
+    return prefix + new_content + suffix
+
+
+svg = text_overlay_pattern.sub(recolor_overlay, svg)
+
+# ---------------------------------------------------------------------------
+# Inject subtitle, month column headers, colorbar, and peak annotations
+# These elements augment the pygal-rendered chart. Insert before </svg>.
+# ---------------------------------------------------------------------------
+W, H = 4800, 2700
+n_rows = len(categories)
+
+# Extract plot area bounds from pygal's rendered SVG
+_transform_match = re.search(r"translate\(([^,]+),\s*([^)]+)\)", svg)
+plot_x = float(_transform_match.group(1)) if _transform_match else 552
+plot_y = float(_transform_match.group(2)) if _transform_match else 224
+
+_bg_rects = re.findall(r'<rect[^>]*width="([^"]+)"[^>]*height="([^"]+)"[^>]*class="background"', svg)
+if len(_bg_rects) >= 2:
+    plot_w, plot_h = float(_bg_rects[1][0]), float(_bg_rects[1][1])
+else:
+    plot_w, plot_h = 3887.2, 2252.0
+
+grid_left = plot_x
+grid_top = plot_y
+grid_right = plot_x + plot_w
+grid_bottom = plot_y + plot_h
+cell_w = plot_w / 12
+cell_h = plot_h / n_rows
+
+extra_svg = []
+
+# Subtitle (positioned between title and month headers)
+extra_svg.append(
+    f'<text x="{W / 2}" y="{grid_top - 76}" text-anchor="middle" fill="#666666" '
+    f'style="font-size:28px;font-weight:400;font-family:sans-serif">'
+    f"Monthly website traffic (thousands of visits) by content category</text>"
+)
+
+# Month column headers directly above the grid
+for j, month in enumerate(months):
+    mx = grid_left + j * cell_w + cell_w / 2
+    extra_svg.append(
+        f'<text x="{mx:.0f}" y="{grid_top - 24}" text-anchor="middle" fill="#333333" '
+        f'style="font-size:30px;font-weight:600;font-family:sans-serif">{month}</text>'
     )
 
-# Axis titles
+# Axis title: Content Category (rotated, left of row labels)
 mid_y = (grid_top + grid_bottom) / 2
-svg_parts.append(
-    f'<text x="{grid_left - 280}" y="{mid_y:.0f}" text-anchor="middle" fill="#333333" '
+extra_svg.append(
+    f'<text x="{grid_left - 300}" y="{mid_y:.0f}" text-anchor="middle" fill="#333333" '
     f'style="font-size:38px;font-weight:bold;font-family:sans-serif" '
-    f'transform="rotate(-90, {grid_left - 280}, {mid_y:.0f})">Content Category</text>'
-)
-svg_parts.append(
-    f'<text x="{(grid_left + grid_right) / 2:.0f}" y="{grid_bottom + 120}" '
-    f'text-anchor="middle" fill="#333333" '
-    f'style="font-size:38px;font-weight:bold;font-family:sans-serif">Month</text>'
+    f'transform="rotate(-90, {grid_left - 300}, {mid_y:.0f})">Content Category</text>'
 )
 
-# ---------------------------------------------------------------------------
-# Colorbar
-# ---------------------------------------------------------------------------
-cb_x, cb_w = 4310, 50
-cb_top_y, cb_bot_y = grid_top + 30, grid_bottom - 30
-cb_h = cb_bot_y - cb_top_y
+# Colorbar (right of grid, within margin)
+cb_x = grid_right + 30
+cb_w = 50
+cb_top = grid_top + 30
+cb_bot = grid_bottom - 30
+cb_h = cb_bot - cb_top
 n_segs = 60
 
 for s in range(n_segs):
     sv = vmax - (vmax - vmin) * s / (n_segs - 1)
-    sy = cb_top_y + cb_h * s / n_segs
-    t = max(0.0, min(1.0, (sv - vmin) / (vmax - vmin)))
-    sr, sg, sb = color_stops[-1][1]
-    for k in range(len(color_stops) - 1):
-        t0, c0 = color_stops[k]
-        t1, c1 = color_stops[k + 1]
-        if t <= t1:
-            frac = (t - t0) / (t1 - t0) if t1 > t0 else 0
-            sr = int(c0[0] + (c1[0] - c0[0]) * frac)
-            sg = int(c0[1] + (c1[1] - c0[1]) * frac)
-            sb = int(c0[2] + (c1[2] - c0[2]) * frac)
-            break
-    svg_parts.append(
-        f'<rect x="{cb_x}" y="{sy:.1f}" width="{cb_w}" '
-        f'height="{cb_h / n_segs + 1:.1f}" fill="#{sr:02x}{sg:02x}{sb:02x}"/>'
-    )
+    sy = cb_top + cb_h * s / n_segs
+    hex_c, _ = interpolate_color(sv)
+    extra_svg.append(f'<rect x="{cb_x}" y="{sy:.1f}" width="{cb_w}" height="{cb_h / n_segs + 1:.1f}" fill="{hex_c}"/>')
 
-svg_parts.append(
-    f'<rect x="{cb_x}" y="{cb_top_y}" width="{cb_w}" height="{cb_h}" fill="none" stroke="#999999" stroke-width="1.5"/>'
+extra_svg.append(
+    f'<rect x="{cb_x}" y="{cb_top}" width="{cb_w}" height="{cb_h}" fill="none" stroke="#999999" stroke-width="1.5"/>'
 )
 
-for fpos, lval in [(0.0, vmax), (0.5, (vmin + vmax) / 2), (1.0, vmin)]:
-    ty = cb_top_y + cb_h * fpos
-    svg_parts.append(
+for frac, label_val in [(0.0, vmax), (0.5, (vmin + vmax) / 2), (1.0, vmin)]:
+    ty = cb_top + cb_h * frac
+    extra_svg.append(
         f'<text x="{cb_x + cb_w + 14}" y="{ty + 10:.0f}" fill="#333333" '
-        f'style="font-size:28px;font-family:sans-serif">{lval:.0f}</text>'
+        f'style="font-size:28px;font-family:sans-serif">{label_val:.0f}</text>'
     )
 
-svg_parts.append(
-    f'<text x="{cb_x + cb_w / 2}" y="{cb_top_y - 20}" text-anchor="middle" '
+extra_svg.append(
+    f'<text x="{cb_x + cb_w / 2}" y="{cb_top - 20}" text-anchor="middle" '
     f'fill="#333333" style="font-size:30px;font-weight:bold;font-family:sans-serif">'
     f"Visits (k)</text>"
 )
 
-# ---------------------------------------------------------------------------
-# Storytelling annotations for seasonal peaks
-# ---------------------------------------------------------------------------
-fin_x = grid_left + 11 * cell_w + cell_w / 2
-fin_y = grid_top + 3 * cell_h - 4
-svg_parts.append(
-    f'<text x="{fin_x:.0f}" y="{fin_y:.0f}" text-anchor="middle" fill="#8b6914" '
-    f'style="font-size:20px;font-weight:bold;font-family:sans-serif;font-style:italic">'
-    f"\u25bc Year-end peak</text>"
-)
+# Storytelling: peak annotations with gold highlight
+# pygal renders rows bottom-to-top: row 0 (Tech) at bottom, row 7 (Culture) at top
+# Finance = categories index 3 → SVG row = n_rows - 1 - 3 = 4 from top
+# Travel = categories index 5 → SVG row = n_rows - 1 - 5 = 2 from top
+for row_i, col_j, label in [(3, 11, "Year-end peak"), (5, 7, "Summer peak")]:
+    svg_row = n_rows - 1 - row_i
+    ax = grid_left + col_j * cell_w + cell_w / 2
+    ay = grid_top + svg_row * cell_h + cell_h * 0.82
+    extra_svg.append(
+        f'<text x="{ax:.0f}" y="{ay:.0f}" text-anchor="middle" fill="#b8860b" '
+        f'style="font-size:20px;font-weight:bold;font-family:sans-serif;font-style:italic">'
+        f"\u25bc {label}</text>"
+    )
 
-trv_x = grid_left + 7 * cell_w + cell_w / 2
-trv_y = grid_top + 5 * cell_h - 4
-svg_parts.append(
-    f'<text x="{trv_x:.0f}" y="{trv_y:.0f}" text-anchor="middle" fill="#8b6914" '
-    f'style="font-size:20px;font-weight:bold;font-family:sans-serif;font-style:italic">'
-    f"\u25bc Summer peak</text>"
-)
-
-svg_parts.append("</svg>")
-final_svg = "\n".join(svg_parts)
+# Inject extra SVG before closing </svg>
+svg = svg.replace("</svg>", "\n".join(extra_svg) + "\n</svg>")
 
 # ---------------------------------------------------------------------------
-# Save
+# Save outputs
 # ---------------------------------------------------------------------------
+_cairosvg.svg2png(bytestring=svg.encode("utf-8"), write_to="plot.png", output_width=4800, output_height=2700)
+
 with open("plot.svg", "w", encoding="utf-8") as fout:
-    fout.write(final_svg)
+    fout.write(svg)
 
-_cairosvg.svg2png(bytestring=final_svg.encode("utf-8"), write_to="plot.png", output_width=4800, output_height=2700)
-
-# Save interactive HTML with pygal's rendered SVG (interactive tooltips)
+# Interactive HTML using pygal's native rendered SVG with tooltips
+pygal_interactive_svg = chart.render(is_unicode=True)
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -295,7 +303,7 @@ html_content = f"""<!DOCTYPE html>
 </head>
 <body>
     <figure class="chart">
-        {pygal_svg}
+        {pygal_interactive_svg}
     </figure>
 </body>
 </html>

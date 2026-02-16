@@ -1,7 +1,7 @@
 """ pyplots.ai
 heatmap-basic: Basic Heatmap
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Library: plotly 6.5.2 | Python 3.14.3
+Quality: 92/100 | Updated: 2026-02-15
 """
 
 import numpy as np
@@ -11,17 +11,26 @@ import plotly.graph_objects as go
 # Data
 np.random.seed(42)
 
-# Create sample data: monthly sales across different product categories
 months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-categories = ["Electronics", "Clothing", "Food", "Books", "Sports", "Home", "Beauty", "Toys"]
+categories = ["Electronics", "Clothing", "Food & Beverage", "Books", "Sports", "Home & Garden", "Beauty", "Toys"]
 
-# Generate realistic-looking data with some patterns
-values = np.random.randn(len(categories), len(months)) * 20 + 50
-# Add seasonal patterns
-for month_idx in [5, 6, 7]:  # Summer boost
-    values[:, month_idx] += 15
-for month_idx in [10, 11]:  # Holiday boost
-    values[:, month_idx] += 25
+# Monthly sales growth (%) relative to annual average — diverging around zero
+base = np.random.randn(len(categories), len(months)) * 8
+# Seasonal patterns: summer lift for outdoor/leisure, holiday lift for gifts
+for i, cat in enumerate(categories):
+    if cat in ("Sports", "Toys", "Home & Garden"):
+        base[i, 5:8] += 12  # Summer
+    if cat in ("Electronics", "Toys", "Books", "Beauty"):
+        base[i, 10:12] += 18  # Holiday season
+    if cat == "Food & Beverage":
+        base[i, 10:12] += 8  # Modest holiday lift
+    if cat == "Clothing":
+        base[i, 3:5] += 10  # Spring fashion
+        base[i, 8:10] += 10  # Back-to-school
+values = np.round(base, 1)
+
+# Font family for publication-quality typography
+font_family = "Palatino, Georgia, serif"
 
 # Plot
 fig = go.Figure(
@@ -29,31 +38,59 @@ fig = go.Figure(
         z=values,
         x=months,
         y=categories,
-        colorscale="RdBu_r",  # Diverging colormap
+        colorscale="RdBu_r",
+        zmid=0,
         colorbar={
-            "title": {"text": "Sales ($K)", "font": {"size": 20}},
-            "tickfont": {"size": 16},
-            "thickness": 30,
-            "len": 0.8,
+            "title": {"text": "Sales Growth (%)", "font": {"size": 20, "family": font_family}},
+            "tickfont": {"size": 16, "family": font_family},
+            "ticksuffix": "%",
+            "thickness": 20,
+            "len": 0.75,
+            "x": 1.005,
+            "xpad": 4,
+            "outlinewidth": 0,
         },
-        text=np.round(values, 0).astype(int),
-        texttemplate="%{text}",
-        textfont={"size": 14},
-        hoverongaps=False,
+        text=values,
+        texttemplate="%{text:+.1f}",
+        textfont={"size": 15, "family": font_family},
+        hovertemplate="<b>%{y}</b> · %{x}<br>Growth: %{z:+.1f}%<extra></extra>",
+        xgap=2,
+        ygap=2,
     )
 )
 
-# Layout
+# Layout — tighter margins maximise heatmap area; serif font elevates polish
 fig.update_layout(
-    title={"text": "heatmap-basic · plotly · pyplots.ai", "font": {"size": 32}, "x": 0.5, "xanchor": "center"},
-    xaxis={"title": {"text": "Month", "font": {"size": 24}}, "tickfont": {"size": 18}, "side": "bottom"},
+    title={
+        "text": (
+            "Monthly Sales Growth · heatmap-basic · plotly · pyplots.ai"
+            "<br><sup style='color:#555; font-size:17px; letter-spacing:0.3px'>"
+            "Retail categories show clear seasonal surges — "
+            "summer outdoor/leisure peaks and Q4 holiday gift spikes"
+            "</sup>"
+        ),
+        "font": {"size": 28, "family": font_family, "color": "#1a1a1a"},
+        "x": 0.5,
+        "xanchor": "center",
+        "y": 0.97,
+        "yanchor": "top",
+    },
+    xaxis={
+        "title": {"text": "Month", "font": {"size": 22, "family": font_family, "color": "#333"}},
+        "tickfont": {"size": 18, "family": font_family, "color": "#444"},
+        "side": "bottom",
+    },
     yaxis={
-        "title": {"text": "Category", "font": {"size": 24}},
-        "tickfont": {"size": 18},
-        "autorange": "reversed",  # Categories from top to bottom
+        "title": {"text": "Product Category", "font": {"size": 22, "family": font_family, "color": "#333"}},
+        "tickfont": {"size": 18, "family": font_family, "color": "#444"},
+        "autorange": "reversed",
     },
     template="plotly_white",
-    margin={"l": 120, "r": 100, "t": 100, "b": 80},
+    margin={"l": 140, "r": 60, "t": 120, "b": 65},
+    width=1600,
+    height=900,
+    paper_bgcolor="#fafafa",
+    plot_bgcolor="#fafafa",
 )
 
 # Save

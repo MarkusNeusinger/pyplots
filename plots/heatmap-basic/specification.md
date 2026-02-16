@@ -23,4 +23,4 @@ A heatmap displaying values in a matrix format using color intensity. Each cell'
 - Use a diverging colormap for data with positive/negative values
 - Add value annotations in cells when readable
 - Include a colorbar legend
-- Consider clustering rows/columns for better pattern visibility
+- Order rows/columns logically (alphabetical, by magnitude, or by similarity)

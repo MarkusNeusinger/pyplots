@@ -1,12 +1,12 @@
 library: letsplot
 specification_id: heatmap-basic
 created: '2025-12-23T00:49:09Z'
-updated: '2025-12-23T01:21:53Z'
-generated_by: claude-opus-4-5-20251101
+updated: '2026-02-15T21:47:29Z'
+generated_by: claude-opus-4-6
 workflow_run: 20447989671
 issue: 0
-python_version: 3.13.11
-library_version: 4.8.1
+python_version: 3.14.3
+library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/letsplot/plot.html
@@ -16,149 +16,165 @@ impl_tags:
   techniques:
   - colorbar
   - annotations
-  - html-export
+  - hover-tooltips
   - layer-composition
+  - html-export
   patterns:
   - data-generation
-  - wide-to-long
+  - matrix-construction
   dataprep: []
-  styling: []
+  styling:
+  - custom-colormap
+  - edge-highlighting
 review:
   strengths:
-  - Excellent use of diverging color scale (blue-yellow-red) that clearly shows low,
-    medium, and high performance
-  - Value annotations in each cell make the exact scores easily readable
-  - Clean, professional layout with proper title format
-  - Good realistic data scenario (department performance by quarter)
-  - Proper use of pd.Categorical to maintain axis ordering
+  - Adaptive text color (white on dark, dark on light) ensures all 72 cell annotations
+    are readable — excellent attention to detail
+  - Realistic energy consumption scenario with believable seasonal patterns and zone-specific
+    baselines using np.outer
+  - 'Effective use of lets-plot distinctive features: layer_tooltips with custom lines,
+    HTML export for interactivity, guide_colorbar fine-tuning'
+  - Clean vectorized data generation without loops, Pythonic long-form data construction
+  - Viridis colormap (reversed) with 256 bins creates smooth perceptual gradient
   weaknesses:
-  - X-axis department labels at 45-degree angle could be more readable if horizontal
-    or using a different layout
-  - White text on yellow cells (mid-range values) has slightly reduced contrast
-  - The data does not show any clear patterns or clustering as mentioned in the spec
-    notes
-  image_description: The heatmap displays a 6×8 matrix showing department performance
-    scores by quarter. The x-axis shows 6 departments (Sales, Marketing, R&D, Operations,
-    Finance, HR) with labels rotated at 45 degrees. The y-axis shows 8 quarters (Q1-Q8)
-    from top to bottom. Each cell contains a numerical score value displayed in bold
-    white text. The color scale uses a diverging gradient from blue (low ~20-30) through
-    yellow (mid ~50-60) to red (high ~80-90), with a color bar legend on the right
-    labeled "Performance Score". The title "heatmap-basic · letsplot · pyplots.ai"
-    appears at the top. Cell values range from approximately 23.4 to 89.6.
+  - Axis labels 'Building Zone' and 'Month' lack units (though kWh is in the colorbar
+    legend, it's a minor gap)
+  - Data could include a more dramatic outlier or anomaly to better showcase the full
+    feature range of heatmaps
+  image_description: The plot displays a heatmap of monthly energy consumption (kWh)
+    across 6 building zones (Lobby, Offices, Lab, Server Room, Cafeteria, Warehouse)
+    over 12 months (Jan–Dec). The viridis colormap (reversed) maps values from dark
+    purple/blue (high ~700 kWh, Server Room in winter) to bright yellow (low ~49 kWh,
+    Warehouse in summer). Each cell contains a bold numeric annotation with adaptive
+    text color — white on dark cells, dark on light cells — ensuring readability throughout.
+    A vertical colorbar legend labeled "Energy (kWh)" sits to the right. The title
+    reads "heatmap-basic · letsplot · pyplots.ai" in bold. Panel grid is removed,
+    background is light gray (#fafafa), and tiles have subtle gaps between them. The
+    layout is clean and well-balanced.
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 28
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title and axis labels are readable, cell annotations are clear white
-          bold text
+        comment: 'All font sizes explicitly set: title=26, axis_title=20, axis_text=16,
+          legend_text=14, legend_title=16. Bold annotations at size=14. All text perfectly
+          readable.'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping text. Tile width/height=0.92 provides clean gaps.
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Tiles are well-sized with clear color differentiation
+        comment: Tiles fill space optimally, annotations clearly visible with adaptive
+          contrast.
       - id: VQ-04
         name: Color Accessibility
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Diverging color scale is good but uses red which may be problematic
-          for some colorblind users
+        comment: Viridis is perceptually uniform and colorblind-safe.
       - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Good proportions, well-balanced layout
-      - id: VQ-06
-        name: Axis Labels
-        score: 1
-        max: 2
-        passed: true
-        comment: Labels are descriptive but lack units (Score is unitless so acceptable)
-      - id: VQ-07
-        name: Grid & Legend
-        score: 1
-        max: 2
-        passed: true
-        comment: Legend is clear but positioned a bit far from the plot
-    spec_compliance:
-      score: 25
-      max: 25
-      items:
-      - id: SC-01
-        name: Plot Type
-        score: 8
-        max: 8
-        passed: true
-        comment: Correct heatmap using geom_tile
-      - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X=Department, Y=Quarter, Fill=Score correctly mapped
-      - id: SC-03
-        name: Required Features
-        score: 5
-        max: 5
-        passed: true
-        comment: Has value annotations, colorbar legend, diverging colormap
-      - id: SC-04
-        name: Data Range
+        name: Layout & Canvas
         score: 3
-        max: 3
-        passed: true
-        comment: All data visible within the plot area
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
+        max: 4
+        passed: false
+        comment: 'Good canvas utilization, colorbar integrated near plot. Minor: colorbar
+          positioning could be slightly better.'
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 1
         max: 2
-        passed: true
-        comment: Legend correctly shows "Performance Score" with accurate scale
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Uses correct format "heatmap-basic · letsplot · pyplots.ai"
-    data_quality:
-      score: 17
+        passed: false
+        comment: Descriptive labels but lack units. Units appear only in the colorbar
+          legend.
+    design_excellence:
+      score: 15
       max: 20
       items:
-      - id: DQ-01
-        name: Feature Coverage
+      - id: DE-01
+        name: Aesthetic Sophistication
         score: 6
         max: 8
         passed: true
-        comment: Shows variation across departments and quarters, but no clear clustering
-          or extreme outliers
+        comment: Custom background, adaptive text colors, removed grid, reversed viridis,
+          bold annotations. Clearly above defaults.
+      - id: DE-02
+        name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: Grid removed, custom background, tile gaps, generous margins. Well
+          polished.
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: 'Clear story: Server Room dominates, seasonal patterns visible. Viridis
+          intensity guides the eye to hotspots.'
+    spec_compliance:
+      score: 15
+      max: 15
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 5
+        max: 5
+        passed: true
+        comment: Correct heatmap using geom_tile.
+      - id: SC-02
+        name: Required Features
+        score: 4
+        max: 4
+        passed: true
+        comment: Value annotations, colorbar legend, logical ordering all present.
+          Sequential colormap appropriate for all-positive data.
+      - id: SC-03
+        name: Data Mapping
+        score: 3
+        max: 3
+        passed: true
+        comment: X=zones, Y=months, fill=kWh correctly assigned.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
+        passed: true
+        comment: Title format correct. Colorbar labeled Energy (kWh).
+    data_quality:
+      score: 14
+      max: 15
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 5
+        max: 6
+        passed: true
+        comment: Shows zone variation, seasonal patterns, realistic baselines. Could
+          show more extreme outliers.
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
+        score: 5
+        max: 5
         passed: true
-        comment: Department performance scores by quarter is a real, comprehensible
-          scenario
+        comment: Monthly energy consumption by building zone is a real, neutral, comprehensible
+          scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Scores 15-95 are realistic for performance metrics, though some values
-          seem arbitrary
+        comment: Values ~49-699 kWh are realistic for building zones.
     code_quality:
       score: 10
       max: 10
@@ -168,40 +184,48 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Simple imports → data → plot → save structure
+        comment: Imports → Data → Plot → Save. No functions/classes.
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports used.
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Uses current lets-plot API
+        comment: Vectorized data generation with np.outer, adaptive text color logic,
+          clean Pythonic code.
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves as plot.png with scale=3.
+    library_mastery:
+      score: 9
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 3
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
         max: 5
         passed: true
-        comment: Uses ggplot grammar with geom_tile and geom_text, scale_fill_gradient2
-          for diverging colors, but nothing particularly unique to lets-plot
+        comment: Proper ggplot grammar, scale_fill_viridis, scale_x_discrete with
+          limits, guide_colorbar customization, layer_tooltips.
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Uses layer_tooltips (interactive), HTML export, guide_colorbar with
+          custom nbin/barwidth/barheight, scale_color_identity for adaptive text.
   verdict: APPROVED

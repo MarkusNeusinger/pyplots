@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bubble-basic: Basic Bubble Chart
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 77/100 | Created: 2026-02-16
+Quality: 78/100 | Created: 2026-02-16
 """
 
 import numpy as np

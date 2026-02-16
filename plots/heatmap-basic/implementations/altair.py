@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-basic: Basic Heatmap
 Library: altair 6.0.0 | Python 3.14.3
-Quality: 89/100 | Updated: 2026-02-15
 """
 
 import altair as alt
@@ -56,11 +55,18 @@ heatmap = (
     .encode(
         x=alt.X(
             "Column:N",
-            title=None,
+            title="Weather Variable",
             sort=axis_order,
-            axis=alt.Axis(labelFontSize=15, labelAngle=-35, orient="top", labelPadding=6),
+            axis=alt.Axis(
+                labelFontSize=15, titleFontSize=18, labelAngle=-45, orient="top", labelPadding=8, titlePadding=10
+            ),
         ),
-        y=alt.Y("Row:N", title=None, sort=axis_order, axis=alt.Axis(labelFontSize=15, labelPadding=6)),
+        y=alt.Y(
+            "Row:N",
+            title="Weather Variable",
+            sort=axis_order,
+            axis=alt.Axis(labelFontSize=15, titleFontSize=18, labelPadding=8, titlePadding=10),
+        ),
         color=alt.Color(
             "value:Q",
             scale=alt.Scale(scheme="blueorange", domain=[-1, 1], domainMid=0),
@@ -109,23 +115,26 @@ text = (
 chart = (
     (heatmap + highlight + text)
     .properties(
-        width=700,
-        height=730,
+        width=740,
+        height=766,
         title=alt.Title(
             "heatmap-basic · altair · pyplots.ai",
-            subtitle="Pairwise Pearson correlation coefficients for 8 weather metrics",
+            subtitle=[
+                "Pairwise Pearson correlation coefficients for 8 weather metrics.",
+                "Bold borders highlight strong relationships (|r| ≥ 0.7).",
+            ],
             fontSize=26,
             subtitleFontSize=16,
             subtitleColor="#666666",
             anchor="start",
             offset=16,
         ),
-        padding={"left": 10, "right": 10, "top": 10, "bottom": 10},
+        padding={"left": 20, "right": 20, "top": 20, "bottom": 20},
     )
     .configure_axis(grid=False)
     .configure_view(strokeWidth=0)
 )
 
-# Save
-chart.save("plot.png", scale_factor=4.0)
+# Save — target: 3600×3600 square format
+chart.save("plot.png", scale_factor=3.6)
 chart.save("plot.html")

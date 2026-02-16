@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bubble-basic: Basic Bubble Chart
 Library: plotnine 0.15.3 | Python 3.14.3
+Quality: 91/100 | Updated: 2026-02-16
 """
 
 import numpy as np

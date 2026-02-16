@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: bubble-basic
 created: '2025-12-23T01:31:09Z'
-updated: '2026-02-15T21:45:16Z'
+updated: '2026-02-16T20:40:02Z'
 generated_by: claude-opus-4-6
 workflow_run: 20448654800
 issue: 0
@@ -10,50 +10,53 @@ library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/letsplot/plot.html
-quality_score: 80
+quality_score: 85
 impl_tags:
   dependencies: []
   techniques:
+  - layer-composition
   - hover-tooltips
   - html-export
+  - custom-legend
   patterns:
   - data-generation
+  - iteration-over-groups
   dataprep: []
   styling:
   - alpha-blending
   - grid-styling
 review:
   strengths:
-  - Excellent code quality with clean KISS structure, specific imports, and idiomatic
-    lets-plot usage
-  - Strong realistic data context (market analysis) with plausible values and visible
-    correlation
-  - Good use of lets-plot layer_tooltips() with formatted revenue/growth/market-share
-    lines — a distinctive feature
-  - All font sizes explicitly configured for the 4800x2700 output resolution
-  - Proper transparency (alpha=0.6) for handling overlapping bubbles
+  - Excellent use of lets-plot distinctive layer_tooltips() feature with formatted
+    fields and custom line labels
+  - Well-chosen colorblind-safe palette starting with Python Blue (#306998) and complementary
+    colors
+  - LOESS trend line with confidence band adds analytical value showing revenue-growth
+    inverse relationship
+  - scale_size_area() correctly scales bubbles by area per spec requirement
+  - All font sizes explicitly set for the 4800x2700 output resolution
+  - Realistic market analysis scenario with plausible business data
   weaknesses:
-  - Single monochrome blue color scheme lacks visual richness — adding a color dimension
-    (e.g., by sector/category) would improve both design excellence and data storytelling
-  - No visual hierarchy or emphasis to guide the viewer toward the negative correlation
-    story in the data
-  - Bubble size range [3, 18] is modest — increasing the range would make the size
-    dimension more dramatic and readable
-  - The spec recommends area-based scaling for accurate visual perception, but scale_size
-    defaults to radius-based scaling
-  image_description: The plot displays a bubble chart with approximately 40 blue bubbles
-    (#306998) of varying sizes scattered across the canvas. The x-axis shows "Revenue
-    (Million USD)" ranging from 10 to 200, and the y-axis shows "Growth Rate (%)"
-    ranging from 0 to 30. A size legend titled "Market Share (%)" appears on the right
-    side with reference bubbles for values 5, 10, 15, 20, and 25. All bubbles share
-    the same blue color with alpha transparency (~0.6), revealing overlapping areas.
-    The data shows a visible negative correlation — companies with higher revenue
-    tend to have lower growth rates. The background uses a minimal theme with light
-    gray major grid lines and no minor grid. The title "bubble-basic · letsplot ·
-    pyplots.ai" appears at the top-left.
+  - 'Layout balance could improve: two separate legends (size + color) take up too
+    much horizontal space, compressing the data area'
+  - 'Data storytelling is moderate: LOESS line helps but no strong visual focal point
+    or emphasis to guide the viewer to a specific insight'
+  - Sector data distributions are somewhat homogeneous; more distinct sector characteristics
+    would better showcase the bubble chart ability to reveal sector-level patterns
+  image_description: 'The plot displays a bubble chart with "Revenue (Million USD)"
+    on the x-axis (range ~10-190) and "Growth Rate (%)" on the y-axis (range ~2-21).
+    Bubble sizes represent "Market Share (%)" with a size legend showing values from
+    5 to 25. Five sectors are color-coded: Technology (dark blue), Healthcare (orange),
+    Finance (teal/green), Energy (purple), and Consumer Goods (coral/red). A LOESS
+    trend line with gray confidence band runs through the data, showing a slight negative
+    relationship between revenue and growth rate. The title reads "bubble-basic ·
+    letsplot · pyplots.ai" in the top-left. Both size and color legends appear on
+    the right side. The minimal theme has subtle light gray gridlines with no minor
+    grid. The 45 data points are distributed across the full revenue range with varying
+    bubble sizes and good alpha transparency (0.65).'
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 26
       max: 30
       items:
       - id: VQ-01
@@ -61,8 +64,8 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title=24, axis_title=20, axis_text=16,
-          legend_title=18, legend_text=14'
+        comment: 'All font sizes explicitly set: title 24pt, axis titles 20pt, axis
+          text 16pt, legend title 18pt, legend text 14pt'
       - id: VQ-02
         name: No Overlap
         score: 6
@@ -71,56 +74,54 @@ review:
         comment: No overlapping text elements anywhere
       - id: VQ-03
         name: Element Visibility
-        score: 4
+        score: 5
         max: 6
-        passed: false
-        comment: Bubbles visible with alpha=0.6 but size range [3,18] is modest; smallest
-          bubbles hard to distinguish
+        passed: true
+        comment: Bubbles well-sized with alpha=0.65 for 45 points; some smaller bubbles
+          slightly hard to distinguish
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Single blue color, colorblind-safe by nature
+        comment: 5-color palette is colorblind-safe, avoids pure red-green distinction
       - id: VQ-05
         name: Layout Balance
         score: 2
         max: 4
         passed: false
-        comment: Decent layout but notable whitespace on right side; legend area somewhat
-          isolated
+        comment: Two separate legends consume significant space on the right, compressing
+          the data area horizontally
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: Revenue (Million USD), Growth Rate
-          (%)'
+        comment: 'Labels include units: Revenue (Million USD), Growth Rate (%)'
     design_excellence:
-      score: 10
+      score: 13
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 6
         max: 8
-        passed: false
-        comment: Well-configured default with Python Blue, but single-color monochrome
-          design lacks visual richness
+        passed: true
+        comment: Thoughtful custom palette, good transparency, LOESS trend adds analytical
+          depth; strong but not publication-level
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Minor grid removed, major grid styled light gray, theme_minimal with
-          customizations
+        comment: Subtle grid styling, minor grid removed, theme_minimal removes spines
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 3
         max: 6
         passed: false
-        comment: Data exhibits negative correlation but no visual hierarchy or emphasis
-          guides the viewer
+        comment: LOESS trend reveals inverse relationship but no strong focal point
+          or emphasis on key insight
     spec_compliance:
       score: 14
       max: 15
@@ -130,26 +131,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct bubble chart with size dimension
+        comment: Correct bubble chart with size-mapped bubbles
       - id: SC-02
         name: Required Features
         score: 3
         max: 4
-        passed: false
-        comment: Has transparency and size legend; area-based scaling recommendation
-          not explicitly addressed
+        passed: true
+        comment: Has transparency, size legend, color grouping, scale_size_area; minor
+          calibration gap
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X/Y correctly mapped, all data visible
+        comment: X/Y correctly assigned, all data visible
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format, legend clearly labeled Market Share (%)
+        comment: Title format correct, legend labels match data
     data_quality:
       score: 14
       max: 15
@@ -158,24 +159,24 @@ review:
         name: Feature Coverage
         score: 5
         max: 6
-        passed: false
-        comment: Good variety in bubble sizes, visible correlation, 40 points; lacks
-          categorical grouping dimension
+        passed: true
+        comment: Good variation in sizes and positions; sectors could show more distinct
+          characteristics
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: 'Real business scenario: market analysis with revenue, growth rate,
-          market share'
+        comment: 'Market analysis: companies by revenue, growth rate, market share
+          across sectors'
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Revenue 10-200M USD, growth 0-30%, market share ~4-28% — all realistic
+        comment: Revenue 10-200M, growth 2-21%, market share 5-25% are realistic
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -183,7 +184,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save pattern
+        comment: 'Linear flow: Imports, Data, Plot, Save'
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -195,21 +196,21 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports used, specific named imports from lets_plot
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Clean, Pythonic, tooltip formatting is elegant
+        passed: false
+        comment: Slightly verbose sector_props dictionary but well-organized
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png and plot.html, no deprecated functions
+        comment: Saves plot.png and plot.html
     library_mastery:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: LM-01
@@ -217,13 +218,13 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Expert use of ggplot2-style API with aes mapping, geom_point, scale_size,
-          theme customizations
+        comment: Expert ggplot2-style grammar with proper aes, geom layers, scales,
+          guides, themes
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Uses layer_tooltips() with formatted lines and HTML export; could
-          leverage more unique features
+        passed: true
+        comment: layer_tooltips() with format/line chaining is unique to lets-plot;
+          guide_legend override_aes
   verdict: REJECTED

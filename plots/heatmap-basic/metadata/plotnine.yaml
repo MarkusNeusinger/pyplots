@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: heatmap-basic
 created: '2025-12-23T00:47:36Z'
-updated: '2026-02-15T21:46:32Z'
+updated: '2026-02-16T20:34:16Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447967616
 issue: 0
@@ -10,7 +10,7 @@ library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 86
+quality_score: 92
 impl_tags:
   dependencies: []
   techniques:
@@ -25,116 +25,106 @@ impl_tags:
   - edge-highlighting
 review:
   strengths:
-  - Excellent use of plotnine grammar of graphics with idiomatic layer composition
-    (geom_tile + geom_text)
-  - Smart conditional text coloring via scale_color_identity ensures readability across
-    all cell backgrounds
-  - Clear data storytelling with recovery trend from negative (blue) to positive (gold)
-    across quarters
-  - Custom diverging palette (steel blue to off-white to gold) with well-chosen midpoint=0
-  - Deliberate extreme values (HR -32.5%, Sales +38.2%) create visual focal points
-  - Realistic neutral business scenario with plausible growth rate values
-  - 'All spec requirements met: diverging colormap, cell annotations, colorbar, logical
-    ordering'
+  - Excellent diverging color palette (steel blue to cream to gold) with well-chosen
+    midpoint at 0, creating an intuitive visual encoding of positive/negative growth
+  - Conditional text color logic (white on dark, dark gray on mid, dark brown on gold)
+    ensures all annotations are readable against their cell background
+  - Data tells a compelling recovery story with intentional extreme values (HR -32.5
+    crisis, Sales +38.2 surge) serving as visual focal points
+  - Clean, idiomatic plotnine code with vectorized data generation and meshgrid-based
+    long-form DataFrame construction
+  - 'Fully polished theme: removed grid lines, custom background, generous margins,
+    rotated tick labels'
   weaknesses:
-  - Title font size 22pt slightly under the 24pt guideline for optimal readability
-    at full resolution
-  - Mid-range color contrast could be stronger — values near zero on off-white background
-    are less visually distinct
-  - Code uses nested loops for matrix construction where vectorized numpy operations
-    could be more concise
-  - Categorical axis labels Quarter and Department lack units (though units are not
-    natural for categories)
-  image_description: 'The plot displays an 8x8 heatmap titled "Quarterly Growth by
-    Department · heatmap-basic · plotnine · pyplots.ai" with a subtitle "Year-over-year
-    growth rate (%) across departments, Q1 2023 – Q4 2024". The Y-axis lists eight
-    departments (Engineering, Marketing, Sales, Finance, Operations, HR, Research,
-    Support) and the X-axis shows eight quarters (Q1 ''23 through Q4 ''24, rotated
-    45 degrees). Each cell is colored using a diverging scheme: steel blue for negative
-    values, off-white/cream for near-zero, and gold/amber for positive values. Every
-    cell contains a bold annotation showing the growth rate with a sign prefix (e.g.,
-    "-32.5", "+38.2"). A vertical colorbar legend on the right labeled "Growth (%)"
-    shows the scale from approximately -20 to +40. The overall layout has a light
-    gray (#fafafa) background, white cell borders separating tiles, and no grid lines.
-    The data tells a clear recovery story: the left columns are predominantly blue
-    (negative growth) transitioning to gold (positive growth) on the right. Notable
-    extremes include HR at -32.5% in Q1 ''23 (deepest blue) and Sales at +38.2% in
-    Q4 ''24 (deepest gold). Text contrast is managed with white text on dark blue
-    cells, dark gray on mid-range cells, and dark brown/amber on bright gold cells.'
+  - The colorbar legend could benefit from more tick marks to better communicate the
+    full range of the scale
+  - Minor wasted horizontal space on the right side between the plot and the legend
+    area
+  image_description: 'The heatmap displays an 8x8 grid of quarterly growth rates (%)
+    across 8 departments (Engineering, Marketing, Sales, Finance, Operations, HR,
+    Research, Support) over 8 quarters (Q1 ''23 through Q4 ''24). A diverging color
+    scheme is used: dark steel blue for strongly negative values, cream/beige for
+    near-zero values, and gold/amber for strongly positive values. Each cell contains
+    a bold, signed numeric annotation (e.g., "+38.2", "-32.5"). Text color adapts
+    to background: white on dark blue cells, dark gray on mid-range cells, and dark
+    brown on gold cells. The title "Quarterly Growth by Department · heatmap-basic
+    · plotnine · pyplots.ai" is centered and bold at the top, with a subtitle describing
+    the data. X-axis labels are rotated 45 degrees showing quarter names, Y-axis shows
+    department names. A vertical colorbar legend labeled "Growth (%)" appears on the
+    right with a range from approximately -20 to 40. White borders separate cells
+    cleanly. The background is light gray (#f7f7f7). The plot clearly shows a recovery
+    narrative from left (negative) to right (positive).'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 28
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title=22, subtitle=15, axis titles=18,
-          axis text=15, annotations size=10). Title slightly under 24pt guideline
-          but all text clearly readable.
+        comment: 'All font sizes explicitly set: title 24pt, axis labels 20pt, ticks
+          16pt, annotations bold size=10'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text anywhere. Rotated x-axis labels, well-spaced
-          cells.
+        comment: No overlapping text anywhere, rotated x-axis labels, well-spaced
+          annotations
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Tiles perfectly sized for 8x8 grid, annotations clear and well-positioned.
+        comment: Tiles fill grid perfectly, annotations clearly visible in every cell
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Blue-to-gold diverging scheme avoids red-green issues. Mid-range
-          contrast could be slightly stronger.
+        comment: Diverging blue-cream-gold avoids red-green issues; not a standard
+          perceptually-uniform palette
       - id: VQ-05
-        name: Layout & Canvas
+        name: Layout Balance
         score: 3
         max: 4
         passed: true
-        comment: Good canvas utilization. Minor wasted space at top-left and between
-          subtitle and heatmap body.
+        comment: Good canvas utilization, minor wasted space near legend on right
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Descriptive labels but categorical axes lack units. Subtitle provides
-          percent context.
+        comment: Descriptive labels with units in annotations and legend
     design_excellence:
-      score: 14
+      score: 16
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Custom diverging palette, intentional typography hierarchy, conditional
-          text coloring. Clearly above defaults.
+        comment: Custom diverging palette, conditional text colors, white cell borders,
+          light gray background — publication-quality
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Grid removed, minimal theme, white cell borders, light background,
-          explicit panel/plot background styling.
+        comment: Grid removed, custom backgrounds, generous whitespace, spines absent
+          — highly polished
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Clear recovery narrative. Extreme values create focal points. Conditional
-          text coloring adds visual hierarchy.
+        comment: Recovery narrative with extreme focal points, conditional text color
+          guides attention
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -142,26 +132,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct heatmap using geom_tile.
+        comment: Correct heatmap using geom_tile
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: diverging colormap, value annotations,
-          colorbar legend, logically ordered rows/columns.'
+        comment: 'All spec features present: diverging colormap, annotations, colorbar,
+          logical ordering'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=Quarter, Y=Department, value mapped to fill correctly.
+        comment: X=Quarter, Y=Department, fill=Growth (%) — correct
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Title format correct with descriptive prefix. Colorbar legend appropriate.
+        comment: Title contains heatmap-basic · plotnine · pyplots.ai, legend labeled
+          Growth (%)
     data_quality:
       score: 14
       max: 15
@@ -171,23 +162,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows positive/negative values, extreme outliers, gradual trends,
-          departmental variation.
+        comment: Shows positive/negative, near-zero, extremes, variation across both
+          dimensions
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Realistic business scenario with department growth rates. Neutral
-          and comprehensible.
+        comment: 'Realistic business scenario: quarterly departmental growth rates'
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Growth rates from -32.5% to +38.2% are realistic for business context.
+        comment: Growth rates -32.5% to +38.2% are plausible
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -195,31 +185,31 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports, data, plot, save structure.
+        comment: Clean imports → data → plot → save, no functions/classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Slightly verbose with nested loops for matrix and DataFrame construction.
+        passed: true
+        comment: Well-organized, vectorized data generation, appropriate complexity
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png, no deprecated functions.
+        comment: Saves as plot.png, no deprecated functions
     library_mastery:
       score: 9
       max: 10
@@ -229,13 +219,13 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Excellent ggplot2-style grammar with aes mappings, geom layering,
-          scales, and theme customization.
+        comment: 'Idiomatic grammar of graphics: ggplot + aes + geom_tile + geom_text
+          + scales + theme'
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: Uses scale_fill_gradient2, scale_color_identity for conditional text,
-          pd.Categorical for ordered factors.
+        comment: scale_fill_gradient2 with midpoint, scale_color_identity for conditional
+          text, pd.Categorical ordering
   verdict: APPROVED

@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 heatmap-basic: Basic Heatmap
 Library: plotnine 0.15.3 | Python 3.14.3
+Quality: 92/100 | Updated: 2026-02-16
 """
 
 import numpy as np

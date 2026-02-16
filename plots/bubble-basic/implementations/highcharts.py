@@ -1,7 +1,7 @@
 """ pyplots.ai
 bubble-basic: Basic Bubble Chart
-Library: highcharts unknown | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: highcharts 1.10.3 | Python 3.14.3
+Quality: 91/100 | Updated: 2026-02-16
 """
 
 import tempfile
@@ -17,98 +17,60 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data - Tech companies comparison
+# Data - Tech companies by sector
 np.random.seed(42)
-n = 30
 
-# Revenue (billions USD) - x axis
-revenue = np.array(
-    [
-        5,
-        12,
-        25,
-        38,
-        45,
-        52,
-        68,
-        75,
-        82,
-        95,
-        110,
-        125,
-        140,
-        155,
-        170,
-        185,
-        200,
-        220,
-        245,
-        270,
-        300,
-        330,
-        360,
-        390,
-        420,
-        460,
-        500,
-        550,
-        600,
-        650,
+sectors = {
+    "Cloud & SaaS": {
+        "color": "rgba(48, 105, 152, 0.65)",
+        "border": "#1e4f7a",
+        "revenues": [12, 38, 68, 125, 200, 330, 500],
+        "growth_base": [48, 35, 42, 28, 22, 15, 10],
+    },
+    "E-Commerce": {
+        "color": "rgba(180, 90, 50, 0.65)",
+        "border": "#8c3a1a",
+        "revenues": [25, 75, 155, 270, 420, 600],
+        "growth_base": [40, 30, 18, 14, 12, 6],
+    },
+    "Semiconductors": {
+        "color": "rgba(60, 145, 80, 0.65)",
+        "border": "#2a6e3a",
+        "revenues": [5, 45, 95, 170, 300, 460],
+        "growth_base": [52, 33, 25, 20, 16, 8],
+    },
+    "Social & Media": {
+        "color": "rgba(140, 80, 160, 0.65)",
+        "border": "#6b3480",
+        "revenues": [8, 52, 110, 185, 245, 390, 550],
+        "growth_base": [55, 38, 30, 22, 18, 12, 7],
+    },
+    "Fintech": {
+        "color": "rgba(200, 160, 50, 0.65)",
+        "border": "#9a7a1a",
+        "revenues": [15, 82, 140, 220],
+        "growth_base": [45, 28, 20, 15],
+    },
+}
+
+# Build series data with realistic variation
+all_series = []
+for sector_name, sector in sectors.items():
+    n = len(sector["revenues"])
+    rev = np.array(sector["revenues"], dtype=float) + np.random.uniform(-3, 3, n)
+    grw = np.array(sector["growth_base"], dtype=float) + np.random.uniform(-2, 2, n)
+    cap = rev * (1 + grw / 100) * np.random.uniform(2.5, 7, n)
+
+    data = [
+        {"x": round(float(rev[i]), 1), "y": round(float(grw[i]), 1), "z": round(float(cap[i]), 1)} for i in range(n)
     ]
-)
 
-# Growth rate (%) - y axis
-growth = np.array(
-    [
-        45,
-        38,
-        52,
-        28,
-        35,
-        22,
-        42,
-        18,
-        30,
-        25,
-        33,
-        20,
-        28,
-        15,
-        38,
-        12,
-        25,
-        18,
-        22,
-        15,
-        20,
-        12,
-        18,
-        10,
-        15,
-        8,
-        12,
-        6,
-        10,
-        5,
-    ]
-)
-
-# Add realistic variation
-revenue = revenue + np.random.uniform(-3, 3, n)
-growth = growth + np.random.uniform(-3, 3, n)
-
-# Market cap (billions USD) - bubble size
-market_cap = revenue * (1 + growth / 100) * np.random.uniform(2, 8, n)
-
-# Scale bubble z values for Highcharts (controls visual size)
-min_cap, max_cap = market_cap.min(), market_cap.max()
-z_scaled = 20 + (market_cap - min_cap) / (max_cap - min_cap) * 80
-
-# Format data for Highcharts bubble chart
-bubble_data = [
-    {"x": float(revenue[i]), "y": float(growth[i]), "z": float(z_scaled[i]), "marketCap": float(market_cap[i])}
-    for i in range(n)
-]
+    s = BubbleSeries()
+    s.name = sector_name
+    s.data = data
+    s.color = sector["color"]
+    s.marker = {"lineWidth": 3, "lineColor": sector["border"]}
+    all_series.append(s)
 
 # Create chart
 chart = Chart(container="container")
@@ -118,85 +80,93 @@ chart.options.chart = {
     "type": "bubble",
     "width": 4800,
     "height": 2700,
-    "backgroundColor": "#ffffff",
-    "plotBorderWidth": 1,
-    "plotBorderColor": "#cccccc",
-    "spacingBottom": 120,
-    "spacingRight": 100,
+    "backgroundColor": "#fafafa",
+    "spacing": [40, 60, 180, 60],
+    "style": {"fontFamily": "'Segoe UI', Arial, sans-serif"},
 }
 
 chart.options.title = {
-    "text": "bubble-basic · highcharts · pyplots.ai",
-    "style": {"fontSize": "64px", "fontWeight": "bold"},
+    "text": "bubble-basic \u00b7 highcharts \u00b7 pyplots.ai",
+    "style": {"fontSize": "60px", "fontWeight": "bold", "color": "#2a2a2a"},
 }
 
 chart.options.subtitle = {
-    "text": "Bubble size represents Market Capitalization",
-    "style": {"fontSize": "40px", "color": "#666666"},
+    "text": "Bubble size represents Market Capitalization \u2014 Tech companies by sector",
+    "style": {"fontSize": "38px", "color": "#666666"},
 }
 
 chart.options.x_axis = {
-    "title": {"text": "Revenue (Billion USD)", "style": {"fontSize": "48px"}, "margin": 30},
-    "labels": {"style": {"fontSize": "36px"}},
+    "title": {"text": "Revenue (Billion USD)", "style": {"fontSize": "42px", "color": "#3a3a3a"}, "margin": 24},
+    "labels": {"style": {"fontSize": "34px", "color": "#555555"}},
     "gridLineWidth": 1,
-    "gridLineColor": "#e6e6e6",
+    "gridLineColor": "rgba(0, 0, 0, 0.06)",
+    "gridLineDashStyle": "Dot",
+    "lineColor": "#cccccc",
+    "lineWidth": 2,
+    "tickColor": "#cccccc",
     "min": 0,
+    "tickInterval": 100,
 }
 
 chart.options.y_axis = {
-    "title": {"text": "Growth Rate (%)", "style": {"fontSize": "48px"}},
-    "labels": {"style": {"fontSize": "36px"}},
+    "title": {"text": "Growth Rate (%)", "style": {"fontSize": "42px", "color": "#3a3a3a"}, "margin": 24},
+    "labels": {"style": {"fontSize": "34px", "color": "#555555"}},
     "gridLineWidth": 1,
-    "gridLineColor": "#e6e6e6",
+    "gridLineColor": "rgba(0, 0, 0, 0.06)",
+    "gridLineDashStyle": "Dot",
+    "lineColor": "#cccccc",
+    "lineWidth": 2,
     "min": 0,
+    "tickInterval": 10,
 }
 
 chart.options.legend = {
     "enabled": True,
-    "itemStyle": {"fontSize": "36px"},
+    "align": "right",
+    "verticalAlign": "top",
+    "layout": "vertical",
+    "x": -30,
+    "y": 80,
+    "floating": True,
+    "backgroundColor": "rgba(255, 255, 255, 0.85)",
+    "borderColor": "#dddddd",
+    "borderWidth": 1,
+    "borderRadius": 8,
+    "padding": 20,
+    "itemStyle": {"fontSize": "32px", "fontWeight": "normal", "color": "#333333"},
+    "itemMarginBottom": 10,
+    "symbolRadius": 6,
     "bubbleLegend": {
         "enabled": True,
-        "borderColor": "#306998",
+        "borderColor": "#888888",
         "borderWidth": 2,
-        "color": "rgba(48, 105, 152, 0.5)",
-        "connectorColor": "#306998",
-        "labels": {"style": {"fontSize": "28px"}},
-        "legendIndex": 0,
-        "ranges": [
-            {"value": 20, "borderColor": "#306998", "color": "rgba(48, 105, 152, 0.5)"},
-            {"value": 60, "borderColor": "#306998", "color": "rgba(48, 105, 152, 0.5)"},
-            {"value": 100, "borderColor": "#306998", "color": "rgba(48, 105, 152, 0.5)"},
-        ],
+        "color": "rgba(200, 200, 200, 0.3)",
+        "connectorColor": "#999999",
+        "connectorWidth": 2,
+        "labels": {"style": {"fontSize": "26px", "color": "#555555"}, "format": "{value:.0f}B"},
+        "minSize": 16,
+        "maxSize": 55,
     },
 }
 
 chart.options.tooltip = {
     "useHTML": True,
-    "headerFormat": "",
-    "pointFormat": '<span style="font-size: 28px"><b>Company Data</b></span><br/>'
-    '<span style="font-size: 24px">Revenue: ${point.x:.1f}B<br/>'
-    "Growth: {point.y:.1f}%<br/>"
-    "Market Cap: ${point.marketCap:.0f}B</span>",
+    "headerFormat": '<span style="font-size: 28px; font-weight: bold; color: {series.color}">{series.name}</span><br/>',
+    "pointFormat": '<span style="font-size: 24px">Revenue: <b>${point.x:.1f}B</b><br/>'
+    "Growth: <b>{point.y:.1f}%</b><br/>"
+    "Market Cap: <b>${point.z:.0f}B</b></span>",
+    "backgroundColor": "rgba(255, 255, 255, 0.95)",
+    "borderColor": "#cccccc",
+    "borderRadius": 8,
+    "shadow": {"color": "rgba(0, 0, 0, 0.15)", "offsetX": 2, "offsetY": 2, "width": 4},
 }
 
 chart.options.plot_options = {
-    "bubble": {
-        "minSize": 50,
-        "maxSize": 200,
-        "color": "#306998",
-        "marker": {"fillOpacity": 0.6, "lineWidth": 3, "lineColor": "#1e4f7a"},
-        "dataLabels": {"enabled": False},
-        "sizeBy": "area",
-    }
+    "bubble": {"minSize": 30, "maxSize": 200, "sizeBy": "area", "dataLabels": {"enabled": False}, "zMin": 0}
 }
 
-# Create bubble series
-series = BubbleSeries()
-series.name = "Market Cap"
-series.data = bubble_data
-series.color = "#306998"
-
-chart.add_series(series)
+for s in all_series:
+    chart.add_series(s)
 
 # Download Highcharts JS and highcharts-more.js for bubble support
 highcharts_url = "https://code.highcharts.com/highcharts.js"
@@ -223,12 +193,10 @@ html_content = f"""<!DOCTYPE html>
 </body>
 </html>"""
 
-# Write temp HTML and take screenshot
 with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encoding="utf-8") as f:
     f.write(html_content)
     temp_path = f.name
 
-# Also save interactive HTML
 with open("plot.html", "w", encoding="utf-8") as f:
     f.write(html_content)
 

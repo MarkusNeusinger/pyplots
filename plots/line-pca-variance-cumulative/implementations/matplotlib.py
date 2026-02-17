@@ -1,10 +1,9 @@
-""" pyplots.ai
+"""pyplots.ai
 line-pca-variance-cumulative: Cumulative Explained Variance for PCA Component Selection
 Library: matplotlib 3.10.8 | Python 3.14.3
 Quality: 85/100 | Created: 2026-02-17
 """
 
-import matplotlib.patheffects as pe
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import numpy as np
@@ -48,7 +47,7 @@ ax.plot(
 )
 
 # Threshold lines with legend entries and crossing annotations
-offsets = [(-3.0, -0.07), (-2.8, 0.035)]
+offsets = [(-4.5, -0.10), (-5.5, 0.04)]
 for (t, label, color), n_comp, (dx, dy) in zip(thresholds, n_at_threshold, offsets, strict=True):
     ax.axhline(y=t, color=color, linestyle="--", linewidth=1.8, alpha=0.6, label=f"{label} threshold")
     ax.plot(n_comp, t, marker="D", color=color, markersize=13, zorder=6, markeredgecolor="white", markeredgewidth=1.5)
@@ -62,12 +61,11 @@ for (t, label, color), n_comp, (dx, dy) in zip(thresholds, n_at_threshold, offse
         arrowprops={"arrowstyle": "-|>", "color": color, "lw": 1.5},
         bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": color, "alpha": 0.9},
         zorder=7,
-        path_effects=[pe.withStroke(linewidth=3, foreground="white")],
     )
 
 # Formatting
 ax.set_xlabel("Number of Components", fontsize=20)
-ax.set_ylabel("Explained Variance Ratio (proportion)", fontsize=20)
+ax.set_ylabel("Explained Variance Ratio (%)", fontsize=20)
 ax.set_title("line-pca-variance-cumulative · matplotlib · pyplots.ai", fontsize=24, fontweight="medium", pad=16)
 ax.tick_params(axis="both", labelsize=16)
 ax.set_xticks(components)
@@ -88,7 +86,7 @@ ax.yaxis.grid(True, alpha=0.15, linewidth=0.6, color="#999999")
 ax.set_axisbelow(True)
 
 # Legend in lower-right where there's empty space
-ax.legend(fontsize=15, loc="lower right", framealpha=0.9, edgecolor="#cccccc", fancybox=True)
+ax.legend(fontsize=16, loc="lower right", framealpha=0.9, edgecolor="#cccccc", fancybox=True)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

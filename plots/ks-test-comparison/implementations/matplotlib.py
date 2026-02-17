@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 ks-test-comparison: Kolmogorov-Smirnov Plot for Distribution Comparison
 Library: matplotlib 3.10.8 | Python 3.14.3
 Quality: 85/100 | Created: 2026-02-17
@@ -36,40 +36,77 @@ max_y_bad = bad_cdf_at_all[max_idx]
 # Plot
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# ECDF step lines with distinct linestyles for colorblind accessibility
+# "Bad Customers" drawn with heavier weight and white outline — focal distribution
+# White outline behind for separation from gridlines
+ax.step(bad_sorted, bad_ecdf, where="post", linewidth=5.0, color="white", zorder=3)
+ax.step(
+    bad_sorted, bad_ecdf, where="post", linewidth=3.2, color="#E5921A", label="Bad Customers", linestyle="--", zorder=4
+)
+
+# "Good Customers" — reference distribution, slightly thinner
 ax.step(
     good_sorted,
     good_ecdf,
     where="post",
-    linewidth=2.8,
+    linewidth=2.6,
     color="#306998",
     label="Good Customers",
     linestyle="-",
     zorder=3,
 )
-ax.step(
-    bad_sorted, bad_ecdf, where="post", linewidth=2.8, color="#D4533B", label="Bad Customers", linestyle="--", zorder=3
+
+# Gradient-style shaded region at maximum distance
+y_span = np.linspace(max_y_bad, max_y_good, 40)
+for i in range(len(y_span) - 1):
+    frac = i / (len(y_span) - 1)
+    alpha = 0.18 - 0.10 * abs(frac - 0.5) * 2
+    ax.fill_betweenx([y_span[i], y_span[i + 1]], max_x - 2.0, max_x + 2.0, color="#306998", alpha=alpha, zorder=1)
+
+# K-S distance line with double-ended annotation arrows
+mid_y = (max_y_good + max_y_bad) / 2
+ax.annotate(
+    "",
+    xy=(max_x, max_y_good),
+    xytext=(max_x, max_y_bad),
+    arrowprops={
+        "arrowstyle": "<->",
+        "color": "#2D2D2D",
+        "linewidth": 2.2,
+        "linestyle": ":",
+        "shrinkA": 0,
+        "shrinkB": 0,
+    },
+    zorder=5,
 )
 
-# Shaded region at maximum distance to emphasize the K-S gap
-ax.fill_betweenx([max_y_bad, max_y_good], max_x - 1.5, max_x + 1.5, color="#306998", alpha=0.10, zorder=1)
+# Endpoint markers
+ax.scatter([max_x, max_x], [max_y_bad, max_y_good], color="#2D2D2D", s=140, zorder=6, edgecolors="white", linewidth=1.5)
 
-# K-S distance line
-ax.plot([max_x, max_x], [max_y_bad, max_y_good], color="#2D2D2D", linewidth=2.5, linestyle=":", zorder=5)
-ax.scatter([max_x, max_x], [max_y_bad, max_y_good], color="#2D2D2D", s=120, zorder=6, edgecolors="white", linewidth=1.2)
-
-# K-S statistic annotation — positioned close to the distance line
-mid_y = (max_y_good + max_y_bad) / 2
+# K-S statistic annotation
 ax.annotate(
     f"D = {ks_stat:.3f}",
     xy=(max_x, mid_y),
-    xytext=(max_x + 4, mid_y + 0.04),
+    xytext=(max_x + 8, mid_y + 0.06),
     fontsize=18,
     fontweight="bold",
     color="#2D2D2D",
     arrowprops={"arrowstyle": "->", "color": "#555555", "linewidth": 1.5, "connectionstyle": "arc3,rad=-0.15"},
     va="center",
-    bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": "#CCCCCC", "alpha": 0.9},
+    bbox={"boxstyle": "round,pad=0.35", "facecolor": "white", "edgecolor": "#AAAAAA", "alpha": 0.95},
+)
+
+# Interpretation text — guides the viewer to the key insight
+ax.text(
+    0.97,
+    0.16,
+    "Strong separation: distributions\nare significantly different",
+    transform=ax.transAxes,
+    fontsize=14,
+    ha="right",
+    va="bottom",
+    color="#444444",
+    linespacing=1.4,
+    bbox={"boxstyle": "round,pad=0.4", "facecolor": "#F0F4F8", "edgecolor": "#CCCCCC", "alpha": 0.85},
 )
 
 # P-value text
@@ -88,8 +125,22 @@ ax.text(
 
 # Style
 ax.set_xlabel("Credit Score (0–100)", fontsize=20)
-ax.set_ylabel("Cumulative Proportion", fontsize=20)
-ax.set_title("ks-test-comparison · matplotlib · pyplots.ai", fontsize=24, fontweight="medium", pad=16)
+ax.set_ylabel("Cumulative Proportion (0–1)", fontsize=20)
+ax.set_title("ks-test-comparison · matplotlib · pyplots.ai", fontsize=24, fontweight="medium", pad=28)
+
+# Subtitle for data storytelling — positioned below the title
+ax.text(
+    0.5,
+    1.02,
+    "K-S test reveals bad customers cluster at low scores while good customers spread higher",
+    transform=ax.transAxes,
+    fontsize=14,
+    ha="center",
+    va="bottom",
+    color="#777777",
+    fontstyle="italic",
+)
+
 ax.tick_params(axis="both", labelsize=16)
 ax.set_ylim(-0.02, 1.04)
 ax.set_xlim(-2, 102)

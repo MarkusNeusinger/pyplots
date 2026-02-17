@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-impurity-comparison: Gini Impurity vs Entropy Comparison
 Library: highcharts unknown | Python 3.14.3
 Quality: 89/100 | Created: 2026-02-17
@@ -12,7 +12,8 @@ from pathlib import Path
 import numpy as np
 from highcharts_core.chart import Chart
 from highcharts_core.options import HighchartsOptions
-from highcharts_core.options.series.area import LineSeries
+from highcharts_core.options.series.area import AreaRangeSeries
+from highcharts_core.options.series.spline import SplineSeries
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -34,57 +35,95 @@ entropy = entropy_raw  # max of entropy is 1.0 at p=0.5, already in [0, 1]
 gini_data = [[round(float(p[i]), 4), round(float(gini[i]), 6)] for i in range(len(p))]
 entropy_data = [[round(float(p[i]), 4), round(float(entropy[i]), 6)] for i in range(len(p))]
 
+# Area range data: [x, low (gini), high (entropy)] to fill between curves
+area_range_data = [
+    [round(float(p[i]), 4), round(float(gini[i]), 6), round(float(entropy[i]), 6)] for i in range(len(p))
+]
+
 # Colors
 color_gini = "#306998"  # Python Blue
 color_entropy = "#E8793A"  # Warm orange complement
+color_fill = "rgba(232, 121, 58, 0.08)"  # Very subtle fill between curves
 
 # Chart
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
 chart.options.chart = {
-    "type": "line",
+    "type": "spline",
     "width": 4800,
     "height": 2700,
-    "backgroundColor": "#ffffff",
-    "marginLeft": 200,
-    "marginRight": 150,
-    "marginBottom": 200,
-    "marginTop": 180,
+    "backgroundColor": "#fafafa",
+    "marginLeft": 220,
+    "marginRight": 160,
+    "marginBottom": 280,
+    "marginTop": 200,
+    "style": {"fontFamily": "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"},
 }
 
 chart.options.title = {
     "text": "line-impurity-comparison \u00b7 highcharts \u00b7 pyplots.ai",
-    "style": {"fontSize": "56px", "fontWeight": "bold"},
+    "style": {"fontSize": "56px", "fontWeight": "bold", "color": "#1a1a2e"},
 }
 
 chart.options.subtitle = {
     "text": "Gini Impurity vs Entropy as Decision Tree Splitting Criteria",
-    "style": {"fontSize": "36px", "color": "#666666"},
+    "style": {"fontSize": "36px", "color": "#555555", "fontWeight": "300"},
 }
 
 chart.options.x_axis = {
-    "title": {"text": "Probability (p)", "style": {"fontSize": "40px"}, "margin": 25},
-    "labels": {"style": {"fontSize": "32px"}, "y": 40},
+    "title": {"text": "Probability (p)", "style": {"fontSize": "40px", "color": "#333333"}, "margin": 25},
+    "labels": {"style": {"fontSize": "32px", "color": "#444444"}, "y": 40},
     "min": 0,
     "max": 1,
     "tickInterval": 0.1,
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.08)",
-    "lineWidth": 2,
-    "lineColor": "#333333",
+    "gridLineColor": "rgba(0, 0, 0, 0.06)",
+    "gridLineDashStyle": "Dot",
+    "lineWidth": 0,
+    "tickWidth": 0,
+    "crosshair": {"width": 2, "color": "rgba(0, 0, 0, 0.15)", "dashStyle": "Dash"},
 }
 
 chart.options.y_axis = {
-    "title": {"text": "Impurity Measure", "style": {"fontSize": "40px"}},
-    "labels": {"style": {"fontSize": "32px"}},
+    "title": {"text": "Impurity Measure", "style": {"fontSize": "40px", "color": "#333333"}},
+    "labels": {"style": {"fontSize": "32px", "color": "#444444"}},
     "min": 0,
-    "max": 1.05,
+    "max": 1.1,
+    "endOnTick": False,
     "tickInterval": 0.2,
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.10)",
-    "lineWidth": 2,
-    "lineColor": "#333333",
+    "gridLineColor": "rgba(0, 0, 0, 0.06)",
+    "gridLineDashStyle": "Dot",
+    "lineWidth": 0,
+    "plotLines": [
+        {
+            "value": 0.5,
+            "color": "rgba(48, 105, 152, 0.25)",
+            "width": 2,
+            "dashStyle": "LongDash",
+            "label": {
+                "text": "Gini max = 0.5",
+                "align": "right",
+                "x": -15,
+                "style": {"fontSize": "26px", "color": "#306998", "fontWeight": "bold"},
+            },
+            "zIndex": 3,
+        },
+        {
+            "value": 1.0,
+            "color": "rgba(232, 121, 58, 0.25)",
+            "width": 2,
+            "dashStyle": "LongDash",
+            "label": {
+                "text": "Entropy max = 1.0",
+                "align": "right",
+                "x": -15,
+                "style": {"fontSize": "26px", "color": "#E8793A", "fontWeight": "bold"},
+            },
+            "zIndex": 3,
+        },
+    ],
 }
 
 chart.options.legend = {
@@ -92,46 +131,80 @@ chart.options.legend = {
     "align": "right",
     "verticalAlign": "top",
     "layout": "vertical",
-    "x": -80,
-    "y": 80,
-    "itemStyle": {"fontSize": "34px", "fontWeight": "normal"},
+    "x": -60,
+    "y": 60,
+    "itemStyle": {"fontSize": "34px", "fontWeight": "normal", "color": "#333333"},
     "itemMarginBottom": 15,
-    "backgroundColor": "rgba(255, 255, 255, 0.9)",
-    "borderRadius": 8,
-    "padding": 20,
+    "backgroundColor": "rgba(255, 255, 255, 0.85)",
+    "borderRadius": 10,
+    "borderWidth": 1,
+    "borderColor": "rgba(0, 0, 0, 0.08)",
+    "padding": 24,
+    "shadow": {"enabled": True, "color": "rgba(0, 0, 0, 0.04)", "offsetX": 2, "offsetY": 2, "width": 8},
 }
 
 chart.options.credits = {"enabled": False}
 
-chart.options.plot_options = {"series": {"animation": False}, "line": {"lineWidth": 6, "marker": {"enabled": False}}}
+chart.options.tooltip = {
+    "shared": True,
+    "backgroundColor": "rgba(255, 255, 255, 0.95)",
+    "borderRadius": 8,
+    "borderWidth": 1,
+    "borderColor": "#cccccc",
+    "shadow": {"color": "rgba(0, 0, 0, 0.08)", "offsetX": 2, "offsetY": 2, "width": 6},
+    "style": {"fontSize": "28px"},
+    "headerFormat": '<span style="font-size: 28px; font-weight: bold;">p = {point.key:.2f}</span><br/>',
+    "pointFormat": '<span style="color:{series.color}">\u25cf</span> {series.name}: <b>{point.y:.4f}</b><br/>',
+    "valueDecimals": 4,
+}
 
-# Annotation at p=0.5 maximum
+chart.options.plot_options = {
+    "series": {"animation": False},
+    "spline": {"lineWidth": 6, "marker": {"enabled": False}},
+    "arearange": {"lineWidth": 0, "marker": {"enabled": False}, "enableMouseTracking": False},
+}
+
+# Annotation at p=0.5 highlighting both maxima
 chart.options.annotations = [
     {
         "draggable": "",
         "labelOptions": {
-            "backgroundColor": "rgba(255, 255, 255, 0.9)",
-            "borderColor": "#333333",
-            "borderRadius": 6,
+            "backgroundColor": "rgba(255, 255, 255, 0.92)",
+            "borderColor": "#444444",
+            "borderRadius": 8,
             "borderWidth": 2,
-            "style": {"fontSize": "28px", "color": "#333333"},
-            "padding": 12,
+            "style": {"fontSize": "28px", "color": "#1a1a2e"},
+            "padding": 14,
+            "shadow": {"color": "rgba(0, 0, 0, 0.06)", "offsetX": 2, "offsetY": 2, "width": 6},
         },
         "labels": [
-            {"point": {"x": 0.5, "y": 1.0, "xAxis": 0, "yAxis": 0}, "text": "Maximum impurity at p = 0.5", "y": -30}
+            {
+                "point": {"x": 0.5, "y": 1.0, "xAxis": 0, "yAxis": 0},
+                "text": "Both peak at p = 0.5<br/>Entropy = 1.0 \u2502 Gini = 0.5",
+                "y": -40,
+            }
         ],
     }
 ]
 
-# Gini series
-gini_series = LineSeries()
+# Area range series (fill between curves) — distinctive Highcharts feature
+fill_series = AreaRangeSeries()
+fill_series.data = area_range_data
+fill_series.name = "Difference"
+fill_series.color = color_fill
+fill_series.fill_opacity = 0.08
+fill_series.show_in_legend = False
+chart.add_series(fill_series)
+
+# Gini series (SplineSeries for smooth interpolation — distinctive Highcharts feature)
+gini_series = SplineSeries()
 gini_series.data = gini_data
 gini_series.name = "Gini Impurity: 2p(1\u2212p)"
 gini_series.color = color_gini
 chart.add_series(gini_series)
 
 # Entropy series
-entropy_series = LineSeries()
+entropy_series = SplineSeries()
 entropy_series.data = entropy_data
 entropy_series.name = "Entropy: \u2212p log\u2082p \u2212 (1\u2212p) log\u2082(1\u2212p)"
 entropy_series.color = color_entropy
@@ -141,6 +214,10 @@ chart.add_series(entropy_series)
 highcharts_url = "https://code.highcharts.com/highcharts.js"
 with urllib.request.urlopen(highcharts_url, timeout=30) as response:
     highcharts_js = response.read().decode("utf-8")
+
+highcharts_more_url = "https://code.highcharts.com/highcharts-more.js"
+with urllib.request.urlopen(highcharts_more_url, timeout=30) as response:
+    highcharts_more_js = response.read().decode("utf-8")
 
 annotations_url = "https://code.highcharts.com/modules/annotations.js"
 with urllib.request.urlopen(annotations_url, timeout=30) as response:
@@ -153,6 +230,7 @@ html_content = f"""<!DOCTYPE html>
 <head>
     <meta charset="utf-8">
     <script>{highcharts_js}</script>
+    <script>{highcharts_more_js}</script>
     <script>{annotations_js}</script>
 </head>
 <body style="margin:0;">
@@ -169,6 +247,7 @@ with open("plot.html", "w", encoding="utf-8") as f:
 <head>
     <meta charset="utf-8">
     <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
     <script src="https://code.highcharts.com/modules/annotations.js"></script>
 </head>
 <body style="margin:0;">

@@ -1,7 +1,7 @@
 library: matplotlib
 specification_id: line-pca-variance-cumulative
 created: '2026-02-17T21:43:23Z'
-updated: '2026-02-17T21:46:52Z'
+updated: '2026-02-17T21:57:25Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22116658417
 issue: 4131
@@ -10,42 +10,41 @@ library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-pca-variance-cumulative/matplotlib/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-pca-variance-cumulative/matplotlib/plot_thumb.png
 preview_html: null
-quality_score: 84
+quality_score: 85
 review:
   strengths:
-  - Uses real Wine dataset from scikit-learn for authentic PCA analysis rather than
-    synthetic data
-  - Effective bar + line overlay showing both individual and cumulative variance in
-    one view
-  - Diamond markers at threshold crossings create clear visual emphasis for decision
-    points
-  - Clean white-filled circle markers with blue edges give a polished professional
-    appearance
-  - Correct title format and all spec-required features implemented
+  - Excellent use of real Wine dataset from scikit-learn, providing genuinely realistic
+    PCA data
+  - Strong visual storytelling with annotated threshold crossings (arrows + diamond
+    markers) guiding component selection decisions
+  - Dual representation (cumulative line + individual variance bars) effectively communicates
+    both perspectives
+  - Clean, polished design with softened spines, subtle grid, path effects, and well-chosen
+    colors
+  - Proper use of matplotlib FuncFormatter for percentage display and annotate with
+    arrowprops
   weaknesses:
-  - Y-axis shows proportion 0.0-1.0 but axis label does not clarify units - could
-    use percentage formatting or add (proportion) to the label
-  - Threshold percentage labels (90% 95%) positioned beyond the plot x-range pushing
-    them to the edge - could be integrated more elegantly inside the plot area or
-    added to legend
-  - Legend placed at center right competes with the threshold line area - lower right
-    or lower center would utilize the empty lower-right quadrant better
-  - Could annotate the exact component count at each threshold crossing for stronger
-    data storytelling
-  image_description: 'The plot displays a combined bar and line chart for PCA cumulative
-    explained variance using the Wine dataset (13 components). Light blue/gray bars
-    show individual variance ratios for each component, with the first component dominating
-    at approximately 0.36 and subsequent components declining. A blue line with white-filled
-    circle markers (blue edges) traces the cumulative explained variance from approximately
-    0.36 to approximately 1.0. Two horizontal dashed threshold lines are drawn: a
-    golden/yellow line at 0.90 labeled "90%" and a reddish-brown line at 0.95 labeled
-    "95%". Diamond markers in matching colors mark where the cumulative curve crosses
-    each threshold (approximately component 8 for 90%, approximately component 10
-    for 95%). Top and right spines are removed, with a subtle y-axis grid. The title
-    reads "line-pca-variance-cumulative · matplotlib · pyplots.ai" in the correct
-    format. X-axis is labeled "Number of Components", Y-axis is labeled "Explained
-    Variance Ratio". A legend in the center-right area identifies the two series as
-    "Cumulative variance" and "Individual variance".'
+  - Y-axis label says 'Explained Variance Ratio (proportion)' but the axis is formatted
+    as percentages (0%-100%) — this is an inconsistency that should be resolved (either
+    change the label to '(percentage)' or '(%)' or change the formatter to show proportions)
+  - The two annotation boxes are slightly cramped in the 8-10 component region, with
+    the 90% annotation positioned below the line where it competes with bars — consider
+    adjusting placement
+  - Legend fontsize=15 instead of the recommended 16 from library rules
+  image_description: 'The plot displays a cumulative explained variance line chart
+    for PCA component selection using the Wine dataset (13 features/components). A
+    blue (#306998) line with white-filled circle markers traces the cumulative variance
+    from approximately 36% at component 1 up to 100% at component 13. Light blue semi-transparent
+    bars beneath the line show individual variance ratios, decreasing from ~36% (component
+    1) to near 0% (component 13). Two horizontal dashed threshold lines are drawn:
+    a gold/amber line at 90% and a coral/red line at 95%. Diamond markers in matching
+    colors highlight the crossing points, with annotated labels reading "8 components
+    → 90% variance" and "10 components → 95% variance", each with arrow pointers and
+    rounded white-background boxes. The title reads "line-pca-variance-cumulative
+    · matplotlib · pyplots.ai" at the top. The x-axis is labeled "Number of Components"
+    (1-13) and the y-axis "Explained Variance Ratio (proportion)" formatted as percentages
+    (0%-100%). A legend in the lower-right lists all four series. Top and right spines
+    are removed, with a subtle y-axis grid.'
   criteria_checklist:
     visual_quality:
       score: 26
@@ -56,63 +55,67 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title=24, labels=20, ticks=16, legend=16'
+        comment: 'All font sizes explicitly set: title=24, labels=20, ticks=16, legend=15,
+          annotations=14. All text clearly readable.'
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: No overlapping text or elements anywhere
+        comment: Annotations well-placed but slightly cramped in the 8-10 component
+          region. Minor crowding, fully readable.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Line width=3, markersize=10, bars clearly visible with appropriate
-          alpha
+        comment: Line width=3, marker size=10, bars visible, diamond markers at size=13.
+          All elements well-adapted.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue/golden/reddish-brown palette is colorblind-safe
+        comment: Blue, gold, and coral palette is colorblind-safe with distinct hues.
       - id: VQ-05
         name: Layout Balance
-        score: 2
+        score: 3
         max: 4
-        passed: false
-        comment: Threshold labels extend to far right; some wasted space in lower-right
-          quadrant
+        passed: true
+        comment: Good overall utilization. Minor unused space in upper-right where
+          the cumulative line plateaus.
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 0
         max: 2
         passed: false
-        comment: Descriptive labels but no units on y-axis
+        comment: Y-axis label says '(proportion)' but axis is formatted as percentages.
+          Inconsistency between label and formatter.
     design_excellence:
-      score: 13
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
         score: 6
         max: 8
-        passed: false
-        comment: Thoughtful color scheme, white-filled markers, clean spines. Above
-          defaults but not publication-perfect
+        passed: true
+        comment: Strong design with custom colors, path effects, styled diamond markers,
+          alpha-blended bars. Clearly above defaults.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
-        passed: false
-        comment: Spines removed, subtle grid, decent whitespace. Some refinement visible
+        passed: true
+        comment: 'Good refinement: spines removed/softened, subtle grid at alpha=0.15,
+          tight_layout. Well-polished.'
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
-        passed: false
-        comment: Diamond markers at threshold crossings create focal points; bar overlay
-          contextualizes individual contributions
+        passed: true
+        comment: Good storytelling through threshold annotations with arrows guiding
+          component selection decisions. Dual representation aids understanding.
     spec_compliance:
       score: 14
       max: 15
@@ -122,49 +125,51 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct line plot with cumulative variance
+        comment: 'Correct chart type: cumulative line plot with markers.'
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Cumulative curve, threshold lines at 90%/95%, markers at each component,
-          individual variance bars
+        comment: 'All spec features present: cumulative curve, threshold lines, markers,
+          individual variance bars, x-axis starts at 1.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=components 1-13, Y=explained variance ratio
+        comment: X = component number (1-13), Y = cumulative variance ratio. Correct
+          mapping.
       - id: SC-04
         name: Title & Legend
         score: 2
         max: 3
-        passed: false
-        comment: Title format correct; threshold labels not represented in legend
+        passed: true
+        comment: Title format correct. Legend fontsize=15 vs recommended 16 — very
+          minor.
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Shows full component range, individual + cumulative, threshold crossings,
-          diminishing returns
+        comment: Shows elbow pattern, decreasing individual variance, cumulative approaching
+          100%. Missing optional 99% threshold.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Uses real Wine dataset from scikit-learn
+        comment: Uses real Wine dataset from scikit-learn. Excellent realistic context.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Real PCA results with genuine variance ratios
+        comment: Real PCA values from a real dataset. Scale inherently correct.
     code_quality:
       score: 9
       max: 10
@@ -174,48 +179,50 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports -> data -> plot -> save structure
+        comment: 'Flat structure: imports → data → plot → save. No functions or classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic real dataset, no random generation needed
+        comment: Deterministic real dataset, no random generation.
       - id: CQ-03
         name: Clean Imports
+        score: 1
+        max: 2
+        passed: true
+        comment: patheffects imported and used, but its usage (white stroke behind
+          text already in a white bbox) is marginally redundant.
+      - id: CQ-04
+        name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: All imports used
-      - id: CQ-04
-        name: Code Elegance
-        score: 1
-        max: 2
-        passed: false
-        comment: Clean overall but slightly verbose in places
+        comment: Clean, well-structured, Pythonic. Appropriate complexity.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png, dpi=300, no deprecated APIs
+        comment: Saves as plot.png, dpi=300, bbox_inches='tight'. No deprecated APIs.
     library_mastery:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 5
         max: 5
-        passed: false
-        comment: Good Axes-level API usage, bar+line combination on same axes
+        passed: true
+        comment: Uses Axes methods throughout, mticker.FuncFormatter, ax.annotate
+          with arrowprops. Idiomatic matplotlib.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
-        passed: false
-        comment: Marker styling (markerfacecolor/markeredgecolor), axhline, combined
-          bar+plot
+        passed: true
+        comment: Uses path_effects, FuncFormatter, detailed annotate with arrowprops
+          and bbox styling. Good but not extraordinary.
   verdict: REJECTED
 impl_tags:
   dependencies:
@@ -225,11 +232,11 @@ impl_tags:
   - manual-ticks
   patterns:
   - dataset-loading
-  - iteration-over-groups
   - explicit-figure
   dataprep:
   - pca
   - cumulative-sum
+  - normalization
   styling:
   - alpha-blending
   - edge-highlighting

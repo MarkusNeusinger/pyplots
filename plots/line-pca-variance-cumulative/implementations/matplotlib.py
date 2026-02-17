@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-pca-variance-cumulative: Cumulative Explained Variance for PCA Component Selection
 Library: matplotlib 3.10.8 | Python 3.14.3
-Quality: 84/100 | Created: 2026-02-17
+Quality: 85/100 | Created: 2026-02-17
 """
 
 import matplotlib.patheffects as pe

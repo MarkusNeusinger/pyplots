@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 ks-test-comparison: Kolmogorov-Smirnov Plot for Distribution Comparison
 Library: plotly 6.5.2 | Python 3.14.3
 Quality: 89/100 | Created: 2026-02-17
@@ -56,7 +56,7 @@ fig.add_trace(
         y=good_cdf,
         mode="lines",
         name="Good Customers",
-        line={"color": blue, "width": 4, "shape": "hv"},
+        line={"color": blue, "width": 3, "shape": "hv"},
         hovertemplate="<b>Good Customers</b><br>Credit Score: %{x:.1f}<br>Cumulative: %{y:.3f}<extra></extra>",
     )
 )
@@ -68,13 +68,13 @@ fig.add_trace(
         y=bad_cdf,
         mode="lines",
         name="Bad Customers",
-        line={"color": orange, "width": 4, "shape": "hv"},
+        line={"color": orange, "width": 3, "shape": "hv"},
         hovertemplate="<b>Bad Customers</b><br>Credit Score: %{x:.1f}<br>Cumulative: %{y:.3f}<extra></extra>",
     )
 )
 
 # Shaded region between ECDFs at the divergence zone
-region_width = 10
+region_width = 5
 region_mask = (all_values >= max_x - region_width) & (all_values <= max_x + region_width)
 region_x = all_values[region_mask]
 region_upper = np.maximum(good_cdf_at_all[region_mask], bad_cdf_at_all[region_mask])
@@ -85,8 +85,8 @@ fig.add_trace(
         x=np.concatenate([region_x, region_x[::-1]]),
         y=np.concatenate([region_upper, region_lower[::-1]]),
         fill="toself",
-        fillcolor="rgba(43,138,62,0.12)",
-        line={"width": 0},
+        fillcolor="rgba(43,138,62,0.15)",
+        line={"color": "rgba(43,138,62,0.25)", "width": 1},
         showlegend=False,
         hoverinfo="skip",
     )
@@ -138,14 +138,19 @@ fig.add_shape(type="line", x0=0, x1=0, y0=0, y1=1, line={"color": spine_color, "
 # Style
 fig.update_layout(
     title={
-        "text": "ks-test-comparison · plotly · pyplots.ai",
+        "text": (
+            "ks-test-comparison · plotly · pyplots.ai"
+            '<br><span style="font-size:16px;color:#888888">'
+            "Good vs. Bad customers — distributions differ significantly (D = "
+            f"{ks_stat:.3f}, {p_text})</span>"
+        ),
         "font": {"size": 28, "color": text_dark, "family": "Arial, sans-serif"},
         "x": 0.5,
         "xanchor": "center",
         "y": 0.96,
     },
     xaxis={
-        "title": {"text": "Credit Score", "font": {"size": 22, "color": axis_color}, "standoff": 12},
+        "title": {"text": "Credit Score (0–100)", "font": {"size": 22, "color": axis_color}, "standoff": 12},
         "tickfont": {"size": 18, "color": axis_color},
         "showgrid": False,
         "zeroline": False,
@@ -161,6 +166,7 @@ fig.update_layout(
         "zeroline": False,
         "showline": False,
         "dtick": 0.25,
+        "tickformat": ".2f",
     },
     template="plotly_white",
     legend={
@@ -173,12 +179,19 @@ fig.update_layout(
     },
     plot_bgcolor="white",
     paper_bgcolor="white",
-    margin={"l": 80, "r": 40, "t": 80, "b": 70},
+    margin={"l": 80, "r": 40, "t": 100, "b": 70},
     hoverlabel={"font": {"size": 16}, "bgcolor": "white", "bordercolor": "#CCCCCC"},
 )
 
-# Custom hover mode for Plotly-distinctive interactivity
-fig.update_layout(hovermode="x unified")
+# Plotly-distinctive interactivity: unified hover with spike lines
+fig.update_layout(
+    hovermode="x unified",
+    xaxis_spikemode="across",
+    xaxis_spikesnap="cursor",
+    xaxis_spikethickness=1,
+    xaxis_spikecolor="rgba(0,0,0,0.15)",
+    xaxis_spikedash="dot",
+)
 
 # Save
 fig.write_image("plot.png", width=1600, height=900, scale=3)

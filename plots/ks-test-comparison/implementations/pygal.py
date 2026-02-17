@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 ks-test-comparison: Kolmogorov-Smirnov Plot for Distribution Comparison
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 68/100 | Created: 2026-02-17
+Quality: 87/100 | Created: 2026-02-17
 """
 
 import numpy as np

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-impurity-comparison: Gini Impurity vs Entropy Comparison
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 88/100 | Created: 2026-02-17
+Quality: 78/100 | Created: 2026-02-17
 """
 
 import numpy as np

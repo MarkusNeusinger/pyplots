@@ -1,7 +1,7 @@
 library: pygal
 specification_id: line-impurity-comparison
 created: '2026-02-17T18:55:53Z'
-updated: '2026-02-17T18:59:24Z'
+updated: '2026-02-17T19:07:59Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22111342471
 issue: 4133
@@ -10,36 +10,44 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-impurity-comparison/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-impurity-comparison/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-impurity-comparison/pygal/plot.html
-quality_score: 88
+quality_score: 78
 review:
   strengths:
-  - Perfect spec compliance — all required features present including formulas in
-    legend and max impurity annotation
-  - Excellent data handling with proper edge case management (nan_to_num for log(0))
-  - Clean, well-structured code following KISS pattern
-  - Good colorblind-safe palette with strong visual contrast between curves
-  - Effective use of the dashed vertical line at p=0.5 for data storytelling
+  - Explicit font sizing across all text elements produces excellent legibility at
+    4800x2700
+  - Clean blue/orange color palette is colorblind-safe and visually harmonious
+  - Correct mathematical computation with proper handling of edge cases (np.errstate,
+    nan_to_num)
+  - 'Good use of pygal-specific features: cubic interpolation, per-series stroke_style,
+    legend column layout'
+  - Subtle grid styling with dashed guides and contrasting plot background
   weaknesses:
-  - Bottom margin (220px) creates excess whitespace below the plot area, reducing
-    canvas utilization
-  - Axis labels could be more descriptive (e.g., add domain notation or units context)
-  - Visual design is solid but lacks extra polish for publication quality — consider
-    subtle enhancements like font weight differentiation or a more refined grid appearance
-  - The vertical dashed marker line could be complemented with a small text annotation
-    near p=0.5 to strengthen the storytelling
-  image_description: 'The plot displays two smooth curves on a clean white background
-    comparing Gini impurity and entropy as decision tree splitting criteria. The blue
-    curve (Gini: 2p(1−p)) forms a parabola peaking at 0.5 on the y-axis at p=0.5.
-    The orange curve (Entropy: −p log₂p − (1−p) log₂(1−p)) forms a broader bell shape
-    peaking at 1.0 at p=0.5. A dashed gray vertical line marks p=0.5 (maximum impurity
-    point) with small dots at both endpoints. The x-axis is labeled "Probability p"
-    (range 0–1), the y-axis is labeled "Impurity Measure" (range 0–1.05). The title
-    reads "line-impurity-comparison · pygal · pyplots.ai" at the top. The legend is
-    positioned at the bottom with three entries showing formulas. Lines are thick
-    and clearly distinguishable. The layout is well-proportioned with generous margins.'
+  - The annotation at the Gini peak (0.5, 0.5) label text is not visible in the rendered
+    PNG — only the dot appears. The entropy peak at (0.5, 1.0) is not annotated at
+    all. Spec requires annotating the maximum impurity point where both curves peak.
+  - The Max impurity (p = 0.5) vertical line is rendered as a third data series in
+    the legend, which is misleading — it should be visually distinguished as an annotation,
+    not a data series.
+  - Data storytelling is weak — the key insight that both curves peak at p=0.5 but
+    at different heights (showing Gini is a scaled approximation of entropy) is not
+    communicated visually.
+  - Bottom legend area creates excess whitespace; the three-item legend with a fake
+    series is cluttered.
+  image_description: 'The plot displays two smooth curves on a white canvas with a
+    light gray (#fafafa) plot background. The blue curve (Gini: 2p(1−p)) forms a parabola
+    peaking at 0.5 at p=0.5. The orange curve (Entropy: −p log₂p − (1−p) log₂(1−p))
+    forms a taller arch peaking at 1.0 at p=0.5. A gray dashed vertical line marks
+    p=0.5 with dots at its endpoints (0,0) and (0.5,1.0). A small blue dot marks the
+    Gini peak at (0.5, 0.5). The title "line-impurity-comparison · pygal · pyplots.ai"
+    appears at top. The X-axis is labeled "Probability p (range 0 to 1)" with tick
+    marks at 0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0. The Y-axis is labeled "Impurity Measure
+    (normalized)" with matching ticks. A bottom legend shows three items: "Gini: 2p(1−p)"
+    (blue), "Entropy: −p log₂p − (1−p) log₂(1−p)" (orange), and "Max impurity (p =
+    0.5)" (gray). Horizontal grid lines are subtle dashed gray. Overall layout is
+    clean with generous margins.'
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 24
       max: 30
       items:
       - id: VQ-01
@@ -47,67 +55,69 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title=72, label=48, major_label=42,
-          legend=44), all perfectly readable
+        comment: All font sizes explicitly set (title 74pt, labels 48pt, major labels
+          44pt, legend 42pt). Perfectly readable.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements, legend at bottom separate from data
+        comment: No overlapping text elements anywhere.
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 5
         max: 6
-        passed: true
-        comment: Thick lines (stroke_width=7), 200 data points for smooth curves
+        passed: false
+        comment: Lines well-sized at stroke width 8. Gini peak annotation dot is small
+          relative to the large canvas.
       - id: VQ-04
         name: Color Accessibility
-        score: 4
-        max: 4
-        passed: true
-        comment: Blue (#306998) and orange (#D4773F) colorblind-safe with good contrast
-      - id: VQ-05
-        name: Layout Balance
         score: 3
         max: 4
         passed: false
-        comment: Good overall but margin_bottom=220 creates slightly excessive whitespace
-          below the plot
+        comment: Blue/orange palette is colorblind-safe. Gray dashed vertical line
+          has low contrast against light background.
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 2
+        max: 4
+        passed: false
+        comment: Plot area fills reasonable portion but large bottom margin for legend
+          creates wasted space. X-axis tick labels appear faint.
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Descriptive labels but lack units notation (though quantities are
-          dimensionless)
+        passed: true
+        comment: Both axes have descriptive labels with context.
     design_excellence:
-      score: 13
+      score: 12
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: false
-        comment: Custom white style with intentional color palette, above defaults
-          but not publication-level polish
+        comment: Custom color palette, intentional typography hierarchy, clean professional
+          appearance. Above defaults but not publication-flagship.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
-        passed: true
-        comment: Selective grid (y-guides only), subtle guide colors, clean white
-          background
+        passed: false
+        comment: Subtle dashed grid, contrasting plot background, generous whitespace,
+          legend at bottom. Good but could be more polished.
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 2
         max: 6
-        passed: true
-        comment: Dashed vertical line at p=0.5 highlights max impurity; formulas in
-          legend provide educational context
+        passed: false
+        comment: Vertical dashed line at p=0.5 provides some structure, but key insight
+          that both curves peak at same point is not effectively communicated. Annotation
+          labels not visible in PNG.
     spec_compliance:
-      score: 15
+      score: 12
       max: 15
       items:
       - id: SC-01
@@ -115,51 +125,55 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: XY line chart, correct for comparing mathematical functions
+        comment: Correct XY line chart showing two mathematical curves.
       - id: SC-02
         name: Required Features
-        score: 4
+        score: 3
         max: 4
-        passed: true
-        comment: Two distinguishable curves, legend with formulas, annotation at p=0.5,
-          y-grid
+        passed: false
+        comment: Spec requires annotating max impurity at p=0.5 for both curves. Only
+          Gini peak has a dot; entropy peak not annotated. Label text not visible
+          in PNG.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=probability [0,1], Y=impurity measure, correctly mapped
+        comment: X/Y correctly assigned; probability on X, impurity on Y.
       - id: SC-04
         name: Title & Legend
-        score: 3
+        score: 1
         max: 3
-        passed: true
-        comment: Title format correct, legend labels include mathematical formulas
+        passed: false
+        comment: Title format correct. But Max impurity line appears as third data
+          series in legend, which is misleading.
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 6
-        passed: true
-        comment: Both curves across full range, similar behavior and differences shown,
-          max point annotated
+        passed: false
+        comment: Shows both curves across full range with clear peak comparison. Could
+          better emphasize region where curves are closest.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real ML educational scenario with mathematical/scientific context
+        comment: Standard ML educational scenario. Gini vs Entropy is a well-known
+          comparison.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Correct formulas, proper normalization, edge cases handled
+        comment: Mathematically correct values. Both curves properly normalized to
+          [0,1].
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -167,32 +181,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports-data-style-plot-save structure, no functions/classes
+        comment: Clean imports → data → style → plot → save structure.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic data (mathematical formulas, no randomness)
+        comment: Deterministic mathematical functions, no randomness needed.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used (numpy, pygal, Style)
+        comment: All imports used (numpy, pygal, Style).
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Clean, Pythonic, appropriate complexity
+        passed: false
+        comment: Slightly verbose list comprehensions. chart.add(None, ...) with stroke_style
+          width 0 is a workaround pattern.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png, no deprecated functions
-    library_mastery:
+        comment: Saves as plot.png correctly.
+    library_features:
       score: 7
       max: 10
       items:
@@ -201,20 +216,22 @@ review:
         score: 4
         max: 5
         passed: false
-        comment: Good use of pygal.XY with custom Style, stroke_style, legend_at_bottom,
-          but could leverage more configuration
+        comment: Good use of pygal XY chart, Style customization, per-series stroke_style
+          overrides.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: false
-        comment: Uses stroke_style with dasharray, per-series show_dots control, dual
-          SVG+PNG output
+        comment: Uses pygal cubic interpolation, legend_at_bottom with column control,
+          SVG-native rendering, and inline stroke_style per series.
   verdict: REJECTED
 impl_tags:
   dependencies: []
-  techniques: []
-  patterns: []
+  techniques:
+  - manual-ticks
+  patterns:
+  - data-generation
   dataprep:
   - normalization
   styling:

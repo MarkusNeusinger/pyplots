@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 ks-test-comparison: Kolmogorov-Smirnov Plot for Distribution Comparison
 Library: highcharts unknown | Python 3.14.3
 Quality: 84/100 | Created: 2026-02-17
@@ -43,9 +43,9 @@ max_x = float(all_values[max_idx])
 max_y_good = float(good_ecdf_at_all[max_idx])
 max_y_bad = float(bad_ecdf_at_all[max_idx])
 
-# Build step function data
-good_step_data = [[float(good_sorted[i]), float(good_ecdf_y[i])] for i in range(len(good_sorted))]
-bad_step_data = [[float(bad_sorted[i]), float(bad_ecdf_y[i])] for i in range(len(bad_sorted))]
+# Build step function data for Highcharts
+good_step_data = [[float(x), float(y)] for x, y in zip(good_sorted, good_ecdf_y, strict=True)]
+bad_step_data = [[float(x), float(y)] for x, y in zip(bad_sorted, bad_ecdf_y, strict=True)]
 
 # Vertical line at max divergence
 max_distance_data = [[max_x, min(max_y_good, max_y_bad)], [max_x, max(max_y_good, max_y_bad)]]
@@ -54,61 +54,63 @@ max_distance_data = [[max_x, min(max_y_good, max_y_bad)], [max_x, max(max_y_good
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-# Chart configuration with generous margins to prevent overlap
+# Chart configuration with balanced margins for good canvas utilization
 chart.options.chart = {
     "type": "line",
     "width": 4800,
     "height": 2700,
-    "backgroundColor": "#f8f9fa",
-    "marginBottom": 350,
-    "marginTop": 200,
-    "marginLeft": 200,
-    "marginRight": 120,
+    "backgroundColor": "#f5f6f8",
+    "marginBottom": 260,
+    "marginTop": 220,
+    "marginLeft": 160,
+    "marginRight": 100,
+    "spacingTop": 30,
+    "spacingBottom": 20,
+    "style": {"fontFamily": "'Segoe UI', 'Helvetica Neue', Arial, sans-serif"},
 }
 
-# Title
+# Title with refined typography
 chart.options.title = {
     "text": "ks-test-comparison \u00b7 highcharts \u00b7 pyplots.ai",
-    "style": {"fontSize": "64px", "fontWeight": "bold", "color": "#1a1a2e"},
-    "y": 40,
+    "style": {"fontSize": "60px", "fontWeight": "700", "color": "#1a1a2e", "letterSpacing": "0.5px"},
+    "y": 50,
 }
 
-# Subtitle showing K-S statistic and p-value
+# Subtitle showing K-S statistic and p-value with interpretation
 chart.options.subtitle = {
-    "text": f"K-S Statistic = {ks_stat:.4f}  \u2502  p-value = {p_value:.2e}",
-    "style": {"fontSize": "44px", "color": "#555555", "fontWeight": "500"},
-    "y": 100,
+    "text": f"K-S Statistic = {ks_stat:.4f}  \u2502  p-value = {p_value:.2e}  \u2502  Distributions are significantly different",
+    "style": {"fontSize": "40px", "color": "#666666", "fontWeight": "400"},
+    "y": 115,
 }
 
-# X-axis with reduced tick density
+# X-axis with clean styling
 chart.options.x_axis = {
-    "title": {"text": "Credit Score", "style": {"fontSize": "44px", "color": "#333333", "fontWeight": "600"}, "y": 20},
-    "labels": {"style": {"fontSize": "32px", "color": "#555555"}},
+    "title": {"text": "Credit Score", "style": {"fontSize": "42px", "color": "#444444", "fontWeight": "600"}, "y": 16},
+    "labels": {"style": {"fontSize": "32px", "color": "#666666"}},
     "tickInterval": 100,
     "gridLineWidth": 0,
-    "lineColor": "#aaaaaa",
-    "lineWidth": 2,
-    "tickColor": "#aaaaaa",
-    "tickLength": 10,
-    # Vertical plotLine at the max divergence point
-    "plotLines": [{"value": max_x, "color": "rgba(44, 62, 80, 0.15)", "width": 60, "zIndex": 0}],
+    "lineColor": "#cccccc",
+    "lineWidth": 1,
+    "tickColor": "#cccccc",
+    "tickLength": 8,
+    "plotBands": [{"from": max_x - 10, "to": max_x + 10, "color": "rgba(44, 62, 80, 0.06)", "zIndex": 0}],
 }
 
-# Y-axis with clean 0.2 tick intervals
+# Y-axis with subtle grid
 chart.options.y_axis = {
-    "title": {"text": "Cumulative Proportion", "style": {"fontSize": "44px", "color": "#333333", "fontWeight": "600"}},
-    "labels": {"style": {"fontSize": "32px", "color": "#555555"}},
+    "title": {"text": "Cumulative Proportion", "style": {"fontSize": "42px", "color": "#444444", "fontWeight": "600"}},
+    "labels": {"style": {"fontSize": "32px", "color": "#666666"}},
     "min": 0,
     "max": 1,
     "tickInterval": 0.2,
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.08)",
-    "gridLineDashStyle": "Dot",
-    "lineColor": "#aaaaaa",
-    "lineWidth": 2,
+    "gridLineColor": "rgba(0, 0, 0, 0.06)",
+    "gridLineDashStyle": "Dash",
+    "lineColor": "#cccccc",
+    "lineWidth": 1,
 }
 
-# Legend positioned below chart, well separated from X-axis label
+# Legend positioned below chart, close to plot area
 chart.options.legend = {
     "enabled": True,
     "align": "center",
@@ -118,12 +120,12 @@ chart.options.legend = {
     "symbolWidth": 60,
     "symbolHeight": 18,
     "itemDistance": 80,
-    "y": 10,
+    "y": -10,
 }
 
 # Plot options
 chart.options.plot_options = {
-    "line": {"lineWidth": 5, "marker": {"enabled": False}, "states": {"hover": {"lineWidth": 7}}}
+    "line": {"lineWidth": 6, "marker": {"enabled": False}, "states": {"hover": {"lineWidth": 8}}}
 }
 
 # Tooltip for interactive HTML version
@@ -151,30 +153,30 @@ chart.add_series(good_series)
 bad_series = LineSeries()
 bad_series.data = bad_step_data
 bad_series.name = "Bad Customers"
-bad_series.color = "#e74c3c"
+bad_series.color = "#e67e22"
 bad_series.step = "left"
 bad_series.z_index = 2
 chart.add_series(bad_series)
 
-# Max distance vertical line — bold and prominent as focal point
+# Max distance vertical line — clear focal point
 distance_series = LineSeries()
 distance_series.data = max_distance_data
 distance_series.name = f"Max Distance (D = {ks_stat:.4f})"
-distance_series.color = "#2c3e50"
+distance_series.color = "#34495e"
 distance_series.dash_style = "LongDash"
-distance_series.line_width = 7
+distance_series.line_width = 5
 distance_series.marker = {
     "enabled": True,
-    "radius": 14,
+    "radius": 12,
     "symbol": "diamond",
-    "fillColor": "#2c3e50",
+    "fillColor": "#34495e",
     "lineColor": "#ffffff",
     "lineWidth": 3,
 }
 distance_series.z_index = 5
 chart.add_series(distance_series)
 
-# Annotation callout on the max divergence point
+# Annotation callout with enhanced styling for data storytelling
 mid_y = (max_y_good + max_y_bad) / 2
 chart.options.annotations = [
     Annotation.from_dict(
@@ -182,18 +184,19 @@ chart.options.annotations = [
             "labels": [
                 {
                     "point": {"x": max_x, "y": mid_y, "xAxis": 0, "yAxis": 0},
-                    "text": f"D = {ks_stat:.4f}",
-                    "x": 140,
-                    "style": {"fontSize": "40px", "fontWeight": "bold", "color": "#2c3e50"},
+                    "text": f"D = {ks_stat:.4f}<br/>Strong separation",
+                    "x": 160,
+                    "style": {"fontSize": "36px", "fontWeight": "bold", "color": "#1a1a2e", "textAlign": "center"},
                 }
             ],
             "labelOptions": {
-                "backgroundColor": "rgba(255, 255, 255, 0.95)",
-                "borderColor": "#2c3e50",
-                "borderWidth": 3,
-                "borderRadius": 12,
-                "padding": 18,
+                "backgroundColor": "rgba(255, 255, 255, 0.92)",
+                "borderColor": "#34495e",
+                "borderWidth": 2,
+                "borderRadius": 10,
+                "padding": 20,
                 "shape": "callout",
+                "shadow": {"color": "rgba(0,0,0,0.15)", "offsetX": 2, "offsetY": 2, "width": 6},
             },
             "draggable": "",
         }

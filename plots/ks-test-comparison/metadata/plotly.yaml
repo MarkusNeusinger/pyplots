@@ -1,7 +1,7 @@
 library: plotly
 specification_id: ks-test-comparison
 created: '2026-02-17T20:11:22Z'
-updated: '2026-02-17T20:14:56Z'
+updated: '2026-02-17T20:26:16Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22113798984
 issue: 4130
@@ -10,43 +10,40 @@ library_version: 6.5.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/ks-test-comparison/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ks-test-comparison/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/ks-test-comparison/plotly/plot.html
-quality_score: 81
+quality_score: 89
 review:
   strengths:
-  - 'Perfect spec compliance: all required K-S test features are present and correct
-    (ECDFs, D statistic, p-value, max divergence line)'
-  - Thoughtful annotation design with green arrow, bordered box, and semi-transparent
-    background pointing to the divergence
-  - Credit scoring context is well-chosen and realistic, with beta distributions producing
-    plausible separation
-  - HTML export alongside PNG leverages Plotly interactive capability
-  - Clean code structure with correct manual computation of the maximum divergence
-    point
+  - All spec requirements fully implemented with both ECDFs, K-S statistic, max divergence
+    highlight, and p-value
+  - Shaded divergence region adds visual storytelling beyond basic spec requirements
+  - Credit scoring context is an excellent realistic application for K-S tests
+  - Strong Plotly idiom usage with hovertemplate, fill=toself, and HTML export
+  - Clean, well-structured code with appropriate complexity
   weaknesses:
-  - The maximum divergence region could be more visually emphasized — a shaded area
-    (fill between the two curves at the divergence point) would strengthen the data
-    storytelling
-  - The two ECDF curves have equal visual weight; adding a subtle fill or shading
-    under each curve could improve distinction and visual hierarchy
-  - The annotation arrow points to the midpoint of the divergence line but the annotation
-    box partially overlaps with the dashed line area — repositioning could improve
-    clarity
-  - Y-axis gridlines are present but very subtle; a slightly stronger grid or horizontal
-    reference lines at 0.25/0.5/0.75 would aid readability
+  - Distributions are too well-separated (D=0.835) — using distributions that partially
+    overlap would better demonstrate the K-S test discriminative power and show where
+    ECDFs cross
+  - Annotation box arrow could be shorter and annotation positioned closer to the
+    divergence line to reduce dead space
+  - Visual refinement could be enhanced with spine/axis line styling and tighter whitespace
+    management
   image_description: The plot displays two empirical cumulative distribution functions
-    (ECDFs) rendered as step functions against a white background. The blue line (#306998)
-    represents "Good Customers" and the orange-red line (#E8590C) represents "Bad
-    Customers", with credit scores (0–100) on the x-axis and cumulative proportion
-    (0–1) on the y-axis. The Bad Customers ECDF rises steeply and plateaus near 1.0
-    by score ~55, while the Good Customers ECDF rises slowly and reaches 1.0 around
-    score ~97. A green dashed vertical line marks the point of maximum divergence
-    at approximately x=50, where the two curves are farthest apart. An annotation
-    box with a green border and arrow displays "D = 0.804" and "p < 0.001". The legend
-    in the upper-left corner lists all three trace labels. The title reads "ks-test-comparison
-    · plotly · pyplots.ai". Y-axis has subtle gray gridlines; x-axis has no gridlines.
+    (ECDFs) as step functions on a clean white background. The blue line (#306998)
+    represents "Good Customers" and the orange line (#E8590C) represents "Bad Customers",
+    plotted against "Credit Score" (X-axis, 0-100) and "Cumulative Proportion" (Y-axis,
+    0-1). The Bad Customers CDF rises steeply on the left side (low credit scores),
+    while the Good Customers CDF is shifted far to the right (high credit scores),
+    showing clear separation. A green dashed vertical line with diamond markers at
+    both endpoints marks the point of maximum divergence at approximately credit score
+    49. A light green shaded region highlights the area around the divergence zone.
+    A bordered annotation box with green outline displays "K-S Statistic / D = 0.835
+    / p < 0.001" with an arrow pointing to the midpoint of the divergence line. Subtle
+    dotted horizontal reference lines appear at 0.25, 0.50, and 0.75. The legend is
+    positioned in the top-left corner with three entries. The title reads "ks-test-comparison
+    · plotly · pyplots.ai" centered at the top.
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -54,63 +51,68 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 28pt, axis labels 22pt, ticks
-          18pt, legend 18pt'
+        comment: 'All font sizes explicitly set: title 28pt, axis labels 22pt, tick
+          fonts 18pt, annotation 18pt, legend 18pt. Perfectly readable.'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping text. Legend in top-left is clear of data. Annotation
+          box doesn't collide.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: false
-        comment: Lines visible at width=3 but step functions slightly noisy at 500
-          data points
+        comment: 'Lines at width 3.5 are visible. Step functions render cleanly. Minor:
+          could benefit from slightly more contrast.'
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue vs orange is colorblind-safe with strong contrast
+        comment: Blue vs orange is colorblind-safe with high contrast. Green divergence
+          marker is distinguishable.
       - id: VQ-05
-        name: Layout Balance
+        name: Layout & Canvas
         score: 3
         max: 4
         passed: false
-        comment: Good canvas utilization, slight excess space on the right side
+        comment: 'Good canvas utilization with explicit margins. Minor: annotation
+          box and arrow consume some space to the right.'
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels Credit Score and Cumulative Proportion
+        comment: Credit Score and Cumulative Proportion are descriptive and appropriate
+          for this data type.
     design_excellence:
-      score: 12
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: false
-        comment: Above defaults with custom palette, styled annotation box; not yet
-          publication-level
+        comment: Strong design with custom palette, styled annotation, shaded region,
+          and reference lines. Clearly above defaults.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: false
-        comment: Subtle grid, zeroline removed, custom margins; further polish possible
+        comment: 'Good refinement: plotly_white template, subtle dotted quartile reference
+          lines, clean axes. Some details could be more polished.'
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: Annotation guides viewer to key insight; could be stronger with shaded
-          region
+        passed: true
+        comment: 'Visual hierarchy guides reader: shaded region and annotation create
+          focal point. Color contrast emphasizes distributional difference.'
     spec_compliance:
       score: 15
       max: 15
@@ -120,26 +122,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct ECDF step functions using shape=hv
+        comment: 'Correct chart type: K-S comparison with two ECDFs as step functions
+          using shape=hv.'
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: ECDFs, K-S stat, p-value, max divergence
-          line, legend'
+        comment: 'All spec features present: ECDFs, K-S statistic, max divergence
+          highlight, p-value, legend, Y-axis 0-1.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Credit scores on X, cumulative proportion on Y
+        comment: X (Credit Score) and Y (Cumulative Proportion) correctly assigned.
+          Both distributions visible.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format and legend labels
+        comment: Title matches required format. Legend labels are clear and descriptive.
     data_quality:
       score: 14
       max: 15
@@ -149,22 +153,24 @@ review:
         score: 5
         max: 6
         passed: false
-        comment: Clear distribution separation; could show more varied distribution
-          shapes
+        comment: Shows clear distributional separation and max divergence. The large
+          D statistic means distributions don't cross, missing that K-S feature.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Credit scoring scenario is realistic and from spec applications
+        comment: Credit scoring context is realistic, neutral, and a standard K-S
+          test application.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Credit scores 0-100 with beta distributions are plausible
+        comment: Credit scores 0-100, 200 points per sample, sensible beta distribution
+          parameters.
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -172,50 +178,52 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports-data-plot-save flow
+        comment: 'Clean sequential structure: imports, data, ECDF, K-S test, plot,
+          save.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: All imports used but manual ECDF computation could leverage scipy
-          more
+        passed: true
+        comment: 'All imports used: numpy, plotly.graph_objects, scipy.stats (ecdf,
+          ks_2samp).'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Appropriate complexity, clean implementation
+        comment: Clean Pythonic code with appropriate complexity. No over-engineering.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png at correct dimensions and plot.html
+        comment: Saves plot.png at correct dimensions. Also exports HTML. No deprecated
+          functions.
     library_mastery:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 5
         max: 5
-        passed: false
-        comment: Good use of go.Figure and go.Scatter; graph_objects appropriate for
-          customization
+        passed: true
+        comment: Expert use of go.Scatter with shape=hv, add_annotation, add_shape,
+          hovertemplate, fill=toself.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: false
-        comment: Uses shape=hv for steps, styled annotations, and write_html for interactive
-          output
+        comment: 'Uses Plotly-specific features: hovertemplate, HTML export with CDN,
+          fill=toself pattern. Could push further.'
   verdict: REJECTED
 impl_tags:
   dependencies:

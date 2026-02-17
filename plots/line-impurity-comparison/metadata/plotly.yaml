@@ -1,7 +1,7 @@
 library: plotly
 specification_id: line-impurity-comparison
 created: '2026-02-17T18:53:39Z'
-updated: '2026-02-17T19:05:08Z'
+updated: '2026-02-17T19:12:25Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22111342351
 issue: 4133
@@ -10,41 +10,41 @@ library_version: 6.5.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-impurity-comparison/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-impurity-comparison/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-impurity-comparison/plotly/plot.html
-quality_score: 85
+quality_score: 95
 review:
   strengths:
-  - Shaded region between curves effectively highlights divergence, adding visual
-    storytelling
-  - Annotations with styled boxes and arrows guide the viewer to key insights (peak
-    and divergence)
-  - Explicit font sizing across all text elements ensures perfect legibility at 4800x2700
-  - Both HTML and PNG exports leverage Plotly dual-output capability
-  - Clean mathematical data handling with proper edge case management (np.where for
-    log(0))
+  - Excellent colorblind-safe color choice (blue + orange) with additional line style
+    differentiation (solid vs dashed)
+  - The shaded fill between curves is a creative Plotly-specific technique that visually
+    emphasizes the key insight about divergence
+  - 'Two well-placed annotations tell the educational story: shared peak at p=0.5
+    and the divergence region'
+  - Legend includes mathematical formulas for both metrics, enhancing educational
+    value
+  - All font sizes explicitly set with appropriate scaling for 4800x2700 output
+  - Clean code structure with proper edge case handling (np.where for log(0))
   weaknesses:
-  - 'Dead code: diff, max_diff_idx, max_diff_p, max_diff_y_mid variables are computed
-    but never used in any trace or annotation'
-  - 'Color pair (blue #306998 vs red #CF4E33) could be improved for colorblind accessibility
-    — consider using a color that is more universally distinguishable (e.g., orange
-    or teal) instead of red'
-  - Axis labels are descriptive but inherently unitless mathematical context limits
-    VQ-06 score
-  image_description: 'The plot displays two smooth bell-shaped curves comparing Gini
-    impurity (solid blue line, #306998) and Entropy (dashed red/coral line, #CF4E33)
-    as decision tree splitting criteria across the probability range [0, 1]. Both
-    curves peak at p=0.5 where they both reach the normalized value of 1.0. The entropy
-    curve is visibly wider than the Gini curve, and the area between them is shaded
-    with a subtle light blue fill to highlight the divergence. A dotted vertical reference
-    line at p=0.5 marks the peak. Two boxed annotations with arrows call out: (1)
-    "Peak: both measures = 1.0 at p = 0.5" near the top, and (2) "Divergence region:
-    Entropy is wider than Gini" in the lower-left area. The title "line-impurity-comparison
-    · plotly · pyplots.ai" is centered at the top. The legend at the bottom-left shows
-    both metrics with their formulas. X-axis is labeled "Probability (p)" ranging
-    from 0 to 1, and Y-axis is labeled "Impurity Measure (normalized)" from 0 to ~1.08.
-    The background is a clean off-white (#FAFBFC) with very subtle gridlines.'
+  - Both Gini and entropy are normalized to [0,1] by dividing by their respective
+    maxima, but the spec says Gini impurity calculated as 2*p*(1-p) which already
+    peaks at 0.5, not 1.0 — the scaling makes comparison easier but slightly departs
+    from the raw formula presentation
+  image_description: 'The plot displays two smooth curves on a clean white/light gray
+    background comparing Gini impurity and entropy as decision tree splitting criteria.
+    The X-axis shows "Probability (p)" ranging from 0 to 1 with ticks every 0.1, and
+    the Y-axis shows "Impurity Measure (normalized)" from 0 to 1 with ticks every
+    0.2. The Gini curve is a solid blue line (#306998) forming a parabolic shape peaking
+    at p=0.5. The entropy curve is a dashed orange line (#E69F00) that is slightly
+    wider/flatter than the Gini curve, also peaking at p=0.5. A light blue shaded
+    region between the two curves highlights their divergence. A dotted vertical reference
+    line marks p=0.5. Two annotations with arrow pointers are present: one at the
+    peak (p=0.5, y=1.0) reading "Peak: both measures = 1.0 at p = 0.5", and another
+    in the lower-left area pointing to the divergence region reading "Divergence region
+    — Entropy is wider than Gini". The legend is positioned at the bottom-left corner
+    showing both curve labels with their mathematical formulas. The title reads "line-impurity-comparison
+    · plotly · pyplots.ai" centered at the top.'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 30
       max: 30
       items:
       - id: VQ-01
@@ -59,36 +59,37 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements; annotations well-positioned with clear
-          arrows
+        comment: No overlapping text. Legend, peak annotation, and divergence annotation
+          all well separated
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Lines at 3.5px width clearly visible; dash pattern differentiates
-          curves well
+        comment: Lines at width 3.5 clearly visible. Dash pattern distinguishes entropy
+          from Gini. Shaded fill is subtle but effective
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Blue vs red/coral distinguished by dash style too, but blue-red pairing
-          not ideal for protanopia
+        comment: Blue and orange is a classic colorblind-safe pairing, further differentiated
+          by line styles
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Good canvas utilization; slight excess whitespace on right side
+        comment: Plot fills ~65% of canvas with well-balanced margins
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Descriptive labels but unitless mathematical context
+        comment: 'Descriptive labels with context: Probability (p) and Impurity Measure
+          (normalized)'
     design_excellence:
-      score: 14
+      score: 16
       max: 20
       items:
       - id: DE-01
@@ -96,24 +97,24 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Strong design with custom palette, shaded divergence region, annotated
-          callouts — above defaults
+        comment: Custom palette, shaded divergence region, styled annotations, subtle
+          grid. Above defaults but not quite publication-level perfection
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Subtle grid, clean off-white background, styled annotations with
-          borders
+        comment: Subtle grid at 5% opacity, clean axis lines, dotted reference line,
+          generous whitespace, polished annotation styling
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Shaded region highlights divergence; annotations guide viewer to
-          key insights
+        comment: Shaded fill emphasizes divergence, two annotations guide the viewer
+          through key insights, legend includes formulas
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -121,52 +122,51 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct line comparison chart
+        comment: Correct line chart with two curves on same axes
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Legend with formulas, annotation at p=0.5, edge cases handled, light
-          grid
+        comment: Legend with formulas, annotation at p=0.5, edge case handling, light
+          grid, distinguishable colors/styles
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: p on X-axis, impurity on Y-axis, correctly assigned
+        comment: X = probability [0,1], Y = normalized impurity [0,1]
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format exact match; legend labels clear with formulas
+        comment: Correct title format and legend labels with formulas
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Shows both curves with characteristic shapes, peak convergence, and
-          divergence
+        comment: Shows both measures across full range, convergence at endpoints,
+          shared peak, and divergence
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real ML education scenario, neutral and comprehensible
+        comment: Mathematical/educational context matching spec purpose
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 'Mathematically correct values: probability [0,1], normalized impurity
-          [0,1]'
+        comment: Probability [0,1] and normalized impurity [0,1], mathematically exact
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -174,13 +174,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports -> data -> plot -> save, no functions/classes
+        comment: Clean Imports-Data-Plot-Style-Save flow, no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic mathematical data, no randomness
+        comment: Fully deterministic mathematical functions, no randomness
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -189,35 +189,35 @@ review:
         comment: Only numpy and plotly.graph_objects, both used
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: 'Dead code: diff, max_diff_idx, max_diff_p, max_diff_y_mid computed
-          but never used'
+        passed: true
+        comment: Clean, well-organized with appropriate complexity
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png (1600x900, scale=3) and plot.html
+        comment: 'Correct output: plot.png at 4800x2700 and plot.html'
     library_mastery:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Good use of go.Figure, go.Scatter, add_annotation, add_vline, hovertemplate
+        comment: Proper go.Figure, add_trace, add_annotation, add_vline, update_layout
+          usage
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: fill=toself for shaded region, HTML export with CDN, hovertemplate,
-          add_vline
-  verdict: REJECTED
+        comment: fill=toself for shaded regions, hovertemplate, HTML export with CDN,
+          add_vline helper
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-impurity-comparison: Gini Impurity vs Entropy Comparison
 Library: letsplot 4.8.2 | Python 3.14.3
 Quality: 88/100 | Created: 2026-02-17
@@ -35,27 +35,25 @@ df = pd.DataFrame(
 # Shaded region between curves
 ribbon_df = pd.DataFrame({"p": p, "gini": gini, "entropy": entropy})
 
-# Consolidated annotation data
-annotations_df = pd.DataFrame(
+# Marker data for maxima (consolidated into single DataFrame)
+markers_df = pd.DataFrame({"p": [0.5, 0.5], "impurity": [1.0, 0.5], "color": ["#e07a2f", "#306998"]})
+
+# Arrow from annotation to peak area (single arrow, no duplicates)
+arrow_df = pd.DataFrame({"x": [0.5], "y": [0.93], "xend": [0.5], "yend": [0.86]})
+
+# Annotation data (consolidated into categories)
+main_label_df = pd.DataFrame({"p": [0.5], "impurity": [0.97], "label": ["Maximum uncertainty at p = 0.5"]})
+region_label_df = pd.DataFrame(
+    {"p": [0.72], "impurity": [0.6], "label": ["Shaded region:\ndifference between metrics"]}
+)
+boundary_df = pd.DataFrame(
     {
-        "p": [0.5, 0.72, 0.0, 1.0],
-        "impurity": [1.08, 0.6, -0.04, -0.04],
-        "label": [
-            "Maximum uncertainty\nat p = 0.5",
-            "Shaded region:\ndifference between metrics",
-            "p \u2192 0: both \u2192 0",
-            "p \u2192 1: both \u2192 0",
-        ],
-        "size": [12, 10, 9, 9],
-        "color": ["#333333", "#4a7a9b", "#888888", "#888888"],
+        "p": [0.03, 0.95],
+        "impurity": [0.06, 0.06],
+        "label": ["p \u2192 0: both \u2192 0", "p \u2192 1: both \u2192 0"],
+        "hjust": [0.0, 1.0],
     }
 )
-
-# Marker data for maxima and boundary points
-markers_df = pd.DataFrame({"p": [0.5, 0.5], "impurity": [1.0, 0.5], "marker_color": ["#e07a2f", "#306998"]})
-
-# Arrow segments from annotations to points
-arrows_df = pd.DataFrame({"x": [0.5, 0.5], "y": [1.05, 1.05], "xend": [0.5, 0.5], "yend": [1.02, 1.02]})
 
 # Plot
 plot = (
@@ -65,7 +63,7 @@ plot = (
         data=ribbon_df,
         mapping=aes(x="p", ymin="gini", ymax="entropy"),  # noqa: F405
         fill="#306998",
-        alpha=0.1,
+        alpha=0.12,
         tooltips="none",
     )
     # Main curves with interactive tooltips (lets-plot distinctive feature)
@@ -82,18 +80,18 @@ plot = (
     )
     # Vertical guide at p=0.5
     + geom_vline(xintercept=0.5, color="#cccccc", size=0.6, linetype="dashed")  # noqa: F405
-    # Arrow segment from annotation to entropy maximum (lets-plot geom_segment)
+    # Arrow from annotation to entropy maximum
     + geom_segment(  # noqa: F405
         aes(x="x", y="y", xend="xend", yend="yend"),  # noqa: F405
-        data=arrows_df,
+        data=arrow_df,
         color="#999999",
         size=0.8,
         arrow=arrow(angle=25, length=8, type="closed"),  # noqa: F405
     )
-    # Open circle markers at maxima
+    # Open circle markers at maxima (entropy peak and Gini peak)
     + geom_point(  # noqa: F405
-        data=markers_df[markers_df["marker_color"] == "#e07a2f"],
-        mapping=aes(x="p", y="impurity"),  # noqa: F405
+        aes(x="p", y="impurity"),  # noqa: F405
+        data=markers_df.iloc[[0]],
         size=9,
         color="#e07a2f",
         shape=21,
@@ -102,8 +100,8 @@ plot = (
         tooltips="none",
     )
     + geom_point(  # noqa: F405
-        data=markers_df[markers_df["marker_color"] == "#306998"],
-        mapping=aes(x="p", y="impurity"),  # noqa: F405
+        aes(x="p", y="impurity"),  # noqa: F405
+        data=markers_df.iloc[[1]],
         size=9,
         color="#306998",
         shape=21,
@@ -113,15 +111,15 @@ plot = (
     )
     # Annotation: maximum uncertainty label
     + geom_text(  # noqa: F405
-        data=annotations_df.iloc[[0]],
+        data=main_label_df,
         mapping=aes(x="p", y="impurity", label="label"),  # noqa: F405
         size=12,
         color="#333333",
         fontface="bold italic",
     )
-    # Annotation: shaded difference region
+    # Annotation: shaded region explanation
     + geom_text(  # noqa: F405
-        data=annotations_df.iloc[[1]],
+        data=region_label_df,
         mapping=aes(x="p", y="impurity", label="label"),  # noqa: F405
         size=10,
         color="#4a7a9b",
@@ -129,20 +127,11 @@ plot = (
     )
     # Annotations: boundary behavior at p→0 and p→1
     + geom_text(  # noqa: F405
-        data=annotations_df.iloc[[2]],
-        mapping=aes(x="p", y="impurity", label="label"),  # noqa: F405
+        data=boundary_df,
+        mapping=aes(x="p", y="impurity", label="label", hjust="hjust"),  # noqa: F405
         size=9,
         color="#888888",
         fontface="italic",
-        hjust=0,
-    )
-    + geom_text(  # noqa: F405
-        data=annotations_df.iloc[[3]],
-        mapping=aes(x="p", y="impurity", label="label"),  # noqa: F405
-        size=9,
-        color="#888888",
-        fontface="italic",
-        hjust=1,
     )
     # Scales
     + scale_color_manual(values=["#306998", "#e07a2f"])  # noqa: F405
@@ -150,7 +139,7 @@ plot = (
         breaks=list(np.arange(0, 1.1, 0.1)), limits=[0, 1]
     )
     + scale_y_continuous(  # noqa: F405
-        breaks=list(np.arange(0, 1.2, 0.2)), limits=[-0.08, 1.15]
+        breaks=list(np.arange(0, 1.2, 0.2)), limits=[-0.06, 1.05]
     )
     # Labels
     + labs(  # noqa: F405
@@ -173,7 +162,7 @@ plot = (
         panel_grid_minor=element_blank(),  # noqa: F405
         axis_line=element_blank(),  # noqa: F405
         axis_ticks=element_blank(),  # noqa: F405
-        plot_margin=[40, 30, 20, 20],
+        plot_margin=[40, 40, 20, 20],
     )
 )
 

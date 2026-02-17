@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-impurity-comparison: Gini Impurity vs Entropy Comparison
 Library: plotly 6.5.2 | Python 3.14.3
 Quality: 85/100 | Created: 2026-02-17
@@ -16,9 +16,6 @@ gini = gini_raw / gini_raw.max()
 
 entropy_raw = np.where((p == 0) | (p == 1), 0.0, -p * np.log2(p) - (1 - p) * np.log2(1 - p))
 entropy = entropy_raw / entropy_raw.max()
-
-# Difference between curves for storytelling
-diff = entropy - gini
 
 # Plot
 fig = go.Figure()
@@ -48,22 +45,17 @@ fig.add_trace(
     )
 )
 
-# Entropy curve
+# Entropy curve (orange for colorblind accessibility — avoids blue-red pairing)
 fig.add_trace(
     go.Scatter(
         x=p,
         y=entropy,
         mode="lines",
         name="Entropy: −p log₂p − (1−p) log₂(1−p)",
-        line={"color": "#CF4E33", "width": 3.5, "dash": "dash"},
+        line={"color": "#E69F00", "width": 3.5, "dash": "dash"},
         hovertemplate="p = %{x:.2f}<br>Entropy = %{y:.3f}<extra></extra>",
     )
 )
-
-# Find maximum difference point for storytelling annotation
-max_diff_idx = np.argmax(np.abs(diff))
-max_diff_p = p[max_diff_idx]
-max_diff_y_mid = (entropy[max_diff_idx] + gini[max_diff_idx]) / 2
 
 # Annotation at p=0.5 maximum
 fig.add_annotation(
@@ -84,10 +76,11 @@ fig.add_annotation(
     borderpad=7,
 )
 
-# Annotation highlighting divergence region
+# Annotation highlighting divergence region at point of max difference
+max_diff_idx = int(np.argmax(entropy - gini))
 fig.add_annotation(
-    x=0.25,
-    y=(entropy[50] + gini[50]) / 2,
+    x=p[max_diff_idx],
+    y=(entropy[max_diff_idx] + gini[max_diff_idx]) / 2,
     text="<b>Divergence region</b><br>Entropy is wider than Gini",
     showarrow=True,
     arrowhead=2,

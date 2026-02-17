@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 ks-test-comparison: Kolmogorov-Smirnov Plot for Distribution Comparison
 Library: altair 6.0.0 | Python 3.14.3
-Quality: 79/100 | Created: 2026-02-17
+Quality: 92/100 | Created: 2026-02-17
 """
 
 import altair as alt

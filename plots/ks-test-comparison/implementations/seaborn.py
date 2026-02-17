@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 ks-test-comparison: Kolmogorov-Smirnov Plot for Distribution Comparison
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 87/100 | Created: 2026-02-17
@@ -13,9 +13,10 @@ from scipy import stats
 
 
 # Data - credit scoring: Good vs Bad customer score distributions
+# Moderate overlap for educational K-S demonstration (~0.35-0.50 statistic)
 np.random.seed(42)
-good_scores = np.random.beta(5, 2, size=300) * 600 + 350
-bad_scores = np.random.beta(2, 4, size=200) * 600 + 350
+good_scores = np.random.beta(5, 3, size=300) * 500 + 350
+bad_scores = np.random.beta(3, 4, size=200) * 500 + 350
 
 # Compute K-S statistic
 ks_stat, p_value = stats.ks_2samp(good_scores, bad_scores)
@@ -58,16 +59,23 @@ palette = {"Good Customers": "#1B6B93", "Bad Customers": "#D35400"}
 fig, ax = plt.subplots(figsize=(16, 9))
 
 # Use seaborn ecdfplot with hue for idiomatic grouped ECDF
+# Apply different linestyles for accessibility beyond color alone
 sns.ecdfplot(data=df, x="Credit Score (points)", hue="Group", palette=palette, linewidth=3.5, ax=ax)
 
-# Shaded fill between the two ECDFs near the max divergence point
-# Narrow band around the max divergence location for visual emphasis
-band_width = 60
-band_mask = (all_values >= max_x - band_width) & (all_values <= max_x + band_width)
+# Set distinct linestyles on the ECDF lines for colorblind accessibility
+lines = ax.get_lines()
+if len(lines) >= 2:
+    lines[0].set_linestyle("-")  # Good Customers: solid
+    lines[1].set_linestyle("--")  # Bad Customers: dashed
+
+# Subtle shaded fill between the two ECDFs near the max divergence point
+# Tight band (±25 points) for balanced layout without dominating the plot
+band_half = 25
+band_mask = (all_values >= max_x - band_half) & (all_values <= max_x + band_half)
 region_values = all_values[band_mask]
 region_good = good_ecdf[band_mask]
 region_bad = bad_ecdf[band_mask]
-ax.fill_between(region_values, region_good, region_bad, alpha=0.15, color="#D35400", zorder=2, label="_nolegend_")
+ax.fill_between(region_values, region_good, region_bad, alpha=0.12, color="#D35400", zorder=2, label="_nolegend_")
 
 # Highlight K-S statistic: vertical line at max divergence
 ax.plot(
@@ -83,11 +91,11 @@ ax.plot(
 ax.scatter([max_x, max_x], [max_y_good, max_y_bad], color="#2D2D2D", s=160, zorder=6, edgecolors="white", linewidth=2)
 
 # Annotate K-S statistic and p-value with refined styling
-# Place annotation in the bottom-right empty region for clear separation
+mid_y = (max_y_good + max_y_bad) / 2
 ax.annotate(
     f"K-S Statistic = {ks_stat:.3f}\np-value = {p_value:.2e}",
-    xy=(max_x, (max_y_good + max_y_bad) / 2),
-    xytext=(max_x + 120, 0.28),
+    xy=(max_x, mid_y),
+    xytext=(max_x + 100, 0.25),
     fontsize=16,
     fontweight="bold",
     color="#2D2D2D",
@@ -95,6 +103,17 @@ ax.annotate(
     va="center",
     bbox={"boxstyle": "round,pad=0.6", "facecolor": "#F8F9FA", "edgecolor": "#95A5A6", "linewidth": 1.2, "alpha": 0.95},
     arrowprops={"arrowstyle": "-|>", "color": "#7F8C8D", "linewidth": 1.5, "connectionstyle": "arc3,rad=-0.2"},
+)
+
+# Small label next to divergence line for storytelling
+ax.text(
+    max_x + 5,
+    max(max_y_good, max_y_bad) + 0.02,
+    "max distance",
+    fontsize=12,
+    fontstyle="italic",
+    color="#555555",
+    va="bottom",
 )
 
 # Axis styling
@@ -109,12 +128,12 @@ ax.xaxis.set_major_formatter(mticker.FormatStrFormatter("%.0f"))
 ax.yaxis.grid(True)
 ax.xaxis.grid(False)
 
-# Refine legend
+# Refine legend using public API
 legend = ax.get_legend()
 legend.set_title(None)
 for text in legend.get_texts():
     text.set_fontsize(16)
-legend._loc = 2  # upper left
+legend.set_loc("upper left")
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

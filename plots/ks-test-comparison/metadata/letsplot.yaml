@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: ks-test-comparison
 created: '2026-02-17T20:13:57Z'
-updated: '2026-02-17T20:28:39Z'
+updated: '2026-02-17T20:40:22Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22113799392
 issue: 4130
@@ -10,45 +10,39 @@ library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/ks-test-comparison/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ks-test-comparison/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/ks-test-comparison/letsplot/plot.html
-quality_score: 87
+quality_score: 96
 review:
   strengths:
-  - 'Excellent spec compliance: all required features (ECDFs, K-S statistic, maximum
-    divergence highlight, p-value, legend, Y-axis 0-1) are present and well-implemented'
-  - Strong data storytelling through the purple shaded ribbon and labeled divergence
-    point — the visual hierarchy guides the viewer to the key statistical insight
-  - Realistic credit scoring scenario with appropriate parameters and sample sizes
-  - Clean, well-organized code following KISS principles with proper seed for reproducibility
-  - 'Good visual refinement: custom background, dashed grid, minimal theme, explicit
-    font sizing'
+  - Excellent use of lets-plot distinctive features (flavor_high_contrast_light, element_markdown,
+    layer_tooltips) that showcase the library unique capabilities
+  - Strong data storytelling with shaded ribbon showing total divergence area plus
+    annotated K-S line highlighting the key insight
+  - Publication-quality typography with explicitly set font sizes and intentional
+    visual hierarchy
+  - Colorblind-safe palette (blue + amber) with explicit protanopia-friendly design
+  - Complete spec compliance with all required features implemented
   weaknesses:
-  - 'Color accessibility could be improved: the blue-red pairing, while having adequate
-    luminance contrast, is not optimal for protanopia — consider using blue and orange/amber
-    instead'
-  - 'Library mastery is generic: the implementation does not leverage any lets-plot-specific
-    features that distinguish it from plotnine — consider using lets-plot geom_segment
-    with arrow annotations, coord_cartesian, or interactive tooltip capabilities via
-    HTML export'
-  - Axis labels lack units — Credit Score (points) would be slightly more informative
-  - The ribbon shading extends ±60 units around max divergence which is somewhat arbitrary
-    — consider shading the full region between the two CDFs or using a more principled
-    boundary
+  - DE-01 could reach 8/8 with slightly more refined color harmony or additional design
+    touches
+  - The shaded ribbon covers a large area which slightly reduces the visual contrast
+    between the two ECDF lines in some regions
   image_description: 'The plot displays two empirical cumulative distribution functions
-    (ECDFs) rendered as step curves on a light gray (#FAFAFA) background. The blue
-    line (#306998) represents "Good Customers" and the red/coral line (#E85D4A) represents
-    "Bad Customers." The X-axis shows "Credit Score" ranging from 300 to 800+, and
-    the Y-axis shows "Cumulative Proportion" from 0 to 1. A purple dashed vertical
-    line marks the point of maximum divergence between the two distributions at approximately
-    score 555. A semi-transparent purple ribbon shades the region around the maximum
-    divergence point (roughly 500-620), visually emphasizing the gap between the two
-    CDFs. The label "D = 0.469" is displayed in bold purple text at the midpoint of
-    the divergence line. The title reads "ks-test-comparison · letsplot · pyplots.ai"
-    in bold, with a subtitle showing "K-S Statistic: 0.469 | p-value: 9.52e-38." The
-    legend is positioned at the top center. Dashed light gray grid lines provide reference.
-    Overall layout is clean and well-proportioned.'
+    (ECDFs) rendered as step functions comparing credit score distributions for "Good
+    Customers" (dark blue, #306998) and "Bad Customers" (amber/orange, #D4820C). A
+    light purple shaded ribbon fills the area between the two ECDFs across the entire
+    overlapping range, visually representing the divergence. A dashed purple vertical
+    line at approximately credit score 555 marks the point of maximum divergence,
+    with a bold purple label "D = 0.469" connected by an arrow. The title reads "ks-test-comparison
+    · letsplot · pyplots.ai" in bold, with a rich-text subtitle showing "K-S Statistic:
+    0.469 | p-value: 9.52e-38 (highly significant)" using bold formatting and grey
+    color for the significance note. The x-axis is labeled "Credit Score (points)"
+    spanning 300-850, and the y-axis is "Cumulative Proportion" from 0 to 1. The legend
+    is positioned at the top. The background is clean with only horizontal dashed
+    grid lines, no vertical grid, and subtle axis lines. Layout is well-balanced with
+    the plot filling the canvas effectively.'
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 30
       max: 30
       items:
       - id: VQ-01
@@ -56,67 +50,67 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title=24, subtitle=18, axis_title=20,
-          axis_text=16, legend_text=16. All perfectly readable.'
+        comment: 'All font sizes explicitly set: title 24pt bold, axis titles 20pt
+          bold, axis text 16pt, legend text 16pt. All perfectly readable.'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text anywhere. D label well-positioned.
+        comment: No overlapping text elements anywhere. Labels, annotations, legend
+          all well separated.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Step lines at size=2.2 clearly visible. K-S line at size=2.5 with
-          dashed style stands out.
+        comment: Step lines at size 2.2 clearly visible, K-S segment at 2.5 prominent,
+          annotation text at size 14 readable.
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
-        passed: false
-        comment: Blue-red pairing has adequate luminance contrast but is not optimal
-          for protanopia.
+        passed: true
+        comment: Blue and amber explicitly chosen as protanopia-friendly pair. Excellent
+          contrast.
       - id: VQ-05
         name: Layout Balance
         score: 4
         max: 4
         passed: true
-        comment: Plot fills canvas well, balanced margins, legend at top without obscuring
-          data.
+        comment: Plot fills canvas well with balanced margins, legend at top near
+          plot, no wasted space.
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Descriptive labels but no units. Credit Score (points) would be more
-          precise.
+        passed: true
+        comment: Credit Score (points) with units, Cumulative Proportion is descriptive.
     design_excellence:
-      score: 14
+      score: 17
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 6
+        score: 7
         max: 8
-        passed: false
-        comment: Custom palette with purple accent, subtle background. Above defaults
-          but not publication-level.
+        passed: true
+        comment: Custom colorblind-safe palette, element_markdown subtitle, flavor_high_contrast_light,
+          intentional typography hierarchy. Near publication quality.
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
-        passed: false
-        comment: Minimal theme, dashed grid, custom background. Could improve spine
-          removal and whitespace.
+        passed: true
+        comment: Minimal grid (horizontal dashed only), panel_grid_minor blank, subtle
+          axis lines, generous whitespace.
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 5
         max: 6
-        passed: false
-        comment: Shaded ribbon and labeled divergence point create clear visual hierarchy
-          guiding viewer to key insight.
+        passed: true
+        comment: Shaded ribbon shows total divergence area, dashed K-S line with arrow
+          annotation highlights key insight, subtitle provides statistical interpretation.
     spec_compliance:
       score: 15
       max: 15
@@ -126,26 +120,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Correct: two ECDFs as step functions with K-S visualization.'
+        comment: Correct K-S plot with two ECDFs as step functions using geom_step.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: ECDFs, K-S statistic, divergence highlight,
-          p-value, legend, Y 0-1.'
+        comment: 'All spec features present: both ECDFs, K-S statistic, max divergence
+          line, p-value, legend, Y-axis 0-1.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=Credit Score, Y=Cumulative Proportion. Correct mapping.
+        comment: X = Credit Score, Y = Cumulative Proportion. Correct mapping.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend labels match data groups.
+        comment: Title format correct. Legend labels Good Customers / Bad Customers
+          match data.
     data_quality:
       score: 14
       max: 15
@@ -154,21 +149,23 @@ review:
         name: Feature Coverage
         score: 5
         max: 6
-        passed: false
-        comment: Shows clear separation, max divergence, significance. Could show
-          CDF crossing points.
+        passed: true
+        comment: Shows clear separation between distributions with different sample
+          sizes. Large K-S divergence is visually compelling.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Credit scoring Good vs Bad customers is a classic K-S test application.
+        comment: Credit scoring (Good vs Bad customers) is a classic real-world K-S
+          test application.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Credit scores 300-850, realistic distributions and sample sizes.
+        comment: Credit scores in 300-850 range, means of 620 and 520 with appropriate
+          standard deviations.
     code_quality:
       score: 10
       max: 10
@@ -178,7 +175,8 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports-data-compute-plot-save flow. No functions/classes.
+        comment: 'Clean linear flow: imports, data generation, ECDF computation, K-S
+          test, DataFrame construction, plot, save.'
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -190,48 +188,51 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: 'All imports used: numpy, pandas, lets_plot, scipy.'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Well-structured, ribbon adds value without over-engineering.
+        comment: Clean, well-organized. Ribbon, segment, and arrow DataFrames are
+          necessary complexity.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png with scale=3 and plot.html.
-    library_features:
-      score: 6
+        comment: Saves as plot.png with ggsave scale=3. Also saves plot.html.
+    library_mastery:
+      score: 10
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 5
         max: 5
-        passed: false
-        comment: 'Good ggplot grammar. Minor: uses ggplot() without data arg, separate
-          data frames per layer.'
+        passed: true
+        comment: Idiomatic grammar-of-graphics with ggplot + aes + layered geoms,
+          scale_color_manual, theme composition.
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 5
         max: 5
-        passed: false
-        comment: Standard ggplot features. Same structure could work in plotnine with
-          minimal changes.
-  verdict: REJECTED
+        passed: true
+        comment: Uses flavor_high_contrast_light, element_markdown, layer_tooltips,
+          arrow in geom_segment, dual PNG+HTML export.
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - scipy
   techniques:
-  - annotations
   - layer-composition
+  - annotations
+  - hover-tooltips
+  - html-export
   patterns:
   - data-generation
   dataprep:
   - ecdf
   styling:
-  - alpha-blending
   - grid-styling
+  - alpha-blending

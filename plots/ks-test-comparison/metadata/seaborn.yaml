@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: ks-test-comparison
 created: '2026-02-17T20:13:04Z'
-updated: '2026-02-17T20:16:37Z'
+updated: '2026-02-17T20:27:39Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22113798991
 issue: 4130
@@ -10,39 +10,41 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/ks-test-comparison/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ks-test-comparison/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 86
+quality_score: 87
 review:
   strengths:
-  - 'Full spec compliance: all required features present (ECDFs, K-S statistic, p-value,
-    max divergence highlight, clear legend)'
-  - Excellent data storytelling with annotated max divergence point creating a clear
-    visual focal point
-  - Clean, well-structured code following KISS principles with proper seed for reproducibility
-  - Realistic credit scoring scenario with appropriate value ranges
-  - Good use of seaborn ecdfplot for the ECDF curves
+  - Excellent use of sns.ecdfplot with hue parameter for idiomatic seaborn ECDF plotting
+  - Strong data storytelling with the shaded divergence band, annotation with arrow,
+    and prominent dots at max distance
+  - Clean, realistic credit scoring context with appropriate sample sizes and score
+    ranges
+  - All text sizes explicitly set to appropriate values for the 4800x2700 canvas
+  - Colorblind-safe palette with good contrast between teal and orange
   weaknesses:
-  - Consider adding a shaded/filled region between the two ECDF curves at the point
-    of maximum divergence to enhance visual storytelling
-  - The annotation box and arrow could be more visually refined (e.g., softer colors,
-    better positioning to avoid slight visual clutter near the vertical line)
-  - Color palette could use higher contrast between the two distributions for improved
-    accessibility
-  - Axis labels lack units — Credit Score (points) would be more informative
-  image_description: 'The plot displays two empirical cumulative distribution function
-    (ECDF) curves comparing credit score distributions for "Good Customers" (blue,
-    #306998) and "Bad Customers" (coral/orange, #E3724B). The x-axis shows "Credit
-    Score" ranging from approximately 350 to 950, and the y-axis shows "Cumulative
-    Proportion" from 0.0 to 1.0. A dashed vertical black line at approximately credit
-    score 660 highlights the point of maximum divergence between the two distributions.
-    Two black dots with white edges mark where this vertical line intersects each
-    ECDF curve. An annotation box with a rounded border and arrow displays "K-S Statistic
-    = 0.717" and "p-value = 5.46e-60". The legend in the upper left clearly labels
-    both distributions. Top and right spines are removed, subtle y-axis grid lines
-    are present, and the title reads "Credit Score Distributions · ks-test-comparison
-    · seaborn · pyplots.ai".'
+  - 'Layout balance: the wide shaded fill band (+-60 points) creates visual weight
+    imbalance in the center-right of the plot'
+  - Uses private attribute legend._loc = 2 instead of public API (legend.set_loc or
+    repositioning via legend kwargs)
+  - ECDF lines could use different linestyles (solid vs dashed) in addition to color
+    for maximum accessibility
+  - The K-S statistic of 0.717 is extremely high — a more moderate separation would
+    be more educational for demonstrating the test
+  image_description: 'The plot displays two empirical cumulative distribution functions
+    (ECDFs) as step curves comparing "Good Customers" (dark teal/blue, #1B6B93) and
+    "Bad Customers" (dark orange, #D35400) credit score distributions. The x-axis
+    shows "Credit Score (points)" ranging from ~350 to ~950, and the y-axis shows
+    "Cumulative Proportion" from 0.0 to 1.0. A dashed vertical black line at approximately
+    660 points marks the point of maximum divergence between the two distributions,
+    with two black dots (white-edged) at the intersection points on each ECDF curve.
+    A shaded orange band (~60 points wide) fills the area between the curves around
+    the maximum divergence region. An annotation box in the lower-right area displays
+    "K-S Statistic = 0.717" and "p-value = 5.46e-60" in bold, connected to the midpoint
+    of the divergence line by a curved arrow. The legend sits in the upper-left corner.
+    Top and right spines are removed; a subtle y-axis grid is visible. The title reads
+    "Credit Score Distributions · ks-test-comparison · seaborn · pyplots.ai".'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 27
       max: 30
       items:
       - id: VQ-01
@@ -51,39 +53,39 @@ review:
         max: 8
         passed: true
         comment: 'All font sizes explicitly set: title 24pt, labels 20pt, ticks 16pt,
-          legend 16pt, annotation 16pt'
+          annotation 16pt, legend 16pt'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements anywhere
+        comment: No overlapping text or elements anywhere
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Lines well-sized at linewidth=3, dots clearly visible; could be slightly
-          more prominent
+        comment: ECDF lines at 3.5 linewidth are clear; dots at s=160 visible. Could
+          benefit from linestyle differentiation
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Blue and orange distinguishable for most colorblind types but not
-          the most optimal contrast pairing
+        comment: Blue vs orange palette is colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 2
         max: 4
-        passed: true
-        comment: Good canvas utilization with tight_layout, minor empty area in bottom-right
+        passed: false
+        comment: Shaded fill band creates visual weight imbalance; annotation placement
+          adequate but large fill region dominates center-right
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Labels descriptive but lack units
+        passed: true
+        comment: 'Descriptive with units: Credit Score (points), Cumulative Proportion'
     design_excellence:
       score: 14
       max: 20
@@ -93,22 +95,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom colors, clean annotation box, removed spines — above defaults
-          but not FiveThirtyEight-level
+        comment: Strong design with custom palette, polished annotation box, shaded
+          divergence region, white-edged dots
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Spines removed, subtle grid, clean annotation. Good refinement but
-          room for more polish
+        comment: Spines removed, subtle grid (alpha=0.15), y-axis only grid, whitegrid
+          theme customized
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: K-S annotation with arrow creates clear focal point; dashed line
-          draws eye to max divergence
+        comment: Shaded band draws attention to divergence region; annotation with
+          arrow guides viewer to key statistic
     spec_compliance:
       score: 15
       max: 15
@@ -118,14 +120,14 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Correct: two ECDFs as step functions via seaborn ecdfplot'
+        comment: Correct ECDF step functions for both distributions
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: both ECDFs, K-S statistic, p-value, max
-          divergence highlight, legend'
+        comment: 'All spec features present: both ECDFs, K-S statistic, max divergence
+          highlight, p-value, legend, Y-axis 0-1'
       - id: SC-03
         name: Data Mapping
         score: 3
@@ -137,8 +139,8 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Title includes spec-id, library, pyplots.ai; legend labels match
-          data
+        comment: Title includes spec-id, library, pyplots.ai format; legend labels
+          match data
     data_quality:
       score: 14
       max: 15
@@ -148,23 +150,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Clear separation between distributions with prominent max divergence;
-          could show more overlap detail
+        comment: Shows clear separation with large K-S statistic (0.717); both distributions
+          have distinct shapes
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Credit scoring Good vs Bad customers is a real, neutral business
-          scenario
+        comment: Credit scoring is a realistic, neutral business scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Credit scores 350-950 are realistic
+        comment: Credit scores in realistic 350-950 range; appropriate sample sizes
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -172,13 +173,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → compute → plot → save
+        comment: Clean imports, data, compute, plot, save structure
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: Fixed seed with np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -187,10 +188,11 @@ review:
         comment: All imports used
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Appropriate complexity, clean Pythonic code
+        passed: false
+        comment: Uses legend._loc = 2 (private attribute access); should use public
+          API
       - id: CQ-05
         name: Output & API
         score: 1
@@ -198,23 +200,23 @@ review:
         passed: true
         comment: Saves as plot.png, no deprecated functions
     library_mastery:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Uses sns.ecdfplot idiomatically; also uses matplotlib for annotation/line
-          (necessary)
+        comment: Uses sns.ecdfplot with hue for grouped ECDF; sns.set_theme for styling;
+          long-form DataFrame convention
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: sns.ecdfplot is distinctive seaborn feature, but much work done via
-          matplotlib directly
+        comment: sns.ecdfplot is distinctive seaborn feature, but much customization
+          falls back to raw matplotlib
   verdict: REJECTED
 impl_tags:
   dependencies:
@@ -224,7 +226,9 @@ impl_tags:
   patterns:
   - data-generation
   - explicit-figure
-  dataprep: []
+  dataprep:
+  - ecdf
   styling:
-  - grid-styling
+  - alpha-blending
   - edge-highlighting
+  - grid-styling

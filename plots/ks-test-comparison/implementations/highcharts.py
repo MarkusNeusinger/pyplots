@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 ks-test-comparison: Kolmogorov-Smirnov Plot for Distribution Comparison
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2026-02-17
+Library: highcharts unknown | Python 3.14.3
+Quality: 78/100 | Created: 2026-02-17
 """
 
 import tempfile

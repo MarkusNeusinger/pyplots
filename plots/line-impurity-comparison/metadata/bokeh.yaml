@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: line-impurity-comparison
 created: '2026-02-17T18:54:46Z'
-updated: '2026-02-17T19:10:21Z'
+updated: '2026-02-17T19:19:16Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22111342431
 issue: 4133
@@ -10,41 +10,38 @@ library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-impurity-comparison/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-impurity-comparison/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-impurity-comparison/bokeh/plot.html
-quality_score: 89
+quality_score: 91
 review:
   strengths:
-  - Perfect spec compliance with all requested features including formula legends
-    and p=0.5 annotation
-  - Strong visual refinement with subtle y-grid, removed toolbar/outline, tinted background,
-    and white border fill
-  - 'Excellent use of Bokeh-specific features: BoxAnnotation for highlight region,
-    HoverTool for interactive HTML, clickable legend with hide policy'
-  - Clean, deterministic code with proper edge case handling (np.errstate + nan_to_num
-    for log2 at 0)
-  - Good color choice with blue/gold palette and dash pattern for secondary differentiation
+  - Shaded area between curves is an excellent visual storytelling technique that
+    immediately communicates the difference between the two metrics
+  - All spec features implemented including formula legends, max annotations, edge
+    case handling, and grid
+  - 'Expert use of Bokeh-specific features: HoverTool, click_policy=hide, Span, dual
+    PNG+HTML export'
+  - Educational annotations (value labels, insight box) transform this from a raw
+    plot into a learning resource
+  - Clean, well-structured code following KISS principles with deterministic data
   weaknesses:
-  - 'Layout could be tighter: reduce y_range upper bound to minimize unused whitespace
-    above the curves'
-  - 'Data storytelling could be enhanced: consider adding a subtle annotation or visual
-    element that communicates the practical insight (e.g., why both criteria yield
-    similar tree structures, or shading the difference area between curves)'
-  - The Gini max = 0.5 label position competes slightly with the nearby curve — repositioning
-    could improve clarity
-  image_description: The plot displays two mathematical curves on a light gray (#f8f8f8)
-    background. A solid blue (#306998) line represents Gini impurity (2p(1-p)) and
-    a dashed gold (#D4A017) line represents Entropy (-p log2p - (1-p) log2(1-p)).
-    Both curves rise from 0 at p=0, peak at p=0.5, and return to 0 at p=1. The entropy
-    curve reaches a maximum of 1.0 while the Gini curve peaks at 0.5. Circular markers
-    with white borders are placed at both maxima at p=0.5 — a blue dot at y=0.5 and
-    a gold dot at y=1.0 — connected by a dotted vertical segment. A bold annotation
-    with a white background box reads "p = 0.5 (maximum impurity)" near the top. Italic
-    value labels show "Gini max = 0.5" (in blue, left of center) and "Entropy max
-    = 1.0" (in dark gold, right of center). A subtle blue-gray BoxAnnotation highlights
-    the region from p=0.35 to p=0.65. The legend in the top-left corner displays both
-    metric formulas with matching line styles. Title follows the required format "line-impurity-comparison
-    · bokeh · pyplots.ai". Only subtle dashed y-axis gridlines are shown. Toolbar
-    is removed for clean static output. The white border fill and removed outline
-    give a polished look.
+  - Axis labels lack units (dimensionless quantities, but normalized to [0,1] or similar
+    could help)
+  - The insight annotation box near the bottom-right is slightly heavy-handed and
+    could be more subtly integrated
+  image_description: The plot displays two smooth curves on a light gray (#f8f8f8)
+    background comparing Gini impurity and entropy as decision tree splitting criteria.
+    A solid blue (#306998) line represents Gini impurity (2p(1-p)) peaking at 0.5,
+    and a dashed amber/gold (#D4A017) line represents entropy (-p log2(p) - (1-p)
+    log2(1-p)) peaking at 1.0. The area between the two curves is filled with a subtle
+    amber shading, visually emphasizing their difference. Both curves start at (0,
+    0) and end at (1, 0) with maxima at p=0.5, marked by large dots (blue at 0.5,
+    amber at 1.0) connected by a dotted vertical segment. A vertical dotted reference
+    line sits at p=0.5. Annotations include "p = 0.5 (maximum impurity)" with a white
+    background box, "Gini max = 0.5" in blue italic, "Entropy max = 1.0" in dark amber
+    italic, and an educational insight box stating "Both criteria agree on optimal
+    splits → similar tree structures in practice." The legend in the top-left corner
+    shows both formulas. Title reads "line-impurity-comparison · bokeh · pyplots.ai".
+    Axis labels are "Probability (p)" and "Impurity Measure (normalized)". Subtle
+    horizontal grid lines on the y-axis only.
   criteria_checklist:
     visual_quality:
       score: 27
@@ -55,44 +52,41 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 42pt, axis labels 32pt, tick
-          labels 24pt, legend 30pt, annotations 32pt/24pt'
+        comment: 'All font sizes explicitly set: title 42pt, axis labels 32pt, ticks
+          24pt, annotations 24-32pt'
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: 'Minor: Gini max label positioned near blue curve, slight visual
-          competition'
+        comment: No overlapping text elements, all annotations well-positioned
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Lines at width 7 and markers at size 32 are well-sized for 4800x2700
+        comment: Lines 7px thick, markers size=32, all elements prominently visible
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: Blue/gold palette is colorblind-safe with dash pattern for secondary
-          differentiation
+        comment: Blue and amber distinguishable with dashed line as secondary encoding;
+          amber can be difficult for tritanopia
       - id: VQ-05
-        name: Layout & Canvas
-        score: 2
+        name: Layout Balance
+        score: 3
         max: 4
         passed: true
-        comment: Good canvas use but y_range to 1.15 creates excess whitespace above
-          curves
+        comment: Good canvas utilization, minor wasted space in lower-right area
       - id: VQ-06
         name: Axis Labels & Title
-        score: 2
+        score: 1
         max: 2
         passed: true
-        comment: 'Descriptive labels with contextual notation: Probability (p) and
-          Impurity Measure (normalized)'
+        comment: Descriptive labels but dimensionless quantities without units
     design_excellence:
-      score: 14
+      score: 16
       max: 20
       items:
       - id: DE-01
@@ -100,22 +94,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom palette, BoxAnnotation highlight, clean background, polished
-          typography — above defaults
+        comment: Strong design with custom palette, visual hierarchy, shaded area,
+          polished backgrounds
       - id: DE-02
         name: Visual Refinement
         score: 5
         max: 6
         passed: true
-        comment: Subtle y-grid only, outline removed, white border, minor ticks removed,
-          toolbar hidden
+        comment: Subtle y-grid only, x-grid disabled, outline removed, custom axis
+          styling, background fills
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 5
         max: 6
         passed: true
-        comment: Highlighted region and connector line draw attention to key insight
-          but could communicate practical takeaway more strongly
+        comment: Shaded area emphasizes difference, value annotations explain peaks,
+          insight annotation communicates takeaway
     spec_compliance:
       score: 15
       max: 15
@@ -125,26 +119,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Correct: line plot comparing two curves'
+        comment: 'Correct chart type: line comparison plot with two curves'
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All present: formula legend, p=0.5 annotation, light grid, edge
-          cases, distinguishable curves'
+        comment: 'All spec features present: distinct colors/line styles, legend with
+          formulas, annotation at p=0.5, edge cases, grid'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=probability, Y=impurity measure, correct mapping
+        comment: X-axis probability [0,1], Y-axis impurity measure, correctly assigned
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, legend labels include formulas as requested
+        comment: Title format correct, legend labels include mathematical formulas
     data_quality:
       score: 15
       max: 15
@@ -154,23 +148,23 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Full range, both maxima, height difference, symmetric shape, edge
-          behavior shown
+        comment: Shows full range of both curves, maxima, edge behavior, and visual
+          difference
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: 'Genuine ML education scenario: theoretical comparison of decision
-          tree splitting criteria'
+        comment: Uses exact mathematical formulas from ML theory, genuine educational
+          context
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Mathematically exact values, 200 points for smooth curves
+        comment: Mathematically correct values with 200 points for smooth curves
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -178,49 +172,51 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, plot, styling, save'
+        comment: Clean imports, data, plot, save flow. No functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic mathematical formulas
+        comment: Fully deterministic mathematical formulas, no randomness needed
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used including HoverTool for HTML export
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
         passed: true
-        comment: Clean Pythonic code, appropriate complexity for visualization
+        comment: Slightly verbose with many Label/ColumnDataSource objects but not
+          over-engineered
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png and plot.html, no deprecated functions
+        comment: Saves as plot.png and plot.html
     library_features:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: 'Good Bokeh patterns: ColumnDataSource, model-based Legend/Label/Span/BoxAnnotation'
+        comment: 'Expert Bokeh usage: ColumnDataSource, HoverTool, Span, Label, Legend
+          with click_policy, NumeralTickFormatter'
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: BoxAnnotation, HoverTool, click_policy hide, Span, dual PNG+HTML
-          export
-  verdict: REJECTED
+        comment: HoverTool vline mode, click_policy=hide, dual HTML+PNG export, Span
+          for reference lines
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
@@ -229,8 +225,10 @@ impl_tags:
   - html-export
   - custom-legend
   patterns:
+  - data-generation
   - columndatasource
   dataprep:
   - normalization
   styling:
   - grid-styling
+  - alpha-blending

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-impurity-comparison: Gini Impurity vs Entropy Comparison
 Library: bokeh 3.8.2 | Python 3.14.3
-Quality: 89/100 | Created: 2026-02-17
+Quality: 91/100 | Created: 2026-02-17
 """
 
 import numpy as np

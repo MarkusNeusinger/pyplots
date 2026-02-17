@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: line-impurity-comparison
 created: '2026-02-17T18:54:49Z'
-updated: '2026-02-17T18:58:36Z'
+updated: '2026-02-17T19:07:59Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22111342349
 issue: 4133
@@ -10,38 +10,41 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-impurity-comparison/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-impurity-comparison/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 82
+quality_score: 85
 review:
   strengths:
-  - Full spec compliance with all requested features (legend formulas, p=0.5 annotation,
-    grid, edge cases)
-  - Clean colorblind-safe palette with redundant visual encoding (color + line style)
-  - Well-set font sizes throughout, all explicitly configured per library rules
-  - Clean KISS code structure with proper edge case handling for entropy at p=0 and
-    p=1
+  - Shaded divergence region between curves is an excellent storytelling addition
+    that immediately draws attention to the key insight
+  - Dual annotations (max impurity + max divergence) effectively communicate the educational
+    purpose of the plot
+  - Colorblind-safe design with redundant encoding (color + line style) ensures accessibility
+  - Clean mathematical data generation with proper edge case handling for entropy
+    at p=0 and p=1
+  - All font sizes explicitly set following the seaborn library guidelines precisely
   weaknesses:
-  - Annotation placement at (0.72, 0.78) creates visual imbalance; the long arrow
-    sweeps across the plot awkwardly
-  - Design could be more sophisticated — consider adding a shaded region between the
-    curves to highlight their difference, or annotating the region of maximum divergence
-  - Data storytelling is limited — the visual only shows they peak at p=0.5 but doesn't
-    emphasize the key insight (why both criteria produce similar trees in practice)
-  - Long-form DataFrame construction with np.tile/np.concatenate is unnecessarily
-    verbose when two separate lineplot calls or wide-form data would be cleaner
-  image_description: 'The plot displays two smooth curves comparing Gini impurity
-    (solid blue line, #306998) and Entropy (dashed orange line, #E8833A) across probability
-    values 0 to 1 on a white background. Both curves are bell-shaped, peaking at p=0.5
-    where normalized impurity reaches 1.0. The Gini curve is slightly narrower than
-    the entropy curve. A dark gray circle marker at (0.5, 1.0) has a curved arrow
-    annotation pointing to a boxed label reading "Max impurity p = 0.5" positioned
-    at approximately (0.72, 0.78). The title reads "line-impurity-comparison · seaborn
-    · pyplots.ai" in medium weight. The upper-left legend is titled "Splitting Criterion"
-    and includes mathematical formulas for both metrics using Unicode characters.
-    Axis labels are "Probability (p)" and "Impurity (normalized)". Top and right spines
-    are removed, and a subtle y-axis grid at low opacity is present.'
+  - The Max divergence annotation arrow has a long curved path that creates visual
+    clutter in the lower-left quadrant; a shorter arrow or repositioned text would
+    be cleaner
+  - The annotation text position (xytext=(0.22, 0.2)) places it far from the actual
+    divergence region, making the connection less immediate
+  - DE-01 could reach 8/8 with more refined typography or a more polished color scheme
+    for the annotations (the gray tones feel generic)
+  image_description: 'The plot displays two curves on a white background with subtle
+    horizontal gridlines. A solid blue line (Python Blue #306998) represents the normalized
+    Gini impurity (2p(1-p)) and a dashed orange line (#E8833A) represents the normalized
+    Entropy (-p log2p - (1-p) log2(1-p)). Both curves span the probability range [0,
+    1] on the x-axis and normalized impurity [0, 1] on the y-axis. Both curves rise
+    symmetrically from 0 at p=0, peak at 1.0 at p=0.5, and return to 0 at p=1. A light
+    blue shaded region between the two curves highlights their divergence, which is
+    most pronounced around p~0.15 and p~0.85. A dark dot marks the maximum impurity
+    point at p=0.5 with an annotated box reading "Max impurity p = 0.5". A second
+    annotation "Max divergence" in gray italic text with a curved arrow points to
+    the region of greatest separation between the curves. The legend in the upper
+    right is titled "Splitting Criterion" and shows both formulas. The title reads
+    "line-impurity-comparison · seaborn · pyplots.ai". Top and right spines are removed.'
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 26
       max: 30
       items:
       - id: VQ-01
@@ -50,66 +53,65 @@ review:
         max: 8
         passed: true
         comment: 'All font sizes explicitly set: title 24pt, labels 20pt, ticks 16pt,
-          legend 16/18pt, annotation 16pt'
+          legend title 18pt, legend text 16pt'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements; legend, annotation, and curves are
-          well-separated
+        comment: No overlapping text elements; annotations are well-positioned
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Lines at 3.5 width clearly visible; dashes at thick width slightly
-          chunky
+        comment: Lines are thick (3.0 and 2.8), clearly visible, solid vs dashed differentiation
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue/orange palette is colorblind-safe with redundant encoding (solid
-          vs dashed)
+        comment: Blue and orange palette is colorblind-safe; line styles provide redundant
+          encoding
       - id: VQ-05
         name: Layout Balance
         score: 2
         max: 4
         passed: false
-        comment: Annotation placement pulls visual weight to the right; some unused
-          space around annotation area
+        comment: Adequate canvas utilization but Max divergence annotation has a long
+          curved arrow path into the lower-left that creates visual clutter
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels: Probability (p), Impurity (normalized)'
+        comment: Probability (p) and Impurity (normalized) are descriptive with context
     design_excellence:
-      score: 12
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
-        passed: false
-        comment: Custom blue/orange palette, intentional line styles, removed spines.
-          Above defaults but not publication-level
+        passed: true
+        comment: Strong design with custom palette, intentional line style differentiation,
+          shaded divergence region, polished legend frame; above defaults but not
+          Nature-level
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
-        passed: false
-        comment: Spines removed, subtle y-grid at alpha 0.2, clean whitespace. Could
-          benefit from more polish
+        passed: true
+        comment: 'Good refinement: whitegrid with subtle alpha 0.15, y-axis-only grid,
+          despine top/right, custom edge colors'
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: Annotation at p=0.5 creates focal point. Could improve by highlighting
-          where curves diverge most or adding context about practical similarity
+        passed: true
+        comment: Shaded divergence region and dual annotations create clear visual
+          hierarchy and guide the viewer to key insights
     spec_compliance:
       score: 15
       max: 15
@@ -119,28 +121,30 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct line comparison chart with two curves on same axes
+        comment: 'Correct chart type: line plot comparing two mathematical curves'
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: both curves, legend with formulas, p=0.5
-          annotation, grid, edge case handling'
+        comment: 'All spec features present: both curves, legend with formulas, max
+          impurity annotation at p=0.5, grid, edge case handling'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=probability, Y=impurity, correctly mapped and normalized to [0,1]
+        comment: 'X/Y correctly assigned: probability on x-axis, normalized impurity
+          on y-axis'
       - id: SC-04
-        name: Title & Legend
+        name: Title Format
         score: 3
         max: 3
         passed: true
-        comment: Correct title format, legend labels include mathematical formulas
+        comment: Title uses spec-id · library · pyplots.ai format; legend labels include
+          formulas
     data_quality:
-      score: 13
+      score: 14
       max: 15
       items:
       - id: DQ-01
@@ -148,21 +152,21 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows both curves, similarity, max impurity. Could highlight region
-          of maximum divergence
+        comment: Shows both curves across full range with normalization; shaded divergence
+          region adds insight; symmetry means right-side divergence is less visually
+          emphasized
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real ML splitting criteria formulas, genuine mathematical relationships
+        comment: 'Real ML educational scenario: decision tree splitting criteria comparison'
       - id: DQ-03
         name: Appropriate Scale
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: 100 points, correct math. Both normalized to [0,1]; spec only specifies
-          normalization for entropy but normalizing both is reasonable
+        comment: Mathematically correct values, appropriately scaled [0, 1]
     code_quality:
       score: 9
       max: 10
@@ -172,7 +176,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → style → save structure
+        comment: 'Linear flow: imports, data, plot, save; no functions/classes'
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -184,48 +188,47 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: matplotlib, numpy, pandas, seaborn'
+        comment: 'All imports used: matplotlib.pyplot, numpy, seaborn'
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
         passed: false
-        comment: Long-form DataFrame with np.tile/np.concatenate is verbose for two-line
-          comparison
+        comment: Slightly verbose annotation code; _nolegend_ label for fill_between
+          is a minor inelegance
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png, dpi=300, bbox_inches=tight
-    library_mastery:
-      score: 6
+        comment: Saves as plot.png with dpi=300
+    library_features:
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
         score: 4
         max: 5
-        passed: false
-        comment: Uses sns.lineplot with hue/style/dashes, DataFrame API. Annotation
-          work is pure matplotlib
+        passed: true
+        comment: Uses sns.lineplot, sns.set_theme, sns.despine, sns.color_palette;
+          good idiomatic usage but annotation work is pure matplotlib
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Hue + style grouping is seaborn-specific, but for two lines this
-          doesn't strongly showcase the library's strengths
+        passed: true
+        comment: sns.set_theme with custom rc, sns.despine, sns.color_palette are
+          distinctive seaborn features; however heavy matplotlib fallback for annotations
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
   patterns:
-  - data-generation
-  - wide-to-long
   - explicit-figure
   dataprep:
   - normalization
   styling:
   - grid-styling
+  - alpha-blending

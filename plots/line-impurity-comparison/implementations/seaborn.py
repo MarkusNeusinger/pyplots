@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-impurity-comparison: Gini Impurity vs Entropy Comparison
 Library: seaborn 0.13.2 | Python 3.14.3
-Quality: 82/100 | Created: 2026-02-17
+Quality: 85/100 | Created: 2026-02-17
 """
 
 import matplotlib.pyplot as plt

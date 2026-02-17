@@ -1,7 +1,7 @@
 library: matplotlib
 specification_id: line-impurity-comparison
 created: '2026-02-17T18:52:33Z'
-updated: '2026-02-17T19:04:26Z'
+updated: '2026-02-17T19:11:49Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22111342356
 issue: 4133
@@ -10,38 +10,36 @@ library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-impurity-comparison/matplotlib/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-impurity-comparison/matplotlib/plot_thumb.png
 preview_html: null
-quality_score: 89
+quality_score: 90
 review:
   strengths:
-  - Excellent use of fill_between to visually encode the difference between curves
-    — immediately tells the story
-  - Path effects (stroke glow) on lines provide clean separation from the fill region
-    and grid
-  - Color-matched annotations with curved arrows create a professional, intentional
-    design
-  - Legend includes LaTeX-rendered formulas exactly as the spec requests
-  - Edge case handling with mask for log(0) is mathematically correct and clean
-  - All font sizes explicitly set to appropriate values for the 4800x2700 canvas
+  - Excellent use of path_effects to give lines a white halo for visual contrast against
+    the fill region
+  - The shaded difference region between curves is an effective storytelling element
+    that goes beyond the spec requirements
+  - Mathematical formulas in legend rendered via LaTeX are informative and match the
+    educational context
+  - Clean handling of entropy edge cases with boolean mask to avoid log(0)
+  - Well-balanced annotation placement with arrows from opposite sides avoiding overlap
   weaknesses:
-  - Gini peak annotation placed at (0.80, 0.22) with arrow back to (0.5, 0.5) creates
-    a long arrow crossing the entropy fill region — place it closer to the marker
-  - Maximum impurity text at y=-0.07 below x-axis forces ylim to -0.10 wasting vertical
-    canvas space — place above x-axis or as tick label
-  - Y-axis label could be more concise (e.g. Impurity normalized) — current label
-    is verbose
-  image_description: The plot displays two smooth curves on a 16:9 landscape canvas
-    comparing Gini Impurity and Entropy as decision tree splitting criteria. A solid
-    blue (#306998) line represents Gini Impurity (2p(1-p)) peaking at 0.5, and a dashed
-    rust/copper (#C1694F) line represents normalized Entropy peaking at 1.0. Both
-    curves start at (0, 0), peak at p=0.5, and return to (0, 0) at p=1. A light gray
-    shaded region (fill_between) highlights the difference between the two curves.
-    Both maxima are marked with colored dots and annotated with arrows — the Entropy
-    annotation points from the upper-left, the Gini annotation from the lower-right.
-    A vertical dotted gray line at p=0.5 is labeled "Maximum impurity" in italic below
-    the x-axis. The legend in the upper-left corner includes LaTeX-rendered formulas.
-    Top and right spines are removed, remaining spines are light gray. A subtle grid
-    is present (y-axis slightly more prominent than x-axis). Title reads "line-impurity-comparison
-    · matplotlib · pyplots.ai".
+  - The annotation cluster around p=0.5 (entropy peak label, Gini peak label, delta
+    bracket, delta text, vertical line label) is slightly dense — consider spacing
+    annotations more
+  - VQ-06 loses a point because the axes lack units, though these are dimensionless
+    quantities so this is inherent to the domain
+  image_description: The plot displays two smooth curves on a single set of axes comparing
+    Gini impurity and entropy as decision tree splitting criteria across the probability
+    range [0, 1]. The Gini impurity is rendered as a solid blue line (#306998) peaking
+    at 0.5, while the normalized entropy is a dashed rust/brown line (#C1694F) peaking
+    at 1.0. A light gray shaded region fills the area between the two curves to visualize
+    their difference. Both maxima at p=0.5 are marked with white-edged circular markers
+    and annotated with arrows — "Entropy peak = 1.0, p = 0.5" from the upper-left
+    and "Gini peak = 0.5, p = 0.5" from the lower-right. A double-headed arrow bracket
+    between the two peaks is labeled "Δ = 0.5". A dotted vertical line at p=0.5 is
+    labeled "Maximum impurity" at the bottom. The legend in the upper-left shows both
+    metrics with their mathematical formulas rendered in LaTeX. The title reads "line-impurity-comparison
+    · matplotlib · pyplots.ai". Top and right spines are removed, with subtle grid
+    lines on both axes. The overall design is polished and publication-ready.
   criteria_checklist:
     visual_quality:
       score: 27
@@ -52,65 +50,66 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 24pt, axis labels 20pt, ticks
-          16pt, legend 15pt, annotations 15pt'
+        comment: 'All font sizes explicitly set: title 24pt, labels 20pt, ticks 16pt,
+          legend 15pt, annotations 15pt'
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: No overlapping text; annotations placed on opposite sides with curved
-          arrows
+        comment: Dense annotation cluster around p=0.5 but all text remains readable
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Lines at 3pt width with path effects; markers at 10pt
+        comment: Lines at linewidth=3 with path effects, markers size 11 with white
+          edge
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue and rust are colorblind-safe, distinct in hue/value/saturation
+        comment: Blue and rust/brown colorblind-safe, reinforced by solid vs dashed
+          line styles
       - id: VQ-05
         name: Layout Balance
-        score: 2
+        score: 3
         max: 4
-        passed: false
-        comment: Gini annotation arrow crosses entropy fill region; Maximum impurity
-          text extends ylim to -0.10
+        passed: true
+        comment: Good proportions with tight_layout, slight asymmetry from annotations
       - id: VQ-06
         name: Axis Labels & Title
         score: 1
         max: 2
-        passed: false
-        comment: Descriptive labels with variable names but no physical units
+        passed: true
+        comment: Descriptive labels but quantities are dimensionless (no units to
+          add)
     design_excellence:
-      score: 14
+      score: 16
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Strong design with custom palette, path effects, fill_between, color-matched
-          annotations
+        comment: Path effects for line contrast, white-edged markers, custom muted
+          palette, styled legend frame — near publication quality
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Spines removed/recolored, differential grid opacity, path effects
-          on lines
+        comment: Dual-axis grid with different alphas, muted spine colors, spines
+          removed, generous whitespace
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Fill_between draws eye to difference; annotations highlight key insight;
-          vertical reference marks critical point
+        comment: Shaded difference region, delta annotation, and Maximum impurity
+          label guide the viewer to the key insight
     spec_compliance:
       score: 15
       max: 15
@@ -120,51 +119,51 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Correct: line plot comparing two mathematical curves'
+        comment: Correct line plot with two comparison curves
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All present: legend with formulas, annotations at p=0.5, edge case
-          handling, grid, different styles'
+        comment: Legend with formulas, annotated maxima at p=0.5, edge cases handled,
+          grid included, different colors and line styles
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=probability [0,1], Y=impurity [0,1], correct mapping
+        comment: X=probability [0,1], Y=impurity measure [0,1]
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct; legend labels include LaTeX formulas
+        comment: Correct title format, legend labels include metric names and formulas
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Full [0,1] range, both curves, fill shows difference, 200 points
-          for smooth rendering
+        comment: Shows both curves, peaks, symmetry, and difference region across
+          full range
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Mathematical/educational ML context; real Gini and Entropy formulas
+        comment: Real ML education scenario (decision tree splitting criteria)
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Exact mathematical values; normalized to [0,1]
+        comment: Mathematically exact values from formulas
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -172,33 +171,34 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → style → save
+        comment: Clean imports → data → plot → save structure
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic mathematical data, no randomness needed
+        comment: Deterministic mathematical functions, no randomness
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All three imports are used
+        comment: All three imports used (patheffects, pyplot, numpy)
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
         passed: true
-        comment: Clean and Pythonic; mask for edge cases is elegant
+        comment: Slightly verbose annotation section with separate bracket and text
+          calls for the delta indicator
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png, dpi=300, bbox_inches=tight
+        comment: Correct plot.png output, dpi=300, no deprecated APIs
     library_mastery:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: LM-01
@@ -206,15 +206,16 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Expert use of ax methods, annotate, fill_between, spines manipulation
+        comment: Proper Axes methods, subplots, annotate with arrowprops and connection
+          styles, fill_between
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: path_effects (Stroke+Normal), fill_between with alpha, custom arrowprops
-          with connectionstyle
-  verdict: REJECTED
+        comment: path_effects for line contrast halos, fill_between for difference
+          region, annotate with arc3 connection styles
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
@@ -225,3 +226,4 @@ impl_tags:
   styling:
   - alpha-blending
   - grid-styling
+  - edge-highlighting

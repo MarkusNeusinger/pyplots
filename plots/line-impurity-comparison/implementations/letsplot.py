@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-impurity-comparison: Gini Impurity vs Entropy Comparison
 Library: letsplot 4.8.2 | Python 3.14.3
-Quality: 81/100 | Created: 2026-02-17
+Quality: 88/100 | Created: 2026-02-17
 """
 
 import numpy as np

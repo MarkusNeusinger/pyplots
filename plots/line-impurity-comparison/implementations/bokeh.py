@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-impurity-comparison: Gini Impurity vs Entropy Comparison
 Library: bokeh 3.8.2 | Python 3.14.3
 Quality: 84/100 | Created: 2026-02-17
@@ -6,7 +6,7 @@ Quality: 84/100 | Created: 2026-02-17
 
 import numpy as np
 from bokeh.io import export_png, output_file, save
-from bokeh.models import ColumnDataSource, Label, Legend
+from bokeh.models import BoxAnnotation, ColumnDataSource, HoverTool, Label, Legend, NumeralTickFormatter, Span
 from bokeh.plotting import figure
 
 
@@ -28,34 +28,71 @@ source_entropy = ColumnDataSource(data={"p": p_vals, "impurity": entropy})
 fig = figure(
     width=4800,
     height=2700,
-    title="line-impurity-comparison \u00b7 bokeh \u00b7 pyplots.ai",
+    title="line-impurity-comparison · bokeh · pyplots.ai",
     x_axis_label="Probability (p)",
-    y_axis_label="Impurity Measure",
+    y_axis_label="Impurity Measure (normalized)",
     x_range=(-0.02, 1.02),
     y_range=(-0.05, 1.15),
 )
 
+# Highlight region around p=0.5 where both measures peak
+peak_region = BoxAnnotation(left=0.35, right=0.65, fill_alpha=0.06, fill_color="#306998")
+fig.add_layout(peak_region)
+
+# Vertical reference line at p=0.5 using Span
+ref_line = Span(
+    location=0.5, dimension="height", line_color="#888888", line_width=2, line_dash="dotted", line_alpha=0.5
+)
+fig.add_layout(ref_line)
+
 # Lines
 line_gini = fig.line(x="p", y="impurity", source=source_gini, line_width=7, line_color="#306998")
 line_entropy = fig.line(
-    x="p", y="impurity", source=source_entropy, line_width=7, line_color="#E24A33", line_dash=[14, 7]
+    x="p", y="impurity", source=source_entropy, line_width=7, line_color="#D4A017", line_dash=[14, 7]
 )
 
-# Annotate max points at p=0.5
-fig.scatter(x=[0.5, 0.5], y=[0.5, 1.0], size=24, fill_color=["#306998", "#E24A33"], line_color="white", line_width=3)
+# Annotate max points at p=0.5 with larger markers
+fig.scatter(x=[0.5, 0.5], y=[0.5, 1.0], size=32, fill_color=["#306998", "#D4A017"], line_color="white", line_width=4)
 
 # Connector line between the two max dots
-fig.segment(x0=[0.5], y0=[0.5], x1=[0.5], y1=[1.0], line_color="#999999", line_width=2, line_dash="dotted")
+fig.segment(x0=[0.5], y0=[0.5], x1=[0.5], y1=[1.0], line_color="#666666", line_width=3, line_dash="dotted")
 
-max_label = Label(x=0.53, y=1.03, text="p = 0.5 (maximum impurity)", text_font_size="30pt", text_color="#555555")
+# Annotation label with background for visual hierarchy
+max_label = Label(
+    x=0.53,
+    y=1.02,
+    text="p = 0.5  (maximum impurity)",
+    text_font_size="32pt",
+    text_font_style="bold",
+    text_color="#333333",
+    background_fill_color="white",
+    background_fill_alpha=0.85,
+    border_line_color="#cccccc",
+    border_line_alpha=0.6,
+    border_line_width=2,
+)
 fig.add_layout(max_label)
+
+# Value labels at each maximum dot
+gini_val_label = Label(
+    x=0.28, y=0.52, text="Gini max = 0.5", text_font_size="24pt", text_color="#306998", text_font_style="italic"
+)
+fig.add_layout(gini_val_label)
+
+entropy_val_label = Label(
+    x=0.62, y=0.88, text="Entropy max = 1.0", text_font_size="24pt", text_color="#B8860B", text_font_style="italic"
+)
+fig.add_layout(entropy_val_label)
+
+# HoverTool for interactive HTML export
+hover = HoverTool(
+    renderers=[line_gini, line_entropy], tooltips=[("p", "@p{0.00}"), ("Impurity", "@impurity{0.000}")], mode="vline"
+)
+fig.add_tools(hover)
 
 # Legend with formulas
 legend = Legend(
-    items=[
-        ("Gini: 2p(1\u2212p)", [line_gini]),
-        ("Entropy: \u2212p log\u2082p \u2212 (1\u2212p) log\u2082(1\u2212p)", [line_entropy]),
-    ],
+    items=[("Gini: 2p(1−p)", [line_gini]), ("Entropy: −p log₂p − (1−p) log₂(1−p)", [line_entropy])],
     location="top_left",
     label_text_font_size="30pt",
     glyph_width=70,
@@ -63,30 +100,43 @@ legend = Legend(
     spacing=18,
     padding=30,
     border_line_alpha=0,
-    background_fill_alpha=0.8,
+    background_fill_color="#fafafa",
+    background_fill_alpha=0.9,
+    click_policy="hide",
 )
 fig.add_layout(legend)
 
 # Style - text sizes scaled for 4800x2700 canvas
 fig.title.text_font_size = "42pt"
+fig.title.text_color = "#2a2a2a"
 fig.xaxis.axis_label_text_font_size = "32pt"
 fig.yaxis.axis_label_text_font_size = "32pt"
 fig.xaxis.major_label_text_font_size = "24pt"
 fig.yaxis.major_label_text_font_size = "24pt"
+fig.xaxis.axis_label_text_color = "#444444"
+fig.yaxis.axis_label_text_color = "#444444"
+
+# Tick formatters for clean number display
+fig.xaxis.formatter = NumeralTickFormatter(format="0.0")
+fig.yaxis.formatter = NumeralTickFormatter(format="0.0")
 
 # Grid - y-axis only, subtle
 fig.xgrid.grid_line_alpha = 0
-fig.ygrid.grid_line_alpha = 0.2
+fig.ygrid.grid_line_alpha = 0.15
+fig.ygrid.grid_line_color = "#999999"
+fig.ygrid.grid_line_dash = [4, 4]
 
 # Background
-fig.background_fill_color = "#fafafa"
+fig.background_fill_color = "#f8f8f8"
 fig.border_fill_color = "white"
 fig.outline_line_color = None
 
 # Axis styling
 fig.axis.axis_line_width = 2
-fig.axis.axis_line_color = "#333333"
+fig.axis.axis_line_color = "#555555"
 fig.axis.minor_tick_line_color = None
+fig.axis.major_tick_line_color = "#888888"
+fig.axis.major_tick_out = 8
 
 # Remove toolbar for cleaner static image
 fig.toolbar_location = None

@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: line-pca-variance-cumulative
 created: '2026-02-17T21:43:36Z'
-updated: '2026-02-17T21:46:56Z'
+updated: '2026-02-17T22:00:18Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22116658507
 issue: 4131
@@ -10,40 +10,39 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-pca-variance-cumulative/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-pca-variance-cumulative/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 82
+quality_score: 85
 review:
   strengths:
-  - 'Excellent spec compliance: all required features present including individual
-    variance bars, cumulative line, threshold lines, and annotation at 95% crossing'
-  - Strong data storytelling with the annotated threshold crossing point guiding viewers
-    to the key PCA selection insight
-  - Real-world Wine dataset provides authentic, meaningful data instead of synthetic
-    random values
-  - Clean visual design with white-filled markers, subtle bar overlay, and removed
-    spines
+  - 'Excellent spec compliance: implements all specified features including the optional
+    bar overlay for individual variance'
+  - 'Strong data storytelling: the red marker and arrow annotation clearly communicate
+    the 95% crossing point, making the key insight immediately visible'
+  - Real dataset (Wine) provides authentic PCA results with a natural elbow curve
+  - Clean white-fill markers with blue edges create a polished, professional look
+  - Well-structured code that follows KISS principle with no unnecessary abstraction
   weaknesses:
-  - 'Limited seaborn usage: only sns.lineplot is used as a plot function; bars, annotations,
-    and styling are all pure matplotlib — consider using more seaborn features or
-    styling'
-  - The annotation text positioning could be improved to avoid proximity overlap with
-    the line near components 7-9
-  - Title format prepends Wine Dataset PCA before the required format; should follow
-    spec-id · library · pyplots.ai more strictly
-  - Red and orange threshold lines could be improved for colorblind accessibility
-    — consider using more distinct colors or adding different line patterns
-  image_description: 'The plot displays a cumulative explained variance curve for
-    PCA on the Wine dataset with 13 principal components. A dark blue line (#306998)
-    with white-filled circle markers traces the cumulative variance from ~36% at component
-    1 up to ~100% at component 13. Subtle light gray-blue bars show individual variance
-    for each component, declining from ~36% (PC1) to near 0% (PC13). Two horizontal
-    dashed threshold lines are drawn: red (#E74C3C) at 95% and orange (#F39C12) at
-    90%, with bold percentage labels on the right edge. A large red filled marker
-    highlights component 10 where cumulative variance first exceeds 95% (96.2%), with
-    a bold red annotation and arrow pointing to it reading "10 components (96.2%)".
-    The title reads "Wine Dataset PCA · line-pca-variance-cumulative · seaborn · pyplots.ai".
-    X-axis: "Number of Principal Components", Y-axis: "Explained Variance (%)". Top
-    and right spines are removed. A legend in center-right displays "Cumulative Variance"
-    and "Individual Variance".'
+  - The 95% and 90% threshold labels are positioned too close together in the upper
+    left, creating slight visual crowding — consider spacing them out or moving one
+    to the right side
+  - The red-purple color pair for threshold lines is not the strongest for colorblind
+    accessibility — consider using more perceptually distinct colors (e.g., blue-orange)
+  - The custom legend, while functional, could benefit from better visual integration
+    (e.g., match the marker sizes more closely to the actual plot elements)
+  image_description: The plot displays a combined line-and-bar chart on a white background
+    with subtle y-axis gridlines. A blue line with white-filled, blue-edged circular
+    markers traces the cumulative explained variance from approximately 36% at component
+    1, rising through an elbow-shaped curve to nearly 100% at component 13. Light
+    blue semi-transparent bars behind the line show the individual variance contribution
+    per component, decreasing from about 36% for the first component to near zero
+    for components 11-13. A red dashed horizontal line marks the 95% threshold and
+    a purple dash-dot line marks 90%, with bold colored labels ("95%" in red, "90%"
+    in purple) placed at the left edge. A prominent red-filled dot at component 10
+    highlights where cumulative variance first exceeds 95% (~96.2%), connected by
+    a curved red arrow to an annotation reading "10 components (96.2%)". The title
+    reads "line-pca-variance-cumulative · seaborn · pyplots.ai" in a medium-weight
+    font. X-axis is labeled "Number of Principal Components", Y-axis is "Explained
+    Variance (%)". A legend in the lower right identifies "Cumulative Variance" (line+marker)
+    and "Individual Variance" (filled rectangle). Top and right spines are removed.
   criteria_checklist:
     visual_quality:
       score: 26
@@ -61,35 +60,36 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: 'Minor: annotation text for 10 components slightly overlaps with
-          line near components 7-9'
+        comment: Threshold labels 95% and 90% slightly crowded near each other in
+          upper left; otherwise clean
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Markers well-sized (markersize=12) for 13 data points, linewidth=3,
-          bars appropriately sized
+        comment: Markers size 12 with 2.5px edges, linewidth 3, bars with good width
+          — all clearly visible
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Blue primary is good; red/orange threshold lines may be difficult
-          to distinguish for some colorblind users
+        comment: Blue/red/purple palette adequate; distinct dash patterns aid colorblind
+          users, but red-purple pair not ideal
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Plot fills canvas well, tight_layout, balanced margins
+        comment: 16:9 figure, plot fills canvas well, balanced margins, legend unobtrusively
+          placed
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Explained Variance (%) with units, Number of Principal Components
-          is descriptive
+        comment: 'Descriptive labels with units: Explained Variance (%), Number of
+          Principal Components'
     design_excellence:
       score: 14
       max: 20
@@ -99,24 +99,24 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Strong design with Python Blue palette, white-filled markers, subtle
-          bar overlay, removed spines. Above defaults
+        comment: 'Thoughtful design: white-fill markers, cohesive blue palette, subtle
+          grid, custom legend. Above defaults.'
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Spines removed, subtle y-grid alpha=0.2, clean marker style. Could
-          benefit from more whitespace refinement
+        comment: Spines removed, y-axis grid alpha 0.2, good whitespace. Threshold
+          label positioning slightly rough.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: 'Good storytelling: 95% threshold crossing annotated with red marker
-          and arrow, dual individual + cumulative display'
+        comment: Red marker + arrow annotation clearly communicates 95% crossing point.
+          Threshold lines guide decisions.
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -124,28 +124,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Correct: cumulative line plot with optional individual variance
-          bar overlay'
+        comment: 'Correct: cumulative line plot with individual variance bar overlay'
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All present: cumulative line, markers, threshold lines at 90%/95%,
-          individual variance bars, annotation at threshold crossing'
+        comment: 'All present: cumulative curve, thresholds at 90%/95%, markers, bars,
+          annotation'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=component number 1-13, Y=cumulative explained variance %, correct
+        comment: X=component number (1-13), Y=variance %. Correct assignment.
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Title prepends Wine Dataset PCA before required format; legend labels
-          clear
+        comment: Title format correct, legend labels Cumulative Variance and Individual
+          Variance are clear
     data_quality:
       score: 14
       max: 15
@@ -155,19 +154,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows PCA elbow curve, individual variance decline, threshold crossing
+        comment: Shows typical PCA curve with diminishing returns from real Wine dataset
+          (13 features)
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real Wine dataset from sklearn, neutral scientific scenario
+        comment: Real sklearn Wine dataset with genuine PCA analysis. Neutral science
+          context.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Real values from actual dataset, variance ratios sum correctly
+        comment: 'Realistic values: first component ~36%, 95% threshold crossed at
+          10 components'
     code_quality:
       score: 9
       max: 10
@@ -177,57 +179,58 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean Imports, Data, Plot, Save structure, no functions/classes
+        comment: 'Flat structure: imports → data → plot → style → save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic data from sklearn Wine dataset
+        comment: 'Deterministic: Wine dataset + PCA, no random seed needed'
       - id: CQ-03
         name: Clean Imports
-        score: 2
-        max: 2
-        passed: true
-        comment: All imports used
-      - id: CQ-04
-        name: Code Elegance
         score: 1
         max: 2
         passed: false
-        comment: Clean but slightly verbose in annotation section with hardcoded offset
-          values
+        comment: All imports used, but Line2D + Patch imports add minor complexity
+          for custom legend
+      - id: CQ-04
+        name: Code Elegance
+        score: 2
+        max: 2
+        passed: true
+        comment: Clean, appropriate complexity. Manual legend construction justified.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300
-    library_features:
-      score: 5
+        comment: Saves as plot.png, 300 DPI, no deprecated functions
+    library_mastery:
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Uses sns.lineplot correctly but bars and annotations are pure matplotlib;
-          seaborn limited to one lineplot call
+        passed: true
+        comment: Uses seaborn axes-level API with hue/palette pattern, sns.set_theme
+          with rc dict. Good but relies on matplotlib for annotations.
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: sns.lineplot with marker styling is generic; most implementation
-          could be replicated in matplotlib with minimal changes
+        passed: true
+        comment: sns.set_theme with rc customization, hue-based palette, combined
+          barplot/lineplot. But annotations/legend are pure matplotlib.
   verdict: REJECTED
 impl_tags:
   dependencies:
   - sklearn
   techniques:
   - annotations
-  - manual-ticks
+  - custom-legend
+  - layer-composition
   patterns:
   - dataset-loading
   - explicit-figure

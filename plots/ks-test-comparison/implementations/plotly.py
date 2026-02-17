@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 ks-test-comparison: Kolmogorov-Smirnov Plot for Distribution Comparison
 Library: plotly 6.5.2 | Python 3.14.3
 Quality: 89/100 | Created: 2026-02-17

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-impurity-comparison: Gini Impurity vs Entropy Comparison
-Library: plotnine | Python 3.13
-Quality: pending | Created: 2026-02-17
+Library: plotnine 0.15.3 | Python 3.14.3
+Quality: 94/100 | Created: 2026-02-17
 """
 
 import numpy as np

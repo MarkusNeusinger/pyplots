@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: ks-test-comparison
 created: '2026-02-17T20:09:31Z'
-updated: '2026-02-17T20:22:47Z'
+updated: '2026-02-17T20:31:44Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22113799077
 issue: 4130
@@ -10,41 +10,41 @@ library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/ks-test-comparison/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ks-test-comparison/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 86
+quality_score: 90
 review:
   strengths:
-  - 'Excellent spec compliance: all required features (both ECDFs, K-S statistic,
-    max divergence highlight, p-value, legend, Y 0-1) are present and well-implemented'
-  - Strong visual hierarchy with the red annotation system (dashed line, shaded band,
-    D label, boxed summary) guiding the viewer's eye to the key insight
-  - Idiomatic plotnine usage with clean grammar of graphics layering and proper use
-    of inherit_aes=False for annotation layers
-  - Good color choice with Python Blue + complementary orange, fully colorblind-safe
+  - 'Excellent spec compliance: all required features (ECDFs, K-S statistic, max divergence
+    highlight, p-value, legend) present and working'
+  - Strong data storytelling with interpretive subtitle, prominent D label, and shaded
+    divergence region guiding the viewer
+  - Publication-quality typography with all font sizes explicitly configured for the
+    4800x2700 target
+  - Realistic credit scoring context directly from the spec application examples
+  - Clean, idiomatic plotnine code using grammar of graphics layer composition
   weaknesses:
-  - 'Data storytelling could be stronger: the viewer must interpret what D=0.730 means
-    on their own; a brief contextual annotation or subtitle would help convey the
-    significance'
-  - Axis labels lack units — while credit scores are inherently unitless, Cumulative
-    Proportion could use a note about the range
-  - The shaded band at the max divergence point is very subtle (alpha=0.12) and could
-    be slightly more prominent to strengthen the visual emphasis
-  - Design could be elevated further with a descriptive subtitle explaining the comparison
-    context
-  image_description: 'The plot displays two empirical cumulative distribution functions
-    (ECDFs) as step functions comparing credit score distributions for "Bad Customers"
-    (orange, #E8873D) and "Good Customers" (blue, #306998). The x-axis shows Credit
-    Score (~200–1000), and the y-axis shows Cumulative Proportion (0–1.0). A dashed
-    dark red vertical line at approximately score 620 marks the point of maximum divergence
-    between the two distributions. A light red shaded band surrounds this line to
-    emphasize the divergence region. A bold red "D = 0.730" label is placed to the
-    right of the dashed line at the midpoint. A boxed annotation in the lower-center
-    shows "K-S Statistic = 0.730" and "p-value = 9.54e-78" with a light pink background
-    and rounded corners. The legend is positioned in the upper-left with a white background.
-    The title reads "ks-test-comparison · plotnine · pyplots.ai" in bold at the top.
-    The theme is minimal with only subtle horizontal grid lines and no panel border.'
+  - Some wasted horizontal space on the right side from excessive x-axis padding (x_pad
+    * 3)
+  - The shaded rectangle for max divergence is slightly crude — a narrower highlight
+    or just the dashed line might look more refined
+  - Separate annotation DataFrames (df_shade, df_seg) add verbosity, though necessary
+    for plotnine grammar
+  image_description: The plot displays two empirical cumulative distribution functions
+    (ECDFs) rendered as step functions on a light gray (#FAFAFA) background. "Good
+    Customers" is drawn in dark blue (#306998) and "Bad Customers" in orange (#E8873D).
+    The x-axis shows "Credit Score (points)" ranging from approximately 200 to 1000,
+    and the y-axis shows "Cumulative Proportion (0–1)" from 0.0 to 1.0. A bold dashed
+    dark red vertical line at approximately x=620 marks the point of maximum divergence
+    between the two distributions, with a translucent pink shaded rectangle highlighting
+    the divergence region. The label "D = 0.730" appears in bold red to the right
+    of the divergence line. A statistics box near the bottom reads "K-S Statistic
+    = 0.730 | p-value = 9.54e-78" in red on a light pink background. The title "ks-test-comparison
+    · plotnine · pyplots.ai" appears at the top in bold 24pt text. An italic subtitle
+    below reads "Distributions are highly distinct (D > 0.5) — strong evidence the
+    groups differ". The legend is positioned in the upper-left area with a white background
+    and thin gray border, listing both distributions.
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -52,67 +52,65 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 24pt bold, axis titles 20pt,
-          tick labels 16pt, legend title 18pt bold, legend text 16pt'
+        comment: 'All font sizes explicitly set: title 24pt, axis titles 20pt, ticks
+          16pt, legend title 18pt, legend text 16pt'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements anywhere in the plot
+        comment: No overlapping text elements anywhere
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Step lines thick (size=2) and clearly visible; shaded band very subtle
-          at alpha=0.12
+        comment: Step lines thick (size=2), divergence line clearly visible, annotations
+          well-sized
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue vs orange is colorblind-safe with strong contrast
+        comment: Blue and orange colorblind-safe with strong contrast
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 2
         max: 4
         passed: false
-        comment: Good canvas utilization; data naturally leaves lower-right empty
-          but layout is well-balanced overall
+        comment: Good overall but wasted space on right from x_pad * 3; stats box
+          low near axis
       - id: VQ-06
         name: Axis Labels & Title
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Descriptive labels but lack units; credit scores are unitless but
-          Cumulative Proportion could note the range
+        passed: true
+        comment: Descriptive labels with units on both axes
     design_excellence:
-      score: 14
+      score: 16
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
         score: 6
         max: 8
-        passed: false
-        comment: Strong design with custom palette, intentional red annotation system,
-          boxed summary, clean typography. Above defaults but not quite FiveThirtyEight-level
+        passed: true
+        comment: Strong design with custom palette, typography hierarchy, styled legend,
+          subtle background. Above defaults.
       - id: DE-02
         name: Visual Refinement
         score: 5
         max: 6
         passed: true
-        comment: Subtle horizontal grid only, no panel border, styled axis lines,
-          legend with white background, generous margins
+        comment: Grid styling refined, axis lines added, panel border removed, custom
+          margins. Shaded rectangle slightly crude.
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 5
         max: 6
-        passed: false
-        comment: Shaded band, dashed line, and D annotation create a focal point.
-          Credit scoring context is meaningful. No interpretive text to help viewer
-          understand significance of D=0.730
+        passed: true
+        comment: Interpretive subtitle, D label, stats box, shaded region create clear
+          story. Viewer immediately understands.
     spec_compliance:
       score: 15
       max: 15
@@ -122,26 +120,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Correct: two ECDFs as step functions with K-S statistic visualization'
+        comment: 'Correct chart type: two ECDFs as step functions'
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: both ECDFs, K-S statistic, max divergence
-          highlight, p-value, legend, Y-axis 0-1'
+        comment: 'All spec features present: both ECDFs, K-S statistic, max divergence,
+          p-value, legend'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X/Y correctly assigned, axes show full data range
+        comment: X/Y correctly assigned, y-axis 0 to 1
       - id: SC-04
-        name: Title Format
+        name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct format with spec-id, library, pyplots.ai; legend labels descriptive
+        comment: Title format correct, legend labels match data
     data_quality:
       score: 14
       max: 15
@@ -151,21 +149,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Two clearly different distributions (beta(5,2) vs beta(2,4)) produce
-          large K-S statistic of 0.730, demonstrating the test effectively
+        comment: Two clearly different distributions with computed statistics. Single
+          comparison appropriate for spec.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Credit scoring with Good vs Bad customers is a real, neutral business
-          scenario
+        comment: Credit scoring scenario from spec applications, realistic 200-1000
+          range
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Credit scores ~200-1000 are realistic values
+        comment: Credit scores 200-1000 realistic, beta distributions produce plausible
+          shapes
     code_quality:
       score: 9
       max: 10
@@ -175,26 +174,26 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports, data, K-S test, ECDF computation, plot, save structure
+        comment: Clean imports → data → computation → plot → save structure
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) present
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
         passed: false
-        comment: Slightly verbose with multiple DataFrames for annotation layers and
-          manual ECDF computation
+        comment: Slightly verbose with separate DataFrames for annotation layers,
+          though follows plotnine idiom
       - id: CQ-05
         name: Output & API
         score: 1
@@ -210,16 +209,16 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Excellent grammar of graphics layering with geom_step + geom_rect
-          + geom_segment + annotate, proper aes(), inherit_aes=False
+        comment: 'Expert plotnine grammar of graphics: layer composition, aes mapping,
+          inherit_aes=False, geom_step, annotate'
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
-        passed: false
-        comment: Uses plotnine-specific annotate label with boxstyle, tuple legend_position,
-          element_* theme system, but not deeply distinctive
-  verdict: REJECTED
+        passed: true
+        comment: Uses annotate('label') with boxstyle, scale_color_manual, element_*
+          theme customization
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - scipy

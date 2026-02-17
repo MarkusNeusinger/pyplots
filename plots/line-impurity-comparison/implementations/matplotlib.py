@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-impurity-comparison: Gini Impurity vs Entropy Comparison
 Library: matplotlib 3.10.8 | Python 3.14.3
 Quality: 89/100 | Created: 2026-02-17
@@ -45,9 +45,9 @@ ax.plot(
     path_effects=[pe.Stroke(linewidth=5, foreground="white"), pe.Normal()],
 )
 
-# Mark both maxima at p=0.5
-ax.plot(0.5, gini_max, "o", color="#306998", markersize=10, zorder=5)
-ax.plot(0.5, entropy_max, "o", color="#C1694F", markersize=10, zorder=5)
+# Mark both maxima at p=0.5 with polished markers
+ax.plot(0.5, gini_max, "o", color="#306998", markersize=11, zorder=5, markeredgecolor="white", markeredgewidth=2)
+ax.plot(0.5, entropy_max, "o", color="#C1694F", markersize=11, zorder=5, markeredgecolor="white", markeredgewidth=2)
 
 # Annotate Entropy maximum (arrow from left side for balance)
 ax.annotate(
@@ -66,27 +66,39 @@ ax.annotate(
 ax.annotate(
     "Gini peak = 0.5\n$p = 0.5$",
     xy=(0.5, gini_max),
-    xytext=(0.80, 0.22),
+    xytext=(0.72, 0.35),
     fontsize=15,
     color="#1E4A6E",
     fontweight="medium",
-    arrowprops={"arrowstyle": "->", "color": "#306998", "lw": 1.8, "connectionstyle": "arc3,rad=0.2"},
+    arrowprops={"arrowstyle": "->", "color": "#306998", "lw": 1.8, "connectionstyle": "arc3,rad=0.15"},
     ha="center",
-    va="top",
+    va="bottom",
 )
+
+# Bracket showing the difference at p=0.5
+ax.annotate(
+    "",
+    xy=(0.505, entropy_max),
+    xytext=(0.505, gini_max),
+    arrowprops={"arrowstyle": "<->", "color": "#7B8FA1", "lw": 1.5},
+)
+ax.text(0.525, 0.75, "$\\Delta = 0.5$", fontsize=13, color="#5A6B7A", ha="left", va="center", fontstyle="italic")
 
 # Vertical dashed line at p=0.5 for maximum impurity
 ax.axvline(x=0.5, ymin=0, ymax=0.92, color="#AAAAAA", linestyle=":", linewidth=1.2, zorder=1)
-ax.text(0.5, -0.07, "Maximum\nimpurity", fontsize=12, color="#666666", ha="center", va="top", fontstyle="italic")
+ax.text(0.5, 0.04, "Maximum\nimpurity", fontsize=13, color="#777777", ha="center", va="bottom", fontstyle="italic")
 
 # Style
 ax.set_xlabel("Probability of Class 1 ($p$)", fontsize=20)
-ax.set_ylabel("Impurity / Information Loss (normalized)", fontsize=20)
+ax.set_ylabel("Impurity (normalized)", fontsize=20)
 ax.set_title("line-impurity-comparison · matplotlib · pyplots.ai", fontsize=24, fontweight="medium")
 ax.tick_params(axis="both", labelsize=16)
-ax.legend(fontsize=15, loc="upper left", framealpha=0.9, edgecolor="#CCCCCC")
+legend = ax.legend(
+    fontsize=15, loc="upper left", framealpha=0.92, edgecolor="#CCCCCC", fancybox=True, shadow=False, borderpad=1.0
+)
+legend.get_frame().set_linewidth(0.8)
 ax.set_xlim(-0.02, 1.02)
-ax.set_ylim(-0.10, 1.08)
+ax.set_ylim(-0.03, 1.08)
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 ax.spines["left"].set_color("#BBBBBB")

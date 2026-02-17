@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-impurity-comparison: Gini Impurity vs Entropy Comparison
 Library: highcharts unknown | Python 3.14.3
-Quality: 89/100 | Created: 2026-02-17
+Quality: 90/100 | Created: 2026-02-17
 """
 
 import tempfile

@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 ks-test-comparison: Kolmogorov-Smirnov Plot for Distribution Comparison
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 87/100 | Created: 2026-02-17
 """
 
 import numpy as np
@@ -51,35 +50,35 @@ bad_xy = list(zip(bad_x_steps.tolist(), bad_y_steps.tolist(), strict=True))
 # Shared font family for consistency
 _font = "Helvetica, Arial, sans-serif"
 
-# Custom style — distinct palette: blue for Good, orange for Bad, dark green for KS
+# Custom style — refined palette: blue for Good, orange for Bad, forest green for KS
 custom_style = Style(
     background="white",
-    plot_background="#fafafa",
+    plot_background="white",
     foreground="#2a2a2a",
     foreground_strong="#111111",
-    foreground_subtle="#e0e0e0",
+    foreground_subtle="#ececec",
     colors=(
         "#306998",  # Good Customers — Python Blue
         "#E8590C",  # Bad Customers — burnt orange
-        "#1a7a3a",  # KS vertical line — dark green (high contrast vs both)
-        "#1a7a3a",  # KS annotation dot (bottom) — matches KS line
-        "#1a7a3a",  # KS annotation dot (top) — matches KS line
+        "#1a7a3a",  # KS vertical line — forest green
+        "#1a7a3a",  # KS annotation dot (bottom)
+        "#1a7a3a",  # KS annotation dot (top)
     ),
-    opacity="0.95",
+    opacity="0.92",
     opacity_hover="1",
     stroke_opacity="1",
     stroke_opacity_hover="1",
-    stroke_width=7,
-    guide_stroke_color="#e8e8e8",
-    guide_stroke_dasharray="4, 6",
-    major_guide_stroke_color="#d0d0d0",
+    stroke_width=8,
+    guide_stroke_color="#e0e0e0",
+    guide_stroke_dasharray="6, 8",
+    major_guide_stroke_color="#cccccc",
     major_guide_stroke_dasharray="0",
-    title_font_size=72,
-    label_font_size=48,
-    major_label_font_size=42,
-    legend_font_size=42,
-    value_font_size=40,
-    value_label_font_size=40,
+    title_font_size=76,
+    label_font_size=50,
+    major_label_font_size=44,
+    legend_font_size=46,
+    value_font_size=52,
+    value_label_font_size=52,
     tooltip_font_size=36,
     font_family=_font,
     label_font_family=_font,
@@ -90,7 +89,7 @@ custom_style = Style(
     value_label_font_family=_font,
 )
 
-# Create XY chart with refined layout
+# Create XY chart — tighter margins for better canvas utilization
 chart = pygal.XY(
     style=custom_style,
     width=4800,
@@ -104,37 +103,41 @@ chart = pygal.XY(
     show_y_guides=True,
     legend_at_bottom=True,
     legend_at_bottom_columns=2,
-    legend_box_size=28,
+    legend_box_size=36,
     truncate_legend=-1,
     range=(0, 1.05),
     print_values=False,
     print_labels=True,
     print_zeroes=False,
     margin=60,
-    margin_top=90,
-    margin_bottom=180,
-    margin_left=180,
-    margin_right=100,
+    margin_top=80,
+    margin_bottom=160,
+    margin_left=150,
+    margin_right=80,
+    x_value_formatter=lambda x: f"{x:.0f}",
+    value_formatter=lambda y: f"{y:.2f}",
+    y_labels_major_count=6,
+    show_minor_y_labels=False,
     js=[],
 )
 
-# Series 1: Good Customers ECDF — prominent blue line
-chart.add("Good Customers", good_xy, stroke_style={"width": 8})
+# Series 1: Good Customers ECDF — bold blue line
+chart.add("Good Customers", good_xy, stroke_style={"width": 9})
 
-# Series 2: Bad Customers ECDF — prominent orange line
-chart.add("Bad Customers", bad_xy, stroke_style={"width": 8})
+# Series 2: Bad Customers ECDF — bold orange line
+chart.add("Bad Customers", bad_xy, stroke_style={"width": 9})
 
-# Series 3: KS vertical line — dark green dashed, thick for focal point
+# Series 3: KS vertical line — dashed green, thick for emphasis
 ks_line_points = [(max_x, min(max_y_good, max_y_bad)), (max_x, max(max_y_good, max_y_bad))]
-chart.add(None, ks_line_points, stroke_style={"width": 6, "dasharray": "14, 8"}, show_dots=False)
+chart.add(None, ks_line_points, stroke_style={"width": 7, "dasharray": "16, 10"}, show_dots=False)
 
-# Series 4: KS annotation dot at bottom of divergence
+# Series 4: KS annotation dot at bottom of divergence with D statistic
 chart.add(
     None,
     [{"value": (max_x, min(max_y_good, max_y_bad)), "label": f"D = {ks_stat:.3f}"}],
     stroke_style={"width": 0},
     show_dots=True,
-    dots_size=18,
+    dots_size=20,
 )
 
 # Series 5: KS annotation dot at top of divergence with p-value
@@ -143,7 +146,7 @@ chart.add(
     [{"value": (max_x, max(max_y_good, max_y_bad)), "label": f"p = {p_value:.2e}"}],
     stroke_style={"width": 0},
     show_dots=True,
-    dots_size=18,
+    dots_size=20,
 )
 
 # Save

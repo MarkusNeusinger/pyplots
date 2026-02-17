@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 ks-test-comparison: Kolmogorov-Smirnov Plot for Distribution Comparison
 Library: matplotlib 3.10.8 | Python 3.14.3
-Quality: 85/100 | Created: 2026-02-17
+Quality: 96/100 | Created: 2026-02-17
 """
 
 import matplotlib.pyplot as plt

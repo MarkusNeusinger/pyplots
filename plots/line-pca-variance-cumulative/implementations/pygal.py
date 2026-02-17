@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-pca-variance-cumulative: Cumulative Explained Variance for PCA Component Selection
-Library: pygal | Python 3.13
-Quality: pending | Created: 2026-02-17
+Library: pygal 3.1.0 | Python 3.14.3
+Quality: 75/100 | Created: 2026-02-17
 """
 
 import numpy as np

@@ -1,58 +1,90 @@
-""" pyplots.ai
+"""pyplots.ai
 ks-test-comparison: Kolmogorov-Smirnov Plot for Distribution Comparison
 Library: plotly 6.5.2 | Python 3.14.3
-Quality: 81/100 | Created: 2026-02-17
 """
 
 import numpy as np
 import plotly.graph_objects as go
-from scipy import stats
+from scipy.stats import ecdf, ks_2samp
 
 
-# Data
+# Data — credit scoring context with varied distribution shapes
 np.random.seed(42)
-good_customers = np.random.beta(5, 2, size=500) * 100
-bad_customers = np.random.beta(2, 5, size=500) * 100
+good_customers = np.random.beta(5, 2, size=200) * 100
+bad_customers = np.random.beta(1.5, 4, size=200) * 100
 
-good_sorted = np.sort(good_customers)
-bad_sorted = np.sort(bad_customers)
+# ECDFs via scipy
+good_ecdf_result = ecdf(good_customers)
+bad_ecdf_result = ecdf(bad_customers)
 
-good_ecdf = np.arange(1, len(good_sorted) + 1) / len(good_sorted)
-bad_ecdf = np.arange(1, len(bad_sorted) + 1) / len(bad_sorted)
+good_sorted = good_ecdf_result.cdf.quantiles
+good_cdf = good_ecdf_result.cdf.probabilities
+bad_sorted = bad_ecdf_result.cdf.quantiles
+bad_cdf = bad_ecdf_result.cdf.probabilities
 
 # K-S test
-ks_stat, p_value = stats.ks_2samp(good_customers, bad_customers)
+ks_stat, p_value = ks_2samp(good_customers, bad_customers)
 
 # Find the point of maximum divergence
 all_values = np.sort(np.concatenate([good_sorted, bad_sorted]))
-good_cdf_at_all = np.searchsorted(good_sorted, all_values, side="right") / len(good_sorted)
-bad_cdf_at_all = np.searchsorted(bad_sorted, all_values, side="right") / len(bad_sorted)
+good_cdf_at_all = good_ecdf_result.cdf.evaluate(all_values)
+bad_cdf_at_all = bad_ecdf_result.cdf.evaluate(all_values)
 diff = np.abs(good_cdf_at_all - bad_cdf_at_all)
 max_idx = np.argmax(diff)
 max_x = all_values[max_idx]
 max_good_y = good_cdf_at_all[max_idx]
 max_bad_y = bad_cdf_at_all[max_idx]
+y_lo = min(max_good_y, max_bad_y)
+y_hi = max(max_good_y, max_bad_y)
+
+# Colors
+blue = "#306998"
+orange = "#E8590C"
+green = "#2B8A3E"
 
 # Plot
 fig = go.Figure()
 
+# Good Customers ECDF
 fig.add_trace(
     go.Scatter(
         x=good_sorted,
-        y=good_ecdf,
+        y=good_cdf,
         mode="lines",
         name="Good Customers",
-        line={"color": "#306998", "width": 3, "shape": "hv"},
+        line={"color": blue, "width": 3.5, "shape": "hv"},
+        hovertemplate="Credit Score: %{x:.1f}<br>Cumulative: %{y:.3f}<extra>Good</extra>",
     )
 )
 
+# Bad Customers ECDF
 fig.add_trace(
     go.Scatter(
         x=bad_sorted,
-        y=bad_ecdf,
+        y=bad_cdf,
         mode="lines",
         name="Bad Customers",
-        line={"color": "#E8590C", "width": 3, "shape": "hv"},
+        line={"color": orange, "width": 3.5, "shape": "hv"},
+        hovertemplate="Credit Score: %{x:.1f}<br>Cumulative: %{y:.3f}<extra>Bad</extra>",
+    )
+)
+
+# Shaded region between ECDFs around the divergence area
+region_width = 12
+region_mask = (all_values >= max_x - region_width) & (all_values <= max_x + region_width)
+region_x = all_values[region_mask]
+region_upper = np.maximum(good_cdf_at_all[region_mask], bad_cdf_at_all[region_mask])
+region_lower = np.minimum(good_cdf_at_all[region_mask], bad_cdf_at_all[region_mask])
+
+fig.add_trace(
+    go.Scatter(
+        x=np.concatenate([region_x, region_x[::-1]]),
+        y=np.concatenate([region_upper, region_lower[::-1]]),
+        fill="toself",
+        fillcolor="rgba(43,138,62,0.12)",
+        line={"width": 0},
+        showlegend=False,
+        hoverinfo="skip",
     )
 )
 
@@ -60,61 +92,78 @@ fig.add_trace(
 fig.add_trace(
     go.Scatter(
         x=[max_x, max_x],
-        y=[min(max_good_y, max_bad_y), max(max_good_y, max_bad_y)],
-        mode="lines",
-        name=f"K-S Statistic = {ks_stat:.3f}",
-        line={"color": "#2B8A3E", "width": 3, "dash": "dash"},
+        y=[y_lo, y_hi],
+        mode="lines+markers",
+        name=f"Max Divergence (D = {ks_stat:.3f})",
+        line={"color": green, "width": 3, "dash": "dash"},
+        marker={"color": green, "size": 10, "symbol": "diamond"},
+        hovertemplate=(f"Max Divergence<br>Score: {max_x:.1f}<br>D = {ks_stat:.3f}<extra></extra>"),
     )
 )
 
-# Annotation for K-S statistic and p-value
+# Annotation for K-S statistic and p-value — offset to the right
+p_text = f"p = {p_value:.2e}" if p_value >= 0.001 else "p < 0.001"
 fig.add_annotation(
     x=max_x,
-    y=(max_good_y + max_bad_y) / 2,
-    text=f"D = {ks_stat:.3f}<br>p < 0.001",
+    y=(y_lo + y_hi) / 2,
+    text=f"<b>K-S Statistic</b><br>D = {ks_stat:.3f}<br>{p_text}",
     showarrow=True,
     arrowhead=2,
-    arrowsize=1.5,
-    arrowwidth=2,
-    arrowcolor="#2B8A3E",
-    ax=80,
-    ay=-40,
-    font={"size": 18, "color": "#2B8A3E"},
-    bordercolor="#2B8A3E",
+    arrowsize=1.2,
+    arrowwidth=2.5,
+    arrowcolor=green,
+    ax=140,
+    ay=-50,
+    font={"size": 18, "color": "#333333"},
+    bordercolor=green,
     borderwidth=2,
-    borderpad=8,
-    bgcolor="rgba(255,255,255,0.9)",
+    borderpad=10,
+    bgcolor="rgba(255,255,255,0.95)",
 )
+
+# Horizontal reference lines at 0.25, 0.50, 0.75
+for y_ref in [0.25, 0.50, 0.75]:
+    fig.add_shape(
+        type="line", x0=0, x1=100, y0=y_ref, y1=y_ref, line={"color": "rgba(0,0,0,0.12)", "width": 1, "dash": "dot"}
+    )
 
 # Style
 fig.update_layout(
-    title={"text": "ks-test-comparison · plotly · pyplots.ai", "font": {"size": 28}},
+    title={
+        "text": "ks-test-comparison · plotly · pyplots.ai",
+        "font": {"size": 28, "color": "#333333", "family": "Arial, sans-serif"},
+        "x": 0.5,
+        "xanchor": "center",
+    },
     xaxis={
-        "title": {"text": "Credit Score", "font": {"size": 22}},
+        "title": {"text": "Credit Score", "font": {"size": 22}, "standoff": 15},
         "tickfont": {"size": 18},
         "showgrid": False,
         "zeroline": False,
+        "range": [-2, 102],
+        "dtick": 20,
     },
     yaxis={
-        "title": {"text": "Cumulative Proportion", "font": {"size": 22}},
+        "title": {"text": "Cumulative Proportion", "font": {"size": 22}, "standoff": 10},
         "tickfont": {"size": 18},
-        "range": [0, 1.05],
-        "showgrid": True,
-        "gridcolor": "rgba(0,0,0,0.08)",
-        "gridwidth": 1,
+        "range": [-0.02, 1.05],
+        "showgrid": False,
         "zeroline": False,
+        "dtick": 0.25,
     },
     template="plotly_white",
     legend={
         "font": {"size": 18},
         "x": 0.02,
         "y": 0.98,
-        "bgcolor": "rgba(255,255,255,0.9)",
-        "bordercolor": "rgba(0,0,0,0.1)",
+        "bgcolor": "rgba(255,255,255,0.92)",
+        "bordercolor": "rgba(0,0,0,0.15)",
         "borderwidth": 1,
     },
     plot_bgcolor="white",
-    margin={"l": 80, "r": 40, "t": 80, "b": 80},
+    paper_bgcolor="white",
+    margin={"l": 90, "r": 50, "t": 90, "b": 80},
+    hoverlabel={"font": {"size": 16}},
 )
 
 # Save

@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: line-pca-variance-cumulative
 created: '2026-02-17T21:42:27Z'
-updated: '2026-02-17T21:46:19Z'
+updated: '2026-02-17T21:57:36Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22116658657
 issue: 4131
@@ -10,43 +10,43 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-pca-variance-cumulative/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-pca-variance-cumulative/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-pca-variance-cumulative/highcharts/plot.html
-quality_score: 81
+quality_score: 93
 review:
   strengths:
-  - Excellent spec compliance — all required features plus the optional bar chart
-    overlay for individual variance
-  - Threshold crossing points clearly marked with distinctive diamond markers in matching
-    colors
-  - Highcharts plotLines feature used effectively for threshold reference lines with
-    inline labels
-  - Realistic industrial sensor data scenario with plausible PCA variance distribution
-  - All text sizes explicitly set and readable at 4800x2700
+  - Excellent data storytelling with callout annotations that directly communicate
+    PCA insights at threshold crossings
+  - Well-executed combo chart combining column bars (individual variance), line (cumulative),
+    and scatter (threshold markers) in a single cohesive visualization
+  - 'Strong visual refinement: dotted grids, subtle column transparency, line shadows,
+    custom typography with explicit font weights'
+  - Realistic data generation using latent factor model with noise, producing plausible
+    industrial sensor PCA results
+  - 'Good use of Highcharts-specific features: plotLines, annotations module, shared
+    tooltips'
   weaknesses:
-  - Right side of the chart has wasted space — threshold labels and legend pushed
-    far to the right; consider moving legend inside the plot area or to the bottom
-  - Design could be more polished — the default Highcharts axis chrome and grid could
-    be refined further for a more publication-ready look
-  - The Y-axis max of 110 creates unnecessary empty space above 100%; consider capping
-    at 105 or 100 with a small buffer
-  - No direct annotation at the elbow point explaining the insight (e.g., 3 components
-    capture 90% of variance) which would strengthen the data storytelling
-  image_description: The plot displays a combination column-and-line chart on a white
-    background. Light blue semi-transparent columns show the individual explained
-    variance for each of 12 PCA components (component 1 ~48%, component 2 ~31%, declining
-    rapidly to near-zero for components 5-12). A blue line with filled circle markers
-    traces the cumulative explained variance, starting at ~48% and reaching ~100%
-    by component 12. Two horizontal dashed orange lines mark the 90% and 95% variance
-    thresholds, with right-aligned labels ("90% Threshold" in orange, "95% Threshold"
-    in purple). An orange diamond marker highlights the 90% crossing at component
-    3, and a purple diamond marker highlights the 95% crossing at component 4. The
-    legend is positioned in the upper-right corner listing all four series. The title
-    reads "PCA Component Selection · line-pca-variance-cumulative · highcharts · pyplots.ai"
-    with a subtitle "Industrial Sensor Data (12 features → explained variance by principal
-    components)". X-axis is labeled "Number of Components" (1-12), Y-axis is "Explained
-    Variance (%)" (0-110).
+  - 'Bottom spacing (spacingBottom: 200) is slightly excessive, creating unnecessary
+    whitespace below the x-axis'
+  - LineSeries is imported from highcharts_core.options.series.area rather than highcharts_core.options.series.line
+    — works but is unconventional
+  image_description: 'The plot displays a PCA cumulative explained variance chart
+    on a light gray (#fafafa) background. A blue (#306998) line with circle markers
+    traces the cumulative variance from ~48% at component 1, rising steeply through
+    components 2-4, then plateauing near 100% by component 12. Light blue semi-transparent
+    column bars show individual variance ratios beneath the line — the first component''s
+    bar reaches ~48%, the second ~31%, then rapidly diminishing. Two horizontal dashed
+    threshold lines cross the plot: an orange line at 90% and a purple line at 95%.
+    Orange and purple diamond markers highlight where the cumulative line crosses
+    these thresholds (at components 3 and 4 respectively). Callout annotations with
+    styled borders read "Only 3 components explain 90.0% of variance" (orange-bordered)
+    and "4 components reach 95.3% — diminishing returns beyond" (purple-bordered).
+    The title reads "PCA Component Selection · line-pca-variance-cumulative · highcharts
+    · pyplots.ai" with a subtitle "Industrial Sensor Data (12 features) — explained
+    variance by principal components". X-axis labeled "Number of Components" (1-12),
+    Y-axis labeled "Explained Variance (%)" (0-100%). A vertical legend in the lower-right
+    lists all four series.'
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -54,66 +54,68 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 44px, axis titles 38px, tick
-          labels 30px, legend 28px, threshold labels 26px'
+        comment: 'All font sizes explicitly set: title 44px, axis titles 34px, tick
+          labels 28px, annotations 26px, legend 26px. All perfectly readable.'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements anywhere
+        comment: No overlapping text anywhere. Annotations well-offset from anchor
+          points.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Line markers and diamond markers well-sized; columns for components
-          5-12 tiny but data-accurate
+        comment: Line markers (radius 10) and threshold diamonds (radius 16) well-sized.
+          Column bars for components 5+ are very small but accurately reflect data.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue, orange, purple palette is colorblind-safe
+        comment: Blue, orange, purple palette is colorblind-safe with good contrast.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Decent layout but right margin wide, legend somewhat isolated, threshold
-          labels at far right edge
+        comment: 'Plot fills canvas well overall. Slightly excessive bottom margin
+          (spacingBottom: 200).'
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: Explained Variance (%) and Number
-          of Components'
+        comment: 'Descriptive labels with units: Number of Components, Explained Variance
+          (%).'
     design_excellence:
-      score: 11
+      score: 17
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 7
         max: 8
-        passed: false
-        comment: Custom palette and intentional threshold colors, above defaults but
-          not publication-level
+        passed: true
+        comment: Custom background, refined typography, line shadows, callout annotations
+          with styled borders. Approaches publication quality.
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 5
         max: 6
-        passed: false
-        comment: Subtle grid lines, clean background, but retains default Highcharts
-          axis chrome
+        passed: true
+        comment: Dotted grid lines, custom spacing, rounded annotation borders, subtle
+          column transparency (alpha 0.25), clean axis styling.
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 5
         max: 6
-        passed: false
-        comment: Threshold lines and crossing markers create hierarchy; column overlay
-          helps convey diminishing returns; lacks direct insight annotation
+        passed: true
+        comment: Strong storytelling with callout annotations communicating PCA insights,
+          threshold lines guiding the eye, diamond markers at crossing points, and
+          column bars for context.
     spec_compliance:
       score: 15
       max: 15
@@ -123,52 +125,56 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Correct: line plot for cumulative variance as primary chart type'
+        comment: Correct cumulative line plot with optional individual variance bar
+          overlay.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: All spec features present including optional bar overlay and threshold
-          crossing markers
+        comment: 'All spec features present: cumulative sum, percentage display, dashed
+          threshold lines at 90% and 95%, markers, individual variance bars.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=component number, Y=explained variance %. Correct mapping
+        comment: X-axis starts at 1, Y-axis 0-100%, cumulative variance correctly
+          computed and mapped.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title includes spec-id, library, pyplots.ai. Legend labels descriptive
-          and accurate
+        comment: Title contains spec-id, library, and pyplots.ai. Legend labels are
+          descriptive and informative.
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Classic PCA elbow curve with both individual and cumulative variance;
-          first 3 components dominate
+        comment: 'Shows all key PCA variance patterns: steep initial rise, diminishing
+          returns, threshold crossings, individual vs cumulative comparison.'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Industrial Sensor Data (12 features) is a realistic neutral scenario
+        comment: Industrial Sensor Data (12 features) is a realistic, neutral PCA
+          use case with plausible latent factor structure.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 'Realistic values from 3-latent-factor model: ~48%, ~31%, ~11%'
+        comment: 'Realistic values: first component ~48%, second ~31%, rapid diminishment
+          after 4 components.'
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -176,32 +182,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Flat structure: imports, data, chart config, series, export'
+        comment: Clean Imports → Data → Plot → Save flow. No functions or classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) set at the start.
       - id: CQ-03
         name: Clean Imports
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: LineSeries imported from options.series.area (misleading module path)
+        passed: true
+        comment: All imports are used. No unnecessary imports.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, Pythonic, appropriate complexity
+        comment: Elegant eigendecomposition approach avoids sklearn dependency. Appropriate
+          complexity.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via Selenium screenshot
-    library_mastery:
+        comment: Saves as plot.png and plot.html. No deprecated functions.
+    library_features:
       score: 8
       max: 10
       items:
@@ -210,20 +217,21 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Uses HighchartsOptions, typed series classes, plotLines, shared tooltips,
-          combo chart
+        comment: 'Proper use of Highcharts Python API: HighchartsOptions, typed series
+          classes, plotLines, chart-level annotations.'
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: plotLines with inline labels, shared tooltip, multi-series-type combo
-          chart are distinctive Highcharts capabilities
-  verdict: REJECTED
+        comment: 'Uses Highcharts-distinctive features: plotLines with inline labels,
+          annotations module with callout shapes, shared tooltips, combo chart.'
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - selenium
   techniques:
+  - annotations
   - html-export
   - layer-composition
   patterns:
@@ -233,3 +241,4 @@ impl_tags:
   - cumulative-sum
   styling:
   - grid-styling
+  - alpha-blending

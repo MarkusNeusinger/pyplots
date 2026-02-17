@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-pca-variance-cumulative: Cumulative Explained Variance for PCA Component Selection
 Library: highcharts unknown | Python 3.14.3
-Quality: 81/100 | Created: 2026-02-17
+Quality: 93/100 | Created: 2026-02-17
 """
 
 import tempfile

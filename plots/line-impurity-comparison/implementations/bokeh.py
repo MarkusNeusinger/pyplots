@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-impurity-comparison: Gini Impurity vs Entropy Comparison
 Library: bokeh 3.8.2 | Python 3.14.3
 Quality: 89/100 | Created: 2026-02-17
@@ -6,7 +6,7 @@ Quality: 89/100 | Created: 2026-02-17
 
 import numpy as np
 from bokeh.io import export_png, output_file, save
-from bokeh.models import BoxAnnotation, ColumnDataSource, HoverTool, Label, Legend, NumeralTickFormatter, Span
+from bokeh.models import ColumnDataSource, HoverTool, Label, Legend, NumeralTickFormatter, Span
 from bokeh.plotting import figure
 
 
@@ -24,6 +24,11 @@ entropy = np.nan_to_num(entropy, nan=0.0)
 source_gini = ColumnDataSource(data={"p": p_vals, "impurity": gini})
 source_entropy = ColumnDataSource(data={"p": p_vals, "impurity": entropy})
 
+# Area between curves to visually emphasize the difference
+source_diff = ColumnDataSource(
+    data={"p": np.concatenate([p_vals, p_vals[::-1]]), "fill": np.concatenate([entropy, gini[::-1]])}
+)
+
 # Plot
 fig = figure(
     width=4800,
@@ -32,12 +37,11 @@ fig = figure(
     x_axis_label="Probability (p)",
     y_axis_label="Impurity Measure (normalized)",
     x_range=(-0.02, 1.02),
-    y_range=(-0.05, 1.15),
+    y_range=(-0.05, 1.10),
 )
 
-# Highlight region around p=0.5 where both measures peak
-peak_region = BoxAnnotation(left=0.35, right=0.65, fill_alpha=0.06, fill_color="#306998")
-fig.add_layout(peak_region)
+# Shaded area between curves shows the gap — both peak at p=0.5 but differ in scale
+fig.patch(x="p", y="fill", source=source_diff, fill_color="#D4A017", fill_alpha=0.08, line_alpha=0)
 
 # Vertical reference line at p=0.5 using Span
 ref_line = Span(
@@ -60,7 +64,7 @@ fig.segment(x0=[0.5], y0=[0.5], x1=[0.5], y1=[1.0], line_color="#666666", line_w
 # Annotation label with background for visual hierarchy
 max_label = Label(
     x=0.53,
-    y=1.02,
+    y=1.00,
     text="p = 0.5  (maximum impurity)",
     text_font_size="32pt",
     text_font_style="bold",
@@ -75,7 +79,7 @@ fig.add_layout(max_label)
 
 # Value labels at each maximum dot
 gini_val_label = Label(
-    x=0.28, y=0.52, text="Gini max = 0.5", text_font_size="24pt", text_color="#306998", text_font_style="italic"
+    x=0.18, y=0.44, text="Gini max = 0.5", text_font_size="24pt", text_color="#306998", text_font_style="italic"
 )
 fig.add_layout(gini_val_label)
 
@@ -83,6 +87,23 @@ entropy_val_label = Label(
     x=0.62, y=0.88, text="Entropy max = 1.0", text_font_size="24pt", text_color="#B8860B", text_font_style="italic"
 )
 fig.add_layout(entropy_val_label)
+
+# Practical insight annotation — key educational takeaway
+insight_label = Label(
+    x=0.62,
+    y=0.18,
+    text="Both criteria agree on optimal splits →\nsimilar tree structures in practice",
+    text_font_size="24pt",
+    text_color="#555555",
+    text_font_style="italic",
+    text_line_height=1.4,
+    background_fill_color="white",
+    background_fill_alpha=0.85,
+    border_line_color="#aaaaaa",
+    border_line_alpha=0.5,
+    border_line_width=1,
+)
+fig.add_layout(insight_label)
 
 # HoverTool for interactive HTML export
 hover = HoverTool(

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 ks-test-comparison: Kolmogorov-Smirnov Plot for Distribution Comparison
 Library: plotly 6.5.2 | Python 3.14.3
 Quality: 89/100 | Created: 2026-02-17
@@ -9,10 +9,10 @@ import plotly.graph_objects as go
 from scipy.stats import ecdf, ks_2samp
 
 
-# Data — credit scoring context with varied distribution shapes
+# Data — credit scoring context with overlapping distributions
 np.random.seed(42)
-good_customers = np.random.beta(5, 2, size=200) * 100
-bad_customers = np.random.beta(1.5, 4, size=200) * 100
+good_customers = np.random.beta(4, 2.5, size=200) * 100
+bad_customers = np.random.beta(2, 3.5, size=200) * 100
 
 # ECDFs via scipy
 good_ecdf_result = ecdf(good_customers)
@@ -38,10 +38,13 @@ max_bad_y = bad_cdf_at_all[max_idx]
 y_lo = min(max_good_y, max_bad_y)
 y_hi = max(max_good_y, max_bad_y)
 
-# Colors
+# Colors — refined palette
 blue = "#306998"
 orange = "#E8590C"
 green = "#2B8A3E"
+axis_color = "#666666"
+text_dark = "#2D2D2D"
+spine_color = "#CCCCCC"
 
 # Plot
 fig = go.Figure()
@@ -53,8 +56,8 @@ fig.add_trace(
         y=good_cdf,
         mode="lines",
         name="Good Customers",
-        line={"color": blue, "width": 3.5, "shape": "hv"},
-        hovertemplate="Credit Score: %{x:.1f}<br>Cumulative: %{y:.3f}<extra>Good</extra>",
+        line={"color": blue, "width": 4, "shape": "hv"},
+        hovertemplate="<b>Good Customers</b><br>Credit Score: %{x:.1f}<br>Cumulative: %{y:.3f}<extra></extra>",
     )
 )
 
@@ -65,13 +68,13 @@ fig.add_trace(
         y=bad_cdf,
         mode="lines",
         name="Bad Customers",
-        line={"color": orange, "width": 3.5, "shape": "hv"},
-        hovertemplate="Credit Score: %{x:.1f}<br>Cumulative: %{y:.3f}<extra>Bad</extra>",
+        line={"color": orange, "width": 4, "shape": "hv"},
+        hovertemplate="<b>Bad Customers</b><br>Credit Score: %{x:.1f}<br>Cumulative: %{y:.3f}<extra></extra>",
     )
 )
 
-# Shaded region between ECDFs around the divergence area
-region_width = 12
+# Shaded region between ECDFs at the divergence zone
+region_width = 10
 region_mask = (all_values >= max_x - region_width) & (all_values <= max_x + region_width)
 region_x = all_values[region_mask]
 region_upper = np.maximum(good_cdf_at_all[region_mask], bad_cdf_at_all[region_mask])
@@ -89,7 +92,7 @@ fig.add_trace(
     )
 )
 
-# Maximum divergence line
+# Maximum divergence line with endpoint markers
 fig.add_trace(
     go.Scatter(
         x=[max_x, max_x],
@@ -97,12 +100,12 @@ fig.add_trace(
         mode="lines+markers",
         name=f"Max Divergence (D = {ks_stat:.3f})",
         line={"color": green, "width": 3, "dash": "dash"},
-        marker={"color": green, "size": 10, "symbol": "diamond"},
-        hovertemplate=(f"Max Divergence<br>Score: {max_x:.1f}<br>D = {ks_stat:.3f}<extra></extra>"),
+        marker={"color": green, "size": 11, "symbol": "diamond", "line": {"color": "white", "width": 1.5}},
+        hovertemplate=(f"<b>Max Divergence</b><br>Score: {max_x:.1f}<br>D = {ks_stat:.3f}<extra></extra>"),
     )
 )
 
-# Annotation for K-S statistic and p-value — offset to the right
+# Annotation for K-S statistic and p-value — positioned close to divergence
 p_text = f"p = {p_value:.2e}" if p_value >= 0.001 else "p < 0.001"
 fig.add_annotation(
     x=max_x,
@@ -110,46 +113,53 @@ fig.add_annotation(
     text=f"<b>K-S Statistic</b><br>D = {ks_stat:.3f}<br>{p_text}",
     showarrow=True,
     arrowhead=2,
-    arrowsize=1.2,
+    arrowsize=1.0,
     arrowwidth=2.5,
     arrowcolor=green,
-    ax=140,
-    ay=-50,
-    font={"size": 18, "color": "#333333"},
+    ax=90,
+    ay=-40,
+    font={"size": 18, "color": text_dark, "family": "Arial, sans-serif"},
     bordercolor=green,
     borderwidth=2,
     borderpad=10,
     bgcolor="rgba(255,255,255,0.95)",
 )
 
-# Horizontal reference lines at 0.25, 0.50, 0.75
+# Horizontal reference lines at quartiles
 for y_ref in [0.25, 0.50, 0.75]:
     fig.add_shape(
-        type="line", x0=0, x1=100, y0=y_ref, y1=y_ref, line={"color": "rgba(0,0,0,0.12)", "width": 1, "dash": "dot"}
+        type="line", x0=0, x1=100, y0=y_ref, y1=y_ref, line={"color": "rgba(0,0,0,0.08)", "width": 1, "dash": "dot"}
     )
+
+# Subtle axis spines — bottom and left only
+fig.add_shape(type="line", x0=0, x1=100, y0=0, y1=0, line={"color": spine_color, "width": 1.5})
+fig.add_shape(type="line", x0=0, x1=0, y0=0, y1=1, line={"color": spine_color, "width": 1.5})
 
 # Style
 fig.update_layout(
     title={
         "text": "ks-test-comparison · plotly · pyplots.ai",
-        "font": {"size": 28, "color": "#333333", "family": "Arial, sans-serif"},
+        "font": {"size": 28, "color": text_dark, "family": "Arial, sans-serif"},
         "x": 0.5,
         "xanchor": "center",
+        "y": 0.96,
     },
     xaxis={
-        "title": {"text": "Credit Score", "font": {"size": 22}, "standoff": 15},
-        "tickfont": {"size": 18},
+        "title": {"text": "Credit Score", "font": {"size": 22, "color": axis_color}, "standoff": 12},
+        "tickfont": {"size": 18, "color": axis_color},
         "showgrid": False,
         "zeroline": False,
+        "showline": False,
         "range": [-2, 102],
         "dtick": 20,
     },
     yaxis={
-        "title": {"text": "Cumulative Proportion", "font": {"size": 22}, "standoff": 10},
-        "tickfont": {"size": 18},
+        "title": {"text": "Cumulative Proportion", "font": {"size": 22, "color": axis_color}, "standoff": 8},
+        "tickfont": {"size": 18, "color": axis_color},
         "range": [-0.02, 1.05],
         "showgrid": False,
         "zeroline": False,
+        "showline": False,
         "dtick": 0.25,
     },
     template="plotly_white",
@@ -158,15 +168,22 @@ fig.update_layout(
         "x": 0.02,
         "y": 0.98,
         "bgcolor": "rgba(255,255,255,0.92)",
-        "bordercolor": "rgba(0,0,0,0.15)",
+        "bordercolor": "rgba(0,0,0,0.12)",
         "borderwidth": 1,
     },
     plot_bgcolor="white",
     paper_bgcolor="white",
-    margin={"l": 90, "r": 50, "t": 90, "b": 80},
-    hoverlabel={"font": {"size": 16}},
+    margin={"l": 80, "r": 40, "t": 80, "b": 70},
+    hoverlabel={"font": {"size": 16}, "bgcolor": "white", "bordercolor": "#CCCCCC"},
 )
+
+# Custom hover mode for Plotly-distinctive interactivity
+fig.update_layout(hovermode="x unified")
 
 # Save
 fig.write_image("plot.png", width=1600, height=900, scale=3)
-fig.write_html("plot.html", include_plotlyjs="cdn")
+fig.write_html(
+    "plot.html",
+    include_plotlyjs="cdn",
+    config={"displayModeBar": True, "modeBarButtonsToAdd": ["drawline", "eraseshape"]},
+)

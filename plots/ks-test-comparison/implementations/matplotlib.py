@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 ks-test-comparison: Kolmogorov-Smirnov Plot for Distribution Comparison
 Library: matplotlib 3.10.8 | Python 3.14.3
 Quality: 84/100 | Created: 2026-02-17
@@ -36,48 +36,70 @@ max_y_bad = bad_cdf_at_all[max_idx]
 # Plot
 fig, ax = plt.subplots(figsize=(16, 9))
 
-ax.step(good_sorted, good_ecdf, where="post", linewidth=2.5, color="#306998", label="Good Customers")
-ax.step(bad_sorted, bad_ecdf, where="post", linewidth=2.5, color="#D4533B", label="Bad Customers")
+# ECDF step lines with distinct linestyles for colorblind accessibility
+ax.step(
+    good_sorted,
+    good_ecdf,
+    where="post",
+    linewidth=2.8,
+    color="#306998",
+    label="Good Customers",
+    linestyle="-",
+    zorder=3,
+)
+ax.step(
+    bad_sorted, bad_ecdf, where="post", linewidth=2.8, color="#D4533B", label="Bad Customers", linestyle="--", zorder=3
+)
+
+# Shaded region at maximum distance to emphasize the K-S gap
+ax.fill_betweenx([max_y_bad, max_y_good], max_x - 1.5, max_x + 1.5, color="#306998", alpha=0.10, zorder=1)
 
 # K-S distance line
-ax.plot([max_x, max_x], [max_y_bad, max_y_good], color="#2D2D2D", linewidth=2.5, linestyle="--", zorder=5)
-ax.scatter([max_x, max_x], [max_y_bad, max_y_good], color="#2D2D2D", s=80, zorder=6, edgecolors="white", linewidth=0.5)
+ax.plot([max_x, max_x], [max_y_bad, max_y_good], color="#2D2D2D", linewidth=2.5, linestyle=":", zorder=5)
+ax.scatter([max_x, max_x], [max_y_bad, max_y_good], color="#2D2D2D", s=120, zorder=6, edgecolors="white", linewidth=1.2)
 
-# K-S statistic annotation
+# K-S statistic annotation — positioned close to the distance line
 mid_y = (max_y_good + max_y_bad) / 2
 ax.annotate(
     f"D = {ks_stat:.3f}",
     xy=(max_x, mid_y),
-    xytext=(max_x + 6, mid_y),
+    xytext=(max_x + 4, mid_y + 0.04),
     fontsize=18,
     fontweight="bold",
     color="#2D2D2D",
-    arrowprops={"arrowstyle": "-", "color": "#2D2D2D", "linewidth": 1.5},
+    arrowprops={"arrowstyle": "->", "color": "#555555", "linewidth": 1.5, "connectionstyle": "arc3,rad=-0.15"},
     va="center",
+    bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": "#CCCCCC", "alpha": 0.9},
 )
 
 # P-value text
+p_text = "p-value < 0.001" if p_value < 0.001 else f"p-value = {p_value:.4f}"
 ax.text(
     0.97,
     0.05,
-    "p-value < 0.001" if p_value < 0.001 else f"p-value = {p_value:.4f}",
+    p_text,
     transform=ax.transAxes,
     fontsize=16,
     ha="right",
     va="bottom",
     color="#555555",
+    fontstyle="italic",
 )
 
 # Style
-ax.set_xlabel("Credit Score", fontsize=20)
+ax.set_xlabel("Credit Score (0–100)", fontsize=20)
 ax.set_ylabel("Cumulative Proportion", fontsize=20)
-ax.set_title("ks-test-comparison · matplotlib · pyplots.ai", fontsize=24, fontweight="medium")
+ax.set_title("ks-test-comparison · matplotlib · pyplots.ai", fontsize=24, fontweight="medium", pad=16)
 ax.tick_params(axis="both", labelsize=16)
-ax.set_ylim(0, 1.02)
-ax.legend(fontsize=16, loc="upper left", framealpha=0.9)
+ax.set_ylim(-0.02, 1.04)
+ax.set_xlim(-2, 102)
+ax.legend(fontsize=16, loc="upper left", framealpha=0.9, edgecolor="#CCCCCC")
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
-ax.yaxis.grid(True, alpha=0.2, linewidth=0.8)
+ax.spines["left"].set_linewidth(0.6)
+ax.spines["bottom"].set_linewidth(0.6)
+ax.yaxis.grid(True, alpha=0.15, linewidth=0.6, color="#AAAAAA")
+ax.set_facecolor("#FAFAFA")
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

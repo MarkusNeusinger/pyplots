@@ -1,7 +1,7 @@
 library: pygal
 specification_id: line-pca-variance-cumulative
 created: '2026-02-17T21:43:13Z'
-updated: '2026-02-17T21:56:27Z'
+updated: '2026-02-17T22:05:18Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22116658802
 issue: 4131
@@ -10,87 +10,84 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-pca-variance-cumulative/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-pca-variance-cumulative/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-pca-variance-cumulative/pygal/plot.html
-quality_score: 87
+quality_score: 84
 review:
   strengths:
-  - Excellent spec compliance — all required features (cumulative line, threshold
-    lines, elbow annotation, markers) are present and correct
-  - Strong data storytelling with elbow point annotation, threshold crossing markers,
-    and dashed reference lines that guide PCA component selection decisions
-  - Colorblind-safe palette (blue/purple/teal) with secondary dash pattern differentiation
-    on threshold lines
-  - Clean, deterministic data based on realistic Wine-like dataset eigenvalues
-  - Good use of pygal-specific features (per-point formatters, SVG dasharray stroke
-    styles, y_labels_major)
+  - Full spec compliance with all requested features including optional individual
+    variance overlay
+  - Effective data storytelling through elbow annotation, threshold crossing labels,
+    and dual-axis presentation
+  - Colorblind-safe palette with good visual distinction between all four series
+  - Clean, well-structured code with deterministic data and no unnecessary dependencies
+  - Good use of pygal-specific features (secondary axis, per-value formatters, stroke_style
+    with dasharray)
   weaknesses:
-  - Threshold dashed lines could be bolder (width 4 is thin on 4800px canvas) for
-    easier visual distinction from grid
-  - Design lacks the final polish to reach publication quality — grid lines and axis
-    styling remain standard pygal defaults; consider removing or lightening grid further
-  - The per-point formatter loop could be simplified; the global value_formatter combined
-    with per-point overrides is a workaround pattern
-  - No individual variance ratio bars as secondary overlay (spec mentions as optional
-    enhancement) — this would add visual richness
-  image_description: 'The plot displays a line chart on a white background with a
-    light gray (#FAFBFC) plot area. A blue (#306998) cumulative variance line with
-    filled square dots runs from component 1 (~40%) up to component 13 (~100%), showing
-    the characteristic PCA elbow curve. Two horizontal dashed reference lines are
-    drawn: a purple (#9B59B6) dashed line at 90% and a teal (#16A085) dashed line
-    at 95%. Key annotations appear: "◆ Elbow (75%)" near component 4, "90% ——→" near
-    component 7 where the curve crosses 90%, and "95% ——→" near component 9. The title
-    "line-pca-variance-cumulative · pygal · pyplots.ai" is centered at top. X-axis
-    reads "Number of Components" (1-13), Y-axis reads "Cumulative Explained Variance
-    (%)". Y-axis labels emphasize 90 and 95 as major labels. Legend at bottom shows
-    three entries in columns: Cumulative Variance, 90% Threshold, 95% Threshold.'
+  - Lower-left quadrant of the chart has significant unused space where individual
+    variance values approach zero
+  - The 90% and 95% annotation labels are close together and could benefit from more
+    vertical separation
+  - Annotation text size is small relative to the overall chart dimensions
+  - The individual variance secondary line lacks its own y-axis label on the right
+    side
+  image_description: 'The plot displays a line chart titled "line-pca-variance-cumulative
+    · pygal · pyplots.ai" on a white background with light gray plot area. A blue
+    cumulative variance line with circular markers rises from approximately 40% at
+    component 1 to ~100% at component 13, showing the classic PCA elbow shape. Two
+    horizontal dashed threshold lines are present: a purple dashed line at 90% and
+    a teal/green dashed line at 95%. Near component 4, a diamond symbol with "Elbow
+    (75%)" annotation marks the elbow point. Near the threshold crossings around components
+    7-9, "90% ——→" and "95% ——→" annotation text appears. A secondary descending steel-blue
+    line represents the individual variance ratios, dropping from the upper left (~40%)
+    to near zero at the right. The x-axis is labeled "Number of Components" (1-13),
+    and the y-axis "Cumulative Explained Variance (%)". A bottom legend identifies
+    four series: Cumulative Variance, 90% Threshold, 95% Threshold, and Individual
+    Variance. The color palette is colorblind-safe (blue, purple, teal, steel blue).'
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 26
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title=64, labels=44, major_labels=44,
-          legend=38, values=38). All text clearly readable.
+        comment: All main text readable with explicit font sizes; annotation text
+          slightly small relative to chart
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: No overlapping text elements. Annotations, labels, and legend are
-          all well-separated.
+        comment: 90% and 95% annotations close together but still readable; minor
+          proximity issue
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Dots visible (size=10), line stroke good (width=7). Threshold lines
-          slightly thin at 4px width on this large canvas.
+        comment: Lines and markers well-sized; individual variance line thinner but
+          visible
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue/purple/teal palette is colorblind-safe with good contrast. Different
-          dash patterns provide secondary differentiation.
+        comment: Blue/purple/teal/steel-blue palette is fully colorblind-safe
       - id: VQ-05
-        name: Layout & Canvas
+        name: Layout Balance
         score: 3
         max: 4
         passed: true
-        comment: Plot fills reasonable canvas area. Some wasted left margin space
-          and the bottom area could be tighter.
+        comment: Good use of canvas; some unused space in lower-left quadrant
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Number of Components and Cumulative Explained Variance (%) — descriptive
-          with units.
+        comment: 'Descriptive labels with units: Cumulative Explained Variance (%)'
     design_excellence:
-      score: 14
+      score: 13
       max: 20
       items:
       - id: DE-01
@@ -98,22 +95,22 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Custom palette, refined typography, light gray plot background. Clearly
-          above defaults but not publication-showcase level.
+        comment: Custom palette, light gray plot bg, explicit typography hierarchy
+          — above defaults but not publication-exceptional
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Y-guides only (no x-guides), clean background, y_labels_major to
-          emphasize thresholds. Grid lines are still default-weight.
+        comment: Custom dash patterns, rounded linecaps/joins, major y-labels at thresholds,
+          tooltip config
       - id: DE-03
         name: Data Storytelling
-        score: 5
+        score: 4
         max: 6
         passed: true
-        comment: 'Strong storytelling: elbow point annotated, threshold crossings
-          marked, dashed reference lines guide interpretation.'
+        comment: Elbow annotation, threshold crossing labels, and individual variance
+          overlay guide viewer to key insights
     spec_compliance:
       score: 15
       max: 15
@@ -123,28 +120,29 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Correct: line plot with cumulative variance.'
+        comment: Correct line chart type for cumulative variance
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Cumulative sum on Y-axis, percentage scale, threshold lines at 90%/95%
-          dashed, elbow annotated, markers at each component, X-axis starts at 1.
+        comment: 'All spec features present: cumulative sum, thresholds, elbow, markers,
+          individual variance'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X = component number (1-13), Y = cumulative explained variance (%).
+        comment: X starts at 1, y-axis shows percentage 0-100%, correct cumulative
+          sum
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend labels descriptive and accurate.
+        comment: Correct format, descriptive legend labels
     data_quality:
-      score: 14
+      score: 13
       max: 15
       items:
       - id: DQ-01
@@ -152,23 +150,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows characteristic elbow pattern, steep initial rise, gradual plateau.
-          13 components from Wine-like dataset.
+        comment: Shows elbow, threshold crossings, diminishing returns, individual
+          variance
       - id: DQ-02
         name: Realistic Context
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Wine-like dataset eigenvalues — real, plausible scientific scenario.
+        comment: Wine-like 13-feature dataset with plausible eigenvalues
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Eigenvalues and variance ratios are realistic. Cumulative sums correctly
-          to 100%.
+        comment: Realistic variance ratios, correct cumulative sum reaching 100%
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -176,32 +173,31 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Imports → Data → Plot → Save. No functions/classes.
+        comment: Clean imports -> data -> plot -> save pattern
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic data (hardcoded eigenvalues, no random generation).
+        comment: Deterministic data with fixed eigenvalues array
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: numpy, pygal, Style — all used.
+        comment: Only numpy, pygal, Style — all used
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Clean overall but per-point formatter loop with global value_formatter
-          override is slightly verbose.
+        comment: Clean list comprehensions, annotation formatters
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via render_to_png.
+        comment: Correct render_to_png output
     library_mastery:
       score: 7
       max: 10
@@ -211,16 +207,16 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Good use of pygal API: Style class, x_labels, y_labels_major, stroke_style
-          dicts, per-point value dicts with formatters.'
+        comment: Good use of Style class, Line chart, secondary axis, per-value formatters,
+          y_labels_major
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: 'Uses pygal-distinctive features: per-point formatter dicts, SVG
-          dasharray, y_labels_major, legend_at_bottom_columns.'
-  verdict: REJECTED
+        comment: secondary=True, per-value formatter functions, stroke_style dasharray,
+          y_labels_major
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:

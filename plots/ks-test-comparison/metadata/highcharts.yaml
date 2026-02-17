@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: ks-test-comparison
 created: '2026-02-17T20:13:29Z'
-updated: '2026-02-17T20:34:49Z'
+updated: '2026-02-17T20:47:22Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22113799154
 issue: 4130
@@ -10,43 +10,39 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/ks-test-comparison/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ks-test-comparison/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/ks-test-comparison/highcharts/plot.html
-quality_score: 84
+quality_score: 86
 review:
   strengths:
-  - 'Full spec compliance: all required features present (both ECDFs, K-S statistic,
-    p-value, max divergence highlight, legend)'
-  - Strong data storytelling with credit scoring context and prominent statistical
-    annotation
-  - Good use of Highcharts-specific features (annotations module, plotLines, step
-    series, HTML export)
-  - All font sizes explicitly set for the 4800x2700 canvas, ensuring legibility
-  - Clean annotation callout with connector drawing attention to the key insight
+  - 'Complete spec compliance: all required features present including ECDFs, K-S
+    statistic, max divergence highlight, p-value, and proper legend'
+  - Effective use of Highcharts annotations module with callout shape, shadow, and
+    connector for the max divergence point
+  - 'Strong data storytelling: subtitle narrates the statistical conclusion, annotation
+    provides focal point, plot band guides visual attention'
+  - Colorblind-safe palette with good luminance contrast between blue and orange
+  - Clean code structure with proper seed, realistic credit scoring scenario, and
+    both PNG and HTML outputs
   weaknesses:
-  - 'The wide gray plotLine band (width: 60) at the max divergence point is visually
-    heavy and distracting — a narrower or more subtle indicator would improve the
-    design'
-  - Color palette uses blue and red which is not ideal for colorblind accessibility
-    — consider using blue and orange or another colorblind-safe pairing
-  - Layout has excessive whitespace due to large margins (especially marginBottom
-    350) and legend is far from the plot area
-  - Line thickness could be increased slightly (e.g., lineWidth 6-7) for better visibility
-    on the large canvas
-  image_description: The plot displays two empirical cumulative distribution functions
-    (ECDFs) as step functions on a light gray (#f8f9fa) background. The blue line
-    (#306998) represents "Good Customers" and the red line (#e74c3c) represents "Bad
-    Customers" in a credit scoring context. The X-axis shows "Credit Score" ranging
-    from ~200 to ~950 with tick marks every 100, and the Y-axis shows "Cumulative
-    Proportion" from 0 to 1 with 0.2 tick intervals and dotted gridlines. A prominent
-    dashed vertical line at approximately x=630 marks the point of maximum divergence
-    between the two distributions, with diamond markers at both endpoints (where the
-    line meets each ECDF). A semi-transparent gray band (plotLine) highlights this
-    region. A callout annotation labeled "D = 0.7300" with a border and connector
-    points to the midpoint of the vertical distance line. The title reads "ks-test-comparison
-    · highcharts · pyplots.ai" in bold at the top, with a subtitle "K-S Statistic
-    = 0.7300 | p-value = 9.54e-78" below it. A horizontal legend at the bottom shows
-    all three series. The two distributions are well-separated, with the Bad Customers
-    curve rising much earlier than the Good Customers curve, clearly illustrating
-    strong model discrimination.
+  - Layout has unused whitespace on the right side — tightening margins or adjusting
+    axis range could improve canvas utilization
+  - Axis labels are descriptive but could include units or range context (e.g., "Credit
+    Score (200–1000)")
+  - The two ECDF lines rely solely on color for differentiation — adding a different
+    dash style to one would improve accessibility further
+  image_description: 'The plot displays a Kolmogorov-Smirnov test comparison using
+    two ECDF step functions on a light gray (#f5f6f8) background. The blue line (#306998)
+    represents "Good Customers" and the orange line (#e67e22) represents "Bad Customers,"
+    plotted against Credit Score (x-axis, ~200–950) and Cumulative Proportion (y-axis,
+    0–1). A dark dashed vertical line near Credit Score ~620 marks the point of maximum
+    divergence, with diamond-shaped markers at both endpoints of the line. A white
+    callout annotation with a border and shadow reads "D = 0.7300 / Strong separation."
+    A subtle light gray plot band highlights the max divergence region on the x-axis.
+    The subtitle reports "K-S Statistic = 0.7300 │ p-value = 9.54e-78 │ Distributions
+    are significantly different." The title follows the required format "ks-test-comparison
+    · highcharts · pyplots.ai" in bold, large text. The legend is horizontally centered
+    at the bottom with three entries: Good Customers, Bad Customers, and Max Distance
+    (D = 0.7300). Dashed grid lines appear on the y-axis with low opacity. The overall
+    layout is clean and well-proportioned.'
   criteria_checklist:
     visual_quality:
       score: 26
@@ -57,44 +53,41 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 64px, subtitle 44px, axis titles
-          44px, ticks 32px, legend 36px. All perfectly readable.'
+        comment: 'All font sizes explicitly set: title 60px, axis titles 42px, tick
+          labels 32px, legend 36px, annotation 36px'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements. Legend well separated, tick labels
-          don't collide.
+        comment: No overlapping text or elements anywhere
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Lines well-sized (lineWidth 5), diamond markers prominent. Step functions
-          could be slightly thicker for optimal visibility at this canvas size.
+        comment: Step lines at lineWidth 6 are clear. Could benefit from dash style
+          differentiation beyond color alone
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Blue vs Red is distinguishable for most colorblind types but not
-          an ideal colorblind-safe palette. Red can be problematic for protanopia.
+        comment: Blue and orange are colorblind-safe with strong luminance contrast
       - id: VQ-05
-        name: Layout & Canvas
+        name: Layout Balance
         score: 2
         max: 4
         passed: false
-        comment: Large margins (marginLeft 200, marginBottom 350) and legend placement
-          create notable whitespace. Plot area could use more canvas.
+        comment: Chart fills most of canvas but notable unused space on right side
       - id: VQ-06
         name: Axis Labels & Title
-        score: 2
+        score: 1
         max: 2
         passed: true
-        comment: 'Descriptive labels: Credit Score and Cumulative Proportion.'
+        comment: Descriptive labels but no explicit units
     design_excellence:
-      score: 13
+      score: 14
       max: 20
       items:
       - id: DE-01
@@ -102,22 +95,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: 'Strong design: custom palette, informative subtitle, gray background,
-          callout annotation, plotLine shading. Above defaults but not FiveThirtyEight-level.'
+        comment: Custom palette, intentional typography hierarchy, subtle background,
+          polished annotation with shadow and callout
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: 'Good: dotted gridlines, axis line styling, gray background. The
-          wide plotLine band is a bit heavy/distracting.'
+        comment: Dashed grid lines at low opacity, custom background, plot band highlight.
+          Axis lines somewhat standard
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Good context through credit scoring, prominent K-S statistic display,
-          annotation on max divergence. Visual hierarchy present but could be enhanced.
+        comment: Annotation callout creates focal point, subtitle narrates conclusion,
+          plot band guides visual attention
     spec_compliance:
       score: 15
       max: 15
@@ -127,26 +120,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Correct: two ECDFs as step functions.'
+        comment: 'Correct: two ECDFs as step functions with K-S statistic visualization'
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All present: both ECDFs, K-S statistic, max divergence highlight,
-          p-value, legend, Y-axis 0-1.'
+        comment: 'All spec features present: ECDFs, K-S statistic, max divergence
+          highlight, p-value, legend, Y-axis 0-1'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Credit scores on X, cumulative proportion on Y, correctly mapped.
+        comment: X = Credit Score, Y = Cumulative Proportion correctly assigned
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, legend labels descriptive.
+        comment: Title format correct. Legend labels match data
     data_quality:
       score: 14
       max: 15
@@ -156,24 +149,24 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Two clearly different distributions with strong separation, K-S test
-          clearly rejects null hypothesis.
+        comment: Clear distribution separation visible, both ECDFs span full range,
+          dramatic max divergence point
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Credit scoring Good vs Bad customers is a real, practical, neutral
-          scenario from the spec's applications.
+        comment: Credit scoring Good vs Bad customers is a real neutral scenario from
+          the spec applications
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Credit scores 200-1000 realistic, beta distributions plausible, 300
-          samples per group appropriate.
+        comment: Credit scores 200-1000, beta distributions with realistic asymmetric
+          shapes, 300 samples per group
     code_quality:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -181,33 +174,31 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean flow: imports, data, computation, chart config, export.'
+        comment: 'Linear flow: imports, data, computation, chart config, series, export'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) present.
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: LineSeries imported from highcharts_core.options.series.area (unconventional
-          path).
+        passed: true
+        comment: All imports are used
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
         passed: true
-        comment: Slightly verbose ECDF computation and step data construction, but
-          acceptable.
+        comment: Slightly verbose with explicit margin settings but structurally clean
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png, no deprecated functions.
+        comment: Saves plot.png and plot.html correctly
     library_features:
       score: 8
       max: 10
@@ -217,16 +208,16 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Good use of Highcharts API: LineSeries with step=left, plotLines,
-          Annotation module, proper series config.'
+        comment: 'Good use of Highcharts API: LineSeries with step, Annotation with
+          callout and shadow, plotBands, structured options'
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: 'Leverages Highcharts-specific features: annotations module with
-          callout shape, plotLines, step series, HTML export.'
-  verdict: REJECTED
+        comment: Uses Highcharts-specific annotations module with callout connectors
+          and shadow, plotBands, step series, tooltip config for HTML
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - scipy

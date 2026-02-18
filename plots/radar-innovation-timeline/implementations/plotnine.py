@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 radar-innovation-timeline: Innovation Radar with Time-Horizon Rings
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 69/100 | Created: 2026-02-18
@@ -16,188 +16,225 @@ from plotnine import (
     element_text,
     geom_path,
     geom_point,
+    geom_polygon,
     geom_segment,
     geom_text,
     ggplot,
+    guide_legend,
+    guides,
     labs,
+    scale_alpha_manual,
     scale_color_manual,
+    scale_fill_identity,
+    scale_size_manual,
     scale_x_continuous,
     scale_y_continuous,
     theme,
 )
 
 
-# Data - Technology innovation radar with 4 rings and 4 sectors
 np.random.seed(42)
 
+# === Three-quarter circle layout (270 deg), open at bottom ===
 rings = ["Adopt", "Trial", "Assess", "Hold"]
-ring_radii = {"Adopt": 1.5, "Trial": 3.0, "Assess": 4.5, "Hold": 6.0}
+ring_inner = [0.75, 2.25, 3.75, 5.25]
+ring_outer = [2.25, 3.75, 5.25, 6.75]
+ring_mid = [1.5, 3.0, 4.5, 6.0]
+ring_fills_c = ["#C8E6C9", "#FFF9C4", "#FFE0B2", "#FFCDD2"]
+ring_sizes = {"Adopt": 7, "Trial": 5.5, "Assess": 4.5, "Hold": 3.5}
+ring_alphas = {"Adopt": 1.0, "Trial": 0.85, "Assess": 0.7, "Hold": 0.55}
 
 sectors = ["AI & ML", "Cloud & Infra", "Data Engineering", "Security"]
-n_sectors = len(sectors)
-sector_span = 2 * math.pi / n_sectors
-sector_starts = {s: i * sector_span for i, s in enumerate(sectors)}
+sector_colors = {"AI & ML": "#306998", "Cloud & Infra": "#27833A", "Data Engineering": "#D2691E", "Security": "#7B4DAA"}
 
-sector_colors = {"AI & ML": "#306998", "Cloud & Infra": "#2CA02C", "Data Engineering": "#E77C2A", "Security": "#9467BD"}
+total_arc = 1.5 * math.pi  # 270 degrees
+arc_start = -math.pi / 4  # Start at -45 deg (lower-right)
+sector_span = total_arc / len(sectors)  # 67.5 deg each
+sector_starts = {s: arc_start + i * sector_span for i, s in enumerate(sectors)}
 
+# === Innovation data ===
 innovations = [
-    # AI & ML
-    ("LLM Agents", "AI & ML", "Adopt", 0.15),
-    ("RAG Pipelines", "AI & ML", "Adopt", 0.65),
-    ("Vision Transformers", "AI & ML", "Trial", 0.25),
-    ("Federated Learning", "AI & ML", "Trial", 0.75),
-    ("Neural Arch. Search", "AI & ML", "Assess", 0.4),
+    ("LLM Agents", "AI & ML", "Adopt", 0.25),
+    ("RAG Pipelines", "AI & ML", "Adopt", 0.85),
+    ("Vision Transformers", "AI & ML", "Trial", 0.15),
+    ("Federated Learning", "AI & ML", "Trial", 0.6),
+    ("Neural Arch. Search", "AI & ML", "Assess", 0.55),
     ("Neuromorphic Comp.", "AI & ML", "Hold", 0.25),
-    ("Quantum ML", "AI & ML", "Hold", 0.75),
-    # Cloud & Infra
-    ("Kubernetes", "Cloud & Infra", "Adopt", 0.35),
-    ("WebAssembly", "Cloud & Infra", "Trial", 0.55),
+    ("Quantum ML", "AI & ML", "Hold", 0.8),
+    ("Kubernetes", "Cloud & Infra", "Adopt", 0.5),
+    ("WebAssembly", "Cloud & Infra", "Trial", 0.65),
     ("FinOps Platforms", "Cloud & Infra", "Trial", 0.2),
     ("Edge Computing", "Cloud & Infra", "Assess", 0.55),
     ("Serverless Cont.", "Cloud & Infra", "Assess", 0.2),
     ("Confidential Comp.", "Cloud & Infra", "Hold", 0.5),
-    # Data Engineering
-    ("dbt", "Data Engineering", "Adopt", 0.35),
-    ("Apache Iceberg", "Data Engineering", "Adopt", 0.7),
-    ("RT Feature Stores", "Data Engineering", "Trial", 0.35),
-    ("Data Mesh", "Data Engineering", "Trial", 0.75),
+    ("dbt", "Data Engineering", "Adopt", 0.3),
+    ("Apache Iceberg", "Data Engineering", "Adopt", 0.8),
+    ("RT Feature Stores", "Data Engineering", "Trial", 0.25),
+    ("Data Mesh", "Data Engineering", "Trial", 0.7),
     ("Lakehouse Arch.", "Data Engineering", "Assess", 0.3),
-    ("Data Contracts", "Data Engineering", "Assess", 0.7),
-    ("Semantic Layer", "Data Engineering", "Hold", 0.45),
-    # Security
+    ("Data Contracts", "Data Engineering", "Assess", 0.75),
+    ("Semantic Layer", "Data Engineering", "Hold", 0.5),
     ("Zero Trust", "Security", "Adopt", 0.5),
-    ("SBOM Tooling", "Security", "Trial", 0.3),
-    ("AI Threat Detection", "Security", "Trial", 0.7),
-    ("Post-Quantum Crypto", "Security", "Assess", 0.5),
+    ("SBOM Tooling", "Security", "Trial", 0.25),
+    ("AI Threat Detection", "Security", "Trial", 0.75),
+    ("Post-Quantum Crypto", "Security", "Assess", 0.45),
     ("Homomorphic Enc.", "Security", "Hold", 0.3),
-    ("Deception Tech.", "Security", "Hold", 0.7),
+    ("Deception Tech.", "Security", "Hold", 0.75),
 ]
 
-# Build dataframe with angular + radial positions
+# === Compute positions ===
+ring_idx = {r: i for i, r in enumerate(rings)}
 rows = []
 for name, sector, ring, frac in innovations:
-    base_angle = sector_starts[sector]
-    padding = sector_span * 0.1
-    angle = base_angle + padding + frac * (sector_span - 2 * padding)
-    jitter = np.random.uniform(-0.25, 0.25)
-    radius = ring_radii[ring] + jitter
-    x = radius * math.cos(angle - math.pi / 2)
-    y = radius * math.sin(angle - math.pi / 2)
-    rows.append({"name": name, "sector": sector, "ring": ring, "angle": angle, "radius": radius, "x": x, "y": y})
+    ri = ring_idx[ring]
+    base = sector_starts[sector]
+    pad = sector_span * 0.15
+    angle = base + pad + frac * (sector_span - 2 * pad)
+    jitter = np.random.uniform(-0.2, 0.2)
+    r = ring_mid[ri] + jitter
+    rows.append(
+        {
+            "name": name,
+            "sector": sector,
+            "ring": ring,
+            "angle": angle,
+            "radius": r,
+            "x": r * math.cos(angle),
+            "y": r * math.sin(angle),
+        }
+    )
 
 df = pd.DataFrame(rows)
+df["ring"] = pd.Categorical(df["ring"], categories=rings, ordered=True)
 
-# Ring boundary circles
-ring_boundaries = [0.75, 2.25, 3.75, 5.25, 6.75]
-circle_angles = np.linspace(0, 2 * math.pi, 201)
-circle_rows = []
-for rb in ring_boundaries:
-    for ca in circle_angles:
-        circle_rows.append({"x": rb * math.cos(ca - math.pi / 2), "y": rb * math.sin(ca - math.pi / 2), "radius": rb})
+# === Ring fill polygons (annular wedges) ===
+n_arc = 150
+arc_angles = np.linspace(arc_start, arc_start + total_arc, n_arc)
+fill_rows = []
+for i, rname in enumerate(rings):
+    r_in, r_out = ring_inner[i], ring_outer[i]
+    for a in arc_angles:
+        fill_rows.append({"x": r_out * math.cos(a), "y": r_out * math.sin(a), "ring_g": rname, "fc": ring_fills_c[i]})
+    for a in reversed(arc_angles):
+        fill_rows.append({"x": r_in * math.cos(a), "y": r_in * math.sin(a), "ring_g": rname, "fc": ring_fills_c[i]})
 
-circle_df = pd.DataFrame(circle_rows)
+fill_df = pd.DataFrame(fill_rows)
 
-# Sector divider spokes
+# === Ring boundary arcs ===
+boundaries = [0.75, 2.25, 3.75, 5.25, 6.75]
+circ_rows = []
+for rb in boundaries:
+    for a in arc_angles:
+        circ_rows.append({"x": rb * math.cos(a), "y": rb * math.sin(a), "r": rb})
+
+circ_df = pd.DataFrame(circ_rows)
+
+# === Sector spokes ===
 spoke_rows = []
-max_r = 6.9
-for i in range(n_sectors):
-    angle = i * sector_span
+for i in range(len(sectors) + 1):
+    a = arc_start + i * sector_span
     spoke_rows.append(
-        {
-            "x1": 0.75 * math.cos(angle - math.pi / 2),
-            "y1": 0.75 * math.sin(angle - math.pi / 2),
-            "x2": max_r * math.cos(angle - math.pi / 2),
-            "y2": max_r * math.sin(angle - math.pi / 2),
-        }
+        {"x1": 0.75 * math.cos(a), "y1": 0.75 * math.sin(a), "x2": 6.75 * math.cos(a), "y2": 6.75 * math.sin(a)}
     )
 
 spoke_df = pd.DataFrame(spoke_rows)
 
-# Sector header labels at outer edge
-sector_label_rows = []
-label_r = 7.5
-for sector_name in sectors:
-    mid_angle = sector_starts[sector_name] + sector_span / 2
-    sector_label_rows.append(
-        {
-            "label": sector_name,
-            "x": label_r * math.cos(mid_angle - math.pi / 2),
-            "y": label_r * math.sin(mid_angle - math.pi / 2),
-        }
-    )
+# === Sector header labels ===
+slbl_rows = []
+for s in sectors:
+    mid = sector_starts[s] + sector_span / 2
+    r = 7.5
+    slbl_rows.append({"label": s, "x": r * math.cos(mid), "y": r * math.sin(mid)})
 
-sector_label_df = pd.DataFrame(sector_label_rows)
+slbl_df = pd.DataFrame(slbl_rows)
 
-# Ring name labels (positioned between Security and AI & ML sectors)
-ring_label_rows = []
-label_angle = sector_starts["Security"] + sector_span * 0.95
-for ring_name in rings:
-    r = ring_radii[ring_name]
-    ring_label_rows.append(
-        {"label": ring_name, "x": r * math.cos(label_angle - math.pi / 2), "y": r * math.sin(label_angle - math.pi / 2)}
-    )
+# === Ring name labels (centered in gap, at 270 deg = straight down) ===
+rlbl_rows = []
+rlbl_angle = 3 * math.pi / 2  # 270 deg, center of the open gap
+for i, rname in enumerate(rings):
+    r = ring_mid[i]
+    rlbl_rows.append({"label": rname, "x": r * math.cos(rlbl_angle), "y": r * math.sin(rlbl_angle)})
 
-ring_label_df = pd.DataFrame(ring_label_rows)
+rlbl_df = pd.DataFrame(rlbl_rows)
 
-# Innovation labels - split into left/right aligned groups
-label_left_rows = []
-label_right_rows = []
+# === Innovation labels (split by x position for alignment) ===
+lbl_l, lbl_r = [], []
 for _, row in df.iterrows():
-    offset_r = 0.45
-    lx = (row["radius"] + offset_r) * math.cos(row["angle"] - math.pi / 2)
-    ly = (row["radius"] + offset_r) * math.sin(row["angle"] - math.pi / 2)
+    off = 0.55
+    lx = (row["radius"] + off) * math.cos(row["angle"])
+    ly = (row["radius"] + off) * math.sin(row["angle"])
     entry = {"name": row["name"], "x": lx, "y": ly, "sector": row["sector"]}
-    if lx >= 0:
-        label_left_rows.append(entry)
-    else:
-        label_right_rows.append(entry)
+    (lbl_l if lx >= 0 else lbl_r).append(entry)
 
-label_left_df = pd.DataFrame(label_left_rows)
-label_right_df = pd.DataFrame(label_right_rows)
+lbl_l_df = pd.DataFrame(lbl_l)
+lbl_r_df = pd.DataFrame(lbl_r)
 
-# Plot
+
+# === Build plot ===
 plot = (
     ggplot()
-    # Ring boundary circles
-    + geom_path(aes(x="x", y="y", group="radius"), data=circle_df, color="#CCCCCC", size=0.3, alpha=0.6)
-    # Sector dividers
-    + geom_segment(aes(x="x1", y="y1", xend="x2", yend="y2"), data=spoke_df, color="#CCCCCC", size=0.3, alpha=0.6)
-    # Innovation points colored by sector
-    + geom_point(aes(x="x", y="y", color="sector"), data=df, size=4.5, alpha=0.9)
+    # Ring background fills
+    + geom_polygon(aes(x="x", y="y", group="ring_g", fill="fc"), data=fill_df, size=0, alpha=0.6)
+    + scale_fill_identity()
+    # Ring boundary arcs
+    + geom_path(aes(x="x", y="y", group="r"), data=circ_df, color="#B0B0B0", size=0.5)
+    # Sector divider spokes
+    + geom_segment(aes(x="x1", y="y1", xend="x2", yend="y2"), data=spoke_df, color="#B0B0B0", size=0.5)
+    # Innovation points with size + alpha by ring (visual hierarchy)
+    + geom_point(aes(x="x", y="y", color="sector", size="ring", alpha="ring"), data=df)
+    + scale_size_manual(values=ring_sizes)
+    + scale_alpha_manual(values=ring_alphas)
     # Innovation labels (left-aligned for right side)
     + geom_text(
-        aes(x="x", y="y", label="name", color="sector"), data=label_left_df, size=6.5, ha="left", show_legend=False
+        aes(x="x", y="y", label="name", color="sector"),
+        data=lbl_l_df,
+        size=8,
+        ha="left",
+        va="center",
+        show_legend=False,
     )
     # Innovation labels (right-aligned for left side)
     + geom_text(
-        aes(x="x", y="y", label="name", color="sector"), data=label_right_df, size=6.5, ha="right", show_legend=False
+        aes(x="x", y="y", label="name", color="sector"),
+        data=lbl_r_df,
+        size=8,
+        ha="right",
+        va="center",
+        show_legend=False,
     )
-    # Sector header labels
-    + geom_text(aes(x="x", y="y", label="label"), data=sector_label_df, size=11, fontweight="bold", color="#333333")
-    # Ring name labels
+    # Sector headers
+    + geom_text(aes(x="x", y="y", label="label"), data=slbl_df, size=13, fontweight="bold", color="#222222")
+    # Ring labels (prominent, along gap edge)
     + geom_text(
-        aes(x="x", y="y", label="label"), data=ring_label_df, size=8, color="#888888", fontstyle="italic", ha="left"
+        aes(x="x", y="y", label="label"), data=rlbl_df, size=10, fontweight="bold", color="#555555", ha="center"
     )
-    # Colors by sector
+    # Scales
     + scale_color_manual(values=sector_colors, name="Category")
+    + guides(color=guide_legend(override_aes={"size": 5}), size=False, alpha=False)
     + coord_fixed(ratio=1)
-    + scale_x_continuous(limits=(-9.5, 9.5))
-    + scale_y_continuous(limits=(-9.5, 9.5))
-    + labs(title="radar-innovation-timeline \u00b7 plotnine \u00b7 pyplots.ai")
+    + scale_x_continuous(limits=(-10.5, 10.5))
+    + scale_y_continuous(limits=(-8, 8.5))
+    + labs(
+        title="radar-innovation-timeline \u00b7 plotnine \u00b7 pyplots.ai",
+        subtitle="Inner rings \u2192 near-term adoption  \u00b7  Outer rings \u2192 future exploration",
+    )
     + theme(
         figure_size=(12, 12),
-        plot_title=element_text(size=24, ha="center"),
+        plot_title=element_text(size=24, ha="center", weight="bold"),
+        plot_subtitle=element_text(size=13, ha="center", color="#666666", style="italic"),
         legend_title=element_text(size=16),
         legend_text=element_text(size=14),
-        legend_position="right",
+        legend_position=(0.78, 0.08),
+        legend_background=element_rect(fill="white", color="#CCCCCC"),
+        legend_key=element_rect(fill="white"),
         axis_title=element_blank(),
         axis_text=element_blank(),
         axis_ticks=element_blank(),
         axis_line=element_blank(),
         panel_grid_major=element_blank(),
         panel_grid_minor=element_blank(),
-        panel_background=element_rect(fill="white"),
-        plot_background=element_rect(fill="white"),
+        panel_background=element_rect(fill="white", color="white"),
+        plot_background=element_rect(fill="white", color="white"),
     )
 )
 

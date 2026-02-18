@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 radar-innovation-timeline: Innovation Radar with Time-Horizon Rings
 Library: matplotlib 3.10.8 | Python 3.14.3
 Quality: 76/100 | Created: 2026-02-18
@@ -45,30 +45,32 @@ innovations = [
     ("Homomorphic Encryption", "Hold", "Security"),
 ]
 
-# Indices
+# Indices and mappings
 ring_index = {name: i for i, name in enumerate(rings)}
 sector_index = {name: i for i, name in enumerate(sectors)}
 
-# Sector colors (colorblind-safe)
+# Sector colors (colorblind-safe Okabe-Ito family)
 sector_colors = {"AI & ML": "#306998", "Cloud & Infra": "#E69F00", "Data Engineering": "#009E73", "Security": "#CC79A7"}
-
 sector_markers = {"AI & ML": "o", "Cloud & Infra": "s", "Data Engineering": "D", "Security": "^"}
 
-# Layout: 270 degrees arc, gap at bottom-right for ring labels + legend
+# Marker sizes by ring — visual hierarchy: near-term prominent, far-future subtle
+ring_marker_sizes = {"Adopt": 280, "Trial": 220, "Assess": 170, "Hold": 130}
+
+# Layout: 270 degrees arc, gap at upper-right for ring labels
 arc_span = 3 / 4 * 2 * np.pi
-arc_start = np.pi * 3 / 4
+arc_start = np.deg2rad(115)  # Rotated slightly to keep all sector labels on-canvas
 sector_width = arc_span / n_sectors
 
-# Ring band boundaries
-ring_boundaries = [0.5, 1.5, 2.5, 3.5, 4.5]
+# Ring band boundaries (wide spacing for label separation)
+ring_boundaries = [0.5, 2.0, 3.5, 5.0, 6.5]
 
-# Count items per ring-sector for even spacing
+# Count items per ring-sector
 sector_ring_counts = {}
 for _, ring_name, sector_name in innovations:
     key = (ring_name, sector_name)
     sector_ring_counts[key] = sector_ring_counts.get(key, 0) + 1
 
-# Compute positions with deterministic spreading
+# Compute positions
 positions = []
 sector_ring_placed = {}
 for name, ring_name, sector_name in innovations:
@@ -80,39 +82,40 @@ for name, ring_name, sector_name in innovations:
     total = sector_ring_counts[key]
     sector_ring_placed[key] = placed + 1
 
-    # Spread radially within ring band
-    r_lo = ring_boundaries[r_idx] + 0.15
-    r_hi = ring_boundaries[r_idx + 1] - 0.15
+    # Place markers in inner half of ring band, leaving outer half for labels
+    r_lo = ring_boundaries[r_idx] + 0.25
+    r_hi = ring_boundaries[r_idx] + (ring_boundaries[r_idx + 1] - ring_boundaries[r_idx]) * 0.55
     if total == 1:
         r = (r_lo + r_hi) / 2
     elif total == 2:
-        r = r_lo + (r_hi - r_lo) * (0.3 + 0.4 * placed)
+        r = r_lo + (r_hi - r_lo) * (0.2 + 0.6 * placed)
     else:
         r = r_lo + (r_hi - r_lo) * (placed + 0.5) / total
 
     # Spread angularly within sector
     sector_start = arc_start + s_idx * sector_width
-    margin = sector_width * 0.12
+    margin = sector_width * 0.10
     a_lo = sector_start + margin
     a_hi = sector_start + sector_width - margin
     if total == 1:
         theta = (a_lo + a_hi) / 2
     elif total == 2:
-        theta = a_lo + (a_hi - a_lo) * (0.3 + 0.4 * placed)
+        theta = a_lo + (a_hi - a_lo) * (0.10 + 0.80 * placed)
     else:
         theta = a_lo + (a_hi - a_lo) * placed / (total - 1)
 
-    # Tiny jitter for natural look
-    theta += np.random.uniform(-0.02, 0.02)
-    r += np.random.uniform(-0.04, 0.04)
+    # Small jitter
+    theta += np.random.uniform(-0.01, 0.01)
+    r += np.random.uniform(-0.02, 0.02)
 
-    positions.append((name, theta, r, sector_name))
+    positions.append((name, theta, r, sector_name, ring_name, placed, total))
 
-# Plot
-fig, ax = plt.subplots(figsize=(14, 14), subplot_kw={"polar": True})
+# --- Plot ---
+fig = plt.figure(figsize=(12, 12))
+ax = fig.add_subplot(111, polar=True)
 
-# Ring fills with subtle coloring
-ring_fill_colors = ["#DAEAF6", "#DEF2DE", "#FDF5D6", "#F8D7DA"]
+# Ring fills with pastel coloring
+ring_fill_colors = ["#D0E4F5", "#D4EDDA", "#FFF3CD", "#F5C6CB"]
 for i in range(len(rings)):
     theta_fill = np.linspace(arc_start, arc_start + arc_span, 300)
     ax.fill_between(
@@ -120,21 +123,21 @@ for i in range(len(rings)):
         np.full(300, ring_boundaries[i]),
         np.full(300, ring_boundaries[i + 1]),
         color=ring_fill_colors[i],
-        alpha=0.45,
+        alpha=0.40,
     )
 
 # Ring boundary arcs
 for boundary in ring_boundaries:
     theta_arc = np.linspace(arc_start, arc_start + arc_span, 300)
-    ax.plot(theta_arc, np.full(300, boundary), color="#B0B0B0", linewidth=0.8, alpha=0.6)
+    ax.plot(theta_arc, np.full(300, boundary), color="#888888", linewidth=1.0, alpha=0.65)
 
 # Sector divider lines
 for i in range(n_sectors + 1):
     angle = arc_start + i * sector_width
-    ax.plot([angle, angle], [ring_boundaries[0], ring_boundaries[-1]], color="#B0B0B0", linewidth=0.8, alpha=0.6)
+    ax.plot([angle, angle], [ring_boundaries[0], ring_boundaries[-1]], color="#888888", linewidth=1.0, alpha=0.65)
 
-# Ring labels along the gap (right side of arc end)
-label_angle = arc_start + arc_span + 0.12
+# Ring labels in the arc gap (pushed further into gap to avoid item overlaps)
+label_angle = arc_start + arc_span + 0.15
 for i, ring_name in enumerate(rings):
     r_mid = (ring_boundaries[i] + ring_boundaries[i + 1]) / 2
     ax.text(
@@ -145,32 +148,57 @@ for i, ring_name in enumerate(rings):
         va="center",
         fontsize=14,
         fontweight="bold",
-        color="#555555",
+        color="#444444",
         fontstyle="italic",
     )
 
-# Sector labels along outer edge
+# Sector labels along outer edge (closer to ring to avoid figure clipping)
 for i, sector_name in enumerate(sectors):
     angle = arc_start + (i + 0.5) * sector_width
     ax.text(
         angle,
-        ring_boundaries[-1] + 0.55,
+        ring_boundaries[-1] + 0.45,
         sector_name,
         ha="center",
         va="center",
-        fontsize=16,
+        fontsize=15,
         fontweight="bold",
-        color="#333333",
+        color="#222222",
     )
 
-# Plot innovation points and labels
-for name, theta, r, sector_name in positions:
+# Label background for readability
+label_bbox = {"boxstyle": "round,pad=0.08", "facecolor": "white", "alpha": 0.82, "edgecolor": "none"}
+
+# Plot markers and labels
+for name, theta, r, sector_name, ring_name, placed, total in positions:
     color = sector_colors[sector_name]
     marker = sector_markers[sector_name]
-    ax.scatter(theta, r, s=200, color=color, marker=marker, edgecolors="white", linewidth=0.8, zorder=5)
-    ax.text(theta, r + 0.2, name, fontsize=8, ha="center", va="bottom", color="#333333", fontweight="medium")
+    msize = ring_marker_sizes[ring_name]
 
-# Style
+    ax.scatter(theta, r, s=msize, color=color, marker=marker, edgecolors="white", linewidth=1.0, zorder=5, alpha=0.95)
+
+    # Labels go outward by default; for 2-item cells, second item goes inward
+    if total >= 2 and placed == 1:
+        label_offset = -0.35
+        va = "top"
+    else:
+        label_offset = 0.38
+        va = "bottom"
+
+    ax.text(
+        theta,
+        r + label_offset,
+        name,
+        fontsize=9,
+        ha="center",
+        va=va,
+        color="#222222",
+        fontweight="medium",
+        bbox=label_bbox,
+        zorder=6,
+    )
+
+# Styling
 ax.set_ylim(0, ring_boundaries[-1] + 1.3)
 ax.set_yticklabels([])
 ax.set_xticklabels([])
@@ -180,32 +208,27 @@ ax.grid(False)
 ax.spines["polar"].set_visible(False)
 
 # Title
-ax.set_title(
-    "Technology Radar 2026 · radar-innovation-timeline · matplotlib · pyplots.ai",
-    fontsize=22,
-    fontweight="medium",
-    pad=30,
-)
+ax.set_title("radar-innovation-timeline · matplotlib · pyplots.ai", fontsize=24, fontweight="medium", pad=30)
 
-# Legend with correct marker shapes
+# Legend in lower-right corner
 legend_handles = [
     plt.scatter(
-        [], [], s=120, color=sector_colors[s], marker=sector_markers[s], edgecolors="white", linewidth=0.8, label=s
+        [], [], s=150, color=sector_colors[s], marker=sector_markers[s], edgecolors="white", linewidth=1.0, label=s
     )
     for s in sectors
 ]
-ax.legend(
+fig.legend(
     handles=legend_handles,
     loc="lower right",
-    bbox_to_anchor=(1.22, -0.02),
-    fontsize=15,
-    framealpha=0.9,
+    fontsize=14,
+    framealpha=0.92,
     edgecolor="#CCCCCC",
     title="Sectors",
-    title_fontsize=16,
+    title_fontsize=15,
     handletextpad=0.8,
-    borderpad=1,
+    borderpad=1.0,
+    bbox_to_anchor=(0.95, 0.03),
 )
 
-plt.tight_layout()
-plt.savefig("plot.png", dpi=300, bbox_inches="tight")
+fig.subplots_adjust(left=0.15, right=0.85, top=0.93, bottom=0.07)
+plt.savefig("plot.png", dpi=300)

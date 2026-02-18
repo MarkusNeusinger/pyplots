@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 radar-innovation-timeline: Innovation Radar with Time-Horizon Rings
 Library: altair 6.0.0 | Python 3.14.3
+Quality: 80/100 | Created: 2026-02-18
 """
 
 from collections import defaultdict

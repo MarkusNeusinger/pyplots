@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 radar-innovation-timeline: Innovation Radar with Time-Horizon Rings
 Library: plotly 6.5.2 | Python 3.14.3
 Quality: 88/100 | Created: 2026-02-18
@@ -14,7 +14,7 @@ np.random.seed(42)
 sectors = ["AI & ML", "Cloud & Infra", "Sustainability", "Biotech"]
 rings = ["Adopt", "Trial", "Assess", "Hold"]
 ring_radii = {"Adopt": 1.3, "Trial": 2.3, "Assess": 3.3, "Hold": 4.3}
-ring_marker_sizes = {"Adopt": 22, "Trial": 17, "Assess": 13, "Hold": 10}
+ring_marker_sizes = {"Adopt": 22, "Trial": 17, "Assess": 14, "Hold": 11}
 ring_boundaries = [1.8, 2.8, 3.8, 4.8]
 
 innovations = [
@@ -35,16 +35,16 @@ innovations = [
     {"name": "Serverless GPUs", "sector": "Cloud & Infra", "ring": "Assess", "textpos": "bottom right"},
     {"name": "Decentralized Cloud", "sector": "Cloud & Infra", "ring": "Hold", "textpos": "top center"},
     # Sustainability sector
-    {"name": "Carbon Tracking APIs", "sector": "Sustainability", "ring": "Adopt", "textpos": "top center"},
-    {"name": "Green Software", "sector": "Sustainability", "ring": "Trial", "textpos": "top center"},
-    {"name": "Digital Product Passports", "sector": "Sustainability", "ring": "Trial", "textpos": "bottom right"},
+    {"name": "Carbon Tracking APIs", "sector": "Sustainability", "ring": "Adopt", "textpos": "top left"},
+    {"name": "Green Software", "sector": "Sustainability", "ring": "Trial", "textpos": "bottom right"},
+    {"name": "Digital Product Passports", "sector": "Sustainability", "ring": "Trial", "textpos": "top left"},
     {"name": "Circular Economy Platforms", "sector": "Sustainability", "ring": "Assess", "textpos": "bottom right"},
     {"name": "Fusion Energy Tech", "sector": "Sustainability", "ring": "Hold", "textpos": "top center"},
     {"name": "Climate AI", "sector": "Sustainability", "ring": "Assess", "textpos": "top left"},
     # Biotech sector
     {"name": "mRNA Therapeutics", "sector": "Biotech", "ring": "Adopt", "textpos": "top center"},
-    {"name": "CRISPR Diagnostics", "sector": "Biotech", "ring": "Trial", "textpos": "bottom center"},
-    {"name": "Digital Twins (Health)", "sector": "Biotech", "ring": "Assess", "textpos": "top right"},
+    {"name": "CRISPR Diagnostics", "sector": "Biotech", "ring": "Trial", "textpos": "bottom left"},
+    {"name": "Digital Twins (Health)", "sector": "Biotech", "ring": "Assess", "textpos": "bottom left"},
     {"name": "Synthetic Biology", "sector": "Biotech", "ring": "Assess", "textpos": "top left"},
     {"name": "Brain-Computer Interfaces", "sector": "Biotech", "ring": "Hold", "textpos": "bottom center"},
     {"name": "Longevity Engineering", "sector": "Biotech", "ring": "Hold", "textpos": "top left"},
@@ -56,6 +56,9 @@ sector_starts = {s: i * sector_span for i, s in enumerate(sectors)}
 
 # Color palette (Python Blue first, colorblind-safe)
 sector_colors = {"AI & ML": "#306998", "Cloud & Infra": "#E0872B", "Sustainability": "#2A9D8F", "Biotech": "#8E4585"}
+
+# Distinct marker shapes per sector for visual grouping
+sector_symbols = {"AI & ML": "circle", "Cloud & Infra": "diamond", "Sustainability": "square", "Biotech": "triangle-up"}
 
 # Compute positions for all items grouped by sector
 items_by_sector: dict[str, list[dict]] = {s: [] for s in sectors}
@@ -142,6 +145,7 @@ for sector in sectors:
             marker={
                 "size": [ring_marker_sizes[it["ring"]] for it in items],
                 "color": color,
+                "symbol": sector_symbols[sector],
                 "line": {"color": "white", "width": 2},
                 "opacity": [1.0 if it["ring"] == "Adopt" else 0.82 for it in items],
             },
@@ -210,12 +214,12 @@ fig.update_layout(
         "radialaxis": {"visible": False, "range": [0, 6.2]},
         "angularaxis": {"visible": False, "direction": "clockwise", "rotation": 90},
         "bgcolor": "rgba(250, 250, 250, 0.3)",
-        "domain": {"x": [0.0, 0.84], "y": [0.03, 0.9]},
+        "domain": {"x": [0.0, 0.82], "y": [0.03, 0.92]},
     },
     legend={
         "font": {"size": 15},
-        "x": 0.855,
-        "y": 0.58,
+        "x": 0.84,
+        "y": 0.55,
         "xanchor": "left",
         "yanchor": "middle",
         "bgcolor": "rgba(255, 255, 255, 0.95)",
@@ -224,7 +228,7 @@ fig.update_layout(
         "title": {"text": "<b>Sectors</b>", "font": {"size": 17}},
     },
     template="plotly_white",
-    margin={"l": 30, "r": 30, "t": 90, "b": 30},
+    margin={"l": 30, "r": 50, "t": 90, "b": 30},
     paper_bgcolor="white",
     width=1200,
     height=1200,
@@ -232,19 +236,19 @@ fig.update_layout(
         {
             "text": (
                 "<b>Time Horizons</b><br>"
-                "● Adopt — ready now<br>"
-                "● Trial — evaluating<br>"
-                "● Assess — exploring<br>"
-                "● Hold — future watch"
+                "● <b>Adopt</b> — ready now<br>"
+                "● <b>Trial</b> — evaluating 0-1 yr<br>"
+                "● <b>Assess</b> — exploring 1-3 yr<br>"
+                "● <b>Hold</b> — future watch 3+ yr"
             ),
-            "x": 0.855,
-            "y": 0.35,
+            "x": 0.84,
+            "y": 0.32,
             "xref": "paper",
             "yref": "paper",
             "xanchor": "left",
             "yanchor": "top",
             "showarrow": False,
-            "font": {"size": 13, "color": "#555"},
+            "font": {"size": 15, "color": "#555"},
             "bgcolor": "rgba(255,255,255,0.95)",
             "bordercolor": "rgba(0,0,0,0.12)",
             "borderwidth": 1,

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 radar-innovation-timeline: Innovation Radar with Time-Horizon Rings
 Library: matplotlib 3.10.8 | Python 3.14.3
 Quality: 81/100 | Created: 2026-02-18
@@ -61,8 +61,8 @@ arc_span = 3 / 4 * 2 * np.pi
 arc_start = np.deg2rad(115)  # Rotated slightly to keep all sector labels on-canvas
 sector_width = arc_span / n_sectors
 
-# Ring band boundaries (wide spacing for label separation)
-ring_boundaries = [0.5, 2.0, 3.5, 5.0, 6.5]
+# Ring band boundaries (wide bands to prevent cross-ring label overlap)
+ring_boundaries = [0.5, 2.6, 4.7, 6.8, 8.9]
 
 # Count items per ring-sector
 sector_ring_counts = {}
@@ -82,17 +82,18 @@ for name, ring_name, sector_name in innovations:
     total = sector_ring_counts[key]
     sector_ring_placed[key] = placed + 1
 
-    # Place markers in inner half of ring band, leaving outer half for labels
-    r_lo = ring_boundaries[r_idx] + 0.25
-    r_hi = ring_boundaries[r_idx] + (ring_boundaries[r_idx + 1] - ring_boundaries[r_idx]) * 0.55
+    # Place markers in the center portion of the ring band (avoid edges)
+    band_width = ring_boundaries[r_idx + 1] - ring_boundaries[r_idx]
+    r_lo = ring_boundaries[r_idx] + band_width * 0.30
+    r_hi = ring_boundaries[r_idx] + band_width * 0.70
     if total == 1:
         r = (r_lo + r_hi) / 2
     elif total == 2:
-        r = r_lo + (r_hi - r_lo) * (0.2 + 0.6 * placed)
+        r = r_lo + (r_hi - r_lo) * (0.30 + 0.40 * placed)
     else:
         r = r_lo + (r_hi - r_lo) * (placed + 0.5) / total
 
-    # Spread angularly within sector
+    # Spread angularly within sector with wider margins
     sector_start = arc_start + s_idx * sector_width
     margin = sector_width * 0.10
     a_lo = sector_start + margin
@@ -100,7 +101,8 @@ for name, ring_name, sector_name in innovations:
     if total == 1:
         theta = (a_lo + a_hi) / 2
     elif total == 2:
-        theta = a_lo + (a_hi - a_lo) * (0.10 + 0.80 * placed)
+        # Wide spread: items at 25% and 75% of angular range
+        theta = a_lo + (a_hi - a_lo) * (0.25 + 0.50 * placed)
     else:
         theta = a_lo + (a_hi - a_lo) * placed / (total - 1)
 
@@ -146,7 +148,7 @@ for i, ring_name in enumerate(rings):
         ring_name,
         ha="left",
         va="center",
-        fontsize=14,
+        fontsize=18,
         fontweight="bold",
         color="#444444",
         fontstyle="italic",
@@ -157,17 +159,17 @@ for i, sector_name in enumerate(sectors):
     angle = arc_start + (i + 0.5) * sector_width
     ax.text(
         angle,
-        ring_boundaries[-1] + 0.45,
+        ring_boundaries[-1] + 0.55,
         sector_name,
         ha="center",
         va="center",
-        fontsize=15,
+        fontsize=20,
         fontweight="bold",
         color="#222222",
     )
 
 # Label background for readability
-label_bbox = {"boxstyle": "round,pad=0.08", "facecolor": "white", "alpha": 0.82, "edgecolor": "none"}
+label_bbox = {"boxstyle": "round,pad=0.12", "facecolor": "white", "alpha": 0.85, "edgecolor": "none"}
 
 # Plot markers and labels
 for name, theta, r, sector_name, ring_name, placed, total in positions:
@@ -177,19 +179,19 @@ for name, theta, r, sector_name, ring_name, placed, total in positions:
 
     ax.scatter(theta, r, s=msize, color=color, marker=marker, edgecolors="white", linewidth=1.0, zorder=5, alpha=0.95)
 
-    # Labels go outward by default; for 2-item cells, second item goes inward
-    if total >= 2 and placed == 1:
-        label_offset = -0.35
+    # Labels go outward by default; for multi-item cells, alternate direction
+    if total >= 2 and placed % 2 == 1:
+        label_offset = -0.40
         va = "top"
     else:
-        label_offset = 0.38
+        label_offset = 0.42
         va = "bottom"
 
     ax.text(
         theta,
         r + label_offset,
         name,
-        fontsize=9,
+        fontsize=13,
         ha="center",
         va=va,
         color="#222222",
@@ -199,7 +201,7 @@ for name, theta, r, sector_name, ring_name, placed, total in positions:
     )
 
 # Styling
-ax.set_ylim(0, ring_boundaries[-1] + 1.3)
+ax.set_ylim(0, ring_boundaries[-1] + 1.6)
 ax.set_yticklabels([])
 ax.set_xticklabels([])
 ax.set_xticks([])
@@ -220,15 +222,15 @@ legend_handles = [
 fig.legend(
     handles=legend_handles,
     loc="lower right",
-    fontsize=14,
+    fontsize=16,
     framealpha=0.92,
     edgecolor="#CCCCCC",
     title="Sectors",
-    title_fontsize=15,
+    title_fontsize=18,
     handletextpad=0.8,
     borderpad=1.0,
     bbox_to_anchor=(0.95, 0.03),
 )
 
-fig.subplots_adjust(left=0.15, right=0.85, top=0.93, bottom=0.07)
-plt.savefig("plot.png", dpi=300)
+fig.subplots_adjust(left=0.05, right=0.95, top=0.93, bottom=0.02)
+plt.savefig("plot.png", dpi=300, bbox_inches="tight")

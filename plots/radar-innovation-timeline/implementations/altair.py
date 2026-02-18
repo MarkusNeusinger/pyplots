@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 radar-innovation-timeline: Innovation Radar with Time-Horizon Rings
 Library: altair 6.0.0 | Python 3.14.3
-Quality: 79/100 | Created: 2026-02-18
 """
 
 from collections import defaultdict
@@ -11,217 +10,179 @@ import numpy as np
 import pandas as pd
 
 
-# Data - Technology radar with 4 rings and 4 sectors
 np.random.seed(42)
 
+# --- Configuration ---
 rings = ["Adopt", "Trial", "Assess", "Hold"]
-ring_radii = {"Adopt": 1, "Trial": 2, "Assess": 3, "Hold": 4}
-
 sectors = ["AI & ML", "Cloud & Infra", "Data Engineering", "Security"]
 n_sectors = len(sectors)
 
-# Sector angular boundaries (270-degree layout, leaving 90 degrees at bottom-left for legend)
+# 270-degree arc layout
 start_angle = -np.pi / 4
 total_arc = 1.5 * np.pi
 sector_arc = total_arc / n_sectors
+sector_bounds = {s: (start_angle + i * sector_arc, start_angle + (i + 1) * sector_arc) for i, s in enumerate(sectors)}
 
-sector_boundaries = {}
-for i, sector in enumerate(sectors):
-    sector_boundaries[sector] = (start_angle + i * sector_arc, start_angle + (i + 1) * sector_arc)
+# Ring bands — wider Adopt ring to reduce crowding at inner radius
+ring_inner = {"Adopt": 0.5, "Trial": 1.45, "Assess": 2.4, "Hold": 3.35}
+ring_outer = {"Adopt": 1.3, "Trial": 2.25, "Assess": 3.2, "Hold": 4.1}
+ring_boundary_radii = [1.375, 2.325, 3.275, 4.175]
 
-# Innovation items
+sector_colors = {"AI & ML": "#306998", "Cloud & Infra": "#E07A2F", "Data Engineering": "#2CA02C", "Security": "#9467BD"}
+ring_tints = {"Adopt": "#306998", "Trial": "#4A8FBF", "Assess": "#7BB5D6", "Hold": "#B0D4E8"}
+ring_opacities = {"Adopt": 0.14, "Trial": 0.09, "Assess": 0.05, "Hold": 0.03}
+ring_shapes = {"Adopt": "circle", "Trial": "diamond", "Assess": "triangle-up", "Hold": "square"}
+
+# --- Data: 25 technology items ---
 items = [
-    # AI & ML
     {"name": "LLM Agents", "ring": "Adopt", "sector": "AI & ML"},
     {"name": "RAG Pipelines", "ring": "Adopt", "sector": "AI & ML"},
     {"name": "Vision Models", "ring": "Trial", "sector": "AI & ML"},
     {"name": "AI Code Review", "ring": "Trial", "sector": "AI & ML"},
     {"name": "Neuro-symbolic AI", "ring": "Assess", "sector": "AI & ML"},
-    {"name": "Autonomous ML Ops", "ring": "Assess", "sector": "AI & ML"},
+    {"name": "Auto. ML Ops", "ring": "Assess", "sector": "AI & ML"},
     {"name": "AGI Frameworks", "ring": "Hold", "sector": "AI & ML"},
-    # Cloud & Infra
     {"name": "Edge Computing", "ring": "Adopt", "sector": "Cloud & Infra"},
     {"name": "Platform Eng.", "ring": "Adopt", "sector": "Cloud & Infra"},
     {"name": "WASM Backends", "ring": "Trial", "sector": "Cloud & Infra"},
     {"name": "FinOps Tools", "ring": "Trial", "sector": "Cloud & Infra"},
     {"name": "Serverless GPUs", "ring": "Assess", "sector": "Cloud & Infra"},
     {"name": "Quantum Cloud", "ring": "Hold", "sector": "Cloud & Infra"},
-    # Data Engineering
     {"name": "Data Contracts", "ring": "Adopt", "sector": "Data Engineering"},
     {"name": "Lakehouse Arch.", "ring": "Trial", "sector": "Data Engineering"},
     {"name": "Streaming SQL", "ring": "Trial", "sector": "Data Engineering"},
     {"name": "Data Mesh", "ring": "Assess", "sector": "Data Engineering"},
     {"name": "Graph Analytics", "ring": "Assess", "sector": "Data Engineering"},
     {"name": "Quantum DB", "ring": "Hold", "sector": "Data Engineering"},
-    # Security
     {"name": "Zero Trust", "ring": "Adopt", "sector": "Security"},
     {"name": "SBOM Tooling", "ring": "Adopt", "sector": "Security"},
-    {"name": "AI Threat Detection", "ring": "Trial", "sector": "Security"},
+    {"name": "AI Threat Det.", "ring": "Trial", "sector": "Security"},
     {"name": "Passkeys", "ring": "Trial", "sector": "Security"},
-    {"name": "Confidential Compute", "ring": "Assess", "sector": "Security"},
-    {"name": "Post-Quantum Crypto", "ring": "Assess", "sector": "Security"},
+    {"name": "Confid. Compute", "ring": "Assess", "sector": "Security"},
+    {"name": "Post-Q. Crypto", "ring": "Assess", "sector": "Security"},
     {"name": "Homomorphic Enc.", "ring": "Hold", "sector": "Security"},
 ]
 
-# Position each item within its sector and ring
-max_radius = 4.5
-ring_inner = {"Adopt": 0.3, "Trial": 1.15, "Assess": 2.15, "Hold": 3.15}
-ring_outer = {"Adopt": 1.05, "Trial": 2.05, "Assess": 3.05, "Hold": 4.05}
-
-# Group items by (sector, ring) for even angular spacing
+# --- Position items with alternating label offsets to prevent overlap ---
 groups = defaultdict(list)
 for item in items:
     groups[(item["sector"], item["ring"])].append(item)
 
 records = []
 for (sector, ring), group_items in groups.items():
-    a_min, a_max = sector_boundaries[sector]
-    padding = 0.12 * sector_arc
-    n_items = len(group_items)
-    r_in = ring_inner[ring]
-    r_out = ring_outer[ring]
+    a_min, a_max = sector_bounds[sector]
+    padding = 0.15 * sector_arc
+    n = len(group_items)
+    r_in, r_out = ring_inner[ring], ring_outer[ring]
     r_mid = (r_in + r_out) / 2
-    for idx, item in enumerate(group_items):
-        # Spread items evenly across the sector arc
-        frac = (idx + 0.5) / n_items
-        angle = a_min + padding + frac * (a_max - a_min - 2 * padding)
-        # Alternate radial position for items in same ring to reduce overlap
-        r_offset = 0.15 * ((-1) ** idx) if n_items > 1 else 0
+    ring_idx = rings.index(ring)
+    # Stagger angular positions by ring to separate cross-ring labels
+    ring_jitter = 0.06 * sector_arc * ((-1) ** ring_idx)
+    for idx, it in enumerate(group_items):
+        angle = a_min + padding + (idx + 0.5) / n * (a_max - a_min - 2 * padding) + ring_jitter
+        r_offset = 0.2 * ((-1) ** idx) if n > 1 else 0
         radius = r_mid + r_offset
-
         x = radius * np.cos(angle)
         y = radius * np.sin(angle)
-        records.append(
-            {
-                "name": item["name"],
-                "ring": item["ring"],
-                "sector": item["sector"],
-                "x": x,
-                "y": y,
-                "radius": radius,
-                "angle": angle,
-            }
-        )
+        # Alternate labels above/below within group; ring jitter handles cross-ring
+        direction = 1 if idx % 2 == 0 else -1
+        label_shift = direction * 0.32
+        records.append({"name": it["name"], "ring": ring, "sector": sector, "x": x, "y": y, "label_y": y + label_shift})
 
 df = pd.DataFrame(records)
 
-# Color palette per sector
-sector_colors = {"AI & ML": "#306998", "Cloud & Infra": "#E07A2F", "Data Engineering": "#2CA02C", "Security": "#9467BD"}
-color_scale = alt.Scale(domain=list(sector_colors.keys()), range=list(sector_colors.values()))
+# --- Geometry: ring fills, arcs, spokes ---
+fill_pts = 80
+ring_fill_rows = []
+for rn in rings:
+    r_in, r_out = ring_inner[rn], ring_outer[rn]
+    thetas = np.linspace(start_angle, start_angle + total_arc, fill_pts)
+    for i, t in enumerate(thetas):
+        ring_fill_rows.append({"x": r_in * np.cos(t), "y": r_in * np.sin(t), "ring": rn, "order": i})
+    for i, t in enumerate(thetas[::-1]):
+        ring_fill_rows.append({"x": r_out * np.cos(t), "y": r_out * np.sin(t), "ring": rn, "order": fill_pts + i})
+    ring_fill_rows.append(
+        {"x": r_in * np.cos(thetas[0]), "y": r_in * np.sin(thetas[0]), "ring": rn, "order": 2 * fill_pts}
+    )
+df_fills = pd.DataFrame(ring_fill_rows)
 
-# Shape per ring
-ring_shapes = {"Adopt": "circle", "Trial": "diamond", "Assess": "triangle-up", "Hold": "square"}
+arc_pts = 100
+arc_rows = []
+for rb in ring_boundary_radii:
+    for i, t in enumerate(np.linspace(start_angle, start_angle + total_arc, arc_pts)):
+        arc_rows.append({"x": rb * np.cos(t), "y": rb * np.sin(t), "rb": rb, "order": i})
+df_arcs = pd.DataFrame(arc_rows)
+
+spoke_rows = []
+for i in range(n_sectors + 1):
+    a = start_angle + i * sector_arc
+    spoke_rows.append({"x": 0, "y": 0, "sid": i, "order": 0})
+    spoke_rows.append({"x": 4.3 * np.cos(a), "y": 4.3 * np.sin(a), "sid": i, "order": 1})
+df_spokes = pd.DataFrame(spoke_rows)
+
+# Sector headers beyond outer ring
+sec_r = 4.55
+df_sec = pd.DataFrame(
+    [
+        {
+            "x": sec_r * np.cos(start_angle + (i + 0.5) * sector_arc),
+            "y": sec_r * np.sin(start_angle + (i + 0.5) * sector_arc),
+            "sector": s,
+        }
+        for i, s in enumerate(sectors)
+    ]
+)
+
+# Ring labels in the gap area (below center, aligned with ring radii)
+gap_angle = 3 * np.pi / 2  # Bottom center of the gap
+df_rlabels = pd.DataFrame(
+    [
+        {
+            "x": (ring_inner[rn] + ring_outer[rn]) / 2 * np.cos(gap_angle) + 0.15,
+            "y": (ring_inner[rn] + ring_outer[rn]) / 2 * np.sin(gap_angle),
+            "ring": rn,
+        }
+        for rn in rings
+    ]
+)
+
+# --- Altair chart assembly ---
+chart_size = 1200
+dom = [-5.3, 5.3]
+x_enc = alt.X("x:Q", scale=alt.Scale(domain=dom), axis=None)
+y_enc = alt.Y("y:Q", scale=alt.Scale(domain=dom), axis=None)
+color_scale = alt.Scale(domain=list(sector_colors), range=list(sector_colors.values()))
 shape_scale = alt.Scale(domain=rings, range=[ring_shapes[r] for r in rings])
 
-# Ring boundary arcs (concentric rings from 0 to 270 degrees)
-ring_boundary_radii = [1.1, 2.1, 3.1, 4.1]
-arc_points = 100
-arc_records = []
-for rb in ring_boundary_radii:
-    theta_vals = np.linspace(start_angle, start_angle + total_arc, arc_points)
-    for i, theta in enumerate(theta_vals):
-        arc_records.append({"x": rb * np.cos(theta), "y": rb * np.sin(theta), "ring_boundary": rb, "order": i})
-
-df_arcs = pd.DataFrame(arc_records)
-
-# Ring fill bands (subtle background)
-ring_fill_records = []
-ring_fill_colors = {"Adopt": "#306998", "Trial": "#4A8FBF", "Assess": "#7BB5D6", "Hold": "#B0D4E8"}
-fill_points = 80
-for ring_name in rings:
-    r_in = ring_inner[ring_name]
-    r_out = ring_outer[ring_name]
-    theta_vals = np.linspace(start_angle, start_angle + total_arc, fill_points)
-    # Inner arc forward
-    for i, theta in enumerate(theta_vals):
-        ring_fill_records.append({"x": r_in * np.cos(theta), "y": r_in * np.sin(theta), "ring": ring_name, "order": i})
-    # Outer arc backward
-    for i, theta in enumerate(reversed(theta_vals)):
-        ring_fill_records.append(
-            {"x": r_out * np.cos(theta), "y": r_out * np.sin(theta), "ring": ring_name, "order": fill_points + i}
-        )
-    # Close
-    theta_first = theta_vals[0]
-    ring_fill_records.append(
-        {"x": r_in * np.cos(theta_first), "y": r_in * np.sin(theta_first), "ring": ring_name, "order": 2 * fill_points}
-    )
-
-df_ring_fills = pd.DataFrame(ring_fill_records)
-
-# Sector divider lines (spokes at sector boundaries)
-spoke_records = []
-for i in range(n_sectors + 1):
-    angle = start_angle + i * sector_arc
-    spoke_records.append({"x": 0, "y": 0, "spoke_id": i, "order": 0})
-    spoke_records.append(
-        {"x": (max_radius - 0.3) * np.cos(angle), "y": (max_radius - 0.3) * np.sin(angle), "spoke_id": i, "order": 1}
-    )
-
-df_spokes = pd.DataFrame(spoke_records)
-
-# Sector labels positioned at the midpoint angle of each sector, beyond outer ring
-sector_label_records = []
-label_radius = 4.65
-for i, sector in enumerate(sectors):
-    mid_angle = start_angle + (i + 0.5) * sector_arc
-    sector_label_records.append(
-        {
-            "x": label_radius * np.cos(mid_angle),
-            "y": label_radius * np.sin(mid_angle),
-            "sector": sector,
-            "angle_deg": np.degrees(mid_angle),
-        }
-    )
-
-df_sector_labels = pd.DataFrame(sector_label_records)
-
-# Ring labels at the top of each ring band
-ring_label_records = []
-for ring_name in rings:
-    r_mid = (ring_inner[ring_name] + ring_outer[ring_name]) / 2
-    label_angle = start_angle + total_arc + 0.08
-    ring_label_records.append({"x": r_mid * np.cos(label_angle), "y": r_mid * np.sin(label_angle), "ring": ring_name})
-
-df_ring_labels = pd.DataFrame(ring_label_records)
-
-# Chart dimensions
-chart_size = 1200
-axis_domain = [-5.5, 5.5]
-x_enc = alt.X("x:Q", scale=alt.Scale(domain=axis_domain), axis=None)
-y_enc = alt.Y("y:Q", scale=alt.Scale(domain=axis_domain), axis=None)
+# Hover selection — Altair interactive highlight
+hover = alt.selection_point(on="pointerover", fields=["name"], nearest=True, empty=False)
 
 # Ring fill bands
-ring_fills = []
-ring_fill_opacity = {"Adopt": 0.12, "Trial": 0.08, "Assess": 0.05, "Hold": 0.03}
-for ring_name in rings:
-    ring_df = df_ring_fills[df_ring_fills["ring"] == ring_name]
-    fill_layer = (
-        alt.Chart(ring_df)
-        .mark_line(
-            strokeWidth=0, filled=True, fill=ring_fill_colors[ring_name], fillOpacity=ring_fill_opacity[ring_name]
-        )
-        .encode(x=x_enc, y=y_enc, order="order:Q")
-    )
-    ring_fills.append(fill_layer)
+fill_layers = [
+    alt.Chart(df_fills[df_fills["ring"] == rn])
+    .mark_line(strokeWidth=0, filled=True, fill=ring_tints[rn], fillOpacity=ring_opacities[rn])
+    .encode(x=x_enc, y=y_enc, order="order:Q")
+    for rn in rings
+]
 
 # Ring boundary arcs
-ring_arcs = (
+arcs = (
     alt.Chart(df_arcs)
-    .mark_line(strokeWidth=1.5, stroke="#aaaaaa", opacity=0.5)
-    .encode(x=x_enc, y=y_enc, detail="ring_boundary:N", order="order:Q")
+    .mark_line(strokeWidth=1.2, stroke="#aaaaaa", opacity=0.4)
+    .encode(x=x_enc, y=y_enc, detail="rb:N", order="order:Q")
 )
 
-# Sector divider spokes
+# Sector spokes
 spokes = (
     alt.Chart(df_spokes)
-    .mark_line(strokeWidth=1.5, stroke="#999999", opacity=0.5)
-    .encode(x=x_enc, y=y_enc, detail="spoke_id:N", order="order:Q")
+    .mark_line(strokeWidth=1.2, stroke="#999999", opacity=0.4)
+    .encode(x=x_enc, y=y_enc, detail="sid:N", order="order:Q")
 )
 
-# Data points (items)
+# Data points with hover-driven size highlight
 points = (
     alt.Chart(df)
-    .mark_point(filled=True, size=350, strokeWidth=1.5, stroke="white", opacity=0.9)
+    .mark_point(filled=True, strokeWidth=1.5, stroke="white", opacity=0.92)
     .encode(
         x=x_enc,
         y=y_enc,
@@ -230,14 +191,14 @@ points = (
             scale=color_scale,
             legend=alt.Legend(
                 title="Sector",
-                titleFontSize=20,
-                labelFontSize=17,
-                orient="bottom-left",
-                offset=5,
-                symbolSize=350,
+                titleFontSize=18,
+                labelFontSize=15,
+                orient="none",
+                legendX=300,
+                legendY=1090,
+                symbolSize=280,
                 symbolStrokeWidth=0,
-                direction="vertical",
-                columns=1,
+                direction="horizontal",
             ),
         ),
         shape=alt.Shape(
@@ -245,57 +206,59 @@ points = (
             scale=shape_scale,
             legend=alt.Legend(
                 title="Ring",
-                titleFontSize=20,
-                labelFontSize=17,
-                orient="bottom-left",
-                offset=5,
-                symbolSize=350,
+                titleFontSize=18,
+                labelFontSize=15,
+                orient="none",
+                legendX=300,
+                legendY=1150,
+                symbolSize=280,
                 symbolStrokeWidth=0,
-                direction="vertical",
-                columns=1,
+                direction="horizontal",
             ),
         ),
-        tooltip=[
-            alt.Tooltip("name:N", title="Technology"),
-            alt.Tooltip("sector:N", title="Sector"),
-            alt.Tooltip("ring:N", title="Ring"),
-        ],
+        size=alt.condition(hover, alt.value(500), alt.value(300)),
+        tooltip=["name:N", "sector:N", "ring:N"],
+    )
+    .add_params(hover)
+)
+
+# Item labels at offset positions, highlighted on hover
+labels = (
+    alt.Chart(df)
+    .mark_text(fontSize=14, color="#222222", fontWeight="normal")
+    .encode(
+        x=alt.X("x:Q", scale=alt.Scale(domain=dom), axis=None),
+        y=alt.Y("label_y:Q", scale=alt.Scale(domain=dom), axis=None),
+        text="name:N",
+        opacity=alt.condition(hover, alt.value(1.0), alt.value(0.85)),
     )
 )
 
-# Item labels
-item_labels = (
-    alt.Chart(df)
-    .mark_text(fontSize=12, dy=-14, color="#222222", fontWeight="normal")
-    .encode(x=x_enc, y=y_enc, text="name:N")
-)
-
-# Sector labels
-sector_labels = (
-    alt.Chart(df_sector_labels)
+# Sector headers
+sec_headers = (
+    alt.Chart(df_sec)
     .mark_text(fontSize=22, fontWeight="bold", color="#333333")
-    .encode(x="x:Q", y="y:Q", text="sector:N")
+    .encode(x=x_enc, y=y_enc, text="sector:N")
 )
 
-# Ring labels
-ring_labels = (
-    alt.Chart(df_ring_labels)
-    .mark_text(fontSize=16, fontWeight="bold", color="#666666", align="left")
-    .encode(x="x:Q", y="y:Q", text="ring:N")
+# Ring labels inside bands
+rlabels = (
+    alt.Chart(df_rlabels)
+    .mark_text(fontSize=16, fontWeight="bold", color="#555555", align="left", baseline="middle")
+    .encode(x=x_enc, y=y_enc, text="ring:N")
 )
 
 # Combine all layers
 chart = (
-    alt.layer(*ring_fills, ring_arcs, spokes, points, item_labels, sector_labels, ring_labels)
+    alt.layer(*fill_layers, arcs, spokes, points, labels, sec_headers, rlabels)
     .properties(
         width=chart_size,
         height=chart_size,
         title=alt.Title("radar-innovation-timeline · altair · pyplots.ai", fontSize=28, anchor="middle", offset=20),
     )
     .configure_view(strokeWidth=0)
-    .configure_legend(strokeColor="#cccccc", padding=15)
+    .configure_legend(padding=12, cornerRadius=4, fillColor="#fafafa", strokeColor="#dddddd")
 )
 
-# Save
 chart.save("plot.png", scale_factor=3.0)
 chart.save("plot.html")

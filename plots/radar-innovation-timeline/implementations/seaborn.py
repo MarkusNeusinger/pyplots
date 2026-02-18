@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 radar-innovation-timeline: Innovation Radar with Time-Horizon Rings
 Library: seaborn 0.13.2 | Python 3.14.3
-Quality: 84/100 | Created: 2026-02-18
 """
 
 import matplotlib.lines as mlines
@@ -12,8 +11,8 @@ import seaborn as sns
 
 
 # ── Seaborn configuration ──
-sns.set_theme(style="white", context="talk", font_scale=1.15)
-custom_palette = sns.color_palette(["#306998", "#E8793A", "#4CAF50", "#9C27B0"])
+sns.set_style("white")
+sns.set_context("poster", font_scale=0.85, rc={"axes.titlesize": 26, "axes.titleweight": "bold", "legend.fontsize": 13})
 
 np.random.seed(42)
 
@@ -24,14 +23,23 @@ rings = ["Adopt", "Trial", "Assess", "Hold"]
 ring_radii = {"Adopt": 1.0, "Trial": 2.0, "Assess": 3.0, "Hold": 4.0}
 ring_importance = {"Adopt": 4, "Trial": 3, "Assess": 2, "Hold": 1}
 
-sector_palette = dict(zip(sectors, custom_palette, strict=True))
+sector_base = sns.color_palette(["#306998", "#E8793A", "#4CAF50", "#9C27B0"])
+sector_palette = dict(zip(sectors, sector_base, strict=True))
 sector_markers = {"AI & ML": "o", "Cloud & Infra": "s", "Sustainability": "D", "Biotech": "^"}
 
 total_angle_deg = 270
 sector_width_deg = total_angle_deg / len(sectors)
 start_angle_deg = 135
 
-ring_bg_colors = sns.color_palette(["#E8F5E9", "#FFF3E0", "#FFF9C4", "#FFEBEE"])
+# Ring backgrounds via seaborn light_palette — distinctive color generation
+ring_bg_colors = [
+    sns.light_palette("#4CAF50", n_colors=6)[1],
+    sns.light_palette("#FF9800", n_colors=6)[1],
+    sns.light_palette("#FDD835", n_colors=6)[1],
+    sns.light_palette("#E53935", n_colors=6)[1],
+]
+# Near-term → future gradient via seaborn blend_palette
+ring_accent = sns.blend_palette(["#4CAF50", "#FDD835", "#E53935"], n_colors=5)
 ring_boundaries = [0.5, 1.5, 2.5, 3.5, 4.5]
 
 # ── Innovation data ──
@@ -75,7 +83,7 @@ for name, ring, sector in innovations:
 
     sector_start = np.deg2rad(start_angle_deg - sector_idx * sector_width_deg)
     sector_end = np.deg2rad(start_angle_deg - (sector_idx + 1) * sector_width_deg)
-    margin = 0.08 * (sector_start - sector_end)
+    margin = 0.10 * (sector_start - sector_end)
     usable_start = sector_start - margin
     usable_end = sector_end + margin
 
@@ -90,9 +98,9 @@ for name, ring, sector in innovations:
         angle = usable_start + (usable_end - usable_start) * item_idx / (n_in_group - 1)
 
     if n_in_group == 2:
-        radial_jitter = 0.22 if item_idx == 0 else -0.22
+        radial_jitter = 0.24 if item_idx == 0 else -0.24
     else:
-        radial_jitter = np.random.uniform(-0.2, 0.2)
+        radial_jitter = np.random.uniform(-0.22, 0.22)
     radius = ring_radii[ring] + radial_jitter
 
     records.append(
@@ -121,9 +129,19 @@ for i in range(len(rings)):
         theta_fill, ring_boundaries[i], ring_boundaries[i + 1], color=ring_bg_colors[i], alpha=0.35, zorder=0
     )
 
-for rb in ring_boundaries:
-    ax.plot(theta_fill, np.full_like(theta_fill, rb), color="gray", linewidth=0.8, alpha=0.4, zorder=1)
+# Ring boundary lines with gradient coloring (green→yellow→red)
+for i, rb in enumerate(ring_boundaries):
+    lw = 1.4 if i == 1 else 0.8
+    ax.plot(
+        theta_fill,
+        np.full_like(theta_fill, rb),
+        color=sns.desaturate(ring_accent[i], 0.5),
+        linewidth=lw,
+        alpha=0.5,
+        zorder=1,
+    )
 
+# Sector divider lines
 for i in range(len(sectors) + 1):
     angle = np.deg2rad(start_angle_deg - i * sector_width_deg)
     ax.plot([angle, angle], [0.5, 4.5], color="gray", linewidth=1.0, alpha=0.5, zorder=1)
@@ -148,15 +166,22 @@ sns.scatterplot(
     zorder=5,
 )
 
-# ── Subtle halo per sector (seaborn layer) ──
+# ── Subtle halo per sector (seaborn scatter layer) ──
 for sector_name in sectors:
     sector_df = df[df["sector"] == sector_name]
-    sector_color = sector_palette[sector_name]
     sns.scatterplot(
-        data=sector_df, x="angle", y="radius", color=sector_color, s=600, alpha=0.08, legend=False, ax=ax, zorder=3
+        data=sector_df,
+        x="angle",
+        y="radius",
+        color=sector_palette[sector_name],
+        s=600,
+        alpha=0.08,
+        legend=False,
+        ax=ax,
+        zorder=3,
     )
 
-# ── Axes setup (before label placement so transforms are correct) ──
+# ── Axes setup ──
 ax.set_ylim(0, 6.0)
 ax.set_yticks([])
 ax.set_xticks([])
@@ -165,97 +190,55 @@ ax.set_ylabel("")
 ax.grid(False)
 ax.spines["polar"].set_visible(False)
 
-# Initialize transforms by drawing
 fig.canvas.draw()
 
-# ── Innovation labels with display-space collision detection ──
-placed_display_boxes = []  # List of (x_disp, y_disp, width, height) in display coords
+# ── Innovation labels with inline collision detection ──
+placed_boxes = []
 DPI = fig.dpi
-PT_TO_DISP = DPI / 72.0  # Points to display pixels
-FONT_SIZE = 12
-CHAR_W = FONT_SIZE * 0.62 * PT_TO_DISP  # Approx char width in display pixels
-CHAR_H = FONT_SIZE * 1.3 * PT_TO_DISP  # Approx line height in display pixels
-PAD = 4 * PT_TO_DISP  # Padding around label
+PT = DPI / 72.0
+FONT_SIZE = 13
+CHAR_W = FONT_SIZE * 0.62 * PT
+CHAR_H = FONT_SIZE * 1.3 * PT
+BOX_PAD = 4 * PT
 
-
-def data_to_display(angle, radius):
-    """Convert polar data coords to display coords."""
-    return ax.transData.transform((angle, radius))
-
-
-def label_display_box(dx, dy, y_off, x_off, text_len, ha, va):
-    """Estimate label bounding box in display coordinates."""
-    cx = dx + x_off * PT_TO_DISP
-    cy = dy + y_off * PT_TO_DISP
-    w = text_len * CHAR_W + PAD * 2
-    h = CHAR_H + PAD * 2
-
-    if ha == "left":
-        x0 = cx
-    elif ha == "right":
-        x0 = cx - w
-    else:
-        x0 = cx - w / 2
-
-    if va == "bottom":
-        y0 = cy
-    else:
-        y0 = cy - h
-
-    return (x0, y0, w, h)
-
-
-def boxes_overlap(b1, b2):
-    """Check if two (x, y, w, h) boxes overlap with some margin."""
-    margin = 2 * PT_TO_DISP
-    x1, y1, w1, h1 = b1
-    x2, y2, w2, h2 = b2
-    return not (x1 + w1 + margin < x2 or x2 + w2 + margin < x1 or y1 + h1 + margin < y2 or y2 + h2 + margin < y1)
-
-
-def count_overlaps(dx, dy, y_off, x_off, text_len, ha, placed):
-    """Count how many placed labels overlap with candidate position."""
-    va = "bottom" if y_off > 0 else "top"
-    candidate = label_display_box(dx, dy, y_off, x_off, text_len, ha, va)
-    return sum(1 for p in placed if boxes_overlap(candidate, p))
-
-
-# Sort items by ring (outer first) so outer labels get placed first
 df_sorted = df.sort_values("radius", ascending=False).reset_index(drop=True)
 
 for _, row in df_sorted.iterrows():
-    angle = row["angle"]
-    radius = row["radius"]
-    name = row["name"]
-
+    angle, radius, name = row["angle"], row["radius"], row["name"]
     angle_deg = np.rad2deg(angle) % 360
-    dx, dy = data_to_display(angle, radius)
+    dx, dy = ax.transData.transform((angle, radius))
 
     if 30 < angle_deg < 150:
-        ha = "left"
-        base_x = 10
+        ha, base_x = "left", 10
     elif 210 < angle_deg < 330:
-        ha = "right"
-        base_x = -10
+        ha, base_x = "right", -10
     else:
-        ha = "center"
-        base_x = 0
+        ha, base_x = "center", 0
 
-    # Generate offset candidates: (y_offset, x_offset)
-    candidates = []
-    for y in [11, -11, 17, -17, 23, -23, 30, -30]:
-        for dx_adj in [0, 7, -7, 14, -14]:
-            candidates.append((y, base_x + dx_adj))
-
-    best_pos = candidates[0]
-    best_score = float("inf")
-    for y_off, x_off in candidates:
-        score = count_overlaps(dx, dy, y_off, x_off, len(name), ha, placed_display_boxes)
-        if score < best_score:
-            best_score = score
-            best_pos = (y_off, x_off)
-            if score == 0:
-                break
+    best_pos, best_score = (12, base_x), float("inf")
+    for y in [12, -12, 18, -18, 25, -25, 33, -33]:
+        for dx_adj in [0, 8, -8, 15, -15]:
+            x_off = base_x + dx_adj
+            va_c = "bottom" if y > 0 else "top"
+            cx = dx + x_off * PT
+            cy = dy + y * PT
+            w = len(name) * CHAR_W + BOX_PAD * 2
+            h = CHAR_H + BOX_PAD * 2
+            x0 = cx if ha == "left" else (cx - w if ha == "right" else cx - w / 2)
+            y0 = cy if va_c == "bottom" else cy - h
+            m = 2 * PT
+            score = sum(
+                1
+                for bx in placed_boxes
+                if not (x0 + w + m < bx[0] or bx[0] + bx[2] + m < x0 or y0 + h + m < bx[1] or bx[1] + bx[3] + m < y0)
+            )
+            if score < best_score:
+                best_score = score
+                best_pos = (y, x_off)
+                if score == 0:
+                    break
+        if best_score == 0:
+            break
 
     y_off, x_off = best_pos
     va = "bottom" if y_off > 0 else "top"
@@ -274,8 +257,13 @@ for _, row in df_sorted.iterrows():
         arrowprops={"arrowstyle": "-", "color": "#bbbbbb", "linewidth": 0.5},
         zorder=6,
     )
-    box = label_display_box(dx, dy, y_off, x_off, len(name), ha, va)
-    placed_display_boxes.append(box)
+    cx_f = dx + x_off * PT
+    cy_f = dy + y_off * PT
+    w_f = len(name) * CHAR_W + BOX_PAD * 2
+    h_f = CHAR_H + BOX_PAD * 2
+    x0_f = cx_f if ha == "left" else (cx_f - w_f if ha == "right" else cx_f - w_f / 2)
+    y0_f = cy_f if va == "bottom" else cy_f - h_f
+    placed_boxes.append((x0_f, y0_f, w_f, h_f))
 
 # ── Sector header labels ──
 for i, sector_name in enumerate(sectors):
@@ -308,7 +296,32 @@ for ring_name, ring_r in zip(rings, [1.0, 2.0, 3.0, 4.0], strict=True):
         zorder=7,
     )
 
-# ── Title (>=24pt per guidelines) ──
+# ── Directional storytelling cues ──
+dir_angle = np.deg2rad(start_angle_deg - total_angle_deg - 22)
+ax.text(
+    dir_angle,
+    0.7,
+    "◂ Ready",
+    fontsize=10,
+    color=sns.desaturate("#4CAF50", 0.6),
+    fontweight="bold",
+    ha="center",
+    va="center",
+    zorder=7,
+)
+ax.text(
+    dir_angle,
+    4.7,
+    "Emerging ▸",
+    fontsize=10,
+    color=sns.desaturate("#E53935", 0.6),
+    fontweight="bold",
+    ha="center",
+    va="center",
+    zorder=7,
+)
+
+# ── Title ──
 ax.set_title(
     "radar-innovation-timeline · seaborn · pyplots.ai", fontsize=26, fontweight="bold", pad=35, color="#1a1a1a"
 )

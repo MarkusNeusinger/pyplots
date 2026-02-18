@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 radar-innovation-timeline: Innovation Radar with Time-Horizon Rings
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 84/100 | Created: 2026-02-18
@@ -45,7 +45,7 @@ RING_SIZE = {"Adopt": 7, "Trial": 5.5, "Assess": 4.5, "Hold": 3.5}
 RING_ALPHA = {"Adopt": 1.0, "Trial": 0.85, "Assess": 0.7, "Hold": 0.6}
 
 SECTORS = ["AI & ML", "Cloud & Infra", "Data Engineering", "Security"]
-SEC_COLOR = {"AI & ML": "#1565C0", "Cloud & Infra": "#2E7D32", "Data Engineering": "#E65100", "Security": "#AD1457"}
+SEC_COLOR = {"AI & ML": "#1565C0", "Cloud & Infra": "#00897B", "Data Engineering": "#E65100", "Security": "#AD1457"}
 
 ARC_TOTAL = 1.5 * math.pi  # 270°
 ARC_START = -math.pi / 4  # -45°
@@ -68,7 +68,7 @@ innovations = [
     ("Edge Computing", "Cloud & Infra", "Assess", 0.65),
     ("Serverless Cont.", "Cloud & Infra", "Assess", 0.15),
     ("Confidential Comp.", "Cloud & Infra", "Hold", 0.5),
-    ("dbt", "Data Engineering", "Adopt", 0.25),
+    ("dbt", "Data Engineering", "Adopt", 0.3),
     ("Apache Iceberg", "Data Engineering", "Adopt", 0.8),
     ("RT Feature Stores", "Data Engineering", "Trial", 0.15),
     ("Data Mesh", "Data Engineering", "Trial", 0.8),
@@ -79,8 +79,8 @@ innovations = [
     ("SBOM Tooling", "Security", "Trial", 0.2),
     ("AI Threat Detect.", "Security", "Trial", 0.75),
     ("Post-Quantum Crypto", "Security", "Assess", 0.45),
-    ("Homomorphic Enc.", "Security", "Hold", 0.25),
-    ("Deception Tech.", "Security", "Hold", 0.3),
+    ("Homomorphic Enc.", "Security", "Hold", 0.15),
+    ("Deception Tech.", "Security", "Hold", 0.75),
 ]
 
 # Compute point positions
@@ -139,7 +139,7 @@ spoke_df = pd.DataFrame(
 # Sector header labels
 slbl_df = pd.DataFrame(
     [
-        {"label": s, "x": 8.5 * math.cos(SEC_START[s] + SEC_SPAN / 2), "y": 8.5 * math.sin(SEC_START[s] + SEC_SPAN / 2)}
+        {"label": s, "x": 7.8 * math.cos(SEC_START[s] + SEC_SPAN / 2), "y": 7.8 * math.sin(SEC_START[s] + SEC_SPAN / 2)}
         for s in SECTORS
     ]
 )
@@ -154,8 +154,8 @@ rlbl_df = pd.DataFrame(
 )
 
 # Innovation labels with text-width-aware collision avoidance
-lbl_offset = 0.6
-char_w = 0.30  # estimated data units per character at size=9
+lbl_offset = 0.65
+char_w = 0.37  # estimated data units per character at size=11
 labels = []
 for _, row in df.iterrows():
     lx = (row["radius"] + lbl_offset) * math.cos(row["angle"])
@@ -166,8 +166,8 @@ for _, row in df.iterrows():
     labels.append({"name": row["name"], "x": lx, "y": ly, "sector": row["sector"], "x_min": x_min, "x_max": x_max})
 
 # Iterative nudge: push labels with overlapping bounding boxes apart
-min_sep = 0.65
-for _ in range(25):
+min_sep = 0.80
+for _ in range(40):
     moved = False
     for i in range(len(labels)):
         for j in range(i + 1, len(labels)):
@@ -198,7 +198,7 @@ plot = (
     + geom_text(
         aes(x="x", y="y", label="name", color="sector"),
         data=lbl_l_df,
-        size=9,
+        size=11,
         ha="left",
         va="center",
         show_legend=False,
@@ -206,7 +206,7 @@ plot = (
     + geom_text(
         aes(x="x", y="y", label="name", color="sector"),
         data=lbl_r_df,
-        size=9,
+        size=11,
         ha="right",
         va="center",
         show_legend=False,
@@ -218,8 +218,8 @@ plot = (
     + scale_color_manual(values=SEC_COLOR, name="Category")
     + guides(color=guide_legend(override_aes={"size": 5}), size=False, alpha=False)
     + coord_fixed(ratio=1)
-    + scale_x_continuous(limits=(-10.5, 10.5))
-    + scale_y_continuous(limits=(-7.5, 9))
+    + scale_x_continuous(limits=(-9.5, 9.5))
+    + scale_y_continuous(limits=(-7.5, 8))
     + labs(
         title="radar-innovation-timeline \u00b7 plotnine \u00b7 pyplots.ai",
         subtitle="Inner rings \u2192 near-term adoption  \u00b7  Outer rings \u2192 future exploration",
@@ -230,7 +230,7 @@ plot = (
         plot_subtitle=element_text(size=14, ha="center", color="#666666", style="italic"),
         legend_title=element_text(size=16),
         legend_text=element_text(size=14),
-        legend_position=(0.65, 0.06),
+        legend_position=(0.13, 0.10),
         legend_background=element_rect(fill="white", color="#CCCCCC"),
         legend_key=element_rect(fill="white"),
         axis_title=element_blank(),
@@ -241,6 +241,7 @@ plot = (
         panel_grid_minor=element_blank(),
         panel_background=element_rect(fill="white", color="white"),
         plot_background=element_rect(fill="white", color="white"),
+        plot_margin=0.02,
     )
 )
 

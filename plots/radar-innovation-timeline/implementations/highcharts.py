@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 radar-innovation-timeline: Innovation Radar with Time-Horizon Rings
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2026-02-18
+Library: highcharts unknown | Python 3.14.3
+Quality: 80/100 | Created: 2026-02-18
 """
 
 import json

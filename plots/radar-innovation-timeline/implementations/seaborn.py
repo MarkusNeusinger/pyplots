@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 radar-innovation-timeline: Innovation Radar with Time-Horizon Rings
-Library: seaborn | Python 3.13
-Quality: pending | Created: 2026-02-18
+Library: seaborn 0.13.2 | Python 3.14.3
+Quality: 62/100 | Created: 2026-02-18
 """
 
 import matplotlib.patches as mpatches

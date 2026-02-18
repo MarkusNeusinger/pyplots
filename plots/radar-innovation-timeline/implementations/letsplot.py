@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 radar-innovation-timeline: Innovation Radar with Time-Horizon Rings
 Library: letsplot 4.8.2 | Python 3.14.3
 Quality: 77/100 | Created: 2026-02-18
@@ -40,9 +40,9 @@ rings = ["Adopt", "Trial", "Assess", "Hold"]
 sectors = ["AI & ML", "Sustainability", "Biotech", "Infrastructure"]
 sector_colors = {"AI & ML": "#306998", "Biotech": "#9F5AC1", "Infrastructure": "#E56910", "Sustainability": "#22A06B"}
 
-# 270-degree layout (centered at top, leaving bottom open for legend)
-arc_start = math.pi * 3 / 4  # 135 degrees (bottom-left)
-arc_end = arc_start + math.pi * 3 / 2  # +270 degrees clockwise
+# 270-degree layout (gap at top-center for ring labels)
+arc_start = math.pi * 3 / 4  # 135 degrees (upper-left)
+arc_end = arc_start + math.pi * 3 / 2  # +270 degrees to 45 degrees (upper-right)
 arc_span = arc_end - arc_start
 
 sector_span = arc_span / len(sectors)
@@ -73,9 +73,14 @@ innovations = [
     {"name": "WebAssembly", "ring": "Adopt", "sector": "Infrastructure"},
     {"name": "Service Mesh", "ring": "Trial", "sector": "Infrastructure"},
     {"name": "Confidential Compute", "ring": "Assess", "sector": "Infrastructure"},
-    {"name": "6G Networks", "ring": "Hold", "sector": "Infrastructure"},
+    {"name": "6G Research", "ring": "Hold", "sector": "Infrastructure"},
     {"name": "Satellite Internet", "ring": "Trial", "sector": "Infrastructure"},
 ]
+
+# Ring-dependent angular micro-offsets to stagger labels across adjacent rings
+ring_micro_offsets = {"Adopt": -0.08, "Trial": 0.08, "Assess": -0.06, "Hold": -0.15}
+# Larger radial label offsets for inner rings where items converge near center
+ring_label_offsets = {"Adopt": 0.60, "Trial": 0.50, "Assess": 0.45, "Hold": 0.40}
 
 # Compute positions for each innovation item
 item_rows = []
@@ -90,12 +95,15 @@ for item in innovations:
     item_idx = same_items.index(item)
     n_same = len(same_items)
 
-    usable_span = sector_span * 0.65
+    # Wider angular spread within sectors to reduce crowding
+    usable_span = sector_span * 0.80
     if n_same > 1:
         angle_offset = -usable_span / 2 + item_idx * usable_span / (n_same - 1)
     else:
         angle_offset = 0
-    angle = sector_center + angle_offset
+
+    # Add ring micro-offset to prevent cross-ring label alignment
+    angle = sector_center + angle_offset + ring_micro_offsets[ring_name]
 
     ring_mid = (ring_inner[ring_name] + ring_outer[ring_name]) / 2
     radius = ring_mid + np.random.uniform(-0.15, 0.15)
@@ -103,16 +111,34 @@ for item in innovations:
     x = radius * math.cos(angle)
     y = radius * math.sin(angle)
 
-    # Label offset: push label radially outward from point
-    label_r = radius + 0.35
+    # Label offset: push label radially outward (more for inner rings to reduce center crowding)
+    label_r = radius + ring_label_offsets[ring_name]
     lx = label_r * math.cos(angle)
     ly = label_r * math.sin(angle)
 
+    # Determine horizontal alignment based on which side of the chart
+    norm_angle = angle % (2 * math.pi)
+    if norm_angle > math.pi / 2 and norm_angle < 3 * math.pi / 2:
+        side = "left"
+    else:
+        side = "right"
+
     item_rows.append(
-        {"name": item["name"], "ring": ring_name, "sector": item["sector"], "x": x, "y": y, "lx": lx, "ly": ly}
+        {
+            "name": item["name"],
+            "ring": ring_name,
+            "sector": item["sector"],
+            "x": x,
+            "y": y,
+            "lx": lx,
+            "ly": ly,
+            "side": side,
+        }
     )
 
 items_df = pd.DataFrame(item_rows)
+items_left = items_df[items_df["side"] == "left"]
+items_right = items_df[items_df["side"] == "right"]
 
 # Ring background arcs (subtle fills per time horizon)
 ring_bg_rows = []
@@ -171,17 +197,18 @@ spoke_df = pd.DataFrame(spoke_rows)
 sector_label_rows = []
 for i, sector in enumerate(sectors):
     angle = arc_start + (i + 0.5) * sector_span
-    r = 5.2
+    r = 5.8
     sector_label_rows.append({"label": sector, "x": r * math.cos(angle), "y": r * math.sin(angle)})
 
 sector_label_df = pd.DataFrame(sector_label_rows)
 
-# Ring name labels along the right-most spoke edge
+# Ring name labels placed in the arc gap (top center at 90 degrees)
+# This avoids overlap with data points which only exist within the 270-degree arc
 ring_label_rows = []
-label_angle = arc_end + 0.08
+gap_center = math.pi / 2  # 90 degrees = center of the 90-degree gap at top
 for ring_name in rings:
     r = (ring_inner[ring_name] + ring_outer[ring_name]) / 2
-    ring_label_rows.append({"label": ring_name, "x": r * math.cos(label_angle), "y": r * math.sin(label_angle)})
+    ring_label_rows.append({"label": ring_name, "x": r * math.cos(gap_center), "y": r * math.sin(gap_center)})
 
 ring_label_df = pd.DataFrame(ring_label_rows)
 
@@ -201,42 +228,44 @@ plot = plot + geom_segment(
     aes(x="x", y="y", xend="xend", yend="yend"), data=spoke_df, color="#BBBBBB", size=0.4, alpha=0.8
 )
 
-# Innovation points (color by sector)
-plot = plot + geom_point(aes(x="x", y="y", color="sector"), data=items_df, size=5, alpha=0.9)
-
-# Innovation labels (radially offset)
-plot = plot + geom_text(aes(x="lx", y="ly", label="name", color="sector"), data=items_df, size=7)
-
-# Sector header labels
+# Sector header labels (drawn before data so data labels render on top)
 plot = plot + geom_text(
     aes(x="x", y="y", label="label"), data=sector_label_df, size=14, color="#222222", fontface="bold"
 )
 
-# Ring name labels
+# Ring name labels (in the arc gap at top center)
+plot = plot + geom_text(aes(x="x", y="y", label="label"), data=ring_label_df, size=13, color="#444444", fontface="bold")
+
+# Innovation points (color by sector)
+plot = plot + geom_point(aes(x="x", y="y", color="sector"), data=items_df, size=6, alpha=0.9)
+
+# Innovation labels - split by chart side for outward-extending horizontal alignment
 plot = plot + geom_text(
-    aes(x="x", y="y", label="label"), data=ring_label_df, size=10, color="#555555", fontface="italic"
+    aes(x="lx", y="ly", label="name", color="sector"),
+    data=items_left,
+    size=8,
+    hjust=1,  # right-align: text extends leftward (away from center)
+)
+plot = plot + geom_text(
+    aes(x="lx", y="ly", label="name", color="sector"),
+    data=items_right,
+    size=8,
+    hjust=0,  # left-align: text extends rightward (away from center)
 )
 
 # Style
 plot = (
     plot
-    + scale_color_manual(
-        values=[
-            sector_colors["AI & ML"],
-            sector_colors["Biotech"],
-            sector_colors["Infrastructure"],
-            sector_colors["Sustainability"],
-        ]
-    )
-    + scale_x_continuous(limits=(-6.5, 6.5))
-    + scale_y_continuous(limits=(-6.5, 6.5))
+    + scale_color_manual(values=sector_colors)  # Dict mapping ensures correct color-sector pairing
+    + scale_x_continuous(limits=(-7.0, 7.5))
+    + scale_y_continuous(limits=(-6.2, 5.8))
     + coord_fixed()
     + labs(title="radar-innovation-timeline · letsplot · pyplots.ai", color="Sector")
     + ggsize(1200, 1200)
     + theme(
-        plot_title=element_text(size=22, face="bold"),
-        legend_title=element_text(size=16),
-        legend_text=element_text(size=14),
+        plot_title=element_text(size=24, face="bold"),
+        legend_title=element_text(size=18),
+        legend_text=element_text(size=16),
         legend_position="bottom",
         axis_title=element_blank(),
         axis_text=element_blank(),

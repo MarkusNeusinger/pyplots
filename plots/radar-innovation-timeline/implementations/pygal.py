@@ -1,20 +1,23 @@
-""" pyplots.ai
+"""pyplots.ai
 radar-innovation-timeline: Innovation Radar with Time-Horizon Rings
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 73/100 | Created: 2026-02-18
 """
 
-import numpy as np
 import pygal
 from pygal.style import Style
 
 
 # Data - Technology innovations mapped to time-horizon rings and thematic sectors
-np.random.seed(42)
-
 sectors = ["AI & ML", "Cloud & Infra", "Sustainability", "Biotech & Health"]
-rings = ["Adopt", "Trial", "Assess", "Hold"]
 ring_values = {"Adopt": 1, "Trial": 2, "Assess": 3, "Hold": 4}
+
+# Colorblind-safe sector palette (blue, amber, teal, purple — no red-green conflict)
+sector_colors = {
+    "AI & ML": "#2563eb",
+    "Cloud & Infra": "#d97706",
+    "Sustainability": "#0d9488",
+    "Biotech & Health": "#7c3aed",
+}
 
 innovations = [
     ("LLM Agents", "AI & ML", "Adopt"),
@@ -25,110 +28,77 @@ innovations = [
     ("Causal AI", "AI & ML", "Assess"),
     ("Kubernetes", "Cloud & Infra", "Adopt"),
     ("GitOps Workflows", "Cloud & Infra", "Adopt"),
-    ("WebAssembly Runtimes", "Cloud & Infra", "Trial"),
-    ("Confidential Computing", "Cloud & Infra", "Trial"),
+    ("WASM Runtimes", "Cloud & Infra", "Trial"),
+    ("Confidential Compute", "Cloud & Infra", "Trial"),
     ("Serverless GPUs", "Cloud & Infra", "Assess"),
     ("Quantum Networking", "Cloud & Infra", "Hold"),
-    ("Carbon Accounting APIs", "Sustainability", "Trial"),
-    ("Green Software Patterns", "Sustainability", "Adopt"),
-    ("Digital Product Passports", "Sustainability", "Assess"),
-    ("Energy-Harvesting IoT", "Sustainability", "Hold"),
-    ("Circular Supply Chains", "Sustainability", "Assess"),
+    ("Carbon Accounting", "Sustainability", "Trial"),
+    ("Green Software", "Sustainability", "Adopt"),
+    ("Digital Passports", "Sustainability", "Assess"),
+    ("Energy-Harvest IoT", "Sustainability", "Hold"),
+    ("Circular Supply", "Sustainability", "Assess"),
     ("AI-Optimized Grids", "Sustainability", "Trial"),
     ("mRNA Therapeutics", "Biotech & Health", "Adopt"),
-    ("Digital Twins for Organs", "Biotech & Health", "Assess"),
+    ("Digital Organ Twins", "Biotech & Health", "Assess"),
     ("CRISPR Diagnostics", "Biotech & Health", "Trial"),
     ("Synthetic Biology", "Biotech & Health", "Hold"),
     ("Wearable Biomarkers", "Biotech & Health", "Trial"),
     ("Longevity Genomics", "Biotech & Health", "Hold"),
 ]
 
-# Build angular slots: each sector gets sub-slots for angular spread of items.
-# Place sector labels at first slot of each sector so they land at 0/90/180/270 degrees.
-slots_per_sector = 9
-total_slots = len(sectors) * slots_per_sector
-
-x_labels = []
-for sector in sectors:
-    x_labels.append(sector)
-    for _ in range(slots_per_sector - 1):
-        x_labels.append("")
-
-# Group innovations by sector
+# Group and sort by ring within each sector (near-term first for visual progression)
 sector_items = {s: [] for s in sectors}
 for name, sector, ring in innovations:
     sector_items[sector].append((name, ring))
+for s in sectors:
+    sector_items[s].sort(key=lambda x: ring_values[x[1]])
 
-# Place each item into slots within its sector (offset from label slot)
+# Angular layout: [HEADER, item1..item6, gap] per sector = 8 slots × 4 sectors = 32
+slots_per_sector = 8
+total_slots = len(sectors) * slots_per_sector
+
+x_labels = []
 item_placements = []
 for sector_idx, sector in enumerate(sectors):
-    items = sector_items[sector]
-    n_items = len(items)
     start_slot = sector_idx * slots_per_sector
-    usable_start = 1
-    usable_end = slots_per_sector - 1
-    usable_range = usable_end - usable_start
-    for i, (name, ring) in enumerate(items):
-        slot_offset = usable_start + int((i + 0.5) * usable_range / n_items)
-        slot_offset = max(usable_start, min(usable_end, slot_offset))
-        slot = start_slot + slot_offset
-        item_placements.append((name, ring, slot))
+    x_labels.append(sector)
+    for i, (name, ring) in enumerate(sector_items[sector]):
+        x_labels.append(name)
+        item_placements.append((name, sector, ring, start_slot + 1 + i))
+    x_labels.append("")  # gap between sectors
 
-# Color palette per ring (colorblind-safe, distinct hues)
-ring_colors = {"Adopt": "#27ae60", "Trial": "#2980b9", "Assess": "#e67e22", "Hold": "#c0392b"}
+# One series per sector → 4 legend entries colored by category
+series_data = {s: [None] * total_slots for s in sectors}
+for name, sector, ring, slot in item_placements:
+    series_data[sector][slot] = {"value": ring_values[ring], "label": name}
 
-# Sort so first occurrence of each ring appears in order for clean legend
-ring_order = {r: i for i, r in enumerate(rings)}
-item_placements.sort(key=lambda x: (ring_order[x[1]], x[2]))
+color_sequence = tuple(sector_colors[s] for s in sectors)
 
-# Build one series per item; first per ring gets legend title, rest get None
-ring_legend_used = set()
-ring_legend_labels = {
-    "Adopt": "Adopt (Now)",
-    "Trial": "Trial (6-12 mo)",
-    "Assess": "Assess (1-2 yr)",
-    "Hold": "Hold (2-5 yr)",
-}
-
-series_list = []
-for name, ring, slot in item_placements:
-    values = [None] * total_slots
-    values[slot] = {"value": ring_values[ring], "label": name}
-    if ring not in ring_legend_used:
-        title = ring_legend_labels[ring]
-        ring_legend_used.add(ring)
-    else:
-        title = None
-    series_list.append((title, values, ring_colors[ring]))
-
-# Custom style
-color_sequence = tuple(color for _, _, color in series_list)
 custom_style = Style(
     background="white",
-    plot_background="white",
-    foreground="#333333",
-    foreground_strong="#333333",
-    foreground_subtle="#dddddd",
+    plot_background="#f8f9fa",
+    foreground="#444444",
+    foreground_strong="#222222",
+    foreground_subtle="#dcdcdc",
     colors=color_sequence,
-    title_font_size=56,
-    label_font_size=34,
-    major_label_font_size=38,
-    legend_font_size=32,
-    value_font_size=20,
-    opacity=0.9,
+    title_font_size=48,
+    label_font_size=20,
+    major_label_font_size=28,
+    legend_font_size=26,
+    value_font_size=18,
+    opacity=0.85,
     opacity_hover=1.0,
 )
 
-# Chart
 chart = pygal.Radar(
-    width=4800,
-    height=2700,
+    width=3600,
+    height=3600,
     style=custom_style,
     title="radar-innovation-timeline · pygal · pyplots.ai",
     show_legend=True,
     legend_at_bottom=True,
     legend_at_bottom_columns=4,
-    legend_box_size=28,
+    legend_box_size=22,
     fill=False,
     dots_size=14,
     stroke=False,
@@ -136,26 +106,27 @@ chart = pygal.Radar(
     show_y_guides=True,
     show_x_guides=False,
     range=(0, 5),
-    inner_radius=0.05,
+    inner_radius=0.08,
     y_labels=[
         {"value": 1, "label": "Adopt"},
         {"value": 2, "label": "Trial"},
         {"value": 3, "label": "Assess"},
         {"value": 4, "label": "Hold"},
     ],
-    show_minor_x_labels=False,
+    show_minor_x_labels=True,
     x_labels_major=sectors,
     x_label_rotation=0,
-    margin_bottom=80,
-    margin_left=140,
-    margin_right=140,
-    margin_top=60,
+    margin_bottom=50,
+    margin_left=50,
+    margin_right=50,
+    margin_top=50,
+    truncate_label=100,
 )
 
 chart.x_labels = x_labels
 
-for title, values, _ in series_list:
-    chart.add(title, values)
+for sector in sectors:
+    chart.add(sector, series_data[sector])
 
 # Save
 chart.render_to_png("plot.png")

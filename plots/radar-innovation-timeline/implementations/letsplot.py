@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 radar-innovation-timeline: Innovation Radar with Time-Horizon Rings
 Library: letsplot 4.8.2 | Python 3.14.3
-Quality: 78/100 | Created: 2026-02-18
 """
 
 import math
@@ -15,6 +14,7 @@ from lets_plot import (
     element_blank,
     element_rect,
     element_text,
+    geom_label,
     geom_path,
     geom_point,
     geom_polygon,
@@ -24,6 +24,7 @@ from lets_plot import (
     ggsave,
     ggsize,
     labs,
+    layer_tooltips,
     scale_color_manual,
     scale_x_continuous,
     scale_y_continuous,
@@ -35,20 +36,27 @@ LetsPlot.setup_html()
 
 np.random.seed(42)
 
-# Data - Innovation items across 4 sectors and 4 time-horizon rings
+# --- Data ---
 rings = ["Adopt", "Trial", "Assess", "Hold"]
-sectors = ["AI & ML", "Sustainability", "Biotech", "Infrastructure"]
-sector_colors = {"AI & ML": "#306998", "Biotech": "#9F5AC1", "Infrastructure": "#E56910", "Sustainability": "#22A06B"}
-
-# 270-degree layout (gap at top-center for ring labels)
-arc_start = math.pi * 3 / 4  # 135 degrees (upper-left)
-arc_end = arc_start + math.pi * 3 / 2  # +270 degrees to 45 degrees (upper-right)
-arc_span = arc_end - arc_start
-
-sector_span = arc_span / len(sectors)
-
+# Sector order chosen to separate heavy-label sectors (AI & ML, Infrastructure) across the arc
+sectors = ["AI & ML", "Biotech", "Sustainability", "Infrastructure"]
+sector_colors = {
+    "AI & ML": "#306998",
+    "Infrastructure": "#E56910",
+    "Biotech": "#D63484",  # Deep pink: high contrast vs blue for colorblind viewers
+    "Sustainability": "#22A06B",
+}
+ring_fills = {"Adopt": "#DCEDC8", "Trial": "#FFF9C4", "Assess": "#FFE0B2", "Hold": "#FFCDD2"}
 ring_inner = {"Adopt": 0.5, "Trial": 1.5, "Assess": 2.5, "Hold": 3.5}
 ring_outer = {"Adopt": 1.5, "Trial": 2.5, "Assess": 3.5, "Hold": 4.5}
+# Angular nudge for Hold ring items to prevent overlap with sector header labels
+ring_nudge = {"Adopt": 0.0, "Trial": 0.0, "Assess": 0.0, "Hold": 0.20}
+
+# 270-degree arc (gap at top for ring labels)
+ARC_START = math.pi * 3 / 4
+ARC_SPAN = math.pi * 3 / 2
+ARC_END = ARC_START + ARC_SPAN
+SECTOR_SPAN = ARC_SPAN / len(sectors)
 
 innovations = [
     {"name": "LLM Agents", "ring": "Adopt", "sector": "AI & ML"},
@@ -57,208 +65,164 @@ innovations = [
     {"name": "AI Code Review", "ring": "Trial", "sector": "AI & ML"},
     {"name": "Neuro-symbolic AI", "ring": "Assess", "sector": "AI & ML"},
     {"name": "Quantum ML", "ring": "Hold", "sector": "AI & ML"},
+    {"name": "mRNA Platforms", "ring": "Adopt", "sector": "Biotech"},
+    {"name": "Gene Editing", "ring": "Trial", "sector": "Biotech"},
+    {"name": "Synthetic Biology", "ring": "Trial", "sector": "Biotech"},
+    {"name": "Digital Twins (Bio)", "ring": "Assess", "sector": "Biotech"},
+    {"name": "Organ-on-Chip", "ring": "Assess", "sector": "Biotech"},
+    {"name": "Nanomedicine", "ring": "Hold", "sector": "Biotech"},
     {"name": "Carbon Tracking", "ring": "Adopt", "sector": "Sustainability"},
     {"name": "Green Cloud", "ring": "Trial", "sector": "Sustainability"},
     {"name": "Circular Design", "ring": "Trial", "sector": "Sustainability"},
     {"name": "Biodegradable PCBs", "ring": "Assess", "sector": "Sustainability"},
-    {"name": "Fusion Energy", "ring": "Hold", "sector": "Sustainability"},
     {"name": "Ocean Cleanup AI", "ring": "Assess", "sector": "Sustainability"},
-    {"name": "mRNA Platforms", "ring": "Adopt", "sector": "Biotech"},
-    {"name": "Gene Editing", "ring": "Trial", "sector": "Biotech"},
-    {"name": "Digital Twins (Bio)", "ring": "Assess", "sector": "Biotech"},
-    {"name": "Organ-on-Chip", "ring": "Assess", "sector": "Biotech"},
-    {"name": "Synthetic Biology", "ring": "Trial", "sector": "Biotech"},
-    {"name": "Nanomedicine", "ring": "Hold", "sector": "Biotech"},
+    {"name": "Fusion Energy", "ring": "Hold", "sector": "Sustainability"},
     {"name": "Edge Computing", "ring": "Adopt", "sector": "Infrastructure"},
     {"name": "WebAssembly", "ring": "Adopt", "sector": "Infrastructure"},
     {"name": "Service Mesh", "ring": "Trial", "sector": "Infrastructure"},
+    {"name": "Satellite Internet", "ring": "Trial", "sector": "Infrastructure"},
     {"name": "Confidential Compute", "ring": "Assess", "sector": "Infrastructure"},
     {"name": "6G Research", "ring": "Hold", "sector": "Infrastructure"},
-    {"name": "Satellite Internet", "ring": "Trial", "sector": "Infrastructure"},
 ]
 
-# Ring-dependent angular micro-offsets to stagger labels across adjacent rings
-ring_micro_offsets = {"Adopt": -0.08, "Trial": 0.08, "Assess": -0.06, "Hold": -0.15}
-# Larger radial label offsets for inner rings where items converge near center
-ring_label_offsets = {"Adopt": 0.60, "Trial": 0.50, "Assess": 0.45, "Hold": 0.40}
+# --- Compute positions ---
+df = pd.DataFrame(innovations)
+sector_idx_map = {s: i for i, s in enumerate(sectors)}
+ring_mid_map = {r: (ring_inner[r] + ring_outer[r]) / 2 for r in rings}
 
-# Compute positions for each innovation item
-item_rows = []
-for item in innovations:
-    sector_idx = sectors.index(item["sector"])
-    ring_name = item["ring"]
+# Vectorized angular placement per sector/ring group
+angles = np.zeros(len(df))
+for (sector, ring), group in df.groupby(["sector", "ring"], sort=False):
+    center = ARC_START + sector_idx_map[sector] * SECTOR_SPAN + SECTOR_SPAN / 2
+    n = len(group)
+    spread = SECTOR_SPAN * 0.72
+    offsets = np.linspace(-spread / 2, spread / 2, n) if n > 1 else np.array([0.0])
+    angles[group.index] = center + offsets + ring_nudge[ring]
 
-    sector_start_angle = arc_start + sector_idx * sector_span
-    sector_center = sector_start_angle + sector_span / 2
+df["angle"] = angles
+df["radius"] = df["ring"].map(ring_mid_map) + np.random.uniform(-0.15, 0.15, len(df))
+df["x"] = df["radius"] * np.cos(df["angle"])
+df["y"] = df["radius"] * np.sin(df["angle"])
 
-    same_items = [inn for inn in innovations if inn["sector"] == item["sector"] and inn["ring"] == ring_name]
-    item_idx = same_items.index(item)
-    n_same = len(same_items)
+# Label positions: pushed radially outward (more offset for inner rings)
+label_offsets = {"Adopt": 0.65, "Trial": 0.55, "Assess": 0.48, "Hold": 0.38}
+df["label_r"] = df["radius"] + df["ring"].map(label_offsets)
+df["lx"] = df["label_r"] * np.cos(df["angle"])
+df["ly"] = df["label_r"] * np.sin(df["angle"])
+df["side"] = np.where(df["lx"] < 0, "left", "right")
 
-    # Wider angular spread within sectors to reduce crowding
-    usable_span = sector_span * 0.80
-    if n_same > 1:
-        angle_offset = -usable_span / 2 + item_idx * usable_span / (n_same - 1)
-    else:
-        angle_offset = 0
+# Label repulsion: push overlapping labels apart vertically on each side
+MIN_Y_SEP = 0.52
+for _ in range(25):
+    for side in ["left", "right"]:
+        side_idx = df.loc[df["side"] == side].sort_values("ly").index.tolist()
+        for k in range(len(side_idx) - 1):
+            i, j = side_idx[k], side_idx[k + 1]
+            if abs(df.loc[j, "lx"] - df.loc[i, "lx"]) < 2.5:
+                dy = df.loc[j, "ly"] - df.loc[i, "ly"]
+                if dy < MIN_Y_SEP:
+                    push = (MIN_Y_SEP - dy) / 2
+                    df.loc[j, "ly"] += push
+                    df.loc[i, "ly"] -= push
 
-    # Add ring micro-offset to prevent cross-ring label alignment
-    angle = sector_center + angle_offset + ring_micro_offsets[ring_name]
+# --- Structural geometry ---
+arc_pts = np.linspace(ARC_START, ARC_END, 120)
 
-    ring_mid = (ring_inner[ring_name] + ring_outer[ring_name]) / 2
-    radius = ring_mid + np.random.uniform(-0.15, 0.15)
-
-    x = radius * math.cos(angle)
-    y = radius * math.sin(angle)
-
-    # Label offset: push label radially outward (more for inner rings to reduce center crowding)
-    label_r = radius + ring_label_offsets[ring_name]
-    lx = label_r * math.cos(angle)
-    ly = label_r * math.sin(angle)
-
-    # Determine horizontal alignment based on which side of the chart
-    norm_angle = angle % (2 * math.pi)
-    if norm_angle > math.pi / 2 and norm_angle < 3 * math.pi / 2:
-        side = "left"
-    else:
-        side = "right"
-
-    item_rows.append(
-        {
-            "name": item["name"],
-            "ring": ring_name,
-            "sector": item["sector"],
-            "x": x,
-            "y": y,
-            "lx": lx,
-            "ly": ly,
-            "side": side,
-        }
-    )
-
-items_df = pd.DataFrame(item_rows)
-items_left = items_df[items_df["side"] == "left"]
-items_right = items_df[items_df["side"] == "right"]
-
-# Ring background arcs (subtle fills per time horizon)
+# Ring background polygons (annular sectors)
 ring_bg_rows = []
-ring_fill_colors = ["#DCEDC8", "#FFF9C4", "#FFE0B2", "#FFCDD2"]
-n_arc = 100
-
-for ring_name in rings:
-    r_in = ring_inner[ring_name]
-    r_out = ring_outer[ring_name]
-    arc_angles = np.linspace(arc_start, arc_end, n_arc)
-
-    xs = []
-    ys = []
-    for a in arc_angles:
-        xs.append(r_out * math.cos(a))
-        ys.append(r_out * math.sin(a))
-    for a in reversed(arc_angles):
-        xs.append(r_in * math.cos(a))
-        ys.append(r_in * math.sin(a))
-    xs.append(xs[0])
-    ys.append(ys[0])
-
-    for px, py in zip(xs, ys, strict=True):
-        ring_bg_rows.append({"x": px, "y": py, "ring": ring_name})
-
+for rname in rings:
+    r_in, r_out = ring_inner[rname], ring_outer[rname]
+    xs = np.concatenate([r_out * np.cos(arc_pts), r_in * np.cos(arc_pts[::-1])])
+    ys = np.concatenate([r_out * np.sin(arc_pts), r_in * np.sin(arc_pts[::-1])])
+    for px, py in zip(np.append(xs, xs[0]), np.append(ys, ys[0]), strict=True):
+        ring_bg_rows.append({"x": px, "y": py, "ring": rname})
 ring_bg_df = pd.DataFrame(ring_bg_rows)
 
-# Concentric ring boundary arcs using geom_path with explicit ordering
-ring_boundary_rows = []
-boundary_radii = [0.5, 1.5, 2.5, 3.5, 4.5]
-for radius in boundary_radii:
-    arc_angles = np.linspace(arc_start, arc_end, n_arc)
-    for idx, a in enumerate(arc_angles):
-        ring_boundary_rows.append(
-            {"x": radius * math.cos(a), "y": radius * math.sin(a), "group": f"r{radius}", "order": idx}
-        )
-
-ring_boundary_df = pd.DataFrame(ring_boundary_rows).sort_values(["group", "order"])
+# Ring boundary arcs
+bnd_rows = []
+for r in [0.5, 1.5, 2.5, 3.5, 4.5]:
+    for idx, a in enumerate(arc_pts):
+        bnd_rows.append({"x": r * math.cos(a), "y": r * math.sin(a), "g": f"r{r}", "o": idx})
+bnd_df = pd.DataFrame(bnd_rows).sort_values(["g", "o"])
 
 # Sector divider spokes
-spoke_rows = []
-for i in range(len(sectors) + 1):
-    angle = arc_start + i * sector_span
-    spoke_rows.append(
-        {
-            "x": 0.5 * math.cos(angle),
-            "y": 0.5 * math.sin(angle),
-            "xend": 4.5 * math.cos(angle),
-            "yend": 4.5 * math.sin(angle),
-        }
-    )
-
-spoke_df = pd.DataFrame(spoke_rows)
+spoke_angles = [ARC_START + i * SECTOR_SPAN for i in range(len(sectors) + 1)]
+spoke_df = pd.DataFrame(
+    [
+        {"x": 0.5 * math.cos(a), "y": 0.5 * math.sin(a), "xend": 4.5 * math.cos(a), "yend": 4.5 * math.sin(a)}
+        for a in spoke_angles
+    ]
+)
 
 # Sector header labels along outer edge
-sector_label_rows = []
-for i, sector in enumerate(sectors):
-    angle = arc_start + (i + 0.5) * sector_span
-    r = 5.8
-    sector_label_rows.append({"label": sector, "x": r * math.cos(angle), "y": r * math.sin(angle)})
+sector_label_df = pd.DataFrame(
+    [
+        {
+            "label": s,
+            "x": 5.5 * math.cos(ARC_START + (i + 0.5) * SECTOR_SPAN),
+            "y": 5.5 * math.sin(ARC_START + (i + 0.5) * SECTOR_SPAN),
+        }
+        for i, s in enumerate(sectors)
+    ]
+)
 
-sector_label_df = pd.DataFrame(sector_label_rows)
+# Ring name labels in arc gap (90 degrees = top center)
+gap_angle = math.pi / 2
+ring_label_df = pd.DataFrame(
+    [
+        {"label": r, "x": ring_mid_map[r] * math.cos(gap_angle), "y": ring_mid_map[r] * math.sin(gap_angle)}
+        for r in rings
+    ]
+)
 
-# Ring name labels placed in the arc gap (top center at 90 degrees)
-# This avoids overlap with data points which only exist within the 270-degree arc
-ring_label_rows = []
-gap_center = math.pi / 2  # 90 degrees = center of the 90-degree gap at top
-for ring_name in rings:
-    r = (ring_inner[ring_name] + ring_outer[ring_name]) / 2
-    ring_label_rows.append({"label": ring_name, "x": r * math.cos(gap_center), "y": r * math.sin(gap_center)})
-
-ring_label_df = pd.DataFrame(ring_label_rows)
-
-# Plot
+# --- Build plot ---
 plot = ggplot()
 
-# Ring background fills
-for ring_name, fill_color in zip(rings, ring_fill_colors, strict=True):
-    ring_data = ring_bg_df[ring_bg_df["ring"] == ring_name].copy()
-    plot = plot + geom_polygon(aes(x="x", y="y"), data=ring_data, fill=fill_color, alpha=0.45)
+# Ring background fills with semantic color gradient (green=safe → pink=risky)
+for rname in rings:
+    rdata = ring_bg_df[ring_bg_df["ring"] == rname]
+    plot += geom_polygon(aes("x", "y"), data=rdata, fill=ring_fills[rname], alpha=0.5)
 
-# Ring boundary arcs
-plot = plot + geom_path(aes(x="x", y="y", group="group"), data=ring_boundary_df, color="#BBBBBB", size=0.4, alpha=0.8)
+# Structural lines: ring boundaries and sector spokes
+plot += geom_path(aes("x", "y", group="g"), data=bnd_df, color="#CCCCCC", size=0.3, alpha=0.7)
+plot += geom_segment(aes(x="x", y="y", xend="xend", yend="yend"), data=spoke_df, color="#CCCCCC", size=0.3, alpha=0.7)
 
-# Sector divider spokes
-plot = plot + geom_segment(
-    aes(x="x", y="y", xend="xend", yend="yend"), data=spoke_df, color="#BBBBBB", size=0.4, alpha=0.8
+# Sector header labels
+plot += geom_text(aes("x", "y", label="label"), data=sector_label_df, size=15, color="#1A1A1A", fontface="bold")
+
+# Ring labels with background box (letsplot geom_label for visual clarity over ring fills)
+plot += geom_label(
+    aes("x", "y", label="label"),
+    data=ring_label_df,
+    size=12,
+    color="#555555",
+    fontface="bold",
+    fill="white",
+    alpha=0.85,
 )
 
-# Sector header labels (drawn before data so data labels render on top)
-plot = plot + geom_text(
-    aes(x="x", y="y", label="label"), data=sector_label_df, size=14, color="#222222", fontface="bold"
+# Thin connector lines from points to labels (aids readability after repulsion)
+plot += geom_segment(aes(x="x", y="y", xend="lx", yend="ly"), data=df, size=0.2, alpha=0.25, color="#888888")
+
+# Innovation points with interactive tooltips (letsplot-specific for HTML export)
+plot += geom_point(
+    aes("x", "y", color="sector"),
+    data=df,
+    size=7,
+    alpha=0.9,
+    tooltips=layer_tooltips().line("@name").line("Ring: @ring").line("Sector: @sector"),
 )
 
-# Ring name labels (in the arc gap at top center)
-plot = plot + geom_text(aes(x="x", y="y", label="label"), data=ring_label_df, size=13, color="#444444", fontface="bold")
+# Innovation labels split by side for outward text alignment
+for side, hj in [("left", 1), ("right", 0)]:
+    side_df = df[df["side"] == side]
+    plot += geom_text(aes("lx", "ly", label="name", color="sector"), data=side_df, size=10, hjust=hj)
 
-# Innovation points (color by sector)
-plot = plot + geom_point(aes(x="x", y="y", color="sector"), data=items_df, size=6, alpha=0.9)
-
-# Innovation labels - split by chart side for outward-extending horizontal alignment
-plot = plot + geom_text(
-    aes(x="lx", y="ly", label="name", color="sector"),
-    data=items_left,
-    size=8,
-    hjust=1,  # right-align: text extends leftward (away from center)
-)
-plot = plot + geom_text(
-    aes(x="lx", y="ly", label="name", color="sector"),
-    data=items_right,
-    size=8,
-    hjust=0,  # left-align: text extends rightward (away from center)
-)
-
-# Style
-plot = (
-    plot
-    + scale_color_manual(values=sector_colors)  # Dict mapping ensures correct color-sector pairing
-    + scale_x_continuous(limits=(-7.0, 7.5))
-    + scale_y_continuous(limits=(-6.2, 5.8))
+# Styling
+plot += (
+    scale_color_manual(values=sector_colors)
+    + scale_x_continuous(limits=(-7.0, 7.0))
+    + scale_y_continuous(limits=(-7.0, 5.8))
     + coord_fixed()
     + labs(title="radar-innovation-timeline · letsplot · pyplots.ai", color="Sector")
     + ggsize(1200, 1200)
@@ -277,6 +241,6 @@ plot = (
     )
 )
 
-# Save
+# Save PNG (scale=3 → 3600×3600 px) and interactive HTML
 ggsave(plot, "plot.png", path=".", scale=3)
 ggsave(plot, "plot.html", path=".")

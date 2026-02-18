@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 radar-innovation-timeline: Innovation Radar with Time-Horizon Rings
 Library: matplotlib 3.10.8 | Python 3.14.3
-Quality: 76/100 | Created: 2026-02-18
+Quality: 81/100 | Created: 2026-02-18
 """
 
 import matplotlib.pyplot as plt

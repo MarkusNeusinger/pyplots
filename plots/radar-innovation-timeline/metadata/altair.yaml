@@ -1,7 +1,7 @@
 library: altair
 specification_id: radar-innovation-timeline
 created: '2026-02-18T21:45:15Z'
-updated: '2026-02-18T22:41:48Z'
+updated: '2026-02-18T22:53:54Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22158672011
 issue: 4301
@@ -13,35 +13,36 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/radar-innovati
 quality_score: 86
 review:
   strengths:
-  - Sophisticated 270-degree radar layout with graduated ring fills and subtle concentric
-    arc/spoke styling creates a polished, professional appearance
-  - Dual encoding (color for sector, shape for ring) provides redundant information
-    channels, improving both aesthetics and accessibility
-  - Interactive hover selection with conditional sizing and tooltips leverages Altair's
-    distinctive declarative interaction grammar
-  - Excellent, realistic data with 25 current technology items and sensible ring/sector
-    placements
+  - Excellent spec compliance — all features from the specification are faithfully
+    implemented including 270-degree arc, ring fills, sector headers, shape encoding,
+    and dual legend
+  - Strong design with graduated ring tints, leader lines, and multi-encoded data
+    (color + shape) creating clear visual hierarchy
+  - Realistic, current technology data with plausible ring assignments that tell a
+    coherent story
+  - 'Good use of Altair-specific features: interactive hover with conditional size,
+    tooltips, and HTML export'
   weaknesses:
-  - Item labels at 16pt fontSize could be increased to 18-20pt for stronger legibility
-    on a 3600x3600 canvas
-  - Minor label crowding in inner rings where sectors contain multiple Adopt items
-    — additional angular or radial jittering could help separate overlapping labels
-  image_description: 'The plot displays a 270-degree (three-quarter circle) innovation
-    radar chart on a white background. Four concentric rings represent time horizons:
-    Adopt (innermost, darkest blue tint), Trial, Assess, and Hold (outermost, lightest
-    tint). Four angular sectors divide the arc: Data Engineering (upper-left), Cloud
-    & Infra (upper-right), Security (lower-left), and AI & ML (lower-right), each
-    labeled with bold sector headers beyond the outer ring. 25 technology items are
-    plotted as filled markers with white strokes — circles for Adopt, diamonds for
-    Trial, triangles for Assess, and squares for Hold. Colors encode sectors: blue
-    (#306998) for AI & ML, orange (#E07A2F) for Cloud & Infra, green (#2CA02C) for
-    Data Engineering, purple (#9467BD) for Security. Ring labels (Adopt, Trial, Assess,
-    Hold) appear in the bottom gap. A horizontal legend at the bottom maps colors
-    to sectors and shapes to rings. The title reads "radar-innovation-timeline · altair
-    · pyplots.ai" at the top center. Gray spokes separate sectors and gray concentric
-    arcs separate rings. Labels are positioned outward from each marker with alternating
-    offsets. Some crowding is visible in inner rings where sectors have multiple Adopt/Trial
-    items.'
+  - Label overlap in crowded areas (AI & ML Adopt/Trial zone, Security sector) — LLM
+    Agents / AI Code Review labels clash
+  - Green and orange sector colors may be confusable under protanopia; consider using
+    a fully colorblind-safe palette
+  - Verbose label rendering with three separate chart layers for left/center/right
+    alignment
+  image_description: 'The plot displays a 270-degree radial "innovation radar" chart
+    on a square canvas. Four concentric ring bands (Adopt innermost, Trial, Assess,
+    Hold outermost) are filled with subtle graduated blue tints that fade from ~18%
+    opacity in the center to ~2% at the outer edge. Grey spoke lines divide the angular
+    space into 4 equal sectors labeled in bold at the outer edge: Data Engineering
+    (upper-left), Cloud & Infra (upper-right), AI & ML (right), and Security (lower-left).
+    26 technology items are plotted as colored markers — blue circles/diamonds/triangles/squares
+    for AI & ML, orange for Cloud & Infra, green for Data Engineering, and purple
+    for Security — with shapes encoding the ring (circle=Adopt, diamond=Trial, triangle=Assess,
+    square=Hold). Each marker has a thin leader line connecting to its text label,
+    which is aligned outward from the center. Ring names (Adopt, Trial, Assess, Hold)
+    appear in the gap area at the bottom. A dual legend at the bottom shows Sector
+    (colors) and Ring (shapes). The title "radar-innovation-timeline · altair · pyplots.ai"
+    sits at the top center.'
   criteria_checklist:
     visual_quality:
       score: 25
@@ -49,46 +50,46 @@ review:
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 28pt, sector headers 22pt, labels
-          16pt, legend 15-18pt). Item labels at 16pt are at the threshold.
+        comment: 'All font sizes explicitly set: title 28pt, sector headers 24pt,
+          item labels 20pt, ring labels 20pt, legend 16-18pt'
       - id: VQ-02
         name: No Overlap
-        score: 4
+        score: 3
         max: 6
-        passed: true
-        comment: Minor crowding in inner rings with multiple Adopt items. Labels mostly
-          readable but not perfectly separated.
+        passed: false
+        comment: LLM Agents and AI Code Review labels overlap in AI & ML Adopt/Trial
+          zone; Passkeys and Zero Trust crowded in Security sector
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Marker sizes well-suited for 25 data points. White strokes provide
-          excellent separation.
+        comment: Markers at size 300 with white stroke well-suited for 26 data points;
+          shape encoding adds distinction
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
-        passed: true
-        comment: Blue-orange-green-purple palette largely colorblind-safe. Shape encoding
-          provides redundant differentiation.
+        passed: false
+        comment: Blue/Orange/Green/Purple mostly colorblind-safe but green and orange
+          may confuse under protanopia; shapes encode ring not sector
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
-        passed: true
-        comment: Radar fills ~60% of canvas. Bottom third has some empty space, balanced
-          margins overall.
+        passed: false
+        comment: 270-degree arc fills canvas well; ring labels utilize gap area; some
+          dead space in lower-right from arc gap
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Title in correct format. Ring labels and sector headers serve as
-          axis equivalents.
+        comment: Descriptive sector headers and ring labels serve as axis equivalents;
+          title follows correct format
     design_excellence:
       score: 15
       max: 20
@@ -98,22 +99,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Strong design with cohesive blue-tinted ring fills, graduated opacity,
-          white-stroked markers, and intentional color palette.
+        comment: Custom palette anchored on Python Blue, graduated ring tints, white
+          marker strokes, leader lines, multi-encoded data
       - id: DE-02
         name: Visual Refinement
         score: 5
         max: 6
         passed: true
-        comment: Axes hidden, subtle ring fills with decreasing opacity, fine gray
-          spokes/arcs, legend with background fill.
+        comment: View strokes removed, axes hidden, subtle ring fills with graduated
+          opacity, thin spoke/boundary lines at low opacity
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Ring structure conveys time horizons. Dual encoding helps identification.
-          Graduated tinting suggests maturity progression.
+        comment: Ring system naturally guides interpretation from near-term to future;
+          color clustering shows sector grouping
     spec_compliance:
       score: 15
       max: 15
@@ -123,52 +124,52 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct radial chart with concentric rings and angular sectors.
+        comment: Correct radar/innovation timeline with concentric time-horizon rings
+          and angular sector divisions
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: rings, sectors, labeled points, markers/colors,
-          background fills, legend, 270-degree layout.'
+        comment: 'All spec features present: rings, ring labels, sector headers, distinct
+          markers/colors, smart label placement, legend, ring fills'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Angular and radial positions correctly map to sector and ring. All
-          25 items properly placed.
+        comment: Angular position maps to sector, radial position maps to ring/time
+          horizon correctly
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format. Legend maps both sector colors and ring shapes
-          accurately.
+        comment: Title format correct; dual legend (Sector + Ring) with accurate labels
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: 25 items across all 4 rings and 4 sectors with good distribution
-          and realistic variation.
+        comment: 26 items across all 4 rings and 4 sectors with varying density per
+          cell
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real, current technology names with sensible ring assignments.
+        comment: Real technology radar scenario with current technologies and plausible
+          ring assignments
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 25 items within spec's 15-40 range. 4 rings and 4 sectors match spec
-          guidance.
+        comment: 26 items within spec 15-40 range; 4 rings, 4 sectors match spec guidance
     code_quality:
       score: 9
       max: 10
@@ -178,59 +179,59 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: Imports, Config, Data, Geometry, Chart assembly, Save.
-          No functions or classes.'
+        comment: 'Flat structure: imports, config, data, geometry, chart, save; no
+          functions or classes'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set. Data is deterministic.
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: collections.defaultdict, altair, numpy, pandas.'
+        comment: 'All imports used: altair, numpy, pandas, collections.defaultdict'
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
-        passed: true
-        comment: Three separate label layers are verbose but necessary given Altair's
-          mark_text alignment limitations.
+        passed: false
+        comment: Well-structured but labels split into 3 separate layers by text alignment
+          is verbose
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png and plot.html using current Altair API.
+        comment: Saves plot.png with scale_factor=3.0 and plot.html correctly
     library_mastery:
-      score: 8
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 3
         max: 5
-        passed: true
-        comment: Good declarative grammar, proper type suffixes, layer composition.
-          Manual coord math unavoidable for radar charts.
+        passed: false
+        comment: Uses alt.layer(), proper encodings, Scale/Legend/Title but relies
+          heavily on pre-computed x,y coordinates rather than declarative grammar
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: Interactive hover with selection_point and condition for size changes.
-          Tooltip encoding and HTML export.
+        comment: Interactive hover selection, conditional encoding, HTML export, tooltips,
+          custom legend positioning
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - layer-composition
-  - annotations
   - hover-tooltips
   - custom-legend
+  - annotations
   - html-export
   patterns:
   - data-generation

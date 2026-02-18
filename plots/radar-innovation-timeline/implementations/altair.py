@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 radar-innovation-timeline: Innovation Radar with Time-Horizon Rings
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 86/100 | Created: 2026-02-18
@@ -31,7 +31,7 @@ ring_boundary_radii = [1.375, 2.325, 3.275, 4.175]
 
 sector_colors = {"AI & ML": "#306998", "Cloud & Infra": "#E07A2F", "Data Engineering": "#2CA02C", "Security": "#9467BD"}
 ring_tints = {"Adopt": "#306998", "Trial": "#4A8FBF", "Assess": "#7BB5D6", "Hold": "#B0D4E8"}
-ring_opacities = {"Adopt": 0.14, "Trial": 0.09, "Assess": 0.05, "Hold": 0.03}
+ring_opacities = {"Adopt": 0.18, "Trial": 0.11, "Assess": 0.05, "Hold": 0.02}
 ring_shapes = {"Adopt": "circle", "Trial": "diamond", "Assess": "triangle-up", "Hold": "square"}
 
 # --- Data: 25 technology items ---
@@ -72,21 +72,21 @@ for item in items:
 records = []
 for (sector, ring), group_items in groups.items():
     a_min, a_max = sector_bounds[sector]
-    padding = 0.15 * sector_arc
+    padding = 0.12 * sector_arc
     n = len(group_items)
     r_in, r_out = ring_inner[ring], ring_outer[ring]
     r_mid = (r_in + r_out) / 2
     ring_idx = rings.index(ring)
     # Stagger angular positions by ring to separate cross-ring labels
-    ring_jitter = 0.12 * sector_arc * ((-1) ** ring_idx)
+    ring_jitter = 0.16 * sector_arc * ((-1) ** ring_idx)
     for idx, it in enumerate(group_items):
         angle = a_min + padding + (idx + 0.5) / n * (a_max - a_min - 2 * padding) + ring_jitter
-        r_offset = 0.25 * ((-1) ** idx) if n > 1 else 0
+        r_offset = 0.30 * ((-1) ** idx) if n > 1 else 0
         radius = r_mid + r_offset
         x = radius * np.cos(angle)
         y = radius * np.sin(angle)
         # Push label outward from center along radial direction
-        outward_r = 0.30 + 0.12 * (idx % 2)  # alternate slight offset
+        outward_r = 0.42 + 0.16 * (idx % 2)  # alternate offset for separation
         label_x = x + outward_r * np.cos(angle)
         label_y = y + outward_r * np.sin(angle)
         # Align text outward: left-align on right side, right-align on left side
@@ -207,7 +207,7 @@ points = (
             legend=alt.Legend(
                 title="Sector",
                 titleFontSize=18,
-                labelFontSize=15,
+                labelFontSize=16,
                 orient="none",
                 legendX=300,
                 legendY=1050,
@@ -222,7 +222,7 @@ points = (
             legend=alt.Legend(
                 title="Ring",
                 titleFontSize=18,
-                labelFontSize=15,
+                labelFontSize=16,
                 orient="none",
                 legendX=300,
                 legendY=1105,
@@ -241,7 +241,7 @@ points = (
 # Split by text alignment to avoid overlap
 labels_left = (
     alt.Chart(df[df["text_align"] == "left"])
-    .mark_text(fontSize=16, color="#222222", fontWeight="normal", align="left")
+    .mark_text(fontSize=20, color="#222222", fontWeight="normal", align="left")
     .encode(
         x=alt.X("label_x:Q", scale=alt.Scale(domain=dom), axis=None),
         y=alt.Y("label_y:Q", scale=alt.Scale(domain=dom), axis=None),
@@ -251,7 +251,7 @@ labels_left = (
 )
 labels_right = (
     alt.Chart(df[df["text_align"] == "right"])
-    .mark_text(fontSize=16, color="#222222", fontWeight="normal", align="right")
+    .mark_text(fontSize=20, color="#222222", fontWeight="normal", align="right")
     .encode(
         x=alt.X("label_x:Q", scale=alt.Scale(domain=dom), axis=None),
         y=alt.Y("label_y:Q", scale=alt.Scale(domain=dom), axis=None),
@@ -261,7 +261,7 @@ labels_right = (
 )
 labels_center = (
     alt.Chart(df[df["text_align"] == "center"])
-    .mark_text(fontSize=16, color="#222222", fontWeight="normal", align="center")
+    .mark_text(fontSize=20, color="#222222", fontWeight="normal", align="center")
     .encode(
         x=alt.X("label_x:Q", scale=alt.Scale(domain=dom), axis=None),
         y=alt.Y("label_y:Q", scale=alt.Scale(domain=dom), axis=None),
@@ -273,20 +273,34 @@ labels_center = (
 # Sector headers
 sec_headers = (
     alt.Chart(df_sec)
-    .mark_text(fontSize=22, fontWeight="bold", color="#333333")
+    .mark_text(fontSize=24, fontWeight="bold", color="#333333")
     .encode(x=x_enc, y=y_enc, text="sector:N")
 )
 
 # Ring labels inside bands
 rlabels = (
     alt.Chart(df_rlabels)
-    .mark_text(fontSize=16, fontWeight="bold", color="#555555", align="left", baseline="middle")
+    .mark_text(fontSize=20, fontWeight="bold", color="#555555", align="left", baseline="middle")
     .encode(x=x_enc, y=y_enc, text="ring:N")
+)
+
+# Leader lines connecting markers to labels
+leaders = (
+    alt.Chart(df)
+    .mark_rule(strokeWidth=0.7, opacity=0.25, color="#888888")
+    .encode(
+        x=alt.X("x:Q", scale=alt.Scale(domain=dom), axis=None),
+        y=alt.Y("y:Q", scale=alt.Scale(domain=dom), axis=None),
+        x2="label_x:Q",
+        y2="label_y:Q",
+    )
 )
 
 # Combine all layers
 chart = (
-    alt.layer(*fill_layers, arcs, spokes, points, labels_left, labels_right, labels_center, sec_headers, rlabels)
+    alt.layer(
+        *fill_layers, arcs, spokes, leaders, points, labels_left, labels_right, labels_center, sec_headers, rlabels
+    )
     .properties(
         width=chart_size,
         height=chart_size,

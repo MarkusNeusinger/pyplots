@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 radar-innovation-timeline: Innovation Radar with Time-Horizon Rings
 Library: matplotlib 3.10.8 | Python 3.14.3
 Quality: 89/100 | Created: 2026-02-18
@@ -62,7 +62,7 @@ arc_start = np.deg2rad(115)  # Rotated slightly to keep all sector labels on-can
 sector_width = arc_span / n_sectors
 
 # Ring band boundaries (wide bands to prevent cross-ring label overlap)
-ring_boundaries = [0.5, 2.6, 4.7, 6.8, 8.9]
+ring_boundaries = [0.5, 2.8, 5.1, 7.4, 9.7]
 
 # Count items per ring-sector
 sector_ring_counts = {}
@@ -102,9 +102,16 @@ for name, ring_name, sector_name in innovations:
         theta = (a_lo + a_hi) / 2
     elif total == 2:
         # Wide spread: items at 25% and 75% of angular range
-        theta = a_lo + (a_hi - a_lo) * (0.25 + 0.50 * placed)
+        frac = 0.25 + 0.50 * placed
+        # Reverse in odd rings to break radial alignment with adjacent rings
+        if r_idx % 2 == 1:
+            frac = 1.0 - frac
+        theta = a_lo + (a_hi - a_lo) * frac
     else:
-        theta = a_lo + (a_hi - a_lo) * placed / (total - 1)
+        frac = placed / (total - 1)
+        if r_idx % 2 == 1:
+            frac = 1.0 - frac
+        theta = a_lo + (a_hi - a_lo) * frac
 
     # Small jitter
     theta += np.random.uniform(-0.01, 0.01)
@@ -159,7 +166,7 @@ for i, sector_name in enumerate(sectors):
     angle = arc_start + (i + 0.5) * sector_width
     ax.text(
         angle,
-        ring_boundaries[-1] + 0.55,
+        ring_boundaries[-1] + 0.65,
         sector_name,
         ha="center",
         va="center",
@@ -179,19 +186,19 @@ for name, theta, r, sector_name, ring_name, placed, total in positions:
 
     ax.scatter(theta, r, s=msize, color=color, marker=marker, edgecolors="white", linewidth=1.0, zorder=5, alpha=0.95)
 
-    # Labels go outward by default; for multi-item cells, alternate direction
+    # Labels: alternate direction for multi-item cells; single items always outward
     if total >= 2 and placed % 2 == 1:
-        label_offset = -0.40
+        label_offset = -0.55
         va = "top"
     else:
-        label_offset = 0.42
+        label_offset = 0.55
         va = "bottom"
 
     ax.text(
         theta,
         r + label_offset,
         name,
-        fontsize=13,
+        fontsize=15,
         ha="center",
         va=va,
         color="#222222",
@@ -201,7 +208,7 @@ for name, theta, r, sector_name, ring_name, placed, total in positions:
     )
 
 # Styling
-ax.set_ylim(0, ring_boundaries[-1] + 1.6)
+ax.set_ylim(0, ring_boundaries[-1] + 1.8)
 ax.set_yticklabels([])
 ax.set_xticklabels([])
 ax.set_xticks([])

@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: radar-innovation-timeline
 created: '2026-02-18T21:45:16Z'
-updated: '2026-02-18T21:49:13Z'
+updated: '2026-02-18T22:21:11Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22158675348
 issue: 4301
@@ -10,126 +10,119 @@ library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/radar-innovation-timeline/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/radar-innovation-timeline/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 69
+quality_score: 81
 review:
   strengths:
-  - Excellent data quality with realistic, recognizable technology names and plausible
-    ring assignments matching industry consensus
-  - Clean code structure following KISS principle with clear linear flow and reproducible
-    seed
-  - Good use of plotnine's layered grammar with multiple geom types (path, point,
-    text, segment) composed together
-  - Smart label alignment strategy (left-aligned for right side, right-aligned for
-    left side) to reduce overlap
-  - Correct title format and well-labeled legend
+  - Excellent spec compliance — all features from the specification are implemented
+    including 270° layout, concentric ring fills, sector spokes, and labeled data
+    points
+  - Strong data storytelling through size and alpha hierarchy that naturally draws
+    the eye to Adopt items first
+  - Realistic, well-chosen technology data that mirrors a real ThoughtWorks-style
+    Technology Radar
+  - Clean visual design with removed axes, subtle gray boundaries, and pastel ring
+    fills creating meaningful color progression
+  - Good grammar-of-graphics layer composition using plotnine idiomatically
   weaknesses:
-  - Multiple label overlaps in crowded areas, especially the Adopt ring where items
-    cluster together — needs angular jittering or radial offset adjustment
-  - Significant empty whitespace at the bottom of the canvas (~40%), with the radar
-    shifted upward — consider adjusting figure_size or y-axis limits
-  - No subtle background fill per ring to visually separate time horizons, which would
-    greatly improve readability
-  - Innovation labels at size 6.5 are small for the canvas size — increasing to 7.5-8
-    would improve legibility
-  - Ring name labels in italic gray are too subtle — consider bolder styling or a
-    different placement strategy
-  - Full 360-degree layout where the spec suggests half-circle or three-quarter to
-    give more room for labels and legend
-  - No visual hierarchy or storytelling emphasis — all points are the same size with
-    no differentiation of importance
-  image_description: 'The plot displays a technology innovation radar with concentric
-    rings on a white background. Four concentric gray circles represent time horizons
-    labeled in italic gray text: Adopt (innermost), Trial, Assess, and Hold (outermost).
-    Four straight gray spokes divide the circle into quadrants labeled in bold black
-    text at the outer edge: Cloud & Infra (top-right), Data Engineering (top-left),
-    Security (bottom-left), and AI & ML (bottom-right). Each innovation is a colored
-    dot — blue for AI & ML, green for Cloud & Infra, orange for Data Engineering,
-    and purple for Security — with a colored text label beside it. The title "radar-innovation-timeline
-    · plotnine · pyplots.ai" appears at the top-left. A legend labeled "Category"
-    on the right maps colors to sectors. There are 26 labeled points total. The radar
-    occupies roughly the upper 60% of the canvas with noticeable empty space below.
-    Several labels in the Adopt ring overlap or crowd together (e.g., "Kubernetes"/"FinOps
-    Platforms", "LLM Agents"/"RAG Pipelines"/"Federated Learning"). The ring name
-    labels ("Adopt", "Trial", "Assess", "Hold") are positioned near the spoke between
-    Security and AI & ML sectors.'
+  - Label overlap in crowded areas — particularly Federated Learning / Neural Arch.
+    Search in AI & ML sector, and RT Feature Stores / Data Contracts in Data Engineering;
+    inner Adopt ring is also crowded
+  - Significant whitespace at the bottom of the canvas (~30%) is underutilized; the
+    legend feels somewhat isolated
+  - Innovation label font size (8) is on the small side for comfortable reading
+  - Blue (#306998) and purple (#7B4DAA) sector colors could be more distinct for colorblind
+    accessibility
+  image_description: 'The plot displays a three-quarter circle (270°) innovation radar
+    chart opening downward. Four concentric rings represent time horizons: "Adopt"
+    (innermost, green-tinted), "Trial" (yellow-tinted), "Assess" (orange-tinted),
+    and "Hold" (outermost, pink-tinted). Four angular sectors divide the chart: "Data
+    Engineering" (upper-left), "Cloud & Infra" (upper-right), "Security" (lower-left),
+    and "AI & ML" (lower-right). Each sector is separated by gray spoke lines, and
+    ring boundaries are drawn as gray arcs. 26 technology items are plotted as colored
+    dots — blue for AI & ML, green for Cloud & Infra, orange for Data Engineering,
+    and purple for Security. Point sizes decrease from inner to outer rings (Adopt=largest,
+    Hold=smallest), and alpha transparency similarly decreases, creating a visual
+    hierarchy emphasizing near-term items. Each dot has a text label in its sector
+    color. Ring names appear in bold gray text at the bottom center of the open gap.
+    Sector headers are bold black text at the outer edge. A "Category" legend with
+    four colored circles sits in the lower-right area. The title "radar-innovation-timeline
+    · plotnine · pyplots.ai" is centered at the top in bold, with an italic subtitle
+    explaining the ring semantics. The background is white.'
   criteria_checklist:
     visual_quality:
-      score: 19
+      score: 21
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Font sizes explicitly set for title (24), sector headers (11), ring
-          labels (8), innovation labels (6.5). Innovation labels at 6.5 are small
-          for 3600x3600 canvas. Ring labels in italic gray reduce readability.
+        comment: All font sizes explicitly set (title 24pt, headers 13pt, ring labels
+          10pt, legend 14pt); innovation labels at size=8 are readable but on the
+          small side
       - id: VQ-02
         name: No Overlap
         score: 3
         max: 6
         passed: false
-        comment: 'Multiple label overlaps: Kubernetes/FinOps Platforms crowd together,
-          LLM Agents/RAG Pipelines/Federated Learning cluster in Adopt ring, Homomorphic
-          Enc./Post-Quantum Crypto overlap in Security, Lakehouse Arch. cut by sector
-          line.'
+        comment: 'Several label overlaps: Federated Learning / Neural Arch. Search
+          crowd each other; RT Feature Stores / Data Contracts overlap; inner Adopt
+          ring labels tightly packed'
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Points at size=4.5 with alpha=0.9 are clearly visible for 26 data
-          points. Slightly small but adequate.
+        comment: Good size and alpha variation by ring creates hierarchy; Hold-ring
+          items at alpha 0.55 slightly hard to see
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: Blue, green, orange, purple palette is distinguishable and colorblind-safe.
+        comment: Blue/green/orange/purple avoids red-green conflicts; blue and purple
+          could be confusable under certain color vision deficiencies
       - id: VQ-05
         name: Layout & Canvas
         score: 2
         max: 4
         passed: false
-        comment: Radar shifted upward with significant empty whitespace at bottom
-          (~40% of canvas). Legend floats to the right. Canvas utilization is suboptimal.
+        comment: Three-quarter layout leaves ~30% whitespace at bottom; legend somewhat
+          isolated in lower corner
       - id: VQ-06
         name: Axis Labels & Title
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: No axis labels (axes hidden). Appropriate for radar chart but no
-          descriptive labels with units exist. Ring labels serve as pseudo-axes but
-          are minimal.
+        passed: true
+        comment: Appropriate for radar chart; subtitle explains ring semantics
     design_excellence:
-      score: 10
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
         passed: true
-        comment: Custom color palette, clean white background, spines/axes removed.
-          Looks like a well-configured default. No background fills to differentiate
-          rings.
+        comment: Custom pastel ring fills with meaningful color progression, custom
+          sector colors, size+alpha hierarchy; above configured defaults but not publication-ready
       - id: DE-02
         name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: All axes/grids/ticks removed, clean white canvas, subtle gray boundaries;
+          well-polished overall
+      - id: DE-03
+        name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Axes, ticks, grid removed. Subtle gray circles and spokes. Some refinement
-          but ring areas lack differentiation.
-      - id: DE-03
-        name: Data Storytelling
-        score: 2
-        max: 6
-        passed: false
-        comment: Data displayed by sector and ring but no visual hierarchy or emphasis.
-          All dots same size. No highlighting of key items.
+        comment: Size and alpha variation create clear visual hierarchy; ring fill
+          colors progress from safe green to caution pink; subtitle guides interpretation
     spec_compliance:
-      score: 12
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -137,53 +130,54 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct radial chart with concentric rings and angular sectors matching
-          innovation radar concept.
+        comment: Correct radial chart with concentric rings and angular sectors; 270°
+          layout per spec suggestion
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 4
         max: 4
-        passed: false
-        comment: 'Most features present. Missing: spec suggests half-circle/three-quarter
-          layout. Missing subtle background fill per ring.'
+        passed: true
+        comment: 'All spec features present: rings, boundaries, labels, spokes, sector
+          headers, color coding, legend, background fills, smart label placement'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Innovations correctly placed by ring and sector with fraction-based
-          angular positioning and jitter.
+        comment: Items correctly placed in their rings and sectors using fraction-based
+          angular positioning
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend labeled Category with matching sector
-          labels.
+        comment: Correct format with spec-id · library · pyplots.ai; legend maps colors
+          to categories
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: 26 items across 4 rings and 4 sectors. Good variation. Some rings
-          sparse in certain sectors.
+        comment: 26 items across all 4 rings and all 4 sectors; good distribution
+          with varying positions within sectors
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real technology names (LLM Agents, Kubernetes, dbt, Zero Trust).
-          Plausible ring assignments.
+        comment: Real-world technology items with plausible ring assignments matching
+          current tech landscape
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Ring assignments realistic. Sector groupings logical.
+        comment: Ring assignments are credible; 26 items across 4 sectors is balanced
+          and within spec range
     code_quality:
       score: 9
       max: 10
@@ -193,58 +187,57 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, computation, plot, save. No functions
-          or classes.'
+        comment: Imports → seed → data → compute → plot → save; no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) set at top
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used. Only numpy, pandas, math, and plotnine.
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
-        passed: true
-        comment: Clear and well-organized but verbose with many separate dataframes.
-          Trigonometric calculations necessarily complex.
+        passed: false
+        comment: Well-structured but verbose (243 lines); necessary given plotnine
+          lacks native polar coords
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300.
-    library_features:
-      score: 5
+        comment: Saves as plot.png with dpi=300
+    library_mastery:
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Good grammar-of-graphics usage: layer composition, aes() mappings,
+          scale_* customization, theme() styling'
+      - id: LM-02
+        name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses ggplot grammar with multiple layers. Pre-computing x/y and using
-          coord_fixed is more workaround than idiomatic.
-      - id: LM-02
-        name: Distinctive Features
-        score: 2
-        max: 5
-        passed: false
-        comment: Uses plotnine layer composition and scale_color_manual. Standard
-          features, nothing truly unique to plotnine.
+        comment: Uses scale_size_manual + scale_alpha_manual for ring-based hierarchy,
+          guide_legend with override_aes, grammar-of-graphics layer composition
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
-  - annotations
   - layer-composition
-  - polar-projection
+  - annotations
+  - custom-legend
   patterns:
   - data-generation
   - iteration-over-groups

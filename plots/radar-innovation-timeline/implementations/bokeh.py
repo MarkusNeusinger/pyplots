@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 radar-innovation-timeline: Innovation Radar with Time-Horizon Rings
 Library: bokeh 3.8.2 | Python 3.14.3
 Quality: 85/100 | Created: 2026-02-18
@@ -19,8 +19,9 @@ sectors = ["AI & ML", "Cloud & Infra", "Sustainability", "Biotech"]
 rings = ["Adopt", "Trial", "Assess", "Hold"]
 
 # Ring radii (inner to outer): Adopt is closest (near-term), Hold is farthest (future)
-ring_inner = [0, 80, 160, 240]
-ring_outer = [80, 160, 240, 320]
+# Wider rings fill more canvas; Adopt ring extra wide for label breathing room
+ring_inner = [0, 105, 200, 295]
+ring_outer = [105, 200, 295, 390]
 ring_mid = [(i + o) / 2 for i, o in zip(ring_inner, ring_outer, strict=True)]
 
 # Marker sizes vary by ring to create visual hierarchy (near-term = larger/bolder)
@@ -79,8 +80,8 @@ p = figure(
     width=3600,
     height=3600,
     title="radar-innovation-timeline \u00b7 bokeh \u00b7 pyplots.ai",
-    x_range=(-500, 500),
-    y_range=(-500, 500),
+    x_range=(-470, 470),
+    y_range=(-460, 480),
     tools="",
     toolbar_location=None,
 )
@@ -92,8 +93,8 @@ p.outline_line_color = None
 p.background_fill_color = "#FAFAFA"
 
 # Draw ring background fills with subtle gradient-like shading
-ring_fills = ["#E8EDF2", "#EDEDED", "#F2EDE6", "#F2E8EC"]
-ring_alphas = [0.7, 0.6, 0.5, 0.45]
+ring_fills = ["#D8E4F0", "#E5E5E5", "#F0E4D8", "#F0D8E4"]
+ring_alphas = [0.8, 0.7, 0.6, 0.5]
 for ring_idx in range(len(rings)):
     r_out = ring_outer[ring_idx]
     r_in = ring_inner[ring_idx]
@@ -112,16 +113,34 @@ for ring_idx in range(len(rings)):
         line_color=None,
     )
 
+# Sector-colored subtle overlays per ring-sector cell for visual grouping
+for ring_idx in range(len(rings)):
+    for sector_idx in range(n_sectors):
+        r_out = ring_outer[ring_idx]
+        r_in = ring_inner[ring_idx]
+        theta_seg = np.linspace(sector_starts[sector_idx], sector_ends[sector_idx], 50)
+        x_out = r_out * np.cos(theta_seg)
+        y_out = r_out * np.sin(theta_seg)
+        x_in = r_in * np.cos(theta_seg[::-1])
+        y_in = r_in * np.sin(theta_seg[::-1])
+        p.patch(
+            np.concatenate([x_out, x_in]).tolist(),
+            np.concatenate([y_out, y_in]).tolist(),
+            fill_color=sector_colors[sector_idx],
+            fill_alpha=0.06,
+            line_color=None,
+        )
+
 # Draw ring boundary arcs
 for r in ring_outer:
     theta = np.linspace(start_angle, start_angle + total_angle, 200)
     p.line(
         (r * np.cos(theta)).tolist(),
         (r * np.sin(theta)).tolist(),
-        line_color="#B0B0B0",
-        line_width=2,
-        line_alpha=0.6,
-        line_dash="dotted",
+        line_color="#9E9E9E",
+        line_width=2.5,
+        line_alpha=0.55,
+        line_dash=[6, 4],
     )
 
 # Draw sector divider lines
@@ -135,8 +154,9 @@ for i in range(n_sectors + 1):
         line_alpha=0.6,
     )
 
-# Ring labels along the starting radial boundary - made prominent
-label_angle = start_angle - 0.08
+# Ring labels along the ending radial boundary (in the gap area, away from items)
+end_angle = start_angle + total_angle
+label_angle = end_angle + 0.08
 for ring_idx, ring_name in enumerate(rings):
     r = ring_mid[ring_idx]
     p.add_layout(
@@ -217,7 +237,18 @@ for idx, (name, ring_idx, sector_idx) in enumerate(items):
     ring_names.append(rings[ring_idx])
     sector_names.append(sectors[sector_idx])
 
-    # Add item label
+    # Add item label with per-ring offset; stagger inner ring labels to avoid crowding
+    base_offsets = [26, 20, 16, 13]
+    if ring_idx == 0 and n_in_group > 1:
+        # Alternate labels: even items push outward, odd items push inward
+        direction = 1 if pos_in_group % 2 == 0 else -0.6
+        label_r_offset = base_offsets[ring_idx] * direction
+    else:
+        label_r_offset = base_offsets[ring_idx]
+
+    lx = x + label_r_offset * np.cos(angle)
+    ly = y + label_r_offset * np.sin(angle)
+
     cos_val = np.cos(angle)
     text_align = "center" if abs(cos_val) < 0.3 else ("left" if cos_val > 0 else "right")
     sin_val = np.sin(angle)
@@ -225,8 +256,8 @@ for idx, (name, ring_idx, sector_idx) in enumerate(items):
 
     p.add_layout(
         Label(
-            x=x + 14 * np.cos(angle),
-            y=y + 14 * np.sin(angle),
+            x=lx,
+            y=ly,
             text=name,
             text_font_size="16pt",
             text_color="#2A2A2A",

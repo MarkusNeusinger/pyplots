@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 radar-innovation-timeline: Innovation Radar with Time-Horizon Rings
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 81/100 | Created: 2026-02-18
@@ -64,9 +64,9 @@ for sector_idx, sector in enumerate(sectors):
     start_slot = sector_idx * slots_per_sector
     x_labels.append(sector)
     for i, (name, ring) in enumerate(sector_items[sector]):
-        x_labels.append(name)
+        x_labels.append("")  # Clean perimeter — item names via tooltips only
         item_placements.append((name, sector, ring, start_slot + 1 + i))
-    x_labels.append("")  # gap between sectors
+    x_labels.append("")
 
 # One series per sector → 4 legend entries colored by category
 series_data = {s: [None] * total_slots for s in sectors}
@@ -77,18 +77,19 @@ color_sequence = tuple(sector_colors[s] for s in sectors)
 
 custom_style = Style(
     background="white",
-    plot_background="#f8f9fa",
-    foreground="#444444",
-    foreground_strong="#222222",
-    foreground_subtle="#dcdcdc",
+    plot_background="#f4f5fa",
+    foreground="#3a3a4a",
+    foreground_strong="#16162a",
+    foreground_subtle="#a0a0b0",  # Visible ring guides for time-horizon hierarchy
     colors=color_sequence,
     title_font_size=48,
-    label_font_size=20,
-    major_label_font_size=28,
+    label_font_size=24,
+    major_label_font_size=34,
     legend_font_size=26,
-    value_font_size=18,
-    opacity=0.85,
-    opacity_hover=1.0,
+    value_font_size=20,
+    opacity=0.65,
+    opacity_hover=0.9,
+    stroke_width=2.5,
 )
 
 chart = pygal.Radar(
@@ -100,27 +101,27 @@ chart = pygal.Radar(
     legend_at_bottom=True,
     legend_at_bottom_columns=4,
     legend_box_size=22,
-    fill=False,
-    dots_size=14,
-    stroke=False,
+    fill=True,
+    stroke=True,
     show_dots=True,
+    dots_size=16,
     show_y_guides=True,
     show_x_guides=False,
     range=(0, 5),
-    inner_radius=0.08,
+    inner_radius=0.12,
     y_labels=[
         {"value": 1, "label": "Adopt"},
         {"value": 2, "label": "Trial"},
         {"value": 3, "label": "Assess"},
         {"value": 4, "label": "Hold"},
     ],
-    show_minor_x_labels=True,
+    show_minor_x_labels=False,
     x_labels_major=sectors,
     x_label_rotation=0,
-    margin_bottom=50,
-    margin_left=50,
-    margin_right=50,
-    margin_top=50,
+    margin_bottom=60,
+    margin_left=60,
+    margin_right=60,
+    margin_top=60,
     truncate_label=100,
 )
 
@@ -129,6 +130,5 @@ chart.x_labels = x_labels
 for sector in sectors:
     chart.add(sector, series_data[sector])
 
-# Save
 chart.render_to_png("plot.png")
 chart.render_to_file("plot.html")

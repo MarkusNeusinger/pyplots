@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 radar-innovation-timeline: Innovation Radar with Time-Horizon Rings
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 80/100 | Created: 2026-02-18
@@ -40,7 +40,7 @@ items = [
     {"name": "RAG Pipelines", "ring": "Adopt", "sector": "AI & ML"},
     {"name": "Vision Models", "ring": "Trial", "sector": "AI & ML"},
     {"name": "AI Code Review", "ring": "Trial", "sector": "AI & ML"},
-    {"name": "Neuro-symbolic AI", "ring": "Assess", "sector": "AI & ML"},
+    {"name": "Neuro-symb. AI", "ring": "Assess", "sector": "AI & ML"},
     {"name": "Auto. ML Ops", "ring": "Assess", "sector": "AI & ML"},
     {"name": "AGI Frameworks", "ring": "Hold", "sector": "AI & ML"},
     {"name": "Edge Computing", "ring": "Adopt", "sector": "Cloud & Infra"},
@@ -78,17 +78,31 @@ for (sector, ring), group_items in groups.items():
     r_mid = (r_in + r_out) / 2
     ring_idx = rings.index(ring)
     # Stagger angular positions by ring to separate cross-ring labels
-    ring_jitter = 0.06 * sector_arc * ((-1) ** ring_idx)
+    ring_jitter = 0.12 * sector_arc * ((-1) ** ring_idx)
     for idx, it in enumerate(group_items):
         angle = a_min + padding + (idx + 0.5) / n * (a_max - a_min - 2 * padding) + ring_jitter
-        r_offset = 0.2 * ((-1) ** idx) if n > 1 else 0
+        r_offset = 0.25 * ((-1) ** idx) if n > 1 else 0
         radius = r_mid + r_offset
         x = radius * np.cos(angle)
         y = radius * np.sin(angle)
-        # Alternate labels above/below within group; ring jitter handles cross-ring
-        direction = 1 if idx % 2 == 0 else -1
-        label_shift = direction * 0.32
-        records.append({"name": it["name"], "ring": ring, "sector": sector, "x": x, "y": y, "label_y": y + label_shift})
+        # Push label outward from center along radial direction
+        outward_r = 0.30 + 0.12 * (idx % 2)  # alternate slight offset
+        label_x = x + outward_r * np.cos(angle)
+        label_y = y + outward_r * np.sin(angle)
+        # Align text outward: left-align on right side, right-align on left side
+        text_align = "left" if x > 0 else "right" if x < -0.5 else "center"
+        records.append(
+            {
+                "name": it["name"],
+                "ring": ring,
+                "sector": sector,
+                "x": x,
+                "y": y,
+                "label_x": label_x,
+                "label_y": label_y,
+                "text_align": text_align,
+            }
+        )
 
 df = pd.DataFrame(records)
 
@@ -122,7 +136,7 @@ for i in range(n_sectors + 1):
 df_spokes = pd.DataFrame(spoke_rows)
 
 # Sector headers beyond outer ring
-sec_r = 4.55
+sec_r = 4.85
 df_sec = pd.DataFrame(
     [
         {
@@ -149,7 +163,7 @@ df_rlabels = pd.DataFrame(
 
 # --- Altair chart assembly ---
 chart_size = 1200
-dom = [-5.3, 5.3]
+dom = [-5.7, 5.7]
 x_enc = alt.X("x:Q", scale=alt.Scale(domain=dom), axis=None)
 y_enc = alt.Y("y:Q", scale=alt.Scale(domain=dom), axis=None)
 color_scale = alt.Scale(domain=list(sector_colors), range=list(sector_colors.values()))
@@ -196,7 +210,7 @@ points = (
                 labelFontSize=15,
                 orient="none",
                 legendX=300,
-                legendY=1090,
+                legendY=1050,
                 symbolSize=280,
                 symbolStrokeWidth=0,
                 direction="horizontal",
@@ -211,7 +225,7 @@ points = (
                 labelFontSize=15,
                 orient="none",
                 legendX=300,
-                legendY=1150,
+                legendY=1105,
                 symbolSize=280,
                 symbolStrokeWidth=0,
                 direction="horizontal",
@@ -223,12 +237,33 @@ points = (
     .add_params(hover)
 )
 
-# Item labels at offset positions, highlighted on hover
-labels = (
-    alt.Chart(df)
-    .mark_text(fontSize=14, color="#222222", fontWeight="normal")
+# Item labels at offset positions, aligned outward from center
+# Split by text alignment to avoid overlap
+labels_left = (
+    alt.Chart(df[df["text_align"] == "left"])
+    .mark_text(fontSize=16, color="#222222", fontWeight="normal", align="left")
     .encode(
-        x=alt.X("x:Q", scale=alt.Scale(domain=dom), axis=None),
+        x=alt.X("label_x:Q", scale=alt.Scale(domain=dom), axis=None),
+        y=alt.Y("label_y:Q", scale=alt.Scale(domain=dom), axis=None),
+        text="name:N",
+        opacity=alt.condition(hover, alt.value(1.0), alt.value(0.85)),
+    )
+)
+labels_right = (
+    alt.Chart(df[df["text_align"] == "right"])
+    .mark_text(fontSize=16, color="#222222", fontWeight="normal", align="right")
+    .encode(
+        x=alt.X("label_x:Q", scale=alt.Scale(domain=dom), axis=None),
+        y=alt.Y("label_y:Q", scale=alt.Scale(domain=dom), axis=None),
+        text="name:N",
+        opacity=alt.condition(hover, alt.value(1.0), alt.value(0.85)),
+    )
+)
+labels_center = (
+    alt.Chart(df[df["text_align"] == "center"])
+    .mark_text(fontSize=16, color="#222222", fontWeight="normal", align="center")
+    .encode(
+        x=alt.X("label_x:Q", scale=alt.Scale(domain=dom), axis=None),
         y=alt.Y("label_y:Q", scale=alt.Scale(domain=dom), axis=None),
         text="name:N",
         opacity=alt.condition(hover, alt.value(1.0), alt.value(0.85)),
@@ -251,7 +286,7 @@ rlabels = (
 
 # Combine all layers
 chart = (
-    alt.layer(*fill_layers, arcs, spokes, points, labels, sec_headers, rlabels)
+    alt.layer(*fill_layers, arcs, spokes, points, labels_left, labels_right, labels_center, sec_headers, rlabels)
     .properties(
         width=chart_size,
         height=chart_size,

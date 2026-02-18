@@ -1,12 +1,14 @@
-""" pyplots.ai
+"""pyplots.ai
 radar-innovation-timeline: Innovation Radar with Time-Horizon Rings
 Library: bokeh 3.8.2 | Python 3.14.3
 Quality: 74/100 | Created: 2026-02-18
 """
 
+from collections import defaultdict
+
 import numpy as np
 from bokeh.io import export_png, output_file, save
-from bokeh.models import Label, Legend, LegendItem
+from bokeh.models import ColumnDataSource, HoverTool, Label, Legend, LegendItem
 from bokeh.plotting import figure
 
 
@@ -20,6 +22,9 @@ rings = ["Adopt", "Trial", "Assess", "Hold"]
 ring_inner = [0, 80, 160, 240]
 ring_outer = [80, 160, 240, 320]
 ring_mid = [(i + o) / 2 for i, o in zip(ring_inner, ring_outer, strict=True)]
+
+# Marker sizes vary by ring to create visual hierarchy (near-term = larger/bolder)
+ring_marker_sizes = [28, 22, 18, 14]
 
 # Innovation items: (name, ring_index, sector_index)
 items = [
@@ -59,24 +64,23 @@ n_sectors = len(sectors)
 
 # Use 270 degrees (three-quarter circle) to leave room for legend/title
 total_angle = 3 * np.pi / 2
-start_angle = np.pi / 4  # Start at 45 degrees (upper-right gap for legend)
+start_angle = np.pi / 4  # Start at 45 degrees (upper-right gap)
 
 # Sector angular boundaries
 sector_width = total_angle / n_sectors
 sector_starts = [start_angle + i * sector_width for i in range(n_sectors)]
 sector_ends = [start_angle + (i + 1) * sector_width for i in range(n_sectors)]
 
-# Sector colors
-sector_colors = ["#306998", "#E57373", "#4CAF50", "#9C27B0"]
-sector_fill_colors = ["#306998", "#E57373", "#4CAF50", "#9C27B0"]
+# Colorblind-safe palette: blue, orange, teal, purple
+sector_colors = ["#306998", "#E07B39", "#2A9D8F", "#7B2D8E"]
 
 # Create figure
 p = figure(
     width=3600,
     height=3600,
-    title="radar-innovation-timeline · bokeh · pyplots.ai",
-    x_range=(-480, 480),
-    y_range=(-480, 480),
+    title="radar-innovation-timeline \u00b7 bokeh \u00b7 pyplots.ai",
+    x_range=(-500, 500),
+    y_range=(-500, 500),
     tools="",
     toolbar_location=None,
 )
@@ -85,88 +89,87 @@ p = figure(
 p.axis.visible = False
 p.grid.visible = False
 p.outline_line_color = None
-p.background_fill_color = "white"
+p.background_fill_color = "#FAFAFA"
 
-# Draw ring background fills with subtle shading
-ring_fills = ["#F0F4F8", "#F5F5F5", "#FAF7F2", "#FFF5F5"]
+# Draw ring background fills with subtle gradient-like shading
+ring_fills = ["#E8EDF2", "#EDEDED", "#F2EDE6", "#F2E8EC"]
+ring_alphas = [0.7, 0.6, 0.5, 0.45]
 for ring_idx in range(len(rings)):
     r_out = ring_outer[ring_idx]
     r_in = ring_inner[ring_idx]
     theta = np.linspace(start_angle, start_angle + total_angle, 200)
 
-    # Outer arc
     x_out = r_out * np.cos(theta)
     y_out = r_out * np.sin(theta)
-
-    # Inner arc (reversed)
     x_in = r_in * np.cos(theta[::-1])
     y_in = r_in * np.sin(theta[::-1])
 
-    x_fill = np.concatenate([x_out, x_in])
-    y_fill = np.concatenate([y_out, y_in])
+    p.patch(
+        np.concatenate([x_out, x_in]).tolist(),
+        np.concatenate([y_out, y_in]).tolist(),
+        fill_color=ring_fills[ring_idx],
+        fill_alpha=ring_alphas[ring_idx],
+        line_color=None,
+    )
 
-    p.patch(x_fill.tolist(), y_fill.tolist(), fill_color=ring_fills[ring_idx], fill_alpha=0.6, line_color=None)
-
-# Draw ring boundary circles (arcs for 270 degrees)
+# Draw ring boundary arcs
 for r in ring_outer:
     theta = np.linspace(start_angle, start_angle + total_angle, 200)
-    x_arc = r * np.cos(theta)
-    y_arc = r * np.sin(theta)
-    p.line(x_arc.tolist(), y_arc.tolist(), line_color="#BBBBBB", line_width=2.5, line_alpha=0.7)
-
-# Inner boundary line (center)
-theta = np.linspace(start_angle, start_angle + total_angle, 200)
-x_arc = ring_inner[0] * np.cos(theta)
-y_arc = ring_inner[0] * np.sin(theta)
+    p.line(
+        (r * np.cos(theta)).tolist(),
+        (r * np.sin(theta)).tolist(),
+        line_color="#B0B0B0",
+        line_width=2,
+        line_alpha=0.6,
+        line_dash="dotted",
+    )
 
 # Draw sector divider lines
 for i in range(n_sectors + 1):
     angle = start_angle + i * sector_width
-    x_line = [0, ring_outer[-1] * np.cos(angle)]
-    y_line = [0, ring_outer[-1] * np.sin(angle)]
-    p.line(x_line, y_line, line_color="#BBBBBB", line_width=2.5, line_alpha=0.7)
+    p.line(
+        [0, ring_outer[-1] * np.cos(angle)],
+        [0, ring_outer[-1] * np.sin(angle)],
+        line_color="#B0B0B0",
+        line_width=2,
+        line_alpha=0.6,
+    )
 
-# Add ring labels along one radial line (at the start angle boundary)
-label_angle = start_angle - 0.06
+# Ring labels along the starting radial boundary - made prominent
+label_angle = start_angle - 0.08
 for ring_idx, ring_name in enumerate(rings):
     r = ring_mid[ring_idx]
-    x_pos = r * np.cos(label_angle)
-    y_pos = r * np.sin(label_angle)
     p.add_layout(
         Label(
-            x=x_pos,
-            y=y_pos,
+            x=r * np.cos(label_angle),
+            y=r * np.sin(label_angle),
             text=ring_name,
-            text_font_size="20pt",
-            text_color="#777777",
-            text_font_style="italic",
+            text_font_size="22pt",
+            text_color="#555555",
+            text_font_style="bold",
             text_align="center",
             text_baseline="middle",
+            background_fill_color="white",
+            background_fill_alpha=0.7,
         )
     )
 
-# Add sector header labels along the outer edge
+# Sector header labels along the outer edge
 for i, sector_name in enumerate(sectors):
     mid_angle = (sector_starts[i] + sector_ends[i]) / 2
-    label_r = ring_outer[-1] + 40
+    label_r = ring_outer[-1] + 45
     x_pos = label_r * np.cos(mid_angle)
     y_pos = label_r * np.sin(mid_angle)
 
-    # Determine text alignment based on position
     cos_val = np.cos(mid_angle)
-    if abs(cos_val) < 0.3:
-        text_align = "center"
-    elif cos_val > 0:
-        text_align = "left"
-    else:
-        text_align = "right"
+    text_align = "center" if abs(cos_val) < 0.3 else ("left" if cos_val > 0 else "right")
 
     p.add_layout(
         Label(
             x=x_pos,
             y=y_pos,
             text=sector_name,
-            text_font_size="26pt",
+            text_font_size="28pt",
             text_color=sector_colors[i],
             text_font_style="bold",
             text_align=text_align,
@@ -174,80 +177,96 @@ for i, sector_name in enumerate(sectors):
         )
     )
 
-# Place innovation items
-legend_renderers = {s: [] for s in sectors}
+# Precompute item positions
+# Group items by (ring, sector) for spacing
+groups = defaultdict(list)
+for idx, (_name, ring_idx, sector_idx) in enumerate(items):
+    groups[(ring_idx, sector_idx)].append(idx)
+
+xs, ys, colors, sizes, names, ring_names, sector_names = [], [], [], [], [], [], []
 
 for idx, (name, ring_idx, sector_idx) in enumerate(items):
-    # Count items in same ring+sector for spacing
-    same_group = [(i, n, ri, si) for i, (n, ri, si) in enumerate(items) if ri == ring_idx and si == sector_idx]
-    pos_in_group = [i for i, _ in enumerate(same_group) if same_group[i][0] == idx][0]
-    n_in_group = len(same_group)
+    group = groups[(ring_idx, sector_idx)]
+    pos_in_group = group.index(idx)
+    n_in_group = len(group)
 
-    # Distribute items within the sector angular range
-    sector_start = sector_starts[sector_idx]
-    sector_end = sector_ends[sector_idx]
-    margin = sector_width * 0.1
-    usable_start = sector_start + margin
-    usable_end = sector_end - margin
+    # Distribute items within the sector angular range with wider margins
+    s_start = sector_starts[sector_idx]
+    margin = sector_width * 0.12
+    usable_start = s_start + margin
+    usable_end = sector_ends[sector_idx] - margin
 
     if n_in_group == 1:
         angle = (usable_start + usable_end) / 2
     else:
         angle = usable_start + (usable_end - usable_start) * pos_in_group / (n_in_group - 1)
 
-    # Radial position: jitter within ring
+    # Radial position with jitter
     r_base = ring_mid[ring_idx]
-    ring_half_width = (ring_outer[ring_idx] - ring_inner[ring_idx]) / 2
-    r_jitter = np.random.uniform(-ring_half_width * 0.4, ring_half_width * 0.4)
-    r = r_base + r_jitter
+    ring_hw = (ring_outer[ring_idx] - ring_inner[ring_idx]) / 2
+    r = r_base + np.random.uniform(-ring_hw * 0.35, ring_hw * 0.35)
 
     x = r * np.cos(angle)
     y = r * np.sin(angle)
 
-    color = sector_colors[sector_idx]
+    xs.append(x)
+    ys.append(y)
+    colors.append(sector_colors[sector_idx])
+    sizes.append(ring_marker_sizes[ring_idx])
+    names.append(name)
+    ring_names.append(rings[ring_idx])
+    sector_names.append(sectors[sector_idx])
 
-    # Draw marker
-    renderer = p.scatter([x], [y], size=22, fill_color=color, line_color="white", line_width=3, alpha=0.9)
-    legend_renderers[sectors[sector_idx]].append(renderer)
-
-    # Add label with smart positioning
-    label_offset_x = 12 * np.cos(angle)
-    label_offset_y = 12 * np.sin(angle)
-
+    # Add item label
     cos_val = np.cos(angle)
-    if abs(cos_val) < 0.3:
-        text_align = "center"
-    elif cos_val > 0:
-        text_align = "left"
-    else:
-        text_align = "right"
-
+    text_align = "center" if abs(cos_val) < 0.3 else ("left" if cos_val > 0 else "right")
     sin_val = np.sin(angle)
-    if abs(sin_val) < 0.3:
-        text_baseline = "middle"
-    elif sin_val > 0:
-        text_baseline = "bottom"
-    else:
-        text_baseline = "top"
+    text_baseline = "middle" if abs(sin_val) < 0.3 else ("bottom" if sin_val > 0 else "top")
 
     p.add_layout(
         Label(
-            x=x + label_offset_x,
-            y=y + label_offset_y,
+            x=x + 14 * np.cos(angle),
+            y=y + 14 * np.sin(angle),
             text=name,
-            text_font_size="14pt",
-            text_color="#333333",
+            text_font_size="16pt",
+            text_color="#2A2A2A",
             text_align=text_align,
             text_baseline=text_baseline,
         )
     )
 
-# Add legend
-legend_items = []
-for sector_name in sectors:
-    if legend_renderers[sector_name]:
-        legend_items.append(LegendItem(label=sector_name, renderers=[legend_renderers[sector_name][0]]))
+# Use ColumnDataSource for scatter markers (core Bokeh idiom)
+source = ColumnDataSource(
+    data={"x": xs, "y": ys, "color": colors, "size": sizes, "name": names, "ring": ring_names, "sector": sector_names}
+)
 
+# Render markers per sector for legend items
+legend_items = []
+for si, sector_name in enumerate(sectors):
+    indices = [i for i, (_, _, sec_idx) in enumerate(items) if sec_idx == si]
+    sector_source = ColumnDataSource(
+        data={
+            "x": [xs[i] for i in indices],
+            "y": [ys[i] for i in indices],
+            "color": [colors[i] for i in indices],
+            "size": [sizes[i] for i in indices],
+            "name": [names[i] for i in indices],
+            "ring": [ring_names[i] for i in indices],
+            "sector": [sector_names[i] for i in indices],
+        }
+    )
+    renderer = p.scatter(
+        "x", "y", source=sector_source, size="size", fill_color="color", line_color="white", line_width=3, alpha=0.9
+    )
+    legend_items.append(LegendItem(label=sector_name, renderers=[renderer]))
+
+# HoverTool - Bokeh-distinctive interactive feature
+hover = HoverTool(
+    tooltips=[("Technology", "@name"), ("Horizon", "@ring"), ("Sector", "@sector")], point_policy="snap_to_data"
+)
+p.add_tools(hover)
+
+# Legend
 legend = Legend(
     items=legend_items,
     location="top_right",
@@ -256,17 +275,19 @@ legend = Legend(
     glyph_width=35,
     spacing=18,
     padding=25,
-    background_fill_alpha=0.85,
+    background_fill_color="white",
+    background_fill_alpha=0.9,
     border_line_color="#CCCCCC",
+    border_line_width=2,
 )
 p.add_layout(legend, "right")
 
-# Style
-p.title.text_font_size = "32pt"
+# Title styling
+p.title.text_font_size = "34pt"
 p.title.align = "center"
-p.title.text_color = "#333333"
+p.title.text_color = "#1A1A1A"
 
 # Save
 export_png(p, filename="plot.png")
-output_file("plot.html", title="radar-innovation-timeline · bokeh · pyplots.ai")
+output_file("plot.html", title="radar-innovation-timeline \u00b7 bokeh \u00b7 pyplots.ai")
 save(p)

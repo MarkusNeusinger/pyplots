@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 radar-innovation-timeline: Innovation Radar with Time-Horizon Rings
 Library: letsplot 4.8.2 | Python 3.14.3
-Quality: 88/100 | Created: 2026-02-18
+Quality: repair-3 | Created: 2026-02-18
 """
 
 import math
@@ -45,7 +45,7 @@ sector_colors = {
     "AI & ML": "#306998",
     "Infrastructure": "#E56910",
     "Biotech": "#D63484",  # Deep pink: high contrast vs blue for colorblind viewers
-    "Sustainability": "#22A06B",
+    "Sustainability": "#00897B",  # Teal: clearly distinct from orange for deuteranopia
 }
 ring_fills = {"Adopt": "#DCEDC8", "Trial": "#FFF9C4", "Assess": "#FFE0B2", "Hold": "#FFCDD2"}
 ring_inner = {"Adopt": 0.5, "Trial": 1.5, "Assess": 2.5, "Hold": 3.5}
@@ -106,15 +106,15 @@ df["x"] = df["radius"] * np.cos(df["angle"])
 df["y"] = df["radius"] * np.sin(df["angle"])
 
 # Label positions: pushed radially outward (more offset for inner rings)
-label_offsets = {"Adopt": 0.65, "Trial": 0.55, "Assess": 0.48, "Hold": 0.38}
+label_offsets = {"Adopt": 0.72, "Trial": 0.62, "Assess": 0.52, "Hold": 0.42}
 df["label_r"] = df["radius"] + df["ring"].map(label_offsets)
 df["lx"] = df["label_r"] * np.cos(df["angle"])
 df["ly"] = df["label_r"] * np.sin(df["angle"])
 df["side"] = np.where(df["lx"] < 0, "left", "right")
 
 # Label repulsion: push overlapping labels apart vertically on each side
-MIN_Y_SEP = 0.52
-for _ in range(25):
+MIN_Y_SEP = 0.60
+for _ in range(35):
     for side in ["left", "right"]:
         side_idx = df.loc[df["side"] == side].sort_values("ly").index.tolist()
         for k in range(len(side_idx) - 1):
@@ -182,7 +182,7 @@ plot = ggplot()
 # Ring background fills with semantic color gradient (green=safe → pink=risky)
 for rname in rings:
     rdata = ring_bg_df[ring_bg_df["ring"] == rname]
-    plot += geom_polygon(aes("x", "y"), data=rdata, fill=ring_fills[rname], alpha=0.5)
+    plot += geom_polygon(aes("x", "y"), data=rdata, fill=ring_fills[rname], alpha=0.55)
 
 # Structural lines: ring boundaries and sector spokes
 plot += geom_path(aes("x", "y", group="g"), data=bnd_df, color="#CCCCCC", size=0.3, alpha=0.7)
@@ -203,13 +203,13 @@ plot += geom_label(
 )
 
 # Thin connector lines from points to labels (aids readability after repulsion)
-plot += geom_segment(aes(x="x", y="y", xend="lx", yend="ly"), data=df, size=0.2, alpha=0.25, color="#888888")
+plot += geom_segment(aes(x="x", y="y", xend="lx", yend="ly"), data=df, size=0.3, alpha=0.30, color="#888888")
 
 # Innovation points with interactive tooltips (letsplot-specific for HTML export)
 plot += geom_point(
     aes("x", "y", color="sector"),
     data=df,
-    size=7,
+    size=8,
     alpha=0.9,
     tooltips=layer_tooltips().line("@name").line("Ring: @ring").line("Sector: @sector"),
 )
@@ -217,13 +217,13 @@ plot += geom_point(
 # Innovation labels split by side for outward text alignment
 for side, hj in [("left", 1), ("right", 0)]:
     side_df = df[df["side"] == side]
-    plot += geom_text(aes("lx", "ly", label="name", color="sector"), data=side_df, size=10, hjust=hj)
+    plot += geom_text(aes("lx", "ly", label="name", color="sector"), data=side_df, size=12, hjust=hj)
 
 # Styling
 plot += (
     scale_color_manual(values=sector_colors)
     + scale_x_continuous(limits=(-7.0, 7.0))
-    + scale_y_continuous(limits=(-7.0, 5.8))
+    + scale_y_continuous(limits=(-6.8, 5.5))
     + coord_fixed()
     + labs(title="radar-innovation-timeline · letsplot · pyplots.ai", color="Sector")
     + ggsize(1200, 1200)

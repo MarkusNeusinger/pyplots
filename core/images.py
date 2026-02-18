@@ -40,12 +40,58 @@ OG_WIDTH = 1200
 OG_HEIGHT = 630
 HEADER_HEIGHT = 80
 
+# Brand text
+TAGLINE = "library-agnostic, ai-powered python plotting."
+
+# Shared colors
+COLOR_LABEL_GRAY = "#6b7280"
+COLOR_PLACEHOLDER_GRAY = "#9ca3af"
+
+# --- OG Single Image Layout ---
+OG_TOP_MARGIN = 25
+OG_LOGO_FONT_SIZE = 42
+OG_LOGO_HEIGHT = 55
+OG_TAGLINE_FONT_SIZE = 22
+OG_TAGLINE_GAP = 18
+OG_HEADER_GAP = 25
+OG_SIDE_MARGIN = 60
+OG_CARD_PADDING = 12
+OG_LABEL_FONT_SIZE = 20
+OG_LABEL_GAP = 15
+OG_BOTTOM_MARGIN = 45
+
+# --- OG Collage Layout ---
+COLLAGE_TOP_MARGIN = 20
+COLLAGE_SIDE_MARGIN = 40
+COLLAGE_LOGO_FONT_SIZE = 38
+COLLAGE_TAGLINE_FONT_SIZE = 18
+COLLAGE_TAGLINE_Y_OFFSET = 58
+COLLAGE_CARD_GAP_X = 20
+COLLAGE_CARD_GAP_Y = 8
+COLLAGE_CARD_PADDING = 6
+COLLAGE_LABEL_FONT_SIZE = 13
+COLLAGE_LABEL_HEIGHT = 18
+COLLAGE_LABEL_GAP = 4
+COLLAGE_BOTTOM_MARGIN = 15
+COLLAGE_COLS = 3
+COLLAGE_ROWS = 2
+COLLAGE_MAX_IMAGES = 6
+COLLAGE_CARD_ASPECT = 16 / 9
+COLLAGE_CARD_RADIUS = 10
+COLLAGE_SHADOW_OFFSET = 2
+
+# --- Comparison Layout ---  (supplement existing COMPARE_* constants)
+COMPARE_HEADER_FONT_SIZE = 28
+COMPARE_LABEL_FONT_SIZE = 22
+COMPARE_PLACEHOLDER_FONT_SIZE = 20
+COMPARE_LABEL_Y_OFFSET = 8
+
 # Optional: pngquant for better compression
 try:
     import subprocess
 
     _HAS_PNGQUANT = subprocess.run(["pngquant", "--version"], capture_output=True).returncode == 0
-except FileNotFoundError, subprocess.SubprocessError:
+except (FileNotFoundError, subprocess.SubprocessError):  # fmt: skip
     _HAS_PNGQUANT = False
 
 
@@ -184,11 +230,9 @@ def create_comparison_image(
         spec_id: Spec ID for the header label.
         library: Library name for the header label.
     """
-    # Canvas
     canvas = Image.new("RGB", (COMPARE_WIDTH, COMPARE_HEIGHT), PYPLOTS_BG)
     draw = ImageDraw.Draw(canvas)
 
-    # Available space for each image panel
     panel_width = (COMPARE_WIDTH - 2 * COMPARE_MARGIN - COMPARE_GAP) // 2
     panel_top = COMPARE_HEADER_HEIGHT + COMPARE_LABEL_HEIGHT
     panel_height = COMPARE_HEIGHT - panel_top - COMPARE_MARGIN
@@ -196,7 +240,7 @@ def create_comparison_image(
     # Header bar
     header_text = f"{library} · {spec_id}" if library and spec_id else library or spec_id
     if header_text:
-        header_font = _get_font(28, weight=700, local_only=True)
+        header_font = _get_font(COMPARE_HEADER_FONT_SIZE, weight=700, local_only=True)
         bbox = draw.textbbox((0, 0), header_text, font=header_font)
         text_w = bbox[2] - bbox[0]
         text_h = bbox[3] - bbox[1]
@@ -208,16 +252,16 @@ def create_comparison_image(
         )
 
     # Labels
-    label_font = _get_font(22, weight=400, local_only=True)
+    label_font = _get_font(COMPARE_LABEL_FONT_SIZE, weight=400, local_only=True)
     before_label = "BEFORE (current)"
     after_label = "AFTER (updated)"
 
     before_bbox = draw.textbbox((0, 0), before_label, font=label_font)
     before_label_w = before_bbox[2] - before_bbox[0]
     draw.text(
-        (COMPARE_MARGIN + (panel_width - before_label_w) // 2, COMPARE_HEADER_HEIGHT + 8),
+        (COMPARE_MARGIN + (panel_width - before_label_w) // 2, COMPARE_HEADER_HEIGHT + COMPARE_LABEL_Y_OFFSET),
         before_label,
-        fill="#6b7280",
+        fill=COLOR_LABEL_GRAY,
         font=label_font,
     )
 
@@ -225,9 +269,9 @@ def create_comparison_image(
     after_label_w = after_bbox[2] - after_bbox[0]
     after_panel_x = COMPARE_MARGIN + panel_width + COMPARE_GAP
     draw.text(
-        (after_panel_x + (panel_width - after_label_w) // 2, COMPARE_HEADER_HEIGHT + 8),
+        (after_panel_x + (panel_width - after_label_w) // 2, COMPARE_HEADER_HEIGHT + COMPARE_LABEL_Y_OFFSET),
         after_label,
-        fill="#6b7280",
+        fill=COLOR_LABEL_GRAY,
         font=label_font,
     )
 
@@ -237,28 +281,27 @@ def create_comparison_image(
         if before_img.mode in ("RGBA", "P"):
             before_img = before_img.convert("RGB")
         before_img = _fit_image(before_img, panel_width, panel_height)
-        bx = COMPARE_MARGIN + (panel_width - before_img.width) // 2
-        by = panel_top + (panel_height - before_img.height) // 2
-        canvas.paste(before_img, (bx, by))
+        before_x = COMPARE_MARGIN + (panel_width - before_img.width) // 2
+        before_y = panel_top + (panel_height - before_img.height) // 2
+        canvas.paste(before_img, (before_x, before_y))
     else:
-        # Gray placeholder
-        placeholder_font = _get_font(20, weight=400, local_only=True)
+        placeholder_font = _get_font(COMPARE_PLACEHOLDER_FONT_SIZE, weight=400, local_only=True)
         placeholder_text = "No previous version"
-        pb = draw.textbbox((0, 0), placeholder_text, font=placeholder_font)
-        pw = pb[2] - pb[0]
-        ph = pb[3] - pb[1]
-        px = COMPARE_MARGIN + (panel_width - pw) // 2
-        py = panel_top + (panel_height - ph) // 2
-        draw.text((px, py), placeholder_text, fill="#9ca3af", font=placeholder_font)
+        bbox = draw.textbbox((0, 0), placeholder_text, font=placeholder_font)
+        placeholder_w = bbox[2] - bbox[0]
+        placeholder_h = bbox[3] - bbox[1]
+        placeholder_x = COMPARE_MARGIN + (panel_width - placeholder_w) // 2
+        placeholder_y = panel_top + (panel_height - placeholder_h) // 2
+        draw.text((placeholder_x, placeholder_y), placeholder_text, fill=COLOR_PLACEHOLDER_GRAY, font=placeholder_font)
 
     # Load and place AFTER image
     after_img = Image.open(after_path)
     if after_img.mode in ("RGBA", "P"):
         after_img = after_img.convert("RGB")
     after_img = _fit_image(after_img, panel_width, panel_height)
-    ax = after_panel_x + (panel_width - after_img.width) // 2
-    ay = panel_top + (panel_height - after_img.height) // 2
-    canvas.paste(after_img, (ax, ay))
+    after_x = after_panel_x + (panel_width - after_img.width) // 2
+    after_y = panel_top + (panel_height - after_img.height) // 2
+    canvas.paste(after_img, (after_x, after_y))
 
     canvas.save(output_path, "PNG", optimize=True)
 
@@ -332,10 +375,10 @@ def _get_font(
             try:
                 font.set_variation_by_axes([weight])
             except Exception:
-                pass  # Ignore if variation not supported
+                logger.debug("Font variation not supported for MonoLisa at weight=%d", weight)
             return font
         except OSError:
-            pass
+            logger.warning("Failed to load MonoLisa font from %s", monolisa_path)
 
     # Fallback to system fonts
     fallback_fonts = ["DejaVuSansMono-Bold.ttf", "DejaVuSansMono.ttf", "LiberationMono-Bold.ttf", "FreeMono.ttf"]
@@ -374,6 +417,38 @@ def _draw_pyplots_logo(draw: ImageDraw.ImageDraw, x: int, y: int, font_size: int
         current_x = bbox[2]  # Move to end of this text
 
     return current_x - x
+
+
+def _draw_branded_header(
+    draw: ImageDraw.ImageDraw,
+    canvas_width: int,
+    top_y: int,
+    logo_font_size: int,
+    tagline_font_size: int,
+    tagline_y: int,
+) -> None:
+    """Draw centered pyplots.ai logo + tagline onto an existing canvas.
+
+    Args:
+        draw: ImageDraw instance to draw on
+        canvas_width: Width of the canvas (for centering)
+        top_y: Y coordinate for the logo
+        logo_font_size: Font size for the logo
+        tagline_font_size: Font size for the tagline
+        tagline_y: Y coordinate for the tagline
+    """
+    logo_font = _get_font(logo_font_size)
+    logo_text = "pyplots.ai"
+    logo_bbox = draw.textbbox((0, 0), logo_text, font=logo_font)
+    logo_width = logo_bbox[2] - logo_bbox[0]
+    logo_x = (canvas_width - logo_width) // 2
+    _draw_pyplots_logo(draw, logo_x, top_y, logo_font_size)
+
+    tagline_font = _get_font(tagline_font_size, weight=400)
+    tagline_bbox = draw.textbbox((0, 0), TAGLINE, font=tagline_font)
+    tagline_width = tagline_bbox[2] - tagline_bbox[0]
+    tagline_x = (canvas_width - tagline_width) // 2
+    draw.text((tagline_x, tagline_y), TAGLINE, fill=COLOR_LABEL_GRAY, font=tagline_font)
 
 
 def create_branded_header(width: int = OG_WIDTH, height: int = HEADER_HEIGHT) -> Image.Image:
@@ -449,6 +524,49 @@ def _draw_rounded_card(
     base.paste(content, (x + padding, y + padding))
 
 
+def _load_plot_image(source: str | Path | Image.Image | bytes) -> Image.Image:
+    """Load a plot image from various sources, converting to RGB.
+
+    Args:
+        source: Path to plot image, PIL Image, or bytes
+
+    Returns:
+        PIL Image in RGB mode
+    """
+    if isinstance(source, bytes):
+        img = Image.open(BytesIO(source))
+    elif isinstance(source, Image.Image):
+        img = source
+    else:
+        img = Image.open(source)
+    if img.mode in ("RGBA", "P"):
+        img = img.convert("RGB")
+    return img
+
+
+def _finalize_og_image(final: Image.Image, output_path: str | Path | None) -> Image.Image | bytes:
+    """Composite RGBA→RGB and either save or return bytes.
+
+    Args:
+        final: RGBA image to finalize
+        output_path: If provided, save to this path and return the RGB image.
+            If None, return PNG bytes.
+
+    Returns:
+        PIL Image if output_path is given, otherwise bytes of PNG
+    """
+    final_rgb = Image.new("RGB", final.size, PYPLOTS_BG)
+    final_rgb.paste(final, mask=final.split()[3] if final.mode == "RGBA" else None)
+
+    if output_path:
+        final_rgb.save(output_path, "PNG", optimize=True)
+        return final_rgb
+
+    buffer = BytesIO()
+    final_rgb.save(buffer, "PNG", optimize=True)
+    return buffer.getvalue()
+
+
 def create_branded_og_image(
     plot_image: str | Path | Image.Image | bytes,
     output_path: str | Path | None = None,
@@ -472,97 +590,128 @@ def create_branded_og_image(
     Returns:
         PIL Image if output_path is None, otherwise bytes of PNG
     """
-    # Load the plot image
-    if isinstance(plot_image, bytes):
-        img = Image.open(BytesIO(plot_image))
-    elif isinstance(plot_image, Image.Image):
-        img = plot_image
-    else:
-        img = Image.open(plot_image)
-
-    # Convert to RGB if necessary
-    if img.mode in ("RGBA", "P"):
-        img = img.convert("RGB")
-
-    # Layout constants
-    top_margin = 25
-    logo_height = 55
-    tagline_height = 35
-    bottom_margin = 45
-    card_padding = 12
-    label_height = 30
+    img = _load_plot_image(plot_image)
 
     # Available space for the card
-    header_total = top_margin + logo_height + tagline_height + 25  # More gap after tagline
-    footer_total = label_height + bottom_margin
-    available_height = OG_HEIGHT - header_total - footer_total - 2 * card_padding
-    available_width = OG_WIDTH - 120  # 60px margin on each side
+    tagline_height = 35
+    label_height = 30
+    header_total = OG_TOP_MARGIN + OG_LOGO_HEIGHT + tagline_height + OG_HEADER_GAP
+    footer_total = label_height + OG_BOTTOM_MARGIN
+    available_height = OG_HEIGHT - header_total - footer_total - 2 * OG_CARD_PADDING
+    available_width = OG_WIDTH - 2 * OG_SIDE_MARGIN
 
-    # Scale plot to fit in available space
+    # Scale plot to fit
     scale = min(available_width / img.width, available_height / img.height)
     new_width = int(img.width * scale)
     new_height = int(img.height * scale)
-
-    # Resize plot
     plot_resized = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
 
-    # Create final image
+    # Create canvas and draw header
     final = Image.new("RGBA", (OG_WIDTH, OG_HEIGHT), PYPLOTS_BG)
     draw = ImageDraw.Draw(final)
-
-    # Draw logo (centered at top)
-    logo_font_size = 42
-    logo_font = _get_font(logo_font_size)
-    logo_text = "pyplots.ai"
-    logo_bbox = draw.textbbox((0, 0), logo_text, font=logo_font)
-    logo_width = logo_bbox[2] - logo_bbox[0]
-    logo_x = (OG_WIDTH - logo_width) // 2
-    logo_y = top_margin
-    _draw_pyplots_logo(draw, logo_x, logo_y, logo_font_size)
-
-    # Draw tagline (matches website style - lowercase)
-    tagline = "library-agnostic, ai-powered python plotting."
-    tagline_font = _get_font(22, weight=400)
-    tagline_bbox = draw.textbbox((0, 0), tagline, font=tagline_font)
-    tagline_width = tagline_bbox[2] - tagline_bbox[0]
-    tagline_x = (OG_WIDTH - tagline_width) // 2
-    tagline_y = top_margin + logo_height + 18  # More space after logo
-    draw.text((tagline_x, tagline_y), tagline, fill="#6b7280", font=tagline_font)
+    tagline_y = OG_TOP_MARGIN + OG_LOGO_HEIGHT + OG_TAGLINE_GAP
+    _draw_branded_header(draw, OG_WIDTH, OG_TOP_MARGIN, OG_LOGO_FONT_SIZE, OG_TAGLINE_FONT_SIZE, tagline_y)
 
     # Draw card with plot
-    card_x = (OG_WIDTH - new_width - 2 * card_padding) // 2
+    card_x = (OG_WIDTH - new_width - 2 * OG_CARD_PADDING) // 2
     card_y = header_total
-    _draw_rounded_card(final, plot_resized, card_x, card_y, padding=card_padding)
+    _draw_rounded_card(final, plot_resized, card_x, card_y, padding=OG_CARD_PADDING)
 
     # Draw label below card
     if spec_id or library:
-        label_parts = []
-        if spec_id:
-            label_parts.append(spec_id)
-        if library:
-            label_parts.append(library)
+        label_parts = [p for p in (spec_id, library) if p]
         label = " · ".join(label_parts)
-
-        label_font = _get_font(20, weight=400)
+        label_font = _get_font(OG_LABEL_FONT_SIZE, weight=400)
+        draw = ImageDraw.Draw(final)  # Refresh draw after card paste
         label_bbox = draw.textbbox((0, 0), label, font=label_font)
         label_width = label_bbox[2] - label_bbox[0]
         label_x = (OG_WIDTH - label_width) // 2
-        label_y = card_y + new_height + 2 * card_padding + 15
-        draw = ImageDraw.Draw(final)  # Refresh draw after card paste
+        label_y = card_y + new_height + 2 * OG_CARD_PADDING + OG_LABEL_GAP
         draw.text((label_x, label_y), label, fill=PYPLOTS_DARK, font=label_font)
 
-    # Convert to RGB for PNG output
-    final_rgb = Image.new("RGB", final.size, PYPLOTS_BG)
-    final_rgb.paste(final, mask=final.split()[3] if final.mode == "RGBA" else None)
+    return _finalize_og_image(final, output_path)
 
-    if output_path:
-        final_rgb.save(output_path, "PNG", optimize=True)
-        return final_rgb
 
-    # Return as bytes
-    buffer = BytesIO()
-    final_rgb.save(buffer, "PNG", optimize=True)
-    return buffer.getvalue()
+def _calculate_collage_grid(grid_top: int, grid_bottom: int) -> tuple[int, int, int, int]:
+    """Calculate card slot and inner dimensions for the collage grid.
+
+    Returns:
+        (slot_width, slot_height, inner_width, inner_height)
+    """
+    available_width = OG_WIDTH - 2 * COLLAGE_SIDE_MARGIN - (COLLAGE_COLS - 1) * COLLAGE_CARD_GAP_X
+    available_height = (
+        grid_bottom
+        - grid_top
+        - (COLLAGE_ROWS - 1) * COLLAGE_CARD_GAP_Y
+        - COLLAGE_ROWS * (COLLAGE_LABEL_HEIGHT + COLLAGE_LABEL_GAP)
+    )
+
+    slot_width = available_width // COLLAGE_COLS
+    slot_height = available_height // COLLAGE_ROWS
+
+    # Max inner size that fits in slot while being 16:9
+    slot_inner_width = slot_width - 2 * COLLAGE_CARD_PADDING
+    slot_inner_height = slot_height - 2 * COLLAGE_CARD_PADDING
+
+    if slot_inner_width / slot_inner_height > COLLAGE_CARD_ASPECT:
+        inner_height = slot_inner_height
+        inner_width = int(inner_height * COLLAGE_CARD_ASPECT)
+    else:
+        inner_width = slot_inner_width
+        inner_height = int(inner_width / COLLAGE_CARD_ASPECT)
+
+    return slot_width, slot_height, inner_width, inner_height
+
+
+def _draw_collage_cards(
+    final: Image.Image,
+    loaded_images: list[Image.Image],
+    labels: list[str] | None,
+    grid_top: int,
+    slot_width: int,
+    slot_height: int,
+    inner_width: int,
+    inner_height: int,
+) -> None:
+    """Draw each card + label into the collage grid."""
+    label_font = _get_font(COLLAGE_LABEL_FONT_SIZE, weight=400)
+
+    for i, img in enumerate(loaded_images):
+        row = i // COLLAGE_COLS
+        col = i % COLLAGE_COLS
+
+        slot_x = COLLAGE_SIDE_MARGIN + col * (slot_width + COLLAGE_CARD_GAP_X)
+        slot_y = grid_top + row * (slot_height + COLLAGE_CARD_GAP_Y + COLLAGE_LABEL_HEIGHT + COLLAGE_LABEL_GAP)
+
+        # Scale image to fit in 16:9 inner area
+        scale = min(inner_width / img.width, inner_height / img.height)
+        new_width = int(img.width * scale)
+        new_height = int(img.height * scale)
+        resized = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+
+        # Center card in slot
+        actual_card_width = new_width + 2 * COLLAGE_CARD_PADDING
+        actual_card_height = new_height + 2 * COLLAGE_CARD_PADDING
+        card_x = slot_x + (slot_width - actual_card_width) // 2
+        card_y = slot_y + (slot_height - actual_card_height) // 2
+
+        _draw_rounded_card(
+            final,
+            resized,
+            card_x,
+            card_y,
+            padding=COLLAGE_CARD_PADDING,
+            radius=COLLAGE_CARD_RADIUS,
+            shadow_offset=COLLAGE_SHADOW_OFFSET,
+        )
+
+        if labels and i < len(labels):
+            draw = ImageDraw.Draw(final)
+            bbox = draw.textbbox((0, 0), labels[i], font=label_font)
+            lbl_width = bbox[2] - bbox[0]
+            label_x = slot_x + (slot_width - lbl_width) // 2
+            label_y = card_y + actual_card_height + COLLAGE_LABEL_GAP
+            draw.text((label_x, label_y), labels[i], fill=PYPLOTS_DARK, font=label_font)
 
 
 def create_og_collage(
@@ -588,134 +737,23 @@ def create_og_collage(
     if not images:
         raise ValueError("At least one image is required")
 
-    # Load all images (max 6 for 2x3 grid)
-    loaded_images: list[Image.Image] = []
-    for img_input in images[:6]:
-        if isinstance(img_input, bytes):
-            img = Image.open(BytesIO(img_input))
-        elif isinstance(img_input, Image.Image):
-            img = img_input
-        else:
-            img = Image.open(img_input)
-        if img.mode in ("RGBA", "P"):
-            img = img.convert("RGB")
-        loaded_images.append(img)
+    loaded_images = [_load_plot_image(img) for img in images[:COLLAGE_MAX_IMAGES]]
 
-    # Create final image (RGBA for card transparency)
+    # Create canvas and draw header
     final = Image.new("RGBA", (OG_WIDTH, OG_HEIGHT), PYPLOTS_BG)
     draw = ImageDraw.Draw(final)
+    tagline_y = COLLAGE_TOP_MARGIN + COLLAGE_TAGLINE_Y_OFFSET
+    _draw_branded_header(
+        draw, OG_WIDTH, COLLAGE_TOP_MARGIN, COLLAGE_LOGO_FONT_SIZE, COLLAGE_TAGLINE_FONT_SIZE, tagline_y
+    )
 
-    # Layout constants
-    top_margin = 20
-    side_margin = 40
-    card_gap_x = 20  # Horizontal gap between cards
-    card_gap_y = 8  # Vertical gap between rows
-    card_padding = 6
-    label_gap = 4  # Gap between card and label
-    bottom_margin = 15
+    # Calculate grid layout and draw cards
+    grid_top = tagline_y + 35
+    grid_bottom = OG_HEIGHT - COLLAGE_BOTTOM_MARGIN
+    slot_width, slot_height, inner_width, inner_height = _calculate_collage_grid(grid_top, grid_bottom)
+    _draw_collage_cards(final, loaded_images, labels, grid_top, slot_width, slot_height, inner_width, inner_height)
 
-    # Draw logo (centered at top)
-    logo_font_size = 38
-    logo_font = _get_font(logo_font_size)
-    logo_text = "pyplots.ai"
-    logo_bbox = draw.textbbox((0, 0), logo_text, font=logo_font)
-    logo_width = logo_bbox[2] - logo_bbox[0]
-    logo_x = (OG_WIDTH - logo_width) // 2
-    logo_y = top_margin
-    _draw_pyplots_logo(draw, logo_x, logo_y, logo_font_size)
-
-    # Draw tagline (matches website style - lowercase)
-    tagline = "library-agnostic, ai-powered python plotting."
-    tagline_font = _get_font(18, weight=400)
-    tagline_bbox = draw.textbbox((0, 0), tagline, font=tagline_font)
-    tagline_width = tagline_bbox[2] - tagline_bbox[0]
-    tagline_x = (OG_WIDTH - tagline_width) // 2
-    tagline_y = top_margin + 58  # More space after logo
-    draw.text((tagline_x, tagline_y), tagline, fill="#6b7280", font=tagline_font)
-
-    # Grid layout: 2 rows x 3 columns
-    cols = 3
-    rows = 2
-
-    # Label font and height
-    label_font = _get_font(13, weight=400)
-    label_height = 18
-
-    # Calculate card area
-    header_height = tagline_y + 35
-    grid_top = header_height
-    grid_bottom = OG_HEIGHT - bottom_margin
-
-    # Available space for grid
-    available_width = OG_WIDTH - 2 * side_margin - (cols - 1) * card_gap_x
-    available_height = grid_bottom - grid_top - (rows - 1) * card_gap_y - rows * (label_height + label_gap)
-
-    # Card slot dimensions
-    slot_width = available_width // cols
-    slot_height = available_height // rows
-
-    # Card inner dimensions (16:9 aspect ratio)
-    # Calculate max inner size that fits in slot while being 16:9
-    inner_aspect = 16 / 9
-    slot_inner_width = slot_width - 2 * card_padding
-    slot_inner_height = slot_height - 2 * card_padding
-
-    if slot_inner_width / slot_inner_height > inner_aspect:
-        # Slot is wider than 16:9, constrain by height
-        inner_height = slot_inner_height
-        inner_width = int(inner_height * inner_aspect)
-    else:
-        # Slot is taller than 16:9, constrain by width
-        inner_width = slot_inner_width
-        inner_height = int(inner_width / inner_aspect)
-
-    for i, img in enumerate(loaded_images):
-        row = i // cols
-        col = i % cols
-
-        # Slot position
-        slot_x = side_margin + col * (slot_width + card_gap_x)
-        slot_y = grid_top + row * (slot_height + card_gap_y + label_height + label_gap)
-
-        # Scale image to fit in 16:9 inner area
-        scale = min(inner_width / img.width, inner_height / img.height)
-        new_width = int(img.width * scale)
-        new_height = int(img.height * scale)
-
-        # Resize image
-        resized = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
-
-        # Center card in slot
-        actual_card_width = new_width + 2 * card_padding
-        actual_card_height = new_height + 2 * card_padding
-        card_x = slot_x + (slot_width - actual_card_width) // 2
-        card_y = slot_y + (slot_height - actual_card_height) // 2
-
-        # Draw card
-        _draw_rounded_card(final, resized, card_x, card_y, padding=card_padding, radius=10, shadow_offset=2)
-
-        # Add label below card
-        if labels and i < len(labels):
-            label = labels[i]
-            draw = ImageDraw.Draw(final)
-            bbox = draw.textbbox((0, 0), label, font=label_font)
-            lbl_width = bbox[2] - bbox[0]
-            label_x = slot_x + (slot_width - lbl_width) // 2
-            label_y = card_y + actual_card_height + label_gap
-            draw.text((label_x, label_y), label, fill=PYPLOTS_DARK, font=label_font)
-
-    # Convert to RGB for PNG output
-    final_rgb = Image.new("RGB", final.size, PYPLOTS_BG)
-    final_rgb.paste(final, mask=final.split()[3] if final.mode == "RGBA" else None)
-
-    if output_path:
-        final_rgb.save(output_path, "PNG", optimize=True)
-        return final_rgb
-
-    # Return as bytes
-    buffer = BytesIO()
-    final_rgb.save(buffer, "PNG", optimize=True)
-    return buffer.getvalue()
+    return _finalize_og_image(final, output_path)
 
 
 if __name__ == "__main__":

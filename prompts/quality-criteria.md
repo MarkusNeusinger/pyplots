@@ -235,7 +235,7 @@ This category evaluates aesthetic sophistication beyond mere correctness. A plot
 |----|-----------|-----|-------------|
 | DE-01 | Aesthetic Sophistication | 8 | Color harmony, typography, professional polish |
 | DE-02 | Visual Refinement | 6 | Grid styling, whitespace, attention to detail |
-| DE-03 | Data Storytelling | 6 | Annotations, narrative, emphasis on insight |
+| DE-03 | Data Storytelling | 6 | Visual hierarchy, data choice, emphasis on insight |
 
 ### DE-01: Aesthetic Sophistication (8 Points)
 
@@ -262,12 +262,12 @@ This category evaluates aesthetic sophistication beyond mere correctness. A plot
 
 | Points | Criterion |
 |--------|-----------|
-| 6 | Excellent: annotations highlight key insights, visual emphasis guides the eye, tells a story |
-| 4 | Good: some annotations or emphasis, reader gets guided somewhat |
+| 6 | Excellent: plot tells a clear story through data choice, visual hierarchy, and emphasis — viewer immediately sees the insight |
+| 4 | Good: visual hierarchy guides the reader — color contrast, size variation, or focal points create emphasis |
 | 2 | Default: data is displayed but not interpreted — viewer must find their own story |
 | 0 | None: raw data dump with no context |
 
-**Calibration:** DE-03 = 2 is the default. Most implementations just display data without storytelling. Score of 4+ requires annotations, callouts, or narrative emphasis that guides the viewer.
+**Calibration:** DE-03 = 2 is the default. Most implementations just display data without storytelling. Score of 4+ does NOT require annotations — visual hierarchy (color contrast, size variation, focal points) is sufficient. Annotations are only expected when the spec explicitly requests them (e.g., spec-id contains "annotated").
 
 ---
 
@@ -425,10 +425,10 @@ Certain errors limit the maximum score:
 | VQ-03 = 0 (invisible elements) | 49 |
 | SC-01 = 0 (wrong plot type) | 40 |
 | DQ-02 = 0 (controversial/sensitive data) | 49 |
-| **DE-01 ≤ 2 AND DE-03 ≤ 2** (generic + no storytelling) | **75** |
+| **DE-01 ≤ 2 AND DE-02 ≤ 2** (generic + no visual refinement) | **75** |
 | **CQ-04 = 0** (fake functionality / gross over-engineering) | **70** |
 
-**The "correct but boring" cap:** A technically correct but visually generic plot (DE-01 ≤ 2) with no storytelling (DE-03 ≤ 2) is capped at 75. This means it cannot pass on first review, even with perfect scores elsewhere. The repair loop will push it to improve design and storytelling.
+**The "correct but boring" cap:** A technically correct but visually generic plot (DE-01 ≤ 2) with no visual refinement (DE-02 ≤ 2) is capped at 75. This means it cannot pass on first review, even with perfect scores elsewhere. The repair loop will push it to improve aesthetic design and visual polish.
 
 ---
 
@@ -438,7 +438,7 @@ Evaluators must use these anchors to prevent score inflation:
 
 - **Median implementation should score 72-78** — not 90+
 - **DE-01 > 6 is rare** on first attempt — most plots look like configured defaults (score 4)
-- **DE-03 = 2 is the default** — most plots just display data without storytelling
+- **DE-03 = 2 is the default** — most plots just display data without visual hierarchy or emphasis
 - **LM-02 = 1 is the default** — most implementations use the library generically
 - **When in doubt, deduct** — the repair loop exists to improve quality
 - A plot scoring 90+ should genuinely impress a data visualization professional
@@ -493,4 +493,4 @@ LIBRARY MASTERY (9/10)
 TOTAL: 76/100 = "Good" Tier → Repair loop
 ```
 
-Note: This plot scored well on technical criteria but only 8/20 on Design Excellence. To reach 90+, it needs better aesthetic sophistication (DE-01), visual refinement (DE-02), and data storytelling (DE-03).
+Note: This plot scored well on technical criteria but only 8/20 on Design Excellence. To reach 90+, it needs better aesthetic sophistication (DE-01), visual refinement (DE-02), and data storytelling through visual emphasis and hierarchy (DE-03).

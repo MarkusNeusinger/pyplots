@@ -7,6 +7,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from automation.scripts.sync_to_postgres import (
+    _chunked,
     convert_datetimes_to_strings,
     main,
     parse_bullet_points,
@@ -653,6 +654,30 @@ review:
         assert impl["review_verdict"] == "APPROVED"
 
 
+class TestChunked:
+    """Tests for _chunked helper function."""
+
+    def test_chunked_exact_division(self):
+        result = list(_chunked([1, 2, 3, 4], 2))
+        assert result == [[1, 2], [3, 4]]
+
+    def test_chunked_with_remainder(self):
+        result = list(_chunked([1, 2, 3, 4, 5], 2))
+        assert result == [[1, 2], [3, 4], [5]]
+
+    def test_chunked_empty(self):
+        result = list(_chunked([], 5))
+        assert result == []
+
+    def test_chunked_single_element(self):
+        result = list(_chunked([1], 5))
+        assert result == [[1]]
+
+    def test_chunked_size_larger_than_input(self):
+        result = list(_chunked([1, 2], 10))
+        assert result == [[1, 2]]
+
+
 class TestSyncToDatabase:
     """Tests for sync_to_database function."""
 
@@ -703,6 +728,7 @@ class TestSyncToDatabase:
                         "review_image_description": None,
                         "review_criteria_checklist": None,
                         "review_verdict": None,
+                        "impl_tags": None,
                     }
                 ],
             }
@@ -802,6 +828,7 @@ class TestSyncToDatabase:
                         "review_image_description": "A plot with points",
                         "review_criteria_checklist": {"visual": {"score": 35}},
                         "review_verdict": "APPROVED",
+                        "impl_tags": None,
                     }
                 ],
             }
@@ -811,6 +838,66 @@ class TestSyncToDatabase:
 
         assert stats["impls_synced"] == 1
         mock_session.commit.assert_called_once()
+
+    def test_sync_batches_multiple_specs_and_impls(self):
+        """Should batch multiple specs and impls, calling execute fewer times than row count."""
+        mock_session = MagicMock()
+        mock_result = MagicMock()
+        mock_result.fetchall.return_value = []
+        mock_session.execute.return_value = mock_result
+
+        def _make_plot(spec_id):
+            return {
+                "spec": {
+                    "id": spec_id,
+                    "title": f"Title {spec_id}",
+                    "description": "",
+                    "applications": [],
+                    "data": [],
+                    "notes": [],
+                    "tags": None,
+                    "created": None,
+                    "updated": None,
+                    "issue": None,
+                    "suggested": None,
+                },
+                "implementations": [
+                    {
+                        "spec_id": spec_id,
+                        "library_id": lib,
+                        "code": "code",
+                        "preview_url": None,
+                        "preview_thumb": None,
+                        "preview_html": None,
+                        "python_version": None,
+                        "library_version": None,
+                        "generated_at": None,
+                        "updated": None,
+                        "generated_by": None,
+                        "workflow_run": None,
+                        "issue": None,
+                        "quality_score": None,
+                        "review_strengths": [],
+                        "review_weaknesses": [],
+                        "review_image_description": None,
+                        "review_criteria_checklist": None,
+                        "review_verdict": None,
+                        "impl_tags": None,
+                    }
+                    for lib in ["matplotlib", "seaborn", "plotly"]
+                ],
+            }
+
+        plots = [_make_plot(f"spec-{i}") for i in range(5)]
+
+        stats = sync_to_database(mock_session, plots)
+
+        assert stats["specs_synced"] == 5
+        assert stats["impls_synced"] == 15
+        mock_session.commit.assert_called_once()
+        # Batched: 1 library seed + 1 spec chunk + 1 impl chunk + 2 removal selects = 5
+        # (much fewer than 5+15+2 = 22 calls in the old per-row approach)
+        assert mock_session.execute.call_count == 5
 
 
 class TestMain:

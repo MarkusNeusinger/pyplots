@@ -1,159 +1,179 @@
 library: highcharts
 specification_id: pie-basic
 created: '2025-12-23T00:36:27Z'
-updated: '2025-12-23T00:40:57Z'
-generated_by: claude-opus-4-5-20251101
+updated: '2026-02-14T15:12:52Z'
+generated_by: claude-opus-4-6
 workflow_run: 20447778270
 issue: 0
-python_version: 3.13.11
-library_version: unknown
+python_version: 3.14.0
+library_version: 1.10.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-basic/highcharts/plot.html
-quality_score: 92
+quality_score: 90
 impl_tags:
   dependencies:
-  - pillow
   - selenium
   techniques:
   - html-export
-  patterns:
-  - data-generation
-  - iteration-over-groups
+  patterns: []
   dataprep: []
-  styling: []
+  styling:
+  - edge-highlighting
 review:
   strengths:
-  - Excellent use of Highcharts-specific pie chart features including slice explosion
-    and data label connectors
-  - Colorblind-safe palette with good color contrast between all 5 slices
-  - Clean implementation following library best practices with proper container specification
-  - 'All spec requirements met: percentage labels, legend, distinct colors, exploded
-    slice emphasis'
-  - Appropriate square format (3600x3600) chosen for pie chart visualization
+  - Excellent data storytelling with computed subtitle insight (Top 3 control 67%)
+    and italic callout for AWS dominance
+  - Visually polished with shadow effects, white slice borders, and crookedLine connectors
+  - All spec requirements met perfectly (percentages, legend, distinct colors, exploded
+    slice)
+  - Realistic and neutral data context with appropriate values
+  - Good use of Highcharts-specific features (states, softConnector, slicedOffset,
+    useHTML)
+  - Dual output (interactive HTML + static PNG) demonstrates library capability
   weaknesses:
-  - Pie chart positioned at 40% horizontal center creates slight layout imbalance
-    with excess whitespace on right
-  - Data labels could benefit from slightly larger connector line distance for smaller
-    slices
-  image_description: 'The plot displays a pie chart with 5 slices representing market
-    share distribution. The title "pie-basic · highcharts · pyplots.ai" is shown at
-    the top. The pie is positioned slightly left of center with a vertical legend
-    on the right side. Colors used are: blue (#306998) for Product A (35.0%), yellow
-    (#FFD43B) for Product B (25.0%), purple (#9467BD) for Product C (20.0%), cyan
-    (#17BECF) for Product D (12.0%), and brown (#8C564B) for Product E (8.0%). Product
-    A (the largest slice) is exploded/offset from the pie for emphasis. Each slice
-    has a data label showing the category name and percentage with connector lines.
-    The layout uses a square 3600x3600 format appropriate for pie charts.'
+  - Minor whitespace gap between subtitle and pie chart top could be tightened
+  - Alibaba slice at 4% is quite thin — could benefit from slightly more visual emphasis
+  - Legend symbols (circles) at the bottom are relatively small compared to the label
+    text size
+  image_description: 'The plot displays a pie chart titled "Cloud Infrastructure Market
+    Share · pie-basic · highcharts · pyplots.ai" at 4800x2700 px on a white background.
+    Five slices represent cloud providers: AWS (31.0%, dark blue #306998) is the largest
+    and exploded outward for emphasis; Azure (25.0%, yellow #FFD43B) is the second
+    largest; Others (29.0%, purple #9467BD) is a large aggregated slice; Google Cloud
+    (11.0%, salmon/orange #E07B54) is mid-sized; and Alibaba (4.0%, teal #2CA089)
+    is the smallest. Data labels outside each slice show the provider name in bold
+    and percentage, connected by subtle crookedLine connectors. A subtitle reads "Global
+    cloud spending by provider, 2024 — Top 3 providers control 67% of the market"
+    with an italicized insight line "AWS leads with nearly 1/3 of global cloud revenue."
+    A horizontal legend at the bottom lists all five categories with colored circle
+    symbols. White borders separate slices, and subtle shadows add depth.'
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 27
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 7
+        max: 8
         passed: true
-        comment: Title at 48px, data labels at 32px, legend at 36px - all perfectly
-          readable at 3600x3600
+        comment: All font sizes explicitly set (title 50px, subtitle 34px, labels
+          38px, legend 36px); all readable; title/subtitle could be slightly larger
+          at full resolution
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text, data labels well-spaced with connector lines
+        comment: No overlapping text; data labels well-spaced with crookedLine connectors
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Pie slices clearly visible with good proportions, 70% size appropriate
+        comment: All slices clearly visible; Alibaba at 4% is small but distinguishable
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Colorblind-safe palette avoiding red-green conflicts
+        comment: Colorblind-safe palette (blue, yellow, orange, teal, purple); no
+          red-green ambiguity
       - id: VQ-05
         name: Layout Balance
         score: 3
-        max: 5
+        max: 4
         passed: true
-        comment: Good overall but pie shifted left (40% center) creates some asymmetry
-          with large right-side whitespace
-      - id: VQ-07
-        name: Grid & Legend
+        comment: Pie occupies good portion of canvas (75% size); some excess whitespace
+          between subtitle and pie top
+      - id: VQ-06
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Legend well-positioned on right, clear formatting
-    spec_compliance:
-      score: 25
-      max: 25
-      items:
-      - id: SC-01
-        name: Plot Type
-        score: 8
-        max: 8
-        passed: true
-        comment: Correct pie chart type
-      - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories and values correctly mapped to slices
-      - id: SC-03
-        name: Required Features
-        score: 5
-        max: 5
-        passed: true
-        comment: Percentage labels ✓, distinct colors ✓, legend ✓, exploded slice
-          for emphasis
-      - id: SC-04
-        name: Data Range
-        score: 3
-        max: 3
-        passed: true
-        comment: All categories visible and proportional
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
-        passed: true
-        comment: Legend labels match data correctly
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Uses correct format "pie-basic · highcharts · pyplots.ai"
-    data_quality:
-      score: 18
+        comment: Descriptive title with context; N/A for pie chart axes
+    design_excellence:
+      score: 16
       max: 20
       items:
-      - id: DQ-01
-        name: Feature Coverage
+      - id: DE-01
+        name: Aesthetic Sophistication
         score: 6
         max: 8
         passed: true
-        comment: Shows 5 categories with varying proportions, exploded slice; could
-          show more variation in slice sizes
-      - id: DQ-02
-        name: Realistic Context
-        score: 7
-        max: 7
+        comment: Custom palette, intentional font hierarchy, shadow effects, white
+          slice borders, crookedLine connectors — clearly above defaults
+      - id: DE-02
+        name: Visual Refinement
+        score: 5
+        max: 6
         passed: true
-        comment: Market share distribution is a plausible real-world scenario
-      - id: DQ-03
-        name: Appropriate Scale
+        comment: Credits disabled, soft connectors, subtle shadows, white border separation,
+          generous spacing, hover/inactive states
+      - id: DE-03
+        name: Data Storytelling
+        score: 5
+        max: 6
+        passed: true
+        comment: Computed subtitle insight (Top 3 control 67%), italic callout for
+          AWS dominance, exploded slice draws attention
+    spec_compliance:
+      score: 15
+      max: 15
+      items:
+      - id: SC-01
+        name: Plot Type
         score: 5
         max: 5
         passed: true
-        comment: Values sum to 100%, realistic market share percentages
+        comment: Correct pie chart type
+      - id: SC-02
+        name: Required Features
+        score: 4
+        max: 4
+        passed: true
+        comment: Percentage labels, distinct colors, legend, exploded largest slice
+          — all present
+      - id: SC-03
+        name: Data Mapping
+        score: 3
+        max: 3
+        passed: true
+        comment: Categories and values correctly mapped to slices
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
+        passed: true
+        comment: Title format correct with spec-id · library · pyplots.ai; legend
+          labels match data
+    data_quality:
+      score: 14
+      max: 15
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 5
+        max: 6
+        passed: true
+        comment: 5 categories with good size variation (4%-31%); dominant, mid-size,
+          small, and aggregated Others slice
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 5
+        passed: true
+        comment: Cloud infrastructure market share — real, neutral business scenario
+          with recognizable companies
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Values (31%, 25%, 11%, 4%, 29%) realistic for 2024 cloud market
     code_quality:
-      score: 8
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -161,14 +181,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Simple linear structure: imports → data → chart config → series
-          → export'
+        comment: 'Linear flow: imports, data, chart config, series, export'
       - id: CQ-02
         name: Reproducibility
-        score: 1
-        max: 3
-        passed: false
-        comment: Uses deterministic data (no random), but no seed comment; acceptable
+        score: 2
+        max: 2
+        passed: true
+        comment: Deterministic hardcoded data, no randomness
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -176,26 +195,35 @@ review:
         passed: true
         comment: All imports used
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Uses current highcharts-core API
+        comment: Clean iteration for series data, computed subtitle insight, appropriate
+          complexity
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png correctly
-    library_features:
-      score: 5
-      max: 5
+        comment: Saves plot.png and plot.html; no deprecated functions
+    library_mastery:
+      score: 8
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 5
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
         max: 5
         passed: true
-        comment: 'Uses Highcharts-specific features: allowPointSelect, slicedOffset
-          for explosion, showInLegend, connector lines, point selection'
+        comment: Proper use of HighchartsOptions, PieSeries, options API, add_series(),
+          to_js_literal()
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Leverages allowPointSelect, slicedOffset, hover halo states, inactive
+          opacity, softConnector with crookedLine, shadow config, useHTML subtitle,
+          interactive HTML export
   verdict: APPROVED

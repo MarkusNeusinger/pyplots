@@ -32,7 +32,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from sqlalchemy import delete, select  # noqa: E402
+from itertools import islice  # noqa: E402
+
+from sqlalchemy import delete, select, tuple_  # noqa: E402
 from sqlalchemy.dialects.postgresql import insert  # noqa: E402
 from sqlalchemy.orm import Session  # noqa: E402
 
@@ -352,9 +354,45 @@ def scan_plot_directory(plot_dir: Path) -> dict | None:
     return {"spec": spec_data, "implementations": implementations}
 
 
+def _chunked(iterable, size):
+    """Split an iterable into chunks of a given size."""
+    it = iter(iterable)
+    while True:
+        chunk = list(islice(it, size))
+        if not chunk:
+            break
+        yield chunk
+
+
+# Chunk size for batched inserts (500 rows * ~25 cols = ~12,500 params, well within PG's 32,767 limit)
+_BATCH_CHUNK_SIZE = 500
+
+# All Impl fields that should be set from the excluded row on conflict
+_IMPL_UPDATE_FIELDS = [
+    "code",
+    "preview_url",
+    "preview_thumb",
+    "preview_html",
+    "python_version",
+    "library_version",
+    "generated_at",
+    "updated",
+    "generated_by",
+    "workflow_run",
+    "issue",
+    "quality_score",
+    "review_strengths",
+    "review_weaknesses",
+    "review_image_description",
+    "review_criteria_checklist",
+    "review_verdict",
+    "impl_tags",
+]
+
+
 def sync_to_database(session: Session, plots: list[dict]) -> dict:
     """
-    Sync plots to the database.
+    Sync plots to the database using batched upserts.
 
     Args:
         session: Database session
@@ -365,87 +403,46 @@ def sync_to_database(session: Session, plots: list[dict]) -> dict:
     """
     stats = {"specs_synced": 0, "specs_removed": 0, "impls_synced": 0, "impls_removed": 0}
 
-    # Ensure libraries exist
-    for lib_data in LIBRARIES_SEED:
-        stmt = insert(Library).values(**lib_data).on_conflict_do_nothing(index_elements=["id"])
+    # Batch seed all libraries in one statement
+    if LIBRARIES_SEED:
+        stmt = insert(Library).values(LIBRARIES_SEED).on_conflict_do_nothing(index_elements=["id"])
         session.execute(stmt)
 
-    # Collect all spec IDs and implementation keys
+    # Collect all spec values and impl values
     spec_ids = set()
     impl_keys = set()
+    all_spec_values = []
+    all_impl_values = []
 
     for plot_data in plots:
         spec = plot_data["spec"]
-        spec_id = spec["id"]
-        spec_ids.add(spec_id)
+        spec_ids.add(spec["id"])
+        all_spec_values.append(spec)
 
-        # Upsert spec
-        stmt = (
-            insert(Spec)
-            .values(**spec)
-            .on_conflict_do_update(
-                index_elements=["id"],
-                set_={
-                    "title": spec["title"],
-                    "description": spec["description"],
-                    "applications": spec["applications"],
-                    "data": spec["data"],
-                    "notes": spec["notes"],
-                    "created": spec.get("created"),
-                    "updated": spec.get("updated"),
-                    "issue": spec.get("issue"),
-                    "suggested": spec.get("suggested"),
-                    "tags": spec.get("tags"),
-                },
-            )
+        for impl in plot_data["implementations"]:
+            impl_keys.add((impl["spec_id"], impl["library_id"]))
+            all_impl_values.append(impl)
+
+    # Batch upsert specs in chunks
+    spec_update_fields = ["title", "description", "applications", "data", "notes", "created", "updated", "issue", "suggested", "tags"]
+    for chunk in _chunked(all_spec_values, _BATCH_CHUNK_SIZE):
+        stmt = insert(Spec).values(chunk)
+        stmt = stmt.on_conflict_do_update(
+            index_elements=["id"],
+            set_={field: stmt.excluded[field] for field in spec_update_fields},
         )
         session.execute(stmt)
-        stats["specs_synced"] += 1
+    stats["specs_synced"] = len(all_spec_values)
 
-        # Upsert implementations
-        for impl in plot_data["implementations"]:
-            key = (impl["spec_id"], impl["library_id"])
-            impl_keys.add(key)
-
-            update_set = {"code": impl["code"]}
-
-            # Add optional fields (only if not None)
-            optional_fields = [
-                "preview_url",
-                "preview_thumb",
-                "preview_html",
-                "python_version",
-                "library_version",
-                "generated_at",
-                "updated",
-                "generated_by",
-                "workflow_run",
-                "issue",
-                "quality_score",
-            ]
-            for field in optional_fields:
-                if impl.get(field) is not None:
-                    update_set[field] = impl[field]
-
-            # Review feedback arrays (always set, even if empty)
-            update_set["review_strengths"] = impl.get("review_strengths") or []
-            update_set["review_weaknesses"] = impl.get("review_weaknesses") or []
-
-            # Extended review data (issue #2845)
-            if impl.get("review_image_description") is not None:
-                update_set["review_image_description"] = impl["review_image_description"]
-            if impl.get("review_criteria_checklist") is not None:
-                update_set["review_criteria_checklist"] = impl["review_criteria_checklist"]
-            if impl.get("review_verdict") is not None:
-                update_set["review_verdict"] = impl["review_verdict"]
-
-            # Implementation-level tags (issue #2434)
-            if impl.get("impl_tags") is not None:
-                update_set["impl_tags"] = impl["impl_tags"]
-
-            stmt = insert(Impl).values(**impl).on_conflict_do_update(constraint="uq_impl", set_=update_set)
-            session.execute(stmt)
-            stats["impls_synced"] += 1
+    # Batch upsert implementations in chunks
+    for chunk in _chunked(all_impl_values, _BATCH_CHUNK_SIZE):
+        stmt = insert(Impl).values(chunk)
+        stmt = stmt.on_conflict_do_update(
+            constraint="uq_impl",
+            set_={field: stmt.excluded[field] for field in _IMPL_UPDATE_FIELDS},
+        )
+        session.execute(stmt)
+    stats["impls_synced"] = len(all_impl_values)
 
     # Remove specs that no longer exist in repo
     result = session.execute(select(Spec.id).where(Spec.id.notin_(spec_ids)))
@@ -461,8 +458,11 @@ def sync_to_database(session: Session, plots: list[dict]) -> dict:
 
     removed_impls = [impl for impl in existing_impls if impl not in impl_keys]
     if removed_impls:
-        for spec_id, library_id in removed_impls:
-            session.execute(delete(Impl).where(Impl.spec_id == spec_id, Impl.library_id == library_id))
+        session.execute(
+            delete(Impl).where(
+                tuple_(Impl.spec_id, Impl.library_id).in_(removed_impls)
+            )
+        )
         stats["impls_removed"] = len(removed_impls)
         logger.info(f"Removed {len(removed_impls)} impls no longer in repo")
 

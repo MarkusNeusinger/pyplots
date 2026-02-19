@@ -1,0 +1,28 @@
+# Specification-level metadata for radar-innovation-timeline
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: radar-innovation-timeline
+title: Innovation Radar with Time-Horizon Rings
+
+# Specification tracking
+created: "2026-02-18T21:12:40Z"
+updated: null
+issue: 4301
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - radar
+    - polar
+  data_type:
+    - categorical
+    - ordinal
+  domain:
+    - business
+    - technology
+  features:
+    - annotated
+    - color-mapped
+    - temporal

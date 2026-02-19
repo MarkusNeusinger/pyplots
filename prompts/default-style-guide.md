@@ -181,8 +181,8 @@ The AI makes the following design decisions for each visualization:
 - Background shade (white or faint gray)
 
 **Data Presentation:**
-- Annotations and callouts
-- Emphasis techniques (bold color, size variation)
+- Emphasis techniques (bold color, size variation, focal points)
 - Data label placement
+- Annotations and callouts (only when specification explicitly requests them)
 
 **Priority:** Clarity, beauty, and readability at full resolution (~13 million pixels).

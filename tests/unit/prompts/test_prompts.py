@@ -216,9 +216,7 @@ class TestPromptStructure:
     def test_static_library_has_interactive_handling(self, filename: str) -> None:
         """Static library prompts should have Interactive Spec Handling section."""
         content = (LIBRARY_PROMPTS_DIR / filename).read_text()
-        assert "## Interactive Spec Handling" in content, (
-            f"{filename} missing Interactive Spec Handling section"
-        )
+        assert "## Interactive Spec Handling" in content, f"{filename} missing Interactive Spec Handling section"
         assert "NOT_FEASIBLE" in content, f"{filename} missing NOT_FEASIBLE guidance"
         assert "AR-08" in content, f"{filename} missing AR-08 reference"
 
@@ -238,9 +236,7 @@ class TestPromptStructure:
         colors_section_match = re.search(r"## Colors\n(.*?)(?=\n## |\Z)", content, re.DOTALL)
         if colors_section_match:
             colors_section = colors_section_match.group(1)
-            assert "#FFD43B" not in colors_section, (
-                f"{filename} still has hardcoded Python Yellow in Colors section"
-            )
+            assert "#FFD43B" not in colors_section, f"{filename} still has hardcoded Python Yellow in Colors section"
 
 
 class TestNoPlaceholders:
@@ -349,25 +345,26 @@ class TestPromptConsistency:
 
     def test_quality_score_threshold_consistent(self) -> None:
         """Quality threshold (90) should be consistent across scoring prompts."""
-        files_to_check = [
-            PROMPTS_DIR / "quality-criteria.md",
-            PROMPTS_DIR / "quality-evaluator.md",
-        ]
+        files_to_check = [PROMPTS_DIR / "quality-criteria.md", PROMPTS_DIR / "quality-evaluator.md"]
 
         for filepath in files_to_check:
             if filepath.exists():
                 content = filepath.read_text()
-                assert ">= 90" in content or "≥ 90" in content, (
-                    f"Approval threshold (90) not found in {filepath.name}"
-                )
+                assert ">= 90" in content or "≥ 90" in content, f"Approval threshold (90) not found in {filepath.name}"
 
     def test_scoring_categories_consistent(self) -> None:
         """Quality criteria and evaluator should have the same 6 categories."""
         criteria = (PROMPTS_DIR / "quality-criteria.md").read_text()
         evaluator = (PROMPTS_DIR / "quality-evaluator.md").read_text()
 
-        categories = ["Visual Quality", "Design Excellence", "Spec Compliance",
-                       "Data Quality", "Code Quality", "Library Mastery"]
+        categories = [
+            "Visual Quality",
+            "Design Excellence",
+            "Spec Compliance",
+            "Data Quality",
+            "Code Quality",
+            "Library Mastery",
+        ]
 
         for category in categories:
             assert category in criteria, f"Missing {category} in quality-criteria.md"

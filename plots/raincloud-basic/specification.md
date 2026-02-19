@@ -20,10 +20,10 @@ A raincloud plot combines three visualization elements—a half-violin (the "clo
 
 ## Notes
 
-- **Required Orientation**: Use HORIZONTAL orientation with categories on y-axis and values on x-axis
-- **Critical Layout**: The "cloud" (half-violin/KDE) must be on TOP (positive y offset), boxplot in MIDDLE, and "rain" (jittered points) BELOW (negative y offset) - like rain falling from a cloud
+- **Required Orientation**: Use HORIZONTAL orientation with categories on y-axis and values on x-axis. "Above" and "below" always refer to the y-direction (screen up/down), not the x-direction
+- **Critical Layout**: For each category on the y-axis: the "cloud" (half-violin/KDE) must extend ABOVE the category baseline (upward on screen), the boxplot sits centered ON the category baseline, and "rain" (jittered points) must appear BELOW the category baseline (downward on screen) - like rain falling from a cloud
 - Clip the violin to show only half (the "cloud" portion), not a full violin
 - Use moderate jitter (0.05-0.1) to spread rain points without excessive overlap
 - Apply transparency (alpha 0.5-0.7) to jittered rain points for visibility
 - Include median and quartile markers in box plot
-- The visual metaphor must be clear: cloud above, rain falling below
+- The visual metaphor must be clear: cloud rises upward (positive y-direction), rain falls downward (negative y-direction) from each category line

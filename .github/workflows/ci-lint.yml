@@ -73,6 +73,10 @@ jobs:
       if: steps.check.outputs.should_lint == 'true'
       run: uv run ruff format --check .
 
+    - name: Run type checking
+      if: steps.check.outputs.should_lint == 'true'
+      run: uv run --extra typecheck mypy api core --pretty
+
     - name: Skip notice
       if: steps.check.outputs.should_lint == 'false'
       run: echo "::notice::Linting skipped - no Python files changed"

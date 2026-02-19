@@ -9,6 +9,7 @@ Supports two connection modes:
 import asyncio
 import logging
 import os
+import re
 import threading
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager, contextmanager
@@ -28,6 +29,10 @@ DB_USER = os.getenv("DB_USER", "postgres")
 DB_PASS = os.getenv("DB_PASS", "")
 DB_NAME = os.getenv("DB_NAME", "pyplots")
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
+
+# Database pool defaults
+DEFAULT_POOL_SIZE = 5
+DEFAULT_MAX_OVERFLOW = 10
 
 # Global instances
 engine = None
@@ -59,6 +64,14 @@ class Base(DeclarativeBase):
     pass
 
 
+def _normalize_db_url(url: str, target_driver: str) -> str:
+    """Replace any PostgreSQL URL scheme with ``postgresql+<target_driver>://``.
+
+    Handles ``postgresql://``, ``postgres://``, and ``postgresql+<driver>://`` prefixes.
+    """
+    return re.sub(r"^postgres(?:ql)?(?:\+\w+)?://", f"postgresql+{target_driver}://", url)
+
+
 def _create_cloud_sql_engine_sync():
     """Create sync engine using Cloud SQL Python Connector with pg8000.
 
@@ -79,8 +92,8 @@ def _create_cloud_sql_engine_sync():
     engine = create_engine(
         "postgresql+pg8000://",
         creator=get_conn,
-        pool_size=5,
-        max_overflow=10,
+        pool_size=DEFAULT_POOL_SIZE,
+        max_overflow=DEFAULT_MAX_OVERFLOW,
         pool_pre_ping=True,
         echo=ENVIRONMENT == "development",
     )
@@ -91,13 +104,7 @@ def _create_cloud_sql_engine_sync():
 
 def _create_direct_engine():
     """Create sync engine using direct DATABASE_URL connection."""
-    url = DATABASE_URL
-
-    # Ensure async driver
-    if url.startswith("postgresql://"):
-        url = url.replace("postgresql://", "postgresql+asyncpg://")
-    elif url.startswith("postgres://"):
-        url = url.replace("postgres://", "postgresql+asyncpg://")
+    url = _normalize_db_url(DATABASE_URL, "asyncpg")
 
     # Use NullPool for testing to avoid connection issues
     poolclass = NullPool if ENVIRONMENT == "test" else None
@@ -107,8 +114,8 @@ def _create_direct_engine():
     if poolclass:
         engine_kwargs["poolclass"] = poolclass
     else:
-        engine_kwargs["pool_size"] = 5
-        engine_kwargs["max_overflow"] = 10
+        engine_kwargs["pool_size"] = DEFAULT_POOL_SIZE
+        engine_kwargs["max_overflow"] = DEFAULT_MAX_OVERFLOW
         engine_kwargs["pool_pre_ping"] = True
 
     engine = create_async_engine(url, **engine_kwargs)
@@ -123,17 +130,14 @@ def _create_direct_engine_sync():
     """Create sync engine using direct DATABASE_URL connection (for sync scripts)."""
     from sqlalchemy import create_engine
 
-    url = DATABASE_URL
+    url = _normalize_db_url(DATABASE_URL, "pg8000")
 
-    # Use pg8000 sync driver (already installed for Cloud SQL)
-    if url.startswith("postgresql+asyncpg://"):
-        url = url.replace("postgresql+asyncpg://", "postgresql+pg8000://")
-    elif url.startswith("postgresql://"):
-        url = url.replace("postgresql://", "postgresql+pg8000://")
-    elif url.startswith("postgres://"):
-        url = url.replace("postgres://", "postgresql+pg8000://")
-
-    engine_kwargs = {"echo": ENVIRONMENT == "development", "pool_size": 5, "max_overflow": 10, "pool_pre_ping": True}
+    engine_kwargs = {
+        "echo": ENVIRONMENT == "development",
+        "pool_size": DEFAULT_POOL_SIZE,
+        "max_overflow": DEFAULT_MAX_OVERFLOW,
+        "pool_pre_ping": True,
+    }
 
     engine = create_engine(url, **engine_kwargs)
 

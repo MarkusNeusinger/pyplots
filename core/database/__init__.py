@@ -15,7 +15,7 @@ from core.database.connection import (
     is_db_configured,
 )
 from core.database.models import LIBRARIES_SEED, Impl, Library, Spec
-from core.database.repositories import ImplRepository, LibraryRepository, SpecRepository
+from core.database.repositories import BaseRepository, ImplRepository, LibraryRepository, SpecRepository
 
 
 __all__ = [
@@ -34,6 +34,7 @@ __all__ = [
     "Impl",
     "LIBRARIES_SEED",
     # Repositories
+    "BaseRepository",
     "SpecRepository",
     "LibraryRepository",
     "ImplRepository",

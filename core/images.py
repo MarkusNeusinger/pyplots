@@ -86,6 +86,13 @@ COMPARE_LABEL_FONT_SIZE = 22
 COMPARE_PLACEHOLDER_FONT_SIZE = 20
 COMPARE_LABEL_Y_OFFSET = 8
 
+
+def _text_size(draw: ImageDraw.ImageDraw, text: str, font) -> tuple[int, int]:
+    """Return (width, height) of rendered text via textbbox."""
+    bbox = draw.textbbox((0, 0), text, font=font)
+    return bbox[2] - bbox[0], bbox[3] - bbox[1]
+
+
 # Optional: pngquant for better compression
 try:
     import subprocess
@@ -241,9 +248,7 @@ def create_comparison_image(
     header_text = f"{library} · {spec_id}" if library and spec_id else library or spec_id
     if header_text:
         header_font = _get_font(COMPARE_HEADER_FONT_SIZE, weight=700, local_only=True)
-        bbox = draw.textbbox((0, 0), header_text, font=header_font)
-        text_w = bbox[2] - bbox[0]
-        text_h = bbox[3] - bbox[1]
+        text_w, text_h = _text_size(draw, header_text, header_font)
         draw.text(
             ((COMPARE_WIDTH - text_w) // 2, (COMPARE_HEADER_HEIGHT - text_h) // 2),
             header_text,
@@ -256,8 +261,7 @@ def create_comparison_image(
     before_label = "BEFORE (current)"
     after_label = "AFTER (updated)"
 
-    before_bbox = draw.textbbox((0, 0), before_label, font=label_font)
-    before_label_w = before_bbox[2] - before_bbox[0]
+    before_label_w, _ = _text_size(draw, before_label, label_font)
     draw.text(
         (COMPARE_MARGIN + (panel_width - before_label_w) // 2, COMPARE_HEADER_HEIGHT + COMPARE_LABEL_Y_OFFSET),
         before_label,
@@ -265,8 +269,7 @@ def create_comparison_image(
         font=label_font,
     )
 
-    after_bbox = draw.textbbox((0, 0), after_label, font=label_font)
-    after_label_w = after_bbox[2] - after_bbox[0]
+    after_label_w, _ = _text_size(draw, after_label, label_font)
     after_panel_x = COMPARE_MARGIN + panel_width + COMPARE_GAP
     draw.text(
         (after_panel_x + (panel_width - after_label_w) // 2, COMPARE_HEADER_HEIGHT + COMPARE_LABEL_Y_OFFSET),
@@ -287,9 +290,7 @@ def create_comparison_image(
     else:
         placeholder_font = _get_font(COMPARE_PLACEHOLDER_FONT_SIZE, weight=400, local_only=True)
         placeholder_text = "No previous version"
-        bbox = draw.textbbox((0, 0), placeholder_text, font=placeholder_font)
-        placeholder_w = bbox[2] - bbox[0]
-        placeholder_h = bbox[3] - bbox[1]
+        placeholder_w, placeholder_h = _text_size(draw, placeholder_text, placeholder_font)
         placeholder_x = COMPARE_MARGIN + (panel_width - placeholder_w) // 2
         placeholder_y = panel_top + (panel_height - placeholder_h) // 2
         draw.text((placeholder_x, placeholder_y), placeholder_text, fill=COLOR_PLACEHOLDER_GRAY, font=placeholder_font)
@@ -439,14 +440,12 @@ def _draw_branded_header(
     """
     logo_font = _get_font(logo_font_size)
     logo_text = "pyplots.ai"
-    logo_bbox = draw.textbbox((0, 0), logo_text, font=logo_font)
-    logo_width = logo_bbox[2] - logo_bbox[0]
+    logo_width, _ = _text_size(draw, logo_text, logo_font)
     logo_x = (canvas_width - logo_width) // 2
     _draw_pyplots_logo(draw, logo_x, top_y, logo_font_size)
 
     tagline_font = _get_font(tagline_font_size, weight=400)
-    tagline_bbox = draw.textbbox((0, 0), TAGLINE, font=tagline_font)
-    tagline_width = tagline_bbox[2] - tagline_bbox[0]
+    tagline_width, _ = _text_size(draw, TAGLINE, tagline_font)
     tagline_x = (canvas_width - tagline_width) // 2
     draw.text((tagline_x, tagline_y), TAGLINE, fill=COLOR_LABEL_GRAY, font=tagline_font)
 
@@ -470,9 +469,7 @@ def create_branded_header(width: int = OG_WIDTH, height: int = HEADER_HEIGHT) ->
 
     # Calculate total text width for centering
     test_text = "pyplots.ai"
-    bbox = draw.textbbox((0, 0), test_text, font=font)
-    text_width = bbox[2] - bbox[0]
-    text_height = bbox[3] - bbox[1]
+    text_width, text_height = _text_size(draw, test_text, font)
 
     x = (width - text_width) // 2
     y = (height - text_height) // 2 - 5  # Slight adjustment for visual centering
@@ -623,8 +620,7 @@ def create_branded_og_image(
         label = " · ".join(label_parts)
         label_font = _get_font(OG_LABEL_FONT_SIZE, weight=400)
         draw = ImageDraw.Draw(final)  # Refresh draw after card paste
-        label_bbox = draw.textbbox((0, 0), label, font=label_font)
-        label_width = label_bbox[2] - label_bbox[0]
+        label_width, _ = _text_size(draw, label, label_font)
         label_x = (OG_WIDTH - label_width) // 2
         label_y = card_y + new_height + 2 * OG_CARD_PADDING + OG_LABEL_GAP
         draw.text((label_x, label_y), label, fill=PYPLOTS_DARK, font=label_font)
@@ -707,8 +703,7 @@ def _draw_collage_cards(
 
         if labels and i < len(labels):
             draw = ImageDraw.Draw(final)
-            bbox = draw.textbbox((0, 0), labels[i], font=label_font)
-            lbl_width = bbox[2] - bbox[0]
+            lbl_width, _ = _text_size(draw, labels[i], label_font)
             label_x = slot_x + (slot_width - lbl_width) // 2
             label_y = card_y + actual_card_height + COLLAGE_LABEL_GAP
             draw.text((label_x, label_y), labels[i], fill=PYPLOTS_DARK, font=label_font)

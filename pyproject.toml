@@ -147,6 +147,50 @@ lines-after-imports = 2
 known-first-party = ["api", "core", "automation", "agentic"]
 split-on-trailing-comma = false
 
+# ===== Mypy Configuration =====
+
+[tool.mypy]
+python_version = "3.14"
+warn_return_any = true
+warn_unused_configs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+strict_optional = true
+
+[[tool.mypy.overrides]]
+module = [
+    "google.*",
+    "cloud_sql.*",
+    "cachetools",
+    "cachetools.*",
+]
+ignore_missing_imports = true
+
+# Gradual adoption: modules with systemic library-interaction type issues.
+# Remove entries as types are fixed per-module.
+[[tool.mypy.overrides]]
+module = [
+    "core.images",
+    "core.database.types",
+    "core.database.connection",
+    "core.database.repositories",
+    "core.generators.plot_generator",
+]
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = [
+    "api.main",
+    "api.mcp.server",
+    "api.routers.debug",
+    "api.routers.specs",
+    "api.routers.og_images",
+    "api.routers.download",
+]
+ignore_errors = true
+
 # ===== Pytest Configuration =====
 
 [tool.pytest.ini_options]

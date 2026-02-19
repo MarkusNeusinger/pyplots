@@ -1,0 +1,91 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen } from '../test-utils';
+
+// Must import after test-utils to get jest-dom matchers
+import { ErrorBoundary } from './ErrorBoundary';
+
+// Component that throws on render
+function ThrowingComponent({ message }: { message: string }) {
+  throw new Error(message);
+}
+
+// Suppress React error boundary console.error noise in tests
+beforeEach(() => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+});
+
+describe('ErrorBoundary', () => {
+  it('renders children when no error occurs', () => {
+    render(
+      <ErrorBoundary>
+        <div>Hello World</div>
+      </ErrorBoundary>
+    );
+    expect(screen.getByText('Hello World')).toBeInTheDocument();
+  });
+
+  it('renders fallback UI when child throws', () => {
+    render(
+      <ErrorBoundary>
+        <ThrowingComponent message="test error" />
+      </ErrorBoundary>
+    );
+    expect(screen.getByText('Something went wrong')).toBeInTheDocument();
+    expect(screen.getByText(/unexpected error occurred/i)).toBeInTheDocument();
+  });
+
+  it('renders custom fallback when provided', () => {
+    render(
+      <ErrorBoundary fallback={<div>Custom Error</div>}>
+        <ThrowingComponent message="test error" />
+      </ErrorBoundary>
+    );
+    expect(screen.getByText('Custom Error')).toBeInTheDocument();
+    expect(screen.queryByText('Something went wrong')).not.toBeInTheDocument();
+  });
+
+  it('shows recovery buttons in default fallback', () => {
+    render(
+      <ErrorBoundary>
+        <ThrowingComponent message="test error" />
+      </ErrorBoundary>
+    );
+    expect(screen.getByRole('button', { name: /try again/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /reload page/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /go home/i })).toBeInTheDocument();
+  });
+
+  it('recovers when Try Again is clicked', async () => {
+    const { userEvent } = await import('../test-utils');
+    const user = userEvent.setup();
+
+    // Use a flag to control whether the child throws
+    let shouldThrow = true;
+
+    function MaybeThrow() {
+      if (shouldThrow) throw new Error('test');
+      return <div>Recovered</div>;
+    }
+
+    const { rerender } = render(
+      <ErrorBoundary>
+        <MaybeThrow />
+      </ErrorBoundary>
+    );
+
+    expect(screen.getByText('Something went wrong')).toBeInTheDocument();
+
+    // Stop throwing and click retry
+    shouldThrow = false;
+    await user.click(screen.getByRole('button', { name: /try again/i }));
+
+    // Re-render to provide non-throwing child
+    rerender(
+      <ErrorBoundary>
+        <MaybeThrow />
+      </ErrorBoundary>
+    );
+
+    expect(screen.getByText('Recovered')).toBeInTheDocument();
+  });
+});

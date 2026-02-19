@@ -7,7 +7,6 @@ Evaluate if the **${LIBRARY}** implementation matches the specification for `${S
 - **Spec ID:** ${SPEC_ID}
 - **Library:** ${LIBRARY}
 - **PR Number:** #${PR_NUMBER}
-- **Sub-Issue:** #${SUB_ISSUE_NUMBER}
 - **Attempt:** ${ATTEMPT}/3
 
 ## Your Task
@@ -23,12 +22,19 @@ Evaluate if the **${LIBRARY}** implementation matches the specification for `${S
 ### 3. Read Library-Specific Rules
 `prompts/library/${LIBRARY}.md`
 
-### 4. View the Generated Plot
-Check the `plot_images/` directory
-- Use your vision capabilities to analyze the image
-- Compare with the spec requirements
+### 4. Read the Impl-Tags Guide
+`prompts/impl-tags-generator.md` (for step 9)
 
-### 5. Check for Auto-Reject (AR-08)
+### 5. MANDATORY: View the Generated Plot
+
+You MUST use the Read tool to open `plot_images/plot.png` and visually analyze the image.
+
+- Compare with the spec requirements
+- A review without seeing the image is **invalid**
+- If the image cannot be read, STOP and report the error
+- Your review MUST include the "Image Description" section proving you looked at the image
+
+### 6. Check for Auto-Reject (AR-08)
 
 **For static libraries (matplotlib, seaborn, plotnine) only:**
 
@@ -40,7 +46,7 @@ Before scoring, check if the implementation fakes interactive features:
 
 If found: Score = 0, verdict = REJECTED, note AR-08 violation.
 
-### 6. Evaluate Using 6-Category Criteria
+### 7. Evaluate Using 6-Category Criteria
 
 Read `prompts/quality-criteria.md` and evaluate:
 
@@ -95,7 +101,7 @@ Read `prompts/quality-criteria.md` and evaluate:
 
 **Defaults:** LM-01=3, LM-02=1. Raise only with evidence.
 
-### 7. Apply Score Caps
+### 8. Apply Score Caps
 
 | Condition | Max Score |
 |-----------|-----------|
@@ -106,12 +112,16 @@ Read `prompts/quality-criteria.md` and evaluate:
 | DE-01 ≤ 2 AND DE-03 ≤ 2 (generic + no storytelling) | 75 |
 | CQ-04 = 0 (fake functionality) | 70 |
 
-### 8. Post Verdict to Sub-Issue #${SUB_ISSUE_NUMBER}
+### 9. Post Verdict as PR Comment on PR #${PR_NUMBER}
 
 Use this EXACT format:
 
 ```markdown
 ## AI Review - Attempt ${ATTEMPT}/3
+
+### Image Description
+> Describe what you see in the plot: colors used, axis labels, title, data representation, overall layout.
+> This proves you actually looked at the image.
 
 ### Score: XX/100
 
@@ -163,11 +173,12 @@ Use this EXACT format:
 ### Score Caps Applied
 - [ ] None / [describe cap if applied]
 
-### Issues Found
-1. **DE-01 LOW**: Generic styling with default colors and no design thought
-   - Fix: Custom palette, remove top/right spines, refine typography
-2. **DE-03 LOW**: No annotations or data storytelling
-   - Fix: Add annotations highlighting key data points or trends
+### Strengths
+- Strength 1 (keep these aspects)
+- Strength 2
+
+### Weaknesses
+- Weakness 1 (AI will fix these - let it decide HOW)
 
 ### AI Feedback for Next Attempt
 > Improve design excellence: remove top/right spines, use subtle y-axis-only grid, add annotations to highlight key patterns. Consider a more refined color palette.
@@ -175,25 +186,76 @@ Use this EXACT format:
 ### Verdict: APPROVED / REJECTED
 ```
 
-### 9. Take Action Based on Result
+### 10. Save Review Data to Files
 
-**APPROVED** (score >= 90):
+The workflow parses these files — create them all:
+
 ```bash
-gh pr edit ${PR_NUMBER} --add-label ai-approved --add-label "quality:${SCORE}"
-gh issue edit ${SUB_ISSUE_NUMBER} --remove-label reviewing --add-label ai-approved
+# Quality score (integer 0-100)
+echo "XX" > quality_score.txt
+
+# Structured feedback as JSON arrays
+echo '["Strength 1", "Strength 2"]' > review_strengths.json
+echo '["Weakness 1"]' > review_weaknesses.json
+
+# Verdict (APPROVED or REJECTED)
+echo "APPROVED" > review_verdict.txt
+
+# Image description (multi-line text proving you viewed the image)
+cat > review_image_description.txt << 'EOF'
+The plot shows a scatter plot with blue markers...
+[Your full image description here]
+EOF
+
+# Criteria checklist as structured JSON
+cat > review_checklist.json << 'EOF'
+{
+  "visual_quality": {
+    "score": 36,
+    "max": 40,
+    "items": [
+      {"id": "VQ-01", "name": "Text Legibility", "score": 10, "max": 10, "passed": true, "comment": "All text readable"},
+      {"id": "VQ-02", "name": "No Overlap", "score": 8, "max": 8, "passed": true, "comment": "No overlapping elements"}
+    ]
+  },
+  "spec_compliance": {"score": 23, "max": 25, "items": [...]},
+  "data_quality": {"score": 18, "max": 20, "items": [...]},
+  "code_quality": {"score": 10, "max": 10, "items": [...]},
+  "library_features": {"score": 5, "max": 5, "items": [...]}
+}
+EOF
 ```
 
-**REJECTED** (score < 90):
+### 11. Generate impl_tags
+
+Analyze the implementation code and create impl_tags based on `prompts/impl-tags-generator.md`:
+
 ```bash
-gh pr edit ${PR_NUMBER} --add-label ai-rejected --add-label "quality:${SCORE}"
-gh issue edit ${SUB_ISSUE_NUMBER} --remove-label reviewing --add-label ai-rejected
+cat > review_impl_tags.json << 'EOF'
+{
+  "dependencies": [],
+  "techniques": ["colorbar", "annotations"],
+  "patterns": ["data-generation"],
+  "dataprep": [],
+  "styling": ["publication-ready"]
+}
+EOF
 ```
+
+The 5 dimensions:
+- `dependencies`: External packages beyond numpy/pandas/plotting library
+- `techniques`: Visualization techniques (twin-axes, colorbar, etc.)
+- `patterns`: Code patterns (data-generation, iteration-over-groups, etc.)
+- `dataprep`: Data transformations (kde, binning, correlation-matrix, etc.)
+- `styling`: Visual style (publication-ready, alpha-blending, etc.)
 
 ## Important
 
-- This is a **${LIBRARY}-only** review - focus only on this library
-- Post feedback to **Sub-Issue #${SUB_ISSUE_NUMBER}**, NOT the main issue
+- **DO NOT add ai-approved or ai-rejected labels** — the workflow adds them after updating metadata
+- This is a **${LIBRARY}-only** review — focus only on this library
+- Post feedback to **PR #${PR_NUMBER}**
 - Be specific about what failed and how to fix it
 - Mark criteria as N/A when not applicable (e.g., legend for single-series)
 - **Score strictly**: median implementation should score 72-78, not 90+
 - **Design Excellence defaults are low**: DE-01=4, DE-02=2, DE-03=2 — raise only with evidence
+- All review data (strengths, weaknesses, image_description, criteria_checklist) is saved to metadata for future regeneration. Be specific!

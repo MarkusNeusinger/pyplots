@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hexbin-basic: Basic Hexbin Plot
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 83/100 | Updated: 2026-02-21
@@ -36,54 +36,54 @@ dy = hex_radius * 1.5
 
 col_idx = np.round(longitude / dx).astype(int)
 row_idx = np.round(latitude / dy).astype(int)
-
-# Offset odd rows for hexagonal staggering
 shift = (row_idx % 2) * 0.5
 col_adj = np.round((longitude / dx) - shift).astype(int)
 
 hex_cx = (col_adj + shift) * dx
 hex_cy = row_idx * dy
 
-hex_keys = list(zip(hex_cx, hex_cy, strict=True))
-hex_counts = pd.Series(hex_keys).value_counts()
-
-hex_df = pd.DataFrame(
-    {"lon": [k[0] for k in hex_counts.index], "lat": [k[1] for k in hex_counts.index], "count": hex_counts.values}
-)
+counts = pd.DataFrame({"lon": hex_cx, "lat": hex_cy}).groupby(["lon", "lat"]).size().reset_index(name="count")
 
 # Compute pixel size for hexagons to tile correctly
-chart_width = 1600
-chart_height = 900
-lon_range = hex_df["lon"].max() - hex_df["lon"].min()
-lat_range = hex_df["lat"].max() - hex_df["lat"].min()
-px_per_lon = chart_width / lon_range if lon_range > 0 else 1
-px_per_lat = chart_height / lat_range if lat_range > 0 else 1
-hex_px_width = dx * px_per_lon
-hex_px_height = 2 * hex_radius * px_per_lat
-hex_area = hex_px_width * hex_px_height * 1.15
+chart_width, chart_height = 1600, 900
+lon_range = counts["lon"].max() - counts["lon"].min()
+lat_range = counts["lat"].max() - counts["lat"].min()
+hex_px_w = dx * (chart_width / lon_range) if lon_range > 0 else 1
+hex_px_h = 2 * hex_radius * (chart_height / lat_range) if lat_range > 0 else 1
+hex_area = hex_px_w * hex_px_h * 1.15
 
 # Plot - hexagonal binning using mark_point with custom hexagon SVG path
 hex_path = "M0,-1L0.866,-0.5L0.866,0.5L0,1L-0.866,0.5L-0.866,-0.5Z"
 
 chart = (
-    alt.Chart(hex_df)
+    alt.Chart(counts)
     .mark_point(shape=hex_path, filled=True, strokeWidth=0.3, stroke="white")
     .encode(
         x=alt.X(
             "lon:Q",
             title="Longitude (\u00b0W)",
             scale=alt.Scale(zero=False),
-            axis=alt.Axis(labelFontSize=18, titleFontSize=22, format=".2f", grid=True, gridOpacity=0.15),
+            axis=alt.Axis(
+                labelFontSize=18, titleFontSize=22, format=".2f", grid=True, gridOpacity=0.12, gridColor="#ccc"
+            ),
         ),
         y=alt.Y(
             "lat:Q",
             title="Latitude (\u00b0N)",
             scale=alt.Scale(zero=False),
-            axis=alt.Axis(labelFontSize=18, titleFontSize=22, format=".3f", grid=True, gridOpacity=0.15),
+            axis=alt.Axis(
+                labelFontSize=18,
+                titleFontSize=22,
+                format=".2f",
+                tickCount=7,
+                grid=True,
+                gridOpacity=0.12,
+                gridColor="#ccc",
+            ),
         ),
         color=alt.Color(
             "count:Q",
-            scale=alt.Scale(scheme="viridis"),
+            scale=alt.Scale(scheme="viridis", type="symlog"),
             legend=alt.Legend(
                 title="Vehicle Count", titleFontSize=20, labelFontSize=16, gradientLength=350, gradientThickness=25
             ),
@@ -98,10 +98,10 @@ chart = (
     .properties(
         width=chart_width,
         height=chart_height,
-        title=alt.Title("hexbin-basic \u00b7 altair \u00b7 pyplots.ai", fontSize=28, anchor="middle"),
+        title=alt.Title("hexbin-basic \u00b7 altair \u00b7 pyplots.ai", fontSize=28, anchor="middle", color="#222"),
     )
-    .configure_view(strokeWidth=0)
-    .configure_axis(domainColor="#888")
+    .configure_view(strokeWidth=0, fill="#f9f9fb")
+    .configure_axis(domainColor="#999", tickColor="#999", labelColor="#444", titleColor="#333")
 )
 
 # Save

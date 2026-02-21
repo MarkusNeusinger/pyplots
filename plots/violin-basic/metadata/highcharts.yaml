@@ -1,224 +1,237 @@
 library: highcharts
 specification_id: violin-basic
 created: '2025-12-23T00:36:59Z'
-updated: '2026-02-21T22:25:00+00:00'
+updated: '2026-02-21T22:33:47Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447783582
 issue: 0
-python_version: '3.14.3'
-library_version: '1.10.3'
+python_version: 3.14.3
+library_version: 1.10.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/violin-basic/highcharts/plot.html
-quality_score: null
+quality_score: 79
 impl_tags:
   dependencies:
-    - scipy
-    - selenium
+  - scipy
+  - selenium
   techniques:
-    - html-export
+  - html-export
+  - custom-legend
   patterns:
-    - data-generation
-  dataprep: []
-  styling: []
+  - data-generation
+  - iteration-over-groups
+  dataprep:
+  - kde
+  styling:
+  - alpha-blending
+  - grid-styling
 review:
   strengths:
-  - Excellent distribution variety demonstrating violin plot capabilities (normal,
-    bimodal, skewed)
-  - Clear colorblind-safe color palette with good contrast
-  - Proper use of Highcharts PolygonSeries to create violin shapes with KDE
-  - Includes median markers and IQR boxes as spec requires
-  - Realistic test score scenario with appropriate data ranges
-  - Both PNG and interactive HTML outputs provided
-  - Clean separation of violin shapes with no overlap
+  - Excellent distribution variety showing normal, bimodal, and skewed shapes that
+    showcase violin plot capabilities
+  - Clean visual refinement with subtle grid (0.08 opacity), removed ticks, and semi-transparent
+    fills
+  - All font sizes explicitly set for high-resolution output (title 72px, axis titles
+    52px, labels 44px)
+  - Correct title format and complete legend with all groups plus median marker
   weaknesses:
-  - Legend positioning at bottom overlaps slightly with x-axis title - could be better
-    placed
-  - The IQR boxes are very thin (box_width=0.05) and could be slightly wider for better
-    visibility
-  - Grid lines could be even more subtle (currently alpha=0.15, could use 0.1)
-  image_description: 'The plot displays four violin shapes representing Study Groups
-    A, B, C, and D on a white background. Each violin uses a distinct colorblind-safe
-    color: blue (#306998) for Group A, yellow (#FFD43B) for Group B, purple (#9467BD)
-    for Group C, and cyan (#17BECF) for Group D. Each violin features a centered black
-    IQR (interquartile range) box and a red diamond marker indicating the median.
-    The title "violin-basic · highcharts · pyplots.ai" appears at the top in bold.
-    The Y-axis labeled "Test Score (points)" ranges from 0-130, and the X-axis labeled
-    "Study Group" shows the four category labels. A legend at the bottom identifies
-    each group color and the median marker. The violins effectively demonstrate different
-    distribution shapes: Group A shows a symmetric normal distribution, Group B displays
-    clear bimodality with two bulges, Group C is normally distributed, and Group D
-    exhibits right-skewed exponential distribution with a long upper tail reaching
-    ~120.'
+  - Generic group labels (Group A-D) instead of realistic context-specific names reduce
+    data quality
+  - Median shown as diamond marker rather than a line as spec requests
+  - Group D exponential tail extends to ~122 which is unrealistic for test scores
+    and wastes vertical space
+  - Does not leverage Highcharts interactive features like custom tooltips showing
+    distribution statistics
+  - Redundant plot.html file generation alongside the temp file used for screenshot
+  image_description: The plot displays four violin shapes arranged horizontally, each
+    representing a study group (Group A through Group D). Group A is steel blue (#306998),
+    Group B is yellow (#FFD43B), Group C is purple (#9467BD), and Group D is cyan
+    (#17BECF). Each violin shows a mirrored KDE density curve with a dark rectangular
+    IQR box inside and a white diamond-shaped median marker. Group A shows a roughly
+    normal distribution centered around 50. Group B displays a clear bimodal shape
+    with humps near 40 and 65. Group C is a normal distribution centered around 60.
+    Group D is right-skewed with a very thin tail extending up to approximately 122.
+    The y-axis reads "Test Score (points)" ranging from 0 to 130, and the x-axis reads
+    "Study Group" with category labels. The title reads "violin-basic · highcharts
+    · pyplots.ai" centered at the top. A floating legend in the top-right corner lists
+    all four groups with colored circle markers plus a "Median" entry with a diamond.
+    The background is clean white with very subtle horizontal grid lines. The overall
+    layout is well-proportioned though the extended y-axis range (to 130) due to Group
+    D's tail creates some wasted vertical space.
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 27
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
-        max: 10
-        passed: true
-        comment: Title, axis labels, and tick marks are all clearly readable at full
-          size. Font sizes are appropriately scaled for 4800x2700 resolution.
-      - id: VQ-02
-        name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements. Category labels, axis titles, and legend
-          are all clearly separated.
+        comment: 'All font sizes explicitly set: title 72px, axis titles 52px, tick
+          labels 44px, legend 40px'
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
+        passed: true
+        comment: No overlapping text elements; legend floats cleanly in top-right
       - id: VQ-03
         name: Element Visibility
-        score: 7
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Violin shapes are clearly visible with good fill opacity. IQR boxes
-          and median markers are well-sized and prominent.
+        comment: Violin shapes well-formed; Group D thin tail spike barely visible
+          at top
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 3
+        max: 4
         passed: true
-        comment: Uses colorblind-safe palette (blue, yellow, purple, cyan) - no red-green
-          conflicts.
+        comment: Blue/yellow/purple/cyan avoids red-green; yellow slightly low contrast
+          on white
       - id: VQ-05
-        name: Layout Balance
-        score: 4
-        max: 5
+        name: Layout & Canvas
+        score: 3
+        max: 4
         passed: true
-        comment: Good overall layout with appropriate margins. Slight excess whitespace
-          at top of chart above Group D's extended distribution.
+        comment: Good proportions but Group D tail forces y-axis to 130, wasting vertical
+          space
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: "Test Score (points)" and "Study
-          Group".'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 1
-        max: 2
+        comment: Test Score (points) includes units; Study Group is descriptive
+    design_excellence:
+      score: 12
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
         passed: true
-        comment: Grid is subtle. Legend is positioned at bottom but could be placed
-          more optimally.
+        comment: Custom palette, semi-transparent fills, dark IQR boxes with diamond
+          medians; above defaults but not publication-level
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Subtle grid (0.08 opacity), light axis lines, removed ticks; good
+          refinement visible
+      - id: DE-03
+        name: Data Storytelling
+        score: 3
+        max: 6
+        passed: true
+        comment: Four distinct distribution shapes create comparison but no particular
+          emphasis or focal point
     spec_compliance:
-      score: 24
-      max: 25
+      score: 14
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
-        passed: true
-        comment: Correct violin plot type with kernel density estimation shown via
-          polygon shapes.
-      - id: SC-02
-        name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Categories on X-axis, values on Y-axis correctly assigned.
-      - id: SC-03
+        comment: Correct violin plot with mirrored KDE density shapes
+      - id: SC-02
         name: Required Features
-        score: 4
-        max: 5
+        score: 3
+        max: 4
         passed: true
-        comment: Shows quartile markers (IQR box), median line (diamond marker), mirrored
-          density on both sides. Split violin comparison not shown but spec says "consider"
-          not required.
-      - id: SC-04
-        name: Data Range
+        comment: Mirrored density and IQR boxes present; median shown as diamond marker
+          instead of line
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible within the axis ranges (0-130 appropriately covers
-          all distributions).
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Categories on x-axis, values on y-axis, all data correctly mapped
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend correctly identifies all groups and median marker.
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Correct format: "violin-basic · highcharts · pyplots.ai"'
+        comment: Title format correct; legend labels match data groups plus Median
     data_quality:
-      score: 19
-      max: 20
+      score: 12
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Excellent variety showing normal (A, C), bimodal (B), and skewed
-          (D) distributions. Demonstrates the plot type's ability to reveal distribution
-          shapes.
+        comment: Normal, bimodal, shifted-normal, and right-skewed distributions showcase
+          violin capabilities
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Test scores by study group is a plausible, real-world scenario that
-          makes sense for comparing distributions.
-      - id: DQ-03
-        name: Appropriate Scale
-        score: 5
+        score: 3
         max: 5
         passed: true
-        comment: Test scores in 0-130 range with most values in 20-100 range are realistic
-          and sensible.
+        comment: Test scores plausible but group labels are generic (Group A-D)
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 3
+        max: 4
+        passed: true
+        comment: Mostly realistic; Group D exponential tail reaching ~122 slightly
+          unrealistic for test scores
     code_quality:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 2
-        max: 3
-        passed: true
-        comment: Follows imports → data → plot → save structure, but code is more
-          complex than strictly necessary due to manual polygon construction for violins.
-      - id: CQ-02
-        name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42) for reproducibility.
+        comment: 'Flat structure: imports, data, KDE, chart config, series, export'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 2
+        passed: true
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used.
+        comment: All imports used
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
+        score: 1
+        max: 2
+        passed: true
+        comment: Polygon construction appropriate but redundant plot.html generation
+      - id: CQ-05
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Uses current API.
-      - id: CQ-05
-        name: Output Correct
-        score: 0
-        max: 1
-        passed: true
-        comment: Saves both plot.png and plot.html correctly.
-    library_features:
-      score: 4
-      max: 5
+        comment: Saves plot.png via Selenium, uses current highcharts_core API
+    library_mastery:
+      score: 5
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 4
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 3
         max: 5
         passed: true
-        comment: Good use of PolygonSeries and ScatterSeries to construct custom violin
-          shapes. Uses highcharts-more.js for polygon support. Interactive HTML output
-          included.
-  verdict: APPROVED
+        comment: Correct use of HighchartsOptions, PolygonSeries, ScatterSeries; building
+          from raw polygons is necessary but basic
+      - id: LM-02
+        name: Distinctive Features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses enableMouseTracking and floating legend but doesn't leverage
+          tooltips, animation, or interactive strengths
+  verdict: REJECTED

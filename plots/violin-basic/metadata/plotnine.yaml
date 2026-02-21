@@ -1,166 +1,178 @@
 library: plotnine
 specification_id: violin-basic
 created: '2025-12-23T00:35:38Z'
-updated: '2025-12-23T00:38:30Z'
-generated_by: claude-opus-4-5-20251101
+updated: '2026-02-21T22:45:59Z'
+generated_by: claude-opus-4-6
 workflow_run: 20447780320
 issue: 0
-python_version: 3.13.11
-library_version: 0.15.2
+python_version: 3.14.3
+library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-basic/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-basic/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 91
+quality_score: 92
 impl_tags:
   dependencies: []
   techniques: []
   patterns:
-    - data-generation
-    - iteration-over-groups
+  - data-generation
   dataprep: []
-  styling: []
+  styling:
+  - alpha-blending
+  - grid-styling
 review:
   strengths:
-  - Excellent use of plotnine grammar of graphics with clean ggplot syntax
-  - Proper use of draw_quantiles parameter to show 25th, 50th, and 75th percentiles
-    inside violins
-  - Good visual differentiation between groups with alternating colors
-  - Correct title format and proper figure sizing for the required resolution
-  - Clean, minimal theme that emphasizes the data
-  - Well-structured code following KISS principles
+  - Excellent data crafting with four distinctly-shaped distributions that showcase
+    violin plot capabilities (right-skewed, bimodal, tight normal, wide spread)
+  - Thoughtful color palette with Python Blue highlighting the most interesting bimodal
+    distribution as a focal point
+  - 'Comprehensive theme customization: subtle grid, soft background, refined typography
+    with intentional color/size hierarchy'
+  - Perfect spec compliance including quartile markers, mirrored density, and median
+    line
+  - Clean, idiomatic plotnine code following grammar of graphics patterns
   weaknesses:
-  - Generic Group A/B/C/D labels instead of a realistic scenario (e.g., job titles,
-    schools)
-  - All distributions are normal - adding one skewed or bimodal distribution would
-    better demonstrate violin plot capabilities
-  - Axis labels lack context or units (e.g., Test Score instead of Value)
-  image_description: 'The plot displays four violin plots arranged horizontally, each
-    representing a different category (Group A, Group B, Group C, Group D). The violins
-    show kernel density estimations with mirrored sides, and each contains three horizontal
-    lines indicating the 25th, 50th (median), and 75th percentiles. The color scheme
-    alternates between blue (#306998, #4B8BBE) for Groups A and C, and yellow (#FFD43B,
-    #FFE873) for Groups B and D. The title "violin-basic · plotnine · pyplots.ai"
-    appears at the top in a large font. The x-axis is labeled "Category" and the y-axis
-    "Value". The distributions vary visibly: Group A is centered around 50, Group
-    B around 65 with wider spread, Group C is narrower around 45, and Group D around
-    70 with moderate spread. The minimal theme provides a clean white background.'
+  - 'Quartile lines inside violins could be slightly more prominent for easier reading
+    at a glance (currently size=0.35 with #666666)'
+  image_description: 'The plot displays four violin plots arranged horizontally for
+    university courses: Biology (sage green), Statistics (deep blue/Python Blue),
+    Chemistry (peach/salmon), and Psychology (light lavender). Each violin shows mirrored
+    kernel density estimation with three horizontal quartile lines (Q1, median, Q3)
+    visible inside. Biology shows a right-skewed distribution concentrated around
+    68-70 with a small bump near 85. Statistics displays a clear bimodal distribution
+    with two peaks around 55 and 82. Chemistry has a tight, narrow normal distribution
+    centered around 74. Psychology shows a wide spread from roughly 30 to 100 centered
+    around 70. The title "violin-basic · plotnine · pyplots.ai" appears in bold at
+    the top. X-axis labeled "Course", Y-axis labeled "Final Exam Score (pts)". Background
+    is a soft off-white (#fafafa) with subtle horizontal gridlines only. No legend
+    is shown (category labels on x-axis suffice). The color palette is harmonious
+    with the Statistics violin highlighted in Python Blue as the focal element.'
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 29
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
-        passed: true
-        comment: Title is large and clear, axis labels and tick labels are all perfectly
-          readable
-      - id: VQ-02
-        name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements, all category labels are well-spaced
+        comment: 'All font sizes explicitly set: title 24pt bold, axis titles 20pt,
+          tick labels 16pt, base 14pt. All text perfectly readable.'
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
+        passed: true
+        comment: No overlapping text anywhere. Category labels well-spaced.
       - id: VQ-03
         name: Element Visibility
-        score: 7
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Violins are well-sized and clearly visible, quantile lines are visible
-          but could be slightly more prominent
+        comment: Violins clearly visible with good alpha (0.82). Quartile lines visible
+          but subtle due to thin line weight (size=0.35).
       - id: VQ-04
         name: Color Accessibility
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Blue/yellow palette has good contrast and is distinguishable, though
-          could use a more standard colorblind-safe palette
+        comment: Four distinct colors easily distinguishable. No red-green only distinction.
+          Good contrast.
       - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
+        name: Layout & Canvas
+        score: 4
+        max: 4
         passed: true
-        comment: Good proportions with appropriate whitespace, 16:9 aspect ratio used
-          effectively
+        comment: 16:9 aspect ratio well utilized. Violins well-distributed with balanced
+          margins.
       - id: VQ-06
-        name: Axis Labels
-        score: 1
+        name: Axis Labels & Title
+        score: 2
         max: 2
         passed: true
-        comment: Labels are descriptive ("Category", "Value") but lack units or context
-      - id: VQ-07
-        name: Grid & Legend
-        score: 1
-        max: 2
+        comment: Y-axis includes units (pts). X-axis appropriate for categorical.
+    design_excellence:
+      score: 15
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 6
+        max: 8
         passed: true
-        comment: No visible grid (minimal theme), legend hidden which is fine since
-          colors don't add information
+        comment: 'Custom palette with intentional hierarchy: Python Blue highlights
+          focal bimodal distribution. Typography customized with distinct sizes and
+          gray progression.'
+      - id: DE-02
+        name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: 'Significant customization: x-grid removed, minor grid removed, y-grid
+          subtle, soft background, thin outlines, legend suppressed.'
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Four distinct distribution shapes invite comparison. Python Blue
+          on bimodal distribution creates focal point and visual hierarchy.
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct violin plot with kernel density estimation
+        comment: Correct violin plot with mirrored density on both sides.
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories on X-axis, values on Y-axis
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Shows quartile markers (25%, 50%, 75%), mirrored density, median
-          line present
-      - id: SC-04
-        name: Data Range
+        comment: Quartile markers, mirrored density, median line all present via draw_quantiles.
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axes
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X=course (categorical), Y=score (numeric). 4 categories within spec
+          range.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend appropriately hidden since fill colors match x-axis categories
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Correct format: "violin-basic · plotnine · pyplots.ai"'
+        comment: Title matches required format. Legend correctly suppressed with x-axis
+          labels.
     data_quality:
-      score: 17
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
         score: 6
-        max: 8
+        max: 6
         passed: true
-        comment: Shows different distributions (different means, spreads), but all
-          are normal distributions - could show some skewed or bimodal data
+        comment: 'Shows all violin plot aspects: right-skewed, bimodal, tight normal,
+          wide spread distributions.'
       - id: DQ-02
         name: Realistic Context
-        score: 6
-        max: 7
-        passed: true
-        comment: Generic groups are plausible but not tied to a real scenario like
-          the spec suggests (salary, test scores, etc.)
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Values in reasonable range (25-125), 200 points per category is appropriate
+        comment: University final exam scores by course — real, comprehensible, neutral
+          education scenario.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Scores 0-100, means 55-74, SDs 4-14 — all realistic for university
+          exams.
     code_quality:
       score: 10
       max: 10
@@ -170,41 +182,48 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save structure, no functions or classes
+        comment: Clean Imports → Data → Plot → Save structure. No functions or classes.
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: np.random.seed(42) is set
+        comment: np.random.seed(42) set at the start.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports used in the code.
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Uses current plotnine API
+        comment: Clean, Pythonic code with appropriate complexity.
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves as plot.png with dpi=300. Current plotnine API.
+    library_mastery:
+      score: 8
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Expert grammar of graphics usage: ggplot + geom + scale + labs +
+          theme layering. Proper aes() mappings, pd.Categorical, draw_quantiles, trim=False.'
+      - id: LM-02
+        name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses ggplot2 grammar with geom_violin and draw_quantiles parameter,
-          theme_minimal, proper plotnine idioms. Could leverage more advanced features
-          like faceting or custom stats.
+        comment: draw_quantiles and fine-grained theme element control are distinctive
+          to plotnine/ggplot2, but the overall visualization could be replicated in
+          other libraries.
   verdict: APPROVED

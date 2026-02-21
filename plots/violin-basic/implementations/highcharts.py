@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 violin-basic: Basic Violin Plot
 Library: highcharts 1.10.3 | Python 3.14.3
 Quality: 87/100 | Updated: 2026-02-21
@@ -30,6 +30,13 @@ raw_data = {
     "Intensive": np.clip(np.random.exponential(15, 200) + 30, 0, 100),
 }
 
+# RGB values for gradient fills
+colors_rgb = ["48,105,152", "229,171,0", "148,103,189", "23,190,207"]
+
+# Overall mean for reference line
+all_scores = np.concatenate(list(raw_data.values()))
+overall_mean = float(np.mean(all_scores))
+
 # Calculate KDE and statistics for each category
 violin_width = 0.35
 violin_data = []
@@ -55,6 +62,7 @@ for i, cat in enumerate(categories):
             "std": float(np.std(data)),
             "n": len(data),
             "color": colors[i],
+            "rgb": colors_rgb[i],
         }
     )
 
@@ -67,6 +75,7 @@ chart.options.chart = {
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
+    "plotBorderWidth": 0,
     "marginBottom": 180,
     "marginLeft": 240,
     "marginRight": 80,
@@ -91,8 +100,7 @@ chart.options.x_axis = {
     "max": 3.5,
     "tickPositions": [0, 1, 2, 3],
     "categories": categories,
-    "lineWidth": 2,
-    "lineColor": "#cccccc",
+    "lineWidth": 0,
     "tickLength": 0,
     "crosshair": {"width": 2, "color": "rgba(0, 0, 0, 0.15)", "dashStyle": "Dash"},
 }
@@ -102,12 +110,27 @@ chart.options.y_axis = {
     "labels": {"style": {"fontSize": "44px", "color": "#555555"}},
     "gridLineWidth": 1,
     "gridLineColor": "rgba(0, 0, 0, 0.08)",
-    "lineWidth": 2,
-    "lineColor": "#cccccc",
+    "lineWidth": 0,
     "min": 0,
     "max": 105,
     "tickInterval": 10,
     "crosshair": {"width": 1, "color": "rgba(0, 0, 0, 0.12)", "dashStyle": "Dot"},
+    "plotLines": [
+        {
+            "value": overall_mean,
+            "color": "rgba(0, 0, 0, 0.22)",
+            "dashStyle": "LongDash",
+            "width": 3,
+            "zIndex": 3,
+            "label": {
+                "text": f"Overall Mean ({overall_mean:.0f})",
+                "style": {"fontSize": "32px", "color": "rgba(0, 0, 0, 0.40)", "fontStyle": "italic"},
+                "align": "right",
+                "x": -15,
+                "y": -10,
+            },
+        }
+    ],
 }
 
 chart.options.legend = {
@@ -138,7 +161,7 @@ chart.options.tooltip = {
 chart.options.plot_options = {
     "polygon": {
         "lineWidth": 2,
-        "fillOpacity": 0.55,
+        "fillOpacity": 1.0,
         "enableMouseTracking": True,
         "animation": True,
         "states": {"hover": {"lineWidth": 3, "brightness": 0.1}, "inactive": {"opacity": 0.4}},
@@ -155,12 +178,24 @@ for v in violin_data:
     for j in range(len(v["y_grid"]) - 1, -1, -1):
         polygon_points.append([float(v["index"] - v["density"][j]), float(v["y_grid"][j])])
 
+    is_featured = v["category"] == "Tutorial"
+    center_alpha = "0.70" if is_featured else "0.55"
+    edge_alpha = "0.20" if is_featured else "0.12"
+
     series = PolygonSeries()
     series.data = polygon_points
     series.name = v["category"]
     series.color = v["color"]
-    series.fill_color = v["color"]
-    series.fill_opacity = 0.55
+    series.fill_color = {
+        "linearGradient": {"x1": 0, "y1": 0, "x2": 1, "y2": 0},
+        "stops": [
+            [0, f"rgba({v['rgb']},{edge_alpha})"],
+            [0.5, f"rgba({v['rgb']},{center_alpha})"],
+            [1, f"rgba({v['rgb']},{edge_alpha})"],
+        ],
+    }
+    series.fill_opacity = 1.0
+    series.line_width = 3 if is_featured else 2
     series.tooltip = {
         "pointFormat": (
             f'<span style="font-size:32px;font-weight:bold;color:{v["color"]}">'
@@ -199,7 +234,7 @@ for v in violin_data:
 
 # IQR boxes (thin rectangles for interquartile range)
 for v in violin_data:
-    box_width = 0.06
+    box_width = 0.10
     box_points = [
         [float(v["index"] - box_width), float(v["q1"])],
         [float(v["index"] + box_width), float(v["q1"])],

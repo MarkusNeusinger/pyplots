@@ -6,7 +6,7 @@ title: Basic Violin Plot
 
 # Specification tracking
 created: 2025-12-14T09:45:06Z
-updated: 2025-12-14T09:45:06Z
+updated: 2026-02-21T12:00:00Z
 issue: 722
 suggested: MarkusNeusinger
 
@@ -16,6 +16,7 @@ tags:
     - violin
   data_type:
     - numeric
+    - continuous
     - categorical
   domain:
     - statistics
@@ -24,3 +25,4 @@ tags:
     - basic
     - distribution
     - density
+    - comparison

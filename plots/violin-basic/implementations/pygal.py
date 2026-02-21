@@ -1,7 +1,7 @@
 """ pyplots.ai
 violin-basic: Basic Violin Plot
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: /100 | Updated: 2026-02-21
+Quality: 80/100 | Updated: 2026-02-21
 """
 
 import numpy as np

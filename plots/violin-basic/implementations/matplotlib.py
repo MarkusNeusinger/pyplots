@@ -1,62 +1,81 @@
 """ pyplots.ai
 violin-basic: Basic Violin Plot
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Library: matplotlib 3.10.8 | Python 3.14.3
+Quality: 92/100 | Updated: 2026-02-21
 """
 
+import matplotlib.patheffects as pe
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-# Data - simulated test scores across different schools
+# Data - simulated test scores (0-100) across different schools
 np.random.seed(42)
-categories = ["School A", "School B", "School C", "School D"]
+categories = ["Lincoln HS", "Roosevelt Acad.", "Jefferson HS", "Hamilton Prep"]
 data = [
-    np.random.normal(75, 10, 150),  # School A: centered around 75
-    np.random.normal(82, 8, 150),  # School B: higher scores, less spread
-    np.random.normal(68, 15, 150),  # School C: lower average, more spread
-    np.random.normal(78, 12, 150),  # School D: moderate
+    np.clip(np.random.normal(75, 10, 150), 0, 100),  # Lincoln: normal, centered ~75
+    np.clip(np.random.normal(85, 6, 150), 0, 100),  # Roosevelt: high, tight cluster
+    np.clip(np.random.normal(62, 15, 150), 0, 100),  # Jefferson: lower, wide spread
+    np.clip(
+        np.concatenate([np.random.normal(70, 5, 80), np.random.normal(88, 4, 70)]), 0, 100
+    ),  # Hamilton: bimodal (two subgroups)
 ]
 
-# Create plot (4800x2700 px)
+# Multi-series palette starting with Python Blue; warm accent for bimodal Hamilton
+colors = ["#306998", "#5BA58B", "#7A6FB5", "#D4853F"]
+edge_colors = ["#1E4060", "#3A7460", "#524A80", "#9A5F2A"]
+
+# Plot
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Create violin plot with quartile markers
-parts = ax.violinplot(data, positions=range(len(categories)), showmeans=False, showmedians=True, showextrema=True)
+parts = ax.violinplot(
+    data,
+    positions=range(len(categories)),
+    quantiles=[[0.25, 0.5, 0.75]] * len(categories),
+    showmeans=False,
+    showmedians=False,
+    showextrema=False,
+    bw_method=0.3,
+    widths=0.75,
+)
 
-# Style the violins with Python Blue
-for pc in parts["bodies"]:
-    pc.set_facecolor("#306998")
-    pc.set_edgecolor("#1e4a6e")
-    pc.set_alpha(0.7)
+# Style each violin body with a distinct color
+for i, pc in enumerate(parts["bodies"]):
+    pc.set_facecolor(colors[i])
+    pc.set_edgecolor(edge_colors[i])
+    pc.set_alpha(0.8)
     pc.set_linewidth(2)
 
-# Style the lines (median, min, max)
-parts["cmedians"].set_color("#FFD43B")
-parts["cmedians"].set_linewidth(3)
-parts["cmins"].set_color("#1e4a6e")
-parts["cmins"].set_linewidth(2)
-parts["cmaxes"].set_color("#1e4a6e")
-parts["cmaxes"].set_linewidth(2)
-parts["cbars"].set_color("#1e4a6e")
-parts["cbars"].set_linewidth(2)
+# Quantile lines with path effects for legibility against colored bodies
+q_colors = ["white", "#FFD43B", "white"] * len(categories)
+q_widths = [2.5, 4, 2.5] * len(categories)
+parts["cquantiles"].set_colors(q_colors)
+parts["cquantiles"].set_linewidths(q_widths)
+parts["cquantiles"].set_path_effects([pe.Stroke(linewidth=6, foreground="black", alpha=0.3), pe.Normal()])
 
-# Add quartile markers (Q1 and Q3) as box indicators
-quartile1 = [np.percentile(d, 25) for d in data]
-quartile3 = [np.percentile(d, 75) for d in data]
-
-# Draw thin boxes for interquartile range
-for i, (q1, q3) in enumerate(zip(quartile1, quartile3, strict=True)):
-    ax.vlines(i, q1, q3, color="#1e4a6e", linewidth=6, zorder=3)
-
-# Labels and styling (scaled font sizes for 4800x2700)
+# Labels and styling
 ax.set_xticks(range(len(categories)))
 ax.set_xticklabels(categories)
 ax.set_xlabel("School", fontsize=20)
 ax.set_ylabel("Test Score (points)", fontsize=20)
-ax.set_title("violin-basic · matplotlib · pyplots.ai", fontsize=24)
+ax.set_title("violin-basic \u00b7 matplotlib \u00b7 pyplots.ai", fontsize=24, fontweight="medium")
 ax.tick_params(axis="both", labelsize=16)
-ax.grid(True, alpha=0.3, linestyle="--", axis="y")
+
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
+ax.yaxis.grid(True, alpha=0.2, linewidth=0.8)
+
+# Subtle annotation highlighting Hamilton Prep's bimodal distribution
+ax.annotate(
+    "Two distinct\nperformance groups",
+    xy=(3, 75),
+    xytext=(3, 45),
+    fontsize=13,
+    color="#9A5F2A",
+    fontstyle="italic",
+    ha="center",
+    arrowprops={"arrowstyle": "->", "color": "#9A5F2A", "lw": 1.5},
+)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

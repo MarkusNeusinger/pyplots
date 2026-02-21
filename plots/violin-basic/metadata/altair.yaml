@@ -1,170 +1,186 @@
 library: altair
 specification_id: violin-basic
 created: '2025-12-23T00:38:09Z'
-updated: '2025-12-23T00:42:01Z'
-generated_by: claude-opus-4-5-20251101
+updated: '2026-02-21T22:47:16Z'
+generated_by: claude-opus-4-6
 workflow_run: 20447779967
 issue: 0
-python_version: 3.13.11
+python_version: 3.14.3
 library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/violin-basic/altair/plot.html
-quality_score: 92
+quality_score: 94
 impl_tags:
   dependencies: []
   techniques:
-    - layer-composition
-    - faceting
+  - faceting
+  - layer-composition
+  - hover-tooltips
+  - html-export
   patterns:
-    - data-generation
-    - groupby-aggregation
-  dataprep: []
-  styling: []
+  - data-generation
+  - iteration-over-groups
+  dataprep:
+  - kde
+  styling:
+  - alpha-blending
+  - grid-styling
 review:
   strengths:
-  - Excellent visualization of distribution shapes with the bimodal Sales distribution
-    clearly visible
-  - Proper implementation of quartile markers (IQR line) and median points inside
-    violins
-  - Good use of Altair declarative syntax with transform_density and layering
-  - Realistic salary data scenario with meaningful variation between departments
-  - Correct title format and well-sized text elements
+  - Expert-level Altair usage with declarative transforms (transform_density, transform_aggregate)
+    instead of pre-computing statistics
+  - 'Thoughtful data design: bimodal Sales distribution showcases violin plots advantage
+    over box plots'
+  - Intentional department ordering creates salary progression narrative with bimodal
+    Sales as focal point
+  - Custom colorblind-safe palette with maximally distinct hues including Python Blue
+  - All font sizes explicitly set for reliable readability at target resolution
+  - Clean well-commented code with clear data generation rationale
   weaknesses:
-  - No grid lines on the plot to aid value reading
-  - Color alternating pattern (2 colors for 4 categories) does not add meaningful
-    category distinction
-  - Could benefit from adding tooltips for interactivity
-  image_description: 'The plot displays four violin plots showing salary distributions
-    by department (Engineering, Marketing, Sales, Support). The violins are colored
-    in a blue-yellow alternating pattern (#306998 blue for Engineering and Sales,
-    #FFD43B yellow for Marketing and Support). Each violin shows the kernel density
-    estimation shape of the salary distribution. Inside each violin, there is a black
-    vertical line representing the interquartile range (IQR) and a white dot with
-    black border marking the median. The y-axis shows "Salary ($)" ranging from 10,000
-    to 140,000. Department names appear below each violin. The title "violin-basic
-    · altair · pyplots.ai" is centered at the top. The Sales violin clearly shows
-    a bimodal distribution (two bulges). All text is clearly readable with appropriate
-    font sizes.'
+  - Median shown as a dot rather than a line (spec says Include median line) — functionally
+    clear but deviates from literal spec wording
+  - Design could push further toward publication-quality with more typographic refinement
+    or background color treatment
+  image_description: 'The plot displays four violin plots arranged as faceted panels
+    showing salary distributions across four departments: Support (brown/tan), Marketing
+    (purple), Engineering (Python Blue), and Sales (orange). Each violin shows a mirrored
+    KDE density shape with a thick dark IQR rule and a white median dot with dark
+    border inside. Support is centered around $55,000 with a compact unimodal shape;
+    Marketing around $72,000 with wider spread; Engineering around $91,000 with the
+    widest unimodal spread; and Sales shows a distinctive bimodal distribution with
+    two humps (base salary ~$50k and commission earners ~$92k). The title "violin-basic
+    · altair · pyplots.ai" appears at the top in large font. The y-axis is labeled
+    "Salary ($)" with comma-formatted values from ~10,000 to ~140,000. Department
+    labels appear below each violin. The grid is subtle with dashed lines at low opacity.
+    No view borders or density axis labels are shown — clean, professional appearance.'
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 30
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title, axis labels, and tick marks are all clearly readable with
-          appropriate font sizes
+        comment: 'All font sizes explicitly set: title 28pt, axis title 22pt, tick
+          labels 18pt, facet headers 20pt'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping text anywhere. Clean facet spacing and label positioning
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Violins are well-sized with good opacity (0.75), quartile markers
-          and median points clearly visible
+        comment: Violins well-sized, IQR rules thick (strokeWidth=5), median dots
+          large (size=250) with high contrast
       - id: VQ-04
         name: Color Accessibility
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Blue/yellow palette is colorblind-safe, but only uses 2 colors for
-          4 categories (alternating pattern)
+        comment: 'Custom colorblind-safe palette with maximally distinct hues: brown,
+          purple, Python Blue, orange'
       - id: VQ-05
-        name: Layout Balance
+        name: Layout & Canvas
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Good layout with faceted design, though spacing could be slightly
-          tighter
+        comment: Tall violins fill canvas well with balanced spacing. Nothing cut
+          off
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: '"Salary ($)" includes units, department names are descriptive'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
+        comment: Y-axis labeled Salary ($) with units. Density axis correctly hidden
+    design_excellence:
+      score: 15
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 6
+        max: 8
         passed: true
-        comment: No grid lines visible on plot, no legend (colors alternate but don't
-          distinguish categories meaningfully)
+        comment: Custom palette, intentional ordering, professional appearance clearly
+          above defaults
+      - id: DE-02
+        name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: Subtle dashed grid (opacity 0.2), view strokes removed, density axis
+          hidden, generous spacing
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Intentional ordering creates salary progression narrative with bimodal
+          Sales as focal point
     spec_compliance:
-      score: 25
-      max: 25
+      score: 14
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct violin plot with kernel density estimation
+        comment: Correct violin plot using KDE with mirrored density shapes
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories on x-axis, values on y-axis correctly
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 3
+        max: 4
         passed: true
-        comment: Shows quartile markers (IQR line), median point, mirrored density
-          on both sides
-      - id: SC-04
-        name: Data Range
+        comment: Quartile markers via IQR rule, mirrored density, median shown as
+          dot not line (minor deviation from spec)
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Axes show all data appropriately
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Category on X via facets, Salary on Y. All data visible with appropriate
+          extent padding
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: No legend needed as categories are labeled directly
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Uses correct format "violin-basic · altair · pyplots.ai"
+        comment: Title follows exact format. Legend correctly omitted since facet
+          headers provide category labels
     data_quality:
-      score: 20
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: 'Excellent! Shows varied distribution shapes: normal (Engineering,
-          Marketing, Support), bimodal (Sales), different spreads'
+        comment: 'Excellent variety: unimodal distributions with different spreads
+          plus bimodal Sales demonstrating violin advantage'
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Salary by department is a perfect real-world scenario for violin
-          plots
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Salary ranges (35K-140K) are realistic for the departments shown
+        comment: 'Salary by department: real-world business scenario with bimodal
+          Sales reflecting base plus commission'
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Realistic salary values for each department role
     code_quality:
-      score: 8
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -172,40 +188,49 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear structure: imports → data → plot → save'
+        comment: Clean Imports, Data, Plot, Save structure with no functions or classes
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set at the start
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports (altair, numpy, pandas)
+        comment: All three imports used, no unused imports
       - id: CQ-04
-        name: No Deprecated API
-        score: 0
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Code works but uses some complex transform patterns
+        comment: Clean declarative Altair code with appropriate complexity and good
+          comments
       - id: CQ-05
-        name: Output Correct
-        score: 0
+        name: Output & API
+        score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html (correct)
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves plot.png with scale_factor=3.0 and plot.html using current
+          Altair API
+    library_mastery:
+      score: 10
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 3
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
         max: 5
         passed: true
-        comment: Uses Altair's transform_density, layering, and faceting well, though
-          could use more interactive features
+        comment: 'Expert declarative grammar: transform_density, transform_aggregate,
+          alt.layer, facet, resolve_scale'
+      - id: LM-02
+        name: Distinctive Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Heavily uses Altair-specific: declarative density transform, stack
+          center, resolve_scale, configure system, tooltip encoding'
   verdict: APPROVED

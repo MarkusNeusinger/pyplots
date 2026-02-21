@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 hexbin-basic: Basic Hexbin Plot
 Library: letsplot 4.8.2 | Python 3.14.3
-Quality: 86/100 | Updated: 2026-02-21
 """
 
 import numpy as np
@@ -30,11 +29,11 @@ LetsPlot.setup_html()
 np.random.seed(42)
 n_points = 10000
 
-# Downtown core - dense commercial district
-downtown_east = np.random.randn(n_points // 2) * 1.5 + 4
-downtown_north = np.random.randn(n_points // 2) * 1.5 + 3
+# Downtown core - elongated east-west along commercial corridor
+downtown_east = np.random.randn(n_points // 2) * 2.0 + 4
+downtown_north = np.random.randn(n_points // 2) * 1.2 + 3
 
-# University campus - moderate foot traffic
+# University campus - compact circular footprint
 campus_east = np.random.randn(n_points // 3) * 1.0 - 3
 campus_north = np.random.randn(n_points // 3) * 1.0 + 1
 
@@ -42,8 +41,12 @@ campus_north = np.random.randn(n_points // 3) * 1.0 + 1
 transit_east = np.random.randn(n_points // 6) * 0.5 + 0.5
 transit_north = np.random.randn(n_points // 6) * 0.5 - 3.5
 
-east_km = np.concatenate([downtown_east, campus_east, transit_east])
-north_km = np.concatenate([downtown_north, campus_north, transit_north])
+# Sparse residential pings across outer metro area
+bg_east = np.random.uniform(-7, 9, n_points // 10)
+bg_north = np.random.uniform(-6, 7, n_points // 10)
+
+east_km = np.concatenate([downtown_east, campus_east, transit_east, bg_east])
+north_km = np.concatenate([downtown_north, campus_north, transit_north, bg_north])
 
 df = pd.DataFrame({"east_km": east_km, "north_km": north_km})
 
@@ -52,7 +55,7 @@ plot = (
     ggplot(df, aes(x="east_km", y="north_km"))
     + geom_hex(
         aes(fill="..count.."),
-        bins=[30, 30],
+        bins=[35, 35],
         color="#FFFFFF",
         size=0.3,
         tooltips=layer_tooltips()
@@ -61,21 +64,23 @@ plot = (
         .line("density|@..density..")
         .format("@..density..", ".3f"),
     )
-    + scale_fill_viridis(name="Ping Count", option="viridis")
+    + scale_fill_viridis(name="Ping Count", option="magma", trans="sqrt", begin=0.05, end=0.95)
     + labs(
-        x="East-West (km from center)",
-        y="North-South (km from center)",
+        x="East\u2013West (km from center)",
+        y="North\u2013South (km from center)",
         title="hexbin-basic \u00b7 letsplot \u00b7 pyplots.ai",
+        subtitle="GPS ping density \u2014 sqrt-scaled color reveals low-density structure",
     )
     + theme_minimal()
     + theme(
         axis_title=element_text(size=22),
         axis_text=element_text(size=18),
-        plot_title=element_text(size=26),
+        plot_title=element_text(size=26, face="bold"),
+        plot_subtitle=element_text(size=17, color="#666666"),
         legend_text=element_text(size=16),
-        legend_title=element_text(size=18),
+        legend_title=element_text(size=18, face="bold"),
         panel_grid=element_line(color="#E0E0E0", size=0.3, linetype="dashed"),
-        panel_background=element_rect(fill="#FAFAFA"),
+        panel_background=element_rect(fill="#F5F5F0"),
     )
     + ggsize(1600, 900)
 )

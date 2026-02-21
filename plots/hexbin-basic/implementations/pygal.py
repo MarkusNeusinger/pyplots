@@ -1,9 +1,12 @@
-""" pyplots.ai
+"""pyplots.ai
 hexbin-basic: Basic Hexbin Plot
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 82/100 | Created: 2026-02-21
 """
 
+import math
+import re
+
+import cairosvg
 import numpy as np
 import pygal
 from pygal.style import Style
@@ -60,17 +63,17 @@ viridis_5 = ("#440154", "#31688e", "#21918c", "#5ec962", "#fde725")
 
 custom_style = Style(
     background="#ffffff",
-    plot_background="#f7f7f7",
+    plot_background="#fafafa",
     foreground="#2d2d2d",
     foreground_strong="#1a1a1a",
-    foreground_subtle="#d4d4d4",
+    foreground_subtle="#e8e8e8",
     colors=viridis_5,
-    opacity=0.92,
+    opacity=0.95,
     opacity_hover=1.0,
     title_font_size=52,
     label_font_size=38,
     major_label_font_size=32,
-    legend_font_size=30,
+    legend_font_size=32,
     value_font_size=24,
     tooltip_font_size=24,
     title_font_family="sans-serif",
@@ -99,7 +102,7 @@ chart = pygal.XY(
     legend_box_size=28,
     stroke=False,
     dots_size=8,
-    show_x_guides=True,
+    show_x_guides=False,
     show_y_guides=True,
     xrange=(data_x_min, data_x_max),
     range=(data_y_min, data_y_max),
@@ -118,20 +121,60 @@ edges[0] = c_min
 edges[-1] = c_max + 1
 
 level_names = ["Sparse", "Low", "Moderate", "Dense", "Hotspot"]
-labels = [f"{level_names[i]} ({int(edges[i])}–{int(edges[i + 1])} pts)" for i in range(n_levels)]
+labels = [f"{level_names[i]} ({int(edges[i])}\u2013{int(edges[i + 1])} pts)" for i in range(n_levels)]
 
 # Assign each hex cell to a density level
-series = [[] for _ in range(n_levels)]
+series_data = [[] for _ in range(n_levels)]
 for x, y, cnt in zip(cx, cy, counts, strict=True):
     level = min(int(np.searchsorted(edges[1:], cnt)), n_levels - 1)
-    series[level].append({"value": (round(float(x), 2), round(float(y), 2)), "label": f"{int(cnt)} sensors"})
+    series_data[level].append({"value": (round(float(x), 2), round(float(y), 2)), "label": f"{int(cnt)} sensors"})
 
-# Dot sizes scaled for visibility: smallest clearly visible, largest dominant
-dot_sizes = [8, 15, 24, 36, 50]
+# Dot sizes scaled for hexagon visibility (slightly larger than circle equivalents)
+dot_sizes = [10, 18, 28, 42, 56]
 for i in range(n_levels):
-    if series[i]:
-        chart.add(labels[i], series[i], dots_size=dot_sizes[i])
+    if series_data[i]:
+        chart.add(labels[i], series_data[i], dots_size=dot_sizes[i])
 
-# Save
-chart.render_to_file("plot.svg")
-chart.render_to_png("plot.png")
+
+# SVG post-processing: replace circular dots with flat-top hexagonal markers
+def hex_points(cx_v, cy_v, r):
+    """Compute flat-top hexagon vertices around (cx_v, cy_v) with circumradius r."""
+    return " ".join(
+        f"{cx_v + r * math.cos(math.radians(a)):.2f},{cy_v + r * math.sin(math.radians(a)):.2f}"
+        for a in range(0, 360, 60)
+    )
+
+
+def circles_to_hexagons(svg_text):
+    """Replace <circle> SVG elements with <polygon> hexagons for hexbin fidelity."""
+
+    def replacer(m):
+        tag = m.group(0)
+        cx_m = re.search(r'cx="([\d.e+-]+)"', tag)
+        cy_m = re.search(r'cy="([\d.e+-]+)"', tag)
+        r_m = re.search(r'\br="([\d.e+-]+)"', tag)
+        if not (cx_m and cy_m and r_m):
+            return tag
+        r_v = float(r_m.group(1))
+        if r_v < 1.0:
+            return tag  # keep tiny decorative circles
+        pts = hex_points(float(cx_m.group(1)), float(cy_m.group(1)), r_v)
+        result = tag
+        result = re.sub(r'\bcx="[\d.e+-]+"', "", result)
+        result = re.sub(r'\bcy="[\d.e+-]+"', "", result)
+        result = re.sub(r'\br="[\d.e+-]+"', f'points="{pts}"', result, count=1)
+        result = result.replace("<circle", "<polygon")
+        return result
+
+    return re.sub(r"<circle[^>]*/>", replacer, svg_text)
+
+
+# Render SVG, transform circles→hexagons, save both formats
+svg_raw = chart.render()
+svg_text = svg_raw.decode("utf-8") if isinstance(svg_raw, bytes) else svg_raw
+svg_hex = circles_to_hexagons(svg_text)
+
+with open("plot.svg", "w", encoding="utf-8") as f:
+    f.write(svg_hex)
+
+cairosvg.svg2png(bytestring=svg_hex.encode("utf-8"), write_to="plot.png")

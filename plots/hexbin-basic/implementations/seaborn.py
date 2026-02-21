@@ -1,7 +1,7 @@
 """ pyplots.ai
 hexbin-basic: Basic Hexbin Plot
 Library: seaborn 0.13.2 | Python 3.14.3
-Quality: /100 | Updated: 2026-02-21
+Quality: 91/100 | Updated: 2026-02-21
 """
 
 import numpy as np

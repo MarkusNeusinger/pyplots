@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 violin-basic: Basic Violin Plot
 Library: bokeh 3.8.2 | Python 3.14.3
-Quality: 88/100 | Updated: 2026-02-21
 """
 
 import numpy as np
@@ -35,39 +34,54 @@ data = {"Engineering": eng, "Marketing": mkt, "Sales": sales, "Support": support
 # Colors - four distinct colorblind-safe hues
 colors = ["#306998", "#E8943A", "#2A9D8F", "#E76F6F"]
 
-# Create figure
+# Visual hierarchy: emphasize non-normal distributions to guide the viewer
+alphas = [0.55, 0.55, 0.85, 0.85]
+
+# Distribution type labels for data storytelling
+dist_labels = ["normal", "normal", "right-skewed", "bimodal"]
+
+# Create figure with subtle warm background tint
 p = figure(
     width=4800,
     height=2700,
-    title="violin-basic \u00b7 bokeh \u00b7 pyplots.ai",
+    title="violin-basic · bokeh · pyplots.ai",
     x_axis_label="Department",
     y_axis_label="Annual Salary (USD)",
     x_range=categories,
     toolbar_location=None,
+    background_fill_color="#FAFAF8",
 )
 
-# Text sizing for 4800x2700 px
+# Title styling — lighter secondary color for visual weight
 p.title.text_font_size = "36pt"
+p.title.text_color = "#2D3436"
+p.title.text_font_style = "bold"
+
+# Text sizing for 4800x2700 px
 p.xaxis.axis_label_text_font_size = "28pt"
 p.yaxis.axis_label_text_font_size = "28pt"
 p.xaxis.major_label_text_font_size = "22pt"
 p.yaxis.major_label_text_font_size = "22pt"
+p.xaxis.axis_label_text_color = "#555555"
+p.yaxis.axis_label_text_color = "#555555"
 
 # Format y-axis as readable currency
 p.yaxis.formatter = NumeralTickFormatter(format="$0,0")
 
-# Visual refinement - clean design
+# Visual refinement - clean, polished design
 p.xgrid.grid_line_color = None
-p.ygrid.grid_line_alpha = 0.2
+p.ygrid.grid_line_alpha = 0.15
 p.ygrid.grid_line_dash = "dashed"
+p.ygrid.grid_line_color = "#B0B0B0"
 p.outline_line_color = None
 p.axis.minor_tick_line_color = None
 p.axis.major_tick_line_color = None
-p.axis.axis_line_color = "#cccccc"
+p.axis.axis_line_color = "#D5D5D5"
+p.border_fill_color = "#FAFAF8"
 
-# Tighten y-axis to data range
+# Tighten y-axis to data range with room for annotations
 all_values = np.concatenate(list(data.values()))
-y_pad = (all_values.max() - all_values.min()) * 0.08
+y_pad = (all_values.max() - all_values.min()) * 0.12
 p.y_range.start = all_values.min() - y_pad
 p.y_range.end = all_values.max() + y_pad
 
@@ -90,10 +104,17 @@ for i, cat in enumerate(categories):
     xs_left = [(cat, float(-d)) for d in density_scaled]
     xs_right = [(cat, float(d)) for d in density_scaled[::-1]]
 
-    # Draw violin patch via ColumnDataSource
+    # Draw violin patch via ColumnDataSource with varying alpha for hierarchy
     violin_source = ColumnDataSource(data={"x": xs_left + xs_right, "y": list(y_grid) + list(y_grid[::-1])})
     p.patch(
-        x="x", y="y", source=violin_source, fill_color=colors[i], fill_alpha=0.7, line_color=colors[i], line_width=3
+        x="x",
+        y="y",
+        source=violin_source,
+        fill_color=colors[i],
+        fill_alpha=alphas[i],
+        line_color=colors[i],
+        line_alpha=min(alphas[i] + 0.15, 1.0),
+        line_width=3,
     )
 
     # Quartiles and median
@@ -166,6 +187,21 @@ for i, cat in enumerate(categories):
         }
     )
     p.segment(x0="x0", y0="y0", x1="x1", y1="y1", source=cap_source, line_color="black", line_width=3)
+
+# Distribution type annotations — guide the viewer to the data story
+annotation_y = all_values.min() - y_pad * 0.65
+ann_source = ColumnDataSource(data={"x": categories, "y": [annotation_y] * len(categories), "text": dist_labels})
+p.text(
+    x="x",
+    y="y",
+    text="text",
+    source=ann_source,
+    text_font_size="18pt",
+    text_font_style="italic",
+    text_color="#999999",
+    text_align="center",
+    text_baseline="top",
+)
 
 # Save outputs
 export_png(p, filename="plot.png")

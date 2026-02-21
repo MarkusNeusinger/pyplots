@@ -1,7 +1,7 @@
 library: plotly
 specification_id: violin-basic
 created: '2025-12-23T00:34:58Z'
-updated: '2026-02-21T22:32:30Z'
+updated: '2026-02-21T22:43:06Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447775667
 issue: 0
@@ -10,11 +10,11 @@ library_version: 6.5.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/violin-basic/plotly/plot.html
-quality_score: 87
+quality_score: 90
 impl_tags:
   dependencies: []
   techniques:
-  - hover-tooltips
+  - annotations
   - html-export
   patterns:
   - data-generation
@@ -25,31 +25,32 @@ impl_tags:
   - grid-styling
 review:
   strengths:
-  - Bimodal Engineering distribution brilliantly showcases violin plots advantage
-    over box plots
-  - Realistic relatable salary-by-department context with appropriate scales
-  - All font sizes explicitly set to correct values for 4800x2700 output
-  - Perfect spec compliance with all required features present
-  - Clean well-structured code with proper reproducibility
+  - Excellent data storytelling with opacity hierarchy and annotation highlighting
+    the bimodal Engineering distribution
+  - Four distinct distribution shapes (bimodal, narrow, wide, low) thoroughly demonstrate
+    violin plot capabilities
+  - Clean professional aesthetic with plotly_white template, subtle gridlines, and
+    custom color palette
+  - All font sizes explicitly set at appropriate values for the output resolution
+  - Realistic salary-by-department context with plausible values
+  - Clean KISS code structure with minimal well-organized code
   weaknesses:
-  - 'Two similar blue shades (#306998 and #4B8BBE) for Engineering and Sales reduce
-    palette distinctiveness'
-  - No visual emphasis highlighting the interesting bimodal Engineering distribution
-    or wide Sales spread
-  - Box plots inside violins are small and hard to read in detail
-  image_description: 'The plot displays 4 violin plots for departments: Engineering,
-    Marketing, Sales, and Support, showing annual salary distributions. Colors are
-    muted blue (#306998) for Engineering, orange (#E8873D) for Marketing, light blue
-    (#4B8BBE) for Sales, and green (#6AAB73) for Support. Each violin is semi-transparent
-    (opacity 0.7) with a white box plot embedded inside showing quartiles and a dashed
-    mean line. The background uses plotly_white template with subtle horizontal gridlines
-    at rgba(0,0,0,0.1). Title "violin-basic · plotly · pyplots.ai" is centered at
-    top in ~28pt font. Y-axis reads "Annual Salary ($)" with comma-formatted tick
-    values from ~20,000 to ~145,000. X-axis reads "Department" with 4 category labels.
-    Engineering shows a clear bimodal distribution (two humps around 75k and 92k),
-    Marketing is a symmetric bell curve centered ~72k, Sales has the widest spread
-    centered ~78k, and Support is the narrowest and lowest centered ~55k. The plot
-    fills the canvas well with balanced margins.'
+  - Three violins at 0.6 opacity are slightly less vivid than they could be
+  - Red-green color pair presents a minor colorblind accessibility concern despite
+    lightness mitigation
+  image_description: 'The plot displays four violin plots arranged horizontally, comparing
+    annual salary distributions across four departments: Engineering (steel blue,
+    #306998), Marketing (orange, #E8873D), Sales (muted red/coral, #C44E52), and Support
+    (sage green, #6AAB73). Engineering is shown with higher opacity (0.85) to emphasize
+    its bimodal distribution, while the other three are at 0.6 opacity. Each violin
+    contains a white box plot showing quartiles, median (solid line), and mean (dashed
+    line). An annotation with an arrow points to the Engineering violin reading "Bimodal:
+    two salary clusters at ~75k & ~92k." The title "violin-basic · plotly · pyplots.ai"
+    is centered at top. Y-axis shows "Annual Salary ($)" with dollar-formatted ticks
+    from ~$20,000 to $140,000+. X-axis shows "Department" with category labels. Background
+    is clean white (plotly_white template) with very subtle horizontal gridlines.
+    The Sales violin is the tallest/widest (high variance), Support is the narrowest
+    and lowest, and Engineering clearly shows two density peaks.'
   criteria_checklist:
     visual_quality:
       score: 28
@@ -60,67 +61,70 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 28pt, axis labels 22pt, tick
-          labels 18pt. All perfectly readable.'
+        comment: 'All font sizes explicitly set: title 28pt, axis titles 22pt, ticks
+          18pt, annotation 15pt. All clearly readable.'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements. Category labels well-spaced.
+        comment: No overlapping text. Annotation positioned cleanly between Engineering
+          and Marketing with arrow.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Violins well-sized with width=0.7. Box plots inside are visible but
-          relatively small.
+        comment: Violins well-sized (width=0.7, spanmode=soft), box plots visible
+          inside. Three violins at 0.6 opacity slightly less vivid than optimal.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
-        passed: false
-        comment: 'Two blue shades (#306998 and #4B8BBE) are similar in hue, reducing
-          distinctiveness.'
+        passed: true
+        comment: 'Custom palette with good contrast. Minor concern: red and green
+          could be similar for deuteranopia, mitigated by lightness differences and
+          positional labels.'
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Good proportions, plot fills ~60% of canvas with balanced margins.
-          Nothing cut off.
+        comment: Good margins, balanced whitespace, nothing cut off, plot fills canvas
+          well.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Annual Salary ($) includes units, Department is descriptive. Comma-formatted
-          ticks.
+        comment: Annual Salary ($) with units, Department descriptive.
     design_excellence:
-      score: 12
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
-        passed: false
-        comment: Thoughtful choices with plotly_white, custom palette, opacity, white
-          box plots. Palette cohesion weakened by two similar blues.
+        passed: true
+        comment: Custom palette starting with Python Blue, intentional opacity hierarchy
+          for emphasis, styled annotation with border/background, plotly_white template.
+          Clearly above defaults.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
-        passed: false
-        comment: Clean template, subtle grid, hidden legend, comma-formatted ticks.
-          Good refinement but could push further.
+        passed: true
+        comment: Subtle gridlines (rgba 0.08 opacity), plotly_white removes chrome,
+          transparent background, zeroline removed, well-configured margins.
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 5
         max: 6
-        passed: false
-        comment: Bimodal Engineering distribution is a strong narrative element. However
-          no explicit emphasis draws attention to insights.
+        passed: true
+        comment: Engineering highlighted via higher opacity, annotation calls out
+          bimodal distribution, viewer immediately sees the insight. Strong visual
+          hierarchy.
     spec_compliance:
       score: 15
       max: 15
@@ -130,26 +134,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct violin plot using go.Violin.
+        comment: Correct violin plot with kernel density estimation.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Quartile markers, mirrored density, median line, mean line all present.
+        comment: Quartile markers (box visible), mirrored density, median line (box),
+          mean line (dashed). Split violins appropriately skipped for 4-category data.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Categories on x-axis, numeric values on y-axis. All data visible.
+        comment: Categories on X-axis, numeric salary on Y-axis, all 4 categories
+          displayed.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title in correct format. Legend appropriately hidden since categories
-          are x-axis labels.
+        comment: Title format correct. X-axis labels serve as category identifiers;
+          legend correctly hidden to avoid redundancy.
     data_quality:
       score: 15
       max: 15
@@ -159,22 +165,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Bimodal, symmetric, wide spread, and narrow distributions shown.
-          Excellent feature coverage.
+        comment: 'Four distinct distributions: bimodal (Engineering), standard normal
+          (Marketing), wide spread (Sales), narrow/low (Support). Demonstrates all
+          violin plot aspects.'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Salary by department is real-world, neutral business scenario with
-          realistic names.
+        comment: Salary distributions by department — real, comprehensible, neutral
+          business context.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: All salary values plausible for US departments with appropriate sample
-          sizes.
+        comment: Realistic salary ranges for each department.
     code_quality:
       score: 10
       max: 10
@@ -184,13 +190,14 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean Import, Data, Plot, Save flow. No functions or classes.
+        comment: 'Clean linear flow: imports, data, figure, traces, annotation, layout,
+          save.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set before all random generation.
+        comment: np.random.seed(42) set at top.
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -202,13 +209,14 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Clean loop for traces, appropriate dict-based config, no over-engineering.
+        comment: Clean dict-based data organization with iteration, no over-engineering.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png at 4800x2700. Also exports HTML. Current API.
+        comment: Saves as plot.png (1600x900, scale=3). Also exports HTML. Current
+          Plotly API.
     library_mastery:
       score: 7
       max: 10
@@ -218,13 +226,13 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Proper go.Violin with dict config, idiomatic update_layout/update_traces,
-          template system.
+        comment: Good use of go.Violin with rich parameterization (box, meanline,
+          hoveron, scalemode). go.Figure approach justified by customization needs.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
-        passed: false
-        comment: Uses integrated box parameter, meanline, hoverinfo, dual HTML+PNG
-          export.
-  verdict: REJECTED
+        passed: true
+        comment: 'Uses Plotly-specific features: hoveron, hoverinfo, HTML export with
+          CDN, spanmode, scalemode.'
+  verdict: APPROVED

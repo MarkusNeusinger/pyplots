@@ -1,7 +1,7 @@
 """ pyplots.ai
 violin-basic: Basic Violin Plot
 Library: seaborn 0.13.2 | Python 3.14.3
-Quality: /100 | Updated: 2026-02-21
+Quality: 87/100 | Updated: 2026-02-21
 """
 
 import matplotlib.pyplot as plt

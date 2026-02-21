@@ -1,25 +1,25 @@
 """ pyplots.ai
 violin-basic: Basic Violin Plot
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Library: plotly 6.5.2 | Python 3.14.3
+Quality: /100 | Updated: 2026-02-21
 """
 
 import numpy as np
 import plotly.graph_objects as go
 
 
-# Data - 4 categories with different distributions
+# Data - 4 categories with distinct distribution shapes
 np.random.seed(42)
 categories = ["Engineering", "Marketing", "Sales", "Support"]
 data = {
-    "Engineering": np.random.normal(85000, 12000, 200),
+    "Engineering": np.concatenate([np.random.normal(92000, 8000, 120), np.random.normal(75000, 5000, 80)]),
     "Marketing": np.random.normal(72000, 10000, 180),
     "Sales": np.random.normal(78000, 18000, 220),
     "Support": np.random.normal(55000, 8000, 190),
 }
 
-# Colors
-colors = ["#306998", "#FFD43B", "#4B8BBE", "#FFE873"]
+# Colors - distinct, colorblind-safe palette starting with Python Blue
+colors = ["#306998", "#E8873D", "#4B8BBE", "#6AAB73"]
 
 # Create figure
 fig = go.Figure()
@@ -29,20 +29,19 @@ for i, (cat, values) in enumerate(data.items()):
         go.Violin(
             y=values,
             name=cat,
-            box_visible=True,
-            meanline_visible=True,
             line_color=colors[i],
             fillcolor=colors[i],
             opacity=0.7,
             points=False,
             box={"visible": True, "width": 0.15, "fillcolor": "white", "line": {"color": "#333333", "width": 2}},
             meanline={"visible": True, "color": "#333333", "width": 2},
+            hoverinfo="y+name",
         )
     )
 
 # Layout
 fig.update_layout(
-    title={"text": "violin-basic · plotly · pyplots.ai", "font": {"size": 28}, "x": 0.5, "xanchor": "center"},
+    title={"text": "violin-basic \u00b7 plotly \u00b7 pyplots.ai", "font": {"size": 28}, "x": 0.5, "xanchor": "center"},
     xaxis={"title": {"text": "Department", "font": {"size": 22}}, "tickfont": {"size": 18}},
     yaxis={
         "title": {"text": "Annual Salary ($)", "font": {"size": 22}},

@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 violin-basic: Basic Violin Plot
 Library: altair 6.0.0 | Python 3.14.3
+Quality: 94/100 | Updated: 2026-02-21
 """
 
 import altair as alt

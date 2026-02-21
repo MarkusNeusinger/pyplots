@@ -1,7 +1,7 @@
 library: plotly
 specification_id: hexbin-basic
 created: 2025-12-14 19:46:35+00:00
-updated: '2026-02-21T21:08:04Z'
+updated: '2026-02-21T21:25:28Z'
 generated_by: claude-opus-4-6
 workflow_run: 20213176968
 issue: 859
@@ -10,13 +10,12 @@ library_version: 6.5.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/hexbin-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hexbin-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/hexbin-basic/plotly/plot.html
-quality_score: 78
+quality_score: 85
 impl_tags:
   dependencies: []
   techniques:
   - colorbar
   - hover-tooltips
-  - patches
   - html-export
   patterns:
   - data-generation
@@ -25,41 +24,41 @@ impl_tags:
   - binning
   styling:
   - custom-colormap
-  - grid-styling
+  - edge-highlighting
 review:
   strengths:
-  - 'Perfect spec compliance: all required features (colorbar, viridis, gridsize)
-    implemented correctly'
-  - Excellent text legibility with all font sizes explicitly set
-  - Clean Viridis color palette that is perceptually uniform and colorblind-safe
-  - Three Gaussian clusters effectively demonstrate hexbin density visualization
-  - Dual output (PNG + HTML) providing both static and interactive versions
+  - Excellent spec compliance with all required features (colorbar, Viridis, hexagonal
+    binning)
+  - Strong realistic data context with ride-share pickup scenario and three distinct
+    clusters
+  - All text sizes explicitly set for consistent legibility
+  - 'Good visual refinement: removed grids/zeroline, subtle background, white hex
+    borders'
+  - Clean use of Plotly-specific features (hexagon2, hovertemplate, scaleanchor, HTML
+    export)
+  - Three clusters create natural visual hierarchy and focal points
   weaknesses:
-  - 'Library mastery is low: plotly used mostly as a rendering engine with manual
-    hexbin computation, color interpolation, and SVG path construction instead of
-    leveraging native density features'
-  - Generic axis labels (X Value, Y Value) lack domain context
-  - Manual Viridis interpolation adds unnecessary code complexity when plotly has
-    built-in colorscale support
-  - Some wasted horizontal canvas space due to 1:1 aspect ratio with 16:9 output
+  - Small white gaps visible between hexagons disrupt seamless tiled appearance
+  - Design is polished but not publication-ready — needs more intentional typography
+    or annotations
+  - Heavy reliance on manual hex binning means most code is numpy not Plotly-native
+  - Marker size calculation is complex and tightly coupled to figure dimensions
   improvements: []
   verdict: REJECTED
-  image_description: 'The plot displays a hexagonal binning density visualization
-    titled "hexbin-basic · plotly · pyplots.ai" centered at the top. Hexagons are
-    rendered using the Viridis colormap — dark purple for low counts, transitioning
-    through teal and green to bright yellow for the highest counts (~90+). A vertical
-    colorbar on the right is labeled "Count" with tick values from 0 to approximately
-    95. The X axis spans roughly -12 to 13 (labeled "X Value") and the Y axis from
-    about -4 to 8+ (labeled "Y Value"). Three distinct density clusters are visible:
-    one centered near (-2, 4) with a bright yellow peak, one near (0, 0) with green/yellow
-    peaks, and one near (3, 3) with teal/green peaks. The hexagons are pointy-top
-    oriented, well-formed, with edges matching fill color for a clean appearance.
-    The background is white (plotly_white template) with subtle gray gridlines. The
-    1:1 aspect ratio creates some unused horizontal space at the left and right edges
-    of the canvas.'
+  image_description: 'The plot displays a hexagonal binning visualization of ride-share
+    pickup density across a metro area. Hexagons are colored using the Viridis colorscale,
+    ranging from dark purple (0 pickups) to bright yellow (~250 pickups). Three distinct
+    density clusters are visible: a high-density hotspot in the center-upper area
+    (around coordinates 1, 3.5) shown in yellow/green, a moderate cluster on the left
+    (around -4, 1) in green/teal, and a moderate cluster on the right (around 6, 1.5)
+    in teal. The title "hexbin-basic · plotly · pyplots.ai" is centered at the top.
+    X-axis is labeled "Distance East (km)" and Y-axis "Distance North (km)". A vertical
+    colorbar on the right is titled "Pickups" with a range of 0-250. The background
+    is light gray, grid lines are hidden, and hexagons have thin white borders separating
+    them. The overall layout is clean with the plotly_white template.'
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -67,67 +66,66 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 32pt, axis labels 24pt, ticks
-          18pt, colorbar title 22pt. All text clearly readable.'
+        comment: 'All font sizes explicitly set: title 32pt, axis titles 24pt, ticks
+          18pt, colorbar title 22pt, colorbar ticks 18pt'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements. All labels, ticks, title, and colorbar
-          well-separated.
+        comment: No overlapping text elements anywhere
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
         comment: Hexagons clearly visible with good color differentiation. Minor white
-          gaps between some hexagons at edges.
+          gaps between some hexagons disrupt visual continuity
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Viridis colormap is perceptually uniform and colorblind-safe.
+        comment: Viridis colorscale is perceptually uniform and colorblind-safe
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
-        passed: false
-        comment: 1:1 aspect ratio creates noticeable unused horizontal space on both
-          sides of the canvas.
+        passed: true
+        comment: Good canvas utilization with minor vertical wasted space above and
+          below hexagon mass
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: X Value and Y Value are descriptive but generic with no units or
-          domain context.
+        passed: true
+        comment: 'Descriptive labels with units: Distance East (km), Distance North
+          (km)'
     design_excellence:
-      score: 11
+      score: 13
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
         score: 5
         max: 8
-        passed: false
-        comment: Clean plotly_white template with Viridis and custom hexagons. Above
-          defaults but not publication-level.
+        passed: true
+        comment: 'Above defaults: Viridis colorscale, light gray background, white
+          hex borders, dark title color. Cohesive but not publication-level'
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: Subtle gridlines, zeroline removed, matching hex edge colors. Some
-          refinement but gridlines could be further reduced.
+        passed: true
+        comment: Grid removed, zeroline removed, plotly_white template, subtle background,
+          white hex borders add finesse
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: Three Gaussian clusters create natural focal points via Viridis gradient.
-          Implicit storytelling through data choice.
+        passed: true
+        comment: Three clusters with distinct intensities create natural visual hierarchy.
+          Yellow hotspot is immediate focal point
     spec_compliance:
       score: 15
       max: 15
@@ -137,27 +135,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct hexagonal binning plot with color-encoded density.
+        comment: Correct hexagonal binning plot with density-based color mapping
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Colorbar, viridis colormap, and gridsize parameter all implemented.
+        comment: Colorbar, Viridis colormap, gridsize parameter, clustered distribution
+          all present
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X/Y correctly mapped, all data visible, 10K points within spec range.
+        comment: X/Y correctly assigned with appropriate axis ranges
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title follows exact format. Colorbar labeled Count. No legend needed.
+        comment: Title format correct. Colorbar serves as density legend
     data_quality:
-      score: 12
+      score: 14
       max: 15
       items:
       - id: DQ-01
@@ -165,22 +164,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows multiple density clusters, density variation from sparse to
-          dense, demonstrates hexbin advantage.
+        comment: Shows density variation across three clusters with different intensities
+          and spreads. Does not explore log-scale for wider dynamic range
       - id: DQ-02
         name: Realistic Context
-        score: 3
+        score: 5
         max: 5
-        passed: false
-        comment: Synthetic Gaussian clusters are plausible but axis labels are generic.
-          A real-world context would strengthen this.
+        passed: true
+        comment: Ride-share pickup density with Downtown, Airport, University clusters
+          — real, neutral scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Sensible values for clustered Gaussian data. Counts realistic for
-          10K points with gridsize 25.
+        comment: Distances ±10km realistic for metro area. Pickup counts 0-250 per
+          bin plausible
     code_quality:
       score: 9
       max: 10
@@ -190,48 +189,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, computation, plot, save. No functions
-          or classes.'
+        comment: Linear structure with no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set before data generation.
+        comment: np.random.seed(42) set at start
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only numpy and plotly.graph_objects imported, both used.
+        comment: Only numpy and plotly.graph_objects imported, both used
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
-        passed: false
-        comment: Manual Viridis color interpolation is unnecessarily verbose when
-          plotly has built-in colorscale support.
+        passed: true
+        comment: Manual hex binning is necessarily verbose. Marker size calculation
+          is complex but justified
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html using current API.
+        comment: Saves plot.png (1600x900 scale=3) and plot.html using current API
     library_mastery:
-      score: 4
+      score: 6
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Uses plotly largely as a rendering engine. Manual hexbin, color interpolation,
-          and SVG paths. Invisible scatter traces for hover and colorbar are workarounds.
+        passed: true
+        comment: Correct go.Figure/go.Scatter/update_layout usage but core hex binning
+          is all manual numpy
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Leverages shapes system and hover tooltips but via hacks. go.Histogram2d
-          or go.Histogram2dContour would be more idiomatic.
+        passed: true
+        comment: Uses hexagon2 markers, hovertemplate, customdata, scaleanchor, write_html
+          — distinctly Plotly features

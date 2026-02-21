@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 violin-basic: Basic Violin Plot
 Library: highcharts 1.10.3 | Python 3.14.3
+Quality: 86/100 | Updated: 2026-02-21
 """
 
 import tempfile

@@ -1,7 +1,7 @@
 library: altair
 specification_id: hexbin-basic
 created: '2025-12-23T01:30:50Z'
-updated: '2026-02-21T21:08:15Z'
+updated: '2026-02-21T21:20:46Z'
 generated_by: claude-opus-4-6
 workflow_run: 20448653325
 issue: 0
@@ -10,7 +10,7 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/hexbin-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hexbin-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/hexbin-basic/altair/plot.html
-quality_score: 83
+quality_score: 84
 impl_tags:
   dependencies: []
   techniques:
@@ -18,43 +18,49 @@ impl_tags:
   - html-export
   patterns:
   - data-generation
+  - groupby-aggregation
   dataprep:
   - binning
   styling:
   - custom-colormap
-  - edge-highlighting
   - grid-styling
+  - edge-highlighting
 review:
   strengths:
-  - Creative use of custom SVG hexagon path with mark_point for hexbin visualization
-  - Realistic GPS coordinate data with three distinct density clusters creating meaningful
-    spatial patterns
-  - 'Good visual polish: viridis colormap, white hex strokes, subtle grid, and explicitly
-    set font sizes'
-  - Proper title format and descriptive axis labels with units
+  - Creative hexbin solution using custom SVG hexagon path with mark_point — clever
+    workaround for Altair lacking built-in hexbin
+  - Realistic GPS data context with Seattle coordinates and multi-cluster traffic
+    density pattern
+  - Full spec compliance with all required features including colorbar, viridis, symlog
+    scale
+  - Clean code structure with proper seed, explicit font sizes, and thoughtful axis
+    configuration
+  - Good design foundation with custom background, subtle grid, configured axis colors,
+    and white hex strokes
   weaknesses:
-  - Y-axis tick labels too dense (every 0.002 degrees, ~30 labels) creating visual
-    noise
-  - Manual hexbin computation is verbose at ~30 lines of hex grid math
-  - No log scale considered for color mapping despite ~120x density variation
-  - Design not yet at publication quality — background and composition could be more
-    refined
-  image_description: 'The plot displays a hexagonal binning visualization of GPS traffic
-    density in a metropolitan area (Seattle, based on coordinates ~-122.3°W, ~47.6°N).
-    Hexagons are rendered using the viridis colormap, ranging from dark purple (low
-    vehicle count ~0) to bright yellow (high count ~120+). Three distinct density
-    clusters are visible: a large downtown core cluster in the center-left area showing
-    moderate density (teal/green), a compact shopping district hotspot on the right
-    side with the highest peak density (bright yellow hexagons), and a smaller industrial
-    zone cluster in the upper-left with moderate density. The x-axis is labeled "Longitude
-    (°W)" with values from -122.37 to -122.30, and the y-axis is labeled "Latitude
-    (°N)" from 47.586 to 47.644. A gradient color bar legend on the right shows "Vehicle
-    Count" from 0 to 120+. The title "hexbin-basic · altair · pyplots.ai" is centered
-    at the top. Hexagons have thin white strokes providing clean separation. The y-axis
-    has very dense tick labels (every 0.002°).'
+  - Hexagon tiling has slight overlap/layering artifacts at edges due to mark_point
+    sizing approach
+  - X-axis tick label formatting creates near-duplicate values with .2f format
+  - Design polish not yet at publication level — needs stronger visual identity and
+    subtitle
+  - Library mastery constrained by heavy reliance on imperative numpy/pandas code
+    for hex computation
+  image_description: 'The plot displays a hexagonal binning visualization of GPS-like
+    traffic density data in the Seattle metropolitan area. Hexagons are colored using
+    the viridis colormap, ranging from dark purple (low vehicle count ~5-10) to bright
+    yellow (high count ~100+). Two primary density hotspots are visible: a downtown
+    core cluster around longitude -122.34 to -122.35 / latitude 47.60-47.61, and a
+    shopping district cluster near longitude -122.31 / latitude 47.62. A sparser industrial
+    zone cluster appears in the upper-left around longitude -122.35 / latitude 47.63.
+    The x-axis is labeled "Longitude (°W)" and the y-axis "Latitude (°N)". A color
+    legend titled "Vehicle Count" sits in the top-right corner showing the symlog
+    scale from approximately 5 to 100+. The background is a subtle off-white (#f9f9fb)
+    with white hexagon stroke edges providing definition between adjacent bins. The
+    title reads "hexbin-basic · altair · pyplots.ai" centered at the top in dark gray
+    text.'
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 26
       max: 30
       items:
       - id: VQ-01
@@ -62,22 +68,22 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set and meet thresholds. Y-axis has ~30
-          dense tick labels every 0.002° creating visual noise.
+        comment: All font sizes explicitly set (title 28, axes 22, ticks 18, legend
+          20/16). Minor x-axis tick label duplication due to .2f format.
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: No physical text overlap, but y-axis tick labels are extremely dense
-          with near-overlap condition.
+        comment: Text elements clean. Slight hexagon overlap/layering at edges from
+          mark_point tiling approach.
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Hexagons perfectly sized with computed hex_area. White strokes provide
-          clean separation. Color gradient clear.
+        comment: Hexagons clearly visible with good color differentiation. Minor sizing
+          inconsistencies at data edges.
       - id: VQ-04
         name: Color Accessibility
         score: 4
@@ -89,15 +95,14 @@ review:
         score: 3
         max: 4
         passed: true
-        comment: Good canvas utilization at 1600x900. Minor wasted space from irregular
-          data shape.
+        comment: Good utilization with hex pattern filling substantial area. Some
+          empty corners from natural data shape.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: Longitude (°W), Latitude (°N). Correct
-          title format.'
+        comment: Longitude (°W) and Latitude (°N) — descriptive with units.
     design_excellence:
       score: 13
       max: 20
@@ -107,24 +112,24 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Above defaults with custom SVG hexagons, viridis, white strokes.
-          Not yet publication-ready.
+        comment: Above defaults with custom background, configured axis colors, white
+          hex strokes, viridis + symlog. Thoughtful but not publication-ready.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: 'View stroke removed, grid opacity 0.15, domain color #888, white
-          hex strokes. Good refinement.'
+        comment: View stroke removed, subtle grid (opacity 0.12), custom background,
+          configured axis styling. Good refinement.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Three density clusters create clear narrative about urban traffic.
-          Viridis gradient draws eye to hotspots.
+        comment: Two distinct density hotspots create natural visual hierarchy. Viewer
+          can immediately identify downtown and shopping clusters.
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -132,26 +137,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct hexagonal binning plot with density-colored hexagons.
+        comment: Correct hexagonal binning plot using creative mark_point with SVG
+          hexagon path.
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Color bar, viridis, gridsize present. Log scale not considered despite
-          120x density range.
+        comment: 'All spec features present: colorbar, viridis, gridsize control,
+          symlog scale.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=longitude, Y=latitude, color=count. All correctly mapped.
+        comment: X=longitude, Y=latitude, Color=count. Axes show full data range.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format. Legend 'Vehicle Count' is descriptive.
+        comment: Title format correct. Legend label 'Vehicle Count' is descriptive.
     data_quality:
       score: 14
       max: 15
@@ -161,75 +167,72 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Multiple density clusters at different concentrations. Could show
-          more dramatic variation.
+        comment: Multiple density clusters with good variation from sparse to dense.
+          Demonstrates hexbin advantage.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: GPS coordinates for Seattle metropolitan traffic density. Real-world
-          plausible, neutral topic.
+        comment: Seattle GPS coordinates, traffic density context, neutral topic.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Realistic Seattle coordinates. Vehicle counts 0-120+ reasonable.
-          5000 points within spec range.
+        comment: Geographically accurate coordinates, plausible vehicle counts (5-100+).
     code_quality:
-      score: 8
+      score: 10
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Follows Import-Data-Plot-Save. Manual hex computation is verbose
-          at ~30 lines.
+        comment: 'Linear flow: imports → data → hex binning → plot → save. No functions/classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) set at start.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: altair, numpy, pandas all used. No unused imports.
+        comment: altair, numpy, pandas — all used.
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Manual hex computation functional but verbose. Magic constant 1.15
-          reduces clarity.
+        comment: Necessarily complex hex binning is clean and well-structured. SVG
+          path approach is clever. No fake UI.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png with scale_factor=3.0 and plot.html. Current Altair
-          6.0 API.
+        comment: Saves plot.png with scale_factor=3.0 and plot.html. Current API.
     library_mastery:
-      score: 7
+      score: 6
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: 'Good declarative grammar: mark_point with SVG shape, encoding channels,
-          Scale/Axis/Legend/Title. Manual hex computation necessary but outside Altair.'
+        comment: Altair portion is idiomatic (Chart, mark_point, encode, properties,
+          configure). Significant numpy/pandas hex computation dilutes declarative
+          approach.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Custom SVG path for hexagon marks, tooltip encoding, HTML export,
-          configure_view/configure_axis.
+        comment: Custom SVG path in mark_point, interactive tooltips, symlog scale,
+          configure_view styling, HTML export.
   verdict: REJECTED

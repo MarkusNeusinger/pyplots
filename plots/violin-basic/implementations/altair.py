@@ -1,7 +1,7 @@
 """ pyplots.ai
 violin-basic: Basic Violin Plot
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Library: altair 6.0.0 | Python 3.14.3
+Quality: 94/100 | Updated: 2026-02-21
 """
 
 import altair as alt
@@ -16,16 +16,13 @@ data = []
 
 for cat in categories:
     if cat == "Engineering":
-        # Higher salaries with moderate spread
         values = np.random.normal(92000, 16000, 150)
     elif cat == "Marketing":
-        # Mid-range salaries
         values = np.random.normal(70000, 13000, 150)
     elif cat == "Sales":
         # Bimodal: base salary + high performers with commissions
         values = np.concatenate([np.random.normal(50000, 8000, 75), np.random.normal(92000, 11000, 75)])
     else:  # Support
-        # Lower salary, tighter distribution
         values = np.random.normal(55000, 10000, 150)
 
     for v in values:
@@ -33,22 +30,15 @@ for cat in categories:
 
 df = pd.DataFrame(data)
 
-# Calculate statistics for quartile markers
-stats = (
-    df.groupby("Department")["Salary"]
-    .agg(q1=lambda x: x.quantile(0.25), median=lambda x: x.quantile(0.5), q3=lambda x: x.quantile(0.75))
-    .reset_index()
-)
+# Department order: unimodal distributions first, bimodal Sales last as focal point
+dept_order = ["Support", "Marketing", "Engineering", "Sales"]
 
-# Merge stats for layering
-df_with_stats = df.merge(stats, on="Department")
+# Colors - four fully distinct colorblind-safe hues with Python Blue
+# brown, purple, Python Blue, orange — each maximally distinct
+palette = ["#8B6C42", "#9467BD", "#306998", "#E5832D"]
+color_scale = alt.Scale(domain=dept_order, range=palette)
 
-# Colors - Python palette
-colors = ["#306998", "#FFD43B", "#4B8BBE", "#FFE873"]
-color_scale = alt.Scale(domain=categories, range=colors)
-
-# Base chart
-base = alt.Chart(df_with_stats)
+base = alt.Chart(df)
 
 # Violin shape using kernel density transform
 violin = (
@@ -69,14 +59,25 @@ violin = (
             axis=alt.Axis(labels=False, values=[0], grid=False, ticks=False),
         ),
         color=alt.Color("Department:N", scale=color_scale, legend=None),
+        tooltip=[alt.Tooltip("Department:N"), alt.Tooltip("Salary:Q", format="$,.0f")],
     )
 )
 
-# IQR rule (black vertical line)
-quartile_rule = base.mark_rule(color="black", strokeWidth=5).encode(y="q1:Q", y2="q3:Q")
+# IQR rule via declarative aggregate (one rule per department)
+quartile_rule = (
+    base.transform_aggregate(q1="q1(Salary)", q3="q3(Salary)", groupby=["Department"])
+    .mark_rule(color="#1a1a1a", strokeWidth=5)
+    .encode(y="q1:Q", y2="q3:Q")
+)
 
-# Median point (white dot with black border)
-median_point = base.mark_point(color="white", size=250, filled=True, strokeWidth=3, stroke="black").encode(y="median:Q")
+# Median point via declarative aggregate (one dot per department)
+median_point = (
+    base.transform_aggregate(med="median(Salary)", groupby=["Department"])
+    .mark_point(color="white", size=250, filled=True, strokeWidth=3, stroke="#1a1a1a")
+    .encode(
+        y="med:Q", tooltip=[alt.Tooltip("Department:N"), alt.Tooltip("med:Q", title="Median Salary", format="$,.0f")]
+    )
+)
 
 # Combine layers and facet by department
 chart = (
@@ -85,14 +86,14 @@ chart = (
         column=alt.Column(
             "Department:N",
             header=alt.Header(labelFontSize=20, labelOrient="bottom", title=None, labelPadding=15),
-            sort=categories,
+            sort=dept_order,
         )
     )
     .resolve_scale(x="independent")
     .properties(title=alt.Title("violin-basic · altair · pyplots.ai", fontSize=28, anchor="middle"))
     .configure_facet(spacing=20)
     .configure_view(stroke=None, continuousWidth=350, continuousHeight=750)
-    .configure_axis(labelFontSize=18, titleFontSize=22, gridOpacity=0.3, gridDash=[3, 3])
+    .configure_axis(labelFontSize=18, titleFontSize=22, gridOpacity=0.2, gridDash=[3, 3])
 )
 
 # Save outputs

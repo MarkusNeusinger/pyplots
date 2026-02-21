@@ -16,10 +16,10 @@ A violin plot combining a box plot with a kernel density estimation on each side
 - `category` (string) - group labels for comparison
 - `value` (numeric) - numerical values to plot
 - Size: 30-1000 points per category, 2-6 categories
+- Example: Test scores (50-100) across 4 class groups with distinct distribution shapes
 
 ## Notes
 
 - Show quartile markers inside the violin
 - Use mirrored density on both sides
 - Include median line
-- Consider split violins for comparing two conditions

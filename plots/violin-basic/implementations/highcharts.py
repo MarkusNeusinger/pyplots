@@ -1,7 +1,7 @@
 """ pyplots.ai
 violin-basic: Basic Violin Plot
-Library: highcharts unknown | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: highcharts 1.10.3 | Python 3.14.3
+Quality: /100 | Updated: 2026-02-21
 """
 
 import tempfile
@@ -19,12 +19,11 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data - generate sample distributions for 4 categories
+# Data - test scores across 4 study groups with distinct distributions
 np.random.seed(42)
 categories = ["Group A", "Group B", "Group C", "Group D"]
 colors = ["#306998", "#FFD43B", "#9467BD", "#17BECF"]
 
-# Generate data with different distributions
 raw_data = {
     "Group A": np.random.normal(50, 12, 200),
     "Group B": np.concatenate([np.random.normal(40, 8, 100), np.random.normal(65, 8, 100)]),  # Bimodal
@@ -33,25 +32,16 @@ raw_data = {
 }
 
 # Calculate KDE and statistics for each category
-violin_width = 0.35  # Half-width of violin in category units
+violin_width = 0.35
 violin_data = []
 
 for i, cat in enumerate(categories):
     data = raw_data[cat]
-
-    # Compute KDE using scipy
     y_min, y_max = data.min() - 5, data.max() + 5
     y_grid = np.linspace(y_min, y_max, 100)
     kde_func = gaussian_kde(data)
     density = kde_func(y_grid)
-
-    # Normalize density to fit within violin width
     density_norm = density / density.max() * violin_width
-
-    # Statistics for markers
-    q1 = np.percentile(data, 25)
-    median = np.percentile(data, 50)
-    q3 = np.percentile(data, 75)
 
     violin_data.append(
         {
@@ -59,99 +49,98 @@ for i, cat in enumerate(categories):
             "index": i,
             "y_grid": y_grid,
             "density": density_norm,
-            "q1": q1,
-            "median": median,
-            "q3": q3,
+            "q1": float(np.percentile(data, 25)),
+            "median": float(np.percentile(data, 50)),
+            "q3": float(np.percentile(data, 75)),
             "color": colors[i],
         }
     )
 
-# Create chart
+# Chart
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-# Chart configuration
 chart.options.chart = {
     "type": "scatter",
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
-    "marginBottom": 200,
-    "marginLeft": 250,
-    "marginRight": 100,
+    "marginBottom": 180,
+    "marginLeft": 240,
+    "marginRight": 80,
+    "marginTop": 160,
 }
 
-# Title
 chart.options.title = {
-    "text": "violin-basic · highcharts · pyplots.ai",
-    "style": {"fontSize": "84px", "fontWeight": "bold"},
+    "text": "violin-basic \u00b7 highcharts \u00b7 pyplots.ai",
+    "style": {"fontSize": "72px", "fontWeight": "bold", "color": "#333333"},
 }
 
-# X-axis (categories)
 chart.options.x_axis = {
-    "title": {"text": "Study Group", "style": {"fontSize": "56px"}},
-    "labels": {"style": {"fontSize": "44px"}, "format": "{value}"},
+    "title": {"text": "Study Group", "style": {"fontSize": "52px", "color": "#555555"}},
+    "labels": {"style": {"fontSize": "44px", "color": "#555555"}},
     "min": -0.5,
     "max": 3.5,
     "tickPositions": [0, 1, 2, 3],
     "categories": categories,
     "lineWidth": 2,
+    "lineColor": "#cccccc",
+    "tickLength": 0,
 }
 
-# Y-axis (values)
 chart.options.y_axis = {
-    "title": {"text": "Test Score (points)", "style": {"fontSize": "56px"}},
-    "labels": {"style": {"fontSize": "44px"}},
+    "title": {"text": "Test Score (points)", "style": {"fontSize": "52px", "color": "#555555"}},
+    "labels": {"style": {"fontSize": "44px", "color": "#555555"}},
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.15)",
+    "gridLineColor": "rgba(0, 0, 0, 0.08)",
+    "lineWidth": 2,
+    "lineColor": "#cccccc",
 }
 
-# Legend
-chart.options.legend = {"enabled": True, "itemStyle": {"fontSize": "44px"}}
+chart.options.legend = {
+    "enabled": True,
+    "itemStyle": {"fontSize": "40px", "color": "#555555"},
+    "verticalAlign": "top",
+    "align": "right",
+    "layout": "vertical",
+    "x": -20,
+    "y": 80,
+    "floating": True,
+}
 
-# Plot options
 chart.options.plot_options = {
-    "polygon": {"lineWidth": 3, "fillOpacity": 0.6, "enableMouseTracking": True},
-    "scatter": {"marker": {"radius": 20, "symbol": "circle"}, "zIndex": 10},
+    "polygon": {"lineWidth": 2, "fillOpacity": 0.55, "enableMouseTracking": True},
+    "scatter": {"marker": {"radius": 18, "symbol": "circle"}, "zIndex": 10},
 }
 
-# Add violin shapes as polygon series
+# Violin shapes as polygon series
 for v in violin_data:
-    # Create polygon points for the violin shape
-    # Go up the right side, then down the left side to form a closed shape
     polygon_points = []
-
-    # Right side (positive x offset from center)
     for y_val, dens in zip(v["y_grid"], v["density"], strict=True):
         polygon_points.append([float(v["index"] + dens), float(y_val)])
-
-    # Left side (negative x offset from center) - reversed to close the polygon
     for j in range(len(v["y_grid"]) - 1, -1, -1):
-        y_val = v["y_grid"][j]
-        dens = v["density"][j]
-        polygon_points.append([float(v["index"] - dens), float(y_val)])
+        polygon_points.append([float(v["index"] - v["density"][j]), float(v["y_grid"][j])])
 
     series = PolygonSeries()
     series.data = polygon_points
     series.name = v["category"]
     series.color = v["color"]
     series.fill_color = v["color"]
-    series.fill_opacity = 0.6
+    series.fill_opacity = 0.55
     chart.add_series(series)
 
-# Add median markers as scatter points
+# Median markers
 med_series = ScatterSeries()
 med_series.data = [[float(v["index"]), float(v["median"])] for v in violin_data]
 med_series.name = "Median"
-med_series.color = "#FF0000"
-med_series.marker = {"fillColor": "#FF0000", "lineColor": "#000000", "lineWidth": 5, "radius": 22, "symbol": "diamond"}
+med_series.color = "#333333"
+med_series.marker = {"fillColor": "#ffffff", "lineColor": "#333333", "lineWidth": 6, "radius": 18, "symbol": "diamond"}
 med_series.z_index = 20
 chart.add_series(med_series)
 
-# Add quartile box indicators (thin rectangles for IQR)
+# IQR boxes (thin rectangles for interquartile range)
 for v in violin_data:
-    # Create a thin box for IQR
-    box_width = 0.05
+    box_width = 0.06
     box_points = [
         [float(v["index"] - box_width), float(v["q1"])],
         [float(v["index"] + box_width), float(v["q1"])],
@@ -163,22 +152,20 @@ for v in violin_data:
     box_series.data = box_points
     box_series.name = f"{v['category']} IQR"
     box_series.show_in_legend = False
-    box_series.color = "#000000"
-    box_series.fill_color = "#000000"
-    box_series.fill_opacity = 0.8
+    box_series.color = "#333333"
+    box_series.fill_color = "#333333"
+    box_series.fill_opacity = 0.85
     chart.add_series(box_series)
 
-# Download Highcharts JS files
-highcharts_url = "https://code.highcharts.com/highcharts.js"
+# Export
+highcharts_url = "https://cdn.jsdelivr.net/npm/highcharts@11/highcharts.js"
 with urllib.request.urlopen(highcharts_url, timeout=30) as response:
     highcharts_js = response.read().decode("utf-8")
 
-# Polygon requires highcharts-more.js
-highcharts_more_url = "https://code.highcharts.com/highcharts-more.js"
+highcharts_more_url = "https://cdn.jsdelivr.net/npm/highcharts@11/highcharts-more.js"
 with urllib.request.urlopen(highcharts_more_url, timeout=30) as response:
     highcharts_more_js = response.read().decode("utf-8")
 
-# Generate HTML with inline scripts
 html_str = chart.to_js_literal()
 html_content = f"""<!DOCTYPE html>
 <html>
@@ -193,19 +180,17 @@ html_content = f"""<!DOCTYPE html>
 </body>
 </html>"""
 
-# Write temp HTML file
 with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encoding="utf-8") as f:
     f.write(html_content)
     temp_path = f.name
 
-# Save HTML for interactive viewing
 with open("plot.html", "w", encoding="utf-8") as f:
     standalone_html = f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highcharts@11/highcharts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highcharts@11/highcharts-more.js"></script>
 </head>
 <body style="margin:0;">
     <div id="container" style="width: 100%; height: 100vh;"></div>
@@ -214,20 +199,20 @@ with open("plot.html", "w", encoding="utf-8") as f:
 </html>"""
     f.write(standalone_html)
 
-# Take screenshot with Selenium
+# Screenshot
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=5000,3000")
+chrome_options.add_argument("--window-size=4900,2800")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
-time.sleep(5)  # Wait for chart to render
+time.sleep(5)
 
 container = driver.find_element("id", "container")
 container.screenshot("plot.png")
 driver.quit()
 
-Path(temp_path).unlink()  # Clean up temp file
+Path(temp_path).unlink()

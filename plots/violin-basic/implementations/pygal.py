@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 violin-basic: Basic Violin Plot
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 86/100 | Updated: 2026-02-21
@@ -19,12 +19,13 @@ data = {
 }
 
 # Colors: 3 series per violin (fill, IQR fill, median line)
-# Advanced gets a bolder gold to emphasize its unique bimodal shape
-violin_colors = ["#306998", "#E8875B", "#5BA37E", "#D4A017"]
-iqr_colors = ["#1d3f5c", "#a35a38", "#37634c", "#8a7228"]
+# Purple replaces green for deuteranopia accessibility; gold emphasizes bimodal Advanced
+violin_colors = ["#306998", "#E8875B", "#8B6FBF", "#D4A017"]
+iqr_colors = ["#1d3f5c", "#a35a38", "#5A3F82", "#8a6a10"]
+median_color = "#FFFFFF"
 palette = []
 for vc, ic in zip(violin_colors, iqr_colors, strict=True):
-    palette.extend([vc, ic, "#ffffff"])
+    palette.extend([vc, ic, median_color])
 
 custom_style = Style(
     background="white",
@@ -57,12 +58,15 @@ chart = pygal.XY(
     dots_size=0,
     show_x_guides=False,
     show_y_guides=True,
-    range=(30, 105),
-    xrange=(0, 5.25),
+    range=(33, 103),
+    xrange=(0, 5.0),
     margin=50,
     value_formatter=lambda x: f"{x:.0f}%",
+    x_value_formatter=lambda x: "",
     tooltip_border_radius=10,
     tooltip_fancy_mode=True,
+    human_readable=True,
+    pretty_print=True,
 )
 
 # Violin widths — Advanced is wider to visually highlight its bimodal shape
@@ -72,7 +76,7 @@ n_points = 100
 
 # Build violins with quartile markers and median lines
 for i, (category, values) in enumerate(data.items()):
-    center_x = i + 1.15
+    center_x = i + 1.0
     violin_width = widths[category]
 
     # KDE using Silverman's rule
@@ -83,7 +87,7 @@ for i, (category, values) in enumerate(data.items()):
 
     # Y values for density estimation
     y_min, y_max = values.min(), values.max()
-    y_range = np.linspace(y_min - 3, y_max + 3, n_points)
+    y_range = np.linspace(y_min - 2, y_max + 2, n_points)
 
     # Gaussian kernel density estimation
     density = np.zeros_like(y_range)
@@ -103,7 +107,7 @@ for i, (category, values) in enumerate(data.items()):
     left_points = [(center_x - d, y) for y, d in zip(y_range, density, strict=True)]
     right_points = [(center_x + d, y) for y, d in zip(y_range[::-1], density[::-1], strict=True)]
     violin_points = left_points + right_points + [left_points[0]]
-    chart.add(category, violin_points, formatter=lambda x, t=tooltip: t)
+    chart.add(category, violin_points, formatter=lambda x, t=tooltip: t, stroke_style={"width": 2})
 
     # Quartile markers — filled box in darker shade for clear visibility
     box_w = 0.16
@@ -116,9 +120,9 @@ for i, (category, values) in enumerate(data.items()):
     ]
     chart.add(None, quartile_box, stroke=True, fill=True, show_dots=False, stroke_style={"width": 5})
 
-    # Median line — white, wide, extends beyond IQR box for emphasis
-    median_line = [(center_x - box_w * 1.6, median_val), (center_x + box_w * 1.6, median_val)]
-    chart.add(None, median_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 12})
+    # Median line — thick white for high contrast against dark IQR box
+    median_line = [(center_x - box_w * 1.1, median_val), (center_x + box_w * 1.1, median_val)]
+    chart.add(None, median_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 18})
 
 # X-axis labels at violin positions
 chart.x_labels = ["", "Honors", "Standard", "Remedial", "Advanced", ""]

@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: violin-basic
 created: '2025-12-23T00:36:01Z'
-updated: '2026-02-21T22:33:48Z'
+updated: '2026-02-21T22:46:13Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447774216
 issue: 0
@@ -10,116 +10,115 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-basic/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-basic/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 87
+quality_score: 92
 impl_tags:
   dependencies: []
-  techniques: []
+  techniques:
+  - annotations
+  - layer-composition
   patterns:
   - data-generation
   - iteration-over-groups
+  - explicit-figure
   dataprep: []
   styling:
+  - alpha-blending
   - grid-styling
 review:
   strengths:
-  - Excellent data design with bimodal Sales distribution showcasing KDE ability to
-    reveal distribution shapes
-  - Realistic salary context with plausible values across departments
-  - Clean well-structured code following KISS principles with proper modern seaborn
-    API usage
-  - Good text sizing with all font sizes explicitly set and currency formatting on
-    y-axis
+  - Bimodal Sales distribution showcases violin plot KDE advantage over box plots
+  - Strip plot overlay demonstrates seaborn layered composition pattern
+  - Annotations guide viewer to bimodal insight with genuine data storytelling
+  - Clean polished aesthetic with custom palette, off-white background, spines removed,
+    currency-formatted axis
+  - Correct modern seaborn API usage with hue parameter and legend=False
   weaknesses:
-  - Monochromatic blue palette lacks differentiation and visual interest
-  - No visual emphasis or annotation highlighting the bimodal Sales distribution
-  - Does not leverage seaborn distinctive features like split violins or swarmplot
-    overlay
-  - Design is competent but not publication-ready
-  image_description: 'The plot displays four violin plots showing salary distributions
-    across four departments: Engineering, Marketing, Sales, and Support. Each violin
-    uses a shade of blue from a monochromatic palette (#306998, #4A90C4, #2D5F8A,
-    #5BA3D9). The violins are mirrored with kernel density estimation on both sides
-    and contain internal box plots showing quartile markers (dark boxes) and median
-    lines (white dots). The y-axis is labeled "Salary ($)" with currency-formatted
-    tick labels ranging from $40k to $120k. The x-axis shows "Department" with the
-    four category labels. The title reads "violin-basic · seaborn · pyplots.ai" at
-    the top center. Engineering has the tallest, highest-centered violin (~$85k median).
-    Marketing is centered around ~$75k. Sales shows a distinctive bimodal shape with
-    two visible peaks (~$55k and ~$90k), demonstrating the KDE strength for revealing
-    distribution shapes. Support is the lowest and narrowest, centered around ~$55k.
-    Top and right spines are removed, and a subtle y-axis grid (alpha=0.2) provides
-    reference lines. The violins are clipped at the data range (cut=0).'
+  - Strip plot dots extremely faint at alpha=0.25 and size=2.5 — barely perceptible
+  - 'Annotation text at fontsize=12 with #555555 color is small and low-contrast for
+    4800x2700 output'
+  - Split violins not explored though spec suggests considering them
+  image_description: 'The plot displays four violin plots arranged horizontally, showing
+    salary distributions across four departments: Engineering, Marketing, Sales, and
+    Support. Each violin is filled with a distinct color — dark blue (#306998) for
+    Engineering, salmon/orange (#E8825A) for Marketing, teal green (#5BA38B) for Sales,
+    and pink/purple (#C46BAE) for Support. Inner box plots with white median dots
+    are visible within each violin. Faint strip plot dots (very low alpha) are scattered
+    around each violin. The Sales violin is noticeably wider, with a bimodal shape
+    showing concentrations around $55k and $90k, annotated with "Junior cohort" and
+    "Senior cohort" labels with arrows. The y-axis shows "Salary ($)" formatted as
+    currency ($40k–$120k), x-axis shows "Department". The background is off-white
+    (#FAFAFA), all spines are removed, and a subtle horizontal grid is present. Title
+    reads "violin-basic · seaborn · pyplots.ai" in medium weight.'
   criteria_checklist:
     visual_quality:
-      score: 29
+      score: 28
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title=24, labels=20, ticks=16. All
-          perfectly readable.'
+        comment: 'All primary text sizes explicitly set. Annotations at fontsize=12
+          with #555555 are slightly small and low-contrast.'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements. Four categories fit well on x-axis.
+        comment: No overlapping text. Annotations placed in clear space between violins.
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Violins well-proportioned, box plots clearly visible inside with
-          white median markers.
+        comment: Violins and box plots clearly visible. Strip plot overlay at alpha=0.25/size=2.5
+          is extremely faint.
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
-        passed: false
-        comment: Monochromatic blue palette is colorblind-safe but four similar shades
-          are harder to distinguish from each other.
+        passed: true
+        comment: Custom 4-color palette avoids red-green confusion with good contrast.
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Good canvas utilization, violins fill plot area well, balanced margins.
+        comment: 16:9 figsize with tight_layout, plot fills canvas well.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Y-axis 'Salary ($)' descriptive with units; x-axis 'Department' descriptive.
+        comment: Y-axis with currency units, descriptive x-axis, correct title format.
     design_excellence:
-      score: 12
+      score: 16
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
-        passed: false
-        comment: Custom cohesive blue palette and good typography, above defaults
-          but monochromatic palette not particularly striking.
+        passed: true
+        comment: Custom palette, off-white background, currency formatting, strip
+          overlay, annotations show clear design intent.
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
-        passed: false
-        comment: Top/right spines removed, subtle y-axis grid, axisbelow=True. Good
-          refinement but not every detail polished.
+        passed: true
+        comment: All spines removed, subtle grid, off-white background, good padding.
+          Strip dots could be slightly more visible.
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 5
         max: 6
-        passed: false
-        comment: Bimodal Sales distribution creates narrative potential but no visual
-          emphasis guides the viewer to the insight.
+        passed: true
+        comment: Bimodal Sales distribution with annotations guides viewer to key
+          insight. Different distribution shapes create natural comparisons.
     spec_compliance:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -127,27 +126,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct violin plot with KDE on both sides.
+        comment: Correct violin plot using seaborn violinplot.
       - id: SC-02
         name: Required Features
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: Quartile markers via inner='box', mirrored density, median line shown.
+        comment: Quartiles via inner=box, mirrored density, median marker present.
+          Split violins not explored.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=Department (category), Y=Salary (numeric). 4 categories within
-          spec range.
+        comment: X=Department, Y=Salary correctly mapped with 150 points per category.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title 'violin-basic · seaborn · pyplots.ai' correct format. No legend
-          needed.
+        comment: Title in correct format. No legend needed as categories on x-axis.
     data_quality:
       score: 15
       max: 15
@@ -157,21 +155,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Four distinct distributions including bimodal Sales showcasing KDE
-          strength.
+        comment: Four categories with distinct distributions including bimodal Sales
+          showing KDE multimodality detection.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Salary distributions across departments - real-world business scenario,
-          neutral topic.
+        comment: Salary distributions across departments — neutral, real-world business
+          scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: All salary ranges plausible for the departments described.
+        comment: 'All salary ranges plausible: Engineering ~$85k, Marketing ~$70k,
+          Sales bimodal $55k/$90k, Support ~$55k.'
     code_quality:
       score: 10
       max: 10
@@ -181,7 +180,8 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: Imports → Data → Plot → Style → Save.'
+        comment: 'Flat structure: imports, data, plot, style, save. No functions or
+          classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -193,35 +193,35 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: matplotlib.pyplot, numpy, pandas, seaborn.'
+        comment: All four imports used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, readable, appropriate complexity.
+        comment: Clean, well-organized, appropriate complexity.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300. Uses current seaborn API.
+        comment: Saves as plot.png at 300 DPI. Current seaborn API with hue parameter.
     library_mastery:
-      score: 6
+      score: 9
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 5
         max: 5
-        passed: false
-        comment: Uses sns.violinplot() axes-level correctly with modern hue/palette/legend
-          API. Could combine with stripplot/swarmplot overlay.
+        passed: true
+        comment: Axes-level violinplot, correct hue+palette+legend=False for 0.14+
+          API, idiomatic parameter usage.
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 4
         max: 5
-        passed: false
-        comment: inner='box' and cut=0 are seaborn-specific but commonly used. No
-          split violins or layered swarmplot/stripplot overlay.
-  verdict: REJECTED
+        passed: true
+        comment: Strip plot overlay is signature seaborn composability. inner=box
+          and cut=0 are library-specific features.
+  verdict: APPROVED

@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 violin-basic: Basic Violin Plot
 Library: highcharts 1.10.3 | Python 3.14.3
-Quality: 79/100 | Updated: 2026-02-21
 """
 
 import tempfile
@@ -13,7 +12,6 @@ import numpy as np
 from highcharts_core.chart import Chart
 from highcharts_core.options import HighchartsOptions
 from highcharts_core.options.series.polygon import PolygonSeries
-from highcharts_core.options.series.scatter import ScatterSeries
 from scipy.stats import gaussian_kde
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -21,14 +19,14 @@ from selenium.webdriver.chrome.options import Options
 
 # Data - test scores across 4 study groups with distinct distributions
 np.random.seed(42)
-categories = ["Group A", "Group B", "Group C", "Group D"]
+categories = ["Control", "Tutorial", "Self-Study", "Intensive"]
 colors = ["#306998", "#FFD43B", "#9467BD", "#17BECF"]
 
 raw_data = {
-    "Group A": np.random.normal(50, 12, 200),
-    "Group B": np.concatenate([np.random.normal(40, 8, 100), np.random.normal(65, 8, 100)]),  # Bimodal
-    "Group C": np.random.normal(60, 10, 200),
-    "Group D": np.random.exponential(15, 200) + 30,  # Skewed
+    "Control": np.random.normal(50, 12, 200),
+    "Tutorial": np.concatenate([np.random.normal(40, 8, 100), np.random.normal(65, 8, 100)]),
+    "Self-Study": np.random.normal(60, 10, 200),
+    "Intensive": np.clip(np.random.exponential(15, 200) + 30, 0, 100),
 }
 
 # Calculate KDE and statistics for each category
@@ -37,7 +35,7 @@ violin_data = []
 
 for i, cat in enumerate(categories):
     data = raw_data[cat]
-    y_min, y_max = data.min() - 5, data.max() + 5
+    y_min, y_max = data.min() - 3, data.max() + 3
     y_grid = np.linspace(y_min, y_max, 100)
     kde_func = gaussian_kde(data)
     density = kde_func(y_grid)
@@ -52,6 +50,9 @@ for i, cat in enumerate(categories):
             "q1": float(np.percentile(data, 25)),
             "median": float(np.percentile(data, 50)),
             "q3": float(np.percentile(data, 75)),
+            "mean": float(np.mean(data)),
+            "std": float(np.std(data)),
+            "n": len(data),
             "color": colors[i],
         }
     )
@@ -69,6 +70,7 @@ chart.options.chart = {
     "marginLeft": 240,
     "marginRight": 80,
     "marginTop": 160,
+    "animation": {"duration": 1000},
 }
 
 chart.options.title = {
@@ -95,6 +97,8 @@ chart.options.y_axis = {
     "gridLineColor": "rgba(0, 0, 0, 0.08)",
     "lineWidth": 2,
     "lineColor": "#cccccc",
+    "min": 0,
+    "max": 105,
 }
 
 chart.options.legend = {
@@ -108,12 +112,25 @@ chart.options.legend = {
     "floating": True,
 }
 
-chart.options.plot_options = {
-    "polygon": {"lineWidth": 2, "fillOpacity": 0.55, "enableMouseTracking": True},
-    "scatter": {"marker": {"radius": 18, "symbol": "circle"}, "zIndex": 10},
+chart.options.tooltip = {
+    "enabled": True,
+    "shared": False,
+    "useHTML": True,
+    "style": {"fontSize": "28px"},
+    "headerFormat": "",
+    "backgroundColor": "rgba(255, 255, 255, 0.95)",
+    "borderColor": "#cccccc",
+    "borderRadius": 8,
+    "shadow": {"color": "rgba(0,0,0,0.15)", "offsetX": 2, "offsetY": 2, "width": 4},
 }
 
-# Violin shapes as polygon series
+chart.options.plot_options = {
+    "polygon": {"lineWidth": 2, "fillOpacity": 0.55, "enableMouseTracking": True, "animation": True},
+    "scatter": {"marker": {"radius": 18, "symbol": "circle"}, "zIndex": 10, "enableMouseTracking": True},
+    "series": {"animation": {"duration": 1200, "easing": "easeOutBounce"}},
+}
+
+# Violin shapes as polygon series with tooltip showing statistics
 for v in violin_data:
     polygon_points = []
     for y_val, dens in zip(v["y_grid"], v["density"], strict=True):
@@ -127,16 +144,41 @@ for v in violin_data:
     series.color = v["color"]
     series.fill_color = v["color"]
     series.fill_opacity = 0.55
+    series.tooltip = {
+        "pointFormat": (
+            f'<span style="font-size:32px;font-weight:bold;color:{v["color"]}">'
+            f"{v['category']}</span><br/>"
+            f"<b>n</b> = {v['n']}<br/>"
+            f"<b>Mean</b>: {v['mean']:.1f}<br/>"
+            f"<b>Median</b>: {v['median']:.1f}<br/>"
+            f"<b>Q1</b>: {v['q1']:.1f} | <b>Q3</b>: {v['q3']:.1f}<br/>"
+            f"<b>Std Dev</b>: {v['std']:.1f}"
+        )
+    }
     chart.add_series(series)
 
-# Median markers
-med_series = ScatterSeries()
-med_series.data = [[float(v["index"]), float(v["median"])] for v in violin_data]
-med_series.name = "Median"
-med_series.color = "#333333"
-med_series.marker = {"fillColor": "#ffffff", "lineColor": "#333333", "lineWidth": 6, "radius": 18, "symbol": "diamond"}
-med_series.z_index = 20
-chart.add_series(med_series)
+# Median lines (horizontal lines across each violin at the median position)
+for v in violin_data:
+    # Find density at median to determine line width
+    kde_func = gaussian_kde(raw_data[v["category"]])
+    med_density = kde_func(v["median"])[0]
+    max_density = max(kde_func(v["y_grid"]))
+    line_half_width = (med_density / max_density) * violin_width * 0.85
+
+    med_line = PolygonSeries()
+    med_line.data = [
+        [float(v["index"] - line_half_width), float(v["median"])],
+        [float(v["index"] + line_half_width), float(v["median"])],
+    ]
+    med_line.name = "Median" if v["index"] == 0 else f"Median {v['category']}"
+    med_line.show_in_legend = v["index"] == 0
+    med_line.color = "#ffffff"
+    med_line.line_width = 8
+    med_line.fill_opacity = 0
+    med_line.z_index = 15
+    med_line.enable_mouse_tracking = False
+    med_line.marker = {"enabled": False}
+    chart.add_series(med_line)
 
 # IQR boxes (thin rectangles for interquartile range)
 for v in violin_data:
@@ -155,6 +197,7 @@ for v in violin_data:
     box_series.color = "#333333"
     box_series.fill_color = "#333333"
     box_series.fill_opacity = 0.85
+    box_series.enable_mouse_tracking = False
     chart.add_series(box_series)
 
 # Export
@@ -167,6 +210,24 @@ with urllib.request.urlopen(highcharts_more_url, timeout=30) as response:
     highcharts_more_js = response.read().decode("utf-8")
 
 html_str = chart.to_js_literal()
+
+# plot.html for interactive viewing (CDN links for browser)
+with open("plot.html", "w", encoding="utf-8") as f:
+    standalone_html = f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="https://cdn.jsdelivr.net/npm/highcharts@11/highcharts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highcharts@11/highcharts-more.js"></script>
+</head>
+<body style="margin:0;">
+    <div id="container" style="width: 100%; height: 100vh;"></div>
+    <script>{html_str}</script>
+</body>
+</html>"""
+    f.write(standalone_html)
+
+# Temp HTML for screenshot (inline JS for headless Chrome)
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -183,21 +244,6 @@ html_content = f"""<!DOCTYPE html>
 with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encoding="utf-8") as f:
     f.write(html_content)
     temp_path = f.name
-
-with open("plot.html", "w", encoding="utf-8") as f:
-    standalone_html = f"""<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <script src="https://cdn.jsdelivr.net/npm/highcharts@11/highcharts.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/highcharts@11/highcharts-more.js"></script>
-</head>
-<body style="margin:0;">
-    <div id="container" style="width: 100%; height: 100vh;"></div>
-    <script>{html_str}</script>
-</body>
-</html>"""
-    f.write(standalone_html)
 
 # Screenshot
 chrome_options = Options()

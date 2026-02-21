@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 violin-basic: Basic Violin Plot
 Library: altair 6.0.0 | Python 3.14.3
-Quality: 89/100 | Updated: 2026-02-21
 """
 
 import altair as alt
@@ -30,19 +29,14 @@ for cat in categories:
 
 df = pd.DataFrame(data)
 
-# Merge quartile statistics for layering
-stats = (
-    df.groupby("Department")["Salary"]
-    .agg(q1=lambda x: x.quantile(0.25), median=lambda x: x.quantile(0.5), q3=lambda x: x.quantile(0.75))
-    .reset_index()
-)
-df = df.merge(stats, on="Department")
+# Department order: unimodal distributions first, bimodal Sales last as focal point
+dept_order = ["Support", "Marketing", "Engineering", "Sales"]
 
-# Colors - cohesive colorblind-safe palette starting with Python Blue
-colors = ["#306998", "#E5832D", "#4B8BBE", "#8B6C42"]
-color_scale = alt.Scale(domain=categories, range=colors)
+# Colors - four fully distinct colorblind-safe hues with Python Blue
+# brown, purple, Python Blue, orange — each maximally distinct
+palette = ["#8B6C42", "#9467BD", "#306998", "#E5832D"]
+color_scale = alt.Scale(domain=dept_order, range=palette)
 
-# Base chart
 base = alt.Chart(df)
 
 # Violin shape using kernel density transform
@@ -68,12 +62,20 @@ violin = (
     )
 )
 
-# IQR rule (dark line from Q1 to Q3)
-quartile_rule = base.mark_rule(color="#1a1a1a", strokeWidth=5).encode(y="q1:Q", y2="q3:Q")
+# IQR rule via declarative aggregate (one rule per department)
+quartile_rule = (
+    base.transform_aggregate(q1="q1(Salary)", q3="q3(Salary)", groupby=["Department"])
+    .mark_rule(color="#1a1a1a", strokeWidth=5)
+    .encode(y="q1:Q", y2="q3:Q")
+)
 
-# Median point (white dot with dark border)
-median_point = base.mark_point(color="white", size=250, filled=True, strokeWidth=3, stroke="#1a1a1a").encode(
-    y="median:Q", tooltip=[alt.Tooltip("Department:N"), alt.Tooltip("median:Q", title="Median Salary", format="$,.0f")]
+# Median point via declarative aggregate (one dot per department)
+median_point = (
+    base.transform_aggregate(med="median(Salary)", groupby=["Department"])
+    .mark_point(color="white", size=250, filled=True, strokeWidth=3, stroke="#1a1a1a")
+    .encode(
+        y="med:Q", tooltip=[alt.Tooltip("Department:N"), alt.Tooltip("med:Q", title="Median Salary", format="$,.0f")]
+    )
 )
 
 # Combine layers and facet by department
@@ -83,7 +85,7 @@ chart = (
         column=alt.Column(
             "Department:N",
             header=alt.Header(labelFontSize=20, labelOrient="bottom", title=None, labelPadding=15),
-            sort=categories,
+            sort=dept_order,
         )
     )
     .resolve_scale(x="independent")

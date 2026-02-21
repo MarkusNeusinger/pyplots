@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 hexbin-basic: Basic Hexbin Plot
 Library: plotly 6.5.2 | Python 3.14.3
-Quality: 88/100 | Created: 2026-02-21
+Created: 2026-02-21
 """
 
 import numpy as np
@@ -56,13 +56,13 @@ hex_x, hex_y, counts = hex_x[order], hex_y[order], counts[order]
 
 # Marker size: slightly oversized to ensure seamless tessellation
 fig_w, fig_h = 1600, 900
-margins = {"l": 100, "r": 140, "t": 100, "b": 100}
+margins = {"l": 85, "r": 125, "t": 95, "b": 85}
 plot_w = fig_w - margins["l"] - margins["r"]
 plot_h = fig_h - margins["t"] - margins["b"]
 ax_x_range = (hex_x.max() + hex_w) - (hex_x.min() - hex_w)
 ax_y_range = (hex_y.max() + hex_h) - (hex_y.min() - hex_h)
 px_per_unit = min(plot_w / ax_x_range, plot_h / ax_y_range)
-marker_size = 2 * hex_size * px_per_unit * 1.55
+marker_size = 2 * hex_size * px_per_unit * 1.78
 
 # Single scatter trace with native hexagon markers, colorscale, and colorbar
 fig = go.Figure(
@@ -80,11 +80,12 @@ fig = go.Figure(
             "colorbar": {
                 "title": {"text": "Pickups", "font": {"size": 22}},
                 "tickfont": {"size": 18},
-                "thickness": 25,
-                "len": 0.75,
+                "thickness": 22,
+                "len": 0.7,
+                "x": 1.01,
                 "outlinewidth": 0,
             },
-            "line": {"width": 0},
+            "line": {"width": 1, "color": counts, "colorscale": "Viridis", "cmin": 0, "cmax": int(counts.max())},
         },
         customdata=counts,
         hovertemplate=("East: %{x:.1f} km<br>North: %{y:.1f} km<br>Pickups: %{customdata}<extra></extra>"),

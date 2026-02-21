@@ -1,7 +1,7 @@
 """ pyplots.ai
 violin-basic: Basic Violin Plot
 Library: plotnine 0.15.3 | Python 3.14.3
-Quality: /100 | Updated: 2026-02-21
+Quality: 87/100 | Updated: 2026-02-21
 """
 
 import numpy as np

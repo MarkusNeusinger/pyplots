@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 violin-basic: Basic Violin Plot
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 81/100 | Updated: 2026-02-21
 """
 
 import numpy as np
@@ -18,9 +17,9 @@ data = {
     "Advanced": np.clip(np.concatenate([np.random.normal(75, 6, 120), np.random.normal(93, 4, 80)]), 45, 100),
 }
 
-# Colors: 3 series per violin (fill, IQR outline, median line)
-# IQR uses darker shade of violin color; median is white for contrast
-violin_colors = ["#306998", "#E8875B", "#5BA37E", "#C4A23D"]
+# Colors: 3 series per violin (fill, IQR fill, median line)
+# Advanced gets a bolder gold to emphasize its unique bimodal shape
+violin_colors = ["#306998", "#E8875B", "#5BA37E", "#D4A017"]
 iqr_colors = ["#1d3f5c", "#a35a38", "#37634c", "#8a7228"]
 palette = []
 for vc, ic in zip(violin_colors, iqr_colors, strict=True):
@@ -29,17 +28,18 @@ for vc, ic in zip(violin_colors, iqr_colors, strict=True):
 custom_style = Style(
     background="white",
     plot_background="white",
-    foreground="#333333",
+    foreground="#555555",
     foreground_strong="#333333",
-    foreground_subtle="#cccccc",
+    foreground_subtle="#e0e0e0",
     colors=tuple(palette),
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=42,
     legend_font_size=36,
     value_font_size=36,
-    opacity=0.75,
-    opacity_hover=0.9,
+    opacity=0.78,
+    opacity_hover=0.92,
+    transition="200ms ease-in",
 )
 
 # Create XY chart for violin plot (pygal has no native violin)
@@ -57,25 +57,28 @@ chart = pygal.XY(
     show_x_guides=False,
     show_y_guides=True,
     range=(30, 105),
-    xrange=(0, 5.5),
+    xrange=(0, 5.25),
     margin=50,
     value_formatter=lambda x: f"{x:.0f}%",
     tooltip_border_radius=10,
+    tooltip_fancy_mode=True,
 )
 
-# Violin shape parameters
-violin_width = 0.4
+# Violin widths — Advanced is wider to visually highlight its bimodal shape
+base_width = 0.38
+widths = {"Honors": base_width, "Standard": base_width, "Remedial": base_width, "Advanced": 0.46}
 n_points = 100
 
 # Build violins with quartile markers and median lines
 for i, (category, values) in enumerate(data.items()):
-    center_x = i + 1.25
+    center_x = i + 1.15
+    violin_width = widths[category]
 
     # KDE using Silverman's rule
     n = len(values)
     std = np.std(values)
-    iqr = np.percentile(values, 75) - np.percentile(values, 25)
-    bandwidth = 0.9 * min(std, iqr / 1.34) * n ** (-0.2)
+    iqr_val = np.percentile(values, 75) - np.percentile(values, 25)
+    bandwidth = 0.9 * min(std, iqr_val / 1.34) * n ** (-0.2)
 
     # Y values for density estimation
     y_min, y_max = values.min(), values.max()
@@ -94,15 +97,15 @@ for i, (category, values) in enumerate(data.items()):
     median_val = float(np.median(values))
     q1 = float(np.percentile(values, 25))
     q3 = float(np.percentile(values, 75))
-    tooltip = f"{category} — Median: {median_val:.1f}, Q1: {q1:.1f}, Q3: {q3:.1f}"
+    tooltip = f"{category} — Median: {median_val:.1f}%, Q1: {q1:.1f}%, Q3: {q3:.1f}%"
 
     left_points = [(center_x - d, y) for y, d in zip(y_range, density, strict=True)]
     right_points = [(center_x + d, y) for y, d in zip(y_range[::-1], density[::-1], strict=True)]
     violin_points = left_points + right_points + [left_points[0]]
     chart.add(category, violin_points, formatter=lambda x, t=tooltip: t)
 
-    # Quartile markers — stroke-only outline in darker violin shade
-    box_w = 0.10
+    # Quartile markers — filled box in darker shade for clear visibility
+    box_w = 0.16
     quartile_box = [
         (center_x - box_w, q1),
         (center_x - box_w, q3),
@@ -110,11 +113,11 @@ for i, (category, values) in enumerate(data.items()):
         (center_x + box_w, q1),
         (center_x - box_w, q1),
     ]
-    chart.add(None, quartile_box, stroke=True, fill=False, show_dots=False, stroke_style={"width": 4})
+    chart.add(None, quartile_box, stroke=True, fill=True, show_dots=False, stroke_style={"width": 5})
 
-    # Median line — white for clear contrast against violin fill
-    median_line = [(center_x - box_w * 1.5, median_val), (center_x + box_w * 1.5, median_val)]
-    chart.add(None, median_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 8})
+    # Median line — white, wide, extends beyond IQR box for emphasis
+    median_line = [(center_x - box_w * 1.6, median_val), (center_x + box_w * 1.6, median_val)]
+    chart.add(None, median_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 12})
 
 # X-axis labels at violin positions
 chart.x_labels = ["", "Honors", "Standard", "Remedial", "Advanced", ""]

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 violin-basic: Basic Violin Plot
 Library: highcharts 1.10.3 | Python 3.14.3
-Quality: 86/100 | Updated: 2026-02-21
+Quality: repair-2 | Updated: 2026-02-21
 """
 
 import tempfile
@@ -21,7 +21,7 @@ from selenium.webdriver.chrome.options import Options
 # Data - test scores across 4 study groups with distinct distributions
 np.random.seed(42)
 categories = ["Control", "Tutorial", "Self-Study", "Intensive"]
-colors = ["#306998", "#FFD43B", "#9467BD", "#17BECF"]
+colors = ["#306998", "#E5AB00", "#9467BD", "#17BECF"]
 
 raw_data = {
     "Control": np.random.normal(50, 12, 200),
@@ -70,13 +70,18 @@ chart.options.chart = {
     "marginBottom": 180,
     "marginLeft": 240,
     "marginRight": 80,
-    "marginTop": 160,
+    "marginTop": 200,
     "animation": {"duration": 1000},
 }
 
 chart.options.title = {
     "text": "violin-basic \u00b7 highcharts \u00b7 pyplots.ai",
     "style": {"fontSize": "72px", "fontWeight": "bold", "color": "#333333"},
+}
+
+chart.options.subtitle = {
+    "text": "Distribution of scores across 200 students per group",
+    "style": {"fontSize": "44px", "fontWeight": "normal", "color": "#777777"},
 }
 
 chart.options.x_axis = {
@@ -89,6 +94,7 @@ chart.options.x_axis = {
     "lineWidth": 2,
     "lineColor": "#cccccc",
     "tickLength": 0,
+    "crosshair": {"width": 2, "color": "rgba(0, 0, 0, 0.15)", "dashStyle": "Dash"},
 }
 
 chart.options.y_axis = {
@@ -100,6 +106,8 @@ chart.options.y_axis = {
     "lineColor": "#cccccc",
     "min": 0,
     "max": 105,
+    "tickInterval": 10,
+    "crosshair": {"width": 1, "color": "rgba(0, 0, 0, 0.12)", "dashStyle": "Dot"},
 }
 
 chart.options.legend = {
@@ -112,6 +120,8 @@ chart.options.legend = {
     "y": 80,
     "floating": True,
 }
+
+chart.options.credits = {"enabled": False}
 
 chart.options.tooltip = {
     "enabled": True,
@@ -126,7 +136,13 @@ chart.options.tooltip = {
 }
 
 chart.options.plot_options = {
-    "polygon": {"lineWidth": 2, "fillOpacity": 0.55, "enableMouseTracking": True, "animation": True},
+    "polygon": {
+        "lineWidth": 2,
+        "fillOpacity": 0.55,
+        "enableMouseTracking": True,
+        "animation": True,
+        "states": {"hover": {"lineWidth": 3, "brightness": 0.1}, "inactive": {"opacity": 0.4}},
+    },
     "scatter": {"marker": {"radius": 18, "symbol": "circle"}, "zIndex": 10, "enableMouseTracking": True},
     "series": {"animation": {"duration": 1200, "easing": "easeOutBounce"}},
 }

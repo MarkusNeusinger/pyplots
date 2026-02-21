@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 violin-basic: Basic Violin Plot
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 80/100 | Updated: 2026-02-21
@@ -13,33 +13,26 @@ from pygal.style import Style
 np.random.seed(42)
 data = {
     "Honors": np.clip(np.random.normal(88, 6, 200), 50, 100),
-    "Standard": np.clip(np.random.normal(74, 10, 200), 40, 100),
+    "Standard": np.clip(60 + np.random.gamma(3.5, 4, 200), 40, 100),
     "Remedial": np.clip(np.random.normal(62, 8, 200), 30, 100),
-    "Advanced": np.clip(np.random.normal(82, 14, 200), 45, 100),
+    "Advanced": np.clip(np.concatenate([np.random.normal(75, 6, 120), np.random.normal(93, 4, 80)]), 45, 100),
 }
 
-# Colors: each violin gets 3 series (fill, IQR box, median line)
-# Palette cycles per series, so position matters
+# Colors: 3 series per violin (fill, IQR outline, median line)
+# IQR uses darker shade of violin color; median is white for contrast
+violin_colors = ["#306998", "#E8875B", "#5BA37E", "#C4A23D"]
+iqr_colors = ["#1d3f5c", "#a35a38", "#37634c", "#8a7228"]
+palette = []
+for vc, ic in zip(violin_colors, iqr_colors, strict=True):
+    palette.extend([vc, ic, "#ffffff"])
+
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#cccccc",
-    colors=(
-        "#306998",
-        "#1a1a1a",
-        "#1a1a1a",
-        "#E8875B",
-        "#1a1a1a",
-        "#1a1a1a",
-        "#5BA37E",
-        "#1a1a1a",
-        "#1a1a1a",
-        "#C4A23D",
-        "#1a1a1a",
-        "#1a1a1a",
-    ),
+    colors=tuple(palette),
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=42,
@@ -56,7 +49,7 @@ chart = pygal.XY(
     style=custom_style,
     title="violin-basic · pygal · pyplots.ai",
     x_title="Class Group",
-    y_title="Test Score",
+    y_title="Test Score (%)",
     show_legend=False,
     stroke=True,
     fill=True,
@@ -66,6 +59,8 @@ chart = pygal.XY(
     range=(30, 105),
     xrange=(0, 5.5),
     margin=50,
+    value_formatter=lambda x: f"{x:.0f}%",
+    tooltip_border_radius=10,
 )
 
 # Violin shape parameters
@@ -95,19 +90,19 @@ for i, (category, values) in enumerate(data.items()):
     # Normalize density to desired width
     density = density / density.max() * violin_width
 
-    # Mirrored violin shape
+    # Mirrored violin shape with tooltip showing statistics
+    median_val = float(np.median(values))
+    q1 = float(np.percentile(values, 25))
+    q3 = float(np.percentile(values, 75))
+    tooltip = f"{category} — Median: {median_val:.1f}, Q1: {q1:.1f}, Q3: {q3:.1f}"
+
     left_points = [(center_x - d, y) for y, d in zip(y_range, density, strict=True)]
     right_points = [(center_x + d, y) for y, d in zip(y_range[::-1], density[::-1], strict=True)]
     violin_points = left_points + right_points + [left_points[0]]
-    chart.add(category, violin_points)
+    chart.add(category, violin_points, formatter=lambda x, t=tooltip: t)
 
-    # Quartile markers and median
-    median = float(np.median(values))
-    q1 = float(np.percentile(values, 25))
-    q3 = float(np.percentile(values, 75))
-    box_w = 0.15
-
-    # IQR box — filled dark for strong contrast
+    # Quartile markers — stroke-only outline in darker violin shade
+    box_w = 0.10
     quartile_box = [
         (center_x - box_w, q1),
         (center_x - box_w, q3),
@@ -115,10 +110,10 @@ for i, (category, values) in enumerate(data.items()):
         (center_x + box_w, q1),
         (center_x - box_w, q1),
     ]
-    chart.add(None, quartile_box, stroke=True, fill=True, show_dots=False, stroke_style={"width": 3})
+    chart.add(None, quartile_box, stroke=True, fill=False, show_dots=False, stroke_style={"width": 4})
 
-    # Median line — thick dark stroke
-    median_line = [(center_x - box_w * 1.3, median), (center_x + box_w * 1.3, median)]
+    # Median line — white for clear contrast against violin fill
+    median_line = [(center_x - box_w * 1.5, median_val), (center_x + box_w * 1.5, median_val)]
     chart.add(None, median_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 8})
 
 # X-axis labels at violin positions

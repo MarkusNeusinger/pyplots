@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 hexbin-basic: Basic Hexbin Plot
 Library: plotly 6.5.2 | Python 3.14.3
-Quality: 85/100 | Created: 2026-02-21
 """
 
 import numpy as np
@@ -50,7 +49,11 @@ hex_x = np.array([v[0] for v in hex_bins.values()])
 hex_y = np.array([v[1] for v in hex_bins.values()])
 counts = np.array([v[2] for v in hex_bins.values()])
 
-# Marker size: match hexagon circumradius to hex grid spacing
+# Sort by count so dense hexagons render on top at overlaps
+order = np.argsort(counts)
+hex_x, hex_y, counts = hex_x[order], hex_y[order], counts[order]
+
+# Marker size: slightly oversized to ensure seamless tessellation
 fig_w, fig_h = 1600, 900
 margins = {"l": 100, "r": 140, "t": 100, "b": 100}
 plot_w = fig_w - margins["l"] - margins["r"]
@@ -58,7 +61,7 @@ plot_h = fig_h - margins["t"] - margins["b"]
 ax_x_range = (hex_x.max() + hex_w) - (hex_x.min() - hex_w)
 ax_y_range = (hex_y.max() + hex_h) - (hex_y.min() - hex_h)
 px_per_unit = min(plot_w / ax_x_range, plot_h / ax_y_range)
-marker_size = 2 * hex_size * px_per_unit * 1.2
+marker_size = 2 * hex_size * px_per_unit * 1.55
 
 # Single scatter trace with native hexagon markers, colorscale, and colorbar
 fig = go.Figure(
@@ -78,8 +81,9 @@ fig = go.Figure(
                 "tickfont": {"size": 18},
                 "thickness": 25,
                 "len": 0.75,
+                "outlinewidth": 0,
             },
-            "line": {"width": 0.5, "color": "rgba(255,255,255,0.25)"},
+            "line": {"width": 0},
         },
         customdata=counts,
         hovertemplate=("East: %{x:.1f} km<br>North: %{y:.1f} km<br>Pickups: %{customdata}<extra></extra>"),
@@ -90,20 +94,20 @@ fig = go.Figure(
 fig.update_layout(
     title={
         "text": "hexbin-basic · plotly · pyplots.ai",
-        "font": {"size": 32, "color": "#2d2d2d"},
+        "font": {"size": 32, "color": "#2d2d2d", "family": "Arial Black, Arial"},
         "x": 0.5,
         "xanchor": "center",
     },
     xaxis={
-        "title": {"text": "Distance East (km)", "font": {"size": 24}},
-        "tickfont": {"size": 18},
+        "title": {"text": "Distance East (km)", "font": {"size": 24, "color": "#555"}},
+        "tickfont": {"size": 18, "color": "#666"},
         "showgrid": False,
         "zeroline": False,
         "range": [hex_x.min() - hex_w, hex_x.max() + hex_w],
     },
     yaxis={
-        "title": {"text": "Distance North (km)", "font": {"size": 24}},
-        "tickfont": {"size": 18},
+        "title": {"text": "Distance North (km)", "font": {"size": 24, "color": "#555"}},
+        "tickfont": {"size": 18, "color": "#666"},
         "showgrid": False,
         "zeroline": False,
         "scaleanchor": "x",
@@ -113,7 +117,34 @@ fig.update_layout(
     template="plotly_white",
     margin=margins,
     plot_bgcolor="#f8f9fa",
+    hoverlabel={
+        "bgcolor": "rgba(50,50,50,0.9)",
+        "font": {"size": 16, "family": "Arial", "color": "white"},
+        "bordercolor": "rgba(0,0,0,0)",
+    },
 )
+
+# Annotate cluster hotspots for data storytelling
+for label, cx, cy, ax, ay in [
+    ("Downtown", -4, 1.0, -45, 55),
+    ("Airport", 1.5, 3.5, 35, -50),
+    ("University", 6, 1.5, 45, 55),
+]:
+    fig.add_annotation(
+        x=cx,
+        y=cy,
+        text=f"<b>{label}</b>",
+        showarrow=True,
+        arrowhead=0,
+        arrowwidth=1.5,
+        arrowcolor="rgba(80,80,80,0.5)",
+        ax=ax,
+        ay=ay,
+        font={"size": 16, "color": "#333", "family": "Arial"},
+        bgcolor="rgba(255,255,255,0.85)",
+        borderpad=4,
+        bordercolor="rgba(0,0,0,0)",
+    )
 
 fig.write_image("plot.png", width=fig_w, height=fig_h, scale=3)
 fig.write_html("plot.html", include_plotlyjs=True, full_html=True)

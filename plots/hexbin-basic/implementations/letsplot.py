@@ -1,7 +1,7 @@
 """ pyplots.ai
 hexbin-basic: Basic Hexbin Plot
 Library: letsplot 4.8.2 | Python 3.14.3
-Quality: /100 | Updated: 2026-02-21
+Quality: 86/100 | Updated: 2026-02-21
 """
 
 import numpy as np

@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: violin-basic
 created: '2025-12-23T00:36:59Z'
-updated: '2026-02-21T22:59:06Z'
+updated: '2026-02-21T23:13:37Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447783582
 issue: 0
@@ -10,7 +10,7 @@ library_version: 1.10.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/violin-basic/highcharts/plot.html
-quality_score: 87
+quality_score: 92
 impl_tags:
   dependencies:
   - scipy
@@ -18,44 +18,46 @@ impl_tags:
   techniques:
   - hover-tooltips
   - html-export
+  - custom-legend
   patterns:
   - data-generation
   - iteration-over-groups
   dataprep:
   - kde
   styling:
+  - gradient-fill
   - alpha-blending
   - grid-styling
 review:
   strengths:
-  - Excellent data variety with 4 distinct distribution shapes showcasing violin plot
-    strengths
-  - Rich interactive tooltips showing complete statistical summary per group
-  - 'All spec features implemented cleanly: mirrored density, IQR boxes, median lines'
-  - Perfect text legibility with explicitly set font sizes throughout
-  - Colorblind-safe palette with good visual harmony
+  - Excellent data choices with four distinct distribution shapes (normal, bimodal,
+    shifted normal, skewed) showcasing violin plot capabilities
+  - Gradient fills with center-to-edge transparency create a polished professional
+    look
+  - All font sizes explicitly set and perfectly readable at 4800x2700
+  - 'Clean visual refinement: removed axis lines, removed ticks, subtle grid, generous
+    margins'
+  - Rich HTML tooltips with formatted statistics (n, mean, median, Q1/Q3, std dev)
+  - Overall mean reference line provides useful context for cross-group comparison
   weaknesses:
-  - 'Design Excellence remains the main gap: good but not yet publication-quality
-    polish'
-  - IQR boxes are quite narrow (box_width=0.06), reducing their visual impact as quartile
-    markers
-  - No visual emphasis or focal point to guide the viewer toward a specific insight
-  - Manual polygon construction limits idiomatic Highcharts usage (inherent to the
-    approach)
-  image_description: 'The plot displays 4 violin shapes representing test score distributions
-    across study groups: Control (steel blue, #306998), Tutorial (gold, #E5AB00),
-    Self-Study (purple, #9467BD), and Intensive (cyan, #17BECF). Each violin has mirrored
-    KDE density contours with a semi-transparent fill (opacity ~0.55). Inside each
-    violin, a narrow dark rectangle shows the interquartile range (Q1-Q3) and a white
-    horizontal line marks the median. The Control violin is centered around 50 with
-    a roughly normal bell shape. The Tutorial violin is wider and shows a bimodal
-    bulge around 40 and 65. The Self-Study violin is centered higher around 60 with
-    a normal shape. The Intensive violin is right-skewed with a lower center (~38)
-    and a long thin tail extending up to ~103. The title reads "violin-basic · highcharts
-    · pyplots.ai" with a subtitle "Distribution of scores across 200 students per
-    group". Y-axis labeled "Test Score (points)" from 0-110, X-axis labeled "Study
-    Group". Legend in top-right shows all 4 groups plus "Median". Background is white
-    with subtle gray gridlines.'
+  - Blue and cyan colors could be slightly similar for some forms of color vision
+    deficiency
+  - IQR boxes are plain dark rectangles — more refined styling could improve polish
+  image_description: The plot displays four violin shapes representing test score
+    distributions across study groups (Control, Tutorial, Self-Study, Intensive).
+    Each violin is rendered as a PolygonSeries with horizontal gradient fills — center
+    opaque fading to transparent edges. Colors are steel blue (#306998), golden yellow
+    (#E5AB00), medium purple (#9467BD), and cyan (#17BECF). Dark IQR boxes sit inside
+    each violin spanning Q1–Q3, with white horizontal median lines crossing each at
+    the median position. A dashed "Overall Mean (51)" reference line spans the full
+    width. The y-axis reads "Test Score (points)" from 0–110 with subtle gridlines
+    every 10 points. The x-axis reads "Study Group" with category labels. A floating
+    legend in the upper right shows all four categories plus "Median". The title "violin-basic
+    · highcharts · pyplots.ai" appears at the top with subtitle "Distribution of scores
+    across 200 students per group." The Control violin is bell-shaped centered ~50,
+    Tutorial is distinctly bimodal (wide body spanning ~25–85), Self-Study is a tighter
+    bell centered ~60, and Intensive is right-skewed with a long thin tail reaching
+    ~103. The layout is clean with no axis lines, no tick marks, and generous margins.
   criteria_checklist:
     visual_quality:
       score: 29
@@ -66,68 +68,68 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 72px, subtitle 44px, axis titles
-          52px, axis labels 44px, legend 40px. All perfectly readable.'
+        comment: All font sizes explicitly set (title 72px, subtitle 44px, axis titles
+          52px, axis labels 44px, legend 40px). All text perfectly readable.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text or data elements. Legend floats in top-right
-          without overlapping violins.
+        comment: No overlapping text elements. Category labels well-spaced, legend
+          floats cleanly.
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Violin shapes clearly visible with good opacity. IQR boxes (box_width=0.06)
-          are functional but quite narrow.
+        comment: Violin shapes clearly visible with appropriate sizing. IQR boxes
+          and median lines have strong contrast.
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: Blue/gold/purple/cyan palette is colorblind-safe with no red-green
-          pairing. Good contrast.
+        comment: Four distinct hue families work for most CVD types. Blue and cyan
+          could be slightly similar for tritanopia.
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Well-proportioned layout with explicit margins. Violins well-distributed.
-          Canvas well-utilized.
+        comment: Plot fills ~60% of canvas. Explicit margins create balanced layout.
+          Nothing cut off.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Test Score (points) and Study Group are descriptive with units where
-          applicable.
+        comment: Y-axis 'Test Score (points)' with units. X-axis 'Study Group' descriptive
+          for categorical data.
     design_excellence:
-      score: 12
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom harmonious palette, clean design, good typography. Above defaults
-          but not publication-ready.
+        comment: Custom palette, gradient fills, featured violin, overall mean reference
+          line. Professional and polished, clearly above defaults.
       - id: DE-02
         name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: Axis lines removed, tick marks removed, subtle grid (alpha 0.08),
+          styled crosshairs, generous whitespace.
+      - id: DE-03
+        name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Subtle grid (opacity 0.08), clean axis lines, no tick marks, credits
-          disabled, generous margins.
-      - id: DE-03
-        name: Data Storytelling
-        score: 3
-        max: 6
-        passed: false
-        comment: Four distinct distribution shapes create visual interest but no clear
-          focal point or guided emphasis.
+        comment: Featured Tutorial violin with higher opacity, overall mean reference
+          line, distinct distribution shapes create natural comparison.
     spec_compliance:
       score: 15
       max: 15
@@ -137,26 +139,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct violin plot with KDE density shapes.
+        comment: Correct violin plot combining KDE density shapes with box-plot-style
+          statistics.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Mirrored density, quartile markers (IQR boxes), median lines all
-          present.
+        comment: Quartile markers (IQR boxes), mirrored density, median line all present.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Categories on X-axis, numerical values on Y-axis, all data visible.
+        comment: Categories on X-axis, numerical values on Y-axis. 4 categories with
+          200 points each.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format. Legend labels match group names.
+        comment: Title follows exact format. Legend labels match category names.
     data_quality:
       score: 15
       max: 15
@@ -166,22 +169,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Excellent variety: normal, bimodal, shifted normal, right-skewed
-          distributions.'
+        comment: 'Four distinct distributions: normal, bimodal, shifted normal, right-skewed
+          exponential.'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Educational study comparing test scores across study methods. Neutral,
-          real-world plausible.
+        comment: Test scores across study groups — plausible educational research
+          scenario, neutral topic.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Test scores 0-100, 200 students per group, sensible distribution
-          parameters.
+        comment: Scores 0-100, 200 students per group — realistic for educational
+          assessment.
     code_quality:
       score: 10
       max: 10
@@ -191,50 +194,49 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data generation, KDE calculation, chart config,
-          series creation, export.'
+        comment: 'Linear script: imports, data, chart setup, series, export. No functions
+          or classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set at top.
+        comment: np.random.seed(42) set at start.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used.
+        comment: All imports used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean loop-based construction. Appropriate complexity for manual
-          polygon violin construction.
+        comment: Clean dictionary-based data structure. Loop-based series construction
+          is appropriate.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via selenium screenshot. Also generates plot.html.
-          Current API.
+        comment: Saves as plot.png via Selenium. Uses current highcharts_core API.
     library_mastery:
-      score: 6
+      score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Uses Chart, HighchartsOptions, PolygonSeries correctly. Manual polygon
-          construction necessary since Highcharts lacks native violin series.
+        comment: Correct use of PolygonSeries for custom shapes. Chart options, tooltip,
+          crosshair, and series config follow highcharts_core patterns.
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Interactive tooltips with rich HTML, hover states, inactive states,
-          crosshair, animation with custom easing.
-  verdict: REJECTED
+        comment: Linear gradient fills, HTML tooltips, hover states, crosshairs, animation
+          easing — distinctive Highcharts features.
+  verdict: APPROVED

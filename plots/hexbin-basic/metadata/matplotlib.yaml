@@ -1,7 +1,7 @@
 library: matplotlib
 specification_id: hexbin-basic
 created: 2025-12-14 19:44:52+00:00
-updated: '2026-02-21T21:02:15+00:00'
+updated: '2026-02-21T21:08:54Z'
 generated_by: claude-opus-4-6
 workflow_run: 20213176712
 issue: 859
@@ -10,17 +10,223 @@ library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/hexbin-basic/matplotlib/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hexbin-basic/matplotlib/plot_thumb.png
 preview_html: null
-quality_score: null
+quality_score: 88
 impl_tags:
   dependencies: []
   techniques:
   - colorbar
   patterns:
   - data-generation
+  - explicit-figure
   dataprep: []
-  styling: []
+  styling:
+  - custom-colormap
+  - edge-highlighting
 review:
-  strengths: []
-  weaknesses: []
+  strengths:
+  - Perfect visual quality with all font sizes explicitly set and clean, readable
+    layout
+  - Full spec compliance including all four noted requirements (colorbar, viridis,
+    gridsize, log scale)
+  - Realistic city sensor data context with three distinct geographical clusters at
+    varying densities
+  - Clean, idiomatic code with proper seed and KISS structure
+  weaknesses:
+  - Design lacks the aesthetic distinction needed for publication quality — viridis
+    is the default colormap and the overall look is well-configured rather than curated
+  - No visual storytelling elements guide the viewer toward key density patterns or
+    cluster relationships
   improvements: []
-  verdict: APPROVED
+  verdict: REJECTED
+  image_description: The plot displays a hexagonal binning visualization of simulated
+    city sensor readings across a 2D spatial grid. Hexagons are colored using the
+    viridis colormap ranging from dark purple (1 count, 10^0) to bright yellow (~30+
+    counts). The x-axis is labeled "Longitude (km)" spanning approximately -6 to 8,
+    and the y-axis is labeled "Latitude (km)" spanning approximately -5 to 7. The
+    title reads "hexbin-basic · matplotlib · pyplots.ai" in medium weight at the top.
+    A vertical colorbar on the right shows "Sensor Reading Count" with a logarithmic
+    scale. Two prominent high-density hotspots (bright yellow) are visible — one centered
+    around (-2, -1) representing the industrial cluster and another around (1-2, 1-2)
+    representing the downtown cluster. A smaller, subtler density region around (1,
+    -2) represents the suburban cluster. Top and right spines are removed, and the
+    plot background is a light gray (#fafafa). White edges on hexagons create clean
+    visual separation.
+  criteria_checklist:
+    visual_quality:
+      score: 30
+      max: 30
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 8
+        max: 8
+        passed: true
+        comment: 'All font sizes explicitly set: title 24pt, axis labels 20pt, tick
+          labels 16pt, colorbar label 20pt, colorbar ticks 16pt'
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
+        passed: true
+        comment: No overlapping text elements; title, axis labels, tick labels, and
+          colorbar label all clearly separated
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 6
+        passed: true
+        comment: Hexagons well-sized at gridsize=30 for 10k points; white edges delineate
+          bins; LogNorm makes low-density bins visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 4
+        passed: true
+        comment: Viridis is perceptually uniform and colorblind-safe with good contrast
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: Plot fills ~65% of canvas with balanced margins; colorbar positioned
+          tightly
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: Longitude (km), Latitude (km)'
+    design_excellence:
+      score: 12
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: true
+        comment: 'White hex edges, removed spines, #fafafa background, LogNorm show
+          design intent; viridis is default cmap though'
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Spines removed, custom facecolor, clean hex edge styling, good whitespace;
+          lacks additional refinement
+      - id: DE-03
+        name: Data Storytelling
+        score: 3
+        max: 6
+        passed: false
+        comment: Three clusters create implicit density narrative but no visual emphasis
+          or hierarchy guides the viewer
+    spec_compliance:
+      score: 15
+      max: 15
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 5
+        max: 5
+        passed: true
+        comment: Correct hexagonal binning plot using ax.hexbin()
+      - id: SC-02
+        name: Required Features
+        score: 4
+        max: 4
+        passed: true
+        comment: Colorbar, viridis colormap, gridsize=30, LogNorm — all spec requirements
+          met
+      - id: SC-03
+        name: Data Mapping
+        score: 3
+        max: 3
+        passed: true
+        comment: X/Y correctly mapped as spatial coordinates; axes show full data
+          range
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
+        passed: true
+        comment: Title follows exact format; colorbar label is descriptive
+    data_quality:
+      score: 14
+      max: 15
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 5
+        max: 6
+        passed: true
+        comment: Multiple density clusters at different sizes and intensities; downtown
+          and suburb clusters partially merge
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 5
+        passed: true
+        comment: City sensor readings with downtown/industrial/suburb clusters is
+          realistic and neutral
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Kilometer-scale coordinates plausible for urban area; sensor counts
+          sensible for 10k dataset
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear flow: imports, data generation, plot, style, save;
+          no functions or classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 2
+        passed: true
+        comment: np.random.seed(42) ensures deterministic output
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: 'All three imports used: matplotlib.colors, matplotlib.pyplot, numpy'
+      - id: CQ-04
+        name: Code Elegance
+        score: 2
+        max: 2
+        passed: true
+        comment: Clean, Pythonic, appropriate complexity; no over-engineering
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with dpi=300 and bbox_inches=tight; no deprecated
+          API
+    library_mastery:
+      score: 7
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of ax.hexbin() with LogNorm, mincnt, edgecolors; follows
+          Axes-method pattern
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: ax.hexbin() is distinctive to matplotlib; mcolors.LogNorm() is library-specific;
+          mincnt leverages built-in filtering

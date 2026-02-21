@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 hexbin-basic: Basic Hexbin Plot
 Library: plotnine 0.15.3 | Python 3.14.3
+Quality: 88/100 | Created: 2026-02-21
 """
 
 import numpy as np

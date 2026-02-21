@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 hexbin-basic: Basic Hexbin Plot
 Library: bokeh 3.8.2 | Python 3.14.3
-Quality: 88/100 | Created: 2026-02-21
+Quality: 90/100 | Created: 2026-02-21
 """
 
 import numpy as np

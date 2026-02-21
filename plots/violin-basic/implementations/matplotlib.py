@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 violin-basic: Basic Violin Plot
 Library: matplotlib 3.10.8 | Python 3.14.3
+Quality: 92/100 | Updated: 2026-02-21
 """
 
 import matplotlib.patheffects as pe

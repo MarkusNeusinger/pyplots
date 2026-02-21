@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 hexbin-basic: Basic Hexbin Plot
 Library: plotly 6.5.2 | Python 3.14.3
-Created: 2026-02-21
+Quality: 92/100 | Created: 2026-02-21
 """
 
 import numpy as np

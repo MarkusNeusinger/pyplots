@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 hexbin-basic: Basic Hexbin Plot
 Library: plotnine 0.15.3 | Python 3.14.3
-Quality: 88/100 | Created: 2026-02-21
 """
 
 import numpy as np
@@ -16,7 +15,7 @@ from plotnine import (
     ggplot,
     guide_colorbar,
     labs,
-    scale_fill_gradientn,
+    scale_fill_cmap,
     theme,
     theme_minimal,
 )
@@ -55,7 +54,8 @@ bin_df = pd.DataFrame({"cx": np.round(col_idx * hex_w + offset, 6), "cy": np.rou
 counts = bin_df.groupby(["cx", "cy"]).size().reset_index(name="count")
 
 # Build hex polygon vertices (fully vectorized)
-r = hex_w / np.sqrt(3)
+# Slight oversize (1.02x) ensures tight tiling with no gaps between hexagons
+r = hex_w / np.sqrt(3) * 1.02
 angles = np.linspace(0, 2 * np.pi, 7)[:-1] + np.pi / 6
 n = len(counts)
 
@@ -68,14 +68,12 @@ hex_df = pd.DataFrame(
     }
 )
 
-# Geothermal palette: deep indigo → magenta → coral → warm gold
-palette = ["#1a1423", "#3d1c5c", "#8b2252", "#c94c4c", "#e8854a", "#f2c94c", "#faf3dd"]
 bg = "#f0edeb"
 
 plot = (
     ggplot(hex_df, aes(x="x", y="y", group="hex_id", fill="count"))
-    + geom_polygon(color=bg, size=0.3)
-    + scale_fill_gradientn(colors=palette, name="Event Count", guide=guide_colorbar(nbin=200))
+    + geom_polygon(color=bg, size=0.15)
+    + scale_fill_cmap("inferno", name="Event Count", guide=guide_colorbar(nbin=200))
     + coord_fixed(ratio=1)
     + labs(x="Longitude (°E)", y="Latitude (°N)", title="Seismic Event Density · hexbin-basic · plotnine · pyplots.ai")
     + theme_minimal()

@@ -1,7 +1,7 @@
 library: pygal
 specification_id: hexbin-basic
 created: 2025-12-14 19:48:53+00:00
-updated: '2026-02-21T21:08:33Z'
+updated: '2026-02-21T21:19:49Z'
 generated_by: claude-opus-4-6
 workflow_run: 20213177474
 issue: 859
@@ -10,7 +10,7 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/hexbin-basic/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hexbin-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/hexbin-basic/pygal/plot.html
-quality_score: 77
+quality_score: 82
 impl_tags:
   dependencies: []
   techniques:
@@ -21,42 +21,38 @@ impl_tags:
   dataprep:
   - binning
   styling:
-  - alpha-blending
+  - grid-styling
 review:
   strengths:
-  - Clever approximation of hexbin using pygal XY scatter with graduated dot sizes
-    and viridis colors
-  - Excellent data storytelling with realistic air quality sensor scenario and three
-    distinct spatial clusters
-  - Log-spaced bin edges provide better visual separation of density levels
-  - All font sizes explicitly set with good typography hierarchy
-  - Clean viridis palette is colorblind-safe and perceptually uniform
+  - Excellent data storytelling with three distinct density clusters and realistic
+    urban scenario
+  - Viridis-derived palette with dual size+color encoding creates strong visual hierarchy
+  - Clean well-commented code with proper hex binning algorithm
+  - Perfect data quality scores with compelling neutral air quality sensor context
   weaknesses:
-  - Sparse-level dots (dots_size=3) are barely visible at full resolution — minimum
-    dot size should be larger
-  - No color bar (using discrete legend instead) — pygal limitation but still a spec
-    gap
-  - Circles instead of hexagons — pygal limitation reduces spec fidelity
-  - Y-axis range extends well beyond data range wasting vertical space
-  - Manual hex binning code is somewhat opaque and could benefit from being more transparent
+  - Hexbin cells displayed as circles rather than hexagons reducing spec fidelity
+  - Grid lines still prominent - could use lighter foreground_subtle or hide x-guides
+  - No continuous colorbar - discrete legend is pygal alternative but could be refined
+  - Library mastery limited by necessity of manual hex binning
   improvements: []
   verdict: REJECTED
-  image_description: 'The plot displays an XY scatter chart on a white/#fafafa background
-    with the title "hexbin-basic · pygal · pyplots.ai" centered at the top. The X-axis
-    is labeled "Sensor Grid X (km)" ranging from -6 to 8, and the Y-axis is labeled
-    "Sensor Grid Y (km)" ranging from -6 to 8. Data points are rendered as circles
-    of five different sizes and colors following a viridis-like palette: tiny dark
-    purple dots for "Sparse (1–3)", small blue-teal dots for "Low (3–14)", medium
-    teal-green dots for "Moderate (14–52)", larger light green dots for "Dense (52–198)",
-    and large yellow dots for "Hotspot (198–744)". A dense cluster of large yellow
-    hotspot dots is clearly visible around coordinates (1–2, 2–4), representing the
-    downtown core. A secondary cluster of moderate green dots appears around (-3 to
-    -4, -1 to -3) for the industrial zone. Sparse tiny dots are scattered across the
-    full range as background. The legend is displayed at the bottom in a single row
-    with 5 entries. Subtle dotted grid lines are visible across the plot area.'
+  image_description: 'The plot displays a scatter-based hexbin visualization on a
+    light gray background (#f7f7f7). The title "hexbin-basic · pygal · pyplots.ai"
+    appears at top center. The x-axis is labeled "Sensor Grid X (km)" ranging from
+    -5 to 7, and the y-axis "Sensor Grid Y (km)" from -4.0 to 5.0 km. Data points
+    are rendered as circular markers using a viridis-derived 5-color palette (dark
+    purple, dark blue, teal, green, yellow) with sizes increasing from ~8px to ~50px
+    to encode density. Three distinct clusters are visible: a dense downtown core
+    cluster (large yellow/green dots around x=1-2, y=2-4), a moderate industrial zone
+    cluster (teal/blue dots around x=-3 to -2, y=-2 to -1), and a sparser highway
+    corridor (green/teal dots around x=5-6, y=0-2). Small purple dots are scattered
+    uniformly in the background. A horizontal legend at the bottom shows 5 categories:
+    Sparse (1-3 pts), Low (3-13 pts), Moderate (13-48 pts), Dense (48-177 pts), Hotspot
+    (177-647 pts). Subtle grid lines are visible. Overall the plot is clean and readable
+    with clear visual hierarchy through the combined size+color encoding.'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 27
       max: 30
       items:
       - id: VQ-01
@@ -64,41 +60,41 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title=48, label=36, major_label=30,
-          legend=26). All text readable. Legend text slightly small.
+        comment: All font sizes explicitly set (title=52, label=38, major_label=32,
+          legend=30). All text readable. Legend text slightly small relative to canvas.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No text overlap. Legend cleanly placed at bottom.
+        comment: No overlapping text. Axis labels well-spaced, legend categories spread
+          horizontally.
       - id: VQ-03
         name: Element Visibility
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Graduated dot sizes create hierarchy but Sparse dots (dots_size=3)
-          are barely visible at full resolution.
+        comment: Variable dot sizes (8-50) create clear density hierarchy. Smallest
+          purple dots visible but quite small.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Viridis palette is perceptually uniform and colorblind-safe.
+        comment: Viridis-derived palette is perceptually uniform and colorblind-safe.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Plot fills most of canvas. Some wasted space at vertical extremes
-          beyond data range.
+        comment: Plot fills ~60% of canvas. Some data points at edges. Legend slightly
+          cramped.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: Sensor Grid X (km), Sensor Grid Y
-          (km).'
+        comment: Both axes labeled with units. Title in correct format.
     design_excellence:
       score: 12
       max: 20
@@ -108,24 +104,24 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Thoughtful viridis palette, intentional size hierarchy, custom typography.
-          Above default but not publication-grade.
+        comment: Custom viridis palette, light gray plot background, dual size+color
+          encoding, consistent sans-serif typography. Above defaults but not publication-ready.
       - id: DE-02
         name: Visual Refinement
         score: 3
         max: 6
         passed: true
-        comment: Subtle grid, clean background. Pygal built-in chrome still present.
-          Limited by library capabilities.
+        comment: Subtle grid with custom foreground_subtle, custom plot_background.
+          Pygal lacks spine removal. Grid lines still somewhat prominent.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Three distinct clusters tell clear air quality story. Size + color
-          double encoding creates strong visual hierarchy.
+        comment: Three distinct clusters tell air quality story. Size+color dual encoding
+          creates clear visual hierarchy with yellow hotspots as focal points.
     spec_compliance:
-      score: 11
+      score: 12
       max: 15
       items:
       - id: SC-01
@@ -133,54 +129,56 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Density binning concept correct but uses circles instead of hexagons
-          due to pygal limitation.
+        comment: Hexagonal binning correctly performed in data processing, but displayed
+          as circles rather than hexagons.
       - id: SC-02
         name: Required Features
-        score: 2
+        score: 3
         max: 4
-        passed: false
-        comment: Missing color bar (uses discrete legend). Has viridis, gridsize,
-          log-scale bin edges.
+        passed: true
+        comment: Missing continuous colorbar (discrete 5-level legend instead). Viridis
+          palette, gridsize parameter, log-spaced thresholds present.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X/Y correctly mapped, axes show full data range.
+        comment: X/Y correctly mapped. Hex binning correctly assigns points to cells.
+          Percentile-based axis range shows all meaningful data.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend labels informative with count ranges.
+        comment: Title follows correct format. Legend has 5 descriptive density categories
+          with point count ranges.
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Shows multiple density levels from sparse to hotspot. Three distinct
-          clusters with different characteristics.
+        comment: 'Full range demonstrated: high density hotspots, medium density,
+          moderate/elongated corridor, sparse background. Multiple cluster shapes.'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Air quality sensor network is real-world and neutral. Realistic spatial
-          patterns.
+        comment: Air quality sensor network with three pollution hotspots. Realistic,
+          neutral, comprehensible urban analytics scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Grid coordinates in km appropriate for city-scale. 4500 data points
-          suitable.
+        comment: Coordinates in km, 4500 total sensors, plausible cluster densities
+          for metropolitan sensor network.
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -188,34 +186,35 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Flat Imports → Data → Computation → Plot → Save structure.
+        comment: 'Linear flow: imports, data generation, hex binning, chart config,
+          series creation, save. No functions or classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Uses np.random.seed(42).
+        comment: np.random.seed(42) set at top.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: numpy, pygal, pygal.style.Style — all used.
+        comment: numpy, pygal, Style — all used, no extras.
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Manual hex bin computation necessary but somewhat dense. Key-based
-          binning is clever but not immediately transparent.
+        comment: Clean hex binning with clear comments. strict=True in zip, logspace
+          thresholds, percentile-based axis range.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as both plot.svg and plot.png. Uses current pygal API.
+        comment: Saves plot.svg and plot.png via current pygal API.
     library_mastery:
-      score: 5
+      score: 6
       max: 10
       items:
       - id: LM-01
@@ -223,12 +222,14 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Uses pygal.XY(), Style, chart.add() correctly. Per-series dots_size
-          is nice. Most heavy lifting done by numpy.
+        comment: 'Good pygal usage: XY chart, custom Style, per-series dots_size,
+          legend configuration, tooltip settings. But bulk of logic is manual numpy
+          hex binning.'
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
         passed: true
-        comment: Per-series dots_size and legend_at_bottom_columns are pygal-specific.
-          Dual SVG/PNG output. Otherwise generic XY scatter usage.
+        comment: Per-series dots_size, SVG+PNG dual output, tooltip_border_radius,
+          human_readable formatting, value_formatter. Pygal-specific but core visualization
+          is manual.

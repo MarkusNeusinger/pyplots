@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: violin-basic
 created: '2025-12-23T00:36:10Z'
-updated: '2026-02-21T22:33:05Z'
+updated: '2026-02-21T22:45:43Z'
 generated_by: claude-opus-4-6
 workflow_run: 20447780513
 issue: 0
@@ -10,15 +10,17 @@ library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-basic/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/violin-basic/bokeh/plot.html
-quality_score: 82
+quality_score: 88
 impl_tags:
   dependencies:
   - scipy
   techniques:
+  - hover-tooltips
   - html-export
   patterns:
   - data-generation
   - iteration-over-groups
+  - columndatasource
   dataprep:
   - kde
   styling:
@@ -26,69 +28,74 @@ impl_tags:
   - grid-styling
 review:
   strengths:
+  - 'All five previous review issues addressed: diverse distributions, four distinct
+    colors, ColumnDataSource, HoverTool, tightened y-range'
   - Full spec compliance with all required features (quartile markers, mirrored density,
     median line)
-  - Realistic salary-by-department data with meaningful distribution differences across
-    categories
-  - Strong visual refinement (removed grids, subtle y-grid, no outlines, cleaned tick
-    marks, light axis lines)
-  - Perfect code quality with clean KISS structure and reproducible seed
-  - Dual PNG+HTML output leveraging Bokeh strengths
+  - Excellent data quality with skewed, bimodal, and normal distributions demonstrating
+    violin plot strengths
+  - Clean, idiomatic Bokeh code with ColumnDataSource and interactive HTML export
+  - Strong visual refinement with removed chart junk, subtle grid, and currency formatting
   weaknesses:
-  - All four distributions are symmetric normal - does not showcase violin plot key
-    advantage of revealing distribution shape (skewness, multimodality)
-  - Color palette uses only two hue families making within-pair categories hard to
-    distinguish
-  - Does not use ColumnDataSource as recommended by Bokeh best practices
-  - HTML output lacks HoverTool, missing opportunity for Bokeh interactive strengths
-  - Y-axis range extends well below data range creating wasted vertical space
-  image_description: 'The plot displays four violin shapes arranged horizontally across
-    departments: Engineering, Marketing, Sales, and Support. The violins alternate
-    between two color families — steel blue (#306998, #4B8BBE) for Engineering and
-    Sales, and golden yellow (#FFD43B, #FFE873) for Marketing and Support — all at
-    0.7 alpha. Each violin shows a mirrored KDE density profile with a white inner
-    box (Q1–Q3), a bold black median line, and whiskers extending to 1.5×IQR with
-    small caps. The y-axis is formatted as USD currency ($20,000–$140,000) with dashed
-    subtle gridlines. Engineering is centered highest (~$85k), Sales is widest (~$70k,
-    std=20k), Marketing is mid-range (~$65k), and Support is the narrowest and lowest
-    (~$50k). The title "violin-basic · bokeh · pyplots.ai" appears top-left. Background
-    is white with no x-grid, no outline, and light gray axis lines.'
+  - All violins have equal visual weight — no emphasis on the most interesting distributions
+    (Sales skew, Support bimodality)
+  - Title styling could be more sophisticated (no color differentiation, font weight,
+    or subtitle)
+  - Uniform alpha (0.7) across all violins misses an opportunity for visual hierarchy
+  image_description: 'The plot displays four violin shapes arranged horizontally for
+    departments: Engineering (steel blue #306998), Marketing (orange #E8943A), Sales
+    (teal #2A9D8F), and Support (coral #E76F6F). Each violin shows a mirrored KDE
+    density profile with a white inner box (Q1-Q3), a bold black median line, and
+    whiskers extending to 1.5xIQR with small caps. Engineering is a symmetric normal
+    shape centered around ~$85k. Marketing is symmetric normal centered ~$65k with
+    a thin KDE tail extending low. Sales is distinctly right-skewed with a sharp peak
+    extending to ~$150k, reflecting the exponential commission-based distribution.
+    Support shows a clear bimodal shape with two bulges around ~$42k and ~$62k representing
+    junior/senior tiers. The y-axis is formatted as USD currency ($20,000-$140,000+)
+    with subtle dashed gridlines at alpha 0.2. The x-grid is removed, tick marks are
+    removed, axis lines are light gray (#cccccc), and the outline is removed. Title
+    "violin-basic · bokeh · pyplots.ai" is displayed top-left at 36pt. All text is
+    clearly readable with explicit font sizes (28pt labels, 22pt ticks).'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 28
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title 36pt, labels 28pt, ticks 22pt),
-          all clearly readable
+        comment: 'Font sizes explicitly set: title 36pt, labels 28pt, ticks 22pt —
+          all above minimums and clearly readable'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text; category labels well-spaced
+        comment: No overlapping text; four category labels well-spaced, y-axis currency
+          ticks fully readable
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Violins visible at alpha=0.7; whisker caps are thin
+        comment: Violins visible at alpha 0.7; Sales violin spike tapers to extremely
+          narrow tip due to exponential tail
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Blue/yellow colorblind-safe but within-pair distinction subtle
+        comment: Four distinct hues (blue, orange, teal, coral) are colorblind-safe
+          with good contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good proportions; some excess vertical whitespace below data range
+        comment: Good proportions, plot fills ~60-65% of canvas. Sales spike creates
+          some vertical imbalance
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
@@ -104,22 +111,22 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Custom blue/yellow palette, currency formatting, above defaults but
-          not publication-level
+        comment: Custom 4-hue palette, currency formatting, cleaned chart junk. Above
+          defaults but not publication-level
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: X-grid removed, y-grid dashed at alpha=0.2, outline removed, ticks
-          removed, axis lines lightened
+        comment: X-grid removed, y-grid dashed at alpha 0.2, outline removed, tick
+          marks removed, light axis lines
       - id: DE-03
         name: Data Storytelling
         score: 3
         max: 6
         passed: true
-        comment: Data choices create contrasts but no explicit visual emphasis or
-          focal point
+        comment: Data variety creates meaningful contrasts but no visual emphasis
+          draws attention to key insights
     spec_compliance:
       score: 15
       max: 15
@@ -129,49 +136,51 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct violin plot with KDE density profiles
+        comment: Correct violin plot with mirrored KDE density profiles
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Quartile markers, mirrored density, median line all present
+        comment: Quartile markers, mirrored density, median line — all present
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Categories on x-axis, numeric values on y-axis, 4 categories with
+        comment: Categories on x-axis, numeric values on y-axis; 4 categories with
           150 points each
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct; legend not needed as categories labeled on
-          x-axis
+        comment: Title format correct; legend not needed as categories are x-axis
+          labels
     data_quality:
-      score: 13
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 4
+        score: 6
         max: 6
         passed: true
-        comment: Different means and spreads but all symmetric normal — misses skewness/multimodality
+        comment: Shows symmetric, right-skewed, and bimodal distributions — demonstrates
+          violin plot strengths
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Salary by department is natural, comprehensible, neutral
+        comment: Salary distributions by department with realistic reasoning; neutral
+          business topic
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Salary values realistic for each department
+        comment: Realistic salary values for each department
     code_quality:
       score: 10
       max: 10
@@ -181,7 +190,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean Imports-Data-Plot-Save flow with single loop
+        comment: Clean Imports → Data → Plot → Save flow with single loop
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -199,27 +208,30 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Clean loop structure, appropriate scipy KDE usage
+        comment: Clean loop structure, well-commented data generation, ColumnDataSource
+          throughout
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png and plot.html; current Bokeh 3.x API
+        comment: Saves plot.png and plot.html; uses current Bokeh 3.x API
     library_mastery:
-      score: 6
+      score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Correct categorical axis and glyph usage but does not use ColumnDataSource
+        comment: ColumnDataSource throughout, categorical x_range with offset tuples,
+          proper glyph methods, HoverTool on renderers
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Categorical offset tuples, NumeralTickFormatter, dual PNG+HTML export
+        comment: Categorical offset tuples, NumeralTickFormatter, HoverTool with tooltips,
+          dual PNG+HTML export
   verdict: REJECTED

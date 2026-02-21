@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 violin-basic: Basic Violin Plot
 Library: bokeh 3.8.2 | Python 3.14.3
-Quality: 82/100 | Updated: 2026-02-21
+Quality: 88/100 | Updated: 2026-02-21
 """
 
 import numpy as np

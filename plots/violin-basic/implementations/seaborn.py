@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 violin-basic: Basic Violin Plot
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 87/100 | Updated: 2026-02-21
@@ -30,35 +30,85 @@ for dept in departments:
 
 df = pd.DataFrame(records)
 
-# Plot
-fig, ax = plt.subplots(figsize=(16, 9))
+# Distinctive palette with good contrast between categories
+palette = ["#306998", "#E8825A", "#5BA38B", "#C46BAE"]
 
+fig, ax = plt.subplots(figsize=(16, 9))
+fig.patch.set_facecolor("#FAFAFA")
+ax.set_facecolor("#FAFAFA")
+
+# Violin plot
 sns.violinplot(
     data=df,
     x="Department",
     y="Salary",
     hue="Department",
-    palette=["#306998", "#4A90C4", "#2D5F8A", "#5BA3D9"],
+    palette=palette,
     inner="box",
     cut=0,
-    linewidth=1.5,
-    saturation=0.9,
+    linewidth=1.2,
+    saturation=0.85,
     legend=False,
     ax=ax,
 )
 
+# Stripplot overlay — signature seaborn layering pattern
+sns.stripplot(
+    data=df,
+    x="Department",
+    y="Salary",
+    hue="Department",
+    palette=palette,
+    dodge=False,
+    jitter=0.25,
+    size=2.5,
+    alpha=0.25,
+    legend=False,
+    ax=ax,
+)
+
+# Annotate the bimodal Sales distribution to guide the viewer
+sales_data = df[df["Department"] == "Sales"]["Salary"]
+lower_peak = sales_data[sales_data < 72000].median()
+upper_peak = sales_data[sales_data >= 72000].median()
+
+ax.annotate(
+    "Junior cohort",
+    xy=(1.85, lower_peak),
+    xytext=(1.35, lower_peak - 5000),
+    fontsize=12,
+    fontstyle="italic",
+    color="#555555",
+    ha="right",
+    va="center",
+    arrowprops={"arrowstyle": "->", "color": "#888888", "lw": 1.0},
+)
+ax.annotate(
+    "Senior cohort",
+    xy=(1.85, upper_peak),
+    xytext=(1.35, upper_peak + 5000),
+    fontsize=12,
+    fontstyle="italic",
+    color="#555555",
+    ha="right",
+    va="center",
+    arrowprops={"arrowstyle": "->", "color": "#888888", "lw": 1.0},
+)
+
 # Style
-ax.set_xlabel("Department", fontsize=20)
-ax.set_ylabel("Salary ($)", fontsize=20)
-ax.set_title("violin-basic \u00b7 seaborn \u00b7 pyplots.ai", fontsize=24, fontweight="medium")
+ax.set_xlabel("Department", fontsize=20, labelpad=12)
+ax.set_ylabel("Salary ($)", fontsize=20, labelpad=12)
+ax.set_title("violin-basic · seaborn · pyplots.ai", fontsize=24, fontweight="medium", pad=20)
 ax.tick_params(axis="both", labelsize=16)
-ax.spines["top"].set_visible(False)
-ax.spines["right"].set_visible(False)
-ax.yaxis.grid(True, alpha=0.2, linewidth=0.8)
+
+for spine in ax.spines.values():
+    spine.set_visible(False)
+
+ax.yaxis.grid(True, alpha=0.3, linewidth=0.6, color="#CCCCCC")
 ax.set_axisbelow(True)
 
 # Format y-axis as currency
 ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f"${x / 1000:.0f}k"))
 
 plt.tight_layout()
-plt.savefig("plot.png", dpi=300, bbox_inches="tight")
+plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor=fig.get_facecolor())

@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 bump-basic: Basic Bump Chart
 Library: plotnine 0.15.3 | Python 3.14.3
-Quality: 89/100 | Updated: 2026-02-22
 """
 
 import pandas as pd
@@ -47,23 +46,60 @@ df = pd.DataFrame(rows)
 # Subset for end labels
 df_end = df[df["qnum"] == n_periods].copy()
 
-# Colors - Python Blue first, then colorblind-safe complements
+# Visual hierarchy: protagonist entities vs supporting cast
+protagonists = ["StreamVue", "WavePlay"]
+supporting = ["CloudCast", "PixelFlix", "SonicNet", "EchoTV"]
+
+df_hero = df[df["platform"].isin(protagonists)]
+df_support = df[df["platform"].isin(supporting)]
+
+# Crossover emphasis at Q4'24 (qnum=4) where WavePlay overtakes StreamVue
+df_crossover = pd.DataFrame(
+    [{"qnum": 4, "rank": 1, "platform": "WavePlay"}, {"qnum": 4, "rank": 2, "platform": "StreamVue"}]
+)
+
+# Colorblind-safe palette — Python Blue first, warm orange for WavePlay
+# Replaced red with teal (#17becf) for deuteranopia safety
 palette = {
     "StreamVue": "#306998",
     "WavePlay": "#e8963e",
-    "CloudCast": "#2ca02c",
-    "PixelFlix": "#d62728",
-    "SonicNet": "#8c564b",
-    "EchoTV": "#7f7f7f",
+    "CloudCast": "#59a14f",
+    "PixelFlix": "#17becf",
+    "SonicNet": "#9d7660",
+    "EchoTV": "#bab0ac",
 }
 
-# Plot
+# Plot — layered for visual hierarchy
 plot = (
     ggplot(df, aes(x="qnum", y="rank", color="platform", group="platform"))
-    + geom_line(size=2.8, alpha=0.85)
-    + geom_point(size=6, stroke=0.8, fill="white")
-    + geom_point(size=4)
-    + geom_text(aes(label="platform"), data=df_end, nudge_x=0.35, ha="left", size=12, fontstyle="italic")
+    # Supporting lines: thinner, more transparent
+    + geom_line(data=df_support, size=1.8, alpha=0.4)
+    + geom_point(data=df_support, size=4, stroke=0.6, fill="white")
+    + geom_point(data=df_support, size=2.5, alpha=0.5)
+    # Protagonist lines: bold and saturated
+    + geom_line(data=df_hero, size=3.5, alpha=0.95)
+    + geom_point(data=df_hero, size=7, stroke=1.0, fill="white")
+    + geom_point(data=df_hero, size=4.5)
+    # Crossover emphasis at Q4'24
+    + geom_point(data=df_crossover, size=12, alpha=0.15)
+    # End labels — bold for protagonists, italic for supporting
+    + geom_text(
+        aes(label="platform"),
+        data=df_end[df_end["platform"].isin(protagonists)],
+        nudge_x=0.35,
+        ha="left",
+        size=13,
+        fontweight="bold",
+    )
+    + geom_text(
+        aes(label="platform"),
+        data=df_end[df_end["platform"].isin(supporting)],
+        nudge_x=0.35,
+        ha="left",
+        size=11,
+        fontstyle="italic",
+        alpha=0.7,
+    )
     + scale_y_reverse(breaks=range(1, len(platforms) + 1))
     + scale_x_continuous(breaks=range(1, n_periods + 1), labels=quarters, limits=(0.5, n_periods + 2))
     + scale_color_manual(values=palette)
@@ -71,15 +107,16 @@ plot = (
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
-        text=element_text(size=14),
-        axis_title=element_text(size=20),
-        axis_text=element_text(size=16),
+        text=element_text(size=14, color="#3c3c3c"),
+        axis_title=element_text(size=20, color="#555555"),
+        axis_text=element_text(size=16, color="#666666"),
         axis_text_x=element_text(rotation=0),
-        plot_title=element_text(size=24, weight="bold"),
+        plot_title=element_text(size=24, weight="bold", color="#2b2b2b"),
         panel_grid_major_x=element_blank(),
         panel_grid_minor=element_blank(),
-        panel_grid_major_y=element_line(alpha=0.2, size=0.5),
+        panel_grid_major_y=element_line(alpha=0.15, size=0.4, color="#cccccc"),
         panel_background=element_rect(fill="white", color="none"),
+        plot_background=element_rect(fill="#fafafa", color="none"),
         legend_position="none",
     )
 )

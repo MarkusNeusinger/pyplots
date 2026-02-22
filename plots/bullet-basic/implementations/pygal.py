@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bullet-basic: Basic Bullet Chart
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: /100 | Updated: 2026-02-22
+Quality: 80/100 | Updated: 2026-02-22
 """
 
 import cairosvg

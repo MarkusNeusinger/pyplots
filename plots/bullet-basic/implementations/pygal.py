@@ -1,8 +1,9 @@
-""" pyplots.ai
+"""pyplots.ai
 bullet-basic: Basic Bullet Chart
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 80/100 | Updated: 2026-02-22
 """
+
+import xml.etree.ElementTree as ET
 
 import cairosvg
 import pygal
@@ -18,22 +19,23 @@ metrics = [
     {"label": "Satisfaction", "actual": 4.2, "target": 4.5, "max": 5.0, "fmt": "{}/5"},
 ]
 
-# Qualitative range thresholds as percentage of max
 POOR_PCT = 50
-SATISFACTORY_PCT = 75
+SAT_PCT = 75
 
-# Custom style with grayscale bands for qualitative ranges
+# Normalize to percentages of max
+actual_pcts = [round((m["actual"] / m["max"]) * 100, 1) for m in metrics]
+target_pcts = [round((m["target"] / m["max"]) * 100, 1) for m in metrics]
+labels = [f"{m['label']} ({m['fmt'].format(m['actual'])})" for m in metrics]
+
+# Style: grayscale range bands + Python Blue actual + black target
+# All 5 colors managed by pygal's style system for consistent legend rendering
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#999999",
-    colors=(
-        "#E0E0E0",  # Poor range (lightest)
-        "#BFBFBF",  # Satisfactory range
-        "#969696",  # Good range (darkest)
-    ),
+    colors=("#E0E0E0", "#BFBFBF", "#969696", "#306998", "#1a1a1a"),
     title_font_size=64,
     label_font_size=40,
     major_label_font_size=36,
@@ -42,7 +44,6 @@ custom_style = Style(
     tooltip_font_size=30,
 )
 
-# Create horizontal stacked bar chart as base for range bands
 chart = pygal.HorizontalStackedBar(
     width=4800,
     height=2700,
@@ -54,72 +55,69 @@ chart = pygal.HorizontalStackedBar(
     print_values=False,
     show_y_guides=False,
     show_x_guides=True,
-    margin=70,
-    spacing=35,
+    margin=60,
+    spacing=8,
     x_title="Performance (% of Maximum)",
     range=(0, 100),
 )
-
-# Build labels and normalized data
-labels = []
-actual_pcts = []
-target_pcts = []
-
-for m in metrics:
-    actual_pcts.append((m["actual"] / m["max"]) * 100)
-    target_pcts.append((m["target"] / m["max"]) * 100)
-    labels.append(f"{m['label']} ({m['fmt'].format(m['actual'])})")
-
 chart.x_labels = labels
 
-# Stacked segments for qualitative ranges
-chart.add("Poor (0-50%)", [POOR_PCT] * len(metrics))
-chart.add("Satisfactory (50-75%)", [SATISFACTORY_PCT - POOR_PCT] * len(metrics))
-chart.add("Good (75-100%)", [100 - SATISFACTORY_PCT] * len(metrics))
+# Qualitative range bands as stacked series with per-value config dicts
+chart.add("Poor (0-50%)", [{"value": POOR_PCT, "label": labels[i]} for i in range(len(metrics))])
+chart.add("Satisfactory (50-75%)", [{"value": SAT_PCT - POOR_PCT, "label": labels[i]} for i in range(len(metrics))])
+chart.add("Good (75-100%)", [{"value": 100 - SAT_PCT, "label": labels[i]} for i in range(len(metrics))])
 
-# Render base SVG, then inject actual bars and target markers
-svg_string = chart.render().decode("utf-8")
+# Actual and Target as pygal series for native legend rendering
+# None values produce no bars but pygal renders legend entries with correct colors
+chart.add("Actual", [None] * len(metrics))
+chart.add("Target", [None] * len(metrics))
 
-# Plot area coordinates (derived from pygal's SVG output structure)
-PLOT_X = 585
-PLOT_Y = 169
-BAR_X0 = 79.71  # x-axis origin within plot area
-PX_PER_PCT = 39.856  # pixels per percentage point (1992.79 / 50)
+# Render SVG and parse to extract bar positions programmatically
+ET.register_namespace("", "http://www.w3.org/2000/svg")
+ET.register_namespace("xlink", "http://www.w3.org/1999/xlink")
+svg_bytes = chart.render()
+root = ET.fromstring(svg_bytes)
+NS = "http://www.w3.org/2000/svg"
 
-# Row centers within plot area (bottom to top: Revenue -> Satisfaction)
-ROW_CENTERS = [1916.96, 1500.23, 1083.50, 666.77, 250.04]
+# Build parent map for coordinate-aware injection
+parent_map = {child: parent for parent in root.iter() for child in parent}
 
-# Build actual-value bars and target markers
-injected = []
-for i in range(len(metrics)):
-    cy = PLOT_Y + ROW_CENTERS[i]
-    x0 = PLOT_X + BAR_X0
+# Locate serie-0 (Poor range) bars as coordinate reference
+serie_0 = next((g for g in root.iter(f"{{{NS}}}g") if "serie-0" in g.get("class", "")), None)
 
-    # Actual value: narrow bar centered on row
-    w = actual_pcts[i] * PX_PER_PCT
-    injected.append(f'<rect x="{x0}" y="{cy - 50}" width="{w}" height="100" fill="#306998"/>')
+# Extract bar rects from Poor range series
+poor_bars = []
+if serie_0 is not None:
+    for rect in serie_0.iter(f"{{{NS}}}rect"):
+        w, h = float(rect.get("width", "0")), float(rect.get("height", "0"))
+        if w > 1 and h > 1:
+            poor_bars.append((float(rect.get("x")), float(rect.get("y")), w, h))
 
-    # Target marker: thin vertical line perpendicular to bar
-    tx = x0 + target_pcts[i] * PX_PER_PCT
-    injected.append(f'<rect x="{tx - 4}" y="{cy - 90}" width="8" height="180" fill="#1a1a1a"/>')
+# Inject actual bars and target markers into the plot group (same coordinate space)
+inject_parent = parent_map.get(serie_0, root)
+for i, (bx, by, bw, bh) in enumerate(poor_bars):
+    px_per_pct = bw / POOR_PCT
+    cy = by + bh / 2
 
-# Legend entries for Actual and Target (aligned with pygal's second legend row)
-lx_actual = 2692
-lx_target = 3350
-ly = 2635
-injected.append(f'<rect x="{lx_actual}" y="{ly + 4}" width="26" height="26" fill="#306998"/>')
-injected.append(
-    f'<text x="{lx_actual + 31}" y="{ly + 27}" '
-    f'font-family="Consolas, monospace" font-size="34" fill="#333">Actual</text>'
-)
-injected.append(f'<rect x="{lx_target}" y="{ly + 4}" width="26" height="26" fill="#1a1a1a"/>')
-injected.append(
-    f'<text x="{lx_target + 31}" y="{ly + 27}" '
-    f'font-family="Consolas, monospace" font-size="34" fill="#333">Target</text>'
-)
+    # Actual value bar (narrower than range band for bullet chart layering)
+    actual_w = actual_pcts[i] * px_per_pct
+    bar_h = bh * 0.38
+    a = ET.SubElement(inject_parent, f"{{{NS}}}rect")
+    a.set("x", f"{bx:.1f}")
+    a.set("y", f"{cy - bar_h / 2:.1f}")
+    a.set("width", f"{actual_w:.1f}")
+    a.set("height", f"{bar_h:.1f}")
+    a.set("fill", "#306998")
 
-# Inject before closing </svg> tag
-svg_output = svg_string.replace("</svg>", "\n".join(injected) + "\n</svg>")
+    # Target marker (thin vertical line perpendicular to bar)
+    tx = bx + target_pcts[i] * px_per_pct
+    marker_h = bh * 0.65
+    t = ET.SubElement(inject_parent, f"{{{NS}}}rect")
+    t.set("x", f"{tx - 4:.1f}")
+    t.set("y", f"{cy - marker_h / 2:.1f}")
+    t.set("width", "8")
+    t.set("height", f"{marker_h:.1f}")
+    t.set("fill", "#1a1a1a")
 
-# Save
-cairosvg.svg2png(bytestring=svg_output.encode(), write_to="plot.png")
+# Save as PNG
+cairosvg.svg2png(bytestring=ET.tostring(root, encoding="utf-8"), write_to="plot.png")

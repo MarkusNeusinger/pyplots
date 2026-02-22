@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bullet-basic: Basic Bullet Chart
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: pygal 3.1.0 | Python 3.14.3
+Quality: /100 | Updated: 2026-02-22
 """
 
 import cairosvg
@@ -11,142 +11,115 @@ from pygal.style import Style
 
 # Data - Sales KPIs showing actual vs target with qualitative ranges
 metrics = [
-    {"label": "Revenue", "actual": 275, "target": 250, "max": 300, "unit": "$K"},
-    {"label": "Profit", "actual": 85, "target": 100, "max": 120, "unit": "$K"},
-    {"label": "New Orders", "actual": 320, "target": 350, "max": 400, "unit": ""},
-    {"label": "Customers", "actual": 1450, "target": 1400, "max": 1600, "unit": ""},
-    {"label": "Satisfaction", "actual": 4.2, "target": 4.5, "max": 5.0, "unit": "/5"},
+    {"label": "Revenue", "actual": 275, "target": 250, "max": 300, "fmt": "${}K"},
+    {"label": "Profit", "actual": 85, "target": 100, "max": 120, "fmt": "${}K"},
+    {"label": "New Orders", "actual": 320, "target": 350, "max": 400, "fmt": "{}"},
+    {"label": "Customers", "actual": 1450, "target": 1400, "max": 1600, "fmt": "{}"},
+    {"label": "Satisfaction", "actual": 4.2, "target": 4.5, "max": 5.0, "fmt": "{}/5"},
 ]
 
 # Qualitative range thresholds as percentage of max
 POOR_PCT = 50
 SATISFACTORY_PCT = 75
 
-# Custom style for bullet chart with grayscale bands
+# Custom style with grayscale bands for qualitative ranges
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
-    foreground_subtle="#666666",
+    foreground_subtle="#999999",
     colors=(
         "#E0E0E0",  # Poor range (lightest)
-        "#B8B8B8",  # Satisfactory range
-        "#909090",  # Good range (darkest)
-        "#306998",  # Actual value (Python blue)
-        "#1a1a1a",  # Target marker (black)
+        "#BFBFBF",  # Satisfactory range
+        "#969696",  # Good range (darkest)
     ),
-    title_font_size=72,
-    label_font_size=42,
-    major_label_font_size=40,
-    legend_font_size=36,
-    value_font_size=32,
-    tooltip_font_size=32,
+    title_font_size=64,
+    label_font_size=40,
+    major_label_font_size=36,
+    legend_font_size=34,
+    value_font_size=30,
+    tooltip_font_size=30,
 )
 
-# Create horizontal stacked bar chart for range bands
+# Create horizontal stacked bar chart as base for range bands
 chart = pygal.HorizontalStackedBar(
     width=4800,
     height=2700,
-    title="bullet-basic · pygal · pyplots.ai",
+    title="bullet-basic \u00b7 pygal \u00b7 pyplots.ai",
     style=custom_style,
     show_legend=True,
     legend_at_bottom=True,
-    legend_box_size=28,
+    legend_box_size=26,
     print_values=False,
     show_y_guides=False,
     show_x_guides=True,
-    x_label_rotation=0,
-    margin=80,
-    spacing=40,
+    margin=70,
+    spacing=35,
     x_title="Performance (% of Maximum)",
     range=(0, 100),
 )
 
-# Build labels and range data
+# Build labels and normalized data
 labels = []
-poor_vals = []
-satisfactory_vals = []
-good_vals = []
 actual_pcts = []
 target_pcts = []
 
 for m in metrics:
-    actual_pct = (m["actual"] / m["max"]) * 100
-    target_pct = (m["target"] / m["max"]) * 100
-    labels.append(f"{m['label']} ({m['actual']}{m['unit']})")
-    # Stacked segments for qualitative ranges
-    poor_vals.append(POOR_PCT)
-    satisfactory_vals.append(SATISFACTORY_PCT - POOR_PCT)
-    good_vals.append(100 - SATISFACTORY_PCT)
-    actual_pcts.append(actual_pct)
-    target_pcts.append(target_pct)
+    actual_pcts.append((m["actual"] / m["max"]) * 100)
+    target_pcts.append((m["target"] / m["max"]) * 100)
+    labels.append(f"{m['label']} ({m['fmt'].format(m['actual'])})")
 
 chart.x_labels = labels
-chart.add("Poor (0-50%)", poor_vals)
-chart.add("Satisfactory (50-75%)", satisfactory_vals)
-chart.add("Good (75-100%)", good_vals)
 
-# Render base chart to SVG, then inject actual bars and target markers
+# Stacked segments for qualitative ranges
+chart.add("Poor (0-50%)", [POOR_PCT] * len(metrics))
+chart.add("Satisfactory (50-75%)", [SATISFACTORY_PCT - POOR_PCT] * len(metrics))
+chart.add("Good (75-100%)", [100 - SATISFACTORY_PCT] * len(metrics))
+
+# Render base SVG, then inject actual bars and target markers
 svg_string = chart.render().decode("utf-8")
 
-# Pygal plot coordinates (from SVG analysis):
-# Plot area: transform="translate(624, 192)", width=4096, height=2104
-# Bars start at x=78.77 within plot (total from origin: 624 + 78.77 = 702.77)
-# X-axis 0 maps to ~78.77, 100 maps to ~4017.23 (range of ~3938.46 pixels)
-PLOT_OFFSET_X = 624
-PLOT_OFFSET_Y = 192
-BAR_START_X = 78.77  # Within plot coordinates
-X_SCALE = 39.3846  # pixels per percentage point (3938.46 / 100)
+# Plot area coordinates (derived from pygal's SVG output structure)
+PLOT_X = 585
+PLOT_Y = 169
+BAR_X0 = 79.71  # x-axis origin within plot area
+PX_PER_PCT = 39.856  # pixels per percentage point (1992.79 / 50)
 
-# Row Y positions (from SVG: y values in <desc> tags) - relative to plot origin
-ROW_Y_CENTERS = [1861.23, 1456.62, 1052.0, 647.38, 242.77]
+# Row centers within plot area (bottom to top: Revenue -> Satisfaction)
+ROW_CENTERS = [1916.96, 1500.23, 1083.50, 666.77, 250.04]
 
-# Build custom SVG elements for actual bars and target markers
-custom_elements = []
-for i, (actual_pct, target_pct) in enumerate(zip(actual_pcts, target_pcts, strict=True)):
-    # Calculate positions in plot coordinates
-    y_center = PLOT_OFFSET_Y + ROW_Y_CENTERS[i]
-    x_start = PLOT_OFFSET_X + BAR_START_X
+# Build actual-value bars and target markers
+injected = []
+for i in range(len(metrics)):
+    cy = PLOT_Y + ROW_CENTERS[i]
+    x0 = PLOT_X + BAR_X0
 
-    # Actual value bar - narrower bar centered on row
-    actual_width = actual_pct * X_SCALE
-    bar_height = 100  # Thinner than the range bands
-    custom_elements.append(
-        f'<rect x="{x_start}" y="{y_center - bar_height / 2}" '
-        f'width="{actual_width}" height="{bar_height}" fill="#306998"/>'
-    )
+    # Actual value: narrow bar centered on row
+    w = actual_pcts[i] * PX_PER_PCT
+    injected.append(f'<rect x="{x0}" y="{cy - 50}" width="{w}" height="100" fill="#306998"/>')
 
-    # Target marker - thin vertical line extending beyond the bar
-    target_x = x_start + target_pct * X_SCALE
-    marker_height = 180
-    marker_width = 12
-    custom_elements.append(
-        f'<rect x="{target_x - marker_width / 2}" y="{y_center - marker_height / 2}" '
-        f'width="{marker_width}" height="{marker_height}" fill="#1a1a1a"/>'
-    )
+    # Target marker: thin vertical line perpendicular to bar
+    tx = x0 + target_pcts[i] * PX_PER_PCT
+    injected.append(f'<rect x="{tx - 4}" y="{cy - 90}" width="8" height="180" fill="#1a1a1a"/>')
 
-# Add legend entries for Actual and Target (positioned after existing legend items)
-legend_y = 2574  # Same line as existing legend
-legend_x_actual = 3200
-legend_x_target = 3700
-custom_elements.append(f'<rect x="{legend_x_actual}" y="{legend_y}" width="28" height="28" fill="#306998"/>')
-custom_elements.append(
-    f'<text x="{legend_x_actual + 40}" y="{legend_y + 24}" '
-    f'font-family="Consolas, monospace" font-size="36" fill="#333">Actual</text>'
+# Legend entries for Actual and Target (aligned with pygal's second legend row)
+lx_actual = 2692
+lx_target = 3350
+ly = 2635
+injected.append(f'<rect x="{lx_actual}" y="{ly + 4}" width="26" height="26" fill="#306998"/>')
+injected.append(
+    f'<text x="{lx_actual + 31}" y="{ly + 27}" '
+    f'font-family="Consolas, monospace" font-size="34" fill="#333">Actual</text>'
 )
-custom_elements.append(f'<rect x="{legend_x_target}" y="{legend_y}" width="28" height="28" fill="#1a1a1a"/>')
-custom_elements.append(
-    f'<text x="{legend_x_target + 40}" y="{legend_y + 24}" '
-    f'font-family="Consolas, monospace" font-size="36" fill="#333">Target</text>'
+injected.append(f'<rect x="{lx_target}" y="{ly + 4}" width="26" height="26" fill="#1a1a1a"/>')
+injected.append(
+    f'<text x="{lx_target + 31}" y="{ly + 27}" '
+    f'font-family="Consolas, monospace" font-size="34" fill="#333">Target</text>'
 )
 
-# Inject custom elements before closing </svg>
-injection = "\n".join(custom_elements)
-svg_output = svg_string.replace("</svg>", f"{injection}\n</svg>")
+# Inject before closing </svg> tag
+svg_output = svg_string.replace("</svg>", "\n".join(injected) + "\n</svg>")
 
-# Save SVG and PNG
-with open("plot.html", "w") as f:
-    f.write(svg_output)
-
+# Save
 cairosvg.svg2png(bytestring=svg_output.encode(), write_to="plot.png")

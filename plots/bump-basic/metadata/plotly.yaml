@@ -1,167 +1,179 @@
 library: plotly
 specification_id: bump-basic
 created: '2025-12-23T09:18:15Z'
-updated: '2026-02-22T20:55:00+00:00'
+updated: '2026-02-22T21:02:51Z'
 generated_by: claude-opus-4-6
 workflow_run: 20456607003
 issue: 0
-python_version: '3.14.3'
-library_version: '6.5.2'
+python_version: 3.14.3
+library_version: 6.5.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bump-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bump-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bump-basic/plotly/plot.html
-quality_score: null
+quality_score: 88
 impl_tags:
   dependencies: []
-  techniques: []
+  techniques:
+  - annotations
+  - html-export
   patterns:
-  - data-generation
   - iteration-over-groups
   dataprep: []
-  styling: []
+  styling:
+  - edge-highlighting
+  - grid-styling
 review:
   strengths:
-  - Excellent use of inverted Y-axis to show rank 1 at top (as required by spec)
-  - Clean, professional appearance with plotly_white template
-  - Good colorblind-safe palette with Python Blue as primary color
-  - Appropriate marker and line sizes for clear visibility
-  - Interactive HTML output alongside PNG leverages plotly strengths
-  - Data tells a compelling story with Team Alpha rise and Team Gamma brief lead in
-    Week 5
+  - Perfect spec compliance with all required features (inverted Y-axis, distinct
+    colors, markers, connected lines)
+  - Excellent data choice with F1 championship context creating natural storytelling
+    through rank crossovers
+  - End-of-line labels instead of legend is a smart design decision that reduces clutter
+  - Clean well-structured code with deterministic data
+  - Subtle grid styling (y-axis only, low opacity) shows visual refinement
   weaknesses:
-  - Data is deterministic so seed is not technically needed, but consider adding np.random.seed
-    for consistency if random data is ever used
-  - Layout balance could be improved with legend placement closer to plot
-  image_description: 'The plot displays a bump chart showing sports league standings
-    over 6 weeks. The Y-axis shows ranks from 1 (top) to 5 (bottom) with rank 1 correctly
-    positioned at the top (inverted axis). The X-axis shows "Period" with Week 1 through
-    Week 6. Five teams are tracked with distinct colored lines and circular markers:
-    Team Alpha (blue #306998), Team Beta (yellow #FFD43B), Team Gamma (green #2ecc71),
-    Team Delta (red #e74c3c), and Team Epsilon (purple #9b59b6). The lines effectively
-    show ranking changes - Team Alpha rises from 3rd to 1st, Team Beta falls from
-    1st to 2nd, Team Gamma has dynamic movement including briefly taking 1st in Week
-    5. The title reads "bump-basic · plotly · pyplots.ai" at top left. The legend
-    is positioned to the right of the plot area. The background uses plotly_white
-    template with subtle grid lines.'
+  - Red-green color pair (Hamilton/Norris) is problematic for colorblind users as
+    lines cross frequently
+  - No visual hierarchy or emphasis to guide the viewer eye to the main story
+  - Could leverage more plotly-distinctive features like custom hover templates or
+    animation
+  image_description: 'The plot shows a bump chart tracking Formula 1 driver championship
+    standings over 8 races (Bahrain through Silverstone). The Y-axis is inverted with
+    rank 1 at the top, labeled "Championship Position". The X-axis shows race names
+    labeled "Race". Six drivers are plotted with distinct colored lines and large
+    circular markers with white edges: Verstappen (dark blue) starts P1 and drops
+    to P2 by Silverstone; Hamilton (red) rises from P4 to P1; Norris (green) peaks
+    at P1 mid-season then falls to P3; Leclerc (orange) declines from P2 to P4; Piastri
+    (purple) drops from P3 to P5; Sainz (gray) stays at P6 throughout. End-of-line
+    labels to the right identify each driver. The background is clean white with subtle
+    horizontal gridlines and no vertical gridlines. The title reads "bump-basic ·
+    plotly · pyplots.ai".'
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 29
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title, axis labels, tick labels all clearly readable with appropriate
-          font sizes
+        comment: 'All font sizes explicitly set: title 28pt, axis titles 22pt, ticks
+          18pt, annotations 16pt'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements, all labels clear
+        comment: No text overlap. End-of-line labels at different rank positions
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Lines (width=4) and markers (size=16) are well-sized for the data
-          density
+        comment: Markers size 14 with white edge, lines width 4. Well-adapted for
+          48 data points
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Five distinct colors that are colorblind-friendly (blue, yellow,
-          green, red, purple)
-      - id: VQ-05
-        name: Layout Balance
         score: 3
-        max: 5
+        max: 4
+        passed: false
+        comment: Red and green lines cross frequently, problematic for deuteranopia
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
         passed: true
-        comment: Good overall balance, though right margin for legend takes notable
-          space
+        comment: Plot fills ~65% of canvas. Right margin accommodates end labels.
+          Balanced proportions
       - id: VQ-06
-        name: Axis Labels
-        score: 1
+        name: Axis Labels & Title
+        score: 2
         max: 2
         passed: true
-        comment: '"Period" and "Rank" are descriptive but lack units (though units
-          aren''t really applicable here)'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 1
-        max: 2
-        passed: true
-        comment: Grid is subtle, legend is well-placed but slightly distant from plot
-          area
+        comment: Descriptive labels. Units not applicable for ordinal rankings. Title
+          matches format
+    design_excellence:
+      score: 12
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: false
+        comment: Custom palette, plotly_white template, white-edged markers, end-of-line
+          labels. Above defaults but not publication-level
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: false
+        comment: Removed x-grid, custom y-grid opacity (0.08), adjusted margins. Shows
+          intentional refinement
+      - id: DE-03
+        name: Data Storytelling
+        score: 3
+        max: 6
+        passed: false
+        comment: Data creates natural crossover interest. End labels help. No visual
+          emphasis on key narrative
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct bump chart showing rank changes over time
+        comment: Correct bump chart with lines connecting rankings over time
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X=periods, Y=ranks correctly mapped
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Inverted Y-axis (rank 1 at top), distinct colors, dot markers, lines
-          connecting entities
-      - id: SC-04
-        name: Data Range
+        comment: Inverted Y-axis, distinct colors, dot markers, connected lines all
+          present
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All ranks (1-5) and periods (Week 1-6) visible
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X = races, Y = rank positions. All data correctly mapped
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend correctly identifies all five teams
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Uses correct format "bump-basic · plotly · pyplots.ai"
+        comment: Title matches format. End-of-line labels serve as legend with correct
+          names
     data_quality:
-      score: 18
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows rank changes, overtakes, stability (Team Delta stays 4th mostly);
-          could show more dramatic swaps
+        comment: Shows crossovers, stability, dramatic rises, declines, and tight
+          mid-pack competition
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
+        score: 5
+        max: 5
         passed: true
-        comment: Sports league standings is a perfect, real-world bump chart use case
+        comment: F1 championship with real driver names and circuit names. Neutral
+          domain
       - id: DQ-03
         name: Appropriate Scale
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: 5 teams over 6 weeks is appropriate; values are sensible
+        comment: 6 drivers, 8 races, rankings 1-6. Sensible for F1 championship
     code_quality:
-      score: 8
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -169,41 +181,49 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Simple linear structure: imports → data → plot → save'
+        comment: 'Clean linear flow: imports, data, colors, figure, loop, layout,
+          save'
       - id: CQ-02
         name: Reproducibility
-        score: 0
-        max: 3
-        passed: false
-        comment: No random seed set (though data is deterministic, np.random is imported
-          but not used)
+        score: 2
+        max: 2
+        passed: true
+        comment: All data hardcoded and deterministic
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only plotly.graph_objects imported, which is used
+        comment: Only plotly.graph_objects imported and used
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
-        passed: true
-        comment: Uses current plotly API
-      - id: CQ-05
-        name: Output Correct
+        name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Saves as plot.png and plot.html
-    library_features:
-      score: 5
-      max: 5
+        comment: Clean loop for traces and annotations. Dictionary-based data. Appropriate
+          complexity
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves plot.png at 4800x2700. Also saves HTML. Current API
+    library_mastery:
+      score: 7
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 5
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
         max: 5
         passed: true
-        comment: Uses go.Scatter with mode="lines+markers", proper plotly_white template,
-          interactive HTML export, and autorange="reversed" for Y-axis inversion
-  verdict: APPROVED
+        comment: Proper Graph Objects usage with go.Figure, go.Scatter, add_trace,
+          add_annotation, update_layout
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: false
+        comment: HTML export with built-in interactivity is distinctive. Annotation
+          system is plotly-specific. Missing advanced features like custom hover templates
+  verdict: REJECTED

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bullet-basic: Basic Bullet Chart
 Library: plotnine 0.15.3 | Python 3.14.3
-Quality: /100 | Updated: 2026-02-22
+Quality: 88/100 | Updated: 2026-02-22
 """
 
 import pandas as pd

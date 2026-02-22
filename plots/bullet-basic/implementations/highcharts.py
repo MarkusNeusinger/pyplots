@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bullet-basic: Basic Bullet Chart
 Library: highcharts 1.10.3 | Python 3.14.3
+Quality: 90/100 | Updated: 2026-02-22
 """
 
 import json

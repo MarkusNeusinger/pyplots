@@ -1,7 +1,7 @@
 library: pygal
 specification_id: bullet-basic
 created: '2025-12-23T09:18:53Z'
-updated: '2026-02-22T21:55:41Z'
+updated: '2026-02-22T22:12:55Z'
 generated_by: claude-opus-4-6
 workflow_run: 20456607578
 issue: 0
@@ -10,7 +10,7 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bullet-basic/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bullet-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bullet-basic/pygal/plot.html
-quality_score: 80
+quality_score: 83
 impl_tags:
   dependencies:
   - cairosvg
@@ -23,32 +23,37 @@ impl_tags:
   styling: []
 review:
   strengths:
-  - Excellent spec compliance — all bullet chart features correctly implemented (qualitative
+  - Perfect spec compliance with all bullet chart features correctly implemented (qualitative
     ranges, actual bars, target markers, stacked layout)
-  - Strong data storytelling with mixed above/below-target metrics creating natural
+  - Excellent data storytelling with mixed above/below-target metrics creating natural
     performance comparison
   - Realistic business KPI context with appropriate scales and units in labels
-  - Good grayscale design following Stephen Few bullet chart conventions
-  - Fully colorblind-safe palette
+  - Programmatic SVG parsing dynamically extracts bar positions instead of hardcoded
+    coordinates
+  - Native pygal legend rendering for Actual/Target entries
   weaknesses:
-  - Extensive SVG injection with hardcoded pixel coordinates bypasses pygal API and
-    makes code fragile
-  - Library mastery is low — pygal used only for background stacked bars while key
-    bullet chart elements are manual SVG
-  - Injected legend font (Consolas monospace) does not match pygal native font
-  - Excessive vertical spacing between rows wastes canvas space
+  - Excessive vertical spacing between bullet rows wastes canvas space and reduces
+    visual compactness
+  - Library mastery limited by pygal lack of native bullet chart support — significant
+    SVG injection still needed
+  - Monospace font rendering and dashed leader lines reduce visual refinement
+  - Design excellence could benefit from tighter layout and more polished typography
   image_description: 'The plot displays a horizontal bullet chart with 5 sales KPI
-    metrics stacked vertically (from bottom to top: Revenue ($275K), Profit ($85K),
-    New Orders (320), Customers (1450), Satisfaction (4.2/5)). Each metric row has
-    three grayscale background bands representing qualitative ranges: lightest gray
-    for Poor (0-50%), medium gray for Satisfactory (50-75%), and darkest gray for
-    Good (75-100%). A steel-blue bar (#306998) overlays the bands showing the actual
-    value as a percentage of maximum, and a thin black vertical marker indicates the
-    target value. The x-axis runs from 0 to 100 labeled "Performance (% of Maximum)".
-    The title reads "bullet-basic · pygal · pyplots.ai" at the top. A legend at the
-    bottom identifies all five elements: Poor, Satisfactory, Good, Actual, and Target.
-    Some metrics exceed their target (Revenue, Customers) while others fall short
-    (Profit, New Orders, Satisfaction), creating a natural performance comparison.'
+    metrics stacked vertically (bottom to top): Revenue ($275K), Profit ($85K), New
+    Orders (320), Customers (1450), Satisfaction (4.2/5). Each metric row has three
+    grayscale background bands representing qualitative ranges: lightest gray for
+    Poor (0-50%), medium gray for Satisfactory (50-75%), and darker gray for Good
+    (75-100%). A steel-blue (#306998) bar overlays the bands showing the actual value
+    as a percentage of maximum, narrower than the background bands in classic bullet
+    chart style. A thin black vertical marker indicates the target value for each
+    metric. The x-axis runs from 0 to 100 labeled "Performance (% of Maximum)" with
+    dotted vertical guide lines. Y-axis labels include metric names with actual values
+    in parentheses connected by dashed leader lines. The title "bullet-basic · pygal
+    · pyplots.ai" appears at top in monospace font. A legend at bottom identifies
+    all five elements: Poor (0-50%), Satisfactory (50-75%), Good (75-100%), Actual,
+    Target. Some metrics exceed targets (Revenue, Customers) while others fall short
+    (Profit, New Orders, Satisfaction). There is generous vertical spacing between
+    rows.'
   criteria_checklist:
     visual_quality:
       score: 27
@@ -59,44 +64,41 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title=64, labels=40, major_labels=36,
-          legend=34). Minor deduction for injected legend entries using Consolas monospace
-          differing from pygal native font.
+        comment: 'All font sizes explicitly set (title=64, labels=40, major_labels=36,
+          legend=34). All readable. Minor: monospace rendering reduces typographic
+          polish.'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text or elements. Bars well-spaced with generous row
-          spacing.
+        comment: No overlapping text or elements. Bars well-spaced.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
         comment: Blue actual bars and gray range bands clearly visible. Target markers
-          thin but distinguishable. Actual bars could be slightly more prominent.
+          thin but distinguishable.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Grayscale bands with value differentiation, blue actual bar, black
-          target marker. Fully colorblind-safe.
+        comment: Grayscale bands, blue actual bar, black target marker. Fully colorblind-safe.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good overall layout with balanced margins. Generous vertical spacing
-          between rows creates some wasted canvas space.
+        comment: Good horizontal utilization. Excessive vertical spacing between rows
+          wastes canvas space.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: X-axis labeled Performance (% of Maximum) with units. Y-axis labels
-          include metric names and actual values.
+        comment: X-axis with units. Y-axis labels include metric name and actual value.
     design_excellence:
       score: 12
       max: 20
@@ -106,23 +108,22 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Thoughtful grayscale range bands following Stephen Few bullet chart
-          principles. Blue actual bar provides good contrast. Above defaults but not
-          publication-ready.
+        comment: Follows Stephen Few bullet chart design principles. Intentional grayscale
+          + blue palette. Above defaults but not publication-ready.
       - id: DE-02
         name: Visual Refinement
         score: 3
         max: 6
         passed: true
-        comment: White background, y-guides hidden, x-guides shown as subtle reference.
-          Some inconsistency from mixed pygal-native and SVG-injected elements.
+        comment: Y-guides hidden, x-guides subtle. Excessive row spacing and dashed
+          leader lines reduce tightness.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
         comment: Mixed above/below-target metrics create natural performance comparison.
-          Labels include actual values for precision.
+          Labels include actual values.
     spec_compliance:
       score: 15
       max: 15
@@ -132,28 +133,29 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct bullet chart with actual value bars, target markers, and
-          qualitative range bands.
+        comment: Correct bullet chart with actual bars, target markers, and qualitative
+          range bands.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
         comment: 'All spec features present: actual bar, target marker, qualitative
-          ranges, metric labels, stacked layout, grayscale shading.'
+          ranges, grayscale shading, labels, multiple bullets.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Data correctly normalized to percentages. X-axis 0-100. All data
-          visible and correctly positioned.
+        comment: Data correctly normalized to percentages. X-axis 0-100. All metrics
+          correctly positioned.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend identifies all five elements.
+        comment: Correct title format. Legend identifies all five elements via native
+          pygal rendering.
     data_quality:
       score: 15
       max: 15
@@ -163,14 +165,14 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows metrics both above target (Revenue, Customers) and below target
-          (Profit, New Orders, Satisfaction). Different data domains.
+        comment: Shows metrics above and below target across different domains (currency,
+          count, rating).
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Sales KPI dashboard is textbook use case for bullet charts. Neutral
+        comment: Sales KPI dashboard is a textbook bullet chart use case. Neutral
           business context.
       - id: DQ-03
         name: Appropriate Scale
@@ -179,7 +181,7 @@ review:
         passed: true
         comment: All values realistic for business context.
     code_quality:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -187,8 +189,8 @@ review:
         score: 2
         max: 3
         passed: true
-        comment: Follows Import-Data-Style-Chart-Render-Inject-Save flow. No functions/classes.
-          SVG injection adds complexity.
+        comment: Flat structure, no functions/classes. SVG parsing/injection adds
+          inherent complexity.
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -200,14 +202,14 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Only cairosvg, pygal, and pygal.style.Style imported - all used.
+        comment: 'All imports used: ET, cairosvg, pygal, Style.'
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: SVG injection with hardcoded magic numbers (PLOT_X, BAR_X0, PX_PER_PCT,
-          ROW_CENTERS) is fragile.
+        comment: Programmatic SVG parsing extracts bar positions dynamically. Clean
+          and robust approach.
       - id: CQ-05
         name: Output & API
         score: 1
@@ -215,22 +217,22 @@ review:
         passed: true
         comment: Saves as plot.png via cairosvg. Current pygal API.
     library_mastery:
-      score: 3
+      score: 5
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses HorizontalStackedBar, Style system, per-value config dicts,
+          and None-series trick for legend. Core bullet elements still require SVG
+          injection.
+      - id: LM-02
+        name: Distinctive Features
         score: 2
         max: 5
         passed: false
-        comment: Uses HorizontalStackedBar for range bands but core bullet elements
-          (actual bars, target markers, legend entries) are raw SVG injection bypassing
-          pygal API.
-      - id: LM-02
-        name: Distinctive Features
-        score: 1
-        max: 5
-        passed: false
-        comment: Standard pygal features only. Extensive SVG manipulation is generic
-          SVG work, not pygal-distinctive.
+        comment: Per-value config dicts and None-series legend trick are pygal-specific.
+          SVG injection portion is generic XML manipulation.
   verdict: REJECTED

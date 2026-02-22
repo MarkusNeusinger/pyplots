@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 bump-basic: Basic Bump Chart
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 88/100 | Updated: 2026-02-22
 """
 
 import pygal
@@ -38,14 +37,15 @@ custom_style = Style(
         "#FF8C00",  # McLaren - bold orange (rising protagonist)
         "#C0392B",  # Ferrari - classic red (steady runner-up)
         "#00A38D",  # Mercedes - teal (stable midfield)
-        "#9B9B9B",  # Aston Martin - muted gray (distant 5th)
+        "#6B6B6B",  # Aston Martin - darker gray for visibility
     ),
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=42,
     legend_font_size=40,
     value_font_size=36,
-    opacity=0.90,
+    stroke_width=8,
+    opacity=1.0,
     opacity_hover=1.0,
     transition="200ms ease-in",
 )
@@ -54,8 +54,8 @@ custom_style = Style(
 inverted_rankings = {e: [max_rank + 1 - r for r in ranks] for e, ranks in rankings.items()}
 
 # Visual hierarchy: protagonist lines (McLaren rising, Red Bull falling) are bolder
-stroke_widths = {"Red Bull Racing": 10, "McLaren": 12, "Ferrari": 6, "Mercedes": 5, "Aston Martin": 4}
-dot_sizes = {"Red Bull Racing": 16, "McLaren": 18, "Ferrari": 12, "Mercedes": 10, "Aston Martin": 8}
+stroke_widths = {"Red Bull Racing": 14, "McLaren": 16, "Ferrari": 10, "Mercedes": 8, "Aston Martin": 7}
+dot_sizes = {"Red Bull Racing": 18, "McLaren": 20, "Ferrari": 14, "Mercedes": 12, "Aston Martin": 12}
 
 chart = pygal.Line(
     width=4800,
@@ -76,7 +76,10 @@ chart = pygal.Line(
     interpolate=None,
     min_scale=1,
     max_scale=max_rank,
-    margin=60,
+    margin_top=60,
+    margin_right=100,
+    margin_bottom=60,
+    margin_left=60,
     value_formatter=lambda v: f"P{max_rank + 1 - int(v)}" if v == int(v) else "",
     tooltip_border_radius=10,
     tooltip_fancy_mode=True,

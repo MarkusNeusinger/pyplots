@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bullet-basic: Basic Bullet Chart
-Library: highcharts unknown | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: highcharts 1.10.3 | Python 3.14.3
+Quality: /100 | Updated: 2026-02-22
 """
 
 import json
@@ -15,117 +15,78 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data - Multiple KPIs with actual values, targets, and qualitative ranges
-# Normalized to percentage scale (0-100) for consistent display
+# Data - Q4 KPI dashboard with actual values, targets, and qualitative ranges
 metrics = [
-    {
-        "name": "Revenue",
-        "actual": 275,
-        "target": 250,
-        "max_value": 300,
-        "ranges": [50, 75, 100],  # Poor/Satisfactory/Good as percentages
-        "unit": "$K",
-    },
-    {
-        "name": "Profit",
-        "actual": 22,
-        "target": 27,
-        "max_value": 35,
-        "ranges": [43, 71, 100],  # 15/35, 25/35, 35/35 as percentages
-        "unit": "%",
-    },
-    {
-        "name": "New Customers",
-        "actual": 1650,
-        "target": 1500,
-        "max_value": 2000,
-        "ranges": [50, 70, 100],  # 1000/2000, 1400/2000, 2000/2000
-        "unit": "",
-    },
-    {
-        "name": "Satisfaction",
-        "actual": 4.5,
-        "target": 4.7,
-        "max_value": 5.0,
-        "ranges": [70, 84, 100],  # 3.5/5, 4.2/5, 5/5 as percentages
-        "unit": "/5",
-    },
+    {"name": "Revenue", "actual": 275, "target": 250, "max": 300, "label": "$275K"},
+    {"name": "Profit", "actual": 22, "target": 27, "max": 35, "label": "22%"},
+    {"name": "New Customers", "actual": 1650, "target": 1500, "max": 2000, "label": "1,650"},
+    {"name": "Satisfaction", "actual": 4.5, "target": 4.7, "max": 5.0, "label": "4.5/5"},
 ]
 
-# Grayscale colors for qualitative ranges (light to dark = poor to good)
+# Qualitative range thresholds as percentage of max — poor / satisfactory / good
+range_pcts = [50, 75, 100]
+
+# Grayscale for qualitative ranges — light to dark = poor to good
 range_colors = ["#e0e0e0", "#b0b0b0", "#808080"]
 
-# Build series data - normalize all values to 0-100 scale for consistent display
+# Normalize all values to 0-100% scale for a shared axis
 series_data = []
-for metric in metrics:
-    max_val = metric["max_value"]
+for m in metrics:
     series_data.append(
         {
-            "y": round((metric["actual"] / max_val) * 100, 1),
-            "target": round((metric["target"] / max_val) * 100, 1),
-            # Store original values for display
-            "actual_value": metric["actual"],
-            "target_value": metric["target"],
-            "unit": metric["unit"],
+            "y": round(m["actual"] / m["max"] * 100, 1),
+            "target": round(m["target"] / m["max"] * 100, 1),
+            "label": m["label"],
         }
     )
 
-# Build categories with metric names
-categories = []
-for metric in metrics:
-    if metric["unit"]:
-        categories.append(f"{metric['name']} ({metric['unit']})")
-    else:
-        categories.append(metric["name"])
+categories = [m["name"] for m in metrics]
 
-# Chart options for bullet chart
+# Chart configuration
 chart_options = {
     "chart": {
         "type": "bullet",
         "width": 4800,
         "height": 2700,
         "backgroundColor": "#ffffff",
-        "inverted": True,  # Horizontal bullet charts
-        "marginLeft": 450,  # Space for category labels
-        "spacing": [100, 100, 100, 100],
+        "inverted": True,
+        "marginLeft": 380,
+        "marginRight": 100,
+        "spacing": [80, 60, 60, 60],
     },
-    "title": {"text": "bullet-basic · highcharts · pyplots.ai", "style": {"fontSize": "48px", "fontWeight": "bold"}},
+    "title": {
+        "text": "Q4 Performance Dashboard \u00b7 bullet-basic \u00b7 highcharts \u00b7 pyplots.ai",
+        "style": {"fontSize": "48px", "fontWeight": "bold"},
+    },
     "subtitle": {
-        "text": "Q4 Performance Dashboard - Actual vs Target",
-        "style": {"fontSize": "32px", "color": "#666666"},
+        "text": "Actual performance vs targets across key business metrics",
+        "style": {"fontSize": "30px", "color": "#666666"},
     },
     "xAxis": {"categories": categories, "labels": {"style": {"fontSize": "32px", "fontWeight": "bold"}}},
     "yAxis": {
         "gridLineWidth": 0,
         "min": 0,
         "max": 100,
-        "title": {"text": "% of Target Range", "style": {"fontSize": "28px"}},
+        "title": {"text": "% of Maximum", "style": {"fontSize": "28px"}},
+        "tickInterval": 10,
         "labels": {"format": "{value}%", "style": {"fontSize": "24px"}},
         "plotBands": [
-            # Poor range (0-50%)
-            {"from": 0, "to": 50, "color": range_colors[0]},
-            # Satisfactory range (50-75%)
-            {"from": 50, "to": 75, "color": range_colors[1]},
-            # Good range (75-100%)
-            {"from": 75, "to": 100, "color": range_colors[2]},
+            {"from": 0, "to": range_pcts[0], "color": range_colors[0]},
+            {"from": range_pcts[0], "to": range_pcts[1], "color": range_colors[1]},
+            {"from": range_pcts[1], "to": range_pcts[2], "color": range_colors[2]},
         ],
     },
     "legend": {"enabled": False},
     "plotOptions": {
         "bullet": {
-            "pointPadding": 0.3,
+            "pointPadding": 0.15,
             "borderWidth": 0,
-            "groupPadding": 0.2,
-            "color": "#306998",  # Python Blue for actual value bar
-            "targetOptions": {
-                "width": "180%",
-                "height": 6,
-                "borderWidth": 0,
-                "color": "#1a1a1a",  # Dark target line
-            },
+            "groupPadding": 0.05,
+            "color": "#306998",
+            "targetOptions": {"width": "180%", "height": 6, "borderWidth": 0, "color": "#1a1a1a"},
             "dataLabels": {
                 "enabled": True,
-                "format": "{point.actual_value}{point.unit}",
+                "format": "{point.label}",
                 "style": {"fontSize": "28px", "fontWeight": "bold", "color": "#ffffff"},
                 "inside": True,
                 "align": "right",
@@ -135,8 +96,12 @@ chart_options = {
     "series": [{"name": "Performance", "data": series_data}],
     "tooltip": {
         "headerFormat": '<span style="font-size: 24px; font-weight: bold;">{point.key}</span><br/>',
-        "pointFormat": '<span style="font-size: 20px;">Actual: <b>{point.actual_value}{point.unit}</b><br/>Target: <b>{point.target_value}{point.unit}</b><br/>Performance: <b>{point.y}%</b></span>',
-        "style": {"fontSize": "20px"},
+        "pointFormat": (
+            '<span style="font-size: 20px;">'
+            "Actual: <b>{point.label}</b> ({point.y}%)<br/>"
+            "Target: {point.target}%"
+            "</span>"
+        ),
     },
     "credits": {"enabled": False},
 }
@@ -180,7 +145,7 @@ with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encodin
     f.write(html_content)
     temp_path = f.name
 
-# Also save the HTML for interactive viewing
+# Save HTML for interactive viewing
 with open("plot.html", "w", encoding="utf-8") as f:
     f.write(html_content)
 
@@ -204,4 +169,4 @@ img_cropped = img.crop((0, 0, 4800, 2700))
 img_cropped.save("plot.png")
 Path("plot_raw.png").unlink()
 
-Path(temp_path).unlink()  # Clean up temp file
+Path(temp_path).unlink()

@@ -1,11 +1,11 @@
-""" pyplots.ai
+"""pyplots.ai
 bump-basic: Basic Bump Chart
 Library: bokeh 3.8.2 | Python 3.14.3
 Quality: 88/100 | Updated: 2026-02-22
 """
 
 from bokeh.io import export_png
-from bokeh.models import ColumnDataSource, Label, Legend
+from bokeh.models import ColumnDataSource, CustomJSTickFormatter, FixedTicker, Label
 from bokeh.plotting import figure
 
 
@@ -42,20 +42,17 @@ p = figure(
 )
 
 # Plot lines and markers for each entity with visual hierarchy
-legend_items = []
 for i, (entity, ranks) in enumerate(rankings.items()):
     source = ColumnDataSource(data={"x": periods, "y": ranks, "team": [entity] * len(periods)})
 
     is_highlight = entity in highlight
     lw = 10 if is_highlight else 5
-    alpha_line = 0.95 if is_highlight else 0.35
-    alpha_marker = 1.0 if is_highlight else 0.4
+    alpha_line = 0.95 if is_highlight else 0.55
+    alpha_marker = 1.0 if is_highlight else 0.6
     marker_size = 38 if is_highlight else 22
 
     line = p.line(x="x", y="y", source=source, line_width=lw, line_color=colors[i], line_alpha=alpha_line)
     scatter = p.scatter(x="x", y="y", source=source, size=marker_size, color=colors[i], alpha=alpha_marker)
-
-    legend_items.append((entity, [line, scatter]))
 
     # End-of-line labels using Bokeh's Label annotation
     label = Label(
@@ -70,17 +67,6 @@ for i, (entity, ranks) in enumerate(rankings.items()):
         y_offset=-8,
     )
     p.add_layout(label)
-
-# Legend outside the plot
-legend = Legend(items=legend_items, location="center")
-legend.label_text_font_size = "22pt"
-legend.glyph_width = 50
-legend.glyph_height = 35
-legend.spacing = 18
-legend.border_line_color = None
-legend.background_fill_alpha = 0
-legend.padding = 20
-p.add_layout(legend, "right")
 
 # Title styling
 p.title.text_font_size = "32pt"
@@ -110,8 +96,14 @@ p.xgrid.grid_line_alpha = 0.15
 p.ygrid.grid_line_alpha = 0.25
 p.ygrid.grid_line_dash = [4, 4]
 
-# Y-axis ticks at integer rank positions only
-p.yaxis.ticker = [1, 2, 3, 4, 5]
+# Y-axis: FixedTicker at rank positions with CustomJSTickFormatter for ordinals
+p.yaxis.ticker = FixedTicker(ticks=[1, 2, 3, 4, 5])
+p.yaxis.formatter = CustomJSTickFormatter(
+    code="""
+    const suffixes = {1: 'st', 2: 'nd', 3: 'rd', 4: 'th', 5: 'th'};
+    return tick + (suffixes[tick] || 'th');
+"""
+)
 
 # Background
 p.background_fill_color = "#f8f9fa"
@@ -120,7 +112,7 @@ p.outline_line_color = None
 
 # Generous padding for balanced layout
 p.min_border_left = 100
-p.min_border_right = 60
+p.min_border_right = 300
 p.min_border_top = 80
 p.min_border_bottom = 80
 

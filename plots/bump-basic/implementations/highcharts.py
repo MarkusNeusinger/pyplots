@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 bump-basic: Basic Bump Chart
 Library: highcharts 1.10.3 | Python 3.14.3
-Quality: 87/100 | Updated: 2026-02-22
 """
 
 import tempfile
@@ -32,8 +31,8 @@ rankings = {
 }
 
 # Colorblind-safe palette starting with Python Blue
-# Replaced cyan→orange and pink→crimson for better perceptual distance
-colors = ["#306998", "#FFD43B", "#9467BD", "#FF7F0E", "#D62728", "#8C564B"]
+# Teal replaces red for better perceptual distance from orange under colorblindness
+colors = ["#306998", "#FFD43B", "#9467BD", "#FF7F0E", "#17BECF", "#8C564B"]
 
 # Visual hierarchy: thicker lines for teams with dramatic rank changes
 line_widths = {
@@ -57,7 +56,7 @@ chart.options.chart = {
     "height": 2700,
     "backgroundColor": "#ffffff",
     "marginLeft": 200,
-    "marginRight": 380,
+    "marginRight": 260,
     "marginBottom": 250,
     "spacingTop": 100,
     "marginTop": 300,
@@ -76,7 +75,7 @@ chart.options.subtitle = {"text": "League Standings Over Season", "style": {"fon
 chart.options.x_axis = {
     "categories": weeks,
     "labels": {"style": {"fontSize": "40px"}},
-    "lineWidth": 2,
+    "lineWidth": 0,
     "tickWidth": 0,
     "gridLineWidth": 0,
 }
@@ -86,6 +85,7 @@ chart.options.y_axis = {
     "title": {"text": "Rank", "style": {"fontSize": "40px", "color": "#444444"}},
     "labels": {"style": {"fontSize": "40px"}, "format": "#{value}"},
     "reversed": True,
+    "lineWidth": 0,
     "min": 0.5,
     "max": 6.5,
     "tickInterval": 1,
@@ -109,16 +109,8 @@ chart.options.y_axis = {
     ],
 }
 
-# Legend
-chart.options.legend = {
-    "enabled": True,
-    "layout": "vertical",
-    "align": "right",
-    "verticalAlign": "middle",
-    "itemStyle": {"fontSize": "36px", "fontWeight": "normal"},
-    "itemMarginBottom": 15,
-    "symbolWidth": 40,
-}
+# Legend disabled — endpoint data labels already identify each team
+chart.options.legend = {"enabled": False}
 
 # Tooltip disabled for static output
 chart.options.tooltip = {"enabled": False}
@@ -129,7 +121,7 @@ chart.options.credits = {"enabled": False}
 # Default plot options for spline
 chart.options.plot_options = {"spline": {"marker": {"enabled": True, "symbol": "circle"}}}
 
-# Series with data labels at endpoints and visual hierarchy
+# Series with data labels at endpoints, key-moment annotations, and visual hierarchy
 series_list = []
 for i, team in enumerate(teams):
     ranks = rankings[team]
@@ -145,6 +137,24 @@ for i, team in enumerate(teams):
                 "verticalAlign": "middle",
                 "x": 20,
                 "style": {"fontSize": "32px", "fontWeight": "bold", "color": colors[i], "textOutline": "3px white"},
+            }
+        elif team == "Eagles" and j == 2:
+            # Storytelling: Eagles take #1 at Week 3
+            point["dataLabels"] = {
+                "enabled": True,
+                "format": "\u2191 Takes lead",
+                "align": "center",
+                "y": -30,
+                "style": {"fontSize": "26px", "fontWeight": "normal", "color": "#555555", "textOutline": "2px white"},
+            }
+        elif team == "Tigers" and j == 4:
+            # Storytelling: Tigers peak at #1 at Week 5
+            point["dataLabels"] = {
+                "enabled": True,
+                "format": "\u2191 Peak",
+                "align": "center",
+                "y": -30,
+                "style": {"fontSize": "26px", "fontWeight": "normal", "color": "#555555", "textOutline": "2px white"},
             }
         data_points.append(point)
 

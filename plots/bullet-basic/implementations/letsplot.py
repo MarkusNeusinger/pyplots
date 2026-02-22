@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 bullet-basic: Basic Bullet Chart
 Library: letsplot 4.8.2 | Python 3.14.3
 Quality: 89/100 | Updated: 2026-02-22

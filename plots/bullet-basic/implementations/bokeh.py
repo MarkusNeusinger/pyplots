@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bullet-basic: Basic Bullet Chart
 Library: bokeh 3.8.2 | Python 3.14.3
-Quality: 88/100 | Updated: 2026-02-22
+Quality: repair-2 | Updated: 2026-02-22
 """
 
 from bokeh.io import export_png, output_file, save
@@ -20,7 +20,7 @@ metrics = [
 
 # Configuration
 num_metrics = len(metrics)
-bar_spacing = 1.5
+bar_spacing = 1.2
 bar_height = 0.8
 
 # Qualitative range colors: index 0=poor (darkest) → index 2=good (lightest)
@@ -36,7 +36,7 @@ p = figure(
     width=4800,
     height=2700,
     x_range=Range1d(-38, 118),
-    y_range=Range1d(-0.8, num_metrics * bar_spacing + 0.2),
+    y_range=Range1d(-0.9, num_metrics * bar_spacing - 0.3),
     title="bullet-basic · bokeh · pyplots.ai",
     x_axis_label="% of Maximum Range",
     toolbar_location=None,
@@ -83,7 +83,7 @@ for i, metric in enumerate(metrics):
 
     # Determine bar color based on actual vs target
     bar_color = color_above if actual >= target else color_below
-    actual_bar_height = bar_height * 0.3
+    actual_bar_height = bar_height * 0.38
 
     # Collect data for ColumnDataSource
     bar_x.append(norm_actual / 2)
@@ -154,7 +154,7 @@ hover = HoverTool(
 p.add_tools(hover)
 
 # Legend - positioned below the chart
-legend_y = -0.5
+legend_y = -0.6
 legend_start_x = 10
 legend_spacing = 22
 range_labels = ["Poor", "Satisfactory", "Good"]

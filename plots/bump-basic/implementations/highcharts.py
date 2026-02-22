@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bump-basic: Basic Bump Chart
 Library: highcharts 1.10.3 | Python 3.14.3
+Quality: 91/100 | Updated: 2026-02-22
 """
 
 import tempfile

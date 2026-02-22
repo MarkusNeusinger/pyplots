@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 bump-basic: Basic Bump Chart
 Library: letsplot 4.8.2 | Python 3.14.3
-Quality: 89/100 | Updated: 2026-02-22
 """
 
 import pandas as pd
@@ -20,7 +19,9 @@ from lets_plot import (
     ggsize,
     labs,
     layer_tooltips,
+    scale_alpha_manual,
     scale_color_manual,
+    scale_size_manual,
     scale_x_continuous,
     scale_y_reverse,
     theme,
@@ -74,44 +75,33 @@ data = {
 }
 df = pd.DataFrame(data)
 
+# Hero entity (Beta Inc) has the most dramatic arc — emphasize via mapped aesthetics
+hero = "Beta Inc"
+df["role"] = df["entity"].apply(lambda x: "hero" if x == hero else "rest")
+
 # Subset for labels at end of lines
 df_labels = df[df["period_num"] == 6].copy()
 
 # Cohesive muted palette — Python Blue anchors, warm/cool balance
 colors = ["#306998", "#C47D2A", "#3A9E78", "#8B6AAE", "#D4707A"]
 
-# Hero entity (Beta Inc) has the most dramatic arc — highlight it
-df_hero = df[df["entity"] == "Beta Inc"]
-df_rest = df[df["entity"] != "Beta Inc"]
-
-# Plot — layered: background lines, then hero emphasis
+# Plot — hero emphasis via scale_size_manual / scale_alpha_manual (idiomatic ggplot approach)
 tooltip_cfg = layer_tooltips().title("@entity").line("@|@period").line("Rank|@rank")
 
 plot = (
-    ggplot(df_rest, aes(x="period_num", y="rank", color="entity", group="entity"))
-    # Background lines — thinner, slightly transparent
-    + geom_line(size=2.0, alpha=0.55, tooltips=tooltip_cfg)
-    + geom_point(size=5, alpha=0.65, tooltips=tooltip_cfg)
-    # Hero line — Beta Inc's dramatic rise-and-fall stands out
-    + geom_line(
-        aes(x="period_num", y="rank", color="entity", group="entity"),
-        data=df_hero,
-        size=3.5,
-        alpha=1.0,
-        tooltips=tooltip_cfg,
-    )
-    + geom_point(
-        aes(x="period_num", y="rank", color="entity", group="entity"),
-        data=df_hero,
-        size=8,
-        alpha=1.0,
-        tooltips=tooltip_cfg,
-    )
-    # End-of-line entity labels
-    + geom_text(aes(label="entity"), data=df_labels, nudge_x=0.3, hjust=0, size=12)
+    ggplot(df, aes(x="period_num", y="rank", color="entity", group="entity"))
+    # Lines: size mapped to role for hero/rest thickness differentiation
+    + geom_line(aes(size="role", alpha="role"), tooltips=tooltip_cfg)
+    # Points: fixed size for all, alpha mapped for hero emphasis
+    + geom_point(aes(alpha="role"), size=6, tooltips=tooltip_cfg)
+    # End-of-line entity labels — sized to match tick text for consistency
+    + geom_text(aes(label="entity"), data=df_labels, nudge_x=0.3, hjust=0, size=15)
     + scale_y_reverse(breaks=[1, 2, 3, 4, 5])
     + scale_x_continuous(breaks=[1, 2, 3, 4, 5, 6], labels=["Q1", "Q2", "Q3", "Q4", "Q5", "Q6"], limits=[0.5, 7.8])
     + scale_color_manual(values=colors)
+    # Hero/rest differentiation through mapped scales — cleaner than duplicated geom layers
+    + scale_size_manual(name="", values={"hero": 3.5, "rest": 2.0}, guide="none")
+    + scale_alpha_manual(name="", values={"hero": 1.0, "rest": 0.70}, guide="none")
     + labs(x="Quarterly Period", y="Market Rank Position", title="bump-basic · letsplot · pyplots.ai")
     + theme_minimal()
     + theme(
@@ -126,7 +116,6 @@ plot = (
         panel_grid_major_y=element_line(color="#E0E0E0", size=0.5),
         panel_grid_minor_y=element_blank(),
         plot_background=element_rect(fill="white", color="white"),
-        # Generous margins
         plot_margin=[40, 60, 30, 20],
     )
     + ggsize(1600, 900)

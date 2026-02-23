@@ -438,7 +438,9 @@ Evaluators must use these anchors to prevent score inflation:
 
 - **Median implementation should score 72-78** — not 90+
 - **DE-01 > 6 is rare** on first attempt — most plots look like configured defaults (score 4)
+- **DE-02 = 2 is the default** — library defaults with minimal customization
 - **DE-03 = 2 is the default** — most plots just display data without visual hierarchy or emphasis
+- **LM-01 = 3 is the default** — correct usage but doesn't leverage the library's best patterns
 - **LM-02 = 1 is the default** — most implementations use the library generically
 - **When in doubt, deduct** — the repair loop exists to improve quality
 - A plot scoring 90+ should genuinely impress a data visualization professional

@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 density-basic: Basic Density Plot
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 87/100 | Updated: 2026-02-23
 """
 
 import numpy as np
@@ -16,7 +15,7 @@ secondary_scores = np.random.normal(52, 5, 70)  # Distinct lower-scoring group
 scores = np.concatenate([main_scores, secondary_scores])
 
 # KDE with Gaussian kernel and Scott's rule bandwidth
-x_range = np.linspace(scores.min() - 12, scores.max() + 12, 400)
+x_range = np.linspace(scores.min() - 8, scores.max() + 8, 400)
 n = len(scores)
 bandwidth = n ** (-1 / 5) * np.std(scores)
 
@@ -43,14 +42,15 @@ custom_style = Style(
     title_font_size=72,
     label_font_size=44,
     major_label_font_size=40,
-    legend_font_size=32,
+    legend_font_size=36,
     value_font_size=28,
     stroke_width=5,
     opacity=0.60,
     opacity_hover=0.85,
+    font_family="'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
 )
 
-# Chart with refined axes, compact bottom legend, explicit margins
+# Chart with refined axes — spines removed for clean floating-axis look
 chart = pygal.XY(
     width=4800,
     height=2700,
@@ -62,22 +62,28 @@ chart = pygal.XY(
     fill=True,
     show_legend=True,
     legend_at_bottom=True,
-    legend_box_size=24,
+    legend_box_size=28,
     show_y_guides=True,
     show_x_guides=False,
     stroke_style={"width": 5, "linecap": "round"},
     truncate_label=-1,
-    margin_top=50,
-    margin_right=60,
+    margin_top=40,
+    margin_right=40,
+    margin_bottom=30,
+    margin_left=20,
     x_value_formatter=lambda x: f"{x:.0f}",
     y_value_formatter=lambda y: f"{y:.3f}",
     css=[
         "file://style.css",
         "inline:.plot .background {fill: white !important; stroke: none !important; stroke-width: 0 !important;}",
         "inline:.graph > .background {fill: white !important; stroke: none !important;}",
-        "inline:.axis .guides .line {stroke: #e8e8e8 !important; stroke-width: 1px;}",
-        "inline:.axis.x .line {stroke: #999999 !important; stroke-width: 1.5px;}",
-        "inline:.axis.y .line {stroke: #999999 !important; stroke-width: 1.5px;}",
+        "inline:.axis .guides .line {stroke: #e0e0e0 !important; stroke-width: 0.8px;}",
+        "inline:.axis.x > path.line {stroke: none !important; stroke-width: 0 !important;}",
+        "inline:.axis.y > path.line {stroke: none !important; stroke-width: 0 !important;}",
+        "inline:.axis .guides text {fill: #666666 !important;}",
+        "inline:text.title {font-weight: 600 !important; fill: #222222 !important;}",
+        "inline:.axis text {font-weight: 400 !important;}",
+        "inline:.legends text {font-weight: 400 !important; fill: #444444 !important;}",
     ],
     js=[],
 )
@@ -86,20 +92,19 @@ chart = pygal.XY(
 xy_combined = [(float(x), float(y)) for x, y in zip(x_range, density, strict=True)]
 chart.add("Test score distribution", xy_combined)
 
-# Secondary component — warm accent line highlighting bimodal structure
+# Secondary component — warm accent highlighting bimodal structure
 xy_sec = [(float(x), float(y)) for x, y in zip(x_range, density_sec, strict=True)]
-chart.add("Lower-scoring group", xy_sec, stroke_style={"width": 3, "linecap": "round"}, fill=False)
+chart.add("Lower-scoring group", xy_sec, stroke_style={"width": 3.5, "linecap": "round"}, fill=True)
 
-# Rug plot — prominent individual observation marks
-rug_height = max(density) * 0.08
-rug_sample = scores[::2]  # Every other point for good coverage
+# Rug plot — individual observation marks with increased prominence
+rug_height = max(density) * 0.10
 rug_data = []
-for xi in sorted(rug_sample):
+for xi in sorted(scores):
     rug_data.append((float(xi), 0.0))
     rug_data.append((float(xi), float(rug_height)))
     rug_data.append((float(xi), 0.0))
 
-chart.add("Individual scores", rug_data, stroke_style={"width": 3.5, "linecap": "round"}, show_dots=False, fill=False)
+chart.add("Individual scores", rug_data, stroke_style={"width": 4.5, "linecap": "round"}, show_dots=False, fill=False)
 
 # Save outputs
 chart.render_to_png("plot.png")

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bubble-packed: Basic Packed Bubble Chart
 Library: plotly 6.5.2 | Python 3.14.3
 Quality: 88/100 | Updated: 2026-02-23
@@ -56,11 +56,17 @@ for _ in range(600):
         x_pos[i] += fx
         y_pos[i] += fy
 
+# Center the bubble cluster on canvas
+x_center = (x_pos.min() + x_pos.max()) / 2
+y_center = (y_pos.min() + y_pos.max()) / 2
+x_pos -= x_center
+y_pos -= y_center
+
 # Color palette - Python colors first, then colorblind-safe
 colors = [
     "#306998",
     "#FFD43B",
-    "#4E79A7",
+    "#CE6DBD",
     "#F28E2B",
     "#E15759",
     "#76B7B2",
@@ -70,9 +76,15 @@ colors = [
     "#FF9DA7",
     "#9C755F",
     "#BAB0AC",
-    "#5778A4",
-    "#E49444",
-    "#85B6B2",
+    "#8CD17D",
+    "#A0CBE8",
+    "#DECBE4",
+]
+
+# Adaptive text color: dark on light backgrounds, white on dark
+text_colors = [
+    "#333" if (int(c[1:3], 16) * 299 + int(c[3:5], 16) * 587 + int(c[5:7], 16) * 114) > 153000 else "white"
+    for c in colors
 ]
 
 # Format values for display
@@ -112,7 +124,7 @@ fig.add_trace(
 
 # Add text labels — only inside bubbles that are large enough
 for i in range(n):
-    font_size = max(9, min(18, int(radii[i] * 0.18)))
+    font_size = max(12, min(20, int(radii[i] * 0.20)))
     if radii[i] > 35:
         text = f"<b>{labels[i]}</b><br>{formatted[i]}"
     else:
@@ -122,11 +134,12 @@ for i in range(n):
         y=y_pos[i],
         text=text,
         showarrow=False,
-        font={"size": font_size, "color": "white", "family": "Arial"},
+        font={"size": font_size, "color": text_colors[i], "family": "Arial"},
     )
 
-# Layout
-pad = 140
+# Layout — symmetric ranges for balanced centering
+x_ext = max(abs((x_pos - radii).min()), abs((x_pos + radii).max())) + 30
+y_ext = max(abs((y_pos - radii).min()), abs((y_pos + radii).max())) + 30
 fig.update_layout(
     title={
         "text": "Department Budget Allocation · bubble-packed · plotly · pyplots.ai",
@@ -134,13 +147,7 @@ fig.update_layout(
         "x": 0.5,
         "xanchor": "center",
     },
-    xaxis={
-        "showgrid": False,
-        "zeroline": False,
-        "showticklabels": False,
-        "title": "",
-        "range": [x_pos.min() - pad, x_pos.max() + pad],
-    },
+    xaxis={"showgrid": False, "zeroline": False, "showticklabels": False, "title": "", "range": [-x_ext, x_ext]},
     yaxis={
         "showgrid": False,
         "zeroline": False,
@@ -148,7 +155,7 @@ fig.update_layout(
         "title": "",
         "scaleanchor": "x",
         "scaleratio": 1,
-        "range": [y_pos.min() - pad, y_pos.max() + pad],
+        "range": [-y_ext, y_ext],
     },
     shapes=shapes,
     template="plotly_white",
@@ -158,13 +165,11 @@ fig.update_layout(
     plot_bgcolor="white",
 )
 
-# Add total budget annotation at bottom
+# Add total budget annotation just below the cluster
 fig.add_annotation(
     text=f"Total: {total}",
-    xref="paper",
-    yref="paper",
-    x=0.5,
-    y=-0.02,
+    x=0,
+    y=(y_pos - radii).min() - 25,
     showarrow=False,
     font={"size": 18, "color": "#666", "family": "Arial"},
 )

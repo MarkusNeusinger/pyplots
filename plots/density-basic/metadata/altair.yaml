@@ -1,164 +1,192 @@
 library: altair
 specification_id: density-basic
 created: '2025-12-23T10:00:19Z'
-updated: '2025-12-23T10:03:53Z'
-generated_by: claude-opus-4-5-20251101
+updated: '2026-02-23T23:02:32Z'
+generated_by: claude-opus-4-6
 workflow_run: 20457534143
 issue: 0
-python_version: 3.13.11
+python_version: 3.14.3
 library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/density-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/density-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/density-basic/altair/plot.html
-quality_score: 92
+quality_score: 91
 impl_tags:
   dependencies: []
   techniques:
-    - hover-tooltips
-    - html-export
+  - annotations
+  - layer-composition
+  - hover-tooltips
+  - html-export
   patterns:
-    - data-generation
+  - data-generation
   dataprep:
-    - kde
+  - kde
   styling:
-    - alpha-blending
+  - alpha-blending
+  - grid-styling
 review:
   strengths:
-  - Excellent use of Altair transform_density for KDE calculation with configurable
-    bandwidth
-  - Clean bimodal distribution effectively demonstrates density plot capabilities
-  - Proper font sizing ensures excellent readability at high resolution
-  - Interactive tooltips and HTML export leverage Altair interactive strengths
-  - Python Blue color scheme maintains project consistency
+  - Bimodal data with peak annotations creates immediate storytelling — viewer instantly
+    understands the two student populations
+  - Rug plot properly positioned at datum=0 (fixed from attempt 1 hardcoded pixel
+    value)
+  - 'Excellent use of Altair-distinctive features: declarative selections, conditional
+    encoding, transform_density'
+  - Clean, refined visual design with cohesive color scheme, subtle grid, and removed
+    view frame
+  - Interactive HTML export with nearest-point hover readout adds genuine value beyond
+    static PNG
   weaknesses:
-  - Some test score values extend beyond typical 0-100 range due to normal distribution
-    tails
-  - Rug plot (optional per spec) not included
-  image_description: 'The plot displays a bimodal density curve (KDE) in Python Blue
-    (#306998) with a filled area and darker stroke outline. The title "density-basic
-    · altair · pyplots.ai" appears at the top in appropriate font size. The X-axis
-    shows "Test Score (points)" ranging from approximately 10 to 110, and the Y-axis
-    displays "Probability Density" from 0.000 to 0.026. Two distinct peaks are visible:
-    a primary peak around 34-36 and a secondary peak around 66-70, demonstrating clear
-    bimodal distribution. The area under the curve has 70% opacity fill with a subtle
-    grid in the background. All text elements (title, axis labels, tick labels) are
-    clearly legible.'
+  - X-axis domain [15, 100] still renders tick from 10 due to Altair tick rounding,
+    creating small empty zone
+  - Rug plot ticks overlap in dense peak regions (inherent to data density)
+  - Subtitle font size (16pt) is proportionally small relative to 28pt title on the
+    large canvas
+  image_description: 'The plot displays a kernel density estimation (KDE) curve of
+    test scores rendered as a filled area in muted blue (#306998) with a darker blue
+    outline (#1e4d6e, strokeWidth 2.5). The distribution is clearly bimodal with two
+    peaks: a taller peak around score 38 (reaching density ~0.030) labeled "Foundational
+    Course" in bold dark blue text above it, and a shorter peak around score 72 (reaching
+    density ~0.019) labeled "Advanced Course." A rug plot of thin blue tick marks
+    sits along the baseline (y=0) showing individual data point concentrations, visibly
+    denser around the two peaks. The x-axis is labeled "Test Score (points)" spanning
+    roughly 10–100, the y-axis "Probability Density" spanning 0.000–0.034 with 3-decimal
+    formatting. The title reads "density-basic · altair · pyplots.ai" at 28pt with
+    a gray subtitle "Kernel density estimation of test scores across two course levels."
+    Grid lines are extremely subtle (dashed, 0.15 opacity), the view frame border
+    is removed, and domain lines are soft gray.'
   criteria_checklist:
     visual_quality:
-      score: 37
-      max: 40
+      score: 27
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 7
+        max: 8
         passed: true
-        comment: Title at 28pt, axis labels at 22pt, tick labels at 18pt - all clearly
-          readable
+        comment: All font sizes explicitly set (title 28pt, axis titles 22pt, ticks
+          18pt, annotations 16pt). Subtitle at 16pt is proportionally small relative
+          to 28pt title.
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping text elements. Peak annotations well-positioned with
+          dy=-18 offset.
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Density curve clearly visible with good opacity and stroke
+        comment: Density curve clearly visible with 0.45 opacity fill and 2.5px outline.
+          Rug plot ticks overlap in dense peak clusters.
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Single color (#306998) is colorblind-safe
-      - id: VQ-05
-        name: Layout Balance
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Good proportions, though slight extra whitespace on right
+        comment: Single-series Python Blue. No colorblind concerns. Good contrast
+          between fill, outline, and background.
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 3
+        max: 4
+        passed: true
+        comment: Good canvas utilization (~55-60%). X-axis domain [15, 100] but Altair
+          renders tick from 10, leaving small empty zone before data starts.
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: "Test Score (points)", "Probability
-          Density"'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
-        passed: false
-        comment: Grid is subtle (alpha 0.3), but no legend present (N/A for single
-          series)
+        comment: Test Score (points) includes units. Probability Density is descriptive
+          and standard.
+    design_excellence:
+      score: 15
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 6
+        max: 8
+        passed: true
+        comment: 'Strong cohesive design: monochromatic Python Blue scheme, darker
+          variant for outline/annotations, gray subtitle, semi-transparent fill. Clearly
+          above defaults.'
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: View frame removed, grid extremely subtle (dashed, 0.15 opacity),
+          domain line softened to gray. Could remove horizontal grid entirely.
+      - id: DE-03
+        name: Data Storytelling
+        score: 5
+        max: 6
+        passed: true
+        comment: Bimodal data with peak annotations immediately explains two student
+          populations. Subtitle provides context. Strong viewer guidance.
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct density/KDE plot
+        comment: Correct KDE/density plot using Altair transform_density.
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X correctly shows values, Y shows probability density
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Smooth curve, fill under curve with transparency as spec suggests
-      - id: SC-04
-        name: Data Range
+        comment: 'All spec features present: smooth curve, filled area with transparency,
+          rug plot, appropriate bandwidth.'
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Axes show full data range
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X maps to Test Score (continuous), Y maps to probability density.
+          All data visible.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: N/A for single series (no legend needed)
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Correct format: "density-basic · altair · pyplots.ai"'
+        comment: Title follows exact format. Single series, no legend needed.
     data_quality:
-      score: 18
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Bimodal distribution demonstrates density estimation well, though
-          rug plot (optional) not included
+        comment: Bimodal distribution with asymmetric peaks demonstrates KDE capabilities.
+          Excellent showcase.
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
+        score: 5
+        max: 5
         passed: true
-        comment: Test scores from two groups is a plausible, real-world scenario
+        comment: Test scores across two course levels — neutral, educational, real-world
+          scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Values 10-100 sensible for test scores, though some values extend
-          beyond 100
+        comment: Scores 5-100, means at 38 and 72, std devs 7-8. 350 total observations.
+          All realistic.
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -166,40 +194,49 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Simple imports → data → plot → save structure, no functions/classes
+        comment: Clean linear flow with no functions or classes.
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) ensures deterministic output.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports (altair, numpy, pandas)
+        comment: All three imports used. No unused imports.
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
+        score: 2
+        max: 2
+        passed: true
+        comment: Clean, well-organized with idiomatic method chaining. Selection-based
+          hover is standard Altair pattern.
+      - id: CQ-05
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Uses current Altair API
-      - id: CQ-05
-        name: Output Correct
-        score: 0
-        max: 1
-        passed: false
-        comment: Saves as plot.png ✓ (actually correct)
-    library_features:
-      score: 5
-      max: 5
+        comment: Saves plot.png with scale_factor=3.0 and plot.html. Current Altair
+          6.0 API.
+    library_mastery:
+      score: 9
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
         score: 5
         max: 5
         passed: true
-        comment: Uses transform_density for KDE, declarative encoding, tooltips, interactive
-          HTML export
+        comment: 'Expert Altair usage: declarative transform_density, proper encoding
+          types, alt.layer, selection_point, conditional encoding, datum=0 for rug.'
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Altair-distinctive: transform_density, selection_point with nearest,
+          conditional opacity, HTML export with interactivity.'
   verdict: APPROVED

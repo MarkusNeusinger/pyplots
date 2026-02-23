@@ -1,14 +1,12 @@
-""" pyplots.ai
+"""pyplots.ai
 bubble-packed: Basic Packed Bubble Chart
 Library: plotnine 0.15.3 | Python 3.14.3
-Quality: 88/100 | Updated: 2026-02-23
 """
 
 import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
-    annotate,
     coord_fixed,
     element_rect,
     element_text,
@@ -70,7 +68,7 @@ max_radius = 1.0
 min_radius = 0.25
 df["radius"] = min_radius + (max_radius - min_radius) * np.sqrt(df["value"] / df["value"].max())
 
-# Circle packing - greedy placement + force simulation
+# Circle packing - greedy placement with vectorized collision detection
 n = len(df)
 radii = df["radius"].values
 idx = np.argsort(-radii)
@@ -88,44 +86,45 @@ for i in range(1, n):
 
     for ref in range(i):
         place_r = sorted_radii[ref] + target_r + gap
-        for angle in angles_sweep:
-            test_x = x[ref] + place_r * np.cos(angle)
-            test_y = y[ref] + place_r * np.sin(angle)
+        cx = x[ref] + place_r * np.cos(angles_sweep)
+        cy = y[ref] + place_r * np.sin(angles_sweep)
 
-            valid = all(
-                np.sqrt((test_x - x[j]) ** 2 + (test_y - y[j]) ** 2) >= target_r + sorted_radii[j] + gap
-                for j in range(i)
-            )
+        # Vectorized collision check across all angles simultaneously
+        dx_c = cx[:, np.newaxis] - x[:i][np.newaxis, :]
+        dy_c = cy[:, np.newaxis] - y[:i][np.newaxis, :]
+        dists_c = np.hypot(dx_c, dy_c)
+        valid = np.all(dists_c >= target_r + sorted_radii[:i] + gap, axis=1)
 
-            if valid:
-                center_dist = test_x**2 + test_y**2
-                if center_dist < best_dist:
-                    best_dist = center_dist
-                    best_x, best_y = test_x, test_y
+        center_dists = cx**2 + cy**2
+        valid_dists = np.where(valid, center_dists, float("inf"))
+        best_k = np.argmin(valid_dists)
+        if valid_dists[best_k] < best_dist:
+            best_dist = valid_dists[best_k]
+            best_x, best_y = cx[best_k], cy[best_k]
 
     x[i] = best_x
     y[i] = best_y
 
-# Force simulation to tighten packing
+# Force simulation to tighten packing (vectorized with numpy)
+tri = np.triu(np.ones((n, n), dtype=bool), k=1)
+min_dists = sorted_radii[:, np.newaxis] + sorted_radii[np.newaxis, :] + gap
+
 for _ in range(2000):
     x *= 0.997
     y *= 0.997
 
-    for i in range(n):
-        for j in range(i + 1, n):
-            dx = x[j] - x[i]
-            dy = y[j] - y[i]
-            dist = np.sqrt(dx * dx + dy * dy)
-            min_dist = sorted_radii[i] + sorted_radii[j] + gap
+    dx = x[:, np.newaxis] - x[np.newaxis, :]
+    dy = y[:, np.newaxis] - y[np.newaxis, :]
+    dists = np.hypot(dx, dy)
 
-            if dist < min_dist and dist > 0.001:
-                overlap = (min_dist - dist) / 2
-                nx_d = dx / dist
-                ny_d = dy / dist
-                x[i] -= overlap * nx_d
-                y[i] -= overlap * ny_d
-                x[j] += overlap * nx_d
-                y[j] += overlap * ny_d
+    overlap = tri & (dists < min_dists) & (dists > 1e-3)
+    if overlap.any():
+        safe_dists = np.where(dists > 1e-3, dists, 1.0)
+        push = ((min_dists - dists) / (2 * safe_dists)) * overlap
+        corr_x = push * dx
+        corr_y = push * dy
+        x += corr_x.sum(axis=1) - corr_x.sum(axis=0)
+        y += corr_y.sum(axis=1) - corr_y.sum(axis=0)
 
 # Restore original order
 x_final = np.zeros(n)
@@ -155,11 +154,7 @@ labels_df["display_label"] = labels_df.apply(
     ),
     axis=1,
 )
-
-# Value annotations below department names (data storytelling layer)
 labels_df["value_label"] = labels_df["value"].apply(lambda v: f"${v}M")
-# Offset value labels below center, scaled to circle size
-labels_df["y_offset"] = labels_df["radius"] * 0.3
 
 # Alpha by group emphasis — Tech & Business slightly more prominent
 alpha_values = {"Tech": 0.90, "Business": 0.85, "Operations": 0.78, "Support": 0.75}
@@ -167,9 +162,18 @@ alpha_values = {"Tech": 0.90, "Business": 0.85, "Operations": 0.78, "Support": 0
 # Color palette - Okabe-Ito colorblind-safe
 group_colors = {"Tech": "#0072B2", "Business": "#E69F00", "Operations": "#009E73", "Support": "#CC79A7"}
 
-# Compute group totals for subtitle annotation
+# Compute group totals for subtitle
 group_totals = df.groupby("group")["value"].sum()
-subtitle_text = " · ".join(f"{g}: ${group_totals[g]}M" for g in ["Tech", "Business", "Operations", "Support"])
+subtitle_text = " \u00b7 ".join(f"{g}: \\${group_totals[g]}M" for g in ["Tech", "Business", "Operations", "Support"])
+
+# Tight viewport bounds for optimal canvas utilization
+pad = 0.15
+x_lo = (df["x"] - df["radius"]).min() - pad
+x_hi = (df["x"] + df["radius"]).max() + pad
+y_lo = (df["y"] - df["radius"]).min() - pad
+y_hi = (df["y"] + df["radius"]).max() + pad
+half_span = max(x_hi - x_lo, y_hi - y_lo) / 2
+cx_mid, cy_mid = (x_lo + x_hi) / 2, (y_lo + y_hi) / 2
 
 # Plot with layered grammar of graphics composition
 plot = (
@@ -188,13 +192,13 @@ plot = (
         size=12,
         color="white",
         fontweight="bold",
-        nudge_y=0.08,
+        nudge_y=0.10,
     )
-    # Layer 3: Small bubble labels (smaller text)
+    # Layer 3: Small bubble labels
     + geom_text(
         data=labels_df[labels_df["value"] < 10],
         mapping=aes(x="x", y="y", label="display_label"),
-        size=8,
+        size=10,
         color="white",
         fontweight="bold",
     )
@@ -202,24 +206,24 @@ plot = (
     + geom_text(
         data=labels_df[labels_df["value"] >= 12],
         mapping=aes(x="x", y="y", label="value_label"),
-        size=9,
+        size=10,
         color="white",
         alpha=0.85,
-        nudge_y=-0.15,
+        nudge_y=-0.17,
     )
     # Scales
     + scale_fill_manual(values=group_colors, name="Department Group")
     + scale_alpha_manual(values=alpha_values)
     + guides(alpha=False)
-    + coord_fixed()
-    # Annotations
-    + annotate("text", x=0, y=-3.6, label=subtitle_text, size=11, color="#555555")
-    + labs(title="bubble-packed · plotnine · pyplots.ai")
+    # Tight viewport with coord_fixed for 1:1 aspect ratio
+    + coord_fixed(xlim=(cx_mid - half_span, cx_mid + half_span), ylim=(cy_mid - half_span, cy_mid + half_span))
+    + labs(title="bubble-packed \u00b7 plotnine \u00b7 pyplots.ai", subtitle=subtitle_text)
     # Theme — plotnine's distinctive void theme with layered customization
     + theme_void()
     + theme(
         figure_size=(12, 12),
-        plot_title=element_text(size=24, ha="center", weight="bold", margin={"b": 15}),
+        plot_title=element_text(size=24, ha="center", weight="bold", margin={"b": 5}),
+        plot_subtitle=element_text(size=16, ha="center", color="#555555", margin={"t": 5, "b": 10}),
         legend_title=element_text(size=18, weight="bold"),
         legend_text=element_text(size=16),
         legend_position="bottom",

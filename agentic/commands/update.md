@@ -150,7 +150,7 @@ Agents report back via `SendMessage` (auto-delivered to you). Agents may report 
 2. **Present a summary to the user** for each library that completed successfully:
    - What was changed (bullet points from agent)
    - **Preview:** `{absolute path}/plots/{spec_id}/implementations/.update-preview/{library}/plot.png` (use the absolute path reported by the agent in its `IMAGE:` field — display it on its own line so terminal emulators render it as a clickable link)
-   - Agent's self-assessment score
+   - Agent's quality score with category breakdown and number of local repair iterations
    - Any spec changes the agent made
 
    **After the summary**, create before/after comparison images and open them:
@@ -369,7 +369,8 @@ Updated **{library}** implementation for **{spec_id}**.
 
 ### Changes
 {bullet points of changes from agent}
-- Quality self-assessment: {score}/100
+- Quality: {score}/100 (after {N} local repair iterations)
+  - VQ: {vq}/30 | DE: {de}/20 | SC: {sc}/15 | DQ: {dq}/15 | CQ: {cq}/10 | LM: {lm}/10
 
 ## Test Plan
 
@@ -640,21 +641,46 @@ uv run python -m core.images process \
   plots/{SPEC_ID}/implementations/.update-preview/{LIBRARY}/plot_thumb.png
 ```
 
-### Step 7: Self-Check
+### Step 7: Quality Evaluation & Local Repair Loop
 
-View the generated image at `plots/{SPEC_ID}/implementations/.update-preview/{LIBRARY}/plot.png`.
+Before shipping, formally evaluate your implementation against the same criteria CI uses. This catches issues locally
+(cheaper) instead of triggering expensive remote repair cycles.
 
-Check against the quality criteria from `prompts/quality-criteria.md`:
+**7a. View the generated image** at `plots/{SPEC_ID}/implementations/.update-preview/{LIBRARY}/plot.png`.
 
-- Text legibility (title 24pt, labels 20pt, ticks 16pt)
-- No overlapping elements
-- Elements visible and distinguishable
-- Color accessibility
-- Layout balance (16:9)
-- Correct axis labels with units
-- Spec compliance
+**7b. Score against all 6 quality categories** using the criteria from `prompts/quality-criteria.md` (read in Step 1).
+Produce category totals only (no per-criterion notes needed):
 
-Fix any obvious issues before reporting.
+```
+VQ: __/30 | DE: __/20 | SC: __/15 | DQ: __/15 | CQ: __/10 | LM: __/10 → TOTAL: __/100
+```
+
+**Scoring calibration — apply these defaults strictly:**
+- DE-01 = 4 (configured default, not exceptional) unless design is genuinely outstanding
+- DE-02 = 2 (library defaults, minimal refinement) unless you added intentional polish
+- DE-03 = 2 (data displayed, no storytelling) unless visual hierarchy clearly guides the viewer
+- LM-01 = 3 (correct but not best patterns) unless you used high-level API expertly
+- LM-02 = 1 (generic usage) unless you used a feature distinctive to this library
+- **Median implementation scores 72-78, not 90+.** If your total is above 85, re-check — are you inflating?
+
+**Apply score caps** (from quality-criteria.md):
+- VQ-02 = 0 (severe overlap) → max 49
+- VQ-03 = 0 (invisible elements) → max 49
+- SC-01 = 0 (wrong plot type) → max 40
+- DQ-02 = 0 (controversial data) → max 49
+- DE-01 ≤ 2 AND DE-02 ≤ 2 (generic + no refinement) → max 75
+- CQ-04 = 0 (fake functionality) → max 70
+
+**7c. If score ≥ 90** → proceed to Step 8.
+
+**7d. If score < 90** → repair locally (max **2 iterations**, separate from CI's 3 repair attempts after PR submission):
+1. Identify the top 2-3 weakest categories/criteria dragging the score down
+2. Fix the implementation code to address those specific weaknesses
+3. Re-run the implementation (Step 4), re-lint (Step 5), re-process images (Step 6)
+4. **Re-read the generated image** and **formally re-score** — produce the full VQ/DE/SC/DQ/CQ/LM breakdown again (fixes can introduce new issues)
+5. If score ≥ 90 → proceed to Step 8
+6. If score < 90 and iterations < 2 → repeat from substep 1
+7. If score < 90 after 2 iterations → proceed to Step 8 anyway with your most recent score (ship to CI for fresh perspective)
 
 ### Step 8: Report to Lead
 
@@ -670,7 +696,10 @@ CHANGES:
 - ...
 
 IMAGE: {absolute path to plots/{SPEC_ID}/implementations/.update-preview/{LIBRARY}/plot.png — use pwd to resolve}
-SELF_SCORE: {your estimated quality score}/100
+
+QUALITY: {total}/100 (after {N} local repair iterations, 0 = passed first evaluation)
+  VQ: {vq}/30 | DE: {de}/20 | SC: {sc}/15
+  DQ: {dq}/15 | CQ: {cq}/10 | LM: {lm}/10
 
 SPEC_CHANGES: {none, or describe what you changed in specification.md}
 

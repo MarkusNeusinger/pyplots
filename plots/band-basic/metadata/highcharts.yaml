@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: band-basic
 created: '2025-12-23T09:09:27Z'
-updated: '2026-02-23T13:41:00Z'
+updated: '2026-02-23T13:55:45Z'
 generated_by: claude-opus-4-6
 workflow_run: 20456388074
 issue: 0
@@ -10,11 +10,11 @@ library_version: 1.10.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/band-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/band-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/band-basic/highcharts/plot.html
-quality_score: null
+quality_score: 88
 impl_tags:
   dependencies:
-  - pillow
   - selenium
+  - pillow
   techniques:
   - html-export
   patterns:
@@ -22,151 +22,155 @@ impl_tags:
   dataprep: []
   styling:
   - alpha-blending
+  - grid-styling
 review:
   strengths:
-  - Excellent use of Highcharts arearange series for band visualization with proper
-    upper/lower bounds
-  - Very clear visual hierarchy with contrasting band (blue, 0.3 alpha) and center
-    line (yellow, solid)
-  - Heteroscedastic uncertainty pattern demonstrates the value of band plots effectively
-  - Proper zIndex layering ensures center line renders on top of band
-  - Large, readable text sizes throughout (64px title, 48px axis labels, 36px tick
-    labels)
-  - Clean Selenium-based PNG export with proper image cropping
+  - Excellent use of Highcharts arearange type for band visualization
+  - Widening prediction interval data creates genuine data storytelling about growing
+    forecast uncertainty
+  - All font sizes explicitly set and clearly readable at target resolution
+  - Perfect spec compliance with all required features implemented correctly
+  - Clean well-structured code with deterministic seed and sensible data generation
   weaknesses:
-  - Axis labels lack units (e.g., "Time (s)" or "Value (units)" would be more informative)
-  - Uses raw dictionary configuration instead of highcharts-core Python library classes
-    as shown in library rules
-  - Legend could be slightly larger for the 4800x2700 canvas size
-  image_description: 'The plot displays a band chart with a light blue semi-transparent
-    area representing the 95% confidence interval, and a golden-yellow center line
-    showing the mean value. The visualization follows a sinusoidal pattern over time
-    (x-axis: 0-10), with values ranging approximately from 24 to 104 on the y-axis.
-    The uncertainty band visibly widens as time increases, demonstrating heteroscedastic
-    behavior. The title "band-basic · highcharts · pyplots.ai" appears at the top
-    in bold, with a subtitle "Time series with 95% confidence interval". A legend
-    in the top-right corner identifies both the confidence interval band and mean
-    value line. The background is clean white with subtle dashed grid lines.'
+  - Yellow forecast line (#FFD43B) is too bright and saturated for refined color harmony
+  - Raw JSON dict approach bypasses highcharts-core Python wrapper reducing idiomatic
+    library usage
+  - Could push visual refinement further with softer axis lines and tighter legend
+    placement
+  image_description: The plot displays a 30-day temperature forecast band chart on
+    a white background. A light blue semi-transparent band (arearange) represents
+    the 95% prediction interval, clearly widening from left to right as forecast uncertainty
+    increases over the horizon. A bright yellow line (#FFD43B) shows the central forecast
+    trend, exhibiting a sinusoidal warming pattern ranging roughly from 12°C to 22°C.
+    The title reads "30-Day Temperature Forecast · band-basic · highcharts · pyplots.ai"
+    in bold, with a gray subtitle "Daily forecast with 95% prediction interval". The
+    x-axis is labeled "Forecast Day" (ticks at 5, 10, 15, 20, 25, 30) and the y-axis
+    "Temperature (°C)" with degree symbols from 5° to 30°. A vertical legend in the
+    upper right shows "95% Prediction Interval" (blue) and "Forecast" (yellow). The
+    y-axis has subtle dotted grid lines; x-axis grid is removed. Overall layout is
+    clean with generous margins.
   criteria_checklist:
     visual_quality:
-      score: 37
-      max: 40
+      score: 29
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title at 64px, axis labels at 48px, tick labels at 36px - all perfectly
-          readable at 4800x2700
+        comment: 'All font sizes explicitly set: title 48px, subtitle 30px, axis titles
+          36px, labels 28px, legend 28px'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements anywhere
+        comment: No overlapping elements anywhere
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Band and line clearly visible with appropriate opacity (0.3 for band),
-          line width of 6
+        comment: Band visible at 0.25 opacity, yellow line has moderate contrast against
+          light background
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Blue (#306998) and yellow (#FFD43B) are colorblind-safe and high
-          contrast
-      - id: VQ-05
-        name: Layout Balance
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Good proportions with appropriate margins, slight excess whitespace
-          on right side
+        comment: Blue-yellow scheme is colorblind-safe
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: Well-balanced margins, plot fills ~65% of canvas
       - id: VQ-06
-        name: Axis Labels
-        score: 1
+        name: Axis Labels & Title
+        score: 2
         max: 2
         passed: true
-        comment: Labels are descriptive ("Time", "Value") but lack units
-      - id: VQ-07
-        name: Grid & Legend
-        score: 1
-        max: 2
+        comment: Temperature (°C) with units, Forecast Day descriptive
+    design_excellence:
+      score: 13
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
         passed: true
-        comment: Grid is subtle with dashed style and 0.1 alpha, legend well-placed
-          but could be larger
+        comment: Intentional palette and font stack, above defaults but bright yellow
+          is garish
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Dotted y-axis-only grid, removed x-axis grid, subtle axis colors,
+          markers disabled
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Widening prediction interval tells clear uncertainty story with visual
+          hierarchy
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct band/arearange chart type
+        comment: Correct band plot using arearange + line series
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X mapped to time, Y to value with proper upper/lower bounds
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Band with upper/lower bounds, center line, semi-transparent fill
-          (0.3 alpha)
-      - id: SC-04
-        name: Data Range
+        comment: Semi-transparent fill, central line, smooth interpolation, uncertainty
+          source in subtitle
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible, axes auto-scaled appropriately
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X=days, band boundaries correct, center line correct
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend correctly labels "95% Confidence Interval" and "Mean Value"
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Uses exact format: "band-basic · highcharts · pyplots.ai"'
+        comment: Title format correct with descriptive prefix, legend labels match
+          data
     data_quality:
-      score: 18
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows sinusoidal trend with heteroscedastic uncertainty (widening
-          with x), demonstrates key band plot features
+        comment: Shows widening uncertainty, sinusoidal variation with warming trend
       - id: DQ-02
         name: Realistic Context
-        score: 6
-        max: 7
-        passed: true
-        comment: Time series with confidence interval is plausible; generic "Value"
-          label slightly reduces real-world applicability
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Values in reasonable 24-104 range, 50 data points appropriate for
-          smooth band
+        comment: Temperature forecasting is real-world neutral scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Temperatures 5-30°C realistic for 30-day forecast
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -174,40 +178,46 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear structure: imports → data → chart config → render → save'
+        comment: 'Linear flow: imports, data, chart options, HTML, screenshot'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports used
+        comment: All imports used
       - id: CQ-04
-        name: No Deprecated API
-        score: 0
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Using raw dict config instead of highcharts-core library classes
+        comment: Clean, well-organized, appropriate complexity
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves plot.png, uses current Highcharts v11.4
+    library_mastery:
+      score: 6
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 3
+        max: 5
+        passed: false
+        comment: Raw JSON dict approach instead of highcharts-core Python wrapper
+      - id: LM-02
+        name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses arearange series type correctly, but doesn't use highcharts-core
-          Python library as recommended
-  verdict: APPROVED
+        comment: Uses Highcharts-specific arearange type with highcharts-more.js,
+          series zIndex
+  verdict: REJECTED

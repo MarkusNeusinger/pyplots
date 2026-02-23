@@ -1,7 +1,7 @@
 library: matplotlib
 specification_id: arc-basic
 created: '2025-12-23T08:48:38Z'
-updated: '2026-02-23T21:34:08Z'
+updated: '2026-02-23T21:45:15Z'
 generated_by: claude-opus-4-6
 workflow_run: 20455960794
 issue: 0
@@ -10,16 +10,17 @@ library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/arc-basic/matplotlib/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/arc-basic/matplotlib/plot_thumb.png
 preview_html: null
-quality_score: 85
+quality_score: 91
 impl_tags:
   dependencies: []
   techniques:
-  - colorbar
+  - bezier-curves
   - patches
+  - colorbar
   - annotations
   patterns:
+  - data-generation
   - iteration-over-groups
-  - explicit-figure
   dataprep: []
   styling:
   - minimal-chrome
@@ -28,32 +29,32 @@ impl_tags:
   - edge-highlighting
 review:
   strengths:
-  - Full spec compliance with all required features implemented correctly
-  - Dual encoding of connection weight through both color intensity and line thickness
-  - Clean, deterministic code with KISS structure and good comments
-  - Cohesive Python-branded color scheme (yellow nodes, blue arcs)
-  - Smart z-ordering by sorting arcs so strong connections render on top
-  - Appropriate use of mpatches.Arc as a distinctive matplotlib feature
+  - Excellent use of Bézier curves via Path/PathPatch for smooth arcs (distinctive
+    matplotlib feature)
+  - 'Strong data storytelling: protagonist highlighting, node size encoding, dual-encoded
+    weights, narrative subtitle'
+  - Truncated colormap is a thoughtful detail ensuring all weight levels remain visible
+  - Fully deterministic data with realistic character interaction context
+  - Clean, well-structured code with perfect KISS adherence
   weaknesses:
-  - Weight-1 arcs are too faint — colormap normalization produces very light blues
-    that are hard to see
-  - Colorbar tick labels at 14pt are below the recommended 16pt minimum
-  - No strong focal point or narrative emphasis in the data storytelling
-  - Could leverage more distinctive matplotlib features (FancyArrowPatch, custom Paths)
-  image_description: The plot displays a basic arc diagram with 10 character nodes
+  - Title format includes extra Character Interactions prefix beyond required spec-id
+    · library · pyplots.ai format
+  image_description: 'The plot displays a basic arc diagram with 10 character nodes
     (Alice, Bob, Carol, David, Eve, Frank, Grace, Henry, Iris, Jack) arranged along
-    a horizontal baseline. Curved arcs connect pairs of characters above the baseline,
-    with arc height proportional to the distance between connected nodes. Arcs use
-    a blue sequential colormap (Blues) where darker, thicker arcs represent stronger
-    connections (weight 3) and lighter, thinner arcs represent weaker connections
-    (weight 1). Yellow circular nodes (#FFD43B) with blue outlines (#306998) mark
-    each character position. A vertical colorbar on the right side shows "Connection
-    Strength" ranging from 1 to 3. The title reads "Character Interactions · arc-basic
-    · matplotlib · pyplots.ai" at the top. Axes are turned off for a clean appearance,
-    with a subtle thin baseline connecting the nodes.
+    a horizontal baseline. Curved arcs above the baseline connect pairs of characters,
+    with arc height proportional to the distance between connected nodes. Arc color
+    uses a truncated Blues colormap — lighter blue for weight-1 connections, darker
+    blue for weight-3 (strongest). Arc thickness also increases with weight (dual
+    encoding). A colorbar on the right shows "Connection Strength" scaled from 1 to
+    3. Node sizes vary by weighted degree: Alice (orange, largest) is the hub character;
+    David is also relatively large. All other nodes are yellow with blue edge outlines.
+    A subtle semi-transparent gray baseline runs beneath the nodes. The title reads
+    "Character Interactions · arc-basic · matplotlib · pyplots.ai" in 24pt, with a
+    gray italic subtitle "Node size reflects connection activity · Alice (orange)
+    is the central character." All axes are turned off for a clean layout.'
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -61,70 +62,70 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set. Title 24pt, node labels 16pt bold,
-          colorbar label 16pt. Colorbar ticks at 14pt slightly below recommended 16pt.
+        comment: All font sizes explicitly set (title 24pt, labels 16pt, colorbar
+          16pt). Subtitle at 13pt slightly small but readable.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No text collisions. Node labels well-spaced. Arcs overlap as expected
-          with semi-transparency.
+        comment: All node labels well-spaced, no text collisions. Arc overlaps handled
+          with alpha blending.
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Nodes clearly visible at s=500. Strong arcs prominent. Weight-1 arcs
-          are quite faint due to colormap normalization.
+        comment: Nodes clearly visible (300-650 size range). Arc thickness 3.3-6.9
+          all visible. Truncated colormap ensures weight-1 arcs visible.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blues sequential colormap is colorblind-safe. Yellow nodes with blue
-          outlines provide strong contrast.
+        comment: Blue sequential colormap is colorblind-safe. Orange accent distinguishable.
+          No red-green reliance.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good proportions overall. Some unused space at top of canvas above
-          tallest arcs. Colorbar consumes side space.
+        comment: Good horizontal spread. Arcs fill vertical space. Minor space imbalance
+          between upper arc region and lower label area.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Title follows correct format. Colorbar label descriptive. Node names
-          are clear character identifiers.
+        comment: Axes appropriately off for arc diagram. Colorbar labeled Connection
+          Strength. Node labels meaningful.
     design_excellence:
-      score: 12
+      score: 16
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Cohesive Python-branded color scheme. Dual weight encoding through
-          color and thickness. Above defaults but not publication-quality.
+        comment: Custom truncated Blues colormap, orange accent for protagonist, coordinated
+          scheme, typography hierarchy. Clearly above defaults.
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Axes off, subtle baseline, arcs sorted by weight, alpha transparency.
-          Missing more typographic hierarchy.
+        comment: Axes hidden, subtle baseline (alpha=0.2), round capstyle, compact
+          colorbar, generous whitespace. Nearly every detail polished.
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 5
         max: 6
         passed: true
-        comment: Weight encoding creates visual hierarchy. Viewer can identify strongest
-          connections. No explicit focal point or narrative emphasis.
+        comment: Protagonist highlighting, node size encoding weighted degree, arcs
+          sorted by weight, narrative subtitle. Clear story emerges immediately.
     spec_compliance:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -132,54 +133,53 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct arc diagram with nodes along horizontal axis and curved arcs
-          above.
+        comment: 'Correct arc diagram: nodes along horizontal line, curved arcs above.'
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: proportional arc height, semi-transparency,
-          readable labels, color coding, weight-based thickness.'
+        comment: 'All spec features present: ordered nodes, curved arcs proportional
+          to distance, semi-transparent, readable labels, color-coded by weight.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Nodes correctly positioned. Arcs connect correct pairs. Heights proportional
-          to index distance.
+        comment: Nodes correctly positioned, edges connect correct pairs, arc heights
+          proportional to distance.
       - id: SC-04
         name: Title & Legend
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Title format correct. Colorbar legend with Connection Strength label
-          and ticks 1-3.
+        comment: Title contains required elements but prepends Character Interactions.
+          Colorbar legend is clear.
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Shows different weights, short/long-range connections, varying node
-          degrees. Good variety but could include more extreme variation.
+        comment: Mix of short-range and long-range connections. Weight variation 1-3.
+          Varying node degrees from hub to peripheral.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Character interactions in a story chapter. Neutral, relatable scenario
-          from spec example.
+        comment: Character interactions in a story chapter. Plausible literary analysis.
+          Neutral topic.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 10 nodes and 15 edges appropriate for readability. Weight scale 1-3
-          is clear.
+        comment: 10 nodes within recommended range. Weights 1-3 appropriate. 15 edges
+          reasonable connectivity.
     code_quality:
       score: 10
       max: 10
@@ -195,20 +195,20 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All data deterministic. No random generation.
+        comment: Fully deterministic hard-coded data, no random elements.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: cm, mcolors, mpatches, plt, np.'
+        comment: 'All 5 imports used: matplotlib.colors, patches, path, pyplot, numpy.'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, well-commented. Sorting arcs by weight for z-order is elegant.
-          No fake functionality.
+        comment: Clean, well-organized. Good list comprehensions. Edge sorting for
+          layering. No over-engineering.
       - id: CQ-05
         name: Output & API
         score: 1
@@ -217,7 +217,7 @@ review:
         comment: Saves as plot.png with dpi=300, bbox_inches=tight. No deprecated
           API.
     library_mastery:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: LM-01
@@ -225,13 +225,13 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of fig/ax subplots, ax.add_patch, ax.scatter, fig.colorbar
-          with ScalarMappable.
+        comment: Proper ax-methods, fig/ax subplots, ScalarMappable for colorbar,
+          tight_layout. Solid idiomatic matplotlib.
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Uses mpatches.Arc and fig.colorbar with ScalarMappable as distinctive
-          matplotlib features. Could push further with FancyArrowPatch or PathPatch.
-  verdict: REJECTED
+        comment: Path with CURVE4 cubic Bezier curves and PathPatch for custom arc
+          rendering. Custom LinearSegmentedColormap. Distinctive matplotlib capabilities.
+  verdict: APPROVED

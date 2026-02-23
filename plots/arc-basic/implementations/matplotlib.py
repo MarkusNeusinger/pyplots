@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 arc-basic: Basic Arc Diagram
 Library: matplotlib 3.10.8 | Python 3.14.3
+Quality: 91/100 | Updated: 2026-02-23
 """
 
 import matplotlib.colors as mcolors

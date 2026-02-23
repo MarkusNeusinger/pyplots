@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: arc-basic
 created: '2026-02-23T12:00:00+00:00'
-updated: '2026-02-23T22:02:59Z'
+updated: '2026-02-23T22:16:27Z'
 generated_by: claude-opus-4-6
 workflow_run: null
 issue: 991
@@ -10,7 +10,7 @@ library_version: 1.10.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/arc-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/arc-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/arc-basic/highcharts/plot.html
-quality_score: 85
+quality_score: 87
 impl_tags:
   dependencies:
   - selenium
@@ -27,33 +27,31 @@ impl_tags:
   - edge-highlighting
 review:
   strengths:
-  - Full spec compliance with all required arc diagram features (15/15)
-  - Thoughtful colorblind-safe palette with Python Blue anchor and 10 distinct hues
-  - Good data storytelling through degree-based node sizing and source-colored arcs
-  - Correct use of Highcharts native arcdiagram type with proper module dependencies
-  - Clean deterministic data with realistic narrative context
+  - Correct use of Highcharts native arcdiagram module with proper sankey dependency
+  - Custom colorblind-safe palette with degree-based node sizing creates clear visual
+    hierarchy
+  - Semi-transparent arcs with source-colored links effectively show connection patterns
+  - Clean deterministic data representing a comprehensible character interaction scenario
+  - Both PNG and interactive HTML output for maximum utility
   weaknesses:
-  - Alice node circle is partially clipped at the left canvas edge due to the 2.5x
-    post-render SVG scaling in cleanup_js
-  - Post-render cleanup_js DOM manipulation is a workaround that introduces visual
-    artifacts (node clipping)
-  - Does not use highcharts_core Python library (understandable limitation but reduces
-    LM-01 score)
-  image_description: The plot shows a basic arc diagram with 10 character nodes (Alice,
-    Bob, Carol, David, Eve, Frank, Grace, Henry, Iris, Jack) arranged along a horizontal
-    line at the bottom of the canvas. Each node is represented by a colored circle
-    with a white border — colors include dark blue (Alice), gold (Bob), cyan (Carol),
-    purple (David), green (Eve), orange-brown (Frank), brown (Grace), blue (Henry),
-    pink (Iris), and muted green (Jack). The circle sizes vary by connection degree,
-    with Alice being the largest. Curved arcs above the line connect pairs of nodes,
-    with arc height proportional to the distance between connected nodes. Long-range
-    arcs (e.g., Alice–Jack, Alice–Henry) reach near the top of the canvas, while short-range
-    arcs (e.g., Eve–Grace, Iris–Jack) are small half-circles. Arcs are semi-transparent
-    and colored by the source node. The title reads "arc-basic · highcharts · pyplots.ai"
-    with a subtitle "Character interactions — Dialogue exchanges between characters
-    in a story chapter." Alice's node extends slightly past the left canvas edge due
-    to the post-render scaling. The background is white and the overall layout is
-    clean.
+  - Title and subtitle text could be scaled slightly larger for the 4800x2700 canvas
+  - Two blue-toned nodes (Alice and Henry) could be more distinct in the palette
+  - Some bottom whitespace below node labels is unused
+  image_description: 'The plot displays a basic arc diagram with 10 character nodes
+    (Alice, Bob, Carol, David, Eve, Frank, Grace, Henry, Iris, Jack) arranged along
+    a horizontal line near the bottom of the canvas. Each node is rendered as a colored
+    circle with white borders, sized proportionally to connection degree — Alice is
+    the largest as the most connected character. Arcs curve above the horizontal line
+    connecting character pairs, with arc height proportional to the distance between
+    connected nodes. Long-range connections (e.g., Alice→Jack, Alice→Henry) form tall
+    arcs spanning the full width, while short-range connections (e.g., Carol→David,
+    Eve→Grace) form smaller arcs. Arcs are semi-transparent (50% opacity) with colors
+    inherited from the source node. The title "arc-basic · highcharts · pyplots.ai"
+    appears at the top in bold dark text, with a subtitle "Character interactions
+    — Dialogue exchanges between characters in a story chapter" below it. The background
+    is white, and the layout is clean with generous margins. Colors used: Alice (dark
+    blue), Bob (golden yellow), Carol (cyan), David (purple), Eve (green), Frank (orange),
+    Grace (brown), Henry (blue), Iris (pink), Jack (teal).'
   criteria_checklist:
     visual_quality:
       score: 26
@@ -64,42 +62,44 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 56px, subtitle 36px, data labels
-          48px, tooltip 32px). All text clearly readable.
+        comment: 'All font sizes explicitly set (title 56px, subtitle 36px, data labels
+          48px). Clear and readable. Minor: title could be slightly larger for 4800px
+          canvas.'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No text overlap. Node labels well-spaced along horizontal axis.
+        comment: No overlapping text or elements. Node labels well-spaced along horizontal
+          axis.
       - id: VQ-03
         name: Element Visibility
-        score: 4
+        score: 5
         max: 6
-        passed: false
-        comment: Alice's node circle partially cut off at left canvas edge due to
-          2.5x post-render scaling. Jack's node comparatively small.
+        passed: true
+        comment: Nodes clearly visible with distinct colors and white borders. Some
+          thinner arcs slightly less prominent but still discernible.
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: Colorblind-safe palette with 10 distinct hues, good contrast on white
-          background.
+        comment: 'Custom colorblind-safe palette. Minor: Alice and Henry are both
+          blue tones, mitigated by direct labeling.'
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: 'Arcs fill vertical space well. Minor issue: Alice''s node extends
-          past left margin. Some unused space at bottom.'
+        comment: Good horizontal spread with 200px margins. Arcs fill upper portion
+          well. Some unused bottom whitespace.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Correct title format with descriptive subtitle providing narrative
-          context.
+        comment: Correct title format. Subtitle provides context. Descriptive node
+          labels. No axes needed for arc diagrams.
     design_excellence:
       score: 14
       max: 20
@@ -109,22 +109,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom palette anchored on Python Blue, white node borders, semi-transparent
-          colored arcs. Thoughtful design clearly above defaults.
+        comment: Custom color palette, semi-transparent arcs with source-colored links,
+          degree-based node sizing, white borders. Above library defaults.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Credits disabled, clean white layout, subtle arc transparency and
-          node border styling.
+        comment: Clean layout with disabled legend/credits, no clutter, good whitespace.
+          Could benefit from typography refinement.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Node sizes reflect connection degree, arc colors identify source,
-          subtitle provides narrative context. Visual hierarchy present.
+        comment: Node sizing by degree shows Alice as most connected. Arc height reveals
+          long vs short range. Link color from source aids tracing.
     spec_compliance:
       score: 15
       max: 15
@@ -134,29 +134,29 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct arcdiagram chart type with nodes on horizontal line and curved
-          arcs above.
+        comment: Correct arc diagram with nodes on horizontal line and curved arcs
+          above.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: horizontal nodes, curved arcs, proportional
-          height, semi-transparent, readable labels, color-coded, weight-based thickness.'
+        comment: 'All spec features: proportional arc height, semi-transparent arcs,
+          readable labels, color-coded edges, weight-based rendering.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Nodes correctly ordered, edges properly connected, weights mapped
-          to arc properties.
+        comment: Nodes correctly ordered. Edges correctly connect pairs. Weights properly
+          mapped.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title in correct format. Legend disabled (appropriate for arc diagram
-          with directly labeled nodes).
+        comment: Title in correct format. Legend appropriately disabled since nodes
+          are directly labeled.
     data_quality:
       score: 14
       max: 15
@@ -166,24 +166,24 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows short-range and long-range connections, varying weights 1-5,
-          varying node degrees. Good variety.
+        comment: 10 nodes with varying connectivity, mix of short and long range connections,
+          weights 1-5. Could include isolated node.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Character dialogue exchanges in a story chapter. Neutral, real-world
-          plausible, comprehensible.
+        comment: Character interactions in a story chapter. Neutral, comprehensible,
+          real-world scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 10 nodes within recommended range, 15 edges with weights 1-5 are
-          plausible dialogue counts.
+        comment: 10 nodes, 15 edges appropriate for readability. Weights 1-5 sensible
+          for dialogue counts.
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -191,13 +191,14 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, config, HTML generation, Selenium screenshot.'
+        comment: 'Linear flow: imports, data, chart config, render, save. No functions
+          or classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic data with no random generation.
+        comment: Fully deterministic with hardcoded data.
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -206,33 +207,33 @@ review:
         comment: All imports used.
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Post-render cleanup_js DOM manipulation is a workaround that introduces
-          visual artifacts.
+        passed: true
+        comment: Clean, well-organized. Pragmatic raw JS approach for unsupported
+          arcdiagram type.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html. Uses current Highcharts 11.4.8.
+        comment: Saves plot.png and plot.html. Uses current Highcharts 11.4.8.
     library_mastery:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Does not use highcharts_core Python library (arcdiagram not supported).
-          Builds raw JSON config and renders via HTML/Selenium.
+        passed: true
+        comment: Uses native arcdiagram series with correct sankey dependency. Raw
+          JS due to highcharts_core limitation.
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: Leverages Highcharts arcdiagram series type with sankey/arc-diagram
-          modules, centeredLinks, linkColorMode, equalNodes, nodeWidth.
+        comment: Leverages Highcharts-specific arcdiagram module with centeredLinks,
+          linkColorMode, linkOpacity, equalNodes options.
   verdict: REJECTED

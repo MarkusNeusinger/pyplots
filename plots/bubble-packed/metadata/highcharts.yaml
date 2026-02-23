@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: bubble-packed
 created: '2025-12-23T09:16:17Z'
-updated: '2026-02-23T16:11:56Z'
+updated: '2026-02-23T16:38:15Z'
 generated_by: claude-opus-4-6
 workflow_run: 20456562080
 issue: 0
@@ -10,16 +10,15 @@ library_version: 1.10.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/highcharts/plot.html
-quality_score: 84
+quality_score: 82
 impl_tags:
   dependencies:
   - selenium
   - pillow
   techniques:
-  - html-export
   - hover-tooltips
+  - html-export
   patterns:
-  - data-generation
   - iteration-over-groups
   dataprep: []
   styling:
@@ -28,81 +27,81 @@ impl_tags:
   - edge-highlighting
 review:
   strengths:
-  - Custom muted colorblind-safe palette with intentional color choices
-  - Per-bubble opacity variation based on value creates within-group visual hierarchy
-  - Data label filtering (value > 320) prevents clutter while highlighting major categories
-  - Clean well-structured code with elegant per-bubble enrichment loop
-  - Good use of Highcharts-specific packedbubble features (splitSeries, layoutAlgorithm,
-    parentNodeOptions)
-  - Realistic and neutral business data context
+  - Custom colorblind-safe palette with per-bubble opacity variation creates effective
+    visual hierarchy
+  - Professional gradient background, custom typography, and clean legend styling
+  - Excellent use of Highcharts packedbubble with splitSeries, filtered dataLabels,
+    and layout algorithm tuning
+  - Realistic market value data with good variety across 5 sectors and 20 sub-sectors
   weaknesses:
-  - Bubble cluster occupies only ~35-40% of the canvas with a large empty gap below
-    before the legend
-  - Sector group clustering (splitSeries) does not produce clearly separated groups
-    — bubbles from different sectors intermix
-  - Data labels inside bubbles are on the smaller side (8px CSS at 4x = ~32px effective)
+  - Label overlap in the dense center area where multiple sector bubbles converge
+  - Canvas underutilization with significant whitespace between the bubble cluster
+    and the legend
+  - The post-render scale_script for SVG manipulation adds code complexity
   image_description: 'The plot displays a packed bubble chart titled "bubble-packed
-    · highcharts · pyplots.ai" with subtitle "Market value by sector ($B)". Twenty
-    bubbles of varying sizes are packed together in the center-upper area of a square
-    canvas with a subtle vertical gradient background (white to light gray). Five
-    sector groups are color-coded: Technology (steel blue — Software is the largest
-    bubble), Finance (golden/amber — Banking is prominent), Healthcare (purple — Pharma
-    and Biotech), Energy (teal — Oil & Gas and Renewables), and Consumer (salmon/pink
-    — Automotive and Retail). Data labels in white text with dark outlines appear
-    inside larger bubbles (value > 320), while smaller bubbles remain unlabeled. A
-    horizontal legend at the bottom center identifies the five sector groups with
-    small circular markers. White border strokes separate adjacent bubbles. The bubble
-    cluster occupies roughly the center-upper 40% of the canvas, with substantial
-    empty space below the cluster before the legend.'
+    · highcharts · pyplots.ai" with subtitle "Market value by sector ($B)". The chart
+    shows approximately 20 bubbles of varying sizes representing industry sub-sectors,
+    colored by five parent sectors: Technology (steel blue), Finance (gold/amber),
+    Healthcare (purple/mauve), Energy (teal), and Consumer (salmon/coral). The background
+    features a subtle vertical gradient from near-white (#FAFBFD) to light gray (#F0F2F5).
+    Larger bubbles (Software, Banking, Cloud Services, Pharma, Oil & Gas, Automotive)
+    are prominently sized, while smaller items (Cybersecurity, Health Svcs, Fintech)
+    appear as noticeably smaller circles. Data labels appear inside the larger bubbles
+    in white text with dark outline, filtered to only show items with value > 320.
+    Bubbles have white borders and per-bubble opacity variation based on value, creating
+    visual depth. The legend at the bottom shows five sector categories with small
+    colored circles. The bubbles are loosely clustered by sector via Highcharts''
+    splitSeries feature, though the clusters overlap somewhat in the dense center
+    area. Some label crowding is visible, particularly around Semiconductors/Oil &
+    Gas and Food & Bev/Asset Mgmt/Insurance in the middle.'
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 23
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title 16px, labels 8px, legend 9px CSS
-          at 4x DPR). Data labels at ~32px output are readable but on the smaller
-          side.
+        comment: All font sizes explicitly set with 4x device scaling; title 64px,
+          data labels 40px, subtitle/legend 36px in final image. All readable, though
+          subtitle and legend are on the smaller side.
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 3
         max: 6
-        passed: true
-        comment: No significant text overlap. Label filtering (value > 320) prevents
-          small-bubble label collisions. Some labels close to adjacent elements but
-          readable.
+        passed: false
+        comment: 'Labels crowd together in the dense center area: Semiconductors/Oil
+          & Gas, Food & Bev/Asset Mgmt/Insurance/Banking cluster with partial overlaps.'
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Bubbles clearly visible with good size differentiation. Opacity variation
-          and white border strokes aid separation.
+        comment: Bubbles well-sized with good variation from 240 to 850. Per-bubble
+          opacity variation and white borders add definition.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Muted palette avoids red-green confusion. Good contrast between all
-          five groups.
+        comment: Custom colorblind-safe palette with distinct hues and good contrast
+          against light background.
       - id: VQ-05
         name: Layout & Canvas
         score: 2
         max: 4
         passed: false
-        comment: Bubble cluster occupies ~35-40% of the 3600x3600 canvas. Large empty
-          gap between bubble cluster and legend at bottom.
+        comment: Bubble cluster occupies roughly 40-50% of canvas area. Significant
+          whitespace gap between bottom of bubbles and legend.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Title follows correct format. Subtitle provides context with units.
-          No axes needed for packed bubble.
+        comment: Descriptive subtitle with units. No traditional axes needed for packed
+          bubble chart.
     design_excellence:
       score: 14
       max: 20
@@ -112,22 +111,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom muted palette, gradient background, custom font family, white
-          border strokes, opacity variation. Clearly above defaults.
+        comment: 'Strong design: custom palette, gradient background, custom font
+          family, per-bubble opacity variation, white borders. Clearly above defaults.'
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Gradient background, credits removed, clean legend styling, marker
-          strokes for separation. Some wasted space prevents full marks.
+        comment: Gradient background, compact spacing, styled legend, filtered data
+          labels. Good attention to detail.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Opacity varies with value, size highlights largest categories, label
-          filtering focuses attention on major items.
+        comment: Per-bubble opacity variation based on value creates visual hierarchy.
+          Selective data labels guide viewer to significant items.
     spec_compliance:
       score: 14
       max: 15
@@ -137,28 +136,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct packedbubble chart type using Highcharts native implementation
-          with physics simulation.
+        comment: Correct packedbubble chart type with physics-based layout algorithm.
       - id: SC-02
         name: Required Features
         score: 3
         max: 4
         passed: true
-        comment: Size encodes value, physics packing, grouping by color, labels inside
-          circles. splitSeries grouping doesn't produce clearly separated clusters.
+        comment: All main features present. Grouping via splitSeries is present but
+          visual separation between sectors is not strongly distinct.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Size correctly mapped to value. All 20 data points visible.
+        comment: Values correctly mapped to bubble area. Groups correctly mapped to
+          color and series.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend shows all 5 sector groups with correct
-          colors.
+        comment: Title in correct format. Legend shows all 5 sectors with correct
+          labels.
     data_quality:
       score: 14
       max: 15
@@ -168,23 +167,23 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: 5 groups with 3-5 items each (20 total). Good size variation $240B-$850B.
-          Could benefit from wider value range.
+        comment: 5 groups with 3-5 items each (20 total), values ranging 240-850.
+          Good size variation.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Company market value by sector is realistic and neutral. Sector names
-          and sub-categories are plausible.
+        comment: Market value by sector ($B) is a real, comprehensible, neutral business
+          scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values $240B-$850B are plausible for industry market value segments.
+        comment: Values $240B-$850B are realistic for industry sector market values.
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -192,34 +191,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Follows Imports-Data-Chart-Export pattern. One simple loop, no functions/classes.
+        comment: 'Linear flow: imports, data, chart config, series loop, HTML generation,
+          Selenium screenshot, crop. No functions or classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: All data is deterministic (hardcoded). No random elements.
+        comment: All data is hardcoded and deterministic.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: tempfile, time, urllib.request, Path, Chart, HighchartsOptions,
-          Image, webdriver, Options.'
+        comment: All imports used.
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Clean, well-structured. Per-bubble opacity enrichment is elegant.
-          No fake functionality.
+        passed: false
+        comment: Post-render scale_script manipulating Highcharts SVG internals adds
+          complexity.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png. Also creates plot.html. Uses current highcharts-core
-          API.
+        comment: Saves as plot.png. Also generates plot.html. Uses current API.
     library_mastery:
       score: 8
       max: 10
@@ -229,13 +227,13 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Correctly uses Chart with container, HighchartsOptions, to_js_literal().
-          Properly inlines JS for headless Chrome.
+        comment: Proper Chart/HighchartsOptions pattern, to_js_literal(), packedbubble
+          with layout algorithm options.
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: packedbubble is Highcharts-specific. Uses splitSeries, layoutAlgorithm,
-          parentNodeOptions, dataLabels filter.
+        comment: Uses Highcharts-specific packedbubble with splitSeries, parentNodeLimit,
+          parentNodeOptions, and filter-based dataLabels.
   verdict: REJECTED

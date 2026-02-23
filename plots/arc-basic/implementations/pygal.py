@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 arc-basic: Basic Arc Diagram
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 80/100 | Created: 2026-02-23
@@ -41,21 +41,20 @@ edges = [
 x_positions = np.linspace(1, 10, n_nodes)
 y_baseline = 0.5
 
-# Color palette: all three levels clearly distinguishable against white
-arc_colors = {1: "#4292C6", 2: "#2171B5", 3: "#08306B"}
+# Color palette: distinct hues for immediate weight differentiation (colorblind-safe)
+arc_colors = {1: "#93C5E8", 2: "#D4770B", 3: "#08306B"}
 
-# Thickness: wider range for immediate visual distinction
-arc_widths = {1: 6, 2: 10, 3: 16}
+# Thickness: wide range for immediate visual distinction
+arc_widths = {1: 4, 2: 12, 3: 22}
 
 # Weight labels for tooltip context
 weight_labels = {1: "Weak", 2: "Moderate", 3: "Strong"}
 
-# Build colors tuple: one entry per edge + 3 legend entries + node outline + node fill
+# Build colors tuple: legend entries first, then edges, then nodes
 colors = tuple(
-    [arc_colors[w] for _, _, w in edges]
-    + [arc_colors[3], arc_colors[2], arc_colors[1]]  # Legend entries
-    + ["#B8860B"]  # Node outline (dark goldenrod)
-    + ["#FFD43B"]  # Node fill (Python Yellow)
+    [arc_colors[3], arc_colors[2], arc_colors[1]]  # Legend (series 1-3)
+    + [arc_colors[w] for _, _, w in edges]  # Edges (series 4-18)
+    + ["#B8860B", "#FFD43B"]  # Node outline + fill
 )
 
 # Custom style — clean white background, no borders
@@ -107,13 +106,23 @@ chart = pygal.XY(
         "inline:.axis .guides .line {stroke: none !important;}",
         "inline:.plot .axis {stroke: none !important;}",
         "inline:.series .line {fill: none !important;}",
-        # Hide edge series (1-15) and node series (19-20) from legend, keep weight legend (16-18)
-        "inline:.legends > g:nth-child(-n+15), .legends > g:nth-child(n+19) {display: none !important;}",
+        # Hide all legend entries after the 3 weight categories
+        "inline:.legends > g:nth-child(n+4) {display: none !important;}",
     ],
     js=[],
 )
 
-# Generate arc points for each edge (empty title hides from legend)
+# Add weight legend entries first (series 1-3, visible in legend)
+for w_val, w_label in [(3, "Strong"), (2, "Moderate"), (1, "Weak")]:
+    chart.add(
+        f"{w_label} connection",
+        [None],
+        stroke=True,
+        show_dots=False,
+        stroke_style={"width": arc_widths[w_val], "linecap": "round"},
+    )
+
+# Generate arc points for each edge
 arc_resolution = 50
 
 for start_idx, end_idx, weight in edges:
@@ -138,19 +147,8 @@ for start_idx, end_idx, weight in edges:
             {"value": (x, y), "label": f"{nodes[start_idx]} ↔ {nodes[end_idx]} ({weight_labels[weight]})"}
         )
 
-    # Empty title "" hides this series from the legend
     chart.add(
         "", arc_points, stroke=True, show_dots=False, stroke_style={"width": arc_widths[weight], "linecap": "round"}
-    )
-
-# Add weight legend entries (visible in legend, minimal data)
-for w_val, w_label in [(3, "Strong"), (2, "Moderate"), (1, "Weak")]:
-    chart.add(
-        f"{w_label} connection",
-        [None],
-        stroke=True,
-        show_dots=False,
-        stroke_style={"width": arc_widths[w_val], "linecap": "round"},
     )
 
 # Add node outline ring (dark goldenrod border effect)
@@ -164,7 +162,7 @@ node_points = [
 chart.add("", node_points, stroke=False, dots_size=42)
 
 # Add node fill on top (Python Yellow)
-chart.add("Characters", node_points, stroke=False, dots_size=32)
+chart.add("", node_points, stroke=False, dots_size=32)
 
 # Save outputs
 chart.render_to_file("plot.svg")

@@ -1,179 +1,188 @@
 library: letsplot
 specification_id: arc-basic
 created: '2025-12-23T08:49:14Z'
-updated: '2026-02-23T12:00:00+00:00'
+updated: '2026-02-23T21:34:49Z'
 generated_by: claude-opus-4-6
 workflow_run: 20455965726
 issue: 0
-python_version: '3.14.3'
+python_version: 3.14.3
 library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/arc-basic/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/arc-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/arc-basic/letsplot/plot.html
-quality_score: null
+quality_score: 87
 impl_tags:
   dependencies: []
   techniques:
   - layer-composition
+  - hover-tooltips
   - html-export
   patterns:
   - data-generation
   - iteration-over-groups
-  - matrix-construction
   dataprep: []
   styling:
+  - minimal-chrome
   - alpha-blending
+  - edge-highlighting
 review:
   strengths:
-  - Excellent visual design with clear proportional arc heights showing connection
-    distances
-  - Smart use of semi-transparency (alpha=0.6) for overlapping arcs
-  - Weight-based line thickness provides additional dimension
-  - Clean minimalist styling with hidden axes appropriate for arc diagrams
-  - Realistic character interaction scenario matches spec applications
-  - Well-structured code following KISS principles
+  - Clean cohesive blue monochromatic palette with yellow node accents creating effective
+    visual contrast
+  - 'Correct visual hierarchy: node size by connection weight, arc thickness/color/height
+    by edge weight'
+  - Comprehensive data covering all arc diagram features (short/long-range, varied
+    weights, overlapping arcs)
+  - Interactive tooltips via layer_tooltips showing connection details and strength
+  - Well-structured deterministic code with clean minimal chrome (all spines/axes/grid
+    removed)
   weaknesses:
-  - Node labels could be slightly larger for optimal readability at high resolution
-  - Does not leverage lets-plot specific interactive features (could use tooltips
-    on hover)
-  image_description: The plot displays a well-executed arc diagram visualizing character
-    interactions. Ten nodes (Alice, Bob, Carol, David, Eve, Frank, Grace, Henry, Iris,
-    Jack) are arranged horizontally along a baseline, represented as yellow circular
-    markers. Blue semi-transparent arcs curve above the baseline connecting related
-    characters. Arc heights are proportional to the distance between connected nodes
-    - short-range connections (like Alice-Bob) have low arcs while long-range connections
-    (like Alice-Jack) have tall arcs spanning nearly the full width. Arc thickness
-    varies based on connection weight, with stronger connections appearing thicker.
-    The title "Character Interactions · arc-basic · letsplot · pyplots.ai" appears
-    at the top left in bold. Node labels are displayed below each node in bold blue
-    text. The design uses a clean white background with no axis lines or grid.
+  - Title format includes non-standard prefix before required spec-id format, no weight
+    legend
+  - Weight-1 arcs are faint (alpha=0.5 with light blue) reducing visibility
+  - Wasted vertical space below node labels (ylim extends too far)
+  - Node label font size (16pt) could be larger for optimal readability at full resolution
+  image_description: 'The plot displays a basic arc diagram with 10 character nodes
+    (Alice, Bob, Carol, David, Eve, Frank, Grace, Henry, Iris, Jack) arranged along
+    a horizontal baseline from left to right. Each node is rendered as a yellow circle
+    (#FFD43B) with a dark blue (#1A3A5C) outline, with sizes varying by total connection
+    weight — Alice and David are the largest. Arcs connect node pairs above the baseline
+    using a blue monochromatic palette: light blue (#93B8CC, alpha 0.5) for weight-1
+    connections, medium blue (#306998, alpha 0.65) for weight-2, and dark blue (#1A3A5C,
+    alpha 0.8) for weight-3. Arc height is proportional to the distance between connected
+    nodes — the Alice-Jack arc spans the full width and reaches the highest point.
+    Arc thickness also scales with weight. A subtle gray baseline connects all nodes.
+    Node labels appear in bold dark blue text below the baseline. The title "Character
+    Interactions · arc-basic · letsplot · pyplots.ai" is positioned in the upper left
+    in bold dark blue. The background is clean white with no axes, spines, or grid
+    lines.'
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 27
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
-        max: 10
-        passed: true
-        comment: Title and labels are clearly readable. Font sizes are appropriate
-          for the output resolution. Labels could be slightly larger for optimal readability.
-      - id: VQ-02
-        name: No Overlap
-        score: 8
-        max: 8
-        passed: true
-        comment: No overlapping text elements. Node labels are well-spaced and arcs
-          do not obscure labels.
-      - id: VQ-03
-        name: Element Visibility
         score: 7
         max: 8
         passed: true
-        comment: Nodes are clearly visible with good sizing. Arcs use appropriate
-          alpha (0.6) for overlapping connections. Some thinner arcs could be slightly
-          more visible.
+        comment: Title explicitly set to 24pt, node labels to 16pt bold. All readable;
+          labels could be slightly larger (18-20pt).
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
+        passed: true
+        comment: No overlapping text or elements. Labels well-spaced below baseline,
+          arcs above.
+      - id: VQ-03
+        name: Element Visibility
+        score: 5
+        max: 6
+        passed: true
+        comment: Most elements well-sized. Weight-1 arcs (alpha=0.5, light blue) are
+          somewhat faint. Smaller nodes appear small.
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Blue (#306998) and yellow (#FFD43B) provide excellent contrast. Colorblind-safe
-          combination.
+        comment: Blue monochromatic scheme with yellow accents. Fully colorblind-safe.
       - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
+        name: Layout & Canvas
+        score: 3
+        max: 4
         passed: true
-        comment: Excellent use of canvas space. Arcs fill the upper portion well,
-          nodes centered horizontally.
+        comment: Good horizontal utilization. Some wasted vertical space below node
+          labels.
       - id: VQ-06
-        name: Axis Labels
-        score: 0
-        max: 2
-        passed: true
-        comment: N/A for arc diagrams (axes are hidden by design), but no descriptive
-          subtitle or legend explaining the visualization.
-      - id: VQ-07
-        name: Grid & Legend
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Appropriately no grid for this diagram type. Legend hidden as connection
-          weights are shown via line thickness.
+        comment: Descriptive title present. Axes appropriately hidden for arc diagram.
+    design_excellence:
+      score: 14
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: true
+        comment: Custom cohesive blue palette with yellow node accents, intentional
+          color hierarchy by weight. Above defaults but not publication-level.
+      - id: DE-02
+        name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: All spines, axes, and grid removed. Clean white background. Subtle
+          gray baseline. Well-polished minimal chrome.
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Visual hierarchy through node size, arc thickness/color, and arc
+          height. Alice and David naturally stand out.
     spec_compliance:
-      score: 24
-      max: 25
+      score: 14
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct arc diagram implementation with nodes on horizontal axis
-          and curved arcs above.
+        comment: Correct arc diagram with nodes on horizontal line and curved arcs
+          above, height proportional to node distance.
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Nodes correctly positioned, edges correctly drawn between specified
-          pairs.
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: 'All spec features present: arc height proportional to distance,
-          semi-transparent overlapping arcs, readable node labels, weight-based line
-          thickness.'
-      - id: SC-04
-        name: Data Range
+        comment: 'All spec features present: arcs, weight-based thickness/color, semi-transparency,
+          readable labels, proportional arc height.'
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All nodes and connections visible within the plot area.
-      - id: SC-05
-        name: Legend Accuracy
-        score: 1
-        max: 2
-        passed: true
-        comment: No explicit legend for weights, but thickness variation is intuitive.
-          Could benefit from a brief explanation.
-      - id: SC-06
-        name: Title Format
+        comment: 10 nodes correctly positioned, 15 edges correctly mapped with proper
+          weight encoding.
+      - id: SC-04
+        name: Title & Legend
         score: 2
-        max: 2
-        passed: true
-        comment: 'Title follows exact format: "Character Interactions · arc-basic
-          · letsplot · pyplots.ai"'
+        max: 3
+        passed: false
+        comment: Title adds non-standard prefix before required format. No weight
+          legend.
     data_quality:
-      score: 19
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows both short-range and long-range connections, varying weights
-          (1-3), multiple connections per node. Could include isolated node to show
-          full feature range.
+        comment: Shows short/long-range connections, three weight levels, overlapping
+          arcs, varied node connectivity.
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Character interactions in a story chapter is a perfect real-world
-          application matching the spec's narrative flow example.
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: 10 nodes with 15 edges is appropriate scale for readability as per
-          spec (10-50 nodes typical).
+        comment: Character interactions in a story chapter — real, neutral, comprehensible
+          scenario.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: 10 nodes in recommended range, 15 edges at reasonable density, weights
+          1-3.
     code_quality:
       score: 10
       max: 10
@@ -183,42 +192,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear structure: imports → data → arc generation → plot →
-          save. No unnecessary functions or classes.'
+        comment: 'Flat script: imports, data, plot, save. No functions or classes.'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses `np.random.seed(42)` for reproducibility.
+        comment: All data is deterministic (hard-coded nodes, edges, weights).
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used. Explicit imports from lets_plot.
+        comment: All imports are used; no unused imports.
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Uses current lets-plot API.
+        comment: Well-structured, readable code with appropriate complexity.
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as `plot.png` and `plot.html`.
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves as plot.png with scale=3. Current lets_plot API.
+    library_mastery:
+      score: 7
+      max: 10
       items:
-      - id: LF-01
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: Good grammar-of-graphics usage with layered geoms, aes mappings,
+          scale_*_identity(), theme customization.
+      - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses ggplot2 grammar correctly with geom_path, geom_point, geom_text,
-          and scale_size_identity. However, does not leverage any lets-plot specific
-          interactive features or advanced capabilities beyond basic ggplot2 syntax.
-  verdict: APPROVED
+        comment: Uses layer_tooltips() for hover information and HTML export via ggsave
+          — distinctive letsplot features.
+  verdict: REJECTED

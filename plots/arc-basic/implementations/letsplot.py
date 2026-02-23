@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 arc-basic: Basic Arc Diagram
 Library: letsplot 4.8.2 | Python 3.14.3
 Quality: 87/100 | Updated: 2026-02-23
@@ -66,8 +66,8 @@ for s, t, w in edges:
     connections[t] += w
 
 # Arc color intensity by weight
-weight_colors = {1: "#93B8CC", 2: "#306998", 3: "#1A3A5C"}
-weight_alphas = {1: 0.5, 2: 0.65, 3: 0.8}
+weight_colors = {1: "#7FAABB", 2: "#306998", 3: "#1A3A5C"}
+weight_alphas = {1: 0.6, 2: 0.7, 3: 0.85}
 weight_labels = {1: "Weak", 2: "Moderate", 3: "Strong"}
 
 # Create arc data for geom_path
@@ -121,6 +121,30 @@ baseline_df = pd.DataFrame({"x": [x_positions[0]], "xend": [x_positions[-1]], "y
 # Label data (positioned below nodes)
 label_df = pd.DataFrame({"x": x_positions, "y": [y_baseline - 0.045] * n_nodes, "name": nodes})
 
+# Legend data: small line segments showing weight encoding
+legend_x = 0.88
+legend_y_start = 0.78
+legend_spacing = 0.06
+legend_line_len = 0.07
+legend_lines = pd.DataFrame(
+    {
+        "x": [legend_x] * 3,
+        "xend": [legend_x + legend_line_len] * 3,
+        "y": [legend_y_start - i * legend_spacing for i in range(3)],
+        "yend": [legend_y_start - i * legend_spacing for i in range(3)],
+        "color": [weight_colors[3], weight_colors[2], weight_colors[1]],
+        "size": [1.0 + 3 * 1.2, 1.0 + 2 * 1.2, 1.0 + 1 * 1.2],
+        "alpha": [weight_alphas[3], weight_alphas[2], weight_alphas[1]],
+    }
+)
+legend_text_df = pd.DataFrame(
+    {
+        "x": [legend_x + legend_line_len + 0.015] * 3,
+        "y": [legend_y_start - i * legend_spacing for i in range(3)],
+        "label": ["Strong (3)", "Moderate (2)", "Weak (1)"],
+    }
+)
+
 # Plot
 plot = (
     ggplot()
@@ -148,12 +172,19 @@ plot = (
     + scale_size_identity()
     # Node labels
     + geom_text(
-        data=label_df, mapping=aes(x="x", y="y", label="name"), size=16, color="#1A3A5C", fontface="bold", vjust=1
+        data=label_df, mapping=aes(x="x", y="y", label="name"), size=20, color="#1A3A5C", fontface="bold", vjust=1
     )
+    # Weight legend
+    + geom_segment(
+        data=legend_lines,
+        mapping=aes(x="x", y="y", xend="xend", yend="yend", color="color", size="size", alpha="alpha"),
+        tooltips="none",
+    )
+    + geom_text(data=legend_text_df, mapping=aes(x="x", y="y", label="label"), size=14, color="#1A3A5C", hjust=0)
     # Styling
     + xlim(-0.06, 1.06)
-    + ylim(-0.15, 0.85)
-    + labs(title="Character Interactions \u00b7 arc-basic \u00b7 letsplot \u00b7 pyplots.ai")
+    + ylim(-0.08, 0.85)
+    + labs(title="arc-basic \u00b7 letsplot \u00b7 pyplots.ai")
     + theme(
         axis_title=element_blank(),
         axis_text=element_blank(),

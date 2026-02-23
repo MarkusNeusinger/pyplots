@@ -1,61 +1,54 @@
 """ pyplots.ai
 density-basic: Basic Density Plot
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Library: plotly 6.5.2 | Python 3.14
+Quality: /100 | Updated: 2026-02-23
 """
 
 import numpy as np
 import plotly.graph_objects as go
+from scipy.stats import gaussian_kde
 
 
-# Data - Test scores with realistic bimodal distribution
+# Data - SAT Math scores with bimodal distribution
 np.random.seed(42)
-scores = np.concatenate(
+sat_scores = np.concatenate(
     [
-        np.random.normal(72, 10, 300),  # Main group around 72
-        np.random.normal(88, 5, 100),  # High achievers around 88
+        np.random.normal(540, 60, 350),  # Main group around 540
+        np.random.normal(680, 35, 150),  # High achievers around 680
     ]
 )
+sat_scores = np.clip(sat_scores, 200, 800)  # SAT range
 
-# Compute KDE using Silverman's rule of thumb for bandwidth
-n = len(scores)
-std = np.std(scores, ddof=1)
-iqr = np.percentile(scores, 75) - np.percentile(scores, 25)
-bandwidth = 0.9 * min(std, iqr / 1.34) * n ** (-0.2)
+# KDE using scipy
+kde = gaussian_kde(sat_scores)
+x_grid = np.linspace(350, 800, 500)
+density = kde(x_grid)
 
-# Evaluate density at each point on a grid
-x_range = np.linspace(scores.min() - 10, scores.max() + 10, 500)
-density = np.zeros_like(x_range)
-for xi in scores:
-    density += np.exp(-0.5 * ((x_range - xi) / bandwidth) ** 2)
-density /= n * bandwidth * np.sqrt(2 * np.pi)
-
-# Create figure
+# Plot
 fig = go.Figure()
 
-# Density curve with fill
 fig.add_trace(
     go.Scatter(
-        x=x_range,
+        x=x_grid,
         y=density,
         mode="lines",
         fill="tozeroy",
-        fillcolor="rgba(48, 105, 152, 0.3)",
-        line={"color": "#306998", "width": 4},
+        fillcolor="rgba(48, 105, 152, 0.25)",
+        line={"color": "#306998", "width": 3.5},
         name="Density",
-        hovertemplate="Score: %{x:.1f}<br>Density: %{y:.4f}<extra></extra>",
+        hovertemplate="Score: %{x:.0f}<br>Density: %{y:.4f}<extra></extra>",
     )
 )
 
-# Rug plot showing individual observations
+# Rug plot
 fig.add_trace(
     go.Scatter(
-        x=scores,
-        y=[-0.001] * len(scores),
+        x=sat_scores,
+        y=np.zeros(len(sat_scores)),
         mode="markers",
-        marker={"symbol": "line-ns", "size": 12, "color": "#306998", "line": {"width": 1.5}},
+        marker={"symbol": "line-ns", "size": 12, "color": "#306998", "opacity": 0.35, "line": {"width": 1.5}},
         name="Observations",
-        hovertemplate="Score: %{x:.1f}<extra></extra>",
+        hovertemplate="Score: %{x:.0f}<extra></extra>",
     )
 )
 
@@ -63,19 +56,16 @@ fig.add_trace(
 fig.update_layout(
     title={"text": "density-basic · plotly · pyplots.ai", "font": {"size": 36}, "x": 0.5, "xanchor": "center"},
     xaxis={
-        "title": {"text": "Test Score", "font": {"size": 28}},
+        "title": {"text": "SAT Math Score (points)", "font": {"size": 28}},
         "tickfont": {"size": 22},
-        "showgrid": True,
-        "gridwidth": 1,
-        "gridcolor": "rgba(128, 128, 128, 0.2)",
+        "showgrid": False,
         "zeroline": False,
     },
     yaxis={
         "title": {"text": "Density", "font": {"size": 28}},
         "tickfont": {"size": 22},
-        "showgrid": True,
+        "gridcolor": "rgba(128, 128, 128, 0.15)",
         "gridwidth": 1,
-        "gridcolor": "rgba(128, 128, 128, 0.2)",
         "zeroline": False,
         "rangemode": "tozero",
     },
@@ -83,15 +73,17 @@ fig.update_layout(
     showlegend=True,
     legend={
         "font": {"size": 20},
-        "x": 0.98,
-        "y": 0.98,
+        "x": 0.97,
+        "y": 0.95,
         "xanchor": "right",
         "yanchor": "top",
         "bgcolor": "rgba(255, 255, 255, 0.8)",
+        "borderwidth": 0,
     },
-    margin={"l": 100, "r": 60, "t": 100, "b": 100},
+    margin={"l": 90, "r": 40, "t": 90, "b": 90},
+    plot_bgcolor="white",
 )
 
-# Save as PNG and HTML
+# Save
 fig.write_image("plot.png", width=1600, height=900, scale=3)
 fig.write_html("plot.html", include_plotlyjs="cdn")

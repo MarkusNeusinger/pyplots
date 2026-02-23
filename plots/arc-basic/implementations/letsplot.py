@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 arc-basic: Basic Arc Diagram
 Library: letsplot 4.8.2 | Python 3.14.3
 Quality: 88/100 | Updated: 2026-02-23
@@ -66,8 +66,8 @@ for s, t, w in edges:
     connections[t] += w
 
 # Arc color intensity by weight
-weight_colors = {1: "#7FAABB", 2: "#306998", 3: "#1A3A5C"}
-weight_alphas = {1: 0.6, 2: 0.7, 3: 0.85}
+weight_colors = {1: "#6A9BB5", 2: "#306998", 3: "#1A3A5C"}
+weight_alphas = {1: 0.7, 2: 0.75, 3: 0.9}
 weight_labels = {1: "Weak", 2: "Moderate", 3: "Strong"}
 
 # Create arc data for geom_path
@@ -122,8 +122,8 @@ baseline_df = pd.DataFrame({"x": [x_positions[0]], "xend": [x_positions[-1]], "y
 label_df = pd.DataFrame({"x": x_positions, "y": [y_baseline - 0.045] * n_nodes, "name": nodes})
 
 # Legend data: small line segments showing weight encoding
-legend_x = 0.88
-legend_y_start = 0.78
+legend_x = 0.82
+legend_y_start = 0.76
 legend_spacing = 0.06
 legend_line_len = 0.07
 legend_lines = pd.DataFrame(
@@ -144,6 +144,7 @@ legend_text_df = pd.DataFrame(
         "label": ["Strong (3)", "Moderate (2)", "Weak (1)"],
     }
 )
+legend_title_df = pd.DataFrame({"x": [legend_x], "y": [legend_y_start + 0.05], "label": ["Connection Strength"]})
 
 # Plot
 plot = (
@@ -180,10 +181,18 @@ plot = (
         mapping=aes(x="x", y="y", xend="xend", yend="yend", color="color", size="size", alpha="alpha"),
         tooltips="none",
     )
-    + geom_text(data=legend_text_df, mapping=aes(x="x", y="y", label="label"), size=14, color="#1A3A5C", hjust=0)
+    + geom_text(data=legend_text_df, mapping=aes(x="x", y="y", label="label"), size=16, color="#1A3A5C", hjust=0)
+    + geom_text(
+        data=legend_title_df,
+        mapping=aes(x="x", y="y", label="label"),
+        size=16,
+        color="#1A3A5C",
+        fontface="bold",
+        hjust=0,
+    )
     # Styling
-    + xlim(-0.06, 1.06)
-    + ylim(-0.08, 0.85)
+    + xlim(-0.06, 1.12)
+    + ylim(-0.04, 0.85)
     + labs(title="arc-basic \u00b7 letsplot \u00b7 pyplots.ai")
     + theme(
         axis_title=element_blank(),

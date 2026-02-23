@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: bubble-packed
 created: '2025-12-23T09:17:14Z'
-updated: '2026-02-23T15:47:58Z'
+updated: '2026-02-23T16:08:54Z'
 generated_by: claude-opus-4-6
 workflow_run: 20456560162
 issue: 0
@@ -10,15 +10,15 @@ library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/bokeh/plot.html
-quality_score: 83
+quality_score: 88
 impl_tags:
   dependencies: []
   techniques:
   - annotations
-  - hover-tooltips
   patterns:
   - data-generation
   - columndatasource
+  - iteration-over-groups
   dataprep:
   - normalization
   styling:
@@ -27,34 +27,36 @@ impl_tags:
   - edge-highlighting
 review:
   strengths:
-  - Excellent force-directed packing algorithm produces clean non-overlapping layout
-  - Professional visual refinement with hidden axes/grids, clean background, white
-    circle borders, and good alpha
-  - Perfect spec compliance with correct title format, area-based scaling, and descriptive
-    data context
-  - Realistic neutral data scenario with good value range across 15 departments
+  - Excellent force-directed circle packing algorithm with proper area-scaling (sqrt
+    normalization) and re-centering
+  - Professional 4-tier color palette with semantic meaning, dark tones chosen for
+    white text readability
+  - Adaptive label sizing system with 5 font brackets that scale text proportionally
+    to circle radius
+  - Complete spec compliance with all required features (packing, area-scaling, labels,
+    color encoding)
+  - Clean, well-organized code with thorough legend styling (padding, spacing, border,
+    font sizes)
   weaknesses:
-  - Monochromatic blue/teal palette makes individual categories hard to distinguish
-    by color
-  - Four smallest circles have no identification in PNG since HoverTool tooltips only
-    work in interactive mode
-  - No visual storytelling beyond size — no grouping, color narrative, or emphasis
-    on insights
-  - Limited showcase of Bokeh-distinctive capabilities
-  image_description: The plot displays a packed bubble chart titled "Department Budgets
-    · bubble-packed · bokeh · pyplots.ai" centered at the top. There are 15 circles
-    of varying sizes packed together without overlap on a light gray (#f8f9fa) background.
-    The color palette is monochromatic blue/teal, with shades ranging from deep navy
-    (#154360) to medium blue (#2E86C1). The largest circles represent Engineering
-    ($45M), R&D ($42M), Sales ($38M), and Marketing ($32M), each clearly labeled in
-    white bold text with dollar values below. Eleven circles total have interior labels
-    (department name + budget), while four smaller circles (HR, QA, Legal, Security)
-    are unlabeled in the PNG. Circles have white borders (line_width=3) and 0.88 fill
-    alpha. Axes and grids are hidden. The cluster is roughly centered on the canvas
-    with some empty space on the right side.
+  - Smallest circle labels (Security, Legal) use 10-12pt font at edge of comfortable
+    readability
+  - Dark blue vs dark teal color pair could challenge some colorblind users
+  - No Bokeh-distinctive interactive features leveraged (HoverTool, callbacks)
+  image_description: 'The plot displays a packed bubble chart titled "Department Budgets
+    · bubble-packed · bokeh · pyplots.ai" on a light gray (#f8f9fa) background. Fifteen
+    circles of varying sizes represent department budgets ranging from $6M (Security)
+    to $45M (Engineering). Circles are packed tightly without overlap, with white
+    borders separating them. Colors encode four budget tiers: dark navy blue (#1B4F72)
+    for >$35M (Engineering, R&D, Sales), teal (#0E6655) for $20-35M (Marketing, Product,
+    Operations, IT, Data Science), brown/orange (#A04000) for $10-19M (Finance, Customer
+    Support, Design, HR, QA), and purple (#6C3483) for <$10M (Legal, Security). Each
+    circle contains white text showing the department name (bold) and dollar value
+    below it, with font sizes adapted to circle radius. A styled legend in the top-right
+    corner shows the four budget tiers. No axes are displayed, which is appropriate
+    for this chart type.'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 27
       max: 30
       items:
       - id: VQ-01
@@ -62,69 +64,69 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 36pt, labels 24pt bold, values
-          20pt). All present text clearly readable. 4 smallest circles have no text
-          in PNG.
+        comment: Font sizes explicitly set via adaptive bracket system (36pt title,
+          24pt-12pt names, 20pt-10pt values). Smallest labels at 10-12pt push readability
+          limits.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping circles or text. Packing algorithm with padding prevents
-          all collisions.
+        comment: No overlap between circles or text. Force simulation with padding
+          ensures clean separation.
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: All 15 circles visible with good size variation. Smallest circles
-          still clearly visible though hard to differentiate without labels.
+        comment: All 15 circles clearly visible with good size differentiation from
+          largest to smallest.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Blue/teal palette is colorblind-safe. Monochromatic scheme makes
-          individual category differentiation difficult.
+        comment: Four distinct hue families. Dark blue vs dark teal pair could challenge
+          some forms of color blindness.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Bubbles occupy 55-65% of canvas, re-centered. Slight asymmetry with
-          more empty space on right.
+        comment: Bubble cluster fills roughly 55-65% of canvas. Some natural empty
+          space in corners inherent to circular packing.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Title follows required format. Axes correctly hidden for packed bubble
-          chart.
+        comment: Descriptive title with correct format. No axes needed for packed
+          bubble.
     design_excellence:
-      score: 13
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom blue/teal palette, white text on dark circles, white borders,
-          light gray background. Above defaults but monochromatic limits impact.
+        comment: Strong design with custom 4-tier palette, white circle borders, professional
+          polish. Above defaults but not FiveThirtyEight-level.
       - id: DE-02
         name: Visual Refinement
         score: 5
         max: 6
         passed: true
-        comment: Hidden axes/grids, outline removed, clean background, white borders,
-          appropriate alpha. Well-polished.
+        comment: Axes/grid hidden, outline removed, custom background, thoroughly
+          styled legend with padding/spacing/border.
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Size variation creates natural hierarchy. Dollar values inside circles
-          help. No color narrative or grouping emphasis.
+        comment: Visual hierarchy through combined size + tier coloring. Viewer immediately
+          identifies top vs bottom spenders.
     spec_compliance:
       score: 15
       max: 15
@@ -140,22 +142,21 @@ review:
         score: 4
         max: 4
         passed: true
-        comment: Area-scaled sizing, non-overlapping packing, labels inside larger
-          circles, tooltips for smaller ones, color encoding.
+        comment: 'All features present: area-scaled circles, packing, in-circle labels,
+          color encoding.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Values correctly mapped to circle area using sqrt scaling. All 15
-          data points represented.
+        comment: Values correctly mapped to circle area via sqrt scaling.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. No legend needed — labels inside circles serve
-          as identification.
+        comment: Title includes all required components. Legend labels are meaningful
+          and match data tiers.
     data_quality:
       score: 14
       max: 15
@@ -165,23 +166,23 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: 15 categories with values from $6M to $45M. Good size variation.
-          No grouping demonstrated.
+        comment: Good range of 15 items with values $6M-$45M. Clear size variation.
+          Optional grouping not demonstrated.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Department budgets in millions is realistic and neutral. Department
-          names are immediately comprehensible.
+        comment: Department budgets is a real, neutral business scenario with realistic
+          department names.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Budget values $6M-$45M realistic for corporate departments.
+        comment: Budget values $6M-$45M are realistic for a mid-to-large company.
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -189,35 +190,34 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, packing, plot, save. No functions or
-          classes.'
+        comment: 'Flat script: Imports, Data, Packing, Figure, Styling, Save.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set at start.
+        comment: np.random.seed(42) set at top.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: 'All imports used: numpy, export_png, ColumnDataSource, LabelSet,
+          figure.'
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Force-directed packing necessarily verbose. Color assignment with
-          sort-by-rank slightly over-engineered for monochromatic palette.
+        comment: Well-organized sections. Force simulation complexity is necessary.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via export_png. Current Bokeh API.
+        comment: Saves as plot.png via export_png(). Current Bokeh 3.x API.
     library_mastery:
-      score: 6
+      score: 7
       max: 10
       items:
       - id: LM-01
@@ -225,13 +225,13 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Proper use of ColumnDataSource, figure, circle, LabelSet, HoverTool.
-          Core packing is manual NumPy.
+        comment: Good use of ColumnDataSource, LabelSet, circle glyphs, legend_label.
+          Follows Bokeh patterns.
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: HoverTool is Bokeh-distinctive but does not render in PNG. Implementation
-          is essentially manual positioning rendered through Bokeh.
+        passed: true
+        comment: ColumnDataSource and LabelSet with source binding are distinctly
+          Bokeh. Core packing algorithm is manual numpy.
   verdict: REJECTED

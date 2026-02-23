@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bubble-packed: Basic Packed Bubble Chart
 Library: altair 6.0.0 | Python 3.14.3
-Quality: 82/100 | Updated: 2026-02-23
+Quality: repair-1 | Updated: 2026-02-23
 """
 
 import altair as alt
@@ -127,7 +127,7 @@ group_colors = {
     "Technology": "#306998",
     "Revenue": "#E07A5F",
     "Corporate": "#7B9E89",
-    "Operations": "#4A90A4",
+    "Operations": "#8B6DA8",
     "Product": "#FFD43B",
 }
 
@@ -149,23 +149,23 @@ group_order = ["Technology", "Revenue", "Operations", "Corporate", "Product"]
 # Circles layer
 circles = (
     alt.Chart(df)
-    .mark_circle(opacity=0.85, stroke="white", strokeWidth=2)
+    .mark_circle(opacity=0.88, stroke="white", strokeWidth=2.5)
     .encode(
-        x=alt.X("x:Q", axis=None, scale=alt.Scale(padding=max_radius * 1.4)),
-        y=alt.Y("y:Q", axis=None, scale=alt.Scale(padding=max_radius * 1.4)),
+        x=alt.X("x:Q", axis=None, scale=alt.Scale(padding=max_radius * 1.1)),
+        y=alt.Y("y:Q", axis=None, scale=alt.Scale(padding=max_radius * 1.1)),
         size=alt.Size("radius:Q", scale=alt.Scale(range=[min_radius**2 * 3, max_radius**2 * 3]), legend=None),
         color=alt.Color(
             "group:N",
             scale=alt.Scale(domain=group_order, range=[group_colors[g] for g in group_order]),
             legend=alt.Legend(
                 title="Division",
-                titleFontSize=18,
+                titleFontSize=20,
                 titleFontWeight="bold",
-                labelFontSize=15,
-                symbolSize=300,
+                labelFontSize=18,
+                symbolSize=350,
                 orient="none",
-                legendX=1400,
-                legendY=680,
+                legendX=1320,
+                legendY=520,
                 direction="vertical",
             ),
         ),
@@ -183,7 +183,7 @@ df_large["display_text"] = df_large["label"] + "\n" + df_large["budget"]
 
 labels_layer = (
     alt.Chart(df_large)
-    .mark_text(fontWeight="bold", fontSize=13, lineBreak="\n")
+    .mark_text(fontWeight="bold", fontSize=16, lineBreak="\n")
     .encode(
         x=alt.X("x:Q"),
         y=alt.Y("y:Q"),
@@ -200,7 +200,10 @@ chart = (
         height=900,
         title=alt.Title(
             "Department Budget Allocation · bubble-packed · altair · pyplots.ai",
+            subtitle="Technology division leads at 39% of total budget — Engineering alone accounts for $850K",
             fontSize=28,
+            subtitleFontSize=18,
+            subtitleColor="#555555",
             fontWeight="bold",
             anchor="middle",
         ),

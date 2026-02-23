@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 arc-basic: Basic Arc Diagram
-Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: plotnine 0.15.3 | Python 3.14.3
+Quality: /100 | Updated: 2026-02-23
 """
 
 import sys
@@ -13,27 +13,28 @@ import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 from plotnine import (  # noqa: E402
     aes,
+    coord_cartesian,
     element_blank,
+    element_rect,
     element_text,
     geom_path,
     geom_point,
     geom_text,
     ggplot,
     labs,
+    scale_alpha_identity,
     scale_size_identity,
     theme,
 )
 
 
 # Data: Character interactions in a story chapter
-np.random.seed(42)
-
 nodes = ["Alice", "Bob", "Carol", "David", "Eve", "Frank", "Grace", "Henry", "Iris", "Jack"]
 n_nodes = len(nodes)
 
-# Edges: pairs of connected nodes with weights (source, target, weight)
+# Edges: (source_idx, target_idx, weight)
 edges = [
-    (0, 1, 3),  # Alice-Bob (strong connection)
+    (0, 1, 3),  # Alice-Bob (strong)
     (0, 3, 2),  # Alice-David
     (1, 2, 2),  # Bob-Carol
     (2, 4, 1),  # Carol-Eve
@@ -52,74 +53,56 @@ edges = [
 
 # Node positions along x-axis
 x_positions = np.linspace(0, 1, n_nodes)
-y_baseline = 0.1
+y_baseline = 0.0
 
-# Create arc paths dataframe
-arc_data = []
-arc_id = 0
+# Build arc paths using vectorized construction
+n_points = 50
+theta = np.linspace(0, np.pi, n_points)
+arc_rows = []
 
-for start, end, weight in edges:
-    x_start = x_positions[start]
-    x_end = x_positions[end]
-
-    # Arc center and radius
+for arc_id, (start, end, weight) in enumerate(edges):
+    x_start, x_end = x_positions[start], x_positions[end]
     x_center = (x_start + x_end) / 2
     arc_radius = abs(x_end - x_start) / 2
+    height = 0.08 * abs(end - start)
 
-    # Arc height proportional to distance between nodes
-    distance = abs(end - start)
-    height = 0.08 * distance
-
-    # Generate arc points (semi-circle above baseline)
-    n_points = 50
-    theta = np.linspace(0, np.pi, n_points)
     x_arc = x_center - arc_radius * np.cos(theta)
     y_arc = y_baseline + height * np.sin(theta)
 
-    # Add points to dataframe with arc identifier
-    for i in range(n_points):
-        arc_data.append(
-            {
-                "x": x_arc[i],
-                "y": y_arc[i],
-                "arc_id": arc_id,
-                "weight": weight,
-                "size": 1.0 + weight * 0.8,  # Line thickness based on weight
-            }
-        )
-    arc_id += 1
+    arc_df_chunk = pd.DataFrame(
+        {"x": x_arc, "y": y_arc, "arc_id": arc_id, "size": 0.8 + weight * 0.7, "alpha": 0.30 + weight * 0.18}
+    )
+    arc_rows.append(arc_df_chunk)
 
-arc_df = pd.DataFrame(arc_data)
+arc_df = pd.concat(arc_rows, ignore_index=True)
 
-# Create nodes dataframe
-node_df = pd.DataFrame({"x": x_positions, "y": [y_baseline] * n_nodes, "name": nodes})
+# Node and label dataframes
+node_df = pd.DataFrame({"x": x_positions, "y": [y_baseline] * n_nodes})
+label_df = pd.DataFrame({"x": x_positions, "y": [y_baseline - 0.03] * n_nodes, "name": nodes})
 
-# Create label dataframe (below nodes)
-label_df = pd.DataFrame({"x": x_positions, "y": [y_baseline - 0.05] * n_nodes, "name": nodes})
-
-# Create the plot
+# Plot
 plot = (
     ggplot()
-    # Draw arcs
-    + geom_path(arc_df, aes(x="x", y="y", group="arc_id", size="size"), color="#306998", alpha=0.6)
+    + geom_path(arc_df, aes(x="x", y="y", group="arc_id", size="size", alpha="alpha"), color="#306998")
     + scale_size_identity()
-    # Draw nodes
-    + geom_point(node_df, aes(x="x", y="y"), color="#FFD43B", size=10, stroke=1.5, fill="#FFD43B")
-    # Add node labels
-    + geom_text(label_df, aes(x="x", y="y", label="name"), size=11, color="#306998", fontweight="bold", va="top")
-    + labs(title="Character Interactions · arc-basic · plotnine · pyplots.ai")
+    + scale_alpha_identity()
+    + geom_point(node_df, aes(x="x", y="y"), color="#306998", size=8, stroke=1.2, fill="white")
+    + geom_text(label_df, aes(x="x", y="y", label="name"), size=12, color="#2C3E50", fontweight="bold", va="top")
+    + coord_cartesian(xlim=(-0.05, 1.05))
+    + labs(title="Character Interactions \u00b7 arc-basic \u00b7 plotnine \u00b7 pyplots.ai")
     + theme(
         figure_size=(16, 9),
-        plot_title=element_text(size=24, ha="center"),
+        plot_title=element_text(size=24, ha="center", weight="bold"),
+        plot_margin=0.02,
         axis_title=element_blank(),
         axis_text=element_blank(),
         axis_ticks=element_blank(),
         panel_grid=element_blank(),
-        panel_background=element_blank(),
-        plot_background=element_blank(),
+        panel_background=element_rect(fill="white", color="white"),
+        plot_background=element_rect(fill="white", color="white"),
         legend_position="none",
     )
 )
 
-# Save the plot
+# Save
 plot.save("plot.png", dpi=300, verbose=False)

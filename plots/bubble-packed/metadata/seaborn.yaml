@@ -1,16 +1,16 @@
 library: seaborn
 specification_id: bubble-packed
 created: '2025-12-23T09:17:35Z'
-updated: 2026-02-23T15:35:00+00:00
+updated: '2026-02-23T15:47:49Z'
 generated_by: claude-opus-4-6
 workflow_run: 20456557869
 issue: 0
-python_version: "3.14.3"
-library_version: "0.13.2"
+python_version: 3.14.3
+library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/seaborn/plot_thumb.png
 preview_html: null
-quality_score: null
+quality_score: 79
 impl_tags:
   dependencies: []
   techniques:
@@ -18,151 +18,171 @@ impl_tags:
   - custom-legend
   patterns:
   - data-generation
+  - iteration-over-groups
   dataprep: []
   styling:
+  - minimal-chrome
   - alpha-blending
   - edge-highlighting
-  - minimal-chrome
 review:
   strengths:
-  - Excellent circle packing algorithm that produces non-overlapping bubbles packed
-    efficiently toward center
-  - Clean visual design with appropriate colors from seaborn Set2 palette
-  - Smart labeling strategy that places text inside large circles and uses annotations
-    for smaller ones
-  - Realistic market cap data scenario that makes the visualization meaningful and
-    relatable
-  - Proper area-based scaling (sqrt of value) for accurate visual perception of relative
-    sizes
+  - Excellent spec compliance — correct packed bubble chart with proper area scaling,
+    labels, grouping, and packing
+  - Good data choice — realistic market cap scenario with recognizable companies and
+    neutral topic
+  - Clean visual separation — white edge borders and adaptive font sizing inside bubbles
+    work well
+  - Deterministic and reproducible — no randomness in data or packing algorithm
   weaknesses:
-  - Seaborn library features are underutilized; most visualization logic is custom
-    matplotlib code with seaborn providing only the scatter layer
-  image_description: 'The plot displays a packed bubble chart showing company market
-    values by sector. The chart contains approximately 17 circles of varying sizes
-    packed together without overlap. Colors encode four sectors: Technology (green/teal),
-    Finance (orange/coral), Healthcare (blue/lavender), and Retail (pink). The largest
-    bubbles are Apple, Microsoft, Amazon, and Google. Most company names appear as
-    white bold text inside their respective bubbles. The title "bubble-packed · seaborn
-    · pyplots.ai" appears at the top in black bold text. A legend at the bottom right
-    shows the four sector categories with colored squares. The background is white,
-    and circles have white edge strokes separating them visually.'
+  - Library Mastery is low — seaborn is mostly used as a thin rendering layer over
+    custom numpy/matplotlib code
+  - Design could be more sophisticated — Set2 is a standard palette, not a custom
+    cohesive color scheme
+  - No data storytelling emphasis — no focal point, annotation, or visual hierarchy
+    guiding the viewer to an insight
+  - Pink/coral color distinction could challenge colorblind users
+  - Marker size computation is overly complex with manual canvas transform calculations
+  image_description: 'The plot displays a packed bubble chart titled "Market Capitalization
+    by Sector" with the subtitle "bubble-packed · seaborn · pyplots.ai". There are
+    17 circles of varying sizes representing companies, packed tightly together without
+    overlap on a white background. Each bubble contains the company name in bold white
+    text with adaptive font sizing. The bubbles are color-coded by sector using pastel
+    Set2 colors: Technology (teal/green) includes Apple (largest), Microsoft, Google,
+    NVIDIA, and Meta; Finance (coral/orange) includes JPMorgan, Visa, Mastercard,
+    and Goldman Sachs (truncated to "Goldman S"); Healthcare (lavender/purple) includes
+    UnitedHealth, J&J, Merck, and Pfizer; Retail (pink) includes Amazon, Walmart,
+    Costco, and Target (smallest). White edge lines (linewidth=3) separate adjacent
+    bubbles. The axes are hidden. A legend at the bottom center shows all four sectors
+    with circular markers and a "Sector" title. The bubbles are well-packed in the
+    center of the canvas.'
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 26
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
-        max: 10
+        score: 7
+        max: 8
         passed: true
-        comment: Title and most labels are clearly readable. Company names inside
-          bubbles are bold white text. Font sizes are appropriate for the image resolution.
+        comment: Font sizes explicitly set throughout (title 24pt, adaptive bubble
+          labels 8-18pt, legend 14-16pt). All readable, smallest bubbles have tight
+          text.
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: No overlapping text or elements. All labels are fully readable.
+        comment: No text-on-text overlap. Some labels tight within their bubbles;
+          Goldman Sachs truncated to fit.
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Bubbles are well-sized relative to their values, clearly visible
-          with good alpha (0.9).
+        comment: Bubbles well-sized with clear differentiation. Alpha=0.9 and white
+          edgecolor provide excellent separation.
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 3
+        max: 4
         passed: true
-        comment: Set2 palette is colorblind-safe with good distinction between the
-          four sectors.
+        comment: Set2 is generally colorblind-friendly, but pink/coral distinction
+          may challenge deuteranopia users.
       - id: VQ-05
-        name: Layout Balance
-        score: 4
-        max: 5
+        name: Layout & Canvas
+        score: 3
+        max: 4
         passed: true
-        comment: Good use of space, circles packed efficiently. Slight asymmetry but
-          overall balanced.
+        comment: Good canvas utilization with bubbles filling center. Slight vertical
+          elongation from aspect=equal on landscape figsize.
       - id: VQ-06
-        name: Axis Labels
-        score: 0
-        max: 2
-        passed: true
-        comment: N/A for packed bubble charts (axes are intentionally hidden).
-      - id: VQ-07
-        name: Grid & Legend
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: No grid (appropriate), legend is well-placed and clearly shows sector
-          categories.
+        comment: Descriptive title. Axes appropriately hidden for packed bubble chart.
+    design_excellence:
+      score: 12
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: true
+        comment: Above defaults with Set2 pastels, white edge borders, adaptive text
+          sizing. Not publication-quality custom design.
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Axes off, no grid, white background, white edge lines, despine applied.
+          Clean and refined.
+      - id: DE-03
+        name: Data Storytelling
+        score: 3
+        max: 6
+        passed: true
+        comment: Size hierarchy shows tech dominance. Color grouping tells basic story.
+          No explicit emphasis or focal point.
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct packed bubble chart with circles representing values.
+        comment: Correct packed bubble chart with greedy circle packing algorithm.
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Circle size correctly represents company market value (scaled by
-          area via sqrt).
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Has labels, groups (sectors), color encoding, and packed layout.
-      - id: SC-04
-        name: Data Range
+        comment: Area scales with value, labels inside circles with adaptive sizing,
+          color encodes sector, circles packed without overlap.
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data is visible within the plot area.
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Circle area proportional to value, all 17 companies visible with
+          correct relative sizes.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend correctly identifies all four sectors with matching colors.
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Uses exact format: "bubble-packed · seaborn · pyplots.ai"'
+        comment: Title format correct with spec-id, library, pyplots.ai. Legend shows
+          all 4 sectors with matching colors.
     data_quality:
-      score: 18
-      max: 20
+      score: 13
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Shows variation in sizes across and within sectors. Good range from
-          small (Target, Pfizer) to large (Apple, Amazon).
+        comment: 17 companies across 4 sectors with good size range. Demonstrates
+          packed layout well.
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Market cap data for real companies is a perfect real-world scenario.
-      - id: DQ-03
-        name: Appropriate Scale
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Values in billions USD are plausible, though some specific values
-          may not match current market caps exactly.
+        comment: Market capitalization by sector is a realistic, neutral business
+          scenario with recognizable companies.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 3
+        max: 4
+        passed: true
+        comment: Relative ordering sensible. Values plausible as synthetic data though
+          below actual current market caps.
     code_quality:
       score: 9
       max: 10
@@ -172,41 +192,49 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports → data → packing algorithm → plot → save.'
+        comment: 'Linear flow: imports, data, packing, plot, save. No functions or
+          classes.'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42).
+        comment: 'Fully deterministic: hardcoded data and deterministic packing algorithm.'
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used (numpy, pandas, matplotlib, seaborn).
+        comment: All four imports used.
       - id: CQ-04
-        name: No Deprecated API
-        score: 0
-        max: 1
+        name: Code Elegance
+        score: 1
+        max: 2
         passed: true
-        comment: 'Minor: seaborn 0.13 shows deprecation warnings for some patterns.'
+        comment: Marker size conversion via canvas transform is complex. Packing algorithm
+          verbose but necessary.
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as 'plot.png'.
-    library_features:
-      score: 2
-      max: 5
+        comment: Saves as plot.png at dpi=300. Uses current seaborn API.
+    library_mastery:
+      score: 4
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 2
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 3
         max: 5
         passed: true
-        comment: Uses sns.scatterplot with hue/size mapping and sns.set_style, but
-          the core visualization relies heavily on matplotlib patches and custom packing
-          logic. Seaborn's role is somewhat limited to the scatter call and styling.
-  verdict: APPROVED
+        comment: Uses sns.set_theme, sns.scatterplot with hue, sns.color_palette,
+          sns.despine. Bulk of work is custom numpy/matplotlib.
+      - id: LM-02
+        name: Distinctive Features
+        score: 1
+        max: 5
+        passed: false
+        comment: Seaborn used mainly as rendering layer. Circle packing is entirely
+          custom code. Could be trivially ported.
+  verdict: REJECTED

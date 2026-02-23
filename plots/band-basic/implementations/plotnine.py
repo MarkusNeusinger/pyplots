@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 band-basic: Basic Band Plot
 Library: plotnine 0.15.3 | Python 3.14
 Quality: 88/100 | Updated: 2026-02-23
@@ -8,6 +8,8 @@ import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
+    annotate,
+    coord_cartesian,
     element_blank,
     element_line,
     element_rect,
@@ -16,6 +18,8 @@ from plotnine import (
     geom_ribbon,
     ggplot,
     labs,
+    scale_x_continuous,
+    scale_y_continuous,
     theme,
     theme_minimal,
 )
@@ -44,12 +48,32 @@ df = pd.DataFrame({"days": days, "temperature": temperature, "temp_lower": temp_
 plot = (
     ggplot(df, aes(x="days"))
     + geom_ribbon(aes(ymin="temp_lower", ymax="temp_upper"), fill="#306998", alpha=0.25)
-    + geom_line(aes(y="temperature"), color="#306998", size=2.5)
+    + geom_line(aes(y="temperature"), color="#1a3a5c", size=2.5)
+    + annotate(
+        "text", x=7, y=temp_lower.min() - 0.8, label="Calibration Phase", size=12, color="#555555", fontstyle="italic"
+    )
+    + annotate(
+        "text", x=25, y=temp_lower.min() - 0.8, label="Extrapolation", size=12, color="#555555", fontstyle="italic"
+    )
+    + annotate(
+        "segment",
+        x=15,
+        xend=15,
+        y=temp_lower.min() - 1.6,
+        yend=temp_upper.max() + 0.5,
+        color="#999999",
+        size=0.5,
+        linetype="dashed",
+    )
     + labs(
         x="Time (days)",
         y="Temperature (\u00b0C)",
         title="Sensor Calibration Forecast \u00b7 band-basic \u00b7 plotnine \u00b7 pyplots.ai",
+        subtitle="Shaded region shows 95% confidence interval \u2014 narrowing during calibration, widening for extrapolation",
     )
+    + scale_x_continuous(breaks=range(0, 31, 5))
+    + scale_y_continuous(labels=lambda lst: [f"{v:.0f}\u00b0C" for v in lst])
+    + coord_cartesian(expand=True)
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
@@ -57,6 +81,7 @@ plot = (
         axis_title=element_text(size=20),
         axis_text=element_text(size=16),
         plot_title=element_text(size=24),
+        plot_subtitle=element_text(size=16, color="#555555"),
         panel_grid_major_y=element_line(color="#cccccc", size=0.5, alpha=0.2),
         panel_grid_major_x=element_blank(),
         panel_grid_minor=element_blank(),

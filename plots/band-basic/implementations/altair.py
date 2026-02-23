@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 band-basic: Basic Band Plot
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Library: altair 6.0.0 | Python 3.14
+Quality: /100 | Updated: 2026-02-23
 """
 
 import altair as alt
@@ -25,17 +25,19 @@ df = pd.DataFrame({"x": x, "y_center": y_center, "y_lower": y_lower, "y_upper": 
 band = (
     alt.Chart(df)
     .mark_area(opacity=0.3, color="#306998")
-    .encode(x=alt.X("x:Q", title="Time (s)"), y=alt.Y("y_lower:Q", title="Signal Amplitude"), y2=alt.Y2("y_upper:Q"))
+    .encode(
+        x=alt.X("x:Q", title="Time (s)"), y=alt.Y("y_lower:Q", title="Signal Amplitude (mV)"), y2=alt.Y2("y_upper:Q")
+    )
 )
 
 # Central trend line
-line = alt.Chart(df).mark_line(strokeWidth=4, color="#306998").encode(x="x:Q", y="y_center:Q")
+line = alt.Chart(df).mark_line(strokeWidth=2.5, color="#306998").encode(x="x:Q", y="y_center:Q")
 
 # Combine band and line
 chart = (
     (band + line)
     .properties(width=1600, height=900, title=alt.Title("band-basic · altair · pyplots.ai", fontSize=28))
-    .configure_axis(labelFontSize=18, titleFontSize=22, gridOpacity=0.3)
+    .configure_axis(labelFontSize=18, titleFontSize=22, gridOpacity=0.2)
     .configure_view(strokeWidth=0)
 )
 

@@ -1,41 +1,62 @@
 """ pyplots.ai
 density-basic: Basic Density Plot
-Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: letsplot 4.8.2 | Python 3.14
+Quality: /100 | Updated: 2026-02-23
 """
 
 import numpy as np
+import pandas as pd
 from lets_plot import *  # noqa: F403
-from lets_plot.export import ggsave as export_ggsave
 
 
 LetsPlot.setup_html()  # noqa: F405
 
-# Data - Generate realistic test scores with slight right skew
+# Data - Simulated marathon finish times with realistic right skew
 np.random.seed(42)
-scores = np.concatenate(
+finish_minutes = np.concatenate(
     [
-        np.random.normal(72, 12, 300),  # Main group of students
-        np.random.normal(90, 5, 100),  # High achievers
+        np.random.normal(240, 25, 350),  # Main pack (~4 hour runners)
+        np.random.normal(200, 15, 100),  # Competitive runners (~3:20)
+        np.random.normal(300, 20, 50),  # Casual runners (~5 hours)
     ]
 )
+finish_minutes = np.clip(finish_minutes, 140, 400)
 
-# Create plot
+df = pd.DataFrame({"time": finish_minutes})
+
+# Plot
 plot = (
-    ggplot({"scores": scores}, aes(x="scores"))  # noqa: F405
-    + geom_density(fill="#306998", color="#306998", alpha=0.6, size=1.5)  # noqa: F405
-    + labs(x="Test Score", y="Density", title="density-basic · letsplot · pyplots.ai")  # noqa: F405
+    ggplot(df, aes(x="time"))  # noqa: F405
+    + geom_density(  # noqa: F405
+        fill="#306998",
+        color="#1e4263",
+        alpha=0.55,
+        size=1.8,
+        kernel="gaussian",
+        adjust=0.85,
+        trim=True,
+        tooltips=layer_tooltips()  # noqa: F405
+        .line("@|@time")
+        .line("density|@..density.."),
+    )
+    + labs(  # noqa: F405
+        x="Finish Time (minutes)", y="Density", title="density-basic · letsplot · pyplots.ai"
+    )
+    + scale_x_continuous(breaks=list(range(150, 401, 50)))  # noqa: F405
+    + scale_y_continuous(expand=[0.02, 0, 0.05, 0])  # noqa: F405
     + theme_minimal()  # noqa: F405
     + theme(  # noqa: F405
         axis_title=element_text(size=20),  # noqa: F405
         axis_text=element_text(size=16),  # noqa: F405
         plot_title=element_text(size=24),  # noqa: F405
-        panel_grid_major=element_line(color="#cccccc", size=0.5),  # noqa: F405
+        panel_grid_major_x=element_blank(),  # noqa: F405
+        panel_grid_major_y=element_line(color="#e0e0e0", size=0.4),  # noqa: F405
         panel_grid_minor=element_blank(),  # noqa: F405
+        axis_ticks=element_blank(),  # noqa: F405
     )
     + ggsize(1600, 900)  # noqa: F405
 )
 
-# Save PNG (scale 3x for 4800x2700) and HTML
-export_ggsave(plot, "plot.png", path=".", scale=3)
-export_ggsave(plot, "plot.html", path=".")
+# Save PNG (scale 3x for 4800 x 2700 px) and HTML
+ggsave(plot, "plot.png", path=".", scale=3)  # noqa: F405
+ggsave(plot, "plot.html", path=".")  # noqa: F405

@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 band-basic: Basic Band Plot
 Library: bokeh 3.8.2 | Python 3.14
+Quality: 93/100 | Updated: 2026-02-23
 """
 
 import numpy as np

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 band-basic: Basic Band Plot
 Library: letsplot 4.8.2 | Python 3.14
 Quality: 82/100 | Updated: 2026-02-23
@@ -14,11 +14,13 @@ from lets_plot import (
     element_text,
     geom_line,
     geom_ribbon,
+    geom_text,
     ggplot,
     ggsave,
     ggsize,
     labs,
     layer_tooltips,
+    scale_x_continuous,
     theme,
     theme_minimal,
 )
@@ -36,13 +38,18 @@ temp_upper = temp_mean + 1.96 * uncertainty  # 95% CI upper bound
 
 df = pd.DataFrame({"time": time_seconds, "mean": temp_mean, "lower": temp_lower, "upper": temp_upper})
 
+# Annotation highlighting the growing uncertainty insight
+annot_idx = np.argmin(np.abs(time_seconds - 8.0))
+annot_df = pd.DataFrame({"x": [8.0], "y": [temp_upper[annot_idx] + 0.6], "label": ["Growing uncertainty \u2192"]})
+
 # Plot
 plot = (
     ggplot(df, aes(x="time"))
     + geom_ribbon(
         aes(ymin="lower", ymax="upper"),
         fill="#306998",
-        alpha=0.25,
+        size=0,
+        alpha=0.2,
         tooltips=layer_tooltips()
         .format("lower", "{.2f}")
         .format("upper", "{.2f}")
@@ -52,21 +59,23 @@ plot = (
     )
     + geom_line(
         aes(y="mean"),
-        color="#306998",
-        size=1.5,
+        color="#C75B2E",
+        size=2.0,
         tooltips=layer_tooltips()
         .format("mean", "{.2f}")
         .format("time", "{.1f}")
         .line("Time|@time s")
         .line("Mean|@mean"),
     )
-    + labs(x="Time (s)", y="Value (units)", title="band-basic \u00b7 letsplot \u00b7 pyplots.ai")
+    + geom_text(aes(x="x", y="y", label="label"), data=annot_df, size=12, color="#555555")
+    + labs(x="Time (s)", y="Temperature (\u00b0C)", title="band-basic \u00b7 letsplot \u00b7 pyplots.ai")
+    + scale_x_continuous(limits=[-0.3, 10.8])
     + theme_minimal()
     + theme(
-        axis_title=element_text(size=20),
-        axis_text=element_text(size=16),
-        plot_title=element_text(size=24),
-        panel_grid_major=element_line(size=0.3, color="#E0E0E0"),
+        axis_title=element_text(size=20, color="#333333"),
+        axis_text=element_text(size=16, color="#555555"),
+        plot_title=element_text(size=24, color="#222222"),
+        panel_grid_major=element_line(size=0.3, color="#E8E8E8"),
         panel_grid_minor=element_blank(),
     )
     + ggsize(1600, 900)

@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 bubble-packed: Basic Packed Bubble Chart
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 79/100 | Updated: 2026-02-23
 """
 
 import math
@@ -11,7 +10,7 @@ from pygal.etree import etree
 from pygal.style import Style
 
 
-# Data - Department budget allocation (values determine circle size)
+# Department budget allocation data ($K, determines circle area)
 data = [
     {"label": "Software Development", "value": 450, "group": "Technology"},
     {"label": "Cloud Infrastructure", "value": 280, "group": "Technology"},
@@ -31,46 +30,56 @@ data = [
     {"label": "Support", "value": 110, "group": "Sales"},
 ]
 
-# Chart dimensions
 WIDTH = 4800
 HEIGHT = 2700
 PADDING = 15
 
-# Group colors matching pyplots style
-GROUP_COLORS = {"Technology": "#306998", "Marketing": "#FFD43B", "Operations": "#4ECDC4", "Sales": "#FF6B6B"}
+# Colorblind-safe palette with strong contrast on white
+GROUP_COLORS = {"Technology": "#306998", "Marketing": "#CC8400", "Operations": "#1A8A72", "Sales": "#C94D46"}
+GROUP_NAMES = ["Technology", "Marketing", "Operations", "Sales"]
 
-# Scale values to radii (by area for accurate visual perception)
+# Compute group totals for labels and sorting
+group_totals = {}
+for item in data:
+    group_totals[item["group"]] = group_totals.get(item["group"], 0) + item["value"]
+
+# Scale values to radii (sqrt for area-based visual perception)
 max_val = max(item["value"] for item in data)
 max_radius = min(WIDTH, HEIGHT) * 0.11
 
 circles = []
 for item in data:
     r = math.sqrt(item["value"] / max_val) * max_radius
-    circles.append({"r": r, "item": item, "x": 0, "y": 0})
+    circles.append({"r": r, "item": item, "x": 0.0, "y": 0.0})
 
-# Sort by radius descending for better packing
-circles.sort(key=lambda c: -c["r"])
+# Sort by group (largest budget group first for central placement),
+# then by descending radius within each group — enables spatial clustering
+sorted_groups = sorted(GROUP_NAMES, key=lambda g: -group_totals[g])
+group_order = {g: i for i, g in enumerate(sorted_groups)}
+circles.sort(key=lambda c: (group_order[c["item"]["group"]], -c["r"]))
+
+# Packing center
+cx, cy = WIDTH / 2, HEIGHT / 2
 
 # Place first circle at center
-cx, cy = WIDTH / 2, HEIGHT / 2
 circles[0]["x"] = cx
 circles[0]["y"] = cy
 placed = [circles[0]]
 
-# Place remaining circles using greedy packing
+# Greedy circle packing with group-affinity clustering
 for circle in circles[1:]:
     best_pos = None
-    min_dist_from_center = float("inf")
+    best_score = float("inf")
+    same_group = [p for p in placed if p["item"]["group"] == circle["item"]["group"]]
 
-    # Try placing adjacent to each existing circle
     for existing in placed:
-        for angle_deg in range(0, 360, 8):
+        for angle_deg in range(0, 360, 6):
             angle = math.radians(angle_deg)
             dist = existing["r"] + circle["r"] + PADDING
             nx = existing["x"] + math.cos(angle) * dist
             ny = existing["y"] + math.sin(angle) * dist
 
-            # Check for overlaps
+            # Check for overlaps with all placed circles
             valid = True
             for other in placed:
                 dx = nx - other["x"]
@@ -81,9 +90,20 @@ for circle in circles[1:]:
                     break
 
             if valid:
-                d = math.sqrt((nx - cx) ** 2 + (ny - cy) ** 2)
-                if d < min_dist_from_center:
-                    min_dist_from_center = d
+                d_center = math.sqrt((nx - cx) ** 2 + (ny - cy) ** 2)
+
+                if same_group:
+                    # Strongly prefer positions near same-group circles
+                    d_group = sum(math.sqrt((nx - p["x"]) ** 2 + (ny - p["y"]) ** 2) for p in same_group) / len(
+                        same_group
+                    )
+                    score = d_center * 0.3 + d_group * 0.7
+                else:
+                    # First circle of a new group: minimize distance to center
+                    score = d_center
+
+                if score < best_score:
+                    best_score = score
                     best_pos = (nx, ny)
 
     if best_pos:
@@ -94,10 +114,38 @@ for circle in circles[1:]:
 
     placed.append(circle)
 
-# Prepare packed data for rendering
+# Recenter bubble layout vertically in available canvas area
+min_y_all = min(c["y"] - c["r"] for c in placed)
+max_y_all = max(c["y"] + c["r"] for c in placed)
+min_x_all = min(c["x"] - c["r"] for c in placed)
+max_x_all = max(c["x"] + c["r"] for c in placed)
+
+# Available area: title ~180px from top, legend ~300px from bottom
+avail_top = 180
+avail_bottom = HEIGHT - 300
+target_cy = (avail_top + avail_bottom) / 2
+target_cx = WIDTH / 2
+
+dy = target_cy - (min_y_all + max_y_all) / 2
+dx = target_cx - (min_x_all + max_x_all) / 2
+
+for c in placed:
+    c["x"] += dx
+    c["y"] += dy
+
+# Compute group centroids and bounds for visual indicators
+group_info = {}
+for c in placed:
+    g = c["item"]["group"]
+    if g not in group_info:
+        group_info[g] = {"xs": [], "ys": [], "rs": []}
+    group_info[g]["xs"].append(c["x"])
+    group_info[g]["ys"].append(c["y"])
+    group_info[g]["rs"].append(c["r"])
+
 packed = [(c["x"], c["y"], c["r"], c["item"]) for c in placed]
 
-# Custom style
+# Pygal style
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -107,97 +155,154 @@ custom_style = Style(
     colors=list(GROUP_COLORS.values()),
     title_font_size=72,
     legend_font_size=42,
+    value_font_size=32,
 )
 
-# Create base chart (Pie with no data, just for structure)
+# Pygal chart scaffold (Pie provides legend and title infrastructure)
 chart = pygal.Pie(
     width=WIDTH,
     height=HEIGHT,
     style=custom_style,
-    title="bubble-packed · pygal · pyplots.ai",
+    title="bubble-packed \u00b7 pygal \u00b7 pyplots.ai",
     show_legend=True,
     legend_at_bottom=True,
     legend_at_bottom_columns=4,
     inner_radius=0,
-    margin=100,
+    margin=80,
     no_data_text="",
+    tooltip_fancy_mode=True,
+    pretty_print=True,
+    truncate_legend=-1,
 )
 
-# Add legend entries (empty slices just for legend)
-for group in ["Technology", "Marketing", "Operations", "Sales"]:
-    chart.add(group, [])
+# Legend entries showing group totals for context
+for group in GROUP_NAMES:
+    chart.add(f"{group}: ${group_totals[group]}K", [])
 
 
-# XML filter to add packed bubbles to SVG
 def add_packed_bubbles(root):
+    """Render packed bubble clusters via pygal's SVG filter pipeline."""
     g = etree.SubElement(root, "g")
     g.set("class", "packed-bubbles")
 
+    overall_cy = sum(c[1] for c in packed) / len(packed)
+
+    # Subtle dashed group boundary indicators
+    for gname, gdata in group_info.items():
+        gcx = sum(gdata["xs"]) / len(gdata["xs"])
+        gcy = sum(gdata["ys"]) / len(gdata["ys"])
+        extent = max(
+            math.sqrt((x - gcx) ** 2 + (y - gcy) ** 2) + r
+            for x, y, r in zip(gdata["xs"], gdata["ys"], gdata["rs"], strict=True)
+        )
+        bg = etree.SubElement(g, "circle")
+        bg.set("cx", f"{gcx:.0f}")
+        bg.set("cy", f"{gcy:.0f}")
+        bg.set("r", f"{extent + 22:.0f}")
+        bg.set("fill", GROUP_COLORS[gname])
+        bg.set("fill-opacity", "0.06")
+        bg.set("stroke", GROUP_COLORS[gname])
+        bg.set("stroke-opacity", "0.20")
+        bg.set("stroke-width", "2.5")
+        bg.set("stroke-dasharray", "10,7")
+
+    # Data circles with labels
     for x, y, r, item in packed:
         color = GROUP_COLORS[item["group"]]
 
-        # Circle element
-        circle_elem = etree.SubElement(g, "circle")
-        circle_elem.set("cx", f"{x:.1f}")
-        circle_elem.set("cy", f"{y:.1f}")
-        circle_elem.set("r", f"{r:.1f}")
-        circle_elem.set("fill", color)
-        circle_elem.set("fill-opacity", "0.85")
-        circle_elem.set("stroke", "white")
-        circle_elem.set("stroke-width", "4")
+        circ = etree.SubElement(g, "circle")
+        circ.set("cx", f"{x:.1f}")
+        circ.set("cy", f"{y:.1f}")
+        circ.set("r", f"{r:.1f}")
+        circ.set("fill", color)
+        circ.set("fill-opacity", "0.85")
+        circ.set("stroke", "white")
+        circ.set("stroke-width", "4")
 
-        # Tooltip
-        title = etree.SubElement(circle_elem, "title")
-        title.text = f"{item['label']}: ${item['value']}K"
+        # SVG-native tooltip
+        title = etree.SubElement(circ, "title")
+        title.text = f"{item['label']}: ${item['value']}K ({item['group']})"
 
-        # Text color: dark for light backgrounds (yellow), white otherwise
+        # Dark text on light backgrounds, white on dark
         text_color = "#333" if item["group"] == "Marketing" else "white"
 
-        # Large circles: show category name + value on two lines
-        if r > 120:
-            font_size = int(r * 0.24)
-            # Category name (above center)
-            name_text = etree.SubElement(g, "text")
-            name_text.set("x", f"{x:.1f}")
-            name_text.set("y", f"{y - font_size * 0.6:.1f}")
-            name_text.set("text-anchor", "middle")
-            name_text.set("dominant-baseline", "middle")
-            name_text.set("fill", text_color)
-            name_text.set("font-size", f"{font_size}")
-            name_text.set("font-family", "sans-serif")
-            name_text.set("font-weight", "bold")
-            name_text.text = item["label"].split()[0]
+        # Large circles: name + value on two lines
+        if r > 110:
+            fs = max(int(r * 0.22), 28)
+            t1 = etree.SubElement(g, "text")
+            t1.set("x", f"{x:.0f}")
+            t1.set("y", f"{y - fs * 0.55:.0f}")
+            t1.set("text-anchor", "middle")
+            t1.set("dominant-baseline", "middle")
+            t1.set("fill", text_color)
+            t1.set("font-size", f"{fs}")
+            t1.set("font-family", "sans-serif")
+            t1.set("font-weight", "bold")
+            t1.text = item["label"].split()[0]
 
-            # Value (below center)
-            val_text = etree.SubElement(g, "text")
-            val_text.set("x", f"{x:.1f}")
-            val_text.set("y", f"{y + font_size * 0.7:.1f}")
-            val_text.set("text-anchor", "middle")
-            val_text.set("dominant-baseline", "middle")
-            val_text.set("fill", text_color)
-            val_text.set("font-size", f"{int(font_size * 0.85)}")
-            val_text.set("font-family", "sans-serif")
-            val_text.text = f"${item['value']}K"
+            t2 = etree.SubElement(g, "text")
+            t2.set("x", f"{x:.0f}")
+            t2.set("y", f"{y + fs * 0.65:.0f}")
+            t2.set("text-anchor", "middle")
+            t2.set("dominant-baseline", "middle")
+            t2.set("fill", text_color)
+            t2.set("font-size", f"{int(fs * 0.82)}")
+            t2.set("font-family", "sans-serif")
+            t2.text = f"${item['value']}K"
 
         # Medium circles: value only
-        elif r > 70:
-            font_size = int(r * 0.30)
-            val_text = etree.SubElement(g, "text")
-            val_text.set("x", f"{x:.1f}")
-            val_text.set("y", f"{y:.1f}")
-            val_text.set("text-anchor", "middle")
-            val_text.set("dominant-baseline", "middle")
-            val_text.set("fill", text_color)
-            val_text.set("font-size", f"{font_size}")
-            val_text.set("font-family", "sans-serif")
-            val_text.set("font-weight", "bold")
-            val_text.text = f"${item['value']}K"
+        elif r > 55:
+            fs = max(int(r * 0.30), 24)
+            t = etree.SubElement(g, "text")
+            t.set("x", f"{x:.0f}")
+            t.set("y", f"{y:.0f}")
+            t.set("text-anchor", "middle")
+            t.set("dominant-baseline", "middle")
+            t.set("fill", text_color)
+            t.set("font-size", f"{fs}")
+            t.set("font-family", "sans-serif")
+            t.set("font-weight", "bold")
+            t.text = f"${item['value']}K"
+
+        # Small circles: value
+        else:
+            fs = max(int(r * 0.38), 22)
+            t = etree.SubElement(g, "text")
+            t.set("x", f"{x:.0f}")
+            t.set("y", f"{y:.0f}")
+            t.set("text-anchor", "middle")
+            t.set("dominant-baseline", "middle")
+            t.set("fill", text_color)
+            t.set("font-size", f"{fs}")
+            t.set("font-family", "sans-serif")
+            t.text = f"${item['value']}K"
+
+    # Group labels with aggregated totals
+    for gname, gdata in group_info.items():
+        gcx = sum(gdata["xs"]) / len(gdata["xs"])
+        gcy = sum(gdata["ys"]) / len(gdata["ys"])
+
+        # Place above for upper groups, below for lower groups
+        if gcy < overall_cy:
+            label_y = min(y - r for y, r in zip(gdata["ys"], gdata["rs"], strict=True)) - 28
+        else:
+            label_y = max(y + r for y, r in zip(gdata["ys"], gdata["rs"], strict=True)) + 52
+
+        lbl = etree.SubElement(g, "text")
+        lbl.set("x", f"{gcx:.0f}")
+        lbl.set("y", f"{label_y:.0f}")
+        lbl.set("text-anchor", "middle")
+        lbl.set("fill", GROUP_COLORS[gname])
+        lbl.set("font-size", "38")
+        lbl.set("font-family", "sans-serif")
+        lbl.set("font-weight", "bold")
+        lbl.set("letter-spacing", "1")
+        lbl.text = f"{gname}: ${group_totals[gname]}K"
 
     return root
 
 
 chart.add_xml_filter(add_packed_bubbles)
 
-# Render and save
 chart.render_to_png("plot.png")
 chart.render_to_file("plot.html")

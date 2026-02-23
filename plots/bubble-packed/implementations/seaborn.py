@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 bubble-packed: Basic Packed Bubble Chart
 Library: seaborn 0.13.2 | Python 3.14.3
-Quality: 79/100 | Updated: 2026-02-23
 """
 
 import matplotlib.pyplot as plt
@@ -25,7 +24,7 @@ for sector, companies in sectors.items():
 
 df = pd.DataFrame(records).sort_values("radius", ascending=False).reset_index(drop=True)
 
-# Circle packing - place circles one by one, closest to center without overlap
+# Circle packing - place circles greedily closest to center without overlap
 placed_x, placed_y, placed_r = [], [], []
 
 for _, row in df.iterrows():
@@ -61,36 +60,38 @@ for _, row in df.iterrows():
 df["x"] = placed_x
 df["y"] = placed_y
 
-# Recenter so all coordinates are positive
+# Recenter coordinates into positive space
 pad = 20
 df["x"] = df["x"] - (df["x"] - df["radius"]).min() + pad
 df["y"] = df["y"] - (df["y"] - df["radius"]).min() + pad
 plot_w = (df["x"] + df["radius"]).max() + pad
 plot_h = (df["y"] + df["radius"]).max() + pad
 
-# Seaborn styling
-sns.set_theme(style="white", context="talk", font_scale=1.2)
-palette = sns.color_palette("Set2", n_colors=len(sectors))
-sector_colors = dict(zip(sectors.keys(), palette, strict=True))
+# Seaborn styling - distinctive context and style management
+sns.set_context("poster", font_scale=0.85)
+sns.set_style("white")
 
-# Plot
-fig, ax = plt.subplots(figsize=(16, 9))
+# Custom colorblind-safe palette anchored on Python Blue (#306998)
+sector_order = list(sectors.keys())
+base_colors = ["#306998", "#DE8F05", "#029E73", "#CC78BC"]
+sector_palette = dict(zip(sector_order, sns.color_palette(base_colors), strict=True))
+
+# Square canvas for better packing utilization (bubbles pack roughly circular)
+fig, ax = plt.subplots(figsize=(12, 12))
 ax.set_xlim(0, plot_w)
 ax.set_ylim(0, plot_h)
 ax.set_aspect("equal")
 
-# Compute scatter marker sizes: convert data-unit diameter to points^2
-# At dpi=100 (default), figsize=(16,9) => 1600x900 pixels for the figure
-# With aspect="equal", the effective data range that fits is limited by the smaller axis
+# Convert data-unit radii to scatter marker sizes (points²)
 fig.canvas.draw()
-transform = ax.transData
-# Get scale: how many display points per data unit
-p0 = transform.transform((0, 0))
-p1 = transform.transform((1, 0))
-pts_per_unit = (p1[0] - p0[0]) * 72 / fig.dpi  # convert pixels to points
+px_per_unit = ax.transData.transform((1, 0))[0] - ax.transData.transform((0, 0))[0]
+pts_per_unit = px_per_unit * 72 / fig.dpi
 df["marker_size"] = (df["radius"] * 2 * pts_per_unit) ** 2
 
-# Draw bubbles with seaborn scatterplot
+# Categorical ordering for consistent palette mapping
+df["sector"] = pd.Categorical(df["sector"], categories=sector_order, ordered=True)
+
+# Draw bubbles with seaborn scatterplot and hue mapping
 sns.scatterplot(
     data=df,
     x="x",
@@ -98,56 +99,84 @@ sns.scatterplot(
     hue="sector",
     size="marker_size",
     sizes=(df["marker_size"].min(), df["marker_size"].max()),
-    palette=sector_colors,
-    alpha=0.9,
+    hue_order=sector_order,
+    palette=sector_palette,
+    alpha=0.92,
     edgecolor="white",
     linewidth=3,
-    legend=False,
+    legend="brief",
     ax=ax,
 )
 
-# Labels inside circles - scale font with bubble size, clip long names
+# Filter legend to sector entries only, then reposition with sns.move_legend
+handles, labels = ax.get_legend_handles_labels()
+sector_h = [h for h, lab in zip(handles, labels, strict=False) if lab in sector_order]
+sector_lab = [lab for lab in labels if lab in sector_order]
+ax.legend(sector_h, sector_lab)
+sns.move_legend(
+    ax,
+    loc="upper center",
+    bbox_to_anchor=(0.5, -0.02),
+    ncol=4,
+    fontsize=16,
+    framealpha=0.95,
+    title="Sector",
+    title_fontsize=18,
+    edgecolor="#CCCCCC",
+)
+
+# Labels with value annotations for data storytelling
 for _, row in df.iterrows():
-    label = row["name"]
     r = row["radius"]
+    name = row["name"]
+    value = row["value"]
+
     if r > 38:
-        fs, max_chars = 18, 12
+        fs_name, max_chars, show_val = 20, 12, True
     elif r > 30:
-        fs, max_chars = 14, 12
+        fs_name, max_chars, show_val = 16, 12, True
     elif r > 24:
-        fs, max_chars = 11, 10
+        fs_name, max_chars, show_val = 12, 10, True
     else:
-        fs, max_chars = 8, 7
-    if len(label) > max_chars:
-        label = label[: max_chars - 1] + "."
-    ax.text(row["x"], row["y"], label, ha="center", va="center", fontsize=fs, fontweight="bold", color="white")
+        fs_name, max_chars, show_val = 9, 8, False
+
+    if len(name) > max_chars:
+        name = name[: max_chars - 1] + "."
+
+    if show_val:
+        y_off = r * 0.13
+        ax.text(
+            row["x"],
+            row["y"] + y_off,
+            name,
+            ha="center",
+            va="center",
+            fontsize=fs_name,
+            fontweight="bold",
+            color="white",
+        )
+        ax.text(
+            row["x"],
+            row["y"] - y_off * 2,
+            f"${value}B",
+            ha="center",
+            va="center",
+            fontsize=fs_name - 4,
+            color="white",
+            alpha=0.8,
+        )
+    else:
+        ax.text(row["x"], row["y"], name, ha="center", va="center", fontsize=fs_name, fontweight="bold", color="white")
 
 ax.axis("off")
 
 # Title
 ax.set_title(
     "Market Capitalization by Sector\nbubble-packed \u00b7 seaborn \u00b7 pyplots.ai",
-    fontsize=24,
+    fontsize=26,
     fontweight="medium",
-    pad=20,
+    pad=25,
     linespacing=1.4,
-)
-
-# Legend with circular markers matching bubble colors
-handles = [
-    plt.Line2D([0], [0], marker="o", color="w", markerfacecolor=sector_colors[s], markersize=14, label=s)
-    for s in sectors
-]
-ax.legend(
-    handles=handles,
-    loc="upper center",
-    bbox_to_anchor=(0.5, -0.01),
-    ncol=4,
-    fontsize=14,
-    framealpha=0.95,
-    title="Sector",
-    title_fontsize=16,
-    edgecolor="gray",
 )
 
 sns.despine(left=True, bottom=True)

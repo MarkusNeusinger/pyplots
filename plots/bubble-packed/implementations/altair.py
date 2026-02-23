@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bubble-packed: Basic Packed Bubble Chart
 Library: altair 6.0.0 | Python 3.14.3
-Quality: repair-1 | Updated: 2026-02-23
+Quality: 84/100 | Updated: 2026-02-23
 """
 
 import altair as alt

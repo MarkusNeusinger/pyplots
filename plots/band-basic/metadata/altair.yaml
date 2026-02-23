@@ -1,7 +1,7 @@
 library: altair
 specification_id: band-basic
 created: '2025-12-23T09:10:02Z'
-updated: '2026-02-23T13:40:00Z'
+updated: '2026-02-23T13:55:14Z'
 generated_by: claude-opus-4-6
 workflow_run: 20456385370
 issue: 0
@@ -10,157 +10,163 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/band-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/band-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/band-basic/altair/plot.html
-quality_score: null
+quality_score: 86
 impl_tags:
   dependencies: []
   techniques:
-  - html-export
   - layer-composition
+  - html-export
   patterns:
   - data-generation
   dataprep: []
   styling:
   - alpha-blending
+  - grid-styling
 review:
   strengths:
-  - Excellent use of Altair declarative grammar with mark_area and y/y2 encoding for
-    the band
-  - Clean layered composition combining band and line charts
-  - Realistic uncertainty growth pattern (band widens over time) demonstrates practical
-    use case
-  - Proper 95% confidence interval calculation using 1.96 * uncertainty
-  - Good visual hierarchy with semi-transparent band (opacity=0.3) and prominent center
-    line (strokeWidth=4)
-  - Correct output format with both PNG and HTML for Altair
+  - Perfect visual quality with all font sizes explicitly set and no overlap issues
+  - Correct title format and descriptive axis labels with appropriate units
+  - Realistic scientific data context with widening confidence intervals demonstrating
+    band utility
+  - Clean, idiomatic Altair code with proper KISS structure
+  - Good use of Y2 encoding for the band area, which is a distinctive Altair feature
   weaknesses:
-  - Y-axis label Signal Amplitude lacks units (should include units like mV)
-  - No legend or annotation explaining what the band represents (e.g. 95% CI)
-  image_description: The plot displays a band plot with a light blue semi-transparent
-    confidence band between two boundary lines, with a solid dark blue central trend
-    line running through the middle. The band shows a sinusoidal pattern with linear
-    upward growth, with amplitude ranging from approximately -3 to 10 on the y-axis.
-    The x-axis shows "Time (s)" from 0.0 to 10.0, and the y-axis shows "Signal Amplitude".
-    The confidence band appropriately widens over time (from ~1.0 at t=0 to ~3.5 at
-    t=10), demonstrating realistic uncertainty growth. The title "band-basic · altair
-    · pyplots.ai" is displayed at the top. The plot has a clean white background with
-    subtle gray gridlines.
+  - Design stays at configured-default level with single Python Blue color for both
+    band and line
+  - No visual hierarchy or data storytelling beyond what the data inherently shows
+  - Central line uses same color (#306998) as the band — a darker shade would create
+    stronger visual separation
+  - Does not leverage Altair interactive capabilities (tooltips, zoom/pan) in the
+    HTML export
+  image_description: The plot displays a band chart on a white background with a light
+    blue semi-transparent filled region (confidence band) between upper and lower
+    boundaries, and a darker blue central trend line running through the middle. The
+    x-axis is labeled "Time (s)" ranging from 0.0 to 10.0 with tick marks at 0.4 intervals.
+    The y-axis is labeled "Signal Amplitude (mV)" ranging from approximately -3.0
+    to 10.0. The title "band-basic · altair · pyplots.ai" appears at the top in a
+    large font. The central line follows a sinusoidal pattern with upward linear growth,
+    creating two peaks (around x=1.8 and x=8.0) and a trough (around x=4.5). The confidence
+    band widens progressively from left to right, starting narrow (~1 mV wide) at
+    x=0 and expanding to ~4 mV wide at x=10, realistically depicting growing uncertainty
+    over time. The grid is very subtle (low opacity) and view borders are removed,
+    giving a clean appearance.
   criteria_checklist:
     visual_quality:
-      score: 37
-      max: 40
+      score: 30
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title at 28pt, axis labels at 22pt, tick labels at 18pt - all perfectly
-          readable
+        comment: 'All font sizes explicitly set: title=28pt, axis labels=22pt, ticks=18pt'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping text elements, tick labels well-spaced
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Band opacity (0.3) allows visibility, line width (4) makes central
-          trend clear
+        comment: Band visible at 0.3 opacity, central line at strokeWidth=2.5 is distinct
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Single color scheme (#306998 blue) with good contrast
+        comment: Single Python Blue hue, no colorblind issues, good contrast
       - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
+        name: Layout & Canvas
+        score: 4
+        max: 4
         passed: true
-        comment: Good proportions, 16:9 aspect ratio, no cut-off content
+        comment: Plot fills canvas well, balanced margins, nothing cut off
       - id: VQ-06
-        name: Axis Labels
-        score: 1
+        name: Axis Labels & Title
+        score: 2
         max: 2
         passed: true
-        comment: Y-axis "Signal Amplitude" is descriptive but lacks units
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
+        comment: 'Descriptive labels with units: Time (s), Signal Amplitude (mV)'
+    design_excellence:
+      score: 10
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
+        passed: false
+        comment: Well-configured default with Python Blue, single-color scheme lacks
+          sophistication
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
         passed: true
-        comment: Grid is subtle (alpha 0.3) but no legend explaining what the band
-          represents
+        comment: View strokes removed, grid opacity 0.2, intentional refinement beyond
+          defaults
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: Data displayed without visual hierarchy or emphasis guiding the viewer
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct band/area plot with central trend line
+        comment: Correct band plot with filled region and central trend line
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: x mapped to time, y_lower/y_upper define band, y_center defines trend
-          line
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Has band with semi-transparent fill, central trend line in contrasting
-          style, smooth interpolation
-      - id: SC-04
-        name: Data Range
+        comment: Semi-transparent fill, central line, smooth interpolation, 100 data
+          points
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data points visible within axes
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X maps to time, Y maps to signal amplitude, band boundaries correct
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: N/A for single-color band plot (no legend needed for basic version)
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Correct format: "band-basic · altair · pyplots.ai"'
+        comment: Correct title format, no legend needed for single series
     data_quality:
-      score: 18
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Shows widening uncertainty over time, sinusoidal pattern with linear
-          growth - demonstrates most band plot features but could show additional
-          scenarios
+        comment: Shows sinusoidal + linear trend, widening uncertainty, peaks and
+          troughs
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
+        score: 5
+        max: 5
         passed: true
-        comment: Time series with 95% confidence interval - plausible scientific/engineering
-          scenario
+        comment: Signal amplitude in mV with 95% CI — plausible scientific context
       - id: DQ-03
         name: Appropriate Scale
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Values are reasonable for signal amplitude but units are abstract
+        comment: mV range and time in seconds realistic for electronic signals
     code_quality:
       score: 10
       max: 10
@@ -170,40 +176,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save structure, no functions/classes
+        comment: Clean Imports → Data → Plot → Save, no functions or classes
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: np.random.seed(42) ensures reproducibility
+        comment: np.random.seed(42) set, data is deterministic
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only altair, numpy, pandas imported - all used
+        comment: All imports (altair, numpy, pandas) are used
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Uses current Altair API
+        comment: Clean, concise Pythonic code with good layer composition
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html
-    library_features:
-      score: 5
-      max: 5
+        comment: Saves as plot.png and plot.html, current Altair 6.x API
+    library_mastery:
+      score: 7
+      max: 10
       items:
-      - id: LF-01
-        name: Distinctive Features
-        score: 5
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
         max: 5
         passed: true
-        comment: Excellent use of Altair's declarative approach with mark_area, y/y2
-          encoding for bands, layered composition (band + line), configure_* for styling
-  verdict: APPROVED
+        comment: Good use of mark_area/mark_line, alt.X/Y/Y2, layer composition, configure
+          chain
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: false
+        comment: Y2 encoding and + layer composition distinctive but doesn't leverage
+          interactive features
+  verdict: REJECTED

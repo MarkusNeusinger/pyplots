@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 band-basic: Basic Band Plot
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-23
+Library: pygal 3.1.0 | Python 3.14
+Quality: /100 | Updated: 2026-02-23
 """
 
 import numpy as np
@@ -11,11 +11,17 @@ from pygal.style import Style
 
 # Data - Time series with 95% confidence interval
 np.random.seed(42)
-x = np.linspace(0, 10, 50)
-# Central trend line (quadratic curve)
-y_center = 2 + 0.5 * x + 0.1 * x**2 + np.random.randn(50) * 0.3
-# Smooth the center line
-y_center = np.convolve(y_center, np.ones(3) / 3, mode="same")
+n_points = 50
+x = np.linspace(0, 10, n_points)
+# Central trend line (quadratic curve with noise)
+y_raw = 2 + 0.5 * x + 0.1 * x**2 + np.random.randn(n_points) * 0.3
+# Smooth with valid-mode convolution, then pad edges to preserve length
+kernel = np.ones(5) / 5
+y_smooth = np.convolve(y_raw, kernel, mode="valid")
+# Pad edges with first/last smoothed values to match original length
+pad_left = (n_points - len(y_smooth)) // 2
+pad_right = n_points - len(y_smooth) - pad_left
+y_center = np.concatenate([np.full(pad_left, y_smooth[0]), y_smooth, np.full(pad_right, y_smooth[-1])])
 # Confidence interval widens with x (increasing uncertainty)
 uncertainty = 0.5 + 0.15 * x
 y_lower = y_center - uncertainty
@@ -28,11 +34,11 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    guide_stroke_color="#888888",  # Darker grid lines for better visibility
-    colors=("#306998", "#FFD43B"),  # Blue for band, Yellow for center line
-    opacity=".65",  # Higher opacity for clearly visible band
+    guide_stroke_color="#AAAAAA",
+    colors=("#306998", "#E8A317"),
+    opacity=".65",
     opacity_hover=".75",
-    stroke_width=5,  # Thicker lines for better visibility
+    stroke_width=5,
     title_font_size=60,
     label_font_size=42,
     major_label_font_size=42,
@@ -40,12 +46,12 @@ custom_style = Style(
     value_font_size=36,
 )
 
-# Create XY chart for precise coordinate control
+# Create XY chart with fill enabled for area rendering
 chart = pygal.XY(
     style=custom_style,
     width=4800,
     height=2700,
-    title="95% Confidence Interval · band-basic · pygal · pyplots.ai",
+    title="band-basic \u00b7 pygal \u00b7 pyplots.ai",
     x_title="Time (s)",
     y_title="Measurement Value",
     show_dots=False,
@@ -58,21 +64,16 @@ chart = pygal.XY(
 )
 
 # Create band as a closed polygon: upper boundary forward, then lower backward
-# Using fill only (no stroke) to avoid visual artifacts at polygon edges
-band_polygon = []
-# Upper boundary (forward)
-for xi, yi in zip(x, y_upper, strict=True):
-    band_polygon.append((float(xi), float(yi)))
-# Lower boundary (backward to close the polygon smoothly)
+band_polygon = [(float(xi), float(yi)) for xi, yi in zip(x, y_upper, strict=True)]
 for xi, yi in zip(reversed(x), reversed(y_lower), strict=True):
     band_polygon.append((float(xi), float(yi)))
 
-chart.add("Confidence Band", band_polygon, stroke=False)
+chart.add("Confidence Band", band_polygon, stroke_style={"width": 0.1}, show_dots=False)
 
-# Add center line (no fill, just stroke) - using a contrasting color
+# Add center line (no fill, just stroke)
 center_data = [(float(xi), float(yi)) for xi, yi in zip(x, y_center, strict=True)]
 chart.add("Central Trend", center_data, fill=False, stroke=True, dots_size=0, stroke_style={"width": 6})
 
-# Save outputs
+# Save
 chart.render_to_png("plot.png")
 chart.render_to_file("plot.html")

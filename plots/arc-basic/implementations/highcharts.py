@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 arc-basic: Basic Arc Diagram
 Library: highcharts 1.10.3 | Python 3.14.3
 Quality: 87/100 | Created: 2026-02-23
@@ -64,7 +64,7 @@ for name in nodes:
         {
             "id": name,
             "color": node_colors[name],
-            "marker": {"radius": 40 + degree[name] * 8, "lineWidth": 4, "lineColor": "#ffffff"},
+            "marker": {"radius": 44 + degree[name] * 7, "lineWidth": 4, "lineColor": "#ffffff"},
         }
     )
 
@@ -79,18 +79,19 @@ chart_options = {
         "height": 2700,
         "backgroundColor": "#ffffff",
         "marginTop": 150,
-        "marginBottom": 30,
+        "marginBottom": 10,
         "marginLeft": 100,
         "marginRight": 100,
+        "spacingTop": 20,
         "spacingBottom": 0,
     },
     "title": {
-        "text": "Character Interactions \u00b7 arc-basic \u00b7 highcharts \u00b7 pyplots.ai",
+        "text": "arc-basic \u00b7 highcharts \u00b7 pyplots.ai",
         "style": {"fontSize": "56px", "fontWeight": "bold", "color": "#333333"},
         "margin": 30,
     },
     "subtitle": {
-        "text": "Dialogue exchanges between characters in a story chapter",
+        "text": "Character interactions — Dialogue exchanges between characters in a story chapter",
         "style": {"fontSize": "36px", "color": "#666666"},
     },
     "accessibility": {"enabled": False},
@@ -125,7 +126,7 @@ chart_options = {
                     "format": "",
                     "linkFormat": "",
                     "style": {
-                        "fontSize": "40px",
+                        "fontSize": "48px",
                         "fontWeight": "bold",
                         "textOutline": "3px #ffffff",
                         "color": "#333333",

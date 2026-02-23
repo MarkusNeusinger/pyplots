@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bubble-packed: Basic Packed Bubble Chart
 Library: highcharts 1.10.3 | Python 3.14.3
 Quality: 84/100 | Updated: 2026-02-23
@@ -72,25 +72,24 @@ colors = ["#306998", "#D4920B", "#7B4F9E", "#0E9AA7", "#C05746"]
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-# Render at 900x900 CSS px, capture at 4x device scale → 3600x3600 output
-# Smaller internal size forces bubbles to fill more of the canvas
+# Render at 1200x675 CSS px, capture at 4x device scale → 4800x2700 output
 chart.options.chart = {
     "type": "packedbubble",
-    "width": 900,
-    "height": 900,
+    "width": 1200,
+    "height": 675,
     "backgroundColor": {
         "linearGradient": {"x1": 0, "y1": 0, "x2": 0, "y2": 1},
         "stops": [[0, "#FAFBFD"], [1, "#F0F2F5"]],
     },
     "style": {"fontFamily": "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"},
-    "spacing": [12, 8, 20, 8],
+    "spacing": [8, 10, 10, 10],
 }
 
 # Title — sizes at 1/4 of target since 4x device scale factor
 chart.options.title = {
     "text": "bubble-packed \u00b7 highcharts \u00b7 pyplots.ai",
     "style": {"fontSize": "16px", "fontWeight": "700", "color": "#1a1a2e"},
-    "margin": 6,
+    "margin": 4,
 }
 
 # Subtitle
@@ -109,14 +108,14 @@ chart.options.tooltip = {
     "pointFormat": "<b>{point.name}</b>: ${point.value}B",
 }
 
-# Legend — floating at bottom
+# Legend — anchored at bottom to reduce gap between bubbles and legend
 chart.options.legend = {
     "enabled": True,
     "layout": "horizontal",
     "align": "center",
     "verticalAlign": "bottom",
-    "floating": True,
-    "y": -6,
+    "floating": False,
+    "margin": 4,
     "itemStyle": {"fontSize": "9px", "fontWeight": "500", "color": "#333333"},
     "symbolHeight": 6,
     "symbolWidth": 6,
@@ -128,23 +127,23 @@ chart.options.legend = {
 chart.options.plot_options = {
     "packedbubble": {
         "minSize": "50%",
-        "maxSize": "280%",
+        "maxSize": "250%",
         "zMin": 0,
         "zMax": 1000,
         "layoutAlgorithm": {
             "gravitationalConstant": 0.02,
             "splitSeries": True,
-            "seriesInteraction": True,
+            "seriesInteraction": False,
             "dragBetweenSeries": False,
             "parentNodeLimit": True,
-            "parentNodeOptions": {"reingold": {"gravitationalConstant": 0.05}},
-            "bubblePadding": 5,
+            "parentNodeOptions": {"reingold": {"gravitationalConstant": 0.06}, "marker": {"fillOpacity": 0}},
+            "bubblePadding": 3,
         },
         "dataLabels": {
             "enabled": True,
             "format": "{point.name}",
             "filter": {"property": "y", "operator": ">", "value": 320},
-            "style": {"fontSize": "8px", "fontWeight": "600", "color": "white", "textOutline": "1px rgba(0,0,0,0.4)"},
+            "style": {"fontSize": "10px", "fontWeight": "600", "color": "white", "textOutline": "1px rgba(0,0,0,0.4)"},
         },
         "marker": {"lineWidth": 1, "lineColor": "rgba(255,255,255,0.35)"},
     }
@@ -173,8 +172,44 @@ with urllib.request.urlopen(highcharts_url, timeout=30) as response:
 with urllib.request.urlopen(highcharts_more_url, timeout=30) as response:
     highcharts_more_js = response.read().decode("utf-8")
 
-# Generate HTML with inline scripts
+# Generate HTML with inline scripts and post-render bubble scaling
 html_str = chart.to_js_literal()
+# Script to scale the bubble cluster to fill more of the plot area after simulation settles
+scale_script = """
+<script>
+setTimeout(function() {
+    var chart = Highcharts.charts[0];
+    if (!chart || !chart.seriesGroup) return;
+    var sg = chart.seriesGroup.element;
+    var bbox = sg.getBBox();
+    if (bbox.width < 1 || bbox.height < 1) return;
+    var pw = chart.plotWidth, ph = chart.plotHeight;
+    var sx = (pw * 0.9) / bbox.width;
+    var sy = (ph * 0.9) / bbox.height;
+    var s = Math.min(sx, sy, 1.8);
+    if (s <= 1.05) return;
+    var cx = bbox.x + bbox.width / 2;
+    var cy = bbox.y + bbox.height / 2;
+    var pcx = chart.plotLeft + pw / 2;
+    var pcy = chart.plotTop + ph / 2;
+    sg.setAttribute('transform',
+        'translate(' + (pcx - cx * s) + ',' + (pcy - cy * s) + ') scale(' + s + ')');
+    // Remove clip-path so scaled bubbles are not clipped at edges
+    sg.removeAttribute('clip-path');
+    var parent = sg.parentNode;
+    if (parent) parent.removeAttribute('clip-path');
+    // Also remove clip-path from any wrapper elements
+    var clips = chart.container.querySelectorAll('[clip-path]');
+    clips.forEach(function(el) {
+        if (el.classList.contains('highcharts-series-group') ||
+            el.classList.contains('highcharts-tracker-group') ||
+            el.closest('.highcharts-series-group')) {
+            el.removeAttribute('clip-path');
+        }
+    });
+}, 8000);
+</script>
+"""
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -182,9 +217,10 @@ html_content = f"""<!DOCTYPE html>
     <script>{highcharts_js}</script>
     <script>{highcharts_more_js}</script>
 </head>
-<body style="margin:0; overflow:hidden; background:#F0F2F5;">
-    <div id="container" style="width: 900px; height: 900px;"></div>
+<body style="margin:0; overflow:hidden; background:#F0F2F5; min-height:100vh;">
+    <div id="container" style="width: 1200px; height: 675px;"></div>
     <script>{html_str}</script>
+    {scale_script}
 </body>
 </html>"""
 
@@ -214,18 +250,18 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=1200,1200")
+chrome_options.add_argument("--window-size=1400,800")
 chrome_options.add_argument("--force-device-scale-factor=4")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
-time.sleep(10)
+time.sleep(12)
 driver.save_screenshot("plot_raw.png")
 driver.quit()
 
-# Crop to exact 4800x2700 dimensions
+# Crop to exact 4800x2700 dimensions (landscape format)
 img = Image.open("plot_raw.png")
-img_cropped = img.crop((0, 0, 3600, 3600))
+img_cropped = img.crop((0, 0, 4800, 2700))
 img_cropped.save("plot.png")
 Path("plot_raw.png").unlink()
 

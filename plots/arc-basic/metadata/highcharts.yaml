@@ -1,0 +1,26 @@
+library: highcharts
+specification_id: arc-basic
+created: '2026-02-23T12:00:00+00:00'
+updated: '2026-02-23T12:00:00+00:00'
+generated_by: claude-opus-4-6
+workflow_run: null
+issue: 991
+python_version: '3.14.3'
+library_version: 1.10.3
+preview_url: https://storage.googleapis.com/pyplots-images/plots/arc-basic/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/arc-basic/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/arc-basic/highcharts/plot.html
+quality_score: null
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
+review:
+  strengths: []
+  weaknesses: []
+  image_description: null
+  criteria_checklist: null
+  verdict: null

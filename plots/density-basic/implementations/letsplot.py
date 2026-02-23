@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 density-basic: Basic Density Plot
 Library: letsplot 4.8.2 | Python 3.14.3
-Quality: 85/100 | Updated: 2026-02-23
 """
 
 import numpy as np
@@ -24,6 +23,18 @@ finish_minutes = np.clip(finish_minutes, 140, 400)
 
 df = pd.DataFrame({"time": finish_minutes})
 
+# Rug data: small vertical ticks at each observation
+rug_df = pd.DataFrame({"x": finish_minutes, "y0": 0.0, "y1": 0.0004})
+
+# Runner group centroids for storytelling annotations
+group_labels = pd.DataFrame(
+    {
+        "x": [200, 240, 300],
+        "y": [0.0123, 0.0123, 0.0123],
+        "label": ["Competitive (~3:20)", "Main Pack (~4:00)", "Casual (~5:00)"],
+    }
+)
+
 # Plot
 plot = (
     ggplot(df, aes(x="time"))  # noqa: F405
@@ -39,11 +50,29 @@ plot = (
         .line("@|@time")
         .line("density|@..density.."),
     )
+    + geom_segment(  # noqa: F405
+        data=rug_df,
+        mapping=aes(x="x", y="y0", xend="x", yend="y1"),  # noqa: F405
+        color="#1e4263",
+        alpha=0.15,
+        size=0.4,
+    )
+    + geom_vline(xintercept=200, linetype="dashed", color="#888888", alpha=0.5, size=0.6)  # noqa: F405
+    + geom_vline(xintercept=240, linetype="dashed", color="#888888", alpha=0.5, size=0.6)  # noqa: F405
+    + geom_vline(xintercept=300, linetype="dashed", color="#888888", alpha=0.5, size=0.6)  # noqa: F405
+    + geom_text(  # noqa: F405
+        data=group_labels,
+        mapping=aes(x="x", y="y", label="label"),  # noqa: F405
+        size=12,
+        color="#444444",
+    )
     + labs(  # noqa: F405
         x="Finish Time (minutes)", y="Density", title="density-basic · letsplot · pyplots.ai"
     )
     + scale_x_continuous(breaks=list(range(150, 401, 50)))  # noqa: F405
-    + scale_y_continuous(expand=[0.02, 0, 0.05, 0])  # noqa: F405
+    + scale_y_continuous(  # noqa: F405
+        breaks=[0.002, 0.004, 0.006, 0.008, 0.010], expand=[0.02, 0, 0.25, 0]
+    )
     + theme_minimal()  # noqa: F405
     + theme(  # noqa: F405
         axis_title=element_text(size=20),  # noqa: F405

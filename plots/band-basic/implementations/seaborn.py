@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 band-basic: Basic Band Plot
-Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 98/100 | Created: 2025-12-23
+Library: seaborn 0.13.2 | Python 3.14
+Quality: /100 | Updated: 2026-02-23
 """
 
 import matplotlib.pyplot as plt
@@ -17,23 +17,31 @@ noise_scale = 0.3 + 0.1 * x  # Increasing uncertainty over time
 y_lower = y_center - 1.96 * noise_scale
 y_upper = y_center + 1.96 * noise_scale
 
-# Create figure
-sns.set_style("whitegrid")
+# Plot
+sns.set_theme(
+    style="whitegrid",
+    rc={
+        "axes.spines.top": False,
+        "axes.spines.right": False,
+        "grid.alpha": 0.2,
+        "grid.linewidth": 0.8,
+        "grid.linestyle": "--",
+    },
+)
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Band plot: confidence interval as filled region
+# Band: confidence interval as filled region
 ax.fill_between(x, y_lower, y_upper, alpha=0.3, color="#306998", label="95% Confidence Interval")
 
 # Central trend line using seaborn
 sns.lineplot(x=x, y=y_center, ax=ax, linewidth=3, color="#FFD43B", label="Mean Trend")
 
-# Styling
+# Style
 ax.set_xlabel("Time (s)", fontsize=20)
 ax.set_ylabel("Amplitude", fontsize=20)
-ax.set_title("band-basic · seaborn · pyplots.ai", fontsize=24)
+ax.set_title("band-basic \u00b7 seaborn \u00b7 pyplots.ai", fontsize=24, fontweight="medium")
 ax.tick_params(axis="both", labelsize=16)
 ax.legend(fontsize=16, loc="upper left")
-ax.grid(True, alpha=0.3, linestyle="--")
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

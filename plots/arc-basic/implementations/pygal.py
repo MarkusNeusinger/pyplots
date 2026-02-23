@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 arc-basic: Basic Arc Diagram
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Library: pygal 3.1.0 | Python 3.14.3
+Quality: /100 | Updated: 2026-02-23
 """
 
 import math
@@ -39,13 +39,16 @@ edges = [
 
 # Node positions along x-axis (1 to 10 range)
 x_positions = np.linspace(1, 10, n_nodes)
-y_baseline = 1.0
+y_baseline = 0.5
 
-# Build color tuple: Python Blue for all arcs, Python Yellow for nodes
+# Color palette: weight-based blue shades for arcs (lighter=weak, darker=strong)
+arc_blues = {1: "#7BA7C9", 2: "#306998", 3: "#1B3F5C"}
+
+# Build colors tuple: one entry per edge series + node series
 n_edges = len(edges)
-colors = tuple(["#306998"] * n_edges + ["#FFD43B"])
+colors = tuple([arc_blues[w] for _, _, w in edges] + ["#FFD43B"])
 
-# Custom style for the chart
+# Custom style
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -59,7 +62,7 @@ custom_style = Style(
     legend_font_size=40,
     value_font_size=32,
     stroke_width=3,
-    opacity=0.65,
+    opacity=0.7,
     opacity_hover=1.0,
 )
 
@@ -79,16 +82,14 @@ chart = pygal.XY(
     stroke=True,
     dots_size=0,
     stroke_style={"width": 3, "linecap": "round"},
-    range=(0, 6),
+    range=(0, 4.6),
     xrange=(0, 11),
-    x_labels=nodes,
-    x_labels_major_count=n_nodes,
+    x_labels=[{"value": float(x_positions[i]), "label": nodes[i]} for i in range(n_nodes)],
     truncate_label=-1,
 )
 
 # Generate arc points for each edge
-# Each arc is drawn as a series of points forming a semi-circle
-arc_resolution = 30  # Number of points per arc
+arc_resolution = 40
 
 for start_idx, end_idx, weight in edges:
     x_start = x_positions[start_idx]
@@ -98,19 +99,18 @@ for start_idx, end_idx, weight in edges:
     x_center = (x_start + x_end) / 2
     arc_radius = abs(x_end - x_start) / 2
 
-    # Arc height proportional to the distance between nodes
+    # Arc height proportional to node distance
     distance = abs(end_idx - start_idx)
     height_scale = 0.4 * distance
 
     # Generate arc points (semi-circle above baseline)
     arc_points = []
     for i in range(arc_resolution + 1):
-        theta = math.pi * i / arc_resolution  # 0 to pi
+        theta = math.pi * i / arc_resolution
         x = x_center - arc_radius * math.cos(theta)
         y = y_baseline + height_scale * math.sin(theta)
         arc_points.append((x, y))
 
-    # Line thickness based on weight
     chart.add(
         f"Arc {start_idx}-{end_idx}",
         arc_points,
@@ -120,19 +120,15 @@ for start_idx, end_idx, weight in edges:
         stroke_style={"width": 2 + weight * 2, "linecap": "round"},
     )
 
-# Add nodes as a separate series (last, so uses Python Yellow)
-node_points = []
-for i, name in enumerate(nodes):
-    x = x_positions[i]
-    node_points.append({"value": (x, y_baseline), "label": name})
-
+# Add nodes as a separate series (last, uses Python Yellow)
+node_points = [{"value": (float(x_positions[i]), y_baseline), "label": nodes[i]} for i in range(n_nodes)]
 chart.add("Characters", node_points, stroke=False, dots_size=35)
 
 # Save outputs
 chart.render_to_file("plot.svg")
 chart.render_to_png("plot.png")
 
-# Also save HTML for interactive version
+# Save HTML for interactive version
 with open("plot.html", "w") as f:
     f.write(
         """<!DOCTYPE html>

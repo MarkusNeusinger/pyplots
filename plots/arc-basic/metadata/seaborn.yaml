@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: arc-basic
 created: '2025-12-23T08:49:25Z'
-updated: '2026-02-23T21:34:20Z'
+updated: '2026-02-23T21:52:19Z'
 generated_by: claude-opus-4-6
 workflow_run: 20455960864
 issue: 0
@@ -10,56 +10,52 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/arc-basic/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/arc-basic/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 83
+quality_score: 91
 impl_tags:
   dependencies: []
   techniques:
-  - patches
-  - colorbar
   - annotations
+  - custom-legend
   patterns:
   - data-generation
   - iteration-over-groups
-  - explicit-figure
   dataprep: []
   styling:
-  - custom-colormap
   - alpha-blending
-  - minimal-chrome
+  - edge-highlighting
 review:
   strengths:
-  - 'Perfect spec compliance: all arc diagram features implemented correctly with
-    proper height-distance proportionality'
-  - Clean polished design with thoughtful color choices (flare palette, consistent
-    Python Blue)
-  - 'Excellent visual refinement: all spines removed, subtle baseline, clean colorbar
-    placement'
-  - Well-chosen example data with meaningful character interaction context
-  - Clean deterministic well-structured code
+  - Excellent data storytelling with two annotations creating a compelling narrative
+    contrast between long-range weak and short-range strong connections
+  - 'Cohesive color scheme: reversed viridis for semantic encoding (darker = stronger)
+    plus Python Blue nodes'
+  - All spines/ticks removed with subtle baseline creates a clean, modern look
+  - Full spec compliance with all required features (proportional height, semi-transparency,
+    color coding, thickness)
+  - Well-crafted legend with styled frame, appropriate title, and descriptive category
+    labels
   weaknesses:
-  - Library mastery limited by seaborn lack of native arc diagram support — most work
-    is matplotlib
-  - Low-weight arcs (weight=1) are somewhat faint and could benefit from higher minimum
-    linewidth or opacity
-  - Colorbar label and node labels could use larger font sizes (20pt for labels)
-  - No visual storytelling emphasis — plot displays connections but does not highlight
-    a narrative insight
-  - Canvas has some wasted whitespace below the baseline
-  image_description: The plot displays a basic arc diagram with 12 character nodes
-    (Alice, Bob, Carol, Dave, Eve, Frank, Grace, Henry, Ivy, Jack, Kate, Leo) arranged
-    along a horizontal baseline as dark blue (#306998) circles. Connections between
-    characters are drawn as curved arcs above the baseline using the "flare" colormap
-    — arcs range from light salmon/orange (weight 1) to deep purple (weight 5). Arc
-    thickness also scales with weight. Arc height is proportional to the distance
-    between connected nodes, making the Alice–Leo long-range arc the tallest and most
-    prominent. A colorbar on the right edge displays "Interaction Strength" from 1
-    to 5. The title "arc-basic · seaborn · pyplots.ai" appears at the top. All spines
-    are removed, axes are hidden, and a subtle semi-transparent horizontal baseline
-    anchors the nodes. Node labels appear below the baseline in Python Blue with medium
-    font weight.
+  - Annotation text at fontsize=13 is noticeably smaller than other text elements
+    (16-24pt)
+  - Some arc crowding in the Dave-Eve-Frank cluster makes individual arcs harder to
+    trace
+  image_description: 'The plot displays a basic arc diagram with 12 character nodes
+    (Alice through Leo) arranged along a horizontal baseline. Curved arcs above the
+    baseline connect pairs of characters, with arc height proportional to the distance
+    between connected nodes. Arcs are color-coded using a reversed viridis palette
+    across 5 interaction strength levels: Weak (yellow-green), Light (green), Moderate
+    (teal), Strong (blue), and Intense (dark purple). Arc thickness also varies with
+    weight — thicker arcs indicate stronger connections. Two italic annotations with
+    arrows provide narrative context: "Weakest link, longest reach" points to the
+    tall Alice–Leo arc spanning the full diagram, while "Strongest local bonds" points
+    to the cluster of short, thick arcs near Dave–Eve. Nodes are rendered as dark
+    blue (#306998) dots with white edges. The title "arc-basic · seaborn · pyplots.ai"
+    appears at the top. A legend in the upper right shows all 5 strength categories.
+    All spines and ticks are removed, and a subtle light-blue horizontal baseline
+    anchors the nodes.'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -67,69 +63,65 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Title at 24pt, node labels at 16pt with medium weight, colorbar label
-          at 16pt, colorbar ticks at 14pt. All readable but colorbar label slightly
-          below recommended 20pt for labels.
+        comment: All font sizes explicitly set (title 24pt, legend 16/20pt, node labels
+          16pt). Annotation text at 13pt slightly small.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No text overlaps. Arcs overlap naturally but semi-transparency handles
-          this well.
+        comment: No text overlap. Node labels well-spaced, annotations clear, legend
+          positioned well.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Nodes at s=600 clearly visible. Low-weight arcs (weight=1) somewhat
-          subtle against white background.
+        comment: Arcs visible with sizes 2.0-6.0 and alpha=0.7. Some crowding in Dave-Eve-Frank
+          cluster.
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Flare palette is perceptually uniform and mostly colorblind-safe,
-          but not among the recommended optimal palettes (viridis, cividis).
+        comment: Viridis palette is perceptually uniform and colorblind-safe.
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Good canvas utilization. Arcs fill vertical space well. Some wasted
-          whitespace below the baseline.
+        comment: 16:9 canvas well-utilized, balanced margins, nothing cut off.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Title format correct. Colorbar labeled Interaction Strength. Node
-          labels serve as categorical axis.
+        comment: Axes appropriately hidden for arc diagram. Nodes labeled directly.
     design_excellence:
-      score: 13
+      score: 16
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Thoughtful flare colormap, consistent Python Blue, clean composition.
-          Clearly above defaults but not publication-exceptional.
+        comment: 'Strong design: reversed viridis palette, Python Blue nodes, styled
+          legend, cohesive color scheme.'
       - id: DE-02
         name: Visual Refinement
         score: 5
         max: 6
         passed: true
-        comment: All spines removed, grid disabled, ticks hidden, subtle baseline
-          at alpha=0.3, well-proportioned colorbar. Minor whitespace below baseline.
+        comment: All spines removed, no ticks, subtle baseline at alpha=0.3, clean
+          white theme, styled legend.
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 5
         max: 6
-        passed: false
-        comment: Weight-based color and thickness create some hierarchy but no explicit
-          focal point or narrative emphasis.
+        passed: true
+        comment: Two annotations create narrative contrast between long-range weak
+          and short-range strong connections.
     spec_compliance:
       score: 15
       max: 15
@@ -139,54 +131,52 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct arc diagram with nodes along horizontal line and curved arcs
-          above.
+        comment: 'Correct arc diagram: nodes on horizontal line, curved arcs above.'
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: weighted arcs, height proportional to
-          distance, semi-transparency, color coding, readable labels.'
+        comment: 'All features: proportional height, semi-transparency, color coding,
+          thickness by weight.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X positions correctly assigned, arcs correctly connect paired nodes,
-          height proportional to distance.
+        comment: Nodes correctly positioned, arcs connect correct pairs, height/color/thickness
+          mapped correctly.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title in correct format. Colorbar provides weight legend with descriptive
-          label.
+        comment: Title in correct format, legend with descriptive category labels.
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Shows short-range and long-range connections, weight variety 1-5,
-          dense and sparse areas. Could show more extreme patterns.
+        comment: 12 nodes, 18 edges, varied weights, short and long range connections,
+          dense and sparse regions.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Character interactions in a story is a real, comprehensible, neutral
+        comment: Character interactions in a story - real, comprehensible, neutral
           scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 12 nodes in recommended 10-50 range, 18 edges with good connectivity,
-          weights 1-5 on sensible scale.
+        comment: 12 nodes within recommended range, 18 edges good density, weights
+          1-5 sensible scale.
     code_quality:
       score: 10
       max: 10
@@ -196,51 +186,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports, data, plot setup, draw arcs, labels,
-          styling, save.'
+        comment: Clean linear flow, no functions or classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic with hardcoded nodes, edges, and weights.
+        comment: All data hardcoded and deterministic.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: patches, plt, numpy, pandas, seaborn.'
+        comment: All four imports used, no unused imports.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean arc drawing loop, good normalization for colors, appropriate
-          complexity.
+        comment: Clean arc generation, good pd.Categorical usage, appropriate complexity.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png at dpi=300 with bbox_inches=tight. No deprecated
-          API.
+        comment: Saves as plot.png at dpi=300 with bbox_inches tight.
     library_mastery:
-      score: 5
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Uses sns.set_theme, sns.scatterplot, sns.color_palette idiomatically.
-          Core arc drawing relies on matplotlib patches — expected since seaborn lacks
-          native arc support.
+        passed: true
+        comment: Good use of sns.lineplot with units/hue/size, sns.scatterplot, set_theme,
+          despine. Falls back to matplotlib for arc geometry.
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Uses seaborn-specific flare palette and theming. These add value
-          but are primarily cosmetic — core visualization is matplotlib.
-  verdict: REJECTED
+        passed: true
+        comment: units+estimator=None is distinctively seaborn, hue+size simultaneous
+          encoding, long-form data paradigm.
+  verdict: APPROVED

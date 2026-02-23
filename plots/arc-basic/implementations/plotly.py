@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 arc-basic: Basic Arc Diagram
 Library: plotly 6.5.2 | Python 3.14.3
-Quality: 87/100 | Updated: 2026-02-23
 """
 
 import numpy as np
@@ -33,13 +32,16 @@ x_positions = np.linspace(0, 10, n_nodes)
 
 # Weight-based styling: color intensity, opacity, and width encode connection strength
 arc_styles = {
-    1: {"color": "rgba(100, 149, 194, 0.40)", "width": 2.5, "label": "Weak (1)"},
-    2: {"color": "rgba(48, 105, 152, 0.60)", "width": 3.5, "label": "Medium (2)"},
+    1: {"color": "rgba(100, 149, 194, 0.50)", "width": 3.0, "label": "Weak (1)"},
+    2: {"color": "rgba(48, 105, 152, 0.65)", "width": 3.5, "label": "Medium (2)"},
     3: {"color": "rgba(20, 66, 110, 0.90)", "width": 5.0, "label": "Strong (3)"},
 }
 
 # Create figure
 fig = go.Figure()
+
+# Track weight per trace for interactive filtering
+trace_weights = []
 
 # Draw arcs as smooth parabolic curves
 for src, tgt, weight in edges:
@@ -66,6 +68,7 @@ for src, tgt, weight in edges:
             showlegend=False,
         )
     )
+    trace_weights.append(weight)
 
 # Weight legend using dummy traces
 for w in [3, 2, 1]:
@@ -80,6 +83,13 @@ for w in [3, 2, 1]:
             showlegend=True,
         )
     )
+    trace_weights.append(w)
+
+# Compute per-node connection counts for rich hover
+conn_count = [0] * n_nodes
+for src, tgt, _ in edges:
+    conn_count[src] += 1
+    conn_count[tgt] += 1
 
 # Draw nodes on horizontal axis
 fig.add_trace(
@@ -91,10 +101,12 @@ fig.add_trace(
         text=nodes,
         textposition="bottom center",
         textfont={"size": 22, "color": "#2a2a2a"},
-        hovertemplate="<b>%{text}</b><extra></extra>",
+        customdata=np.array(conn_count),
+        hovertemplate="<b>%{text}</b><br>Connections: %{customdata}<extra></extra>",
         showlegend=False,
     )
 )
+trace_weights.append(0)  # 0 = always visible
 
 # Subtle horizontal baseline
 fig.add_shape(
@@ -109,34 +121,47 @@ fig.add_annotation(
     y=peak_y,
     text="longest range",
     showarrow=True,
-    arrowhead=0,
-    arrowwidth=1.2,
-    arrowcolor="#888888",
-    ax=50,
-    ay=-20,
-    font={"size": 14, "color": "#666666", "family": "Arial"},
+    arrowhead=2,
+    arrowwidth=1.5,
+    arrowcolor="#666666",
+    ax=55,
+    ay=-25,
+    font={"size": 20, "color": "#555555", "family": "Arial"},
+    bgcolor="rgba(255, 255, 255, 0.7)",
+    borderpad=4,
 )
+
+# Build interactive filter buttons (Plotly-distinctive updatemenus)
+filter_options = [("All", {1, 2, 3}), ("Strong", {3}), ("Medium", {2}), ("Weak", {1})]
+buttons = []
+for label, keep in filter_options:
+    visible = [True if tw == 0 else (tw in keep) for tw in trace_weights]
+    buttons.append({"label": label, "method": "update", "args": [{"visible": visible}]})
 
 # Layout
 fig.update_layout(
     title={
-        "text": "arc-basic \u00b7 plotly \u00b7 pyplots.ai",
+        "text": (
+            "arc-basic \u00b7 plotly \u00b7 pyplots.ai"
+            "<br><span style='font-size:18px;color:#777777;font-weight:normal'>"
+            "Character interactions in a story narrative</span>"
+        ),
         "font": {"size": 30, "color": "#2a2a2a"},
         "x": 0.5,
         "xanchor": "center",
-        "y": 0.96,
+        "y": 0.97,
     },
     xaxis={"showgrid": False, "zeroline": False, "showticklabels": False, "showline": False, "range": [-0.5, 10.5]},
-    yaxis={"showgrid": False, "zeroline": False, "showticklabels": False, "showline": False, "range": [-0.35, 4.5]},
+    yaxis={"showgrid": False, "zeroline": False, "showticklabels": False, "showline": False, "range": [-0.7, 4.1]},
     hovermode="closest",
     hoverlabel={"bgcolor": "white", "font_size": 16, "font_color": "#306998", "bordercolor": "#306998"},
     template="plotly_white",
     plot_bgcolor="white",
     paper_bgcolor="white",
-    margin={"l": 30, "r": 30, "t": 70, "b": 30},
+    margin={"l": 30, "r": 30, "t": 90, "b": 30},
     legend={
-        "title": {"text": "Connection Strength", "font": {"size": 16, "color": "#2a2a2a"}},
-        "font": {"size": 14},
+        "title": {"text": "Connection Strength", "font": {"size": 18, "color": "#2a2a2a"}},
+        "font": {"size": 16},
         "x": 0.98,
         "y": 0.98,
         "xanchor": "right",
@@ -145,8 +170,32 @@ fig.update_layout(
         "bordercolor": "#CCCCCC",
         "borderwidth": 1,
     },
+    updatemenus=[
+        {
+            "type": "buttons",
+            "direction": "right",
+            "x": 0.02,
+            "y": 0.98,
+            "xanchor": "left",
+            "yanchor": "top",
+            "buttons": buttons,
+            "showactive": True,
+            "bgcolor": "rgba(255, 255, 255, 0.85)",
+            "bordercolor": "#CCCCCC",
+            "font": {"size": 14, "color": "#306998"},
+            "pad": {"r": 8, "t": 8},
+        }
+    ],
 )
 
 # Save outputs
 fig.write_image("plot.png", width=1600, height=900, scale=3)
-fig.write_html("plot.html", include_plotlyjs="cdn")
+fig.write_html(
+    "plot.html",
+    include_plotlyjs="cdn",
+    config={
+        "displaylogo": False,
+        "modeBarButtonsToRemove": ["lasso2d", "select2d"],
+        "toImageButtonOptions": {"width": 4800, "height": 2700, "scale": 1},
+    },
+)

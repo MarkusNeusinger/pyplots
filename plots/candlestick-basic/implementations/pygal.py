@@ -1,7 +1,7 @@
 """ pyplots.ai
 candlestick-basic: Basic Candlestick Chart
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: /100 | Updated: 2026-02-24
+Quality: 81/100 | Updated: 2026-02-24
 """
 
 import re

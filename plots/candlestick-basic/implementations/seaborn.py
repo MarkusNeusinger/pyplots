@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 candlestick-basic: Basic Candlestick Chart
 Library: seaborn 0.13.2 | Python 3.14.3
+Quality: 92/100 | Updated: 2026-02-24
 """
 
 import matplotlib.pyplot as plt

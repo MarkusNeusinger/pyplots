@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 candlestick-basic: Basic Candlestick Chart
 Library: highcharts 1.10.3 | Python 3.14.3
 Quality: 86/100 | Updated: 2026-02-24
@@ -56,9 +56,24 @@ while len(dates) < n_days:
 
 # Format data for Highcharts: [timestamp, open, high, low, close]
 ohlc_data = []
+timestamps = []
 for i in range(n_days):
     timestamp = int(dates[i].timestamp() * 1000)
+    timestamps.append(timestamp)
     ohlc_data.append([timestamp, opens[i], highs[i], lows[i], closes[i]])
+
+# Compute 5-day simple moving average for storytelling overlay
+sma_period = 5
+sma_data = []
+for i in range(n_days):
+    if i >= sma_period - 1:
+        avg = np.mean(closes[i - sma_period + 1 : i + 1])
+        sma_data.append([timestamps[i], round(float(avg), 2)])
+
+# Find the trough point (lowest close) for visual emphasis
+min_close_idx = int(np.argmin(closes))
+trough_timestamp = timestamps[min_close_idx]
+trough_price = closes[min_close_idx]
 
 # Chart options
 chart_options = {
@@ -66,63 +81,117 @@ chart_options = {
         "type": "candlestick",
         "width": 4800,
         "height": 2700,
-        "backgroundColor": "#ffffff",
+        "backgroundColor": "#FAFBFC",
         "marginBottom": 200,
         "marginLeft": 240,
         "marginRight": 100,
-        "marginTop": 140,
-        "style": {"fontFamily": "Arial, sans-serif"},
+        "marginTop": 160,
+        "style": {"fontFamily": "'Segoe UI', Arial, sans-serif"},
     },
     "title": {
         "text": "Stock Price Movement \u00b7 candlestick-basic \u00b7 highcharts \u00b7 pyplots.ai",
-        "style": {"fontSize": "68px", "fontWeight": "bold", "color": "#2c2c2c"},
-        "y": 55,
+        "style": {"fontSize": "64px", "fontWeight": "600", "color": "#1a1a2e", "letterSpacing": "0.5px"},
+        "y": 65,
+    },
+    "subtitle": {
+        "text": "30 trading days with 5-day moving average \u2014 Oct\u2013Nov 2024",
+        "style": {"fontSize": "38px", "color": "#666680", "fontWeight": "300"},
+        "y": 115,
     },
     "xAxis": {
         "type": "datetime",
-        "title": {"text": "Date", "style": {"fontSize": "48px", "color": "#333333"}, "margin": 25},
-        "labels": {"style": {"fontSize": "36px", "color": "#555555"}, "format": "{value:%b %d}", "y": 40, "step": 2},
+        "title": {"text": "Date", "style": {"fontSize": "44px", "color": "#444460", "fontWeight": "500"}, "margin": 25},
+        "labels": {"style": {"fontSize": "34px", "color": "#666680"}, "format": "{value:%b %d}", "y": 40, "step": 2},
         "gridLineWidth": 0,
-        "lineWidth": 2,
-        "lineColor": "#333333",
+        "lineWidth": 0,
         "tickWidth": 0,
+        "crosshair": {"width": 2, "color": "rgba(100, 100, 120, 0.3)", "dashStyle": "Dash"},
     },
     "yAxis": {
-        "title": {"text": "Price (USD)", "style": {"fontSize": "48px", "color": "#333333"}, "margin": 25},
-        "labels": {"style": {"fontSize": "36px", "color": "#555555"}, "format": "${value:.0f}", "x": -15},
+        "title": {
+            "text": "Price (USD)",
+            "style": {"fontSize": "44px", "color": "#444460", "fontWeight": "500"},
+            "margin": 25,
+        },
+        "labels": {"style": {"fontSize": "34px", "color": "#666680"}, "format": "${value:.0f}", "x": -15},
         "gridLineWidth": 1,
-        "gridLineColor": "rgba(0, 0, 0, 0.20)",
-        "lineWidth": 2,
-        "lineColor": "#333333",
+        "gridLineColor": "rgba(100, 100, 120, 0.12)",
+        "gridLineDashStyle": "Dot",
+        "lineWidth": 0,
         "opposite": False,
         "tickWidth": 0,
         "tickInterval": 2,
+        "plotBands": [
+            {
+                "from": trough_price - 0.5,
+                "to": trough_price + 0.5,
+                "color": "rgba(230, 126, 34, 0.08)",
+                "label": {
+                    "text": f"Trough: ${trough_price:.2f}",
+                    "align": "right",
+                    "x": -20,
+                    "style": {"fontSize": "28px", "color": "#D35400", "fontStyle": "italic", "fontWeight": "500"},
+                },
+            }
+        ],
     },
-    "legend": {"enabled": False},
+    "legend": {
+        "enabled": True,
+        "align": "right",
+        "verticalAlign": "top",
+        "layout": "horizontal",
+        "x": -60,
+        "y": 60,
+        "floating": True,
+        "itemStyle": {"fontSize": "30px", "fontWeight": "400", "color": "#444460"},
+        "symbolWidth": 40,
+        "symbolRadius": 0,
+    },
     "tooltip": {
         "split": False,
         "style": {"fontSize": "28px"},
         "headerFormat": "<b>{point.x:%b %d, %Y}</b><br/>",
-        "pointFormat": "Open: ${point.open:.2f}<br/>"
-        + "High: ${point.high:.2f}<br/>"
-        + "Low: ${point.low:.2f}<br/>"
-        + "Close: ${point.close:.2f}",
+        "shared": True,
+        "backgroundColor": "rgba(255, 255, 255, 0.96)",
+        "borderColor": "#ccc",
+        "borderRadius": 8,
+        "shadow": True,
     },
     "plotOptions": {
         "candlestick": {
             "color": "#E67E22",
             "upColor": "#306998",
-            "lineColor": "#C0392B",
+            "lineColor": "#D35400",
             "upLineColor": "#1A3A5C",
             "lineWidth": 4,
             "pointWidth": 70,
-        }
+            "tooltip": {
+                "pointFormat": "Open: ${point.open:.2f}<br/>"
+                + "High: ${point.high:.2f}<br/>"
+                + "Low: ${point.low:.2f}<br/>"
+                + "Close: ${point.close:.2f}"
+            },
+        },
+        "line": {"tooltip": {"pointFormat": "SMA(5): <b>${point.y:.2f}</b>"}},
     },
     "rangeSelector": {"enabled": False},
     "navigator": {"enabled": False},
     "scrollbar": {"enabled": False},
     "credits": {"enabled": False},
-    "series": [{"type": "candlestick", "name": "Stock Price", "data": ohlc_data}],
+    "series": [
+        {"type": "candlestick", "name": "OHLC", "data": ohlc_data, "zIndex": 1},
+        {
+            "type": "line",
+            "name": "5-day SMA",
+            "data": sma_data,
+            "color": "#8E44AD",
+            "lineWidth": 5,
+            "marker": {"enabled": False},
+            "dashStyle": "ShortDash",
+            "zIndex": 2,
+            "enableMouseTracking": True,
+        },
+    ],
 }
 
 # Download Highstock JS (includes candlestick support)
@@ -139,7 +208,7 @@ html_content = f"""<!DOCTYPE html>
     <meta charset="utf-8">
     <script>{highstock_js}</script>
 </head>
-<body style="margin:0; background-color: #ffffff;">
+<body style="margin:0; background-color: #FAFBFC;">
     <div id="container" style="width: 4800px; height: 2700px;"></div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {{

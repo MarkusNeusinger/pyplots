@@ -1,36 +1,21 @@
 """ pyplots.ai
 candlestick-basic: Basic Candlestick Chart
-Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Library: letsplot 4.8.2 | Python 3.14.3
+Quality: /100 | Updated: 2026-02-24
 """
 
-import cairosvg
 import numpy as np
 import pandas as pd
-from lets_plot import (
-    LetsPlot,
-    aes,
-    element_blank,
-    element_text,
-    geom_rect,
-    geom_segment,
-    ggplot,
-    ggsize,
-    labs,
-    scale_x_continuous,
-    theme,
-    theme_minimal,
-)
-from lets_plot.export import ggsave
+from lets_plot import *  # noqa: F403
 
 
-LetsPlot.setup_html()
+LetsPlot.setup_html()  # noqa: F405
 
 # Data - simulated 30 trading days of stock OHLC data
 np.random.seed(42)
 n_days = 30
 
-dates = pd.date_range(start="2024-01-02", periods=n_days, freq="B")  # Business days
+dates = pd.date_range(start="2024-01-02", periods=n_days, freq="B")
 
 # Generate realistic OHLC data with random walk
 price = 100.0
@@ -52,60 +37,89 @@ for _ in range(n_days):
 
 df = pd.DataFrame({"date": dates, "open": opens, "high": highs, "low": lows, "close": closes})
 
-# Calculate candlestick properties
+# Candlestick properties
 df["bullish"] = df["close"] >= df["open"]
-df["color"] = df["bullish"].map({True: "#22C55E", False: "#EF4444"})  # Green/Red
 df["body_low"] = df[["open", "close"]].min(axis=1)
 df["body_high"] = df[["open", "close"]].max(axis=1)
-df["x"] = range(len(df))  # Numeric x for positioning
+df["x"] = range(len(df))
 df["xmin"] = df["x"] - 0.35
 df["xmax"] = df["x"] + 0.35
+df["date_str"] = df["date"].dt.strftime("%b %d")
+
+bull_color = "#2271B5"  # Blue for bullish (up)
+bear_color = "#D55E00"  # Orange for bearish (down) — colorblind-safe
+
+bull_df = df[df["bullish"]].copy()
+bear_df = df[~df["bullish"]].copy()
+
+# Tick label positions: every 5th trading day
+tick_pos = list(range(0, n_days, 5))
+tick_labels = [dates[i].strftime("%b %d") for i in tick_pos]
+
+# Tooltip template for interactive HTML export
+tip_fmt = (
+    layer_tooltips()  # noqa: F405
+    .line("@date_str")
+    .line("Open|$@open")
+    .line("High|$@high")
+    .line("Low|$@low")
+    .line("Close|$@close")
+)
 
 # Plot
 plot = (
-    ggplot()
-    # Wicks (high-low lines)
-    + geom_segment(aes(x="x", xend="x", y="low", yend="high"), data=df, color="#666666", size=1)
-    # Bullish candle bodies (green)
-    + geom_rect(
-        aes(xmin="xmin", xmax="xmax", ymin="body_low", ymax="body_high"),
-        data=df[df["bullish"]],
-        fill="#22C55E",
-        color="#22C55E",
+    ggplot()  # noqa: F405
+    # Wicks (high-low lines) colored per direction
+    + geom_segment(  # noqa: F405
+        aes(x="x", xend="x", y="low", yend="high"),  # noqa: F405
+        data=bull_df,
+        color=bull_color,
+        size=0.9,
+        tooltips=tip_fmt,
+    )
+    + geom_segment(  # noqa: F405
+        aes(x="x", xend="x", y="low", yend="high"),  # noqa: F405
+        data=bear_df,
+        color=bear_color,
+        size=0.9,
+        tooltips=tip_fmt,
+    )
+    # Bullish candle bodies (blue)
+    + geom_rect(  # noqa: F405
+        aes(xmin="xmin", xmax="xmax", ymin="body_low", ymax="body_high"),  # noqa: F405
+        data=bull_df,
+        fill=bull_color,
+        color=bull_color,
         size=0.5,
+        tooltips=tip_fmt,
     )
-    # Bearish candle bodies (red)
-    + geom_rect(
-        aes(xmin="xmin", xmax="xmax", ymin="body_low", ymax="body_high"),
-        data=df[~df["bullish"]],
-        fill="#EF4444",
-        color="#EF4444",
+    # Bearish candle bodies (orange)
+    + geom_rect(  # noqa: F405
+        aes(xmin="xmin", xmax="xmax", ymin="body_low", ymax="body_high"),  # noqa: F405
+        data=bear_df,
+        fill=bear_color,
+        color=bear_color,
         size=0.5,
+        tooltips=tip_fmt,
     )
-    # Labels and theme
-    + scale_x_continuous(
-        breaks=list(range(0, n_days, 5)), labels=[df["date"].iloc[i].strftime("%b %d") for i in range(0, n_days, 5)]
+    + scale_x_continuous(breaks=tick_pos, labels=tick_labels, expand=[0.02, 0])  # noqa: F405
+    + labs(  # noqa: F405
+        x="Trading Day (Jan\u2013Feb 2024)", y="Price ($)", title="candlestick-basic \u00b7 letsplot \u00b7 pyplots.ai"
     )
-    + labs(x="Date", y="Price ($)", title="candlestick-basic · letsplot · pyplots.ai")
-    + theme_minimal()
-    + theme(
-        axis_title=element_text(size=20),
-        axis_text=element_text(size=16),
-        plot_title=element_text(size=24),
-        panel_grid_major_x=element_blank(),
-        panel_grid_minor=element_blank(),
+    + theme_minimal()  # noqa: F405
+    + theme(  # noqa: F405
+        axis_title=element_text(size=20, color="#333333"),  # noqa: F405
+        axis_text=element_text(size=16, color="#555555"),  # noqa: F405
+        plot_title=element_text(size=24, color="#222222"),  # noqa: F405
+        panel_grid_major_x=element_line(color="#ececec", size=0.3),  # noqa: F405
+        panel_grid_major_y=element_line(color="#e0e0e0", size=0.4),  # noqa: F405
+        panel_grid_minor=element_blank(),  # noqa: F405
+        axis_ticks=element_blank(),  # noqa: F405
+        plot_background=element_rect(fill="white", color="white"),  # noqa: F405
     )
-    + ggsize(1600, 900)
+    + ggsize(1600, 900)  # noqa: F405
 )
 
-# Save HTML for interactive version
-ggsave(plot, "plot.html", path=".")
-
-# Save SVG first, then convert to PNG
-ggsave(plot, "plot.svg", path=".", w=1600, h=900, unit="px")
-
-# Convert SVG to PNG using cairosvg
-with open("plot.svg", "r") as f:
-    svg_content = f.read()
-
-cairosvg.svg2png(bytestring=svg_content.encode("utf-8"), write_to="plot.png", output_width=4800, output_height=2700)
+# Save
+ggsave(plot, "plot.png", path=".", scale=3)  # noqa: F405
+ggsave(plot, "plot.html", path=".")  # noqa: F405

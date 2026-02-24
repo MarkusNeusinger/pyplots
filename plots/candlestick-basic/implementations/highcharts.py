@@ -1,7 +1,7 @@
 """ pyplots.ai
 candlestick-basic: Basic Candlestick Chart
-Library: highcharts unknown | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Library: highcharts 1.10.3 | Python 3.14.3
+Quality: /100 | Updated: 2026-02-24
 """
 
 import json
@@ -19,11 +19,9 @@ from selenium.webdriver.chrome.options import Options
 # Data - 30 trading days of simulated stock prices
 np.random.seed(42)
 
-# Start price and generate OHLC data
 start_price = 150.0
 n_days = 30
 
-# Generate realistic stock movements
 opens = [start_price]
 highs = []
 lows = []
@@ -34,9 +32,8 @@ for i in range(n_days):
     if i > 0:
         opens.append(open_price)
 
-    # Daily volatility
     daily_range = abs(np.random.randn() * 2) + 1
-    direction = np.random.choice([-1, 1], p=[0.45, 0.55])  # Slight bullish bias
+    direction = np.random.choice([-1, 1], p=[0.45, 0.55])
 
     close_price = open_price + direction * np.random.rand() * daily_range
     high_price = max(open_price, close_price) + abs(np.random.randn() * 0.5)
@@ -53,63 +50,53 @@ start_date = datetime(2024, 10, 1)
 dates = []
 current_date = start_date
 while len(dates) < n_days:
-    if current_date.weekday() < 5:  # Monday to Friday
+    if current_date.weekday() < 5:
         dates.append(current_date)
     current_date += timedelta(days=1)
 
 # Format data for Highcharts: [timestamp, open, high, low, close]
 ohlc_data = []
 for i in range(n_days):
-    timestamp = int(dates[i].timestamp() * 1000)  # JavaScript timestamp in ms
+    timestamp = int(dates[i].timestamp() * 1000)
     ohlc_data.append([timestamp, opens[i], highs[i], lows[i], closes[i]])
 
-# Chart options for Highcharts Stock candlestick
-# Using colorblind-safe palette: Python Blue for bullish, warm amber for bearish
+# Chart options
 chart_options = {
     "chart": {
         "type": "candlestick",
         "width": 4800,
         "height": 2700,
         "backgroundColor": "#ffffff",
-        "marginBottom": 220,
-        "marginLeft": 250,
-        "marginRight": 80,
-        "marginTop": 150,
+        "marginBottom": 200,
+        "marginLeft": 240,
+        "marginRight": 100,
+        "marginTop": 140,
         "style": {"fontFamily": "Arial, sans-serif"},
     },
     "title": {
-        "text": "Stock Price Movement · candlestick-basic · highcharts · pyplots.ai",
-        "style": {"fontSize": "72px", "fontWeight": "bold", "color": "#333333"},
-        "y": 60,
+        "text": "Stock Price Movement \u00b7 candlestick-basic \u00b7 highcharts \u00b7 pyplots.ai",
+        "style": {"fontSize": "68px", "fontWeight": "bold", "color": "#2c2c2c"},
+        "y": 55,
     },
     "xAxis": {
         "type": "datetime",
-        "title": {"text": "Date", "style": {"fontSize": "52px", "color": "#333333"}, "margin": 30},
-        "labels": {
-            "style": {"fontSize": "36px", "color": "#333333"},
-            "format": "{value:%b %d}",
-            "y": 45,
-            "step": 2,  # Show every 2nd label to prevent overlap
-        },
-        "gridLineWidth": 1,
-        "gridLineColor": "rgba(0, 0, 0, 0.15)",
-        "gridLineDashStyle": "Dash",
-        "lineWidth": 3,
+        "title": {"text": "Date", "style": {"fontSize": "48px", "color": "#333333"}, "margin": 25},
+        "labels": {"style": {"fontSize": "36px", "color": "#555555"}, "format": "{value:%b %d}", "y": 40, "step": 2},
+        "gridLineWidth": 0,
+        "lineWidth": 2,
         "lineColor": "#333333",
-        "tickWidth": 3,
-        "tickColor": "#333333",
-        "tickLength": 15,
+        "tickWidth": 0,
     },
     "yAxis": {
-        "title": {"text": "Price (USD)", "style": {"fontSize": "52px", "color": "#333333"}, "margin": 30},
-        "labels": {"style": {"fontSize": "36px", "color": "#333333"}, "format": "${value:.0f}", "x": -15},
+        "title": {"text": "Price (USD)", "style": {"fontSize": "48px", "color": "#333333"}, "margin": 25},
+        "labels": {"style": {"fontSize": "36px", "color": "#555555"}, "format": "${value:.0f}", "x": -15},
         "gridLineWidth": 1,
-        "gridLineColor": "rgba(0, 0, 0, 0.15)",
-        "gridLineDashStyle": "Dash",
-        "lineWidth": 3,
+        "gridLineColor": "rgba(0, 0, 0, 0.20)",
+        "lineWidth": 2,
         "lineColor": "#333333",
-        "opposite": False,  # Keep Y-axis on left side only
-        "tickInterval": 1,  # Show labels at $1 intervals
+        "opposite": False,
+        "tickWidth": 0,
+        "tickInterval": 2,
     },
     "legend": {"enabled": False},
     "tooltip": {
@@ -123,13 +110,12 @@ chart_options = {
     },
     "plotOptions": {
         "candlestick": {
-            # Colorblind-safe: Python Blue for bullish, warm amber for bearish
-            "color": "#E67E22",  # Warm amber for bearish (close < open)
-            "upColor": "#306998",  # Python Blue for bullish (close > open)
-            "lineColor": "#C0392B",  # Darker line for bearish wicks
-            "upLineColor": "#1A3A5C",  # Darker blue for bullish wicks
-            "lineWidth": 4,  # Wick line width - visible at large size
-            "pointWidth": 70,  # Candle body width
+            "color": "#E67E22",
+            "upColor": "#306998",
+            "lineColor": "#C0392B",
+            "upLineColor": "#1A3A5C",
+            "lineWidth": 4,
+            "pointWidth": 70,
         }
     },
     "rangeSelector": {"enabled": False},
@@ -144,10 +130,9 @@ highstock_url = "https://code.highcharts.com/stock/highstock.js"
 with urllib.request.urlopen(highstock_url, timeout=30) as response:
     highstock_js = response.read().decode("utf-8")
 
-# Generate chart options JSON
 chart_options_json = json.dumps(chart_options)
 
-# Generate HTML with inline scripts
+# Render
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -164,16 +149,14 @@ html_content = f"""<!DOCTYPE html>
 </body>
 </html>"""
 
-# Write temp HTML file
 with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encoding="utf-8") as f:
     f.write(html_content)
     temp_path = f.name
 
-# Also save the HTML for interactive viewing
 with open("plot.html", "w", encoding="utf-8") as f:
     f.write(html_content)
 
-# Take screenshot with headless Chrome
+# Screenshot
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
@@ -187,5 +170,4 @@ time.sleep(5)
 driver.save_screenshot("plot.png")
 driver.quit()
 
-# Clean up temp file
 Path(temp_path).unlink()

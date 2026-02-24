@@ -1,160 +1,180 @@
 library: plotly
 specification_id: candlestick-basic
 created: '2025-12-23T10:01:32Z'
-updated: '2026-02-24T20:50:21+00:00'
+updated: '2026-02-24T20:57:45Z'
 generated_by: claude-opus-4-6
 workflow_run: 20457529753
 issue: 0
-python_version: "3.14.3"
-library_version: "6.5.2"
+python_version: 3.14.3
+library_version: 6.5.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/candlestick-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/candlestick-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/candlestick-basic/plotly/plot.html
-quality_score: null
+quality_score: 85
 impl_tags:
   dependencies: []
   techniques:
+  - hover-tooltips
   - html-export
   patterns:
   - data-generation
-  dataprep: []
-  styling: []
+  dataprep:
+  - time-series
+  styling:
+  - grid-styling
 review:
   strengths:
-  - Excellent use of Plotly's native go.Candlestick for clean, idiomatic implementation
-  - Proper teal/red color scheme that is more accessible than pure green/red
-  - Realistic price simulation with appropriate volatility and trend behavior
-  - Clean code structure following KISS principles with proper seed for reproducibility
-  - Correctly disabled rangeslider for cleaner static output
+  - Perfect spec compliance with all required features implemented correctly
+  - Expert Plotly API usage with idiomatic patterns (rangebreaks, hovertemplate, native
+    candlestick)
+  - Clean well-structured code with excellent reproducibility
+  - Realistic data with intentional rally-pullback-recovery narrative
+  - 'Good visual refinement: y-only grid, no range slider, weekend gaps removed'
   weaknesses:
-  - Could enhance Plotly's distinctive hover tooltips with custom hovertemplate showing
-    OHLC values
-  - Grid visibility is good but could add annotation or subtitle explaining color
-    meaning for first-time viewers
-  image_description: The plot displays a candlestick chart showing 30 trading days
-    of stock price data from January 2 to February 11, 2024. The chart uses teal/green
-    (#26A69A) for bullish (up) candles and red (#EF5350) for bearish (down) candles.
-    Each candlestick clearly shows the body (open-close range) and wicks (high-low
-    range). The price starts around $100 and shows realistic market movement with
-    an initial uptrend to ~$109, followed by a gradual decline to the $100-102 range.
-    The title "candlestick-basic · plotly · pyplots.ai" is centered at the top. X-axis
-    shows "Date" with appropriate date labels, Y-axis shows "Price ($)" ranging from
-    96 to 112. A subtle gray grid helps read price levels. The layout is clean with
-    a white background.
+  - 'Color accessibility: teal/coral is in the red-green spectrum; colorblind users
+    may have difficulty distinguishing bullish from bearish candles'
+  - Design lacks visual hierarchy or storytelling emphasis — no annotations or focal
+    points to guide the viewer through the rally-pullback-recovery pattern
+  - Aesthetic sophistication stays at well-configured default level rather than reaching
+    publication quality
+  image_description: 'The plot displays a candlestick chart titled "ACME Corp Daily
+    Prices" with a gray subtitle "candlestick-basic · plotly · pyplots.ai" centered
+    at the top. The x-axis shows "Date" with labels formatted as "Jan 08", "Jan 15",
+    "Jan 22", "Jan 29", "Feb 05", "Feb 12". The y-axis shows "Price (USD)" with dollar-prefixed
+    ticks from $140 to $165. Bullish (up) candles are teal green (#26A69A) and bearish
+    (down) candles are coral red (#EF5350). The background is white with subtle horizontal
+    grid lines on the y-axis only. The data shows a clear pattern: an initial rally
+    from ~$150 to ~$163 in early January, a pullback through late January to ~$145,
+    and a slight recovery into February. Candle bodies and wicks are clearly visible,
+    with wicks thinner than bodies. Weekend gaps are properly removed via rangebreaks.
+    No legend is shown (appropriate for single-series candlestick). No range slider
+    is present.'
   criteria_checklist:
     visual_quality:
-      score: 38
-      max: 40
+      score: 27
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title, axis labels, and tick labels are all clearly readable at the
-          target resolution
+        comment: 'All font sizes explicitly set: title 28pt, axis labels 22pt, ticks
+          18pt. All perfectly readable at full resolution.'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements; date labels are well-spaced
+        comment: No overlapping text anywhere. Date labels well-spaced with rangebreaks
+          removing weekends.
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Candlesticks are perfectly sized for 30 data points; bodies and wicks
-          clearly visible
+        comment: Candlesticks clearly visible with distinct bodies and wicks. Some
+          narrow-range candles appear thin.
       - id: VQ-04
         name: Color Accessibility
-        score: 4
-        max: 5
-        passed: true
-        comment: Teal/red scheme is better than pure green/red for colorblind users,
-          but not ideal
+        score: 2
+        max: 4
+        passed: false
+        comment: Uses teal/coral in the red-green spectrum. Some luminance difference
+          but colorblind users may struggle.
       - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
+        name: Layout & Canvas
+        score: 4
+        max: 4
         passed: true
-        comment: Good proportions, appropriate margins, no cut-off content
+        comment: Good proportions with explicit margins. Plot fills appropriate canvas
+          area. Nothing cut off.
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: '"Date" and "Price ($)" with units'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 1
-        max: 2
+        comment: Price (USD) includes units. Date is descriptive for a time axis.
+    design_excellence:
+      score: 10
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
+        passed: false
+        comment: Well-configured Plotly default with standard Material Design financial
+          chart colors. Not a truly custom palette.
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
         passed: true
-        comment: Subtle grid at alpha 0.3; no legend needed for single series
+        comment: 'Good refinement: y-axis-only subtle grid, no range slider, weekends
+          removed, zeroline disabled, custom margins.'
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: Data shows rally-pullback-recovery but no visual emphasis or annotations
+          to guide the viewer.
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct candlestick chart type
+        comment: Correct candlestick chart using go.Candlestick with OHLC data.
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Date on X-axis, OHLC correctly mapped to candlesticks
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: All OHLC elements present, color coding for up/down, visible wicks
-      - id: SC-04
-        name: Data Range
+        comment: 'All spec features present: green/red colors, visible wicks, date
+          formatting, subtle grid, weekend gaps.'
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Y-axis shows full price range with appropriate padding
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X=dates (30 business days), Y=OHLC prices. All data visible.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: N/A for single-series candlestick (full points)
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Correct format: "candlestick-basic · plotly · pyplots.ai"'
+        comment: Title with correct subtitle format. No legend needed for single-series
+          candlestick.
     data_quality:
-      score: 18
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows both bullish and bearish candles, various body sizes and wick
-          lengths; good mix of trends
+        comment: Shows bullish and bearish candles, varying sizes, visible wicks,
+          rally/pullback/recovery phases.
       - id: DQ-02
         name: Realistic Context
-        score: 6
-        max: 7
-        passed: true
-        comment: Simulated stock price data is plausible but generic (not tied to
-          a real-world scenario name)
-      - id: DQ-03
-        name: Appropriate Scale
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Stock price starting at $100 with 2-3% daily volatility is realistic
+        comment: ACME Corp is plausible. Prices $140-$165 realistic. Daily movements
+          reasonable. Slightly generic fictional name.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Price values, daily changes, and wick extensions all realistic for
+          a mid-cap stock.
     code_quality:
       score: 10
       max: 10
@@ -164,40 +184,50 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save structure, no functions/classes
+        comment: 'Clean linear flow: imports, data generation, figure creation, layout,
+          save.'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set at the start.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only numpy, pandas, and plotly.graph_objects used
+        comment: All imports (numpy, pandas, plotly.graph_objects) are used.
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
-        passed: true
-        comment: Uses current Plotly API
-      - id: CQ-05
-        name: Output Correct
-        score: 1
-        max: 1
-        passed: true
-        comment: Saves as plot.png and plot.html
-    library_features:
-      score: 2
-      max: 5
-      items:
-      - id: LF-01
-        name: Uses distinctive library features
+        name: Code Elegance
         score: 2
+        max: 2
+        passed: true
+        comment: Clean Pythonic code. Appropriate complexity. Hovertemplate is natural
+          Plotly pattern.
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png at 4800x2700. Also saves interactive HTML. Uses
+          current API.
+    library_mastery:
+      score: 9
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
         max: 5
-        passed: false
-        comment: Uses go.Candlestick which is appropriate, but doesn't leverage Plotly's
-          interactive features like hover customization or range selector
-  verdict: APPROVED
+        passed: true
+        comment: 'Expert use of Plotly API: go.Candlestick, update_layout, rangebreaks,
+          rangeslider control, hovertemplate.'
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Uses Plotly-distinctive features: native candlestick, rangebreaks,
+          hovertemplate, interactive HTML export.'
+  verdict: REJECTED

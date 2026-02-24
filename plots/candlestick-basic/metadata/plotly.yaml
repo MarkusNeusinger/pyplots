@@ -1,7 +1,7 @@
 library: plotly
 specification_id: candlestick-basic
 created: '2025-12-23T10:01:32Z'
-updated: '2026-02-24T20:57:45Z'
+updated: '2026-02-24T21:10:20Z'
 generated_by: claude-opus-4-6
 workflow_run: 20457529753
 issue: 0
@@ -10,10 +10,11 @@ library_version: 6.5.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/candlestick-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/candlestick-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/candlestick-basic/plotly/plot.html
-quality_score: 85
+quality_score: 95
 impl_tags:
   dependencies: []
   techniques:
+  - annotations
   - hover-tooltips
   - html-export
   patterns:
@@ -24,34 +25,33 @@ impl_tags:
   - grid-styling
 review:
   strengths:
-  - Perfect spec compliance with all required features implemented correctly
-  - Expert Plotly API usage with idiomatic patterns (rangebreaks, hovertemplate, native
-    candlestick)
-  - Clean well-structured code with excellent reproducibility
-  - Realistic data with intentional rally-pullback-recovery narrative
-  - 'Good visual refinement: y-only grid, no range slider, weekend gaps removed'
+  - Excellent data storytelling with three labeled market phases and key price annotations
+    that create immediate narrative clarity
+  - Colorblind-safe blue/red palette with consistent typography and intentional visual
+    hierarchy
+  - 'Expert use of Plotly-specific features: native Candlestick trace, rangebreaks,
+    hovertemplate, dual HTML+PNG output'
+  - Clean, well-structured code with reproducible data generation and realistic financial
+    context
   weaknesses:
-  - 'Color accessibility: teal/coral is in the red-green spectrum; colorblind users
-    may have difficulty distinguishing bullish from bearish candles'
-  - Design lacks visual hierarchy or storytelling emphasis — no annotations or focal
-    points to guide the viewer through the rally-pullback-recovery pattern
-  - Aesthetic sophistication stays at well-configured default level rather than reaching
-    publication quality
+  - Axis border lines still visible rather than fully removed for maximum visual refinement
+  - Recovery phase data shows relatively flat prices rather than a convincing upward
+    trend, slightly undermining the narrative
   image_description: 'The plot displays a candlestick chart titled "ACME Corp Daily
-    Prices" with a gray subtitle "candlestick-basic · plotly · pyplots.ai" centered
-    at the top. The x-axis shows "Date" with labels formatted as "Jan 08", "Jan 15",
-    "Jan 22", "Jan 29", "Feb 05", "Feb 12". The y-axis shows "Price (USD)" with dollar-prefixed
-    ticks from $140 to $165. Bullish (up) candles are teal green (#26A69A) and bearish
-    (down) candles are coral red (#EF5350). The background is white with subtle horizontal
-    grid lines on the y-axis only. The data shows a clear pattern: an initial rally
-    from ~$150 to ~$163 in early January, a pullback through late January to ~$145,
-    and a slight recovery into February. Candle bodies and wicks are clearly visible,
-    with wicks thinner than bodies. Weekend gaps are properly removed via rangebreaks.
-    No legend is shown (appropriate for single-series candlestick). No range slider
-    is present.'
+    Prices" with subtitle "candlestick-basic · plotly · pyplots.ai" centered at the
+    top. The x-axis is labeled "Date" showing business days from early January to
+    mid-February in "%b %d" format. The y-axis is labeled "Price (USD)" with dollar-sign
+    prefixed ticks ranging from ~$138 to ~$166. Blue-filled candlesticks represent
+    bullish (up) days and red-filled candlesticks represent bearish (down) days. Three
+    faintly shaded vertical regions divide the chart into labeled market phases: "Rally"
+    (left, light blue), "Pullback" (center, light red), and "Recovery" (right, light
+    blue). Two annotations with arrows mark "Rally Peak $166" near Jan 08 and "Pullback
+    Low $141" near Feb 03-05. The background is light gray (#FAFAFA) with a very subtle
+    y-axis-only grid. Wicks are clearly thinner than candle bodies. The layout is
+    clean with generous margins and no range slider.'
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 30
       max: 30
       items:
       - id: VQ-01
@@ -59,67 +59,68 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 28pt, axis labels 22pt, ticks
-          18pt. All perfectly readable at full resolution.'
+        comment: 'All font sizes explicitly set: title=28, axis labels=22, ticks=18,
+          annotations=15. All perfectly readable at 4800x2700.'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text anywhere. Date labels well-spaced with rangebreaks
-          removing weekends.
+        comment: No overlapping text elements. Annotations well-positioned and don't
+          collide with candles or labels.
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Candlesticks clearly visible with distinct bodies and wicks. Some
-          narrow-range candles appear thin.
+        comment: Candlestick bodies and wicks clearly visible and well-sized for 30
+          data points. Line width=2 provides good definition.
       - id: VQ-04
         name: Color Accessibility
-        score: 2
+        score: 4
         max: 4
-        passed: false
-        comment: Uses teal/coral in the red-green spectrum. Some luminance difference
-          but colorblind users may struggle.
+        passed: true
+        comment: Blue/red palette is colorblind-safe. Good contrast against light
+          background.
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Good proportions with explicit margins. Plot fills appropriate canvas
-          area. Nothing cut off.
+        comment: Chart fills ~65-70% of canvas with balanced margins. Nothing cut
+          off.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Price (USD) includes units. Date is descriptive for a time axis.
+        comment: Y-axis 'Price (USD)' includes units. X-axis 'Date' with formatted
+          tick labels.
     design_excellence:
-      score: 10
+      score: 16
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 6
         max: 8
-        passed: false
-        comment: Well-configured Plotly default with standard Material Design financial
-          chart colors. Not a truly custom palette.
+        passed: true
+        comment: Custom blue/red palette, consistent Arial typography, intentional
+          visual hierarchy. Clearly above defaults but not FiveThirtyEight-level.
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: 'Good refinement: y-axis-only subtle grid, no range slider, weekends
-          removed, zeroline disabled, custom margins.'
+        comment: Subtle y-only grid, x-grid hidden, custom background, rangeslider
+          disabled, weekend gaps removed. Axis border lines still present.
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 5
         max: 6
-        passed: false
-        comment: Data shows rally-pullback-recovery but no visual emphasis or annotations
-          to guide the viewer.
+        passed: true
+        comment: Three labeled market phases with shaded regions and two key price
+          annotations create immediate narrative. Recovery phase slightly weak.
     spec_compliance:
       score: 15
       max: 15
@@ -135,23 +136,23 @@ review:
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: green/red colors, visible wicks, date
-          formatting, subtle grid, weekend gaps.'
+        comment: Blue/red color scheme, visible wicks thinner than body, date formatting,
+          subtle grid all present.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=dates (30 business days), Y=OHLC prices. All data visible.
+        comment: X=dates, OHLC correctly mapped. All data visible on axes.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title with correct subtitle format. No legend needed for single-series
+        comment: Subtitle matches required format. No legend needed for single-series
           candlestick.
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
@@ -159,22 +160,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows bullish and bearish candles, varying sizes, visible wicks,
-          rally/pullback/recovery phases.
+        comment: Shows bullish and bearish candles, varying body sizes, long and short
+          wicks, clear trend pattern.
       - id: DQ-02
         name: Realistic Context
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: ACME Corp is plausible. Prices $140-$165 realistic. Daily movements
-          reasonable. Slightly generic fictional name.
+        comment: ACME Corp stock prices, neutral financial scenario, business-day
+          frequency.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Price values, daily changes, and wick extensions all realistic for
-          a mid-cap stock.
+        comment: Prices $140-$166 realistic for mid-cap stock. Daily changes of ~$2-5
+          plausible.
     code_quality:
       score: 10
       max: 10
@@ -184,34 +185,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports, data generation, figure creation, layout,
-          save.'
+        comment: 'Linear flow: imports, data generation, plot creation, annotations,
+          layout, save. No functions or classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set at the start.
+        comment: np.random.seed(42) set at start.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports (numpy, pandas, plotly.graph_objects) are used.
+        comment: All three imports (numpy, pandas, plotly.graph_objects) are used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean Pythonic code. Appropriate complexity. Hovertemplate is natural
-          Plotly pattern.
+        comment: Clean, Pythonic code. Drift array for market phases is clever and
+          simple.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png at 4800x2700. Also saves interactive HTML. Uses
-          current API.
+        comment: Saves as plot.png (4800x2700) and plot.html. Current Plotly API.
     library_mastery:
       score: 9
       max: 10
@@ -221,13 +221,13 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Expert use of Plotly API: go.Candlestick, update_layout, rangebreaks,
-          rangeslider control, hovertemplate.'
+        comment: 'Expert use of Plotly: go.Candlestick, go.Figure, update_layout,
+          add_annotation, add_vrect.'
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: 'Uses Plotly-distinctive features: native candlestick, rangebreaks,
-          hovertemplate, interactive HTML export.'
-  verdict: REJECTED
+        comment: Native go.Candlestick, rangebreaks for weekend removal, hovertemplate,
+          dual HTML+PNG output, add_vrect.
+  verdict: APPROVED

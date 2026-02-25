@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 gantt-dependencies: Gantt Chart with Dependencies
 Library: pygal 3.1.0 | Python 3.14
-Quality: /100 | Updated: 2026-02-25
+Quality: 73/100 | Updated: 2026-02-25
 """
 
 from datetime import date

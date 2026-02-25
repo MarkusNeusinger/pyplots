@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 gantt-dependencies: Gantt Chart with Dependencies
 Library: matplotlib 3.10.8 | Python 3.14
+Quality: 88/100 | Updated: 2026-02-25
 """
 
 import matplotlib.dates as mdates

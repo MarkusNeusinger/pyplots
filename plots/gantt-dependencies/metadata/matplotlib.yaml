@@ -1,7 +1,7 @@
 library: matplotlib
 specification_id: gantt-dependencies
 created: '2026-01-15T21:03:31Z'
-updated: '2026-02-25T14:53:54Z'
+updated: '2026-02-25T15:05:17Z'
 generated_by: claude-opus-4-6
 workflow_run: 21046151669
 issue: 3830
@@ -10,85 +10,82 @@ library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/gantt-dependencies/matplotlib/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gantt-dependencies/matplotlib/plot_thumb.png
 preview_html: null
-quality_score: 85
+quality_score: 88
 review:
   strengths:
-  - 'Perfect spec compliance with all required features: dependency arrows, phase
-    grouping, aggregate bars, hierarchical layout'
-  - Excellent data design with realistic software project lifecycle, parallel/sequential
-    dependencies, and multi-predecessor relationships
-  - FancyArrowPatch with dynamic arc curvature based on vertical distance is an elegant
-    matplotlib-specific approach
-  - 'Clean visual hierarchy: bold phase headers, thinner phase bars vs thicker task
-    bars, indented child tasks'
+  - Excellent hierarchical organization with phase headers (thin bars, bold labels)
+    and indented child tasks
+  - Well-designed dependency arrows using FancyArrowPatch with adaptive curvature
+    based on vertical distance
+  - Perfect spec compliance with all required features including finish-to-start arrows,
+    group aggregation, and color-coded phases
+  - Realistic software project data with all dependency orderings temporally valid
+  - Strong visual refinement with removed spines, subtle grid, and styled background
   weaknesses:
-  - Y-axis tick labels at fontsize=14, below the recommended 16pt minimum for 4800x2700
-    output
-  - Green/pink color pair may challenge deuteranopic viewers; needs a more colorblind-safe
-    palette
-  - Axis labels Date and Tasks are generic without additional context
-  - Design is above defaults but not at publication quality level
-  image_description: 'The plot shows a horizontal Gantt chart for a software development
-    project spanning January to May 2024. There are 18 tasks organized into 4 color-coded
-    phases: Requirements Phase (steel blue), Design Phase (gold/yellow), Development
-    Phase (green), and Testing Phase (pink). Phase header bars are thinner than individual
-    task bars, creating visual hierarchy. Task names appear on the left y-axis with
-    phase headers in bold and child tasks slightly indented. Curved gray dependency
-    arrows connect the end of predecessor tasks to the start of successor tasks, with
-    varying curvature based on vertical distance. The title reads "gantt-dependencies
-    · matplotlib · pyplots.ai". A legend in the upper right identifies the 4 phase
-    colors plus a "Dependency" arrow entry. Top and right spines are removed, and
-    a subtle dashed vertical grid marks date intervals. X-axis dates are rotated 45
-    degrees. The chart clearly shows sequential and parallel task relationships.'
+  - Yellow (Design Phase) bars have reduced contrast against the light background
+  - No critical path highlighting or milestone markers to strengthen data storytelling
+  - Y-axis task density (18 items) creates slight visual crowding
+  image_description: 'The plot displays a Gantt chart for a software development project
+    spanning January to May 2024. There are 18 tasks organized into 4 color-coded
+    phases: Requirements Phase (steel blue), Design Phase (yellow/gold), Development
+    Phase (orange), and Testing Phase (purple). Phase header bars are rendered thinner
+    than child task bars, and child task labels are indented on the y-axis with phase
+    names in bold. Curved gray dependency arrows connect the right edge of predecessor
+    bars to the left edge of successor bars, showing finish-to-start relationships.
+    The title reads "gantt-dependencies · matplotlib · pyplots.ai" in bold dark text.
+    The x-axis shows biweekly date ticks labeled "Timeline (2024)", the y-axis is
+    labeled "Project Tasks". A legend in the upper right identifies each phase color
+    and the dependency arrow symbol. The background is a subtle off-white (#FAFAFA),
+    top and right spines are removed, and a faint vertical dashed grid aids date tracking.'
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 27
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Title 24pt, axis labels 20pt, x-ticks 16pt correct, but y-tick labels
-          at fontsize=14 below recommended 16pt
+        comment: All font sizes explicitly set (title 24, labels 20, ticks 16, legend
+          16). Dense y-axis with 18 tasks but still readable.
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: All task labels, date labels, and legend clearly separated with no
-          collisions
+        comment: No text collisions. X-axis rotated 45 degrees. Minor proximity between
+          some arrows and bar edges.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Good bar sizing with phase/task differentiation; dependency arrows
-          visible; some short-duration tasks small but data-appropriate
+        comment: Task bars clearly visible with good height differentiation. Short-duration
+          tasks like Code Review appear narrow but identifiable.
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Blue-gold excellent; green-pink pair may challenge deuteranopic viewers
-          though brightness differs
+        comment: Blue, yellow, orange, purple palette avoids red-green confusion.
+          Edge colors help delineate bars.
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Good 16:9 proportions, plot fills canvas well, balanced margins,
-          nothing cut off
+        comment: 16:9 figure fills space well. tight_layout with bbox_inches tight.
+          Good margins.
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Generic Date and Tasks labels; adequate for Gantt but lacks additional
-          context
+        comment: Timeline (2024) with context, Project Tasks descriptive. Title in
+          correct spec format.
     design_excellence:
-      score: 13
+      score: 14
       max: 20
       items:
       - id: DE-01
@@ -96,22 +93,22 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Custom 4-color phase palette, intentional hierarchy through bar thickness,
-          bold headers; above defaults but not publication-level
+        comment: Custom 4-color palette, subtle background, differentiated bar heights,
+          bold/regular font hierarchy. Above defaults but yellow bars have weak contrast.
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Top/right spines removed, subtle dashed grid at alpha=0.2, edge colors
-          on bars; good refinement
+        comment: Spines removed, subtle dashed grid, styled legend, custom background.
+          Near-perfect refinement.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Clear visual hierarchy through phase grouping, color coding, and
-          dependency arrows guiding viewer through project flow
+        comment: Clear hierarchy through phase grouping, indentation, bold labels,
+          bar height differentiation. Could add critical path highlighting.
     spec_compliance:
       score: 15
       max: 15
@@ -121,28 +118,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct Gantt chart with horizontal bars
+        comment: Correct Gantt chart with horizontal bars and dependency arrows.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: dependency arrows, phase grouping, aggregate
-          bars, hierarchical indentation, color coding'
+        comment: 'All features present: timelines, dependencies, grouping, phase headers,
+          indentation, color coding, legend.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Tasks on y-axis, dates on x-axis, all 18 tasks visible and correctly
-          positioned
+        comment: X-axis timeline, y-axis tasks. Bars span correct dates. Arrows connect
+          end-to-start correctly.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct; legend shows all 4 phases plus dependency arrow
-          entry
+        comment: Title in correct format. Legend identifies all 4 phases and dependency
+          arrows.
     data_quality:
       score: 15
       max: 15
@@ -152,22 +149,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Sequential and parallel dependencies, multi-predecessor, cross-phase
-          dependencies, 4 distinct phases
+        comment: 4 distinct phases, intra/inter-phase dependencies, multi-predecessor,
+          parallel tasks, sequential chains.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Software development lifecycle is real-world, neutral, and instantly
-          recognizable
+        comment: Software development project lifecycle with realistic task names.
+          Neutral business domain.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Jan-May 2024 timeline realistic; 1-7 week task durations plausible;
-          dependency ordering logical
+        comment: 4.5 month project, 5-14 day tasks, all dependency orderings temporally
+          valid.
     code_quality:
       score: 10
       max: 10
@@ -177,33 +174,34 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports-data-plot-save flow with no functions or classes
+        comment: 'Linear flow: imports, data, DataFrame, plot bars, draw arrows, format,
+          legend, save.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set and all data is deterministic
+        comment: np.random.seed(42) set and all data deterministic.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: matplotlib.dates, pyplot, numpy, pandas, Line2D,
-          FancyArrowPatch, Patch'
+        comment: 'All imports used: mdates, plt, np, pd, Line2D, FancyArrowPatch,
+          Patch.'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, appropriate complexity; no over-engineering or fake functionality
+        comment: Clean readable code with appropriate complexity. No fake UI elements.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png at dpi=300 with bbox_inches=tight; no deprecated
-          API
+        comment: Saves as plot.png with dpi=300 and bbox_inches tight. No deprecated
+          functions.
     library_mastery:
       score: 7
       max: 10
@@ -213,15 +211,15 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Uses axes methods throughout, mdates formatting, proper figure creation;
-          minor: could use ax.tick_params for y-axis sizing'
+        comment: Proper ax methods, matplotlib.dates formatting, FancyArrowPatch for
+          styled arrows.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: FancyArrowPatch with arc3 connectionstyle and dynamic curvature;
-          custom legend combining Patch and Line2D
+        comment: FancyArrowPatch with connectionstyle arc3, custom legend handles
+          mixing Patch and Line2D, mdates locators.
   verdict: REJECTED
 impl_tags:
   dependencies: []
@@ -232,7 +230,6 @@ impl_tags:
   patterns:
   - data-generation
   - iteration-over-groups
-  - explicit-figure
   dataprep: []
   styling:
   - alpha-blending

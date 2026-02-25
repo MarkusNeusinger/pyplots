@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 gantt-dependencies: Gantt Chart with Dependencies
 Library: matplotlib 3.10.8 | Python 3.14
-Quality: 85/100 | Updated: 2026-02-25
 """
 
 import matplotlib.dates as mdates
@@ -146,16 +145,18 @@ df["duration"] = (df["end"] - df["start"]).dt.days
 # Create task index mapping for y-position
 task_to_idx = {task: i for i, task in enumerate(df["task"])}
 
-# Define colors for each phase
+# Define colorblind-safe palette for each phase
 phase_colors = {
     "Requirements Phase": "#306998",
     "Design Phase": "#FFD43B",
-    "Development Phase": "#4CAF50",
-    "Testing Phase": "#E91E63",
+    "Development Phase": "#E67E22",
+    "Testing Phase": "#8E44AD",
 }
 
-# Create figure
+# Create figure with subtle background
 fig, ax = plt.subplots(figsize=(16, 9))
+fig.patch.set_facecolor("#FAFAFA")
+ax.set_facecolor("#FAFAFA")
 
 # Plot bars
 bar_height = 0.6
@@ -179,7 +180,7 @@ for _idx, row in df.iterrows():
             height=group_bar_height,
             color=color,
             alpha=0.95,
-            edgecolor="black",
+            edgecolor="#2C3E50",
             linewidth=1.5,
             zorder=3,
         )
@@ -194,9 +195,9 @@ for _idx, row in df.iterrows():
             left=start,
             height=bar_height,
             color=color,
-            alpha=0.65,
-            edgecolor="black",
-            linewidth=0.8,
+            alpha=0.7,
+            edgecolor="#2C3E50",
+            linewidth=0.6,
             zorder=3,
         )
 
@@ -227,12 +228,12 @@ for _idx, row in df.iterrows():
             arrow = FancyArrowPatch(
                 (start_x, start_y),
                 (end_x, end_y),
-                arrowstyle="->",
-                color="#555555",
-                linewidth=2,
+                arrowstyle="-|>",
+                color="#4A4A4A",
+                linewidth=1.8,
                 connectionstyle=f"arc3,rad={rad}",
-                alpha=0.7,
-                mutation_scale=15,
+                alpha=0.6,
+                mutation_scale=14,
                 zorder=4,
             )
             ax.add_patch(arrow)
@@ -250,7 +251,7 @@ for label in task_labels:
         styled_labels.append(label)
 
 ax.set_yticks(y_positions)
-ax.set_yticklabels(styled_labels, fontsize=14)
+ax.set_yticklabels(styled_labels)
 
 # Bold phase labels
 for i, label in enumerate(task_labels):
@@ -261,25 +262,28 @@ for i, label in enumerate(task_labels):
 # Format x-axis with dates
 ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %d"))
 ax.xaxis.set_major_locator(mdates.WeekdayLocator(interval=2))
-ax.tick_params(axis="x", labelsize=16)
+ax.tick_params(axis="both", labelsize=16)
 plt.xticks(rotation=45, ha="right")
 
 # Labels and title
-ax.set_xlabel("Date", fontsize=20)
-ax.set_ylabel("Tasks", fontsize=20)
-ax.set_title("gantt-dependencies · matplotlib · pyplots.ai", fontsize=24, fontweight="medium")
+ax.set_xlabel("Timeline (2024)", fontsize=20)
+ax.set_ylabel("Project Tasks", fontsize=20)
+ax.set_title("gantt-dependencies · matplotlib · pyplots.ai", fontsize=24, fontweight="bold", color="#2C3E50", pad=20)
 
 # Grid - subtle vertical lines for timeline
-ax.grid(True, axis="x", alpha=0.2, linewidth=0.8, linestyle="--")
+ax.grid(True, axis="x", alpha=0.15, linewidth=0.6, linestyle="--", color="#999999")
 ax.set_axisbelow(True)
 
-# Remove top and right spines
+# Remove top and right spines, style remaining
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
+ax.spines["left"].set_color("#CCCCCC")
+ax.spines["bottom"].set_color("#CCCCCC")
 
 # Create legend with proper dependency arrow entry
 legend_patches = [
-    Patch(facecolor=color, alpha=0.7, edgecolor="black", label=phase) for phase, color in phase_colors.items()
+    Patch(facecolor=color, alpha=0.8, edgecolor="#2C3E50", linewidth=0.6, label=phase)
+    for phase, color in phase_colors.items()
 ]
 arrow_legend = Line2D(
     [0],
@@ -293,10 +297,18 @@ arrow_legend = Line2D(
     label="Dependency",
 )
 legend_patches.append(arrow_legend)
-ax.legend(handles=legend_patches, loc="upper right", fontsize=14, framealpha=0.9, edgecolor="#cccccc")
+ax.legend(
+    handles=legend_patches,
+    loc="upper right",
+    fontsize=16,
+    framealpha=0.95,
+    edgecolor="#CCCCCC",
+    fancybox=True,
+    shadow=False,
+)
 
 # Adjust layout
 ax.set_xlim(df["start"].min() - pd.Timedelta(days=3), df["end"].max() + pd.Timedelta(days=3))
 
 plt.tight_layout()
-plt.savefig("plot.png", dpi=300, bbox_inches="tight")
+plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor=fig.get_facecolor())

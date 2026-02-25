@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: gantt-dependencies
 created: '2026-01-15T21:03:35Z'
-updated: '2026-02-25T14:40:00Z'
+updated: '2026-02-25T14:53:47Z'
 generated_by: claude-opus-4-6
 workflow_run: 21046151686
 issue: 3830
@@ -10,203 +10,216 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/gantt-dependencies/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gantt-dependencies/seaborn/plot_thumb.png
 preview_html: null
-quality_score: null
+quality_score: 84
 review:
   strengths:
-  - Excellent hierarchical organization with group headers and indented task names
-  - Dependency arrows are well-styled with curved paths and appropriate opacity
-  - Color scheme is distinctive and colorblind-accessible
-  - Aggregate phase bars provide good visual summary
-  - Clean title format and professional appearance
+  - Perfect spec compliance with all required features including dependency arrows,
+    group aggregate bars, and hierarchical organization
+  - Excellent data quality with realistic software project and diverse dependency
+    patterns (linear, fan-out, fan-in, cross-group, parallel)
+  - Good visual hierarchy with bold group headers, indented tasks, and alpha-differentiated
+    group vs task bars
+  - Clean well-organized code with deterministic data and appropriate complexity
+  - Creative use of sns.lineplot with units parameter to draw Gantt bars
   weaknesses:
-  - The implementation relies heavily on matplotlib for actual plotting logic; seaborn
-    is mainly used for styling and the lineplot hack for bars
-  - Some dependency arrows pass through task bars rather than routing around them
-  image_description: 'The plot displays a Gantt chart with task dependencies for a
-    software development project. The chart shows 15 tasks organized into 4 phases:
-    Requirements (dark blue), Design (yellow/gold), Development (light blue), and
-    Testing (olive green). Each phase has a semi-transparent aggregate bar showing
-    the overall phase duration, with individual tasks displayed as thicker bars below
-    their respective phase headers. The y-axis lists tasks with bullet markers (▪)
-    for group headers and indented task names. The x-axis shows dates from Jan 01
-    to May 20, with tick marks every 2 weeks. Curved gray dependency arrows connect
-    related tasks showing finish-to-start relationships. A legend in the upper right
-    explains the color coding for project phases and the dependency arrow style. The
-    title follows the correct format: "gantt-dependencies · seaborn · pyplots.ai".'
+  - 'Two similar blue shades (#306998 and #4B8BBE) for Requirements and Development
+    reduce color distinguishability'
+  - Tick label font sizes (13-14pt) below the recommended 16pt minimum
+  - Heavy reliance on matplotlib for core visualization reduces seaborn library mastery
+  - Generic axis labels without additional context
+  image_description: 'The plot displays a Gantt chart for a software development project
+    with 15 tasks organized into 4 phases (Requirements, Design, Development, Testing).
+    Task bars are drawn as thick horizontal lines color-coded by group: dark blue
+    (#306998) for Requirements, yellow (#FFD43B) for Design, light blue (#4B8BBE)
+    for Development, and olive green (#6B8E23) for Testing. Group headers (bold with
+    a square prefix) have semi-transparent aggregate bars spanning each phase''s full
+    duration. Gray curved dependency arrows connect the end of predecessor tasks to
+    the start of successor tasks. The title reads "gantt-dependencies · seaborn ·
+    pyplots.ai" in bold at the top. X-axis shows dates from Jan 01 to Jun 17 (rotated
+    45 degrees), y-axis shows "Tasks" with hierarchical indentation. A legend in the
+    upper right shows "Project Phases" with all group colors and a "Dependency" arrow
+    indicator. Left spine is removed, grid is vertical-only with subtle dashed lines.
+    The temporal flow reads naturally from top-left to bottom-right.'
   criteria_checklist:
     visual_quality:
-      score: 37
-      max: 40
+      score: 26
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
-        passed: true
-        comment: Title 24pt bold, axis labels 20pt, tick labels properly sized and
-          readable
-      - id: VQ-02
-        name: No Overlap
-        score: 8
-        max: 8
-        passed: true
-        comment: Task labels and bars are well separated, no overlapping text
-      - id: VQ-03
-        name: Element Visibility
         score: 7
         max: 8
         passed: true
-        comment: Task bars are clearly visible with good thickness, alpha for overlapping
-          elements works well; slight deduction for some bars being quite short
+        comment: Font sizes explicitly set but tick labels at 13-14pt below recommended
+          16pt
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
+        passed: true
+        comment: All text fully readable, no collisions
+      - id: VQ-03
+        name: Element Visibility
+        score: 5
+        max: 6
+        passed: true
+        comment: Task bars clearly visible, dependency arrows could be slightly more
+          prominent
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Four distinct colors (blue, yellow, light blue, green) are colorblind-friendly
-          with good contrast
+        score: 3
+        max: 4
+        passed: false
+        comment: Two blue shades too similar for Requirements and Development
       - id: VQ-05
-        name: Layout Balance
+        name: Layout & Canvas
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Good use of canvas, minor issue with rotated x-axis labels taking
-          extra space
+        comment: Good 16:9 proportions, plot fills canvas well
       - id: VQ-06
-        name: Axis Labels
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Descriptive labels: Tasks and Timeline'
-      - id: VQ-07
-        name: Grid & Legend
+        name: Axis Labels & Title
         score: 1
         max: 2
+        passed: false
+        comment: Descriptive labels but generic without units or context
+    design_excellence:
+      score: 13
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
         passed: true
-        comment: Grid is subtle (vertical only, alpha 0.3), legend is well placed
-          but includes some redundancy
+        comment: Custom palette with alpha differentiation, above defaults but two-blues
+          flaw
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Left spine removed, subtle vertical grid, alpha differentiation
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Hierarchical organization with dependency arrows creates clear visual
+          hierarchy
     spec_compliance:
-      score: 24
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
-        passed: true
-        comment: Correct Gantt chart with dependencies
-      - id: SC-02
-        name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Tasks on Y-axis, timeline on X-axis, correct mapping
-      - id: SC-03
+        comment: Correct Gantt chart with dependency arrows
+      - id: SC-02
         name: Required Features
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Has dependency arrows, group headers with aggregate bars, hierarchical
-          organization; arrows could avoid task bars better
-      - id: SC-04
-        name: Data Range
+        comment: All spec features present including end-to-start arrows and group
+          aggregates
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axes
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X=timeline, Y=tasks by phase, dependencies correctly mapped
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend correctly identifies all phases and dependency arrows
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Correct: gantt-dependencies · seaborn · pyplots.ai'
+        comment: Title format correct, legend shows all phases plus dependency indicator
     data_quality:
-      score: 18
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows various dependency patterns including sequential and parallel
-          tasks; some tasks have multiple dependencies
+        comment: Shows linear, fan-out, fan-in, cross-group deps, parallel tasks,
+          varying durations
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
+        score: 5
+        max: 5
         passed: true
-        comment: Software development project is a classic, neutral, and realistic
-          Gantt chart scenario
+        comment: Realistic software development project lifecycle, neutral topic
       - id: DQ-03
         name: Appropriate Scale
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Dates and durations are realistic for a software project; some task
-          durations could be more varied
+        comment: 6 month timeline, 4-19 day tasks, realistic for software projects
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 2
-        max: 3
-        passed: true
-        comment: Follows imports to data to plot to save, but has some complexity
-          in data preparation loops
-      - id: CQ-02
-        name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses deterministic data (no random elements)
+        comment: Imports-Data-Plot-Save, no functions or classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 2
+        passed: true
+        comment: Deterministic hardcoded data
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports used
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Uses current seaborn API
+        comment: Clean, well-organized, appropriate complexity
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves as plot.png, dpi=300, current API
+    library_mastery:
+      score: 5
+      max: 10
       items:
-      - id: LF-01
-        name: Distinctive Features
+      - id: LM-01
+        name: Idiomatic Usage
         score: 3
         max: 5
-        passed: true
-        comment: Uses sns.lineplot with units parameter creatively for Gantt bars,
-          sns.set_theme for styling, and sns.despine; however, Gantt charts are not
-          a native seaborn feature so this is more of a matplotlib-heavy implementation
-  verdict: APPROVED
+        passed: false
+        comment: Uses sns.lineplot with units, set_theme, despine but core visualization
+          relies on matplotlib
+      - id: LM-02
+        name: Distinctive Features
+        score: 2
+        max: 5
+        passed: false
+        comment: Units parameter and theming are seaborn-specific but chart replicable
+          in pure matplotlib
+  verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
-  - annotations
+  - manual-ticks
   - custom-legend
   - patches
-  - manual-ticks
   patterns:
+  - data-generation
   - iteration-over-groups
   - explicit-figure
   dataprep:

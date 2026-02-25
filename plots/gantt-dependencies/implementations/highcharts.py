@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 gantt-dependencies: Gantt Chart with Dependencies
-Library: highcharts unknown | Python 3.13.11
-Quality: 91/100 | Created: 2026-01-15
+Library: highcharts 1.10.3 | Python 3.14
+Quality: /100 | Updated: 2026-02-25
 """
 
 import tempfile
@@ -14,150 +14,36 @@ from selenium.webdriver.chrome.options import Options
 
 
 # Download Highcharts Gantt JS (includes core + gantt module)
-highcharts_gantt_url = "https://code.highcharts.com/gantt/highcharts-gantt.js"
+highcharts_gantt_url = "https://cdn.jsdelivr.net/npm/highcharts@11.4.8/highcharts-gantt.js"
 with urllib.request.urlopen(highcharts_gantt_url, timeout=30) as response:
     highcharts_gantt_js = response.read().decode("utf-8")
 
-# Project data: Software Development Project with phases and dependencies
-# Each task has: id, name, start (ms), end (ms), parent (group), dependency
-project_data = [
-    # Phase 1: Requirements
-    {"id": "requirements", "name": "Requirements Phase", "collapsed": False},
-    {
-        "id": "req_gather",
-        "name": "Gather Requirements",
-        "start": 1704067200000,  # Jan 1, 2024
-        "end": 1704672000000,  # Jan 8, 2024
-        "parent": "requirements",
-    },
-    {
-        "id": "req_analysis",
-        "name": "Requirements Analysis",
-        "start": 1704672000000,  # Jan 8, 2024
-        "end": 1705276800000,  # Jan 15, 2024
-        "parent": "requirements",
-        "dependency": "req_gather",
-    },
-    {
-        "id": "req_approval",
-        "name": "Stakeholder Approval",
-        "start": 1705276800000,  # Jan 15, 2024
-        "end": 1705536000000,  # Jan 18, 2024
-        "parent": "requirements",
-        "dependency": "req_analysis",
-    },
-    # Phase 2: Design
-    {"id": "design", "name": "Design Phase", "collapsed": False},
-    {
-        "id": "design_arch",
-        "name": "Architecture Design",
-        "start": 1705536000000,  # Jan 18, 2024
-        "end": 1706400000000,  # Jan 28, 2024
-        "parent": "design",
-        "dependency": "req_approval",
-    },
-    {
-        "id": "design_ui",
-        "name": "UI/UX Design",
-        "start": 1705536000000,  # Jan 18, 2024 (parallel)
-        "end": 1706832000000,  # Feb 2, 2024
-        "parent": "design",
-        "dependency": "req_approval",
-    },
-    {
-        "id": "design_db",
-        "name": "Database Design",
-        "start": 1706400000000,  # Jan 28, 2024
-        "end": 1707004800000,  # Feb 4, 2024
-        "parent": "design",
-        "dependency": "design_arch",
-    },
-    # Phase 3: Development
-    {"id": "development", "name": "Development Phase", "collapsed": False},
-    {
-        "id": "dev_backend",
-        "name": "Backend Development",
-        "start": 1707004800000,  # Feb 4, 2024
-        "end": 1709251200000,  # Mar 1, 2024
-        "parent": "development",
-        "dependency": ["design_arch", "design_db"],
-    },
-    {
-        "id": "dev_frontend",
-        "name": "Frontend Development",
-        "start": 1706832000000,  # Feb 2, 2024
-        "end": 1709078400000,  # Feb 28, 2024
-        "parent": "development",
-        "dependency": "design_ui",
-    },
-    {
-        "id": "dev_integration",
-        "name": "System Integration",
-        "start": 1709251200000,  # Mar 1, 2024
-        "end": 1710115200000,  # Mar 11, 2024
-        "parent": "development",
-        "dependency": ["dev_backend", "dev_frontend"],
-    },
-    # Phase 4: Testing
-    {"id": "testing", "name": "Testing Phase", "collapsed": False},
-    {
-        "id": "test_unit",
-        "name": "Unit Testing",
-        "start": 1708041600000,  # Feb 16, 2024 (starts during dev)
-        "end": 1709683200000,  # Mar 6, 2024
-        "parent": "testing",
-        "dependency": "dev_backend",
-    },
-    {
-        "id": "test_integration",
-        "name": "Integration Testing",
-        "start": 1710115200000,  # Mar 11, 2024
-        "end": 1710720000000,  # Mar 18, 2024
-        "parent": "testing",
-        "dependency": "dev_integration",
-    },
-    {
-        "id": "test_uat",
-        "name": "User Acceptance Testing",
-        "start": 1710720000000,  # Mar 18, 2024
-        "end": 1711324800000,  # Mar 25, 2024
-        "parent": "testing",
-        "dependency": "test_integration",
-    },
-]
-
-# Colors for different phases
-phase_colors = {
-    "requirements": "#306998",  # Python Blue
-    "design": "#FFD43B",  # Python Yellow
-    "development": "#9467BD",  # Purple
-    "testing": "#17BECF",  # Cyan
-}
-
-# Build the chart configuration as JavaScript
+# Chart configuration using Highcharts Gantt with parent/child grouping
+# Software Development Project: 4 phases, 12 tasks, finish-to-start dependencies
 chart_config = """
 Highcharts.ganttChart('container', {
     chart: {
         width: 4800,
         height: 2700,
         backgroundColor: '#ffffff',
-        spacingTop: 60,
-        spacingBottom: 180,
-        spacingLeft: 60,
-        spacingRight: 150
+        spacingTop: 40,
+        spacingBottom: 40,
+        spacingLeft: 40,
+        spacingRight: 40
     },
     title: {
-        text: 'gantt-dependencies \\u00b7 highcharts \\u00b7 pyplots.ai',
+        text: 'Software Development Project Schedule',
         style: {
-            fontSize: '56px',
+            fontSize: '52px',
             fontWeight: 'bold'
         },
-        margin: 40
+        margin: 20
     },
     subtitle: {
-        text: 'Software Development Project Schedule with Task Dependencies',
+        text: 'gantt-dependencies \\u00b7 highcharts \\u00b7 pyplots.ai',
         style: {
-            fontSize: '36px'
+            fontSize: '36px',
+            color: '#666666'
         }
     },
     xAxis: [{
@@ -166,7 +52,7 @@ Highcharts.ganttChart('container', {
         tickInterval: 7 * 24 * 3600 * 1000,
         labels: {
             style: {
-                fontSize: '26px'
+                fontSize: '24px'
             },
             format: '{value:%b %e}'
         },
@@ -176,12 +62,12 @@ Highcharts.ganttChart('container', {
     yAxis: {
         labels: {
             style: {
-                fontSize: '30px'
-            }
+                fontSize: '28px'
+            },
+            indentation: 30
         },
-        staticScale: 100,
         gridLineWidth: 1,
-        gridLineColor: '#e6e6e6'
+        gridLineColor: '#f0f0f0'
     },
     tooltip: {
         style: {
@@ -190,19 +76,6 @@ Highcharts.ganttChart('container', {
         dateTimeLabelFormats: {
             day: '%A, %b %e, %Y'
         }
-    },
-    legend: {
-        enabled: true,
-        align: 'center',
-        verticalAlign: 'bottom',
-        layout: 'horizontal',
-        itemStyle: {
-            fontSize: '28px'
-        },
-        symbolHeight: 24,
-        symbolWidth: 50,
-        itemMarginTop: 20,
-        itemMarginBottom: 10
     },
     navigator: {
         enabled: false
@@ -217,144 +90,168 @@ Highcharts.ganttChart('container', {
         series: {
             animation: false,
             borderRadius: 6,
-            pointPadding: 0.1,
-            groupPadding: 0.1,
             dataLabels: {
                 enabled: true,
-                align: 'center',
+                align: 'left',
+                padding: 10,
                 style: {
-                    fontSize: '22px',
+                    fontSize: '20px',
                     fontWeight: 'bold',
                     textOutline: '3px white'
                 },
-                format: '{point.name}'
+                format: '{point.name}',
+                overflow: 'allow',
+                crop: false
             },
             connectors: {
-                lineWidth: 5,
+                lineWidth: 4,
                 dashStyle: 'Solid',
-                lineColor: '#666666',
-                radius: 15,
-                marker: {
+                lineColor: '#555555',
+                radius: 12,
+                startMarker: {
+                    enabled: false
+                },
+                endMarker: {
                     enabled: true,
-                    width: 16,
-                    height: 16
+                    width: 14,
+                    height: 14
                 }
             }
         }
     },
     series: [{
-        name: 'Requirements Phase',
-        color: '#306998',
+        name: 'Project Schedule',
         data: [
+            // Phase 1: Requirements (Jan 1 - Jan 20)
+            {
+                id: 'requirements',
+                name: 'Requirements Phase',
+                color: '#306998'
+            },
             {
                 id: 'req_gather',
                 name: 'Gather Requirements',
+                parent: 'requirements',
                 start: Date.UTC(2024, 0, 1),
                 end: Date.UTC(2024, 0, 8),
-                y: 0
+                color: '#306998'
             },
             {
                 id: 'req_analysis',
                 name: 'Requirements Analysis',
-                start: Date.UTC(2024, 0, 8),
+                parent: 'requirements',
+                start: Date.UTC(2024, 0, 9),
                 end: Date.UTC(2024, 0, 15),
                 dependency: 'req_gather',
-                y: 1
+                color: '#306998'
             },
             {
                 id: 'req_approval',
                 name: 'Stakeholder Approval',
-                start: Date.UTC(2024, 0, 15),
-                end: Date.UTC(2024, 0, 18),
+                parent: 'requirements',
+                start: Date.UTC(2024, 0, 16),
+                end: Date.UTC(2024, 0, 20),
                 dependency: 'req_analysis',
-                y: 2
-            }
-        ]
-    }, {
-        name: 'Design Phase',
-        color: '#FFD43B',
-        data: [
+                color: '#306998'
+            },
+            // Phase 2: Design (Jan 22 - Feb 9)
+            {
+                id: 'design',
+                name: 'Design Phase',
+                color: '#FFD43B'
+            },
             {
                 id: 'design_arch',
                 name: 'Architecture Design',
-                start: Date.UTC(2024, 0, 18),
-                end: Date.UTC(2024, 0, 28),
+                parent: 'design',
+                start: Date.UTC(2024, 0, 22),
+                end: Date.UTC(2024, 0, 31),
                 dependency: 'req_approval',
-                y: 3
+                color: '#FFD43B'
             },
             {
                 id: 'design_ui',
                 name: 'UI/UX Design',
-                start: Date.UTC(2024, 0, 18),
-                end: Date.UTC(2024, 1, 2),
+                parent: 'design',
+                start: Date.UTC(2024, 0, 22),
+                end: Date.UTC(2024, 1, 5),
                 dependency: 'req_approval',
-                y: 4
+                color: '#FFD43B'
             },
             {
                 id: 'design_db',
                 name: 'Database Design',
-                start: Date.UTC(2024, 0, 28),
-                end: Date.UTC(2024, 1, 4),
+                parent: 'design',
+                start: Date.UTC(2024, 1, 1),
+                end: Date.UTC(2024, 1, 9),
                 dependency: 'design_arch',
-                y: 5
-            }
-        ]
-    }, {
-        name: 'Development Phase',
-        color: '#9467BD',
-        data: [
+                color: '#FFD43B'
+            },
+            // Phase 3: Development (Feb 12 - Mar 15)
+            {
+                id: 'development',
+                name: 'Development Phase',
+                color: '#9467BD'
+            },
             {
                 id: 'dev_backend',
                 name: 'Backend Development',
-                start: Date.UTC(2024, 1, 4),
-                end: Date.UTC(2024, 2, 1),
-                dependency: ['design_arch', 'design_db'],
-                y: 6
+                parent: 'development',
+                start: Date.UTC(2024, 1, 12),
+                end: Date.UTC(2024, 2, 4),
+                dependency: 'design_db',
+                color: '#9467BD'
             },
             {
                 id: 'dev_frontend',
                 name: 'Frontend Development',
-                start: Date.UTC(2024, 1, 2),
-                end: Date.UTC(2024, 1, 28),
+                parent: 'development',
+                start: Date.UTC(2024, 1, 7),
+                end: Date.UTC(2024, 2, 1),
                 dependency: 'design_ui',
-                y: 7
+                color: '#9467BD'
             },
             {
                 id: 'dev_integration',
                 name: 'System Integration',
-                start: Date.UTC(2024, 2, 1),
-                end: Date.UTC(2024, 2, 11),
+                parent: 'development',
+                start: Date.UTC(2024, 2, 5),
+                end: Date.UTC(2024, 2, 15),
                 dependency: ['dev_backend', 'dev_frontend'],
-                y: 8
-            }
-        ]
-    }, {
-        name: 'Testing Phase',
-        color: '#17BECF',
-        data: [
+                color: '#9467BD'
+            },
+            // Phase 4: Testing (Mar 5 - Mar 29)
+            {
+                id: 'testing',
+                name: 'Testing Phase',
+                color: '#17BECF'
+            },
             {
                 id: 'test_unit',
                 name: 'Unit Testing',
-                start: Date.UTC(2024, 1, 16),
-                end: Date.UTC(2024, 2, 6),
+                parent: 'testing',
+                start: Date.UTC(2024, 2, 5),
+                end: Date.UTC(2024, 2, 15),
                 dependency: 'dev_backend',
-                y: 9
+                color: '#17BECF'
             },
             {
                 id: 'test_integration',
                 name: 'Integration Testing',
-                start: Date.UTC(2024, 2, 11),
-                end: Date.UTC(2024, 2, 18),
-                dependency: 'dev_integration',
-                y: 10
+                parent: 'testing',
+                start: Date.UTC(2024, 2, 16),
+                end: Date.UTC(2024, 2, 22),
+                dependency: ['dev_integration', 'test_unit'],
+                color: '#17BECF'
             },
             {
                 id: 'test_uat',
                 name: 'User Acceptance Testing',
-                start: Date.UTC(2024, 2, 18),
-                end: Date.UTC(2024, 2, 25),
+                parent: 'testing',
+                start: Date.UTC(2024, 2, 23),
+                end: Date.UTC(2024, 2, 29),
                 dependency: 'test_integration',
-                y: 11
+                color: '#17BECF'
             }
         ]
     }]
@@ -386,18 +283,21 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=4800,2700")
+chrome_options.add_argument("--window-size=4800,5000")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
-time.sleep(5)  # Wait for chart to render
-driver.save_screenshot("plot.png")
+time.sleep(5)
+
+# Capture the chart container element (may exceed 2700px with treegrid)
+container = driver.find_element("id", "container")
+container.screenshot("plot.png")
 driver.quit()
 
-Path(temp_path).unlink()  # Clean up temp file
+Path(temp_path).unlink()
 
-# Also save HTML for interactive version
-html_output = f"""<!DOCTYPE html>
+# Save HTML for interactive version
+html_output = """<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -407,7 +307,56 @@ html_output = f"""<!DOCTYPE html>
 <body style="margin:0; padding:20px; background:#ffffff;">
     <div id="container" style="width:100%; height:800px;"></div>
     <script>
-    {chart_config}
+    Highcharts.ganttChart('container', {
+        title: {
+            text: 'Software Development Project Schedule'
+        },
+        subtitle: {
+            text: 'gantt-dependencies \\u00b7 highcharts \\u00b7 pyplots.ai'
+        },
+        xAxis: [{
+            min: Date.UTC(2024, 0, 1),
+            max: Date.UTC(2024, 2, 28)
+        }],
+        yAxis: {
+            labels: {
+                indentation: 30
+            }
+        },
+        plotOptions: {
+            series: {
+                connectors: {
+                    lineWidth: 2,
+                    lineColor: '#555555',
+                    radius: 8,
+                    endMarker: {
+                        enabled: true
+                    }
+                }
+            }
+        },
+        series: [{
+            name: 'Project Schedule',
+            data: [
+                { id: 'requirements', name: 'Requirements Phase', color: '#306998' },
+                { id: 'req_gather', name: 'Gather Requirements', parent: 'requirements', start: Date.UTC(2024, 0, 1), end: Date.UTC(2024, 0, 8), color: '#306998' },
+                { id: 'req_analysis', name: 'Requirements Analysis', parent: 'requirements', start: Date.UTC(2024, 0, 9), end: Date.UTC(2024, 0, 15), dependency: 'req_gather', color: '#306998' },
+                { id: 'req_approval', name: 'Stakeholder Approval', parent: 'requirements', start: Date.UTC(2024, 0, 16), end: Date.UTC(2024, 0, 20), dependency: 'req_analysis', color: '#306998' },
+                { id: 'design', name: 'Design Phase', color: '#FFD43B' },
+                { id: 'design_arch', name: 'Architecture Design', parent: 'design', start: Date.UTC(2024, 0, 22), end: Date.UTC(2024, 0, 31), dependency: 'req_approval', color: '#FFD43B' },
+                { id: 'design_ui', name: 'UI/UX Design', parent: 'design', start: Date.UTC(2024, 0, 22), end: Date.UTC(2024, 1, 5), dependency: 'req_approval', color: '#FFD43B' },
+                { id: 'design_db', name: 'Database Design', parent: 'design', start: Date.UTC(2024, 1, 1), end: Date.UTC(2024, 1, 9), dependency: 'design_arch', color: '#FFD43B' },
+                { id: 'development', name: 'Development Phase', color: '#9467BD' },
+                { id: 'dev_backend', name: 'Backend Development', parent: 'development', start: Date.UTC(2024, 1, 12), end: Date.UTC(2024, 2, 4), dependency: 'design_db', color: '#9467BD' },
+                { id: 'dev_frontend', name: 'Frontend Development', parent: 'development', start: Date.UTC(2024, 1, 7), end: Date.UTC(2024, 2, 1), dependency: 'design_ui', color: '#9467BD' },
+                { id: 'dev_integration', name: 'System Integration', parent: 'development', start: Date.UTC(2024, 2, 5), end: Date.UTC(2024, 2, 15), dependency: ['dev_backend', 'dev_frontend'], color: '#9467BD' },
+                { id: 'testing', name: 'Testing Phase', color: '#17BECF' },
+                { id: 'test_unit', name: 'Unit Testing', parent: 'testing', start: Date.UTC(2024, 2, 5), end: Date.UTC(2024, 2, 15), dependency: 'dev_backend', color: '#17BECF' },
+                { id: 'test_integration', name: 'Integration Testing', parent: 'testing', start: Date.UTC(2024, 2, 16), end: Date.UTC(2024, 2, 22), dependency: ['dev_integration', 'test_unit'], color: '#17BECF' },
+                { id: 'test_uat', name: 'User Acceptance Testing', parent: 'testing', start: Date.UTC(2024, 2, 23), end: Date.UTC(2024, 2, 29), dependency: 'test_integration', color: '#17BECF' }
+            ]
+        }]
+    });
     </script>
 </body>
 </html>"""

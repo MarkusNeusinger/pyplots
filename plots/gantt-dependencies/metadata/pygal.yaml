@@ -1,16 +1,16 @@
 library: pygal
 specification_id: gantt-dependencies
 created: '2026-01-15T21:04:11Z'
-updated: '2026-01-15T21:07:06Z'
-generated_by: claude-opus-4-5-20251101
+updated: '2026-02-25T14:40:00Z'
+generated_by: claude-opus-4-6
 workflow_run: 21046151934
 issue: 3830
-python_version: 3.13.11
+python_version: '3.14'
 library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/gantt-dependencies/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gantt-dependencies/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/gantt-dependencies/pygal/plot.html
-quality_score: 91
+quality_score: null
 review:
   strengths:
   - Excellent creative solution using pygal HorizontalBar as base with custom SVG

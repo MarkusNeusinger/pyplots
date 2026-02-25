@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 gantt-dependencies: Gantt Chart with Dependencies
 Library: letsplot 4.8.2 | Python 3.14
 Quality: 84/100 | Updated: 2026-02-25
@@ -6,6 +6,7 @@ Quality: 84/100 | Updated: 2026-02-25
 
 import pandas as pd
 from lets_plot import *
+from lets_plot.export import ggsave
 
 
 LetsPlot.setup_html()
@@ -106,9 +107,9 @@ df = pd.DataFrame(tasks_data)
 df["start"] = pd.to_datetime(df["start"])
 df["end"] = pd.to_datetime(df["end"])
 
-# Group ordering and colors
+# Group ordering and curated color palette (muted, harmonious, colorblind-safe)
 group_order = ["Requirements", "Design", "Development", "Testing"]
-group_colors = {"Requirements": "#306998", "Design": "#E8A838", "Development": "#2CA02C", "Testing": "#9467BD"}
+group_colors = {"Requirements": "#4878A8", "Design": "#D4913B", "Development": "#45A5A5", "Testing": "#8B6BAD"}
 
 # Build y positions — assign in reading order top-to-bottom, then flip
 y_positions = {}
@@ -139,7 +140,7 @@ n = len(reading_order)
 for i, name in enumerate(reading_order):
     y_positions[name] = n - 1 - i
 
-# Prepare plot dataframes using native datetimes (no timestamp conversion)
+# Prepare plot dataframes using native datetimes
 plot_data = []
 for name, y in y_positions.items():
     info = task_info[name]
@@ -159,7 +160,7 @@ plot_df = pd.DataFrame(plot_data)
 groups_df = plot_df[plot_df["is_group"]]
 tasks_df = plot_df[~plot_df["is_group"]]
 
-# Colorblind-safe dependency arrow colors (orange/blue/purple instead of red/blue/green)
+# Colorblind-safe dependency arrow colors
 dep_colors = {"finish-to-start": "#D95F02", "start-to-start": "#3498DB", "finish-to-finish": "#7570B3"}
 
 # Build arrow data with native datetimes
@@ -194,16 +195,15 @@ arrows_df = pd.DataFrame(arrows_data) if arrows_data else None
 # Build plot
 x_min = plot_df["start"].min()
 x_max = plot_df["end"].max()
-y_pos = n
 
 plot = ggplot()
 
-# Alternating group background bands for visual separation
+# Alternating group background bands (softened tones)
 for i, group in enumerate(group_order):
     group_task_ys = [y_positions[t] for t, info in task_info.items() if info["group"] == group]
     y_lo = min(group_task_ys) - 0.45
     y_hi = max(group_task_ys) + 0.45
-    band_color = "#F7F9FC" if i % 2 == 0 else "#FFFFFF"
+    band_color = "#F0F4F8" if i % 2 == 0 else "#FAFBFC"
     band_df = pd.DataFrame(
         [{"xmin": x_min - pd.Timedelta(days=18), "xmax": x_max + pd.Timedelta(days=5), "ymin": y_lo, "ymax": y_hi}]
     )
@@ -216,24 +216,22 @@ plot += geom_segment(
     size=14,
     color="#1a365d",
     alpha=0.95,
-    tooltips=layer_tooltips().title("@task").line("@start — @end").line("Duration: @duration days"),
+    tooltips=layer_tooltips().title("@task").line("@start \u2014 @end").line("Duration: @duration days"),
 )
 
-# Task bars colored by group with interactive tooltips
+# Task bars — single layer with color mapped to group via scale_color_manual
 task_tooltips = (
-    layer_tooltips().title("@task").line("@start — @end").line("Group: @group").line("Duration: @duration days")
+    layer_tooltips().title("@task").line("@start \u2014 @end").line("Group: @group").line("Duration: @duration days")
 )
-for group in group_order:
-    gdf = tasks_df[tasks_df["group"] == group]
-    if not gdf.empty:
-        plot += geom_segment(
-            aes(x="start", xend="end", y="y", yend="y"),
-            data=gdf,
-            size=8,
-            color=group_colors[group],
-            alpha=0.85,
-            tooltips=task_tooltips,
-        )
+plot += geom_segment(
+    aes(x="start", xend="end", y="y", yend="y", color="group"),
+    data=tasks_df,
+    size=8,
+    alpha=0.85,
+    tooltips=task_tooltips,
+    show_legend=False,
+)
+plot += scale_color_manual(values=[group_colors[g] for g in group_order], breaks=group_order)
 
 # Dependency arrows by type with interactive tooltips
 if arrows_df is not None and not arrows_df.empty:
@@ -247,7 +245,7 @@ if arrows_df is not None and not arrows_df.empty:
                 color=color,
                 alpha=0.85,
                 arrow=arrow(angle=25, length=10, type="closed"),
-                tooltips=layer_tooltips().line("@from_task → @to_task").line("Type: @dep_type"),
+                tooltips=layer_tooltips().line("@from_task \u2192 @to_task").line("Type: @dep_type"),
             )
 
 # Labels: task names on left, group names on right
@@ -256,60 +254,59 @@ group_labels = groups_df.assign(label_x=groups_df["end"] + label_offset)
 task_labels_df = tasks_df.assign(label_x=tasks_df["start"] - label_offset)
 
 plot += geom_text(
-    aes(x="label_x", y="y", label="task"), data=group_labels, hjust=0, size=12, fontface="bold", color="#1a365d"
+    aes(x="label_x", y="y", label="task"), data=group_labels, hjust=0, size=14, fontface="bold", color="#1a365d"
 )
-plot += geom_text(aes(x="label_x", y="y", label="task"), data=task_labels_df, hjust=1, size=12, color="#333333")
+plot += geom_text(aes(x="label_x", y="y", label="task"), data=task_labels_df, hjust=1, size=13, color="#2D3748")
 
-# Dependency type legend (data-driven)
+# Dependency type legend (compact)
 legend_x = x_max - pd.Timedelta(days=12)
 legend_xend = legend_x + pd.Timedelta(days=5)
 legend_text_x = legend_xend + pd.Timedelta(days=1)
-legend_items = [
-    ("Finish-to-Start", "finish-to-start", -2.0),
-    ("Start-to-Start", "start-to-start", -2.9),
-    ("Finish-to-Finish", "finish-to-finish", -3.8),
+legend_entries = [
+    ("Finish-to-Start", "finish-to-start", -1.5),
+    ("Start-to-Start", "start-to-start", -2.2),
+    ("Finish-to-Finish", "finish-to-finish", -2.9),
 ]
 
 plot += geom_text(
     aes(x="x", y="y", label="label"),
-    data=pd.DataFrame([{"x": legend_x, "y": -1.1, "label": "Dependencies:"}]),
+    data=pd.DataFrame([{"x": legend_x, "y": -0.7, "label": "Dependencies:"}]),
     hjust=0,
-    size=12,
+    size=13,
     fontface="bold",
-    color="#222222",
+    color="#1a365d",
 )
 
-legend_seg_df = pd.DataFrame([{"x": legend_x, "xend": legend_xend, "y": y} for _, _, y in legend_items])
-legend_lbl_df = pd.DataFrame([{"x": legend_text_x, "y": y, "label": label} for label, _, y in legend_items])
-
-for (label, dep_type, y), (_, seg_row) in zip(legend_items, legend_seg_df.iterrows()):
+for label, dep_type, y in legend_entries:
+    seg_df = pd.DataFrame([{"x": legend_x, "xend": legend_xend, "y": y}])
     plot += geom_segment(
         aes(x="x", xend="xend", y="y", yend="y"),
-        data=pd.DataFrame([seg_row]),
+        data=seg_df,
         size=1.5,
         color=dep_colors[dep_type],
         arrow=arrow(angle=25, length=10, type="closed"),
     )
 
-plot += geom_text(aes(x="x", y="y", label="label"), data=legend_lbl_df, hjust=0, size=11, color="#333333")
+legend_lbl_df = pd.DataFrame([{"x": legend_text_x, "y": y, "label": label} for label, _, y in legend_entries])
+plot += geom_text(aes(x="x", y="y", label="label"), data=legend_lbl_df, hjust=0, size=12, color="#2D3748")
 
-# Native datetime axis and theme
+# Native datetime axis and refined theme
 plot += scale_x_datetime(format="%b %d", limits=[x_min - pd.Timedelta(days=18), x_max + pd.Timedelta(days=12)])
-plot += scale_y_continuous(breaks=[], labels=[], limits=[-5.0, y_pos + 0.5])
+plot += scale_y_continuous(breaks=[], labels=[], limits=[-3.8, n + 0.5])
 plot += labs(x="Timeline", y="", title="gantt-dependencies \u00b7 letsplot \u00b7 pyplots.ai")
 plot += theme_minimal()
 plot += theme(
-    axis_title_x=element_text(size=22),
+    axis_title_x=element_text(size=22, color="#4A5568"),
     axis_title_y=element_blank(),
-    axis_text_x=element_text(size=18, angle=45),
+    axis_text_x=element_text(size=18, angle=45, color="#4A5568"),
     axis_text_y=element_blank(),
-    plot_title=element_text(size=28),
+    plot_title=element_text(size=32, face="bold", color="#1a365d"),
     panel_grid_major_y=element_blank(),
     panel_grid_minor=element_blank(),
-    panel_grid_major_x=element_line(color="#E0E4E8", size=0.5),
+    panel_grid_major_x=element_line(color="#E2E8F0", size=0.4),
 )
 plot += ggsize(1600, 900)
 
 # Save
-ggsave(plot, "plot.png", scale=3)
-ggsave(plot, "plot.html")
+ggsave(plot, "plot.png", path=".", scale=3)
+ggsave(plot, "plot.html", path=".")

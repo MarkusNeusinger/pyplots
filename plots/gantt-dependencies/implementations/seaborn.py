@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 gantt-dependencies: Gantt Chart with Dependencies
-Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 91/100 | Created: 2026-01-15
+Library: seaborn 0.13.2 | Python 3.14
+Quality: /100 | Updated: 2026-02-25
 """
 
 import matplotlib.patches as mpatches
@@ -16,6 +16,7 @@ from matplotlib.patches import FancyArrowPatch
 sns.set_theme(style="whitegrid")
 
 # Data: Software Development Project with Dependencies
+# All dependent tasks start at or after their predecessors end
 tasks_data = [
     # Requirements Phase
     {
@@ -49,51 +50,51 @@ tasks_data = [
     },
     {
         "task": "Database Design",
-        "start": "2024-02-01",
-        "end": "2024-02-12",
+        "start": "2024-02-09",
+        "end": "2024-02-20",
         "group": "Design",
         "depends_on": ["System Architecture"],
     },
     {
         "task": "UI/UX Design",
-        "start": "2024-02-05",
-        "end": "2024-02-18",
+        "start": "2024-02-09",
+        "end": "2024-02-22",
         "group": "Design",
         "depends_on": ["System Architecture"],
     },
     {
         "task": "Design Review",
-        "start": "2024-02-19",
-        "end": "2024-02-23",
+        "start": "2024-02-23",
+        "end": "2024-02-28",
         "group": "Design",
         "depends_on": ["Database Design", "UI/UX Design"],
     },
     # Development Phase
     {
         "task": "Backend Core",
-        "start": "2024-02-26",
+        "start": "2024-02-29",
         "end": "2024-03-18",
         "group": "Development",
         "depends_on": ["Design Review"],
     },
     {
         "task": "API Development",
-        "start": "2024-03-04",
-        "end": "2024-03-22",
+        "start": "2024-03-19",
+        "end": "2024-04-05",
         "group": "Development",
         "depends_on": ["Backend Core"],
     },
     {
         "task": "Frontend Components",
-        "start": "2024-03-11",
-        "end": "2024-03-29",
+        "start": "2024-04-06",
+        "end": "2024-04-22",
         "group": "Development",
         "depends_on": ["UI/UX Design", "API Development"],
     },
     {
         "task": "Integration",
-        "start": "2024-04-01",
-        "end": "2024-04-12",
+        "start": "2024-04-23",
+        "end": "2024-05-06",
         "group": "Development",
         "depends_on": ["API Development", "Frontend Components"],
     },
@@ -107,19 +108,19 @@ tasks_data = [
     },
     {
         "task": "Integration Testing",
-        "start": "2024-04-08",
-        "end": "2024-04-19",
+        "start": "2024-05-07",
+        "end": "2024-05-17",
         "group": "Testing",
         "depends_on": ["Integration", "Unit Testing"],
     },
     {
         "task": "UAT",
-        "start": "2024-04-22",
-        "end": "2024-05-03",
+        "start": "2024-05-20",
+        "end": "2024-05-31",
         "group": "Testing",
         "depends_on": ["Integration Testing"],
     },
-    {"task": "Bug Fixes", "start": "2024-05-06", "end": "2024-05-17", "group": "Testing", "depends_on": ["UAT"]},
+    {"task": "Bug Fixes", "start": "2024-06-03", "end": "2024-06-14", "group": "Testing", "depends_on": ["UAT"]},
 ]
 
 df = pd.DataFrame(tasks_data)
@@ -155,10 +156,8 @@ df["y_pos"] = df["task"].map(task_to_y)
 fig, ax = plt.subplots(figsize=(16, 9))
 
 # Create data for seaborn lineplot (bars as thick lines)
-# This uses seaborn's lineplot to draw horizontal bars as line segments
 line_data = []
 for _, row in df.iterrows():
-    # Create start and end points for each task bar
     line_data.append(
         {"x": row["start_num"], "y": row["y_pos"], "task": row["task"], "group": row["group"], "point": "start"}
     )
@@ -193,7 +192,7 @@ for group in groups:
 
     ax.plot([group_start, group_end], [y, y], color=color, linewidth=10, alpha=0.4, solid_capstyle="round")
 
-# Draw dependency arrows
+# Draw dependency arrows from right edge of predecessor to left edge of successor
 for _, row in df.iterrows():
     if row["depends_on"]:
         end_y = task_to_y[row["task"]]
@@ -230,8 +229,14 @@ for group in groups:
         all_y.append(task_to_y[task])
 
 ax.set_yticks(all_y)
-ax.set_yticklabels(all_labels, fontsize=12)
+ax.set_yticklabels(all_labels, fontsize=13)
 ax.invert_yaxis()
+
+# Bold group labels for hierarchy emphasis
+for label in ax.get_yticklabels():
+    if label.get_text().startswith("▪"):
+        label.set_fontweight("bold")
+        label.set_fontsize(14)
 
 # X-axis formatting (dates)
 max_day = int(df["end_num"].max()) + 7

@@ -1,16 +1,16 @@
 library: seaborn
 specification_id: gantt-dependencies
 created: '2026-01-15T21:03:35Z'
-updated: '2026-01-15T21:06:24Z'
-generated_by: claude-opus-4-5-20251101
+updated: '2026-02-25T14:40:00Z'
+generated_by: claude-opus-4-6
 workflow_run: 21046151686
 issue: 3830
-python_version: 3.13.11
+python_version: '3.14'
 library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/gantt-dependencies/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gantt-dependencies/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 91
+quality_score: null
 review:
   strengths:
   - Excellent hierarchical organization with group headers and indented task names

@@ -520,7 +520,6 @@ Located in `.github/workflows/`:
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
 | **spec-create.yml** | `spec-request` label | Creates new specification (branch -> PR -> approval -> merge) |
-| **spec-update.yml** | `spec-update` label | Updates existing specification |
 
 ### Implementation Workflows (`impl-*.yml`)
 
@@ -663,7 +662,6 @@ bash .github/scripts/setup-labels.sh
 ### Specification Labels
 
 - **`spec-request`** - New specification request
-- **`spec-update`** - Update existing specification
 - **`spec-ready`** - Specification merged to main, ready for implementations
 
 ### Implementation Labels (on specification issue)
@@ -757,13 +755,6 @@ These are set automatically by `impl-review.yml` after AI evaluation and used by
 **Option D: Bulk (one library across all specs)**
 1. Go to Actions -> bulk-generate.yml -> Run workflow
 2. Enter specification_id=all, library=matplotlib
-
-### Updating Existing Specifications
-
-1. Create issue referencing the spec to update
-2. Add `spec-update` label
-3. `spec-update.yml` creates PR with changes
-4. Maintainer adds `approved` label to merge
 
 ### Issue Lifecycle
 

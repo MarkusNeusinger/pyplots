@@ -125,7 +125,6 @@ Examples: `scatter-basic`, `scatter-color-mapped`, `bar-grouped-horizontal`, `he
 ### Specification Labels
 
 - **`spec-request`** - New specification request
-- **`spec-update`** - Update existing specification
 - **`spec-ready`** - Specification merged to main, ready for implementations
 
 ### Implementation Labels

@@ -125,7 +125,6 @@ pyplots/
 ├── .github/
 │   └── workflows/                     # GitHub Actions CI/CD
 │       ├── spec-create.yml            # Creates specification (branch → PR → approval)
-│       ├── spec-update.yml            # Updates existing specification
 │       ├── impl-generate.yml          # Generates single library implementation
 │       ├── impl-review.yml            # AI quality evaluation
 │       ├── impl-repair.yml            # Repairs rejected implementation
@@ -479,7 +478,6 @@ plt.savefig('plot.png', dpi=300)
 
 **Specification Workflows**:
 - `spec-create.yml` - Creates specification (branch → PR → approval → merge)
-- `spec-update.yml` - Updates existing specification
 
 **Implementation Workflows**:
 - `impl-generate.yml` - Generates single library (`generate:{lib}` label OR dispatch)

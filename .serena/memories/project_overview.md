@@ -20,7 +20,7 @@ pyplots/
 ├── api/                    # FastAPI backend
 │   ├── main.py             # App factory, CORS, lifespan
 │   ├── routers/            # health, specs, libraries, images, plots, stats,
-│   │                       # download, proxy, seo, og_images, debug
+│   │                       # download, proxy, seo, og_images, debug (11 routers)
 │   ├── mcp/               # MCP server (server.py)
 │   ├── schemas.py          # Pydantic response models
 │   ├── dependencies.py     # DB session injection
@@ -41,25 +41,39 @@ pyplots/
 │       └── plot_generator.py  # Plot code generation logic
 ├── app/                    # React frontend
 │   └── src/
-│       ├── components/     # 13 components (PlotCard, CodeBlock, FilterPanel, Header, Footer, etc.)
-│       ├── pages/          # GalleryPage, SpecDetailPage, AboutPage
-│       ├── hooks/          # useSpecs, useSpec, useLibraries, useDebounce, useMediaQuery, etc.
+│       ├── components/     # 16 components (Breadcrumb, ErrorBoundary, FilterBar,
+│       │                   # Footer, Header, ImageCard, ImagesGrid, Layout,
+│       │                   # LibraryPills, LoaderSpinner, SpecDetailView,
+│       │                   # SpecOverview, SpecTabs, ToolbarActions)
+│       ├── pages/          # 7 pages (CatalogPage, DebugPage, HomePage,
+│       │                   # InteractivePage, LegalPage, McpPage, SpecPage)
+│       ├── hooks/          # 10 hooks (useAnalytics, useCodeFetch, useCopyCode,
+│       │                   # useFilterFetch, useFilterState, useInfiniteScroll,
+│       │                   # useLayoutContext, useLocalStorage, useUrlSync)
 │       ├── types/          # TypeScript interfaces
-│       ├── utils/          # api.ts (fetch-based API client)
-│       └── theme.ts        # MUI theme config
+│       ├── utils/          # api.ts (fetch-based API client), filters.ts, fuzzySearch.ts
+│       └── theme/          # MUI theme config
 ├── agentic/                # AI workflow layer
 │   ├── workflows/          # Composable phase scripts (Click CLI, uv inline headers)
 │   │   ├── plan.py, build.py, test.py, review.py  # Individual phases
+│   │   ├── document.py, patch.py, prompt.py, ship.py  # Additional phases
 │   │   ├── plan_build.py, plan_build_test.py       # Orchestrators
-│   │   ├── plan_build_test_review.py               # Full pipeline
-│   │   └── modules/        # agent.py (execution, types), state.py (persistence)
-│   ├── commands/           # 12 .md prompt templates ($1, $2, $ARGUMENTS vars)
-│   ├── specs/              # quality-criteria.md, code-conventions.md
+│   │   ├── plan_build_test_review.py               # Full review pipeline
+│   │   ├── plan_build_test_review_document.py      # + documentation
+│   │   ├── plan_build_test_review_document_ship.py # + shipping
+│   │   └── modules/        # agent.py (execution, types), state.py (persistence),
+│   │                        # orchestrator.py, template.py
+│   ├── commands/           # 17 .md prompt templates ($1, $2, $ARGUMENTS vars)
+│   │                       # agentic, audit, bug, chore, classify, commit, context,
+│   │                       # dokument, feature, implement, prime, pull_request,
+│   │                       # refactor, review, start, test, update
+│   ├── specs/              # Task specification files
+│   ├── context/            # Context documentation for specific changes
 │   ├── docs/               # project-guide.md
 │   └── runs/               # Runtime state (gitignored)
 ├── automation/             # CI/CD helper scripts
 │   └── scripts/            # workflow_cli.py, label_manager.py, sync_to_postgres.py, workflow_utils.py
-├── plots/                  # 267 specifications (plot-centric design)
+├── plots/                  # ~259 specifications (plot-centric design)
 │   └── {spec-id}/
 │       ├── specification.md      # Library-agnostic description
 │       ├── specification.yaml    # Tags, metadata

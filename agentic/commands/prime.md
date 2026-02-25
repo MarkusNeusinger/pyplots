@@ -4,7 +4,16 @@
 
 ## Run
 
-git ls-files ':!plots/'
+```bash
+# Current state: branch, uncommitted changes, stashes
+git status --short --branch
+
+# Recent activity: what's been worked on
+git log --oneline --graph -15
+
+# Open PRs: what's in flight
+gh pr list --limit 10 2>/dev/null || echo "(gh CLI not available)"
+```
 
 ## Read
 

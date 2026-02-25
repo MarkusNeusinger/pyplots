@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 gantt-dependencies: Gantt Chart with Dependencies
 Library: plotnine 0.15.3 | Python 3.14
 Quality: 89/100 | Updated: 2026-02-25
@@ -302,20 +302,20 @@ plot = (
         lineend="butt",
         alpha=0.85,
     )
-    # Non-critical dependency arrows (lighter)
+    # Non-critical dependency arrows (lighter but visible)
     + geom_segment(
         data=norm_arrows,
         mapping=aes(x="x_start", xend="x_end", y="y_start", yend="y_end"),
-        color="#999999",
-        size=0.8,
-        alpha=0.5,
+        color="#888888",
+        size=1.0,
+        alpha=0.6,
     )
     + geom_segment(
         data=norm_heads,
         mapping=aes(x="x_start", xend="x_end", y="y_start", yend="y_end"),
-        color="#999999",
-        size=1.0,
-        alpha=0.5,
+        color="#888888",
+        size=1.2,
+        alpha=0.6,
     )
     # Critical path dependency arrows (bold, dark)
     + geom_segment(
@@ -339,14 +339,22 @@ plot = (
     # Scales
     + scale_color_manual(values=group_colors, name="Project Phase", limits=group_order)
     + scale_y_continuous(breaks=y_breaks, labels=y_labels_list, trans="reverse")
-    + scale_x_datetime(date_breaks="1 week", date_labels="%b %d")
+    + scale_x_datetime(
+        date_breaks="1 week", date_labels="%b %d", limits=(datetime(2023, 12, 29), datetime(2024, 3, 23))
+    )
     # Labels
-    + labs(title="gantt-dependencies \u00b7 plotnine \u00b7 pyplots.ai", x="Date (2024)", y="")
+    + labs(
+        title="gantt-dependencies \u00b7 plotnine \u00b7 pyplots.ai",
+        subtitle="Bold bars & dark arrows = Critical Path  |  Subdued bars & gray arrows = Non-critical",
+        x="Date (2024)",
+        y="",
+    )
     # Theme - publication-quality styling
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
-        plot_title=element_text(size=26, weight="bold", margin={"b": 15}),
+        plot_title=element_text(size=26, weight="bold", margin={"b": 5}),
+        plot_subtitle=element_text(size=14, color="#555555", margin={"b": 15}),
         axis_title_x=element_text(size=20),
         axis_text_x=element_text(size=16, rotation=45, ha="right"),
         axis_text_y=element_text(size=16, ha="right"),

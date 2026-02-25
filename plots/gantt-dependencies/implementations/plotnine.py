@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 gantt-dependencies: Gantt Chart with Dependencies
 Library: plotnine 0.15.3 | Python 3.14
-Quality: 81/100 | Updated: 2026-02-25
 """
 
 from datetime import datetime, timedelta
@@ -13,6 +12,7 @@ from plotnine import (
     element_line,
     element_rect,
     element_text,
+    geom_point,
     geom_segment,
     ggplot,
     labs,
@@ -119,41 +119,44 @@ tasks_data = [
 
 df = pd.DataFrame(tasks_data)
 
-# Define group colors
-group_colors = {"Requirements": "#306998", "Design": "#4B8BBE", "Development": "#FFD43B", "Testing": "#646464"}
+# Differentiated color palette - colorblind-safe with distinct hues
+group_colors = {
+    "Requirements": "#306998",  # Deep blue
+    "Design": "#2A9D8F",  # Teal (distinct from blue)
+    "Development": "#E9A820",  # Amber
+    "Testing": "#7B2D8E",  # Purple
+}
+
+# Critical path: longest dependency chain through the project
+# Gather Req → Doc Specs → Review → Sys Arch → DB Design → Backend API → Integration → Int Testing → UAT
+critical_path_tasks = {
+    "Gather Requirements",
+    "Document Specs",
+    "Review & Approve",
+    "System Architecture",
+    "Database Design",
+    "Backend API",
+    "Integration",
+    "Integration Testing",
+    "User Acceptance",
+}
 
 # Create ordered task list with group headers (top to bottom)
 group_order = ["Requirements", "Design", "Development", "Testing"]
-task_display_order = []  # Top to bottom display order
-task_labels = {}  # Map y position to label
-
+task_labels = {}
 y_pos = 0
 group_positions = {}
 task_positions = {}
 
 for grp in group_order:
-    # Group header
-    group_label = f"▸ {grp}"
-    task_display_order.append({"label": group_label, "y": y_pos, "is_group": True, "group": grp})
+    group_label = f"\u25b8 {grp}"
     group_positions[grp] = y_pos
     task_labels[y_pos] = group_label
     y_pos += 1
 
-    # Tasks in this group
     group_tasks = df[df["group"] == grp]
     for _, task_row in group_tasks.iterrows():
         task_label = f"   {task_row['task']}"
-        task_display_order.append(
-            {
-                "label": task_label,
-                "y": y_pos,
-                "is_group": False,
-                "group": grp,
-                "task": task_row["task"],
-                "start": task_row["start"],
-                "end": task_row["end"],
-            }
-        )
         task_positions[task_row["task"]] = y_pos
         task_labels[y_pos] = task_label
         y_pos += 1
@@ -163,43 +166,39 @@ group_data = []
 for grp in group_order:
     group_tasks = df[df["group"] == grp]
     group_data.append(
-        {
-            "y": group_positions[grp],
-            "start": group_tasks["start"].min(),
-            "end": group_tasks["end"].max(),
-            "group": grp,
-            "is_group": True,
-        }
+        {"y": group_positions[grp], "start": group_tasks["start"].min(), "end": group_tasks["end"].max(), "group": grp}
     )
 
-# Create task data with y positions
-task_data = []
-for grp in group_order:
-    group_tasks = df[df["group"] == grp]
-    for _, task_row in group_tasks.iterrows():
-        task_data.append(
-            {
-                "y": task_positions[task_row["task"]],
-                "start": task_row["start"],
-                "end": task_row["end"],
-                "group": grp,
-                "is_group": False,
-            }
-        )
+# Create task data with y positions, split into critical path and non-critical
+critical_task_data = []
+normal_task_data = []
+for _, task_row in df.iterrows():
+    entry = {
+        "y": task_positions[task_row["task"]],
+        "start": task_row["start"],
+        "end": task_row["end"],
+        "group": task_row["group"],
+    }
+    if task_row["task"] in critical_path_tasks:
+        critical_task_data.append(entry)
+    else:
+        normal_task_data.append(entry)
 
 # Create DataFrames for plotting
-tasks_df = pd.DataFrame(task_data)
-groups_df = pd.DataFrame(group_data)
-
-# Set explicit category ordering for legend (project phase order, not alphabetical)
 phase_order = pd.CategoricalDtype(categories=group_order, ordered=True)
-tasks_df["group"] = tasks_df["group"].astype(phase_order)
+groups_df = pd.DataFrame(group_data)
 groups_df["group"] = groups_df["group"].astype(phase_order)
 
-# Build dependency arrows as L-shaped connectors (vertical then horizontal)
+critical_df = pd.DataFrame(critical_task_data)
+critical_df["group"] = critical_df["group"].astype(phase_order)
+
+normal_df = pd.DataFrame(normal_task_data)
+normal_df["group"] = normal_df["group"].astype(phase_order)
+
+# Build dependency arrows as L-shaped connectors
 arrows_data = []
 arrowheads_data = []
-arrow_size_days = 1.5  # Size of arrowhead in days
+arrow_size_days = 1.8
 
 for _, row in df.iterrows():
     if row["depends_on"]:
@@ -211,108 +210,155 @@ for _, row in df.iterrows():
                 y_start = task_positions[dep_name]
                 y_end = task_positions[row["task"]]
 
-                # Vertical segment: from predecessor end down to successor row
-                arrows_data.append({"x_start": x_start, "x_end": x_start, "y_start": y_start, "y_end": y_end})
-                # Horizontal segment: from corner to successor start (shortened for arrowhead)
+                is_critical = dep_name in critical_path_tasks and row["task"] in critical_path_tasks
+
+                # Vertical segment
+                arrows_data.append(
+                    {"x_start": x_start, "x_end": x_start, "y_start": y_start, "y_end": y_end, "critical": is_critical}
+                )
+                # Horizontal segment
                 arrows_data.append(
                     {
                         "x_start": x_start,
-                        "x_end": x_end - timedelta(days=arrow_size_days * 0.4),
+                        "x_end": x_end - timedelta(days=arrow_size_days * 0.3),
                         "y_start": y_end,
                         "y_end": y_end,
+                        "critical": is_critical,
                     }
                 )
 
-                # Arrowhead (V pointing right at successor start)
+                # Arrowhead (V pointing right)
                 arrow_tip_x = x_end
                 arrow_base_x = x_end - timedelta(days=arrow_size_days)
-                arrow_wing_offset = 0.25
+                arrow_wing = 0.28
 
                 arrowheads_data.append(
                     {
                         "x_start": arrow_base_x,
                         "x_end": arrow_tip_x,
-                        "y_start": y_end - arrow_wing_offset,
+                        "y_start": y_end - arrow_wing,
                         "y_end": y_end,
+                        "critical": is_critical,
                     }
                 )
                 arrowheads_data.append(
                     {
                         "x_start": arrow_base_x,
                         "x_end": arrow_tip_x,
-                        "y_start": y_end + arrow_wing_offset,
+                        "y_start": y_end + arrow_wing,
                         "y_end": y_end,
+                        "critical": is_critical,
                     }
                 )
 
-arrows_df = pd.DataFrame(arrows_data) if arrows_data else None
-arrowheads_df = pd.DataFrame(arrowheads_data) if arrowheads_data else None
+arrows_df = pd.DataFrame(arrows_data)
+arrowheads_df = pd.DataFrame(arrowheads_data)
 
-# Create y-axis labels and breaks
+# Split arrows into critical and non-critical
+crit_arrows = arrows_df[arrows_df["critical"]]
+norm_arrows = arrows_df[~arrows_df["critical"]]
+crit_heads = arrowheads_df[arrowheads_df["critical"]]
+norm_heads = arrowheads_df[~arrowheads_df["critical"]]
+
+# Milestone markers at phase handoff dates
+milestones = pd.DataFrame(
+    [
+        {"x": datetime(2024, 1, 20), "y": task_positions["Review & Approve"], "label": "Design Start"},
+        {"x": datetime(2024, 2, 7), "y": task_positions["Database Design"], "label": "Dev Start"},
+        {"x": datetime(2024, 2, 28), "y": task_positions["Backend API"], "label": "Testing Start"},
+        {"x": datetime(2024, 3, 21), "y": task_positions["User Acceptance"], "label": "Launch"},
+    ]
+)
+
+# Y-axis configuration
 y_breaks = list(task_labels.keys())
-y_labels = [task_labels[y] for y in y_breaks]
+y_labels_list = [task_labels[y] for y in y_breaks]
 
-# Build the plot
+# Build the plot using grammar of graphics layer composition
 plot = (
     ggplot()
-    # Task bars
+    # Non-critical task bars (subdued)
     + geom_segment(
-        data=tasks_df, mapping=aes(x="start", xend="end", y="y", yend="y", color="group"), size=10, lineend="butt"
+        data=normal_df,
+        mapping=aes(x="start", xend="end", y="y", yend="y", color="group"),
+        size=9,
+        lineend="butt",
+        alpha=0.5,
     )
-    # Group aggregate bars (thicker)
+    # Critical path task bars (prominent)
+    + geom_segment(
+        data=critical_df,
+        mapping=aes(x="start", xend="end", y="y", yend="y", color="group"),
+        size=11,
+        lineend="butt",
+        alpha=1.0,
+    )
+    # Group aggregate bars (thicker, bold)
     + geom_segment(
         data=groups_df,
         mapping=aes(x="start", xend="end", y="y", yend="y", color="group"),
-        size=14,
+        size=15,
         lineend="butt",
+        alpha=0.85,
+    )
+    # Non-critical dependency arrows (lighter)
+    + geom_segment(
+        data=norm_arrows,
+        mapping=aes(x="x_start", xend="x_end", y="y_start", yend="y_end"),
+        color="#999999",
+        size=0.8,
+        alpha=0.5,
+    )
+    + geom_segment(
+        data=norm_heads,
+        mapping=aes(x="x_start", xend="x_end", y="y_start", yend="y_end"),
+        color="#999999",
+        size=1.0,
+        alpha=0.5,
+    )
+    # Critical path dependency arrows (bold, dark)
+    + geom_segment(
+        data=crit_arrows,
+        mapping=aes(x="x_start", xend="x_end", y="y_start", yend="y_end"),
+        color="#1A1A1A",
+        size=1.4,
+        alpha=0.85,
+    )
+    + geom_segment(
+        data=crit_heads,
+        mapping=aes(x="x_start", xend="x_end", y="y_start", yend="y_end"),
+        color="#1A1A1A",
+        size=1.8,
         alpha=0.9,
     )
-)
-
-# Add dependency arrows with arrowheads
-if arrows_df is not None and len(arrows_df) > 0:
-    plot = plot + geom_segment(
-        data=arrows_df,
-        mapping=aes(x="x_start", xend="x_end", y="y_start", yend="y_end"),
-        color="#333333",
-        size=1.0,
-        alpha=0.7,
+    # Milestone diamond markers at key handoff points
+    + geom_point(
+        data=milestones, mapping=aes(x="x", y="y"), shape="D", size=5, color="#C0392B", fill="#C0392B", alpha=0.9
     )
-    if arrowheads_df is not None and len(arrowheads_df) > 0:
-        plot = plot + geom_segment(
-            data=arrowheads_df,
-            mapping=aes(x="x_start", xend="x_end", y="y_start", yend="y_end"),
-            color="#333333",
-            size=1.4,
-            alpha=0.85,
-        )
-
-# Add scales, labels, and theme
-plot = (
-    plot
+    # Scales
     + scale_color_manual(values=group_colors, name="Project Phase", limits=group_order)
-    + scale_y_continuous(
-        breaks=y_breaks,
-        labels=y_labels,
-        trans="reverse",  # Reverse so first group is at top
-    )
-    + scale_x_datetime()
-    + labs(title="gantt-dependencies · plotnine · pyplots.ai", x="Date (2024)", y="")
+    + scale_y_continuous(breaks=y_breaks, labels=y_labels_list, trans="reverse")
+    + scale_x_datetime(date_breaks="1 week", date_labels="%b %d")
+    # Labels
+    + labs(title="gantt-dependencies \u00b7 plotnine \u00b7 pyplots.ai", x="Date (2024)", y="")
+    # Theme - publication-quality styling
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
-        plot_title=element_text(size=24, weight="bold", margin={"b": 15}),
-        axis_title_x=element_text(size=18),
-        axis_text_x=element_text(size=14, rotation=45, ha="right"),
-        axis_text_y=element_text(size=12, ha="right"),
-        legend_title=element_text(size=16, weight="bold"),
-        legend_text=element_text(size=14),
+        plot_title=element_text(size=26, weight="bold", margin={"b": 15}),
+        axis_title_x=element_text(size=20),
+        axis_text_x=element_text(size=16, rotation=45, ha="right"),
+        axis_text_y=element_text(size=16, ha="right"),
+        legend_title=element_text(size=18, weight="bold"),
+        legend_text=element_text(size=16),
         legend_position="right",
-        legend_background=element_rect(fill="white", alpha=0.8),
+        legend_background=element_rect(fill="white", alpha=0.85, color="#CCCCCC", size=0.5),
+        legend_key_size=18,
         panel_grid_major_y=element_blank(),
         panel_grid_minor=element_blank(),
-        panel_grid_major_x=element_line(color="#DDDDDD", size=0.4, alpha=0.4),
+        panel_grid_major_x=element_line(color="#E0E0E0", size=0.3, alpha=0.5),
         plot_background=element_rect(fill="white", color="white"),
+        panel_background=element_rect(fill="#FAFAFA", color="white"),
     )
 )
 

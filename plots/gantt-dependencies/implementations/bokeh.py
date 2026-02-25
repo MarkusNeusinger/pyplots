@@ -1,12 +1,12 @@
-""" pyplots.ai
+"""pyplots.ai
 gantt-dependencies: Gantt Chart with Dependencies
-Library: bokeh 3.8.2 | Python 3.13.11
-Quality: 90/100 | Created: 2026-01-15
+Library: bokeh 3.8.2 | Python 3.14
+Quality: /100 | Updated: 2026-02-25
 """
 
 import pandas as pd
 from bokeh.io import export_png, output_file, save
-from bokeh.models import ColumnDataSource, LabelSet, Legend, LegendItem
+from bokeh.models import BoxAnnotation, ColumnDataSource, LabelSet, Legend, LegendItem
 from bokeh.plotting import figure
 
 
@@ -120,43 +120,57 @@ for group in groups:
     group_df = df[df["group"] == group]
     group_spans[group] = {"start": group_df["start"].min(), "end": group_df["end"].max()}
 
-# Build y-positions using numeric indices
+# Build y-positions with group headers
 y_positions = {}
 y_labels = []
+y_is_group = []
 current_y = 0
 
 for group in groups:
-    # Group header
     y_positions[f"__group__{group}"] = current_y
     y_labels.append((current_y, group))
+    y_is_group.append(True)
     current_y += 1
-    # Tasks in this group (indented)
     group_tasks = df[df["group"] == group]["task"].tolist()
     for task in group_tasks:
         y_positions[task] = current_y
-        y_labels.append((current_y, f"    {task}"))
+        y_labels.append((current_y, f"   {task}"))
+        y_is_group.append(False)
         current_y += 1
 
 max_y = current_y
 
-# Create figure with numeric y-axis
+# Create figure
 p = figure(
     width=4800,
     height=2700,
     x_axis_type="datetime",
     y_range=(max_y + 0.5, -0.5),
-    title="gantt-dependencies · bokeh · pyplots.ai",
-    x_axis_label="Timeline",
+    title="gantt-dependencies \u00b7 bokeh \u00b7 pyplots.ai",
+    x_axis_label="Timeline (Weeks)",
     tools="",
 )
 
-# Style - larger fonts for 4800x2700 canvas
+# Style
 p.title.text_font_size = "42pt"
+p.title.text_color = "#333333"
 p.xaxis.axis_label_text_font_size = "28pt"
 p.xaxis.major_label_text_font_size = "22pt"
 p.yaxis.visible = False
-p.xgrid.grid_line_alpha = 0.3
+p.xgrid.grid_line_alpha = 0.15
+p.xgrid.grid_line_dash = [6, 4]
 p.ygrid.grid_line_alpha = 0.0
+p.outline_line_color = None
+p.background_fill_color = "#FAFAFA"
+
+# Alternating row bands for readability
+for i in range(max_y):
+    if i % 2 == 0:
+        p.add_layout(
+            BoxAnnotation(
+                bottom=i - 0.5, top=i + 0.5, fill_color="#F0F0F0", fill_alpha=0.5, level="underlay", line_color=None
+            )
+        )
 
 # Draw group span bars (lighter background)
 group_renderers = {}
@@ -164,104 +178,142 @@ for group in groups:
     span = group_spans[group]
     y = y_positions[f"__group__{group}"]
     source = ColumnDataSource(data={"y": [y], "left": [span["start"]], "right": [span["end"]], "height": [0.7]})
-    r = p.hbar(y="y", left="left", right="right", height="height", color=group_colors[group], alpha=0.35, source=source)
+    r = p.hbar(y="y", left="left", right="right", height="height", color=group_colors[group], alpha=0.3, source=source)
     group_renderers[group] = r
 
 # Draw task bars
 for _, row in df.iterrows():
     y = y_positions[row["task"]]
-    source = ColumnDataSource(data={"y": [y], "left": [row["start"]], "right": [row["end"]], "height": [0.55]})
+    source = ColumnDataSource(data={"y": [y], "left": [row["start"]], "right": [row["end"]], "height": [0.5]})
     p.hbar(
-        y="y", left="left", right="right", height="height", color=group_colors[row["group"]], alpha=0.9, source=source
+        y="y",
+        left="left",
+        right="right",
+        height="height",
+        color=group_colors[row["group"]],
+        alpha=0.9,
+        line_color="white",
+        line_width=1,
+        source=source,
     )
 
-# Draw dependency arrows using multi_line with arrowheads
-# Route arrows to avoid passing through task bars by going below/above them
+# Draw dependency arrows (finish-to-start)
 arrow_xs = []
 arrow_ys = []
 arrowhead_xs = []
 arrowhead_ys = []
 
-bar_offset = 0.4  # Offset to route around bars
+dep_color = "#666666"
 
 for _, row in df.iterrows():
     task_name = row["task"]
     task_y = y_positions[task_name]
-    task_start = row["start"].value / 1e6  # Convert to ms for plotting
+    task_start_ms = row["start"].value / 1e6
 
     for dep_name in row["depends_on"]:
         if dep_name in task_lookup:
             dep_row = df.iloc[task_lookup[dep_name]]
-            dep_end = dep_row["end"].value / 1e6
+            dep_end_ms = dep_row["end"].value / 1e6
             dep_y = y_positions[dep_name]
 
-            # Route around bars: go from end of dep bar, drop down/up outside bar area, then connect
-            if task_y > dep_y:
-                # Target is below: route via bottom edges of bars
-                route_y = max(dep_y, task_y) + bar_offset
-                arrow_xs.append([dep_end, dep_end, task_start, task_start])
-                arrow_ys.append([dep_y + bar_offset * 0.7, route_y, route_y, task_y])
-            elif task_y < dep_y:
-                # Target is above: route via top edges
-                route_y = min(dep_y, task_y) - bar_offset
-                arrow_xs.append([dep_end, dep_end, task_start, task_start])
-                arrow_ys.append([dep_y - bar_offset * 0.7, route_y, route_y, task_y])
+            # Horizontal offset for the vertical drop segment
+            h_offset = 1.0 * 24 * 60 * 60 * 1000  # 1 day in ms
+
+            if task_y != dep_y:
+                # Route: right from dep end → down/up → horizontal → into successor start
+                mid_x = dep_end_ms + h_offset
+                arrow_xs.append([dep_end_ms, mid_x, mid_x, task_start_ms])
+                arrow_ys.append([dep_y, dep_y, task_y, task_y])
             else:
-                # Same row (shouldn't happen)
-                arrow_xs.append([dep_end, task_start])
+                arrow_xs.append([dep_end_ms, task_start_ms])
                 arrow_ys.append([dep_y, task_y])
 
-            # Arrowhead (small triangle pointing right)
-            arrow_size = 2 * 24 * 60 * 60 * 1000  # 2 days in ms for arrowhead
-            arrowhead_xs.append([task_start - arrow_size, task_start, task_start - arrow_size])
+            # Arrowhead pointing right into the successor bar
+            arrow_size = 1.5 * 24 * 60 * 60 * 1000  # 1.5 days in ms
+            arrowhead_xs.append([task_start_ms - arrow_size, task_start_ms, task_start_ms - arrow_size])
             arrowhead_ys.append([task_y - 0.12, task_y, task_y + 0.12])
 
 # Draw dependency lines
+dep_renderer = None
 if arrow_xs:
-    p.multi_line(xs=arrow_xs, ys=arrow_ys, line_color="#555555", line_width=2.5, line_alpha=0.7)
+    dep_renderer = p.multi_line(xs=arrow_xs, ys=arrow_ys, line_color=dep_color, line_width=3, line_alpha=0.6)
 
 # Draw arrowheads
 if arrowhead_xs:
     p.patches(
-        xs=arrowhead_xs, ys=arrowhead_ys, fill_color="#555555", fill_alpha=0.8, line_color="#555555", line_width=1
+        xs=arrowhead_xs, ys=arrowhead_ys, fill_color=dep_color, fill_alpha=0.7, line_color=dep_color, line_width=1
     )
 
-# Add y-axis labels manually with larger font for 4800x2700 canvas
-label_source = ColumnDataSource(
-    data={
-        "y": [y for y, _ in y_labels],
-        "text": [label for _, label in y_labels],
-        "x": [df["start"].min() - pd.Timedelta(days=1)] * len(y_labels),
-    }
-)
-labels = LabelSet(
-    x="x",
-    y="y",
-    text="text",
-    source=label_source,
-    text_font_size="22pt",
-    text_align="right",
-    x_offset=-10,
-    y_offset=0,
-    text_baseline="middle",
-)
-p.add_layout(labels)
+# Y-axis labels — group headers bold, task names regular
+group_label_ys = []
+group_label_texts = []
+task_label_ys = []
+task_label_texts = []
 
-# Adjust x range to make room for labels
-x_min = df["start"].min() - pd.Timedelta(days=12)
+for (y, label), is_group in zip(y_labels, y_is_group, strict=True):
+    if is_group:
+        group_label_ys.append(y)
+        group_label_texts.append(label)
+    else:
+        task_label_ys.append(y)
+        task_label_texts.append(label)
+
+label_x = df["start"].min() - pd.Timedelta(days=1)
+
+# Group header labels (bold, larger)
+group_label_source = ColumnDataSource(
+    data={"y": group_label_ys, "text": group_label_texts, "x": [label_x] * len(group_label_ys)}
+)
+p.add_layout(
+    LabelSet(
+        x="x",
+        y="y",
+        text="text",
+        source=group_label_source,
+        text_font_size="24pt",
+        text_font_style="bold",
+        text_align="right",
+        x_offset=-10,
+        text_baseline="middle",
+        text_color="#222222",
+    )
+)
+
+# Task labels (regular, slightly smaller)
+task_label_source = ColumnDataSource(
+    data={"y": task_label_ys, "text": task_label_texts, "x": [label_x] * len(task_label_ys)}
+)
+p.add_layout(
+    LabelSet(
+        x="x",
+        y="y",
+        text="text",
+        source=task_label_source,
+        text_font_size="20pt",
+        text_align="right",
+        x_offset=-10,
+        text_baseline="middle",
+        text_color="#444444",
+    )
+)
+
+# Adjust x range for labels
+x_min = df["start"].min() - pd.Timedelta(days=14)
 x_max = df["end"].max() + pd.Timedelta(days=3)
 p.x_range.start = x_min
 p.x_range.end = x_max
 
-# Add legend inside the plot area (top right corner) for better proximity to content
+# Legend with phase colors and dependency line
 legend_items = []
 for group in groups:
     legend_items.append(LegendItem(label=group, renderers=[group_renderers[group]]))
+if dep_renderer:
+    legend_items.append(LegendItem(label="Dependency (finish-to-start)", renderers=[dep_renderer]))
 
 legend = Legend(
     items=legend_items,
     location="top_right",
-    label_text_font_size="22pt",
+    label_text_font_size="20pt",
     spacing=12,
     padding=20,
     background_fill_alpha=0.85,
@@ -277,5 +329,5 @@ p.toolbar_location = None
 export_png(p, filename="plot.png")
 
 # Save HTML (interactive)
-output_file("plot.html", title="gantt-dependencies · bokeh · pyplots.ai")
+output_file("plot.html", title="gantt-dependencies \u00b7 bokeh \u00b7 pyplots.ai")
 save(p)

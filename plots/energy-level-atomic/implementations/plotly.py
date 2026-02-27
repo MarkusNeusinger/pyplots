@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 energy-level-atomic: Atomic Energy Level Diagram
 Library: plotly 6.5.2 | Python 3.14.3
-Quality: 85/100 | Created: 2026-02-27
+Quality: 89/100 | Created: 2026-02-27
 """
 
 import plotly.graph_objects as go

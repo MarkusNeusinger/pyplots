@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 mohr-circle: Mohr's Circle for Stress Analysis
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 86/100 | Created: 2026-02-27
@@ -35,7 +35,7 @@ stress_points = pd.DataFrame(
         {"sigma": sigma_1, "tau": 0, "label": f"σ₁ = {sigma_1:.1f} MPa", "type": "Principal"},
         {"sigma": sigma_2, "tau": 0, "label": f"σ₂ = {sigma_2:.1f} MPa", "type": "Principal"},
         {"sigma": center, "tau": tau_max, "label": f"τmax = {tau_max:.1f} MPa", "type": "Max Shear"},
-        {"sigma": center, "tau": -tau_max, "label": "−τmax", "type": "Max Shear"},
+        {"sigma": center, "tau": -tau_max, "label": f"−τmax = −{tau_max:.1f} MPa", "type": "Max Shear"},
     ]
 )
 
@@ -50,7 +50,7 @@ arc_df = pd.DataFrame(
 )
 
 # Equal aspect ratio domains
-span = max(sigma_1 - sigma_2, 2 * tau_max) + 50
+span = max(sigma_1 - sigma_2, 2 * tau_max) + 30
 domain_sigma = [center - span / 2, center + span / 2]
 domain_tau = [-span / 2, span / 2]
 
@@ -104,24 +104,43 @@ angle_lbl = (
     .encode(x="sigma:Q", y="tau:Q")
 )
 
-# Stress points with color by type
+# Interactive selection for hover highlighting (HTML output)
+highlight = alt.selection_point(fields=["type"], on="pointerover")
+
+# Stress points with color by type and interactive highlighting
 points = (
     alt.Chart(stress_points)
-    .mark_point(size=300, filled=True, strokeWidth=2, stroke="white")
+    .mark_point(filled=True, strokeWidth=2, stroke="white")
     .encode(
         x="sigma:Q",
         y="tau:Q",
         color=alt.Color(
             "type:N",
-            scale=alt.Scale(domain=["Stress State", "Principal", "Max Shear"], range=["#306998", "#C0392B", "#E67E22"]),
-            legend=None,
+            scale=alt.Scale(domain=["Stress State", "Principal", "Max Shear"], range=["#306998", "#D63031", "#E67E22"]),
+            legend=alt.Legend(
+                title=None,
+                orient="bottom-right",
+                direction="vertical",
+                symbolSize=200,
+                symbolStrokeWidth=0,
+                labelFontSize=14,
+                padding=10,
+                offset=10,
+                fillColor="rgba(255,255,255,0.85)",
+                strokeColor="#CCCCCC",
+                cornerRadius=4,
+            ),
         ),
+        size=alt.condition(highlight, alt.value(420), alt.value(300)),
+        opacity=alt.condition(highlight, alt.value(1.0), alt.value(0.5)),
         tooltip=[
             alt.Tooltip("label:N", title="Point"),
             alt.Tooltip("sigma:Q", title="σ (MPa)", format=".1f"),
             alt.Tooltip("tau:Q", title="τ (MPa)", format=".1f"),
+            alt.Tooltip("type:N", title="Category"),
         ],
     )
+    .add_params(highlight)
 )
 
 # Center point
@@ -133,7 +152,7 @@ center_pt = (
 )
 center_lbl = (
     alt.Chart(center_pt_df)
-    .mark_text(text=f"C ({center:.0f}, 0)", fontSize=14, color="#666666", dy=22)
+    .mark_text(text=f"C ({center:.0f}, 0)", fontSize=16, color="#555555", dy=22)
     .encode(x="sigma:Q", y="tau:Q")
 )
 
@@ -187,9 +206,30 @@ chart = (
         center_lbl,
         angle_lbl,
     )
-    .properties(width=1200, height=1200, title=alt.Title("mohr-circle · altair · pyplots.ai", fontSize=28))
-    .configure_axis(labelFontSize=18, titleFontSize=22, grid=True, gridOpacity=0.15)
-    .configure_view(strokeWidth=0)
+    .properties(
+        width=1200,
+        height=1200,
+        title=alt.Title(
+            "mohr-circle · altair · pyplots.ai",
+            fontSize=28,
+            fontWeight="bold",
+            color="#2C3E50",
+            subtitle="2D Stress Transformation — σx=80, σy=−40, τxy=30 MPa",
+            subtitleFontSize=16,
+            subtitleColor="#7F8C8D",
+        ),
+    )
+    .configure_axis(
+        labelFontSize=18,
+        titleFontSize=22,
+        titleColor="#2C3E50",
+        labelColor="#555555",
+        grid=True,
+        gridOpacity=0.12,
+        gridColor="#B0BEC5",
+        domainColor="#90A4AE",
+    )
+    .configure_view(strokeWidth=0, fill="#FAFBFC")
 )
 
 # Save

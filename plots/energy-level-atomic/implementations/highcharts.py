@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 energy-level-atomic: Atomic Energy Level Diagram
 Library: highcharts unknown | Python 3.14.3
 Quality: 86/100 | Created: 2026-02-27
@@ -48,28 +48,61 @@ chart.options.chart = {
 
 chart.options.title = {
     "text": "energy-level-atomic \u00b7 highcharts \u00b7 pyplots.ai",
-    "style": {"fontSize": "64px", "fontWeight": "bold", "color": "#2c3e50"},
+    "style": {"fontSize": "64px", "fontWeight": "700", "color": "#2c3e50", "letterSpacing": "1px"},
+    "margin": 30,
 }
 
 chart.options.subtitle = {
     "text": "Hydrogen Atom Energy Levels and Spectral Transitions",
-    "style": {"fontSize": "40px", "color": "#7f8c8d"},
+    "style": {"fontSize": "42px", "fontWeight": "400", "color": "#7f8c8d", "letterSpacing": "0.5px"},
 }
 
 chart.options.x_axis = {"visible": False, "min": 0, "max": 11}
 
 chart.options.y_axis = {
-    "title": {"text": "Energy (eV)", "style": {"fontSize": "40px", "color": "#2c3e50"}},
-    "labels": {"style": {"fontSize": "32px", "color": "#2c3e50"}, "format": "{value}"},
+    "title": {
+        "text": "Energy (eV)",
+        "style": {"fontSize": "42px", "fontWeight": "600", "color": "#2c3e50"},
+        "margin": 30,
+    },
+    "labels": {"style": {"fontSize": "34px", "color": "#34495e"}, "format": "{value}"},
     "gridLineWidth": 0,
     "lineWidth": 2,
-    "lineColor": "#bdc3c7",
-    "min": -14.5,
-    "max": 0.8,
+    "lineColor": "#95a5a6",
+    "min": -14.2,
+    "max": 0.6,
     "tickPositions": [-14, -13, -3, -2, -1, 0],
+    "tickWidth": 2,
+    "tickLength": 10,
+    "tickColor": "#95a5a6",
     "startOnTick": False,
     "endOnTick": False,
-    "breaks": [{"from": -12, "to": -4, "breakSize": 0.5}],
+    "breaks": [{"from": -12.5, "to": -3.6, "breakSize": 0.12}],
+    "plotBands": [
+        {
+            "from": -14.2,
+            "to": -12.5,
+            "color": "rgba(214, 51, 132, 0.04)",
+            "label": {
+                "text": "Ground state",
+                "align": "left",
+                "x": 10,
+                "style": {"fontSize": "24px", "color": "#aab2b8", "fontStyle": "italic"},
+            },
+        },
+        {
+            "from": -3.6,
+            "to": 0.6,
+            "color": "rgba(48, 105, 152, 0.03)",
+            "label": {
+                "text": "Excited states \u2192 Continuum",
+                "align": "right",
+                "x": -10,
+                "y": 30,
+                "style": {"fontSize": "24px", "color": "#aab2b8", "fontStyle": "italic"},
+            },
+        },
+    ],
 }
 
 chart.options.legend = {
@@ -77,10 +110,11 @@ chart.options.legend = {
     "layout": "horizontal",
     "align": "center",
     "verticalAlign": "bottom",
-    "itemStyle": {"fontSize": "36px", "fontWeight": "normal", "color": "#2c3e50"},
-    "symbolWidth": 50,
-    "symbolHeight": 4,
+    "itemStyle": {"fontSize": "36px", "fontWeight": "500", "color": "#2c3e50"},
+    "symbolWidth": 60,
+    "symbolHeight": 6,
     "itemMarginBottom": 10,
+    "itemDistance": 80,
     "y": 10,
 }
 
@@ -117,12 +151,12 @@ for n, energy in energy_levels.items():
                         "y": label_y_offsets[n],
                         "crop": False,
                         "overflow": "allow",
-                        "style": {"fontSize": "30px", "fontWeight": "bold", "color": "#2c3e50", "textOutline": "none"},
+                        "style": {"fontSize": "32px", "fontWeight": "600", "color": "#2c3e50", "textOutline": "none"},
                     },
                 },
             ],
-            "color": "#34495e",
-            "lineWidth": 5,
+            "color": "#2c3e50",
+            "lineWidth": 6,
             "marker": {"enabled": False},
             "enableMouseTracking": False,
             "showInLegend": False,
@@ -163,7 +197,7 @@ chart.add_series(
 
 # Transition arrows grouped by spectral series
 transition_groups = [
-    ("Lyman Series (UV)", lyman_series, "#8e44ad", 2.5, "lyman"),
+    ("Lyman Series (UV)", lyman_series, "#D63384", 2.5, "lyman"),
     ("Balmer Series (Visible)", balmer_series, "#306998", 5.0, "balmer"),
     ("Paschen Series (IR)", paschen_series, "#e67e22", 7.5, "paschen"),
 ]
@@ -185,7 +219,7 @@ for group_name, transitions, color, base_x, group_id in transition_groups:
             "marker": {
                 "enabled": True,
                 "symbol": "circle",
-                "radius": 10 if is_alpha else 7,
+                "radius": 12 if is_alpha else 10,
                 "fillColor": color,
                 "lineColor": color,
             },
@@ -203,11 +237,11 @@ for group_name, transitions, color, base_x, group_id in transition_groups:
                 "crop": False,
                 "overflow": "allow",
                 "style": {
-                    "fontSize": "26px",
+                    "fontSize": "30px",
                     "fontStyle": "italic",
                     "fontWeight": "bold",
                     "color": color,
-                    "textOutline": "2px #ffffff",
+                    "textOutline": "3px #fafafa",
                 },
             }
 
@@ -217,7 +251,7 @@ for group_name, transitions, color, base_x, group_id in transition_groups:
             "marker": {
                 "enabled": True,
                 "symbol": "triangle-down",
-                "radius": 16 if is_alpha else 12,
+                "radius": 18 if is_alpha else 15,
                 "fillColor": color,
                 "lineColor": color,
             },
@@ -228,7 +262,7 @@ for group_name, transitions, color, base_x, group_id in transition_groups:
             "name": group_name,
             "data": [upper_point, lower_point],
             "color": color,
-            "lineWidth": 5 if is_alpha else 3,
+            "lineWidth": 6 if is_alpha else 4,
             "showInLegend": is_first,
             "tooltip": {
                 "headerFormat": "",

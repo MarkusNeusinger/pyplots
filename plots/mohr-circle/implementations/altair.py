@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 mohr-circle: Mohr's Circle for Stress Analysis
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 88/100 | Created: 2026-02-27
@@ -30,12 +30,60 @@ circle_df = pd.DataFrame(
 # Key stress points
 stress_points = pd.DataFrame(
     [
-        {"sigma": sigma_x, "tau": tau_xy, "label": f"A ({sigma_x}, {tau_xy})", "type": "Stress State"},
-        {"sigma": sigma_y, "tau": -tau_xy, "label": f"B ({sigma_y}, {-tau_xy})", "type": "Stress State"},
-        {"sigma": sigma_1, "tau": 0, "label": f"σ₁ = {sigma_1:.1f} MPa", "type": "Principal"},
-        {"sigma": sigma_2, "tau": 0, "label": f"σ₂ = {sigma_2:.1f} MPa", "type": "Principal"},
-        {"sigma": center, "tau": tau_max, "label": f"τmax = {tau_max:.1f} MPa", "type": "Max Shear"},
-        {"sigma": center, "tau": -tau_max, "label": f"−τmax = −{tau_max:.1f} MPa", "type": "Max Shear"},
+        {
+            "sigma": sigma_x,
+            "tau": tau_xy,
+            "label": f"A ({sigma_x}, {tau_xy})",
+            "type": "Stress State",
+            "align": "left",
+            "dx": 14,
+            "dy": -14,
+        },
+        {
+            "sigma": sigma_y,
+            "tau": -tau_xy,
+            "label": f"B ({sigma_y}, {-tau_xy})",
+            "type": "Stress State",
+            "align": "right",
+            "dx": -14,
+            "dy": 18,
+        },
+        {
+            "sigma": sigma_1,
+            "tau": 0,
+            "label": f"σ₁ = {sigma_1:.1f} MPa",
+            "type": "Principal",
+            "align": "left",
+            "dx": 14,
+            "dy": -14,
+        },
+        {
+            "sigma": sigma_2,
+            "tau": 0,
+            "label": f"σ₂ = {sigma_2:.1f} MPa",
+            "type": "Principal",
+            "align": "right",
+            "dx": -14,
+            "dy": -14,
+        },
+        {
+            "sigma": center,
+            "tau": tau_max,
+            "label": f"τmax = {tau_max:.1f} MPa",
+            "type": "Max Shear",
+            "align": "left",
+            "dx": 14,
+            "dy": -14,
+        },
+        {
+            "sigma": center,
+            "tau": -tau_max,
+            "label": f"−τmax = −{tau_max:.1f} MPa",
+            "type": "Max Shear",
+            "align": "left",
+            "dx": 14,
+            "dy": 18,
+        },
     ]
 )
 
@@ -89,7 +137,7 @@ diameter = (
 )
 
 # 2θp arc
-arc = alt.Chart(arc_df).mark_line(color="#E67E22", strokeWidth=2.5).encode(x="sigma:Q", y="tau:Q", order="order:Q")
+arc = alt.Chart(arc_df).mark_line(color="#8E44AD", strokeWidth=2.5).encode(x="sigma:Q", y="tau:Q", order="order:Q")
 
 # Angle label
 angle_lbl_df = pd.DataFrame(
@@ -100,7 +148,7 @@ angle_lbl_df = pd.DataFrame(
 )
 angle_lbl = (
     alt.Chart(angle_lbl_df)
-    .mark_text(text=f"2θp = {theta_p2:.1f}°", fontSize=16, fontWeight="bold", color="#E67E22")
+    .mark_text(text=f"2θp = {theta_p2:.1f}°", fontSize=16, fontWeight="bold", color="#8E44AD")
     .encode(x="sigma:Q", y="tau:Q")
 )
 
@@ -116,14 +164,14 @@ points = (
         y="tau:Q",
         color=alt.Color(
             "type:N",
-            scale=alt.Scale(domain=["Stress State", "Principal", "Max Shear"], range=["#306998", "#D63031", "#E67E22"]),
+            scale=alt.Scale(domain=["Stress State", "Principal", "Max Shear"], range=["#306998", "#C0392B", "#8E44AD"]),
             legend=alt.Legend(
                 title=None,
                 orient="bottom-right",
                 direction="vertical",
                 symbolSize=200,
                 symbolStrokeWidth=0,
-                labelFontSize=14,
+                labelFontSize=16,
                 padding=10,
                 offset=10,
                 fillColor="rgba(255,255,255,0.85)",
@@ -156,56 +204,19 @@ center_lbl = (
     .encode(x="sigma:Q", y="tau:Q")
 )
 
-# Labels grouped by offset direction
-# Upper-right: A, σ₁, τmax
-ur_df = stress_points.iloc[[0, 2, 4]]
-ur_labels = (
-    alt.Chart(ur_df)
-    .mark_text(fontSize=15, fontWeight="bold", align="left", dx=14, dy=-14)
-    .encode(x="sigma:Q", y="tau:Q", text="label:N")
-)
-
-# Upper-left: σ₂
-ul_df = stress_points.iloc[[3]]
-ul_labels = (
-    alt.Chart(ul_df)
-    .mark_text(fontSize=15, fontWeight="bold", align="right", dx=-14, dy=-14)
-    .encode(x="sigma:Q", y="tau:Q", text="label:N")
-)
-
-# Lower-left: B
-ll_df = stress_points.iloc[[1]]
-ll_labels = (
-    alt.Chart(ll_df)
-    .mark_text(fontSize=15, fontWeight="bold", align="right", dx=-14, dy=18)
-    .encode(x="sigma:Q", y="tau:Q", text="label:N")
-)
-
-# Lower-right: −τmax
-lr_df = stress_points.iloc[[5]]
-lr_labels = (
-    alt.Chart(lr_df)
-    .mark_text(fontSize=15, fontWeight="bold", align="left", dx=14, dy=18)
-    .encode(x="sigma:Q", y="tau:Q", text="label:N")
+# Labels — position via data-space offsets for a single text layer
+px_to_data = span / 1200
+stress_points["lbl_sigma"] = stress_points["sigma"] + stress_points["dx"] * px_to_data
+stress_points["lbl_tau"] = stress_points["tau"] - stress_points["dy"] * px_to_data
+labels = (
+    alt.Chart(stress_points)
+    .mark_text(fontSize=15, fontWeight="bold")
+    .encode(x="lbl_sigma:Q", y="lbl_tau:Q", text="label:N")
 )
 
 # Combine all layers
 chart = (
-    alt.layer(
-        h_rule,
-        v_rule,
-        circle,
-        diameter,
-        arc,
-        points,
-        center_pt,
-        ur_labels,
-        ul_labels,
-        ll_labels,
-        lr_labels,
-        center_lbl,
-        angle_lbl,
-    )
+    alt.layer(h_rule, v_rule, circle, diameter, arc, points, center_pt, labels, center_lbl, angle_lbl)
     .properties(
         width=1200,
         height=1200,
@@ -227,7 +238,7 @@ chart = (
         grid=True,
         gridOpacity=0.12,
         gridColor="#B0BEC5",
-        domainColor="#90A4AE",
+        domain=False,
     )
     .configure_view(strokeWidth=0, fill="#FAFBFC")
 )

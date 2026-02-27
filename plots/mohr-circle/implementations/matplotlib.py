@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 mohr-circle: Mohr's Circle for Stress Analysis
 Library: matplotlib 3.10.8 | Python 3.14.3
-Quality: 85/100 | Created: 2026-02-27
+Quality: 92/100 | Created: 2026-02-27
 """
 
 import matplotlib.patches as patches

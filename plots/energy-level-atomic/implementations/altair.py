@@ -1,0 +1,165 @@
+""" pyplots.ai
+energy-level-atomic: Atomic Energy Level Diagram
+Library: altair 6.0.0 | Python 3.14.3
+Quality: 90/100 | Created: 2026-02-27
+"""
+
+import altair as alt
+import pandas as pd
+
+
+# Data - Hydrogen atom energy levels: E_n = -13.6 / n² eV
+levels = {n: -13.6 / n**2 for n in range(1, 7)}
+
+# Rydberg constant for wavelength computation
+R_H = 1.097e7  # m⁻¹
+
+# Stagger line endpoints for label clarity at converging upper levels
+line_ends = {1: 9.0, 2: 9.0, 3: 9.0, 4: 8.0, 5: 9.0, 6: 8.0}
+
+level_df = pd.DataFrame(
+    [{"energy": levels[n], "x_start": 1.5, "x_end": line_ends[n], "label": f"n = {n}"} for n in range(1, 7)]
+)
+
+ionization_df = pd.DataFrame([{"energy": 0.0, "x_start": 1.5, "x_end": 9.0, "label": "n = \u221e"}])
+
+all_labels_df = pd.concat([level_df, ionization_df], ignore_index=True)
+
+# Spectral series transitions (emission: upper → lower)
+transition_data = [
+    # Lyman series (UV) - transitions to n=1
+    (2, 1, "Lyman (UV)", 2.5),
+    (3, 1, "Lyman (UV)", 3.1),
+    (4, 1, "Lyman (UV)", 3.7),
+    # Balmer series (Visible) - transitions to n=2
+    (3, 2, "Balmer (Visible)", 4.8),
+    (4, 2, "Balmer (Visible)", 5.4),
+    (5, 2, "Balmer (Visible)", 6.0),
+    # Paschen series (IR) - transitions to n=3
+    (4, 3, "Paschen (IR)", 6.8),
+    (5, 3, "Paschen (IR)", 7.2),
+    (6, 3, "Paschen (IR)", 7.6),
+]
+
+arrow_df = pd.DataFrame(
+    [
+        {
+            "x": x,
+            "y_upper": levels[up],
+            "y_lower": levels[lo],
+            "y_mid": (levels[up] + levels[lo]) / 2,
+            "series": s,
+            "transition": f"n={up} \u2192 n={lo}",
+            "wl_label": f"{1e9 / (R_H * (1 / lo**2 - 1 / up**2)):.0f} nm",
+        }
+        for up, lo, s, x in transition_data
+    ]
+)
+
+head_df = pd.DataFrame([{"x": x, "y": levels[lo], "series": s} for up, lo, s, x in transition_data])
+
+series_order = ["Lyman (UV)", "Balmer (Visible)", "Paschen (IR)"]
+series_colors = ["#306998", "#E69F00", "#CC79A7"]
+
+# Symlog scale distributes energy levels more evenly than linear,
+# compressing the large n=1-to-n=2 gap while expanding upper levels
+y_scale = alt.Scale(type="symlog", constant=1, domain=[-15, 1])
+y_axis = alt.Axis(
+    titleFontSize=22,
+    labelFontSize=14,
+    titlePadding=15,
+    values=[-13.6, -3.4, -1.51, -0.85, -0.54, -0.38, 0],
+    format=".2f",
+    gridOpacity=0.08,
+)
+
+# Layer 1: Energy level lines
+energy_lines = (
+    alt.Chart(level_df)
+    .mark_rule(strokeWidth=3, color="#2C3E50")
+    .encode(
+        x=alt.X("x_start:Q", scale=alt.Scale(domain=[0, 11.5]), axis=None),
+        x2="x_end:Q",
+        y=alt.Y("energy:Q", title="Energy (eV)", scale=y_scale, axis=y_axis),
+        tooltip=[alt.Tooltip("label:N", title="Level"), alt.Tooltip("energy:Q", title="Energy (eV)", format=".2f")],
+    )
+)
+
+# Layer 2: Ionization limit (dashed line)
+ion_line = (
+    alt.Chart(ionization_df)
+    .mark_rule(strokeWidth=2, strokeDash=[10, 6], color="#95a5a6")
+    .encode(x="x_start:Q", x2="x_end:Q", y="energy:Q")
+)
+
+# Layer 3: Quantum number labels at line endpoints
+level_labels = (
+    alt.Chart(all_labels_df)
+    .mark_text(align="left", baseline="middle", fontSize=18, dx=8, fontWeight="bold", color="#2C3E50")
+    .encode(x="x_end:Q", y="energy:Q", text="label:N")
+)
+
+# Layer 4: Transition arrow shafts
+arrow_shafts = (
+    alt.Chart(arrow_df)
+    .mark_rule(strokeWidth=3, opacity=0.9)
+    .encode(
+        x="x:Q",
+        y="y_upper:Q",
+        y2="y_lower:Q",
+        color=alt.Color(
+            "series:N",
+            scale=alt.Scale(domain=series_order, range=series_colors),
+            legend=alt.Legend(
+                title="Spectral Series",
+                titleFontSize=18,
+                labelFontSize=16,
+                symbolSize=200,
+                titleColor="#2C3E50",
+                labelColor="#2C3E50",
+            ),
+        ),
+        tooltip=["transition:N", "series:N", alt.Tooltip("wl_label:N", title="Wavelength")],
+    )
+)
+
+# Layer 5: Arrowheads (emission = pointing down)
+arrowheads = (
+    alt.Chart(head_df)
+    .mark_point(shape="triangle-down", filled=True, size=350, opacity=0.9)
+    .encode(
+        x="x:Q",
+        y="y:Q",
+        color=alt.Color("series:N", scale=alt.Scale(domain=series_order, range=series_colors), legend=None),
+    )
+)
+
+# Layer 6: Wavelength annotations along arrows
+wl_labels = (
+    alt.Chart(arrow_df)
+    .mark_text(fontSize=12, angle=90, dx=12, color="#555555", fontStyle="italic")
+    .encode(x="x:Q", y="y_mid:Q", text="wl_label:N")
+)
+
+# Combine all layers
+chart = (
+    alt.layer(energy_lines, ion_line, level_labels, arrow_shafts, arrowheads, wl_labels)
+    .properties(
+        width=1600,
+        height=900,
+        title=alt.Title(
+            "energy-level-atomic \u00b7 altair \u00b7 pyplots.ai",
+            fontSize=28,
+            anchor="middle",
+            color="#2C3E50",
+            subtitle="Hydrogen atom emission lines \u00b7 energy levels: \u221213.6/n\u00b2 eV",
+            subtitleFontSize=16,
+            subtitleColor="#7f8c8d",
+        ),
+    )
+    .configure_view(strokeWidth=0, fill="#fafbfc")
+)
+
+# Save
+chart.save("plot.png", scale_factor=3.0)
+chart.save("plot.html")

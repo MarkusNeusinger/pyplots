@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 mohr-circle: Mohr's Circle for Stress Analysis
 Library: highcharts unknown | Python 3.14.3
 Quality: 85/100 | Created: 2026-02-27
@@ -12,6 +12,9 @@ from pathlib import Path
 import numpy as np
 from highcharts_core.chart import Chart
 from highcharts_core.options import HighchartsOptions
+from highcharts_core.options.annotations import Annotation
+from highcharts_core.options.series.area import LineSeries
+from highcharts_core.options.series.scatter import ScatterSeries
 from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -34,6 +37,18 @@ two_theta_p = np.degrees(np.arctan2(tau_xy, (sigma_x - sigma_y) / 2))
 theta = np.linspace(0, 2 * np.pi, 200)
 circle_x = center + radius * np.cos(theta)
 circle_y = radius * np.sin(theta)
+
+# Color palette (colorblind-safe: no red-green pairing)
+COLOR_CIRCLE = "#306998"  # Python Blue
+COLOR_STRESS_PTS = "#e74c3c"  # Red for stress points A, B
+COLOR_PRINCIPAL = "#1abc9c"  # Teal for principal stresses (NOT green)
+COLOR_PRINCIPAL_DARK = "#16a085"  # Darker teal for outlines
+COLOR_SHEAR = "#8e44ad"  # Purple for max shear
+COLOR_SHEAR_DARK = "#6c3483"  # Darker purple for outlines
+COLOR_CENTER = "#2c3e50"  # Dark for center point
+COLOR_ANGLE = "#e67e22"  # Orange for angle arc
+COLOR_DIAMETER = "#7f8c8d"  # Gray for diameter line
+COLOR_AXIS = "#d5d8dc"  # Soft axis line color
 
 # Chart
 chart = Chart(container="container")
@@ -79,8 +94,8 @@ chart.options.x_axis = {
     "max": x_max,
     "gridLineWidth": 1,
     "gridLineColor": "rgba(0,0,0,0.06)",
-    "lineWidth": 2,
-    "lineColor": "#bdc3c7",
+    "lineWidth": 0,
+    "lineColor": COLOR_AXIS,
     "tickWidth": 0,
     "plotLines": [{"value": center, "color": "#95a5a6", "width": 2, "dashStyle": "Dash", "zIndex": 1}],
 }
@@ -96,8 +111,8 @@ chart.options.y_axis = {
     "max": y_pad,
     "gridLineWidth": 1,
     "gridLineColor": "rgba(0,0,0,0.06)",
-    "lineWidth": 2,
-    "lineColor": "#bdc3c7",
+    "lineWidth": 0,
+    "lineColor": COLOR_AXIS,
     "tickWidth": 0,
     "plotLines": [{"value": 0, "color": "#95a5a6", "width": 2, "dashStyle": "Dash", "zIndex": 1}],
 }
@@ -107,302 +122,292 @@ chart.options.tooltip = {"enabled": False}
 chart.options.credits = {"enabled": False}
 chart.options.plot_options = {"series": {"animation": False, "states": {"hover": {"enabled": False}}}}
 
+# --- Series using typed classes ---
+
 # Mohr's Circle outline
-circle_data = [[float(cx), float(cy)] for cx, cy in zip(circle_x, circle_y, strict=False)]
-chart.add_series(
-    {
-        "type": "line",
-        "name": "Mohr's Circle",
-        "data": circle_data,
-        "color": "#306998",
-        "lineWidth": 5,
-        "marker": {"enabled": False},
-        "enableMouseTracking": False,
-        "showInLegend": False,
-    }
-)
+circle_series = LineSeries()
+circle_series.name = "Mohr's Circle"
+circle_series.data = [[float(cx), float(cy)] for cx, cy in zip(circle_x, circle_y, strict=False)]
+circle_series.color = COLOR_CIRCLE
+circle_series.line_width = 5
+circle_series.marker = {"enabled": False}
+circle_series.enable_mouse_tracking = False
+circle_series.show_in_legend = False
+chart.add_series(circle_series)
 
 # Diameter line connecting A and B
-chart.add_series(
-    {
-        "type": "line",
-        "name": "Diameter",
-        "data": [[float(sigma_x), float(tau_xy)], [float(sigma_y), float(-tau_xy)]],
-        "color": "#7f8c8d",
-        "lineWidth": 3,
-        "dashStyle": "Dash",
-        "marker": {"enabled": False},
-        "enableMouseTracking": False,
-        "showInLegend": False,
-    }
-)
+diameter_series = LineSeries()
+diameter_series.name = "Diameter"
+diameter_series.data = [[float(sigma_x), float(tau_xy)], [float(sigma_y), float(-tau_xy)]]
+diameter_series.color = COLOR_DIAMETER
+diameter_series.line_width = 3
+diameter_series.dash_style = "Dash"
+diameter_series.marker = {"enabled": False}
+diameter_series.enable_mouse_tracking = False
+diameter_series.show_in_legend = False
+chart.add_series(diameter_series)
 
 # Stress point A (σx, τxy)
-chart.add_series(
-    {
-        "type": "scatter",
-        "data": [
-            {
-                "x": float(sigma_x),
-                "y": float(tau_xy),
-                "dataLabels": {
-                    "enabled": True,
-                    "format": f"A ({sigma_x}, {tau_xy})",
-                    "align": "left",
-                    "x": 18,
-                    "y": -12,
-                    "style": {
-                        "fontSize": "32px",
-                        "fontWeight": "600",
-                        "color": "#c0392b",
-                        "textOutline": "3px #ffffff",
-                    },
-                },
-            }
-        ],
-        "color": "#e74c3c",
-        "marker": {"symbol": "circle", "radius": 14, "lineWidth": 3, "lineColor": "#c0392b", "fillColor": "#e74c3c"},
-        "enableMouseTracking": False,
-        "showInLegend": False,
-    }
-)
+point_a_series = ScatterSeries()
+point_a_series.data = [{"x": float(sigma_x), "y": float(tau_xy)}]
+point_a_series.color = COLOR_STRESS_PTS
+point_a_series.marker = {
+    "symbol": "circle",
+    "radius": 14,
+    "lineWidth": 3,
+    "lineColor": "#c0392b",
+    "fillColor": COLOR_STRESS_PTS,
+}
+point_a_series.enable_mouse_tracking = False
+point_a_series.show_in_legend = False
+chart.add_series(point_a_series)
 
 # Stress point B (σy, −τxy)
-chart.add_series(
-    {
-        "type": "scatter",
-        "data": [
-            {
-                "x": float(sigma_y),
-                "y": float(-tau_xy),
-                "dataLabels": {
-                    "enabled": True,
-                    "format": f"B ({sigma_y}, {-tau_xy})",
-                    "align": "right",
-                    "x": -18,
-                    "y": 12,
-                    "style": {
-                        "fontSize": "32px",
-                        "fontWeight": "600",
-                        "color": "#c0392b",
-                        "textOutline": "3px #ffffff",
-                    },
-                },
-            }
-        ],
-        "color": "#e74c3c",
-        "marker": {"symbol": "circle", "radius": 14, "lineWidth": 3, "lineColor": "#c0392b", "fillColor": "#e74c3c"},
-        "enableMouseTracking": False,
-        "showInLegend": False,
-    }
-)
+point_b_series = ScatterSeries()
+point_b_series.data = [{"x": float(sigma_y), "y": float(-tau_xy)}]
+point_b_series.color = COLOR_STRESS_PTS
+point_b_series.marker = {
+    "symbol": "circle",
+    "radius": 14,
+    "lineWidth": 3,
+    "lineColor": "#c0392b",
+    "fillColor": COLOR_STRESS_PTS,
+}
+point_b_series.enable_mouse_tracking = False
+point_b_series.show_in_legend = False
+chart.add_series(point_b_series)
 
 # Principal stress σ1
-chart.add_series(
-    {
-        "type": "scatter",
-        "data": [
-            {
-                "x": float(sigma_1),
-                "y": 0,
-                "dataLabels": {
-                    "enabled": True,
-                    "format": f"\u03c3\u2081 = {sigma_1:.1f} MPa",
-                    "align": "left",
-                    "x": 15,
-                    "y": -22,
-                    "style": {
-                        "fontSize": "34px",
-                        "fontWeight": "bold",
-                        "color": "#27ae60",
-                        "textOutline": "3px #ffffff",
-                    },
-                },
-            }
-        ],
-        "color": "#27ae60",
-        "marker": {"symbol": "diamond", "radius": 16, "lineWidth": 3, "lineColor": "#1e8449", "fillColor": "#27ae60"},
-        "enableMouseTracking": False,
-        "showInLegend": False,
-    }
-)
+sigma1_series = ScatterSeries()
+sigma1_series.data = [{"x": float(sigma_1), "y": 0}]
+sigma1_series.color = COLOR_PRINCIPAL
+sigma1_series.marker = {
+    "symbol": "diamond",
+    "radius": 16,
+    "lineWidth": 3,
+    "lineColor": COLOR_PRINCIPAL_DARK,
+    "fillColor": COLOR_PRINCIPAL,
+}
+sigma1_series.enable_mouse_tracking = False
+sigma1_series.show_in_legend = False
+chart.add_series(sigma1_series)
 
 # Principal stress σ2
-chart.add_series(
-    {
-        "type": "scatter",
-        "data": [
-            {
-                "x": float(sigma_2),
-                "y": 0,
-                "dataLabels": {
-                    "enabled": True,
-                    "format": f"\u03c3\u2082 = {sigma_2:.1f} MPa",
-                    "align": "right",
-                    "x": -15,
-                    "y": -22,
-                    "style": {
-                        "fontSize": "34px",
-                        "fontWeight": "bold",
-                        "color": "#27ae60",
-                        "textOutline": "3px #ffffff",
-                    },
-                },
-            }
-        ],
-        "color": "#27ae60",
-        "marker": {"symbol": "diamond", "radius": 16, "lineWidth": 3, "lineColor": "#1e8449", "fillColor": "#27ae60"},
-        "enableMouseTracking": False,
-        "showInLegend": False,
-    }
-)
+sigma2_series = ScatterSeries()
+sigma2_series.data = [{"x": float(sigma_2), "y": 0}]
+sigma2_series.color = COLOR_PRINCIPAL
+sigma2_series.marker = {
+    "symbol": "diamond",
+    "radius": 16,
+    "lineWidth": 3,
+    "lineColor": COLOR_PRINCIPAL_DARK,
+    "fillColor": COLOR_PRINCIPAL,
+}
+sigma2_series.enable_mouse_tracking = False
+sigma2_series.show_in_legend = False
+chart.add_series(sigma2_series)
 
 # Maximum shear stress (top)
-chart.add_series(
-    {
-        "type": "scatter",
-        "data": [
-            {
-                "x": float(center),
-                "y": float(tau_max),
-                "dataLabels": {
-                    "enabled": True,
-                    "format": f"\u03c4max = {tau_max:.1f} MPa",
-                    "align": "left",
-                    "x": 15,
-                    "y": -15,
-                    "style": {
-                        "fontSize": "32px",
-                        "fontWeight": "bold",
-                        "color": "#8e44ad",
-                        "textOutline": "3px #ffffff",
-                    },
-                },
-            }
-        ],
-        "color": "#8e44ad",
-        "marker": {"symbol": "triangle", "radius": 14, "lineWidth": 3, "lineColor": "#6c3483", "fillColor": "#8e44ad"},
-        "enableMouseTracking": False,
-        "showInLegend": False,
-    }
-)
+tau_max_series = ScatterSeries()
+tau_max_series.data = [{"x": float(center), "y": float(tau_max)}]
+tau_max_series.color = COLOR_SHEAR
+tau_max_series.marker = {
+    "symbol": "triangle",
+    "radius": 14,
+    "lineWidth": 3,
+    "lineColor": COLOR_SHEAR_DARK,
+    "fillColor": COLOR_SHEAR,
+}
+tau_max_series.enable_mouse_tracking = False
+tau_max_series.show_in_legend = False
+chart.add_series(tau_max_series)
 
 # Maximum shear stress (bottom)
-chart.add_series(
-    {
-        "type": "scatter",
-        "data": [
-            {
-                "x": float(center),
-                "y": float(-tau_max),
-                "dataLabels": {
-                    "enabled": True,
-                    "format": f"\u03c4min = \u2212{tau_max:.1f} MPa",
-                    "align": "left",
-                    "x": 15,
-                    "y": 18,
-                    "style": {
-                        "fontSize": "32px",
-                        "fontWeight": "bold",
-                        "color": "#8e44ad",
-                        "textOutline": "3px #ffffff",
-                    },
-                },
-            }
-        ],
-        "color": "#8e44ad",
-        "marker": {
-            "symbol": "triangle-down",
-            "radius": 14,
-            "lineWidth": 3,
-            "lineColor": "#6c3483",
-            "fillColor": "#8e44ad",
-        },
-        "enableMouseTracking": False,
-        "showInLegend": False,
-    }
-)
+tau_min_series = ScatterSeries()
+tau_min_series.data = [{"x": float(center), "y": float(-tau_max)}]
+tau_min_series.color = COLOR_SHEAR
+tau_min_series.marker = {
+    "symbol": "triangle-down",
+    "radius": 14,
+    "lineWidth": 3,
+    "lineColor": COLOR_SHEAR_DARK,
+    "fillColor": COLOR_SHEAR,
+}
+tau_min_series.enable_mouse_tracking = False
+tau_min_series.show_in_legend = False
+chart.add_series(tau_min_series)
 
 # Center point C
-chart.add_series(
-    {
-        "type": "scatter",
-        "data": [
-            {
-                "x": float(center),
-                "y": 0,
-                "dataLabels": {
-                    "enabled": True,
-                    "format": f"C ({center:.1f}, 0)",
-                    "align": "center",
-                    "y": 32,
-                    "style": {
-                        "fontSize": "28px",
-                        "fontWeight": "600",
-                        "color": "#2c3e50",
-                        "textOutline": "3px #ffffff",
-                    },
-                },
-            }
-        ],
-        "color": "#2c3e50",
-        "marker": {"symbol": "circle", "radius": 10, "fillColor": "#2c3e50"},
-        "enableMouseTracking": False,
-        "showInLegend": False,
-    }
-)
+center_series = ScatterSeries()
+center_series.data = [{"x": float(center), "y": 0}]
+center_series.color = COLOR_CENTER
+center_series.marker = {"symbol": "circle", "radius": 10, "fillColor": COLOR_CENTER}
+center_series.enable_mouse_tracking = False
+center_series.show_in_legend = False
+chart.add_series(center_series)
 
 # Angle arc for 2θp (from σ-axis to line CA)
 arc_r = radius * 0.25
 arc_theta = np.linspace(0, np.radians(two_theta_p), 30)
 arc_x = center + arc_r * np.cos(arc_theta)
 arc_y = arc_r * np.sin(arc_theta)
-arc_data = [[float(ax), float(ay)] for ax, ay in zip(arc_x, arc_y, strict=False)]
 
-chart.add_series(
-    {
-        "type": "line",
-        "data": arc_data,
-        "color": "#e67e22",
-        "lineWidth": 4,
-        "marker": {"enabled": False},
-        "enableMouseTracking": False,
-        "showInLegend": False,
-    }
-)
+arc_series = LineSeries()
+arc_series.name = "Angle Arc"
+arc_series.data = [[float(ax), float(ay)] for ax, ay in zip(arc_x, arc_y, strict=False)]
+arc_series.color = COLOR_ANGLE
+arc_series.line_width = 4
+arc_series.marker = {"enabled": False}
+arc_series.enable_mouse_tracking = False
+arc_series.show_in_legend = False
+chart.add_series(arc_series)
 
-# 2θp angle label
+# --- Annotations for labels (Highcharts annotations API) ---
+
+# 2θp angle label position
 mid_angle = np.radians(two_theta_p) / 2
 label_r = arc_r * 1.5
-chart.add_series(
-    {
-        "type": "scatter",
-        "data": [
-            {
-                "x": float(center + label_r * np.cos(mid_angle)),
-                "y": float(label_r * np.sin(mid_angle)),
-                "dataLabels": {
-                    "enabled": True,
-                    "format": f"2\u03b8p = {two_theta_p:.1f}\u00b0",
+
+chart.options.annotations = [
+    # Stress points A and B labels
+    Annotation.from_dict(
+        {
+            "draggable": "",
+            "labelOptions": {
+                "backgroundColor": "transparent",
+                "borderWidth": 0,
+                "shadow": False,
+                "useHTML": False,
+                "style": {"fontSize": "32px", "fontWeight": "600", "color": "#c0392b", "textOutline": "3px #ffffff"},
+            },
+            "labels": [
+                {
+                    "point": {"x": float(sigma_x), "y": float(tau_xy), "xAxis": 0, "yAxis": 0},
+                    "text": f"A ({sigma_x}, {tau_xy})",
+                    "align": "left",
+                    "x": 18,
+                    "y": -18,
+                },
+                {
+                    "point": {"x": float(sigma_y), "y": float(-tau_xy), "xAxis": 0, "yAxis": 0},
+                    "text": f"B ({sigma_y}, {-tau_xy})",
+                    "align": "right",
+                    "x": -18,
+                    "y": 18,
+                },
+            ],
+        }
+    ),
+    # Principal stresses labels
+    Annotation.from_dict(
+        {
+            "draggable": "",
+            "labelOptions": {
+                "backgroundColor": "transparent",
+                "borderWidth": 0,
+                "shadow": False,
+                "style": {
+                    "fontSize": "34px",
+                    "fontWeight": "bold",
+                    "color": COLOR_PRINCIPAL_DARK,
+                    "textOutline": "3px #ffffff",
+                },
+            },
+            "labels": [
+                {
+                    "point": {"x": float(sigma_1), "y": 0, "xAxis": 0, "yAxis": 0},
+                    "text": f"\u03c3\u2081 = {sigma_1:.1f} MPa",
+                    "align": "left",
+                    "x": 15,
+                    "y": -28,
+                },
+                {
+                    "point": {"x": float(sigma_2), "y": 0, "xAxis": 0, "yAxis": 0},
+                    "text": f"\u03c3\u2082 = {sigma_2:.1f} MPa",
+                    "align": "right",
+                    "x": -15,
+                    "y": -28,
+                },
+            ],
+        }
+    ),
+    # Max shear stress labels
+    Annotation.from_dict(
+        {
+            "draggable": "",
+            "labelOptions": {
+                "backgroundColor": "transparent",
+                "borderWidth": 0,
+                "shadow": False,
+                "style": {"fontSize": "32px", "fontWeight": "bold", "color": COLOR_SHEAR, "textOutline": "3px #ffffff"},
+            },
+            "labels": [
+                {
+                    "point": {"x": float(center), "y": float(tau_max), "xAxis": 0, "yAxis": 0},
+                    "text": f"\u03c4max = {tau_max:.1f} MPa",
+                    "align": "left",
+                    "x": 15,
+                    "y": -20,
+                },
+                {
+                    "point": {"x": float(center), "y": float(-tau_max), "xAxis": 0, "yAxis": 0},
+                    "text": f"\u03c4min = \u2212{tau_max:.1f} MPa",
+                    "align": "left",
+                    "x": 15,
+                    "y": 22,
+                },
+            ],
+        }
+    ),
+    # Center point label
+    Annotation.from_dict(
+        {
+            "draggable": "",
+            "labelOptions": {
+                "backgroundColor": "transparent",
+                "borderWidth": 0,
+                "shadow": False,
+                "style": {"fontSize": "28px", "fontWeight": "600", "color": COLOR_CENTER, "textOutline": "3px #ffffff"},
+            },
+            "labels": [
+                {
+                    "point": {"x": float(center), "y": 0, "xAxis": 0, "yAxis": 0},
+                    "text": f"C ({center:.1f}, 0)",
+                    "align": "center",
+                    "y": 36,
+                }
+            ],
+        }
+    ),
+    # 2θp angle label
+    Annotation.from_dict(
+        {
+            "draggable": "",
+            "labelOptions": {
+                "backgroundColor": "transparent",
+                "borderWidth": 0,
+                "shadow": False,
+                "style": {"fontSize": "30px", "fontWeight": "bold", "color": COLOR_ANGLE, "textOutline": "3px #ffffff"},
+            },
+            "labels": [
+                {
+                    "point": {
+                        "x": float(center + label_r * np.cos(mid_angle)),
+                        "y": float(label_r * np.sin(mid_angle)),
+                        "xAxis": 0,
+                        "yAxis": 0,
+                    },
+                    "text": f"2\u03b8p = {two_theta_p:.1f}\u00b0",
                     "align": "left",
                     "x": 10,
-                    "y": -5,
-                    "style": {
-                        "fontSize": "30px",
-                        "fontWeight": "bold",
-                        "color": "#e67e22",
-                        "textOutline": "3px #ffffff",
-                    },
-                },
-            }
-        ],
-        "marker": {"enabled": False},
-        "enableMouseTracking": False,
-        "showInLegend": False,
-    }
-)
+                    "y": -8,
+                }
+            ],
+        }
+    ),
+]
 
-# Download Highcharts JS
+# Download Highcharts JS and annotations module
 cdn_urls = ["https://cdn.jsdelivr.net/npm/highcharts@11/highcharts.js", "https://code.highcharts.com/highcharts.js"]
 highcharts_js = None
 for url in cdn_urls:
@@ -416,6 +421,22 @@ for url in cdn_urls:
 if highcharts_js is None:
     raise RuntimeError("Failed to download Highcharts JS from all CDNs")
 
+annotations_urls = [
+    "https://cdn.jsdelivr.net/npm/highcharts@11/modules/annotations.js",
+    "https://code.highcharts.com/modules/annotations.js",
+]
+annotations_js = None
+for url in annotations_urls:
+    try:
+        with urllib.request.urlopen(url, timeout=30) as response:
+            annotations_js = response.read().decode("utf-8")
+        break
+    except urllib.error.HTTPError:
+        time.sleep(2)
+        continue
+if annotations_js is None:
+    raise RuntimeError("Failed to download Highcharts annotations module from all CDNs")
+
 # Generate JS literal
 js_literal = chart.to_js_literal()
 
@@ -425,6 +446,7 @@ html_content = f"""<!DOCTYPE html>
 <head>
     <meta charset="utf-8">
     <script>{highcharts_js}</script>
+    <script>{annotations_js}</script>
 </head>
 <body style="margin:0;">
     <div id="container" style="width: 4800px; height: 2700px;"></div>
@@ -438,6 +460,7 @@ standalone_html = f"""<!DOCTYPE html>
 <head>
     <meta charset="utf-8">
     <script src="https://cdn.jsdelivr.net/npm/highcharts@11/highcharts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highcharts@11/modules/annotations.js"></script>
 </head>
 <body style="margin:0; overflow:auto;">
     <div id="container" style="width: 4800px; height: 2700px;"></div>

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 mohr-circle: Mohr's Circle for Stress Analysis
 Library: plotly 6.5.2 | Python 3.14.3
-Quality: 87/100 | Created: 2026-02-27
+Quality: 90/100 | Created: 2026-02-27
 """
 
 import numpy as np

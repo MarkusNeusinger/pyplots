@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 mohr-circle: Mohr's Circle for Stress Analysis
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 84/100 | Created: 2026-02-27
@@ -30,53 +30,57 @@ circle_pts = [(float(center + radius * np.cos(t)), float(radius * np.sin(t))) fo
 point_a = (float(sigma_x), float(tau_xy))
 point_b = (float(sigma_y), float(-tau_xy))
 
-# 2θp angle arc (larger radius for clear visibility)
-arc_r = radius * 0.38
+# 2θp angle arc (large radius for clear visibility)
+arc_r = radius * 0.45
 arc_angles = np.linspace(0, np.radians(theta_p2), 40)
 arc_pts = [(float(center + arc_r * np.cos(a)), float(arc_r * np.sin(a))) for a in arc_angles]
 
-# Reference lines through center (horizontal and vertical)
-padding = 25
+# Axis ranges - tight around circle with balanced padding
+padding = 20
 y_min = -(radius + padding)
 y_max = radius + padding
-y_span = y_max - y_min
-x_span = y_span * 1.65
-x_min = center - x_span / 2
-x_max = center + x_span / 2
+x_min = float(sigma_2 - padding)
+x_max = float(sigma_1 + padding)
 
-center_h_line = [(float(x_min), 0.0), (float(x_max), 0.0)]
-center_v_line = [(float(center), float(y_min)), (float(center), float(y_max))]
+# Reference lines through center (combined into one series)
+ref_lines = [
+    (float(x_min), 0.0),
+    (float(x_max), 0.0),
+    None,
+    (float(center), float(y_min)),
+    (float(center), float(y_max)),
+]
 
-# Colorblind-safe palette: grays for ref lines, then steel blue, orange, teal, indigo, coral
+# Refined colorblind-safe palette with strong contrast
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#2B2B2B",
     foreground_strong="#1A1A1A",
-    foreground_subtle="#D0D0D0",
-    colors=("#AAAAAA", "#AAAAAA", "#2C5F8A", "#D4761C", "#1A8A7A", "#5B4FA0", "#C44E52"),
-    title_font_size=52,
-    label_font_size=36,
-    major_label_font_size=32,
-    legend_font_size=28,
-    value_font_size=24,
-    tooltip_font_size=24,
+    foreground_subtle="#D8D8D8",
+    colors=("#B0B0B0", "#1B6692", "#D4761C", "#0E7C6B", "#4A3D8F", "#B5342B"),
+    title_font_size=48,
+    label_font_size=34,
+    major_label_font_size=30,
+    legend_font_size=26,
+    value_font_size=22,
+    tooltip_font_size=22,
     stroke_width=3,
-    opacity=0.9,
+    opacity=0.92,
     opacity_hover=1.0,
 )
 
-# Chart with value formatters for engineering notation
+# Square canvas (3600×3600) for guaranteed equal aspect ratio — circle appears as true circle
 chart = pygal.XY(
-    width=4800,
-    height=2700,
+    width=3600,
+    height=3600,
     style=custom_style,
     title="mohr-circle · pygal · pyplots.ai",
     x_title="Normal Stress σ (MPa)",
     y_title="Shear Stress τ (MPa)",
     show_legend=True,
     legend_at_bottom=True,
-    legend_at_bottom_columns=7,
+    legend_at_bottom_columns=3,
     dots_size=6,
     stroke=True,
     show_x_guides=True,
@@ -92,15 +96,13 @@ chart = pygal.XY(
 
 # Reference lines through center (plotted first, behind data)
 chart.add(
-    "σ axis", center_h_line, stroke=True, dots_size=0, stroke_style={"width": 2, "dasharray": "12, 6"}, show_dots=False
-)
-chart.add(
-    f"Center (σ={center:.0f})",
-    center_v_line,
+    f"Reference axes (σ={center:.0f} MPa)",
+    ref_lines,
     stroke=True,
     dots_size=0,
     stroke_style={"width": 2, "dasharray": "12, 6"},
     show_dots=False,
+    allow_interruptions=True,
 )
 
 # Mohr's Circle outline
@@ -140,8 +142,8 @@ chart.add(
     dots_size=18,
 )
 
-# 2θp angle arc with increased visibility
-chart.add(f"2θp = {theta_p2:.1f}°", arc_pts, stroke=True, dots_size=0, stroke_style={"width": 5})
+# 2θp angle arc with bold stroke for clear visibility
+chart.add(f"2θp = {theta_p2:.1f}°", arc_pts, stroke=True, dots_size=0, stroke_style={"width": 8})
 
 # Save
 chart.render_to_file("plot.html")

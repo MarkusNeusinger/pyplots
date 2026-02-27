@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 energy-level-atomic: Atomic Energy Level Diagram
 Library: plotly 6.5.2 | Python 3.14.3
 Quality: 89/100 | Created: 2026-02-27
@@ -23,7 +23,7 @@ paschen_series = [(4, 3, "Pa-α  1875 nm", 1875.1), (5, 3, "Pa-β  1282 nm", 128
 
 # Colors - well-differentiated within each series
 lyman_colors = ["#7B1FA2", "#C2185B", "#303F9F"]  # Purple, magenta, indigo
-balmer_colors = ["#D32F2F", "#0288D1", "#5E35B1", "#4527A0"]
+balmer_colors = ["#D32F2F", "#0288D1", "#00897B", "#F9A825"]  # Red, blue, teal, amber
 paschen_colors = ["#E65100", "#BF360C"]  # Deep orange, dark red-brown
 
 # Create figure
@@ -70,13 +70,13 @@ for n in [1, 2, 3]:
     )
 
 # Upper level labels (n=4,5,6) with yshift to avoid overlap with each other and ionization
-for n, shift in [(4, -14), (5, -2), (6, 8)]:
+for n, shift in [(4, -18), (5, 0), (6, 14)]:
     fig.add_annotation(
         x=line_right + 0.02,
         y=energies[n],
         text=f"<b>n = {n}</b>",
         showarrow=False,
-        font={"size": 14, "color": "#306998"},
+        font={"size": 16, "color": "#306998"},
         xanchor="left",
         yanchor="middle",
         yshift=shift,
@@ -89,7 +89,7 @@ for n in [1, 2, 3]:
         y=energies[n],
         text=f"<b>{energies[n]:.2f}</b> eV",
         showarrow=False,
-        font={"size": 15, "color": "#555"},
+        font={"size": 16, "color": "#555"},
         xanchor="right",
         yanchor="middle",
     )
@@ -100,7 +100,7 @@ fig.add_annotation(
     y=0,
     text="<b>0</b> eV  <i>Ionization</i>",
     showarrow=False,
-    font={"size": 15, "color": "#888"},
+    font={"size": 16, "color": "#888"},
     xanchor="right",
     yanchor="bottom",
     yshift=3,
@@ -131,7 +131,7 @@ for i, (n_up, n_low, label, _wl) in enumerate(lyman_series):
         y=(e_up + e_low) / 2,
         text=label,
         showarrow=False,
-        font={"size": 14, "color": lyman_colors[i]},
+        font={"size": 16, "color": lyman_colors[i]},
         xanchor="right",
     )
 
@@ -160,7 +160,7 @@ for i, (n_up, n_low, label, _wl) in enumerate(balmer_series):
         y=(e_up + e_low) / 2,
         text=label,
         showarrow=False,
-        font={"size": 14, "color": balmer_colors[i]},
+        font={"size": 16, "color": balmer_colors[i]},
         xanchor="left",
     )
 
@@ -190,7 +190,7 @@ for i, (n_up, n_low, label, _wl) in enumerate(paschen_series):
         y=paschen_label_y[i],
         text=label,
         showarrow=False,
-        font={"size": 14, "color": paschen_colors[i]},
+        font={"size": 16, "color": paschen_colors[i]},
         xanchor="center",
     )
 

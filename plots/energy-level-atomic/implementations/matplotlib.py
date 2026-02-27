@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 energy-level-atomic: Atomic Energy Level Diagram
 Library: matplotlib 3.10.8 | Python 3.14.3
 Quality: 87/100 | Created: 2026-02-27
@@ -28,7 +28,7 @@ balmer_data = [
 
 # Lyman series transitions (UV, single color)
 lyman_data = [(2, 1), (3, 1), (4, 1), (5, 1), (6, 1)]
-lyman_color = "#8B5CF6"
+lyman_color = "#D4880F"
 
 # Lookup: quantum number → display y position
 y_of = {n: -np.sqrt(13.6 / n**2) for n in range(1, 7)}
@@ -44,11 +44,11 @@ gap = 0.06  # arrow gap from level lines
 for n, energy, y in zip(n_values, energies, y_pos, strict=True):
     ax.plot([left, right], [y, y], color="#306998", linewidth=2.5, solid_capstyle="round", zorder=3)
     ax.text(right + 0.02, y, f"n = {n}", fontsize=18, va="center", ha="left", color="#306998", fontweight="medium")
-    ax.text(left - 0.02, y, f"{energy:.2f} eV", fontsize=15, va="center", ha="right", color="#555555")
+    ax.text(left - 0.02, y, f"{energy:.2f} eV", fontsize=16, va="center", ha="right", color="#555555")
 
 # Ionization limit (dashed)
 ax.plot([left, right], [ion_y, ion_y], color="#888888", linewidth=1.5, linestyle="--", zorder=2)
-ax.text(right + 0.02, ion_y, "Ionization (0 eV)", fontsize=15, va="center", ha="left", color="#888888")
+ax.text(right + 0.02, ion_y, "Ionization (0 eV)", fontsize=16, va="center", ha="left", color="#888888")
 
 # Lyman series arrows (left side)
 lyman_x = np.linspace(0.24, 0.40, len(lyman_data))
@@ -84,8 +84,8 @@ ax.text(
     fontstyle="italic",
 )
 ax.text(
-    0.635,
-    (y_of[2] + y_of[3]) / 2,
+    0.76,
+    (y_of[3] + y_of[4]) / 2,
     "Balmer series\n(Visible)",
     fontsize=16,
     ha="center",
@@ -102,16 +102,11 @@ legend_handles = [
     mpatches.Patch(color="#7B3FA0", label="H-\u03b4  410 nm"),
     mpatches.Patch(color=lyman_color, label="Lyman (UV)"),
 ]
-ax.legend(handles=legend_handles, fontsize=14, loc="lower right", framealpha=0.9, edgecolor="#CCCCCC", fancybox=False)
+ax.legend(handles=legend_handles, fontsize=16, loc="lower right", framealpha=0.9, edgecolor="#CCCCCC", fancybox=False)
 
 # Style
 ax.set_ylabel("Energy (eV)", fontsize=20)
-ax.set_title(
-    "Hydrogen Emission Spectrum · energy-level-atomic · matplotlib · pyplots.ai",
-    fontsize=24,
-    fontweight="medium",
-    pad=20,
-)
+ax.set_title("energy-level-atomic · matplotlib · pyplots.ai", fontsize=24, fontweight="medium", pad=20)
 ax.set_xlim(0.05, 1.08)
 ax.set_ylim(y_of[1] - 0.3, ion_y + 0.4)
 ax.set_xticks([])

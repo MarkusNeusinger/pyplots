@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 mohr-circle: Mohr's Circle for Stress Analysis
 Library: bokeh 3.8.2 | Python 3.14.3
 Quality: 87/100 | Created: 2026-02-27
@@ -87,7 +87,8 @@ center_v = Span(
 p.add_layout(center_h)
 p.add_layout(center_v)
 
-# Mohr's circle
+# Mohr's circle — primary visual element with subtle fill
+p.patch(circle_x.tolist(), circle_y.tolist(), fill_color="#306998", fill_alpha=0.04, line_color=None)
 p.line(circle_x, circle_y, line_color="#306998", line_width=4, line_alpha=0.9)
 
 # Line connecting A and B through center (diameter)
@@ -100,9 +101,9 @@ principal_r = p.scatter(
     "x", "y", source=principal_source, size=22, color="#E74C3C", marker="diamond", line_color="white", line_width=2
 )
 
-# Maximum shear stress at top and bottom (colorblind-safe orange)
+# Maximum shear stress at top and bottom (colorblind-safe teal)
 shear_r = p.scatter(
-    "x", "y", source=shear_source, size=22, color="#E67E22", marker="triangle", line_color="white", line_width=2
+    "x", "y", source=shear_source, size=24, color="#1B9E77", marker="triangle", line_color="white", line_width=2
 )
 
 # Stress points A and B
@@ -153,8 +154,8 @@ p.add_layout(
         x=center + offset_lg,
         y=tau_max + offset_lg * 0.5,
         text=f"τ_max = {tau_max:.1f} MPa",
-        text_font_size="20pt",
-        text_color="#E67E22",
+        text_font_size="22pt",
+        text_color="#1B9E77",
     )
 )
 p.add_layout(
@@ -162,8 +163,8 @@ p.add_layout(
         x=center + offset_lg,
         y=-tau_max - offset_lg * 0.5,
         text=f"τ_max = {tau_max:.1f} MPa",
-        text_font_size="20pt",
-        text_color="#E67E22",
+        text_font_size="22pt",
+        text_color="#1B9E77",
         text_baseline="top",
     )
 )
@@ -173,7 +174,7 @@ p.add_layout(
         x=ax_pt[0] + offset_lg,
         y=ax_pt[1] + offset_lg * 0.5,
         text=f"A ({sigma_x}, {tau_xy})",
-        text_font_size="20pt",
+        text_font_size="22pt",
         text_color="#306998",
     )
 )
@@ -182,7 +183,7 @@ p.add_layout(
         x=bx_pt[0] - offset_lg,
         y=bx_pt[1] - offset_lg * 0.5,
         text=f"B ({sigma_y}, {-tau_xy})",
-        text_font_size="20pt",
+        text_font_size="22pt",
         text_color="#306998",
         text_align="right",
         text_baseline="top",
@@ -194,7 +195,7 @@ p.add_layout(
         x=center,
         y=-padding * 0.85,
         text=f"Center = ({center:.1f}, 0)  |  R = {radius:.1f} MPa",
-        text_font_size="20pt",
+        text_font_size="22pt",
         text_color="#555555",
         text_align="center",
     )
@@ -208,31 +209,48 @@ p.add_layout(
         x=center + label_r * np.cos(arc_mid_angle),
         y=label_r * np.sin(arc_mid_angle),
         text=f"2θp = {2 * theta_p_deg:.1f}°",
-        text_font_size="20pt",
+        text_font_size="22pt",
         text_color="#E74C3C",
     )
 )
 
 # Style
 p.title.text_font_size = "32pt"
+p.title.text_color = "#222222"
 p.title.align = "center"
 p.xaxis.axis_label_text_font_size = "22pt"
 p.yaxis.axis_label_text_font_size = "22pt"
 p.xaxis.major_label_text_font_size = "18pt"
 p.yaxis.major_label_text_font_size = "18pt"
 
-p.xgrid.grid_line_alpha = 0.2
-p.ygrid.grid_line_alpha = 0.2
+p.xgrid.grid_line_alpha = 0.15
+p.ygrid.grid_line_alpha = 0.15
 p.xgrid.grid_line_width = 1
 p.ygrid.grid_line_width = 1
+p.xgrid.grid_line_dash = [4, 4]
+p.ygrid.grid_line_dash = [4, 4]
 
 p.outline_line_color = None
-p.background_fill_color = "#FFFFFF"
+p.background_fill_color = "#FAFAFA"
+p.border_fill_color = "#FFFFFF"
 
-p.xaxis.axis_line_width = 2
-p.yaxis.axis_line_width = 2
+# Refined axis styling — thin, muted spines
+p.xaxis.axis_line_color = "#888888"
+p.yaxis.axis_line_color = "#888888"
+p.xaxis.axis_line_width = 1
+p.yaxis.axis_line_width = 1
 p.xaxis.minor_tick_line_color = None
 p.yaxis.minor_tick_line_color = None
+p.xaxis.major_tick_line_color = "#888888"
+p.yaxis.major_tick_line_color = "#888888"
+p.xaxis.major_tick_line_width = 1
+p.yaxis.major_tick_line_width = 1
+p.xaxis.axis_label_text_font_style = "normal"
+p.yaxis.axis_label_text_font_style = "normal"
+p.xaxis.major_label_text_color = "#444444"
+p.yaxis.major_label_text_color = "#444444"
+p.xaxis.axis_label_text_color = "#333333"
+p.yaxis.axis_label_text_color = "#333333"
 
 # Save HTML with interactive features (toolbar visible for hover)
 output_file("plot.html")

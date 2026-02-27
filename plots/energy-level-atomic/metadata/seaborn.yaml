@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: energy-level-atomic
 created: '2026-02-27T20:43:27Z'
-updated: '2026-02-27T20:58:59Z'
+updated: '2026-02-27T21:09:40Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22502879493
 issue: 4434
@@ -10,112 +10,105 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/energy-level-atomic/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/energy-level-atomic/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 84
+quality_score: 90
 review:
   strengths:
-  - Physically accurate hydrogen atom data with correct E_n = -13.6/n² formula and
-    real spectral wavelengths
-  - Thoughtful qualitative y-spacing that prevents upper converging levels from becoming
-    unreadable
-  - Spectrum-inspired color palette (UV=purple, visible=blue, IR=red) with intentional
-    visual hierarchy
-  - Clean design with removed spines, dashed ionization line, and organized columnar
-    layout
-  - 'Significant improvement from attempt 1: seaborn now properly imported and used,
-    title format corrected, font sizes increased'
+  - Physically accurate hydrogen atom data with correct Rydberg formula values and
+    wavelengths
+  - Excellent spatial organization with three series in color-coded columns with subtle
+    background tints
+  - 'Strong design choices: custom palette, removed spines, clean typography, light
+    background tints via sns.light_palette'
+  - Spectral region labels (ultraviolet/visible/infrared) add meaningful scientific
+    context
+  - Nonlinear visual spacing keeps upper converging levels readable
+  - Clean, well-structured code with DataFrame-driven approach
   weaknesses:
-  - Wavelength labels at 13pt are still below ideal for 4800x2700 resolution; increase
-    to at least 15pt
-  - Level labels and series labels at 18pt are close but slightly below the 20pt guideline
-  - Purple and dark blue could be difficult to distinguish under some color vision
-    deficiencies
-  - Seaborn usage is mostly for styling/theming; core visualization relies heavily
-    on matplotlib primitives
-  image_description: 'The plot displays a hydrogen atom energy level diagram on a
-    clean white background. Six horizontal dark charcoal (#2C3E50) lines represent
-    energy levels from n=1 (−13.60 eV) at the bottom to n=6 (−0.38 eV) near the top,
-    each with small endpoint dots. A dashed gray line at the top marks the ionization
-    limit (0.00 eV). Three spectral series are shown as colored downward emission
-    arrows arranged in columns: Lyman series in purple (#7B2FBE, transitions to n=1,
-    wavelengths 122/103/97 nm), Balmer series in dark blue (#306998, transitions to
-    n=2, wavelengths 656/486/434 nm), and Paschen series in red (#C0392B, transitions
-    to n=3, wavelengths 1875/1282/1094 nm). Each arrow has a 90°-rotated wavelength
-    label alongside it. Series names appear in bold at the top in matching colors.
-    A gray "Energy" label with an upward arrow sits on the left margin. All spines
-    are removed. The title reads "energy-level-atomic · seaborn · pyplots.ai" centered
-    at the top.'
+  - Minor crowding of rotated wavelength labels in the Paschen column area
+  - Purple and blue colors could be closer in perception for some CVD types
+  image_description: 'The plot displays a hydrogen atom energy level diagram with
+    six horizontal dark lines (n=1 through n=6) at visually-spaced vertical positions,
+    labeled on the right with quantum numbers and energy values in eV. A dashed ionization
+    limit line sits at the top labeled "Ionization (0.00 eV)". Three spectral series
+    are organized in color-coded columns: Lyman series (purple, ultraviolet) on the
+    left with transitions to n=1, Balmer series (dark blue, visible) in the center
+    with transitions to n=2, and Paschen series (red, infrared) on the right with
+    transitions to n=3. Each transition is a downward arrow with a rotated wavelength
+    label in nm. Subtle background tints distinguish each series column. A vertical
+    "Energy" arrow on the far left indicates the energy direction. The title reads
+    "energy-level-atomic · seaborn · pyplots.ai" at the top. The background is a light
+    off-white (#FAFBFC) with clean, professional typography throughout.'
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 27
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set. Title 26pt good. Level/series labels 18pt
-          slightly below 20pt guideline. Wavelength labels 13pt small for resolution.
+        comment: All font sizes explicitly set (title 26pt, labels 20pt, wavelengths
+          16pt). Rotated wavelength labels slightly tight in dense areas.
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: Rotated wavelength labels prevent most overlap. Minor crowding in
-          n=3/n=4 region between Balmer and Paschen labels.
+        comment: No severe overlap. Some visual crowding of wavelength labels in Paschen
+          column area.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Energy level lines at linewidth=2.5 and arrows at linewidth=2.2 with
-          well-sized arrowheads clearly visible.
+        comment: Lines, arrows, endpoints, and ionization line all clearly visible
+          and well-sized.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Purple, blue, red provide three distinct hues. Purple and dark blue
-          could be similar under deuteranopia.
+        comment: Purple/blue/red palette provides reasonable luminance contrast. Purple
+          and blue could be somewhat close for certain CVD types.
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Good canvas use with levels spanning ~80% horizontal. Some wasted
-          vertical space below n=1.
+        comment: Good use of 16:9 canvas. Energy levels span full width, labels well-positioned.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Appropriate for schematic: Energy direction arrow, eV units on level
-          labels, no traditional axes needed.'
+        comment: Energy direction arrow with label, eV units on each level. Appropriate
+          for schematic diagram.
     design_excellence:
-      score: 14
+      score: 16
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Spectrum-inspired palette (UV=purple, visible=blue, IR=red). Dark
-          charcoal for structure, gray for secondary. Above defaults but not publication-tier.
+        comment: 'Strong design: custom palette, subtle background tints, clean typography,
+          intentional color hierarchy.'
       - id: DE-02
         name: Visual Refinement
         score: 5
         max: 6
         passed: true
-        comment: All spines removed via sns.despine. Clean white background. No grid.
-          Dashed ionization line. Generous whitespace.
+        comment: All spines removed, no grid (appropriate), subtle alpha=0.12 tints,
+          clean endpoint dots, generous whitespace.
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Three spectral series in clear columns with color coding. Qualitative
-          y-spacing reveals convergence. Clear emission hierarchy.
+        comment: Three series spatially grouped and color-coded, spectral region labels
+          add context, energy arrow orients viewer, clear visual hierarchy.
     spec_compliance:
       score: 15
       max: 15
@@ -125,29 +118,29 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct energy level diagram with horizontal lines and vertical transition
+        comment: Correct energy level diagram with horizontal lines and transition
           arrows.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: All spec features present including partial-width lines, emission
-          arrows, color coding, wavelength labels, ionization line, nonlinear spacing.
+        comment: 'All spec features present: partial-width lines, labels, emission
+          arrows, color coding, ionization limit, nonlinear spacing.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Energy levels correctly ordered. Transitions accurately mapped as
-          emission. Wavelengths match hydrogen spectral lines.
+        comment: Energy increases upward, correct relative positions, transitions
+          connect correct levels.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title follows exact required format. Color-coded series names at
-          top serve as effective legend.
+        comment: Correct title format. Series labels at top serve as legend with matching
+          colors.
     data_quality:
       score: 15
       max: 15
@@ -157,21 +150,21 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Six energy levels, three spectral series, nine transitions, ionization
-          limit. Comprehensive.
+        comment: Six levels, three spectral series, nine transitions, ionization limit.
+          Comprehensive.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Hydrogen atom with correct E_n = -13.6/n² eV formula. Wavelengths
-          match known spectral lines. Neutral physics topic.
+        comment: Real hydrogen atom physics with correct Rydberg formula values and
+          wavelengths.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: All energy values and wavelengths physically accurate for hydrogen.
+        comment: All energy and wavelength values match hydrogen Rydberg formula precisely.
     code_quality:
       score: 10
       max: 10
@@ -181,62 +174,65 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save structure with no functions or
-          classes.
+        comment: 'Linear flow: imports, theme, data, figure, plot elements, save.
+          No functions or classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic data based on physics formula.
+        comment: All data deterministic (hardcoded physical constants). No random
+          elements.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: matplotlib.pyplot, pandas, and seaborn all imported and used.
+        comment: matplotlib.pyplot, pandas, seaborn — all used. No unused imports.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Well-organized dictionaries, systematic arrow placement, clear variable
-          naming.
+        comment: Clean organization, DataFrame for transitions, well-commented. No
+          fake UI.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300 and bbox_inches='tight'. Current API.
+        comment: Saves as plot.png at dpi=300. Uses current sns.set_theme() API.
     library_mastery:
-      score: 5
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: Uses sns.set_theme, sns.lineplot, sns.scatterplot with DataFrames,
+          sns.despine, sns.color_palette. Some reliance on matplotlib annotate unavoidable
+          for diagram type.
+      - id: LM-02
+        name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses sns.set_style, sns.set_context, sns.despine, sns.color_palette
-          idiomatically. sns.lineplot/scatterplot used for basic drawing rather than
-          statistical visualization.
-      - id: LM-02
-        name: Distinctive Features
-        score: 2
-        max: 5
-        passed: false
-        comment: sns.set_context('talk') and sns.despine() are distinctive utilities,
-          but core visualization is matplotlib primitives. Could work almost identically
-          without seaborn.
-  verdict: REJECTED
+        comment: sns.light_palette for background tints is distinctively seaborn.
+          sns.set_theme with context/font_scale. Core visualization relies on matplotlib
+          annotations.
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
-  - custom-legend
+  - layer-composition
   patterns:
+  - data-generation
   - iteration-over-groups
   - explicit-figure
   dataprep: []
   styling:
   - minimal-chrome
+  - alpha-blending

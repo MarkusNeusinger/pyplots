@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 mohr-circle: Mohr's Circle for Stress Analysis
 Library: letsplot 4.8.2 | Python 3.14.3
 Quality: 88/100 | Created: 2026-02-27
@@ -79,7 +79,7 @@ df_center = pd.DataFrame(
 )
 
 # Reference geometry
-pad = radius * 0.35
+pad = radius * 0.45
 df_hline = pd.DataFrame({"sigma": [center - radius - pad, center + radius + pad], "tau": [0.0, 0.0]})
 df_vline = pd.DataFrame({"sigma": [center, center], "tau": [-radius - pad, radius + pad]})
 df_diameter = pd.DataFrame({"sigma": [sigma_x, sigma_y], "tau": [tau_xy, -tau_xy]})
@@ -180,8 +180,8 @@ plot = (
         data=df_input.iloc[[0]],
         mapping=aes(x="sigma", y="tau", label="label"),  # noqa: F405
         color=C_INPUT,
-        size=12,
-        nudge_y=radius * 0.12,
+        size=14,
+        nudge_y=radius * 0.08,
         nudge_x=-radius * 0.05,
         hjust=1,
     )
@@ -189,7 +189,7 @@ plot = (
         data=df_input.iloc[[1]],
         mapping=aes(x="sigma", y="tau", label="label"),  # noqa: F405
         color=C_INPUT,
-        size=12,
+        size=14,
         nudge_y=-radius * 0.12,
         nudge_x=radius * 0.05,
         hjust=0,
@@ -198,41 +198,49 @@ plot = (
         data=df_principal.iloc[[0]],
         mapping=aes(x="sigma", y="tau", label="label"),  # noqa: F405
         color=C_PRINCIPAL,
-        size=12,
-        nudge_y=-radius * 0.12,
-        nudge_x=radius * 0.02,
-        hjust=0,
+        size=14,
+        nudge_y=-radius * 0.14,
+        hjust=0.5,
     )
     + geom_text(  # noqa: F405
         data=df_principal.iloc[[1]],
         mapping=aes(x="sigma", y="tau", label="label"),  # noqa: F405
         color=C_PRINCIPAL,
-        size=12,
-        nudge_y=-radius * 0.12,
-        nudge_x=-radius * 0.02,
-        hjust=1,
+        size=14,
+        nudge_y=-radius * 0.14,
+        hjust=0.5,
     )
-    # Shear labels (combined - same color, nudge, hjust)
+    # Shear labels - nudge τ_max up further to avoid proximity with point A label
     + geom_text(  # noqa: F405
-        data=df_shear,
+        data=df_shear.iloc[[0]],
         mapping=aes(x="sigma", y="tau", label="label"),  # noqa: F405
         color=C_SHEAR,
-        size=12,
+        size=14,
         nudge_x=radius * 0.1,
+        nudge_y=radius * 0.08,
+        hjust=0,
+    )
+    + geom_text(  # noqa: F405
+        data=df_shear.iloc[[1]],
+        mapping=aes(x="sigma", y="tau", label="label"),  # noqa: F405
+        color=C_SHEAR,
+        size=14,
+        nudge_x=radius * 0.1,
+        nudge_y=-radius * 0.08,
         hjust=0,
     )
     # Angle label
     + geom_text(  # noqa: F405
         data=pd.DataFrame(
             {
-                "sigma": [center + arc_r * 1.2 * np.cos(np.radians(theta_p))],
-                "tau": [arc_r * 1.2 * np.sin(np.radians(theta_p))],
+                "sigma": [center + arc_r * 1.3 * np.cos(np.radians(theta_p))],
+                "tau": [arc_r * 1.3 * np.sin(np.radians(theta_p))],
                 "label": [f"2\u03b8p = {2 * theta_p:.1f}\u00b0"],
             }
         ),
         mapping=aes(x="sigma", y="tau", label="label"),  # noqa: F405
         color=C_SHEAR,
-        size=12,
+        size=14,
         hjust=0,
     )
     # Center label
@@ -240,7 +248,7 @@ plot = (
         data=df_center,
         mapping=aes(x="sigma", y="tau", label="label"),  # noqa: F405
         color=C_CIRCLE,
-        size=11,
+        size=13,
         nudge_y=-radius * 0.12,
     )
     # Styling
@@ -251,19 +259,22 @@ plot = (
         subtitle=(
             f"Stress state: \u03c3x = {sigma_x:.0f}, \u03c3y = {sigma_y:.0f},"
             f" \u03c4xy = {tau_xy:.0f} MPa \u2014 Beam under combined loading"
+            f" | \u03c3\u2081 = {sigma_1:.1f}, \u03c3\u2082 = {sigma_2:.1f},"
+            f" \u03c4max = {tau_max:.1f} MPa"
         ),
     )
     + coord_fixed()  # noqa: F405
     + theme_minimal()  # noqa: F405
     + theme(  # noqa: F405
-        plot_title=element_text(size=24, face="bold"),  # noqa: F405
+        plot_title=element_text(size=24, face="bold", color="#1A1A2E"),  # noqa: F405
         plot_subtitle=element_text(size=16, color="#525252", face="italic"),  # noqa: F405
-        axis_title=element_text(size=20, color="#404040"),  # noqa: F405
+        axis_title=element_text(size=20, color="#2D2D44"),  # noqa: F405
         axis_text=element_text(size=16, color="#525252"),  # noqa: F405
-        panel_grid_major=element_line(size=0.4, color="#EBEBEB"),  # noqa: F405
+        panel_grid_major=element_line(size=0.3, color="#E8E8E8"),  # noqa: F405
         panel_grid_minor=element_blank(),  # noqa: F405
         plot_background=element_rect(fill="#FAFAFA", color="#FAFAFA"),  # noqa: F405
-        panel_background=element_rect(fill="white", color="#E0E0E0", size=0.5),  # noqa: F405
+        panel_background=element_rect(fill="white", color="#D8D8D8", size=0.4),  # noqa: F405
+        plot_margin=[30, 30, 20, 20],
     )
     + ggsize(1600, 900)  # noqa: F405
 )

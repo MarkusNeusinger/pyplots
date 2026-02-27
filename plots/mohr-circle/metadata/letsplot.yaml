@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: mohr-circle
 created: '2026-02-27T22:07:39Z'
-updated: '2026-02-27T22:12:17Z'
+updated: '2026-02-27T22:23:42Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22505483008
 issue: 4432
@@ -10,40 +10,40 @@ library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/mohr-circle/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/mohr-circle/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/mohr-circle/letsplot/plot.html
-quality_score: 85
+quality_score: 88
 review:
   strengths:
-  - 'Excellent spec compliance: every required feature from the specification is present
-    and correctly implemented'
-  - Thoughtful semantic color coding with matching marker shapes creates clear visual
-    differentiation between point types
-  - Realistic engineering data with appropriate stress values and proper MPa units
-  - Clean deterministic data with well-organized code structure
+  - 'Perfect spec compliance with all required features: circle, principal stresses,
+    max shear, stress points A/B, angle arc, reference lines'
+  - 'Excellent data quality: realistic engineering scenario with meaningful stress
+    values that showcase all circle features'
+  - Strong visual hierarchy through color-coded point categories with distinct shapes
+    (circles, diamonds, triangles, X)
+  - Effective use of lets-plot interactive tooltips providing detailed stress information
+    on hover
+  - Clean, well-organized code with deterministic geometry computation
   weaknesses:
-  - Red and green color pairing is not colorblind-safe; should use a more accessible
-    palette
-  - Annotation label text at size 10-11 is smaller than ideal for readability
-  - Verbose geom_text implementation with six individual layers and DataFrame slicing
-  - Design could be more polished with background fill, subtitle, or refined typography
-  - Does not leverage lets-plot distinctive features like interactive tooltips or
-    GGBunch
-  image_description: 'The plot displays a Mohr''s Circle for stress analysis on a
-    minimal white background. A large blue circle (#306998) is centered at approximately
-    (25, 0) with a radius of ~74.3 MPa. Two red circular markers indicate the input
-    stress state: point A (σx, τxy) = (80, 50) in the upper-right region and point
-    B (σy, −τxy) = (-30, -50) in the lower-left. Green diamond markers mark the principal
-    stresses at σ₁ = 99.3 on the far right and σ₂ = -49.3 on the far left of the circle
-    along the horizontal axis. Orange triangle markers show τ_max = 74.3 at the top
-    and −τ_max = -74.3 at the bottom of the circle. A blue X marks the center C (25,
-    0). A dashed gray diameter line connects A to B through the center. Dashed light
-    gray reference lines pass through the center horizontally and vertically. An orange
-    arc near the center shows the angle 2θp = 42.3°. The x-axis is labeled "Normal
-    Stress σ (MPa)" and the y-axis "Shear Stress τ (MPa)". The title reads "mohr-circle
-    · letsplot · pyplots.ai" in bold. The circle appears as a true circle due to coord_fixed().
-    Light gray major grid lines are visible; minor grid is suppressed.'
+  - Annotation label font sizes (11-12) are slightly inconsistent with the 16pt tick
+    labels — bumping to 13-14 would improve consistency
+  - The τ_max and A labels in the upper portion are in close proximity — could benefit
+    from slightly adjusted positioning
+  - Some unused canvas space at top/bottom due to equal aspect ratio constraint
+  image_description: The plot displays a Mohr's Circle for stress analysis on a white
+    panel with a light gray (#FAFAFA) background. The main circle is drawn in blue
+    (#306998) with a very subtle light-blue fill (alpha ~0.06). The title "mohr-circle
+    · letsplot · pyplots.ai" is bold at the top with an italic subtitle showing the
+    stress state (σx = 80, σy = -30, τxy = 50 MPa — Beam under combined loading).
+    Two input stress points A(80, 50) and B(-30, -50) are shown as dark crimson circles.
+    Principal stress points σ₁ = 99.3 and σ₂ = -49.3 appear as teal/cyan diamonds
+    on the horizontal axis. Maximum shear stress points τ_max = ±74.3 are marked with
+    amber/gold triangles at top and bottom of the circle. The center C(25, 0) is marked
+    with an X. A dashed gray diameter line connects A to B. An amber arc shows the
+    principal angle 2θp = 42.3°. Dashed light-gray reference lines pass through the
+    center. Axes are labeled "Normal Stress σ (MPa)" and "Shear Stress τ (MPa)" with
+    a subtle grid. The circle maintains equal aspect ratio.
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 27
       max: 30
       items:
       - id: VQ-01
@@ -51,68 +51,69 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title=24, axis_title=20, axis_text=16,
-          geom_text=10-11). Annotation labels readable but on the smaller side.
+        comment: Font sizes explicitly set for title (24), subtitle (16), axis_title
+          (20), axis_text (16). Annotation labels at size 11-12 are readable but slightly
+          small relative to axis text.
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: No overlapping text. Labels well-positioned with nudge offsets and
-          hjust alignment.
+        comment: Most labels well-positioned. τ_max and point A labels in close proximity
+          in upper circle region.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: All markers clearly visible with size=6 and distinct shapes. Circle
-          line width 1.8 is prominent.
+        comment: All markers clearly visible with distinct shapes (circle, diamond,
+          triangle, X). Circle outline crisp at size=1.8.
       - id: VQ-04
         name: Color Accessibility
-        score: 3
-        max: 4
-        passed: true
-        comment: Red and green used together is a colorblind concern. Mitigated partially
-          by different marker shapes.
-      - id: VQ-05
-        name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Good proportions with coord_fixed(). Circle fills ~55-60% of canvas.
-          Balanced margins.
+        comment: Colorblind-safe palette (crimson, teal, amber, blue) with shape differentiation
+          as additional encoding.
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 3
+        max: 4
+        passed: true
+        comment: Circle fills reasonable portion of canvas. Equal aspect ratio leaves
+          some unused corner space. Balanced margins.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: Normal Stress σ (MPa) and Shear Stress
-          τ (MPa).'
+        comment: Normal Stress σ (MPa) and Shear Stress τ (MPa) — descriptive with
+          units.
     design_excellence:
-      score: 12
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Semantic color palette with matching annotations and distinct marker
-          shapes. Above defaults but not publication-level.
+        comment: 'Strong design: custom color palette with intentional hierarchy,
+          subtle polygon fill, professional typography.'
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: theme_minimal removes spines, minor grid disabled, grid color customized.
-          Some refinement beyond defaults.
+        comment: theme_minimal, minor grid removed, subtle major grid, custom panel/plot
+          backgrounds.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Good visual hierarchy through color and shape differentiation. Viewer
-          can follow the stress analysis narrative.
+        comment: Color coding creates visual hierarchy. Subtitle provides context.
+          Diameter line and angle arc guide the viewer.
     spec_compliance:
       score: 15
       max: 15
@@ -128,22 +129,21 @@ review:
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: circle, principal stresses, max shear,
-          stress points A & B, 2θp angle arc, equal aspect ratio, grid, reference
-          lines.'
+        comment: 'All features present: circle, principal stresses, max shear, stress
+          points A/B, angle 2θp, reference lines.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=Normal Stress σ, Y=Shear Stress τ. All data points correctly positioned.
+        comment: Horizontal = Normal Stress σ, Vertical = Shear Stress τ. All data
+          correctly mapped.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title in correct format. Direct labeling replaces traditional legend
-          appropriately.
+        comment: Title format correct. Direct labeling used instead of legend — appropriate.
     data_quality:
       score: 15
       max: 15
@@ -153,23 +153,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows both positive and negative principal stresses, max shear, both
-          input stress points, center, and 2θp angle.
+        comment: Stress state spans positive and negative normal stresses, non-zero
+          shear, non-trivial principal angle.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Beam under combined loading with realistic MPa values for structural
-          analysis.
+        comment: Beam under combined loading with plausible MPa stress magnitudes.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values in 30-100 MPa range are sensible for structural steel applications.
+        comment: Stress values within realistic ranges for engineering materials.
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -177,34 +176,35 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean Imports → Data → Plot → Save structure. No functions or classes.
+        comment: Clean Imports → Data → Plot → Save structure with no functions or
+          classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic data with fixed stress values.
+        comment: 'Fully deterministic: fixed stress inputs, mathematical circle computation.'
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: numpy, pandas, lets_plot, lets_plot.export.'
+        comment: numpy, pandas, lets_plot, export_ggsave — all used.
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Well-organized but verbose with six separate geom_text layers and
-          individual DataFrame slicing.
+        comment: Well-organized DataFrames for each point type. Tooltips are genuine
+          lets-plot features.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with scale=3. Current API used.
+        comment: Saves as plot.png via export_ggsave with scale=3. Also exports HTML.
     library_mastery:
-      score: 6
+      score: 7
       max: 10
       items:
       - id: LM-01
@@ -212,23 +212,26 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of ggplot grammar with layered geoms, coord_fixed, theme,
-          labs, ggsize.
+        comment: Good ggplot grammar usage with layered geoms, aes mappings, theme
+          customization, coord_fixed().
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Uses export_ggsave with scale and HTML export but core plotting follows
-          generic ggplot2 patterns.
+        passed: true
+        comment: Uses layer_tooltips() with custom .line() formatting for interactive
+          hover. Also exports HTML.
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
   - layer-composition
+  - hover-tooltips
+  - html-export
   patterns:
   - data-generation
   dataprep: []
   styling:
+  - alpha-blending
   - grid-styling

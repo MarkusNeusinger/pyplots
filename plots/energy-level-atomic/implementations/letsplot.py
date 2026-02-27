@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 energy-level-atomic: Atomic Energy Level Diagram
 Library: letsplot 4.8.2 | Python 3.14.3
 Quality: 86/100 | Created: 2026-02-27
@@ -11,6 +11,7 @@ from lets_plot import (
     element_blank,
     element_line,
     element_text,
+    geom_band,
     geom_segment,
     geom_text,
     ggplot,
@@ -31,8 +32,8 @@ LetsPlot.setup_html()
 level_names = ["n=1", "n=2", "n=3", "n=4", "n=5", "n=6"]
 energies = [-13.6, -3.4, -1.51, -0.85, -0.54, -0.38]
 
-# Visual y-positions: power transform (0.4) to spread converging upper levels
-y_positions = [-(abs(e) ** 0.4) for e in energies]
+# Visual y-positions: power transform (0.33) to spread converging upper levels more
+y_positions = [-(abs(e) ** 0.33) for e in energies]
 level_ypos = dict(zip(level_names, y_positions, strict=True))
 
 # Ionization limit
@@ -107,50 +108,37 @@ for from_lvl, to_lvl, series, color, wavelength in transitions:
 
 arrow_df = pd.DataFrame(arrow_rows)
 
-# Arrowheads (V-shape at bottom of each arrow, compact to reduce crowding)
-head_len = 0.08
-head_width = 0.010
-head_rows = []
-for _, row in arrow_df.iterrows():
-    head_rows.append(
-        {
-            "x_left": row["x"] - head_width,
-            "x_right": row["x"] + head_width,
-            "x_tip": row["x"],
-            "y_base": row["y_to"] + head_len,
-            "y_tip": row["y_to"],
-            "color": row["color"],
-            "series": row["series"],
-        }
-    )
-head_df = pd.DataFrame(head_rows)
+# Arrowheads (V-shape at bottom of each arrow)
+head_len, head_width = 0.10, 0.014
+head_df = pd.DataFrame(
+    {
+        "x_left": arrow_df["x"] - head_width,
+        "x_right": arrow_df["x"] + head_width,
+        "x_tip": arrow_df["x"].values,
+        "y_base": arrow_df["y_to"] + head_len,
+        "y_tip": arrow_df["y_to"].values,
+        "color": arrow_df["color"].values,
+        "series": arrow_df["series"].values,
+    }
+)
 
 # Wavelength annotations for α-lines (first transition in each series)
 alpha_arrows = arrow_df[arrow_df["is_alpha"]].copy()
 alpha_arrows["y_mid"] = (alpha_arrows["y_from"] + alpha_arrows["y_to"]) / 2
 alpha_arrows["x_label"] = alpha_arrows["x"] + 0.025
 
-# Legend data
-legend_items = [
-    ("Lyman series (UV)", lyman_color, -1.2),
-    ("Balmer series (Visible)", balmer_color, -1.7),
-    ("Paschen series (IR)", paschen_color, -2.2),
-]
-legend_seg_df = pd.DataFrame(
+# Legend data (compact construction)
+legend_labels = ["Lyman series (UV)", "Balmer series (Visible)", "Paschen series (IR)"]
+legend_colors = [lyman_color, balmer_color, paschen_color]
+legend_y = [-1.2, -1.7, -2.2]
+legend_df = pd.DataFrame(
     {
-        "x": [0.68] * 3,
-        "xend": [0.74] * 3,
-        "y": [item[2] for item in legend_items],
-        "yend": [item[2] for item in legend_items],
-        "color": [item[1] for item in legend_items],
-    }
-)
-legend_text_df = pd.DataFrame(
-    {
-        "x": [0.755] * 3,
-        "y": [item[2] for item in legend_items],
-        "label": [item[0] for item in legend_items],
-        "color": [item[1] for item in legend_items],
+        "x_seg": [0.68] * 3,
+        "xend_seg": [0.74] * 3,
+        "x_text": [0.755] * 3,
+        "y": legend_y,
+        "label": legend_labels,
+        "color": legend_colors,
     }
 )
 
@@ -162,11 +150,29 @@ ion_label_df = pd.DataFrame({"x": [0.60], "y": [ion_ypos], "label": ["Ionization
 y_breaks = y_positions + [ion_ypos]
 y_labels = [f"{e:.1f}" for e in energies] + ["0.0"]
 
+# Ionization continuum band (shaded region above ionization limit)
+ion_band_df = pd.DataFrame({"ymin": [ion_ypos], "ymax": [ion_ypos + 0.3]})
+
 # Build plot
 plot = (
     ggplot()
-    # Energy level horizontal lines
-    + geom_segment(data=level_df, mapping=aes(x="x_start", xend="x_end", y="y", yend="y"), size=2.0, color="#2C3E50")
+    # Ionization continuum (lets-plot geom_band: subtle shaded region above 0 eV)
+    + geom_band(
+        data=ion_band_df,
+        mapping=aes(ymin="ymin", ymax="ymax"),
+        fill="#E8EAF6",
+        alpha=0.5,
+        color="blank",
+        tooltips=layer_tooltips().line("Ionization continuum"),
+    )
+    # Energy level horizontal lines with interactive tooltips
+    + geom_segment(
+        data=level_df,
+        mapping=aes(x="x_start", xend="x_end", y="y", yend="y"),
+        size=2.0,
+        color="#2C3E50",
+        tooltips=layer_tooltips().line("@label").line("Energy: @energy_label"),
+    )
     # Level labels (left side)
     + geom_text(
         data=level_df,
@@ -216,7 +222,7 @@ plot = plot + geom_text(
     data=alpha_arrows,
     mapping=aes(x="x_label", y="y_mid", label="wavelength"),
     hjust=0,
-    size=14,
+    size=16,
     color="#444444",
     fontface="italic",
 )
@@ -226,11 +232,16 @@ plot = (
     plot
     + scale_color_identity()
     # Legend
-    + geom_segment(data=legend_seg_df, mapping=aes(x="x", xend="xend", y="y", yend="yend", color="color"), size=2.5)
-    + geom_text(data=legend_text_df, mapping=aes(x="x", y="y", label="label", color="color"), hjust=0, size=16)
+    + geom_segment(data=legend_df, mapping=aes(x="x_seg", xend="xend_seg", y="y", yend="y", color="color"), size=2.5)
+    + geom_text(data=legend_df, mapping=aes(x="x_text", y="y", label="label", color="color"), hjust=0, size=16)
     + scale_x_continuous(limits=[-0.05, 1.05], expand=[0, 0])
     + scale_y_continuous(breaks=y_breaks, labels=y_labels)
-    + labs(x="", y="Energy (eV)", title="Hydrogen Atom Energy Levels · energy-level-atomic · letsplot · pyplots.ai")
+    + labs(
+        x="",
+        y="Energy (eV)",
+        title="energy-level-atomic · letsplot · pyplots.ai",
+        subtitle="Hydrogen Atom Energy Levels & Spectral Series",
+    )
     + ggsize(1600, 900)
     + theme(
         axis_text_x=element_blank(),
@@ -242,6 +253,7 @@ plot = (
         axis_line_y=element_line(color="#CCCCCC", size=0.8),
         axis_ticks_y=element_line(color="#CCCCCC"),
         plot_title=element_text(size=24, hjust=0.5, color="#2C3E50"),
+        plot_subtitle=element_text(size=18, hjust=0.5, color="#666666"),
         panel_grid_major_x=element_blank(),
         panel_grid_minor_x=element_blank(),
         panel_grid_major_y=element_line(color="#EEEEEE", size=0.4),

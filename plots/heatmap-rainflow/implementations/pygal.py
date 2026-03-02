@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-rainflow: Rainflow Counting Matrix for Fatigue Analysis
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 83/100 | Created: 2026-03-02
@@ -33,47 +33,50 @@ class RainflowHeatmap(Graph):
         self.colorbar_title = kwargs.pop("colorbar_title", "")
         super().__init__(*args, **kwargs)
 
-    def _color_at(self, t):
-        """Interpolate colormap at normalized position t in [0, 1]."""
-        t = max(0.0, min(1.0, t))
-        pos = t * (len(self.colormap) - 1)
-        lo = int(pos)
-        hi = min(lo + 1, len(self.colormap) - 1)
-        f = pos - lo
-        c1, c2 = self.colormap[lo], self.colormap[hi]
-        rgb = tuple(int(int(c1[k : k + 2], 16) * (1 - f) + int(c2[k : k + 2], 16) * f) for k in (1, 3, 5))
-        return f"#{rgb[0]:02x}{rgb[1]:02x}{rgb[2]:02x}"
-
-    def _log_norm(self, value):
-        """Normalize count via log10 to [0, 1]. Returns -1 for zero counts."""
-        if value <= 0:
-            return -1.0
-        return math.log10(value + 1) / math.log10(self.vmax + 1)
-
-    def _svg_text(self, parent, x, y, label, size, **kw):
-        """Add an SVG text node using pygal's node system."""
-        node = self.svg.node(parent, "text", x=x, y=y)
-        node.set("text-anchor", kw.get("anchor", "middle"))
-        node.set("fill", kw.get("fill", "#333"))
-        weight = "bold" if kw.get("bold") else "500"
-        node.set("style", f"font-size:{size}px;font-weight:{weight};font-family:sans-serif")
-        if "rotation" in kw:
-            node.set("transform", f"rotate({kw['rotation']}, {x}, {y})")
-        node.text = label
-
     def _plot(self):
         if not self.matrix_data:
             return
+
+        cmap = self.colormap
+        log_max = math.log10(self.vmax + 1)
+
+        def color_at(t):
+            """Interpolate colormap at normalized position t in [0, 1]."""
+            t = max(0.0, min(1.0, t))
+            pos = t * (len(cmap) - 1)
+            lo = int(pos)
+            hi = min(lo + 1, len(cmap) - 1)
+            f = pos - lo
+            c1, c2 = cmap[lo], cmap[hi]
+            rgb = tuple(int(int(c1[k : k + 2], 16) * (1 - f) + int(c2[k : k + 2], 16) * f) for k in (1, 3, 5))
+            return f"#{rgb[0]:02x}{rgb[1]:02x}{rgb[2]:02x}"
+
+        def log_norm(value):
+            """Normalize count via log10 to [0, 1]. Returns -1 for zero."""
+            if value <= 0:
+                return -1.0
+            return math.log10(value + 1) / log_max
+
+        def svg_text(parent, x, y, label, size, **kw):
+            """Add SVG text node using pygal's node system."""
+            node = self.svg.node(parent, "text", x=x, y=y)
+            node.set("text-anchor", kw.get("anchor", "middle"))
+            node.set("fill", kw.get("fill", "#333"))
+            weight = "bold" if kw.get("bold") else "500"
+            node.set("style", f"font-size:{size}px;font-weight:{weight};font-family:sans-serif")
+            if "rotation" in kw:
+                node.set("transform", f"rotate({kw['rotation']}, {x}, {y})")
+            node.text = label
 
         nr = len(self.matrix_data)
         nc = len(self.matrix_data[0])
         pw, ph = self.view.width, self.view.height
 
-        # Proportional margins (adapt to chart dimensions)
-        ml = int(pw * 0.11)  # left: y-title + row labels
-        mr = int(pw * 0.09)  # right: colorbar + tick labels
-        mt = int(ph * 0.02)  # top
-        mb = int(ph * 0.12)  # bottom: col labels + x-title
+        # Proportional margins
+        ml = int(pw * 0.11)
+        mr = int(pw * 0.10)  # slightly more for larger colorbar
+        mt = int(ph * 0.02)
+        mb = int(ph * 0.12)
 
         aw, ah = pw - ml - mr, ph - mt - mb
         cw = aw / nc * 0.97
@@ -89,29 +92,37 @@ class RainflowHeatmap(Graph):
 
         # Y-axis title (rotated)
         if self.y_axis_title:
-            self._svg_text(g, x0 - int(pw * 0.096), y0 + gh / 2, self.y_axis_title, 52, bold=True, rotation=-90)
+            svg_text(g, x0 - int(pw * 0.096), y0 + gh / 2, self.y_axis_title, 52, bold=True, rotation=-90)
 
         # Row labels — every other to prevent crowding
         rf = min(36, int(ch * 0.6))
         for i, lbl in enumerate(self.row_labels):
             if i % 2 == 0 or i == nr - 1:
-                self._svg_text(g, x0 - 20, y0 + i * (ch + gap) + ch / 2 + rf * 0.35, lbl, rf, anchor="end")
+                svg_text(g, x0 - 20, y0 + i * (ch + gap) + ch / 2 + rf * 0.35, lbl, rf, anchor="end")
 
-        # Column labels — every other, rotated 45°
+        # Column labels — every other, rotated 45 degrees
         cf = min(36, int(cw * 0.55))
         for j, lbl in enumerate(self.col_labels):
             if j % 2 == 0 or j == nc - 1:
                 x = x0 + j * (cw + gap) + cw / 2
                 y = y0 + gh + gap + 15
-                self._svg_text(g, x, y, lbl, cf, anchor="start", rotation=45)
+                svg_text(g, x, y, lbl, cf, anchor="start", rotation=45)
 
         # X-axis title
         if self.x_axis_title:
-            self._svg_text(g, x0 + gw / 2, y0 + gh + int(ph * 0.10), self.x_axis_title, 52, bold=True)
+            svg_text(g, x0 + gw / 2, y0 + gh + int(ph * 0.10), self.x_axis_title, 52, bold=True)
 
-        # Annotation threshold: top ~5% of non-zero cells
-        nonzero = [v for row in self.matrix_data for v in row if v > 0]
-        peak_min = np.percentile(nonzero, 95) if nonzero else self.vmax
+        # Find the top 3 peak cells for annotation and emphasis
+        cell_values = []
+        for i in range(nr):
+            for j in range(nc):
+                if self.matrix_data[i][j] > 0:
+                    cell_values.append((self.matrix_data[i][j], i, j))
+        cell_values.sort(reverse=True)
+        top_peaks = set()
+        for _, i, j in cell_values[:3]:
+            top_peaks.add((i, j))
+        peak_cell = (cell_values[0][1], cell_values[0][2]) if cell_values else None
 
         # Draw heatmap cells
         for i in range(nr):
@@ -119,48 +130,58 @@ class RainflowHeatmap(Graph):
                 val = self.matrix_data[i][j]
                 cx = x0 + j * (cw + gap)
                 cy = y0 + i * (ch + gap)
-                norm = self._log_norm(val)
+                norm = log_norm(val)
 
-                fill = "#ffffff" if norm < 0 else self._color_at(norm)
+                fill = "#ffffff" if norm < 0 else color_at(norm)
                 stroke = "#e0e0e0" if norm < 0 else "none"
+                sw = "0.5"
+
+                # Emphasis border on absolute peak cell
+                if (i, j) == peak_cell:
+                    stroke = "#222222"
+                    sw = "3"
 
                 rect = self.svg.node(g, "rect", x=cx, y=cy, width=cw, height=ch, rx=2, ry=2)
                 rect.set("fill", fill)
                 rect.set("stroke", stroke)
-                rect.set("stroke-width", "0.5")
+                rect.set("stroke-width", sw)
 
-                # Annotate peak cells with count value
-                if val >= peak_min:
+                # Annotate only top 3 peaks
+                if (i, j) in top_peaks:
                     txt = f"{int(val)}" if val < 10000 else f"{val / 1000:.1f}k"
-                    sz = min(int(ch * 0.38), int(cw * 0.33), 26)
-                    ink = "#ffffff" if norm > 0.45 else "#333"
-                    self._svg_text(g, cx + cw / 2, cy + ch / 2 + sz * 0.35, txt, sz, fill=ink)
+                    sz = min(int(ch * 0.42), int(cw * 0.36), 30)
+                    ink = "#ffffff" if norm > 0.45 else "#333333"
+                    svg_text(g, cx + cw / 2, cy + ch / 2 + sz * 0.35, txt, sz, fill=ink, bold=True)
 
-        # Colorbar
-        cb_w = int(pw * 0.012)
-        cb_h = int(gh * 0.85)
-        cb_x = x0 + gw + int(pw * 0.018)
+        # Colorbar — slightly larger
+        cb_w = int(pw * 0.016)
+        cb_h = int(gh * 0.88)
+        cb_x = x0 + gw + int(pw * 0.020)
         cb_y = y0 + (gh - cb_h) / 2
-        n_seg = 60
+        n_seg = 80
         seg_h = cb_h / n_seg
 
         for si in range(n_seg):
             t = 1 - si / (n_seg - 1)
-            self.svg.node(g, "rect", x=cb_x, y=cb_y + si * seg_h, width=cb_w, height=seg_h + 1, fill=self._color_at(t))
+            self.svg.node(g, "rect", x=cb_x, y=cb_y + si * seg_h, width=cb_w, height=seg_h + 1, fill=color_at(t))
 
-        self.svg.node(g, "rect", x=cb_x, y=cb_y, width=cb_w, height=cb_h, fill="none", stroke="#333")
+        # Colorbar border
+        border = self.svg.node(g, "rect", x=cb_x, y=cb_y, width=cb_w, height=cb_h, rx=2, ry=2)
+        border.set("fill", "none")
+        border.set("stroke", "#333")
+        border.set("stroke-width", "1.5")
 
         # Colorbar ticks (log scale: 0, 1, 10, 100, 1000, ...)
         max_pow = int(math.log10(self.vmax)) if self.vmax > 0 else 0
         for tv in [0] + [10**p for p in range(max_pow + 1)]:
-            t = 0 if tv == 0 else math.log10(tv + 1) / math.log10(self.vmax + 1)
+            t = 0 if tv == 0 else math.log10(tv + 1) / log_max
             ty = cb_y + cb_h * (1 - t)
-            self.svg.node(g, "line", x1=cb_x + cb_w, y1=ty, x2=cb_x + cb_w + 10, y2=ty, stroke="#333")
-            self._svg_text(g, cb_x + cb_w + 18, ty + 12, str(int(tv)), 36, anchor="start")
+            self.svg.node(g, "line", x1=cb_x + cb_w, y1=ty, x2=cb_x + cb_w + 12, y2=ty, stroke="#333")
+            svg_text(g, cb_x + cb_w + 20, ty + 12, str(int(tv)), 36, anchor="start")
 
         # Colorbar title
         if self.colorbar_title:
-            self._svg_text(g, cb_x + cb_w / 2, cb_y - 40, self.colorbar_title, 42, bold=True)
+            svg_text(g, cb_x + cb_w / 2, cb_y - 40, self.colorbar_title, 42, bold=True)
 
     def _compute(self):
         nr = len(self.matrix_data) if self.matrix_data else 1

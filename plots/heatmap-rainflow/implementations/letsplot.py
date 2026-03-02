@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-rainflow: Rainflow Counting Matrix for Fatigue Analysis
 Library: letsplot 4.8.2 | Python 3.14.3
 Quality: 83/100 | Created: 2026-03-02
@@ -9,6 +9,7 @@ import pandas as pd
 from lets_plot import (
     LetsPlot,
     aes,
+    coord_cartesian,
     element_blank,
     element_rect,
     element_text,
@@ -18,7 +19,7 @@ from lets_plot import (
     guide_colorbar,
     labs,
     layer_tooltips,
-    scale_fill_gradientn,
+    scale_fill_viridis,
     scale_x_continuous,
     scale_y_continuous,
     theme,
@@ -39,11 +40,12 @@ amp_step = float(amplitude_centers[1] - amplitude_centers[0])
 mean_step = float(mean_centers[1] - mean_centers[0])
 
 # Realistic rainflow matrix: exponential decay in amplitude, Gaussian in mean
+# Gentler decay for broader coverage across the matrix
 amp_grid, mean_grid = np.meshgrid(amplitude_centers, mean_centers, indexing="ij")
-base_counts = 1200 * np.exp(-0.04 * amp_grid) * np.exp(-0.0008 * (mean_grid - 20) ** 2)
-noise = np.random.exponential(scale=0.15, size=base_counts.shape)
+base_counts = 1000 * np.exp(-0.022 * amp_grid) * np.exp(-0.0004 * (mean_grid - 15) ** 2)
+noise = np.random.exponential(scale=0.2, size=base_counts.shape)
 raw_counts = np.round(base_counts * (1 + noise)).astype(int)
-raw_counts[raw_counts < 8] = 0
+raw_counts[raw_counts < 3] = 0
 
 # Build long-form DataFrame (only non-zero bins)
 rows = []
@@ -55,7 +57,7 @@ for i, amp in enumerate(amplitude_centers):
 
 df = pd.DataFrame(rows)
 
-# Plot - Sequential warm colormap for clear intensity gradient
+# Plot - Plasma palette with log10 color scale for clear intensity differentiation
 plot = (
     ggplot(df, aes(x="mean_stress", y="amplitude", fill="cycles"))
     + geom_tile(
@@ -66,13 +68,12 @@ plot = (
         .line("Mean: @mean_stress MPa")
         .line("Cycles: @cycles"),
     )
-    + scale_fill_gradientn(
-        colors=["#d4e6f1", "#306998", "#1a3a5c", "#0a1628"],
-        name="Cycle\nCount",
-        guide=guide_colorbar(barwidth=18, barheight=300, nbin=256),
+    + scale_fill_viridis(
+        option="plasma", name="Cycle\nCount", trans="log10", guide=guide_colorbar(barwidth=18, barheight=300, nbin=256)
     )
-    + scale_x_continuous(name="Mean Stress (MPa)", limits=[-60, 110])
-    + scale_y_continuous(name="Stress Amplitude (MPa)", limits=[0, 210])
+    + scale_x_continuous(name="Mean Stress (MPa)")
+    + scale_y_continuous(name="Stress Amplitude (MPa)")
+    + coord_cartesian(ylim=[0, 210])
     + labs(title="heatmap-rainflow · letsplot · pyplots.ai")
     + theme_minimal()
     + theme(

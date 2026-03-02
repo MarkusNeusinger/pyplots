@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: heatmap-rainflow
 created: '2026-03-02T21:05:10Z'
-updated: '2026-03-02T21:28:05Z'
+updated: '2026-03-02T21:38:52Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22595466428
 issue: 4465
@@ -10,106 +10,112 @@ library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-rainflow/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-rainflow/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-rainflow/bokeh/plot.html
-quality_score: 88
+quality_score: 93
 review:
   strengths:
-  - 'Perfect spec compliance: all required features implemented correctly (colorbar,
-    log scale, units, zero-count distinction)'
-  - 'Excellent data quality: realistic three-cluster fatigue loading pattern with
-    physically meaningful values'
-  - 'Clean Bokeh idioms: ColumnDataSource, LogColorMapper, construct_color_bar(),
-    HoverTool'
-  - 'Smart dual output: PNG for static review + interactive HTML with hover tooltips'
-  - Good data storytelling with two annotation labels guiding the viewer
+  - Inferno palette with logarithmic color mapping creates a visually striking, engineering-appropriate
+    heatmap with excellent contrast across the wide count range
+  - Data storytelling annotations guide viewer interpretation of fatigue loading patterns
+    effectively
+  - Clean heatmap aesthetic with removed grid, outline, and minor ticks — professional
+    and data-focused
+  - Expert Bokeh usage with ColumnDataSource, LogColorMapper, construct_color_bar(),
+    HoverTool, and dual PNG/HTML export
+  - Realistic three-cluster fatigue data distribution with appropriate MPa scales
+    for a vehicle suspension component
+  - Zero-count bins visually distinct against light gray background, creating clear
+    contrast with Inferno palette
   weaknesses:
-  - 'Design could push further: Viridis is the expected default for heatmaps — a more
-    distinctive palette or custom color treatment would elevate the design'
-  - Colorbar title Cycle Count is small and rotated, reducing readability
-  - Dominant loading cluster annotation is positioned far from the actual peak (mean=200
-    vs peak at ~mean=80)
-  - Canvas utilization could be tighter, especially around the colorbar area
+  - Colorbar is relatively thin (width=80) for a 3600px canvas; could be wider for
+    better visual prominence
+  - Data flattening loop (lines 47-54) is slightly verbose — could use numpy boolean
+    indexing for more Pythonic code
   image_description: 'The plot displays a 2D heatmap of a rainflow counting matrix
-    on a white background using the Viridis color palette. The x-axis is labeled "Cycle
-    Mean Stress (MPa)" ranging from -100 to 300, and the y-axis is labeled "Cycle
-    Amplitude (MPa)" ranging from roughly 20 to 210. The title "heatmap-rainflow ·
-    bokeh · pyplots.ai" appears in the top-left. Rectangular bins are colored by cycle
-    count on a logarithmic scale — bright yellow (~5000 counts) at low amplitude/moderate
-    mean, transitioning through green/teal to dark purple (low counts) toward higher
-    amplitudes and extreme means. The data forms a dome/bell shape with white (zero-count)
-    areas at the extremes. Two annotation labels with dark semi-transparent backgrounds
-    guide the viewer: "Rare severe events →" in the upper-left and "← Dominant loading
-    cluster (~5000 cycles)" in the lower-right. A colorbar on the right shows "Cycle
-    Count" with logarithmic tick marks. Grid lines, outline, and minor ticks are removed
-    for a clean appearance.'
+    using the Inferno color palette (dark purple/black to orange to bright yellow).
+    The x-axis is labeled "Cycle Mean Stress (MPa)" ranging from -100 to 300, the
+    y-axis is labeled "Cycle Amplitude (MPa)" ranging from approximately 15 to 210.
+    A vertical colorbar on the right is labeled "Cycle Count" with a logarithmic scale
+    from approximately 1 to 5000. The title "heatmap-rainflow · bokeh · pyplots.ai"
+    appears at the top left. The heatmap forms a dome/mountain shape with the brightest
+    yellow area (highest counts around 5000) concentrated at low amplitudes (30-50
+    MPa) and moderate mean stress (60-120 MPa), tapering through orange, pink, purple
+    to near-black at the sparse edges. Zero-count bins appear as the light gray (#f5f5f5)
+    background. Two annotations with dark semi-transparent backgrounds and white bold
+    text are present: "↑ Dominant loading cluster (~5000 cycles)" near the bottom-center
+    bright area, and "Rare severe events →" in the upper-left pointing toward the
+    high-amplitude region.'
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 29
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title 28pt, labels 22pt, ticks 18pt).
-          All readable, but colorbar title is small and rotated.
+        comment: 'All font sizes explicitly set: title 28pt, axis labels 22pt, tick
+          labels 18pt, colorbar text 18pt/22pt, annotations 20pt. All clearly readable.'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements. Annotations, axis labels, and tick
-          labels all clearly separated.
+        comment: No overlapping text. Annotations positioned clear of axes and tick
+          labels.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Heatmap rectangles perfectly sized for 20x20 bin grid. Color gradient
-          clearly distinguishes density levels.
+        comment: Heatmap rectangles fill bins properly. Color mapping clearly distinguishes
+          high/low count bins. Zero-count bins visually distinct.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Viridis256 is perceptually uniform and colorblind-safe.
+        comment: Inferno is a perceptually-uniform, colorblind-safe sequential colormap
+          with excellent contrast.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good proportions for square format. Colorbar area slightly cramped.
+        comment: 'Good 3600x3600 square layout. Minor deduction: colorbar relatively
+          thin and title slightly cramped at right edge.'
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with MPa units on both axes.
+        comment: 'Descriptive labels with units: Cycle Mean Stress (MPa) and Cycle
+          Amplitude (MPa).'
     design_excellence:
-      score: 13
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Above defaults with styled annotations and clean chrome removal.
-          Viridis is standard/expected for heatmaps.
+        comment: 'Strong design: Inferno palette for thermal/engineering aesthetic,
+          styled annotations, clean heatmap look. Clearly above defaults.'
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
         comment: 'Good refinement: grid removed, outline removed, minor ticks removed,
-          white background, padded colorbar.'
+          background customized, border fill white. Colorbar could be wider.'
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Two annotation labels guide viewer to key features. Log scale creates
-          natural hierarchy. Annotation positioning could be tighter.
+        comment: Effective storytelling through annotations guiding viewer to dominant
+          cluster and rare events. Color intensity creates natural focal point.
     spec_compliance:
       score: 15
       max: 15
@@ -119,27 +125,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct 2D heatmap with rectangular bins and color-mapped cycle counts.
+        comment: Correct 2D heatmap using rect glyphs with continuous color mapping.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec requirements met: sequential colormap, log scale, colorbar,
-          units, zero-count distinction.'
+        comment: 'All spec features present: sequential colormap, log scale, colorbar,
+          units, tick labels, distinct zero-count bins.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Amplitude on y-axis, mean on x-axis as specified.
+        comment: Mean on x-axis, amplitude on y-axis (per spec), color maps to count.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title matches required format. Colorbar serves as legend with Cycle
-          Count title.
+        comment: Title format correct. Colorbar titled Cycle Count. No legend needed
+          for single-series heatmap.
     data_quality:
       score: 15
       max: 15
@@ -149,22 +155,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Shows all aspects: dominant cluster, secondary cluster, rare events,
-          wide count range, zero-count regions.'
+        comment: 'Shows all aspects: dominant low-amplitude cluster, secondary moderate
+          cluster, sparse high-amplitude events, zero-count edges.'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Vehicle suspension fatigue analysis with physically meaningful MPa
-          values.
+        comment: Vehicle suspension component fatigue analysis — real, neutral engineering
+          scenario with plausible MPa values.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Amplitude 10-210 MPa and mean -100 to 300 MPa are sensible for vehicle
-          suspension.
+        comment: Amplitudes 10-210 MPa, means -100-300 MPa realistic for steel/aluminum.
+          Counts up to ~5000 realistic for durability testing.
     code_quality:
       score: 10
       max: 10
@@ -174,50 +180,53 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean flat script: imports, data, plot, styling, save.'
+        comment: 'Linear flow: imports, seed, data generation, plot, styling, save.
+          No functions or classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set at start.
+        comment: np.random.seed(42) set at beginning.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used.
+        comment: 'All imports used: numpy, bokeh.io, bokeh.models, bokeh.palettes,
+          bokeh.plotting, bokeh.resources.'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, well-organized. HoverTool is legitimate for Bokeh.
+        comment: Clean, readable code. Data flattening loop slightly verbose but functional.
+          No fake UI or over-engineering.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via export_png(). Also saves HTML. Current API.
+        comment: Saves as plot.png and plot.html. Uses current Bokeh 3.x API.
     library_mastery:
-      score: 7
+      score: 9
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Expert Bokeh usage: ColumnDataSource, LogColorMapper, figure with
+          ranges, construct_color_bar(), HoverTool with renderers.'
+      - id: LM-02
+        name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: 'Expert Bokeh patterns: ColumnDataSource, LogColorMapper, construct_color_bar(),
-          rect glyphs, HoverTool.'
-      - id: LM-02
-        name: Distinctive Features
-        score: 3
-        max: 5
-        passed: true
-        comment: HoverTool with tooltips, dual PNG+HTML export, ColumnDataSource model,
-          construct_color_bar() API.
-  verdict: REJECTED
+        comment: 'Bokeh-distinctive: HoverTool with custom tooltips, dual PNG+HTML
+          export, construct_color_bar() from renderer, LogColorMapper.'
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
@@ -229,7 +238,6 @@ impl_tags:
   - data-generation
   - matrix-construction
   - columndatasource
-  - iteration-over-groups
   dataprep: []
   styling:
   - custom-colormap

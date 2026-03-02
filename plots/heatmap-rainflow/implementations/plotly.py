@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-rainflow: Rainflow Counting Matrix for Fatigue Analysis
 Library: plotly 6.5.2 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-02
@@ -44,17 +44,9 @@ z_display[z_display == 0] = np.nan
 
 font_family = "Palatino, Georgia, serif"
 
-# Custom sequential colorscale: light cream → orange → deep red
-# Starts light so low-count bins blend with the white zero-count background
-colorscale = [
-    [0.0, "#fff7ec"],
-    [0.15, "#fee8c8"],
-    [0.3, "#fdb863"],
-    [0.5, "#e08214"],
-    [0.7, "#d94801"],
-    [0.85, "#b13507"],
-    [1.0, "#7f2704"],
-]
+# Perceptually uniform colorscale (plasma) — colorblind-safe and
+# low-count bins clearly distinguishable from zero-count white background
+colorscale = "Plasma"
 
 # Plot
 fig = go.Figure(
@@ -70,14 +62,67 @@ fig = go.Figure(
             "len": 0.75,
             "outlinewidth": 0,
         },
-        hovertemplate=("Mean: %{x} MPa<br>Amplitude: %{y} MPa<br>Cycles: %{z:.0f}<extra></extra>"),
+        hovertemplate="Mean: %{x} MPa<br>Amplitude: %{y} MPa<br>Cycles: %{z:.0f}<extra></extra>",
         xgap=1,
         ygap=1,
         connectgaps=False,
     )
 )
 
-# Layout
+# Annotations — tell the engineering story of the dual-cluster loading pattern
+fig.add_annotation(
+    x=100,
+    y=105,
+    text="<b>Primary loading</b><br>High-cycle fatigue from<br>main service loads",
+    showarrow=True,
+    arrowhead=2,
+    arrowsize=1.2,
+    arrowwidth=2,
+    arrowcolor="#333",
+    ax=95,
+    ay=-70,
+    font={"size": 15, "family": font_family, "color": "#1a1a1a"},
+    bgcolor="rgba(255,255,255,0.85)",
+    bordercolor="#999",
+    borderpad=5,
+    borderwidth=1,
+)
+fig.add_annotation(
+    x=160,
+    y=30,
+    text="<b>Vibration fatigue</b><br>Low-amplitude, high-mean<br>resonance-induced cycles",
+    showarrow=True,
+    arrowhead=2,
+    arrowsize=1.2,
+    arrowwidth=2,
+    arrowcolor="#333",
+    ax=75,
+    ay=-65,
+    font={"size": 15, "family": font_family, "color": "#1a1a1a"},
+    bgcolor="rgba(255,255,255,0.85)",
+    bordercolor="#999",
+    borderpad=5,
+    borderwidth=1,
+)
+fig.add_annotation(
+    x=80,
+    y=160,
+    text="Rare overload<br>events",
+    showarrow=True,
+    arrowhead=2,
+    arrowsize=1.2,
+    arrowwidth=2,
+    arrowcolor="#666",
+    ax=65,
+    ay=-50,
+    font={"size": 13, "family": font_family, "color": "#555"},
+    bgcolor="rgba(255,255,255,0.85)",
+    bordercolor="#aaa",
+    borderpad=4,
+    borderwidth=1,
+)
+
+# Layout — tighten y-axis range to reduce empty space at top
 fig.update_layout(
     title={
         "text": (
@@ -99,6 +144,7 @@ fig.update_layout(
     yaxis={
         "title": {"text": "Cycle Amplitude (MPa)", "font": {"size": 22, "family": font_family, "color": "#333"}},
         "tickfont": {"size": 18, "family": font_family, "color": "#444"},
+        "range": [5, 200],
     },
     template="plotly_white",
     margin={"l": 100, "r": 60, "t": 120, "b": 80},

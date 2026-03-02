@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-rainflow: Rainflow Counting Matrix for Fatigue Analysis
 Library: bokeh 3.8.2 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-02
@@ -6,7 +6,8 @@ Quality: 84/100 | Created: 2026-03-02
 
 import numpy as np
 from bokeh.io import export_png, save
-from bokeh.models import ColumnDataSource, HoverTool, LogColorMapper, LogTicker
+from bokeh.models import ColumnDataSource, HoverTool, Label, LogColorMapper, LogTicker
+from bokeh.palettes import Viridis256
 from bokeh.plotting import figure
 from bokeh.resources import CDN
 
@@ -66,65 +67,19 @@ source = ColumnDataSource(
 amp_bin_width = amplitude_centers[1] - amplitude_centers[0]
 mean_bin_width = mean_centers[1] - mean_centers[0]
 
-# Sequential colormap — viridis-inspired for cycle counts (log scale)
-viridis_palette = [
-    "#440154",
-    "#46085c",
-    "#471164",
-    "#48196b",
-    "#482071",
-    "#472878",
-    "#462f7e",
-    "#443683",
-    "#423d87",
-    "#40448b",
-    "#3d4b8f",
-    "#3a5192",
-    "#375895",
-    "#345e97",
-    "#316499",
-    "#2e6a9b",
-    "#2b709d",
-    "#28769e",
-    "#257d9f",
-    "#2283a0",
-    "#2089a0",
-    "#1e8fa0",
-    "#1d95a0",
-    "#1c9b9f",
-    "#1da19e",
-    "#1fa79d",
-    "#23ad9b",
-    "#28b399",
-    "#2fb996",
-    "#37be93",
-    "#40c48f",
-    "#4bc98b",
-    "#56ce86",
-    "#63d380",
-    "#70d87a",
-    "#7edc73",
-    "#8de06c",
-    "#9ce465",
-    "#abe85d",
-    "#bbeb56",
-    "#ccee50",
-    "#dcf04c",
-    "#eaf24b",
-    "#f7f44d",
-    "#fde725",
-]
+# Sequential colormap — Bokeh built-in Viridis256 palette (log scale)
+palette = list(Viridis256)
 
 # Log color mapper for wide count range
 min_count = max(1, min(count_flat))
 max_count = max(count_flat)
-color_mapper = LogColorMapper(palette=viridis_palette, low=min_count, high=max_count, nan_color="#ffffff")
+color_mapper = LogColorMapper(palette=palette, low=min_count, high=max_count, nan_color="#ffffff")
 
 # Plot — square format for symmetric heatmap
 p = figure(
     width=3600,
     height=3600,
-    title="Rainflow Counting Matrix · heatmap-rainflow · bokeh · pyplots.ai",
+    title="heatmap-rainflow · bokeh · pyplots.ai",
     x_axis_label="Cycle Mean Stress (MPa)",
     y_axis_label="Cycle Amplitude (MPa)",
     toolbar_location=None,
@@ -146,15 +101,15 @@ r = p.rect(
 
 # Color bar
 color_bar = r.construct_color_bar(
-    width=40,
+    width=60,
     ticker=LogTicker(),
-    label_standoff=16,
+    label_standoff=20,
     major_label_text_font_size="18pt",
     border_line_color=None,
-    padding=10,
+    padding=20,
     title="Cycle Count",
     title_text_font_size="20pt",
-    title_standoff=20,
+    title_standoff=30,
 )
 p.add_layout(color_bar, "right")
 
@@ -177,10 +132,37 @@ p.ygrid.grid_line_color = None
 p.axis.minor_tick_line_color = None
 p.outline_line_color = None
 
+# Annotations — data storytelling to guide viewer
+dominant_label = Label(
+    x=200,
+    y=35,
+    text="← Dominant loading cluster\n     (~5000 cycles)",
+    text_font_size="20pt",
+    text_color="white",
+    text_font_style="bold",
+    text_align="left",
+    background_fill_color="#333333",
+    background_fill_alpha=0.75,
+)
+p.add_layout(dominant_label)
+
+rare_label = Label(
+    x=-60,
+    y=185,
+    text="Rare severe events →",
+    text_font_size="20pt",
+    text_color="white",
+    text_font_style="bold",
+    text_align="left",
+    background_fill_color="#333333",
+    background_fill_alpha=0.75,
+)
+p.add_layout(rare_label)
+
 # Background — white for zero-count bins to stand out
 p.background_fill_color = "white"
 p.border_fill_color = "white"
-p.min_border_right = 120
+p.min_border_right = 140
 p.min_border_bottom = 80
 
 # Save

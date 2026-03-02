@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-rainflow: Rainflow Counting Matrix for Fatigue Analysis
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-02
@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
+    annotate,
     element_blank,
     element_rect,
     element_text,
@@ -62,9 +63,26 @@ tile_h = amplitude_centers[1] - amplitude_centers[0]
 df_nonzero = df[df["Cycle Count"] > 0].copy()
 df_nonzero["Log Count"] = np.log10(df_nonzero["Cycle Count"])
 
+# Identify peak region for storytelling annotation
+peak_idx = df_nonzero["Log Count"].idxmax()
+peak_mean = df_nonzero.loc[peak_idx, "Mean Stress (MPa)"]
+peak_amp = df_nonzero.loc[peak_idx, "Amplitude (MPa)"]
+
+# Viridis-inspired palette: deep indigo → teal → green → yellow
+# Low end clearly distinct from white zero bins; perceptually uniform
+viridis_colors = [
+    "#440154",  # deep indigo (low counts)
+    "#31688e",  # dark teal
+    "#21918c",  # teal
+    "#35b779",  # green
+    "#90d743",  # yellow-green
+    "#fde725",  # bright yellow (high counts)
+]
+
 # Plot
 plot = (
     ggplot()
+    # Layer 1: Light gray tiles for zero-count bins (clearly distinct from viridis)
     + geom_tile(
         data=df,
         mapping=aes(x="Mean Stress (MPa)", y="Amplitude (MPa)"),
@@ -74,15 +92,30 @@ plot = (
         width=tile_w,
         height=tile_h,
     )
+    # Layer 2: Viridis-colored tiles for nonzero bins
     + geom_tile(
         data=df_nonzero,
         mapping=aes(x="Mean Stress (MPa)", y="Amplitude (MPa)", fill="Log Count"),
         width=tile_w,
         height=tile_h,
     )
-    + scale_fill_gradientn(
-        colors=["#fff7ec", "#fee8c8", "#fdb863", "#e08214", "#b35806", "#7f3b08"], name="Cycle Count\n(log₁₀)"
+    + scale_fill_gradientn(colors=viridis_colors, name="Cycle Count\n(log₁₀)")
+    # Annotations guide the viewer to key fatigue-critical clusters
+    + annotate(
+        "text", x=-80, y=30, label="Peak\nconcentration", size=11, color="#333333", fontstyle="italic", ha="center"
     )
+    + annotate("segment", x=-68, xend=-15, y=22, yend=10, color="#666666", size=0.5)
+    + annotate(
+        "text",
+        x=85,
+        y=115,
+        label="Secondary\nloading\ncluster",
+        size=11,
+        color="#333333",
+        fontstyle="italic",
+        ha="center",
+    )
+    + annotate("segment", x=78, xend=42, y=100, yend=68, color="#666666", size=0.5)
     + scale_x_continuous(expand=(0, 2))
     + scale_y_continuous(expand=(0, 2))
     + labs(x="Mean Stress (MPa)", y="Stress Amplitude (MPa)", title="heatmap-rainflow · plotnine · pyplots.ai")
@@ -90,7 +123,7 @@ plot = (
     + theme(
         figure_size=(16, 9),
         text=element_text(family="sans-serif"),
-        plot_title=element_text(size=24, ha="center", weight="bold", margin={"b": 8}),
+        plot_title=element_text(size=24, ha="center", weight="bold", margin={"b": 12}),
         axis_title_x=element_text(size=20, margin={"t": 10}),
         axis_title_y=element_text(size=20, margin={"r": 10}),
         axis_text_x=element_text(size=16),

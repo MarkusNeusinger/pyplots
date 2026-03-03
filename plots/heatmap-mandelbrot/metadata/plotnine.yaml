@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: heatmap-mandelbrot
 created: '2026-03-03T13:48:57Z'
-updated: '2026-03-03T13:54:06Z'
+updated: '2026-03-03T14:14:18Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22625546851
 issue: 4431
@@ -10,108 +10,108 @@ library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-mandelbrot/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-mandelbrot/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 86
+quality_score: 90
 review:
   strengths:
-  - Perfect spec compliance with all required features including smooth coloring and
-    preserved aspect ratio
-  - Excellent code quality with clean vectorized Mandelbrot computation and elegant
-    smooth coloring formula
-  - Thoughtful inferno colormap on black panel background enhances the fractal visualization
-  - All font sizes explicitly set at appropriate scales for 4800x2700 output
-  - Fully deterministic computation with no random elements needed
+  - Striking custom cosmic fire palette with carefully tuned non-linear color stops
+    creates dramatic visual impact
+  - Smooth coloring via normalized iteration count eliminates discrete banding artifacts
+  - Fully deterministic vectorized computation with no external dependencies beyond
+    numpy/pandas
+  - Expert plotnine grammar of graphics usage with layered composition
+  - Perfect spec compliance with all six spec requirements met including aspect ratio
+    preservation
+  - Dark theme is aesthetically appropriate and cohesive for fractal visualization
+  - Annotations identify key mathematical features without visual clutter
   weaknesses:
-  - Design Excellence could be elevated with more striking visual polish and intentional
-    storytelling
-  - Faint horizontal rendering artifact visible at y=0 from the left edge
-  - Grid resolution 600x429 could be increased for finer fractal detail
-  - Library Mastery is generic - does not leverage distinctive plotnine features beyond
-    basic grammar of graphics
-  image_description: The plot shows a Mandelbrot set fractal visualization rendered
-    as a heatmap using plotnine's geom_raster. The background of the plot area is
-    black, with the Mandelbrot set interior rendered in black (escape_time=0). The
-    fractal boundary is colored using the "inferno" colormap, transitioning from dark
-    purple/blue at low escape iterations through magenta/pink to yellow/orange at
-    higher values. The characteristic cardioid (main body centered near -0.25+0i)
-    and period-2 bulb (circle to the left centered near -1+0i) are clearly visible
-    with sharp, detailed boundaries. The title "heatmap-mandelbrot · plotnine · pyplots.ai"
-    appears at the top in bold. The x-axis is labeled "Real Axis" (range -2.5 to 1.0)
-    and the y-axis "Imaginary Axis" (range -1.25 to 1.25). A legend on the right shows
-    "Escape Iterations" with a color scale from 0 to 75. Grid lines are removed. There
-    is a very faint horizontal artifact at y=0 from the left edge toward the set,
-    likely a rendering artifact from geom_raster interpolation.
+  - Legend colorbar tick labels are slightly cramped within the compact colorbar height
+  - Annotation text (size 8-10, alpha=0.45) is intentionally subtle but borders on
+    too faint at full resolution
+  - Custom palette is not a standard colorblind-safe option though luminance gradient
+    provides reasonable accessibility
+  image_description: The plot displays the Mandelbrot set fractal on a dark background
+    (#0a0a0f). The main body of the set is rendered in solid black, with the characteristic
+    large cardioid shape on the right and the period-2 bulb (smaller circle) attached
+    to its left. The fractal boundary is colored using a "cosmic fire" palette transitioning
+    from deep purple/violet near the set boundary through hot magenta and coral, to
+    gold and near-white at the outermost escape regions. The title "heatmap-mandelbrot
+    · plotnine · pyplots.ai" appears at the top in bold white text. The x-axis is
+    labeled "Re(c)" spanning approximately -2.5 to 1.0, and the y-axis "Im(c)" spanning
+    -1.25 to 1.25. Subtle white italic annotations at low opacity label the "Cardioid"
+    and "Period-2 Bulb" features. A vertical colorbar on the right shows "Escape Iterations"
+    from 0 to 100. The overall aesthetic is polished and dramatic with the dark theme.
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 27
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title=24pt bold, axis titles=20pt,
-          axis text=16pt, legend title=16pt bold, legend text=14pt'
+        comment: All font sizes explicitly set (title=24, axes=20, ticks=16, legend=16/14).
+          Annotations at size 8-10 with alpha=0.45 are intentionally subtle but slightly
+          small.
       - id: VQ-02
         name: No Overlap
-        score: 6
-        max: 6
-        passed: true
-        comment: No overlapping text elements; tick labels well-spaced, legend separate
-          from data
-      - id: VQ-03
-        name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Fractal boundary well-defined with smooth coloring; faint horizontal
-          artifact at y=0; grid resolution 600x429 adequate but not maximal
+        comment: Legend colorbar tick labels slightly cramped. Main plot area clean.
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 6
+        passed: true
+        comment: geom_raster with interpolation renders fractal boundary detail beautifully
+          at 1200x857 resolution.
       - id: VQ-04
         name: Color Accessibility
-        score: 4
-        max: 4
-        passed: true
-        comment: Inferno colormap is perceptually uniform and colorblind-safe with
-          excellent contrast
-      - id: VQ-05
-        name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good layout but coord_fixed with 16:9 figure creates some unused
-          space; canvas utilization ~55%
+        comment: Custom palette has strong luminance gradient but not a standard colorblind-safe
+          palette.
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: Plot fills canvas well, dark background is cohesive, legend near
+          plot, balanced margins.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels: Real Axis and Imaginary Axis; no units needed
-          for dimensionless coordinates'
+        comment: Re(c) and Im(c) are correct mathematical notation for complex plane
+          axes.
     design_excellence:
-      score: 12
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Inferno on black is thoughtful; custom font weights; clearly above
-          defaults but not publication-exceptional
+        comment: Custom cosmic fire palette with 11 colors and non-linear stops. Dark
+          theme complements fractal perfectly. Clearly above defaults.
       - id: DE-02
         name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: Grid removed, dark backgrounds, subtle tick colors, expand=(0,0),
+          annotation alpha for subtlety. Strong refinement.
+      - id: DE-03
+        name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Grid removed, black panel background, expand=(0,0), no border; good
-          refinement beyond defaults
-      - id: DE-03
-        name: Data Storytelling
-        score: 3
-        max: 6
-        passed: true
-        comment: Fractal boundary creates natural focal point; smooth coloring adds
-          depth; hierarchy from subject matter and colormap
+        comment: Annotations guide viewer to cardioid and period-2 bulb. Color gradient
+          draws eye to boundary. Dark interior creates focal point.
     spec_compliance:
       score: 15
       max: 15
@@ -121,28 +121,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct heatmap/raster visualization of complex plane iteration data
+        comment: Correct heatmap visualization of Mandelbrot set using geom_raster.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: smooth coloring, cardioid, period-2 bulb,
-          black interior, correct axes, preserved aspect ratio'
+        comment: 'All spec features present: smooth coloring, full set, labeled axes,
+          black interior, preserved aspect ratio.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Real axis on x (-2.5 to 1.0), imaginary on y (-1.25 to 1.25), all
-          data visible
+        comment: X=real, Y=imaginary, fill=escape time. Range matches spec defaults
+          exactly.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct; legend labeled Escape Iterations with color
-          scale
+        comment: Title in correct format. Legend with meaningful colorbar breaks.
     data_quality:
       score: 15
       max: 15
@@ -152,21 +151,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Full Mandelbrot set with cardioid, period-2 bulb, smaller bulbs,
-          filaments, and fractal boundary detail
+        comment: Shows full Mandelbrot set with cardioid, period-2 bulb, boundary
+          detail, interior, and self-similar structure.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Well-established mathematical object; neutral scientific/educational
-          subject
+        comment: Real mathematical object in science/education context, completely
+          neutral.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Standard mathematical ranges for the full Mandelbrot set view
+        comment: Standard mathematical ranges, max_iter=100 appropriate, resolution
+          exceeds minimum.
     code_quality:
       score: 10
       max: 10
@@ -176,58 +176,60 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports, data computation, plot, save'
+        comment: 'Clean linear flow: Imports, Data, DataFrame, Plot, Save. No functions
+          or classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic computation with no random elements
+        comment: Entirely deterministic computation, no random elements.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used; no unused imports
+        comment: All 16 plotnine imports used. numpy and pandas appropriately imported.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean vectorized computation; elegant smooth coloring formula; appropriate
-          complexity
+        comment: Vectorized iteration, smooth coloring formula, appropriate complexity.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300; uses current plotnine API
+        comment: Saves as plot.png with dpi=300. Current plotnine API.
     library_mastery:
-      score: 6
+      score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: 'Good grammar of graphics usage: ggplot + aes + geom_raster + scale_fill_cmap
-          + coord_fixed + theme layering'
+        comment: Expert grammar of graphics composition with layered ggplot + aes
+          + geom + scales + coord + guides + theme.
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Uses geom_raster(interpolate=True) and grammar composition but features
-          could be replicated in other libraries
-  verdict: REJECTED
+        passed: true
+        comment: Uses geom_raster(interpolate=True), scale_fill_gradientn with custom
+          stops, guide_colorbar(nbin=300), coord_fixed.
+  verdict: APPROVED
 impl_tags:
   dependencies: []
-  techniques: []
+  techniques:
+  - annotations
+  - colorbar
   patterns:
   - data-generation
   - matrix-construction
   dataprep: []
   styling:
   - custom-colormap
-  - minimal-chrome
+  - dark-theme

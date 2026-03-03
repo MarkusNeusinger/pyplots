@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 alluvial-opinion-flow: Opinion Flow Diagram
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-03
@@ -20,7 +20,7 @@ cat_colors = {
     "Agree": "#72B7D4",
     "Neutral": "#888888",
     "Disagree": "#E8853D",
-    "Strongly Disagree": "#C44E52",
+    "Strongly Disagree": "#9B2226",
 }
 
 # Transition flows between consecutive waves
@@ -125,7 +125,7 @@ for wave_idx, trans in enumerate(all_transitions):
         r = int(base_color[1:3], 16)
         g = int(base_color[3:5], 16)
         b = int(base_color[5:7], 16)
-        opacity = 0.55 if is_stable else 0.30
+        opacity = 0.55 if is_stable else 0.35
         link_colors.append(f"rgba({r},{g},{b},{opacity})")
 
         link_customdata.append(
@@ -168,6 +168,18 @@ fig = go.Figure(
             },
         )
     ]
+)
+
+# Subtitle annotation summarizing the key insight
+fig.add_annotation(
+    x=0.5,
+    y=1.07,
+    xref="paper",
+    yref="paper",
+    text="Neutral respondents declined 35% as opinions polarized toward extremes over four quarters",
+    showarrow=False,
+    font={"size": 20, "color": "#666666"},
+    xanchor="center",
 )
 
 # Wave column headers (paper coordinates, positioned above nodes)
@@ -234,7 +246,7 @@ fig.update_layout(
     },
     font={"size": 18, "color": "#333333"},
     template="plotly_white",
-    margin={"l": 40, "r": 60, "t": 160, "b": 90},
+    margin={"l": 40, "r": 60, "t": 200, "b": 90},
     paper_bgcolor="white",
     plot_bgcolor="white",
     legend={

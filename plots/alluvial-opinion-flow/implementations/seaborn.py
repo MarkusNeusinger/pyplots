@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 alluvial-opinion-flow: Opinion Flow Diagram
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-03
@@ -24,6 +24,10 @@ categories = ["Strongly Agree", "Agree", "Neutral", "Disagree", "Strongly Disagr
 # Diverging palette via seaborn: blue (agreement) → gray (neutral) → warm (disagreement)
 palette_rgb = sns.diverging_palette(220, 25, n=5, s=80, l=50)
 category_colors = {cat: tuple(palette_rgb[i]) for i, cat in enumerate(categories)}
+
+# Seaborn color utilities: lighter node fill variants and desaturated changing-flow colors
+node_light_colors = {cat: sns.light_palette(category_colors[cat], n_colors=5)[2] for cat in categories}
+changer_colors = {cat: sns.desaturate(category_colors[cat], 0.55) for cat in categories}
 
 # Respondent counts per category at each wave (total = 1000 per wave)
 # Pattern: Neutral shrinks as respondents polarize toward extremes
@@ -155,8 +159,8 @@ for wave_idx, wave in enumerate(waves):
             bar_width,
             height,
             facecolor=category_colors[category],
-            edgecolor="white",
-            linewidth=2,
+            edgecolor=node_light_colors[category],
+            linewidth=2.5,
         )
         ax.add_patch(rect)
 
@@ -169,7 +173,7 @@ for wave_idx, wave in enumerate(waves):
                 f"{category}\n(n={count_val})",
                 ha="right",
                 va="center",
-                fontsize=14,
+                fontsize=16,
                 fontweight="bold",
                 color=category_colors[category],
             )
@@ -180,7 +184,7 @@ for wave_idx, wave in enumerate(waves):
                 f"(n={count_val})",
                 ha="left",
                 va="center",
-                fontsize=14,
+                fontsize=16,
                 fontweight="bold",
                 color=category_colors[category],
             )
@@ -192,7 +196,7 @@ for wave_idx, wave in enumerate(waves):
                     f"n={count_val}",
                     ha="center",
                     va="center",
-                    fontsize=13,
+                    fontsize=16,
                     fontweight="semibold",
                     color="white",
                 )
@@ -258,11 +262,11 @@ for flow_idx, flow_dict in enumerate(flows):
         ]
         path = Path(verts, codes)
 
-        # Stable flows (same category) get high opacity; changers get slightly higher for visibility
+        # Stable flows use full color at high opacity; changers use desaturated color
         is_stable = source_cat == target_cat
-        alpha = 0.60 if is_stable else 0.28
+        alpha = 0.60 if is_stable else 0.38
 
-        color = category_colors[source_cat]
+        color = category_colors[source_cat] if is_stable else changer_colors[source_cat]
         patch = mpatches.PathPatch(path, facecolor=color, edgecolor=color, linewidth=0.3, alpha=alpha)
         ax.add_patch(patch)
 
@@ -302,10 +306,10 @@ for i, cat in enumerate(cat_order):
     offset = 5 if val >= 0 else -5
     ha = "left" if val >= 0 else "right"
     ax_net.text(
-        val + offset, i, f"{sign}{val}", ha=ha, va="center", fontsize=12, fontweight="bold", color=category_colors[cat]
+        val + offset, i, f"{sign}{val}", ha=ha, va="center", fontsize=14, fontweight="bold", color=category_colors[cat]
     )
 
-ax_net.set_title("Net Shift\nQ1 → Q4", fontsize=14, fontweight="bold", pad=15)
+ax_net.set_title("Net Shift\nQ1 → Q4", fontsize=16, fontweight="bold", pad=15)
 ax_net.set_ylabel("")
 ax_net.set_xlabel("")
 ax_net.tick_params(axis="y", length=0)
@@ -323,7 +327,7 @@ fig.text(
     "Renewable Energy Survey · 1,000 respondents across 4 waves · Stable flows shown at higher opacity",
     ha="center",
     va="bottom",
-    fontsize=14,
+    fontsize=16,
     color="#666666",
     style="italic",
 )

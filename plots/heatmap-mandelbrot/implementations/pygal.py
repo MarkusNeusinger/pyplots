@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-mandelbrot: Mandelbrot Set Fractal Visualization
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 88/100 | Created: 2026-03-03
+Quality: 90/100 | Created: 2026-03-03
 """
 
 import sys
@@ -130,9 +130,9 @@ class MandelbrotHeatmap(Graph):
         gw = self.view.width
         gh = self.view.height
 
-        # Layout parameters for heatmap within the plot area
-        pad_left, pad_top = 280, 40
-        pad_right, pad_bottom = 230, 130
+        # Tighter layout for better canvas utilization
+        pad_left, pad_top = 250, 50
+        pad_right, pad_bottom = 210, 105
         x_span = self._x_range[1] - self._x_range[0]
         y_span = self._y_range[1] - self._y_range[0]
 
@@ -148,24 +148,30 @@ class MandelbrotHeatmap(Graph):
         px, py = pad_left, pad_top
         root = self.svg.node(self.nodes["plot"], class_="mandelbrot-heatmap")
 
+        # Subtle shadow behind heatmap for depth
+        self.svg.node(
+            root, "rect", x=px + 4, y=py + 4, width=plot_w, height=plot_h, style="fill:#d0d0d0;stroke:none;opacity:0.5"
+        )
+
         # Embedded high-resolution heatmap image
         ns = "http://www.w3.org/1999/xlink"
         img = self.svg.node(root, "image", x=px, y=py, width=plot_w, height=plot_h)
         img.attrib["{%s}href" % ns] = self._heatmap_uri
         img.attrib["preserveAspectRatio"] = "none"
 
-        # Plot border
+        # Refined plot border
         self.svg.node(
-            root, "rect", x=px, y=py, width=plot_w, height=plot_h, style="fill:none;stroke:#222;stroke-width:2"
+            root, "rect", x=px, y=py, width=plot_w, height=plot_h, style="fill:none;stroke:#333;stroke-width:2.5"
         )
 
-        # Subtitle with mathematical formula
+        # Subtitle with mathematical formula (italic for elegance)
         sub = self.svg.node(
             root,
             "text",
             x=px + plot_w / 2,
-            y=py - 10,
-            style="font-size:36px;font-weight:400;font-family:sans-serif;fill:#666",
+            y=py - 12,
+            style="font-size:36px;font-style:italic;font-weight:300;"
+            "font-family:'Georgia',serif;fill:#555;letter-spacing:1px",
         )
         sub.text = "z\u2099\u208a\u2081 = z\u2099\u00b2 + c \u00b7 Escape time with smooth iteration count"
         sub.attrib["text-anchor"] = "middle"
@@ -175,8 +181,8 @@ class MandelbrotHeatmap(Graph):
             frac = (val - self._x_range[0]) / x_span
             tx = px + frac * plot_w
             ty = py + plot_h
-            self.svg.node(root, "line", x1=tx, y1=ty, x2=tx, y2=ty + 15, style="stroke:#333;stroke-width:2")
-            lbl = self.svg.node(root, "text", x=tx, y=ty + 55, style="font-size:34px;font-family:sans-serif;fill:#333")
+            self.svg.node(root, "line", x1=tx, y1=ty, x2=tx, y2=ty + 14, style="stroke:#444;stroke-width:2")
+            lbl = self.svg.node(root, "text", x=tx, y=ty + 50, style="font-size:34px;font-family:sans-serif;fill:#333")
             lbl.text = f"{val:.1f}"
             lbl.attrib["text-anchor"] = "middle"
 
@@ -185,8 +191,8 @@ class MandelbrotHeatmap(Graph):
             root,
             "text",
             x=px + plot_w / 2,
-            y=py + plot_h + 110,
-            style="font-size:44px;font-weight:600;font-family:sans-serif;fill:#333",
+            y=py + plot_h + 95,
+            style="font-size:42px;font-weight:600;font-family:sans-serif;fill:#333;letter-spacing:0.5px",
         )
         xl.text = "Real Axis (Re)"
         xl.attrib["text-anchor"] = "middle"
@@ -195,29 +201,59 @@ class MandelbrotHeatmap(Graph):
         for val in [-1.0, -0.5, 0.0, 0.5, 1.0]:
             frac = (self._y_range[1] - val) / y_span
             ty = py + frac * plot_h
-            self.svg.node(root, "line", x1=px - 15, y1=ty, x2=px, y2=ty, style="stroke:#333;stroke-width:2")
+            self.svg.node(root, "line", x1=px - 14, y1=ty, x2=px, y2=ty, style="stroke:#444;stroke-width:2")
             label = f"{val:+.1f}i" if val != 0 else "0.0i"
             lbl = self.svg.node(
-                root, "text", x=px - 25, y=ty + 12, style="font-size:34px;font-family:sans-serif;fill:#333"
+                root, "text", x=px - 22, y=ty + 12, style="font-size:34px;font-family:sans-serif;fill:#333"
             )
             lbl.text = label
             lbl.attrib["text-anchor"] = "end"
 
         # Y-axis title (rotated)
-        ylx = px - 220
+        ylx = px - 200
         yly = py + plot_h / 2
         yl = self.svg.node(
-            root, "text", x=ylx, y=yly, style="font-size:44px;font-weight:600;font-family:sans-serif;fill:#333"
+            root,
+            "text",
+            x=ylx,
+            y=yly,
+            style="font-size:42px;font-weight:600;font-family:sans-serif;fill:#333;letter-spacing:0.5px",
         )
         yl.text = "Imaginary Axis (Im)"
         yl.attrib["text-anchor"] = "middle"
         yl.attrib["transform"] = f"rotate(-90, {ylx}, {yly})"
 
+        # Feature annotations — guide viewer to key mathematical structures
+        annotations = [
+            {"label": "Main cardioid", "cx": -0.25, "cy": 0.15, "dx": 60, "dy": -90},
+            {"label": "Period-2 bulb", "cx": -1.0, "cy": 0.15, "dx": -40, "dy": -90},
+        ]
+        for ann in annotations:
+            ax = px + (ann["cx"] - self._x_range[0]) / x_span * plot_w
+            ay = py + (self._y_range[1] - ann["cy"]) / y_span * plot_h
+            tx = ax + ann["dx"]
+            ty = ay + ann["dy"]
+            # Leader line with subtle white stroke
+            self.svg.node(
+                root, "line", x1=ax, y1=ay, x2=tx, y2=ty + 5, style="stroke:#ffffff;stroke-width:2.5;opacity:0.9"
+            )
+            # Small circle at anchor point
+            self.svg.node(root, "circle", cx=ax, cy=ay, r=5, style="fill:#ffffff;opacity:0.9;stroke:none")
+            # Annotation text with semi-transparent background
+            tw = len(ann["label"]) * 14 + 14
+            self.svg.node(
+                root, "rect", x=tx - 7, y=ty - 24, width=tw, height=32, rx=5, ry=5, style="fill:#000000;opacity:0.65"
+            )
+            lbl = self.svg.node(
+                root, "text", x=tx, y=ty, style="font-size:23px;font-family:sans-serif;fill:#ffffff;font-weight:500"
+            )
+            lbl.text = ann["label"]
+
         # Colorbar
-        cb_x = px + plot_w + 40
-        cb_w = 45
-        cb_top = py + 50
-        cb_h = plot_h - 100
+        cb_x = px + plot_w + 35
+        cb_w = 40
+        cb_top = py + 45
+        cb_h = plot_h - 90
         n_seg = 100
 
         for s in range(n_seg):
@@ -236,7 +272,7 @@ class MandelbrotHeatmap(Graph):
             )
 
         self.svg.node(
-            root, "rect", x=cb_x, y=cb_top, width=cb_w, height=cb_h, style="fill:none;stroke:#333;stroke-width:1.5"
+            root, "rect", x=cb_x, y=cb_top, width=cb_w, height=cb_h, style="fill:none;stroke:#444;stroke-width:1.5"
         )
 
         # Colorbar tick labels — round values for readability
@@ -249,25 +285,29 @@ class MandelbrotHeatmap(Graph):
             frac = 1.0 - t_c
             ty = cb_top + frac * cb_h
             self.svg.node(
-                root, "line", x1=cb_x + cb_w, y1=ty, x2=cb_x + cb_w + 8, y2=ty, style="stroke:#333;stroke-width:1.5"
+                root, "line", x1=cb_x + cb_w, y1=ty, x2=cb_x + cb_w + 8, y2=ty, style="stroke:#444;stroke-width:1.5"
             )
             lbl = self.svg.node(
-                root, "text", x=cb_x + cb_w + 15, y=ty + 10, style="font-size:28px;font-family:sans-serif;fill:#333"
+                root, "text", x=cb_x + cb_w + 14, y=ty + 10, style="font-size:28px;font-family:sans-serif;fill:#333"
             )
             lbl.text = str(iter_val)
 
         # Colorbar title
         cbt = self.svg.node(
-            root, "text", x=cb_x, y=cb_top - 25, style="font-size:34px;font-weight:600;font-family:sans-serif;fill:#333"
+            root,
+            "text",
+            x=cb_x - 5,
+            y=cb_top - 22,
+            style="font-size:32px;font-weight:600;font-family:sans-serif;fill:#333",
         )
         cbt.text = "Iterations"
         cbt.attrib["text-anchor"] = "start"
 
         # In-set legend entry
-        lg_y = cb_top + cb_h + 50
-        self.svg.node(root, "rect", x=cb_x, y=lg_y, width=30, height=30, style="fill:black;stroke:#555;stroke-width:1")
+        lg_y = cb_top + cb_h + 40
+        self.svg.node(root, "rect", x=cb_x, y=lg_y, width=28, height=28, style="fill:black;stroke:#555;stroke-width:1")
         lg = self.svg.node(
-            root, "text", x=cb_x + 45, y=lg_y + 24, style="font-size:28px;font-family:sans-serif;fill:#333"
+            root, "text", x=cb_x + 40, y=lg_y + 22, style="font-size:26px;font-family:sans-serif;fill:#333"
         )
         lg.text = "In set"
 
@@ -281,6 +321,7 @@ custom_style = Style(
     foreground_subtle="#666666",
     colors=("#000000",),
     title_font_size=56,
+    title_font_family="sans-serif",
     label_font_size=34,
     major_label_font_size=34,
     legend_font_size=28,
@@ -303,6 +344,8 @@ chart = MandelbrotHeatmap(
     show_x_guides=False,
     show_y_guides=False,
     print_values=False,
+    margin=30,
+    spacing=10,
 )
 
 chart.add("In set", [1])

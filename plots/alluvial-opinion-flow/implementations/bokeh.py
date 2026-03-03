@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 alluvial-opinion-flow: Opinion Flow Diagram
-Library: bokeh | Python 3.13
-Quality: pending | Created: 2026-03-03
+Library: bokeh 3.8.2 | Python 3.14.3
+Quality: 83/100 | Created: 2026-03-03
 """
 
 import numpy as np

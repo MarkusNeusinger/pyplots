@@ -1,8 +1,10 @@
-""" pyplots.ai
+"""pyplots.ai
 alluvial-opinion-flow: Opinion Flow Diagram
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 78/100 | Created: 2026-03-03
+Quality: repair-1 | Created: 2026-03-03
 """
+
+import re
 
 import cairosvg
 import numpy as np
@@ -10,20 +12,14 @@ import pygal
 from pygal.style import Style
 
 
-# Data
 np.random.seed(42)
 
-waves = ["Wave 1\n(Q1)", "Wave 2\n(Q2)", "Wave 3\n(Q3)", "Wave 4\n(Q4)"]
+# Data
+waves = ["Wave 1 (Q1)", "Wave 2 (Q2)", "Wave 3 (Q3)", "Wave 4 (Q4)"]
 categories = ["Strongly Favor", "Favor", "Neutral", "Oppose", "Strongly Oppose"]
 
-category_colors = {
-    "Strongly Favor": "#306998",
-    "Favor": "#5B9BD5",
-    "Neutral": "#FFD43B",
-    "Oppose": "#E07B54",
-    "Strongly Oppose": "#D64541",
-}
-
+# Improved color palette - better contrast between Oppose/Strongly Oppose
+cat_colors = ["#1a5276", "#5499c7", "#f4d03f", "#af601a", "#7b241c"]
 # Respondent counts per category at each wave (1000 total respondents)
 respondent_counts = np.array(
     [
@@ -104,194 +100,203 @@ flows = [
     },
 ]
 
-# Custom style
+# Compute top cross-category flows for polarization highlighting
+cross_flows = []
+for flow_dict in flows:
+    for (src, tgt), count in flow_dict.items():
+        if src != tgt:
+            cross_flows.append(count)
+cross_flows.sort(reverse=True)
+highlight_threshold = cross_flows[7] if len(cross_flows) > 7 else 0
+
+# Custom style - extensive use of pygal's Style system
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
-    foreground_strong="#333333",
-    foreground_subtle="#666666",
+    foreground_strong="#222222",
+    foreground_subtle="#999999",
+    colors=tuple(cat_colors),
     title_font_size=72,
+    label_font_size=44,
+    major_label_font_size=44,
+    legend_font_size=34,
+    value_font_size=32,
+    value_label_font_size=32,
+    font_family="DejaVu Sans, sans-serif",
+    label_font_family="DejaVu Sans, sans-serif",
+    title_font_family="DejaVu Sans, sans-serif",
+    legend_font_family="DejaVu Sans, sans-serif",
+    value_font_family="DejaVu Sans, sans-serif",
 )
 
-# Create minimal chart for title rendering
-chart = pygal.XY(
+# Create StackedBar chart using pygal's chart system for the node columns
+chart = pygal.StackedBar(
     width=4800,
     height=2700,
     style=custom_style,
     title="alluvial-opinion-flow · pygal · pyplots.ai",
-    show_legend=False,
-    show_x_guides=False,
+    x_title="Renewable Energy Policy Survey · 1,000 Respondents Tracked Quarterly",
+    show_legend=True,
+    legend_at_bottom=True,
+    legend_at_bottom_columns=5,
+    legend_box_size=24,
     show_y_guides=False,
-    show_x_labels=False,
+    show_x_guides=False,
     show_y_labels=False,
-    dots_size=0,
-    stroke=False,
-    range=(0, 100),
-    xrange=(0, 100),
+    print_values=True,
+    print_values_position="center",
+    value_formatter=lambda x: f"{int(x)}",
+    x_label_rotation=0,
+    rounded_bars=6,
+    margin_bottom=10,
 )
-chart.add("", [(50, 50)])
+chart.x_labels = waves
 
-# Render base SVG
-base_svg = chart.render().decode("utf-8")
+# Add data series with descriptive tooltips using pygal's data API
+for cat_idx, cat in enumerate(categories):
+    chart.add(cat, [{"value": int(v), "label": f"{cat}: {int(v)} respondents"} for v in respondent_counts[cat_idx]])
 
-# SVG layout
-margin_left = 700
-margin_right = 700
-margin_top = 350
-margin_bottom = 400
-chart_width = 4800 - margin_left - margin_right
-chart_height = 2700 - margin_top - margin_bottom
-node_gap = 20
-bar_width = 160
+# Render chart to SVG
+svg_str = chart.render().decode("utf-8")
 
-n_waves = len(waves)
-x_positions = [margin_left + i * chart_width / (n_waves - 1) for i in range(n_waves)]
+# Parse bar rect positions from the SVG using pygal's desc metadata
+# Structure: <g class="bar"><rect .../><desc class="value">N</desc>
+#            <desc class="x centered">X</desc><desc class="y centered">Y</desc></g>
+bar_info = []  # (series_idx, bar_idx, x, y, w, h, center_x)
+for series_match in re.finditer(r'<g class="series serie-(\d+) color-\d+">(.*?)</g>\s*</g>', svg_str, re.DOTALL):
+    series_idx = int(series_match.group(1))
+    content = series_match.group(2)
+    bar_idx = 0
+    for bar_match in re.finditer(r'<g class="bar[^"]*">(.*?)</g>', content, re.DOTALL):
+        bar_content = bar_match.group(1)
+        rect_m = re.search(
+            r"<rect\s+x=\"([\d.e+-]+)\"\s+y=\"([\d.e+-]+)\"\s+"
+            r"rx=\"\d+\"\s+ry=\"\d+\"\s+"
+            r"width=\"([\d.e+-]+)\"\s+height=\"([\d.e+-]+)\"",
+            bar_content,
+        )
+        cx_m = re.search(r'<desc class="x centered">([\d.e+-]+)</desc>', bar_content)
+        if rect_m and cx_m:
+            x = float(rect_m.group(1))
+            y = float(rect_m.group(2))
+            w = float(rect_m.group(3))
+            h = float(rect_m.group(4))
+            cx = float(cx_m.group(1))
+            bar_info.append((series_idx, bar_idx, x, y, w, h, cx))
+        bar_idx += 1
 
-# Calculate node positions with gaps
-node_positions = {}
-for wave_idx in range(n_waves):
-    wave_total = respondent_counts[:, wave_idx].sum()
-    available_height = chart_height - node_gap * (len(categories) - 1)
-    y_top = margin_top
+# Narrow bars from full-width stacked bars to alluvial node columns
+# and add white stroke for visual separation
+NODE_WIDTH = 160
+for _series_idx, _bar_idx, x, y, w, h, cx in bar_info:
+    new_x = cx - NODE_WIDTH / 2
+    old_rect = f'x="{x}" y="{y}" rx="6" ry="6" width="{w}" height="{h}"'
+    new_rect = (
+        f'x="{new_x:.2f}" y="{y}" rx="6" ry="6" width="{NODE_WIDTH}" height="{h}" stroke="white" stroke-width="3"'
+    )
+    svg_str = svg_str.replace(old_rect, new_rect, 1)
 
-    for cat_idx, cat in enumerate(categories):
-        height = (respondent_counts[cat_idx, wave_idx] / wave_total) * available_height
-        node_positions[(wave_idx, cat)] = (y_top, y_top + height)
-        y_top += height + node_gap
+# Build position lookup: (series_idx, wave_idx) -> (y_top, y_bottom, center_x)
+bar_positions = {}
+for series_idx, bar_idx, _x, y, _w, h, cx in bar_info:
+    bar_positions[(series_idx, bar_idx)] = (y, y + h, cx)
 
-# Build SVG
-alluvial_svg = '<g id="alluvial-opinion-flow">'
+# Category name to series index mapping
+cat_to_series = {cat: idx for idx, cat in enumerate(categories)}
 
-# Draw flows between consecutive waves
+# Build flow SVG paths
+flow_svg = '<g id="alluvial-flows">\n'
+
 for flow_idx, flow_dict in enumerate(flows):
-    x0 = x_positions[flow_idx]
-    x1 = x_positions[flow_idx + 1]
-    wave0_total = respondent_counts[:, flow_idx].sum()
-    wave1_total = respondent_counts[:, flow_idx + 1].sum()
-    available_h0 = chart_height - node_gap * (len(categories) - 1)
-    available_h1 = chart_height - node_gap * (len(categories) - 1)
+    # Track vertical offsets within each bar segment for flow stacking
+    source_offsets = {}
+    target_offsets = {}
+    for cat_idx in range(len(categories)):
+        src_pos = bar_positions.get((cat_idx, flow_idx))
+        if src_pos:
+            source_offsets[cat_idx] = src_pos[0]
+        tgt_pos = bar_positions.get((cat_idx, flow_idx + 1))
+        if tgt_pos:
+            target_offsets[cat_idx] = tgt_pos[0]
 
-    source_offsets = {cat: node_positions[(flow_idx, cat)][0] for cat in categories}
-    target_offsets = {cat: node_positions[(flow_idx + 1, cat)][0] for cat in categories}
-
-    for (src, tgt), count in sorted(flow_dict.items(), key=lambda x: -x[1]):
+    for (src_cat, tgt_cat), count in sorted(flow_dict.items(), key=lambda x: -x[1]):
         if count <= 0:
             continue
 
-        src_height = (count / wave0_total) * available_h0
-        tgt_height = (count / wave1_total) * available_h1
+        src_idx = cat_to_series[src_cat]
+        tgt_idx = cat_to_series[tgt_cat]
 
-        y0_top = source_offsets[src]
-        y0_bottom = y0_top + src_height
-        y1_top = target_offsets[tgt]
-        y1_bottom = y1_top + tgt_height
+        src_bar = bar_positions.get((src_idx, flow_idx))
+        tgt_bar = bar_positions.get((tgt_idx, flow_idx + 1))
+        if not src_bar or not tgt_bar:
+            continue
 
-        band_x0 = x0 + bar_width / 2
-        band_x1 = x1 - bar_width / 2
+        src_total = respondent_counts[src_idx, flow_idx]
+        tgt_total = respondent_counts[tgt_idx, flow_idx + 1]
+        src_bar_h = src_bar[1] - src_bar[0]
+        tgt_bar_h = tgt_bar[1] - tgt_bar[0]
+
+        src_frac_h = (count / src_total) * src_bar_h
+        tgt_frac_h = (count / tgt_total) * tgt_bar_h
+
+        y0_top = source_offsets[src_idx]
+        y0_bottom = y0_top + src_frac_h
+        y1_top = target_offsets[tgt_idx]
+        y1_bottom = y1_top + tgt_frac_h
+
+        band_x0 = src_bar[2] + NODE_WIDTH / 2
+        band_x1 = tgt_bar[2] - NODE_WIDTH / 2
         cx0 = band_x0 + 0.4 * (band_x1 - band_x0)
         cx1 = band_x0 + 0.6 * (band_x1 - band_x0)
 
-        # Stable flows (same category) get higher opacity
-        is_stable = src == tgt
-        opacity = 0.55 if is_stable else 0.2
+        is_stable = src_cat == tgt_cat
+        if is_stable:
+            opacity = 0.55
+        elif count >= highlight_threshold:
+            opacity = 0.45
+        else:
+            opacity = 0.30
 
         path_d = (
-            f"M {band_x0:.0f},{y0_top:.0f} "
-            f"C {cx0:.0f},{y0_top:.0f} {cx1:.0f},{y1_top:.0f} {band_x1:.0f},{y1_top:.0f} "
-            f"L {band_x1:.0f},{y1_bottom:.0f} "
-            f"C {cx1:.0f},{y1_bottom:.0f} {cx0:.0f},{y0_bottom:.0f} {band_x0:.0f},{y0_bottom:.0f} "
+            f"M {band_x0:.1f},{y0_top:.1f} "
+            f"C {cx0:.1f},{y0_top:.1f} {cx1:.1f},{y1_top:.1f} {band_x1:.1f},{y1_top:.1f} "
+            f"L {band_x1:.1f},{y1_bottom:.1f} "
+            f"C {cx1:.1f},{y1_bottom:.1f} {cx0:.1f},{y0_bottom:.1f} {band_x0:.1f},{y0_bottom:.1f} "
             f"Z"
         )
 
-        alluvial_svg += f"""
-    <path d="{path_d}" fill="{category_colors[src]}" fill-opacity="{opacity}" stroke="none"/>"""
+        flow_svg += f'  <path d="{path_d}" fill="{cat_colors[src_idx]}" fill-opacity="{opacity}" stroke="none"/>\n'
 
-        source_offsets[src] = y0_bottom
-        target_offsets[tgt] = y1_bottom
+        source_offsets[src_idx] = y0_bottom
+        target_offsets[tgt_idx] = y1_bottom
 
-# Draw node bars with respondent count labels
-for wave_idx in range(n_waves):
-    x = x_positions[wave_idx]
+flow_svg += "</g>\n"
 
-    for cat_idx, cat in enumerate(categories):
-        y_top, y_bottom = node_positions[(wave_idx, cat)]
-        height = y_bottom - y_top
-        count = respondent_counts[cat_idx, wave_idx]
+# Insert flows BEFORE series groups so bars render on top
+first_series = svg_str.find('<g class="series')
+if first_series > 0:
+    svg_str = svg_str[:first_series] + flow_svg + svg_str[first_series:]
 
-        alluvial_svg += f"""
-    <rect x="{x - bar_width / 2:.0f}" y="{y_top:.0f}" width="{bar_width:.0f}" height="{height:.0f}"
-          fill="{category_colors[cat]}" stroke="white" stroke-width="3" rx="4"/>"""
+# Add polarization annotation below title, right-aligned within chart area
+annotation_svg = (
+    '<text x="4720" y="90" text-anchor="end" font-size="32" font-style="italic" '
+    'font-family="DejaVu Sans, sans-serif" fill="#888888">'
+    "Solid = stable opinion · Faded = changed · "
+    "Polarization: Neutral 280&#x2192;150"
+    "</text>\n"
+)
+svg_str = svg_str.replace("</svg>", f"{annotation_svg}</svg>")
 
-        # Respondent count label on node
-        y_center = (y_top + y_bottom) / 2
-        if height > 40:
-            alluvial_svg += f"""
-    <text x="{x:.0f}" y="{y_center + 6:.0f}" text-anchor="middle"
-          font-size="32" font-weight="bold" font-family="DejaVu Sans, sans-serif"
-          fill="white">{count}</text>"""
-
-# Wave labels at bottom
-for wave_idx, wave_label in enumerate(waves):
-    x = x_positions[wave_idx]
-    lines = wave_label.split("\n")
-    alluvial_svg += f"""
-    <text x="{x:.0f}" y="{margin_top + chart_height + 70:.0f}" text-anchor="middle"
-          font-size="48" font-weight="bold" font-family="DejaVu Sans, sans-serif"
-          fill="#333333">{lines[0]}</text>"""
-    if len(lines) > 1:
-        alluvial_svg += f"""
-    <text x="{x:.0f}" y="{margin_top + chart_height + 120:.0f}" text-anchor="middle"
-          font-size="36" font-family="DejaVu Sans, sans-serif"
-          fill="#666666">{lines[1]}</text>"""
-
-# Category labels on left side
-for cat in categories:
-    y_top, y_bottom = node_positions[(0, cat)]
-    y_center = (y_top + y_bottom) / 2
-    alluvial_svg += f"""
-    <text x="{x_positions[0] - bar_width / 2 - 25:.0f}" y="{y_center + 6:.0f}" text-anchor="end"
-          font-size="38" font-weight="bold" font-family="DejaVu Sans, sans-serif"
-          fill="{category_colors[cat]}">{cat}</text>"""
-
-# Category labels on right side
-for cat in categories:
-    y_top, y_bottom = node_positions[(n_waves - 1, cat)]
-    y_center = (y_top + y_bottom) / 2
-    alluvial_svg += f"""
-    <text x="{x_positions[-1] + bar_width / 2 + 25:.0f}" y="{y_center + 6:.0f}" text-anchor="start"
-          font-size="38" font-weight="bold" font-family="DejaVu Sans, sans-serif"
-          fill="{category_colors[cat]}">{cat}</text>"""
-
-# Legend for opacity distinction
-legend_y = margin_top + chart_height + 200
-alluvial_svg += f"""
-    <rect x="1650" y="{legend_y:.0f}" width="40" height="20" fill="#306998" fill-opacity="0.55" rx="3"/>
-    <text x="1700" y="{legend_y + 16:.0f}" font-size="32" font-family="DejaVu Sans, sans-serif"
-          fill="#555555">Stable (same opinion)</text>
-    <rect x="2350" y="{legend_y:.0f}" width="40" height="20" fill="#306998" fill-opacity="0.2" rx="3"/>
-    <text x="2400" y="{legend_y + 16:.0f}" font-size="32" font-family="DejaVu Sans, sans-serif"
-          fill="#555555">Changed opinion</text>"""
-
-# Subtitle
-alluvial_svg += f"""
-    <text x="2400" y="{margin_top + chart_height + 280:.0f}" text-anchor="middle"
-          font-size="34" font-style="italic" font-family="DejaVu Sans, sans-serif"
-          fill="#888888">Renewable Energy Policy Survey · 1,000 Respondents Tracked Quarterly</text>"""
-
-alluvial_svg += "\n</g>"
-
-# Insert elements into SVG
-svg_output = base_svg.replace("</svg>", f"{alluvial_svg}\n</svg>")
-
-# Save
+# Save outputs
 with open("plot.svg", "w") as f:
-    f.write(svg_output)
+    f.write(svg_str)
 
-cairosvg.svg2png(bytestring=svg_output.encode("utf-8"), write_to="plot.png")
+cairosvg.svg2png(bytestring=svg_str.encode("utf-8"), write_to="plot.png")
 
 with open("plot.html", "w") as f:
-    f.write("""<!DOCTYPE html>
+    f.write(
+        """<!DOCTYPE html>
 <html>
 <head>
     <title>alluvial-opinion-flow · pygal · pyplots.ai</title>
@@ -308,4 +313,5 @@ with open("plot.html", "w") as f:
         </object>
     </div>
 </body>
-</html>""")
+</html>"""
+    )

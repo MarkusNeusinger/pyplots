@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-mandelbrot: Mandelbrot Set Fractal Visualization
 Library: letsplot 4.8.2 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-03
@@ -11,13 +11,18 @@ from lets_plot import (
     aes,
     coord_fixed,
     element_blank,
+    element_line,
+    element_rect,
     element_text,
     geom_raster,
     ggplot,
     ggsize,
     guide_colorbar,
     labs,
-    scale_fill_gradientn,
+    layer_tooltips,
+    scale_fill_viridis,
+    scale_x_continuous,
+    scale_y_continuous,
     theme,
     theme_minimal,
 )
@@ -54,25 +59,44 @@ iterations[interior] = np.nan
 
 df = pd.DataFrame({"real": real_grid.ravel(), "imag": imag_grid.ravel(), "iterations": iterations.ravel()})
 
-# Plot - Mandelbrot fractal heatmap
-colors = ["#000764", "#206BCB", "#EDFFFF", "#FFAA00", "#000200"]
-
+# Plot - Mandelbrot fractal heatmap with perceptually uniform inferno colormap
 plot = (
     ggplot(df, aes(x="real", y="imag", fill="iterations"))
-    + geom_raster()
-    + scale_fill_gradientn(
-        colors=colors, na_value="#000000", name="Iterations", guide=guide_colorbar(barwidth=18, barheight=300, nbin=256)
+    + geom_raster(
+        tooltips=layer_tooltips()
+        .format("@real", ".3f")
+        .format("@imag", ".3f")
+        .format("@iterations", ".1f")
+        .line("c = @real + @imag i")
+        .line("Iterations: @iterations")
     )
+    + scale_fill_viridis(
+        option="inferno",
+        na_value="#000000",
+        name="Iterations",
+        guide=guide_colorbar(barwidth=18, barheight=300, nbin=256),
+    )
+    + scale_x_continuous(name="Real Axis", breaks=[-2.5, -2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0], expand=[0.01, 0])
+    + scale_y_continuous(name="Imaginary Axis", breaks=[-1.0, -0.5, 0.0, 0.5, 1.0], expand=[0.01, 0])
     + coord_fixed()
-    + labs(x="Real Axis", y="Imaginary Axis", title="heatmap-mandelbrot · letsplot · pyplots.ai")
+    + labs(
+        title="heatmap-mandelbrot · letsplot · pyplots.ai",
+        subtitle="Escape-time fractal with smooth iteration coloring on the complex plane",
+        caption="z(n+1) = z(n)² + c · max iterations = 100 · interior points in black",
+    )
     + theme_minimal()
     + theme(
-        plot_title=element_text(size=24, face="bold", color="#1a1a2e"),
-        axis_title=element_text(size=20, color="#2d2d44"),
-        axis_text=element_text(size=16, color="#2d2d44"),
-        legend_title=element_text(size=16, face="bold"),
+        plot_title=element_text(size=26, face="bold", color="#1a1a2e"),
+        plot_subtitle=element_text(size=16, color="#5a5a7a", face="italic"),
+        plot_caption=element_text(size=12, color="#8a8aaa"),
+        axis_title=element_text(size=20, color="#2d2d44", face="bold"),
+        axis_text=element_text(size=16, color="#3d3d55"),
+        axis_line=element_line(color="#cccccc", size=0.5),
+        legend_title=element_text(size=16, face="bold", color="#2d2d44"),
         legend_text=element_text(size=14),
         panel_grid=element_blank(),
+        plot_background=element_rect(fill="white", color="white"),
+        panel_background=element_rect(fill="#0d0d0d", color="#0d0d0d"),
         plot_margin=[40, 20, 20, 20],
     )
     + ggsize(1600, 900)

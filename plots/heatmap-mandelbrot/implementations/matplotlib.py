@@ -1,9 +1,10 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-mandelbrot: Mandelbrot Set Fractal Visualization
 Library: matplotlib 3.10.8 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-03
 """
 
+import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -33,35 +34,52 @@ for i in range(max_iterations):
 # Points inside the set get NaN so they render as black
 iterations[mask] = np.nan
 
+# PowerNorm emphasizes boundary detail — a distinctive matplotlib normalization
+norm = mcolors.PowerNorm(gamma=0.4, vmin=np.nanmin(iterations), vmax=np.nanmax(iterations))
+
 # Plot
 fig, ax = plt.subplots(figsize=(16, 9), facecolor="black")
-fig.patch.set_facecolor("black")
 
 img = ax.imshow(
     iterations,
     extent=[x_min, x_max, y_min, y_max],
     origin="lower",
     cmap="inferno",
+    norm=norm,
     aspect="equal",
     interpolation="bilinear",
 )
 
 ax.set_facecolor("black")
 
+# Subtle contour lines at escape boundaries for depth and visual hierarchy
+iterations_clean = np.where(np.isnan(iterations), 0, iterations)
+ax.contour(
+    iterations_clean,
+    levels=[5, 15, 35, 70, 120],
+    extent=[x_min, x_max, y_min, y_max],
+    colors="white",
+    linewidths=0.3,
+    alpha=0.12,
+    origin="lower",
+)
+
 # Colorbar
 cbar = fig.colorbar(img, ax=ax, fraction=0.03, pad=0.02)
-cbar.set_label("Escape Iterations", fontsize=18, color="white")
-cbar.ax.tick_params(labelsize=14, colors="white")
-cbar.outline.set_edgecolor("white")
+cbar.set_label("Escape Iterations", fontsize=20, color="white")
+cbar.ax.tick_params(labelsize=16, colors="white")
+cbar.outline.set_edgecolor("#444444")
 
-# Style
+# Style — mathematical axis labels using matplotlib's mathtext rendering
 text_color = "white"
-ax.set_xlabel("Real Axis", fontsize=20, color=text_color)
-ax.set_ylabel("Imaginary Axis", fontsize=20, color=text_color)
-ax.set_title("heatmap-mandelbrot · matplotlib · pyplots.ai", fontsize=24, fontweight="medium", color=text_color)
+ax.set_xlabel(r"Real Part $\mathrm{Re}(c)$", fontsize=20, color=text_color)
+ax.set_ylabel(r"Imaginary Part $\mathrm{Im}(c)$", fontsize=20, color=text_color)
+ax.set_title("heatmap-mandelbrot · matplotlib · pyplots.ai", fontsize=24, fontweight="medium", color=text_color, pad=16)
 ax.tick_params(axis="both", labelsize=16, colors=text_color)
+
+# Clean spine removal for visual refinement
 for spine in ax.spines.values():
-    spine.set_edgecolor(text_color)
+    spine.set_visible(False)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="black")

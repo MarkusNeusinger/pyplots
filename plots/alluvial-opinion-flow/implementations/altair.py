@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 alluvial-opinion-flow: Opinion Flow Diagram
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-03
@@ -73,7 +73,7 @@ for w_idx in range(n_waves):
 # Colors for sentiment categories (diverging blue-gray-red)
 category_colors = {
     "Strongly Agree": "#306998",
-    "Agree": "#5B9BD5",
+    "Agree": "#79B8DE",
     "Neutral": "#888888",
     "Disagree": "#E07B54",
     "Strongly Disagree": "#C0392B",
@@ -149,8 +149,6 @@ for t_idx, trans in enumerate(transitions):
                 )
 
 flows_df = pd.DataFrame(all_flow_data)
-stable_df = flows_df[flows_df["is_stable"]].reset_index(drop=True)
-change_df = flows_df[~flows_df["is_stable"]].reset_index(drop=True)
 
 # Node rectangles data
 nodes_data = []
@@ -184,7 +182,8 @@ node_hover = alt.selection_point(fields=["name"], on="pointerover")
 
 # Stable flows (higher opacity to emphasize persistence)
 stable_chart = (
-    alt.Chart(stable_df)
+    alt.Chart(flows_df)
+    .transform_filter("datum.is_stable")
     .mark_line(filled=True, opacity=0.65, strokeWidth=0)
     .encode(
         x=alt.X("x:Q", scale=x_domain, axis=None),
@@ -192,14 +191,15 @@ stable_chart = (
         color=alt.Color("source_cat:N", scale=alt.Scale(domain=color_domain, range=color_range), legend=None),
         detail="flow_id:N",
         order="order:Q",
-        opacity=alt.condition(node_hover, alt.value(0.65), alt.value(0.45)),
+        opacity=alt.condition(node_hover, alt.value(0.7), alt.value(0.5)),
         tooltip=[alt.Tooltip("source_cat:N", title="Category"), alt.Tooltip("value:Q", title="Respondents (stable)")],
     )
 )
 
 # Changing flows (increased opacity for better visibility)
 change_chart = (
-    alt.Chart(change_df)
+    alt.Chart(flows_df)
+    .transform_filter("!datum.is_stable")
     .mark_line(filled=True, opacity=0.45, strokeWidth=0)
     .encode(
         x=alt.X("x:Q", scale=x_domain, axis=None),
@@ -207,7 +207,7 @@ change_chart = (
         color=alt.Color("source_cat:N", scale=alt.Scale(domain=color_domain, range=color_range), legend=None),
         detail="flow_id:N",
         order="order:Q",
-        opacity=alt.condition(node_hover, alt.value(0.45), alt.value(0.28)),
+        opacity=alt.condition(node_hover, alt.value(0.5), alt.value(0.35)),
         tooltip=[
             alt.Tooltip("source_cat:N", title="From"),
             alt.Tooltip("target_cat:N", title="To"),
@@ -219,7 +219,7 @@ change_chart = (
 # Node rectangles with color legend
 nodes_chart = (
     alt.Chart(nodes_df)
-    .mark_rect(stroke="#222222", strokeWidth=2, cornerRadius=4)
+    .mark_rect(stroke="#2A2A2A", strokeWidth=1.5, cornerRadius=5)
     .encode(
         x=alt.X("x:Q", scale=x_domain),
         y=alt.Y("y:Q", scale=y_domain),
@@ -233,9 +233,10 @@ nodes_chart = (
                 orient="bottom",
                 direction="horizontal",
                 titleFontSize=18,
-                labelFontSize=16,
-                titlePadding=8,
-                symbolSize=200,
+                labelFontSize=18,
+                titlePadding=10,
+                symbolSize=220,
+                padding=5,
             ),
         ),
         tooltip=[
@@ -247,11 +248,12 @@ nodes_chart = (
     .add_params(node_hover)
 )
 
-# Count labels on nodes
-nodes_df["count_label"] = nodes_df["total"].astype(str)
+# Count labels on nodes (filtered by minimum node height for readability)
 count_labels = (
-    alt.Chart(nodes_df[nodes_df["y2"] - nodes_df["y"] >= 25].reset_index(drop=True))
-    .mark_text(fontSize=16, fontWeight="bold", color="#FFFFFF", baseline="middle", align="center")
+    alt.Chart(nodes_df)
+    .transform_filter(alt.datum.y2 - alt.datum.y >= 25)
+    .transform_calculate(count_label="'' + datum.total")
+    .mark_text(fontSize=18, fontWeight="bold", color="#FFFFFF", baseline="middle", align="center")
     .encode(x=alt.X("label_x:Q", scale=x_domain), y=alt.Y("label_y:Q", scale=y_domain), text="count_label:N")
 )
 
@@ -279,13 +281,15 @@ for _, row in nodes_df.iterrows():
 labels_df = pd.DataFrame(label_data)
 
 left_labels = (
-    alt.Chart(labels_df[labels_df["align"] == "right"].reset_index(drop=True))
+    alt.Chart(labels_df)
+    .transform_filter(alt.datum.align == "right")
     .mark_text(fontSize=18, fontWeight="bold", color="#444444", align="right", baseline="middle")
     .encode(x=alt.X("x:Q", scale=x_domain), y=alt.Y("y:Q", scale=y_domain), text="text:N")
 )
 
 right_labels = (
-    alt.Chart(labels_df[labels_df["align"] == "left"].reset_index(drop=True))
+    alt.Chart(labels_df)
+    .transform_filter(alt.datum.align == "left")
     .mark_text(fontSize=18, fontWeight="bold", color="#444444", align="left", baseline="middle")
     .encode(x=alt.X("x:Q", scale=x_domain), y=alt.Y("y:Q", scale=y_domain), text="text:N")
 )
@@ -302,13 +306,13 @@ wave_headers = (
     .encode(x=alt.X("x:Q", scale=x_domain), y=alt.Y("y:Q", scale=y_domain), text="text:N")
 )
 
-# Trend annotation
+# Trend annotation (positioned near bottom, close to legend)
 trend_data = [
-    {"x": width / 2, "y": 40, "text": "Polarization trend: extreme sentiments grow while moderate opinions decline"}
+    {"x": width / 2, "y": 18, "text": "Polarization trend: extreme sentiments grow while moderate opinions decline"}
 ]
 trend_annotation = (
     alt.Chart(pd.DataFrame(trend_data))
-    .mark_text(fontSize=16, fontStyle="italic", color="#666666", baseline="top", align="center")
+    .mark_text(fontSize=18, fontStyle="italic", color="#666666", baseline="top", align="center")
     .encode(x=alt.X("x:Q", scale=x_domain), y=alt.Y("y:Q", scale=y_domain), text="text:N")
 )
 
@@ -326,7 +330,7 @@ for i in range(n_waves):
     )
 wave_bands = (
     alt.Chart(pd.DataFrame(band_data))
-    .mark_rect(color="#F0F0F0", opacity=0.6, cornerRadius=6)
+    .mark_rect(color="#EAEEF2", opacity=0.5, cornerRadius=8)
     .encode(x=alt.X("x:Q", scale=x_domain, axis=None), x2="x2:Q", y=alt.Y("y:Q", scale=y_domain, axis=None), y2="y2:Q")
 )
 
@@ -347,7 +351,14 @@ chart = (
         width=width,
         height=height,
         title=alt.Title(
-            text="alluvial-opinion-flow · altair · pyplots.ai", fontSize=28, anchor="middle", color="#333333", offset=20
+            text="alluvial-opinion-flow · altair · pyplots.ai",
+            subtitle="Employee Engagement Survey — 1,000 Staff Quarterly Sentiment Tracking",
+            fontSize=28,
+            subtitleFontSize=18,
+            subtitleColor="#888888",
+            anchor="middle",
+            color="#333333",
+            offset=20,
         ),
     )
     .configure_view(strokeWidth=0)

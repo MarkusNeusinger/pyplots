@@ -1,7 +1,7 @@
 library: pygal
 specification_id: alluvial-opinion-flow
 created: '2026-03-03T20:10:41Z'
-updated: '2026-03-03T20:15:53Z'
+updated: '2026-03-03T20:41:23Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22640489645
 issue: 4430
@@ -10,45 +10,40 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/alluvial-opinion-flow/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/alluvial-opinion-flow/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/alluvial-opinion-flow/pygal/plot.html
-quality_score: 78
+quality_score: 70
 review:
   strengths:
-  - Excellent custom SVG alluvial diagram with smooth bezier curves connecting opinion
-    categories across waves
-  - Thoughtful diverging color palette with semantic meaning (blue to yellow to red
-    for favorable to neutral to opposing)
-  - Clean opacity-based distinction between stable respondents and opinion changers
-  - Well-structured data showing realistic polarization trends in renewable energy
-    policy survey context
-  - Category labels on both left and right sides for easy tracing of flows
-  - Complete respondent count annotations on every node bar
-  - 'Perfect code quality: clean, deterministic, flat script structure'
+  - 'Significant Library Mastery improvement from attempt 1: now uses pygal StackedBar,
+    Style system, data series, and tooltips meaningfully'
+  - Good color palette with semantic meaning and improved Oppose/Strongly Oppose contrast
+    per prior feedback
+  - Strong data quality with realistic neutral context and sensible respondent distributions
+  - Polarization annotation and opacity-based flow distinction add data storytelling
+    elements
+  - Changed-flow opacity increased from 0.2 to 0.30 per prior feedback
   weaknesses:
-  - 'Library Mastery very low: pygal used purely as SVG shell for title while entire
-    visualization is hand-crafted SVG'
-  - Spec requests highlighting net flows for polarization trends but this is not explicitly
-    implemented
-  - Some changed-opinion flows at 0.2 opacity are very faint and hard to trace
-  - Orange and red distinction between Oppose and Strongly Oppose could be improved
-    for color accessibility
-  image_description: 'The plot displays an alluvial/Sankey-style opinion flow diagram
-    with 4 waves (Wave 1 Q1 through Wave 4 Q4) arranged left to right. Five opinion
-    categories are stacked vertically at each wave: "Strongly Favor" (dark blue),
-    "Favor" (medium blue), "Neutral" (yellow), "Oppose" (orange), and "Strongly Oppose"
-    (red). Node bars at each wave display respondent counts (e.g., 180, 210, 250,
-    270 for Strongly Favor across waves). Curved bezier flows connect categories between
-    consecutive waves, with stable flows (same category) rendered at higher opacity
-    (0.55) and changed-opinion flows at lower opacity (0.2). Category labels appear
-    on both left and right sides in matching colors. Wave labels with quarter annotations
-    sit at the bottom. A legend distinguishes "Stable (same opinion)" vs "Changed
-    opinion" flows. A subtitle reads "Renewable Energy Policy Survey · 1,000 Respondents
-    Tracked Quarterly". The title reads "alluvial-opinion-flow · pygal · pyplots.ai"
-    at top center. The background is clean white with no grid lines. The data shows
-    a clear polarization trend with Neutral declining from 280 to 150 while extreme
-    positions grow.'
+  - 'CRITICAL: Wave 3 to Wave 4 alluvial flows are completely missing - SVG regex
+    parsing fails to connect the last two waves'
+  - Unbalanced layout with large gap between Wave 3 and Wave 4 columns
+  - SVG regex parsing approach is fragile and the root cause of the rendering failure
+  - Annotation text in upper right is small and hard to read
+  image_description: 'The plot shows an alluvial/Sankey-style opinion flow diagram
+    titled "alluvial-opinion-flow · pygal · pyplots.ai" tracking 1,000 respondents
+    across 4 quarterly waves of a "Renewable Energy Policy Survey." Five opinion categories
+    are displayed as narrow stacked bar nodes at each wave: Strongly Favor (dark navy
+    blue), Favor (medium blue), Neutral (yellow), Oppose (brown), and Strongly Oppose
+    (dark red). Respondent counts are printed on each bar segment (e.g., Strongly
+    Favor: 180, 210, 250, 270). Curved bezier flows connect categories between Waves
+    1-2 and 2-3, with stable flows at higher opacity and changed flows at lower opacity.
+    CRITICAL ISSUE: Wave 4 (Q4) appears completely disconnected with NO visible alluvial
+    flows between Wave 3 and Wave 4. A large empty gap separates the third wave from
+    the fourth. A small italic annotation in the upper right reads "Solid = stable
+    opinion · Faded = changed · Polarization: Neutral 280→150". The legend at the
+    bottom shows all 5 categories. The x-axis title reads "Renewable Energy Policy
+    Survey · 1,000 Respondents Tracked Quarterly."'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 21
       max: 30
       items:
       - id: VQ-01
@@ -56,45 +51,44 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 72px, labels 38px, counts 32px,
-          waves 48/36px). All readable. Node count labels slightly small.
+        comment: Font sizes explicitly set in Style (title=72, labels=44, legend=34,
+          values=32). Annotation text in upper right is small.
       - id: VQ-02
         name: No Overlap
-        score: 6
-        max: 6
-        passed: true
-        comment: No overlapping text. Category labels well-spaced. Node counts fit
-          within bars.
-      - id: VQ-03
-        name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Flows clearly visible. Stable vs changed well-distinguished. Some
-          changed-opinion flows too faint at 0.2 opacity.
+        comment: No text overlap. Values on bars readable, legend well-positioned.
+          Minor flow crossing.
+      - id: VQ-03
+        name: Element Visibility
+        score: 2
+        max: 6
+        passed: false
+        comment: 'CRITICAL: Alluvial flows between Wave 3 and Wave 4 are completely
+          missing. One-third of flow transitions do not render.'
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Diverging blue-yellow-red palette reasonably accessible. Orange/red
-          Oppose categories could be challenging for red-blind viewers.
+        comment: Improved diverging palette. Oppose/Strongly Oppose contrast better
+          than attempt 1. Brown and dark red still somewhat similar.
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 2
         max: 4
-        passed: true
-        comment: Plot fills ~60-70% of canvas. Balanced margins. Slight excess whitespace
-          between title and chart.
+        passed: false
+        comment: 'Unbalanced layout: Waves 1-3 clustered together, Wave 4 isolated
+          on far right with large gap.'
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Title correct format. Wave labels with quarter annotations. Descriptive
-          category labels on both sides.
+        comment: Title in correct format. X-title descriptive with context.
     design_excellence:
-      score: 13
+      score: 11
       max: 20
       items:
       - id: DE-01
@@ -102,56 +96,54 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Semantic diverging palette, consistent typography, rounded bar corners,
-          opacity distinction. Above defaults but not publication-masterpiece.
+        comment: Custom diverging palette with semantic meaning. Extensive Style customization.
+          Above defaults but not publication-ready.
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 3
         max: 6
         passed: true
-        comment: Clean white background, no grid, no frames. Rounded corners, white
-          stroke separation. Good whitespace.
+        comment: Clean white background, no grids, rounded bars with white strokes.
+          Broken layout detracts.
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 3
         max: 6
         passed: true
-        comment: Polarization trend visible (neutral shrinks 280 to 150). Opacity
-          guides focus. Subtitle contextualizes. Missing explicit polarization annotation.
+        comment: Opacity distinction, polarization annotation, highlight threshold.
+          Missing Wave 3-4 flows undermine narrative.
     spec_compliance:
-      score: 14
+      score: 10
       max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 5
+        score: 3
         max: 5
-        passed: true
-        comment: Correct alluvial/Sankey-style diagram with flows connecting opinion
-          categories across survey waves.
+        passed: false
+        comment: Creative StackedBar-to-alluvial approach but Wave 3-4 flows missing.
+          Only 2 of 3 transitions render.
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 2
         max: 4
-        passed: true
-        comment: 'Most features present. Missing: net flow highlighting for polarization
-          trends.'
+        passed: false
+        comment: 'Most features present. Missing: complete flow rendering for Wave
+          3-4 transition.'
       - id: SC-03
         name: Data Mapping
-        score: 3
+        score: 2
         max: 3
-        passed: true
-        comment: Waves correctly mapped left-to-right. Categories consistent. Flow
-          counts correctly represented.
+        passed: false
+        comment: Correct mapping for Waves 1-3. Wave 4 data shown but no flow connections.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title correct format. Legend shows stable/changed distinction. Category
-          labels serve as color legend.
+        comment: Title format correct. Legend at bottom with all 5 categories.
     data_quality:
-      score: 13
+      score: 14
       max: 15
       items:
       - id: DQ-01
@@ -159,84 +151,80 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows 4 waves, 5 categories, stable and changing flows, polarization
-          trend. Missing extreme outlier flows.
+        comment: 4 waves, 5 categories, varying magnitudes, polarization trend visible.
       - id: DQ-02
         name: Realistic Context
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Renewable Energy Policy Survey is plausible real-world scenario.
-          1000 respondents quarterly is realistic. Slightly edges toward political
-          territory.
+        comment: Renewable Energy Policy Survey is neutral and realistic.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 1000 total respondents per wave, counts sum correctly. Realistic
-          survey data values.
+        comment: 1,000 respondents, realistic distributions and transitions.
     code_quality:
-      score: 10
+      score: 8
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: 'Flat script: imports, data, chart setup, SVG construction, save.
-          No functions or classes.'
+        comment: Linear structure but complex SVG regex parsing adds significant complexity.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set. Data is hardcoded/deterministic.
+        comment: np.random.seed(42) set, data is hardcoded.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: cairosvg, numpy, pygal, pygal.style.Style.'
+        comment: 'All imports used: re, cairosvg, numpy, pygal, Style.'
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Well-organized SVG construction. Bezier curves elegantly computed.
-          No fake UI.
+        passed: false
+        comment: SVG regex parsing is fragile and error-prone, causing the Wave 3-4
+          rendering failure.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png via cairosvg. Also saves plot.svg and plot.html.
+        comment: Saves plot.png via cairosvg, also plot.svg and plot.html.
     library_mastery:
-      score: 2
+      score: 6
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 1
+        score: 3
         max: 5
-        passed: false
-        comment: Pygal used only as SVG container for title. Entire alluvial visualization
-          is hand-crafted SVG injected into pygal output.
+        passed: true
+        comment: Significantly improved from attempt 1. Uses pygal.StackedBar with
+          data series, Style system, tooltips, print_values, legend. SVG post-processing
+          modifies pygal output rather than replacing it.
       - id: LM-02
         name: Distinctive Features
-        score: 1
+        score: 3
         max: 5
-        passed: false
-        comment: None of pygal distinctive features leveraged. Implementation is library-agnostic
-          raw SVG.
+        passed: true
+        comment: Leverages pygal Style system extensively, dict-based data with tooltip
+          labels, native SVG output, interactive HTML export.
   verdict: REJECTED
 impl_tags:
   dependencies:
   - cairosvg
   techniques:
-  - bezier-curves
   - annotations
+  - bezier-curves
   - html-export
   patterns:
   - data-generation

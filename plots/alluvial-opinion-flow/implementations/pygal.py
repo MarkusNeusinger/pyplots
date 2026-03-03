@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 alluvial-opinion-flow: Opinion Flow Diagram
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: repair-1 | Created: 2026-03-03
+Quality: 70/100 | Created: 2026-03-03
 """
 
 import re

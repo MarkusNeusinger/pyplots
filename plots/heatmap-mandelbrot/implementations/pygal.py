@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-mandelbrot: Mandelbrot Set Fractal Visualization
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-03
@@ -25,7 +25,7 @@ x_min, x_max = -2.5, 1.0
 y_min, y_max = -1.25, 1.25
 max_iter = 200
 bailout = 256
-grid_w, grid_h = 800, 572
+grid_w, grid_h = 800, 600
 
 real = np.linspace(x_min, x_max, grid_w)
 imag = np.linspace(y_max, y_min, grid_h)
@@ -131,8 +131,8 @@ class MandelbrotHeatmap(Graph):
         gh = self.view.height
 
         # Layout parameters for heatmap within the plot area
-        pad_left, pad_top = 280, 60
-        pad_right, pad_bottom = 250, 160
+        pad_left, pad_top = 280, 40
+        pad_right, pad_bottom = 230, 130
         x_span = self._x_range[1] - self._x_range[0]
         y_span = self._y_range[1] - self._y_range[0]
 
@@ -165,7 +165,7 @@ class MandelbrotHeatmap(Graph):
             "text",
             x=px + plot_w / 2,
             y=py - 10,
-            style="font-size:32px;font-weight:400;font-family:sans-serif;fill:#666",
+            style="font-size:36px;font-weight:400;font-family:sans-serif;fill:#666",
         )
         sub.text = "z\u2099\u208a\u2081 = z\u2099\u00b2 + c \u00b7 Escape time with smooth iteration count"
         sub.attrib["text-anchor"] = "middle"
@@ -185,7 +185,7 @@ class MandelbrotHeatmap(Graph):
             root,
             "text",
             x=px + plot_w / 2,
-            y=py + plot_h + 120,
+            y=py + plot_h + 110,
             style="font-size:44px;font-weight:600;font-family:sans-serif;fill:#333",
         )
         xl.text = "Real Axis (Re)"
@@ -214,7 +214,7 @@ class MandelbrotHeatmap(Graph):
         yl.attrib["transform"] = f"rotate(-90, {ylx}, {yly})"
 
         # Colorbar
-        cb_x = px + plot_w + 60
+        cb_x = px + plot_w + 40
         cb_w = 45
         cb_top = py + 50
         cb_h = plot_h - 100
@@ -239,27 +239,29 @@ class MandelbrotHeatmap(Graph):
             root, "rect", x=cb_x, y=cb_top, width=cb_w, height=cb_h, style="fill:none;stroke:#333;stroke-width:1.5"
         )
 
-        # Colorbar tick labels
-        for frac in [0.0, 0.25, 0.5, 0.75, 1.0]:
-            t_c = 1.0 - frac
-            log_val = self._log_range[0] + t_c * (self._log_range[1] - self._log_range[0])
-            iter_val = np.exp(log_val) - 1
+        # Colorbar tick labels — round values for readability
+        log_span = self._log_range[1] - self._log_range[0]
+        for iter_val in [1, 5, 10, 25, 50, 100, 200]:
+            log_val = np.log(iter_val + 1)
+            if log_val < self._log_range[0] or log_val > self._log_range[1]:
+                continue
+            t_c = (log_val - self._log_range[0]) / log_span if log_span > 0 else 0
+            frac = 1.0 - t_c
             ty = cb_top + frac * cb_h
+            self.svg.node(
+                root, "line", x1=cb_x + cb_w, y1=ty, x2=cb_x + cb_w + 8, y2=ty, style="stroke:#333;stroke-width:1.5"
+            )
             lbl = self.svg.node(
                 root, "text", x=cb_x + cb_w + 15, y=ty + 10, style="font-size:28px;font-family:sans-serif;fill:#333"
             )
-            lbl.text = f"{iter_val:.0f}"
+            lbl.text = str(iter_val)
 
         # Colorbar title
         cbt = self.svg.node(
-            root,
-            "text",
-            x=cb_x + cb_w / 2,
-            y=cb_top - 25,
-            style="font-size:34px;font-weight:600;font-family:sans-serif;fill:#333",
+            root, "text", x=cb_x, y=cb_top - 25, style="font-size:34px;font-weight:600;font-family:sans-serif;fill:#333"
         )
         cbt.text = "Iterations"
-        cbt.attrib["text-anchor"] = "middle"
+        cbt.attrib["text-anchor"] = "start"
 
         # In-set legend entry
         lg_y = cb_top + cb_h + 50

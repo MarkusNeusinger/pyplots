@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 alluvial-opinion-flow: Opinion Flow Diagram
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 83/100 | Created: 2026-03-03
@@ -41,7 +41,7 @@ height = 900
 top_margin = 130
 bottom_margin = 60
 left_margin = 240
-right_margin = 280
+right_margin = 350
 node_width = 50
 node_padding = 18
 available_height = height - top_margin - bottom_margin
@@ -185,14 +185,14 @@ node_hover = alt.selection_point(fields=["name"], on="pointerover")
 # Stable flows (higher opacity to emphasize persistence)
 stable_chart = (
     alt.Chart(stable_df)
-    .mark_line(filled=True, opacity=0.60, strokeWidth=0)
+    .mark_line(filled=True, opacity=0.65, strokeWidth=0)
     .encode(
         x=alt.X("x:Q", scale=x_domain, axis=None),
         y=alt.Y("y:Q", scale=y_domain, axis=None),
         color=alt.Color("source_cat:N", scale=alt.Scale(domain=color_domain, range=color_range), legend=None),
         detail="flow_id:N",
         order="order:Q",
-        opacity=alt.condition(node_hover, alt.value(0.60), alt.value(0.18)),
+        opacity=alt.condition(node_hover, alt.value(0.65), alt.value(0.45)),
         tooltip=[alt.Tooltip("source_cat:N", title="Category"), alt.Tooltip("value:Q", title="Respondents (stable)")],
     )
 )
@@ -200,14 +200,14 @@ stable_chart = (
 # Changing flows (increased opacity for better visibility)
 change_chart = (
     alt.Chart(change_df)
-    .mark_line(filled=True, opacity=0.35, strokeWidth=0)
+    .mark_line(filled=True, opacity=0.45, strokeWidth=0)
     .encode(
         x=alt.X("x:Q", scale=x_domain, axis=None),
         y=alt.Y("y:Q", scale=y_domain, axis=None),
         color=alt.Color("source_cat:N", scale=alt.Scale(domain=color_domain, range=color_range), legend=None),
         detail="flow_id:N",
         order="order:Q",
-        opacity=alt.condition(node_hover, alt.value(0.35), alt.value(0.08)),
+        opacity=alt.condition(node_hover, alt.value(0.45), alt.value(0.28)),
         tooltip=[
             alt.Tooltip("source_cat:N", title="From"),
             alt.Tooltip("target_cat:N", title="To"),
@@ -219,7 +219,7 @@ change_chart = (
 # Node rectangles with color legend
 nodes_chart = (
     alt.Chart(nodes_df)
-    .mark_rect(stroke="#333333", strokeWidth=1.5, cornerRadius=3)
+    .mark_rect(stroke="#222222", strokeWidth=2, cornerRadius=4)
     .encode(
         x=alt.X("x:Q", scale=x_domain),
         y=alt.Y("y:Q", scale=y_domain),
@@ -312,10 +312,36 @@ trend_annotation = (
     .encode(x=alt.X("x:Q", scale=x_domain), y=alt.Y("y:Q", scale=y_domain), text="text:N")
 )
 
+# Light background bands behind each wave column for visual depth
+band_width = 60
+band_data = []
+for i in range(n_waves):
+    band_data.append(
+        {
+            "x": x_positions[i] - band_width,
+            "x2": x_positions[i] + band_width,
+            "y": top_margin - 20,
+            "y2": max_node_y + 10,
+        }
+    )
+wave_bands = (
+    alt.Chart(pd.DataFrame(band_data))
+    .mark_rect(color="#F0F0F0", opacity=0.6, cornerRadius=6)
+    .encode(x=alt.X("x:Q", scale=x_domain, axis=None), x2="x2:Q", y=alt.Y("y:Q", scale=y_domain, axis=None), y2="y2:Q")
+)
+
 # Combine all layers
 chart = (
     alt.layer(
-        change_chart, stable_chart, nodes_chart, count_labels, left_labels, right_labels, wave_headers, trend_annotation
+        wave_bands,
+        change_chart,
+        stable_chart,
+        nodes_chart,
+        count_labels,
+        left_labels,
+        right_labels,
+        wave_headers,
+        trend_annotation,
     )
     .properties(
         width=width,

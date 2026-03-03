@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 alluvial-opinion-flow: Opinion Flow Diagram
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 81/100 | Created: 2026-03-03
@@ -15,11 +15,13 @@ from pygal.style import Style
 np.random.seed(42)
 
 # Data
-waves = ["Wave 1 (Q1)", "Wave 2 (Q2)", "Wave 3 (Q3)", "Wave 4 (Q4)"]
+waves = ["Q1 2024", "Q2 2024", "Q3 2024", "Q4 2024"]
 categories = ["Strongly Favor", "Favor", "Neutral", "Oppose", "Strongly Oppose"]
 
-# Improved color palette - better contrast between Oppose/Strongly Oppose
-cat_colors = ["#1a5276", "#5499c7", "#f4d03f", "#af601a", "#7b241c"]
+# Improved palette: increased hue separation between Oppose (warm orange) and
+# Strongly Oppose (deep crimson) for better accessibility
+cat_colors = ["#1a5276", "#2e86c1", "#f1c40f", "#e67e22", "#922b21"]
+
 # Respondent counts per category at each wave (1000 total respondents)
 respondent_counts = np.array(
     [
@@ -101,33 +103,45 @@ flows = [
 ]
 
 # Compute top cross-category flows for polarization highlighting
-cross_flows = []
+cross_flows_list = []
 for flow_dict in flows:
     for (src, tgt), count in flow_dict.items():
         if src != tgt:
-            cross_flows.append(count)
-cross_flows.sort(reverse=True)
-highlight_threshold = cross_flows[7] if len(cross_flows) > 7 else 0
+            cross_flows_list.append(((src, tgt), count))
+cross_flows_list.sort(key=lambda x: -x[1])
+highlight_threshold = cross_flows_list[7][1] if len(cross_flows_list) > 7 else 0
 
-# Custom style - extensive use of pygal's Style system
+# Top 5 cross-category flows for labeling on the diagram
+top_cross_flows = {}
+for flow_idx, flow_dict in enumerate(flows):
+    for (src, tgt), count in flow_dict.items():
+        if src != tgt and count >= 40:
+            top_cross_flows[(flow_idx, src, tgt)] = count
+
+# Custom style - extensive use of pygal's Style system with refined typography
 custom_style = Style(
     background="white",
     plot_background="white",
-    foreground="#333333",
-    foreground_strong="#222222",
-    foreground_subtle="#999999",
+    foreground="#2c3e50",
+    foreground_strong="#1a252f",
+    foreground_subtle="#95a5a6",
+    opacity=".85",
+    opacity_hover=".95",
+    transition="200ms ease-in",
     colors=tuple(cat_colors),
-    title_font_size=72,
-    label_font_size=44,
-    major_label_font_size=44,
-    legend_font_size=34,
-    value_font_size=32,
-    value_label_font_size=32,
-    font_family="DejaVu Sans, sans-serif",
-    label_font_family="DejaVu Sans, sans-serif",
-    title_font_family="DejaVu Sans, sans-serif",
-    legend_font_family="DejaVu Sans, sans-serif",
-    value_font_family="DejaVu Sans, sans-serif",
+    title_font_size=76,
+    label_font_size=40,
+    major_label_font_size=40,
+    legend_font_size=36,
+    value_font_size=34,
+    value_label_font_size=34,
+    font_family="'DejaVu Sans', 'Segoe UI', sans-serif",
+    label_font_family="'DejaVu Sans', 'Segoe UI', sans-serif",
+    title_font_family="'DejaVu Sans', 'Segoe UI', sans-serif",
+    legend_font_family="'DejaVu Sans', 'Segoe UI', sans-serif",
+    value_font_family="'DejaVu Sans', 'Segoe UI', sans-serif",
+    tooltip_font_size=28,
+    tooltip_font_family="'DejaVu Sans', 'Segoe UI', sans-serif",
 )
 
 # Create StackedBar chart using pygal's chart system for the node columns
@@ -140,7 +154,7 @@ chart = pygal.StackedBar(
     show_legend=True,
     legend_at_bottom=True,
     legend_at_bottom_columns=5,
-    legend_box_size=24,
+    legend_box_size=28,
     show_y_guides=False,
     show_x_guides=False,
     show_y_labels=False,
@@ -148,8 +162,11 @@ chart = pygal.StackedBar(
     print_values_position="center",
     value_formatter=lambda x: f"{int(x)}",
     x_label_rotation=0,
-    rounded_bars=6,
+    rounded_bars=8,
     margin_bottom=10,
+    margin_top=10,
+    tooltip_fancy_mode=True,
+    js=[],
 )
 chart.x_labels = waves
 
@@ -164,8 +181,7 @@ svg_str = chart.render().decode("utf-8")
 root = ET.fromstring(svg_str)
 SVG = "{http://www.w3.org/2000/svg}"
 
-# Extract bar positions using proper XML parsing (replaces fragile regex)
-# pygal SVG structure: <g class="series serie-N"> -> <g class="bars"> -> <g class="bar">
+# Extract bar positions using proper XML parsing
 bar_info = []  # (series_idx, bar_idx, x, y, w, h, center_x, rect_elem)
 for g in root.iter(f"{SVG}g"):
     cls = g.get("class", "")
@@ -178,7 +194,6 @@ for g in root.iter(f"{SVG}g"):
             break
     if series_idx is None:
         continue
-    # Find the bars wrapper group, then iterate individual bar elements
     bars_group = None
     for child in g:
         if child.tag == f"{SVG}g" and child.get("class", "") == "bars":
@@ -224,7 +239,17 @@ for series_idx, bar_idx, _x, y, _w, h, cx, _rect in bar_info:
 
 cat_to_series = {cat: idx for idx, cat in enumerate(categories)}
 
-# Find the plot group (parent of series groups with actual bar data) for flow insertion
+# Compute plot area bounds for background panels
+wave_cx = {}
+for _series_idx, bar_idx, _x, _y, _w, _h, cx, _rect in bar_info:
+    if bar_idx not in wave_cx:
+        wave_cx[bar_idx] = cx
+
+# Find min/max y across all bars for background panels
+all_y_top = min(y for _, _, _, y, _, h, _, _ in bar_info)
+all_y_bottom = max(y + h for _, _, _, y, _, h, _, _ in bar_info)
+
+# Find the plot group for flow insertion
 plot_group = None
 first_series_pos = 0
 for g in root.iter(f"{SVG}g"):
@@ -238,9 +263,33 @@ for g in root.iter(f"{SVG}g"):
     if plot_group is not None:
         break
 
+# Add subtle background shading behind wave columns for visual structure
+bg_group = ET.Element(f"{SVG}g")
+bg_group.set("id", "wave-backgrounds")
+panel_padding = 40
+for wi, cx in sorted(wave_cx.items()):
+    bg_rect = ET.SubElement(bg_group, f"{SVG}rect")
+    bg_rect.set("x", f"{cx - NODE_WIDTH / 2 - panel_padding:.1f}")
+    bg_rect.set("y", f"{all_y_top - panel_padding:.1f}")
+    bg_rect.set("width", f"{NODE_WIDTH + 2 * panel_padding}")
+    bg_rect.set("height", f"{all_y_bottom - all_y_top + 2 * panel_padding:.1f}")
+    bg_rect.set("rx", "12")
+    bg_rect.set("ry", "12")
+    bg_rect.set("fill", "#f0f3f5" if wi % 2 == 0 else "#e8ecf0")
+    bg_rect.set("fill-opacity", "0.6")
+    bg_rect.set("stroke", "none")
+
+# Insert background panels before series groups in the plot
+if plot_group is not None:
+    plot_group.insert(first_series_pos, bg_group)
+    first_series_pos += 1
+
 # Build alluvial flow paths
 flow_group = ET.Element(f"{SVG}g")
 flow_group.set("id", "alluvial-flows")
+
+# Track flow midpoints for labeling top cross-category flows
+flow_label_positions = []
 
 for flow_idx, flow_dict in enumerate(flows):
     source_offsets = {}
@@ -305,6 +354,12 @@ for flow_idx, flow_dict in enumerate(flows):
         path_elem.set("fill-opacity", str(opacity))
         path_elem.set("stroke", "none")
 
+        # Record midpoint for top cross-category flow labels
+        if (flow_idx, src_cat, tgt_cat) in top_cross_flows:
+            mid_x = (band_x0 + band_x1) / 2
+            mid_y = (y0_top + y0_bottom + y1_top + y1_bottom) / 4
+            flow_label_positions.append((mid_x, mid_y, count, src_idx))
+
         source_offsets[src_idx] = y0_bottom
         target_offsets[tgt_idx] = y1_bottom
 
@@ -312,15 +367,46 @@ for flow_idx, flow_dict in enumerate(flows):
 if plot_group is not None:
     plot_group.insert(first_series_pos, flow_group)
 
-# Add polarization annotation with readable font size and contrast
-annotation = ET.SubElement(root, f"{SVG}text")
-annotation.set("x", "4720")
-annotation.set("y", "130")
-annotation.set("text-anchor", "end")
-annotation.set("font-size", "44")
+# Add flow count labels on largest cross-category transitions for data storytelling
+label_group = ET.SubElement(root, f"{SVG}g")
+label_group.set("id", "flow-labels")
+for mid_x, mid_y, count, src_idx in flow_label_positions:
+    # Background pill for readability
+    pill = ET.SubElement(label_group, f"{SVG}rect")
+    pill_w, pill_h = 80, 40
+    pill.set("x", f"{mid_x - pill_w / 2:.1f}")
+    pill.set("y", f"{mid_y - pill_h / 2:.1f}")
+    pill.set("width", str(pill_w))
+    pill.set("height", str(pill_h))
+    pill.set("rx", "12")
+    pill.set("ry", "12")
+    pill.set("fill", "white")
+    pill.set("fill-opacity", "0.85")
+    pill.set("stroke", cat_colors[src_idx])
+    pill.set("stroke-width", "2")
+
+    label = ET.SubElement(label_group, f"{SVG}text")
+    label.set("x", f"{mid_x:.1f}")
+    label.set("y", f"{mid_y + 10:.1f}")
+    label.set("text-anchor", "middle")
+    label.set("font-size", "30")
+    label.set("font-weight", "bold")
+    label.set("font-family", "'DejaVu Sans', 'Segoe UI', sans-serif")
+    label.set("fill", cat_colors[src_idx])
+    label.text = str(count)
+
+# Add polarization annotation as subtitle beneath the title
+anno_group = ET.SubElement(root, f"{SVG}g")
+anno_group.set("id", "annotations")
+
+annotation = ET.SubElement(anno_group, f"{SVG}text")
+annotation.set("x", "2400")
+annotation.set("y", "135")
+annotation.set("text-anchor", "middle")
+annotation.set("font-size", "38")
 annotation.set("font-style", "italic")
-annotation.set("font-family", "DejaVu Sans, sans-serif")
-annotation.set("fill", "#555555")
+annotation.set("font-family", "'DejaVu Sans', 'Segoe UI', sans-serif")
+annotation.set("fill", "#5d6d7e")
 annotation.text = "Solid = stable opinion \u00b7 Faded = changed \u00b7 Polarization: Neutral 280\u2192150"
 
 # Serialize SVG
@@ -337,9 +423,9 @@ with open("plot.html", "w") as f:
         """<!DOCTYPE html>
 <html>
 <head>
-    <title>alluvial-opinion-flow · pygal · pyplots.ai</title>
+    <title>alluvial-opinion-flow &middot; pygal &middot; pyplots.ai</title>
     <style>
-        body { margin: 0; padding: 20px; background: #f5f5f5; font-family: sans-serif; }
+        body { margin: 0; padding: 20px; background: #f8f9fa; font-family: sans-serif; }
         .container { max-width: 100%; margin: 0 auto; }
         object { width: 100%; height: auto; }
     </style>

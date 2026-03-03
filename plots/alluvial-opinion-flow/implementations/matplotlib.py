@@ -1,10 +1,11 @@
-""" pyplots.ai
+"""pyplots.ai
 alluvial-opinion-flow: Opinion Flow Diagram
 Library: matplotlib 3.10.8 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-03
 """
 
 import matplotlib.patches as mpatches
+import matplotlib.patheffects as patheffects
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.path import Path
@@ -17,7 +18,7 @@ waves = ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"]
 categories = ["Strongly Agree", "Agree", "Neutral", "Disagree", "Strongly Disagree"]
 colors = {
     "Strongly Agree": "#306998",
-    "Agree": "#2A9D8F",
+    "Agree": "#5BA865",
     "Neutral": "#95A5A6",
     "Disagree": "#E67E22",
     "Strongly Disagree": "#C0392B",
@@ -123,9 +124,9 @@ flows = [
 fig, ax = plt.subplots(figsize=(16, 9))
 
 x_positions = [2.0, 4.5, 7.0, 9.5]
-node_width = 0.65
+node_width = 0.8
 total_height = 7.5
-node_gap = 0.2
+node_gap = 0.22
 
 # Calculate node positions
 node_bounds = {}
@@ -140,6 +141,9 @@ for t_idx, wave in enumerate(waves):
         h = heights[c_idx]
         node_bounds[(wave, cat)] = {"x": x_positions[t_idx], "y_start": y, "height": h}
         y += h + node_gap
+
+# Track the largest cross-category flows for net flow highlighting
+cross_flows = []
 
 # Draw flows between consecutive waves
 for t_idx in range(len(waves) - 1):
@@ -179,6 +183,12 @@ for t_idx in range(len(waves) - 1):
             is_stable = from_cat == to_cat
             alpha = 0.6 if is_stable else 0.25
 
+            # Highlight the largest cross-category flows with a subtle edge
+            is_major_cross = (not is_stable) and flow_val >= 25
+            edge_color = colors[from_cat] if is_major_cross else "none"
+            edge_alpha = 0.5 if is_major_cross else 0
+            edge_lw = 1.0 if is_major_cross else 0
+
             verts = [
                 (x0, y0_start),
                 (mid_x, y0_start),
@@ -202,23 +212,42 @@ for t_idx in range(len(waves) - 1):
                 Path.CLOSEPOLY,
             ]
             path = Path(verts, codes)
-            patch = mpatches.PathPatch(path, facecolor=colors[from_cat], edgecolor="none", alpha=alpha)
+            patch = mpatches.PathPatch(
+                path, facecolor=colors[from_cat], edgecolor=edge_color, alpha=alpha, linewidth=edge_lw
+            )
+            if is_major_cross:
+                patch.set_path_effects([patheffects.withStroke(linewidth=1.5, foreground=colors[from_cat], alpha=0.4)])
             ax.add_patch(patch)
+
+            # Track cross-category flows for annotation
+            if not is_stable and flow_val >= 30:
+                cross_flows.append(
+                    {
+                        "from": from_cat,
+                        "to": to_cat,
+                        "val": flow_val,
+                        "mid_x": mid_x,
+                        "mid_y": (y0_start + y0_end + y1_start + y1_end) / 4,
+                    }
+                )
 
             from_offsets[from_cat] += from_height
             to_offsets[to_cat] += to_height
 
-# Draw nodes
+# Draw nodes with FancyBboxPatch for rounded corners
+shadow_effect = [patheffects.withSimplePatchShadow(offset=(1.5, -1.5), shadow_rgbFace="#00000015")]
 for wave in waves:
     for cat in categories:
         node = node_bounds[(wave, cat)]
-        rect = mpatches.Rectangle(
+        rect = mpatches.FancyBboxPatch(
             (node["x"] - node_width / 2, node["y_start"]),
             node_width,
             node["height"],
+            boxstyle="round,pad=0.02",
             facecolor=colors[cat],
             edgecolor="white",
-            linewidth=2,
+            linewidth=2.5,
+            path_effects=shadow_effect,
         )
         ax.add_patch(rect)
 
@@ -232,17 +261,17 @@ for wave in waves:
             "Strongly Disagree": "Str.\nDisagree",
         }
         label = f"{short[cat]}\nn={count}"
-        text_color = "white" if cat != "Neutral" else "#222222"
-        fontsize = 14 if node["height"] > 0.8 else 12
+        text_color = "white" if cat != "Neutral" else "#1a1a1a"
         ax.text(
             node["x"],
             node["y_start"] + node["height"] / 2,
             label,
             ha="center",
             va="center",
-            fontsize=fontsize,
+            fontsize=16,
             fontweight="bold",
             color=text_color,
+            path_effects=[patheffects.withStroke(linewidth=1.5, foreground="#00000022")],
         )
 
 # Wave column headers
@@ -258,10 +287,41 @@ for t_idx, wave in enumerate(waves):
         color="#333333",
     )
 
+# Annotate net polarization trend
+# Calculate net change from Q1 to Q4 for key categories
+q1_neutral = node_values["Q1 2025"]["Neutral"]
+q4_neutral = node_values["Q4 2025"]["Neutral"]
+q1_strong = node_values["Q1 2025"]["Strongly Agree"] + node_values["Q1 2025"]["Strongly Disagree"]
+q4_strong = node_values["Q4 2025"]["Strongly Agree"] + node_values["Q4 2025"]["Strongly Disagree"]
+
+ax.annotate(
+    f"Neutral: {q1_neutral} \u2192 {q4_neutral}  (\u2013{q1_neutral - q4_neutral})",
+    xy=(
+        x_positions[-1] + node_width / 2 + 0.15,
+        node_bounds[("Q4 2025", "Neutral")]["y_start"] + node_bounds[("Q4 2025", "Neutral")]["height"] / 2,
+    ),
+    fontsize=16,
+    fontweight="medium",
+    color="#666666",
+    va="center",
+)
+ax.annotate(
+    f"Strong opinions: {q1_strong} \u2192 {q4_strong}  (+{q4_strong - q1_strong})",
+    xy=(
+        x_positions[-1] + node_width / 2 + 0.15,
+        node_bounds[("Q4 2025", "Strongly Agree")]["y_start"]
+        + node_bounds[("Q4 2025", "Strongly Agree")]["height"] / 2,
+    ),
+    fontsize=16,
+    fontweight="medium",
+    color="#306998",
+    va="center",
+)
+
 # Legend distinguishing stable vs changing flows
 legend_elements = [
     mpatches.Patch(facecolor="#306998", alpha=0.6, edgecolor="#333333", linewidth=1.5, label="Stable (same opinion)"),
-    mpatches.Patch(facecolor="#306998", alpha=0.15, edgecolor="#333333", linewidth=1.5, label="Changed opinion"),
+    mpatches.Patch(facecolor="#306998", alpha=0.25, edgecolor="#333333", linewidth=1.5, label="Changed opinion"),
 ]
 for cat in categories:
     legend_elements.append(mpatches.Patch(facecolor=colors[cat], label=cat))
@@ -277,9 +337,20 @@ ax.legend(
 )
 
 # Style
-ax.set_xlim(0.7, 11.0)
-ax.set_ylim(-0.8, total_height + 1.6)
-ax.set_title("alluvial-opinion-flow · matplotlib · pyplots.ai", fontsize=24, fontweight="medium", pad=20)
+ax.set_xlim(0.5, 14.0)
+ax.set_ylim(-0.8, total_height + 2.6)
+ax.set_title("alluvial-opinion-flow \u00b7 matplotlib \u00b7 pyplots.ai", fontsize=24, fontweight="medium", pad=30)
+ax.text(
+    0.5,
+    1.015,
+    "Neutral opinion declines as views polarize toward strong agreement and disagreement",
+    transform=ax.transAxes,
+    ha="center",
+    va="bottom",
+    fontsize=18,
+    fontstyle="italic",
+    color="#666666",
+)
 ax.axis("off")
 
 plt.tight_layout()

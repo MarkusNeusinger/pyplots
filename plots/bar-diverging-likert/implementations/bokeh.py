@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-diverging-likert: Likert Scale Diverging Bar Chart
 Library: bokeh 3.8.2 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-04
@@ -44,17 +44,17 @@ sa_sorted = [strongly_agree[i] for i in sorted_idx]
 
 # Diverging color scheme: red-to-blue with muted neutral
 likert_colors = {
-    "Strongly Disagree": "#C44E52",
-    "Disagree": "#E8927C",
-    "Neutral": "#B0B0B0",
-    "Agree": "#6BAED6",
-    "Strongly Agree": "#306998",
+    "Strongly Disagree": "#CA0020",
+    "Disagree": "#F4A582",
+    "Neutral": "#999999",
+    "Agree": "#92C5DE",
+    "Strongly Agree": "#0571B0",
 }
 
 label_text_colors = {
     "Strongly Disagree": "white",
     "Disagree": "#333333",
-    "Neutral": "#333333",
+    "Neutral": "white",
     "Agree": "#333333",
     "Strongly Agree": "white",
 }
@@ -64,7 +64,7 @@ p = figure(
     width=4800,
     height=2700,
     y_range=questions_sorted,
-    x_range=(-65, 90),
+    x_range=(-65, 85),
     title="bar-diverging-likert · bokeh · pyplots.ai",
     toolbar_location=None,
 )
@@ -154,7 +154,7 @@ for cat_name in likert_categories:
             source=label_source,
             text_align="center",
             text_baseline="middle",
-            text_font_size="18pt",
+            text_font_size="20pt",
             text_color=label_text_colors[cat_name],
         )
         p.add_layout(labels)

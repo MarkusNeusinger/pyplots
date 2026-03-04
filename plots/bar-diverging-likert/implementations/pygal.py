@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-diverging-likert: Likert Scale Diverging Bar Chart
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 81/100 | Created: 2026-03-04
@@ -38,14 +38,14 @@ order = sorted(range(len(questions)), key=lambda i: net_scores[i])
 questions = [questions[i] for i in order]
 responses = [responses[i] for i in order]
 
-# Diverging color palette: red → gray → blue (colorblind-safe)
+# Diverging color palette: ColorBrewer RdBu 5-class (colorblind-safe)
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
-    foreground_subtle="#999999",
-    colors=("#AAAAAA", "#E8998D", "#D94535", "#AAAAAA", "#7DB5D6", "#306998"),
+    foreground_subtle="#e0e0e0",
+    colors=("#D9D9D9", "#EF8A62", "#B2182B", "#D9D9D9", "#67A9CF", "#2166AC"),
     title_font_size=72,
     label_font_size=44,
     major_label_font_size=40,
@@ -71,12 +71,13 @@ chart = pygal.HorizontalStackedBar(
     title="Employee Engagement Survey · bar-diverging-likert · pygal · pyplots.ai",
     show_legend=True,
     legend_at_bottom=True,
-    legend_at_bottom_columns=6,
+    legend_at_bottom_columns=5,
     show_x_guides=False,
-    show_y_guides=True,
+    show_y_guides=False,
     print_values=True,
     print_values_position="center",
     value_formatter=lambda x: f"{abs(x):.0f}%" if abs(x) >= 8 else "",
+    x_title="Response Percentage (%)",
     margin=50,
     spacing=15,
     truncate_label=-1,
@@ -89,7 +90,7 @@ chart.add("Neutral", neutral_left)
 chart.add("Disagree", disagree_vals)
 chart.add("Strongly Disagree", strongly_disagree_vals)
 # Positive side: neutral half → agree → strongly agree
-chart.add(" ", neutral_right)
+chart.add(None, neutral_right)
 chart.add("Agree", agree_vals)
 chart.add("Strongly Agree", strongly_agree_vals)
 

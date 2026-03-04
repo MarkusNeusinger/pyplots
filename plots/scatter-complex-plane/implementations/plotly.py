@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-complex-plane: Complex Plane Visualization (Argand Diagram)
 Library: plotly 6.6.0 | Python 3.14.3
-Quality: 87/100 | Created: 2026-03-04
 """
 
 import numpy as np
@@ -20,7 +19,6 @@ arbitrary_labels = ["z₁", "z₂", "z₃", "z₄", "z₅"]
 conjugate_pair = [1.5 + 2j, 1.5 - 2j]
 conjugate_labels = ["w", "w̄"]
 
-# Sum example: z₁ + z₂ to demonstrate complex addition (spec mentions sums)
 z_sum = arbitrary_points[0] + arbitrary_points[1]
 sum_points = [z_sum]
 sum_labels = ["z₁+z₂"]
@@ -46,17 +44,20 @@ palette = {
 }
 
 # Marker sizes per category for visual hierarchy
-marker_sizes = {"5th Roots of Unity": 14, "Arbitrary Points": 16, "Conjugate Pair": 16, "Sum (z₁+z₂)": 20}
+marker_sizes = {"5th Roots of Unity": 15, "Arbitrary Points": 17, "Conjugate Pair": 17, "Sum (z₁+z₂)": 22}
 
-# Custom text positions to avoid overlap
+# Custom text positions to reduce overlap — especially near origin for roots of unity
 text_offsets = dict.fromkeys(all_labels, "top right")
-text_offsets["z₄"] = "bottom left"
-text_offsets["w̄"] = "bottom right"
+text_offsets["ω0"] = "bottom right"
+text_offsets["ω1"] = "top right"
 text_offsets["ω2"] = "top left"
 text_offsets["ω3"] = "bottom left"
-text_offsets["ω4"] = "bottom right"
-text_offsets["z₁+z₂"] = "top left"
+text_offsets["ω4"] = "bottom left"
 text_offsets["z₃"] = "bottom right"
+text_offsets["z₄"] = "bottom left"
+text_offsets["z₅"] = "bottom right"
+text_offsets["w̄"] = "bottom right"
+text_offsets["z₁+z₂"] = "top left"
 
 # Plot
 fig = go.Figure()
@@ -68,32 +69,44 @@ fig.add_trace(
         x=np.cos(theta).tolist(),
         y=np.sin(theta).tolist(),
         mode="lines",
-        line={"color": "#BBBBBB", "width": 2, "dash": "dash"},
+        line={"color": "#C0C0C0", "width": 2.5, "dash": "dash"},
         name="Unit Circle",
         hoverinfo="skip",
         showlegend=False,
     )
 )
 
-# "r=1" label repositioned to ~70° to avoid ω1 crowding
+# "r = 1" label at ~160° — well away from all data points
 fig.add_annotation(
-    x=np.cos(np.pi * 70 / 180),
-    y=np.sin(np.pi * 70 / 180),
+    x=np.cos(np.radians(160)),
+    y=np.sin(np.radians(160)),
     text="<i>r</i> = 1",
     showarrow=False,
-    font={"size": 14, "color": "#999999", "family": "serif"},
-    xshift=-20,
-    yshift=14,
+    font={"size": 16, "color": "#999999", "family": "Georgia, serif"},
+    xshift=-14,
+    yshift=16,
 )
 
-# Dashed lines from z₁ and z₂ to z₁+z₂ to show addition (parallelogram rule)
+# Conjugate dashed line connecting w and w̄ for visual symmetry
+fig.add_trace(
+    go.Scatter(
+        x=[conjugate_pair[0].real, conjugate_pair[1].real],
+        y=[conjugate_pair[0].imag, conjugate_pair[1].imag],
+        mode="lines",
+        line={"color": "#7B4F9D", "width": 1.5, "dash": "dash"},
+        hoverinfo="skip",
+        showlegend=False,
+    )
+)
+
+# Parallelogram rule lines from z₁ and z₂ to z₁+z₂
 for src in [arbitrary_points[0], arbitrary_points[1]]:
     fig.add_trace(
         go.Scatter(
             x=[src.real, z_sum.real],
             y=[src.imag, z_sum.imag],
             mode="lines",
-            line={"color": "#2CA02C", "width": 1.5, "dash": "dot"},
+            line={"color": "#2CA02C", "width": 1.8, "dash": "dot"},
             hoverinfo="skip",
             showlegend=False,
         )
@@ -120,17 +133,17 @@ for cat in ["5th Roots of Unity", "Arbitrary Points", "Conjugate Pair", "Sum (z�
             ayref="y",
             showarrow=True,
             arrowhead=3,
-            arrowsize=1.2,
+            arrowsize=1.3,
             arrowwidth=2.5,
             arrowcolor=color,
-            opacity=0.65,
+            opacity=0.60,
         )
 
-    # Annotations with a+bi form (inline formatting, no helper function)
+    # Annotations with a+bi form
     for r, im, label in zip(cat_real, cat_imag, cat_labels, strict=True):
         pos = text_offsets.get(label, "top right")
-        xshift = -10 if "left" in pos else 10
-        yshift = -16 if "bottom" in pos else 16
+        xshift = -12 if "left" in pos else 12
+        yshift = -18 if "bottom" in pos else 18
         sign = "+" if im >= 0 else "−"
         complex_str = f"{r:.1f}" if im == 0 else f"{r:.1f} {sign} {abs(im):.1f}i"
         fig.add_annotation(
@@ -138,7 +151,7 @@ for cat in ["5th Roots of Unity", "Arbitrary Points", "Conjugate Pair", "Sum (z�
             y=im,
             text=f"<b>{label}</b>  ({complex_str})",
             showarrow=False,
-            font={"size": 15, "color": color, "family": "serif"},
+            font={"size": 16, "color": color, "family": "Georgia, serif"},
             xanchor="left" if "right" in pos else "right",
             yanchor="bottom" if "top" in pos else "top",
             xshift=xshift,
@@ -177,51 +190,52 @@ fig.update_layout(
     title={
         "text": (
             "scatter-complex-plane · plotly · pyplots.ai"
-            "<br><sup style='color:#888; font-weight:normal'>"
+            "<br><sup style='color:#777; font-weight:normal'>"
             "Argand diagram — roots of unity, conjugates & vector addition"
             "</sup>"
         ),
-        "font": {"size": 28, "family": "serif"},
+        "font": {"size": 28, "family": "Georgia, serif"},
         "x": 0.5,
         "xanchor": "center",
     },
     xaxis={
-        "title": {"text": "Re(z)", "font": {"size": 22, "family": "serif"}},
-        "tickfont": {"size": 18},
+        "title": {"text": "Re(z)", "font": {"size": 22, "family": "Georgia, serif"}},
+        "tickfont": {"size": 18, "family": "Georgia, serif"},
         "zeroline": True,
         "zerolinewidth": 2.5,
-        "zerolinecolor": "#333333",
-        "gridcolor": "rgba(0,0,0,0.06)",
+        "zerolinecolor": "#2a2a2a",
+        "gridcolor": "rgba(0,0,0,0.05)",
         "showgrid": True,
         "dtick": 1,
-        "range": [-3.5, 4.5],
+        "range": [-3.2, 4.2],
     },
     yaxis={
-        "title": {"text": "Im(z)", "font": {"size": 22, "family": "serif"}},
-        "tickfont": {"size": 18},
+        "title": {"text": "Im(z)", "font": {"size": 22, "family": "Georgia, serif"}},
+        "tickfont": {"size": 18, "family": "Georgia, serif"},
         "zeroline": True,
         "zerolinewidth": 2.5,
-        "zerolinecolor": "#333333",
-        "gridcolor": "rgba(0,0,0,0.06)",
+        "zerolinecolor": "#2a2a2a",
+        "gridcolor": "rgba(0,0,0,0.05)",
         "showgrid": True,
         "scaleanchor": "x",
         "scaleratio": 1,
         "dtick": 1,
-        "range": [-3.5, 4.5],
+        "range": [-3.2, 4.8],
     },
     template="plotly_white",
     plot_bgcolor="white",
+    paper_bgcolor="white",
     legend={
-        "font": {"size": 16, "family": "serif"},
+        "font": {"size": 17, "family": "Georgia, serif"},
         "x": 0.01,
         "y": 0.99,
-        "bgcolor": "rgba(255,255,255,0.9)",
-        "bordercolor": "rgba(0,0,0,0.15)",
+        "bgcolor": "rgba(255,255,255,0.92)",
+        "bordercolor": "rgba(0,0,0,0.12)",
         "borderwidth": 1,
     },
     width=1200,
     height=1200,
-    margin={"l": 80, "r": 80, "t": 120, "b": 80},
+    margin={"l": 80, "r": 60, "t": 120, "b": 70},
 )
 
 # Save

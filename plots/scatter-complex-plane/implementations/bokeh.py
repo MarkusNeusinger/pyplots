@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-complex-plane: Complex Plane Visualization (Argand Diagram)
 Library: bokeh 3.8.2 | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-04
@@ -13,7 +13,7 @@ from bokeh.resources import CDN
 
 # Data
 roots_of_unity = [np.exp(2j * np.pi * k / 5) for k in range(5)]
-arbitrary_points = [2.5 + 1.5j, -1.8 + 2.2j, 1.2 - 2.0j, -2.3 - 1.0j, 3.0 + 0j, 0 + 2.8j]
+arbitrary_points = [2.5 + 1.5j, -1.8 + 2.2j, -0.5 - 2.5j, -2.3 - 1.0j, 3.0 + 0j, 0 + 2.8j]
 conjugate_pair = [1.5 + 2j, 1.5 - 2j]
 product_point = [(1.5 + 2j) * np.exp(1j * np.pi / 4)]
 
@@ -109,22 +109,33 @@ for cat, color in color_map.items():
     legend_items.append(LegendItem(label=cat, renderers=[r]))
 
 # Smart label placement — offset based on angle from origin to avoid overlap
+label_positions = []  # Track placed labels to detect collisions
 for i, (rx, iy, lbl) in enumerate(zip(real_parts, imag_parts, labels, strict=True)):
     angle = np.arctan2(iy, rx)
     cat = categories[i]
     # Larger radial offset for roots of unity (clustered near origin on unit circle)
-    dist = 28 if cat == "5th Root of Unity" else 22
+    base_dist = 32 if cat == "5th Root of Unity" else 22
     # Position label radially outward from origin
-    ox = dist * np.cos(angle)
-    oy = dist * np.sin(angle)
+    ox = base_dist * np.cos(angle)
+    oy = base_dist * np.sin(angle)
     # Adjust for readability: labels in left half shift further left
     if rx < -0.5:
-        ox -= 10
+        ox -= 12
     if abs(iy) < 0.5 and rx > 0:
         oy += 14
-    # Extra nudge for bottom roots of unity to avoid crowding
-    if cat == "5th Root of Unity" and iy < -0.3:
-        oy -= 12
+    # Extra separation for roots of unity — stagger by quadrant
+    if cat == "5th Root of Unity":
+        if iy < -0.3:
+            oy -= 16
+        if abs(rx) < 0.5 and iy > 0:
+            oy += 12
+    # Collision avoidance — nudge away from previously placed labels
+    for px, py in label_positions:
+        dx = (rx + ox * 0.01) - px
+        dy = (iy + oy * 0.01) - py
+        if abs(dx) < 0.6 and abs(dy) < 0.6:
+            oy += 18 if iy >= py else -18
+    label_positions.append((rx + ox * 0.01, iy + oy * 0.01))
     p.add_layout(
         Label(
             x=rx,

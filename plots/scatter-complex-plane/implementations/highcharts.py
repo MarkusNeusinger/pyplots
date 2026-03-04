@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-complex-plane: Complex Plane Visualization (Argand Diagram)
 Library: highcharts unknown | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-04
@@ -71,15 +71,10 @@ COLOR_AXIS = "#2c3e50"
 COLOR_BG = "#fafbfc"
 
 
-def arrowhead_points(x, y, size=0.18, spread=math.radians(28)):
-    """Compute two barb endpoints for a V-shaped arrowhead at (x,y) from origin."""
-    angle = math.atan2(y, x)
-    b1x = x - size * math.cos(angle - spread)
-    b1y = y - size * math.sin(angle - spread)
-    b2x = x - size * math.cos(angle + spread)
-    b2y = y - size * math.sin(angle + spread)
-    return b1x, b1y, b2x, b2y
-
+# Arrowhead geometry parameters
+ARROW_SIZE = 0.18
+ARROW_SPREAD = math.radians(28)
+ARROW_SIZE_SMALL = 0.15
 
 # Create chart
 chart = Chart(container="container")
@@ -92,7 +87,7 @@ chart.options.chart = {
     "backgroundColor": COLOR_BG,
     "style": {"fontFamily": "'Segoe UI', Helvetica, Arial, sans-serif"},
     "marginTop": 160,
-    "marginBottom": 260,
+    "marginBottom": 320,
     "marginLeft": 260,
     "marginRight": 180,
 }
@@ -113,13 +108,15 @@ chart.options.x_axis = {
     "title": {
         "text": "Real Axis (Re)",
         "style": {"fontSize": "40px", "color": COLOR_AXIS, "fontWeight": "500"},
-        "margin": 25,
+        "margin": 30,
     },
     "labels": {"style": {"fontSize": "32px", "color": "#7f8c8d"}},
     "min": -axis_range,
     "max": axis_range,
     "tickInterval": 1,
-    "gridLineWidth": 0,
+    "gridLineWidth": 1,
+    "gridLineColor": "rgba(180, 190, 200, 0.25)",
+    "gridLineDashStyle": "Dot",
     "lineColor": COLOR_AXIS,
     "lineWidth": 2,
     "tickColor": COLOR_AXIS,
@@ -138,7 +135,9 @@ chart.options.y_axis = {
     "min": -axis_range,
     "max": axis_range,
     "tickInterval": 1,
-    "gridLineWidth": 0,
+    "gridLineWidth": 1,
+    "gridLineColor": "rgba(180, 190, 200, 0.25)",
+    "gridLineDashStyle": "Dot",
     "lineColor": COLOR_AXIS,
     "lineWidth": 2,
     "tickColor": COLOR_AXIS,
@@ -206,10 +205,20 @@ for i in range(n_roots):
     vec.show_in_legend = False
     vec.z_index = 2
     chart.add_series(vec)
-    # Arrowhead (V-shape)
-    b1x, b1y, b2x, b2y = arrowhead_points(rx, ry, size=0.15)
+    # Arrowhead (V-shape) — inlined geometry
+    angle = math.atan2(ry, rx)
     arrow = SplineSeries()
-    arrow.data = [[b1x, b1y], [rx, ry], [b2x, b2y]]
+    arrow.data = [
+        [
+            rx - ARROW_SIZE_SMALL * math.cos(angle - ARROW_SPREAD),
+            ry - ARROW_SIZE_SMALL * math.sin(angle - ARROW_SPREAD),
+        ],
+        [rx, ry],
+        [
+            rx - ARROW_SIZE_SMALL * math.cos(angle + ARROW_SPREAD),
+            ry - ARROW_SIZE_SMALL * math.sin(angle + ARROW_SPREAD),
+        ],
+    ]
     arrow.color = COLOR_ROOTS
     arrow.line_width = 4
     arrow.marker = {"enabled": False}
@@ -232,10 +241,14 @@ for i in range(len(arb_real)):
     vec.show_in_legend = False
     vec.z_index = 2
     chart.add_series(vec)
-    # Arrowhead (V-shape)
-    b1x, b1y, b2x, b2y = arrowhead_points(ax, ay, size=0.18)
+    # Arrowhead (V-shape) — inlined geometry
+    angle = math.atan2(ay, ax)
     arrow = SplineSeries()
-    arrow.data = [[b1x, b1y], [ax, ay], [b2x, b2y]]
+    arrow.data = [
+        [ax - ARROW_SIZE * math.cos(angle - ARROW_SPREAD), ay - ARROW_SIZE * math.sin(angle - ARROW_SPREAD)],
+        [ax, ay],
+        [ax - ARROW_SIZE * math.cos(angle + ARROW_SPREAD), ay - ARROW_SIZE * math.sin(angle + ARROW_SPREAD)],
+    ]
     arrow.color = COLOR_ARB
     arrow.line_width = 3
     arrow.marker = {"enabled": False}
@@ -285,7 +298,7 @@ arb_label_offsets = [
     {"y": -35, "x": 0},  # z₁ at (2, 1.5) — up
     {"y": -35, "x": 0},  # z₂ at (-1.2, 2) — up
     {"y": 40, "x": 0},  # z₃ at (1.5, -1.8) — down
-    {"y": 40, "x": 0},  # z₄ at (-2, -1) — down
+    {"y": 40, "x": 25},  # z₄ at (-2, -1) — down-right to avoid left edge
     {"y": -35, "x": 0},  # z₅ at (0.5, 2.5) — up
 ]
 

@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: scatter-complex-plane
 created: '2026-03-04T20:23:02Z'
-updated: '2026-03-04T20:46:04Z'
+updated: '2026-03-04T20:52:29Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22687521714
 issue: 4427
@@ -10,38 +10,39 @@ library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-complex-plane/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-complex-plane/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-complex-plane/letsplot/plot.html
-quality_score: 85
+quality_score: 86
 review:
   strengths:
-  - Excellent data storytelling with three distinct categories (roots of unity, arbitrary,
-    sum) creating mathematical narrative
-  - 'Strong visual design: custom palette, unit circle fill, white-filled stroke markers,
-    typographic hierarchy'
-  - Effective label anti-overlap algorithm prevents text collisions
-  - Good use of lets-plot distinctive features (layer_tooltips, flavor, dual HTML/PNG
-    export)
-  - 'Perfect data quality: real mathematical context with full feature coverage across
-    all quadrants'
+  - 'Full spec compliance: all required features (unit circle, vectors, annotations,
+    equal aspect) present and correct'
+  - 'Excellent data choice: 5th roots of unity + arbitrary points + complex sum demonstrates
+    mathematical richness'
+  - Three-level annotation hierarchy (name, rectangular, polar) provides comprehensive
+    information
+  - 'Effective use of lets-plot distinctive features: layer_tooltips() and flavor_high_contrast_light()'
+  - Label repulsion algorithm proactively addresses text overlap
   weaknesses:
-  - Coordinate annotation text (size=9) is smaller than ideal for the output resolution
-  - The label nudging algorithm is over-engineered (40 iterations for 12 points)
-  - Polar form annotations are only in tooltips, invisible in the static PNG output
+  - Minor label overlaps remain in crowded areas (z6/omega2 region, omega0 near origin)
+    despite repulsion algorithm
+  - Some empty space on the right side of canvas between data and legend
   image_description: 'The plot displays an Argand diagram (complex plane visualization)
-    on a light background with the title "scatter-complex-plane · letsplot · pyplots.ai"
-    in bold and an italic subtitle describing 5th roots of unity and complex addition.
-    The x-axis is labeled "Real Part" and y-axis "Imaginary Part" with tick marks
-    at -2, -1, 0, 1, 2. A dashed unit circle centered at the origin is filled with
-    a subtle light blue. Gray horizontal and vertical axes pass through the origin.
-    Three categories of points are shown: blue open circles for "5th Root of Unity"
-    (ω0–ω4) positioned on the unit circle, orange open circles for "Arbitrary" points
-    (z1–z6) scattered across all four quadrants, and a magenta open circle for "Sum"
-    (ω1+ω2). Vectors (arrows) emanate from the origin to each point, colored by category.
-    Each point is annotated with its name in bold and rectangular form (a+bi) in gray
-    below. The legend on the right identifies the three categories. Equal aspect ratio
-    is maintained — the unit circle appears circular.'
+    with the title "scatter-complex-plane · letsplot · pyplots.ai" in bold at the
+    top and a descriptive italic subtitle. The x-axis is labeled "Real Part" and the
+    y-axis "Imaginary Part", with tick marks at integer values from -3 to 3. A dashed
+    unit circle is centered at the origin with a subtle light blue filled interior.
+    Light gray horizontal and vertical lines cross at the origin to represent the
+    real and imaginary axes. Five 5th roots of unity (ω0–ω4) are shown as blue open
+    circle markers with arrows from the origin, arranged symmetrically on the unit
+    circle. Six arbitrary complex numbers (z1–z6) are shown as orange open circle
+    markers with arrows, scattered at various magnitudes and angles. One sum point
+    (ω1+ω2) appears in magenta/pink. Each point has three annotation levels: a bold
+    colored name label, the rectangular form (a+bi) in gray, and the polar form (r,
+    θ) in lighter italic gray. A legend on the right identifies the three categories.
+    The overall color scheme uses blue, orange, and magenta against a clean white
+    background with subtle gray grid lines.'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 25
       max: 30
       items:
       - id: VQ-01
@@ -49,41 +50,43 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set. Annotation text (size=9) slightly
-          small but readable.
+        comment: All font sizes explicitly set (title=26, subtitle=17, axis_title=21,
+          axis_text=17). Annotations slightly small but legible.
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 4
         max: 6
         passed: true
-        comment: Label anti-overlap algorithm works well. Minor crowding near ω2/z6
-          area.
+        comment: Minor overlaps in z6/ω2 region and near ω0 at origin despite label
+          repulsion algorithm.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Points well-sized with white fill. Arrows slightly transparent at
-          alpha=0.65.
+        comment: Points clearly visible with white-filled circle markers and colored
+          strokes. Arrows visible with open arrowheads.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue/orange/magenta palette is colorblind-safe with good contrast.
+        comment: Blue/orange/magenta palette is colorblind-safe with good luminance
+          contrast.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good layout with equal aspect ratio. Some unused space in corners.
+        comment: Good proportions with coord_fixed(). Some empty space between data
+          and legend on right.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels. Units not applicable for dimensionless complex
-          numbers.
+        comment: 'Descriptive labels: Real Part, Imaginary Part. Units N/A for dimensionless
+          coordinates.'
     design_excellence:
       score: 14
       max: 20
@@ -93,24 +96,24 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom palette, unit circle fill, white-filled stroke markers, typographic
-          hierarchy. Above defaults.
+        comment: Custom three-color palette, flavor_high_contrast_light(), subtle
+          filled unit circle, three-level annotation hierarchy.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Minor grid removed, subtle major grid, generous margins, high-contrast-light
-          flavor.
+        comment: High contrast light theme, minor grid removed, major grid subtle,
+          filled unit circle interior.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Three categories create visual hierarchy. Sum point demonstrates
-          complex addition.
+        comment: Color-coded categories, unit circle provides geometric context, sum
+          point demonstrates complex addition.
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -118,25 +121,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct Argand diagram with vectors from origin.
+        comment: Correct Argand diagram with scatter points and vectors from origin.
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: All features present. Polar form only in tooltips (invisible in PNG).
+        comment: 'All features present: unit circle, vectors, annotations, equal aspect,
+          distinct colors.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Real on x-axis, imaginary on y-axis. All data visible.
+        comment: Real part on x-axis, imaginary on y-axis. All data visible.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format. Legend shows all three categories.
+        comment: Title follows exact format. Legend labels match data categories.
     data_quality:
       score: 15
       max: 15
@@ -146,24 +150,24 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Roots of unity, arbitrary points in all quadrants, complex addition
-          demonstrated.
+        comment: 5th roots of unity, arbitrary points in all quadrants, complex addition
+          sum.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: 'Real mathematical context: roots of unity, complex addition. Educational
-          and neutral.'
+        comment: Mathematical/educational context with roots of unity and complex
+          arithmetic.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values in [-2.3, 2.3] range. Roots at magnitude 1. Appropriate for
-          complex plane.
+        comment: Axes -3 to 3, roots at magnitude 1, arbitrary points at reasonable
+          magnitudes.
     code_quality:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -171,13 +175,13 @@ review:
         score: 2
         max: 3
         passed: true
-        comment: Linear flow. Label overlap loop adds inline complexity.
+        comment: Linear flow but label repulsion algorithm adds complexity.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set. Arbitrary points hardcoded for determinism.
+        comment: np.random.seed(42) set at beginning.
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -186,17 +190,17 @@ review:
         comment: 'All imports used: numpy, pandas, lets_plot, export_ggsave.'
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Label nudging algorithm over-engineered for 12 points. Otherwise
-          clean.
+        comment: Well-organized code, label repulsion serves real purpose, no fake
+          functionality.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png with scale=3. Also exports plot.html.
+        comment: Saves as plot.png via export_ggsave with scale=3. Also exports HTML.
     library_mastery:
       score: 8
       max: 10
@@ -206,15 +210,15 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Good ggplot grammar: layer composition, coord_fixed(), flavor_high_contrast_light().'
+        comment: Correct ggplot grammar with layered geoms, aes, scales, coord_fixed(),
+          flavor_high_contrast_light().
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: layer_tooltips() with formatted fields, flavor_high_contrast_light(),
-          dual HTML/PNG export.
-  verdict: REJECTED
+        comment: layer_tooltips() for interactive HTML tooltips, HTML export, flavor_high_contrast_light().
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-complex-plane: Complex Plane Visualization (Argand Diagram)
 Library: bokeh 3.8.2 | Python 3.14.3
-Quality: 83/100 | Created: 2026-03-04
+Created: 2026-03-04
 """
 
 import numpy as np
@@ -73,7 +73,7 @@ p.add_layout(origin_x)
 p.add_layout(origin_y)
 
 # Vectors from origin to each point — alpha varies by category for hierarchy
-alpha_map = {"5th Root of Unity": 0.65, "Arbitrary": 0.35, "Conjugate Pair": 0.5, "Product": 0.55}
+alpha_map = {"5th Root of Unity": 0.7, "Arbitrary": 0.5, "Conjugate Pair": 0.6, "Product": 0.65}
 for i, (rx, iy) in enumerate(zip(real_parts, imag_parts, strict=True)):
     cat = categories[i]
     p.add_layout(
@@ -109,17 +109,22 @@ for cat, color in color_map.items():
     legend_items.append(LegendItem(label=cat, renderers=[r]))
 
 # Smart label placement — offset based on angle from origin to avoid overlap
-for rx, iy, lbl in zip(real_parts, imag_parts, labels, strict=True):
+for i, (rx, iy, lbl) in enumerate(zip(real_parts, imag_parts, labels, strict=True)):
     angle = np.arctan2(iy, rx)
-    dist = 18
+    cat = categories[i]
+    # Larger radial offset for roots of unity (clustered near origin on unit circle)
+    dist = 28 if cat == "5th Root of Unity" else 22
     # Position label radially outward from origin
     ox = dist * np.cos(angle)
     oy = dist * np.sin(angle)
     # Adjust for readability: labels in left half shift further left
     if rx < -0.5:
-        ox -= 8
+        ox -= 10
     if abs(iy) < 0.5 and rx > 0:
-        oy += 12
+        oy += 14
+    # Extra nudge for bottom roots of unity to avoid crowding
+    if cat == "5th Root of Unity" and iy < -0.3:
+        oy -= 12
     p.add_layout(
         Label(
             x=rx,
@@ -127,7 +132,7 @@ for rx, iy, lbl in zip(real_parts, imag_parts, labels, strict=True):
             text=lbl,
             x_offset=ox,
             y_offset=oy,
-            text_font_size="18pt",
+            text_font_size="20pt",
             text_color="#333333",
             text_font_style="normal",
         )
@@ -138,7 +143,7 @@ unit_circle_item = LegendItem(label="Unit Circle", renderers=[unit_circle_render
 legend = Legend(
     items=[unit_circle_item] + legend_items,
     location="top_left",
-    label_text_font_size="20pt",
+    label_text_font_size="22pt",
     glyph_width=40,
     glyph_height=40,
     spacing=12,
@@ -150,34 +155,34 @@ legend = Legend(
 )
 p.add_layout(legend)
 
-# Style — publication-quality refinement
-p.title.text_font_size = "34pt"
+# Style — publication-quality refinement with larger fonts for 3600×3600
+p.title.text_font_size = "38pt"
 p.title.text_font_style = "normal"
 p.title.text_color = "#222222"
-p.xaxis.axis_label_text_font_size = "24pt"
-p.yaxis.axis_label_text_font_size = "24pt"
+p.xaxis.axis_label_text_font_size = "28pt"
+p.yaxis.axis_label_text_font_size = "28pt"
 p.xaxis.axis_label_text_color = "#444444"
 p.yaxis.axis_label_text_color = "#444444"
-p.xaxis.major_label_text_font_size = "18pt"
-p.yaxis.major_label_text_font_size = "18pt"
+p.xaxis.major_label_text_font_size = "20pt"
+p.yaxis.major_label_text_font_size = "20pt"
 p.xaxis.major_label_text_color = "#666666"
 p.yaxis.major_label_text_color = "#666666"
 
-# Remove spines for cleaner look (L-shaped frame)
-p.xaxis.axis_line_color = "#888888"
-p.yaxis.axis_line_color = "#888888"
-p.xaxis.axis_line_width = 1.5
-p.yaxis.axis_line_width = 1.5
+# Clean axis styling — subtle lines, no minor ticks
+p.xaxis.axis_line_color = "#aaaaaa"
+p.yaxis.axis_line_color = "#aaaaaa"
+p.xaxis.axis_line_width = 1
+p.yaxis.axis_line_width = 1
 p.xaxis.minor_tick_line_color = None
 p.yaxis.minor_tick_line_color = None
-p.xaxis.major_tick_line_color = "#888888"
-p.yaxis.major_tick_line_color = "#888888"
+p.xaxis.major_tick_line_color = "#aaaaaa"
+p.yaxis.major_tick_line_color = "#aaaaaa"
 
 # Grid — subtle, solid thin lines
 p.grid.grid_line_alpha = 0.15
 p.grid.grid_line_dash = "solid"
 p.grid.grid_line_color = "#999999"
-p.outline_line_width = 0
+p.outline_line_color = None
 p.background_fill_color = "#ffffff"
 p.border_fill_color = "#ffffff"
 

@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-diverging-likert: Likert Scale Diverging Bar Chart
 Library: plotnine 0.15.3 | Python 3.14.3
-Quality: 86/100 | Created: 2026-03-04
 """
 
 import pandas as pd
@@ -18,6 +17,7 @@ from plotnine import (
     guide_legend,
     guides,
     labs,
+    scale_color_manual,
     scale_fill_manual,
     scale_x_continuous,
     scale_y_continuous,
@@ -27,22 +27,20 @@ from plotnine import (
 
 
 # Data - Employee engagement survey (10 questions, 5-point Likert scale)
-questions = [
-    "Career growth opportunities",
-    "Work-life balance",
-    "Team collaboration",
-    "Management communication",
-    "Compensation & benefits",
-    "Training & development",
-    "Workplace environment",
-    "Recognition & rewards",
-    "Job security",
-    "Company culture",
-]
-
 survey_data = pd.DataFrame(
     {
-        "question": questions,
+        "question": [
+            "Career growth opportunities",
+            "Work-life balance",
+            "Team collaboration",
+            "Management communication",
+            "Compensation & benefits",
+            "Training & development",
+            "Workplace environment",
+            "Recognition & rewards",
+            "Job security",
+            "Company culture",
+        ],
         "strongly_disagree": [5, 8, 3, 12, 15, 10, 4, 14, 6, 7],
         "disagree": [10, 12, 7, 18, 20, 15, 8, 16, 10, 12],
         "neutral": [15, 18, 12, 20, 22, 18, 14, 18, 16, 15],
@@ -51,75 +49,57 @@ survey_data = pd.DataFrame(
     }
 )
 
-# Sort by net agreement for easy comparison
+# Sort by net agreement for visual hierarchy
 survey_data["net_agreement"] = (
     survey_data["agree"] + survey_data["strongly_agree"] - survey_data["disagree"] - survey_data["strongly_disagree"]
 )
 survey_data = survey_data.sort_values("net_agreement", ascending=True).reset_index(drop=True)
 
-# Build segments for diverging layout centered on neutral midpoint
-segments = []
-bar_height = 0.7
+# Wide-to-long transformation (tidy data for grammar of graphics)
+response_cols = ["strongly_disagree", "disagree", "neutral", "agree", "strongly_agree"]
+long_df = survey_data.melt(id_vars=["question"], value_vars=response_cols, var_name="response_key", value_name="pct")
 
-for idx, row in survey_data.iterrows():
-    sd = row["strongly_disagree"]
-    d = row["disagree"]
-    n = row["neutral"]
-    a = row["agree"]
-    sa = row["strongly_agree"]
-    q = row["question"]
-    half_n = n / 2
-
-    segments.append(
-        {
-            "question": q,
-            "response": "Strongly Disagree",
-            "xmin": -(sd + d + half_n),
-            "xmax": -(d + half_n),
-            "y_pos": idx,
-            "value": sd,
-        }
-    )
-    segments.append(
-        {"question": q, "response": "Disagree", "xmin": -(d + half_n), "xmax": -half_n, "y_pos": idx, "value": d}
-    )
-    segments.append({"question": q, "response": "Neutral", "xmin": -half_n, "xmax": half_n, "y_pos": idx, "value": n})
-    segments.append({"question": q, "response": "Agree", "xmin": half_n, "xmax": half_n + a, "y_pos": idx, "value": a})
-    segments.append(
-        {
-            "question": q,
-            "response": "Strongly Agree",
-            "xmin": half_n + a,
-            "xmax": half_n + a + sa,
-            "y_pos": idx,
-            "value": sa,
-        }
-    )
-
-seg_df = pd.DataFrame(segments)
-seg_df["label_x"] = (seg_df["xmin"] + seg_df["xmax"]) / 2
-seg_df["ymin"] = seg_df["y_pos"] - bar_height / 2
-seg_df["ymax"] = seg_df["y_pos"] + bar_height / 2
-
-# Percentage labels only where segments are wide enough to read
-seg_df["label"] = seg_df["value"].apply(lambda v: f"{v}%" if v >= 10 else "")
-
-# Use dark text on lighter segments (Neutral, Agree, Disagree), white on darker ones
-label_colors = {
-    "Strongly Disagree": "white",
-    "Disagree": "#5A1A14",
-    "Neutral": "#444444",
-    "Agree": "#133B5C",
-    "Strongly Agree": "white",
+# Ordered categorical for factor-level control (plotnine idiom)
+name_map = {
+    "strongly_disagree": "Strongly Disagree",
+    "disagree": "Disagree",
+    "neutral": "Neutral",
+    "agree": "Agree",
+    "strongly_agree": "Strongly Agree",
 }
-seg_df["label_color"] = seg_df["response"].apply(lambda r: label_colors[r])
-
-# Response ordering for legend
 response_order = ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"]
-seg_df["response"] = pd.Categorical(seg_df["response"], categories=response_order, ordered=True)
+long_df["response"] = pd.Categorical(long_df["response_key"].map(name_map), categories=response_order, ordered=True)
+
+# Vectorized diverging position computation via cumsum
+# Centering offset = sum of negative side + half neutral
+offset_map = survey_data.set_index("question")[["strongly_disagree", "disagree", "neutral"]].assign(
+    offset=lambda d: d["strongly_disagree"] + d["disagree"] + d["neutral"] / 2
+)["offset"]
+long_df["offset"] = long_df["question"].map(offset_map)
+
+# Stack segments left-to-right within each question
+stack_pos = {col: i for i, col in enumerate(response_cols)}
+long_df["stack_pos"] = long_df["response_key"].map(stack_pos)
+long_df = long_df.sort_values(["question", "stack_pos"]).reset_index(drop=True)
+
+# Cumulative sum gives right edge; subtract offset to center on neutral
+long_df["xmax"] = long_df.groupby("question")["pct"].cumsum() - long_df["offset"]
+long_df["xmin"] = long_df["xmax"] - long_df["pct"]
+
+# Bar geometry
+question_order = survey_data["question"].tolist()
+y_map = {q: i for i, q in enumerate(question_order)}
+long_df["y_pos"] = long_df["question"].map(y_map)
+bar_height = 0.7
+long_df["ymin"] = long_df["y_pos"] - bar_height / 2
+long_df["ymax"] = long_df["y_pos"] + bar_height / 2
+long_df["label_x"] = (long_df["xmin"] + long_df["xmax"]) / 2
+
+# Percentage labels only for segments wide enough to read
+long_df["label"] = long_df["pct"].apply(lambda v: f"{v}%" if v >= 10 else "")
 
 # Diverging color palette: red → gray → blue
-colors = {
+fill_colors = {
     "Strongly Disagree": "#C0392B",
     "Disagree": "#E78B84",
     "Neutral": "#BDC3C7",
@@ -127,22 +107,28 @@ colors = {
     "Strongly Agree": "#2471A3",
 }
 
-# Y-axis labels mapped to numeric positions
-question_labels = survey_data["question"].tolist()
-y_breaks = list(range(len(question_labels)))
+# Contrast-aware label colors mapped via scale_color_manual (ggplot2 aesthetic idiom)
+label_colors = {
+    "Strongly Disagree": "white",
+    "Disagree": "#5A1A14",
+    "Neutral": "#444444",
+    "Agree": "#133B5C",
+    "Strongly Agree": "white",
+}
 
-# Plot
+# Grammar of graphics composition
 plot = (
-    ggplot(seg_df)
+    ggplot(long_df)
     + geom_rect(aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax", fill="response"))
     + geom_text(
-        aes(x="label_x", y="y_pos", label="label"), color=seg_df["label_color"].tolist(), size=11, fontweight="bold"
+        aes(x="label_x", y="y_pos", label="label", color="response"), size=11, fontweight="bold", show_legend=False
     )
     + geom_vline(xintercept=0, color="#333333", size=0.8)
-    + scale_fill_manual(values=colors, breaks=response_order)
-    + scale_y_continuous(breaks=y_breaks, labels=question_labels)
+    + scale_fill_manual(values=fill_colors, breaks=response_order)
+    + scale_color_manual(values=label_colors, breaks=response_order)
+    + scale_y_continuous(breaks=list(range(len(question_order))), labels=question_order)
     + scale_x_continuous(labels=lambda ticks: [f"{abs(int(v))}%" for v in ticks])
-    + annotate("text", x=30, y=9.6, label="← Disagree    Agree →", size=10, color="#666666", fontstyle="italic")
+    + annotate("text", x=0, y=9.8, label="← Disagree    Agree →", size=11, color="#555555", fontstyle="italic")
     + labs(x="Percentage of Responses", y="", title="bar-diverging-likert · plotnine · pyplots.ai", fill="Response")
     + guides(fill=guide_legend(nrow=1))
     + theme_minimal()

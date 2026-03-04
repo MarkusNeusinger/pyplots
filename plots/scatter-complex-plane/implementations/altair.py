@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-complex-plane: Complex Plane Visualization (Argand Diagram)
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 81/100 | Created: 2026-03-04
@@ -23,66 +23,64 @@ arbitrary_points = [2.5 + 1.5j, -1.8 + 2.2j, 1.0 - 2.0j, -0.5 - 1.5j, 2.0 + 0.5j
 z_original = 1.5 + 0.8j
 z_rotated = z_original * np.exp(1j * np.pi / 4)  # rotate 45 degrees
 
-
-def fmt_complex(z, decimals=2):
-    """Format complex number as a+bi string."""
-    r, i = round(z.real, decimals), round(z.imag, decimals)
-    if i >= 0:
-        return f"{r}+{i}i"
-    return f"{r}{i}i"
-
-
+# Build point data inline (no helper functions for KISS)
 all_points = []
 
-# Add roots of unity
 for k, z in enumerate(roots_of_unity):
+    r, i = round(z.real, 2), round(z.imag, 2)
+    rect = f"{r}+{i}i" if i >= 0 else f"{r}{i}i"
     all_points.append(
-        {
-            "real": z.real,
-            "imaginary": z.imag,
-            "label": f"ω{k}",
-            "rect_form": fmt_complex(z),
-            "category": "Roots of Unity",
-        }
+        {"real": z.real, "imaginary": z.imag, "label": f"ω{k}", "rect_form": rect, "category": "Roots of Unity"}
     )
 
-# Add arbitrary points
 labels_arb = ["z₁", "z₂", "z₃", "z₄", "z₅"]
 for lbl, z in zip(labels_arb, arbitrary_points, strict=True):
+    r, i = round(z.real, 1), round(z.imag, 1)
+    rect = f"{r}+{i}i" if i >= 0 else f"{r}{i}i"
+    all_points.append({"real": z.real, "imaginary": z.imag, "label": lbl, "rect_form": rect, "category": "Arbitrary"})
+
+for lbl, z, dec in [("z", z_original, 1), ("z·e^(iπ/4)", z_rotated, 2)]:
+    r, i = round(z.real, dec), round(z.imag, dec)
+    rect = f"{r}+{i}i" if i >= 0 else f"{r}{i}i"
     all_points.append(
-        {"real": z.real, "imaginary": z.imag, "label": lbl, "rect_form": fmt_complex(z, 1), "category": "Arbitrary"}
+        {"real": z.real, "imaginary": z.imag, "label": lbl, "rect_form": rect, "category": "Transformation"}
     )
 
-# Add transformation pair
-all_points.append(
-    {
-        "real": z_original.real,
-        "imaginary": z_original.imag,
-        "label": "z",
-        "rect_form": fmt_complex(z_original, 1),
-        "category": "Transformation",
-    }
-)
-all_points.append(
-    {
-        "real": z_rotated.real,
-        "imaginary": z_rotated.imag,
-        "label": "z·e^(iπ/4)",
-        "rect_form": fmt_complex(z_rotated),
-        "category": "Transformation",
-    }
-)
-
 df = pd.DataFrame(all_points)
-
-# Combined annotation: label + rectangular form
 df["annotation_text"] = df["label"] + " = " + df["rect_form"]
+
+# Compute label positions in data coordinates to avoid overlap with vectors
+# Axis range is 5.6 data units across 1200px; offset ~0.2 data units ≈ 43px
+label_x = []
+label_y = []
+label_align = []
+for _, row in df.iterrows():
+    rx, iy = row["real"], row["imaginary"]
+    if rx >= 0 and iy >= 0:  # Q1: push right and up
+        label_x.append(rx + 0.12)
+        label_y.append(iy + 0.18)
+        label_align.append("left")
+    elif rx < 0 and iy >= 0:  # Q2: push left and up
+        label_x.append(rx - 0.12)
+        label_y.append(iy + 0.18)
+        label_align.append("right")
+    elif rx < 0 and iy < 0:  # Q3: push left and down
+        label_x.append(rx - 0.12)
+        label_y.append(iy - 0.22)
+        label_align.append("right")
+    else:  # Q4: push right and down
+        label_x.append(rx + 0.12)
+        label_y.append(iy - 0.22)
+        label_align.append("left")
+df["label_x"] = label_x
+df["label_y"] = label_y
+df["label_align"] = label_align
 
 # Unit circle data (parametric)
 theta = np.linspace(0, 2 * np.pi, 200)
 circle_df = pd.DataFrame({"x": np.cos(theta), "y": np.sin(theta), "order": range(len(theta))})
 
-# Vector arrow lines (origin to each point)
+# Vector line segments (origin to each point)
 arrow_data = []
 for _, row in df.iterrows():
     arrow_data.append({"x": 0, "y": 0, "group": row["label"], "order": 0, "category": row["category"]})
@@ -91,7 +89,26 @@ for _, row in df.iterrows():
     )
 arrow_df = pd.DataFrame(arrow_data)
 
-# Axis range - tight to fill canvas while keeping unit circle visible
+# Arrowhead data: triangle markers near vector tips, offset slightly back so they
+# remain visible beneath scatter points
+arrowhead_data = []
+head_offset = 0.08  # data units back along vector from the point
+for _, row in df.iterrows():
+    rx, iy = row["real"], row["imaginary"]
+    mag = np.sqrt(rx**2 + iy**2)
+    # Position arrowhead slightly before the endpoint
+    if mag > 0:
+        hx = rx - head_offset * rx / mag
+        hy = iy - head_offset * iy / mag
+    else:
+        hx, hy = rx, iy
+    # Vega-Lite angle: degrees clockwise from north
+    math_angle = np.arctan2(iy, rx)
+    vega_angle = 90 - np.degrees(math_angle)
+    arrowhead_data.append({"x": hx, "y": hy, "angle": vega_angle, "category": row["category"]})
+arrowhead_df = pd.DataFrame(arrowhead_data)
+
+# Axis range
 axis_limit = 2.8
 
 # Axis lines through origin
@@ -109,6 +126,8 @@ category_colors = ["#306998", "#E8822A", "#6A5ACD"]
 category_domain = ["Roots of Unity", "Arbitrary", "Transformation"]
 color_scale = alt.Scale(domain=category_domain, range=category_colors)
 
+# --- Layers ---
+
 # Axis lines
 axes = (
     alt.Chart(axis_line_data)
@@ -123,7 +142,7 @@ unit_circle = (
     .encode(x="x:Q", y="y:Q", order="order:O")
 )
 
-# Vector arrows from origin (use strokeColor to avoid legend merge with points' color)
+# Vector lines from origin
 vectors = (
     alt.Chart(arrow_df)
     .mark_line(strokeWidth=2, opacity=0.7)
@@ -136,7 +155,14 @@ vectors = (
     )
 )
 
-# Scatter points - this layer drives the legend with filled circle markers
+# Arrowheads (triangle markers at vector tips, rotated to point outward)
+arrowheads = (
+    alt.Chart(arrowhead_df)
+    .mark_point(shape="triangle-up", filled=True, size=250, opacity=0.9)
+    .encode(x="x:Q", y="y:Q", angle=alt.Angle("angle:Q"), color=alt.Color("category:N", scale=color_scale, legend=None))
+)
+
+# Scatter points
 points = (
     alt.Chart(df)
     .mark_point(filled=True, size=200, stroke="white", strokeWidth=1.5, opacity=0.9)
@@ -189,15 +215,14 @@ points = (
     )
 )
 
-# Point annotations showing label = a+bi (rectangular form)
-# Use dy offset to avoid overlap; adjust per-point via calculated field
+# Point annotations at computed positions to avoid overlap with vectors
 annotations = (
     alt.Chart(df)
-    .mark_text(fontSize=13, fontWeight="bold", dy=-18, color="#333333")
-    .encode(x="real:Q", y="imaginary:Q", text="annotation_text:N")
+    .mark_text(fontSize=15, fontWeight="bold", color="#333333")
+    .encode(x="label_x:Q", y="label_y:Q", text="annotation_text:N")
 )
 
-# Axis labels at ends
+# Axis endpoint labels (Re, Im)
 axis_labels_df = pd.DataFrame({"x": [axis_limit - 0.15, 0.2], "y": [-0.2, axis_limit - 0.1], "text": ["Re", "Im"]})
 axis_labels = (
     alt.Chart(axis_labels_df)
@@ -205,9 +230,9 @@ axis_labels = (
     .encode(x="x:Q", y="y:Q", text="text:N")
 )
 
-# Compose
+# Compose all layers
 chart = (
-    alt.layer(axes, unit_circle, vectors, points, annotations, axis_labels)
+    alt.layer(axes, unit_circle, vectors, arrowheads, points, annotations, axis_labels)
     .properties(
         width=1200,
         height=1200,

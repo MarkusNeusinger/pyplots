@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: scatter-complex-plane
 created: '2026-03-04T20:26:38Z'
-updated: '2026-03-04T20:30:50Z'
+updated: '2026-03-04T20:39:45Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22687521661
 issue: 4427
@@ -10,32 +10,38 @@ library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-complex-plane/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-complex-plane/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 78
+quality_score: 84
 review:
   strengths:
-  - Full spec compliance with all required features (unit circle, vectors, annotations,
-    equal aspect ratio)
-  - Excellent code quality with clean deterministic well-structured code
-  - Good colorblind-safe blue/orange color palette
-  - Smart label offset logic to avoid label-on-point collisions
+  - Excellent spec compliance with all required features present (axes through origin,
+    unit circle, vectors, annotations, equal aspect)
+  - Strong color palette with deep blue and warm orange providing clear visual differentiation
+    and colorblind safety
+  - Good data storytelling with roots of unity vs arbitrary points distinction and
+    outer ring highlights
+  - Clean well-structured code with deterministic data and no unnecessary dependencies
+  - Thoughtful label positioning logic to reduce annotation overlap
   weaknesses:
-  - Some annotation labels crowd each other especially near omega1/z1 and omega4/z5
-  - Design could be elevated beyond well-configured default with more visual polish
-  - No strong data storytelling or focal point beyond basic categorization
-  - Annotation font size could be slightly larger for better readability
-  image_description: 'The plot shows an Argand diagram (complex plane visualization)
-    on a 16:9 canvas with the title "scatter-complex-plane · plotnine · pyplots.ai"
-    in bold at the top. The x-axis is labeled "Real Axis" and y-axis "Imaginary Axis",
-    both ranging from -2 to 2. A dashed gray unit circle is centered at the origin,
-    with lighter gray axes crossing through the origin. There are 10 points total:
-    5 blue points labeled ω0–ω4 representing 5th roots of unity arranged on the unit
-    circle, and 5 orange points labeled z₁–z₅ representing arbitrary complex numbers
-    scattered both inside and outside the unit circle. Arrows (vectors) extend from
-    the origin to each point, colored by category. Each point is annotated with its
-    name and rectangular form (e.g., "ω0 (1.0+0.0i)", "z₃ (0.5+1.7i)"). The legend
-    at the bottom shows "Category" with "5th Root of Unity" (blue) and "Arbitrary
-    Point" (orange). The background uses a minimal theme with subtle gray major grid
-    lines.'
+  - 'Duplicate axis labels: both plotnine-generated axis titles and annotated text
+    at axis ends create redundancy'
+  - Label crowding in lower-left quadrant between z2 and omega3 annotations
+  - Arrow vectors at alpha=0.55 could be slightly more prominent
+  - Library mastery could be improved by leveraging more plotnine-specific patterns
+  image_description: 'The plot displays an Argand diagram (complex plane) with a light
+    gray panel background on a white canvas. The title "scatter-complex-plane · plotnine
+    · pyplots.ai" appears bold at the top. Two thin gray reference axes cross at the
+    origin, labeled "Re(z)" (right end) and "Im(z)" (top end) in italic gray text.
+    A dashed gray unit circle is centered at the origin with a "|z| = 1" label at
+    45 degrees. Ten points are plotted: five dark navy-blue points (5th roots of unity:
+    omega0 through omega4) sitting on the unit circle with subtle outer ring highlights,
+    and five warm orange points (z1 through z5) scattered at various positions both
+    inside and outside the unit circle. Vectors (arrows) extend from the origin to
+    each point, colored by category with semi-transparency. Each point is annotated
+    with its name and rectangular form (e.g., "omega0 = 1.00+0.00i", "z1 = 1.50+0.70i")
+    in bold dark text. A legend at the bottom shows "5th Root of Unity (|z| = 1)"
+    and "Arbitrary Point" with a bordered white background. Tick marks at -2, -1,
+    0, 1, 2 on both axes. The plotnine-generated axis titles "Re(z)" and "Im(z)" also
+    appear on the outer axes, creating duplication with the annotated axis labels.'
   criteria_checklist:
     visual_quality:
       score: 24
@@ -43,68 +49,71 @@ review:
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: Font sizes explicitly set for title, axis labels, ticks. Annotation
-          text at size=7 is somewhat small but readable.
+        comment: Font sizes explicitly set (title 22pt, axis 18pt, ticks 14pt, annotations
+          size=8). Title slightly under 24pt guideline; annotations readable but on
+          the smaller side.
       - id: VQ-02
         name: No Overlap
         score: 4
         max: 6
         passed: false
-        comment: Some label crowding near omega1/z1 and omega4/z5 areas reduces readability.
+        comment: Labels for z2 and omega3 in lower-left quadrant are very close and
+          partially crowd each other.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Points and arrows clearly visible. Some arrow convergence density
-          near origin.
+        comment: Points at size=5.5 clearly visible. Arrows at alpha=0.55 could be
+          slightly more prominent.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue and orange palette is colorblind-safe with excellent contrast.
+        comment: Deep navy blue vs warm orange provides excellent contrast, fully
+          colorblind-safe.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good layout with coord_fixed. Some empty corners due to equal aspect
-          ratio.
+        comment: Equal aspect ratio constrains plot within 16:9 canvas, leaving some
+          empty space on sides.
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Descriptive labels but could use mathematical notation Re(z)/Im(z).
+        passed: true
+        comment: Re(z) and Im(z) are descriptive and standard for mathematical domain.
     design_excellence:
-      score: 10
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 6
         max: 8
-        passed: false
-        comment: Custom blue/orange palette is intentional. Looks like well-configured
-          default, not publication-quality.
+        passed: true
+        comment: Custom palette with intentional color harmony, theme_void base with
+          extensive customization, outer ring highlights.
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 5
         max: 6
-        passed: false
-        comment: Theme_minimal applied, subtle grid, no minor grid. Some refinement
-          but not fully polished.
+        passed: true
+        comment: Built from theme_void with subtle grid, no spines, generous whitespace.
+          Minor duplicate axis labels issue.
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: Two-category color distinction creates some hierarchy. Unit circle
-          contextualizes roots. No strong focal point.
+        passed: true
+        comment: Clear visual hierarchy between roots of unity and arbitrary points.
+          Outer ring highlights guide the viewer.
     spec_compliance:
       score: 15
       max: 15
@@ -114,28 +123,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct Argand diagram with scatter, vectors, and unit circle.
+        comment: Correct Argand diagram / scatter in complex plane.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All required features present: axes through origin, dashed unit
-          circle, vectors, equal aspect ratio, annotations, distinct colors.'
+        comment: 'All spec requirements present: axes through origin, dashed unit
+          circle, vectors with arrows, equal aspect, annotations, distinct colors.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Real on x-axis, imaginary on y-axis, correctly mapped.
+        comment: Real part on x-axis, imaginary on y-axis, all data visible.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format and descriptive legend labels.
+        comment: Title format correct. Legend labels clear and descriptive.
     data_quality:
-      score: 13
+      score: 14
       max: 15
       items:
       - id: DQ-01
@@ -143,21 +152,21 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows roots of unity and arbitrary points in all quadrants. Could
-          include conjugate pairs or sums.
+        comment: Shows roots of unity on unit circle and arbitrary points inside and
+          outside, covering multiple quadrants.
       - id: DQ-02
         name: Realistic Context
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: 5th roots of unity is a real mathematical concept. Genuine and neutral
-          context.
+        comment: 5th roots of unity is a genuine mathematical concept, neutral and
+          educational.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values in sensible range for complex plane with unit circle.
+        comment: Values in range +-2.5 are appropriate for complex plane visualization.
     code_quality:
       score: 10
       max: 10
@@ -167,13 +176,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean Imports-Data-Plot-Save structure, no functions or classes.
+        comment: Clean imports, data, plot, save structure. No functions or classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: All data is deterministic.
+        comment: Fully deterministic data, no randomness.
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -185,13 +194,13 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Clean pandas construction, smart label offsets, appropriate complexity.
+        comment: Well-structured with smart label positioning logic.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300, current API.
+        comment: Saves as plot.png with dpi=300.
     library_mastery:
       score: 6
       max: 10
@@ -201,24 +210,26 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good grammar of graphics layering with multiple geom layers, aes
-          mappings, coord_fixed. Idiomatic multi-source plot approach.
+        comment: 'Good use of grammar of graphics: layered ggplot, aes mappings, coord_fixed,
+          scale_color_manual. Split geom_text by alignment is somewhat un-idiomatic.'
       - id: LM-02
         name: Distinctive Features
         score: 2
         max: 5
         passed: false
-        comment: Uses standard ggplot2 patterns (coord_fixed, layered geoms). No particularly
-          unique plotnine feature leveraged.
+        comment: Uses theme_void + customization and arrow() in geom_segment. Heavy
+          use of annotate() is more workaround than distinctive plotnine pattern.
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
   - layer-composition
+  - custom-legend
   patterns:
   - data-generation
   dataprep: []
   styling:
+  - minimal-chrome
   - alpha-blending
   - grid-styling

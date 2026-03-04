@@ -1,7 +1,7 @@
 library: altair
 specification_id: scatter-complex-plane
 created: '2026-03-04T20:22:49Z'
-updated: '2026-03-04T20:26:51Z'
+updated: '2026-03-04T20:36:42Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22687521750
 issue: 4427
@@ -10,38 +10,38 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-complex-plane/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-complex-plane/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-complex-plane/altair/plot.html
-quality_score: 79
+quality_score: 81
 review:
   strengths:
-  - Excellent data storytelling with three meaningful categories (roots of unity,
-    arbitrary points, rotation transformation)
-  - Clean layered composition with unit circle, axis lines, vectors, points, and annotations
-  - Good colorblind-safe color palette that is visually cohesive
-  - Perfect code quality with deterministic data and clean structure
-  - Effective use of Altair interactive features (tooltips, zoom/pan) and HTML export
+  - Excellent mathematical storytelling with three distinct categories (roots of unity,
+    arbitrary, transformation)
+  - Clean layered composition using Altair declarative grammar
+  - Good colorblind-safe color palette that is aesthetically cohesive
+  - 'Thoughtful visual refinement: subtle grid, styled axis labels, view stroke removed'
+  - Interactive features (zoom/pan, tooltips) leverage Altair strengths
   weaknesses:
-  - Point annotations show only symbolic labels instead of required rectangular form
-    (a+bi) as specified
-  - Legend displays line symbols instead of filled point markers
-  - Bottom third of canvas is mostly empty with data concentrated in upper half
-  - Some label crowding near the origin where multiple vectors converge
-  image_description: 'The plot shows a complex plane (Argand diagram) on a square
-    canvas. The title "scatter-complex-plane · altair · pyplots.ai" appears at top
-    center with a subtitle "Roots of unity, arbitrary points, and rotation in the
-    complex plane". A dashed gray unit circle is centered at the origin. Gray axis
-    lines pass through the origin with italic "Re" and "Im" labels at their ends.
-    Ten complex number points are plotted with vectors (lines) from the origin to
-    each point, color-coded into three categories: Roots of Unity (dark blue) showing
-    ω0, ω1, ω2 on the unit circle; Arbitrary (orange) showing z₁ through z₅ at various
-    positions in all quadrants; and Transformation (purple/lavender) showing z and
-    z·e^(iπ/4). Points are filled circles with white stroke. Labels appear above each
-    point showing only the symbolic name but not the rectangular form (a+bi). A legend
-    in the top-right shows the three categories with line symbols. The grid is very
-    subtle with dashed lines at low opacity. The lower third of the canvas is largely
-    empty.'
+  - Vectors lack arrowheads - spec explicitly calls for arrows from origin to points
+  - Annotation positions use fixed dy=-18 offset causing crowding near origin and
+    overlap with vector lines
+  - Helper function fmt_complex() breaks KISS structure
+  - Annotation font size (13pt) could be larger for better readability on 3600px canvas
+  - Lower canvas area underutilized with empty space below data region
+  image_description: 'The plot shows a complex plane (Argand diagram) rendered as
+    a 3600x3600 square image. The title "scatter-complex-plane · altair · pyplots.ai"
+    is displayed at the top in dark text with a subtitle "Roots of unity, arbitrary
+    points, and rotation in the complex plane" in gray. Three categories are plotted:
+    Roots of Unity (blue, #306998) with 3 points on the unit circle, Arbitrary (orange,
+    #E8822A) with 5 points spread across all quadrants, and Transformation (purple,
+    #6A5ACD) with 2 points showing rotation by pi/4. A dashed gray unit circle is
+    centered at the origin. Gray axis lines cross at the origin with "Re" and "Im"
+    labels at the ends. Vectors (lines without arrowheads) extend from the origin
+    to each point. Each point is annotated with its label and rectangular form (e.g.,
+    "z1 = 2.5+1.5i"). The legend in the top-right shows all three categories. Subtle
+    grid lines with very low opacity are visible. The overall layout is clean with
+    good use of the square canvas.'
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 25
       max: 30
       items:
       - id: VQ-01
@@ -49,22 +49,22 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set throughout. Annotation text at 13pt is
-          slightly small but readable.
+        comment: Title 28pt, axis labels 20pt, ticks 16pt explicitly set. Annotations
+          at 13pt readable but slightly small.
       - id: VQ-02
         name: No Overlap
         score: 4
         max: 6
-        passed: true
-        comment: Some label clustering near origin where ω0, z, z₅ labels are close
-          together.
+        passed: false
+        comment: Fixed dy=-18 offset causes crowding near origin. Labels overlap with
+          vector lines in dense areas.
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Points at size=200 well-suited for <15 data points. Vectors clearly
-          visible.
+        comment: Points well-sized (200) with white stroke. Vectors visible at strokeWidth=2.
+          Slight blending near origin.
       - id: VQ-04
         name: Color Accessibility
         score: 4
@@ -73,18 +73,17 @@ review:
         comment: Blue/orange/purple palette is colorblind-safe with good contrast.
       - id: VQ-05
         name: Layout & Canvas
-        score: 2
+        score: 3
         max: 4
         passed: true
-        comment: Data concentrated in upper-center. Bottom third of canvas mostly
-          empty.
+        comment: Square 3600x3600 appropriate for equal aspect ratio. Some empty space
+          in lower region.
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Axis titles 'Real' and 'Imaginary' are descriptive. Re/Im end labels
-          are nice but no units.
+        comment: Real/Imaginary axis titles with Re/Im italic labels at ends.
     design_excellence:
       score: 13
       max: 20
@@ -94,24 +93,24 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Custom palette, white stroke on points, subtle grid. Above defaults
-          but legend shows line symbols.
+        comment: Custom palette, white stroke on markers, styled subtitle. Above defaults
+          but not publication-quality.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: View border removed, grid opacity 0.15, manual axis lines, generous
-          whitespace.
+        comment: View stroke removed, grid opacity 0.15 dashed, axis lines at reduced
+          opacity. Good refinement.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Clear story with three categories. Subtitle reinforces narrative.
-          Color coding effective.
+        comment: Clear mathematical story with three categories. Color coding guides
+          the viewer. Subtitle explains narrative.
     spec_compliance:
-      score: 11
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -119,29 +118,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Correct: scatter plot on complex plane with vectors (Argand diagram).'
+        comment: Correct scatter plot in complex plane (Argand diagram).
       - id: SC-02
         name: Required Features
-        score: 2
+        score: 3
         max: 4
         passed: false
-        comment: Missing rectangular form (a+bi) annotations on points as required.
-          Values only in tooltips.
+        comment: All major features present. Missing arrowheads on vectors - spec
+          says arrows.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Real on x, imaginary on y. Equal aspect ratio. All data visible.
+        comment: X=real, Y=imaginary correctly assigned. All points visible.
       - id: SC-04
         name: Title & Legend
-        score: 1
+        score: 3
         max: 3
-        passed: false
-        comment: Title format correct. Legend shows line symbols instead of filled
-          markers.
+        passed: true
+        comment: Title format correct. Legend shows all three categories.
     data_quality:
-      score: 14
+      score: 13
       max: 15
       items:
       - id: DQ-01
@@ -149,49 +147,48 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows roots of unity, arbitrary points in all quadrants, and rotation
+        comment: Shows roots of unity, arbitrary points across quadrants, and rotation
           transformation.
       - id: DQ-02
         name: Realistic Context
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Mathematical context is genuine and educational. Neutral and comprehensible.
+        comment: Mathematical/educational context appropriate. Standard notation used.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values range from -2 to 3, appropriate for complex plane with unit
-          circle reference.
+        comment: Axis range ±2.8 accommodates all points with unit circle prominent.
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
-        passed: true
-        comment: Clean imports → data → chart layers → compose → save flow.
+        passed: false
+        comment: Has helper function fmt_complex() that breaks strict KISS structure.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set. Data is deterministic.
+        comment: np.random.seed(42) set. All data is deterministic.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: altair, numpy, pandas.'
+        comment: altair, numpy, pandas all used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Appropriate complexity. Layer composition is clean and readable.
+        comment: Well-organized layer composition, clean data preparation.
       - id: CQ-05
         name: Output & API
         score: 1
@@ -207,15 +204,15 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Good declarative grammar: layered composition, encoding channels,
-          mark types, configure chain.'
+        comment: 'Good declarative grammar usage: layered composition, encoding types,
+          Scale/Axis config, resolve_scale.'
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Leverages interactive zoom/pan, rich tooltips, HTML export, declarative
-          layering.
+        comment: Uses interactive(), tooltips, declarative layering, HTML export alongside
+          PNG.
   verdict: REJECTED
 impl_tags:
   dependencies: []
@@ -229,6 +226,6 @@ impl_tags:
   - iteration-over-groups
   dataprep: []
   styling:
-  - alpha-blending
   - grid-styling
+  - alpha-blending
   - edge-highlighting

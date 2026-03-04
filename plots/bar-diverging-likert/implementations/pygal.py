@@ -1,10 +1,11 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-diverging-likert: Likert Scale Diverging Bar Chart
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-04
 """
 
 import re
+from xml.etree import ElementTree as ET
 
 import cairosvg
 import pygal
@@ -106,7 +107,24 @@ svg_content = chart.render().decode("utf-8")
 # Remove guide line paths but keep axis text labels
 svg_content = re.sub(r'<path [^>]*class="(?:major )?(?:axis major )?guide line"[^/]*/>', "", svg_content)
 
-# Save cleaned SVG as PNG and HTML
+# Reorder legend from stacking order (N, D, SD, A, SA) to Likert scale order (SD, D, N, A, SA)
+SVG_NS = "http://www.w3.org/2000/svg"
+ET.register_namespace("", SVG_NS)
+ET.register_namespace("xlink", "http://www.w3.org/1999/xlink")
+root = ET.fromstring(svg_content)
+
+serie_0 = root.find(f'.//{{{SVG_NS}}}g[@id="activate-serie-0"]')
+serie_2 = root.find(f'.//{{{SVG_NS}}}g[@id="activate-serie-2"]')
+if serie_0 is not None and serie_2 is not None:
+    for child_0, child_2 in zip(serie_0, serie_2, strict=False):
+        x0, x2 = child_0.get("x"), child_2.get("x")
+        if x0 is not None and x2 is not None:
+            child_0.set("x", x2)
+            child_2.set("x", x0)
+
+svg_content = ET.tostring(root, encoding="unicode")
+
+# Save as PNG and HTML
 cairosvg.svg2png(bytestring=svg_content.encode("utf-8"), write_to="plot.png")
 
 with open("plot.html", "w") as f:

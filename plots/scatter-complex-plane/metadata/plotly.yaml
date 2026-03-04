@@ -1,7 +1,7 @@
 library: plotly
 specification_id: scatter-complex-plane
 created: '2026-03-04T20:23:50Z'
-updated: '2026-03-04T20:27:37Z'
+updated: '2026-03-04T20:34:52Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22687521485
 issue: 4427
@@ -10,34 +10,36 @@ library_version: 6.6.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-complex-plane/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-complex-plane/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-complex-plane/plotly/plot.html
-quality_score: 79
+quality_score: 83
 review:
   strengths:
-  - Excellent data organization with three meaningful categories of complex numbers
-    (roots of unity, arbitrary, conjugate pair)
-  - Vector arrows from origin using Plotly annotations with axref/ayref is a clever
-    technique
-  - Clean, well-structured code with good separation of data and visualization
-  - Custom color palette with good colorblind accessibility
-  - Equal aspect ratio correctly implemented via scaleanchor
+  - Full spec compliance with all required features (unit circle, vectors, annotations,
+    equal aspect ratio)
+  - Three meaningful data categories creating mathematical narrative (roots of unity,
+    arbitrary, conjugate pair)
+  - Custom colorblind-safe palette with good visual hierarchy
+  - Rich Plotly hover templates showing magnitude and phase angle — excellent use
+    of interactivity
+  - Careful text offset handling to reduce annotation overlap
   weaknesses:
-  - Missing rectangular form (a+bi) annotations on each point — spec explicitly requires
-    this; values are only in hover text (invisible in static PNG)
-  - Labels z4 and w-bar overlap slightly near (1.2, -2.0) and (1.5, -2.0)
-  - Axis labels use plain text instead of mathematical notation (Re(z)/Im(z))
-  image_description: 'The plot displays a complex plane (Argand diagram) on a square
-    white canvas. The title "scatter-complex-plane · plotly · pyplots.ai" is centered
-    at the top. The x-axis is labeled "Real Axis" and the y-axis "Imaginary Axis",
-    both with integer tick marks from roughly -3 to +4 and -3 to +3 respectively.
-    A dashed gray unit circle is centered at the origin. Dark zero lines cross at
-    the origin. Three categories of complex numbers are plotted with vector arrows
-    emanating from the origin: blue markers for "5th Roots of Unity" (omega-0 through
-    omega-4 on the unit circle), orange markers for "Arbitrary Points" (z1 through
-    z5 scattered across the plane), and purple markers for a "Conjugate Pair" (w at
-    approximately 1.5+2i and w-bar at approximately 1.5-2i, symmetric about the real
-    axis). Arrows are semi-transparent with matching category colors. A legend in
-    the upper left lists all four trace categories including the Unit Circle. The
-    aspect ratio is equal, making the unit circle appear circular.'
+  - Annotation font size (13pt) slightly small; increasing to 14-15pt would improve
+    legibility
+  - Some annotation crowding near unit circle area, particularly ω1 vs r=1 label
+  - format_complex helper function breaks KISS flat structure
+  - Vector arrows at 0.5 opacity somewhat faded
+  image_description: 'The plot displays a complex plane (Argand diagram) on a 3600×3600
+    px square canvas. The title "scatter-complex-plane · plotly · pyplots.ai" is centered
+    at the top in ~28pt font. The x-axis is labeled "Re(z)" and the y-axis "Im(z)",
+    both in serif font. A dashed gray unit circle is centered at the origin with an
+    "r = 1" label near the 45° position. Three categories of points are plotted with
+    vector arrows from the origin: blue markers for "5th Roots of Unity" (ω0–ω4 arranged
+    symmetrically on the unit circle), orange markers for "Arbitrary Points" (z₁–z₅
+    at various positions), and purple markers for "Conjugate Pair" (w at 1.5+2i and
+    w̄ at 1.5−2i). Each point is annotated with its label in bold and rectangular
+    form (a+bi). The legend in the upper left shows all three categories with a semi-transparent
+    white background. The axes pass through the origin with emphasized dark zero lines.
+    Subtle grid lines are visible. Equal aspect ratio is maintained — the unit circle
+    appears circular.'
   criteria_checklist:
     visual_quality:
       score: 25
@@ -45,42 +47,44 @@ review:
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 28pt, axis labels 22pt, ticks
-          18pt, text labels 16pt'
+        comment: All font sizes explicitly set (title 28, axis 22, ticks 18, annotations
+          13). Annotations slightly small but readable.
       - id: VQ-02
         name: No Overlap
         score: 4
         max: 6
         passed: true
-        comment: Minor crowding near origin; z4 and w-bar labels overlap slightly
+        comment: 'Minor overlap: ω1 annotation crowds r=1 label; z₃ near unit circle;
+          z₄/w̄ close despite offsets.'
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Markers visible with white borders; arrow opacity at 0.5 makes them
-          subtle
+        comment: Markers size 16 with white edge visible. Arrows at 0.5 opacity somewhat
+          faded.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue, orange, purple palette is colorblind-safe
+        comment: Blue/orange/purple palette is colorblind-safe with excellent contrast.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Square layout works well; some wasted space at edges
+        comment: Square canvas appropriate for equal-aspect complex plane. Good fill,
+          slight left-side imbalance.
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Descriptive labels but lack mathematical notation Re(z)/Im(z)
+        comment: Re(z) and Im(z) are standard mathematical notation.
     design_excellence:
       score: 13
       max: 20
@@ -90,23 +94,24 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Custom palette, plotly_white template, white marker borders, semi-transparent
-          arrows
+        comment: Custom palette, serif fonts, white marker edges, plotly_white template.
+          Above defaults but not publication-level.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Subtle grid, clean background, styled zero lines
+        comment: plotly_white removes clutter, subtle grid, emphasized zero lines,
+          translucent legend.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Three meaningful categories create visual narrative with color-coded
-          arrows
+        comment: Three categories create mathematical narrative. Vector arrows show
+          geometric relationships.
     spec_compliance:
-      score: 11
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -114,27 +119,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct Argand diagram with scatter and vector arrows
+        comment: 'Correct: scatter plot on complex plane / Argand diagram.'
       - id: SC-02
         name: Required Features
-        score: 2
+        score: 4
         max: 4
-        passed: false
-        comment: Missing rectangular form (a+bi) annotations visible on static plot
+        passed: true
+        comment: 'All spec features present: axes, unit circle, vectors, equal aspect
+          ratio, annotations, distinct colors.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Real on x-axis, imaginary on y-axis, all data visible
+        comment: Real on x, imaginary on y, all data visible.
       - id: SC-04
         name: Title & Legend
-        score: 1
+        score: 3
         max: 3
-        passed: false
-        comment: Title format correct; legend includes Unit Circle trace separately
+        passed: true
+        comment: Correct title format and legend labels.
     data_quality:
-      score: 14
+      score: 13
       max: 15
       items:
       - id: DQ-01
@@ -142,55 +148,56 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows roots of unity, arbitrary points, conjugate pair symmetry
+        comment: Shows roots of unity, arbitrary points, conjugate pair. Missing sum/addition
+          example from spec.
       - id: DQ-02
         name: Realistic Context
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Mathematical/educational context with meaningful categories
+        comment: Mathematical/educational context with standard complex analysis concepts.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Mathematically appropriate values
+        comment: Range [-3.5, 4] sensible for data.
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Clean Imports-Data-Plot-Save flow
+        comment: Mostly flat structure but includes format_complex helper function.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only numpy and plotly.graph_objects imported
+        comment: Only numpy and plotly.graph_objects, both used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean iteration, well-organized data setup
+        comment: Clean, well-organized code with smart text offset dictionary.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png and plot.html, current API
+        comment: Saves plot.png and plot.html using current API.
     library_mastery:
-      score: 6
+      score: 8
       max: 10
       items:
       - id: LM-01
@@ -198,14 +205,15 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of go.Figure, go.Scatter, add_annotation with axref/ayref
+        comment: Good use of go.Figure, go.Scatter, add_annotation, update_layout.
+          Could use hovertemplate instead of hovertext.
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 4
         max: 5
-        passed: false
-        comment: Uses annotations for arrows and HTML export but could leverage more
-          Plotly-specific features
+        passed: true
+        comment: Rich hover text, HTML export, annotation vectors with axref/ayref.
+          Leverages Plotly interactivity.
   verdict: REJECTED
 impl_tags:
   dependencies: []

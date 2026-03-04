@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-complex-plane: Complex Plane Visualization (Argand Diagram)
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-04
@@ -104,10 +104,10 @@ for _, row in df.iterrows():
 
 # Annotations with rectangular form
 offsets = {
-    "$\\omega_0$": (18, -22),
-    "$\\omega_1$": (-90, 14),
-    "$\\omega_2$": (-90, -22),
-    "$\\Sigma\\omega_k$": (18, -24),
+    "$\\omega_0$": (20, -28),
+    "$\\omega_1$": (-95, 18),
+    "$\\omega_2$": (-95, -26),
+    "$\\Sigma\\omega_k$": (-85, -30),
 }
 
 for _, row in df.iterrows():
@@ -144,6 +144,11 @@ for _, row in df.iterrows():
         zorder=6,
     )
 
+# Connect roots of unity to show equilateral triangle
+root_reals = [z.real for z in roots_of_unity] + [roots_of_unity[0].real]
+root_imags = [z.imag for z in roots_of_unity] + [roots_of_unity[0].imag]
+ax.plot(root_reals, root_imags, ls="-", color=palette[0], lw=2.0, alpha=0.4, zorder=3, label="Roots Triangle")
+
 # Unit circle
 theta = np.linspace(0, 2 * np.pi, 200)
 ax.plot(np.cos(theta), np.sin(theta), ls="--", color="#888888", lw=1.8, alpha=0.6, label="Unit Circle")
@@ -167,13 +172,13 @@ limit = 3.8
 ax.set_xlim(-limit, limit)
 ax.set_ylim(-limit, limit)
 
-ax.set_xlabel("Real Axis", fontsize=20, labelpad=12)
-ax.set_ylabel("Imaginary Axis", fontsize=20, labelpad=12)
+ax.set_xlabel("Re(z)", fontsize=20, labelpad=12)
+ax.set_ylabel("Im(z)", fontsize=20, labelpad=12)
 
 # Adjust legend — keep category + unit circle, remove size entries
 handles, leg_labels = ax.get_legend_handles_labels()
 keep = []
-skip_keys = {"magnitude", ""}
+skip_keys = {"magnitude", "", "category"}
 for handle, lbl in zip(handles, leg_labels, strict=False):
     if lbl not in skip_keys:
         try:
@@ -188,4 +193,4 @@ ax.legend(
 plt.tight_layout()
 
 # Save
-plt.savefig("plot.png", dpi=225, bbox_inches="tight")
+plt.savefig("plot.png", dpi=300, bbox_inches="tight")

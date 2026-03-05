@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 histogram-epidemic: Epidemic Curve (Epi Curve)
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-05
@@ -71,18 +71,24 @@ interventions = pd.DataFrame(
     {"date": [lockdown_date, vaccination_date], "label": ["Lockdown", "Vaccination\ncampaign"]}
 )
 
-# Compute scale factor for secondary axis (cumulative on right y-axis)
+# Scale cumulative to fit on same y-axis as daily counts
 max_daily = daily_totals["case_count"].max()
-max_cumul = daily_totals["cumulative"].max()
-scale_factor = max_daily / max_cumul
-daily_totals["cumulative_scaled"] = daily_totals["cumulative"] * scale_factor
+daily_totals["cumulative_scaled"] = daily_totals["cumulative"] / daily_totals["cumulative"].max() * max_daily
+
+# Identify peak dates for annotations
+wave1_idx = daily_totals.loc[daily_totals["onset_date"] < "2024-03-01", "case_count"].idxmax()
+wave2_idx = daily_totals.loc[daily_totals["onset_date"] >= "2024-03-01", "case_count"].idxmax()
+wave1_date = daily_totals.loc[wave1_idx, "onset_date"]
+wave1_peak = daily_totals.loc[wave1_idx, "case_count"]
+wave2_date = daily_totals.loc[wave2_idx, "onset_date"]
+wave2_peak = daily_totals.loc[wave2_idx, "case_count"]
 
 # Plot
 plot = (
     ggplot(df, aes(x="onset_date", y="case_count"))
     + geom_col(aes(fill="case_type"), width=0.85)
     + geom_line(
-        data=daily_totals, mapping=aes(x="onset_date", y="cumulative_scaled"), color="#8B0000", size=1.2, alpha=0.85
+        data=daily_totals, mapping=aes(x="onset_date", y="cumulative_scaled"), color="#8B0000", size=1.8, alpha=0.85
     )
     + geom_vline(
         data=interventions, mapping=aes(xintercept="date"), linetype="dashed", color="#444444", size=0.6, alpha=0.7
@@ -99,9 +105,9 @@ plot = (
     )
     + annotate(
         "text",
-        x=dates[-1],
-        y=daily_totals["cumulative_scaled"].iloc[-1],
-        label="Cumulative\ncases →",
+        x=dates[-8],
+        y=daily_totals["cumulative_scaled"].iloc[-1] + 2,
+        label="Cumulative cases →",
         ha="right",
         va="bottom",
         size=10,
@@ -110,21 +116,33 @@ plot = (
         fontweight="bold",
     )
     + annotate(
-        "segment",
-        x=dates[-8],
-        xend=dates[-2],
-        y=daily_totals["cumulative_scaled"].iloc[-8],
-        yend=daily_totals["cumulative_scaled"].iloc[-2],
-        color="#8B0000",
-        size=0.5,
-        alpha=0.4,
+        "text",
+        x=wave1_date,
+        y=wave1_peak + 4,
+        label=f"Wave 1 peak\n{wave1_peak} cases/day",
+        ha="center",
+        va="bottom",
+        size=9,
+        color="#306998",
+        fontweight="bold",
+    )
+    + annotate(
+        "text",
+        x=wave2_date,
+        y=wave2_peak + 4,
+        label=f"Wave 2 peak\n{wave2_peak} cases/day",
+        ha="center",
+        va="bottom",
+        size=9,
+        color="#306998",
+        fontweight="bold",
     )
     + scale_fill_manual(values={"Confirmed": "#306998", "Probable": "#E8963E", "Suspect": "#C0C0C0"})
     + scale_x_date(date_breaks="2 weeks", date_labels="%b %d")
     + scale_y_continuous(expand=(0, 0, 0.08, 0))
     + labs(
         x="Date of Symptom Onset",
-        y="Number of New Cases",
+        y="Number of New Cases (per day)",
         fill="Case Classification",
         title="histogram-epidemic \u00b7 plotnine \u00b7 pyplots.ai",
     )

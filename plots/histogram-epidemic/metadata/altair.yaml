@@ -1,7 +1,7 @@
 library: altair
 specification_id: histogram-epidemic
 created: '2026-03-05T18:46:59Z'
-updated: '2026-03-05T18:52:43Z'
+updated: '2026-03-05T19:04:08Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22731374893
 issue: 4426
@@ -10,34 +10,39 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-epidemic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-epidemic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-epidemic/altair/plot.html
-quality_score: 71
+quality_score: 88
 review:
   strengths:
-  - Realistic epidemic data with three distinct waves and three case classifications
-  - Clean code structure with proper Altair declarative patterns
-  - Intervention event annotations add meaningful context
-  - Good use of transform_calculate for stacking order control
+  - Excellent spec compliance with all required features (stacked bars, intervention
+    lines, cumulative overlay, peak annotation) present and functional
+  - Strong colorblind-safe palette from Wong recommended colors with consistent vermillion
+    color coding for cumulative data
+  - Good data storytelling with three epidemic waves, intervention timeline, and peak
+    callout creating clear narrative
+  - Clean declarative Altair code with proper encoding types and layer composition
   weaknesses:
-  - Three blue shades are too similar — categories are hard to distinguish visually
-  - No cumulative case count line overlay (spec mentions this feature)
-  - Event labels are cramped near bar peaks, could use better positioning
-  - No visual storytelling emphasis — all data treated equally with no focal point
-  image_description: 'The plot shows a stacked bar chart depicting an epidemic curve
-    spanning approximately 120 days (Jan 15 – May 11, 2024). The x-axis is labeled
-    "Date of Symptom Onset" with date ticks formatted as "Mon DD". The y-axis shows
-    "New Cases" ranging from 0 to 90. Three case classifications are displayed in
-    shades of blue: Confirmed (dark blue #306998), Probable (medium blue #5B9BD5),
-    and Suspect (light blue #A8D0E6). The epidemic shows three distinct waves — a
-    primary peak around Feb 7 (~85 total cases), a secondary wave around Mar 9 (~50
-    cases), and a third smaller wave around Apr 9–17 (~30 cases). Three vertical dashed
-    lines mark intervention events with rotated labels: "Source identified" (Feb 10),
-    "Containment measures" (Mar 1), and "Vaccination campaign" (Mar 20). The title
-    reads "histogram-epidemic · altair · pyplots.ai" at the top-left. A legend labeled
-    "Classification" appears in the top-right corner. The background is clean white
-    with subtle gridlines at 0.2 opacity.'
+  - Intervention labels at 13pt and peak annotation at 14pt are undersized for the
+    4800x2700 canvas
+  - Manual right-axis implementation via mark_text uses hardcoded pixel positions
+    that are fragile
+  - Bar boundaries between stacked categories lack edge highlighting for visual separation
+  image_description: 'The plot displays a stacked bar chart of daily new epidemic
+    cases over approximately 120 days (Jan 15 to May 14, 2024). Bars are stacked by
+    case classification: Confirmed (dark blue), Probable (amber), and Suspect (sky
+    blue). Three distinct epidemic waves are visible with the primary peak around
+    February 8 reaching approximately 85 total daily cases. A smooth vermillion cumulative
+    line overlay rises from 0 to approximately 3,206 cases, with values shown on manually
+    placed right-axis labels. Three dashed vertical intervention lines mark "Source
+    identified", "Containment measures", and "Vaccination campaign" with rotated italic
+    labels at the top. A "Peak: 85 cases" annotation in vermillion highlights the
+    maximum. The title reads "histogram-epidemic · altair · pyplots.ai" with a subtitle
+    "Daily new cases by classification with cumulative total". A styled legend with
+    semi-transparent background and rounded corners sits in the top-right. Grid lines
+    are very subtle at 0.15 opacity, the view frame is removed, and axis domain/tick
+    colors are light gray, creating a clean professional appearance.'
   criteria_checklist:
     visual_quality:
-      score: 22
+      score: 27
       max: 30
       items:
       - id: VQ-01
@@ -45,119 +50,123 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title 28pt, axis 22pt, ticks 18pt, legend
-          16-18pt). All text clearly readable.
+        comment: All major text explicitly sized. Intervention labels at 13pt and
+          peak label at 14pt slightly below 16pt recommendation.
       - id: VQ-02
         name: No Overlap
-        score: 4
+        score: 6
         max: 6
         passed: true
-        comment: Event label text somewhat cramped near bars at peak. Minor crowding
-          between Source identified label and bar tops.
+        comment: No overlapping text. X-axis labels angled, intervention labels well-separated,
+          legend has background.
       - id: VQ-03
         name: Element Visibility
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Bars visible but three similar blue shades are hard to distinguish,
-          especially at lower values.
+        comment: Bars clearly visible and well-sized. Some stacked category boundaries
+          hard to distinguish in dense areas.
       - id: VQ-04
         name: Color Accessibility
-        score: 2
+        score: 4
         max: 4
-        passed: false
-        comment: Three shades of blue have low contrast between them. Distinguishing
-          Probable from Suspect is difficult.
+        passed: true
+        comment: Excellent Wong colorblind-safe palette. Blue, amber, sky blue highly
+          distinguishable.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good canvas utilization. Legend floats in top-right but near data.
+        comment: Good canvas utilization. Minor imbalance from manual right-axis text
+          positioning.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels: Date of Symptom Onset and New Cases.'
+        comment: 'Descriptive labels: Date of Symptom Onset, New Cases, Cumulative
+          Cases.'
     design_excellence:
-      score: 9
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 6
         max: 8
-        passed: false
-        comment: Cohesive blue palette but too similar shades reduce distinction.
-          Looks like well-configured default.
+        passed: true
+        comment: Custom colorblind-safe palette, styled legend, good typography hierarchy.
+          Above defaults.
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: View stroke removed, grid opacity 0.2. Some refinement but default
-          Altair chrome still present.
+        passed: true
+        comment: View frame removed, subtle grid at 0.15 opacity, custom legend styling.
+          Manual right-axis slightly rough.
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 5
         max: 6
-        passed: false
-        comment: Three waves and intervention lines present but no visual emphasis
-          guides the viewer.
+        passed: true
+        comment: Strong narrative with three waves, intervention timeline, peak callout,
+          and cumulative overlay.
     spec_compliance:
-      score: 11
+      score: 15
       max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Correct stacked bar chart for epi curve. Similar blue shades make
-          stacking visually ambiguous.
+        comment: Correct stacked bar histogram for epidemic curve with daily bins.
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Has stacked bars, intervention lines, daily bins. Missing cumulative
-          line overlay.
+        comment: 'All spec features present: stacked bars, intervention lines, cumulative
+          overlay, daily bins.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X is onset dates, Y is case counts. Correct.
+        comment: X=onset_date temporal, Y=case_count quantitative. Full data range
+          shown.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend shows Classification with correct labels.
+        comment: Correct title format. Legend labels match data categories.
     data_quality:
-      score: 13
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Three epidemic waves, three case classifications, intervention events.
-          Missing cumulative view.
+        comment: Three epidemic waves, varying case type proportions, peak/decline/tail
+          phases visible.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Realistic epidemic scenario with plausible interventions.
+        comment: Realistic epidemic scenario with plausible case counts. Neutral public
+          health topic.
       - id: DQ-03
         name: Appropriate Scale
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Peak ~85 daily cases reasonable. Gaussian shapes slightly too smooth.
+        comment: Peak ~85 daily cases, 120-day duration, ~3200 cumulative all realistic
+          for moderate outbreak.
     code_quality:
       score: 9
       max: 10
@@ -167,31 +176,32 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, chart, save.'
+        comment: Linear flow with no functions or classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) set at start.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: All imports (altair, numpy, pandas) actively used.
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
         passed: true
-        comment: 'Minor inelegance: mutating events DataFrame after creation.'
+        comment: Clean overall but manual right-axis via hardcoded mark_text positions
+          is verbose.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html.
+        comment: Saves plot.png with scale_factor=3.0 and plot.html. Current API.
     library_mastery:
       score: 7
       max: 10
@@ -201,13 +211,15 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Good declarative API usage: layering, encoding, transform_calculate.'
+        comment: Good declarative encoding with proper types. Layer composition and
+          transform_calculate. Manual right-axis is non-idiomatic.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses transform_calculate, alt.Order, declarative tooltips, resolve_scale.
+        comment: Interactive tooltips, HTML export, declarative transforms. Could
+          use selections/parameters for more distinction.
   verdict: REJECTED
 impl_tags:
   dependencies: []
@@ -219,6 +231,7 @@ impl_tags:
   patterns:
   - data-generation
   dataprep:
+  - cumulative-sum
   - time-series
   styling:
   - grid-styling

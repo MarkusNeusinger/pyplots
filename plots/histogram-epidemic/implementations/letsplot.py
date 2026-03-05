@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 histogram-epidemic: Epidemic Curve (Epi Curve)
 Library: letsplot 4.8.2 | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-05
@@ -63,9 +63,15 @@ daily_total = confirmed_counts + probable_counts + suspect_counts
 cumulative = np.cumsum(daily_total)
 max_daily = int(daily_total.max())
 max_cumulative = int(cumulative[-1])
-scale_factor = max_daily * 0.85 / max_cumulative
+scale_factor = max_daily * 0.90 / max_cumulative
 
 df_cumulative = pd.DataFrame({"onset_date": dates, "scaled_cumulative": cumulative * scale_factor})
+
+# Secondary y-axis label for cumulative line
+cumul_label_y = cumulative[-1] * scale_factor
+df_cumul_label = pd.DataFrame(
+    {"onset_date": [dates[-3]], "y_pos": [cumul_label_y * 0.92], "label": [f"{max_cumulative:,}\ncumulative"]}
+)
 
 # Intervention dates — epoch milliseconds for lets-plot datetime axis
 lockdown_date = pd.Timestamp("2024-03-15")
@@ -168,6 +174,16 @@ plot = (
         nudge_x=-80000000,
         inherit_aes=False,
     )
+    # Cumulative line endpoint label (secondary y-axis context)
+    + geom_text(
+        data=df_cumul_label,
+        mapping=aes(x="onset_date", y="y_pos", label="label"),
+        color="#333333",
+        size=9,
+        fontface="italic",
+        hjust=1,
+        inherit_aes=False,
+    )
     + scale_fill_manual(
         values={"Confirmed": color_confirmed, "Probable": color_probable, "Suspect": color_suspect},
         name="Case Classification",
@@ -187,8 +203,9 @@ plot = (
         axis_text=element_text(size=16),
         legend_title=element_text(size=16, face="bold"),
         legend_text=element_text(size=14),
-        plot_caption=element_text(size=14, color="#555555", hjust=0.5),
-        legend_position=[0.15, 0.72],
+        plot_caption=element_text(size=16, color="#555555", hjust=0.5),
+        legend_position=[0.82, 0.88],
+        legend_background=element_rect(fill="white", color="#DDDDDD", size=0.5),
         panel_grid_major_x=element_blank(),
         panel_grid_minor=element_blank(),
         panel_grid_major_y=element_line(color="#E0E0E0", size=0.5),

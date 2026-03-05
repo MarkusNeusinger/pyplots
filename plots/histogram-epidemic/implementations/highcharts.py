@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 histogram-epidemic: Epidemic Curve (Epi Curve)
 Library: highcharts unknown | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-05
@@ -56,16 +56,14 @@ chart.options.chart = {
 }
 
 chart.options.title = {
-    "text": "Respiratory Illness Outbreak \u00b7 histogram-epidemic \u00b7 highcharts \u00b7 pyplots.ai",
+    "text": "histogram-epidemic \u00b7 highcharts \u00b7 pyplots.ai",
     "style": {"fontSize": "56px", "fontWeight": "700", "color": "#1a1a2e"},
     "margin": 30,
 }
 
 chart.options.subtitle = {
-    "text": (
-        "Daily new cases by classification, Jan\u2013Apr 2024 \u00a0|\u00a0 Two-wave pattern with intervention markers"
-    ),
-    "style": {"fontSize": "34px", "color": "#555555", "fontWeight": "400"},
+    "text": ("Respiratory Illness Outbreak \u2014 Daily new cases by classification, Jan\u2013Apr 2024"),
+    "style": {"fontSize": "36px", "color": "#555555", "fontWeight": "400"},
 }
 
 # X-axis — date categories with intervention plot lines
@@ -122,7 +120,9 @@ chart.options.y_axis = [
         },
         "labels": {"style": {"fontSize": "34px", "color": "#444444"}},
         "min": 0,
-        "tickInterval": 10,
+        "max": 75,
+        "endOnTick": False,
+        "tickInterval": 15,
         "gridLineColor": "#e0e0e0",
         "gridLineWidth": 1,
         "gridLineDashStyle": "Dot",
@@ -140,15 +140,20 @@ chart.options.y_axis = [
     },
 ]
 
+chart.options.tooltip = {
+    "shared": True,
+    "backgroundColor": "rgba(255, 255, 255, 0.95)",
+    "borderColor": "#cccccc",
+    "borderRadius": 8,
+    "style": {"fontSize": "24px", "color": "#333333"},
+    "headerFormat": '<span style="font-size:26px;font-weight:600">{point.key}</span><br/>',
+    "pointFormat": '<span style="color:{series.color}">\u25cf</span> {series.name}: <b>{point.y}</b><br/>',
+}
+
 chart.options.plot_options = {
-    "column": {
-        "stacking": "normal",
-        "pointPadding": 0,
-        "groupPadding": 0.05,
-        "borderWidth": 0.5,
-        "borderColor": "#ffffff",
-    },
-    "spline": {"lineWidth": 4, "marker": {"enabled": False}},
+    "column": {"stacking": "normal", "pointPadding": 0, "groupPadding": 0.02, "borderWidth": 0, "shadow": False},
+    "spline": {"lineWidth": 5, "marker": {"enabled": False}},
+    "series": {"animation": False},
 }
 
 chart.options.legend = {

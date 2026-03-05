@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 histogram-epidemic: Epidemic Curve (Epi Curve)
 Library: highcharts unknown | Python 3.14.3
-Quality: 84/100 | Created: 2026-03-05
+Quality: 91/100 | Created: 2026-03-05
 """
 
 import tempfile

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 histogram-epidemic: Epidemic Curve (Epi Curve)
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 80/100 | Created: 2026-03-05
@@ -33,19 +33,19 @@ suspect = np.round(total_signal * suspect_frac).astype(int)
 # Key intervention events (day index -> label)
 interventions = {10: "Cluster ID", 25: "Contact Tracing", 40: "Quarantine", 60: "Vaccination", 75: "Contained"}
 
-# X-axis labels — annotate intervention dates with event name
+# X-axis labels — annotate intervention dates with event marker
 date_labels = []
 for i, d in enumerate(dates):
     fmt = d.strftime("%b %d")
     if i in interventions:
-        date_labels.append(f"{fmt} [{interventions[i]}]")
+        date_labels.append(f"{fmt} \u25bc {interventions[i]}")
     else:
         date_labels.append(fmt)
 
-# Major labels: weekly ticks + all intervention dates
-weekly_set = {i for i in range(90) if i % 7 == 0}
+# Major labels: biweekly ticks + all intervention dates
+biweekly_set = {i for i in range(90) if i % 14 == 0}
 intervention_set = set(interventions.keys())
-major_indices = sorted(weekly_set | intervention_set)
+major_indices = sorted(biweekly_set | intervention_set)
 major_labels = [date_labels[i] for i in major_indices]
 
 # Build series with intervention annotations as tooltip labels
@@ -70,7 +70,7 @@ custom_style = Style(
     foreground="#2D2D2D",
     foreground_strong="#1A1A1A",
     foreground_subtle="#D4D4D0",
-    colors=("#1B5E8C", "#D4882C", "#B84747"),
+    colors=("#1B5E8C", "#E8A838", "#8B4049"),
     title_font_size=60,
     label_font_size=28,
     major_label_font_size=30,
@@ -82,7 +82,7 @@ custom_style = Style(
     opacity_hover=1.0,
 )
 
-# Chart with x-guides to draw vertical lines at intervention dates
+# Chart — clean layout without x-guides for visual clarity
 chart = pygal.StackedBar(
     width=4800,
     height=2700,
@@ -91,7 +91,7 @@ chart = pygal.StackedBar(
     x_title="Date of Symptom Onset",
     y_title="New Cases",
     show_y_guides=True,
-    show_x_guides=True,
+    show_x_guides=False,
     legend_at_bottom=True,
     legend_box_size=28,
     margin=50,

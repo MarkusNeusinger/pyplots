@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 histogram-epidemic: Epidemic Curve (Epi Curve)
 Library: seaborn 0.13.2 | Python 3.14.3
-Quality: 89/100 | Created: 2026-03-05
 """
 
 import matplotlib.dates as mdates
@@ -31,7 +30,7 @@ confirmed_base = np.concatenate(
 )
 confirmed_counts = np.maximum(0, confirmed_base + np.random.normal(0, 8, 120)).astype(int)
 probable_counts = np.maximum(0, confirmed_counts * 0.25 + np.random.normal(0, 3, 120)).astype(int)
-suspect_counts = np.maximum(0, confirmed_counts * 0.12 + np.random.normal(0, 2, 120)).astype(int)
+suspect_counts = np.maximum(0, confirmed_counts * 0.15 + np.random.normal(0, 2, 120)).astype(int)
 
 # Build long-form DataFrame with one row per case for sns.histplot
 rows = []
@@ -46,8 +45,8 @@ daily_totals = confirmed_counts + probable_counts + suspect_counts
 cumulative = np.cumsum(daily_totals)
 
 # Plot
-sns.set_theme(style="ticks", font_scale=1.0)
-palette = {"Confirmed": "#306998", "Probable": "#E8A838", "Suspect": "#5BA05B"}
+sns.set_theme(style="ticks", font_scale=1.0, rc={"font.family": "sans-serif"})
+palette = {"Confirmed": "#306998", "Probable": "#E8A838", "Suspect": "#9467BD"}
 
 fig, ax = plt.subplots(figsize=(16, 9))
 
@@ -60,33 +59,56 @@ sns.histplot(
     palette=palette,
     bins=120,
     edgecolor="white",
-    linewidth=0.3,
+    linewidth=0.4,
     legend=False,
     ax=ax,
 )
 
+# Highlight peak period with subtle background shading
+peak_start = pd.Timestamp("2024-03-01")
+peak_end = pd.Timestamp("2024-03-18")
+ax.axvspan(peak_start, peak_end, alpha=0.06, color="#C04040", zorder=0)
+ax.text(
+    peak_start + (peak_end - peak_start) / 2,
+    ax.get_ylim()[1] * 0.03,
+    "Peak",
+    fontsize=12,
+    ha="center",
+    va="bottom",
+    color="#C04040",
+    fontstyle="italic",
+    alpha=0.7,
+)
+
 # Cumulative line on secondary axis
 ax2 = ax.twinx()
-ax2.plot(dates_range, cumulative, color="#C04040", linewidth=2.5, alpha=0.85)
-ax2.set_ylabel("Cumulative Cases", fontsize=20, color="#C04040")
+ax2.plot(dates_range, cumulative, color="#C04040", linewidth=2.8, alpha=0.85, zorder=3)
+ax2.fill_between(dates_range, cumulative, alpha=0.03, color="#C04040")
+ax2.set_ylabel("Cumulative Cases", fontsize=20, color="#C04040", labelpad=12)
 ax2.tick_params(axis="y", labelsize=16, colors="#C04040")
 
-# Intervention annotations
+# Intervention annotations with bolder styling
 intervention_dates = [
     (pd.Timestamp("2024-02-20"), "Travel\nRestrictions"),
     (pd.Timestamp("2024-03-25"), "Vaccination\nCampaign"),
 ]
 for date, label in intervention_dates:
-    ax.axvline(date, color="#555555", linewidth=1.5, linestyle="--", alpha=0.7, zorder=5)
-    ax.text(
-        date,
-        ax.get_ylim()[1] * 0.92,
+    ax.axvline(date, color="#444444", linewidth=1.8, linestyle="--", alpha=0.8, zorder=5)
+    ax.annotate(
         label,
-        fontsize=13,
+        xy=(date, ax.get_ylim()[1] * 0.95),
+        fontsize=14,
+        fontweight="semibold",
         ha="center",
         va="top",
-        color="#555555",
-        bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": "#CCCCCC", "alpha": 0.85},
+        color="#333333",
+        bbox={
+            "boxstyle": "round,pad=0.4",
+            "facecolor": "#F8F8F8",
+            "edgecolor": "#888888",
+            "linewidth": 1.2,
+            "alpha": 0.92,
+        },
     )
 
 # Style
@@ -110,7 +132,7 @@ legend_handles = [
     mpatches.Patch(facecolor=palette["Suspect"], edgecolor="white", label="Suspect"),
     mlines.Line2D([], [], color="#C04040", linewidth=2.5, alpha=0.85, label="Cumulative Cases"),
 ]
-ax.legend(handles=legend_handles, fontsize=14, loc="upper left", framealpha=0.9)
+ax.legend(handles=legend_handles, fontsize=14, loc="upper left", framealpha=0.92, edgecolor="#CCCCCC", fancybox=True)
 
 # Save
 plt.tight_layout()

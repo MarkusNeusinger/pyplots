@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-stripes-climate: Climate Warming Stripes
 Library: letsplot 4.8.2 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-06
@@ -9,16 +9,16 @@ import pandas as pd
 from lets_plot import (
     LetsPlot,
     aes,
-    element_blank,
     element_rect,
     element_text,
     geom_tile,
     ggplot,
     ggsize,
-    guide_colorbar,
     labs,
+    layer_tooltips,
     scale_fill_gradient2,
     theme,
+    theme_void,
 )
 from lets_plot.export import ggsave
 
@@ -51,31 +51,21 @@ vmax = max(abs(df["anomaly"].min()), abs(df["anomaly"].max()))
 # Plot - warming stripes: pure color, no axes
 plot = (
     ggplot(df, aes(x="year", y="row", fill="anomaly"))
-    + geom_tile(width=1.0, height=1.0)
-    + scale_fill_gradient2(
-        low="#08306b",
-        mid="#f7f7f7",
-        high="#67000d",
-        midpoint=0,
-        limits=[-vmax, vmax],
-        name="",
-        guide=guide_colorbar(barwidth=400, barheight=14, nbin=256),
+    + geom_tile(
+        width=1.0,
+        height=10.0,
+        tooltips=layer_tooltips().line("Year: @year").line("Anomaly: @anomaly °C").format("@anomaly", ".3f"),
     )
+    + scale_fill_gradient2(low="#08306b", mid="#f7f7f7", high="#67000d", midpoint=0, limits=[-vmax, vmax], name="")
     + labs(title="heatmap-stripes-climate · letsplot · pyplots.ai")
+    + theme_void()
     + theme(
-        plot_title=element_text(size=22, color="#333333"),
-        panel_background=element_blank(),
-        panel_grid=element_blank(),
-        axis_title=element_blank(),
-        axis_text_x=element_blank(),
-        axis_text_y=element_blank(),
-        axis_ticks=element_blank(),
-        axis_line=element_blank(),
+        plot_title=element_text(size=24, color="#333333"),
         legend_position="none",
         plot_background=element_rect(fill="#ffffff", color="#ffffff"),
         plot_margin=[30, 10, 10, 10],
     )
-    + ggsize(1600, 533)
+    + ggsize(1600, 900)
 )
 
 # Save

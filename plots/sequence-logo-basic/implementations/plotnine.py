@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 sequence-logo-basic: Sequence Logo for Motif Visualization
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 77/100 | Created: 2026-03-06
@@ -8,14 +8,18 @@ import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
+    annotate,
+    coord_cartesian,
     element_blank,
     element_line,
+    element_rect,
     element_text,
     geom_rect,
     geom_text,
     ggplot,
     labs,
     scale_fill_manual,
+    scale_size_identity,
     scale_x_continuous,
     scale_y_continuous,
     theme,
@@ -64,40 +68,64 @@ for pos, freqs in position_freqs.items():
             y_bottom += height
 
 df = pd.DataFrame(records)
-bar_half_width = 0.42
+bar_half_width = 0.45
 df["xmin"] = df["position"] - bar_half_width
 df["xmax"] = df["position"] + bar_half_width
 
-# Separate large and small segments for different text sizes
-df_large = df[df["height"] > 0.15].copy()
-df_medium = df[(df["height"] > 0.05) & (df["height"] <= 0.15)].copy()
+# Scale font size proportional to segment height so letters fill their rectangles
+# Calibrated so the largest letter visually fills its segment
+max_height = df["height"].max()
+df["fontsize"] = df["height"] * (42 / max_height)
 
-# DNA color scheme
-dna_colors = {"A": "#2ca02c", "C": "#1f77b4", "G": "#ff7f0e", "T": "#d62728"}
+# Only show letters on segments tall enough to be readable (fixes VQ-02 overlap)
+df_text = df[df["height"] > 0.04].copy()
+
+# Colorblind-safe DNA color scheme (avoids pure red-green conflict)
+dna_colors = {"A": "#009E73", "C": "#0072B2", "G": "#E69F00", "T": "#CC79A7"}
+
+# Highlight most conserved position for data storytelling
+highlight_pos = 8
+df_highlight = pd.DataFrame(
+    {
+        "xmin": [highlight_pos - 0.48],
+        "xmax": [highlight_pos + 0.48],
+        "ymin": [-0.02],
+        "ymax": [df[df["position"] == highlight_pos]["ymax"].max() + 0.03],
+    }
+)
 
 # Plot
 plot = (
     ggplot(df)
-    + geom_rect(aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax", fill="letter"))
-    + geom_text(
-        aes(x="position", y="y_mid", label="letter"),
-        data=df_large,
-        fontweight="bold",
-        color="white",
-        size=18,
-        show_legend=False,
+    + geom_rect(
+        aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax"),
+        data=df_highlight,
+        fill="#FFF9C4",
+        color=None,
+        alpha=0.6,
     )
+    + geom_rect(aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax", fill="letter"), color="white", size=0.5)
     + geom_text(
-        aes(x="position", y="y_mid", label="letter"),
-        data=df_medium,
+        aes(x="position", y="y_mid", label="letter", size="fontsize"),
+        data=df_text,
         fontweight="bold",
         color="white",
-        size=10,
         show_legend=False,
     )
     + scale_fill_manual(values=dna_colors)
+    + scale_size_identity()
     + scale_x_continuous(breaks=range(1, 11), minor_breaks=[])
     + scale_y_continuous(expand=(0, 0, 0.05, 0))
+    + coord_cartesian(ylim=(0, None))
+    + annotate(
+        "text",
+        x=highlight_pos,
+        y=df[df["position"] == highlight_pos]["ymax"].max() + 0.07,
+        label="most conserved",
+        size=9,
+        color="#555555",
+        fontstyle="italic",
+    )
     + labs(
         x="Position",
         y="Information content (bits)",
@@ -110,12 +138,15 @@ plot = (
         plot_title=element_text(size=24, weight="bold"),
         axis_title=element_text(size=20),
         axis_text=element_text(size=16),
-        legend_title=element_text(size=16),
+        legend_title=element_text(size=16, weight="bold"),
         legend_text=element_text(size=14),
         panel_grid_major_x=element_blank(),
         panel_grid_minor=element_blank(),
+        panel_grid_major_y=element_line(color="#E0E0E0", size=0.3),
         axis_line_x=element_line(color="#333333", size=0.8),
         axis_line_y=element_line(color="#333333", size=0.8),
+        plot_background=element_rect(fill="#FAFAFA", color=None),
+        panel_background=element_rect(fill="#FAFAFA", color=None),
     )
 )
 

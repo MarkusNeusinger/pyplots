@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 tree-decision: Decision Tree Visualization with Probabilities
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-06
@@ -83,16 +83,16 @@ nodes = {
     },
 }
 
-# Layout positions (x, y) - left-to-right tree
+# Layout positions (x, y) - left-to-right tree with adjusted spacing
 positions = {
     "D1": (0.0, 0.50),
-    "C1": (0.35, 0.82),
+    "C1": (0.35, 0.84),
     "T1": (0.72, 0.96),
-    "T2": (0.72, 0.68),
-    "C2": (0.35, 0.30),
-    "T3": (0.72, 0.43),
-    "T4": (0.72, 0.17),
-    "T5": (0.35, 0.08),
+    "T2": (0.72, 0.72),
+    "C2": (0.35, 0.33),
+    "T3": (0.72, 0.46),
+    "T4": (0.72, 0.20),
+    "T5": (0.35, 0.05),
 }
 
 # Colors
@@ -103,41 +103,10 @@ pruned_color = "#9E9E9E"
 optimal_edge = "#2D5F8A"
 bg_color = "#FAFBFC"
 
-# Pre-build hover text for edges and nodes (used for both PNG annotations and HTML interactivity)
-edge_hover_texts = {}
-for nid, n in nodes.items():
-    if n["parent"] is None:
-        continue
-    parts = [f"<b>{n['label'] or ''}</b>"]
-    if n["prob"] is not None:
-        parts.append(f"Probability: {n['prob']:.0%}")
-    if n["payoff"] is not None:
-        parts.append(f"Payoff: ${n['payoff']:+,}")
-    if n["pruned"]:
-        parts.append("<i>Pruned (suboptimal)</i>")
-    edge_hover_texts[nid] = "<br>".join(parts)
-
-node_hover_texts = {}
-for nid, n in nodes.items():
-    parts = [f"<b>{nid}</b> — {n['type'].title()} Node"]
-    if n["emv"] is not None:
-        parts.append(f"EMV: <b>${n['emv']:,}</b>")
-    if n["payoff"] is not None:
-        parts.append(f"Payoff: <b>${n['payoff']:+,}</b>")
-    if n["prob"] is not None:
-        parts.append(f"Probability: {n['prob']:.0%}")
-    if n["label"]:
-        parts.append(f"Branch: {n['label']}")
-    if n["pruned"]:
-        parts.append("<i>Pruned (suboptimal path)</i>")
-    elif n["type"] != "terminal":
-        parts.append("<i>Optimal path</i>")
-    node_hover_texts[nid] = "<br>".join(parts)
-
 # Plot
 fig = go.Figure()
 
-# Draw edges (branches)
+# Draw edges (branches) with hover text built inline
 for nid, n in nodes.items():
     if n["parent"] is None:
         continue
@@ -148,6 +117,16 @@ for nid, n in nodes.items():
     line_width = 2.5 if n["pruned"] else 4
     opacity = 0.5 if n["pruned"] else 1.0
 
+    # Build hover text for this edge
+    hover_parts = [f"<b>{n['label'] or ''}</b>"]
+    if n["prob"] is not None:
+        hover_parts.append(f"Probability: {n['prob']:.0%}")
+    if n["payoff"] is not None:
+        hover_parts.append(f"Payoff: ${n['payoff']:+,}")
+    if n["pruned"]:
+        hover_parts.append("<i>Pruned (suboptimal)</i>")
+    edge_hover = "<br>".join(hover_parts)
+
     fig.add_trace(
         go.Scatter(
             x=[px, cx],
@@ -155,13 +134,14 @@ for nid, n in nodes.items():
             mode="lines",
             line={"color": line_color, "width": line_width, "dash": dash},
             opacity=opacity,
-            hoverinfo="skip",
+            hoverinfo="text",
+            hovertext=[edge_hover, edge_hover],
             showlegend=False,
         )
     )
 
-    # Branch label
-    t = 0.45 if n["parent"] == "D1" else 0.5
+    # Branch label with adjusted positioning to avoid crowding
+    t = 0.42 if n["parent"] == "D1" else 0.5
     mid_x = px + (cx - px) * t
     mid_y = py + (cy - py) * t
     label_text = n["label"] or ""
@@ -169,13 +149,20 @@ for nid, n in nodes.items():
         label_text = f"{n['label']} (p={n['prob']})"
     text_color = pruned_color if n["pruned"] else "#2B2B2B"
 
+    # Adjust yshift based on branch direction to prevent crowding
+    yshift = 22
+    if nid == "T5":
+        yshift = -18
+    elif nid == "C2":
+        yshift = -18
+
     fig.add_annotation(
         x=mid_x,
         y=mid_y,
         text=f"<b>{label_text}</b>",
         showarrow=False,
         font={"size": 20, "color": text_color, "family": "Arial, sans-serif"},
-        yshift=20,
+        yshift=yshift,
     )
 
 # Draw pruned marks on pruned branches
@@ -191,54 +178,71 @@ for nid, n in nodes.items():
         x=mark_x, y=mark_y, text="//", showarrow=False, font={"size": 26, "color": "#CC0000", "family": "Arial Black"}
     )
 
-# Draw nodes using layout shapes for precise rendering + invisible scatter for hover
-node_shapes = []
+
+# Helper to get node color
+def _node_color(n):
+    if n["pruned"]:
+        return pruned_color
+    if n["type"] == "decision":
+        return decision_color
+    if n["type"] == "chance":
+        return chance_color
+    return terminal_color
+
+
+# Draw nodes using add_shape for precise geometric rendering + scatter with hovertemplate
 shape_size_x = 0.032
 shape_size_y = 0.05
 
 for nid, n in nodes.items():
     nx, ny = positions[nid]
-    node_color = (
-        pruned_color
-        if n["pruned"]
-        else (decision_color if n["type"] == "decision" else chance_color if n["type"] == "chance" else terminal_color)
-    )
+    node_color = _node_color(n)
     node_opacity = 0.65 if n["pruned"] else 1.0
 
+    # Build hover text for this node
+    hover_parts = [f"<b>{nid}</b> — {n['type'].title()} Node"]
+    if n["emv"] is not None:
+        hover_parts.append(f"EMV: <b>${n['emv']:,}</b>")
+    if n["payoff"] is not None:
+        hover_parts.append(f"Payoff: <b>${n['payoff']:+,}</b>")
+    if n["prob"] is not None:
+        hover_parts.append(f"Probability: {n['prob']:.0%}")
+    if n["label"]:
+        hover_parts.append(f"Branch: {n['label']}")
+    if n["pruned"]:
+        hover_parts.append("<i>Pruned (suboptimal path)</i>")
+    elif n["type"] != "terminal":
+        hover_parts.append("<i>Optimal path</i>")
+    node_hover = "<br>".join(hover_parts)
+
     if n["type"] == "decision":
-        # Square shape via layout
-        node_shapes.append(
-            {
-                "type": "rect",
-                "x0": nx - shape_size_x,
-                "y0": ny - shape_size_y,
-                "x1": nx + shape_size_x,
-                "y1": ny + shape_size_y,
-                "fillcolor": node_color,
-                "opacity": node_opacity,
-                "line": {"color": "white", "width": 2.5},
-                "xref": "x",
-                "yref": "y",
-            }
+        fig.add_shape(
+            type="rect",
+            x0=nx - shape_size_x,
+            y0=ny - shape_size_y,
+            x1=nx + shape_size_x,
+            y1=ny + shape_size_y,
+            fillcolor=node_color,
+            opacity=node_opacity,
+            line={"color": "white", "width": 2.5},
+            xref="x",
+            yref="y",
         )
     elif n["type"] == "chance":
-        # Circle shape via layout
-        node_shapes.append(
-            {
-                "type": "circle",
-                "x0": nx - shape_size_x,
-                "y0": ny - shape_size_y,
-                "x1": nx + shape_size_x,
-                "y1": ny + shape_size_y,
-                "fillcolor": node_color,
-                "opacity": node_opacity,
-                "line": {"color": "white", "width": 2.5},
-                "xref": "x",
-                "yref": "y",
-            }
+        fig.add_shape(
+            type="circle",
+            x0=nx - shape_size_x,
+            y0=ny - shape_size_y,
+            x1=nx + shape_size_x,
+            y1=ny + shape_size_y,
+            fillcolor=node_color,
+            opacity=node_opacity,
+            line={"color": "white", "width": 2.5},
+            xref="x",
+            yref="y",
         )
     else:
-        # Terminal: use triangle-right marker (shapes don't support triangles)
+        # Terminal: right-pointing triangle marker
         fig.add_trace(
             go.Scatter(
                 x=[nx],
@@ -251,23 +255,27 @@ for nid, n in nodes.items():
                     "line": {"color": "white", "width": 2.5},
                     "opacity": node_opacity,
                 },
-                hoverinfo="skip",
+                hoverinfo="text",
+                hovertext=[node_hover],
+                hoverlabel={"bgcolor": node_color, "font_size": 15, "font_color": "white"},
                 showlegend=False,
             )
         )
 
-    # Invisible scatter trace for hover interactivity on all nodes
-    fig.add_trace(
-        go.Scatter(
-            x=[nx],
-            y=[ny],
-            mode="markers",
-            marker={"size": 50, "color": "rgba(0,0,0,0)", "symbol": "square"},
-            hoverinfo="skip",
-            hoverlabel={"bgcolor": node_color, "font_size": 15, "font_color": "white"},
-            showlegend=False,
+    # Invisible scatter for hover on decision/chance nodes (shapes don't support hover)
+    if n["type"] in ("decision", "chance"):
+        fig.add_trace(
+            go.Scatter(
+                x=[nx],
+                y=[ny],
+                mode="markers",
+                marker={"size": 50, "color": "rgba(0,0,0,0)", "symbol": "square"},
+                hoverinfo="text",
+                hovertext=[node_hover],
+                hoverlabel={"bgcolor": node_color, "font_size": 15, "font_color": "white"},
+                showlegend=False,
+            )
         )
-    )
 
     # EMV inside decision/chance nodes
     if n["emv"] is not None:
@@ -292,7 +300,7 @@ for nid, n in nodes.items():
             xshift=58,
         )
 
-# Legend entries
+# Legend entries using grouped legendgroup for organization
 for name, color, symbol in [
     ("Decision Node", decision_color, "square"),
     ("Chance Node", chance_color, "circle"),
@@ -320,7 +328,7 @@ fig.add_trace(
     )
 )
 
-# Style
+# Style using update_layout with plotly_white template
 fig.update_layout(
     title={
         "text": (
@@ -336,9 +344,8 @@ fig.update_layout(
     template="plotly_white",
     width=1600,
     height=900,
-    shapes=node_shapes,
-    xaxis={"showgrid": False, "zeroline": False, "showticklabels": False, "range": [-0.08, 0.95]},
-    yaxis={"showgrid": False, "zeroline": False, "showticklabels": False, "range": [-0.02, 1.06]},
+    xaxis={"showgrid": False, "zeroline": False, "showticklabels": False, "showline": False, "range": [-0.08, 0.95]},
+    yaxis={"showgrid": False, "zeroline": False, "showticklabels": False, "showline": False, "range": [-0.05, 1.08]},
     legend={
         "font": {"size": 17, "family": "Arial, sans-serif"},
         "x": 0.01,
@@ -348,50 +355,17 @@ fig.update_layout(
         "bgcolor": "rgba(255,255,255,0.92)",
         "bordercolor": "#CCCCCC",
         "borderwidth": 1,
+        "itemsizing": "constant",
     },
     margin={"l": 40, "r": 60, "t": 100, "b": 30},
     plot_bgcolor=bg_color,
     paper_bgcolor="white",
     hoverlabel={"font_size": 15},
+    hovermode="closest",
 )
 
 # Save static PNG
 fig.write_image("plot.png", width=1600, height=900, scale=3)
 
-# Enable hover tooltips for interactive HTML export using pre-built hover texts
-edge_idx = 0
-for nid, n in nodes.items():
-    if n["parent"] is None:
-        continue
-    hover = edge_hover_texts[nid]
-    fig.data[edge_idx].hoverinfo = "text"
-    fig.data[edge_idx].hovertext = [hover, hover]
-    edge_idx += 1
-
-# Enable hover on invisible node traces
-# Trace order after edges: terminal marker traces interleaved with invisible hover traces
-# We need to find the invisible hover traces (the ones with rgba(0,0,0,0) markers)
-for i in range(edge_idx, len(fig.data)):
-    trace = fig.data[i]
-    if trace.marker and trace.marker.color == "rgba(0,0,0,0)" and trace.x is not None and len(trace.x) == 1:
-        # Find which node this trace belongs to by matching position
-        tx, ty = trace.x[0], trace.y[0]
-        for nid, (nx, ny) in positions.items():
-            if abs(tx - nx) < 0.001 and abs(ty - ny) < 0.001:
-                node_color = (
-                    pruned_color
-                    if nodes[nid]["pruned"]
-                    else (
-                        decision_color
-                        if nodes[nid]["type"] == "decision"
-                        else chance_color
-                        if nodes[nid]["type"] == "chance"
-                        else terminal_color
-                    )
-                )
-                trace.hoverinfo = "text"
-                trace.hovertext = [node_hover_texts[nid]]
-                trace.hoverlabel = {"bgcolor": node_color, "font_size": 15, "font_color": "white"}
-                break
-
+# Save interactive HTML with all hover already configured
 fig.write_html("plot.html", include_plotlyjs="cdn")

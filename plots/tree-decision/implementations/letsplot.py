@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 tree-decision: Decision Tree Visualization with Probabilities
 Library: letsplot 4.8.2 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-06
@@ -38,16 +38,16 @@ LetsPlot.setup_html()
 #   D1: max($450K, $250K) = $450K -> "License Tech" pruned
 
 node_records = [
-    {"id": "D1", "type": "decision", "x": 0, "y": 5.0, "value": "EMV $450K"},
-    {"id": "C1", "type": "chance", "x": 5, "y": 8.0, "value": "EMV $450K"},
-    {"id": "T6", "type": "terminal", "x": 5, "y": 1.5, "value": "$250K"},
-    {"id": "T1", "type": "terminal", "x": 10, "y": 10.5, "value": "$900K"},
+    {"id": "D1", "type": "decision", "x": 0, "y": 6.0, "value": "EMV $450K"},
+    {"id": "C1", "type": "chance", "x": 5, "y": 9.0, "value": "EMV $450K"},
+    {"id": "T6", "type": "terminal", "x": 5, "y": 2.0, "value": "$250K"},
+    {"id": "T1", "type": "terminal", "x": 10, "y": 12.5, "value": "$900K"},
     {"id": "D2", "type": "decision", "x": 10, "y": 7.5, "value": "EMV $440K"},
-    {"id": "T2", "type": "terminal", "x": 10, "y": 4.5, "value": "-$200K"},
-    {"id": "C2", "type": "chance", "x": 15, "y": 9.8, "value": "EMV $440K"},
-    {"id": "T3", "type": "terminal", "x": 15, "y": 5.5, "value": "$350K"},
-    {"id": "T4", "type": "terminal", "x": 20, "y": 11.5, "value": "$600K"},
-    {"id": "T5", "type": "terminal", "x": 20, "y": 7.8, "value": "$200K"},
+    {"id": "T2", "type": "terminal", "x": 10, "y": 4.0, "value": "-$200K"},
+    {"id": "C2", "type": "chance", "x": 15, "y": 10.5, "value": "EMV $440K"},
+    {"id": "T3", "type": "terminal", "x": 15, "y": 3.5, "value": "$350K"},
+    {"id": "T4", "type": "terminal", "x": 20, "y": 12.5, "value": "$600K"},
+    {"id": "T5", "type": "terminal", "x": 20, "y": 8.0, "value": "$200K"},
 ]
 
 branch_records = [
@@ -80,15 +80,16 @@ for b in branch_records:
 df_active = pd.DataFrame(active_segs)
 df_pruned = pd.DataFrame(pruned_segs)
 
-# Branch labels - probability labels use italic, decision labels use bold
+# Branch labels - placed on the vertical segment of the elbow connector
 prob_label_records = []
 decision_label_records = []
 for b in branch_records:
     f = node_lookup[b["from_id"]]
     t = node_lookup[b["to_id"]]
     mid_x = (f["x"] + t["x"]) / 2
-    label_y = t["y"] + 0.5
-    rec = {"x": mid_x, "y": label_y, "label": b["label"]}
+    # Place label on the vertical segment, offset slightly right
+    label_y = f["y"] + (t["y"] - f["y"]) * 0.35
+    rec = {"x": mid_x + 0.6, "y": label_y, "label": b["label"]}
     if b["is_prob"]:
         prob_label_records.append(rec)
     else:
@@ -139,7 +140,7 @@ for r in node_records:
     if r["type"] == "terminal":
         payoff_label_records.append({"x": r["x"] + 1.1, "y": r["y"], "label": r["value"]})
     else:
-        emv_label_records.append({"x": r["x"], "y": r["y"] - 0.8, "label": r["value"]})
+        emv_label_records.append({"x": r["x"], "y": r["y"] - 1.0, "label": r["value"]})
 df_emv_labels = pd.DataFrame(emv_label_records)
 df_payoff_labels = pd.DataFrame(payoff_label_records)
 
@@ -186,8 +187,8 @@ df_legend_tri = pd.DataFrame(legend_tri)
 # Subtle level shading bands to distinguish tree depth
 level_bands = pd.DataFrame(
     [
-        {"xmin": -1.5, "xmax": 2.5, "ymin": -0.5, "ymax": 13.0, "level": "Stage 1"},
-        {"xmin": 7.5, "xmax": 12.5, "ymin": -0.5, "ymax": 13.0, "level": "Stage 2"},
+        {"xmin": -1.5, "xmax": 2.5, "ymin": 0.0, "ymax": 14.5, "level": "Stage 1"},
+        {"xmin": 7.5, "xmax": 12.5, "ymin": 0.0, "ymax": 14.5, "level": "Stage 2"},
     ]
 )
 
@@ -275,17 +276,21 @@ plot = (
     # Legend: terminal triangle
     + geom_polygon(aes(x="x", y="y", group="group"), data=df_legend_tri, fill="#6AAB6A", color="#3D7A3D", size=0.8)
     # Legend labels
-    + geom_text(aes(x="x", y="y", label="label"), data=df_legend_labels, size=10, color="#4A4A4A", hjust=0)
+    + geom_text(aes(x="x", y="y", label="label"), data=df_legend_labels, size=12, color="#4A4A4A", hjust=0)
     + scale_x_continuous(limits=[-2, 23])
-    + scale_y_continuous(limits=[-0.5, 13.0])
-    + labs(title="Product Launch Strategy · tree-decision · letsplot · pyplots.ai")
+    + scale_y_continuous(limits=[0.0, 14.5])
+    + labs(
+        title="tree-decision · letsplot · pyplots.ai",
+        subtitle="Product Launch Strategy — Two-stage EMV rollback analysis",
+    )
     + theme_void()
     + flavor_solarized_light()
     + theme(
         plot_title=element_text(size=28, hjust=0.5, face="bold"),
+        plot_subtitle=element_text(size=16, hjust=0.5, color="#666666", face="italic"),
         plot_margin=[60, 40, 30, 30],
         plot_background=element_rect(color="transparent"),
-        plot_subtitle=element_text(size=14, hjust=0.5, color="#666666"),
+        legend_position="none",
     )
     + ggsize(1600, 900)
 )

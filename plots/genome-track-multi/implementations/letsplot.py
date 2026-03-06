@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 genome-track-multi: Genome Track Viewer
 Library: letsplot 4.8.2 | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-06
@@ -111,12 +111,12 @@ regulatory = pd.DataFrame(
     }
 )
 
-# Track layout: y-offset for each track
-track_gene_y = 3.0
-track_cov_y = 2.0
-track_var_y = 1.0
+# Track layout: increased spacing between tracks for better visual separation
+track_gene_y = 3.9
+track_cov_y = 2.6
+track_var_y = 1.3
 track_reg_y = 0.0
-track_height = 0.35
+track_height = 0.38
 
 # Scale positions to kb for readability
 scale = 1000.0
@@ -132,11 +132,14 @@ exon_df = pd.DataFrame(
         "xmax": exons["end"] / scale,
         "ymin": track_gene_y - track_height,
         "ymax": track_gene_y + track_height,
+        "gene": exons["gene"],
     }
 )
+# Add tooltip info for exons
+exon_df["exon_size"] = ((exons["end"] - exons["start"]) / 1000).round(1).astype(str) + " kb"
 
 gene_label_df = pd.DataFrame(
-    {"x": (genes["start"] + genes["end"]) / 2 / scale, "y": track_gene_y + track_height + 0.15, "label": genes["name"]}
+    {"x": (genes["start"] + genes["end"]) / 2 / scale, "y": track_gene_y + track_height + 0.18, "label": genes["name"]}
 )
 
 # Strand arrows
@@ -144,7 +147,7 @@ strand_arrows = []
 for _, g in genes.iterrows():
     mid = (g["start"] + g["end"]) / 2 / scale
     arrow_char = "\u25b6" if g["strand"] == "+" else "\u25c0"
-    strand_arrows.append({"x": mid, "y": track_gene_y - track_height - 0.15, "label": arrow_char})
+    strand_arrows.append({"x": mid, "y": track_gene_y - track_height - 0.18, "label": arrow_char})
 strand_df = pd.DataFrame(strand_arrows)
 
 # --- Coverage track data ---
@@ -154,13 +157,17 @@ cov_plot_df["x"] = cov_plot_df["position"] / scale
 max_depth = cov_plot_df["depth"].max()
 cov_plot_df["y"] = track_cov_y - track_height + (cov_plot_df["depth"] / max_depth) * (2 * track_height)
 cov_plot_df["ybase"] = track_cov_y - track_height
+cov_plot_df["depth_label"] = cov_plot_df["depth"].round(1).astype(str) + "x"
+cov_plot_df["pos_label"] = (cov_plot_df["position"] / 1000).round(1).astype(str) + " kb"
 
 # --- Variant track data ---
 var_plot_df = variants_df.copy()
 var_plot_df["x"] = var_plot_df["position"] / scale
 var_plot_df["y_base"] = track_var_y
-# Lollipop height based on quality
-var_plot_df["y_top"] = track_var_y + (var_plot_df["quality"] / 100) * (2 * track_height)
+# Lollipop height based on quality - slightly taller stems
+var_plot_df["y_top"] = track_var_y + (var_plot_df["quality"] / 100) * (2 * track_height + 0.1)
+var_plot_df["qual_label"] = "QUAL: " + var_plot_df["quality"].round(1).astype(str)
+var_plot_df["pos_label"] = (var_plot_df["position"] / 1000).round(1).astype(str) + " kb"
 
 # --- Regulatory track data ---
 reg_plot_df = pd.DataFrame(
@@ -170,27 +177,43 @@ reg_plot_df = pd.DataFrame(
         "ymin": track_reg_y - track_height,
         "ymax": track_reg_y + track_height,
         "element": regulatory["element"],
+        "size_label": ((regulatory["end"] - regulatory["start"]) / 1000).round(1).astype(str) + " kb",
     }
 )
 
-# Track background shading
+# Track background shading with more generous spacing
 track_bg = pd.DataFrame(
     {
         "xmin": [region_start / scale] * 4,
         "xmax": [region_end / scale] * 4,
         "ymin": [
-            track_reg_y - track_height - 0.25,
-            track_var_y - track_height - 0.25,
-            track_cov_y - track_height - 0.25,
-            track_gene_y - track_height - 0.25,
+            track_reg_y - track_height - 0.3,
+            track_var_y - track_height - 0.3,
+            track_cov_y - track_height - 0.3,
+            track_gene_y - track_height - 0.3,
         ],
         "ymax": [
-            track_reg_y + track_height + 0.3,
-            track_var_y + track_height + 0.3,
-            track_cov_y + track_height + 0.3,
-            track_gene_y + track_height + 0.45,
+            track_reg_y + track_height + 0.35,
+            track_var_y + track_height + 0.35,
+            track_cov_y + track_height + 0.35,
+            track_gene_y + track_height + 0.5,
         ],
         "track": ["Regulatory", "Variants", "Coverage", "Genes"],
+    }
+)
+
+# Thin horizontal divider lines between tracks
+divider_y_positions = [
+    (track_reg_y + track_height + 0.35 + track_var_y - track_height - 0.3) / 2,
+    (track_var_y + track_height + 0.35 + track_cov_y - track_height - 0.3) / 2,
+    (track_cov_y + track_height + 0.35 + track_gene_y - track_height - 0.3) / 2,
+]
+divider_df = pd.DataFrame(
+    {
+        "x": [region_start / scale] * 3,
+        "xend": [region_end / scale] * 3,
+        "y": divider_y_positions,
+        "yend": divider_y_positions,
     }
 )
 
@@ -203,61 +226,99 @@ track_labels_df = pd.DataFrame(
     }
 )
 
-# Colors
+# Highlight region: variant within exon (HOXA3, exon 2 region) for focal point
+highlight_df = pd.DataFrame(
+    {
+        "xmin": [27241.0],
+        "xmax": [27243.0],
+        "ymin": [track_var_y - track_height - 0.3],
+        "ymax": [track_gene_y + track_height + 0.5],
+    }
+)
+
+# Colors — refined palette
 gene_color = "#306998"
-exon_color = "#306998"
-cov_fill = "#4A90D9"
+exon_color = "#2B5F8A"
+cov_fill = "#6AAED6"
+cov_border = "#4A90D9"
 snp_color = "#E8833A"
-indel_color = "#D55E00"
+indel_color = "#C44E52"
 promoter_color = "#2CA02C"
-enhancer_color = "#9467BD"
+enhancer_color = "#8B6DAF"
 
 # Plot
 plot = (
     ggplot()
+    # Highlight region for storytelling focal point
+    + geom_rect(
+        aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax"),
+        data=highlight_df,
+        fill="#FFF8E1",
+        color="#FFE082",
+        size=0.5,
+        alpha=0.4,
+    )
     # Track background shading
     + geom_rect(
         aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax"),
         data=track_bg,
-        fill="#F7F7F7",
-        color="#EEEEEE",
+        fill="#F8F9FA",
+        color="#E8E8E8",
         size=0.3,
-        alpha=0.6,
+        alpha=0.5,
+    )
+    # Divider lines between tracks
+    + geom_segment(
+        aes(x="x", xend="xend", y="y", yend="yend"), data=divider_df, color="#D0D0D0", size=0.4, linetype="dashed"
     )
     # Gene track: intron lines
-    + geom_segment(aes(x="x", xend="xend", y="y", yend="yend"), data=gene_intron_df, color=gene_color, size=1.0)
-    # Gene track: exon rectangles
+    + geom_segment(aes(x="x", xend="xend", y="y", yend="yend"), data=gene_intron_df, color=gene_color, size=1.2)
+    # Gene track: exon rectangles with tooltips
     + geom_rect(
         aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax"),
         data=exon_df,
         fill=exon_color,
-        color="#1E4F7A",
-        size=0.5,
-        alpha=0.85,
+        color="#1A3F5C",
+        size=0.6,
+        alpha=0.9,
+        tooltips=layer_tooltips().line("Gene: @gene").line("Size: @exon_size"),
     )
     # Gene labels
-    + geom_text(aes(x="x", y="y", label="label"), data=gene_label_df, size=11, color="#333333", fontface="italic")
+    + geom_text(aes(x="x", y="y", label="label"), data=gene_label_df, size=13, color="#1a1a1a", fontface="italic")
     # Strand direction arrows
-    + geom_text(aes(x="x", y="y", label="label"), data=strand_df, size=9, color="#666666")
-    # Coverage track: filled area using ribbon to constrain to track band
+    + geom_text(aes(x="x", y="y", label="label"), data=strand_df, size=10, color="#555555")
+    # Coverage track: filled area with tooltips
     + geom_ribbon(
-        aes(x="x", ymin="ybase", ymax="y"), data=cov_plot_df, fill=cov_fill, color=cov_fill, alpha=0.5, size=0.3
+        aes(x="x", ymin="ybase", ymax="y"),
+        data=cov_plot_df,
+        fill=cov_fill,
+        color=cov_border,
+        alpha=0.55,
+        size=0.4,
+        tooltips=layer_tooltips().line("Position: @pos_label").line("Depth: @depth_label"),
     )
-    # Variant track: lollipop stems
-    + geom_segment(aes(x="x", xend="x", y="y_base", yend="y_top", color="type"), data=var_plot_df, size=0.8)
-    # Variant track: lollipop heads
-    + geom_point(aes(x="x", y="y_top", color="type"), data=var_plot_df, size=4)
-    # Regulatory track
+    # Variant track: lollipop stems - thicker
+    + geom_segment(aes(x="x", xend="x", y="y_base", yend="y_top", color="type"), data=var_plot_df, size=1.2)
+    # Variant track: lollipop heads - larger with tooltips
+    + geom_point(
+        aes(x="x", y="y_top", color="type"),
+        data=var_plot_df,
+        size=6,
+        stroke=0.8,
+        tooltips=layer_tooltips().line("@type").line("@qual_label").line("Position: @pos_label"),
+    )
+    # Regulatory track with tooltips
     + geom_rect(
         aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax", fill="element"),
         data=reg_plot_df,
-        alpha=0.75,
-        size=0.3,
+        alpha=0.8,
+        size=0.4,
         color="#FFFFFF",
+        tooltips=layer_tooltips().line("@element").line("Size: @size_label"),
     )
     # Track labels on the left
     + geom_text(
-        aes(x="x", y="y", label="label"), data=track_labels_df, size=12, color="#444444", fontface="bold", hjust=1
+        aes(x="x", y="y", label="label"), data=track_labels_df, size=13, color="#333333", fontface="bold", hjust=1
     )
     # Scales
     + scale_color_manual(values={"SNP": snp_color, "Indel": indel_color}, name="Variant Type")
@@ -266,13 +327,13 @@ plot = (
     + scale_y_continuous(expand=[0.05, 0.05])
     + labs(
         title="genome-track-multi \u00b7 letsplot \u00b7 pyplots.ai",
-        subtitle="HOXA Gene Cluster \u2014 chr7:27,200\u201327,280 kb",
+        subtitle="HOXA Gene Cluster \u2014 chr7:27,200\u201327,280 kb  |  Highlight: variant-rich region in HOXA3",
     )
-    + coord_cartesian(xlim=[region_start / scale - 9, region_end / scale + 1])
+    + coord_cartesian(xlim=[region_start / scale - 10, region_end / scale + 1])
     + theme_minimal()
     + theme(
-        plot_title=element_text(size=24, face="bold", color="#1a1a1a"),
-        plot_subtitle=element_text(size=17, color="#666666"),
+        plot_title=element_text(size=26, face="bold", color="#1a1a1a"),
+        plot_subtitle=element_text(size=17, color="#555555"),
         axis_title_x=element_text(size=20, color="#333333"),
         axis_title_y=element_blank(),
         axis_text_x=element_text(size=16, color="#555555"),
@@ -281,10 +342,11 @@ plot = (
         panel_grid_major_x=element_line(color="#EAEAEA", size=0.3),
         panel_grid_major_y=element_blank(),
         panel_grid_minor=element_blank(),
-        legend_title=element_text(size=16),
+        legend_title=element_text(size=16, face="bold"),
         legend_text=element_text(size=14),
         legend_position="bottom",
         plot_background=element_rect(fill="white", color="white"),
+        plot_margin=[40, 20, 20, 20],
     )
     + ggsize(1600, 900)
 )

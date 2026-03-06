@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: sequence-logo-basic
 created: '2026-03-06T20:26:04Z'
-updated: '2026-03-06T20:38:12Z'
+updated: '2026-03-06T20:47:34Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22780525013
 issue: 4421
@@ -10,34 +10,34 @@ library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/sequence-logo-basic/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sequence-logo-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/sequence-logo-basic/letsplot/plot.html
-quality_score: 73
+quality_score: 75
 review:
   strengths:
-  - 'Excellent data choice: TATA-box transcription factor binding site motif is a
-    real, recognizable biological example'
-  - Clean code structure with deterministic data and correct information content calculation
-    (entropy-based)
-  - Good use of letsplot ggplot grammar with appropriate geom layering (rect + text)
-  - Correct title format and descriptive axis labels with units
-  - Code quality is exemplary with clean KISS structure
+  - 'Significant visual improvement: colored letters on white background create an
+    authentic sequence logo appearance (addressed core feedback from attempts 1-2)'
+  - 'Excellent data choice: TATA-box motif is a real, recognizable biological example'
+  - Exemplary code quality with clean KISS structure and deterministic data
+  - Correct information content calculation and proper frequency-based stacking
+  - Subtle background rectangles (alpha=0.15) add structure without visual noise
   weaknesses:
-  - Still uses colored rectangles with white text overlay rather than colored letters
-    as primary elements — looks like a stacked bar chart, not a sequence logo
-  - White text inside thin rectangles is illegible at minor-frequency positions (especially
-    positions 9, 10)
-  - No meaningful improvement from attempt 1 feedback on the core visual approach
-  image_description: The plot shows a sequence logo approximation using stacked colored
-    rectangles at 10 positions along the x-axis ("Position"). Each position displays
-    nucleotides A (green), C (blue), G (orange), and T (red) as colored rectangles
-    stacked vertically, with total stack height proportional to information content
-    in bits. White bold text labels appear inside each rectangle, sized proportionally
-    to bar height. The title "sequence-logo-basic · letsplot · pyplots.ai" appears
-    at top left in bold. Y-axis is labeled "Information content (bits)" ranging from
-    0 to ~1.5. A "Nucleotide" legend with four colored entries sits on the right.
-    Positions 2–5 clearly show the TATA motif (T, A, T, A dominant with tall stacks
-    ~1.0–1.4 bits). Position 7 shows moderate G conservation, position 8 shows C conservation.
-    Positions 1, 9, and 10 have near-zero information content with tiny barely-visible
-    bars. The background uses a minimal theme with only horizontal gridlines.
+  - Letters are sized but not vertically stretched to fill their allocated height
+    (letsplot limitation)
+  - Small-frequency letters at bottom of stacks remain very small and hard to read
+  - Legend shows lowercase a symbols instead of actual nucleotide letters
+  - Significant unused vertical space (y-axis 2.1 vs max data 1.4)
+  image_description: 'The plot displays a sequence logo approximation for a 10-position
+    DNA transcription factor binding site motif. At each position, colored letters
+    (A=green, C=blue, G=orange, T=red) are stacked vertically with heights proportional
+    to their contribution to information content. Subtle, semi-transparent colored
+    rectangles (alpha=0.15) sit behind the letters, providing visual structure without
+    dominating. The title "sequence-logo-basic · letsplot · pyplots.ai" appears bold
+    at the top left. X-axis is labeled "Position" (1-10), Y-axis is "Information content
+    (bits)" (0-2.1). A "Nucleotide" legend on the right shows A, C, G, T with lowercase
+    "a" symbols in respective colors. The TATA-box motif is clearly visible: positions
+    2 (T, red), 3 (A, green), 4 (T, red), 5 (A, green) are dominant with tall stacks
+    (~1.0-1.4 bits). Position 7 shows moderate G conservation, position 8 shows C
+    conservation. Positions 1, 9, and 10 have near-zero information content. Small-frequency
+    letters at the bottom of stacks are very small but colored against a white background.'
   criteria_checklist:
     visual_quality:
       score: 22
@@ -48,96 +48,98 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Font sizes explicitly set but white text on thin rectangles is illegible
-          at minor-frequency positions
+        comment: Font sizes explicitly set. Dominant letters clear; small-frequency
+          letters still quite small due to size mapping range.
       - id: VQ-02
         name: No Overlap
         score: 4
         max: 6
         passed: false
-        comment: Letter labels cramped in thin bottom rectangles; text overlaps at
-          positions 9 and 10
+        comment: Small letters at bottom of positions 2-8 are cramped. Minor overlap
+          at positions like 6.
       - id: VQ-03
         name: Element Visibility
         score: 4
         max: 6
         passed: true
-        comment: Dominant letters visible but minor frequency bars near-invisible
-          at positions 1, 9, 10
+        comment: Dominant letters prominently visible. Minor frequency letters tiny
+          but colored against white background helps.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Standard biology colors; green-red not ideal for colorblind but is
-          established convention
+        comment: Standard biology color scheme as specified. Green/red not ideal for
+          colorblind but spec-mandated.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Reasonable layout with some unused vertical space above data
+        comment: Y-axis extends to 2.1 but max data is ~1.4, leaving significant empty
+          space in upper third.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: Position, Information content (bits)'
+        comment: 'Descriptive labels with units: Position and Information content
+          (bits).'
     design_excellence:
-      score: 10
+      score: 11
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
         passed: true
-        comment: Well-configured defaults with biology color scheme; competent but
-          not exceptional
+        comment: Colored letters with subtle background rectangles create cleaner
+          sequence logo appearance. Above configured default.
       - id: DE-02
         name: Visual Refinement
         score: 3
         max: 6
         passed: true
-        comment: theme_minimal, removed x grid and minor grid; some refinement beyond
-          defaults
+        comment: theme_minimal, removed x grid and minor grid, subtle alpha=0.15 rectangles.
       - id: DE-03
         name: Data Storytelling
         score: 3
         max: 6
         passed: true
-        comment: TATA-box data creates natural visual hierarchy; conserved positions
-          tower over variable ones
+        comment: TATA-box motif creates natural visual hierarchy. Size scaling tells
+          conservation story.
     spec_compliance:
-      score: 11
+      score: 12
       max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Stacked bar chart approximation rather than true sequence logo with
-          stretched letter glyphs
+        passed: true
+        comment: Colored letters as primary visual element, close to sequence logo.
+          Not truly stretched glyphs (letsplot limitation).
       - id: SC-02
         name: Required Features
-        score: 2
+        score: 3
         max: 4
-        passed: false
-        comment: Stacking, info content, colors present but missing stretched letter
-          glyphs as primary element
+        passed: true
+        comment: 'All features present: stacking, frequency ordering, info content
+          scaling, standard colors. Letters not stretched.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=position, Y=information content in bits, correctly mapped
+        comment: X=position, Y=information content in bits. Correct entropy calculation.
       - id: SC-04
         name: Title & Legend
-        score: 3
+        score: 2
         max: 3
-        passed: true
-        comment: Correct title format and Nucleotide legend with all four bases
+        passed: false
+        comment: Title format correct. Legend shows lowercase a symbols instead of
+          actual nucleotide letters.
     data_quality:
       score: 14
       max: 15
@@ -147,20 +149,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows high, moderate, and low conservation positions with good variety
+        comment: Shows high, moderate, and near-zero conservation positions. Good
+          range.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: TATA-box transcription factor binding site is a real biological motif
+        comment: TATA-box-like transcription factor binding site. Real, well-known
+          biological motif.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Frequencies sum to 1.0, information content 0-2 bits for DNA, biologically
-          realistic
+        comment: Frequencies sum to 1.0, info content 0-2 bits for DNA. Biologically
+          realistic.
     code_quality:
       score: 10
       max: 10
@@ -170,31 +174,32 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, calculation, plot, save'
+        comment: 'Linear flow: imports, data, calculation, plot, save. No functions
+          or classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic with hardcoded frequency dictionaries
+        comment: Fully deterministic with hardcoded frequency dictionaries.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: numpy, pandas, lets_plot'
+        comment: 'All imports used: numpy, pandas, lets_plot.'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, well-structured rect+text approach for letsplot limitations
+        comment: Clean, well-structured. Elegant geom_rect + colored geom_text approach.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with scale=3 plus HTML export
+        comment: Saves as plot.png with scale=3, plus HTML export.
     library_mastery:
       score: 6
       max: 10
@@ -204,24 +209,25 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Good ggplot grammar: geom_rect + geom_text, scale_fill_manual, scale_size,
-          theme customization'
+        comment: 'Good ggplot grammar: geom_rect + geom_text, scale_fill/color_manual,
+          scale_size, guide_legend, ggsize/ggsave.'
       - id: LM-02
         name: Distinctive Features
         score: 2
         max: 5
         passed: false
-        comment: HTML export is letsplot-specific but no interactive features or unique
-          capabilities leveraged
+        comment: HTML export and scale_size with override_aes. No unique interactive
+          features leveraged.
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - layer-composition
+  - html-export
   patterns:
   - data-generation
   - iteration-over-groups
-  dataprep: []
+  dataprep:
+  - normalization
   styling:
-  - edge-highlighting
-  - grid-styling
+  - alpha-blending

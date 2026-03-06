@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 tree-decision: Decision Tree Visualization with Probabilities
 Library: highcharts unknown | Python 3.14.3
 Quality: 83/100 | Created: 2026-03-06
@@ -43,12 +43,19 @@ chart.options = HighchartsOptions()
 chart.options.chart = {
     "width": 4800,
     "height": 2700,
-    "backgroundColor": "#ffffff",
+    "backgroundColor": "#F8F9FA",
     "style": {"fontFamily": "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif"},
     "spacingTop": 20,
     "spacingBottom": 40,
     "spacingLeft": 40,
     "spacingRight": 40,
+    "plotBackgroundColor": {
+        "linearGradient": {"x1": 0, "y1": 0, "x2": 1, "y2": 1},
+        "stops": [[0, "#FFFFFF"], [1, "#F0F4F8"]],
+    },
+    "plotBorderColor": "#E0E6ED",
+    "plotBorderWidth": 1,
+    "plotShadow": {"color": "rgba(0,0,0,0.06)", "offsetX": 3, "offsetY": 3, "width": 8},
 }
 
 chart.options.title = {
@@ -61,9 +68,9 @@ chart.options.subtitle = {
     "style": {"fontSize": "32px", "fontWeight": "400", "color": "#777777"},
 }
 
-chart.options.x_axis = {"visible": False, "min": 0, "max": 4400, "gridLineWidth": 0}
+chart.options.x_axis = {"visible": False, "min": 0, "max": 4200, "gridLineWidth": 0}
 
-chart.options.y_axis = {"visible": False, "min": 0, "max": 2300, "reversed": True, "gridLineWidth": 0}
+chart.options.y_axis = {"visible": False, "min": 0, "max": 2100, "reversed": True, "gridLineWidth": 0}
 
 chart.options.tooltip = {
     "useHTML": True,
@@ -86,7 +93,7 @@ chart.options.legend = {
     "align": "right",
     "verticalAlign": "middle",
     "x": -60,
-    "y": 250,
+    "y": 200,
     "itemStyle": {"fontSize": "28px", "fontWeight": "400", "color": "#444444"},
     "symbolWidth": 24,
     "symbolHeight": 24,
@@ -116,15 +123,15 @@ chart.options.plot_options = {
 decision_series = ScatterSeries()
 decision_series.name = "Decision Node"
 decision_series.data = [
-    {"x": 550, "y": 1100, "id": "D1", "name": "EMV: $560K"},
-    {"x": 2650, "y": 750, "id": "D2", "name": "EMV: $200K"},
+    {"x": 450, "y": 1000, "id": "D1", "name": "EMV: $560K"},
+    {"x": 2600, "y": 700, "id": "D2", "name": "EMV: $200K"},
 ]
 decision_series.marker = {
     "symbol": "square",
-    "radius": 36,
+    "radius": 38,
     "fillColor": "#306998",
-    "lineColor": "#1F4D6E",
-    "lineWidth": 4,
+    "lineColor": "#1A3F5C",
+    "lineWidth": 5,
 }
 decision_series.color = "#306998"
 decision_series.data_labels = {
@@ -139,10 +146,10 @@ chart.add_series(decision_series)
 chance_series = ScatterSeries()
 chance_series.name = "Chance Node"
 chance_series.data = [
-    {"x": 1550, "y": 450, "id": "C1", "name": "EMV: $560K"},
+    {"x": 1500, "y": 380, "id": "C1", "name": "EMV: $560K"},
     {
-        "x": 1550,
-        "y": 1750,
+        "x": 1500,
+        "y": 1650,
         "id": "C2",
         "name": "EMV: $325K",
         "marker": {"fillColor": "#DDDDDD", "lineColor": "#BBBBBB"},
@@ -150,16 +157,16 @@ chance_series.data = [
 ]
 chance_series.marker = {
     "symbol": "circle",
-    "radius": 36,
+    "radius": 38,
     "fillColor": "#E8833A",
-    "lineColor": "#B85E20",
-    "lineWidth": 4,
+    "lineColor": "#A35218",
+    "lineWidth": 5,
 }
 chance_series.color = "#E8833A"
 chance_series.data_labels = {
     "enabled": True,
     "format": "{point.name}",
-    "y": 60,
+    "y": 75,
     "style": {"fontSize": "32px", "fontWeight": "700", "color": "#222222", "textOutline": "3px white"},
 }
 chart.add_series(chance_series)
@@ -168,15 +175,13 @@ chart.add_series(chance_series)
 optimal_series = ScatterSeries()
 optimal_series.name = "Terminal (Optimal)"
 optimal_series.data = [
-    {"x": 2650, "y": 200, "id": "T1", "name": "$800K"},
-    {"x": 3750, "y": 500, "id": "T4", "name": "$200K"},
+    {"x": 2600, "y": 150, "id": "T1", "name": "$800K"},
+    {"x": 3650, "y": 480, "id": "T4", "name": "$200K"},
 ]
 optimal_series.marker = {
-    "symbol": "triangle",
-    "radius": 30,
-    "fillColor": "#2A9D8F",
-    "lineColor": "#1E7A6D",
-    "lineWidth": 4,
+    "symbol": "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48cG9seWdvbiBwb2ludHM9IjgsMiAzOCwyMCA4LDM4IiBmaWxsPSIjMkE5RDhGIiBzdHJva2U9IiMxRTdBNkQiIHN0cm9rZS13aWR0aD0iMyIvPjwvc3ZnPg==)",
+    "width": 40,
+    "height": 40,
 }
 optimal_series.color = "#2A9D8F"
 optimal_series.data_labels = {
@@ -193,16 +198,14 @@ chart.add_series(optimal_series)
 pruned_series = ScatterSeries()
 pruned_series.name = "Terminal (Pruned)"
 pruned_series.data = [
-    {"x": 3750, "y": 1000, "id": "T5", "name": "-$100K"},
-    {"x": 2650, "y": 1450, "id": "T2", "name": "$400K"},
-    {"x": 2650, "y": 2050, "id": "T3", "name": "$250K"},
+    {"x": 3650, "y": 930, "id": "T5", "name": "-$100K"},
+    {"x": 2600, "y": 1350, "id": "T2", "name": "$400K"},
+    {"x": 2600, "y": 1950, "id": "T3", "name": "$250K"},
 ]
 pruned_series.marker = {
-    "symbol": "triangle",
-    "radius": 28,
-    "fillColor": "#DDDDDD",
-    "lineColor": "#BBBBBB",
-    "lineWidth": 3,
+    "symbol": "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiIgdmlld0JveD0iMCAwIDM2IDM2Ij48cG9seWdvbiBwb2ludHM9IjYsMiAzNCwxOCA2LDM0IiBmaWxsPSIjRERERERERCIgc3Ryb2tlPSIjQkJCQkJCIiBzdHJva2Utd2lkdGg9IjIiLz48L3N2Zz4=)",
+    "width": 36,
+    "height": 36,
 }
 pruned_series.color = "#BBBBBB"
 pruned_series.data_labels = {
@@ -239,14 +242,14 @@ chart_js = chart.to_js_literal()
 
 # Edge data for bezier curve drawing (renderer for custom graph edges)
 edges_data = [
-    {"fx": 550, "fy": 1100, "tx": 1550, "ty": 450, "label": "Launch Product", "p": False},
-    {"fx": 550, "fy": 1100, "tx": 1550, "ty": 1750, "label": "Keep Current", "p": True},
-    {"fx": 1550, "fy": 450, "tx": 2650, "ty": 200, "label": "High Demand (0.6)", "p": False},
-    {"fx": 1550, "fy": 450, "tx": 2650, "ty": 750, "label": "Low Demand (0.4)", "p": False},
-    {"fx": 2650, "fy": 750, "tx": 3750, "ty": 500, "label": "Discount", "p": False},
-    {"fx": 2650, "fy": 750, "tx": 3750, "ty": 1000, "label": "Withdraw", "p": True},
-    {"fx": 1550, "fy": 1750, "tx": 2650, "ty": 1450, "label": "Market Grows (0.5)", "p": True},
-    {"fx": 1550, "fy": 1750, "tx": 2650, "ty": 2050, "label": "Market Stable (0.5)", "p": True},
+    {"fx": 450, "fy": 1000, "tx": 1500, "ty": 380, "label": "Launch Product", "p": False},
+    {"fx": 450, "fy": 1000, "tx": 1500, "ty": 1650, "label": "Keep Current", "p": True},
+    {"fx": 1500, "fy": 380, "tx": 2600, "ty": 150, "label": "High Demand (0.6)", "p": False},
+    {"fx": 1500, "fy": 380, "tx": 2600, "ty": 700, "label": "Low Demand (0.4)", "p": False},
+    {"fx": 2600, "fy": 700, "tx": 3650, "ty": 480, "label": "Discount", "p": False},
+    {"fx": 2600, "fy": 700, "tx": 3650, "ty": 930, "label": "Withdraw", "p": True},
+    {"fx": 1500, "fy": 1650, "tx": 2600, "ty": 1350, "label": "Market Grows (0.5)", "p": True},
+    {"fx": 1500, "fy": 1650, "tx": 2600, "ty": 1950, "label": "Market Stable (0.5)", "p": True},
 ]
 edges_json = json.dumps(edges_data)
 
@@ -259,6 +262,32 @@ edge_js = (
     var ren = chart.renderer;
     var xAxis = chart.xAxis[0];
     var yAxis = chart.yAxis[0];
+
+    // Add a subtle SVG filter for drop shadows on nodes
+    var defs = ren.createElement('defs').add();
+    defs.element.innerHTML =
+        '<filter id="nodeShadow" x="-20%%" y="-20%%" width="160%%" height="160%%">' +
+        '<feDropShadow dx="3" dy="4" stdDeviation="5" flood-color="rgba(0,0,0,0.18)"/>' +
+        '</filter>';
+
+    // Draw shadow circles behind decision nodes
+    var decisionNodes = [{x:450,y:1000},{x:2600,y:700}];
+    decisionNodes.forEach(function(n) {
+        var px = xAxis.toPixels(n.x), py = yAxis.toPixels(n.y);
+        ren.rect(px - 40, py - 40, 80, 80, 6).attr({
+            fill: 'rgba(48,105,152,0.12)', 'stroke-width': 0, zIndex: 0
+        }).add();
+    });
+
+    // Draw shadow circles behind chance nodes
+    var chanceNodes = [{x:1500,y:380},{x:1500,y:1650}];
+    chanceNodes.forEach(function(n) {
+        var px = xAxis.toPixels(n.x), py = yAxis.toPixels(n.y);
+        ren.circle(px + 3, py + 4, 42).attr({
+            fill: 'rgba(0,0,0,0.1)', 'stroke-width': 0, zIndex: 0
+        }).add();
+    });
+
     var edges = """
     + edges_json
     + """;
@@ -300,18 +329,21 @@ edge_js = (
         }
 
         var labelX = x1 + (x2 - x1) * 0.45;
-        var labelY = y1 + (y2 - y1) * 0.45 - 20;
-        var labelColor = e.p ? '#999999' : '#444444';
+        var labelY = y1 + (y2 - y1) * 0.45 - 24;
+        var labelColor = e.p ? '#999999' : '#333333';
 
-        ren.text(e.label, labelX, labelY).attr({
+        ren.label(e.label, labelX, labelY - 18, null, null, null, false, false).attr({
             align: 'center',
-            zIndex: 6
+            zIndex: 6,
+            padding: 6,
+            r: 4
         }).css({
             fontSize: '30px',
             fontWeight: '600',
             color: labelColor,
-            fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif'
-        }).add();
+            fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif',
+            textShadow: 'none'
+        }).shadow({color: 'rgba(0,0,0,0.04)', offsetX: 1, offsetY: 1, width: 3}).add();
     });
 })();
 """

@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: heatmap-rainflow
 created: '2026-03-02T21:06:18Z'
-updated: '2026-03-06T20:32:19Z'
+updated: '2026-03-06T20:45:46Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22595466105
 issue: 4465
@@ -10,32 +10,33 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-rainflow/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-rainflow/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-rainflow/highcharts/plot.html
-quality_score: 87
+quality_score: 86
 review:
   strengths:
-  - Full spec compliance with all required features (logarithmic colorbar, MPa units,
-    zero-count distinction)
-  - Strong viridis-inspired color scheme with explicit stops for colorblind accessibility
-  - Effective data storytelling through subtitle, annotation, and logarithmic scale
-  - Realistic fatigue engineering context with sensible MPa ranges
-  - Clean use of Highcharts heatmap module with proper null handling
+  - Perfect spec compliance with all required features (logarithmic colorbar, units,
+    distinct zero-count bins)
+  - Excellent realistic engineering data with physically plausible fatigue distributions
+  - Strong viridis-derived custom colormap with 9 color stops and logarithmic scaling
+  - Clean visual design with removed grid/spines and warm background
+  - Informative subtitle that narrates the key data insight
   weaknesses:
-  - 'Layout could be tighter: annotation box overlaps data cells, colorbar legend
-    text relatively small'
-  - X-axis labels slightly crowded at 20 categories despite rotation
-  - Renderer annotation approach adds code complexity that could be simplified
-  image_description: 'The plot displays a 20x20 heatmap of rainflow cycle counts using
-    a viridis-inspired color gradient (dark purple through teal/green to bright yellow).
-    The y-axis shows "Cycle Amplitude (MPa)" from 10 to 200, the x-axis shows "Cycle
-    Mean (MPa)" from -50 to 250. A vertical logarithmic colorbar on the right is labeled
-    "Cycle Count" with values from 1 to 6k. The background is light gray (#fafafa),
-    and zero-count bins appear as a lighter gray (#f0f0f0) visible mainly in the upper
-    corners. The highest cycle counts (bright yellow cells) cluster at low amplitudes
-    (10-30 MPa) near a mean of ~100 MPa, showing the expected exponential decay pattern.
-    A subtle annotation box near the bottom-right reads "Peak region: low-amplitude
-    cycles near 100 MPa mean stress dominate fatigue damage." The title "heatmap-rainflow
-    · highcharts · pyplots.ai" appears at the top with a descriptive subtitle. X-axis
-    labels are rotated at 315 degrees.'
+  - Renderer annotation for peak region (lines 199-221) does not render in headless
+    Chrome screenshot — dead code adding complexity
+  - X-axis tick labels slightly clipped at bottom edge despite 200px margin
+  - Data storytelling reduced because peak-region annotation does not render
+  image_description: The plot displays a 20x20 heatmap with the title "heatmap-rainflow
+    · highcharts · pyplots.ai" at the top and a subtitle describing the fatigue spectrum.
+    The x-axis is labeled "Cycle Mean (MPa)" with rotated tick labels ranging from
+    -50 to ~234 MPa. The y-axis is labeled "Cycle Amplitude (MPa)" with tick labels
+    from 10 to 200 MPa. A viridis-derived colormap ranges from dark purple (low counts,
+    ~1) through teal/green to bright yellow (high counts, ~6k). A vertical logarithmic
+    color bar on the right is titled "Cycle Count." The dominant feature is a bright
+    yellow region at low amplitudes (10-40 MPa) near mean ~100 MPa, representing the
+    highest cycle concentrations. High-amplitude and extreme-mean regions are dark
+    purple or light gray (zero-count bins). Cell borders in the background color (#fafafa)
+    provide clean separation. The x-axis tick labels are rotated 315 degrees and appear
+    slightly clipped at the bottom edge. The coded renderer annotation for the peak
+    region is not visible in the rendered image.
   criteria_checklist:
     visual_quality:
       score: 27
@@ -43,45 +44,48 @@ review:
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 52px, subtitle 30px, axis titles
-          34px, tick labels 28px, legend 24-28px'
+        comment: All font sizes explicitly set (52px title, 34px axis titles, 28px
+          labels). Minor clipping on rotated x-axis tick labels at bottom edge.
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: X-axis labels rotated 315 degrees but slightly crowded at 20 categories
+        comment: X-axis labels rotated to prevent overlap; spacing adequate but slightly
+          cramped for outermost labels.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: 20x20 grid cells fill plot area well, colors clearly differentiate
-          values
+        comment: Heatmap cells well-sized with clear color differentiation. Cell borders
+          provide good separation. Logarithmic scale spans full range.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Viridis color stops are colorblind-safe with good contrast
+        comment: Viridis colormap with 9 custom stops is colorblind-safe with excellent
+          perceptual uniformity.
       - id: VQ-05
         name: Layout & Canvas
-        score: 2
+        score: 3
         max: 4
-        passed: false
-        comment: Annotation box overlaps data cells, colorbar legend text relatively
-          small, plot could use more width
+        passed: true
+        comment: Good overall layout. Right-side legend consumes notable space. X-axis
+          labels slightly clipped at bottom.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Both axes include MPa units
+        comment: 'Both axes have descriptive labels with units: Cycle Mean (MPa) and
+          Cycle Amplitude (MPa).'
     design_excellence:
-      score: 14
+      score: 13
       max: 20
       items:
       - id: DE-01
@@ -89,22 +93,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom viridis stops, thoughtful font family, distinct null cell
-          color, above defaults
+        comment: Custom viridis-derived palette, custom font family, styled title/subtitle,
+          warm background. Strong intentional design.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Grid lines removed, axis lines/ticks removed, cell borders add structure,
-          generous margins
+        comment: Axis lines and grid removed, tick marks removed, cell borders in
+          background color, credits disabled. Clean and polished.
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 3
         max: 6
         passed: true
-        comment: Subtitle explains insight, annotation highlights peak region, logarithmic
-          scale reveals distribution
+        comment: Subtitle narrates key insight. Viridis colormap draws eye to hotspot.
+          Renderer annotation doesn't appear in screenshot, reducing impact.
     spec_compliance:
       score: 15
       max: 15
@@ -114,50 +118,52 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct 2D heatmap chart type
+        comment: Correct 2D heatmap visualization of rainflow counting matrix.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Sequential colormap, logarithmic scale, colorbar, MPa units, bin
-          labels, zero-count distinction
+        comment: 'All features present: sequential colormap, logarithmic scale, colorbar,
+          MPa units, bin-center ticks, distinct zero-count bins.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Amplitude on y-axis, mean on x-axis as specified
+        comment: Amplitude on y-axis, mean on x-axis, color intensity = cycle count.
+          Correct per spec.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, colorbar title appropriate
+        comment: Title matches required format. Legend titled Cycle Count.
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Shows exponential amplitude decay, Gaussian mean distribution, sparsity,
-          zero-count regions
+        comment: 'Full range shown: hotspot, gradual decay, sparse regions, zero-count
+          bins.'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Fatigue analysis with MPa stress units, realistic for mechanical
-          engineering
+        comment: Engineering fatigue analysis with MPa units. Physically plausible
+          distribution.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Amplitude 10-200 MPa, mean -50 to 250 MPa, counts up to ~6000
+        comment: Amplitude 10-200 MPa, mean -50 to 250 MPa realistic for structural
+          steel fatigue.
     code_quality:
       score: 9
       max: 10
@@ -167,34 +173,35 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean Imports, Data, Plot, Save flow
+        comment: 'Linear flow: imports, data, chart, HTML, screenshot. No functions
+          or classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) ensures deterministic output.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: All imports are used.
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
         passed: false
-        comment: DOMContentLoaded renderer.label adds complexity; download retry loop
-          slightly verbose
+        comment: Renderer annotation block (lines 199-221) does not render in headless
+          Chrome — dead code adding complexity.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via Selenium screenshot
+        comment: Saves as plot.png via Selenium screenshot. Current API.
     library_mastery:
-      score: 8
+      score: 7
       max: 10
       items:
       - id: LM-01
@@ -202,15 +209,15 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of highcharts-core Python wrapper with from_dict, heatmap
-          module, to_js_literal
+        comment: Proper highcharts-core wrapper usage with from_dict, container, to_js_literal.
+          Download retry for CDN.
       - id: LM-02
         name: Distinctive Features
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: Uses colorAxis logarithmic type, heatmap module, renderer.label,
-          nullColor, structured tooltips
+        comment: Uses colorAxis with logarithmic type, heatmap module, nullColor,
+          tooltip pointFormat with axis categories, renderer API.
   verdict: REJECTED
 impl_tags:
   dependencies:
@@ -222,6 +229,7 @@ impl_tags:
   patterns:
   - data-generation
   - matrix-construction
+  - iteration-over-groups
   dataprep: []
   styling:
   - custom-colormap

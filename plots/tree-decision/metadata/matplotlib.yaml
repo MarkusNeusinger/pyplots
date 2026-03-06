@@ -1,7 +1,7 @@
 library: matplotlib
 specification_id: tree-decision
 created: '2026-03-06T21:34:31Z'
-updated: '2026-03-06T21:38:22Z'
+updated: '2026-03-06T21:45:17Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22782764506
 issue: 4569
@@ -10,32 +10,34 @@ library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/tree-decision/matplotlib/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/tree-decision/matplotlib/plot_thumb.png
 preview_html: null
-quality_score: 84
+quality_score: 87
 review:
   strengths:
-  - Excellent spec compliance with all required node types, shapes, and features present
-  - Clean visual differentiation between pruned and optimal branches using dashed/gray
-    vs solid/colored
-  - Well-structured readable code with clear data definition and manual layout
-  - Good use of matplotlib patch system for custom node shapes
+  - Perfect spec compliance with all required node types, shapes, EMV values, and
+    pruning features
+  - EMV rollback calculations are now arithmetically correct
+  - Strong visual differentiation between optimal and pruned branches using multiple
+    cues
+  - Professional polish with drop shadows, white node edges, and rounded label boxes
+  - Clean, well-structured code with appropriate complexity
   weaknesses:
-  - EMV values are arithmetically incorrect — rollback calculation does not match
-    the payoffs and probabilities shown
-  - Font sizes for branch labels (13pt) and EMV text (12pt) are below recommended
-    minimums for target resolution
-  - Some wasted canvas space in lower-right quadrant
-  image_description: 'The plot shows a decision tree diagram with a left-to-right
-    layout on a white background. The title "tree-decision · matplotlib · pyplots.ai"
-    is displayed at the top. There are two blue square decision nodes (D1 at far left,
-    D2 at upper middle) displaying "EMV $0.6M" and "EMV $0.8M" respectively. One orange
-    circle chance node (C1) shows "EMV $0.6M". Four green right-pointing triangles
-    serve as terminal nodes with payoff labels: "$1.2M", "$800K", "$100K", and "$0K".
-    Pruned branches (Don''t Invest and Maintain) are rendered as gray dashed lines
-    with red X markers at their midpoints, and their terminal triangles are gray.
-    Non-pruned branches are solid dark gray lines. Branch labels ("Invest", "Don''t
-    Invest", "High Demand (0.6)", "Low Demand (0.4)", "Expand", "Maintain") appear
-    along the branches with white background boxes. A legend in the lower right identifies
-    Decision Node, Chance Node, Terminal Node, and Pruned Branch.'
+  - Orange and green node colors may be difficult to distinguish for deuteranopia
+  - EMV sub-label at 14pt slightly below recommended minimum
+  - Branch label placement near nodes could be refined to avoid proximity crowding
+  - Layout has unused space in lower-right area
+  image_description: 'The plot displays a decision tree diagram with a left-to-right
+    layout on a light gray (#FAFAFA) background. The title "tree-decision · matplotlib
+    · pyplots.ai" is centered at the top in dark gray. Two blue (#306998) rounded-square
+    decision nodes (D1 at far left, D2 at upper-right area) display "EMV $760K" and
+    "EMV $1.20M" respectively. One orange (#D4682A) circle chance node (C1) shows
+    "EMV $760K". Four right-pointing triangles serve as terminal nodes: two green
+    (#3D8B5E) non-pruned terminals with payoff labels "$1.2M" (Expand) and "$100K"
+    (Low Demand), and two gray (#B0B0B0) pruned terminals showing "$800K" (Maintain)
+    and "$0K" (Don''t Invest). Pruned branches are rendered as gray dashed lines with
+    prominent red X markers at their midpoints. Non-pruned branches are solid dark
+    lines. Branch labels appear in white-background rounded boxes along the branches.
+    All nodes have subtle drop shadows. A legend in the lower right identifies all
+    four element types.'
   criteria_checklist:
     visual_quality:
       score: 26
@@ -43,17 +45,18 @@ review:
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set but EMV labels (12pt) and branch labels
-          (13pt) are below recommended 16pt minimum
+        comment: 'Font sizes explicitly set: title 24pt, branch labels 16pt, EMV value
+          17pt, payoff 18pt. EMV sub-label at 14pt slightly below 16pt recommendation'
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: All text fully readable, no collisions
+        comment: 'Minor proximity issues: High Demand label close to C1/D2 nodes,
+          Maintain label near pruning X marker'
       - id: VQ-03
         name: Element Visibility
         score: 6
@@ -66,42 +69,45 @@ review:
         max: 4
         passed: true
         comment: Blue/orange/green palette generally distinguishable; orange and green
-          borderline for deuteranopia
+          could be borderline for deuteranopia
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good left-to-right layout, some unused space in lower-right
+        comment: Good left-to-right layout; some unused space in lower-right area
+          near legend
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Axes appropriately hidden, title format correct
+        comment: Axes appropriately hidden for tree diagram, title format correct
     design_excellence:
-      score: 13
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom color palette with white edge highlights, above defaults but
-          not publication-level
+        comment: Custom palette, white edge highlights, drop shadows, rounded label
+          boxes — clearly above defaults
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Axes hidden, white node borders, subtle label background boxes
+        comment: Axes hidden, shadow effects, rounded label boxes, clean background
+          — good polish
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Pruned branches clearly differentiated, optimal path stands out visually
+        comment: Clear differentiation between optimal and pruned paths; viewer can
+          trace optimal decision quickly
     spec_compliance:
       score: 15
       max: 15
@@ -111,13 +117,13 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct tree diagram with squares, circles, and triangles
+        comment: Correct tree with squares, circles, and right-pointing triangles
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: node shapes, EMV, probabilities, pruning,
+        comment: 'All features: node shapes, EMV, probabilities, pruning markers,
           branch labels'
       - id: SC-03
         name: Data Mapping
@@ -130,9 +136,9 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Correct title format, legend with all element types
+        comment: Title format correct, legend identifies all four element types
     data_quality:
-      score: 13
+      score: 15
       max: 15
       items:
       - id: DQ-01
@@ -140,22 +146,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Shows all tree elements: decision, chance, terminal nodes, pruning,
-          EMV rollback'
+        comment: 'All tree elements shown: decision nodes, chance node, terminals,
+          pruning, EMV rollback'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Two-stage investment decision with high/low demand, neutral business
-          scenario
+        comment: Two-stage investment decision — real-world business scenario, neutral
+          topic
       - id: DQ-03
         name: Appropriate Scale
-        score: 2
+        score: 4
         max: 4
-        passed: false
-        comment: EMV rollback values are arithmetically incorrect for the given payoffs
-          and probabilities
+        passed: true
+        comment: 'EMV calculations correct: D2=$1.20M, C1=$760K, D1=$760K. Realistic
+          business values'
     code_quality:
       score: 10
       max: 10
@@ -165,7 +171,8 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports, data, positions, draw, save'
+        comment: 'Clean linear flow: imports, data, positions, colors, draw, legend,
+          save'
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -183,7 +190,7 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Well-organized with clear sections, appropriate complexity
+        comment: Well-organized, appropriate complexity for custom diagram
       - id: CQ-05
         name: Output & API
         score: 1
@@ -199,8 +206,8 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of ax methods, FancyBboxPatch, plt.Circle, plt.Polygon,
-          proper zorder layering
+        comment: Good use of Axes methods, FancyBboxPatch, FancyArrowPatch, plt.Circle,
+          plt.Polygon, zorder layering
       - id: LM-02
         name: Distinctive Features
         score: 3

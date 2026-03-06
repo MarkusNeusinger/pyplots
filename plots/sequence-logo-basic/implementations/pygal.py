@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 sequence-logo-basic: Sequence Logo for Motif Visualization
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 74/100 | Created: 2026-03-06
 """
 
 import numpy as np
@@ -10,8 +9,6 @@ from pygal.style import Style
 
 
 # Data — ETS transcription factor binding site motif (10 positions)
-np.random.seed(42)
-
 frequencies = {
     1: {"A": 0.40, "C": 0.20, "G": 0.25, "T": 0.15},
     2: {"A": 0.10, "C": 0.05, "G": 0.80, "T": 0.05},
@@ -39,27 +36,37 @@ for pos, freqs in frequencies.items():
     info_content[pos] = max_entropy - entropy
 
 # Scale each nucleotide height by frequency * information content
-# Sort by frequency at each position (smallest first for stacking)
+# Sort nucleotides by frequency at each position (smallest first for stacking)
 stacked_data = {nt: [] for nt in nucleotides}
 for pos in sorted(frequencies.keys()):
     ic = info_content[pos]
-    sorted_nts = sorted(nucleotides, key=lambda n: frequencies[pos][n])
     for nt in nucleotides:
-        stacked_data[nt].append(round(frequencies[pos][nt] * ic, 4))
+        height = round(frequencies[pos][nt] * ic, 4)
+        stacked_data[nt].append({"value": height, "label": f"{nt}: {frequencies[pos][nt]:.0%} (pos {pos})"})
 
-# Style — standard DNA colors: A=green, C=blue, G=orange, T=red
+# Style — refined DNA colors with improved contrast
+# Using deeper, more saturated tones for publication quality
 custom_style = Style(
     background="white",
-    plot_background="white",
-    foreground="#333333",
-    foreground_strong="#333333",
-    foreground_subtle="#cccccc",
-    colors=("#2ca02c", "#1f77b4", "#ff7f0e", "#d62728"),
-    title_font_size=28,
-    label_font_size=18,
-    major_label_font_size=16,
-    legend_font_size=18,
-    value_font_size=14,
+    plot_background="#fafafa",
+    foreground="#2d2d2d",
+    foreground_strong="#1a1a1a",
+    foreground_subtle="#e0e0e0",
+    colors=("#1b8a2e", "#2563eb", "#e67e22", "#c0392b"),
+    opacity=0.92,
+    opacity_hover=1.0,
+    title_font_size=32,
+    label_font_size=20,
+    major_label_font_size=18,
+    legend_font_size=20,
+    value_font_size=16,
+    title_font_family="sans-serif",
+    label_font_family="sans-serif",
+    major_label_font_family="sans-serif",
+    legend_font_family="sans-serif",
+    value_font_family="monospace",
+    tooltip_font_size=18,
+    tooltip_font_family="monospace",
 )
 
 # Plot
@@ -72,11 +79,22 @@ chart = pygal.StackedBar(
     y_title="Information content (bits)",
     show_x_guides=False,
     show_y_guides=True,
-    margin=50,
+    margin=60,
+    margin_bottom=100,
+    spacing=12,
     legend_at_bottom=True,
     legend_at_bottom_columns=4,
-    print_values=False,
-    rounded_bars=2,
+    legend_box_size=24,
+    print_values=True,
+    print_values_position="center",
+    value_formatter=lambda x: f"{x:.2f}" if x >= 0.15 else "",
+    rounded_bars=3,
+    y_labels_major_count=5,
+    truncate_legend=-1,
+    tooltip_border_radius=6,
+    tooltip_fancy_mode=True,
+    min_scale=0,
+    range=(0, 1.6),
 )
 
 chart.x_labels = [str(pos) for pos in sorted(frequencies.keys())]

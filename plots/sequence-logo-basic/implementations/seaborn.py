@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 sequence-logo-basic: Sequence Logo for Motif Visualization
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 82/100 | Created: 2026-03-06
@@ -7,7 +7,6 @@ Quality: 82/100 | Created: 2026-03-06
 import matplotlib.pyplot as plt
 import matplotlib.transforms as mtransforms
 import numpy as np
-import pandas as pd
 import seaborn as sns
 from matplotlib.font_manager import FontProperties
 from matplotlib.patches import PathPatch
@@ -41,25 +40,12 @@ for i in range(n_positions):
     entropy = sum(f * np.log2(f) for f in frequencies[i] if f > 0)
     info_content[i] = 2.0 + entropy
 
-# Build DataFrame for seaborn stacked bars
-rows = []
-for pos in range(n_positions):
-    ic = info_content[pos]
-    letter_heights = frequencies[pos] * ic
-    sorted_indices = np.argsort(letter_heights)
-    for idx in sorted_indices:
-        height = letter_heights[idx]
-        if height >= 0.01:
-            rows.append({"Position": pos + 1, "Base": bases[idx], "Height": height})
-df = pd.DataFrame(rows)
-
-# Colorblind-friendly palette using seaborn color utilities
-base_palette = sns.color_palette("colorblind", n_colors=4)
+# Standard DNA color scheme per spec: A=green, C=blue, G=orange, T=red
 base_colors = {
-    "A": base_palette[0],  # blue
-    "C": base_palette[1],  # orange
-    "G": base_palette[2],  # green
-    "T": base_palette[3],  # red-ish
+    "A": "#3AA655",  # green
+    "C": "#4169E1",  # blue
+    "G": "#F5A623",  # orange
+    "T": "#E74C3C",  # red
 }
 
 # Plot setup with seaborn context and style
@@ -67,20 +53,7 @@ sns.set_context("talk", font_scale=1.1)
 sns.set_style("whitegrid", {"grid.alpha": 0.15, "grid.linewidth": 0.6})
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Use seaborn barplot to draw stacked IC bars as a base layer
-# Stack bars manually by tracking cumulative y per position
-cumulative = {}
-for _, row in df.iterrows():
-    pos = int(row["Position"])
-    base = row["Base"]
-    height = row["Height"]
-    bottom = cumulative.get(pos, 0.0)
-    sns.barplot(
-        x=[pos], y=[height], color=base_colors[base], ax=ax, bottom=bottom, width=0.8, edgecolor="none", alpha=0.18
-    )
-    cumulative[pos] = bottom + height
-
-# Overlay scaled letter glyphs on top of bars
+# Render scaled letter glyphs
 fp = FontProperties(family="monospace", weight="bold")
 letter_width = 0.78
 
@@ -97,7 +70,7 @@ for pos in range(n_positions):
 
         letter = bases[idx]
         color = base_colors[letter]
-        # Map position to bar x-coordinate (barplot uses 0-based integer x)
+        # Map position to x-coordinate (0-based integer x)
         x_center = pos
         x_left = x_center - letter_width / 2
 

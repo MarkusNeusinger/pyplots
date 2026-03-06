@@ -1,15 +1,16 @@
-""" pyplots.ai
+"""pyplots.ai
 genome-track-multi: Genome Track Viewer
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 79/100 | Created: 2026-03-06
 """
 
 import importlib
+import re
 import sys
 
 import numpy as np
 
 
+# Script filename matches library name; use importlib to avoid circular import
 _script_dir = sys.path[0]
 sys.path.remove(_script_dir)
 pygal = importlib.import_module("pygal")
@@ -17,17 +18,14 @@ Style = importlib.import_module("pygal.style").Style
 cairosvg = importlib.import_module("cairosvg")
 sys.path.insert(0, _script_dir)
 
-# Data - Synthetic genomic data for EGFR gene region on chromosome 7
 np.random.seed(42)
 
+# === Genomic data: EGFR gene region on chromosome 7 ===
 chrom = "chr7"
 region_start = 55_086_000
 region_end = 55_280_000
 region_length = region_end - region_start
 
-# Gene annotations (EGFR gene - simplified exon structure)
-gene_name = "EGFR"
-gene_strand = "+"
 exons = [
     (55_086_714, 55_087_058),
     (55_088_200, 55_088_590),
@@ -59,16 +57,14 @@ exons = [
     (55_238_800, 55_240_817),
 ]
 
-# Coverage data - simulated read depth across region
-n_coverage_points = 500
-coverage_positions = np.linspace(region_start, region_end, n_coverage_points)
-base_coverage = np.random.poisson(30, n_coverage_points).astype(float)
-for exon_start, exon_end in exons:
-    mask = (coverage_positions >= exon_start) & (coverage_positions <= exon_end)
-    base_coverage[mask] += np.random.poisson(60, mask.sum())
-coverage_values = np.convolve(base_coverage, np.ones(5) / 5, mode="same")
+n_cov = 500
+cov_pos = np.linspace(region_start, region_end, n_cov)
+cov_base = np.random.poisson(30, n_cov).astype(float)
+for es, ee in exons:
+    mask = (cov_pos >= es) & (cov_pos <= ee)
+    cov_base[mask] += np.random.poisson(60, mask.sum())
+cov_vals = np.convolve(cov_base, np.ones(5) / 5, mode="same")
 
-# Variants (SNPs and indels)
 variants = [
     {"pos": 55_089_100, "type": "SNP", "quality": 95},
     {"pos": 55_092_500, "type": "SNP", "quality": 88},
@@ -84,7 +80,6 @@ variants = [
     {"pos": 55_239_500, "type": "SNP", "quality": 88},
 ]
 
-# Regulatory elements
 regulatory = [
     {"start": 55_086_000, "end": 55_088_000, "type": "Promoter"},
     {"start": 55_100_000, "end": 55_105_000, "type": "Enhancer"},
@@ -94,302 +89,313 @@ regulatory = [
     {"start": 55_245_000, "end": 55_248_000, "type": "CTCF"},
 ]
 
-# Colors
-EXON_COLOR = "#2E8B57"
-INTRON_COLOR = "#2E8B57"
-COVERAGE_COLOR = "#306998"
-SNP_COLOR = "#DC143C"
-INDEL_COLOR = "#E8A317"
-PROMOTER_COLOR = "#9370DB"
-ENHANCER_COLOR = "#FFD43B"
-CTCF_COLOR = "#FF8C00"
+# === Colorblind-safe palette (Tol bright, avoids red-green) ===
+GENE_CLR = "#4477AA"
+COV_CLR = "#66CCEE"
+COV_STROKE = "#2277BB"
+SNP_CLR = "#EE6677"
+INDEL_CLR = "#AA3377"
+PROM_CLR = "#CCBB44"
+ENH_CLR = "#228833"
+CTCF_CLR = "#EE8866"
 
-# Layout
+# === Layout ===
 WIDTH = 4800
 HEIGHT = 2700
-MARGIN_TOP = 160
-MARGIN_BOTTOM = 160
 MARGIN_LEFT = 300
-MARGIN_RIGHT = 80
-PLOT_WIDTH = WIDTH - MARGIN_LEFT - MARGIN_RIGHT
-PLOT_HEIGHT = HEIGHT - MARGIN_TOP - MARGIN_BOTTOM
+MARGIN_RIGHT = 100
+MARGIN_TOP = 140
+MARGIN_BOTTOM = 150
+PLOT_W = WIDTH - MARGIN_LEFT - MARGIN_RIGHT
+PLOT_H = HEIGHT - MARGIN_TOP - MARGIN_BOTTOM
+N_TRACKS = 4
+TRACK_GAP = 24
+TRACK_H = (PLOT_H - (N_TRACKS - 1) * TRACK_GAP) / N_TRACKS
 
-track_names = ["Genes", "Coverage", "Variants", "Regulatory"]
-n_tracks = len(track_names)
-track_gap = 30
-track_height = (PLOT_HEIGHT - (n_tracks - 1) * track_gap) / n_tracks
+# Pygal internal data padding fraction (1/52 per side, ~1.923%)
+PYGAL_PAD = 1 / 52
 
+# Normalize genomic positions to [0, 1] for stable pygal coordinate mapping
+norm_pos = (cov_pos - region_start) / region_length
+norm_variants = [(v["pos"] - region_start) / region_length for v in variants]
 
-# Coordinate helpers
-def pos_to_x(genomic_pos):
-    return MARGIN_LEFT + (genomic_pos - region_start) / region_length * PLOT_WIDTH
-
-
-def track_top(track_idx):
-    return MARGIN_TOP + track_idx * (track_height + track_gap)
-
-
-# Style
-custom_style = Style(
-    background="white",
-    plot_background="white",
-    foreground="#333333",
-    foreground_strong="#222222",
-    foreground_subtle="#cccccc",
-    colors=(COVERAGE_COLOR,),
-    title_font_size=48,
-    label_font_size=22,
-    major_label_font_size=24,
-    value_font_size=14,
+# === Coverage chart: pygal.XY with fill + hermite interpolation + tooltips ===
+cov_style = Style(
+    background="transparent",
+    plot_background="transparent",
+    foreground="#333",
+    foreground_strong="#333",
+    foreground_subtle="transparent",
+    colors=(COV_CLR,),
     font_family="sans-serif",
+    tooltip_font_size=18,
 )
 
-# Create minimal pygal chart as structural base
-chart = pygal.Line(
-    width=WIDTH,
-    height=HEIGHT,
-    style=custom_style,
-    title="EGFR Gene Region (chr7) \u00b7 genome-track-multi \u00b7 pygal \u00b7 pyplots.ai",
+cov_chart = pygal.XY(
+    width=int(PLOT_W),
+    height=int(TRACK_H),
+    style=cov_style,
+    fill=True,
     show_legend=False,
     show_x_labels=False,
     show_y_labels=False,
     show_x_guides=False,
     show_y_guides=False,
     margin=0,
-    margin_top=MARGIN_TOP,
-    margin_bottom=MARGIN_BOTTOM,
-    margin_left=MARGIN_LEFT,
-    margin_right=MARGIN_RIGHT,
+    interpolate="hermite",
+    dots_size=0,
+    stroke_style={"width": 2, "color": COV_STROKE},
+    range=(0, float(cov_vals.max() * 1.05)),
 )
-chart.add("placeholder", [None])
+cov_xy = [
+    {"value": (float(nx), float(v)), "label": f"Depth: {v:.0f}x at {p / 1e6:.3f} Mb"}
+    for nx, p, v in zip(norm_pos, cov_pos, cov_vals, strict=True)
+]
+cov_chart.add("Read Depth", cov_xy)
+cov_svg_raw = cov_chart.render(is_unicode=True)
 
-# Render base SVG
-svg_str = chart.render(is_unicode=True)
+# === Variant chart: pygal.XY scatter with tooltips ===
+var_style = Style(
+    background="transparent",
+    plot_background="transparent",
+    foreground="#333",
+    foreground_strong="#333",
+    foreground_subtle="transparent",
+    colors=(SNP_CLR, INDEL_CLR),
+    font_family="sans-serif",
+    tooltip_font_size=18,
+)
 
-# Build custom track elements
-elements = []
+var_chart = pygal.XY(
+    width=int(PLOT_W),
+    height=int(TRACK_H),
+    style=var_style,
+    show_legend=False,
+    show_x_labels=False,
+    show_y_labels=False,
+    show_x_guides=False,
+    show_y_guides=False,
+    margin=0,
+    dots_size=10,
+    stroke=False,
+    range=(0, 105),
+)
+snp_series = [
+    {"value": (float(nv), float(v["quality"])), "label": f"SNP at {v['pos']:,} (Q={v['quality']})"}
+    for v, nv in zip(variants, norm_variants, strict=True)
+    if v["type"] == "SNP"
+]
+indel_series = [
+    {"value": (float(nv), float(v["quality"])), "label": f"Indel at {v['pos']:,} (Q={v['quality']})"}
+    for v, nv in zip(variants, norm_variants, strict=True)
+    if v["type"] == "indel"
+]
+var_chart.add("SNP", snp_series)
+var_chart.add("Indel", indel_series)
+var_svg_raw = var_chart.render(is_unicode=True)
 
-# Track background shading
-for i in range(n_tracks):
-    y = track_top(i)
-    bg_color = "#f8f8f8" if i % 2 == 0 else "#ffffff"
-    elements.append(
-        f'<rect x="{MARGIN_LEFT}" y="{y:.0f}" width="{PLOT_WIDTH}" height="{track_height:.0f}" fill="{bg_color}"/>'
-    )
+# === Build composite SVG with embedded pygal charts ===
+# ViewBox crops pygal's internal padding so data aligns with manual SVG tracks
+pad_x = PLOT_W * PYGAL_PAD
+pad_y = TRACK_H * PYGAL_PAD
+vb_w = PLOT_W - 2 * pad_x
+vb_h = TRACK_H - 2 * pad_y
 
-# Track labels
-for i, name in enumerate(track_names):
-    y = track_top(i) + track_height / 2 + 8
-    elements.append(
-        f'<text x="{MARGIN_LEFT - 20}" y="{y:.0f}" '
+parts = []
+parts.append(
+    f'<svg xmlns="http://www.w3.org/2000/svg" '
+    f'xmlns:xlink="http://www.w3.org/1999/xlink" '
+    f'width="{WIDTH}" height="{HEIGHT}" viewBox="0 0 {WIDTH} {HEIGHT}">'
+)
+parts.append(f'<rect width="{WIDTH}" height="{HEIGHT}" fill="white"/>')
+
+# Title
+title = "EGFR Gene Region (chr7) \u00b7 genome-track-multi \u00b7 pygal \u00b7 pyplots.ai"
+parts.append(
+    f'<text x="{WIDTH / 2}" y="80" font-family="sans-serif" font-size="44" '
+    f'fill="#222" text-anchor="middle" font-weight="bold">{title}</text>'
+)
+
+# Track backgrounds, labels, separators
+track_names = ["Genes", "Coverage", "Variants", "Regulatory"]
+for i in range(N_TRACKS):
+    ty = MARGIN_TOP + i * (TRACK_H + TRACK_GAP)
+    bg = "#f5f5f5" if i % 2 == 0 else "#ffffff"
+    parts.append(f'<rect x="{MARGIN_LEFT}" y="{ty:.0f}" width="{PLOT_W}" height="{TRACK_H:.0f}" fill="{bg}"/>')
+    parts.append(
+        f'<text x="{MARGIN_LEFT - 20}" y="{ty + TRACK_H / 2 + 8:.0f}" '
         f'font-family="sans-serif" font-size="28" fill="#333" '
-        f'text-anchor="end" font-weight="bold">{name}</text>'
+        f'text-anchor="end" font-weight="bold">{track_names[i]}</text>'
     )
 
-# Track 1: Gene annotations
-gene_track_y = track_top(0)
-gene_center_y = gene_track_y + track_height / 2
+for i in range(1, N_TRACKS):
+    sy = MARGIN_TOP + i * (TRACK_H + TRACK_GAP) - TRACK_GAP / 2
+    parts.append(
+        f'<line x1="{MARGIN_LEFT}" y1="{sy:.0f}" x2="{MARGIN_LEFT + PLOT_W}" '
+        f'y2="{sy:.0f}" stroke="#ddd" stroke-width="1.5"/>'
+    )
 
-gene_start_x = pos_to_x(exons[0][0])
-gene_end_x = pos_to_x(exons[-1][1])
+# --- Track 1: Gene annotations (manual SVG — no pygal chart type for this) ---
+gene_ty = MARGIN_TOP
+gene_cy = gene_ty + TRACK_H / 2
 
-# Intron line
-elements.append(
-    f'<line x1="{gene_start_x:.1f}" y1="{gene_center_y:.1f}" '
-    f'x2="{gene_end_x:.1f}" y2="{gene_center_y:.1f}" '
-    f'stroke="{INTRON_COLOR}" stroke-width="3"/>'
+gene_x1 = MARGIN_LEFT + (exons[0][0] - region_start) / region_length * PLOT_W
+gene_x2 = MARGIN_LEFT + (exons[-1][1] - region_start) / region_length * PLOT_W
+
+parts.append(
+    f'<line x1="{gene_x1:.1f}" y1="{gene_cy:.1f}" x2="{gene_x2:.1f}" '
+    f'y2="{gene_cy:.1f}" stroke="{GENE_CLR}" stroke-width="3"/>'
 )
 
-# Exon rectangles
-exon_height = track_height * 0.4
+exon_h = TRACK_H * 0.45
 for es, ee in exons:
-    x1 = pos_to_x(es)
-    x2 = pos_to_x(ee)
-    w = max(x2 - x1, 3)
-    elements.append(
-        f'<rect x="{x1:.1f}" y="{gene_center_y - exon_height / 2:.1f}" '
-        f'width="{w:.1f}" height="{exon_height:.1f}" '
-        f'fill="{EXON_COLOR}" rx="2" ry="2">'
+    x1 = MARGIN_LEFT + (es - region_start) / region_length * PLOT_W
+    x2 = MARGIN_LEFT + (ee - region_start) / region_length * PLOT_W
+    w = max(x2 - x1, 5)
+    parts.append(
+        f'<rect x="{x1:.1f}" y="{gene_cy - exon_h / 2:.1f}" width="{w:.1f}" '
+        f'height="{exon_h:.1f}" fill="{GENE_CLR}" rx="2">'
         f"<title>Exon: {es:,}-{ee:,}</title></rect>"
     )
 
-# Strand direction arrows (+ strand)
-arrow_spacing = PLOT_WIDTH / 15
 for j in range(1, 14):
-    ax = gene_start_x + j * arrow_spacing
-    if ax < gene_end_x - 20:
-        genomic_pos = region_start + (ax - MARGIN_LEFT) / PLOT_WIDTH * region_length
-        in_exon = any(es <= genomic_pos <= ee for es, ee in exons)
-        if not in_exon:
-            elements.append(
-                f'<path d="M{ax - 8:.1f},{gene_center_y + 6:.1f} '
-                f"L{ax + 8:.1f},{gene_center_y:.1f} "
-                f'L{ax - 8:.1f},{gene_center_y - 6:.1f}" fill="none" '
-                f'stroke="{INTRON_COLOR}" stroke-width="2.5"/>'
+    ax = gene_x1 + j * PLOT_W / 15
+    if ax < gene_x2 - 20:
+        gpos = region_start + (ax - MARGIN_LEFT) / PLOT_W * region_length
+        if not any(es <= gpos <= ee for es, ee in exons):
+            parts.append(
+                f'<path d="M{ax - 8:.1f},{gene_cy + 6:.1f} '
+                f"L{ax + 8:.1f},{gene_cy:.1f} "
+                f'L{ax - 8:.1f},{gene_cy - 6:.1f}" fill="none" '
+                f'stroke="{GENE_CLR}" stroke-width="2.5"/>'
             )
 
-# Gene name label
-label_x = (gene_start_x + gene_end_x) / 2
-elements.append(
-    f'<text x="{label_x:.1f}" y="{gene_center_y - exon_height / 2 - 14:.1f}" '
-    f'font-family="sans-serif" font-size="26" fill="{EXON_COLOR}" '
-    f'text-anchor="middle" font-style="italic">{gene_name}</text>'
+parts.append(
+    f'<text x="{(gene_x1 + gene_x2) / 2:.1f}" '
+    f'y="{gene_cy - exon_h / 2 - 14:.1f}" font-family="sans-serif" '
+    f'font-size="26" fill="{GENE_CLR}" text-anchor="middle" '
+    f'font-style="italic">EGFR</text>'
 )
 
-# Track 2: Coverage (filled area)
-coverage_track_y = track_top(1)
-max_coverage = float(coverage_values.max())
-coverage_plot_height = track_height * 0.85
-coverage_pad = (track_height - coverage_plot_height) / 2
-
-path_points = []
-for i, (pos, val) in enumerate(zip(coverage_positions, coverage_values, strict=True)):
-    x = pos_to_x(pos)
-    y = coverage_track_y + coverage_pad + coverage_plot_height - (val / max_coverage) * coverage_plot_height
-    path_points.append(f"{'M' if i == 0 else 'L'}{x:.1f},{y:.1f}")
-
-baseline_y = coverage_track_y + coverage_pad + coverage_plot_height
-first_x = pos_to_x(coverage_positions[0])
-last_x = pos_to_x(coverage_positions[-1])
-area_path = " ".join(path_points) + f" L{last_x:.1f},{baseline_y:.1f} L{first_x:.1f},{baseline_y:.1f} Z"
-elements.append(
-    f'<path d="{area_path}" fill="{COVERAGE_COLOR}" fill-opacity="0.3" stroke="{COVERAGE_COLOR}" stroke-width="1.5"/>'
+# --- Track 2: Coverage (embedded pygal.XY with fill + hermite interpolation) ---
+cov_ty = MARGIN_TOP + 1 * (TRACK_H + TRACK_GAP)
+cov_svg = re.sub(r"<\?xml[^?]*\?>\s*", "", cov_svg_raw)
+cov_svg = re.sub(r"<!DOCTYPE[^>]*>\s*", "", cov_svg)
+# Preserve pygal's id/class for CSS, but set position + viewBox for alignment
+cov_id = re.search(r'id="([^"]+)"', cov_svg).group(1)
+cov_svg = re.sub(
+    r"<svg[^>]*>",
+    f'<svg id="{cov_id}" class="pygal-chart" '
+    f'x="{MARGIN_LEFT}" y="{cov_ty:.0f}" '
+    f'width="{PLOT_W}" height="{TRACK_H:.0f}" '
+    f'viewBox="{pad_x:.2f} {pad_y:.2f} {vb_w:.2f} {vb_h:.2f}">',
+    cov_svg,
+    count=1,
 )
+parts.append(cov_svg)
 
 # Coverage y-axis ticks
-for tick_val in [0, int(max_coverage / 2), int(max_coverage)]:
-    tick_y = coverage_track_y + coverage_pad + coverage_plot_height - (tick_val / max_coverage) * coverage_plot_height
-    elements.append(
-        f'<text x="{MARGIN_LEFT - 10}" y="{tick_y + 6:.1f}" '
-        f'font-family="sans-serif" font-size="18" fill="#999" '
-        f'text-anchor="end">{tick_val}</text>'
+max_cov = float(cov_vals.max())
+cov_range_max = max_cov * 1.05
+for tick_val in [0, int(max_cov / 2), int(max_cov)]:
+    frac = tick_val / cov_range_max
+    tick_y = cov_ty + TRACK_H * (1 - frac)
+    parts.append(
+        f'<text x="{MARGIN_LEFT - 10}" y="{tick_y + 6:.1f}" font-family="sans-serif" '
+        f'font-size="20" fill="#999" text-anchor="end">{tick_val}</text>'
     )
 
-# Track 3: Variants (lollipop plot)
-variant_track_y = track_top(2)
-variant_baseline_y = variant_track_y + track_height * 0.85
-max_quality = max(v["quality"] for v in variants)
-
-for v in variants:
-    x = pos_to_x(v["pos"])
-    stem_height = (v["quality"] / max_quality) * track_height * 0.7
-    stem_top_y = variant_baseline_y - stem_height
-    color = SNP_COLOR if v["type"] == "SNP" else INDEL_COLOR
-    radius = 8 if v["type"] == "SNP" else 10
-
-    # Stem
-    elements.append(
-        f'<line x1="{x:.1f}" y1="{variant_baseline_y:.1f}" '
-        f'x2="{x:.1f}" y2="{stem_top_y:.1f}" '
-        f'stroke="{color}" stroke-width="2.5"/>'
-    )
-    # Head
-    if v["type"] == "SNP":
-        elements.append(
-            f'<circle cx="{x:.1f}" cy="{stem_top_y:.1f}" r="{radius}" fill="{color}" '
-            f'stroke="white" stroke-width="1.5">'
-            f"<title>SNP at {v['pos']:,} (Q={v['quality']})</title></circle>"
-        )
-    else:
-        elements.append(
-            f'<rect x="{x - radius:.1f}" y="{stem_top_y - radius:.1f}" '
-            f'width="{2 * radius}" height="{2 * radius}" fill="{color}" '
-            f'stroke="white" stroke-width="1.5" rx="2">'
-            f"<title>Indel at {v['pos']:,} (Q={v['quality']})</title></rect>"
-        )
-
-# Variant legend
-legend_x = MARGIN_LEFT + PLOT_WIDTH - 300
-legend_y = variant_track_y + 25
-elements.append(f'<circle cx="{legend_x}" cy="{legend_y}" r="6" fill="{SNP_COLOR}"/>')
-elements.append(
-    f'<text x="{legend_x + 14}" y="{legend_y + 6}" font-family="sans-serif" font-size="20" fill="#333">SNP</text>'
+# --- Track 3: Variants (embedded pygal.XY scatter with tooltips) ---
+var_ty = MARGIN_TOP + 2 * (TRACK_H + TRACK_GAP)
+var_svg = re.sub(r"<\?xml[^?]*\?>\s*", "", var_svg_raw)
+var_svg = re.sub(r"<!DOCTYPE[^>]*>\s*", "", var_svg)
+var_id = re.search(r'id="([^"]+)"', var_svg).group(1)
+var_svg = re.sub(
+    r"<svg[^>]*>",
+    f'<svg id="{var_id}" class="pygal-chart" '
+    f'x="{MARGIN_LEFT}" y="{var_ty:.0f}" '
+    f'width="{PLOT_W}" height="{TRACK_H:.0f}" '
+    f'viewBox="{pad_x:.2f} {pad_y:.2f} {vb_w:.2f} {vb_h:.2f}">',
+    var_svg,
+    count=1,
 )
-elements.append(f'<rect x="{legend_x + 70}" y="{legend_y - 7}" width="14" height="14" fill="{INDEL_COLOR}" rx="2"/>')
-elements.append(
-    f'<text x="{legend_x + 90}" y="{legend_y + 6}" font-family="sans-serif" font-size="20" fill="#333">Indel</text>'
+parts.append(var_svg)
+
+# Variant legend (manual, positioned within track)
+vleg_x = MARGIN_LEFT + PLOT_W - 280
+vleg_y = var_ty + 25
+parts.append(f'<circle cx="{vleg_x}" cy="{vleg_y}" r="7" fill="{SNP_CLR}"/>')
+parts.append(f'<text x="{vleg_x + 14}" y="{vleg_y + 6}" font-family="sans-serif" font-size="22" fill="#333">SNP</text>')
+parts.append(f'<rect x="{vleg_x + 80}" y="{vleg_y - 8}" width="15" height="15" fill="{INDEL_CLR}" rx="2"/>')
+parts.append(
+    f'<text x="{vleg_x + 102}" y="{vleg_y + 6}" font-family="sans-serif" font-size="22" fill="#333">Indel</text>'
 )
 
-# Track 4: Regulatory elements
-reg_track_y = track_top(3)
-reg_center_y = reg_track_y + track_height / 2
-reg_height = track_height * 0.45
-reg_colors = {"Promoter": PROMOTER_COLOR, "Enhancer": ENHANCER_COLOR, "CTCF": CTCF_COLOR}
+# --- Track 4: Regulatory (manual SVG — no pygal chart type for intervals) ---
+reg_ty = MARGIN_TOP + 3 * (TRACK_H + TRACK_GAP)
+reg_cy = reg_ty + TRACK_H / 2
+reg_h = TRACK_H * 0.45
+reg_clrs = {"Promoter": PROM_CLR, "Enhancer": ENH_CLR, "CTCF": CTCF_CLR}
 
 for reg in regulatory:
-    x1 = pos_to_x(reg["start"])
-    x2 = pos_to_x(reg["end"])
+    x1 = MARGIN_LEFT + (reg["start"] - region_start) / region_length * PLOT_W
+    x2 = MARGIN_LEFT + (reg["end"] - region_start) / region_length * PLOT_W
     w = max(x2 - x1, 4)
-    color = reg_colors[reg["type"]]
-    elements.append(
-        f'<rect x="{x1:.1f}" y="{reg_center_y - reg_height / 2:.1f}" '
-        f'width="{w:.1f}" height="{reg_height:.1f}" '
-        f'fill="{color}" fill-opacity="0.8" rx="3" ry="3">'
+    clr = reg_clrs[reg["type"]]
+    parts.append(
+        f'<rect x="{x1:.1f}" y="{reg_cy - reg_h / 2:.1f}" width="{w:.1f}" '
+        f'height="{reg_h:.1f}" fill="{clr}" fill-opacity="0.85" rx="3">'
         f"<title>{reg['type']}: {reg['start']:,}-{reg['end']:,}</title></rect>"
     )
-    label_x = (x1 + x2) / 2
-    elements.append(
-        f'<text x="{label_x:.1f}" y="{reg_center_y + 6:.1f}" '
-        f'font-family="sans-serif" font-size="18" fill="#333" '
+    # Labels above rectangles to avoid crowding track label
+    parts.append(
+        f'<text x="{(x1 + x2) / 2:.1f}" y="{reg_cy - reg_h / 2 - 8:.1f}" '
+        f'font-family="sans-serif" font-size="18" fill="#555" '
         f'text-anchor="middle">{reg["type"]}</text>'
     )
 
 # Regulatory legend
-reg_legend_x = MARGIN_LEFT + PLOT_WIDTH - 460
-reg_legend_y = reg_track_y + 25
-for j, (rtype, rcolor) in enumerate(reg_colors.items()):
-    lx = reg_legend_x + j * 155
-    elements.append(f'<rect x="{lx}" y="{reg_legend_y - 8}" width="16" height="16" fill="{rcolor}" rx="2"/>')
-    elements.append(
-        f'<text x="{lx + 22}" y="{reg_legend_y + 6}" font-family="sans-serif" font-size="20" fill="#333">{rtype}</text>'
+rlx = MARGIN_LEFT + PLOT_W - 460
+rly = reg_ty + 25
+for j, (rtype, rclr) in enumerate(reg_clrs.items()):
+    lx = rlx + j * 155
+    parts.append(f'<rect x="{lx}" y="{rly - 8}" width="16" height="16" fill="{rclr}" rx="2"/>')
+    parts.append(
+        f'<text x="{lx + 22}" y="{rly + 6}" font-family="sans-serif" font-size="20" fill="#333">{rtype}</text>'
     )
 
-# Track separator lines
-for i in range(1, n_tracks):
-    y = track_top(i) - track_gap / 2
-    elements.append(
-        f'<line x1="{MARGIN_LEFT}" y1="{y:.0f}" x2="{MARGIN_LEFT + PLOT_WIDTH}" y2="{y:.0f}" '
-        f'stroke="#ddd" stroke-width="1.5"/>'
-    )
-
-# X-axis: genomic coordinates
-x_axis_y = MARGIN_TOP + PLOT_HEIGHT + 10
+# X-axis with genomic coordinates
+xay = MARGIN_TOP + PLOT_H + 10
 tick_interval = 25_000
 tick_start = ((region_start // tick_interval) + 1) * tick_interval
 
 for tick_pos in range(tick_start, region_end, tick_interval):
-    x = pos_to_x(tick_pos)
-    elements.append(
-        f'<line x1="{x:.1f}" y1="{x_axis_y}" x2="{x:.1f}" y2="{x_axis_y + 12}" stroke="#333" stroke-width="2"/>'
+    x = MARGIN_LEFT + (tick_pos - region_start) / region_length * PLOT_W
+    parts.append(f'<line x1="{x:.1f}" y1="{xay}" x2="{x:.1f}" y2="{xay + 12}" stroke="#333" stroke-width="2"/>')
+    parts.append(
+        f'<line x1="{x:.1f}" y1="{MARGIN_TOP}" x2="{x:.1f}" '
+        f'y2="{MARGIN_TOP + PLOT_H}" stroke="#e8e8e8" stroke-width="1" '
+        f'stroke-dasharray="4,4"/>'
     )
-    # Vertical guide (subtle)
-    elements.append(
-        f'<line x1="{x:.1f}" y1="{MARGIN_TOP}" x2="{x:.1f}" y2="{MARGIN_TOP + PLOT_HEIGHT}" '
-        f'stroke="#e8e8e8" stroke-width="1" stroke-dasharray="4,4"/>'
-    )
-    label = f"{tick_pos / 1_000_000:.2f} Mb"
-    elements.append(
-        f'<text x="{x:.1f}" y="{x_axis_y + 40}" '
-        f'font-family="sans-serif" font-size="22" fill="#333" '
-        f'text-anchor="middle">{label}</text>'
+    parts.append(
+        f'<text x="{x:.1f}" y="{xay + 40}" font-family="sans-serif" '
+        f'font-size="22" fill="#333" text-anchor="middle">'
+        f"{tick_pos / 1_000_000:.2f} Mb</text>"
     )
 
-# X-axis label
-elements.append(
-    f'<text x="{MARGIN_LEFT + PLOT_WIDTH / 2}" y="{x_axis_y + 80}" '
+parts.append(
+    f'<text x="{MARGIN_LEFT + PLOT_W / 2}" y="{xay + 80}" '
     f'font-family="sans-serif" font-size="28" fill="#333" '
     f'text-anchor="middle">Genomic Position ({chrom})</text>'
 )
 
-# Inject custom elements before </svg>
-all_elements = "\n".join(elements)
-svg_output = svg_str.replace("</svg>", f"{all_elements}\n</svg>")
-svg_output = svg_output.replace(">No data<", "><")
+parts.append("</svg>")
+svg_output = "\n".join(parts)
 
 # Save PNG
 cairosvg.svg2png(bytestring=svg_output.encode("utf-8"), write_to="plot.png")
 
-# Save interactive HTML
+# Save HTML with pygal interactive tooltips
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>

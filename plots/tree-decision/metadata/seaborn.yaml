@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: tree-decision
 created: '2026-03-06T21:34:38Z'
-updated: '2026-03-06T21:38:44Z'
+updated: '2026-03-06T21:48:02Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22782764484
 issue: 4569
@@ -10,36 +10,42 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/tree-decision/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/tree-decision/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 78
+quality_score: 81
 review:
   strengths:
-  - Excellent data quality with realistic investment decision scenario and correct
-    EMV calculations
-  - Clean visual hierarchy distinguishing optimal from pruned paths via opacity, line
-    style, and X marks
-  - Well-structured readable code with deterministic data
-  - Good use of right-angle branch routing and white node borders for visual polish
+  - Decision tree structure is well-implemented with correct node shapes (squares,
+    circles, right-pointing triangles) and left-to-right layout
+  - Strong data storytelling through visual distinction of optimal vs pruned paths
+    using opacity, dashed lines, and X marks
+  - Custom colorblind-safe palette with good color choices (Python Blue decision nodes,
+    orange chance nodes, differentiated terminal payoff colors)
+  - 'All spec requirements fully met: EMV values, probabilities, branch labels, pruned
+    branches, and correct node types'
+  - Clean white-edge highlighting on nodes gives professional polish
   weaknesses:
-  - Terminal triangles point upward instead of right as spec requires
-  - Red-green color pairing for positive/negative payoffs is not colorblind-safe
-  - EMV text on pruned chance node is hard to read due to overlap with cross marks
-    at low alpha
-  - Minimal seaborn usage - essentially a matplotlib diagram with seaborn styling
-  image_description: 'The plot displays a decision tree diagram with a left-to-right
-    layout on a white background. A blue square decision node (labeled "EMV $130K")
-    on the left branches into two paths: "Invest" (solid lines, upward) leading to
-    an orange circle chance node (labeled "EMV $130K"), and "Partner" (dashed lines
-    with reduced opacity, downward) leading to a faded orange circle chance node (labeled
-    "EMV $80K"). Each chance node branches into "High Demand (p=0.6)" and "Low Demand
-    (p=0.4)" outcomes. Terminal nodes are upward-pointing triangles: green for positive
-    payoffs ($+300K, $+150K) and red for negative payoffs ($-125K, $-25K). Pruned
-    branches (Partner path) are shown with dashed lines, reduced opacity, and red
-    X marks. A legend in the lower-right shows Decision Node (blue), Chance Node (orange),
-    Positive Payoff (green), Negative Payoff (red), and Pruned Branch (dashed). Title
-    reads "tree-decision · seaborn · pyplots.ai".'
+  - Library mastery is low - most drawing uses matplotlib patches (FancyBboxPatch,
+    plt.Circle, RegularPolygon) rather than seaborn plotting functions
+  - Minor text crowding in the pruned branch section where EMV $80K label and High
+    Demand probability label are close together
+  - Seaborn lineplot is used for branches but scatterplot for terminal node markers
+    is not leveraged despite being set up in the code
+  image_description: 'The plot displays a two-stage investment decision tree with
+    a left-to-right layout on a clean white background. On the far left is a dark
+    blue square decision node labeled "EMV $130K". Two branches extend from it: an
+    upper solid branch labeled "Invest" leading to an orange circle chance node (EMV
+    $130K), and a lower dashed branch labeled "Partner" leading to a faded orange
+    circle chance node (EMV $80K). The optimal Invest branch has two sub-branches:
+    "High Demand (p=0.6)" leading to a large blue right-pointing triangle with "$+300K",
+    and "Low Demand (p=0.4)" leading to a brown/dark triangle with "$-125K". The pruned
+    Partner branch similarly splits into "High Demand (p=0.6)" with a faded blue triangle
+    "$+150K" and "Low Demand (p=0.4)" with a faded brown triangle "$-25K". Pruned
+    branches are rendered with dashed lines, reduced opacity, and orange X marks.
+    A legend in the lower right identifies Decision Node, Chance Node, Positive Payoff,
+    Negative Payoff, and Pruned Branch. The title reads "tree-decision · seaborn ·
+    pyplots.ai" at the top center.'
   criteria_checklist:
     visual_quality:
-      score: 23
+      score: 25
       max: 30
       items:
       - id: VQ-01
@@ -47,42 +53,43 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 24pt, branches 13pt, EMV 13-14pt,
-          payoffs 15pt). Branch labels slightly small but readable.
+        comment: Font sizes explicitly set via set_context('talk', font_scale=1.2)
+          and individual fontsize params (13-24pt). All text readable at full size.
       - id: VQ-02
         name: No Overlap
         score: 4
         max: 6
         passed: true
-        comment: EMV text on pruned chance node overlaps with cross marks and is hard
-          to read at low alpha.
+        comment: Minor crowding in pruned section where EMV $80K label and High Demand
+          probability text are close together. X marks also crowd the pruned branch
+          area.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Nodes and branches clearly visible. Pruned EMV text at alpha=0.35
-          is hard to read.
+        comment: All nodes clearly visible with appropriate sizing. Pruned elements
+          have reduced opacity but remain distinguishable.
       - id: VQ-04
         name: Color Accessibility
-        score: 2
+        score: 4
         max: 4
-        passed: false
-        comment: Red-green used for positive/negative payoff terminals. Colorblind
-          issue mitigated by text labels.
+        passed: true
+        comment: Uses seaborn colorblind palette. Blue/orange distinction is colorblind-safe.
+          Positive/negative payoffs use blue vs brown.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good use of 16:9 canvas, tree fills most of the space. Slight empty
-          space at corners.
+        comment: Good left-to-right layout filling most of the canvas. Some unused
+          space in lower-right near legend.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Title correctly formatted. Axes appropriately hidden for diagram.
+        comment: Axes appropriately hidden for tree diagram. Title correctly formatted.
     design_excellence:
       score: 13
       max: 20
@@ -92,78 +99,80 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Intentional color palette, white edge highlights, clean branch routing.
-          Above defaults but not publication-ready.
+        comment: Thoughtful color choices (Python Blue, colorblind orange), white
+          edge highlights on nodes, clean background. Above defaults but not publication-level.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Axes off, clean white background, white node borders add depth, branch
-          label backgrounds.
+        comment: Axes removed, clean white background, white edge highlights on nodes,
+          L-shaped branch routing is clean. Good refinement visible.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Clear visual hierarchy between optimal and pruned paths. Red X marks
-          reinforce rejection. Viewer sees optimal path immediately.
+        comment: Clear optimal vs pruned path distinction through opacity, dashing,
+          and X marks. Positive/negative payoff coloring creates visual hierarchy.
+          Viewer immediately sees Invest as optimal choice.
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Correct decision tree with squares, circles, triangles. Triangles
-          point upward instead of right as spec requires.
+        comment: Correct decision tree with proper node types and branching structure.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: node shapes, probabilities, payoffs, EMV rollback,
-          pruned marking, branch labels.'
+        comment: 'All spec features present: decision/chance/terminal nodes with correct
+          shapes, probabilities, EMVs, pruned branches with marks, distinct colors.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: EMV calculations correct. Probabilities sum to 1.0 for each chance
-          node.
+        comment: Correct data structure. Probabilities sum to 1.0 per chance node.
+          EMV calculations correct (0.6*300+0.4*(-125)=130).
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend includes all node types and pruned branch
-          indicator.
+        comment: Title follows exact format. Legend includes all node types and pruned
+          branch indicator.
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: 'Shows all aspects: decision/chance/terminal nodes, positive/negative
-          payoffs, pruned/optimal branches, EMV rollback.'
+        comment: Shows decision, chance, and terminal nodes; positive and negative
+          payoffs; pruned and optimal branches; probabilities and EMVs. Tree is relatively
+          simple (7 nodes) but covers all features.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real-world investment decision scenario with market demand uncertainty.
-          Neutral business context.
+        comment: Investment decision with Invest vs Partner options under uncertain
+          demand. Realistic business scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Payoffs and probabilities realistic for business investment decisions.
+        comment: Payoffs in $K range realistic for investment decisions. Probabilities
+          reasonable.
     code_quality:
       score: 10
       max: 10
@@ -173,34 +182,36 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Flat script: imports, data, config, draw branches, draw nodes, legend,
-          save.'
+        comment: 'Linear structure: imports, style, data, plot, save. No functions
+          or classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: All data hardcoded and deterministic.
+        comment: All data is hardcoded/deterministic. No random generation.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: mpatches, plt, sns, FancyBboxPatch, RegularPolygon.'
+        comment: 'All imports used: math, matplotlib.patches, plt, pd, sns, FancyBboxPatch,
+          RegularPolygon.'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, well-organized. Node-map lookup pattern efficient. No over-engineering.
+        comment: Well-organized code with clear data structure and logical drawing
+          order.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png at 300 DPI with bbox_inches tight.
+        comment: Saves as plot.png with dpi=300 and bbox_inches='tight'.
     library_mastery:
-      score: 3
+      score: 4
       max: 10
       items:
       - id: LM-01
@@ -208,15 +219,17 @@ review:
         score: 2
         max: 5
         passed: false
-        comment: Uses sns.set_context, set_style, despine for styling but all drawing
-          is matplotlib primitives. No seaborn plot functions — inherent to plot type.
+        comment: Uses sns.set_context, set_style, color_palette, lineplot, and despine.
+          However, most drawing relies on matplotlib patches (FancyBboxPatch, plt.Circle,
+          RegularPolygon) rather than seaborn functions.
       - id: LM-02
         name: Distinctive Features
-        score: 1
+        score: 2
         max: 5
         passed: false
-        comment: Only basic seaborn styling utilities used. Could be pure matplotlib
-          with minor changes.
+        comment: Uses seaborn's colorblind palette, context/style management, and
+          lineplot with DataFrame. But the core visualization is essentially matplotlib
+          with seaborn styling.
   verdict: REJECTED
 impl_tags:
   dependencies: []
@@ -227,6 +240,7 @@ impl_tags:
   patterns:
   - data-generation
   - iteration-over-groups
+  - explicit-figure
   dataprep: []
   styling:
   - minimal-chrome

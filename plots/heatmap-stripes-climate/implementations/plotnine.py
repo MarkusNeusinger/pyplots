@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-stripes-climate: Climate Warming Stripes
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 81/100 | Created: 2026-03-06
@@ -8,13 +8,16 @@ import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
-    element_blank,
+    after_stat,
     element_rect,
+    element_text,
     geom_tile,
     ggplot,
     guides,
     labs,
     scale_fill_gradientn,
+    scale_x_continuous,
+    scale_y_continuous,
     theme,
     theme_void,
 )
@@ -39,20 +42,23 @@ df = pd.DataFrame({"year": years, "anomaly": anomaly})
 vmax = max(abs(anomaly.min()), abs(anomaly.max()))
 
 plot = (
-    ggplot(df, aes(x="year", y=1, fill="anomaly"))
-    + geom_tile(width=1.0, height=1.0)
+    ggplot(df, aes(x="year", y=after_stat("1"), fill="anomaly"))
+    + geom_tile(aes(width=1, height=1))
     + scale_fill_gradientn(
         colors=["#08306b", "#2171b5", "#6baed6", "#deebf7", "#ffffff", "#fee0d2", "#fc9272", "#de2d26", "#67000d"],
         limits=(-vmax, vmax),
     )
+    + scale_x_continuous(expand=(0, 0))
+    + scale_y_continuous(expand=(0, 0))
     + guides(fill=False)
-    + labs(title="heatmap-stripes-climate \u00b7 plotnine \u00b7 pyplots.ai")
+    + labs(title="heatmap-stripes-climate · plotnine · pyplots.ai")
     + theme_void()
     + theme(
         figure_size=(16, 5),
-        plot_title=element_blank(),
+        plot_title=element_text(size=24, ha="center", margin={"b": 10}),
         plot_background=element_rect(fill="white", color="white"),
         panel_background=element_rect(fill="white", color="white"),
+        plot_margin=0.01,
     )
 )
 

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 genome-track-multi: Genome Track Viewer
 Library: bokeh 3.8.2 | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-06
@@ -123,7 +123,7 @@ reg_color_map = {"Promoter": promoter_color, "Enhancer": enhancer_color, "CTCF B
 
 shared_x_range = Range1d(start=region_start, end=region_end)
 common_width = 4800
-border_left = 200
+border_left = 160
 border_right = 80
 
 # ============================================================
@@ -183,12 +183,12 @@ for pos in arrow_positions:
         p_gene.scatter(
             x=[pos],
             y=[0],
-            size=18,
+            size=24,
             angle=-np.pi / 2,
             marker="triangle",
             fill_color=intron_color,
             line_color=None,
-            alpha=0.5,
+            alpha=0.65,
         )
 
 # Gene label
@@ -445,12 +445,12 @@ p_reg.border_fill_color = "white"
 p_reg.outline_line_color = None
 p_reg.min_border_left = border_left
 p_reg.min_border_right = border_right
-p_reg.legend.label_text_font_size = "18pt"
+p_reg.legend.label_text_font_size = "20pt"
 p_reg.legend.label_text_color = text_mid
-p_reg.legend.glyph_height = 25
-p_reg.legend.glyph_width = 35
-p_reg.legend.spacing = 12
-p_reg.legend.padding = 15
+p_reg.legend.glyph_height = 30
+p_reg.legend.glyph_width = 40
+p_reg.legend.spacing = 15
+p_reg.legend.padding = 20
 p_reg.legend.background_fill_alpha = 0.9
 p_reg.legend.background_fill_color = "white"
 p_reg.legend.border_line_color = "#E2E8F0"

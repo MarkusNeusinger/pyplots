@@ -1,7 +1,7 @@
 library: pygal
 specification_id: gantt-dependencies
 created: '2026-01-15T21:04:11Z'
-updated: '2026-02-25T14:53:52Z'
+updated: '2026-03-06T21:08:08Z'
 generated_by: claude-opus-4-6
 workflow_run: 21046151934
 issue: 3830
@@ -14,30 +14,36 @@ quality_score: 73
 review:
   strengths:
   - Excellent data quality — realistic software project scenario with comprehensive
-    dependency coverage
+    dependency coverage across 16 tasks and 5 phases
   - Clean dependency arrow routing with elbow connectors (end-to-start connections
-    are correct)
-  - Good 5-color phase palette with rounded bar corners
+    are correct and well-routed)
+  - Good 5-color phase palette with rounded bar corners providing visual distinction
+  - Deterministic data with well-structured task definitions including proper temporal
+    ordering
   weaknesses:
   - Legend overlaps with month labels at the bottom, making both partially unreadable
-  - Missing group header/aggregate bars that spec explicitly requires
-  - Title has extra prefix text beyond the required format
-  - Dependency arrows are thin and arrowheads are small — hard to trace
+    (flagged in attempt 1, still unfixed)
+  - Missing group header/aggregate bars that spec explicitly requires for phase summaries
+    (flagged in attempt 1, still unfixed)
+  - Title has extra Software Project Timeline prefix beyond the required format
+  - Dependency arrows are thin with small arrowheads — hard to trace on full-resolution
+    canvas
   - pygal used mostly as SVG scaffolding rather than its charting API
   - No visual emphasis on critical path or milestones for storytelling
   image_description: 'The plot displays a horizontal Gantt chart titled "Software
     Project Timeline · gantt-dependencies · pygal · pyplots.ai" at 4800x2700 px on
     a white background. Sixteen tasks are listed on the Y-axis from bottom (Requirements
     Gathering) to top (Post-Launch Support), organized across 5 color-coded phases:
-    steel blue for Requirements (3 tasks), gold/yellow for Design (4 tasks), teal
+    steel blue for Requirements (3 tasks), gold/yellow for Design (4 tasks), teal/cyan
     for Development (3 tasks), coral/red for Testing (3 tasks), and purple for Deployment
-    (3 tasks). Bars have rounded corners and 0.9 opacity. Gray elbow-connector arrows
-    (stroke-width 2.5, 0.7 opacity) show finish-to-start dependencies between tasks,
-    connecting the right edge of predecessors to the left edge of successors. Dashed
-    vertical guide lines mark month boundaries (Jan-Jun 2025). A legend at the bottom
-    shows the 5 category colors, but it overlaps with the month labels. A small note
-    at the top-right reads "→ indicates task dependencies". The "Project Timeline"
-    x-axis label appears at the bottom center.'
+    (3 tasks). Bars have rounded corners (rx/ry=6) with 0.9 opacity. Gray elbow-connector
+    arrows (stroke-width 2.5, 0.7 opacity) with small triangular arrowheads show finish-to-start
+    dependencies between tasks. Dashed vertical guide lines mark month boundaries
+    (Jan-Jun 2025) with month labels at the bottom. A legend at the bottom shows the
+    5 category colors but overlaps with the month labels, making both partially unreadable.
+    A small note at the top-right reads "→ indicates task dependencies". An x-axis
+    label "Project Timeline" sits at the bottom center. No group header/aggregate
+    bars are present for phases.'
   criteria_checklist:
     visual_quality:
       score: 23
@@ -49,36 +55,37 @@ review:
         max: 8
         passed: true
         comment: Font sizes explicitly set in Style (title=60, labels=30, legend=30)
-          and custom SVG elements (28-32px). All text readable. Dependency note at
-          top-right slightly small (24px).
+          and custom SVG text elements (24-32px). All text readable. Dependency note
+          at top-right slightly small (24px).
       - id: VQ-02
         name: No Overlap
         score: 3
         max: 6
         passed: false
         comment: Legend category labels overlap with month labels at the bottom (Jan
-          2025/Requirements, Mar 2025/Design, May 2025/Development).
+          2025/Requirements, Mar 2025/Design, May 2025/Development). Flagged in attempt
+          1, still unfixed.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Bars clearly visible with good sizing. Dependency arrows visible
-          but thin (stroke-width 2.5 at 0.7 opacity) with small arrowheads.
+        comment: Bars clearly visible with good sizing and color saturation. Dependency
+          arrows thin (2.5px at 0.7 opacity) with small arrowheads.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Five distinct hues with different lightness values. Red and teal
-          could be slightly problematic for some deuteranopia cases.
+        comment: Five distinct hues with varying lightness. Red and teal could be
+          somewhat difficult for deuteranopia cases.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good overall canvas use. Task labels on left, bars spanning middle-to-right.
-          Some wasted space at top-right. Legend area cramped.
+        comment: Good overall canvas utilization. Task labels on left, bars spanning
+          mid-to-right. Some wasted vertical space at top. Legend area cramped.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
@@ -96,13 +103,13 @@ review:
         max: 8
         passed: true
         comment: Custom 5-color palette by phase, rounded bar corners, clean white
-          background. Above defaults but not publication-ready.
+          background, monospace font. Above defaults but not publication-ready.
       - id: DE-02
         name: Visual Refinement
         score: 3
         max: 6
         passed: true
-        comment: Subtle dashed guide lines, no heavy borders. Clean bar spacing. Legend
+        comment: Subtle dashed guide lines, clean bar spacing, no heavy borders. Legend
           overlap and lack of row backgrounds reduce polish.
       - id: DE-03
         name: Data Storytelling
@@ -110,7 +117,7 @@ review:
         max: 6
         passed: true
         comment: Color coding by phase guides viewer through project lifecycle. Dependencies
-          show flow. No critical path highlighting or milestone emphasis.
+          show workflow. No critical path highlighting or milestone emphasis.
     spec_compliance:
       score: 12
       max: 15
@@ -120,28 +127,29 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct horizontal Gantt chart with dependency arrows.
+        comment: Correct horizontal Gantt chart with dependency arrows (finish-to-start
+          connectors).
       - id: SC-02
         name: Required Features
         score: 2
         max: 4
         passed: false
-        comment: Dependencies and color coding present. Missing group header/aggregate
+        comment: Dependencies and color-coded grouping present. Missing group header/aggregate
           bars spanning each phase as spec requires.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Timeline on X, tasks on Y. Dependencies connect end-to-start correctly.
-          Tasks temporally ordered.
+        comment: Timeline on X-axis, tasks on Y-axis. Dependencies connect end-to-start
+          correctly. Tasks properly ordered.
       - id: SC-04
         name: Title & Legend
         score: 2
         max: 3
         passed: true
-        comment: Title contains required components but has extra prefix. Legend shows
-          all 5 categories correctly.
+        comment: Title contains required components but has extra Software Project
+          Timeline prefix. Legend shows all 5 categories correctly.
     data_quality:
       score: 15
       max: 15
@@ -202,7 +210,8 @@ review:
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via cairosvg.svg2png(). Uses current pygal API.
+        comment: Saves as plot.png via cairosvg.svg2png(). Uses current pygal 3.1.0
+          API.
     library_mastery:
       score: 3
       max: 10
@@ -212,16 +221,16 @@ review:
         score: 2
         max: 5
         passed: false
-        comment: pygal used primarily as SVG scaffolding. Actual Gantt bars and arrows
-          are hand-drawn SVG injected into rendered output. HorizontalBar created
-          with empty series for layout structure.
+        comment: pygal used primarily as SVG scaffolding. HorizontalBar created with
+          empty series for layout structure. Actual Gantt bars and arrows are hand-drawn
+          SVG injected into rendered output.
       - id: LM-02
         name: Distinctive Features
         score: 1
         max: 5
         passed: false
         comment: Only pygal-specific features used are Style system and legend_at_bottom.
-          Core visualization is manual SVG.
+          Core visualization is manual SVG construction.
   verdict: REJECTED
 impl_tags:
   dependencies:

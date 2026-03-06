@@ -1,10 +1,9 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-stripes-climate: Climate Warming Stripes
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 83/100 | Created: 2026-03-06
 """
 
-import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -30,10 +29,7 @@ anomalies = baseline_trend + noise
 anomaly_matrix = anomalies.reshape(1, -1)
 
 # Plot
-cmap = mcolors.LinearSegmentedColormap.from_list(
-    "warming_stripes",
-    ["#08306b", "#2171b5", "#6baed6", "#c6dbef", "#ffffff", "#fcbba1", "#fb6a4a", "#cb181d", "#67000d"],
-)
+cmap = sns.color_palette("coolwarm", as_cmap=True)
 vmax = max(abs(anomalies.min()), abs(anomalies.max()))
 
 fig, ax = plt.subplots(figsize=(16, 5))
@@ -61,7 +57,7 @@ fig.text(
     "heatmap-stripes-climate \u00b7 seaborn \u00b7 pyplots.ai",
     ha="center",
     va="center",
-    fontsize=20,
+    fontsize=24,
     fontweight="medium",
 )
 

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 tree-decision: Decision Tree Visualization with Probabilities
-Library: pygal | Python 3.13
-Quality: pending | Created: 2026-03-06
+Library: pygal 3.1.0 | Python 3.14.3
+Quality: 80/100 | Created: 2026-03-06
 """
 
 import cairosvg

@@ -1,7 +1,7 @@
 library: plotly
 specification_id: tree-decision
 created: '2026-03-06T21:34:38Z'
-updated: '2026-03-06T21:38:50Z'
+updated: '2026-03-06T21:52:33Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22782764459
 issue: 4569
@@ -10,42 +10,36 @@ library_version: 6.6.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/tree-decision/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/tree-decision/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/tree-decision/plotly/plot.html
-quality_score: 81
+quality_score: 83
 review:
   strengths:
-  - Perfect spec compliance with all required features (node shapes, EMV, probabilities,
-    pruning marks, payoffs) fully implemented
-  - Excellent data quality with mathematically verified EMV rollback and realistic
-    business scenario
-  - Strong visual hierarchy distinguishing optimal path (solid, colored) from pruned
-    branches (dashed, gray, reduced opacity)
-  - Clean, well-structured deterministic code
+  - Excellent spec compliance with all required features fully implemented
+  - Strong visual hierarchy between optimal and pruned paths through opacity, line
+    style, and color coding
+  - Semantic color palette with clear meaning (blue=decision, orange=chance, green=terminal)
+  - Clean left-to-right tree layout with good spacing
+  - Red // pruned branch markers are visually distinctive
+  - Interactive hover tooltips add value for HTML export
   weaknesses:
-  - EMV text inside nodes too small (13pt); white-on-gray for pruned nodes nearly
-    illegible
-  - Plotly interactivity completely disabled — hover tooltips would add significant
-    value
-  - Branch label positioning could be improved to reduce crowding near D1
-  - Bottom portion of canvas underutilized with $+0 terminal pushed far from other
-    nodes
-  image_description: 'The plot displays a decision tree for a product launch investment
-    decision with left-to-right layout on a white background. A blue square decision
-    node (D1) on the far left shows EMV "$280" in white text. Three branches extend
-    rightward: (1) a solid dark line labeled "Launch Product" leads to an orange circle
-    chance node (C1, EMV "$280"), which further branches into two solid lines to green
-    right-pointing terminal triangles — "High Demand (p=0.6)" with payoff "$+500"
-    and "Low Demand (p=0.4)" with payoff "$-50"; (2) a dashed gray line labeled "License
-    Tech" leads to a gray circle chance node (C2, EMV "$170"), which branches into
-    two dashed lines to gray terminal triangles — "Accepted (p=0.7)" at "$+200" and
-    "Rejected (p=0.3)" at "$+100"; (3) a dashed gray line labeled "Do Nothing" leads
-    to a gray terminal triangle at "$+0". Red "//" double-strike marks appear on pruned
-    branches near D1 and C2. A legend in the bottom-left shows Decision Node (blue
-    square), Chance Node (orange circle), Terminal Node (green triangle), and Pruned
-    Branch (dashed line). Title reads "Product Launch Decision · tree-decision · plotly
-    · pyplots.ai".'
+  - Branch label and EMV font sizes (16pt) below recommended 20pt for target resolution
+  - Duplicated hover text construction logic in code
+  - Could leverage more distinctive Plotly features beyond basic Scatter traces
+  image_description: 'The plot displays a left-to-right decision tree for a product
+    launch scenario. A blue square decision node (D1, EMV $280) sits at the left,
+    branching into three paths: "Launch Product" (solid blue optimal path) leading
+    to an orange circle chance node (C1, EMV $280), "License Tech" (dashed gray pruned
+    path with red "//" marks) leading to a gray circle chance node (C2, EMV $170),
+    and "Do Nothing" (dashed gray pruned path with red "//") leading directly to a
+    gray terminal triangle ($+0). The chance node C1 branches to two green right-pointing
+    triangles: "High Demand (p=0.6)" at $+500 and "Low Demand (p=0.4)" at $-50. The
+    pruned C2 branches to gray triangles: "Accepted (p=0.7)" at $+200 and "Rejected
+    (p=0.3)" at $+100. A legend in the bottom-left shows Decision Node (blue square),
+    Chance Node (orange circle), Terminal Node (green triangle), and Pruned Branch
+    (dashed gray). Background is light gray with a white paper background. Title reads
+    "Product Launch Decision · tree-decision · plotly · pyplots.ai".'
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 26
       max: 30
       items:
       - id: VQ-01
@@ -53,40 +47,41 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Font sizes explicitly set but EMV at 13pt is small; white-on-gray
-          for pruned nodes hard to read
+        comment: Font sizes explicitly set but branch labels and EMV at 16pt fall
+          below 20pt recommendation for labels at 4800x2700
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: Minor crowding of pruned marks and labels near D1
+        comment: Minor crowding near decision node D1 where three branch labels converge,
+          but all remain readable
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Nodes at size 42 well-visible; pruned gray terminal triangles faint
-          at 0.5 opacity
+        comment: Node markers at size 48 clearly visible; solid vs dashed lines with
+          opacity effectively distinguish paths
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Blue/orange/green generally safe; orange-green distinction marginal
-          for some colorblind conditions
+        comment: Blue/orange/green/gray palette is colorblind-safe
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good left-to-right layout but wasted space at bottom
+        comment: Tree uses ~60% of canvas with good flow; some unused space on the
+          right
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Axes appropriately hidden for tree diagram; title descriptive
+        comment: Axes correctly hidden for tree diagram; title is descriptive
     design_excellence:
       score: 13
       max: 20
@@ -96,21 +91,22 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Custom palette, distinct shapes, white borders; above defaults but
-          not publication-level
+        comment: Thoughtful custom palette with semantic color coding, white edge
+          highlights, plotly_white template; above defaults but not publication-level
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Clean white background, no grid, hidden axes, subtle legend border
+        comment: Grid and axes hidden, clean backgrounds, generous margins, white
+          marker borders add depth
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: 'Clear visual hierarchy: solid optimal path vs dashed gray pruned
-          branches'
+        comment: Clear visual hierarchy between optimal and pruned paths; viewer can
+          trace optimal decision immediately
     spec_compliance:
       score: 15
       max: 15
@@ -120,27 +116,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct decision tree with squares, circles, right-pointing triangles
+        comment: Correct decision tree with squares, circles, and right-pointing triangles
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: node shapes, pruned marks, EMV, probabilities,
-          payoffs'
+        comment: 'All spec features present: node shapes, probabilities, payoffs,
+          EMV, pruned marks, distinct colors, L-to-R layout'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Tree structure correct, EMV rollback verified mathematically
+        comment: EMV values correctly calculated; probabilities sum to 1.0 per chance
+          node
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, legend identifies all node types and pruned
-          branches
+        comment: Title follows format; legend shows all four node/branch types with
+          correct symbols
     data_quality:
       score: 14
       max: 15
@@ -150,22 +147,23 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows all node types, pruning, EMV, positive and negative payoffs;
-          tree depth limited to 2 stages
+        comment: Shows all node types, positive and negative payoffs, pruned vs optimal
+          paths; could benefit from deeper tree
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Realistic product launch investment decision
+        comment: Product launch investment decision is a classic neutral business
+          scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: All values mathematically correct and business-plausible
+        comment: Payoff values and probabilities are reasonable for business context
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -173,33 +171,36 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Data → Layout → Colors → Plot → Style → Save; no functions/classes
+        comment: 'Flat structure: data, positions, colors, figure, edges, nodes, legend,
+          layout, save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic hardcoded data
+        comment: All data hardcoded and deterministic
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'Single import: plotly.graph_objects'
+        comment: Only plotly.graph_objects imported and used
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Clean dictionary-based node data, appropriate complexity
+        passed: false
+        comment: 'Hover text construction duplicated: built once during trace creation
+          then rebuilt at end of script'
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png at 1600x900 scale=3; current API
+        comment: Saves as plot.png at correct dimensions; also exports HTML; current
+          API
     library_mastery:
-      score: 5
+      score: 6
       max: 10
       items:
       - id: LM-01
@@ -207,20 +208,22 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Standard go.Scatter for nodes/edges; correct but straightforward
+        comment: Standard go.Figure with go.Scatter and add_annotation; correct but
+          doesn't leverage higher-level patterns
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: HTML export is plotly-distinctive but hover disabled; no custom hover
-          templates or interactive callbacks
+        passed: true
+        comment: Rich hover tooltips with HTML, interactive HTML export, hoverlabel
+          customization are Plotly-distinctive
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
   - custom-legend
+  - hover-tooltips
   - html-export
   patterns:
   - iteration-over-groups
@@ -228,4 +231,3 @@ impl_tags:
   styling:
   - minimal-chrome
   - edge-highlighting
-  - alpha-blending

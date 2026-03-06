@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 heatmap-stripes-climate: Climate Warming Stripes
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-06

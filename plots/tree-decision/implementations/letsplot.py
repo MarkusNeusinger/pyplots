@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 tree-decision: Decision Tree Visualization with Probabilities
-Library: letsplot | Python 3.13
-Quality: pending | Created: 2026-03-06
+Library: letsplot 4.8.2 | Python 3.14.3
+Quality: 76/100 | Created: 2026-03-06
 """
 
 import pandas as pd

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 sequence-logo-basic: Sequence Logo for Motif Visualization
 Library: bokeh 3.8.2 | Python 3.14.3
 Quality: 78/100 | Created: 2026-03-06
@@ -35,22 +35,26 @@ max_bits = np.log2(len(bases))
 entropy = np.array([-np.sum(f * np.log2(np.where(f > 0, f, 1))) for f in frequencies])
 information_content = max_bits - entropy
 
-# Build letter stacks: colored letter glyphs sized by information content
-text_x, text_y, text_letter, text_color_list, text_size = [], [], [], [], []
-hover_x, hover_y, hover_w, hover_h = [], [], [], []
+# Build letter stacks: stretched letter glyphs filling colored rectangles
+rect_x, rect_y, rect_w, rect_h, rect_color = [], [], [], [], []
+text_x, text_y, text_letter, text_size = [], [], [], []
 hover_base, hover_freq, hover_ic, hover_pos = [], [], [], []
 
 # Y-range: tight fit around actual data
 max_ic = float(np.max(information_content))
-y_top = max_ic * 1.05 + 0.02
+y_top = max_ic + 0.05
 
-# Font scaling: plot area height ~2200px for 2700px canvas
-# 1 IC unit in pixels ≈ 2200 / y_top. 1pt ≈ 1.33px.
-# A capital letter occupies ~72% of font em-height.
-# target_px = height_in_ic * (2200 / y_top)
-# font_pt = target_px / (1.33 * 0.72)
-PX_PER_IC = 2200.0 / y_top
-PT_SCALE = PX_PER_IC / (1.33 * 0.72)
+# Minimum visible height threshold — skip letters too small to render
+MIN_HEIGHT = 0.005
+
+# Plot area pixel height (~2200px effective for 2700 canvas minus margins)
+PLOT_PX_HEIGHT = 2200.0
+PX_PER_UNIT = PLOT_PX_HEIGHT / y_top
+# Font scaling: letter cap-height ≈ 72% of em-height, 1pt ≈ 1.33px
+# We want the letter to visually fill the rectangle height
+PT_SCALE = PX_PER_UNIT / (1.33 * 0.72)
+
+COLUMN_WIDTH = 0.82
 
 for i, pos in enumerate(positions):
     ic = information_content[i]
@@ -61,22 +65,27 @@ for i, pos in enumerate(positions):
     for idx in sorted_indices:
         letter = bases[idx]
         height = freqs[idx] * ic
-        if height < 0.001:
+        if height < MIN_HEIGHT:
             y_bottom += height
             continue
 
+        center_y = y_bottom + height / 2
+
+        # Colored rectangle filling the allocated space
+        rect_x.append(pos)
+        rect_y.append(center_y)
+        rect_w.append(COLUMN_WIDTH)
+        rect_h.append(height)
+        rect_color.append(base_colors[letter])
+
+        # Letter glyph scaled to fill the rectangle
         text_x.append(pos)
-        text_y.append(y_bottom + height / 2)
+        text_y.append(center_y)
         text_letter.append(letter)
-        text_color_list.append(base_colors[letter])
-        font_pt = max(16, min(int(height * PT_SCALE * 0.85), 220))
+        font_pt = max(14, min(int(height * PT_SCALE * 0.92), 260))
         text_size.append(f"{font_pt}pt")
 
-        # Invisible hover targets
-        hover_x.append(pos)
-        hover_y.append(y_bottom + height / 2)
-        hover_w.append(0.85)
-        hover_h.append(height)
+        # Hover data
         hover_base.append(letter)
         hover_freq.append(f"{freqs[idx]:.0%}")
         hover_ic.append(f"{height:.3f}")
@@ -96,38 +105,47 @@ p = figure(
     y_range=Range1d(-0.02, y_top),
 )
 
-# Invisible rectangles for hover interaction
-hover_source = ColumnDataSource(
+# Colored rectangles — the "stretched glyph" background
+rect_source = ColumnDataSource(
     data={
-        "x": hover_x,
-        "y": hover_y,
-        "width": hover_w,
-        "height": hover_h,
+        "x": rect_x,
+        "y": rect_y,
+        "width": rect_w,
+        "height": rect_h,
+        "color": rect_color,
         "base": hover_base,
         "freq": hover_freq,
         "ic": hover_ic,
         "pos": hover_pos,
     }
 )
-hover_rects = p.rect(x="x", y="y", width="width", height="height", source=hover_source, fill_alpha=0, line_alpha=0)
+rects = p.rect(
+    x="x",
+    y="y",
+    width="width",
+    height="height",
+    source=rect_source,
+    fill_color="color",
+    fill_alpha=0.92,
+    line_color="white",
+    line_width=1.5,
+)
 
 # HoverTool — distinctive Bokeh interactive feature
 hover_tool = HoverTool(
-    renderers=[hover_rects],
+    renderers=[rects],
     tooltips=[("Position", "@pos"), ("Base", "@base"), ("Frequency", "@freq"), ("IC contribution", "@ic bits")],
 )
 p.add_tools(hover_tool)
 
-# Colored letter glyphs (the core visualization)
-text_source = ColumnDataSource(
-    data={"x": text_x, "y": text_y, "text": text_letter, "color": text_color_list, "size": text_size}
-)
+# White letter glyphs on top of colored rectangles (stretched to fill)
+text_source = ColumnDataSource(data={"x": text_x, "y": text_y, "text": text_letter, "size": text_size})
 p.text(
     x="x",
     y="y",
     text="text",
     source=text_source,
-    text_color="color",
+    text_color="white",
     text_font_size="size",
     text_font_style="bold",
     text_align="center",

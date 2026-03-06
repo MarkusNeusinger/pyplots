@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 genome-track-multi: Genome Track Viewer
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 91/100 | Created: 2026-03-06

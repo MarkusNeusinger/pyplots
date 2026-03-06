@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-stripes-climate: Climate Warming Stripes
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-06
@@ -35,7 +35,14 @@ colorscale = [
     [1.0, "#67000d"],
 ]
 
-# Plot using go.Heatmap with native colorscale for idiomatic Plotly usage
+# Classify each year's anomaly for hover display
+labels = np.where(
+    anomalies > 0.3,
+    "Strong warming",
+    np.where(anomalies > 0, "Warm", np.where(anomalies > -0.3, "Cool", "Strong cooling")),
+)
+
+# Plot using go.Heatmap with native colorscale and custom hovertemplate
 fig = go.Figure(
     data=go.Heatmap(
         z=[anomalies],
@@ -45,9 +52,10 @@ fig = go.Figure(
         zmin=-vmax,
         zmax=vmax,
         showscale=False,
-        hoverinfo="skip",
         xgap=0,
         ygap=0,
+        customdata=[np.column_stack([labels])],
+        hovertemplate="<b>%{x}</b><br>Anomaly: %{z:+.2f} °C<br>%{customdata[0]}<extra></extra>",
     )
 )
 
@@ -96,4 +104,6 @@ fig.update_layout(
 
 # Save with ~3:1 aspect ratio (wide and short, per spec)
 fig.write_image("plot.png", width=1600, height=533, scale=3)
-fig.write_html("plot.html", include_plotlyjs="cdn")
+fig.write_html(
+    "plot.html", include_plotlyjs="cdn", config={"displayModeBar": False, "scrollZoom": False, "staticPlot": False}
+)

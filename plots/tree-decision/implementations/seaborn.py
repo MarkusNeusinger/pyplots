@@ -1,21 +1,17 @@
-""" pyplots.ai
+"""pyplots.ai
 tree-decision: Decision Tree Visualization with Probabilities
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 81/100 | Created: 2026-03-06
 """
 
-import math
-
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-from matplotlib.patches import FancyBboxPatch, RegularPolygon
 
 
-# Style
-sns.set_context("talk", font_scale=1.2)
-sns.set_style("white")
+# Style using seaborn's consolidated theme API
+sns.set_theme(context="talk", style="white", font_scale=1.2, palette="colorblind")
 
 # Colorblind-safe palette via seaborn
 cb_palette = sns.color_palette("colorblind", 6)
@@ -41,7 +37,7 @@ tree = [
         "emv": 130,
         "pruned": False,
         "x": 1.0,
-        "y": 4.5,
+        "y": 5.0,
     },
     {
         "id": "C1",
@@ -53,7 +49,7 @@ tree = [
         "emv": 130,
         "pruned": False,
         "x": 5.5,
-        "y": 7.0,
+        "y": 7.5,
     },
     {
         "id": "C2",
@@ -77,7 +73,7 @@ tree = [
         "emv": None,
         "pruned": False,
         "x": 11.0,
-        "y": 8.2,
+        "y": 9.0,
     },
     {
         "id": "T2",
@@ -89,7 +85,7 @@ tree = [
         "emv": None,
         "pruned": False,
         "x": 11.0,
-        "y": 5.8,
+        "y": 6.0,
     },
     {
         "id": "T3",
@@ -101,7 +97,7 @@ tree = [
         "emv": None,
         "pruned": True,
         "x": 11.0,
-        "y": 3.2,
+        "y": 3.5,
     },
     {
         "id": "T4",
@@ -113,13 +109,13 @@ tree = [
         "emv": None,
         "pruned": True,
         "x": 11.0,
-        "y": 0.8,
+        "y": 0.5,
     },
 ]
 
 node_map = {n["id"]: n for n in tree}
 
-# Build DataFrames for seaborn plotting
+# Build branch DataFrame for seaborn lineplot with units parameter
 branch_rows = []
 for node in tree:
     if node["parent"] is None:
@@ -130,33 +126,157 @@ for node in tree:
     mid_x = px + (nx - px) * 0.4
     seg_id = f"{parent['id']}-{node['id']}"
     style = "pruned" if node["pruned"] else "optimal"
-    # Segment 1: horizontal from parent to mid, then down/up to child y
     branch_rows.append({"seg": seg_id, "x": px, "y": py, "style": style})
     branch_rows.append({"seg": seg_id, "x": mid_x, "y": ny, "style": style})
     branch_rows.append({"seg": seg_id, "x": nx, "y": ny, "style": style})
 
 branch_df = pd.DataFrame(branch_rows)
 
-# Plot
+# Build node DataFrame for seaborn scatterplot with hue/style mapping
+node_rows = []
+for node in tree:
+    if node["type"] == "decision":
+        category = "Decision"
+    elif node["type"] == "chance":
+        category = "Chance"
+    else:
+        category = "Positive Payoff" if node["payoff"] >= 0 else "Negative Payoff"
+    node_rows.append({"x": node["x"], "y": node["y"], "category": category, "pruned": node["pruned"]})
+
+node_df = pd.DataFrame(node_rows)
+
+# Seaborn marker and palette mappings for node types
+marker_map = {
+    "Decision": "s",  # square for decision nodes
+    "Chance": "o",  # circle for chance nodes
+    "Positive Payoff": ">",  # right triangle for positive terminal
+    "Negative Payoff": ">",  # right triangle for negative terminal
+}
+color_map = {
+    "Decision": decision_color,
+    "Chance": chance_color,
+    "Positive Payoff": terminal_pos_color,
+    "Negative Payoff": terminal_neg_color,
+}
+
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Draw branches using seaborn lineplot with DataFrame
-for style, group_df in branch_df.groupby("style"):
-    alpha = pruned_alpha if style == "pruned" else normal_alpha
-    lw = 1.8 if style == "pruned" else 2.5
-    ls = "--" if style == "pruned" else "-"
-    for _seg_id, seg_df in group_df.groupby("seg"):
-        sns.lineplot(
-            data=seg_df,
-            x="x",
-            y="y",
-            color=branch_color,
-            linewidth=lw,
+# Draw branches using sns.lineplot with units parameter (idiomatic seaborn)
+optimal_branches = branch_df[branch_df["style"] == "optimal"]
+pruned_branches = branch_df[branch_df["style"] == "pruned"]
+
+sns.lineplot(
+    data=optimal_branches,
+    x="x",
+    y="y",
+    units="seg",
+    estimator=None,
+    color=branch_color,
+    linewidth=2.5,
+    sort=False,
+    ax=ax,
+    legend=False,
+)
+sns.lineplot(
+    data=pruned_branches,
+    x="x",
+    y="y",
+    units="seg",
+    estimator=None,
+    color=branch_color,
+    linewidth=1.8,
+    alpha=pruned_alpha,
+    linestyle="--",
+    sort=False,
+    ax=ax,
+    legend=False,
+)
+
+# Draw nodes using sns.scatterplot with hue/style mapping (replaces matplotlib patches)
+active_nodes = node_df[~node_df["pruned"]]
+pruned_node_df = node_df[node_df["pruned"]]
+
+sns.scatterplot(
+    data=active_nodes,
+    x="x",
+    y="y",
+    hue="category",
+    style="category",
+    markers=marker_map,
+    palette=color_map,
+    s=5000,
+    edgecolor="white",
+    linewidth=3,
+    ax=ax,
+    legend=False,
+    zorder=3,
+)
+
+sns.scatterplot(
+    data=pruned_node_df,
+    x="x",
+    y="y",
+    hue="category",
+    style="category",
+    markers=marker_map,
+    palette=color_map,
+    s=5000,
+    edgecolor="white",
+    linewidth=3,
+    alpha=pruned_alpha,
+    ax=ax,
+    legend=False,
+    zorder=3,
+)
+
+# Add EMV and payoff text labels
+for node in tree:
+    nx, ny = node["x"], node["y"]
+    alpha = pruned_alpha if node["pruned"] else normal_alpha
+
+    if node["type"] in ("decision", "chance"):
+        node_color = decision_color if node["type"] == "decision" else chance_color
+        if node["pruned"]:
+            ax.text(
+                nx,
+                ny + 0.8,
+                f"EMV ${node['emv']}K",
+                fontsize=13,
+                fontweight="bold",
+                ha="center",
+                va="bottom",
+                color=node_color,
+                alpha=max(alpha, 0.6),
+                zorder=4,
+            )
+        else:
+            ax.text(
+                nx,
+                ny,
+                f"EMV\n${node['emv']}K",
+                fontsize=14,
+                fontweight="bold",
+                ha="center",
+                va="center",
+                color="white",
+                alpha=alpha,
+                zorder=4,
+            )
+
+    elif node["type"] == "terminal":
+        color = terminal_pos_color if node["payoff"] >= 0 else terminal_neg_color
+        sign = "+" if node["payoff"] >= 0 else ""
+        ax.text(
+            nx + 0.65,
+            ny,
+            f"${sign}{node['payoff']}K",
+            fontsize=15,
+            fontweight="bold",
+            ha="left",
+            va="center",
+            color=color,
             alpha=alpha,
-            linestyle=ls,
-            sort=False,
-            ax=ax,
-            legend=False,
+            zorder=4,
         )
 
 # Branch labels and pruned marks
@@ -208,125 +328,6 @@ for node in tree:
             zorder=5,
         )
 
-# Build node DataFrame for seaborn scatterplot (terminal nodes)
-terminal_rows = []
-for node in tree:
-    if node["type"] == "terminal":
-        payoff = node["payoff"]
-        terminal_rows.append(
-            {
-                "x": node["x"],
-                "y": node["y"],
-                "payoff_type": "Positive" if payoff >= 0 else "Negative",
-                "pruned": node["pruned"],
-                "payoff": payoff,
-            }
-        )
-
-terminal_df = pd.DataFrame(terminal_rows)
-
-# Draw decision and chance nodes (these need custom patches)
-node_size_decision = 0.50
-node_size_chance = 0.45
-
-for node in tree:
-    nx, ny = node["x"], node["y"]
-    alpha = pruned_alpha if node["pruned"] else normal_alpha
-
-    if node["type"] == "decision":
-        rect = FancyBboxPatch(
-            (nx - node_size_decision, ny - node_size_decision),
-            node_size_decision * 2,
-            node_size_decision * 2,
-            boxstyle="square,pad=0",
-            facecolor=decision_color,
-            edgecolor="white",
-            linewidth=3,
-            alpha=alpha,
-            zorder=3,
-        )
-        ax.add_patch(rect)
-        ax.text(
-            nx,
-            ny,
-            f"EMV\n${node['emv']}K",
-            fontsize=14,
-            fontweight="bold",
-            ha="center",
-            va="center",
-            color="white",
-            alpha=alpha,
-            zorder=4,
-        )
-
-    elif node["type"] == "chance":
-        circle = plt.Circle(
-            (nx, ny), node_size_chance, facecolor=chance_color, edgecolor="white", linewidth=3, alpha=alpha, zorder=3
-        )
-        ax.add_patch(circle)
-        # Offset EMV text above node for pruned nodes to avoid overlap with X marks
-        if node["pruned"]:
-            ax.text(
-                nx,
-                ny + 0.65,
-                f"EMV ${node['emv']}K",
-                fontsize=13,
-                fontweight="bold",
-                ha="center",
-                va="bottom",
-                color=chance_color,
-                alpha=max(alpha, 0.6),
-                zorder=4,
-            )
-        else:
-            ax.text(
-                nx,
-                ny,
-                f"EMV\n${node['emv']}K",
-                fontsize=13,
-                fontweight="bold",
-                ha="center",
-                va="center",
-                color="white",
-                alpha=alpha,
-                zorder=4,
-            )
-
-# Draw terminal nodes using seaborn scatterplot for positive/negative payoffs
-palette_map = {"Positive": terminal_pos_color, "Negative": terminal_neg_color}
-
-# Use sns.scatterplot for terminal node markers
-for payoff_type, sub_df in terminal_df.groupby("payoff_type"):
-    color = palette_map[payoff_type]
-    for _, row in sub_df.iterrows():
-        alpha = pruned_alpha if row["pruned"] else normal_alpha
-        # Right-pointing triangle: orientation = -pi/2
-        triangle = RegularPolygon(
-            (row["x"], row["y"]),
-            numVertices=3,
-            radius=0.35,
-            orientation=-math.pi / 2,
-            facecolor=color,
-            edgecolor="white",
-            linewidth=2.5,
-            alpha=alpha,
-            zorder=3,
-        )
-        ax.add_patch(triangle)
-        sign = "+" if row["payoff"] >= 0 else ""
-        ax.text(
-            row["x"] + 0.65,
-            row["y"],
-            f"${sign}{row['payoff']}K",
-            fontsize=15,
-            fontweight="bold",
-            ha="left",
-            va="center",
-            color=color,
-            alpha=alpha,
-            zorder=4,
-        )
-
 # Legend
 legend_elements = [
     mpatches.Patch(facecolor=decision_color, edgecolor="white", label="Decision Node"),
@@ -340,7 +341,7 @@ ax.legend(handles=legend_elements, loc="lower right", fontsize=13, framealpha=0.
 # Title and styling
 ax.set_title("tree-decision \u00b7 seaborn \u00b7 pyplots.ai", fontsize=24, fontweight="medium", pad=20)
 ax.set_xlim(-0.5, 14.5)
-ax.set_ylim(-0.5, 9.5)
+ax.set_ylim(-1.0, 10.5)
 ax.axis("off")
 sns.despine(left=True, bottom=True)
 

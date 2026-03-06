@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 sequence-logo-basic: Sequence Logo for Motif Visualization
 Library: plotnine 0.15.3 | Python 3.14.3
-Quality: 78/100 | Created: 2026-03-06
 """
 
 import numpy as np
@@ -17,9 +16,7 @@ from plotnine import (
     geom_rect,
     geom_text,
     ggplot,
-    guides,
     labs,
-    scale_color_manual,
     scale_fill_manual,
     scale_size_identity,
     scale_x_continuous,
@@ -74,14 +71,13 @@ bar_half_width = 0.44
 df["xmin"] = df["position"] - bar_half_width
 df["xmax"] = df["position"] + bar_half_width
 
-# Scale font size so letters visually fill their segments as glyphs
-# The letter IS the primary visual element (sequence logo convention)
+# Font size scaled to height - letters fill their glyph rectangles
 max_height = df["height"].max()
-df["fontsize"] = df["height"] * (64 / max_height)
-df["fontsize"] = df["fontsize"].clip(lower=5)
+df["fontsize"] = df["height"] * (72 / max_height)
+df["fontsize"] = df["fontsize"].clip(lower=9)
 
-# Only show letters on segments tall enough to be readable
-df_visible = df[df["height"] > 0.02].copy()
+# Only label segments tall enough to show readable text
+df_labels = df[df["height"] > 0.03].copy()
 
 # Colorblind-safe DNA color scheme
 dna_colors = {"A": "#009E73", "C": "#0072B2", "G": "#E69F00", "T": "#CC79A7"}
@@ -90,10 +86,10 @@ dna_colors = {"A": "#009E73", "C": "#0072B2", "G": "#E69F00", "T": "#CC79A7"}
 highlight_pos = 8
 highlight_ymax = df[df["position"] == highlight_pos]["ymax"].max()
 df_highlight = pd.DataFrame(
-    {"xmin": [highlight_pos - 0.48], "xmax": [highlight_pos + 0.48], "ymin": [-0.02], "ymax": [highlight_ymax + 0.04]}
+    {"xmin": [highlight_pos - 0.50], "xmax": [highlight_pos + 0.50], "ymin": [-0.02], "ymax": [highlight_ymax + 0.06]}
 )
 
-# Plot - colored letters as primary visual elements (sequence logo style)
+# Plot - colored rectangles as stretched glyphs with letter labels
 plot = (
     ggplot(df)
     # Storytelling: highlight most conserved position
@@ -101,42 +97,35 @@ plot = (
         aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax"),
         data=df_highlight,
         fill="#FFF9C4",
-        color=None,
-        alpha=0.5,
+        color="#E0D68A",
+        size=0.5,
+        alpha=0.6,
     )
-    # Very subtle background rectangles to define segment boundaries
-    + geom_rect(
-        aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax", fill="letter"), alpha=0.08, color="#FFFFFF", size=0.2
-    )
-    # Colored bold letters: the primary visual element (scaled glyphs)
+    # Colored rectangles as stretched glyphs - the primary visual element
+    + geom_rect(aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax", fill="letter"), color="white", size=0.3)
+    # Letter labels overlaid on the colored glyph rectangles
     + geom_text(
-        aes(x="position", y="y_mid", label="letter", color="letter", size="fontsize"),
-        data=df_visible,
+        aes(x="position", y="y_mid", label="letter", size="fontsize"),
+        data=df_labels,
+        color="white",
         fontweight="bold",
         show_legend=False,
     )
-    + scale_fill_manual(values=dna_colors)
-    + scale_color_manual(values=dna_colors, name="Nucleotide")
+    + scale_fill_manual(values=dna_colors, name="Nucleotide")
     + scale_size_identity()
-    + guides(fill="none")
     + scale_x_continuous(breaks=range(1, 11), minor_breaks=[])
-    + scale_y_continuous(expand=(0, 0, 0.05, 0))
+    + scale_y_continuous(expand=(0, 0, 0.08, 0))
     + coord_cartesian(ylim=(0, None))
     + annotate(
         "text",
         x=highlight_pos,
-        y=highlight_ymax + 0.09,
+        y=highlight_ymax + 0.12,
         label="most conserved",
-        size=10,
+        size=11,
         color="#555555",
         fontstyle="italic",
     )
-    + labs(
-        x="Position",
-        y="Information content (bits)",
-        title="sequence-logo-basic \u00b7 plotnine \u00b7 pyplots.ai",
-        color="Nucleotide",
-    )
+    + labs(x="Position", y="Information content (bits)", title="sequence-logo-basic \u00b7 plotnine \u00b7 pyplots.ai")
     + theme_minimal()
     + theme(
         figure_size=(16, 9),

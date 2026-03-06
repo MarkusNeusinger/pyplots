@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 sequence-logo-basic: Sequence Logo for Motif Visualization
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 82/100 | Created: 2026-03-06

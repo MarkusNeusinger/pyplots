@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 sequence-logo-basic: Sequence Logo for Motif Visualization
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 82/100 | Created: 2026-03-06
@@ -7,6 +7,7 @@ Quality: 82/100 | Created: 2026-03-06
 import matplotlib.pyplot as plt
 import matplotlib.transforms as mtransforms
 import numpy as np
+import pandas as pd
 import seaborn as sns
 from matplotlib.font_manager import FontProperties
 from matplotlib.patches import PathPatch
@@ -15,7 +16,6 @@ from matplotlib.textpath import TextPath
 
 # Data - DNA transcription factor binding site motif (10 positions)
 bases = ["A", "C", "G", "T"]
-base_colors = {"A": "#2ca02c", "C": "#1f77b4", "G": "#ff7f0e", "T": "#d62728"}
 
 frequencies = np.array(
     [
@@ -41,12 +41,48 @@ for i in range(n_positions):
     entropy = sum(f * np.log2(f) for f in frequencies[i] if f > 0)
     info_content[i] = 2.0 + entropy
 
-# Plot
-sns.set_style("white")
+# Build DataFrame for seaborn stacked bars
+rows = []
+for pos in range(n_positions):
+    ic = info_content[pos]
+    letter_heights = frequencies[pos] * ic
+    sorted_indices = np.argsort(letter_heights)
+    for idx in sorted_indices:
+        height = letter_heights[idx]
+        if height >= 0.01:
+            rows.append({"Position": pos + 1, "Base": bases[idx], "Height": height})
+df = pd.DataFrame(rows)
+
+# Colorblind-friendly palette using seaborn color utilities
+base_palette = sns.color_palette("colorblind", n_colors=4)
+base_colors = {
+    "A": base_palette[0],  # blue
+    "C": base_palette[1],  # orange
+    "G": base_palette[2],  # green
+    "T": base_palette[3],  # red-ish
+}
+
+# Plot setup with seaborn context and style
+sns.set_context("talk", font_scale=1.1)
+sns.set_style("whitegrid", {"grid.alpha": 0.15, "grid.linewidth": 0.6})
 fig, ax = plt.subplots(figsize=(16, 9))
 
+# Use seaborn barplot to draw stacked IC bars as a base layer
+# Stack bars manually by tracking cumulative y per position
+cumulative = {}
+for _, row in df.iterrows():
+    pos = int(row["Position"])
+    base = row["Base"]
+    height = row["Height"]
+    bottom = cumulative.get(pos, 0.0)
+    sns.barplot(
+        x=[pos], y=[height], color=base_colors[base], ax=ax, bottom=bottom, width=0.8, edgecolor="none", alpha=0.18
+    )
+    cumulative[pos] = bottom + height
+
+# Overlay scaled letter glyphs on top of bars
 fp = FontProperties(family="monospace", weight="bold")
-letter_width = 0.8
+letter_width = 0.78
 
 for pos in range(n_positions):
     ic = info_content[pos]
@@ -61,7 +97,9 @@ for pos in range(n_positions):
 
         letter = bases[idx]
         color = base_colors[letter]
-        x_left = pos + 1 - letter_width / 2
+        # Map position to bar x-coordinate (barplot uses 0-based integer x)
+        x_center = pos
+        x_left = x_center - letter_width / 2
 
         tp = TextPath((0, 0), letter, size=1, prop=fp)
         bbox = tp.get_extents()
@@ -79,17 +117,32 @@ for pos in range(n_positions):
         y_offset += height
 
 # Style
-ax.set_xlim(0.4, n_positions + 0.6)
+ax.set_xlim(-0.6, n_positions - 0.4)
 ax.set_ylim(0, 2.1)
-ax.set_xticks(range(1, n_positions + 1))
+ax.set_xticks(range(n_positions))
+ax.set_xticklabels(range(1, n_positions + 1))
 ax.set_xlabel("Position", fontsize=20)
 ax.set_ylabel("Information content (bits)", fontsize=20)
-ax.set_title("sequence-logo-basic \u00b7 seaborn \u00b7 pyplots.ai", fontsize=24, fontweight="medium")
+ax.set_title("sequence-logo-basic \u00b7 seaborn \u00b7 pyplots.ai", fontsize=24, fontweight="medium", pad=15)
 ax.tick_params(axis="both", labelsize=16)
-ax.spines["top"].set_visible(False)
-ax.spines["right"].set_visible(False)
-ax.yaxis.grid(True, alpha=0.2, linewidth=0.8)
+sns.despine(ax=ax, top=True, right=True, left=False, bottom=False)
 ax.set_axisbelow(True)
+
+# Highlight the most conserved position with a subtle background
+max_ic_pos = int(np.argmax(info_content))
+ax.axvspan(max_ic_pos - 0.42, max_ic_pos + 0.42, color="#ffd700", alpha=0.12, zorder=0)
+
+# Add conservation annotation for the strongest position
+ax.annotate(
+    f"Most conserved\n({info_content[max_ic_pos]:.1f} bits)",
+    xy=(max_ic_pos, info_content[max_ic_pos]),
+    xytext=(max_ic_pos + 1.5, 1.85),
+    fontsize=13,
+    fontstyle="italic",
+    color="#555555",
+    arrowprops={"arrowstyle": "->", "color": "#999999", "lw": 1.2},
+    ha="center",
+)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 genome-track-multi: Genome Track Viewer
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-06
@@ -122,22 +122,29 @@ gene_names = (
     )
 )
 
-strand_df = gene_bodies.copy()
-strand_df["arrow"] = strand_df["strand"].map({"+": ">>>", "-": "<<<"})
+# Strand direction arrows along gene bodies using triangle marks
+strand_arrows_data = []
+for _, row in gene_bodies.iterrows():
+    n_arrows = 5
+    positions = np.linspace(row["start"] + 1000, row["end"] - 1000, n_arrows)
+    angle = 0 if row["strand"] == "+" else 180
+    for pos in positions:
+        strand_arrows_data.append({"position": pos, "y_pos": row["y_pos"], "angle": angle, "gene": row["gene"]})
+strand_arrows_df = pd.DataFrame(strand_arrows_data)
 
 strand_marks = (
-    alt.Chart(strand_df)
-    .mark_text(fontSize=13, align="right", dx=-5)
+    alt.Chart(strand_arrows_df)
+    .mark_point(shape="triangle-right", size=80, filled=True, opacity=0.7)
     .encode(
-        x=alt.X("end:Q", scale=alt.Scale(domain=x_domain)),
+        x=alt.X("position:Q", scale=alt.Scale(domain=x_domain)),
         y=alt.Y("y_pos:Q", scale=alt.Scale(domain=[-0.5, 1.5]), axis=None),
-        text="arrow:N",
-        color=alt.value("#306998"),
+        angle=alt.Angle("angle:Q", scale=None),
+        color=alt.value("#4a86c8"),
     )
 )
 
 gene_track = (intron_lines + exon_bars + gene_names + strand_marks).properties(
-    width=1600, height=80, title=alt.Title("Genes", anchor="start", fontSize=18, color="#555")
+    width=1600, height=100, title=alt.Title("Genes", anchor="start", fontSize=20, color="#555")
 )
 
 # Track 2: Coverage (area plot)
@@ -146,14 +153,14 @@ coverage_track = (
     .mark_area(interpolate="monotone", opacity=0.5, line={"color": "#306998", "strokeWidth": 1.5})
     .encode(
         x=alt.X("position:Q", scale=alt.Scale(domain=x_domain), axis=None),
-        y=alt.Y("depth:Q", axis=alt.Axis(title="Read Depth", labelFontSize=14, titleFontSize=16, grid=False)),
+        y=alt.Y("depth:Q", axis=alt.Axis(title="Read Depth", labelFontSize=16, titleFontSize=20, grid=False)),
         color=alt.value("#306998"),
         tooltip=[
             alt.Tooltip("position:Q", title="Position", format=","),
             alt.Tooltip("depth:Q", title="Depth", format=".1f"),
         ],
     )
-    .properties(width=1600, height=160, title=alt.Title("Coverage", anchor="start", fontSize=18, color="#555"))
+    .properties(width=1600, height=160, title=alt.Title("Coverage", anchor="start", fontSize=20, color="#555"))
 )
 
 # Track 3: Variants (circles with quality on y-axis)
@@ -164,11 +171,11 @@ variant_track = (
     .mark_circle(size=200)
     .encode(
         x=alt.X("position:Q", scale=alt.Scale(domain=x_domain), axis=None),
-        y=alt.Y("quality:Q", axis=alt.Axis(title="Quality", labelFontSize=14, titleFontSize=16, grid=False)),
+        y=alt.Y("quality:Q", axis=alt.Axis(title="Quality", labelFontSize=16, titleFontSize=20, grid=False)),
         color=alt.Color(
             "variant_type:N",
             scale=variant_color_scale,
-            legend=alt.Legend(title="Type", labelFontSize=14, titleFontSize=16),
+            legend=alt.Legend(title="Type", labelFontSize=16, titleFontSize=18),
         ),
         tooltip=[
             alt.Tooltip("position:Q", title="Position", format=","),
@@ -176,11 +183,11 @@ variant_track = (
             alt.Tooltip("variant_type:N", title="Type"),
         ],
     )
-    .properties(width=1600, height=140, title=alt.Title("Variants", anchor="start", fontSize=18, color="#555"))
+    .properties(width=1600, height=140, title=alt.Title("Variants", anchor="start", fontSize=20, color="#555"))
 )
 
 # Track 4: Regulatory elements
-reg_color_scale = alt.Scale(domain=["Promoter", "Enhancer"], range=["#7B2D8E", "#228B22"])
+reg_color_scale = alt.Scale(domain=["Promoter", "Enhancer"], range=["#7B2D8E", "#D4920B"])
 
 regulatory_track = (
     alt.Chart(regulatory_df)
@@ -201,7 +208,7 @@ regulatory_track = (
         color=alt.Color(
             "element_type:N",
             scale=reg_color_scale,
-            legend=alt.Legend(title="Element", labelFontSize=14, titleFontSize=16),
+            legend=alt.Legend(title="Element", labelFontSize=16, titleFontSize=18),
         ),
         tooltip=[
             alt.Tooltip("element_type:N", title="Type"),
@@ -209,7 +216,7 @@ regulatory_track = (
             alt.Tooltip("end:Q", title="End", format=","),
         ],
     )
-    .properties(width=1600, height=60, title=alt.Title("Regulatory", anchor="start", fontSize=18, color="#555"))
+    .properties(width=1600, height=80, title=alt.Title("Regulatory", anchor="start", fontSize=20, color="#555"))
 )
 
 # Combine all tracks vertically
@@ -218,7 +225,8 @@ chart = (
     .resolve_scale(color="independent")
     .properties(title=alt.Title("genome-track-multi · altair · pyplots.ai", fontSize=28, anchor="middle"))
     .configure_axis(labelFontSize=16, titleFontSize=20)
-    .configure_view(strokeWidth=0)
+    .configure_view(strokeWidth=0, fill=None, stroke=None)
+    .configure_concat(spacing=8)
 )
 
 # Save

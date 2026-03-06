@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: sequence-logo-basic
 created: '2026-03-06T20:27:13Z'
-updated: '2026-03-06T20:31:06Z'
+updated: '2026-03-06T20:40:26Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22780525163
 issue: 4421
@@ -10,34 +10,37 @@ library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/sequence-logo-basic/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sequence-logo-basic/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 77
+quality_score: 80
 review:
   strengths:
-  - Correct information content calculation with proper entropy formula
-  - Good realistic bioinformatics data with varied conservation levels
-  - Clean well-structured code with perfect KISS pattern
-  - Appropriate DNA color scheme (A=green, C=blue, G=orange, T=red)
-  - Good text sizing with explicit font size settings throughout
+  - Excellent colorblind-safe palette with good contrast between nucleotides
+  - Smart data storytelling with yellow highlight on most conserved position and annotation
+  - Clean well-structured code with deterministic data and proper IC calculation
+  - 'Good visual refinement: subtle gridlines, custom background, removed unnecessary
+    chrome'
+  - Font size scaling proportional to segment height is a clever approach
   weaknesses:
-  - Letters rendered as plain text on colored rectangles rather than scaled/stretched
-    glyphs filling their allocated height
-  - Small text labels on thin segments at positions 3, 4, 7 are crowded and partially
-    overlap
-  - Green/red nucleotide colors could be improved for colorblind accessibility
+  - Letters rendered as plain text on colored rectangles instead of stretched/scaled
+    glyphs filling segments
+  - Small-frequency segments at stack bases have tiny cramped barely-readable letters
+  - Looks more like a stacked bar chart with labels than a traditional sequence logo
+  - Generic library usage not distinctive to plotnine
   image_description: 'The plot displays a sequence logo for a 10-position DNA transcription
-    factor binding site motif. Each position shows a vertical stack of colored rectangles
-    representing the four nucleotides: A (green), C (blue), G (orange), T (red). Stack
-    heights are proportional to information content in bits (y-axis, ranging 0 to
-    ~1.5). Position 5 is empty (uniform distribution = 0 bits), while position 8 has
-    the tallest stack (~1.5 bits, dominated by A). White bold letter labels are overlaid
-    on larger rectangles, with smaller labels on medium segments. The title reads
-    "sequence-logo-basic · plotnine · pyplots.ai". X-axis shows "Position" (1-10),
-    y-axis shows "Information content (bits)". A "Nucleotide" legend on the right
-    shows the four color-letter mappings. The layout uses theme_minimal with removed
-    x-grid and visible axis lines.'
+    factor binding site, implemented as stacked colored rectangles with white bold
+    letter labels. Each position shows stacked bars whose total height represents
+    information content in bits (y-axis). Position 5 is essentially empty (uniform
+    distribution = 0 bits). Position 8 is the tallest (~1.4 bits) and highlighted
+    with a pale yellow background rectangle and an italic "most conserved" annotation
+    above it. Colors used: A=green (#009E73), C=blue (#0072B2), G=orange (#E69F00),
+    T=pink (#CC79A7) — a colorblind-safe palette. The title reads "sequence-logo-basic
+    · plotnine · pyplots.ai" in bold at the top. X-axis labeled "Position" (1-10),
+    Y-axis labeled "Information content (bits)". A "Nucleotide" legend appears on
+    the right. Background is light gray (#FAFAFA) with subtle horizontal gridlines.
+    Larger segments have clearly readable white letters; smaller segments at the base
+    have tiny barely-visible letters.'
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 26
       max: 30
       items:
       - id: VQ-01
@@ -45,45 +48,45 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title=24, axis_title=20, axis_text=16).
-          White letter labels on bars clear at size 18; medium labels at size 10 are
-          small but readable.
+        comment: Font sizes explicitly set (title 24, axis_title 20, axis_text 16,
+          legend 14-16). Letter labels scale with segment height. Some small-segment
+          letters are tiny.
       - id: VQ-02
         name: No Overlap
-        score: 4
+        score: 5
         max: 6
-        passed: false
-        comment: Small stacked segments at positions 3, 4, 7 have crowded medium-size
-          text labels that partially overlap.
+        passed: true
+        comment: Height filter prevents most overlap. A few bottom-stack letters are
+          cramped and barely distinguishable.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Rectangles well-sized and visible. Position 5 correctly empty. Small
-          segments thin but visible.
+        comment: Stacked bars clearly visible with good width. Small frequency segments
+          at base are very thin but visible.
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Standard DNA colors used. Green/red could challenge red-green colorblind
-          viewers, though shades are distinct.
+        comment: 'Excellent colorblind-safe palette: green, blue, orange, pink. Avoids
+          red-green conflict.'
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good 16:9 layout. Plot fills reasonable portion of canvas. Some empty
-          space near legend.
+        comment: Good 16:9 layout, plot fills most of canvas. Some wasted space on
+          right near legend.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Position and Information content (bits) are descriptive with units.
+        comment: Position and Information content (bits) - descriptive with units.
     design_excellence:
-      score: 11
+      score: 13
       max: 20
       items:
       - id: DE-01
@@ -91,24 +94,24 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Domain-appropriate DNA color scheme. Custom palette. Above defaults
-          but not publication-level.
+        comment: Custom colorblind palette, white letters on colored bars, light gray
+          background, white edge separators. Above defaults but not publication-grade.
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: theme_minimal base, removed x-grid and minor grid, added axis lines.
-          Some refinement beyond defaults.
+        comment: X-grid removed, subtle y-grid, axis lines present, custom background.
+          Good refinement.
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: Data naturally shows conservation variation but no explicit emphasis
-          or focal point guides the viewer.
+        passed: true
+        comment: Yellow highlight on most conserved position with annotation creates
+          clear focal point.
     spec_compliance:
-      score: 12
+      score: 11
       max: 15
       items:
       - id: SC-01
@@ -116,22 +119,21 @@ review:
         score: 3
         max: 5
         passed: false
-        comment: Stacked bar chart approximation rather than true sequence logo with
-          scaled/stretched letter glyphs.
+        comment: Stacked colored rectangles with plain text instead of true sequence
+          logo with stretched letter glyphs.
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 2
         max: 4
-        passed: true
-        comment: Vertical stacking by frequency, IC height scaling, DNA colors all
-          present. Missing stretched glyph rendering.
+        passed: false
+        comment: Vertical stacking, IC scaling, standard colors, axis labels present.
+          Letters NOT rendered as scaled glyphs per spec.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Positions 1-10 on x-axis, information content in bits on y-axis.
-          All data correctly mapped.
+        comment: X=position (1-10), Y=information content in bits. Correct mapping.
       - id: SC-04
         name: Title & Legend
         score: 3
@@ -147,22 +149,20 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: 'Good variation: highly conserved (pos 8), moderately conserved (pos
-          1), and uniform distribution (pos 5).'
+        comment: 10 positions with varied conservation levels from uniform to highly
+          conserved.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Transcription factor binding site motif is a real bioinformatics
-          scenario.
+        comment: Transcription factor binding site motif - real bioinformatics context.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Information content 0 to ~1.5 bits, within 0-2 bit theoretical range
-          for DNA.
+        comment: IC ranges from 0 to ~1.4 bits, max possible 2 bits for DNA. Realistic.
     code_quality:
       score: 10
       max: 10
@@ -172,32 +172,32 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, calculation, plot, save. No functions/classes.'
+        comment: 'Clean linear flow: imports, data, calculation, DataFrame, plot,
+          save.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic data with hardcoded frequency distributions.
+        comment: Deterministic data, no randomness.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: All imports are used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean and well-structured. Two text layers for different sizes is
-          smart.
+        comment: Clean, appropriate complexity. Highlight logic and font scaling well-implemented.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300. Current API.
+        comment: Saves as plot.png with dpi=300.
     library_mastery:
       score: 6
       max: 10
@@ -207,25 +207,26 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Good ggplot grammar usage: aes, geom_rect + geom_text layering,
-          scale_fill_manual, theme customization.'
+        comment: 'Good grammar of graphics usage: layer composition, scale_size_identity,
+          coord_cartesian, scale_fill_manual.'
       - id: LM-02
         name: Distinctive Features
         score: 2
         max: 5
         passed: false
-        comment: Rectangles + text overlay approach could be replicated in most libraries.
-          No plotnine-specific features used.
+        comment: Uses scale_size_identity and layer composition but stacked-rect-with-text
+          could be done in most libraries.
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
-  - layer-composition
   - annotations
+  - layer-composition
   patterns:
   - data-generation
   - iteration-over-groups
   dataprep:
   - normalization
   styling:
+  - edge-highlighting
   - grid-styling

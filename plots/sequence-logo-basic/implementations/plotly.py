@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 sequence-logo-basic: Sequence Logo for Motif Visualization
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-06
@@ -18,7 +18,7 @@ pwm = np.array(
         [0.25, 0.25, 0.25, 0.25],  # pos 4: uniform (0 bits)
         [0.70, 0.05, 0.15, 0.10],  # pos 5: A dominant
         [0.10, 0.10, 0.70, 0.10],  # pos 6: G dominant
-        [0.01, 0.01, 0.01, 0.97],  # pos 7: T highly conserved (~1.85 bits)
+        [0.001, 0.001, 0.001, 0.997],  # pos 7: T near-perfect conservation (~1.97 bits)
         [0.60, 0.15, 0.15, 0.10],  # pos 8: A dominant
         [0.10, 0.10, 0.65, 0.15],  # pos 9: G dominant
         [0.15, 0.55, 0.10, 0.20],  # pos 10: C dominant
@@ -40,15 +40,7 @@ for i in range(n_positions):
 # Letter heights = frequency * information content at each position
 letter_heights = pwm * info_content[:, np.newaxis]
 
-# Compute max stack height for y-axis scaling
-max_ic = max(info_content)
-
-# Plot - using Plotly shapes for stretched letter glyphs
-fig = go.Figure()
-bar_width = 0.38  # half-width for shapes
-
 # SVG path data for letters (simplified block-style glyphs within 0-1 x 0-1 box)
-# These are designed to look like stretched sequence logo letters
 letter_paths = {
     "A": "M 0.5 0 L 0.05 1 L 0.25 1 L 0.35 0.7 L 0.65 0.7 L 0.75 1 L 0.95 1 L 0.5 0 Z M 0.4 0.52 L 0.6 0.52 L 0.55 0.38 L 0.45 0.38 Z",
     "C": "M 0.85 0.2 C 0.65 -0.05 0.2 0 0.1 0.3 C 0 0.6 0.15 0.95 0.5 1 C 0.7 1.02 0.85 0.9 0.88 0.8 L 0.68 0.7 C 0.6 0.82 0.5 0.82 0.4 0.78 C 0.28 0.7 0.25 0.5 0.3 0.35 C 0.35 0.2 0.5 0.15 0.6 0.18 C 0.68 0.2 0.72 0.28 0.75 0.32 Z",
@@ -56,36 +48,9 @@ letter_paths = {
     "T": "M 0.05 0 L 0.05 0.18 L 0.38 0.18 L 0.38 1 L 0.62 1 L 0.62 0.18 L 0.95 0.18 L 0.95 0 Z",
 }
 
-
-def svg_path_to_plotly(path_str, x_center, y_bottom, width, height):
-    """Transform an SVG path from 0-1 space to data coordinates."""
-    tokens = path_str.split()
-    result = []
-    i = 0
-    while i < len(tokens):
-        cmd = tokens[i]
-        if cmd in ("M", "L", "Z"):
-            result.append(cmd)
-            if cmd != "Z":
-                px = float(tokens[i + 1])
-                py = float(tokens[i + 2])
-                result.append(str(x_center - width + px * 2 * width))
-                result.append(str(y_bottom + py * height))
-                i += 3
-            else:
-                i += 1
-        elif cmd == "C":
-            result.append(cmd)
-            for j in range(3):
-                px = float(tokens[i + 1 + j * 2])
-                py = float(tokens[i + 2 + j * 2])
-                result.append(str(x_center - width + px * 2 * width))
-                result.append(str(y_bottom + py * height))
-            i += 7
-        else:
-            i += 1
-    return " ".join(result)
-
+# Plot - using Plotly shapes for stretched letter glyphs
+fig = go.Figure()
+bar_width = 0.38  # half-width for shapes
 
 # Build letter shapes at each position
 for pos in range(n_positions):
@@ -118,8 +83,34 @@ for pos in range(n_positions):
             )
         )
 
-        # Draw stretched letter glyph as SVG path shape
-        path_data = svg_path_to_plotly(letter_paths[letter], pos + 1, y_bottom, bar_width, h)
+        # Transform SVG path from 0-1 space to data coordinates (inline)
+        tokens = letter_paths[letter].split()
+        path_parts = []
+        ti = 0
+        while ti < len(tokens):
+            cmd = tokens[ti]
+            if cmd in ("M", "L", "Z"):
+                path_parts.append(cmd)
+                if cmd != "Z":
+                    px = float(tokens[ti + 1])
+                    py = float(tokens[ti + 2])
+                    path_parts.append(str((pos + 1) - bar_width + px * 2 * bar_width))
+                    path_parts.append(str(y_bottom + py * h))
+                    ti += 3
+                else:
+                    ti += 1
+            elif cmd == "C":
+                path_parts.append(cmd)
+                for j in range(3):
+                    px = float(tokens[ti + 1 + j * 2])
+                    py = float(tokens[ti + 2 + j * 2])
+                    path_parts.append(str((pos + 1) - bar_width + px * 2 * bar_width))
+                    path_parts.append(str(y_bottom + py * h))
+                ti += 7
+            else:
+                ti += 1
+        path_data = " ".join(path_parts)
+
         fig.add_shape(
             type="path",
             path=path_data,
@@ -149,43 +140,51 @@ for letter in letters:
 fig.update_layout(
     title={
         "text": "sequence-logo-basic · plotly · pyplots.ai",
-        "font": {"size": 28, "family": "Arial, Helvetica, sans-serif", "color": "#2d3436"},
+        "font": {"size": 28, "family": "Arial, Helvetica, sans-serif", "color": "#1a1a2e"},
         "x": 0.5,
         "y": 0.96,
     },
     xaxis={
-        "title": {"text": "Position", "font": {"size": 22, "color": "#2d3436"}, "standoff": 12},
-        "tickfont": {"size": 18, "color": "#636e72"},
+        "title": {
+            "text": "Position",
+            "font": {"size": 22, "color": "#1a1a2e", "family": "Arial, sans-serif"},
+            "standoff": 12,
+        },
+        "tickfont": {"size": 18, "color": "#4a4a68", "family": "Arial, sans-serif"},
         "tickvals": list(range(1, n_positions + 1)),
         "showline": True,
         "linewidth": 2,
-        "linecolor": "#2d3436",
+        "linecolor": "#1a1a2e",
         "mirror": False,
         "showgrid": False,
         "zeroline": False,
         "ticks": "outside",
-        "ticklen": 6,
+        "ticklen": 8,
         "tickwidth": 1.5,
-        "tickcolor": "#636e72",
+        "tickcolor": "#4a4a68",
     },
     yaxis={
-        "title": {"text": "Information content (bits)", "font": {"size": 22, "color": "#2d3436"}, "standoff": 10},
-        "tickfont": {"size": 18, "color": "#636e72"},
-        "range": [0, 2.1],
+        "title": {
+            "text": "Information content (bits)",
+            "font": {"size": 22, "color": "#1a1a2e", "family": "Arial, sans-serif"},
+            "standoff": 10,
+        },
+        "tickfont": {"size": 18, "color": "#4a4a68", "family": "Arial, sans-serif"},
+        "range": [0, 2.15],
         "showline": True,
         "linewidth": 2,
-        "linecolor": "#2d3436",
+        "linecolor": "#1a1a2e",
         "mirror": False,
         "gridwidth": 0.5,
-        "gridcolor": "rgba(0,0,0,0.05)",
+        "gridcolor": "rgba(100,100,140,0.08)",
         "griddash": "dot",
         "zeroline": True,
         "zerolinewidth": 2,
-        "zerolinecolor": "#2d3436",
+        "zerolinecolor": "#1a1a2e",
         "ticks": "outside",
-        "ticklen": 6,
+        "ticklen": 8,
         "tickwidth": 1.5,
-        "tickcolor": "#636e72",
+        "tickcolor": "#4a4a68",
         "dtick": 0.5,
     },
     template="plotly_white",
@@ -204,20 +203,38 @@ fig.update_layout(
         "tracegroupgap": 20,
     },
     margin={"l": 90, "r": 50, "t": 120, "b": 70},
-    hoverlabel={"bgcolor": "white", "bordercolor": "#636e72", "font": {"size": 14, "family": "Arial, sans-serif"}},
+    hoverlabel={"bgcolor": "white", "bordercolor": "#4a4a68", "font": {"size": 15, "family": "Arial, sans-serif"}},
 )
 
-# Annotate highly conserved positions
-for pos_idx in [2, 6]:  # positions 3 and 7 (0-indexed)
+# Annotate highly conserved positions with larger, more prominent labels
+conserved_positions = [2, 6]  # positions 3 and 7 (0-indexed)
+for pos_idx in conserved_positions:
+    ic_val = info_content[pos_idx]
     fig.add_annotation(
         x=pos_idx + 1,
-        y=info_content[pos_idx] + 0.08,
-        text=f"▼ {info_content[pos_idx]:.1f} bits",
-        font={"size": 13, "color": "#636e72", "family": "Arial, sans-serif"},
+        y=ic_val + 0.08,
+        text=f"▼ {ic_val:.2f} bits",
+        font={
+            "size": 16,
+            "color": "#1a1a2e",
+            "family": "Arial, sans-serif",
+            "weight": "bold" if ic_val > 1.9 else "normal",
+        },
         showarrow=False,
         yanchor="bottom",
         xanchor="center",
     )
+
+# Add subtle annotation for the zero-information position
+fig.add_annotation(
+    x=4,
+    y=-0.08,
+    text="no signal",
+    font={"size": 13, "color": "#999999", "family": "Arial, sans-serif"},
+    showarrow=False,
+    yanchor="top",
+    xanchor="center",
+)
 
 # Save
 fig.write_html("plot.html")

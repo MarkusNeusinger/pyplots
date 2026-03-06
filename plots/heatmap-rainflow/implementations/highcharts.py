@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-rainflow: Rainflow Counting Matrix for Fatigue Analysis
 Library: highcharts unknown | Python 3.14.3
 Quality: 87/100 | Updated: 2026-03-06
@@ -69,9 +69,9 @@ chart.options = HighchartsOptions.from_dict(
             "height": 2700,
             "backgroundColor": "#fafafa",
             "marginTop": 180,
-            "marginBottom": 200,
-            "marginRight": 380,
-            "marginLeft": 320,
+            "marginBottom": 220,
+            "marginRight": 340,
+            "marginLeft": 280,
             "style": {"fontFamily": "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"},
         },
         "title": {
@@ -89,9 +89,9 @@ chart.options = HighchartsOptions.from_dict(
             "title": {
                 "text": "Cycle Mean (MPa)",
                 "style": {"fontSize": "34px", "fontWeight": "600", "color": "#34495e"},
-                "margin": 20,
+                "margin": 24,
             },
-            "labels": {"style": {"fontSize": "28px", "color": "#34495e"}, "rotation": 315, "y": 30},
+            "labels": {"style": {"fontSize": "26px", "color": "#34495e"}, "rotation": 315, "step": 2, "y": 20},
             "lineWidth": 0,
             "tickLength": 0,
         },
@@ -102,7 +102,7 @@ chart.options = HighchartsOptions.from_dict(
                 "style": {"fontSize": "34px", "fontWeight": "600", "color": "#34495e"},
                 "margin": 20,
             },
-            "labels": {"style": {"fontSize": "28px", "color": "#34495e"}},
+            "labels": {"style": {"fontSize": "26px", "color": "#34495e"}},
             "reversed": False,
             "lineWidth": 0,
             "gridLineWidth": 0,
@@ -122,18 +122,18 @@ chart.options = HighchartsOptions.from_dict(
                 [0.87, "#6ece58"],
                 [1, "#fde725"],
             ],
-            "labels": {"style": {"fontSize": "28px", "color": "#34495e"}},
+            "labels": {"style": {"fontSize": "30px", "color": "#34495e"}},
         },
         "legend": {
-            "title": {"text": "Cycle Count", "style": {"fontSize": "28px", "fontWeight": "600", "color": "#34495e"}},
+            "title": {"text": "Cycle Count", "style": {"fontSize": "30px", "fontWeight": "600", "color": "#34495e"}},
             "align": "right",
             "layout": "vertical",
             "verticalAlign": "middle",
-            "symbolHeight": 900,
-            "symbolWidth": 36,
-            "itemStyle": {"fontSize": "24px", "color": "#34495e"},
-            "x": -40,
-            "margin": 40,
+            "symbolHeight": 1000,
+            "symbolWidth": 40,
+            "itemStyle": {"fontSize": "26px", "color": "#34495e"},
+            "x": -20,
+            "margin": 30,
         },
         "tooltip": {
             "style": {"fontSize": "30px"},
@@ -162,27 +162,17 @@ chart.options = HighchartsOptions.from_dict(
 # Generate chart JS literal via highcharts-core wrapper
 js_literal = chart.to_js_literal()
 
-# Download Highcharts JS and heatmap module with retry
-urls = {
-    "highcharts": "https://cdn.jsdelivr.net/npm/highcharts/highcharts.js",
-    "heatmap": "https://cdn.jsdelivr.net/npm/highcharts/modules/heatmap.js",
-}
-scripts = {}
-for name, url in urls.items():
-    for attempt in range(3):
-        try:
-            with urllib.request.urlopen(url, timeout=30) as response:
-                scripts[name] = response.read().decode("utf-8")
-            break
-        except urllib.error.HTTPError:
-            time.sleep(2 * (attempt + 1))
-    else:
-        raise RuntimeError(f"Failed to download {url}")
+# Download Highcharts JS and heatmap module
+highcharts_js = (
+    urllib.request.urlopen("https://cdn.jsdelivr.net/npm/highcharts/highcharts.js", timeout=30).read().decode("utf-8")
+)
+heatmap_js = (
+    urllib.request.urlopen("https://cdn.jsdelivr.net/npm/highcharts/modules/heatmap.js", timeout=30)
+    .read()
+    .decode("utf-8")
+)
 
-highcharts_js = scripts["highcharts"]
-heatmap_js = scripts["heatmap"]
-
-# Generate HTML with inline scripts and renderer annotation for data storytelling
+# Generate HTML with inline scripts
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -194,33 +184,6 @@ html_content = f"""<!DOCTYPE html>
     <div id="container" style="width:4800px; height:2700px;"></div>
     <script>
         {js_literal}
-    </script>
-    <script>
-        // Add annotation highlighting the dominant fatigue region
-        // (separate DOMContentLoaded ensures chart is created first)
-        document.addEventListener('DOMContentLoaded', function() {{
-            var ch = Highcharts.charts[Highcharts.charts.length - 1];
-            if (ch) {{
-                ch.renderer.label(
-                    '\\u25B6 Peak region: low-amplitude cycles near<br>' +
-                    '\\u2003 100 MPa mean stress dominate fatigue damage',
-                    ch.plotLeft + ch.plotWidth * 0.55,
-                    ch.plotTop + ch.plotHeight * 0.78
-                ).css({{
-                    fontSize: '28px',
-                    color: '#333',
-                    fontStyle: 'italic',
-                    lineHeight: '40px'
-                }}).attr({{
-                    fill: 'rgba(255, 255, 255, 0.93)',
-                    stroke: '#888',
-                    'stroke-width': 1.5,
-                    padding: 18,
-                    r: 8,
-                    zIndex: 5
-                }}).add();
-            }}
-        }});
     </script>
 </body>
 </html>"""

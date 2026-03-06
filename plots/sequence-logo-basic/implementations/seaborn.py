@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 sequence-logo-basic: Sequence Logo for Motif Visualization
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-06
@@ -7,6 +7,7 @@ Quality: 84/100 | Created: 2026-03-06
 import matplotlib.pyplot as plt
 import matplotlib.transforms as mtransforms
 import numpy as np
+import pandas as pd
 import seaborn as sns
 from matplotlib.font_manager import FontProperties
 from matplotlib.patches import PathPatch
@@ -40,20 +41,20 @@ for i in range(n_positions):
     entropy = sum(f * np.log2(f) for f in frequencies[i] if f > 0)
     info_content[i] = 2.0 + entropy
 
-# Standard DNA color scheme per spec: A=green, C=blue, G=orange, T=red
-base_colors = {
-    "A": "#3AA655",  # green
-    "C": "#4169E1",  # blue
-    "G": "#F5A623",  # orange
-    "T": "#E74C3C",  # red
-}
+# Standard DNA color scheme via seaborn palette management
+base_color_list = ["#3AA655", "#4169E1", "#F5A623", "#E74C3C"]
+base_palette = sns.color_palette(base_color_list)
+base_colors = dict(zip(bases, base_palette, strict=True))
+
+# Build frequency DataFrame for heatmap
+freq_df = pd.DataFrame(frequencies.T, index=bases, columns=range(1, n_positions + 1))
 
 # Plot setup with seaborn context and style
-sns.set_context("talk", font_scale=1.1)
-sns.set_style("whitegrid", {"grid.alpha": 0.15, "grid.linewidth": 0.6})
-fig, ax = plt.subplots(figsize=(16, 9))
+sns.set_context("talk", font_scale=1.0)
+sns.set_style("white")
+fig, (ax_logo, ax_heat) = plt.subplots(2, 1, figsize=(16, 9), height_ratios=[3.5, 1], gridspec_kw={"hspace": 0.45})
 
-# Render scaled letter glyphs
+# --- Top panel: Sequence Logo ---
 fp = FontProperties(family="monospace", weight="bold")
 letter_width = 0.78
 
@@ -70,7 +71,6 @@ for pos in range(n_positions):
 
         letter = bases[idx]
         color = base_colors[letter]
-        # Map position to x-coordinate (0-based integer x)
         x_center = pos
         x_left = x_center - letter_width / 2
 
@@ -84,38 +84,66 @@ for pos in range(n_positions):
         tx = x_left - bbox.x0 * scale_x
         ty = y_offset - bbox.y0 * scale_y
 
-        transform = mtransforms.Affine2D().scale(scale_x, scale_y).translate(tx, ty) + ax.transData
+        transform = mtransforms.Affine2D().scale(scale_x, scale_y).translate(tx, ty) + ax_logo.transData
         patch = PathPatch(tp, facecolor=color, edgecolor="none", transform=transform)
-        ax.add_patch(patch)
+        ax_logo.add_patch(patch)
         y_offset += height
 
-# Style
-ax.set_xlim(-0.6, n_positions - 0.4)
-ax.set_ylim(0, 2.1)
-ax.set_xticks(range(n_positions))
-ax.set_xticklabels(range(1, n_positions + 1))
-ax.set_xlabel("Position", fontsize=20)
-ax.set_ylabel("Information content (bits)", fontsize=20)
-ax.set_title("sequence-logo-basic \u00b7 seaborn \u00b7 pyplots.ai", fontsize=24, fontweight="medium", pad=15)
-ax.tick_params(axis="both", labelsize=16)
-sns.despine(ax=ax, top=True, right=True, left=False, bottom=False)
-ax.set_axisbelow(True)
+# Logo axis styling
+ax_logo.set_xlim(-0.6, n_positions - 0.4)
+ax_logo.set_ylim(0, 2.1)
+ax_logo.set_xticks(range(n_positions))
+ax_logo.set_xticklabels(range(1, n_positions + 1))
+ax_logo.set_xlabel("Position", fontsize=20)
+ax_logo.set_ylabel("Information content (bits)", fontsize=20)
+ax_logo.set_title("sequence-logo-basic \u00b7 seaborn \u00b7 pyplots.ai", fontsize=24, fontweight="medium", pad=15)
+ax_logo.tick_params(axis="both", labelsize=16)
+sns.despine(ax=ax_logo, top=True, right=True)
+ax_logo.yaxis.grid(True, alpha=0.15, linewidth=0.5, color="#cccccc")
+ax_logo.set_axisbelow(True)
 
-# Highlight the most conserved position with a subtle background
+# Highlight the most conserved position
 max_ic_pos = int(np.argmax(info_content))
-ax.axvspan(max_ic_pos - 0.42, max_ic_pos + 0.42, color="#ffd700", alpha=0.12, zorder=0)
+ax_logo.axvspan(max_ic_pos - 0.42, max_ic_pos + 0.42, color="#ffd700", alpha=0.12, zorder=0)
 
-# Add conservation annotation for the strongest position
-ax.annotate(
+# Conservation annotation
+ax_logo.annotate(
     f"Most conserved\n({info_content[max_ic_pos]:.1f} bits)",
     xy=(max_ic_pos, info_content[max_ic_pos]),
-    xytext=(max_ic_pos + 1.5, 1.85),
+    xytext=(max_ic_pos - 2.5, 1.90),
     fontsize=13,
     fontstyle="italic",
-    color="#555555",
-    arrowprops={"arrowstyle": "->", "color": "#999999", "lw": 1.2},
+    color="#444444",
+    arrowprops={"arrowstyle": "->", "color": "#888888", "lw": 1.3, "connectionstyle": "arc3,rad=-0.2"},
     ha="center",
+    va="center",
 )
 
-plt.tight_layout()
+# --- Bottom panel: Frequency heatmap using seaborn ---
+sns.heatmap(
+    freq_df,
+    ax=ax_heat,
+    cmap=sns.light_palette("#306998", as_cmap=True),
+    annot=True,
+    fmt=".2f",
+    annot_kws={"fontsize": 12, "fontweight": "medium"},
+    linewidths=1.5,
+    linecolor="white",
+    cbar_kws={"label": "Frequency", "shrink": 0.8, "aspect": 15, "pad": 0.02},
+    vmin=0,
+    vmax=1,
+    square=False,
+)
+ax_heat.set_xlabel("Position", fontsize=16)
+ax_heat.set_ylabel("", fontsize=16)
+ax_heat.tick_params(axis="both", labelsize=14)
+ax_heat.tick_params(axis="y", rotation=0)
+
+# Color the y-axis base labels to match the logo colors
+for tick_label in ax_heat.get_yticklabels():
+    base = tick_label.get_text()
+    if base in base_colors:
+        tick_label.set_color(base_colors[base])
+        tick_label.set_fontweight("bold")
+
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

@@ -1,8 +1,10 @@
-""" pyplots.ai
+"""pyplots.ai
 genome-track-multi: Genome Track Viewer
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-06
 """
+
+import copy
 
 import numpy as np
 import plotly.graph_objects as go
@@ -286,12 +288,19 @@ for row, label in track_labels:
 
 # Layout
 fig.update_layout(
-    title={"text": "EGFR Locus (chr7) · genome-track-multi · plotly · pyplots.ai", "font": {"size": 28}, "x": 0.5},
+    title={
+        "text": (
+            "EGFR Locus (chr7) · genome-track-multi · plotly · pyplots.ai"
+            '<br><span style="font-size:16px;color:#666">Multi-track genome browser — chr7:55,086,000–55,280,000</span>'
+        ),
+        "font": {"size": 30},
+        "x": 0.5,
+    },
     template="plotly_white",
     height=900,
     width=1600,
-    legend={"font": {"size": 16}, "orientation": "h", "yanchor": "top", "y": -0.02, "xanchor": "center", "x": 0.5},
-    margin={"l": 100, "r": 40, "t": 80, "b": 100},
+    legend={"font": {"size": 16}, "orientation": "h", "yanchor": "top", "y": -0.06, "xanchor": "center", "x": 0.5},
+    margin={"l": 100, "r": 40, "t": 100, "b": 110},
 )
 
 # X-axis formatting (genomic coordinates)
@@ -311,7 +320,7 @@ for row in range(1, 4):
 fig.update_yaxes(range=[-0.2, 1.4], showticklabels=False, showgrid=False, row=1, col=1)
 fig.update_yaxes(tickfont={"size": 16}, gridcolor="rgba(200, 210, 220, 0.4)", gridwidth=1, row=2, col=1)
 fig.update_yaxes(
-    title={"text": "<b>Variants</b> (Quality)", "font": {"size": 18}},
+    title={"text": "<b>Variants</b><br>Qual. Score", "font": {"size": 18}},
     tickfont={"size": 16},
     range=[-5, 110],
     row=3,
@@ -334,6 +343,24 @@ for row in [1, 3]:
         layer="below",
     )
 
+# Colored left-edge accent strips for each track
+track_accent_colors = {1: exon_color, 2: coverage_color, 3: snp_color, 4: promoter_color}
+for row, accent_color in track_accent_colors.items():
+    xref = f"x{row} domain" if row > 1 else "x domain"
+    yref = f"y{row} domain" if row > 1 else "y domain"
+    fig.add_shape(
+        type="rect",
+        x0=-0.005,
+        x1=0.0,
+        y0=0,
+        y1=1,
+        xref=xref,
+        yref=yref,
+        fillcolor=accent_color,
+        line={"width": 0},
+        layer="above",
+    )
+
 # Track divider lines for visual separation
 for row in range(1, 5):
     yref = f"y{row} domain" if row > 1 else "y domain"
@@ -348,6 +375,10 @@ for row in range(1, 5):
         line={"color": "rgba(180, 190, 200, 0.6)", "width": 1},
     )
 
-# Save
-fig.write_image("plot.png", width=1600, height=900, scale=3)
+# Save static PNG without rangeslider (cleaner layout)
+fig_static = copy.deepcopy(fig)
+fig_static.update_xaxes(rangeslider={"visible": False}, row=4, col=1)
+fig_static.write_image("plot.png", width=1600, height=900, scale=3)
+
+# Save HTML with rangeslider for interactive navigation
 fig.write_html("plot.html", include_plotlyjs="cdn")

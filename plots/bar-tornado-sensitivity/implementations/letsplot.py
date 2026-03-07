@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-tornado-sensitivity: Tornado Diagram for Sensitivity Analysis
 Library: letsplot 4.8.2 | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-07
@@ -47,6 +47,10 @@ for _, row in df.iterrows():
     low_delta = low_side - base_npv
     high_delta = high_side - base_npv
 
+    # Offset labels away from reference line to avoid crowding on small bars
+    low_nudge = min(low_delta - 0.3, low_delta) if abs(low_delta) > 0.5 else low_delta - 0.3
+    high_nudge = max(high_delta + 0.3, high_delta) if abs(high_delta) > 0.5 else high_delta + 0.3
+
     rows.append(
         {
             "parameter": row["parameter"],
@@ -54,6 +58,7 @@ for _, row in df.iterrows():
             "scenario": "Low Scenario",
             "label": f"{low_delta:+.1f}",
             "npv": f"${low_side:.1f}M",
+            "label_x": low_nudge,
         }
     )
     rows.append(
@@ -63,6 +68,7 @@ for _, row in df.iterrows():
             "scenario": "High Scenario",
             "label": f"{high_delta:+.1f}",
             "npv": f"${high_side:.1f}M",
+            "label_x": high_nudge,
         }
     )
 
@@ -88,43 +94,52 @@ plot = (
     )
     + geom_vline(xintercept=0, color="#333333", size=1.2)  # noqa: F405
     + geom_text(  # noqa: F405
-        aes(label="label"),  # noqa: F405
+        aes(x="label_x", label="label"),  # noqa: F405
         position="identity",
-        hjust=-0.1,
-        size=11,
-        color="#333333",
+        hjust=-0.05,
+        size=13,
+        color="#222222",
+        fontface="bold",
         data=plot_df[plot_df["scenario"] == "High Scenario"],
     )
     + geom_text(  # noqa: F405
-        aes(label="label"),  # noqa: F405
+        aes(x="label_x", label="label"),  # noqa: F405
         position="identity",
-        hjust=1.1,
-        size=11,
-        color="#333333",
+        hjust=1.05,
+        size=13,
+        color="#222222",
+        fontface="bold",
         data=plot_df[plot_df["scenario"] == "Low Scenario"],
     )
-    + scale_fill_manual(values=["#306998", "#E8783A"])  # noqa: F405
+    + scale_fill_manual(  # noqa: F405
+        values=["#306998", "#E8783A"], labels=["Low Scenario (decrease)", "High Scenario (increase)"]
+    )
     + scale_x_continuous(  # noqa: F405
-        expand=[0.15, 0]
+        expand=[0.15, 0], format="{.1f}"
     )
     + labs(  # noqa: F405
         x="Change in NPV ($M)",
         y="",
         title="NPV Sensitivity Analysis \u00b7 bar-tornado-sensitivity \u00b7 letsplot \u00b7 pyplots.ai",
+        subtitle="One-at-a-time parameter variation from base case (NPV = $12.5M)",
         fill="",
     )
     + theme_minimal()  # noqa: F405
     + flavor_high_contrast_light()  # noqa: F405
     + theme(  # noqa: F405
         plot_title=element_text(size=24, face="bold", hjust=0.5),  # noqa: F405
-        axis_title_x=element_text(size=20),  # noqa: F405
+        plot_subtitle=element_text(size=16, hjust=0.5, color="#666666"),  # noqa: F405
+        axis_title_x=element_text(size=20, margin=[10, 0, 0, 0]),  # noqa: F405
         axis_title_y=element_text(size=20),  # noqa: F405
         axis_text_x=element_text(size=16),  # noqa: F405
         axis_text_y=element_text(size=18),  # noqa: F405
         legend_text=element_text(size=16),  # noqa: F405
+        legend_title=element_blank(),  # noqa: F405
         legend_position="top",
         panel_grid_major_y=element_blank(),  # noqa: F405
         panel_grid_minor=element_blank(),  # noqa: F405
+        panel_grid_major_x=element_line(color="#E0E0E0", size=0.5),  # noqa: F405
+        plot_margin=[20, 30, 20, 10],
     )
     + ggsize(1600, 900)  # noqa: F405
 )

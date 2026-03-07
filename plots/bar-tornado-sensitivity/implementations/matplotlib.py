@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bar-tornado-sensitivity: Tornado Diagram for Sensitivity Analysis
 Library: matplotlib 3.10.8 | Python 3.14.3
-Quality: 87/100 | Repair: 2/3 | Created: 2026-03-07
+Quality: 90/100 | Created: 2026-03-07
 """
 
 import matplotlib.patheffects as pe

@@ -1,86 +1,122 @@
-""" pyplots.ai
+"""pyplots.ai
 feynman-basic: Feynman Diagram for Particle Interactions
 Library: seaborn 0.13.2 | Python 3.14.3
-Quality: 82/100 | Created: 2026-03-07
 """
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
-from matplotlib.lines import Line2D
 
 
-# Setup
+# Seaborn theming and colorblind-safe palette
 sns.set_context("talk", font_scale=1.2)
 sns.set_style("white")
+pal = sns.color_palette("colorblind")
+FERMION = pal[0]  # blue
+PHOTON = pal[3]  # red/vermillion
+GLUON = pal[2]  # green
+BOSON_S = pal[4]  # purple (scalar boson, distinct from photon)
+
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Vertices for e- e+ -> gamma -> mu- mu+ (s-channel annihilation)
-v1 = np.array([0.3, 0.5])
-v2 = np.array([0.7, 0.5])
+# === Main Diagram: e- e+ -> gamma -> mu- mu+ (s-channel annihilation) ===
 
-# Fermion endpoints
-e_minus_start = np.array([0.05, 0.85])
-e_plus_start = np.array([0.05, 0.15])
-mu_minus_end = np.array([0.95, 0.85])
-mu_plus_end = np.array([0.95, 0.15])
+v1 = np.array([0.30, 0.58])  # left vertex
+v2 = np.array([0.70, 0.58])  # right vertex
 
-# Arrow style for fermion lines
-fermion_arrow = {"arrowstyle": "-|>", "color": "#306998", "lw": 3, "mutation_scale": 25}
+e_minus = np.array([0.05, 0.92])
+e_plus = np.array([0.05, 0.24])
+mu_minus = np.array([0.95, 0.92])
+mu_plus = np.array([0.95, 0.24])
 
-# Draw incoming fermions (arrows toward vertex)
-ax.annotate("", xy=v1, xytext=e_minus_start, arrowprops=fermion_arrow)
-ax.annotate("", xy=v1, xytext=e_plus_start, arrowprops=fermion_arrow)
+# Fermion lines with arrows (annotate needed for arrowheads)
+arrow_kw = {"arrowstyle": "-|>", "color": FERMION, "lw": 3, "mutation_scale": 25}
+for start, end in [(e_minus, v1), (e_plus, v1), (v2, mu_minus), (v2, mu_plus)]:
+    ax.annotate("", xy=end, xytext=start, arrowprops=arrow_kw)
 
-# Draw outgoing fermions (arrows away from vertex)
-ax.annotate("", xy=mu_minus_end, xytext=v2, arrowprops=fermion_arrow)
-ax.annotate("", xy=mu_plus_end, xytext=v2, arrowprops=fermion_arrow)
-
-# Draw virtual photon (wavy line between vertices)
-n_waves = 8
+# Photon wavy line drawn with sns.lineplot + DataFrame
 t = np.linspace(0, 1, 500)
-direction = v2 - v1
-length = np.linalg.norm(direction)
-perp = np.array([-direction[1], direction[0]]) / length
-amplitude = 0.025
-wave_x = v1[0] + t * direction[0] + amplitude * np.sin(2 * np.pi * n_waves * t) * perp[0]
-wave_y = v1[1] + t * direction[1] + amplitude * np.sin(2 * np.pi * n_waves * t) * perp[1]
-ax.plot(wave_x, wave_y, color="#D4442A", lw=3, solid_capstyle="round")
+d = v2 - v1
+perp = np.array([-d[1], d[0]]) / np.linalg.norm(d)
+photon_df = pd.DataFrame(
+    {
+        "x": v1[0] + t * d[0] + 0.022 * np.sin(2 * np.pi * 8 * t) * perp[0],
+        "y": v1[1] + t * d[1] + 0.022 * np.sin(2 * np.pi * 8 * t) * perp[1],
+    }
+)
+sns.lineplot(data=photon_df, x="x", y="y", ax=ax, color=PHOTON, linewidth=3, sort=False, legend=False)
 
-# Vertex dots
-for v in [v1, v2]:
-    ax.plot(v[0], v[1], "o", color="#306998", markersize=12, zorder=5)
+# Vertex dots drawn with sns.scatterplot + DataFrame
+vertex_df = pd.DataFrame({"x": [v1[0], v2[0]], "y": [v1[1], v2[1]]})
+sns.scatterplot(data=vertex_df, x="x", y="y", ax=ax, color=FERMION, s=250, zorder=5, legend=False, edgecolor="none")
 
 # Particle labels
-label_kwargs = {"fontsize": 22, "fontweight": "bold", "ha": "center", "va": "center"}
-ax.text(e_minus_start[0] - 0.02, e_minus_start[1] + 0.06, r"$e^-$", color="#306998", **label_kwargs)
-ax.text(e_plus_start[0] - 0.02, e_plus_start[1] - 0.06, r"$e^+$", color="#306998", **label_kwargs)
-ax.text(0.5, 0.57, r"$\gamma$", color="#D4442A", fontsize=24, fontweight="bold", ha="center", va="bottom")
-ax.text(mu_minus_end[0] + 0.02, mu_minus_end[1] + 0.06, r"$\mu^-$", color="#306998", **label_kwargs)
-ax.text(mu_plus_end[0] + 0.02, mu_plus_end[1] - 0.06, r"$\mu^+$", color="#306998", **label_kwargs)
+lkw = {"fontsize": 22, "fontweight": "bold", "ha": "center", "va": "center"}
+ax.text(e_minus[0] - 0.03, e_minus[1] + 0.04, r"$e^-$", color=FERMION, **lkw)
+ax.text(e_plus[0] - 0.03, e_plus[1] - 0.04, r"$e^+$", color=FERMION, **lkw)
+ax.text(0.50, 0.65, r"$\gamma$", color=PHOTON, fontsize=24, fontweight="bold", ha="center")
+ax.text(mu_minus[0] + 0.03, mu_minus[1] + 0.04, r"$\mu^-$", color=FERMION, **lkw)
+ax.text(mu_plus[0] + 0.03, mu_plus[1] - 0.04, r"$\mu^+$", color=FERMION, **lkw)
 
-# Time axis indicator
+# Time arrow
 ax.annotate(
     "",
-    xy=(0.92, 0.02),
-    xytext=(0.08, 0.02),
+    xy=(0.92, 0.13),
+    xytext=(0.08, 0.13),
     arrowprops={"arrowstyle": "-|>", "color": "#999999", "lw": 1.5, "mutation_scale": 18},
 )
-ax.text(0.5, 0.0, "time", fontsize=16, color="#999999", ha="center", va="bottom", style="italic")
+ax.text(0.50, 0.10, "time", fontsize=16, color="#999999", ha="center", style="italic")
 
-# Legend for line styles
-legend_elements = [
-    Line2D([0], [0], color="#306998", lw=3, label="Fermion (solid + arrow)"),
-    Line2D([0], [0], color="#D4442A", lw=3, label="Photon (wavy)"),
-]
-ax.legend(handles=legend_elements, loc="upper center", fontsize=14, frameon=False, ncol=2)
+# === Particle Line Styles Reference (all 4 types) ===
+ax.plot([0.03, 0.97], [0.05, 0.05], color="#DDDDDD", lw=0.5)
 
-# Style
+ref_y = -0.06
+ref_spans = [(0.04, 0.17), (0.29, 0.42), (0.54, 0.67), (0.79, 0.92)]
+ref_names = ["Fermion\n(solid + arrow)", "Photon\n(wavy)", "Gluon\n(curly)", "Scalar Boson\n(dashed)"]
+ref_cols = [FERMION, PHOTON, GLUON, BOSON_S]
+
+# 1. Fermion: solid + arrow
+ax.annotate(
+    "",
+    xy=(ref_spans[0][1], ref_y),
+    xytext=(ref_spans[0][0], ref_y),
+    arrowprops={"arrowstyle": "-|>", "color": FERMION, "lw": 3, "mutation_scale": 20},
+)
+
+# 2. Photon: wavy line via sns.lineplot
+tr = np.linspace(0, 1, 300)
+xs0, xs1 = ref_spans[1]
+photon_ref = pd.DataFrame({"x": xs0 + tr * (xs1 - xs0), "y": ref_y + 0.018 * np.sin(2 * np.pi * 4 * tr)})
+sns.lineplot(data=photon_ref, x="x", y="y", ax=ax, color=PHOTON, linewidth=3, sort=False, legend=False)
+
+# 3. Gluon: curly/looped line via sns.lineplot (cycloid parameterization)
+tg = np.linspace(0, 1, 1000)
+xs0, xs1 = ref_spans[2]
+span_g = xs1 - xs0
+n_coils = 4
+r_coil = span_g / (2 * np.pi * n_coils) * 4.0
+phase_g = 2 * np.pi * n_coils * tg
+gluon_ref = pd.DataFrame(
+    {"x": xs0 + tg * span_g + r_coil * np.sin(phase_g), "y": ref_y + r_coil * (1 - np.cos(phase_g))}
+)
+sns.lineplot(data=gluon_ref, x="x", y="y", ax=ax, color=GLUON, linewidth=3, sort=False, legend=False)
+
+# 4. Scalar boson: dashed line via sns.lineplot
+xs0, xs1 = ref_spans[3]
+boson_ref = pd.DataFrame({"x": [xs0, xs1], "y": [ref_y, ref_y]})
+sns.lineplot(data=boson_ref, x="x", y="y", ax=ax, color=BOSON_S, linewidth=3, linestyle="--", legend=False)
+
+# Reference labels
+for (xs0, xs1), name, col in zip(ref_spans, ref_names, ref_cols, strict=True):
+    ax.text((xs0 + xs1) / 2, ref_y - 0.03, name, fontsize=16, ha="center", va="top", color=col, fontweight="bold")
+
+# Title and cleanup
 ax.set_title("feynman-basic \u00b7 seaborn \u00b7 pyplots.ai", fontsize=24, fontweight="medium", pad=20)
 ax.set_xlim(-0.05, 1.05)
-ax.set_ylim(-0.08, 1.05)
-ax.set_aspect("equal")
+ax.set_ylim(-0.20, 1.02)
 ax.axis("off")
+sns.despine(ax=ax, left=True, bottom=True)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

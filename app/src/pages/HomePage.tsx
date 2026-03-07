@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import Fab from '@mui/material/Fab';
@@ -156,6 +157,11 @@ export function HomePage() {
 
   return (
     <Box onClick={handleContainerClick}>
+      <Helmet>
+        <title>pyplots.ai</title>
+        <meta name="description" content="library-agnostic, ai-powered python plotting examples. browse, compare, and copy code across 9 libraries." />
+        <link rel="canonical" href="https://pyplots.ai/" />
+      </Helmet>
       <Header stats={stats} onRandom={handleRandom} />
 
       {error && (

@@ -224,6 +224,7 @@ export function SpecPage() {
           property="og:url"
           content={isOverviewMode ? `https://pyplots.ai/${specId}` : `https://pyplots.ai/${specId}/${selectedLibrary}`}
         />
+        <link rel="canonical" href={isOverviewMode ? `https://pyplots.ai/${specId}` : `https://pyplots.ai/${specId}/${selectedLibrary}`} />
       </Helmet>
 
       <Box sx={{ pb: 4 }}>

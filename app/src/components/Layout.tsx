@@ -76,7 +76,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
 // Layout component for pages with standard layout (HomePage, SpecPage, CatalogPage)
 export function Layout() {
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#fafafa', py: 5, position: 'relative' }}>
+    <Box component="main" sx={{ minHeight: '100vh', bgcolor: '#fafafa', py: 5, position: 'relative' }}>
       <Container maxWidth={false} sx={{ px: { xs: 2, sm: 4, md: 8, lg: 12 } }}>
         <Outlet />
       </Container>

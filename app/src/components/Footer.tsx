@@ -11,7 +11,7 @@ interface FooterProps {
 
 export function Footer({ onTrackEvent, selectedSpec, selectedLibrary }: FooterProps) {
   return (
-    <Box sx={{ textAlign: 'center', mt: 4, pt: 4, borderTop: '1px solid #f3f4f6' }}>
+    <Box component="footer" sx={{ textAlign: 'center', mt: 4, pt: 4, borderTop: '1px solid #f3f4f6' }}>
       <Box
         sx={{
           display: 'flex',

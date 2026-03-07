@@ -197,6 +197,10 @@ export function InteractivePage() {
     <>
       <Helmet>
         <title>{`${title} - ${library} (Interactive) | pyplots.ai`}</title>
+        <meta name="description" content={`Interactive ${title} visualization using ${library} | pyplots.ai`} />
+        <meta property="og:title" content={`${title} - ${library} (interactive) | pyplots.ai`} />
+        <meta property="og:description" content={`Interactive ${title} visualization using ${library}`} />
+        <link rel="canonical" href={`https://pyplots.ai/interactive/${specId}/${library}`} />
       </Helmet>
 
       <Box

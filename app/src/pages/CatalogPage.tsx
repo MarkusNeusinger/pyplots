@@ -149,6 +149,7 @@ export function CatalogPage() {
         <meta name="description" content="Browse all Python plotting specifications alphabetically" />
         <meta property="og:title" content="catalog | pyplots.ai" />
         <meta property="og:description" content="Browse all Python plotting specifications alphabetically" />
+        <link rel="canonical" href="https://pyplots.ai/catalog" />
       </Helmet>
 
       <Box sx={{ pb: 4 }}>

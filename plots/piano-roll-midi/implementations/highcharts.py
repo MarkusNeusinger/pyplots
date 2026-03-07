@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 piano-roll-midi: MIDI Piano Roll Visualization
 Library: highcharts unknown | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-07
@@ -121,10 +121,30 @@ pitch_to_index = {midi: i for i, midi in enumerate(all_midi_range)}
 # Using brighter amber midpoint for crisper transitions
 vel_min, vel_max = 60, 127
 color_stops_rgb = [
-    (20, 130, 150),  # #14829696 deep teal (soft/piano)
-    (255, 165, 0),  # #ffa500 bright amber (medium/mezzo) - crisper than olive-gold
-    (185, 25, 40),  # #b91928 crimson (loud/forte)
+    (20, 130, 150),  # deep teal (soft/piano)
+    (255, 165, 0),  # bright amber (medium/mezzo)
+    (185, 25, 40),  # crimson (loud/forte)
 ]
+
+
+def vel_to_rgb(t, stops=color_stops_rgb):
+    """Interpolate velocity 0..1 through three color stops."""
+    if t < 0.5:
+        s = t / 0.5
+        c0, c1 = stops[0], stops[1]
+    else:
+        s = (t - 0.5) / 0.5
+        c0, c1 = stops[1], stops[2]
+    return tuple(int(c0[i] * (1 - s) + c1[i] * s) for i in range(3))
+
+
+# Pre-compute colorbar gradient segments (shared by Python→JS)
+N_COLORBAR_SEGS = 80
+colorbar_colors = []
+for i in range(N_COLORBAR_SEGS):
+    t = 1 - i / (N_COLORBAR_SEGS - 1)
+    r, g, b = vel_to_rgb(t)
+    colorbar_colors.append(f"rgb({r},{g},{b})")
 
 # Role-specific styling
 role_config = {
@@ -137,16 +157,7 @@ role_config = {
 series_data = {"melody": [], "harmony": [], "bass": []}
 for start, dur, pitch, vel, role in notes:
     t = float(np.clip((vel - vel_min) / (vel_max - vel_min), 0.0, 1.0))
-    if t < 0.5:
-        s = t / 0.5
-        r = int(color_stops_rgb[0][0] * (1 - s) + color_stops_rgb[1][0] * s)
-        g = int(color_stops_rgb[0][1] * (1 - s) + color_stops_rgb[1][1] * s)
-        b = int(color_stops_rgb[0][2] * (1 - s) + color_stops_rgb[1][2] * s)
-    else:
-        s = (t - 0.5) / 0.5
-        r = int(color_stops_rgb[1][0] * (1 - s) + color_stops_rgb[2][0] * s)
-        g = int(color_stops_rgb[1][1] * (1 - s) + color_stops_rgb[2][1] * s)
-        b = int(color_stops_rgb[1][2] * (1 - s) + color_stops_rgb[2][2] * s)
+    r, g, b = vel_to_rgb(t)
     alpha = role_config[role]["opacity"]
     color = f"rgba({r},{g},{b},{alpha})"
     series_data[role].append(
@@ -187,7 +198,7 @@ chart.options.chart = {
     "marginLeft": 200,
     "marginTop": 180,
     "marginBottom": 200,
-    "marginRight": 380,
+    "marginRight": 360,
     "style": {"fontFamily": "'Segoe UI', 'Helvetica Neue', Arial, sans-serif"},
 }
 
@@ -204,7 +215,7 @@ chart.options.subtitle = {
 }
 
 chart.options.x_axis = {
-    "title": {"text": "Beats", "style": {"fontSize": "28px", "color": "#444444"}},
+    "title": {"text": "Beats (quarter notes)", "style": {"fontSize": "28px", "color": "#444444"}},
     "labels": {"style": {"fontSize": "22px", "color": "#555555"}, "step": 1},
     "min": 0,
     "max": 32,
@@ -217,8 +228,8 @@ chart.options.x_axis = {
 chart.options.y_axis = {
     "type": "category",
     "categories": categories,
-    "title": {"text": "Pitch", "style": {"fontSize": "28px", "color": "#444444"}},
-    "labels": {"style": {"fontSize": "20px", "color": "#555555"}},
+    "title": {"text": "Pitch (note name)", "style": {"fontSize": "28px", "color": "#444444"}},
+    "labels": {"style": {"fontSize": "22px", "color": "#555555"}},
     "gridLineWidth": 1,
     "gridLineColor": "rgba(0, 0, 0, 0.04)",
     "plotBands": plot_bands,
@@ -323,6 +334,9 @@ for cl in chord_labels:
       .attr({{'text-anchor':'middle'}})
       .css({{fontSize:'26px', color:'#888', fontWeight:'600', fontStyle:'italic'}}).add();"""
 
+# Build JS array of pre-computed colors (eliminates duplicated interpolation in JS)
+colors_js_array = "[" + ",".join(f"'{c}'" for c in colorbar_colors) + "]"
+
 colorbar_js = f"""
 <script>
 (function() {{
@@ -331,19 +345,12 @@ colorbar_js = f"""
     if (!chart) return;
     clearInterval(checkChart);
     var r = chart.renderer;
-    var x = 4470, y = 220, w = 36, totalH = 2200;
-    var stops = [[20,130,150],[255,165,0],[185,25,40]];
-    var nSegs = 80;
+    var x = 4470, y = 220, w = 34, totalH = 2200;
+    var colors = {colors_js_array};
+    var nSegs = colors.length;
     var segH = totalH / nSegs;
     for (var i = 0; i < nSegs; i++) {{
-      var t = 1 - i / (nSegs - 1);
-      var c0, c1, s;
-      if (t < 0.5) {{ s = t / 0.5; c0 = stops[0]; c1 = stops[1]; }}
-      else {{ s = (t - 0.5) / 0.5; c0 = stops[1]; c1 = stops[2]; }}
-      var cr = Math.round(c0[0]*(1-s)+c1[0]*s);
-      var cg = Math.round(c0[1]*(1-s)+c1[1]*s);
-      var cb = Math.round(c0[2]*(1-s)+c1[2]*s);
-      r.rect(x, y + i*segH, w, segH+1, 0).attr({{fill:'rgb('+cr+','+cg+','+cb+')', 'stroke-width':0}}).add();
+      r.rect(x, y + i*segH, w, segH+1, 0).attr({{fill:colors[i], 'stroke-width':0}}).add();
     }}
     r.rect(x, y, w, totalH, 6).attr({{fill:'none', stroke:'#bbb', 'stroke-width':1}}).add();
     r.text('Velocity', x + w/2, y - 15).attr({{'text-anchor':'middle'}}).css({{fontSize:'24px', color:'#444', fontWeight:'600'}}).add();

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-tornado-sensitivity: Tornado Diagram for Sensitivity Analysis
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 78/100 | Created: 2026-03-07
@@ -24,30 +24,50 @@ parameters = [
 
 records = []
 for param, low, high in parameters:
-    records.append({"parameter": param, "value": low, "side": "Low Scenario", "span": abs(high - low)})
-    records.append({"parameter": param, "value": high, "side": "High Scenario", "span": abs(high - low)})
+    span = abs(high - low)
+    records.append({"parameter": param, "value": low, "side": "Low Scenario", "span": span, "base": base_npv})
+    records.append({"parameter": param, "value": high, "side": "High Scenario", "span": span, "base": base_npv})
 
 df = pd.DataFrame(records)
 
-# Sort order by total range (widest at top)
-sort_order = [p for p, _, _ in sorted(parameters, key=lambda x: abs(x[2] - x[1]))]
+# Sort by span descending — widest at top means highest sort_rank at top
+y_sort = alt.EncodingSortField(field="span", order="descending")
 
-# Plot
+# Bars
 bars = (
     alt.Chart(df)
     .mark_bar(cornerRadius=3, height=38)
     .encode(
-        x=alt.X("value:Q", title="Net Present Value ($M)", scale=alt.Scale(domain=[180, 330])),
-        x2=alt.X2("base:Q"),
-        y=alt.Y("parameter:N", sort=sort_order, title=None),
+        x=alt.X("value:Q", title="Net Present Value ($M)", scale=alt.Scale(domain=[185, 325])),
+        x2="base:Q",
+        y=alt.Y("parameter:N", sort=y_sort, title=None, axis=alt.Axis(grid=False)),
         color=alt.Color(
             "side:N",
             scale=alt.Scale(domain=["Low Scenario", "High Scenario"], range=["#306998", "#E8853A"]),
             title=None,
         ),
-        tooltip=["parameter:N", "side:N", "value:Q"],
+        tooltip=[
+            alt.Tooltip("parameter:N", title="Parameter"),
+            alt.Tooltip("side:N", title="Scenario"),
+            alt.Tooltip("value:Q", title="NPV ($M)", format=",.0f"),
+        ],
     )
-    .transform_calculate(base=str(base_npv))
+)
+
+# Value labels — low scenario (left side)
+low_labels = (
+    alt.Chart(df)
+    .transform_filter(alt.datum.side == "Low Scenario")
+    .mark_text(fontSize=14, fontWeight="bold", dx=-18, align="right", color="#306998")
+    .encode(x="value:Q", y=alt.Y("parameter:N", sort=y_sort), text=alt.Text("value:Q", format="$,.0f"))
+)
+
+# Value labels — high scenario (right side)
+high_labels = (
+    alt.Chart(df)
+    .transform_filter(alt.datum.side == "High Scenario")
+    .mark_text(fontSize=14, fontWeight="bold", dx=18, align="left", color="#C06A2B")
+    .encode(x="value:Q", y=alt.Y("parameter:N", sort=y_sort), text=alt.Text("value:Q", format="$,.0f"))
 )
 
 # Base case reference line
@@ -57,21 +77,30 @@ rule = (
     .encode(x="x:Q")
 )
 
-# Base case label
+# Base case label anchored to top parameter
+sort_order = [p for p, _, _ in sorted(parameters, key=lambda x: abs(x[2] - x[1]), reverse=True)]
+base_label_df = pd.DataFrame(
+    {
+        "x": [base_npv],
+        "y": [sort_order[0]],
+        "label": [f"Base Case: ${base_npv:.0f}M"],
+        "span": [max(abs(high - low) for _, low, high in parameters)],
+    }
+)
 label = (
-    alt.Chart(pd.DataFrame({"x": [base_npv], "label": [f"Base Case: ${base_npv:.0f}M"]}))
-    .mark_text(align="left", dx=6, dy=-140, fontSize=16, fontWeight="bold", color="#333333")
-    .encode(x="x:Q", text="label:N")
+    alt.Chart(base_label_df)
+    .mark_text(align="left", dx=8, dy=-28, fontSize=16, fontWeight="bold", color="#333333")
+    .encode(x="x:Q", y=alt.Y("y:N", sort=y_sort), text="label:N")
 )
 
 chart = (
-    (bars + rule + label)
+    (bars + low_labels + high_labels + rule + label)
     .properties(
         width=1600,
         height=900,
         title=alt.Title("bar-tornado-sensitivity \u00b7 altair \u00b7 pyplots.ai", fontSize=28, anchor="start"),
     )
-    .configure_axis(labelFontSize=18, titleFontSize=22)
+    .configure_axis(labelFontSize=18, titleFontSize=22, gridColor="#e8e8e8", gridDash=[3, 3])
     .configure_legend(labelFontSize=16, symbolSize=300, orient="bottom", direction="horizontal")
     .configure_view(strokeWidth=0)
 )

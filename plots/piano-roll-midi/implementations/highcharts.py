@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 piano-roll-midi: MIDI Piano Roll Visualization
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2026-03-07
+Library: highcharts unknown | Python 3.14.3
+Quality: 80/100 | Created: 2026-03-07
 """
 
 import tempfile

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-hr-diagram: Hertzsprung-Russell Diagram
 Library: letsplot 4.8.2 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-07
@@ -69,8 +69,8 @@ df = pd.DataFrame(
 
 # Spectral type colors (astrophysical convention, A/F differentiated)
 spectral_colors = {
-    "O": "#6B7FFF",
-    "B": "#9BB0FF",
+    "O": "#5566FF",
+    "B": "#A0C4FF",
     "A": "#B8C9FF",
     "F": "#FFF0C8",
     "G": "#FFE08A",
@@ -85,8 +85,8 @@ sun_label_df = pd.DataFrame({"temperature": [7500], "luminosity": [3.5], "label"
 # Region label positions (repositioned to avoid data overlap)
 region_labels = pd.DataFrame(
     {
-        "temperature": [25000, 5500, 18000, 18000],
-        "luminosity": [0.015, 5000, 70000, 0.0006],
+        "temperature": [25000, 5200, 18000, 18000],
+        "luminosity": [0.015, 6000, 70000, 0.0006],
         "label": ["Main Sequence", "Red Giants", "Supergiants", "White Dwarfs"],
     }
 )
@@ -128,7 +128,7 @@ plot = (
     + geom_text(  # noqa: F405
         data=region_labels,
         mapping=aes(x="temperature", y="luminosity", label="label"),  # noqa: F405
-        size=15,
+        size=17,
         color="#8899AA",
         fontface="bold_italic",
         inherit_aes=False,
@@ -156,19 +156,7 @@ plot = (
         limits=["O", "B", "A", "F", "G", "K", "M"],
         name="Spectral Type",
     )
-    + scale_color_manual(  # noqa: F405
-        values=[
-            spectral_colors["O"],
-            spectral_colors["B"],
-            spectral_colors["A"],
-            spectral_colors["F"],
-            spectral_colors["G"],
-            spectral_colors["K"],
-            spectral_colors["M"],
-        ],
-        limits=["O", "B", "A", "F", "G", "K", "M"],
-        name="Spectral Type",
-    )
+    + guides(color="none")  # noqa: F405
     + labs(  # noqa: F405
         title="scatter-hr-diagram · letsplot · pyplots.ai"
     )
@@ -181,7 +169,7 @@ plot = (
         legend_text=element_text(size=14, color="#CCCCCC"),  # noqa: F405
         legend_title=element_text(size=16, face="bold", color="#DDDDDD"),  # noqa: F405
         legend_background=element_rect(fill="#1A1F2B", color="#1A1F2B"),  # noqa: F405
-        panel_grid_major=element_line(color="#2A2F3A", size=0.35),  # noqa: F405
+        panel_grid_major=element_line(color="#1E2330", size=0.25),  # noqa: F405
         panel_grid_minor=element_blank(),  # noqa: F405
         plot_background=element_rect(fill="#0D1117", color="#0D1117"),  # noqa: F405
         panel_background=element_rect(fill="#0D1117", color="#0D1117"),  # noqa: F405

@@ -1,91 +1,75 @@
-""" pyplots.ai
+"""pyplots.ai
 feynman-basic: Feynman Diagram for Particle Interactions
-Library: highcharts unknown | Python 3.14.3
-Quality: 84/100 | Created: 2026-03-07
+Library: highcharts | Python 3.14.3
 """
 
-import json
 import math
 import tempfile
 import time
 import urllib.request
 from pathlib import Path
 
+from highcharts_core.chart import Chart
+from highcharts_core.options import HighchartsOptions
 from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data: Electron-positron annihilation into muon pair (e+e- -> gamma -> mu+mu-)
-v1 = (3.0, 3.0)
-v2 = (7.0, 3.0)
-
-# Fermion propagators
-# Convention: particles arrow forward in time, antiparticles arrow backward
-fermion_lines = [
-    {"start": (0.5, 5.0), "end": v1, "label": "e\u207b", "label_side": "above", "arrow_dir": "forward"},
-    {"start": (0.5, 1.0), "end": v1, "label": "e\u207a", "label_side": "below", "arrow_dir": "backward"},
-    {"start": v2, "end": (9.5, 5.0), "label": "\u03bc\u207b", "label_side": "above", "arrow_dir": "forward"},
-    {"start": v2, "end": (9.5, 1.0), "label": "\u03bc\u207a", "label_side": "below", "arrow_dir": "backward"},
-]
-
-# Photon propagator (wavy line between vertices)
-n_wave_points = 200
-wave_amplitude = 0.35
-wave_frequency = 7
-photon_data = []
-for i in range(n_wave_points + 1):
-    t = i / n_wave_points
-    px = v1[0] + (v2[0] - v1[0]) * t
-    py = v1[1] + wave_amplitude * math.sin(2 * math.pi * wave_frequency * t)
-    photon_data.append([round(px, 4), round(py, 4)])
-
-series_list = []
+# Data: Electron-positron annihilation (e⁻e⁺ → γ → μ⁻μ⁺)
+# Vertices positioned for good canvas utilization
+v1 = (3.0, 4.0)
+v2 = (7.0, 4.0)
 
 # Colors
 fermion_color = "#306998"
 photon_color = "#D63384"
+gluon_color = "#2E8B57"
+boson_color = "#E67E22"
 vertex_color = "#2c3e50"
 
+# Fermion propagators with arrow direction convention
+fermion_lines = [
+    {"start": (0.3, 7.0), "end": v1, "label": "e\u207b", "side": "above", "dir": "forward"},
+    {"start": (0.3, 1.0), "end": v1, "label": "e\u207a", "side": "below", "dir": "backward"},
+    {"start": v2, "end": (9.7, 7.0), "label": "\u03bc\u207b", "side": "above", "dir": "forward"},
+    {"start": v2, "end": (9.7, 1.0), "label": "\u03bc\u207a", "side": "below", "dir": "backward"},
+]
+
+# Photon propagator (wavy line between vertices)
+n_wave = 200
+photon_data = []
+for i in range(n_wave + 1):
+    t = i / n_wave
+    px = v1[0] + (v2[0] - v1[0]) * t
+    py = v1[1] + 0.35 * math.sin(2 * math.pi * 7 * t)
+    photon_data.append({"x": round(px, 4), "y": round(py, 4), "marker": {"enabled": False}})
+
+series_list = []
+
 # Arrowhead geometry
-arrow_length = 0.35
-arrow_spread = 0.18
+arrow_len = 0.45
+arrow_spread = 0.22
 
 for fl in fermion_lines:
     sx, sy = fl["start"]
     ex, ey = fl["end"]
-    mx = (sx + ex) / 2
-    my = (sy + ey) / 2
-
-    # Direction and perpendicular unit vectors
-    dx = ex - sx
-    dy = ey - sy
+    mx, my = (sx + ex) / 2, (sy + ey) / 2
+    dx, dy = ex - sx, ey - sy
     length = math.sqrt(dx * dx + dy * dy)
     ux, uy = dx / length, dy / length
-    px, py = -uy, ux
+    perpx, perpy = -uy, ux
+    sign = 1.0 if fl["dir"] == "forward" else -1.0
 
-    # Arrow direction: forward = along line, backward = against line
-    sign = 1.0 if fl["arrow_dir"] == "forward" else -1.0
-
-    # Arrowhead: two lines from tip backward
-    tip_x, tip_y = mx, my
-    tail1_x = tip_x - sign * arrow_length * ux + arrow_spread * px
-    tail1_y = tip_y - sign * arrow_length * uy + arrow_spread * py
-    tail2_x = tip_x - sign * arrow_length * ux - arrow_spread * px
-    tail2_y = tip_y - sign * arrow_length * uy - arrow_spread * py
-
-    # Label offset
-    label_y_offset = -55 if fl["label_side"] == "above" else 55
-
-    # Main fermion line
-    label_point = {
+    y_off = -55 if fl["side"] == "above" else 55
+    label_pt = {
         "x": mx,
         "y": my,
         "marker": {"enabled": False},
         "dataLabels": {
             "enabled": True,
             "format": fl["label"],
-            "y": label_y_offset,
+            "y": y_off,
             "style": {
                 "fontSize": "72px",
                 "fontWeight": "bold",
@@ -96,10 +80,11 @@ for fl in fermion_lines:
         },
     }
 
+    # Fermion line
     series_list.append(
         {
             "type": "line",
-            "data": [{"x": sx, "y": sy}, label_point, {"x": ex, "y": ey}],
+            "data": [{"x": sx, "y": sy}, label_pt, {"x": ex, "y": ey}],
             "color": fermion_color,
             "lineWidth": 8,
             "showInLegend": False,
@@ -108,14 +93,20 @@ for fl in fermion_lines:
         }
     )
 
-    # Arrowhead (two line segments forming a V)
+    # Arrowhead (V shape)
     series_list.append(
         {
             "type": "line",
             "data": [
-                {"x": round(tail1_x, 4), "y": round(tail1_y, 4)},
-                {"x": round(tip_x, 4), "y": round(tip_y, 4)},
-                {"x": round(tail2_x, 4), "y": round(tail2_y, 4)},
+                {
+                    "x": round(mx - sign * arrow_len * ux + arrow_spread * perpx, 4),
+                    "y": round(my - sign * arrow_len * uy + arrow_spread * perpy, 4),
+                },
+                {"x": round(mx, 4), "y": round(my, 4)},
+                {
+                    "x": round(mx - sign * arrow_len * ux - arrow_spread * perpx, 4),
+                    "y": round(my - sign * arrow_len * uy - arrow_spread * perpy, 4),
+                },
             ],
             "color": fermion_color,
             "lineWidth": 7,
@@ -126,29 +117,22 @@ for fl in fermion_lines:
     )
 
 # Photon wavy line with label at midpoint
-photon_mid_idx = n_wave_points // 2
-photon_series_data = []
-for i, pt in enumerate(photon_data):
-    point = {"x": pt[0], "y": pt[1], "marker": {"enabled": False}}
-    if i == photon_mid_idx:
-        point["dataLabels"] = {
-            "enabled": True,
-            "format": "\u03b3",
-            "y": -70,
-            "style": {
-                "fontSize": "72px",
-                "fontWeight": "bold",
-                "color": photon_color,
-                "textOutline": "4px #ffffff",
-                "fontStyle": "italic",
-            },
-        }
-    photon_series_data.append(point)
-
+photon_data[n_wave // 2]["dataLabels"] = {
+    "enabled": True,
+    "format": "\u03b3",
+    "y": -70,
+    "style": {
+        "fontSize": "72px",
+        "fontWeight": "bold",
+        "color": photon_color,
+        "textOutline": "4px #ffffff",
+        "fontStyle": "italic",
+    },
+}
 series_list.append(
     {
         "type": "spline",
-        "data": photon_series_data,
+        "data": photon_data,
         "color": photon_color,
         "lineWidth": 7,
         "showInLegend": False,
@@ -158,11 +142,10 @@ series_list.append(
 )
 
 # Vertex dots
-vertex_data = [{"x": v1[0], "y": v1[1]}, {"x": v2[0], "y": v2[1]}]
 series_list.append(
     {
         "type": "scatter",
-        "data": vertex_data,
+        "data": [{"x": v1[0], "y": v1[1]}, {"x": v2[0], "y": v2[1]}],
         "color": vertex_color,
         "marker": {"radius": 24, "symbol": "circle", "lineWidth": 4, "lineColor": "#ffffff"},
         "showInLegend": False,
@@ -171,29 +154,101 @@ series_list.append(
     }
 )
 
-# Legend entries
+# --- Reference line styles at bottom showing gluon and boson ---
+ref_y = -0.6
+ref_label_style = {"fontSize": "44px", "fontWeight": "600", "textOutline": "2px #ffffff"}
+
+# "Line Styles:" label
 series_list.append(
     {
-        "type": "line",
-        "name": "Fermion (e\u207b, \u03bc\u207b, ...)",
-        "data": [],
-        "color": fermion_color,
-        "lineWidth": 8,
-        "showInLegend": True,
+        "type": "scatter",
+        "data": [
+            {
+                "x": 0.2,
+                "y": ref_y,
+                "dataLabels": {
+                    "enabled": True,
+                    "format": "Line Styles:",
+                    "align": "left",
+                    "x": 0,
+                    "y": 10,
+                    "style": {"fontSize": "40px", "fontWeight": "700", "color": "#2c3e50", "textOutline": "none"},
+                },
+            }
+        ],
+        "color": "transparent",
         "marker": {"enabled": False},
+        "showInLegend": False,
+        "enableMouseTracking": False,
     }
 )
+
+# Gluon reference line (curly/looped pattern using abs(sin) for bumps)
+n_gluon = 200
+gluon_x_s, gluon_x_e = 2.5, 4.8
+gluon_data = []
+for i in range(n_gluon + 1):
+    t = i / n_gluon
+    gx = gluon_x_s + (gluon_x_e - gluon_x_s) * t
+    gy = ref_y + 0.28 * abs(math.sin(2 * math.pi * 5 * t))
+    gluon_data.append({"x": round(gx, 4), "y": round(gy, 4), "marker": {"enabled": False}})
+
+gluon_data[n_gluon // 2]["dataLabels"] = {
+    "enabled": True,
+    "format": "g (gluon)",
+    "y": -50,
+    "style": {**ref_label_style, "color": gluon_color},
+}
 series_list.append(
     {
         "type": "spline",
-        "name": "Photon (\u03b3)",
-        "data": [],
-        "color": photon_color,
-        "lineWidth": 7,
-        "showInLegend": True,
+        "data": gluon_data,
+        "color": gluon_color,
+        "lineWidth": 6,
+        "showInLegend": False,
+        "enableMouseTracking": False,
         "marker": {"enabled": False},
     }
 )
+
+# Boson reference line (dashed)
+boson_x_s, boson_x_e = 6.2, 8.5
+boson_mid_x = (boson_x_s + boson_x_e) / 2
+series_list.append(
+    {
+        "type": "line",
+        "data": [
+            {"x": boson_x_s, "y": ref_y},
+            {
+                "x": boson_mid_x,
+                "y": ref_y,
+                "dataLabels": {
+                    "enabled": True,
+                    "format": "H (scalar boson)",
+                    "y": -50,
+                    "style": {**ref_label_style, "color": boson_color},
+                },
+            },
+            {"x": boson_x_e, "y": ref_y},
+        ],
+        "color": boson_color,
+        "lineWidth": 6,
+        "dashStyle": "Dash",
+        "showInLegend": False,
+        "enableMouseTracking": False,
+        "marker": {"enabled": False},
+    }
+)
+
+# Legend entries for all 4 particle types + vertex
+legend_entries = [
+    {"type": "line", "name": "Fermion (e\u207b, \u03bc\u207b, ...)", "color": fermion_color, "lineWidth": 8},
+    {"type": "spline", "name": "Photon (\u03b3)", "color": photon_color, "lineWidth": 7},
+    {"type": "spline", "name": "Gluon (g)", "color": gluon_color, "lineWidth": 6},
+    {"type": "line", "name": "Scalar Boson (H)", "color": boson_color, "lineWidth": 6, "dashStyle": "Dash"},
+]
+for entry in legend_entries:
+    series_list.append({**entry, "data": [], "showInLegend": True, "marker": {"enabled": False}})
 series_list.append(
     {
         "type": "scatter",
@@ -205,90 +260,91 @@ series_list.append(
     }
 )
 
-# Chart options
-chart_options = {
-    "chart": {
-        "width": 4800,
-        "height": 2700,
-        "backgroundColor": "#ffffff",
-        "marginTop": 250,
-        "marginBottom": 250,
-        "marginLeft": 150,
-        "marginRight": 150,
-        "style": {"fontFamily": "'Segoe UI', Arial, Helvetica, sans-serif"},
-    },
-    "title": {
-        "text": "Electron-Positron Annihilation \u00b7 feynman-basic \u00b7 highcharts \u00b7 pyplots.ai",
-        "style": {"fontSize": "64px", "fontWeight": "700", "color": "#2c3e50", "letterSpacing": "1px"},
-        "margin": 50,
-    },
-    "subtitle": {
-        "text": "e\u207be\u207a \u2192 \u03b3 \u2192 \u03bc\u207b\u03bc\u207a  \u2014  Quantum Electrodynamics (QED) Process",
-        "style": {"fontSize": "44px", "fontWeight": "400", "color": "#7f8c8d"},
-    },
-    "xAxis": {
-        "visible": True,
-        "min": -0.5,
-        "max": 10.5,
-        "lineWidth": 0,
-        "gridLineWidth": 0,
-        "tickWidth": 0,
-        "labels": {"enabled": False},
-        "title": {
-            "text": "Time \u2192",
-            "style": {"fontSize": "48px", "fontWeight": "600", "color": "#bdc3c7"},
-            "align": "high",
-            "offset": 0,
-            "x": 40,
-            "y": -20,
+# Build chart using highcharts-core Python API
+chart = Chart(container="container")
+chart.options = HighchartsOptions.from_dict(
+    {
+        "chart": {
+            "width": 4800,
+            "height": 2700,
+            "backgroundColor": "#ffffff",
+            "marginTop": 200,
+            "marginBottom": 200,
+            "marginLeft": 120,
+            "marginRight": 120,
+            "style": {"fontFamily": "'Segoe UI', Arial, Helvetica, sans-serif"},
         },
-    },
-    "yAxis": {
-        "visible": True,
-        "min": -0.2,
-        "max": 6.2,
-        "lineWidth": 0,
-        "gridLineWidth": 0,
-        "tickWidth": 0,
-        "labels": {"enabled": False},
-        "title": {"text": None},
-    },
-    "legend": {
-        "enabled": True,
-        "layout": "horizontal",
-        "align": "center",
-        "verticalAlign": "bottom",
-        "itemStyle": {"fontSize": "42px", "fontWeight": "500", "color": "#2c3e50"},
-        "symbolWidth": 80,
-        "symbolHeight": 10,
-        "itemDistance": 100,
-        "y": -10,
-    },
-    "tooltip": {"enabled": False},
-    "plotOptions": {"series": {"animation": False, "states": {"hover": {"enabled": False}}}},
-    "credits": {"enabled": False},
-    "series": series_list,
-}
+        "title": {
+            "text": "Electron-Positron Annihilation \u00b7 feynman-basic \u00b7 highcharts \u00b7 pyplots.ai",
+            "style": {"fontSize": "64px", "fontWeight": "700", "color": "#2c3e50", "letterSpacing": "1px"},
+            "margin": 40,
+        },
+        "subtitle": {
+            "text": "e\u207be\u207a \u2192 \u03b3 \u2192 \u03bc\u207b\u03bc\u207a  \u2014  Quantum Electrodynamics (QED) Process",
+            "style": {"fontSize": "44px", "fontWeight": "400", "color": "#7f8c8d"},
+        },
+        "xAxis": {
+            "visible": True,
+            "min": -0.5,
+            "max": 10.5,
+            "lineWidth": 0,
+            "gridLineWidth": 0,
+            "tickWidth": 0,
+            "labels": {"enabled": False},
+            "title": {
+                "text": "Time \u2192",
+                "align": "high",
+                "offset": 0,
+                "x": 40,
+                "y": -20,
+                "style": {"fontSize": "48px", "fontWeight": "600", "color": "#bdc3c7"},
+            },
+        },
+        "yAxis": {
+            "visible": True,
+            "min": -1.5,
+            "max": 8.0,
+            "lineWidth": 0,
+            "gridLineWidth": 0,
+            "tickWidth": 0,
+            "labels": {"enabled": False},
+            "title": {"text": None},
+        },
+        "legend": {
+            "enabled": True,
+            "layout": "horizontal",
+            "align": "center",
+            "verticalAlign": "bottom",
+            "itemStyle": {"fontSize": "36px", "fontWeight": "500", "color": "#2c3e50"},
+            "symbolWidth": 60,
+            "symbolHeight": 10,
+            "itemDistance": 50,
+            "y": -10,
+        },
+        "tooltip": {"enabled": False},
+        "plotOptions": {"series": {"animation": False, "states": {"hover": {"enabled": False}}}},
+        "credits": {"enabled": False},
+        "series": series_list,
+    }
+)
 
-options_json = json.dumps(chart_options)
+# Generate JS using highcharts-core
+js_literal = chart.to_js_literal()
 
-# Download Highcharts JS
+# Download Highcharts JS for headless rendering
 cdn_urls = ["https://cdn.jsdelivr.net/npm/highcharts@11/highcharts.js", "https://code.highcharts.com/highcharts.js"]
 highcharts_js = None
 for url in cdn_urls:
     try:
-        with urllib.request.urlopen(url, timeout=30) as response:
-            highcharts_js = response.read().decode("utf-8")
+        with urllib.request.urlopen(url, timeout=30) as resp:
+            highcharts_js = resp.read().decode("utf-8")
         break
-    except urllib.error.HTTPError:
-        time.sleep(2)
+    except Exception:
         continue
-if highcharts_js is None:
-    raise RuntimeError("Failed to download Highcharts JS from all CDNs")
+if not highcharts_js:
+    raise RuntimeError("Failed to download Highcharts JS")
 
-chart_init_js = f"Highcharts.chart('container', {options_json});"
-
-# Inline HTML for screenshot
+# HTML for screenshot with inline JS
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -297,7 +353,7 @@ html_content = f"""<!DOCTYPE html>
 </head>
 <body style="margin:0;">
     <div id="container" style="width: 4800px; height: 2700px;"></div>
-    <script>{chart_init_js}</script>
+    <script>{js_literal}</script>
 </body>
 </html>"""
 
@@ -310,7 +366,7 @@ standalone_html = f"""<!DOCTYPE html>
 </head>
 <body style="margin:0; overflow:auto;">
     <div id="container" style="width: 4800px; height: 2700px;"></div>
-    <script>{chart_init_js}</script>
+    <script>{js_literal}</script>
 </body>
 </html>"""
 

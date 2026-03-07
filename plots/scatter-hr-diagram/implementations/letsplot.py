@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-hr-diagram: Hertzsprung-Russell Diagram
 Library: letsplot 4.8.2 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-07
@@ -67,25 +67,26 @@ df = pd.DataFrame(
     {"temperature": temperature, "luminosity": luminosity, "region": region, "spectral_type": spectral_type}
 )
 
-# Spectral type colors (astrophysical convention)
+# Spectral type colors (astrophysical convention, A/F differentiated)
 spectral_colors = {
-    "O": "#9BB0FF",
-    "B": "#AABFFF",
-    "A": "#CAD7FF",
-    "F": "#F8F7FF",
-    "G": "#FFF4E8",
-    "K": "#FFD2A1",
-    "M": "#FFAA6E",
+    "O": "#6B7FFF",
+    "B": "#9BB0FF",
+    "A": "#B8C9FF",
+    "F": "#FFF0C8",
+    "G": "#FFE08A",
+    "K": "#FFB86C",
+    "M": "#FF7B5A",
 }
 
 # Sun reference point
 sun_df = pd.DataFrame({"temperature": [5778], "luminosity": [1.0], "label": ["Sun"]})
+sun_label_df = pd.DataFrame({"temperature": [7500], "luminosity": [3.5], "label": ["Sun"]})
 
-# Region label positions
+# Region label positions (repositioned to avoid data overlap)
 region_labels = pd.DataFrame(
     {
-        "temperature": [7000, 4000, 15000, 18000],
-        "luminosity": [0.5, 500, 80000, 0.005],
+        "temperature": [25000, 5500, 18000, 18000],
+        "luminosity": [0.015, 5000, 70000, 0.0006],
         "label": ["Main Sequence", "Red Giants", "Supergiants", "White Dwarfs"],
     }
 )
@@ -94,12 +95,12 @@ region_labels = pd.DataFrame(
 plot = (
     ggplot(df, aes(x="temperature", y="luminosity", color="spectral_type"))  # noqa: F405
     + geom_point(  # noqa: F405
-        size=4,
-        alpha=0.7,
+        size=5,
+        alpha=0.75,
         shape=21,
-        stroke=0.3,
+        stroke=0.4,
         mapping=aes(fill="spectral_type"),  # noqa: F405
-        color="white",
+        color="#1A1F2B",
         tooltips=layer_tooltips()  # noqa: F405
         .line("Temperature|@temperature K")
         .line("Luminosity|@luminosity L☉")
@@ -117,11 +118,9 @@ plot = (
         inherit_aes=False,
     )
     + geom_text(  # noqa: F405
-        data=sun_df,
+        data=sun_label_df,
         mapping=aes(x="temperature", y="luminosity", label="label"),  # noqa: F405
-        nudge_x=2500,
-        nudge_y=0.3,
-        size=13,
+        size=16,
         color="#FFD700",
         fontface="bold",
         inherit_aes=False,
@@ -129,10 +128,11 @@ plot = (
     + geom_text(  # noqa: F405
         data=region_labels,
         mapping=aes(x="temperature", y="luminosity", label="label"),  # noqa: F405
-        size=12,
-        color="#AAAAAA",
-        fontface="italic",
+        size=15,
+        color="#8899AA",
+        fontface="bold_italic",
         inherit_aes=False,
+        label_padding=0.4,
     )
     + scale_x_continuous(  # noqa: F405
         trans="reverse",

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 piano-roll-midi: MIDI Piano Roll Visualization
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-07
@@ -52,7 +52,7 @@ notes = [
     (6.0, 1.5, 72, 115),  # C5 high point - CLIMAX
     (7.5, 0.5, 69, 80),  # A4
     # Measure 3: G major chord + descending melody (diminuendo)
-    (8.0, 2.0, 47, 85),  # B2 bass (changed from G2 to reduce range gap)
+    (8.0, 2.0, 50, 85),  # D3 bass (G/D inversion — tighter pitch range)
     (8.0, 2.0, 55, 70),  # G3
     (8.0, 2.0, 59, 70),  # B3
     (8.0, 1.0, 71, 105),  # B4 melody
@@ -149,9 +149,7 @@ plot = (
     # Dynamic markings below the piano roll
     + geom_text(dynamic_labels, aes(x="x", y="y", label="label"), size=9, color="#7a7590", fontstyle="italic")
     # Color scale: viridis for perceptual uniformity and colorblind safety
-    + scale_fill_cmap(
-        cmap_name="inferno", limits=(55, 120), name="Velocity\n(MIDI 0–127)", guide=guide_colorbar(nbin=200)
-    )
+    + scale_fill_cmap(cmap_name="inferno", limits=(55, 120), name="Velocity", guide=guide_colorbar(nbin=200))
     + scale_y_continuous(breaks=label_pitches, labels=label_names, expand=(0.02, 0.02))
     + scale_x_continuous(breaks=measure_lines, labels=["0", "4", "8", "12", "16"], expand=(0.01, 0.01))
     + coord_cartesian(xlim=(-0.3, total_beats + 0.3), ylim=(pitch_min - 1.2, pitch_max + 1.5))

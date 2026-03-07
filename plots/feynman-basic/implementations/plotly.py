@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 feynman-basic: Feynman Diagram for Particle Interactions
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-07
@@ -11,27 +11,27 @@ import plotly.graph_objects as go
 # Data - Gluon fusion Higgs production with diphoton decay: gg → H → γγ (via top loop)
 # Showcases all 4 particle types: fermion (straight), photon (wavy), gluon (curly), boson (dashed)
 vertices = {
-    "v1": (0.20, 0.72),  # top of top-quark triangle
-    "v2": (0.20, 0.28),  # bottom of top-quark triangle
-    "v3": (0.44, 0.50),  # right of triangle (Higgs emission)
-    "v4": (0.72, 0.50),  # Higgs decay vertex
+    "v1": (0.18, 0.74),  # top of top-quark triangle
+    "v2": (0.18, 0.26),  # bottom of top-quark triangle
+    "v3": (0.48, 0.50),  # right of triangle (Higgs emission)
+    "v4": (0.76, 0.50),  # Higgs decay vertex
 }
 
 propagators = [
-    {"from": (0.02, 0.84), "to": "v1", "type": "gluon", "label": "g"},
-    {"from": (0.02, 0.16), "to": "v2", "type": "gluon", "label": "g"},
+    {"from": (0.0, 0.88), "to": "v1", "type": "gluon", "label": "g"},
+    {"from": (0.0, 0.12), "to": "v2", "type": "gluon", "label": "g"},
     {"from": "v1", "to": "v2", "type": "fermion", "label": "t"},
     {"from": "v2", "to": "v3", "type": "fermion", "label": "t"},
     {"from": "v3", "to": "v1", "type": "fermion", "label": "t̄"},
     {"from": "v3", "to": "v4", "type": "boson", "label": "H"},
-    {"from": "v4", "to": (0.96, 0.82), "type": "photon", "label": "γ"},
-    {"from": "v4", "to": (0.96, 0.18), "type": "photon", "label": "γ"},
+    {"from": "v4", "to": (0.98, 0.84), "type": "photon", "label": "γ"},
+    {"from": "v4", "to": (0.98, 0.16), "type": "photon", "label": "γ"},
 ]
 
 # Label offsets per propagator (dx, dy from midpoint)
 label_offsets = [
-    (-0.05, 0.05),  # g (top)
-    (-0.05, -0.06),  # g (bottom)
+    (-0.04, 0.06),  # g (top)
+    (-0.04, -0.07),  # g (bottom)
     (-0.06, 0.0),  # t (left side, vertical)
     (0.0, -0.06),  # t (bottom-right diagonal)
     (0.0, 0.06),  # t̄ (top-right diagonal)
@@ -161,46 +161,28 @@ for name, (vx, vy) in vertices.items():
         )
     )
 
-# Line style legend (bottom-right)
-legend_x0, legend_y = 0.62, 0.08
+# Line style legend (bottom-right, centered under decay products)
+legend_x0, legend_y0 = 0.66, 0.08
 legend_entries = [
-    ("fermion", "Fermion (straight)", COLORS["fermion"]),
-    ("photon", "Photon (wavy)", COLORS["photon"]),
-    ("gluon", "Gluon (curly)", COLORS["gluon"]),
-    ("boson", "Boson (dashed)", COLORS["boson"]),
+    ("fermion", "Fermion (straight)"),
+    ("photon", "Photon (wavy)"),
+    ("gluon", "Gluon (curly)"),
+    ("boson", "Boson (dashed)"),
 ]
-for j, (ptype, desc, col) in enumerate(legend_entries):
-    lx = legend_x0
-    ly = legend_y - j * 0.055
-    dash = "10px,6px" if ptype == "boson" else None
+legend_ts = np.linspace(0, 1, 200)
+legend_taper = np.minimum(legend_ts / 0.1, 1.0) * np.minimum((1 - legend_ts) / 0.1, 1.0)
+for j, (ptype, desc) in enumerate(legend_entries):
+    lx, ly = legend_x0, legend_y0 - j * 0.055
+    col, lw_len = COLORS[ptype], 0.06
     if ptype in ("fermion", "boson"):
-        fig.add_shape(type="line", x0=lx, y0=ly, x1=lx + 0.06, y1=ly, line={"color": col, "width": 3, "dash": dash})
-    elif ptype == "photon":
-        ts = np.linspace(0, 1, 100)
-        w = 0.012 * np.sin(2 * np.pi * 5 * ts)
+        dash = "10px,6px" if ptype == "boson" else None
+        fig.add_shape(type="line", x0=lx, y0=ly, x1=lx + lw_len, y1=ly, line={"color": col, "width": 3, "dash": dash})
+    else:
+        theta_s = 2 * np.pi * (5 if ptype == "photon" else 4) * legend_ts
+        px = lx + legend_ts * lw_len - (0.005 * (1 - np.cos(theta_s)) * legend_taper if ptype == "gluon" else 0)
+        py = ly + 0.012 * np.sin(theta_s) * legend_taper
         fig.add_trace(
-            go.Scatter(
-                x=lx + ts * 0.06,
-                y=ly + w,
-                mode="lines",
-                line={"color": col, "width": 2.5},
-                showlegend=False,
-                hoverinfo="skip",
-            )
-        )
-    elif ptype == "gluon":
-        ts = np.linspace(0, 1, 200)
-        theta_s = 2 * np.pi * 4 * ts
-        tp = np.minimum(ts / 0.1, 1.0) * np.minimum((1 - ts) / 0.1, 1.0)
-        fig.add_trace(
-            go.Scatter(
-                x=lx + ts * 0.06 - 0.005 * (1 - np.cos(theta_s)) * tp,
-                y=ly + 0.012 * np.sin(theta_s) * tp,
-                mode="lines",
-                line={"color": col, "width": 2.5},
-                showlegend=False,
-                hoverinfo="skip",
-            )
+            go.Scatter(x=px, y=py, mode="lines", line={"color": col, "width": 2.5}, showlegend=False, hoverinfo="skip")
         )
     fig.add_annotation(
         x=lx + 0.07, y=ly, text=desc, showarrow=False, font={"size": 16, "color": col}, xanchor="left", yanchor="middle"
@@ -208,9 +190,9 @@ for j, (ptype, desc, col) in enumerate(legend_entries):
 
 # Time axis arrow
 fig.add_annotation(
-    x=0.55,
+    x=0.60,
     y=-0.04,
-    ax=0.02,
+    ax=0.0,
     ay=-0.04,
     xref="x",
     yref="y",
@@ -224,7 +206,7 @@ fig.add_annotation(
     text="",
 )
 fig.add_annotation(
-    x=0.285, y=-0.075, text="<i>time</i>", showarrow=False, font={"size": 20, "color": "#888"}, xanchor="center"
+    x=0.30, y=-0.075, text="<i>time</i>", showarrow=False, font={"size": 20, "color": "#888"}, xanchor="center"
 )
 
 # Layout
@@ -235,8 +217,8 @@ fig.update_layout(
         "x": 0.5,
         "xanchor": "center",
     },
-    xaxis={"visible": False, "range": [-0.04, 1.04], "fixedrange": True},
-    yaxis={"visible": False, "range": [-0.12, 1.0], "fixedrange": True, "scaleanchor": "x"},
+    xaxis={"visible": False, "range": [-0.06, 1.06], "fixedrange": True},
+    yaxis={"visible": False, "range": [-0.12, 1.02], "fixedrange": True},
     template="plotly_white",
     plot_bgcolor="white",
     margin={"l": 30, "r": 30, "t": 75, "b": 30},

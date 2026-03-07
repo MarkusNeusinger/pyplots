@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-hr-diagram: Hertzsprung-Russell Diagram
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 81/100 | Created: 2026-03-07
@@ -52,13 +52,13 @@ wd_lum = 10 ** np.random.uniform(-4, -1.5, n_wd)
 
 
 spectral_colors = {
-    "O": "#6B93D6",
-    "B": "#9DB4E0",
-    "A": "#D5D5F0",
-    "F": "#F5F3CE",
-    "G": "#FFCC33",
-    "K": "#FF8C00",
-    "M": "#E03C31",
+    "O": "#4A6FA5",
+    "B": "#7096C8",
+    "A": "#A8B8D0",
+    "F": "#D4C86A",
+    "G": "#F0B830",
+    "K": "#E07020",
+    "M": "#CC3333",
 }
 
 
@@ -85,8 +85,8 @@ sun = pd.DataFrame({"temperature": [5778], "luminosity": [1.0], "label": ["Sun"]
 # Region labels
 region_labels = pd.DataFrame(
     {
-        "temperature": [9000, 3600, 15000, 18000],
-        "luminosity": [0.15, 300, 120000, 0.003],
+        "temperature": [9000, 3200, 15000, 18000],
+        "luminosity": [0.15, 1500, 120000, 0.003],
         "label": ["Main Sequence", "Red Giants", "Supergiants", "White Dwarfs"],
     }
 )
@@ -94,32 +94,32 @@ region_labels = pd.DataFrame(
 # Plot
 plot = (
     ggplot(df, aes(x="temperature", y="luminosity", color="spectral_type"))
-    + geom_point(size=2.5, alpha=0.7, stroke=0.3)
+    + geom_point(size=4, alpha=0.65, stroke=0.3)
     + geom_point(
         data=sun,
         mapping=aes(x="temperature", y="luminosity"),
         color="black",
-        fill="#FFCC33",
-        size=6,
+        fill="#F0B830",
+        size=7,
         shape="*",
-        stroke=1.2,
+        stroke=1.5,
         inherit_aes=False,
     )
     + geom_text(
         data=sun,
         mapping=aes(x="temperature", y="luminosity", label="label"),
         color="black",
-        size=12,
+        size=13,
         nudge_x=2500,
-        nudge_y=0.3,
+        nudge_y=0.4,
         inherit_aes=False,
         fontweight="bold",
     )
     + geom_text(
         data=region_labels,
         mapping=aes(x="temperature", y="luminosity", label="label"),
-        color="#444444",
-        size=11,
+        color="#555555",
+        size=12,
         fontstyle="italic",
         inherit_aes=False,
     )
@@ -131,11 +131,11 @@ plot = (
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
-        plot_title=element_text(size=22, weight="bold"),
-        axis_title=element_text(size=18),
-        axis_text=element_text(size=14),
-        legend_title=element_text(size=16),
-        legend_text=element_text(size=14),
+        plot_title=element_text(size=24, weight="bold"),
+        axis_title=element_text(size=20),
+        axis_text=element_text(size=16),
+        legend_title=element_text(size=18),
+        legend_text=element_text(size=16),
         legend_position="right",
         panel_grid_minor=element_blank(),
         panel_grid_major=element_line(color="#E0E0E0", size=0.5, alpha=0.3),

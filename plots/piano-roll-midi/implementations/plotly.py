@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 piano-roll-midi: MIDI Piano Roll Visualization
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 77/100 | Created: 2026-03-07
@@ -9,60 +9,69 @@ import plotly.graph_objects as go
 
 
 # Data - C major chord progression (I-V-vi-IV) with melody over 4 measures
+# Tighter voicings to fill the pitch range and eliminate large gaps
 NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 BLACK_KEY_INDICES = {1, 3, 6, 8, 10}
 
 notes = [
     # (start_beat, duration, midi_pitch, velocity)
-    # Measure 1 - C major chord
-    (0.0, 2.0, 48, 80),
-    (0.0, 2.0, 52, 75),
-    (0.0, 2.0, 55, 70),
-    (0.0, 0.5, 72, 100),
-    (0.5, 0.5, 74, 95),
-    (1.0, 1.0, 76, 110),
-    (2.0, 2.0, 48, 78),
-    (2.0, 2.0, 52, 73),
-    (2.0, 2.0, 55, 68),
-    (2.0, 0.75, 79, 105),
-    (2.75, 0.25, 76, 85),
-    (3.0, 1.0, 77, 100),
+    # Measure 1 - C major chord (close voicing with melody)
+    (0.0, 2.0, 48, 80),  # C3 bass
+    (0.0, 2.0, 55, 75),  # G3
+    (0.0, 2.0, 60, 70),  # C4 (mid)
+    (0.0, 2.0, 64, 72),  # E4 (mid)
+    (0.0, 0.5, 72, 100),  # C5 melody
+    (0.5, 0.5, 74, 95),  # D5 melody
+    (1.0, 1.0, 76, 110),  # E5 melody
+    (2.0, 2.0, 48, 78),  # C3 bass
+    (2.0, 2.0, 55, 73),  # G3
+    (2.0, 2.0, 60, 68),  # C4 (mid)
+    (2.0, 2.0, 64, 70),  # E4 (mid)
+    (2.0, 0.75, 79, 105),  # G5 melody
+    (2.75, 0.25, 76, 85),  # E5 melody
+    (3.0, 1.0, 77, 100),  # F5 melody
     # Measure 2 - G major chord
-    (4.0, 2.0, 43, 82),
-    (4.0, 2.0, 47, 76),
-    (4.0, 2.0, 55, 72),
-    (4.0, 0.5, 76, 108),
-    (4.5, 0.5, 74, 90),
-    (5.0, 1.0, 72, 100),
-    (6.0, 2.0, 43, 80),
-    (6.0, 2.0, 47, 74),
-    (6.0, 2.0, 55, 70),
-    (6.0, 1.0, 74, 95),
-    (7.0, 0.5, 72, 88),
-    (7.5, 0.5, 71, 92),
+    (4.0, 2.0, 47, 82),  # B2 bass
+    (4.0, 2.0, 55, 76),  # G3
+    (4.0, 2.0, 59, 72),  # B3 (mid)
+    (4.0, 2.0, 62, 74),  # D4 (mid)
+    (4.0, 0.5, 76, 108),  # E5 melody
+    (4.5, 0.5, 74, 90),  # D5 melody
+    (5.0, 1.0, 72, 100),  # C5 melody
+    (6.0, 2.0, 47, 80),  # B2 bass
+    (6.0, 2.0, 55, 74),  # G3
+    (6.0, 2.0, 59, 70),  # B3 (mid)
+    (6.0, 2.0, 62, 72),  # D4 (mid)
+    (6.0, 1.0, 67, 95),  # G4 melody
+    (7.0, 0.5, 69, 88),  # A4 melody
+    (7.5, 0.5, 71, 92),  # B4 melody
     # Measure 3 - A minor chord
-    (8.0, 2.0, 45, 85),
-    (8.0, 2.0, 48, 78),
-    (8.0, 2.0, 52, 72),
-    (8.0, 1.0, 72, 112),
-    (9.0, 0.5, 74, 96),
-    (9.5, 0.5, 76, 90),
-    (10.0, 2.0, 45, 83),
-    (10.0, 2.0, 48, 76),
-    (10.0, 2.0, 52, 70),
-    (10.0, 1.5, 76, 105),
-    (11.5, 0.5, 74, 88),
+    (8.0, 2.0, 45, 85),  # A2 bass
+    (8.0, 2.0, 52, 78),  # E3
+    (8.0, 2.0, 57, 72),  # A3 (mid)
+    (8.0, 2.0, 60, 74),  # C4 (mid)
+    (8.0, 1.0, 72, 112),  # C5 melody
+    (9.0, 0.5, 74, 96),  # D5 melody
+    (9.5, 0.5, 76, 90),  # E5 melody
+    (10.0, 2.0, 45, 83),  # A2 bass
+    (10.0, 2.0, 52, 76),  # E3
+    (10.0, 2.0, 57, 70),  # A3 (mid)
+    (10.0, 2.0, 64, 72),  # E4 (mid)
+    (10.0, 1.5, 76, 105),  # E5 melody
+    (11.5, 0.5, 74, 88),  # D5 melody
     # Measure 4 - F major chord
-    (12.0, 2.0, 41, 88),
-    (12.0, 2.0, 45, 80),
-    (12.0, 2.0, 48, 74),
-    (12.0, 1.0, 72, 115),
-    (13.0, 0.5, 71, 92),
-    (13.5, 0.5, 69, 85),
-    (14.0, 2.0, 41, 86),
-    (14.0, 2.0, 45, 78),
-    (14.0, 2.0, 48, 72),
-    (14.0, 2.0, 72, 120),
+    (12.0, 2.0, 53, 88),  # F3 bass
+    (12.0, 2.0, 57, 80),  # A3
+    (12.0, 2.0, 60, 74),  # C4 (mid)
+    (12.0, 2.0, 65, 76),  # F4 (mid)
+    (12.0, 1.0, 72, 115),  # C5 melody
+    (13.0, 0.5, 71, 92),  # B4 melody
+    (13.5, 0.5, 69, 85),  # A4 melody
+    (14.0, 2.0, 53, 86),  # F3 bass
+    (14.0, 2.0, 57, 78),  # A3
+    (14.0, 2.0, 60, 72),  # C4 (mid)
+    (14.0, 2.0, 65, 74),  # F4 (mid)
+    (14.0, 2.0, 72, 120),  # C5 melody (final)
 ]
 
 starts = np.array([n[0] for n in notes])
@@ -74,6 +83,15 @@ pitch_min = int(pitches.min()) - 1
 pitch_max = int(pitches.max()) + 1
 total_beats = 16
 beats_per_measure = 4
+
+# Classify notes: melody (highest pitch per onset) vs accompaniment
+is_melody = np.zeros(len(notes), dtype=bool)
+unique_starts = np.unique(starts)
+for s in unique_starts:
+    mask = starts == s
+    idx = np.where(mask)[0]
+    max_pitch_idx = idx[np.argmax(pitches[idx])]
+    is_melody[max_pitch_idx] = True
 
 # Plot
 fig = go.Figure()
@@ -129,32 +147,65 @@ for p in range(pitch_min, pitch_max + 2):
         layer="below",
     )
 
-# Color interpolation: blue (soft/pp) to red (loud/ff)
-vel_normalized = (velocities - velocities.min()) / (velocities.max() - velocities.min())
-r_vals = (59 + vel_normalized * (239 - 59)).astype(int)
-g_vals = (130 + vel_normalized * (68 - 130)).astype(int)
-b_vals = (246 + vel_normalized * (68 - 246)).astype(int)
+# Plasma colorscale stops (perceptually uniform, colorblind-safe)
+# Matches Plotly's built-in "Plasma" exactly
+PLASMA_STOPS = [
+    (0.0, (13, 8, 135)),
+    (0.1, (75, 3, 161)),
+    (0.2, (125, 3, 168)),
+    (0.3, (168, 34, 150)),
+    (0.4, (203, 70, 121)),
+    (0.5, (229, 107, 93)),
+    (0.6, (248, 148, 65)),
+    (0.7, (253, 191, 36)),
+    (0.8, (240, 230, 33)),
+    (0.9, (213, 255, 89)),
+    (1.0, (240, 249, 33)),
+]
+colorscale_plotly = [[s, f"rgb({r},{g},{b})"] for s, (r, g, b) in PLASMA_STOPS]
 
-# Note rectangles
+vel_min = float(velocities.min())
+vel_max = float(velocities.max())
+vel_normalized = (velocities - vel_min) / (vel_max - vel_min)
+
+
+def get_plasma_color(t):
+    """Interpolate Plasma colorscale at position t in [0, 1]."""
+    for i in range(len(PLASMA_STOPS) - 1):
+        t0, (r0, g0, b0) = PLASMA_STOPS[i]
+        t1, (r1, g1, b1) = PLASMA_STOPS[i + 1]
+        if t0 <= t <= t1:
+            frac = (t - t0) / (t1 - t0) if t1 > t0 else 0
+            r = int(r0 + frac * (r1 - r0))
+            g = int(g0 + frac * (g1 - g0))
+            b = int(b0 + frac * (b1 - b0))
+            return f"rgb({r},{g},{b})"
+    return f"rgb({PLASMA_STOPS[-1][1][0]},{PLASMA_STOPS[-1][1][1]},{PLASMA_STOPS[-1][1][2]})"
+
+
+# Note rectangles with visual hierarchy: melody thicker/opaque, accompaniment thinner
 for i in range(len(notes)):
+    color = get_plasma_color(vel_normalized[i])
+    height = 0.42 if is_melody[i] else 0.35
+    opacity = 0.95 if is_melody[i] else 0.78
+    border_w = 2.0 if is_melody[i] else 1.0
     fig.add_shape(
         type="rect",
         x0=starts[i],
         x1=starts[i] + durations[i],
-        y0=pitches[i] - 0.4,
-        y1=pitches[i] + 0.4,
-        fillcolor=f"rgb({r_vals[i]}, {g_vals[i]}, {b_vals[i]})",
-        line={"color": "white", "width": 1.5},
+        y0=pitches[i] - height,
+        y1=pitches[i] + height,
+        fillcolor=color,
+        line={"color": "white", "width": border_w},
         layer="above",
-        opacity=0.92,
+        opacity=opacity,
     )
-
-# Velocity colorscale
-colorscale = [[0.0, "#3B82F6"], [0.3, "#6366F1"], [0.6, "#F59E0B"], [1.0, "#EF4444"]]
 
 # Invisible scatter for hover info and colorbar
 hover_labels = [
-    f"{NOTE_NAMES[p % 12]}{p // 12 - 1}<br>Beat: {s:.1f}<br>Duration: {d:.1f}<br>Velocity: {v}" for s, d, p, v in notes
+    f"{'♪ ' if is_melody[i] else ''}{NOTE_NAMES[p % 12]}{p // 12 - 1}"
+    f"<br>Beat: {s:.1f}<br>Duration: {d:.1f}<br>Velocity: {v}"
+    for i, (s, d, p, v) in enumerate(notes)
 ]
 fig.add_trace(
     go.Scatter(
@@ -165,15 +216,15 @@ fig.add_trace(
             "size": 1,
             "opacity": 0,
             "color": velocities,
-            "colorscale": colorscale,
+            "colorscale": colorscale_plotly,
             "colorbar": {
                 "title": {"text": "Velocity", "font": {"size": 20}},
                 "tickfont": {"size": 16},
                 "thickness": 20,
                 "len": 0.6,
             },
-            "cmin": int(velocities.min()),
-            "cmax": int(velocities.max()),
+            "cmin": int(vel_min),
+            "cmax": int(vel_max),
         },
         text=hover_labels,
         hoverinfo="text",
@@ -181,7 +232,7 @@ fig.add_trace(
     )
 )
 
-# Y-axis: note names
+# Y-axis: note names - show every other note to reduce density
 pitch_range = list(range(pitch_min, pitch_max + 1))
 tick_labels = [f"{NOTE_NAMES[p % 12]}{p // 12 - 1}" for p in pitch_range]
 
@@ -196,7 +247,7 @@ fig.update_layout(
         "title": {"text": "Beat Position", "font": {"size": 22}},
         "tickvals": beat_ticks,
         "ticktext": beat_labels,
-        "tickfont": {"size": 14},
+        "tickfont": {"size": 16},
         "range": [-0.2, total_beats + 0.2],
         "showgrid": False,
     },
@@ -204,7 +255,7 @@ fig.update_layout(
         "title": {"text": "Pitch", "font": {"size": 22}},
         "tickvals": pitch_range,
         "ticktext": tick_labels,
-        "tickfont": {"size": 14},
+        "tickfont": {"size": 16},
         "range": [pitch_min - 0.8, pitch_max + 0.8],
         "showgrid": False,
     },

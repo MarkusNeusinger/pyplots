@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-tornado-sensitivity: Tornado Diagram for Sensitivity Analysis
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-07
@@ -42,7 +42,7 @@ bars = (
             "value:Q",
             title="Net Present Value ($M)",
             scale=alt.Scale(domain=[180, 330]),
-            axis=alt.Axis(tickCount=8, grid=True),
+            axis=alt.Axis(tickCount=8, grid=False),
         ),
         x2="base:Q",
         y=alt.Y("parameter:N", sort=y_sort, title=None, axis=alt.Axis(grid=False)),
@@ -71,7 +71,7 @@ low_labels = (
 high_labels = (
     alt.Chart(df)
     .transform_filter(alt.datum.side == "High Scenario")
-    .mark_text(fontSize=16, fontWeight="bold", dx=18, align="left", color="#C06A2B")
+    .mark_text(fontSize=16, fontWeight="bold", dx=18, align="left", color="#E8853A")
     .encode(x="value:Q", y=alt.Y("parameter:N", sort=y_sort), text=alt.Text("value:Q", format="$,.0f"))
 )
 
@@ -98,10 +98,15 @@ label = (
     .encode(x="x:Q", y=alt.Y("y:N", sort=y_sort), text="label:N")
 )
 
-# Interactive highlight on hover
+# Interactive: hover highlights parameter, click selects for persistent focus
 highlight = alt.selection_point(on="pointerover", fields=["parameter"], empty=False)
+click = alt.selection_point(fields=["parameter"])
 
-bars = bars.add_params(highlight).encode(opacity=alt.condition(highlight, alt.value(1.0), alt.value(0.75)))
+bars = bars.add_params(highlight, click).encode(
+    opacity=alt.condition(highlight | click, alt.value(1.0), alt.value(0.65)),
+    strokeWidth=alt.condition(click, alt.value(2), alt.value(0)),
+    stroke=alt.condition(click, alt.value("#333333"), alt.value(None)),
+)
 
 chart = (
     (bars + low_labels + high_labels + rule + label)
@@ -117,11 +122,11 @@ chart = (
             anchor="start",
         ),
     )
-    .configure_axis(labelFontSize=18, titleFontSize=22, gridColor="#e0e0e0", gridDash=[2, 4], gridOpacity=0.6)
+    .configure_axis(labelFontSize=18, titleFontSize=22, domainColor="#cccccc", tickColor="#cccccc")
     .configure_legend(
         labelFontSize=16, symbolSize=300, orient="bottom", direction="horizontal", titleFontSize=0, padding=20
     )
-    .configure_view(strokeWidth=0)
+    .configure_view(strokeWidth=0, fill="#FAFAFA")
 )
 
 # Save

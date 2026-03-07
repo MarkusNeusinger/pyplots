@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 feynman-basic: Feynman Diagram for Particle Interactions
-Library: pygal | Python 3.13
-Quality: pending | Created: 2026-03-07
+Library: pygal 3.1.0 | Python 3.14.3
+Quality: 75/100 | Created: 2026-03-07
 """
 
 import numpy as np

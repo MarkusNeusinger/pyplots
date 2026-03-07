@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 waveform-audio: Audio Waveform Plot
 Library: plotnine 0.15.3 | Python 3.14.3
-Quality: 79/100 | Created: 2026-03-07
+Quality: 92/100 | Created: 2026-03-07
 """
 
 import numpy as np

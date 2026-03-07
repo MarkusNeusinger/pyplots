@@ -1,7 +1,7 @@
 library: pygal
 specification_id: waveform-audio
 created: '2026-03-07T14:58:06Z'
-updated: '2026-03-07T15:02:00Z'
+updated: '2026-03-07T15:11:33Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22801238622
 issue: 4563
@@ -10,99 +10,104 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/waveform-audio/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/waveform-audio/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/waveform-audio/pygal/plot.html
-quality_score: 76
+quality_score: 82
 review:
   strengths:
-  - Clean synthetic audio data with harmonics and realistic amplitude envelope creating
-    a believable waveform
-  - Appropriate downsampling strategy (800 points) to handle pygal SVG rendering limitations
-  - Perfect code quality with clean linear structure and all explicitly set style
-    parameters
-  - Dashed zero reference line adds useful visual context
+  - Significantly improved font sizes (doubled from attempt 1) making all text clearly
+    readable
+  - Envelope overlay creates clear data storytelling and visual hierarchy — attack-decay
+    pattern is immediately apparent
+  - Per-point tooltip labels leverage pygal distinctive dict-based data format
+  - Time axis now correctly in seconds (was ms in attempt 1)
+  - Clean code quality with perfect linear structure
   weaknesses:
-  - Font sizes render too small on the 4800x2700 canvas — title_font_size=28 and label_font_size=18
-    need to be significantly larger
-  - No visual hierarchy or storytelling emphasis — the decaying waveform tells a natural
-    story but nothing in the design emphasizes it
-  - Default-level aesthetic — could benefit from removing chart chrome, using a more
-    refined color, or adding subtle design touches
-  - X-axis uses milliseconds instead of seconds as suggested by the spec
-  image_description: The plot displays an audio waveform as a filled XY area chart
-    using pygal's Python Blue (#306998) color. The title "waveform-audio · pygal ·
-    pyplots.ai" appears at the top. The x-axis is labeled "Time (ms)" with tick marks
-    from 0 to approximately 150ms, and the y-axis is labeled "Amplitude" ranging from
-    -1 to 1. The waveform shows a synthesized decaying sinusoidal signal with harmonics
-    — high amplitude peaks (around 0.9) at the start that gradually decay over 150ms.
-    The filled area extends symmetrically above and below a dashed zero reference
-    line. Horizontal grid lines are visible on a white background. The overall layout
-    is clean with balanced proportions.
+  - Design still not reaching publication quality — could benefit from further aesthetic
+    polish
+  - X-axis tick labels slightly crowded with 16 labels across the time range
+  - Initial sample count (3307) still below spec suggested 5000-50000 range
+  - Envelope line stroke width could be slightly thicker for better visibility
+  image_description: The plot shows an audio waveform rendered as a filled XY area
+    chart in pygal's Python Blue (#306998) with semi-transparent fill (opacity 0.75).
+    The title "waveform-audio · pygal · pyplots.ai" appears at top in large font.
+    The x-axis is labeled "Time (s)" with tick marks from 0.000 to 0.150 in 0.010
+    increments, and the y-axis shows "Amplitude" from -1.000 to 1.000. The waveform
+    displays a synthesized decaying sinusoidal signal with harmonics — high peaks
+    (~0.92) near the start decaying exponentially over 150ms. Dashed red/pink envelope
+    lines (upper and lower) trace the decay boundary symmetrically around zero, providing
+    clear visual storytelling of the attack-decay pattern. A dashed zero reference
+    line runs horizontally. The background is white with a light gray (#fafafa) plot
+    area. Horizontal y-axis grid lines are visible. A legend at the bottom identifies
+    "Waveform" (blue) and "Decay envelope" (red).
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 26
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set but render somewhat small on the 4800x2700
-          canvas
+        comment: Font sizes explicitly set to large values (title=56, label=36, major_label=32);
+          all text clearly readable at 4800x2700
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: X-axis tick labels slightly crowded; no major overlap
+        comment: X-axis tick labels at 0.010 intervals slightly crowded; no major
+          overlap
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Waveform clearly visible with 800 downsampled points; zero reference
-          line distinguishable
+        comment: Waveform clearly visible with 800 points and semi-transparent fill;
+          envelope lines thin but distinguishable
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Single blue color with good contrast against white
+        comment: Blue and red distinguishable for all color vision types; good contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Plot fills good portion of canvas; slight wasted space at top
+        comment: Plot fills good portion of canvas; legend at bottom well-placed;
+          slight wasted vertical space
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Time (ms) includes units; Amplitude appropriate for normalized values
+        comment: Time (s) with units; Amplitude appropriate for normalized values
     design_excellence:
-      score: 9
+      score: 12
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
         passed: false
-        comment: Well-configured custom style but looks like a configured default,
-          not publication-quality
+        comment: Intentional blue/red color pairing, clean background, large typography;
+          above default but not publication-quality
       - id: DE-02
         name: Visual Refinement
         score: 3
         max: 6
         passed: true
-        comment: Vertical grid removed, horizontal guides retained, white background;
-          some refinement
+        comment: X-guides removed, y-guides retained, light plot background, generous
+          margins, legend at bottom
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 4
         max: 6
-        passed: false
-        comment: Decaying envelope shows natural story but no deliberate visual emphasis
+        passed: true
+        comment: Envelope lines communicate attack-decay dynamic creating visual hierarchy;
+          viewer immediately sees amplitude decay
     spec_compliance:
       score: 14
       max: 15
@@ -112,26 +117,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct XY area chart representing audio waveform
+        comment: Correct XY filled area chart representing audio waveform
       - id: SC-02
         name: Required Features
         score: 3
         max: 4
         passed: true
-        comment: Most features present; sample count below spec suggestion and time
-          in ms not seconds
+        comment: Filled waveform, semi-transparent fill, zero line, synthetic data,
+          time in seconds; sample count below spec suggestion
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=time, Y=amplitude correctly mapped
+        comment: X=time in seconds, Y=amplitude correctly mapped
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format; legend hidden appropriately for single series
+        comment: Correct title format; legend labels Waveform and Decay envelope descriptive
     data_quality:
       score: 13
       max: 15
@@ -141,21 +146,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows fundamental + harmonics with attack/decay envelope; both positive
-          and negative amplitudes
+        comment: Fundamental + 3 harmonics with attack/decay envelope; positive and
+          negative amplitudes; envelope overlay adds analytical dimension
       - id: DQ-02
         name: Realistic Context
         score: 4
         max: 5
         passed: true
-        comment: 220Hz (A3 note) with harmonics represents realistic audio engineering
+        comment: 220Hz A3 musical note with harmonics represents realistic audio engineering
           context
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Amplitude ±0.92 within ±1.0 range; 220Hz real musical frequency
+        comment: Amplitude within normalized range; 220Hz real musical frequency;
+          150ms realistic duration
     code_quality:
       score: 10
       max: 10
@@ -165,25 +171,26 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports, data, style, chart, save'
+        comment: 'Clean linear flow: imports, data, downsampling, style, chart, save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set; signal generation deterministic
+        comment: np.random.seed(42) set; deterministic signal generation
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: numpy, pygal, Style all used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean downsampling; appropriate complexity
+        comment: Clean downsampling; per-point dict format for tooltips; appropriate
+          complexity
       - id: CQ-05
         name: Output & API
         score: 1
@@ -191,22 +198,23 @@ review:
         passed: true
         comment: Saves plot.png and plot.html; current API
     library_mastery:
-      score: 5
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Standard pygal.XY with Style class; correct but not leveraging best
-          patterns
+        passed: true
+        comment: Good pygal.XY with Style class, fill, stroke_style dicts, per-series
+          options, value_formatter lambdas
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: HTML export leverages pygal interactive SVG; overall usage generic
+        passed: true
+        comment: Per-point dict format with value/label for tooltips; HTML export;
+          stroke_style dasharray; truncate_label
   verdict: REJECTED
 impl_tags:
   dependencies: []

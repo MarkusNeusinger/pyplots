@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-hr-diagram: Hertzsprung-Russell Diagram
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-07
@@ -56,8 +56,8 @@ wd_lum = 10 ** np.random.uniform(-4, -1.5, n_wd)
 spectral_colors = {
     "O": "#1A237E",
     "B": "#42A5F5",
-    "A": "#90CAF9",
-    "F": "#FFF9C4",
+    "A": "#64B5F6",
+    "F": "#FFD54F",
     "G": "#FFB300",
     "K": "#E65100",
     "M": "#B71C1C",
@@ -172,7 +172,7 @@ plot = (
         legend_key=element_rect(fill="white", color="none"),
         panel_grid_minor=element_blank(),
         panel_grid_major=element_line(color="#E8E8E8", size=0.4, alpha=0.5),
-        panel_background=element_rect(fill="#FAFBFC", color="none"),
+        panel_background=element_rect(fill="#F0F2F5", color="none"),
         plot_background=element_rect(fill="white", color="none"),
         plot_margin=0.04,
     )

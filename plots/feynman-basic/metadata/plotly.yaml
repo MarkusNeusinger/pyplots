@@ -1,7 +1,7 @@
 library: plotly
 specification_id: feynman-basic
 created: '2026-03-07T21:21:37Z'
-updated: '2026-03-07T21:36:56Z'
+updated: '2026-03-07T21:45:08Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22807440233
 issue: 4667
@@ -10,36 +10,32 @@ library_version: 6.6.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/feynman-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/feynman-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/feynman-basic/plotly/plot.html
-quality_score: 86
+quality_score: 90
 review:
   strengths:
-  - All 4 particle types demonstrated with distinct well-crafted line styles (curly
-    gluons with taper, wavy photons with taper)
-  - Physically accurate gluon fusion Higgs production process showcasing all line
-    types
-  - Interactive hover tooltips on every element (Plotly-distinctive feature)
-  - Custom legend with actual rendered wavy/curly line samples
-  - Serif typography appropriate for physics diagrams
-  - Prominent fermion flow arrows with proper direction convention
+  - 'Excellent physics accuracy: real gluon fusion process with correct topology'
+  - All four particle line styles (straight, wavy, curly, dashed) are visually distinct
+    and well-rendered
+  - Professional design with serif typography, custom color palette, and clean layout
+  - Handcrafted legend with miniature line-style demonstrations
+  - Tapered line endpoints on wavy and curly lines add polish
+  - Interactive features (hover tooltips, HTML export) leverage Plotly strengths
   weaknesses:
-  - Significant canvas underutilization — diagram sits in left-center with empty right
-    side
-  - Legend placement does not balance the overall composition
-  - Manual legend construction is verbose
-  image_description: 'The plot displays a Feynman diagram for gluon fusion Higgs production
-    with diphoton decay (gg → H → γγ) on a white background. Two green curly gluon
-    lines enter from the upper-left and lower-left, connecting to a triangular top-quark
-    loop formed by three blue straight fermion lines (labeled t, t, t̄) with prominent
-    blue direction arrows at midpoints. The right vertex of the triangle connects
-    via a purple dashed line (labeled H for Higgs boson) to a decay vertex on the
-    right. From that vertex, two red wavy photon lines (labeled γ) exit toward the
-    upper-right and lower-right. Four black vertex dots with white borders mark the
-    interaction points. A custom legend in the bottom-right area shows all four line
-    styles with matching colors: blue "Fermion (straight)", red "Photon (wavy)", green
-    "Gluon (curly)", and purple "Boson (dashed)" — using actual wavy/curly line samples.
-    A gray "time" arrow with italic label runs along the bottom. The title at top
-    reads "gg → H → γγ (Gluon Fusion) · feynman-basic · plotly · pyplots.ai" in serif
-    font.'
+  - 'Minor: bottom-left gluon g label sits slightly close to the curly line'
+  - Red-green color pair could be improved for stronger colorblind accessibility
+  image_description: The plot displays a Feynman diagram for gluon fusion Higgs production
+    with diphoton decay (gg → H → γγ) on a clean white background. Two green curly
+    gluon lines enter from the left, connecting to the top and bottom vertices of
+    a blue triangular top-quark loop (fermions shown as solid blue lines with prominent
+    flow arrows). From the right vertex of the triangle, a purple dashed Higgs boson
+    line connects to a fourth vertex, from which two red wavy photon lines emerge
+    going upper-right and lower-right. Each propagator is labeled with its particle
+    symbol (g, t, t̄, H, γ) in bold colored serif text. Four black vertex dots with
+    white borders mark interaction points. A custom line-style legend in the bottom-right
+    demonstrates all four particle types with miniature line samples. A gray time
+    arrow with italic "time" label runs along the bottom. The title reads "gg → H
+    → γγ (Gluon Fusion) · feynman-basic · plotly · pyplots.ai" in serif font at the
+    top.
   criteria_checklist:
     visual_quality:
       score: 27
@@ -47,45 +43,48 @@ review:
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 30pt, particle labels 24pt
-          serif, legend text 16pt, time label 20pt'
+        comment: 'All font sizes explicitly set: title 30pt, labels 24pt serif, legend
+          16pt, time 20pt'
       - id: VQ-02
         name: No Overlap
-        score: 6
-        max: 6
-        passed: true
-        comment: No overlapping text; manual label offsets carefully tuned per propagator
-      - id: VQ-03
-        name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Lines width 4, vertex dots size 16 with white border, prominent arrows.
-          Slightly thick overall
+        comment: Labels well-positioned with manual offsets; bottom-left g label slightly
+          close to gluon curl
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 6
+        passed: true
+        comment: Line width 4 excellent; wavy, curly, dashed, solid patterns all crisp
+          and distinct
       - id: VQ-04
         name: Color Accessibility
+        score: 3
+        max: 4
+        passed: true
+        comment: Four distinct colors with good luminance contrast; red-green pair
+          mitigated by distinct line styles
+      - id: VQ-05
+        name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Four distinct hues (blue, red, green, purple), colorblind-friendly
-      - id: VQ-05
-        name: Layout & Canvas
-        score: 2
-        max: 4
-        passed: false
-        comment: Diagram clustered in left-center, ~40-45% canvas utilization, unbalanced
-          whitespace
+        comment: Diagram fills canvas well with appropriate margins; legend positioned
+          near diagram
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Axes hidden appropriately, time arrow labeled, descriptive title
+        comment: Axes correctly hidden for Feynman diagram; title descriptive with
+          process notation; time axis labeled
     design_excellence:
-      score: 14
+      score: 16
       max: 20
       items:
       - id: DE-01
@@ -93,22 +92,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom 4-color palette, serif typography, vertex dots with white
-          borders, tapered parametric curves
+        comment: 'Strong design: custom 4-color palette, serif font for physics context,
+          professional look'
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Axes hidden, clean background, custom legend with rendered line samples.
-          Unbalanced whitespace
+        comment: Axes hidden, vertex dots with white edge highlighting, handcrafted
+          legend, tapered line endpoints
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Gluon fusion process tells clear physics story, color coding and
-          flow arrows guide viewer
+        comment: 'Clear physics narrative: gluon fusion through top-quark loop to
+          Higgs to photon pair; time axis guides viewer'
     spec_compliance:
       score: 15
       max: 15
@@ -118,29 +117,30 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct Feynman diagram with proper topology
+        comment: Correct Feynman diagram with all required elements
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: All 4 line styles, vertex dots, particle labels, time axis all present
+        comment: All four line styles, arrows on fermions, vertex dots, particle labels,
+          time axis, clean layout
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Vertices and propagators correctly positioned for gg → H → γγ via
-          top-quark loop
+        comment: Vertices correctly positioned; propagators connect correct vertices;
+          topology physically accurate
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title follows required format, custom line-style legend identifies
-          all particle types
+        comment: Title follows required format; custom legend identifies all four
+          particle line styles
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
@@ -148,23 +148,23 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: All 4 particle types with distinct line styles, fermion loop, multiple
-          vertices
+        comment: All 4 particle types shown; fermion arrows; vertex interactions;
+          particle/antiparticle distinction
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Gluon fusion Higgs production — famous real physics process discovered
-          at CERN LHC
+        comment: Gluon fusion is a real particle physics process; primary Higgs production
+          mode at the LHC
       - id: DQ-03
         name: Appropriate Scale
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Clean layout with good vertex spacing, slightly compressed horizontally
+        comment: Diagram topology is physically correct with clean readable layout
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -172,51 +172,50 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear structure: imports → data → drawing loop → legend → layout
-          → save'
+        comment: 'Flat script: imports, data, plot construction, save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic, no random elements
+        comment: Fully deterministic with hardcoded vertices and propagators
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: numpy and plotly.graph_objects both used
+        comment: Only numpy and plotly.graph_objects, both actively used
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Well-organized drawing loop, but manual legend construction is verbose
+        comment: Clean loop with type branching; taper function for wavy/curly lines
+          is elegant
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png (1600x900 scale=3) and plot.html
+        comment: Saves as plot.png with correct dimensions; also exports HTML
     library_mastery:
       score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
-        max: 5
-        passed: true
-        comment: Standard go.Scatter, add_annotation, add_shape patterns. Manual coordinate-based
-          drawing.
-      - id: LM-02
-        name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: Interactive hovertemplate on every element, HTML export for full
-          interactivity
-  verdict: REJECTED
+        comment: 'Good use of Graph Objects API: go.Scatter, add_annotation, add_shape,
+          update_layout'
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses hovertemplate for interactive tooltips and write_html for interactivity
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
@@ -229,3 +228,4 @@ impl_tags:
   dataprep: []
   styling:
   - minimal-chrome
+  - edge-highlighting

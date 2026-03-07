@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-hr-diagram: Hertzsprung-Russell Diagram
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-07
@@ -8,8 +8,10 @@ import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
+    annotate,
     element_blank,
     element_line,
+    element_rect,
     element_text,
     geom_point,
     geom_text,
@@ -52,13 +54,13 @@ wd_lum = 10 ** np.random.uniform(-4, -1.5, n_wd)
 
 
 spectral_colors = {
-    "O": "#4A6FA5",
-    "B": "#7096C8",
-    "A": "#A8B8D0",
-    "F": "#D4C86A",
-    "G": "#F0B830",
-    "K": "#E07020",
-    "M": "#CC3333",
+    "O": "#1A237E",
+    "B": "#42A5F5",
+    "A": "#90CAF9",
+    "F": "#FFF9C4",
+    "G": "#FFB300",
+    "K": "#E65100",
+    "M": "#B71C1C",
 }
 
 
@@ -82,14 +84,6 @@ df = pd.DataFrame(
 # Sun reference
 sun = pd.DataFrame({"temperature": [5778], "luminosity": [1.0], "label": ["Sun"]})
 
-# Region labels
-region_labels = pd.DataFrame(
-    {
-        "temperature": [9000, 3200, 15000, 18000],
-        "luminosity": [0.15, 1500, 120000, 0.003],
-        "label": ["Main Sequence", "Red Giants", "Supergiants", "White Dwarfs"],
-    }
-)
 
 # Plot
 plot = (
@@ -99,29 +93,65 @@ plot = (
         data=sun,
         mapping=aes(x="temperature", y="luminosity"),
         color="black",
-        fill="#F0B830",
-        size=7,
-        shape="*",
-        stroke=1.5,
+        fill="#FFD700",
+        size=10,
+        shape="D",
+        stroke=1.2,
         inherit_aes=False,
     )
     + geom_text(
         data=sun,
         mapping=aes(x="temperature", y="luminosity", label="label"),
         color="black",
-        size=13,
-        nudge_x=2500,
-        nudge_y=0.4,
+        size=14,
+        nudge_x=3000,
+        nudge_y=0.5,
         inherit_aes=False,
         fontweight="bold",
     )
-    + geom_text(
-        data=region_labels,
-        mapping=aes(x="temperature", y="luminosity", label="label"),
-        color="#555555",
+    + annotate(
+        "text",
+        x=9000,
+        y=0.12,
+        label="Main Sequence",
+        color="#444444",
         size=12,
         fontstyle="italic",
-        inherit_aes=False,
+        fontweight="bold",
+        alpha=0.8,
+    )
+    + annotate(
+        "text",
+        x=3100,
+        y=2000,
+        label="Red Giants",
+        color="#444444",
+        size=12,
+        fontstyle="italic",
+        fontweight="bold",
+        alpha=0.8,
+    )
+    + annotate(
+        "text",
+        x=14000,
+        y=250000,
+        label="Supergiants",
+        color="#444444",
+        size=12,
+        fontstyle="italic",
+        fontweight="bold",
+        alpha=0.8,
+    )
+    + annotate(
+        "text",
+        x=22000,
+        y=0.0005,
+        label="White Dwarfs",
+        color="#444444",
+        size=12,
+        fontstyle="italic",
+        fontweight="bold",
+        alpha=0.8,
     )
     + scale_x_reverse()
     + scale_y_log10()
@@ -131,14 +161,20 @@ plot = (
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
-        plot_title=element_text(size=24, weight="bold"),
-        axis_title=element_text(size=20),
-        axis_text=element_text(size=16),
-        legend_title=element_text(size=18),
+        plot_title=element_text(size=24, weight="bold", margin={"b": 15}),
+        plot_subtitle=element_text(size=14, color="#666666"),
+        axis_title=element_text(size=20, margin={"t": 10, "r": 10}),
+        axis_text=element_text(size=16, color="#333333"),
+        legend_title=element_text(size=18, weight="bold"),
         legend_text=element_text(size=16),
         legend_position="right",
+        legend_background=element_rect(fill="#FAFAFA", color="#E0E0E0", size=0.5),
+        legend_key=element_rect(fill="white", color="none"),
         panel_grid_minor=element_blank(),
-        panel_grid_major=element_line(color="#E0E0E0", size=0.5, alpha=0.3),
+        panel_grid_major=element_line(color="#E8E8E8", size=0.4, alpha=0.5),
+        panel_background=element_rect(fill="#FAFBFC", color="none"),
+        plot_background=element_rect(fill="white", color="none"),
+        plot_margin=0.04,
     )
 )
 

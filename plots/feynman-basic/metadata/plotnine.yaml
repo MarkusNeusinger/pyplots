@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: feynman-basic
 created: '2026-03-07T21:21:57Z'
-updated: '2026-03-07T21:36:19Z'
+updated: '2026-03-07T21:43:20Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22807440281
 issue: 4667
@@ -10,37 +10,34 @@ library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/feynman-basic/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/feynman-basic/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 83
+quality_score: 91
 review:
   strengths:
-  - Excellent physics accuracy with correct Feynman conventions (antiparticle arrow
-    reversal)
-  - Clean, well-organized code with clear section comments
-  - Comprehensive legend showing all 4 particle line styles
-  - Good color coding with accessible palette
-  - Process subtitle and time arrow add helpful context
+  - Excellent physics accuracy with correct arrow conventions for particles vs antiparticles
+  - Comprehensive legend showing all 4 particle line types (fermion, photon, gluon,
+    scalar boson)
+  - Clean professional design with custom color palette and Unicode particle symbols
+  - Good use of process subtitle and time axis for educational context
+  - Deterministic well-structured code following KISS principles
   weaknesses:
-  - Legend text (size=12) and time label (size=13) could be larger for the 4800x2700
-    canvas
-  - Gluon curly line in legend looks somewhat similar to photon wavy line
-  - Some wasted whitespace at edges
-  - Library mastery is limited since plotnine is used as a drawing canvas
-  image_description: 'The plot displays a Feynman diagram for the electron-positron
-    annihilation process e⁻e⁺ → γ → μ⁻μ⁺ on a clean white background. Two dark blue
-    (steel blue #306998) fermion lines with arrowheads converge at a left vertex (black
-    dot) — e⁻ from upper-left and e⁺ from lower-left (arrow reversed per antiparticle
-    convention). An orange (#E0672A) wavy photon propagator line connects the left
-    vertex to a right vertex, labeled γ in orange above. From the right vertex, two
-    more blue fermion lines diverge — μ⁻ to upper-right and μ⁺ to lower-right. Particle
-    labels (e⁻, e⁺, μ⁻, μ⁺) are bold blue text near the line endpoints. A gray "time"
-    label with a right-pointing arrow sits below the main diagram. At the bottom,
-    a legend displays all four particle line styles: Fermion (blue solid with arrow),
-    Photon (orange wavy), Gluon (green curly), and Scalar Boson (purple dashed). The
-    title "feynman-basic · plotnine · pyplots.ai" is bold and centered at the top.
-    A subtitle "e⁻e⁺ → γ → μ⁻μ⁺" appears below the title.'
+  - Library mastery limited by diagram nature — Feynman diagrams are inherently drawing-oriented
+    rather than data-visualization-oriented
+  - Legend text slightly small compared to diagram particle labels
+  image_description: 'The plot displays a Feynman diagram for the e⁻e⁺ → γ → μ⁻μ⁺
+    process on a clean white background. The title "feynman-basic · plotnine · pyplots.ai"
+    appears at the top in bold black text. Below it, the process notation "e⁻e⁺ →
+    γ → μ⁻μ⁺" is shown in italic. Four blue (#306998) fermion lines with directional
+    arrows connect to two central black vertex dots — e⁻ enters from upper-left, e⁺
+    from lower-left (with antiparticle arrow convention), μ⁻ exits upper-right, μ⁺
+    exits lower-right. An orange (#E0672A) wavy line represents the virtual photon
+    (γ) connecting the two vertices, with the γ label above in orange bold text. A
+    gray time arrow runs left-to-right near the bottom with italic "time" label. Below
+    the diagram, a legend displays all four particle line types: blue solid arrow
+    for Fermion, orange wavy for Photon, green curly/looped for Gluon, and purple
+    dashed for Scalar Boson, each clearly labeled.'
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 29
       max: 30
       items:
       - id: VQ-01
@@ -48,69 +45,64 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set. Title 24pt, particle labels size=20.
-          Legend labels (size=12) and time label (size=13) slightly small.
+        comment: All font sizes explicitly set (title 26pt, labels 22pt, legend 16pt).
+          Legend labels slightly small.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text or elements. All labels well-positioned.
+        comment: All text and elements well-separated, no collisions.
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Fermion lines and photon wavy line clearly visible. Gluon in legend
-          slightly hard to distinguish from photon.
+        comment: Lines at size 2.0, vertex dots size 8, all clearly visible.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue, orange, green, purple palette is colorblind-safe with good
-          contrast.
+        comment: Blue/orange/green/purple palette is colorblind-safe.
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Diagram well-centered. Some wasted whitespace at left/right edges
-          and bottom margin.
+        comment: Diagram fills canvas well with balanced margins.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Title in correct format. No axes needed for Feynman diagram. Process
-          subtitle provides context.
+        comment: theme_void appropriate for diagram. Title follows correct format.
     design_excellence:
-      score: 13
+      score: 16
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Intentional color coding for particle types. Bold labels create hierarchy.
-          Above default but not publication-tier.
+        comment: Custom color palette, Unicode symbols, professional look. Above defaults.
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: theme_void() removes spines and grid. Clean white background. Subtle
-          gray time arrow.
+        comment: theme_void, white background, generous whitespace, well-organized
+          legend.
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Clear physics story with process subtitle, time arrow, and Feynman
-          conventions. Legend explains all particle types.
+        comment: Process subtitle, time arrow, correct arrow conventions tell the
+          physics story.
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -118,53 +110,47 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct Feynman diagram with vertices, propagators, and particle
-          labels.
+        comment: Correct Feynman diagram.
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Fermion arrows, wavy photon, vertex dots, labels, time axis all present.
-          Gluon and boson only in legend.
+        comment: All 4 line styles, arrows, vertex dots, labels, time axis present.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Vertices correctly positioned. Arrow directions follow Feynman conventions.
+        comment: Vertices and propagators positioned correctly.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend shows all 4 particle types with correct
-          line styles.
+        comment: Correct title format and comprehensive particle type legend.
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Demonstrates fermion lines with arrows, wavy photon propagator, vertex
-          points. Legend covers all 4 line styles. Main diagram only shows 2 of 4
-          types.
+        comment: Shows all 4 particle line types, vertex dots, directional arrows.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: e⁻e⁺ → γ → μ⁻μ⁺ is a real, well-known QED process. Neutral scientific
-          topic.
+        comment: 'Real QED process: electron-positron annihilation to muon pair.'
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Symmetric layout follows standard Feynman diagram conventions.
+        comment: Clean symmetric layout with sensible proportions.
     code_quality:
       score: 10
       max: 10
@@ -174,56 +160,56 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save structure. No functions or classes.
+        comment: 'Linear flow: imports, data, plot, save. No functions or classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic. No random elements.
+        comment: All data deterministic, no randomness.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used in the implementation.
+        comment: All imports used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Well-organized with clear inline comments. Appropriate complexity.
+        comment: Clean, well-organized code appropriate for plotnine grammar.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300.
+        comment: Saves as plot.png with dpi=300, current API.
     library_mastery:
-      score: 5
+      score: 6
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: 'Uses plotnine grammar correctly: ggplot() + geom_* layers, aes()
-          mappings, theme_void(), coord_fixed(). But used as drawing tool rather than
-          statistical graphics.'
+        comment: 'Good use of grammar of graphics: ggplot + geom layers, aes, scales,
+          themes.'
       - id: LM-02
         name: Distinctive Features
         score: 2
         max: 5
-        passed: true
-        comment: Uses theme_void(), coord_fixed(), layer composition. Relatively basic
-          plotnine features.
-  verdict: REJECTED
+        passed: false
+        comment: Feynman diagrams are drawing-oriented, not where plotnine's grammar
+          shines.
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
   - layer-composition
+  - custom-legend
   patterns:
   - data-generation
   dataprep: []

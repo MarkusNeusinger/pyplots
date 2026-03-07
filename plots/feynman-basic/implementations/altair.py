@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 feynman-basic: Feynman Diagram for Particle Interactions
 Library: altair 6.0.0 | Python 3.14.3
-Quality: 87/100 | Created: 2026-03-07
+Created: 2026-03-07
 """
 
 import altair as alt
@@ -23,7 +23,7 @@ x_scale = alt.Scale(domain=[-0.3, 9.8])
 y_scale = alt.Scale(domain=[-0.3, 7.2])
 
 color_scale = alt.Scale(
-    domain=["fermion", "photon", "gluon", "boson"], range=["#306998", "#D4A017", "#C0392B", "#27AE60"]
+    domain=["fermion", "photon", "gluon", "boson"], range=["#306998", "#D4A017", "#C0392B", "#8E44AD"]
 )
 
 # Interactive selection bound to legend
@@ -129,6 +129,14 @@ time_line_df = pd.DataFrame([{"x": 1.5, "y": 0.2, "x2": 8.5, "y2": 0.2}])
 time_arrow_df = pd.DataFrame([{"x": 8.5, "y": 0.2, "angle": 90}])
 time_label_df = pd.DataFrame([{"x": 5.0, "y": -0.1, "label": "time"}])
 
+# --- Subtle background panel for the interaction region ---
+bg_df = pd.DataFrame([{"x": 0.0, "y": 0.5, "x2": 9.6, "y2": 6.5}])
+bg_layer = (
+    alt.Chart(bg_df)
+    .mark_rect(color="#f7f9fc", cornerRadius=18, stroke="#e0e4ea", strokeWidth=1)
+    .encode(x=alt.X("x:Q", scale=x_scale, axis=None), y=alt.Y("y:Q", scale=y_scale, axis=None), x2="x2:Q", y2="y2:Q")
+)
+
 # --- Chart layers ---
 straight_layer = (
     alt.Chart(straight_df)
@@ -182,9 +190,15 @@ arrow_layer = (
     .add_params(highlight)
 )
 
+vertex_shadow = (
+    alt.Chart(vertex_df)
+    .mark_circle(size=700, color="#00000015")
+    .encode(x=alt.X("x:Q", scale=x_scale, axis=None), y=alt.Y("y:Q", scale=y_scale, axis=None))
+)
+
 vertex_layer = (
     alt.Chart(vertex_df)
-    .mark_circle(size=450, color="#1a1a1a", stroke="white", strokeWidth=2)
+    .mark_circle(size=500, color="#1a1a1a", stroke="white", strokeWidth=2.5)
     .encode(
         x=alt.X("x:Q", scale=x_scale, axis=None),
         y=alt.Y("y:Q", scale=y_scale, axis=None),
@@ -236,9 +250,11 @@ time_label_layer = (
 # Combine all layers
 chart = (
     alt.layer(
+        bg_layer,
         straight_layer,
         path_layer,
         arrow_layer,
+        vertex_shadow,
         vertex_layer,
         label_layer,
         process_layer,

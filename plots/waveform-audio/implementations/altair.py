@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 waveform-audio: Audio Waveform Plot
 Library: altair 6.0.0 | Python 3.14.3
-Quality: 82/100 | Created: 2026-03-07
+Quality: 92/100 | Created: 2026-03-07
 """
 
 import altair as alt

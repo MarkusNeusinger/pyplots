@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-hr-diagram: Hertzsprung-Russell Diagram
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-07
@@ -58,13 +58,13 @@ spectral_types = np.select(
 )
 
 spectral_colors = {
-    "O": "#6B8EFF",
-    "B": "#9BB0FF",
-    "A": "#CAD7FF",
-    "F": "#FFFCE8",
-    "G": "#FFD966",
-    "K": "#FF9933",
-    "M": "#FF4D2E",
+    "O": "#5B7FFF",
+    "B": "#8EAAFF",
+    "A": "#C4D4FF",
+    "F": "#E8E8D0",
+    "G": "#E6C84B",
+    "K": "#D98030",
+    "M": "#C94420",
 }
 
 df = pd.DataFrame(
@@ -76,13 +76,30 @@ df = pd.DataFrame(
     }
 )
 
-# Plot
+# Plot — use sns.set_theme for cohesive dark styling
+sns.set_theme(
+    style="darkgrid",
+    rc={
+        "figure.facecolor": "#0D1117",
+        "axes.facecolor": "#0D1117",
+        "axes.edgecolor": "#333333",
+        "axes.labelcolor": "white",
+        "text.color": "white",
+        "xtick.color": "white",
+        "ytick.color": "white",
+        "grid.color": "#FFFFFF",
+        "grid.alpha": 0.12,
+        "grid.linewidth": 0.5,
+    },
+)
+
 fig, ax = plt.subplots(figsize=(16, 9))
-fig.patch.set_facecolor("#0D1117")
-ax.set_facecolor("#0D1117")
 
 spectral_order = ["O", "B", "A", "F", "G", "K", "M"]
 palette = [spectral_colors[s] for s in spectral_order]
+
+# Use sns.scatterplot with style parameter for region-based marker differentiation
+region_markers = {"Main Sequence": "o", "Red Giants": "D", "Supergiants": "s", "White Dwarfs": "v"}
 
 sns.scatterplot(
     data=df,
@@ -91,16 +108,32 @@ sns.scatterplot(
     hue="Spectral Type",
     hue_order=spectral_order,
     palette=palette,
-    s=120,
-    alpha=0.75,
+    style="Region",
+    markers=region_markers,
+    s=45,
+    alpha=0.45,
     edgecolor="white",
     linewidth=0.3,
     ax=ax,
-    legend=True,
+    legend="full",
+)
+
+# Use sns.kdeplot to show density contours along the main sequence
+ms_df = df[df["Region"] == "Main Sequence"]
+sns.kdeplot(
+    data=ms_df,
+    x="Temperature (K)",
+    y="Luminosity (L☉)",
+    levels=4,
+    color="#5588CC",
+    alpha=0.3,
+    linewidths=0.8,
+    ax=ax,
+    log_scale=True,
 )
 
 # Sun reference
-ax.scatter(5778, 1, s=350, color="#FFD966", edgecolors="white", linewidth=2, zorder=10, marker="*")
+ax.scatter(5778, 1, s=350, color="#E6C84B", edgecolors="white", linewidth=2, zorder=10, marker="*")
 ax.annotate(
     "Sun",
     (5778, 1),
@@ -141,17 +174,13 @@ ax.invert_xaxis()
 ax.set_xlim(45000, 1800)
 ax.set_ylim(1e-5, 1e6)
 
-ax.set_xlabel("Surface Temperature (K)", fontsize=20, color="white")
-ax.set_ylabel("Luminosity (L☉)", fontsize=20, color="white")
-ax.set_title("scatter-hr-diagram · seaborn · pyplots.ai", fontsize=24, fontweight="medium", color="white", pad=20)
+ax.set_xlabel("Surface Temperature (K)", fontsize=20)
+ax.set_ylabel("Luminosity (L☉)", fontsize=20)
+ax.set_title("scatter-hr-diagram · seaborn · pyplots.ai", fontsize=24, fontweight="medium", pad=20)
 
-ax.tick_params(axis="both", labelsize=16, colors="white")
+ax.tick_params(axis="both", labelsize=16)
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
-ax.spines["left"].set_color("#333333")
-ax.spines["bottom"].set_color("#333333")
-
-ax.grid(True, alpha=0.15, linewidth=0.5, color="white")
 
 # Spectral class secondary axis
 spec_boundaries = {"O": 35000, "B": 17000, "A": 8500, "F": 6500, "G": 5500, "K": 4200, "M": 2800}
@@ -165,18 +194,39 @@ ax2.spines["top"].set_color("#333333")
 ax2.spines["right"].set_visible(False)
 ax2.set_xlabel("Spectral Class", fontsize=16, color="#AAAAAA", labelpad=10)
 
-# Legend
-legend = ax.legend(
+# Legend — separate spectral type and region legends
+handles, labels = ax.get_legend_handles_labels()
+spectral_handles = [(h, lab) for h, lab in zip(handles, labels, strict=False) if lab in spectral_order]
+region_handles = [(h, lab) for h, lab in zip(handles, labels, strict=False) if lab in region_markers]
+
+leg1 = ax.legend(
+    [h for h, _ in spectral_handles],
+    [lab for _, lab in spectral_handles],
     title="Spectral Type",
-    fontsize=13,
-    title_fontsize=15,
+    fontsize=12,
+    title_fontsize=14,
     loc="lower left",
     framealpha=0.3,
     facecolor="#1A1F2B",
     edgecolor="#333333",
     labelcolor="white",
 )
-legend.get_title().set_color("white")
+leg1.get_title().set_color("white")
+
+leg2 = ax.legend(
+    [h for h, _ in region_handles],
+    [lab for _, lab in region_handles],
+    title="Region",
+    fontsize=12,
+    title_fontsize=14,
+    loc="upper right",
+    framealpha=0.3,
+    facecolor="#1A1F2B",
+    edgecolor="#333333",
+    labelcolor="white",
+)
+leg2.get_title().set_color("white")
+ax.add_artist(leg1)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor=fig.get_facecolor())

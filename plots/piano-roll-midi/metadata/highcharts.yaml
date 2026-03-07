@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: piano-roll-midi
 created: '2026-03-07T19:49:41Z'
-updated: '2026-03-07T19:53:32Z'
+updated: '2026-03-07T20:03:52Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22805912217
 issue: 4565
@@ -10,34 +10,36 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/piano-roll-midi/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/piano-roll-midi/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/piano-roll-midi/highcharts/plot.html
-quality_score: 80
+quality_score: 85
 review:
   strengths:
-  - Excellent use of Highcharts xrange chart type — a natural fit for piano roll visualization
-  - Musically authentic data with a real chord progression (C-Am-F-G) and realistic
-    velocity dynamics
-  - Black key row shading via plotBands adds genuine musical context
-  - Beat/measure grid lines with differentiated weight effectively convey rhythmic
-    structure
-  - Custom velocity color interpolation (blue to purple to red) is domain-appropriate
+  - Excellent velocity colorbar added via Highcharts SVG renderer — addresses the
+    key missing feature from attempt 1
+  - Teal-gold-crimson palette is a major improvement with better perceptual separation
+    and domain-appropriate color semantics
+  - Spines removed and grids refined — much cleaner visual appearance
+  - Full spec compliance with all required features present
+  - Perfect code quality with linear KISS structure and inlined color interpolation
+  - Musically authentic data with building dynamics toward climax
   weaknesses:
-  - No velocity color legend/colorbar to explain what colors mean to the viewer
-  - Blue and purple tones are somewhat hard to distinguish for mid-range velocities
-  - Helper function vel_to_color() breaks KISS pattern
-  - Some empty pitch rows waste vertical space
-  image_description: The plot displays a piano roll visualization of MIDI notes across
-    32 beats (8 measures of 4/4 time). Horizontal bars represent individual notes,
-    positioned vertically by pitch (B2 at bottom to C5 at top) and horizontally by
-    time in beats. Bar length indicates note duration. Colors range from blue (soft/low
-    velocity) through purple (medium) to red (loud/high velocity). The y-axis shows
-    pitch names (C3, D3, E3, etc.) with alternating light gray bands marking black-key
-    pitches (C#, D#, F#, G#, A#). Vertical grid lines mark beats, with thicker lines
-    at measure boundaries (every 4 beats). The title reads "piano-roll-midi · highcharts
-    · pyplots.ai". Bass notes (C3, E3, A3, F3, G3) appear as long sustained bars in
-    the lower register, while shorter melody notes occupy the upper register. The
-    chord progression (C-Am-F-G) is visually identifiable with velocity building toward
-    the final measures. No color legend/colorbar is present to explain the velocity-to-color
-    mapping.
+  - Bass/accompaniment notes and melody not visually distinguished beyond pitch position
+    — no visual hierarchy between musical roles
+  - Empty B2 row at bottom wastes vertical space
+  - Mid-range velocity colors (olive/dark yellow) lack crispness in the transition
+    zone
+  image_description: The plot displays a piano roll visualization using Highcharts
+    xrange chart. Horizontal bars represent MIDI notes positioned by pitch (y-axis,
+    B2 at bottom to C5 at top) and time in beats (x-axis, 0-32). Bar length indicates
+    note duration, and color indicates velocity/dynamics using a teal-golden yellow-crimson
+    gradient. The title reads "piano-roll-midi · highcharts · pyplots.ai" with a subtitle
+    "C – Am – F – G chord progression · 8 measures · velocity-colored dynamics". Alternating
+    light gray bands mark black-key pitches (C#, D#, F#, G#, A#). Vertical grid lines
+    distinguish beats from measure boundaries (thicker lines every 4 beats). A vertical
+    velocity colorbar on the right side shows the gradient from "60 (piano)" (teal)
+    through "93 (mezzo)" (gold) to "127 (forte)" (crimson). Bass notes appear as long
+    sustained bars in the lower register, with shorter melody notes in the upper register.
+    The background is a subtle off-white (#fafafa). Axis spines are removed. The overall
+    appearance is clean and professional.
   criteria_checklist:
     visual_quality:
       score: 26
@@ -48,69 +50,66 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (48px title, 32px axis titles, 26px/22px
-          tick labels). All text clearly readable.
+        comment: All font sizes explicitly set (44px title, 28px axis titles, 22px/20px
+          tick labels). Y-axis labels slightly small but legible.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text. Y-axis pitch labels well-spaced, x-axis beat
-          labels clear.
+        comment: No overlapping text anywhere.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Note bars clearly visible with good height. Some short notes (0.5
-          beats) are small but distinguishable.
+        comment: Note bars clearly visible. Short notes (0.5 beats) small but distinguishable.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Blue-purple-red gradient is sequential. Blue and purple tones somewhat
-          similar, making mid-range velocities harder to distinguish.
+        comment: Teal-gold-crimson palette has good separation. Mid-range olive tones
+          less distinct.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Plot fills canvas well. Some wasted vertical space for empty pitch
-          rows. Margins well-configured.
+        comment: Good canvas usage. Some empty pitch rows waste vertical space.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Beats on x-axis and Pitch on y-axis are descriptive and domain-appropriate.
+        comment: Beats and Pitch are descriptive and domain-appropriate.
     design_excellence:
-      score: 11
+      score: 13
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom velocity palette, plot bands for black keys, border radius
-          on bars. Above defaults but not publication-level.
+        comment: Distinctive teal-gold-crimson palette. Custom font, subtle background,
+          border radius on bars. Above defaults.
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Subtle grid lines, plot bands, border radius. Spines remain, grid
-          could be more refined.
+        comment: Axis lines removed, subtle grids, plotBands for black keys, differentiated
+          beat lines. Good refinement.
       - id: DE-03
         name: Data Storytelling
         score: 3
         max: 6
         passed: true
-        comment: Musical phrase builds dynamically with increasing velocity. Color
-          contrast guides viewer to louder notes.
+        comment: Dynamic buildup toward climax visible through color. No explicit
+          visual hierarchy between melody and bass.
     spec_compliance:
-      score: 13
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -118,28 +117,25 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Highcharts xrange chart correctly implements piano roll as horizontal
-          bars on time-pitch grid.
+        comment: Highcharts xrange correctly implements piano roll.
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: All features present except no color scale legend showing velocity-to-color
-          mapping.
+        comment: All spec features present including velocity colorbar.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X maps to beats/time, Y maps to pitch with proper note name categories.
+        comment: X maps to beats, Y maps to pitch with note names. All data visible.
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend disabled (appropriate) but no velocity
-          colorbar to explain color meaning.
+        comment: Title format correct. Velocity colorbar serves as color legend.
     data_quality:
       score: 14
       max: 15
@@ -149,59 +145,54 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Varied durations, wide velocity range, chords plus melody, multiple
-          pitch registers.
+        comment: Shows varied durations, wide velocity range, chords plus melody,
+          multiple registers.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real C-Am-F-G chord progression with realistic voice leading and
-          dynamic phrasing.
+        comment: Real C-Am-F-G chord progression with plausible MIDI data.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: MIDI pitches 48-72 (C3-C5), velocities 65-125, 8 measures at 4/4
-          — all realistic.
+        comment: Realistic MIDI pitches, velocities, and timing.
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Mostly linear flow. Has one helper function vel_to_color() which
-          breaks strict KISS.
+        comment: Linear flow with no functions or classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set and data is fully deterministic.
+        comment: np.random.seed(42) and deterministic hardcoded data.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used.
+        comment: All imports used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean velocity interpolation, well-organized data structure, appropriate
-          complexity.
+        comment: Clean inline color interpolation, well-organized structure.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via Selenium screenshot. Uses current highcharts-core
-          API.
+        comment: Saves as plot.png via Selenium. Current API.
     library_mastery:
       score: 7
       max: 10
@@ -211,26 +202,28 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Uses Chart/HighchartsOptions, xrange series, plotBands, plotLines,
-          custom tooltip with point.custom.
+        comment: Uses Chart/HighchartsOptions, xrange, plotBands, plotLines, custom
+          tooltip, SVG renderer.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: xrange chart type is Highcharts-distinctive. plotBands, plotLines,
-          and custom tooltip are Highcharts-specific.
+        comment: xrange chart type is Highcharts-distinctive. SVG renderer callback
+          for colorbar is unique.
   verdict: REJECTED
 impl_tags:
   dependencies:
   - selenium
   techniques:
-  - html-export
   - hover-tooltips
+  - html-export
+  - custom-legend
   patterns:
   - data-generation
   - iteration-over-groups
   dataprep: []
   styling:
+  - custom-colormap
   - grid-styling
   - edge-highlighting

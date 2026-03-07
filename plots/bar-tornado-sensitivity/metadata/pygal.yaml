@@ -1,7 +1,7 @@
 library: pygal
 specification_id: bar-tornado-sensitivity
 created: '2026-03-07T08:45:34Z'
-updated: '2026-03-07T08:49:38Z'
+updated: '2026-03-07T08:57:14Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22795810087
 issue: 4566
@@ -10,31 +10,30 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-tornado-sensitivity/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-tornado-sensitivity/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-tornado-sensitivity/pygal/plot.html
-quality_score: 80
+quality_score: 87
 review:
   strengths:
-  - Clean tornado shape with correct sorting by total range
-  - Well-chosen color palette (coral + steel blue) that is colorblind-safe and aesthetically
-    harmonious
-  - Realistic NPV sensitivity analysis data with appropriate financial parameters
-  - Values printed on bars help quantify the impact of each parameter
-  - Excellent code quality with clean flat structure and deterministic data
+  - Perfect spec compliance - all tornado diagram features present and correct
+  - Excellent data choice with realistic NPV sensitivity analysis context
+  - Good use of pygal-specific features (dict-based tooltips, rounded bars, dual output)
+  - Clean well-structured code with deterministic data
+  - Effective visual hierarchy through bar sorting
   weaknesses:
-  - Missing vertical reference line at base case value (spec requirement)
-  - Legend labels could better match spec terminology
-  - Design could be more polished with subtle grid styling and whitespace control
-  - Generic pygal usage without leveraging distinctive library features
-  image_description: 'The plot displays a horizontal tornado diagram for NPV Sensitivity
-    Analysis. Nine financial parameters are listed on the y-axis (Discount Rate at
-    top, Inflation Rate at bottom), sorted by total range in descending order creating
-    the characteristic tornado shape. Bars extend left and right from a zero baseline
-    representing deviations from a $2.5M base case NPV. Two colors are used: a muted
-    coral/salmon (#E07A5F) for "Low Scenario" and a steel blue (#306998) for "High
-    Scenario." Deviation values (e.g., -1.1, +1.3) are printed centered on each bar.
-    The x-axis is labeled "Change in NPV ($M)" with tick marks from -1.0 to +1.2.
-    The title reads "NPV Sensitivity Analysis · bar-tornado-sensitivity · pygal ·
-    pyplots.ai" and a legend at the bottom identifies the two series. White background
-    with subtle vertical grid lines.'
+  - 'Design could push further toward publication-ready polish (DE-01: 5/8)'
+  - Some unused canvas space on the right side
+  - The zero reference line could be more visually prominent to anchor the tornado
+    shape
+  image_description: The plot shows a horizontal tornado (stacked bar) diagram for
+    NPV Sensitivity Analysis. Nine financial parameters are listed on the y-axis,
+    sorted from widest bar (Discount Rate) at top to narrowest (Inflation Rate) at
+    bottom. Bars extend left and right from a vertical zero reference line. The left
+    (negative) bars are salmon/coral colored ("Low Input Effect") and the right (positive)
+    bars are steel blue ("High Input Effect"). Each bar displays its deviation value
+    (e.g., -1.1, +1.3) printed in the center. The x-axis is labeled "Change in NPV
+    ($M)" with gridlines at 0.2 intervals. The title reads "NPV Sensitivity Analysis
+    · bar-tornado-sensitivity · pygal · pyplots.ai" and a legend at the bottom identifies
+    the two series. The background is white with a light gray (#fafafa) plot area,
+    and bars have slightly rounded corners.
   criteria_checklist:
     visual_quality:
       score: 27
@@ -45,43 +44,40 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title=72, labels=44, major_labels=40,
-          values=34). All text clearly readable. Minor cramping on smallest bar values.
+        comment: All font sizes explicitly set (title=72, labels=44, values=34). Readable
+          throughout, value labels slightly cramped in smallest bars.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No text overlap anywhere. Parameter names, values, and axis labels
-          all fully readable.
+        comment: No overlapping text elements. All labels and bar values clearly separated.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Bars well-sized with good spacing. Smallest bars still visible but
-          quite small relative to largest.
+        comment: Bars well-sized with good spacing. Tornado shape clearly visible.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Coral and steel blue are colorblind-safe and provide good contrast.
+        comment: Salmon and steel blue are colorblind-safe warm/cool distinction.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good canvas utilization. Slight wasted space in margins and between
-          legend and plot.
+        comment: Good layout but some unused space on right edge of canvas.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'X-axis label includes units: Change in NPV ($M). Title descriptive.'
+        comment: Change in NPV ($M) includes units. Title is descriptive.
     design_excellence:
-      score: 11
+      score: 13
       max: 20
       items:
       - id: DE-01
@@ -89,24 +85,23 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Custom harmonious palette (coral + steel blue). Above defaults but
-          lacks publication-ready polish.
+        comment: Custom warm/cool palette, light plot background, rounded bars. Above
+          defaults but not publication-ready.
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Y-guides disabled, x-guides kept, white background, custom spacing.
-          Some refinement over defaults.
+        comment: Y-guides hidden, dashed x-guides, major guide at zero, rounded bars.
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Tornado shape naturally communicates importance ranking. Values on
-          bars quantify impact. Clear focal point at top.
+        comment: Sorting by range creates clear visual hierarchy. Printed values add
+          insight.
     spec_compliance:
-      score: 12
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -114,28 +109,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct horizontal bar tornado diagram with characteristic shape.
+        comment: Correct tornado diagram as horizontal stacked bars extending from
+          zero.
       - id: SC-02
         name: Required Features
-        score: 2
+        score: 4
         max: 4
-        passed: false
-        comment: Missing vertical reference line at base case value. Has sorting,
-          two colors, parameter labels, values.
+        passed: true
+        comment: 'All features present: reference line, sorting, two colors, labels,
+          values.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X-axis shows output metric, y-axis shows parameters. All data correctly
-          mapped.
+        comment: Deviations on x-axis, parameters on y-axis.
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Title correctly formatted. Legend labels clear but could better match
-          spec terminology.
+        comment: Title follows required format. Legend labels clear.
     data_quality:
       score: 14
       max: 15
@@ -145,22 +139,19 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: 9 parameters with good range variation and both positive/negative
-          deviations.
+        comment: 9 parameters with good variation and asymmetric effects.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: NPV sensitivity analysis for capital investment with realistic financial
-          parameters.
+        comment: NPV sensitivity for capital investment. Authentic financial parameters.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Base NPV $2.5M with deviations ±0.1M to ±1.3M, realistic for capital
-          project modeling.
+        comment: Base $2.5M with plausible variations.
     code_quality:
       score: 10
       max: 10
@@ -170,34 +161,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean flat structure: imports, data, compute, style, chart, save.'
+        comment: Clean Imports, Data, Plot, Save flow.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: All data hardcoded and deterministic.
+        comment: Fully deterministic hardcoded data.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only imports pygal and Style, both used.
+        comment: Only pygal and Style, both used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean deviation computation loop, sorted with lambda, clear variable
-          names.
+        comment: Clean Pythonic code with dict-based tooltips.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via render_to_png. Current API.
+        comment: Saves plot.png and plot.html.
     library_mastery:
-      score: 6
+      score: 8
       max: 10
       items:
       - id: LM-01
@@ -205,22 +195,22 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of HorizontalStackedBar, custom Style, print_values with
-          value_formatter, legend_at_bottom.
+        comment: Good use of HorizontalStackedBar, Style, print_values, value_formatter.
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 4
         max: 5
-        passed: false
-        comment: Uses HorizontalStackedBar and print_values with custom formatter,
-          but doesn't leverage more distinctive pygal features.
+        passed: true
+        comment: Dict-based tooltips, dual SVG/HTML + PNG output, rounded_bars.
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
+  - hover-tooltips
   - html-export
   patterns:
   - data-generation
+  - iteration-over-groups
   dataprep: []
   styling:
   - grid-styling

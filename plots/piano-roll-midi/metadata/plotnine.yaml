@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: piano-roll-midi
 created: '2026-03-07T19:46:37Z'
-updated: '2026-03-07T19:50:31Z'
+updated: '2026-03-07T19:59:00Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22805912195
 issue: 4565
@@ -10,98 +10,105 @@ library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/piano-roll-midi/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/piano-roll-midi/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 82
+quality_score: 88
 review:
   strengths:
-  - Excellent spec compliance - all required features implemented correctly
-  - 'Thoughtful domain-specific design: alternating black/white key rows, differentiated
-    beat/measure grid lines'
-  - Clean well-structured code with realistic chord progression data
-  - Custom velocity color scale is intuitive (blue=soft, red=loud)
+  - Excellent musical data choice with a real chord progression (I-IV-V-I) that tells
+    a harmonic story
+  - Cohesive purple-toned design with alternating key shading creates an authentic
+    DAW-like appearance
+  - Strong spec compliance with all required features including black/white key distinction,
+    beat/measure grid, note names, and velocity color mapping
+  - Good use of chord progression labels at the top to provide musical context
+  - Clean well-structured code with appropriate use of plotnine grammar of graphics
   weaknesses:
-  - Y-axis pitch label font size (14pt) slightly below recommended 16pt
-  - Color gradient midrange (yellow tones) lacks visual punch and differentiation
-  - No visual emphasis on musical climax or structural elements
-  - Library mastery could be stronger with more plotnine-distinctive features
-  image_description: The plot displays a piano roll visualization on a white background
-    with alternating light gray/lavender horizontal bands distinguishing black-key
-    pitches from white-key pitches. The x-axis shows "Beats" from 0 to 16 with stronger
-    vertical lines at measure boundaries (0, 4, 8, 12, 16) and lighter lines at individual
-    beats. The y-axis shows "Pitch" with note names (G2, C3, E3, F3, G3, C4, E4, F4,
-    G4, C5). Horizontal rectangles represent notes, colored by velocity using a blue
-    (soft, ~60) through yellow (~80-90) to red (loud, ~120) gradient scale. White
-    borders separate adjacent notes. A "Velocity" color bar legend appears on the
-    right. The title reads "piano-roll-midi · plotnine · pyplots.ai" in bold at the
-    top. The data depicts a 4-measure chord progression (C->F->G->C) with a melodic
-    line showing varying durations and dynamics.
+  - Y-axis label crowding for adjacent semitones (B3/C4, E4/F4)
+  - Large vertical gaps in pitch range between G2 and C3 waste vertical space
+  - Color gradient mid-range purple tones may be hard to distinguish for colorblind
+    viewers
+  - Axis labels lack units
+  image_description: 'The plot displays a MIDI piano roll visualization on a 16:9
+    canvas with a light purple-white color scheme. The title "piano-roll-midi · plotnine
+    · pyplots.ai" appears in bold dark purple at the top. The y-axis shows pitch names
+    (G2 through C5) with alternating light purple (black key) and very light lavender
+    (white key) background rows. The x-axis shows beats from 0 to 16. Four measures
+    are labeled at the top in italic: "I (C)", "IV (F)", "V (G)", "I (C)". Horizontal
+    rectangles represent notes, colored on a blue-to-red gradient based on velocity
+    (60-120 range shown in the right-side colorbar). The loudest notes (C5 climax
+    around beat 6, long C4 resolution in measure 4) appear in bright red/orange. Softer
+    notes appear in blue/purple. Beat divisions are shown as subtle dotted vertical
+    lines, with solid lines at measure boundaries. Dashed horizontal lines mark octave
+    boundaries at C notes.'
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 26
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Font sizes explicitly set; y-axis at 14pt slightly below 16pt recommendation
+        comment: 'All font sizes explicitly set: title=24, axis titles=20, ticks=16,
+          legend title=16, legend text=14'
       - id: VQ-02
         name: No Overlap
-        score: 6
-        max: 6
-        passed: true
-        comment: No text overlaps anywhere
-      - id: VQ-03
-        name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Note rectangles clearly visible with white borders; short notes slightly
-          small
+        comment: Minor crowding on y-axis where adjacent semitones have labels very
+          close together
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 6
+        passed: true
+        comment: Note rectangles well-sized with ±0.4 pitch height, all notes clearly
+          distinguishable
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Blue-yellow-red gradient is accessible but yellow midrange hard to
-          distinguish
+        comment: Blue-to-red gradient reasonable but mid-tones may be hard to distinguish
+          for colorblind types
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good proportions; some vertical empty space from pitch gaps
+        comment: Good 16:9 utilization but large vertical gaps where no notes exist
       - id: VQ-06
         name: Axis Labels & Title
         score: 1
         max: 2
         passed: true
-        comment: Descriptive labels but no units
+        comment: Descriptive labels but lack units
     design_excellence:
-      score: 12
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom domain-appropriate palette, alternating key rows, white note
-          borders
+        comment: Custom palette, cohesive purple-toned background, theme_void base
+          with selective restoration
       - id: DE-02
         name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: theme_void eliminates spines, subtle dotted beat grid vs solid measure
+          lines, generous whitespace
+      - id: DE-03
+        name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Spines removed, custom grid via geom_vline, differentiated beat/measure
-          lines
-      - id: DE-03
-        name: Data Storytelling
-        score: 3
-        max: 6
-        passed: true
-        comment: Musical narrative visible but lacks visual emphasis on climax or
-          structure
+        comment: Chord progression labels tell musical story, velocity colors create
+          hierarchy with C5 climax visible
     spec_compliance:
       score: 15
       max: 15
@@ -111,47 +118,49 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct piano roll with horizontal rectangles
+        comment: Correct piano roll with horizontal rectangles on pitch×time grid
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: All spec features present
+        comment: 'All spec features present: note rectangles, pitch/time axes, duration
+          as length, velocity as color, key shading, grid, note names'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=time, Y=pitch, fill=velocity all correct
+        comment: X=beats, Y=pitch with MIDI note names, all data visible
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format and velocity legend
+        comment: Correct format title, velocity colorbar legend
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Chords, melody, varying durations and velocities shown
+        comment: Shows chords, melody, varying durations and velocities, 4 measures
+          with different harmonic context
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Realistic musical chord progression with idiomatic content
+        comment: Musically meaningful C-F-G-C progression with melody
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: MIDI pitches 43-72, velocities 60-115, 4 measures all realistic
+        comment: MIDI pitches 43-72, velocities 60-115, standard 4/4 time
     code_quality:
       score: 10
       max: 10
@@ -161,13 +170,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports-data-plot-save structure
+        comment: 'Linear flow: imports, data, dataframe, background, plot, save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Seed set; data is deterministic
+        comment: Seed set, data is deterministic
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -185,9 +194,9 @@ review:
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png, current API
+        comment: Saves as plot.png, dpi=300, current API
     library_mastery:
-      score: 6
+      score: 7
       max: 10
       items:
       - id: LM-01
@@ -195,24 +204,28 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good grammar-of-graphics layering with geom_rect, geom_vline, proper
-          aes mapping
+        comment: Good grammar of graphics with layered geoms, aes mappings, scales,
+          themes. theme_void as base is idiomatic
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Uses ggplot-style features but not strongly distinctive to plotnine
+        passed: true
+        comment: theme_void + selective restoration, scale_fill_gradientn with guide_colorbar,
+          coord_cartesian
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - layer-composition
+  - annotations
+  - colorbar
   - manual-ticks
   patterns:
   - data-generation
   dataprep: []
   styling:
+  - minimal-chrome
   - custom-colormap
   - grid-styling
   - edge-highlighting

@@ -1,7 +1,7 @@
 library: matplotlib
 specification_id: bar-tornado-sensitivity
 created: '2026-03-07T08:44:42Z'
-updated: '2026-03-07T08:48:24Z'
+updated: '2026-03-07T08:58:42Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22795810088
 issue: 4566
@@ -10,32 +10,31 @@ library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-tornado-sensitivity/matplotlib/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-tornado-sensitivity/matplotlib/plot_thumb.png
 preview_html: null
-quality_score: 85
+quality_score: 87
 review:
   strengths:
-  - Perfect spec compliance with all required tornado chart features
-  - Clean readable code with KISS structure and deterministic data
-  - Good visual quality with explicit font sizes and clean layout
-  - Realistic NPV financial scenario with sensible parameter names and values
+  - Excellent spec compliance with all required features implemented perfectly
+  - Strong colorblind-safe teal/coral palette with good visual appeal
+  - Clean visual refinement with spine removal, subtle grid, and polished look
+  - Realistic neutral financial data scenario with good parameter variation
+  - Perfect code quality with clean KISS structure and deterministic data
   weaknesses:
-  - No bar-end value labels showing actual NPV values at each bar tip
-  - No annotation on base case reference line to orient viewer
-  - Blue-red color pair is conventional and not optimal for colorblind accessibility
-  - No distinctive matplotlib features beyond basic barh
-  image_description: The plot displays a horizontal tornado/sensitivity analysis chart
-    for NPV of a capital investment project. Ten parameters are listed on the y-axis,
-    sorted by total range with Revenue Growth (widest) at top and Salvage Value (narrowest)
-    at bottom. Blue bars (#4A90D9) represent "Low Scenario" and red bars (#D94A4A)
-    represent "High Scenario", extending left and right from a vertical black reference
-    line at the base NPV (~$12.5M). The x-axis shows "Net Present Value ($M)" ranging
-    from about 8 to 17. The title reads "bar-tornado-sensitivity · matplotlib · pyplots.ai".
-    A legend in the lower right identifies the two colors with frameon=False. Top,
-    right, and left spines are removed, with subtle x-axis gridlines (alpha=0.2).
-    White edge lines on bars provide clean separation. The characteristic tornado
-    shape is clearly visible with progressively narrower bars toward the bottom.
+  - Layout has excess horizontal whitespace beyond the data range
+  - No visual emphasis on most influential parameters beyond natural tornado shape
+  - Data storytelling could be stronger with additional focal point emphasis
+  image_description: The plot shows a horizontal tornado diagram for NPV sensitivity
+    analysis. Ten financial parameters are listed on the y-axis, sorted by total range
+    with "Revenue Growth" (widest) at top and "Salvage Value" (narrowest) at bottom.
+    Teal bars extend left/right for low scenarios, coral/salmon bars for high scenarios,
+    both emanating from a vertical base case line at $12.5M. Each bar end is labeled
+    with its dollar value (e.g., "$8.2M", "$17.3M"). The title reads "bar-tornado-sensitivity
+    · matplotlib · pyplots.ai". A legend in the lower right distinguishes "Low Scenario"
+    (teal) and "High Scenario" (coral). X-axis shows "Net Present Value" with dollar
+    formatting ($8M to $18M). Top/right/left spines are removed, subtle vertical gridlines
+    are visible.
   criteria_checklist:
     visual_quality:
-      score: 29
+      score: 27
       max: 30
       items:
       - id: VQ-01
@@ -43,61 +42,63 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title=24, xlabel=20, yticks=16, xticks=16'
+        comment: 'All font sizes explicitly set: title 24pt, xlabel 20pt, yticks/xticks
+          16pt, legend 16pt, bar labels 11pt'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text, parameter names well-spaced
+        comment: All text elements well-separated, bar-end labels properly offset
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Bars clearly visible with appropriate height=0.6
+        comment: Bars well-sized at height=0.6, bottom bars slightly narrow but still
+          clear
       - id: VQ-04
         name: Color Accessibility
-        score: 3
-        max: 4
-        passed: true
-        comment: Blue/red pairing works for most CVD types but not optimal for all
-      - id: VQ-05
-        name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Good canvas utilization with tight_layout
+        comment: Teal and coral are colorblind-safe with good contrast
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 2
+        max: 4
+        passed: false
+        comment: Wasted horizontal space beyond data range, x-axis extends too far
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Net Present Value ($M) with units
+        comment: Net Present Value with dollar formatting on ticks
     design_excellence:
-      score: 12
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom palette, clean typography, above defaults but blue-red is
-          conventional
+        comment: Strong custom teal/coral palette, white bar edges, clean typography
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Spines removed, subtle grid, frameon=False legend, white bar edges
+        comment: Top/right/left spines removed, subtle x-grid at alpha=0.2, y-tick
+          length=0
       - id: DE-03
         name: Data Storytelling
         score: 3
         max: 6
-        passed: true
-        comment: Sorting creates natural hierarchy but no bar-end value labels or
-          base-case annotation
+        passed: false
+        comment: Tornado shape creates natural hierarchy but lacks additional emphasis
+          on key drivers
     spec_compliance:
       score: 15
       max: 15
@@ -107,26 +108,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct horizontal tornado bar chart
+        comment: Correct horizontal tornado/butterfly bar chart
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Reference line, sorted by range, dual colors, parameter labels all
-          present
+        comment: Vertical base case line, sorted by range, dual colors, parameter
+          labels, bar-end labels
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=NPV output metric, Y=parameters
+        comment: X-axis is output metric (NPV), y-axis is parameters
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format, clear legend labels
+        comment: Correct format with matching legend labels
     data_quality:
       score: 14
       max: 15
@@ -136,19 +137,21 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: 10 parameters with good variety of ranges
+        comment: Good variation in bar widths, some asymmetric effects, both positive
+          and negative sensitivities
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: NPV sensitivity for capital investment, real-world financial scenario
+        comment: NPV sensitivity analysis for capital investment, neutral financial
+          domain
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: $8-17M NPV range realistic for a project
+        comment: NPV values $8M-$17M realistic for capital project analysis
     code_quality:
       score: 10
       max: 10
@@ -158,33 +161,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports, data, sort, plot, save structure
+        comment: Clean imports, data, sort, plot, style, save structure
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic hardcoded data
+        comment: Deterministic data, no random generation
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only matplotlib and numpy, both used
+        comment: All three imports used (plt, mticker, np)
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, Pythonic, appropriate complexity
+        comment: Clean, appropriate complexity, well-structured label loop
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png, dpi=300, current API
+        comment: Saves as plot.png, dpi=300, bbox_inches=tight, current API
     library_mastery:
-      score: 5
+      score: 7
       max: 10
       items:
       - id: LM-01
@@ -192,21 +195,23 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of ax.barh with left parameter, ax.axvline, proper axes
-          API
+        comment: Good Axes API usage, mticker.FuncFormatter for dollar formatting
       - id: LM-02
         name: Distinctive Features
-        score: 1
+        score: 3
         max: 5
         passed: false
-        comment: Generic usage, barh/axvline/spine removal are standard features
+        comment: FuncFormatter and white edgecolor are matplotlib-specific but not
+          deeply distinctive
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
+  - annotations
   - manual-ticks
   patterns:
   - data-generation
+  - iteration-over-groups
   dataprep: []
   styling:
   - edge-highlighting

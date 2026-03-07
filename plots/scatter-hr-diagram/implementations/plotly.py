@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-hr-diagram: Hertzsprung-Russell Diagram
 Library: plotly 6.6.0 | Python 3.14.3
-Quality: 81/100 | Created: 2026-03-07
+Quality: 83/100 | Created: 2026-03-07
 """
 
 import numpy as np

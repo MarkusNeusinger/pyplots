@@ -1,7 +1,7 @@
 library: plotly
 specification_id: scatter-hr-diagram
 created: '2026-03-07T06:46:52Z'
-updated: '2026-03-07T06:50:44Z'
+updated: '2026-03-07T06:59:02Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22794049018
 issue: 4558
@@ -10,37 +10,40 @@ library_version: 6.6.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-hr-diagram/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-hr-diagram/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-hr-diagram/plotly/plot.html
-quality_score: 81
+quality_score: 83
 review:
   strengths:
   - Perfect spec compliance with all required features including reversed x-axis,
     log scale, region labels, Sun reference, and secondary spectral class axis
-  - Excellent data quality with physically realistic stellar populations and L~T^4
+  - Excellent data quality with physically realistic stellar populations and the L~T^4
     relationship
-  - Good data storytelling with clear region labels and the Sun as an intuitive anchor
-    point
-  - Effective use of Plotly-specific features (hover templates, dual axes, HTML export)
+  - 'Major improvement from attempt 1: F and G spectral type colors are now clearly
+    visible as distinct yellow/gold tones'
+  - Strong domain-appropriate aesthetic with blue-yellow-orange-red spectral color
+    progression
+  - Good use of Plotly-specific features (hover templates, dual axes, HTML export)
   weaknesses:
-  - F-type and G-type colors are nearly invisible against the white background, severely
-    reducing visibility for ~105 data points
-  - Some marker and label overlap in the dense main sequence region around the Sun
-  - Duplicated color definitions between spectral_config and spectral_colors dicts
-  image_description: 'The plot displays a Hertzsprung-Russell diagram with surface
-    temperature (K) on a reversed logarithmic x-axis (40,000 K on the left to 2,500
-    K on the right) and luminosity (L☉) on a logarithmic y-axis (100μ to 1M). A secondary
-    x-axis at the top shows spectral class labels (O, B, A, F, G, K, M). Stars are
-    plotted as circles color-coded by spectral type: darker blue for O types, lighter
-    blue for B types, very pale/near-white for A, F, and G types, and orange/gold
-    for K and M types. Four region labels with semi-transparent white backgrounds
-    mark "Supergiants" (upper region), "Red Giants" (right-center), "Main Sequence"
-    (center diagonal), and "White Dwarfs" (lower-left). The Sun is marked with a gold
-    star symbol near 5,778 K / 1 L☉ with a "☉ Sun" text label. A legend in the bottom-left
-    lists all spectral types and the Sun. The title reads "scatter-hr-diagram · plotly
-    · pyplots.ai". The F and G type markers are nearly invisible against the white
-    background due to their extremely pale colors.'
+  - Sun label partially obscured by nearby markers in dense main sequence region
+  - O/B/A spectral types use three similar blue shades that are hard to distinguish
+  - Main sequence region is dense with overlapping markers (opacity too high for point
+    density)
+  - Code contains a helper function (classify_temp) violating the flat KISS structure
+  image_description: 'The plot displays a Hertzsprung-Russell diagram as a scatter
+    plot. The x-axis shows "Surface Temperature (K)" on a reversed logarithmic scale
+    (40,000 K on the left to 2,500 K on the right). The y-axis shows "Luminosity (L☉)"
+    on a logarithmic scale from 100μ to 1M. A secondary x-axis at the top displays
+    spectral class labels (O, B, A, F, G, K, M). Stars are color-coded by spectral
+    type: darker blue for O, lighter blue for B, pale blue for A, saturated yellow
+    for F, warm gold/amber for G, orange for K, and dark orange/red for M. All spectral
+    types are now clearly visible against the white background. Four region labels
+    ("Supergiants", "Red Giants", "Main Sequence", "White Dwarfs") are positioned
+    with semi-transparent white backgrounds. The Sun is marked with a gold star symbol
+    near 5,778 K / 1 L☉ with "☉ Sun" text, though the label is partially obscured
+    by nearby markers. A legend in the bottom-left lists all spectral types and the
+    Sun. Title reads "scatter-hr-diagram · plotly · pyplots.ai".'
   criteria_checklist:
     visual_quality:
-      score: 21
+      score: 23
       max: 30
       items:
       - id: VQ-01
@@ -49,35 +52,35 @@ review:
         max: 8
         passed: true
         comment: All font sizes explicitly set (title 28, labels 22, ticks 18, legend
-          16-18). Clearly readable.
+          16-18, annotations 18). All text clearly readable.
       - id: VQ-02
         name: No Overlap
         score: 4
         max: 6
         passed: false
-        comment: Sun label overlaps with nearby G/K markers. Main Sequence annotation
-          in crowded area.
+        comment: Sun label partially obscured by nearby G/K markers. Some marker crowding
+          in main sequence around 5,000-6,000 K.
       - id: VQ-03
         name: Element Visibility
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: F-type (#F8F7FF) and G-type (#FFF4EA) markers nearly invisible against
-          white background. ~105 data points affected.
+        passed: true
+        comment: F and G types now visible as distinct yellow/gold. Main sequence
+          region dense with marker overlap at size=10, opacity=0.85.
       - id: VQ-04
         name: Color Accessibility
-        score: 2
+        score: 3
         max: 4
-        passed: false
-        comment: Near-white colors for F and G types create severe contrast problem.
-          Types indistinguishable from background.
+        passed: true
+        comment: Blue-yellow-orange-red progression effective. O/B/A blue tones somewhat
+          similar.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good layout at 1600x900 scale 3. Plot fills canvas well with balanced
-          margins.
+        comment: Good layout with balanced margins. Plot fills canvas well. Legend
+          well-positioned.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
@@ -86,30 +89,31 @@ review:
         comment: Surface Temperature (K) and Luminosity (L☉) are descriptive with
           units.
     design_excellence:
-      score: 13
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Domain-appropriate colors, plotly_white template, semi-transparent
-          annotations, star marker for Sun.
+        comment: Domain-appropriate spectral color progression now fully effective.
+          Custom palette, plotly_white template, star marker for Sun. O/B/A blues
+          still similar.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Subtle grid, clean background, semi-transparent legend with border,
-          padded annotations.
+        comment: Subtle grid, clean white background, semi-transparent legend with
+          border, annotation backgrounds with padding. Above default refinement.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Region labels, Sun reference point, reversed x-axis convention, secondary
-          spectral class axis.
+        comment: Four stellar regions labeled, Sun as reference anchor, reversed x-axis
+          convention, secondary spectral class axis. Good visual hierarchy.
     spec_compliance:
       score: 15
       max: 15
@@ -125,20 +129,20 @@ review:
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: reversed x-axis, log y, spectral colors, region
-          labels, Sun, secondary axis.'
+        comment: 'All required features present: reversed x-axis, log y, spectral
+          type colors, region labels, Sun reference, secondary x-axis.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Temperature on x, luminosity on y. All data visible.
+        comment: Temperature on x, luminosity on y. All data visible across full range.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format. Legend shows all spectral types and Sun.
+        comment: Title format correct. Legend shows all spectral types and Sun.
     data_quality:
       score: 15
       max: 15
@@ -148,29 +152,30 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: All four stellar populations, all seven spectral types, Sun reference.
+        comment: All four stellar populations and seven spectral types well-represented.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Astrophysics domain with realistic L~T^4 relationship.
+        comment: Astrophysics domain with physically realistic stellar data using
+          L~T^4 relationship.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Temperature 2400-40000K, luminosity 10^-4 to 10^6 L☉ are realistic.
+        comment: Temperature 2,400-40,000 K and luminosity 10^-4 to 10^6 L☉ are realistic.
     code_quality:
-      score: 9
+      score: 8
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
-        passed: true
-        comment: Imports, data, plot, save structure. No functions or classes.
+        passed: false
+        comment: Defines classify_temp helper function violating flat KISS structure.
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -182,19 +187,20 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Only numpy and plotly.graph_objects, both used.
+        comment: Only numpy and plotly.graph_objects imported, both used.
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
         passed: false
-        comment: Duplicated color definitions. Verbose if/elif chains for type classification.
+        comment: Invisible trace workaround for xaxis2 adds complexity. classify_temp
+          function is unnecessary abstraction.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png at 1600x900 scale 3. Also exports HTML.
+        comment: Saves as plot.png with correct dimensions. Also exports HTML.
     library_mastery:
       score: 8
       max: 10
@@ -204,8 +210,8 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good go.Figure with go.Scatter traces. Custom hover templates. Proper
-          annotation API.
+        comment: Good use of go.Figure with individual traces, hover templates, annotations,
+          layout API.
       - id: LM-02
         name: Distinctive Features
         score: 4
@@ -226,6 +232,6 @@ impl_tags:
   - iteration-over-groups
   dataprep: []
   styling:
+  - alpha-blending
   - edge-highlighting
   - grid-styling
-  - alpha-blending

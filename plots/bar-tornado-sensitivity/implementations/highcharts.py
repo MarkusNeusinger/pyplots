@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-tornado-sensitivity: Tornado Diagram for Sensitivity Analysis
 Library: highcharts unknown | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-07
@@ -15,7 +15,6 @@ from highcharts_core.options import HighchartsOptions
 from highcharts_core.options.series.bar import BarSeries
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
 
 
 # Data - NPV sensitivity analysis for a capital investment project
@@ -59,21 +58,24 @@ chart.options.chart = {
     "backgroundColor": "#ffffff",
     "marginLeft": 400,
     "marginRight": 120,
-    "marginTop": 180,
-    "marginBottom": 120,
+    "marginTop": 240,
+    "marginBottom": 200,
     "style": {"fontFamily": "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"},
+    "plotBackgroundColor": "#fafafa",
+    "plotBorderWidth": 1,
+    "plotBorderColor": "#e0e0e0",
 }
 
 chart.options.title = {
     "text": "bar-tornado-sensitivity \u00b7 highcharts \u00b7 pyplots.ai",
     "style": {"fontSize": "48px", "fontWeight": "bold", "color": "#222222"},
-    "y": 40,
+    "y": 45,
 }
 
 chart.options.subtitle = {
     "text": "NPV Sensitivity Analysis \u2014 Base Case: $12.5M",
     "style": {"fontSize": "32px", "color": "#555555"},
-    "y": 90,
+    "y": 95,
 }
 
 chart.options.x_axis = {
@@ -85,7 +87,7 @@ chart.options.x_axis = {
 }
 
 chart.options.y_axis = {
-    "title": {"text": "Change in NPV ($M)", "style": {"fontSize": "28px", "color": "#333333"}, "margin": 20},
+    "title": {"text": "Change in NPV ($M)", "style": {"fontSize": "28px", "color": "#333333"}, "margin": 30},
     "labels": {"style": {"fontSize": "24px", "color": "#555555"}, "format": "{value}"},
     "tickInterval": 1,
     "gridLineWidth": 1,
@@ -98,10 +100,10 @@ chart.options.y_axis = {
             "zIndex": 5,
             "label": {
                 "text": "Base Case",
-                "align": "right",
-                "style": {"fontSize": "22px", "color": "#333333", "fontStyle": "italic"},
-                "x": -10,
-                "y": -10,
+                "align": "center",
+                "rotation": 0,
+                "style": {"fontSize": "24px", "fontWeight": "bold", "color": "#444444"},
+                "y": 25,
             },
         }
     ],
@@ -113,7 +115,7 @@ chart.options.legend = {
     "verticalAlign": "top",
     "layout": "horizontal",
     "align": "center",
-    "y": 110,
+    "y": 150,
     "floating": True,
     "symbolRadius": 4,
 }
@@ -202,8 +204,12 @@ driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
 time.sleep(5)
 
-container = driver.find_element(By.ID, "container")
-container.screenshot("plot.png")
+# Use CDP to set exact device metrics for full-size screenshot
+driver.execute_cdp_cmd(
+    "Emulation.setDeviceMetricsOverride", {"width": 4800, "height": 2700, "deviceScaleFactor": 1, "mobile": False}
+)
+time.sleep(1)
+driver.save_screenshot("plot.png")
 driver.quit()
 
 Path(temp_path).unlink()

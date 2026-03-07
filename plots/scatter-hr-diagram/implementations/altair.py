@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-hr-diagram: Hertzsprung-Russell Diagram
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-07
@@ -78,7 +78,7 @@ selection = alt.selection_point(fields=["Spectral Type"], bind="legend")
 # Plot
 stars = (
     alt.Chart(df)
-    .mark_circle(strokeWidth=0.5, stroke="#555555")
+    .mark_circle(strokeWidth=0)
     .encode(
         x=alt.X(
             "Temperature (K):Q",
@@ -115,7 +115,7 @@ stars = (
             "Spectral Type:N",
             scale=alt.Scale(
                 domain=["O", "B", "A", "F", "G", "K", "M"],
-                range=["#4466bb", "#7799dd", "#c0d0e8", "#f0d070", "#ddcc44", "#ee9933", "#cc5522"],
+                range=["#4466bb", "#7799dd", "#8aaad0", "#d4b840", "#ddcc44", "#ee9933", "#cc5522"],
             ),
             sort=["O", "B", "A", "F", "G", "K", "M"],
             legend=alt.Legend(
@@ -123,7 +123,7 @@ stars = (
             ),
         ),
         size=alt.value(40),
-        opacity=alt.condition(selection, alt.value(0.55), alt.value(0.08)),
+        opacity=alt.condition(selection, alt.value(0.7), alt.value(0.08)),
         tooltip=["Temperature (K):Q", "Luminosity (Solar):Q", "Spectral Type:N", "Region:N"],
     )
     .add_params(selection)
@@ -152,7 +152,7 @@ labels = (
 chart = (
     (stars + sun_point + sun_label + labels)
     .properties(
-        width=1600, height=900, title=alt.Title("scatter-hr-diagram · altair · pyplots.ai", fontSize=26, anchor="start")
+        width=1600, height=900, title=alt.Title("scatter-hr-diagram · altair · pyplots.ai", fontSize=28, anchor="start")
     )
     .configure_view(strokeWidth=0)
     .configure_axis(tickSize=0)

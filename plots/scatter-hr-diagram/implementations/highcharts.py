@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-hr-diagram: Hertzsprung-Russell Diagram
 Library: highcharts unknown | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-07
@@ -22,9 +22,9 @@ np.random.seed(42)
 
 # Main sequence: luminosity scales as ~T^3.5 (mass-luminosity relation)
 spectral_config = {
-    "O": {"temp_range": (28000, 45000), "n": 10, "color": "#6b93d6"},
-    "B": {"temp_range": (10000, 28000), "n": 25, "color": "#8db4e6"},
-    "A": {"temp_range": (7500, 10000), "n": 30, "color": "#cad7f5"},
+    "O": {"temp_range": (28000, 45000), "n": 10, "color": "#4169e1"},
+    "B": {"temp_range": (10000, 28000), "n": 25, "color": "#7ec8e3"},
+    "A": {"temp_range": (7500, 10000), "n": 30, "color": "#e8e8ff"},
     "F": {"temp_range": (6000, 7500), "n": 40, "color": "#f8f7e4"},
     "G": {"temp_range": (5200, 6000), "n": 50, "color": "#fff44f"},
     "K": {"temp_range": (3700, 5200), "n": 45, "color": "#ffb347"},
@@ -81,6 +81,21 @@ chart.options.subtitle = {
     "style": {"fontSize": "36px", "color": "#8b949e", "fontWeight": "400"},
 }
 
+# Spectral class boundaries and label positions
+spectral_boundaries = [
+    {"value": 28000, "label": "O/B"},
+    {"value": 10000, "label": "B/A"},
+    {"value": 7500, "label": "A/F"},
+    {"value": 6000, "label": "F/G"},
+    {"value": 5200, "label": "G/K"},
+    {"value": 3700, "label": "K/M"},
+]
+
+x_plot_lines = [
+    {"value": b["value"], "color": "rgba(139, 148, 158, 0.15)", "width": 2, "dashStyle": "Dash", "zIndex": 1}
+    for b in spectral_boundaries
+]
+
 # X-axis — reversed (hot on left, cool on right)
 chart.options.x_axis = {
     "title": {
@@ -99,6 +114,7 @@ chart.options.x_axis = {
     "lineColor": "rgba(139, 148, 158, 0.3)",
     "lineWidth": 1,
     "tickColor": "rgba(139, 148, 158, 0.3)",
+    "plotLines": x_plot_lines,
 }
 
 # Y-axis — logarithmic luminosity
@@ -131,10 +147,24 @@ chart.options.legend = {
     "borderWidth": 1,
     "borderColor": "rgba(139, 148, 158, 0.3)",
     "borderRadius": 8,
-    "itemStyle": {"fontSize": "26px", "fontWeight": "400", "color": "#c9d1d9"},
+    "itemStyle": {"fontSize": "32px", "fontWeight": "400", "color": "#c9d1d9"},
     "itemHoverStyle": {"color": "#e6edf3"},
-    "padding": 16,
-    "symbolRadius": 6,
+    "padding": 20,
+    "itemMarginBottom": 6,
+    "symbolRadius": 8,
+}
+
+chart.options.plot_options = {
+    "scatter": {
+        "marker": {
+            "radius": 8,
+            "symbol": "circle",
+            "lineWidth": 1,
+            "lineColor": "rgba(255, 255, 255, 0.3)",
+            "states": {"hover": {"radiusPlus": 3}},
+        },
+        "opacity": 0.8,
+    }
 }
 
 chart.options.credits = {"enabled": False}
@@ -160,13 +190,6 @@ for stype, data in stars_by_type.items():
     series.data = [[float(t), float(lum)] for t, lum in zip(data["temps"], data["lums"], strict=True)]
     series.name = f"Type {stype}"
     series.color = data["color"]
-    series.marker = {
-        "radius": 8,
-        "symbol": "circle",
-        "lineWidth": 1,
-        "lineColor": "rgba(255, 255, 255, 0.3)",
-        "states": {"hover": {"radiusPlus": 3}},
-    }
     series.z_index = 2
     chart.add_series(series)
 
@@ -175,13 +198,8 @@ rg_series = ScatterSeries()
 rg_series.data = [[float(t), float(lum)] for t, lum in zip(rg_temps, rg_lums, strict=True)]
 rg_series.name = "Red Giants"
 rg_series.color = "#ff6347"
-rg_series.marker = {
-    "radius": 12,
-    "symbol": "circle",
-    "lineWidth": 1,
-    "lineColor": "rgba(255, 255, 255, 0.3)",
-    "states": {"hover": {"radiusPlus": 4}},
-}
+rg_series.marker = {"radius": 12, "states": {"hover": {"radiusPlus": 4}}}
+rg_series.opacity = 0.85
 rg_series.z_index = 3
 chart.add_series(rg_series)
 
@@ -192,7 +210,6 @@ sg_series.name = "Supergiants"
 sg_series.color = "#ffd700"
 sg_series.marker = {
     "radius": 16,
-    "symbol": "circle",
     "lineWidth": 2,
     "lineColor": "rgba(255, 215, 0, 0.5)",
     "states": {"hover": {"radiusPlus": 5}},
@@ -205,13 +222,7 @@ wd_series = ScatterSeries()
 wd_series.data = [[float(t), float(lum)] for t, lum in zip(wd_temps, wd_lums, strict=True)]
 wd_series.name = "White Dwarfs"
 wd_series.color = "#b0c4de"
-wd_series.marker = {
-    "radius": 6,
-    "symbol": "circle",
-    "lineWidth": 1,
-    "lineColor": "rgba(255, 255, 255, 0.4)",
-    "states": {"hover": {"radiusPlus": 3}},
-}
+wd_series.marker = {"radius": 6, "lineColor": "rgba(255, 255, 255, 0.4)"}
 wd_series.z_index = 2
 chart.add_series(wd_series)
 
@@ -253,7 +264,7 @@ if highcharts_js is None:
     with urllib.request.urlopen(req, timeout=30) as response:
         highcharts_js = response.read().decode("utf-8")
 
-# Region labels added via Highcharts renderer after chart renders
+# Region + spectral class labels via Highcharts renderer
 region_labels_js = """
 setTimeout(function() {
     var chart = Highcharts.charts[0];
@@ -263,12 +274,11 @@ setTimeout(function() {
     var yA = chart.yAxis[0];
 
     var labels = [
-        ['MAIN SEQUENCE', 8000, 8, 'rgba(200,215,245,0.45)', '30px'],
-        ['RED GIANTS', 3800, 3000, 'rgba(255,99,71,0.45)', '30px'],
-        ['SUPERGIANTS', 12000, 150000, 'rgba(255,215,0,0.45)', '30px'],
-        ['WHITE DWARFS', 18000, 0.0005, 'rgba(176,196,222,0.45)', '30px']
+        ['MAIN SEQUENCE', 8000, 8, 'rgba(200,215,245,0.45)', '36px'],
+        ['RED GIANTS', 3800, 3000, 'rgba(255,99,71,0.45)', '36px'],
+        ['SUPERGIANTS', 12000, 150000, 'rgba(255,215,0,0.45)', '36px'],
+        ['WHITE DWARFS', 18000, 0.0005, 'rgba(176,196,222,0.45)', '36px']
     ];
-
     for (var i = 0; i < labels.length; i++) {
         var l = labels[i];
         var px = xA.toPixels(l[1]);
@@ -279,6 +289,28 @@ setTimeout(function() {
             fontWeight: '600',
             letterSpacing: '3px'
         }).add();
+    }
+
+    // Spectral class letters along the top of the plot area
+    var spectralLabels = [
+        ['O', 36000, '#4169e1'],
+        ['B', 17000, '#7ec8e3'],
+        ['A', 8700, '#e8e8ff'],
+        ['F', 6750, '#f8f7e4'],
+        ['G', 5600, '#fff44f'],
+        ['K', 4400, '#ffb347'],
+        ['M', 3000, '#e8684a']
+    ];
+    var topY = chart.plotTop + 30;
+    for (var j = 0; j < spectralLabels.length; j++) {
+        var s = spectralLabels[j];
+        var sx = xA.toPixels(s[1]);
+        r.text(s[0], sx, topY).css({
+            color: s[2],
+            fontSize: '38px',
+            fontWeight: '700',
+            textAnchor: 'middle'
+        }).attr({zIndex: 6}).add();
     }
 }, 500);
 """

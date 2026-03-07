@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 piano-roll-midi: MIDI Piano Roll Visualization
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-07
@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
+    annotate,
     coord_cartesian,
     element_line,
     element_rect,
@@ -19,7 +20,7 @@ from plotnine import (
     ggplot,
     guide_colorbar,
     labs,
-    scale_fill_gradientn,
+    scale_fill_cmap,
     scale_x_continuous,
     scale_y_continuous,
     theme,
@@ -31,7 +32,7 @@ from plotnine import (
 np.random.seed(42)
 
 notes = [
-    # Measure 1: C major chord + melody (opening)
+    # Measure 1: C major chord + melody (opening — mf)
     (0.0, 2.0, 48, 80),  # C3 bass
     (0.0, 2.0, 52, 70),  # E3
     (0.0, 2.0, 55, 70),  # G3
@@ -41,7 +42,7 @@ notes = [
     (2.0, 1.0, 65, 105),  # F4
     (3.0, 0.5, 64, 85),  # E4
     (3.5, 0.5, 62, 80),  # D4
-    # Measure 2: F major chord + melody (building)
+    # Measure 2: F major chord + melody (building — f to ff)
     (4.0, 2.0, 53, 75),  # F3 bass
     (4.0, 2.0, 57, 65),  # A3
     (4.0, 2.0, 60, 65),  # C4
@@ -50,8 +51,8 @@ notes = [
     (5.5, 0.5, 69, 100),  # A4
     (6.0, 1.5, 72, 115),  # C5 high point - CLIMAX
     (7.5, 0.5, 69, 80),  # A4
-    # Measure 3: G major chord + descending melody
-    (8.0, 2.0, 43, 85),  # G2 bass
+    # Measure 3: G major chord + descending melody (diminuendo)
+    (8.0, 2.0, 47, 85),  # B2 bass (changed from G2 to reduce range gap)
     (8.0, 2.0, 55, 70),  # G3
     (8.0, 2.0, 59, 70),  # B3
     (8.0, 1.0, 71, 105),  # B4 melody
@@ -60,7 +61,7 @@ notes = [
     (10.0, 1.0, 65, 95),  # F4
     (11.0, 0.5, 64, 80),  # E4
     (11.5, 0.5, 62, 75),  # D4
-    # Measure 4: C major resolution (ending)
+    # Measure 4: C major resolution (ending — p, fading)
     (12.0, 2.0, 48, 90),  # C3 bass
     (12.0, 2.0, 52, 75),  # E3
     (12.0, 2.0, 55, 75),  # G3
@@ -90,10 +91,15 @@ for p in range(pitch_min, pitch_max + 1):
 
 bg_df = pd.DataFrame(bg_rows)
 
-# Y-axis labels: show note names for every pitch that has data
-used_pitches = sorted(df["pitch"].unique())
+# Y-axis labels: show only white-key pitches and pitches with notes to reduce crowding
+used_pitches = set(df["pitch"].unique())
 pitch_labels_map = {p: f"{note_names[p % 12]}{p // 12 - 1}" for p in range(pitch_min, pitch_max + 1)}
-label_pitches = used_pitches
+# Show white keys that have data, plus octave C notes for orientation
+white_key_semitones = {0, 2, 4, 5, 7, 9, 11}
+label_pitches = sorted(
+    {p for p in used_pitches if p % 12 in white_key_semitones}
+    | {p for p in range(pitch_min, pitch_max + 1) if p % 12 == 0}
+)
 label_names = [pitch_labels_map[p] for p in label_pitches]
 
 # Measure structure
@@ -101,10 +107,13 @@ total_beats = 16
 measure_lines = [0, 4, 8, 12, 16]
 beat_lines = [b for b in range(total_beats + 1) if b not in measure_lines]
 
-# Measure labels at top
+# Measure labels at top with chord names
 measure_labels = pd.DataFrame(
     {"x": [2, 6, 10, 14], "label": ["I  (C)", "IV  (F)", "V  (G)", "I  (C)"], "y": [pitch_max + 0.8] * 4}
 )
+
+# Dynamic markings to enhance storytelling
+dynamic_labels = pd.DataFrame({"x": [2, 6.5, 10, 14.5], "label": ["mf", "ff", "dim.", "p"], "y": [pitch_min - 0.3] * 4})
 
 # Horizontal separators at octave boundaries (every C note)
 octave_cs = [p for p in range(pitch_min, pitch_max + 1) if p % 12 == 0]
@@ -132,22 +141,21 @@ plot = (
         octave_lines, aes(x="xstart", xend="xend", y="y", yend="y"), color="#b0adc5", size=0.35, linetype="dashed"
     )
     # Note rectangles with velocity color mapping
-    + geom_rect(
-        df, aes(xmin="start", xmax="end", ymin="ymin", ymax="ymax", fill="velocity"), color="#2d2a3e", size=0.25
-    )
+    + geom_rect(df, aes(xmin="start", xmax="end", ymin="ymin", ymax="ymax", fill="velocity"), color="#2d2a3e", size=0.3)
+    # Climax annotation using plotnine annotate
+    + annotate("text", x=7.6, y=72 + 1.0, label="← climax", size=9, color="#e05634", fontstyle="italic", ha="left")
     # Measure chord labels at top
     + geom_text(measure_labels, aes(x="x", y="y", label="label"), size=11, color="#4a4568", fontstyle="italic")
-    # Color scale: perceptually uniform blue → purple → orange → red
-    + scale_fill_gradientn(
-        colors=["#2166ac", "#5e4fa2", "#b2477d", "#e05634", "#d62f27"],
-        limits=(55, 120),
-        name="Velocity",
-        guide=guide_colorbar(nbin=200),
+    # Dynamic markings below the piano roll
+    + geom_text(dynamic_labels, aes(x="x", y="y", label="label"), size=9, color="#7a7590", fontstyle="italic")
+    # Color scale: viridis for perceptual uniformity and colorblind safety
+    + scale_fill_cmap(
+        cmap_name="inferno", limits=(55, 120), name="Velocity\n(MIDI 0–127)", guide=guide_colorbar(nbin=200)
     )
     + scale_y_continuous(breaks=label_pitches, labels=label_names, expand=(0.02, 0.02))
     + scale_x_continuous(breaks=measure_lines, labels=["0", "4", "8", "12", "16"], expand=(0.01, 0.01))
-    + coord_cartesian(xlim=(-0.3, total_beats + 0.3), ylim=(pitch_min - 0.5, pitch_max + 1.5))
-    + labs(x="Beats", y="Pitch", title="piano-roll-midi · plotnine · pyplots.ai")
+    + coord_cartesian(xlim=(-0.3, total_beats + 0.3), ylim=(pitch_min - 1.2, pitch_max + 1.5))
+    + labs(x="Time (beats)", y="Pitch (note)", title="piano-roll-midi · plotnine · pyplots.ai")
     # Start from theme_void for full control, then add back what we need
     + theme_void()
     + theme(

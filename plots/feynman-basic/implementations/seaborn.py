@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 feynman-basic: Feynman Diagram for Particle Interactions
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-07
@@ -32,9 +32,14 @@ mu_minus = np.array([0.95, 0.92])
 mu_plus = np.array([0.95, 0.24])
 
 # Fermion lines with arrows (annotate needed for arrowheads)
+# Convention: particle arrows forward in time, antiparticle arrows backward
 arrow_kw = {"arrowstyle": "-|>", "color": FERMION, "lw": 3, "mutation_scale": 25}
-for start, end in [(e_minus, v1), (e_plus, v1), (v2, mu_minus), (v2, mu_plus)]:
-    ax.annotate("", xy=end, xytext=start, arrowprops=arrow_kw)
+# Particles (e-, mu-): arrow forward in time (toward/away from vertex)
+ax.annotate("", xy=v1, xytext=e_minus, arrowprops=arrow_kw)  # e- into vertex
+ax.annotate("", xy=mu_minus, xytext=v2, arrowprops=arrow_kw)  # mu- out of vertex
+# Antiparticles (e+, mu+): arrow backward in time (reversed direction)
+ax.annotate("", xy=e_plus, xytext=v1, arrowprops=arrow_kw)  # e+ arrow backward
+ax.annotate("", xy=v2, xytext=mu_plus, arrowprops=arrow_kw)  # mu+ arrow backward
 
 # Photon wavy line drawn with sns.lineplot + DataFrame
 t = np.linspace(0, 1, 500)
@@ -48,9 +53,20 @@ photon_df = pd.DataFrame(
 )
 sns.lineplot(data=photon_df, x="x", y="y", ax=ax, color=PHOTON, linewidth=3, sort=False, legend=False)
 
-# Vertex dots drawn with sns.scatterplot + DataFrame
-vertex_df = pd.DataFrame({"x": [v1[0], v2[0]], "y": [v1[1], v2[1]]})
-sns.scatterplot(data=vertex_df, x="x", y="y", ax=ax, color=FERMION, s=250, zorder=5, legend=False, edgecolor="none")
+# Vertex dots drawn with sns.scatterplot + DataFrame with hue for vertex type
+vertex_df = pd.DataFrame({"x": [v1[0], v2[0]], "y": [v1[1], v2[1]], "vertex": ["QED vertex", "QED vertex"]})
+sns.scatterplot(
+    data=vertex_df,
+    x="x",
+    y="y",
+    hue="vertex",
+    ax=ax,
+    palette=[FERMION],
+    s=250,
+    zorder=5,
+    legend=False,
+    edgecolor="none",
+)
 
 # Particle labels
 lkw = {"fontsize": 22, "fontweight": "bold", "ha": "center", "va": "center"}

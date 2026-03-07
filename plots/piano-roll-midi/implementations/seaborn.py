@@ -1,16 +1,13 @@
-""" pyplots.ai
+"""pyplots.ai
 piano-roll-midi: MIDI Piano Roll Visualization
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 81/100 | Created: 2026-03-07
 """
 
-import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from matplotlib.collections import PatchCollection
-from matplotlib.colors import Normalize
 
 
 # Setup
@@ -21,13 +18,12 @@ sns.set_style("white")
 NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 BLACK_KEY_INDICES = {1, 3, 6, 8, 10}
 
-
 # Data - A chord progression (C - Am - F - G) with melody over 8 measures
 np.random.seed(42)
 
 notes_data = []
 
-# Chord progression pattern (each chord lasts 2 beats, repeated across measures)
+# Chord progression pattern
 chords = {
     "C": [60, 64, 67],  # C4, E4, G4
     "Am": [57, 60, 64],  # A3, C4, E4
@@ -42,12 +38,11 @@ for measure in range(8):
     pitches = chords[chord_name]
     beat_offset = measure * 4
 
-    # Whole note chords (sustain full measure)
     for pitch in pitches:
         velocity = np.random.randint(50, 80)
         notes_data.append({"start": beat_offset, "duration": 4.0, "pitch": pitch, "velocity": velocity})
 
-# Add a melody line on top
+# Melody line
 melody = [
     (0, 0.5, 72, 100),
     (0.5, 0.5, 74, 95),
@@ -102,69 +97,98 @@ df = pd.DataFrame(notes_data)
 # Pitch range with margin
 pitch_min = df["pitch"].min() - 1
 pitch_max = df["pitch"].max() + 1
+pitches = list(range(pitch_min, pitch_max + 1))
+n_pitches = len(pitches)
+
+# Create a time-pitch matrix for heatmap (resolution: 0.25 beats = sixteenth notes)
+resolution = 0.25
+total_beats = 32
+n_steps = int(total_beats / resolution)
+matrix = np.full((n_pitches, n_steps), np.nan)
+
+for _, row in df.iterrows():
+    pitch_idx = int(row["pitch"]) - pitch_min
+    start_step = int(row["start"] / resolution)
+    end_step = int((row["start"] + row["duration"]) / resolution)
+    end_step = min(end_step, n_steps)
+    for t in range(start_step, end_step):
+        existing = matrix[pitch_idx, t]
+        if np.isnan(existing) or row["velocity"] > existing:
+            matrix[pitch_idx, t] = row["velocity"]
+
+# Flip so highest pitch is at the top
+matrix_flipped = matrix[::-1]
+pitches_flipped = pitches[::-1]
+
+# Build pitch labels
+pitch_labels = [f"{NOTE_NAMES[p % 12]}{p // 12 - 1}" for p in pitches_flipped]
+
+# Build time labels (show measure numbers at beat 0 of each measure)
+time_labels = [""] * n_steps
+for beat in range(0, total_beats + 1, 4):
+    step = int(beat / resolution)
+    if step < n_steps:
+        time_labels[step] = f"M{beat // 4 + 1}"
+
+# Create blue-to-red colormap as spec suggests
+cmap = sns.color_palette("coolwarm", as_cmap=True)
+
+# Black key row mask for background shading
+black_key_mask = np.array([p % 12 in BLACK_KEY_INDICES for p in pitches_flipped])
 
 # Plot
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Background shading for black keys
-for pitch in range(pitch_min, pitch_max + 1):
-    if pitch % 12 in BLACK_KEY_INDICES:
-        ax.axhspan(pitch - 0.5, pitch + 0.5, color="#e8e8e8", zorder=0)
+# Draw background shading for black keys first
+for i, is_black in enumerate(black_key_mask):
+    if is_black:
+        ax.axhspan(i, i + 1, color="#e8e8e8", zorder=0)
 
-# Beat grid lines
-total_beats = 32
+# Use seaborn heatmap as the core visualization
+sns.heatmap(
+    pd.DataFrame(matrix_flipped, index=pitch_labels),
+    ax=ax,
+    cmap=cmap,
+    vmin=40,
+    vmax=127,
+    cbar_kws={"label": "Velocity (MIDI 0–127)", "shrink": 0.8, "aspect": 30, "pad": 0.02},
+    xticklabels=False,
+    yticklabels=1,
+    linewidths=0,
+    mask=np.isnan(matrix_flipped),
+)
+
+# Add beat grid lines
 for beat in range(total_beats + 1):
+    x_pos = beat / resolution
     if beat % 4 == 0:
-        ax.axvline(beat, color="#999999", linewidth=1.2, alpha=0.6, zorder=1)
+        ax.axvline(x_pos, color="#777777", linewidth=1.2, alpha=0.6, zorder=3)
     else:
-        ax.axvline(beat, color="#cccccc", linewidth=0.6, alpha=0.4, zorder=1)
+        ax.axvline(x_pos, color="#bbbbbb", linewidth=0.5, alpha=0.3, zorder=3)
 
-# Draw note rectangles
-cmap = sns.color_palette("YlOrRd", as_cmap=True)
-norm = Normalize(vmin=40, vmax=127)
+# X-axis: measure labels
+measure_positions = [int(b / resolution) for b in range(0, total_beats, 4)]
+measure_labels_display = [f"M{i + 1}" for i in range(len(measure_positions))]
+ax.set_xticks([pos + 2 / resolution for pos in measure_positions])
+ax.set_xticklabels(measure_labels_display, fontsize=16)
 
-rectangles = []
-colors = []
-for _, row in df.iterrows():
-    rect = mpatches.FancyBboxPatch(
-        (row["start"], row["pitch"] - 0.4), row["duration"] - 0.05, 0.8, boxstyle="round,pad=0.02"
-    )
-    rectangles.append(rect)
-    colors.append(cmap(norm(row["velocity"])))
+# Y-axis styling
+ax.tick_params(axis="y", labelsize=14, length=0)
+ax.tick_params(axis="x", length=0)
 
-pc = PatchCollection(rectangles, facecolors=colors, edgecolors="white", linewidths=0.8, zorder=2)
-ax.add_collection(pc)
-
-# Colorbar
-sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
-sm.set_array([])
-cbar = fig.colorbar(sm, ax=ax, pad=0.02, aspect=30, shrink=0.8)
-cbar.set_label("Velocity", fontsize=18)
+# Colorbar styling
+cbar = ax.collections[0].colorbar
 cbar.ax.tick_params(labelsize=14)
+cbar.set_label("Velocity (MIDI 0–127)", fontsize=18)
 
-# Y-axis: note names
-pitch_range = range(pitch_min, pitch_max + 1)
-pitch_labels = [f"{NOTE_NAMES[p % 12]}{p // 12 - 1}" for p in pitch_range]
-ax.set_yticks(list(pitch_range))
-ax.set_yticklabels(pitch_labels, fontsize=13)
+# Labels and title
+ax.set_xlabel("Measure (4/4 time)", fontsize=20)
+ax.set_ylabel("Pitch (MIDI note)", fontsize=20)
+ax.set_title("piano-roll-midi · seaborn · pyplots.ai", fontsize=24, fontweight="medium", pad=15)
 
-# X-axis: beats with measure numbers
-measure_ticks = list(range(0, total_beats + 1, 4))
-measure_labels = [f"M{i + 1}" for i in range(len(measure_ticks))]
-ax.set_xticks(measure_ticks)
-ax.set_xticklabels(measure_labels, fontsize=16)
-
-# Minor ticks for individual beats
-ax.set_xticks(range(total_beats + 1), minor=True)
-
-# Style
-ax.set_xlim(-0.2, total_beats + 0.2)
-ax.set_ylim(pitch_min - 0.5, pitch_max + 0.5)
-ax.set_xlabel("Measure", fontsize=20)
-ax.set_ylabel("Pitch", fontsize=20)
-ax.set_title("piano-roll-midi \u00b7 seaborn \u00b7 pyplots.ai", fontsize=24, fontweight="medium")
-ax.spines["top"].set_visible(False)
-ax.spines["right"].set_visible(False)
+# Remove spines
+for spine in ax.spines.values():
+    spine.set_visible(False)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

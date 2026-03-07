@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 piano-roll-midi: MIDI Piano Roll Visualization
 Library: bokeh 3.8.2 | Python 3.14.3
-Quality: 82/100 | Created: 2026-03-07
+Quality: 90/100 | Created: 2026-03-07
 """
 
 import numpy as np

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 piano-roll-midi: MIDI Piano Roll Visualization
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-07
@@ -101,10 +101,16 @@ df["end"] = df["start"] + df["duration"]
 # Create note labels (e.g., C4, D#5)
 df["note_name"] = df["pitch"].apply(lambda p: f"{NOTE_NAMES[p % 12]}{p // 12 - 1}")
 
-# Determine pitch range with margin
+# Only include pitches actually used + 1 semitone margin on each side
+used_pitches = set(df["pitch"].unique())
 pitch_min = df["pitch"].min() - 1
 pitch_max = df["pitch"].max() + 1
-all_pitches = list(range(pitch_min, pitch_max + 1))
+# Keep used pitches plus their immediate neighbors for context
+display_pitches = set()
+for p in used_pitches:
+    display_pitches.update([p - 1, p, p + 1])
+# Clamp to the overall range
+all_pitches = sorted([p for p in display_pitches if pitch_min <= p <= pitch_max])
 
 # Black key indicators for background shading
 black_key_semitones = {1, 3, 6, 8, 10}
@@ -122,6 +128,15 @@ bg_df = pd.DataFrame(bg_rows)
 # Sort order for y-axis (low pitch at bottom, high at top — reversed for Altair)
 pitch_labels = [f"{NOTE_NAMES[p % 12]}{p // 12 - 1}" for p in reversed(all_pitches)]
 
+# Assign musical layer labels for selection filtering
+df["layer"] = df["pitch"].apply(lambda p: "Bass" if p < 55 else ("Chords" if p < 70 else "Melody"))
+
+# Selection: click legend to highlight a musical layer
+layer_selection = alt.selection_point(fields=["layer"], bind="legend")
+
+# Selection: interval selection on x-axis for measure zoom (HTML)
+brush = alt.selection_interval(encodings=["x"])
+
 # Background: alternating shading for black/white keys
 background = (
     alt.Chart(bg_df)
@@ -130,30 +145,33 @@ background = (
         x=alt.X("start:Q", scale=alt.Scale(domain=[0, 32])),
         x2="end:Q",
         y=alt.Y("note_name:N", sort=pitch_labels),
-        color=alt.condition(alt.datum.is_black, alt.value("#e0e0e0"), alt.value("#f8f8f8")),
+        color=alt.condition(alt.datum.is_black, alt.value("#d4d0c8"), alt.value("#f5f3ef")),
     )
 )
 
 # Beat grid lines (vertical rules at each beat)
 beat_positions = pd.DataFrame({"beat": list(range(33))})
 beat_grid = (
-    alt.Chart(beat_positions).mark_rule(strokeDash=[2, 2], opacity=0.3, color="#999999").encode(x=alt.X("beat:Q"))
+    alt.Chart(beat_positions).mark_rule(strokeDash=[3, 3], opacity=0.25, color="#8a8580").encode(x=alt.X("beat:Q"))
 )
 
 # Measure lines (stronger lines every 4 beats)
 measure_positions = pd.DataFrame({"beat": list(range(0, 33, 4))})
 measure_grid = (
-    alt.Chart(measure_positions).mark_rule(opacity=0.6, color="#666666", strokeWidth=1.5).encode(x=alt.X("beat:Q"))
+    alt.Chart(measure_positions).mark_rule(opacity=0.5, color="#5a554f", strokeWidth=1.5).encode(x=alt.X("beat:Q"))
 )
 
-# Piano roll notes
+# Color scale: warm amber-to-crimson palette for velocity
+velocity_colors = ["#2c1654", "#5b3a8c", "#9b4dca", "#d4577a", "#f28c38", "#ffd54f"]
+
+# Piano roll notes with selection-based opacity
 note_bars = (
     alt.Chart(df)
-    .mark_bar(cornerRadius=3, stroke="#222222", strokeWidth=0.5)
+    .mark_bar(cornerRadius=4, stroke="#1a1a2e", strokeWidth=0.6)
     .encode(
         x=alt.X(
             "start:Q",
-            title="Beat",
+            title="Measure",
             axis=alt.Axis(
                 labelFontSize=16,
                 titleFontSize=20,
@@ -162,29 +180,53 @@ note_bars = (
             ),
         ),
         x2="end:Q",
-        y=alt.Y("note_name:N", sort=pitch_labels, title="Pitch", axis=alt.Axis(labelFontSize=14, titleFontSize=20)),
+        y=alt.Y("note_name:N", sort=pitch_labels, title="Pitch", axis=alt.Axis(labelFontSize=16, titleFontSize=20)),
         color=alt.Color(
             "velocity:Q",
             title="Velocity",
-            scale=alt.Scale(scheme="viridis", domain=[40, 127]),
-            legend=alt.Legend(titleFontSize=18, labelFontSize=14, orient="right", gradientLength=300),
+            scale=alt.Scale(range=velocity_colors, domain=[40, 127]),
+            legend=alt.Legend(titleFontSize=18, labelFontSize=16, orient="right", gradientLength=300),
         ),
+        opacity=alt.condition(layer_selection, alt.value(0.95), alt.value(0.15)),
         tooltip=[
             alt.Tooltip("note_name:N", title="Note"),
+            alt.Tooltip("layer:N", title="Layer"),
             alt.Tooltip("start:Q", title="Start (beat)"),
             alt.Tooltip("duration:Q", title="Duration"),
             alt.Tooltip("velocity:Q", title="Velocity"),
         ],
     )
+    .add_params(layer_selection)
+)
+
+# Layer labels as text annotations on the right edge
+layer_label_data = pd.DataFrame(
+    [
+        {"x": 32.5, "note_name": "C3", "label": "Bass"},
+        {"x": 32.5, "note_name": "E4", "label": "Chords"},
+        {"x": 32.5, "note_name": "E5", "label": "Melody"},
+    ]
+)
+layer_labels = (
+    alt.Chart(layer_label_data)
+    .mark_text(align="left", dx=8, fontSize=14, fontWeight="bold", color="#5a554f", fontStyle="italic")
+    .encode(x=alt.X("x:Q"), y=alt.Y("note_name:N", sort=pitch_labels), text="label:N")
 )
 
 # Layer everything together
 chart = (
-    (background + beat_grid + measure_grid + note_bars)
+    (background + beat_grid + measure_grid + note_bars + layer_labels)
     .properties(
         width=1500,
         height=850,
-        title=alt.Title(text="piano-roll-midi · altair · pyplots.ai", fontSize=28, anchor="middle", offset=20),
+        title=alt.Title(
+            text="piano-roll-midi · altair · pyplots.ai",
+            fontSize=28,
+            anchor="middle",
+            offset=20,
+            color="#1a1a2e",
+            subtitleColor="#5a554f",
+        ),
     )
     .configure_view(strokeWidth=0)
     .configure_axis(grid=False)
@@ -192,4 +234,4 @@ chart = (
 
 # Save
 chart.save("plot.png", scale_factor=3.0)
-chart.interactive().save("plot.html")
+chart.add_params(brush).save("plot.html")

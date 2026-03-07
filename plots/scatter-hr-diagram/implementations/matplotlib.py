@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-hr-diagram: Hertzsprung-Russell Diagram
 Library: matplotlib 3.10.8 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-07
@@ -12,12 +12,12 @@ import numpy as np
 np.random.seed(42)
 
 spectral_colors = {
-    "O": "#6699ff",
-    "B": "#99bbff",
-    "A": "#ccddff",
-    "F": "#ffee88",
-    "G": "#ffdd44",
-    "K": "#ff9933",
+    "O": "#4477cc",
+    "B": "#6699dd",
+    "A": "#99aacc",
+    "F": "#ccb833",
+    "G": "#ffcc00",
+    "K": "#ff8800",
     "M": "#cc3300",
 }
 
@@ -30,6 +30,16 @@ temp_ranges = {
     "K": (3700, 5200),
     "M": (2400, 3700),
 }
+
+temp_boundaries = sorted([(t_lo, t_hi, sp) for sp, (t_lo, t_hi) in temp_ranges.items()], key=lambda x: x[0])
+
+
+def classify_temp(t):
+    for _t_lo, t_hi, sp in temp_boundaries:
+        if t < t_hi:
+            return sp
+    return temp_boundaries[-1][2]
+
 
 # Main sequence stars (250)
 ms_temps = []
@@ -48,48 +58,17 @@ for sp_type, (t_lo, t_hi) in temp_ranges.items():
 # Red giants (50)
 rg_temps = np.random.uniform(3000, 5200, 50)
 rg_lums = 10 ** np.random.uniform(1.0, 3.0, 50)
-rg_types = []
-for t in rg_temps:
-    if t < 3700:
-        rg_types.append("M")
-    elif t < 5200:
-        rg_types.append("K")
-    else:
-        rg_types.append("G")
+rg_types = [classify_temp(t) for t in rg_temps]
 
-# Supergiants (20)
-sg_temps = np.random.uniform(3500, 30000, 20)
-sg_lums = 10 ** np.random.uniform(3.5, 5.5, 20)
-sg_types = []
-for t in sg_temps:
-    if t < 3700:
-        sg_types.append("M")
-    elif t < 5200:
-        sg_types.append("K")
-    elif t < 6000:
-        sg_types.append("G")
-    elif t < 7500:
-        sg_types.append("F")
-    elif t < 10000:
-        sg_types.append("A")
-    elif t < 30000:
-        sg_types.append("B")
-    else:
-        sg_types.append("O")
+# Supergiants (35)
+sg_temps = np.random.uniform(3500, 30000, 35)
+sg_lums = 10 ** np.random.uniform(3.5, 5.5, 35)
+sg_types = [classify_temp(t) for t in sg_temps]
 
 # White dwarfs (30)
 wd_temps = np.random.uniform(5000, 30000, 30)
 wd_lums = 10 ** np.random.uniform(-4.0, -1.5, 30)
-wd_types = []
-for t in wd_temps:
-    if t < 6000:
-        wd_types.append("G")
-    elif t < 7500:
-        wd_types.append("F")
-    elif t < 10000:
-        wd_types.append("A")
-    else:
-        wd_types.append("B")
+wd_types = [classify_temp(t) for t in wd_temps]
 
 all_temps = np.array(ms_temps + list(rg_temps) + list(sg_temps) + list(wd_temps))
 all_lums = np.array(ms_lums + list(rg_lums) + list(sg_lums) + list(wd_lums))
@@ -106,24 +85,41 @@ for sp_type in ["O", "B", "A", "F", "G", "K", "M"]:
             all_lums[mask],
             c=spectral_colors[sp_type],
             label=sp_type,
-            s=120,
-            alpha=0.75,
+            s=60,
+            alpha=0.65,
             edgecolors="white",
             linewidth=0.5,
             zorder=3,
         )
 
 # Sun reference point
-ax.scatter(5778, 1.0, c="#ffdd44", s=500, edgecolors="#333333", linewidth=2, zorder=5, marker="*")
+ax.scatter(5778, 1.0, c="#ffcc00", s=500, edgecolors="#333333", linewidth=2, zorder=5, marker="*")
 ax.annotate(
     "Sun", (5778, 1.0), textcoords="offset points", xytext=(14, -10), fontsize=16, fontweight="bold", color="#333333"
 )
 
-# Region labels
-ax.annotate("Main Sequence", xy=(8500, 8), fontsize=15, fontstyle="italic", color="#555555", rotation=-42, ha="center")
-ax.annotate("Red Giants", xy=(3800, 300), fontsize=15, fontstyle="italic", color="#555555", ha="center")
-ax.annotate("Supergiants", xy=(8000, 60000), fontsize=15, fontstyle="italic", color="#555555", ha="center")
-ax.annotate("White Dwarfs", xy=(12000, 0.0005), fontsize=15, fontstyle="italic", color="#555555", ha="center")
+# Region labels (positioned away from dense data clusters)
+ax.annotate(
+    "Main Sequence",
+    xy=(15000, 200),
+    fontsize=15,
+    fontstyle="italic",
+    color="#444444",
+    rotation=-42,
+    ha="center",
+    bbox={"boxstyle": "round,pad=0.2", "fc": "white", "ec": "none", "alpha": 0.7},
+)
+ax.annotate(
+    "Red Giants",
+    xy=(3200, 150),
+    fontsize=15,
+    fontstyle="italic",
+    color="#444444",
+    ha="center",
+    bbox={"boxstyle": "round,pad=0.2", "fc": "white", "ec": "none", "alpha": 0.7},
+)
+ax.annotate("Supergiants", xy=(8000, 400000), fontsize=15, fontstyle="italic", color="#444444", ha="center")
+ax.annotate("White Dwarfs", xy=(15000, 0.00008), fontsize=15, fontstyle="italic", color="#444444", ha="center")
 
 # Style
 ax.set_xscale("log")
@@ -140,7 +136,7 @@ ax.legend(title="Spectral Type", fontsize=14, title_fontsize=16, loc="upper righ
 
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
-ax.grid(True, alpha=0.15, linewidth=0.8, which="both")
+ax.yaxis.grid(True, alpha=0.2, linewidth=0.8, which="both")
 
 # Secondary x-axis for spectral classes
 ax2 = ax.twiny()

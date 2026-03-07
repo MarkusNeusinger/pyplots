@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-tornado-sensitivity: Tornado Diagram for Sensitivity Analysis
 Library: bokeh 3.8.2 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-07
@@ -50,13 +50,18 @@ n = len(parameters_sorted)
 low_alphas = [0.55 + 0.4 * (i / (n - 1)) for i in range(n)]
 high_alphas = [0.55 + 0.4 * (i / (n - 1)) for i in range(n)]
 
+low_val_fmt = [f"${v:.1f}M" for v in low_sorted]
+high_val_fmt = [f"${v:.1f}M" for v in high_sorted]
+range_val_fmt = [f"${r:.1f}M" for r in ranges_sorted]
+
 source_low = ColumnDataSource(
     data={
         "parameter": parameters_sorted,
         "left": low_left,
         "right": low_right,
-        "low_val": [f"${v:.1f}M" for v in low_sorted],
-        "range_val": [f"${r:.1f}M" for r in ranges_sorted],
+        "low_val": low_val_fmt,
+        "high_val": high_val_fmt,
+        "range_val": range_val_fmt,
         "alpha": low_alphas,
     }
 )
@@ -66,8 +71,9 @@ source_high = ColumnDataSource(
         "parameter": parameters_sorted,
         "left": high_left,
         "right": high_right,
-        "high_val": [f"${v:.1f}M" for v in high_sorted],
-        "range_val": [f"${r:.1f}M" for r in ranges_sorted],
+        "low_val": low_val_fmt,
+        "high_val": high_val_fmt,
+        "range_val": range_val_fmt,
         "alpha": high_alphas,
     }
 )
@@ -129,7 +135,7 @@ low_labels = LabelSet(
     y="parameter",
     text="text",
     source=label_low_source,
-    text_font_size="14pt",
+    text_font_size="17pt",
     text_color="#333333",
     text_align="right",
     x_offset=-8,
@@ -144,7 +150,7 @@ high_labels = LabelSet(
     y="parameter",
     text="text",
     source=label_high_source,
-    text_font_size="14pt",
+    text_font_size="17pt",
     text_color="#333333",
     text_align="left",
     x_offset=8,
@@ -160,14 +166,14 @@ p.add_layout(baseline)
 # Base case label
 base_label = Label(
     x=base_npv,
-    y=n - 0.3,
+    y=n - 0.5,
     text=f"Base Case: ${base_npv}M",
-    text_font_size="16pt",
+    text_font_size="18pt",
     text_color="#2c3e50",
     text_font_style="bold",
     text_align="center",
     y_units="data",
-    y_offset=30,
+    y_offset=100,
 )
 p.add_layout(base_label)
 
@@ -224,8 +230,9 @@ p.legend.glyph_height = 20
 p.legend.glyph_width = 30
 p.legend.label_text_color = "#333333"
 
-# Toolbar position
+# Toolbar position and padding
 p.toolbar_location = "above"
+p.min_border_top = 120
 
 # Save
 export_png(p, filename="plot.png")

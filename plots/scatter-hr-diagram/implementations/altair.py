@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-hr-diagram: Hertzsprung-Russell Diagram
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-07
@@ -115,7 +115,7 @@ stars = (
             "Spectral Type:N",
             scale=alt.Scale(
                 domain=["O", "B", "A", "F", "G", "K", "M"],
-                range=["#4466bb", "#7799dd", "#8aaad0", "#d4b840", "#ddcc44", "#ee9933", "#cc5522"],
+                range=["#2244aa", "#6699ee", "#b0c4de", "#c8a82a", "#f0e040", "#ee8822", "#cc4411"],
             ),
             sort=["O", "B", "A", "F", "G", "K", "M"],
             legend=alt.Legend(
@@ -123,7 +123,7 @@ stars = (
             ),
         ),
         size=alt.value(40),
-        opacity=alt.condition(selection, alt.value(0.7), alt.value(0.08)),
+        opacity=alt.condition(selection, alt.value(0.5), alt.value(0.08)),
         tooltip=["Temperature (K):Q", "Luminosity (Solar):Q", "Spectral Type:N", "Region:N"],
     )
     .add_params(selection)

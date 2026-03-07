@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-hr-diagram: Hertzsprung-Russell Diagram
 Library: matplotlib 3.10.8 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-07

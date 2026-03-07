@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-tornado-sensitivity: Tornado Diagram for Sensitivity Analysis
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-07
@@ -40,25 +40,30 @@ sorted_params = [d[0] for d in deviations]
 sorted_low_devs = [d[1] for d in deviations]
 sorted_high_devs = [d[2] for d in deviations]
 
-# Style - refined palette with prominent zero reference line
+# Style - refined palette with strong zero reference line
 custom_style = Style(
     background="white",
-    plot_background="#fafafa",
+    plot_background="#f8f9fa",
     foreground="#2d2d2d",
     foreground_strong="#1a1a1a",
-    foreground_subtle="#e0e0e0",
-    colors=("#E07A5F", "#4A7C96"),
+    foreground_subtle="#e8e8e8",
+    colors=("#D95F4E", "#3A7CA5"),
     title_font_size=72,
     label_font_size=44,
-    major_label_font_size=44,
+    major_label_font_size=48,
     legend_font_size=42,
-    value_font_size=34,
-    value_label_font_size=34,
+    value_font_size=36,
+    value_label_font_size=36,
     tooltip_font_size=36,
     guide_stroke_color="#e0e0e0",
-    guide_stroke_dasharray="4,4",
-    major_guide_stroke_color="#555555",
+    guide_stroke_dasharray="6,4",
+    major_guide_stroke_color="#333333",
     major_guide_stroke_dasharray="",
+    title_font_family="Helvetica, Arial, sans-serif",
+    label_font_family="Helvetica, Arial, sans-serif",
+    value_font_family="Helvetica, Arial, sans-serif",
+    legend_font_family="Helvetica, Arial, sans-serif",
+    major_label_font_family="Helvetica, Arial, sans-serif",
 )
 
 # Plot
@@ -75,14 +80,18 @@ chart = pygal.HorizontalStackedBar(
     show_x_guides=True,
     show_y_guides=False,
     y_labels_major=[0],
+    range=(-1.4, 1.4),
     print_values=True,
     print_values_position="center",
     value_formatter=lambda x: f"{x:+.1f}" if x else "",
-    margin=40,
-    margin_bottom=100,
-    spacing=20,
+    margin=50,
+    margin_left=80,
+    margin_right=50,
+    margin_bottom=110,
+    spacing=24,
     truncate_label=-1,
-    rounded_bars=6,
+    rounded_bars=8,
+    zero=0,
 )
 
 chart.x_labels = sorted_params

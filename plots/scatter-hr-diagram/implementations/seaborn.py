@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-hr-diagram: Hertzsprung-Russell Diagram
 Library: seaborn 0.13.2 | Python 3.14.3
-Quality: 89/100 | Created: 2026-03-07
+Quality: 91/100 | Created: 2026-03-07
 """
 
 import matplotlib.patheffects as pe

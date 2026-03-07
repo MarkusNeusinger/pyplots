@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 piano-roll-midi: MIDI Piano Roll Visualization
 Library: highcharts unknown | Python 3.14.3
 Quality: 80/100 | Created: 2026-03-07
@@ -101,62 +101,61 @@ notes = [
     (30.0, 2.0, 72, 125),  # C5 - final sustained
 ]
 
-# Determine pitch range
-pitches = [n[2] for n in notes]
-min_pitch = min(pitches) - 1
-max_pitch = max(pitches) + 1
+# Determine pitch range - only include pitches that have notes
+used_pitches = sorted({n[2] for n in notes})
+min_pitch = min(used_pitches) - 1
+max_pitch = max(used_pitches) + 1
 
-# Build category list (one per semitone, low to high)
+# Build category list for only the used range
+all_midi_range = list(range(min_pitch, max_pitch + 1))
 categories = []
-for midi in range(min_pitch, max_pitch + 1):
+for midi in all_midi_range:
     octave = midi // 12 - 1
     name = NOTE_NAMES[midi % 12]
     categories.append(f"{name}{octave}")
 
-pitch_to_index = {midi: i for i, midi in enumerate(range(min_pitch, max_pitch + 1))}
+pitch_to_index = {midi: i for i, midi in enumerate(all_midi_range)}
 
-# Velocity to color (blue=soft → purple → red=loud)
+# Velocity color mapping: teal (soft) → gold (medium) → crimson (loud)
+# Better perceptual separation than blue→purple→red
 vel_min, vel_max = 60, 127
-vel_colors = np.array(
-    [
-        [48, 105, 152],  # #306998 blue (soft)
-        [120, 60, 160],  # purple (medium)
-        [220, 40, 40],  # red (loud)
-    ],
-    dtype=float,
-)
+color_stops_rgb = [
+    (30, 120, 140),  # #1e788c teal (soft/piano)
+    (240, 180, 40),  # #f0b428 golden yellow (medium/mezzo)
+    (190, 30, 45),  # #be1e2d crimson (loud/forte)
+]
 
-
-def vel_to_color(v):
-    t = np.clip((v - vel_min) / (vel_max - vel_min), 0.0, 1.0)
-    if t < 0.5:
-        s = t / 0.5
-        rgb = vel_colors[0] * (1 - s) + vel_colors[1] * s
-    else:
-        s = (t - 0.5) / 0.5
-        rgb = vel_colors[1] * (1 - s) + vel_colors[2] * s
-    return f"#{int(rgb[0]):02x}{int(rgb[1]):02x}{int(rgb[2]):02x}"
-
-
-# Build xrange data points
+# Build xrange data points with inline color interpolation
 data_points = []
 for start, dur, pitch, vel in notes:
+    t = float(np.clip((vel - vel_min) / (vel_max - vel_min), 0.0, 1.0))
+    if t < 0.5:
+        s = t / 0.5
+        r = int(color_stops_rgb[0][0] * (1 - s) + color_stops_rgb[1][0] * s)
+        g = int(color_stops_rgb[0][1] * (1 - s) + color_stops_rgb[1][1] * s)
+        b = int(color_stops_rgb[0][2] * (1 - s) + color_stops_rgb[1][2] * s)
+    else:
+        s = (t - 0.5) / 0.5
+        r = int(color_stops_rgb[1][0] * (1 - s) + color_stops_rgb[2][0] * s)
+        g = int(color_stops_rgb[1][1] * (1 - s) + color_stops_rgb[2][1] * s)
+        b = int(color_stops_rgb[1][2] * (1 - s) + color_stops_rgb[2][2] * s)
+    color = f"#{r:02x}{g:02x}{b:02x}"
     data_points.append(
         {
             "x": start,
             "x2": start + dur,
             "y": pitch_to_index[pitch],
-            "color": vel_to_color(vel),
+            "color": color,
             "custom": {"pitch": pitch, "velocity": vel, "noteName": categories[pitch_to_index[pitch]]},
         }
     )
 
-# Plot bands for black keys (darker background rows)
+# Plot bands for black keys (subtle darker background rows)
 plot_bands = []
-for midi in range(min_pitch, max_pitch + 1):
+for midi in all_midi_range:
     if (midi % 12) in BLACK_KEY_INDICES:
         idx = pitch_to_index[midi]
-        plot_bands.append({"from": idx - 0.5, "to": idx + 0.5, "color": "rgba(30, 30, 30, 0.08)"})
+        plot_bands.append({"from": idx - 0.5, "to": idx + 0.5, "color": "rgba(0, 0, 0, 0.06)"})
 
 # Beat grid lines for x-axis (stronger at measure boundaries)
 total_beats = 32
@@ -164,7 +163,7 @@ beat_lines = []
 for beat in range(total_beats + 1):
     is_measure = beat % 4 == 0
     beat_lines.append(
-        {"value": beat, "color": "#888888" if is_measure else "#cccccc", "width": 3 if is_measure else 1, "zIndex": 3}
+        {"value": beat, "color": "#999999" if is_measure else "#dddddd", "width": 2 if is_measure else 1, "zIndex": 3}
     )
 
 # Chart
@@ -175,42 +174,47 @@ chart.options.chart = {
     "type": "xrange",
     "width": 4800,
     "height": 2700,
-    "backgroundColor": "#ffffff",
+    "backgroundColor": "#fafafa",
     "marginLeft": 200,
-    "marginTop": 140,
-    "marginBottom": 160,
-    "marginRight": 220,
+    "marginTop": 180,
+    "marginBottom": 200,
+    "marginRight": 380,
+    "style": {"fontFamily": "'Segoe UI', 'Helvetica Neue', Arial, sans-serif"},
 }
 
 chart.options.title = {
     "text": "piano-roll-midi \u00b7 highcharts \u00b7 pyplots.ai",
-    "style": {"fontSize": "48px", "fontWeight": "bold"},
-    "y": 60,
+    "style": {"fontSize": "44px", "fontWeight": "600", "color": "#2c2c2c"},
+    "y": 55,
+}
+
+chart.options.subtitle = {
+    "text": "C \u2013 Am \u2013 F \u2013 G chord progression \u00b7 8 measures \u00b7 velocity-colored dynamics",
+    "style": {"fontSize": "26px", "color": "#666666", "fontWeight": "400"},
+    "y": 100,
 }
 
 chart.options.x_axis = {
-    "title": {"text": "Beats", "style": {"fontSize": "32px"}},
-    "labels": {"style": {"fontSize": "26px"}, "step": 1},
+    "title": {"text": "Beats", "style": {"fontSize": "28px", "color": "#444444"}},
+    "labels": {"style": {"fontSize": "22px", "color": "#555555"}, "step": 1},
     "min": 0,
     "max": 32,
     "tickInterval": 4,
     "gridLineWidth": 0,
     "plotLines": beat_lines,
-    "lineWidth": 2,
-    "lineColor": "#333333",
+    "lineWidth": 0,
 }
 
 chart.options.y_axis = {
     "type": "category",
     "categories": categories,
-    "title": {"text": "Pitch", "style": {"fontSize": "32px"}},
-    "labels": {"style": {"fontSize": "22px"}},
+    "title": {"text": "Pitch", "style": {"fontSize": "28px", "color": "#444444"}},
+    "labels": {"style": {"fontSize": "20px", "color": "#555555"}},
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.06)",
+    "gridLineColor": "rgba(0, 0, 0, 0.04)",
     "plotBands": plot_bands,
     "reversed": False,
-    "lineWidth": 2,
-    "lineColor": "#333333",
+    "lineWidth": 0,
 }
 
 chart.options.legend = {"enabled": False}
@@ -220,6 +224,10 @@ chart.options.tooltip = {
     "pointFormat": '<span style="font-size:22px"><b>{point.custom.noteName}</b> (MIDI {point.custom.pitch})<br/>'
     "Beat {point.x} \u2013 {point.x2}<br/>"
     "Velocity: {point.custom.velocity}</span>",
+    "backgroundColor": "rgba(255,255,255,0.95)",
+    "borderColor": "#cccccc",
+    "borderRadius": 8,
+    "shadow": {"color": "rgba(0,0,0,0.15)", "offsetX": 2, "offsetY": 2, "width": 4},
 }
 
 chart.options.series = [
@@ -227,17 +235,17 @@ chart.options.series = [
         "type": "xrange",
         "name": "Notes",
         "data": data_points,
-        "pointWidth": 65,
-        "borderRadius": 4,
+        "pointWidth": 60,
+        "borderRadius": 5,
         "borderWidth": 1,
-        "borderColor": "rgba(0, 0, 0, 0.25)",
+        "borderColor": "rgba(0, 0, 0, 0.15)",
         "dataLabels": {"enabled": False},
     }
 ]
 
 chart.options.credits = {"enabled": False}
 
-# Download Highcharts JS modules (jsdelivr CDN)
+# Download Highcharts JS modules
 cache_dir = Path("/tmp")
 cdn_urls = {
     "highcharts": ("https://cdn.jsdelivr.net/npm/highcharts@11.4.8/highcharts.js", cache_dir / "highcharts.js"),
@@ -255,8 +263,44 @@ for name, (url, cache_path) in cdn_urls.items():
 highcharts_js = js_scripts["highcharts"]
 xrange_js = js_scripts["xrange"]
 
-# Generate HTML with inline scripts
+# Generate HTML with inline scripts and velocity colorbar via Highcharts renderer callback
 html_str = chart.to_js_literal()
+
+# JavaScript to draw velocity colorbar using Highcharts SVG renderer (segmented gradient)
+colorbar_js = """
+<script>
+(function() {
+  var checkChart = setInterval(function() {
+    var chart = Highcharts.charts[0];
+    if (!chart) return;
+    clearInterval(checkChart);
+    var r = chart.renderer;
+    var x = 4470, y = 220, w = 36, totalH = 2200;
+    var stops = [[30,120,140],[240,180,40],[190,30,45]];
+    var nSegs = 80;
+    var segH = totalH / nSegs;
+    for (var i = 0; i < nSegs; i++) {
+      var t = 1 - i / (nSegs - 1);
+      var c0, c1, s;
+      if (t < 0.5) { s = t / 0.5; c0 = stops[0]; c1 = stops[1]; }
+      else { s = (t - 0.5) / 0.5; c0 = stops[1]; c1 = stops[2]; }
+      var cr = Math.round(c0[0]*(1-s)+c1[0]*s);
+      var cg = Math.round(c0[1]*(1-s)+c1[1]*s);
+      var cb = Math.round(c0[2]*(1-s)+c1[2]*s);
+      var ry = (i === 0) ? 4 : 0;
+      var ry2 = (i === nSegs-1) ? 4 : 0;
+      r.rect(x, y + i*segH, w, segH+1, 0).attr({fill:'rgb('+cr+','+cg+','+cb+')', 'stroke-width':0}).add();
+    }
+    r.rect(x, y, w, totalH, 6).attr({fill:'none', stroke:'#bbb', 'stroke-width':1}).add();
+    r.text('Velocity', x + w/2, y - 15).attr({'text-anchor':'middle'}).css({fontSize:'24px', color:'#444', fontWeight:'600'}).add();
+    r.text('127 (forte)', x + w + 14, y + 18).css({fontSize:'20px', color:'#666'}).add();
+    r.text('93 (mezzo)', x + w + 14, y + totalH/2 + 6).css({fontSize:'20px', color:'#666'}).add();
+    r.text('60 (piano)', x + w + 14, y + totalH - 4).css({fontSize:'20px', color:'#666'}).add();
+  }, 100);
+})();
+</script>
+"""
+
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -264,9 +308,10 @@ html_content = f"""<!DOCTYPE html>
     <script>{highcharts_js}</script>
     <script>{xrange_js}</script>
 </head>
-<body style="margin:0; padding:0; background: #ffffff;">
+<body style="margin:0; padding:0; background: #fafafa;">
     <div id="container" style="width: 4800px; height: 2700px;"></div>
     <script>{html_str}</script>
+    {colorbar_js}
 </body>
 </html>"""
 

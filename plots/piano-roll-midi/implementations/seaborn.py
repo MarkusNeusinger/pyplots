@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 piano-roll-midi: MIDI Piano Roll Visualization
-Library: seaborn | Python 3.13
-Quality: pending | Created: 2026-03-07
+Library: seaborn 0.13.2 | Python 3.14.3
+Quality: 81/100 | Created: 2026-03-07
 """
 
 import matplotlib.patches as mpatches

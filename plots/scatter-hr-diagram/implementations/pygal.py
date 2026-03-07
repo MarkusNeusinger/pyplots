@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-hr-diagram: Hertzsprung-Russell Diagram
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 72/100 | Created: 2026-03-07
@@ -67,7 +67,18 @@ custom_style = Style(
     foreground_strong="#2a2a2a",
     foreground_subtle="#e0e0e0",
     guide_stroke_color="#e0e0e0",
-    colors=("#6699ff", "#bbccff", "#ffdd44", "#ff9933", "#ee4422", "#222222"),
+    colors=(
+        "#4477dd",  # O/B Stars — strong blue
+        "#c8b4e8",  # A Stars — lavender (distinct from blue)
+        "#ffdd44",  # F/G Stars — golden yellow
+        "#ff9933",  # K Stars — orange
+        "#ee4422",  # M Stars — red
+        "#222222",  # Sun marker
+        "#555555",  # Region labels (shared muted color)
+        "#555555",
+        "#555555",
+        "#555555",
+    ),
     font_family=font,
     title_font_family=font,
     title_font_size=52,
@@ -75,7 +86,7 @@ custom_style = Style(
     major_label_font_size=36,
     legend_font_size=32,
     legend_font_family=font,
-    value_font_size=26,
+    value_font_size=56,
     tooltip_font_size=26,
     tooltip_font_family=font,
     opacity=0.7,
@@ -87,7 +98,7 @@ chart = pygal.XY(
     width=4800,
     height=2700,
     style=custom_style,
-    title="Hertzsprung-Russell Diagram \u00b7 scatter-hr-diagram \u00b7 pygal \u00b7 pyplots.ai",
+    title="scatter-hr-diagram \u00b7 pygal \u00b7 pyplots.ai",
     x_title="\u2190 Surface Temperature (K) \u2192 Cool",
     y_title="log\u2081\u2080 Luminosity (L\u2609)",
     show_legend=True,
@@ -99,7 +110,7 @@ chart = pygal.XY(
     show_x_guides=True,
     show_y_guides=True,
     xrange=(-40000, -2000),
-    range=(-5, 7),
+    range=(-5, 7.5),
     x_value_formatter=lambda x: f"{abs(x):,.0f} K",
     value_formatter=lambda y: f"{y:.1f}",
     margin_bottom=100,
@@ -107,7 +118,13 @@ chart = pygal.XY(
     margin_right=40,
     margin_top=50,
     truncate_legend=-1,
+    print_labels=True,
     print_values=False,
+    css=[
+        "file://style.css",
+        "file://graph.css",
+        "inline:.label{font-size:28px !important; font-family:DejaVu Sans, sans-serif !important; fill:#444 !important;}",
+    ],
     js=[],
 )
 
@@ -124,6 +141,16 @@ chart.add(
     stroke=False,
     dots_size=14,
 )
+
+# Region labels — placed at representative positions for each stellar population
+region_labels = [
+    ("Main Sequence", -22000, 1.8),
+    ("Red Giants", -3500, 3.5),
+    ("Supergiants", -25000, 6.5),
+    ("White Dwarfs", -25000, -2.5),
+]
+for region_name, rx, ry in region_labels:
+    chart.add(region_name, [{"value": (rx, ry), "label": region_name}], stroke=False, dots_size=1)
 
 # Save
 chart.render_to_png("plot.png")

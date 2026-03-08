@@ -8,6 +8,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Skeleton from '@mui/material/Skeleton';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import BugReportIcon from '@mui/icons-material/BugReport';
+import { NotFoundPage } from './NotFoundPage';
 
 import { API_URL, GITHUB_URL } from '../constants';
 import { useAnalytics } from '../hooks';
@@ -192,11 +193,14 @@ export function SpecPage() {
   }
 
   // Error state
-  if (error || !specData) {
+  if (error === 'Spec not found' || (!error && !specData)) {
+    return <NotFoundPage />;
+  }
+  if (error) {
     return (
       <Box sx={{ textAlign: 'center', py: 8 }}>
         <Typography variant="h5" sx={{ mb: 2, color: '#6b7280' }}>
-          {error || 'Spec not found'}
+          {error}
         </Typography>
         <Button component={Link} to="/" startIcon={<ArrowBackIcon />} sx={{ color: '#3776AB' }}>
           Back to Home

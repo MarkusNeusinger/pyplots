@@ -333,7 +333,7 @@ export function SpecTabs({
         >
           {/* Title only - spec ID visible in breadcrumb */}
           <Typography
-            component="h1"
+            component="h2"
             sx={{
               fontFamily: '"MonoLisa", monospace',
               fontSize: '1.1rem',

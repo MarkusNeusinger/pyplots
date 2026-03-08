@@ -35,6 +35,8 @@ export interface BreadcrumbProps {
 export function Breadcrumb({ items, rightAction, sx }: BreadcrumbProps) {
   return (
     <Box
+      component="nav"
+      aria-label="breadcrumb"
       sx={{
         display: 'flex',
         justifyContent: 'space-between',

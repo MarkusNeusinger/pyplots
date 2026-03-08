@@ -92,6 +92,7 @@ export function McpPage() {
           property="og:description"
           content="Configure your AI assistant to access pyplots data via MCP"
         />
+        <link rel="canonical" href="https://pyplots.ai/mcp" />
       </Helmet>
 
       <Breadcrumb items={[{ label: 'pyplots.ai', to: '/' }, { label: 'mcp' }]} sx={{ mb: 2 }} />

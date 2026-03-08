@@ -68,6 +68,7 @@ export function LegalPage() {
         <meta name="description" content="Legal notice, privacy policy, and transparency information for pyplots.ai" />
         <meta property="og:title" content="legal | pyplots.ai" />
         <meta property="og:description" content="Legal notice, privacy policy, and transparency information" />
+        <link rel="canonical" href="https://pyplots.ai/legal" />
       </Helmet>
 
       <Breadcrumb items={[{ label: 'pyplots.ai', to: '/' }, { label: 'legal' }]} sx={{ mb: 2 }} />

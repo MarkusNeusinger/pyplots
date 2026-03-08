@@ -209,6 +209,9 @@ export function SpecPage() {
     );
   }
 
+  // After loading/error/not-found guards, specData is guaranteed to be non-null
+  if (!specData) return null;
+
   return (
     <>
       <Helmet>

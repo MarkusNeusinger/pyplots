@@ -4,11 +4,6 @@ import { Layout, AppDataProvider } from './components/Layout';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { HomePage } from './pages/HomePage';
 import { SpecPage } from './pages/SpecPage';
-import { CatalogPage } from './pages/CatalogPage';
-import { InteractivePage } from './pages/InteractivePage';
-import { DebugPage } from './pages/DebugPage';
-import { LegalPage } from './pages/LegalPage';
-import { McpPage } from './pages/McpPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 const router = createBrowserRouter([
@@ -17,18 +12,18 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { index: true, element: <HomePage /> },
-      { path: 'catalog', element: <CatalogPage /> },
-      { path: 'legal', element: <LegalPage /> },
-      { path: 'mcp', element: <McpPage /> },
+      { path: 'catalog', lazy: () => import('./pages/CatalogPage').then(m => ({ Component: m.CatalogPage })) },
+      { path: 'legal', lazy: () => import('./pages/LegalPage').then(m => ({ Component: m.LegalPage })) },
+      { path: 'mcp', lazy: () => import('./pages/McpPage').then(m => ({ Component: m.McpPage })) },
       { path: ':specId', element: <SpecPage /> },
       { path: ':specId/:library', element: <SpecPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },
   // Fullscreen interactive view (outside Layout but inside AppDataProvider)
-  { path: 'interactive/:specId/:library', element: <InteractivePage /> },
+  { path: 'interactive/:specId/:library', lazy: () => import('./pages/InteractivePage').then(m => ({ Component: m.InteractivePage })) },
   // Hidden debug dashboard (outside Layout - no header/footer)
-  { path: 'debug', element: <DebugPage /> },
+  { path: 'debug', lazy: () => import('./pages/DebugPage').then(m => ({ Component: m.DebugPage })) },
   { path: '*', element: <NotFoundPage /> },
 ]);
 

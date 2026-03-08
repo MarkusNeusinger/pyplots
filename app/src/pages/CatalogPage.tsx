@@ -124,7 +124,7 @@ export function CatalogPage() {
     [trackEvent]
   );
 
-  if (loading) {
+  if (loading || specsData.length === 0) {
     return (
       <Box sx={{ py: 4 }}>
         <Skeleton variant="text" width={200} height={40} sx={{ mb: 4 }} />

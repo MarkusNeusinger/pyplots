@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 calibration-beer-lambert: Beer-Lambert Calibration Curve
 Library: highcharts unknown | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-09
@@ -32,7 +32,7 @@ slope, intercept, r_value, p_value, std_err = stats.linregress(concentration, ab
 r_squared = r_value**2
 
 # Regression line and prediction interval
-conc_fit = np.linspace(-0.5, 15.5, 200)
+conc_fit = np.linspace(0, 15, 200)
 abs_fit = slope * conc_fit + intercept
 n = len(concentration)
 mean_conc = np.mean(concentration)
@@ -55,28 +55,41 @@ chart.options = HighchartsOptions()
 chart.options.chart = {
     "width": 4800,
     "height": 2700,
-    "backgroundColor": "#ffffff",
+    "backgroundColor": {
+        "linearGradient": {"x1": 0, "y1": 0, "x2": 0, "y2": 1},
+        "stops": [[0, "#ffffff"], [1, "#f8f9fb"]],
+    },
     "spacingTop": 60,
     "spacingBottom": 80,
     "spacingLeft": 60,
-    "spacingRight": 60,
-    "style": {"fontFamily": "Arial, Helvetica, sans-serif"},
+    "spacingRight": 140,
+    "style": {"fontFamily": "'Segoe UI', 'Helvetica Neue', Arial, sans-serif"},
 }
 
 chart.options.title = {
     "text": "calibration-beer-lambert \u00b7 highcharts \u00b7 pyplots.ai",
-    "style": {"fontSize": "52px", "fontWeight": "500", "color": "#333333"},
+    "style": {"fontSize": "52px", "fontWeight": "600", "color": "#2c3e50", "letterSpacing": "0.5px"},
     "margin": 50,
 }
 
+chart.options.subtitle = {
+    "text": "UV-Vis Spectrophotometric Calibration Standards",
+    "style": {"fontSize": "30px", "fontWeight": "400", "color": "#7f8c8d", "letterSpacing": "0.3px"},
+    "y": 90,
+}
+
 chart.options.x_axis = {
-    "title": {"text": "Concentration (mg/L)", "style": {"fontSize": "36px", "color": "#444444"}, "margin": 30},
+    "title": {
+        "text": "Concentration (mg/L)",
+        "style": {"fontSize": "36px", "fontWeight": "600", "color": "#2c3e50"},
+        "margin": 30,
+    },
     "labels": {"style": {"fontSize": "28px", "color": "#666666"}},
     "min": 0,
     "max": 15,
     "tickInterval": 2,
     "gridLineWidth": 0,
-    "lineColor": "#cccccc",
+    "lineColor": "#bdc3c7",
     "lineWidth": 2,
     "tickWidth": 0,
     "plotLines": [
@@ -85,14 +98,21 @@ chart.options.x_axis = {
 }
 
 chart.options.y_axis = {
-    "title": {"text": "Absorbance", "style": {"fontSize": "36px", "color": "#444444"}, "margin": 30},
+    "title": {
+        "text": "Absorbance",
+        "style": {"fontSize": "36px", "fontWeight": "600", "color": "#2c3e50"},
+        "margin": 30,
+    },
     "labels": {"style": {"fontSize": "28px", "color": "#666666"}},
-    "min": -0.05,
-    "max": 0.75,
+    "min": -0.02,
+    "max": 0.65,
+    "startOnTick": False,
+    "endOnTick": False,
     "tickInterval": 0.1,
-    "gridLineColor": "#eeeeee",
+    "gridLineColor": "#e8e8e8",
+    "gridLineDashStyle": "Dot",
     "gridLineWidth": 1,
-    "lineColor": "#cccccc",
+    "lineColor": "#bdc3c7",
     "lineWidth": 2,
     "plotLines": [
         {"value": float(unknown_absorbance), "color": "#c0392b", "width": 4, "dashStyle": "Dash", "zIndex": 2}
@@ -104,19 +124,33 @@ chart.options.legend = {
     "align": "right",
     "verticalAlign": "top",
     "layout": "vertical",
-    "x": -40,
-    "y": 80,
+    "x": -120,
+    "y": 100,
     "floating": True,
-    "backgroundColor": "rgba(255,255,255,0.85)",
-    "borderColor": "#cccccc",
+    "backgroundColor": "rgba(255,255,255,0.92)",
+    "borderColor": "#dce1e6",
     "borderWidth": 1,
-    "borderRadius": 6,
-    "itemStyle": {"fontSize": "28px", "fontWeight": "normal", "color": "#444444"},
+    "borderRadius": 8,
+    "shadow": {"enabled": True, "color": "rgba(0,0,0,0.06)", "offsetX": 2, "offsetY": 2, "width": 6},
+    "itemStyle": {"fontSize": "28px", "fontWeight": "normal", "color": "#2c3e50"},
+    "itemHoverStyle": {"color": "#306998"},
     "symbolRadius": 6,
-    "itemMarginBottom": 8,
+    "itemMarginBottom": 10,
+    "padding": 16,
 }
 
 chart.options.credits = {"enabled": False}
+
+chart.options.tooltip = {
+    "enabled": True,
+    "headerFormat": "",
+    "pointFormat": "<b>{series.name}</b><br/>Concentration: {point.x:.1f} mg/L<br/>Absorbance: {point.y:.4f}",
+    "style": {"fontSize": "24px"},
+    "borderRadius": 8,
+    "shadow": {"color": "rgba(0,0,0,0.1)", "offsetX": 2, "offsetY": 2, "width": 4},
+}
+
+chart.options.plot_options = {"series": {"animation": False, "states": {"hover": {"lineWidthPlus": 0}}}}
 
 # Prediction interval band (arearange)
 band_data = [[float(conc_fit[i]), float(lower_band[i]), float(upper_band[i])] for i in range(len(conc_fit))]
@@ -197,7 +231,7 @@ chart.options.annotations = [
             "style": {"fontSize": "36px", "color": "#306998", "fontWeight": "bold"},
             "padding": 24,
         },
-        "labels": [{"point": {"x": 2.5, "y": 0.62, "xAxis": 0, "yAxis": 0}, "text": f"{eq_text}<br>{r2_text}"}],
+        "labels": [{"point": {"x": 2.5, "y": 0.52, "xAxis": 0, "yAxis": 0}, "text": f"{eq_text}<br>{r2_text}"}],
     },
     {
         "draggable": "",

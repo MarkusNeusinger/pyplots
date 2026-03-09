@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: heatmap-loss-triangle
 created: '2026-03-09T11:57:28Z'
-updated: '2026-03-09T12:01:58Z'
+updated: '2026-03-09T12:11:34Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22852106885
 issue: 4581
@@ -10,38 +10,36 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-loss-triangle/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-loss-triangle/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-loss-triangle/highcharts/plot.html
-quality_score: 83
+quality_score: 88
 review:
   strengths:
-  - Full spec compliance with all required features (actual/projected distinction,
-    cell annotations, development factors, color encoding, legend)
-  - Excellent data quality with realistic actuarial scenario and plausible claim amounts
-  - Clean well-structured code with appropriate complexity and no over-engineering
-  - Good use of Highcharts-specific features (renderer API, colorAxis, useHTML data
-    labels)
-  - Effective visual distinction between actual (bold, white border) and projected
-    (italic, gold border) cells
+  - Comprehensive spec compliance with all required features including development
+    factors and actual/projected distinction
+  - Effective gold borders to visually separate projected IBNR cells from actual observations
+  - Custom 8-stop blue gradient palette creates professional appearance
+  - Age-to-age development factors rendered as styled boxes add analytical value
+  - Realistic actuarial data with proper cumulative development patterns
   weaknesses:
-  - Age-to-age factors row at bottom is cramped - all 9 factors on one dense line
-  - Custom actual/projected legend is small and could be more prominent
-  - Not using highcharts-core Python library API (raw HTML approach)
-  - Layout slightly imbalanced with color axis on right side
-  image_description: The plot displays a 10x10 heatmap loss development triangle.
-    Rows represent accident years 2015-2024 (top to bottom), columns show development
-    periods 1-10. Cells are colored with a blue sequential gradient from light blue
-    (low values ~3,000) to dark navy (high values ~31,000). Each cell contains the
-    cumulative claim amount formatted with thousands separators. Actual (observed)
-    cells have white borders, while projected (IBNR) cells have gold/amber borders,
-    creating a visible diagonal boundary from upper-right to lower-left. The title
-    reads "heatmap-loss-triangle · highcharts · pyplots.ai" with a subtitle "Cumulative
-    Paid Claims ($K) — Actual vs Projected (IBNR)". The y-axis is labeled "Accident
-    Year", x-axis "Development Period (Years)". A vertical color axis legend on the
-    right shows "Cumulative Claims ($K)" ranging 0-35,000. Age-to-age development
-    factors are displayed in a single line at the bottom, along with a small custom
-    legend distinguishing actual (white border) vs projected (gold border) cells.
+  - Data label font size (20px) could be increased to 22-24px for better readability
+  - Code uses raw JSON construction instead of highcharts-core Python API classes
+  - JS formatter injection pattern with string replacements is somewhat fragile
+  image_description: 'The plot displays a 10x10 heatmap loss development triangle
+    with title "heatmap-loss-triangle · highcharts · pyplots.ai" and subtitle "Cumulative
+    Paid Claims ($K) — Actual vs Projected (IBNR)". The Y-axis shows Accident Years
+    2015-2024 (top to bottom), and the X-axis shows Development Periods 1-10. Cells
+    use a sequential blue colormap from light (#e8f4f8) for low values (~3,200) to
+    dark navy (#052c54) for high values (~31,000). The upper-left triangle of actual
+    claims has white borders, while the lower-right projected (IBNR) cells have distinctive
+    gold/amber borders. Each cell is annotated with the cumulative amount formatted
+    with thousands separators. Below the main chart, Age-to-Age Development Factors
+    are displayed in styled boxes (1→2: 2.162, 2→3: 1.446, down to 9→10: 1.019). A
+    custom legend at the bottom shows blue square with white border for "Actual (Observed)"
+    and blue square with gold border for "Projected (IBNR Estimate)". A vertical color
+    axis legend on the right shows "Cumulative Claims ($K)" with a gradient bar. Background
+    is light gray (#fafbfc).'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -49,66 +47,67 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (42px title, 28px subtitle/axes, 24px
-          labels, 20px data labels). Age-to-age factors line slightly small.
+        comment: All font sizes explicitly set (title 44px, axis titles 28px, labels
+          24px, data labels 20px). Data labels slightly small for 4800x2700 canvas.
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Main heatmap cells clean. Age-to-age factors line dense but readable.
+        comment: No overlapping text; all cell annotations fit within cells.
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Heatmap cells well-sized, color gradient differentiates values. Border
-          distinction visible but subtle.
+        comment: Heatmap cells well-sized with clear color differentiation across
+          gradient.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue sequential palette is colorblind-safe. Gold borders provide
-          good contrast.
+        comment: Blue sequential colormap is colorblind-safe. Gold borders provide
+          strong contrast.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Chart fills canvas well. Slight imbalance with color axis legend
-          on right side.
+        comment: Good layout with generous margins. Color axis on right creates slight
+          space imbalance.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with units in subtitle and color axis.
+        comment: 'Descriptive axis labels: Development Period (Years) and Accident
+          Year.'
     design_excellence:
-      score: 12
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom 7-stop blue palette, gold borders, styled data labels. Above
-          defaults but not publication-level.
+        comment: Custom 8-stop blue palette, gold borders for projected cells, professional
+          typography. Clearly above defaults.
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Clean white background, white cell borders. Room for more polish
-          around factors row.
+        comment: Custom background, styled borders, factor boxes below chart, custom
+          legend rendering.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Bold vs italic and gold borders tell actual-vs-projected story. Color
-          intensity shows development.
+        comment: Actual/projected split immediately visible through border contrast.
+          Development factors add analytical context.
     spec_compliance:
       score: 15
       max: 15
@@ -118,51 +117,54 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct heatmap with triangular structure.
+        comment: Correct heatmap type with proper triangular structure.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: actual/projected distinction, annotations,
-          factors, color encoding, legend.'
+        comment: 'All spec features present: actual/projected distinction, cell annotations,
+          development factors, legend.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Correct mapping with reversed y-axis and triangular pattern.
+        comment: X=development periods, Y=accident years, correct mapping with y-axis
+          reversed.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Custom legend for actual vs projected.
+        comment: Title format correct. Legend labels match data series.
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Full 10x10 triangle with ~55 actual and ~45 projected cells. Good
-          variation.
+        comment: Full triangle with ~55 actual and ~45 projected cells showing cumulative
+          growth patterns.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Insurance loss development triangle is a genuine actuarial use case.
+        comment: Actuarial insurance cumulative paid claims - real-world professional
+          domain.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Realistic cumulative claims range and development factors.
+        comment: Claims in thousands with sensible growth. Development factors match
+          actuarial expectations.
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -170,7 +172,8 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear flow, no functions or classes.
+        comment: 'Linear structure: Imports, Data, Chart config, JS formatters, HTML,
+          Screenshot.'
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -185,50 +188,49 @@ review:
         comment: All imports used.
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Clean JSON dict approach with formatter injection. Appropriate complexity.
+        passed: false
+        comment: JS formatter injection via string replacement is functional but verbose
+          and fragile.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html.
+        comment: Saves as plot.png via Selenium screenshot.
     library_mastery:
-      score: 6
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
         score: 3
         max: 5
-        passed: true
-        comment: Raw HTML approach rather than highcharts-core Python library API.
-          Pragmatic but not idiomatic.
+        passed: false
+        comment: Uses raw JSON/HTML approach instead of highcharts-core Python API
+          classes.
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Uses heatmap module, colorAxis, renderer API, useHTML data labels,
-          interactive tooltips.
+        comment: Uses chart.renderer for custom drawing, load event, HTML data labels,
+          colorAxis with custom stops, heatmap module.
   verdict: REJECTED
 impl_tags:
   dependencies:
   - selenium
   techniques:
   - annotations
-  - colorbar
   - html-export
-  - hover-tooltips
   - custom-legend
+  - colorbar
   patterns:
   - data-generation
   - matrix-construction
   - iteration-over-groups
-  dataprep:
-  - cumulative-sum
+  dataprep: []
   styling:
   - custom-colormap
   - edge-highlighting

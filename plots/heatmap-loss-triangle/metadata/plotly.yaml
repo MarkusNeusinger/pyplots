@@ -1,7 +1,7 @@
 library: plotly
 specification_id: heatmap-loss-triangle
 created: '2026-03-09T11:57:31Z'
-updated: '2026-03-09T12:01:03Z'
+updated: '2026-03-09T12:09:12Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22852106647
 issue: 4581
@@ -10,34 +10,34 @@ library_version: 6.6.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-loss-triangle/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-loss-triangle/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-loss-triangle/plotly/plot.html
-quality_score: 87
+quality_score: 88
 review:
   strengths:
-  - Perfect spec compliance with all required features implemented
-  - Excellent data quality with realistic actuarial context and appropriate scale
-  - Smart contrast-aware annotation coloring (white on dark, dark on light)
-  - Amber overlay elegantly distinguishes projected from actual cells
-  - Interactive hover tooltips with customdata provide rich detail
+  - Excellent spec compliance — all required features present and well-implemented
+  - Strong data storytelling with amber overlay, diagonal line, and boundary cell
+    highlighting
+  - Realistic actuarial data with plausible development factors and claim amounts
+  - Good use of Plotly-specific features (hover tooltips, HTML export)
+  - Dynamic font color contrast (white on dark, dark on light cells)
   weaknesses:
-  - Dashed diagonal line overlaps and partially obscures cell annotations along the
-    boundary
-  - Annotation font size (13pt) could be slightly larger for better readability in
-    a dense grid
-  image_description: The plot displays a 10x10 heatmap loss development triangle with
-    a Blues colorscale. Accident years 2015-2024 are on the y-axis, development periods
-    1-10 on the x-axis. Each cell is annotated with cumulative claim amounts using
-    thousands separators (e.g., "4,300", "49,569"). A dashed diagonal line runs from
-    the top-right corner to the bottom-left, separating actual (upper-left) from projected
-    (lower-right) regions. Projected cells have a subtle amber/orange overlay tint.
-    The title reads "heatmap-loss-triangle · plotly · pyplots.ai" centered at the
-    top. A text legend above the heatmap shows "Actual (observed)" in blue and "Projected
-    (estimated IBNR)" in amber. Development factors (2.500 down to 1.010) appear in
-    a row below the x-axis. A vertical colorbar on the right shows "Cumulative Claims
-    ($)" ranging from ~5,000 to ~45,000. Font colors adapt per cell — white on dark
-    blues, dark gray on lighter blues.
+  - Helper function is_boundary_cell() breaks KISS structure — should be inlined
+  - Cell annotation font size (15pt) could be slightly larger for better readability
+  image_description: The plot displays a 10x10 heatmap representing an actuarial loss
+    development triangle. Accident years 2015-2024 run along the y-axis (top to bottom),
+    and development periods 1-10 along the x-axis. Cells are colored using a Blues
+    sequential colorscale encoding cumulative claim magnitude, with a colorbar on
+    the right labeled "Cumulative Claims ($)" ranging from ~4,000 to ~49,000. Projected
+    (estimated IBNR) cells in the lower-right triangle are overlaid with a subtle
+    amber/orange tint. A dashed diagonal line separates actual from projected regions.
+    Each cell is annotated with its cumulative amount formatted with thousands separators.
+    Cells along the actual/projected boundary have white background highlights for
+    contrast. A legend at the top left distinguishes "Actual (observed)" in blue from
+    "Projected (estimated IBNR)" in amber. Development factors (2.500 down to 1.010)
+    are displayed below the x-axis. The title reads "heatmap-loss-triangle · plotly
+    · pyplots.ai". The background is a light off-white (#fafafa).
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -45,65 +45,65 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set throughout (title 28, axis 22, ticks 16,
-          annotations 13). Annotation font slightly small but readable.
+        comment: All font sizes explicitly set. Annotations at 15pt slightly small
+          for dense grid.
       - id: VQ-02
         name: No Overlap
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Dashed diagonal line cuts through annotation text on boundary cells,
-          partially obscuring numbers.
+        comment: No text overlap, minor visual clutter from boundary cell white backgrounds.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: All heatmap cells well-sized, color differences clear.
+        comment: All cells visible with good color contrast and dynamic font color
+          switching.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blues colorscale is colorblind-safe. Amber overlay provides good
-          contrast.
+        comment: Blues colorscale is colorblind-safe with amber overlay for secondary
+          distinction.
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Plot fills canvas well, margins balanced, colorbar well-positioned.
+        comment: Good canvas utilization with balanced margins.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with units on both axes and colorbar.
+        comment: Descriptive labels with units.
     design_excellence:
-      score: 12
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Thoughtful contrast-aware colors, amber overlay, plotly_white template.
-          Above defaults but not exceptional.
+        comment: Strong design with thoughtful colors, amber overlay, custom fonts,
+          clearly above defaults.
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Clean template, good margins, styled colorbar. Diagonal line clashing
-          with annotations reduces polish.
+        comment: plotly_white template, custom margins, subtle background, refined
+          colorbar.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Triangle structure clearly tells the actuarial story with development
-          factors for interpretation.
+        comment: Diagonal separation, amber overlay, and dev factors guide the actuarial
+          narrative.
     spec_compliance:
       score: 15
       max: 15
@@ -113,26 +113,25 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct heatmap triangular matrix visualization.
+        comment: Correct triangular heatmap matrix.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: actual/projected distinction, diagonal,
-          annotations, dev factors, legend.'
+        comment: All spec requirements met.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Correct axis mapping.
+        comment: X=development periods, Y=accident years, correctly mapped.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, legend distinguishes actual vs projected.
+        comment: Correct title format and legend.
     data_quality:
       score: 15
       max: 15
@@ -142,29 +141,30 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Full triangle with actual and projected, realistic development factors.
+        comment: Full triangle with actual and projected cells, increasing claims
+          trend, decreasing dev factors.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Insurance actuarial reserving context — real-world, neutral domain.
+        comment: Real actuarial use case with plausible insurance claim amounts.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Claim values and development factors realistic for casualty insurance.
+        comment: Realistic base claims and development factors.
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Flat script structure.
+        comment: Contains is_boundary_cell() helper function, breaking KISS principle.
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -182,7 +182,7 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Clean, well-structured, appropriate complexity.
+        comment: Clean, well-organized code.
       - id: CQ-05
         name: Output & API
         score: 1
@@ -190,7 +190,7 @@ review:
         passed: true
         comment: Saves as plot.png and plot.html.
     library_mastery:
-      score: 8
+      score: 7
       max: 10
       items:
       - id: LM-01
@@ -198,13 +198,13 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of go.Heatmap, shapes, annotations, layout configuration.
+        comment: Good use of go.Heatmap, shapes, annotations, update_layout.
       - id: LM-02
         name: Distinctive Features
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: Leverages hover with customdata, shape overlays, HTML export.
+        comment: Uses customdata/hovertemplate, HTML export, shape overlays.
   verdict: REJECTED
 impl_tags:
   dependencies: []
@@ -220,3 +220,4 @@ impl_tags:
   dataprep: []
   styling:
   - custom-colormap
+  - alpha-blending

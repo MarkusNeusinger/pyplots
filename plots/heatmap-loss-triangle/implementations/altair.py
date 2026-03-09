@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 heatmap-loss-triangle: Actuarial Loss Development Triangle
 Library: altair 6.0.0 | Python 3.14.3
-Quality: 89/100 | Created: 2026-03-09
+Quality: 90/100 | Created: 2026-03-09
 """
 
 import altair as alt

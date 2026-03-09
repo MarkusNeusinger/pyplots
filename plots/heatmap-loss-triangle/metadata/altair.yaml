@@ -1,7 +1,7 @@
 library: altair
 specification_id: heatmap-loss-triangle
 created: '2026-03-09T11:57:49Z'
-updated: '2026-03-09T12:02:11Z'
+updated: '2026-03-09T12:09:08Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22852106659
 issue: 4581
@@ -10,37 +10,35 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-loss-triangle/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-loss-triangle/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-loss-triangle/altair/plot.html
-quality_score: 89
+quality_score: 90
 review:
   strengths:
-  - 'Excellent data quality: realistic actuarial claims data with appropriate development
-    factors'
-  - Clear visual distinction between actual and projected values using opacity + dashed
-    orange borders
-  - Adaptive text color (white on dark, dark on light cells) ensures readability throughout
-  - Development factors row with distinct styling adds analytical value
-  - Informative subtitle explains the visual encoding scheme
-  - Clean, idiomatic Altair code with modern API usage (alt.when())
+  - Excellent spec compliance with all required features including development factors
+    row
+  - Strong visual distinction between actual and projected values using opacity and
+    dashed orange borders
+  - Informative subtitle guiding viewer through visual encoding
+  - Realistic actuarial data with appropriate scale and domain context
+  - Clean well-structured code with proper random seed
   weaknesses:
-  - No formal legend element for actual vs projected status — only subtitle text explains
-    the encoding
-  - Cell annotation font size (12pt) could be slightly larger for optimal readability
-    in the dense grid
-  image_description: The plot displays a 10×10 actuarial loss development triangle
-    heatmap using a blue sequential color scheme. Rows represent accident years 2015–2024,
-    columns represent development periods 1–10 (labeled at top). Each cell contains
-    formatted cumulative claim amounts (e.g., "3.3M", "19.7M"). The upper-left triangle
-    shows actual observed values at full opacity with solid borders. The lower-right
-    triangle shows projected (IBNR) values at reduced opacity with dashed orange borders.
-    A "Dev Factor" row at the bottom displays age-to-age development factors (2.500
-    down to 1.008) on a light gray background in blue text. A continuous color legend
-    labeled "Cumulative Claims" appears on the right. The title reads "heatmap-loss-triangle
-    · altair · pyplots.ai" with a two-line subtitle explaining the visual encoding.
-    White cell separators provide clean delineation. Text color adapts—white on dark
-    cells, dark blue on light cells.
+  - Cell annotation text (14pt) could be slightly larger for improved readability
+  - Projected cells at 0.4 opacity make lighter-valued cells quite faint
+  - Canvas layout slightly right-heavy due to dual legends
+  image_description: The plot displays a 10x10 heatmap loss development triangle with
+    accident years 2015-2024 on the y-axis and development periods 1-10 on the x-axis
+    (oriented at top). Cells are colored in a sequential blue scheme (light to dark)
+    encoding cumulative claim amounts ranging from approximately 3.3M to 29.1M. Each
+    cell is annotated with its cumulative amount in abbreviated format (e.g., "3.3M",
+    "19.7M"). Full-opacity cells in the upper-left triangle represent actual observed
+    data, while faded cells (0.4 opacity) with dashed orange borders in the lower-right
+    triangle represent projected IBNR values. A "Dev Factor" row at the bottom shows
+    age-to-age development factors (2.500 down to 1.008) in a light gray background.
+    The title reads "heatmap-loss-triangle · altair · pyplots.ai" with two subtitle
+    lines explaining the visual encoding. A "Cumulative Claims" color gradient legend
+    and a "Status" legend (Actual vs Projected squares) appear on the right side.
   criteria_checklist:
     visual_quality:
-      score: 29
+      score: 27
       max: 30
       items:
       - id: VQ-01
@@ -48,42 +46,40 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 26pt, axis titles 20pt, tick
-          labels 16pt, cell text 12pt at 3x scale). Cell annotations readable but
-          slightly small for dense grid.
+        comment: All font sizes explicitly set (title 26pt, axes 16/20pt, cell text
+          14pt). Cell annotations slightly small but readable.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: All text fits cleanly within cells, no collisions.
+        comment: All text fits within cells, no collisions anywhere.
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Cells well-sized, opacity distinction between actual and projected
-          is clear.
+        comment: Heatmap cells well-sized. Projected cells at 0.4 opacity lighter
+          but text readable due to adaptive color.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blues sequential scheme is colorblind-safe. Orange dashed borders
-          provide secondary visual channel.
+        comment: Sequential blues scheme is colorblind-safe with good contrast.
       - id: VQ-05
         name: Layout & Canvas
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: Chart fills canvas well with balanced margins. Legend positioned
-          neatly on the right.
+        comment: Good proportions, chart fills canvas well. Slight right-side imbalance
+          from dual legends.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels appropriate for the actuarial domain.
+        comment: Descriptive labels appropriate for actuarial domain.
     design_excellence:
       score: 15
       max: 20
@@ -93,24 +89,24 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Strong design with blues scheme, white cell borders, orange dashed
-          projected borders, adaptive text color, styled Dev Factor row.
+        comment: Thoughtful blue palette, white cell borders, dashed orange projected
+          boundary, good typography hierarchy.
       - id: DE-02
         name: Visual Refinement
         score: 5
         max: 6
         passed: true
-        comment: Grid removed, view stroke removed, domain width zeroed, generous
-          whitespace, factor row has distinct background.
+        comment: Grid removed, view strokes removed, clean cell borders with rounded
+          corners, subtle Dev Factor row styling.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Opacity + dashed border encoding clearly separates actual from projected.
-          Subtitle guides interpretation. Color intensity shows claim growth.
+        comment: Opacity distinction creates clear narrative. Subtitle guides interpretation.
+          Dev factors row adds analytical context.
     spec_compliance:
-      score: 13
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -118,28 +114,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct triangular heatmap matrix.
+        comment: Correct triangular heatmap matrix visualization.
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: All features present except formal legend for actual vs projected
-          status.
+        comment: 'All spec features present: actual vs projected, annotations, dev
+          factors, color encoding, legend.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Accident years on Y-axis, development periods on X-axis, cumulative
-          amounts encoded by color.
+        comment: Accident years on y-axis, development periods on x-axis, cumulative
+          amounts as color and text.
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Title format correct. Colorbar legend present. No discrete legend
-          for actual vs projected status.
+        comment: Title follows exact format. Status legend distinguishes actual vs
+          projected.
     data_quality:
       score: 15
       max: 15
@@ -149,22 +145,21 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Full triangle with actual and projected values, increasing cumulative
-          amounts, decreasing development factors.
+        comment: Full triangle with actual and projected regions, increasing claims,
+          decreasing dev factors.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Genuine actuarial domain with realistic accident years, claim amounts,
-          and development factors.
+        comment: Insurance actuarial reserving is real-world, neutral, domain-specific.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Claims in $3M-$29M range, development factors from 2.5 to 1.008 —
-          plausible for mid-size insurance portfolio.
+        comment: Claims in millions, dev factors 2.5 to 1.008 are realistic for casualty
+          insurance.
     code_quality:
       score: 10
       max: 10
@@ -174,7 +169,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data generation, chart layers, combine, save.'
+        comment: Clean imports, data, chart, save structure with no functions or classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -186,21 +181,21 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: altair, numpy, pandas all used.
+        comment: Only altair, numpy, pandas - all used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, well-organized declarative code. Appropriate complexity.
+        comment: Well-structured, appropriate complexity.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html. Current Altair API.
+        comment: Saves as plot.png and plot.html using current API.
     library_mastery:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: LM-01
@@ -208,21 +203,22 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of declarative grammar, mark_rect, layer composition, alt.when()
-          conditional encoding, tooltips.
+        comment: Good use of declarative API with proper encoding types, layered composition,
+          and axis configuration.
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: alt.when() conditional encoding, built-in tooltips, HTML export,
-          layer composition with + operator.
-  verdict: REJECTED
+        comment: Leverages alt.when().then().otherwise(), multi-layer composition,
+          native tooltips, HTML export.
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
   - layer-composition
+  - custom-legend
   - hover-tooltips
   - html-export
   patterns:

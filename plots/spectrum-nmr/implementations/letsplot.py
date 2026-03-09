@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 spectrum-nmr: NMR Spectrum (Nuclear Magnetic Resonance)
 Library: letsplot 4.8.2 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-09
@@ -14,7 +14,7 @@ LetsPlot.setup_html()  # noqa: F405
 
 # Data - Synthetic 1H NMR spectrum of ethanol (CH3CH2OH)
 np.random.seed(42)
-chemical_shift = np.linspace(12, -0.5, 5000)
+chemical_shift = np.linspace(5.0, -0.5, 5000)
 w = 0.008  # Lorentzian half-width for sharp peaks
 
 # Build spectrum by summing Lorentzian peaks: A * w^2 / ((x - c)^2 + w^2)
@@ -42,11 +42,11 @@ intensity = np.clip(intensity, 0, None)
 
 df = pd.DataFrame({"chemical_shift": chemical_shift, "intensity": intensity})
 
-# Peak labels (spec requires labeling key peaks with chemical shift values)
+# Peak labels with increased y-offsets to avoid overlap
 peak_labels = pd.DataFrame(
     {
         "x": [0.0, 1.18, 2.61, 3.69],
-        "y": [1.08, 1.45, 0.68, 1.30],
+        "y": [1.15, 1.60, 0.75, 1.38],
         "label": [
             "TMS\n0.00 ppm",
             "CH\u2083 (triplet)\n1.18 ppm",
@@ -56,22 +56,24 @@ peak_labels = pd.DataFrame(
     }
 )
 
-# Plot
+# Plot - using geom_area for filled spectrum (lets-plot distinctive feature)
 plot = (
     ggplot(df, aes(x="chemical_shift", y="intensity"))  # noqa: F405
-    + geom_line(color="#306998", size=1.0)  # noqa: F405
+    + geom_area(fill="#306998", alpha=0.15)  # noqa: F405
+    + geom_line(color="#306998", size=1.2)  # noqa: F405
     + geom_text(  # noqa: F405
         data=peak_labels,
         mapping=aes(x="x", y="y", label="label"),  # noqa: F405
         size=11,
-        color="#333333",
+        color="#1a1a1a",
+        fontface="bold",
     )
     + labs(  # noqa: F405
         x="\u03b4 Chemical Shift (ppm)",
         y="Intensity (a.u.)",
         title="Ethanol \u00b9H NMR \u00b7 spectrum-nmr \u00b7 letsplot \u00b7 pyplots.ai",
     )
-    + scale_x_reverse()  # noqa: F405
+    + scale_x_reverse(limits=[-0.5, 5.0])  # noqa: F405
     + scale_y_continuous(expand=[0.02, 0, 0.15, 0])  # noqa: F405
     + theme_minimal()  # noqa: F405
     + theme(  # noqa: F405

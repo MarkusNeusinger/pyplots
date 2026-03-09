@@ -1,7 +1,7 @@
 library: pygal
 specification_id: spectrum-nmr
 created: '2026-03-09T12:52:06Z'
-updated: '2026-03-09T13:06:34Z'
+updated: '2026-03-09T13:13:24Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22854183440
 issue: 4676
@@ -10,36 +10,39 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/spectrum-nmr/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spectrum-nmr/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/spectrum-nmr/pygal/plot.html
-quality_score: 83
+quality_score: 86
 review:
   strengths:
-  - Excellent data quality with realistic ethanol NMR spectrum showing proper splitting
-    patterns (singlet, triplet, quartet with correct intensity ratios)
-  - Clean reversed x-axis implementation using negation trick with abs() formatter
-  - 'Good use of pygal-specific features: CSS injection to hide axis lines, print_labels,
-    per-point label dicts'
-  - Well-labeled peaks with functional group assignments enhance scientific storytelling
+  - 'Excellent spec compliance: all required NMR features implemented including reversed
+    x-axis, splitting patterns, TMS reference, and peak labels'
+  - Scientifically accurate data with correct Lorentzian lineshapes and realistic
+    splitting ratios
+  - Clever workaround for pygal axis reversal using negated x-values with positive
+    label formatting
+  - Clean code structure with good use of pygal-specific features (CSS injection,
+    print_labels, dual output)
+  - Good design refinement with hidden axis lines, subtle grid, and colorblind-safe
+    palette
   weaknesses:
-  - X-axis range extends past 0 ppm to -1.0 (displayed as 1.0), creating a confusing
-    mirrored region at the right edge
-  - Significant empty canvas space in upper-left quadrant (high ppm, high intensity
-    region is blank)
-  - Legend at bottom is busy with 5 long-text entries; could be simplified
-  image_description: 'The plot displays a 1H NMR spectrum of ethanol on a white background.
-    A blue spectrum line runs along the baseline from 12.0 to approximately 0.0 ppm
-    (x-axis reversed, high ppm on left). Four distinct peak groups are visible: a
-    tall CH3 triplet (~1.18 ppm) with three resolved lines and the highest intensity
-    (~1.0), a CH2 quartet (~3.69 ppm) showing four resolved peaks reaching ~0.65 intensity,
-    an OH singlet (~2.61 ppm) as a single peak at ~0.35, and a TMS reference peak
-    at 0.00 ppm. Each peak is marked with a colored dot (teal, blue, purple, orange
-    respectively) and labeled with its functional group and ppm value. The title reads
-    "Ethanol 1H NMR - spectrum-nmr - pygal - pyplots.ai". Axis labels show "Chemical
-    Shift (ppm)" and "Intensity (a.u.)". A legend at the bottom lists all five series.
-    The axis line is hidden via CSS. The x-axis extends slightly past 0 to show "1.0"
-    on the far right (a negated -1.0 region).'
+  - Annotation dot markers could be larger for better visibility at this canvas size
+  - TMS label at far right is close to the margin edge
+  - Font rendering in pygal PNG output uses monospace system fonts which reduces typographic
+    polish
+  image_description: 'The plot displays an ethanol 1H NMR spectrum rendered as a blue
+    XY line chart on a white background. The x-axis shows "Chemical Shift (ppm)" running
+    from 12.0 on the left to 0.0 on the right (correctly reversed per NMR convention).
+    The y-axis shows "Intensity (a.u.)" ranging from 0 to 1.1. The title reads "Ethanol
+    1H NMR · spectrum-nmr · pygal · pyplots.ai". Four annotated peak markers with
+    colored dots are visible: a green dot for CH3 triplet (1.18 ppm) near the tallest
+    peak (~0.9), a blue dot for CH2 quartet (3.69 ppm) at ~0.77, a purple dot for
+    OH singlet (2.61 ppm) at ~0.34, and an orange dot for TMS (0.00 ppm) at ~0.30.
+    The spectrum shows sharp, well-resolved peaks with realistic splitting patterns.
+    The baseline is clean with minimal noise. A legend at the bottom identifies all
+    five series. Subtle horizontal grid lines on y-axis only. The axis line is hidden
+    via CSS styling.'
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 26
       max: 30
       items:
       - id: VQ-01
@@ -48,40 +51,42 @@ review:
         max: 8
         passed: true
         comment: Font sizes explicitly set (title=68, label=44, major_label=40, legend=36).
-          All text readable, legend text at bottom slightly small.
+          All text readable. Monospace rendering slightly diminishes quality.
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: Peak labels mostly well-positioned. OH singlet label sits close to
-          spectrum line area.
+        comment: 'Minor: OH singlet label close to peak area; TMS label near right
+          edge. No text-on-text collision.'
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Spectrum line sharp, peaks well-resolved. Peak marker dots slightly
-          oversized relative to some peaks.
+        comment: Spectrum line clear with sharp peaks. Annotation dots visible but
+          somewhat small for canvas size.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Colorblind-safe palette (teal, orange, blue, purple) with good contrast.
+        comment: Teal, blue, orange, purple palette is colorblind-safe with good contrast
+          on white.
       - id: VQ-05
         name: Layout & Canvas
-        score: 1
+        score: 3
         max: 4
-        passed: false
-        comment: X-axis extends past 0 ppm to -1.0 (displayed as 1.0), creating confusing
-          mirrored region. Large empty upper-left area.
+        passed: true
+        comment: Plot fills reasonable area. Some wasted whitespace below legend and
+          at top. Right margin slightly tight for TMS label.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Chemical Shift (ppm) and Intensity (a.u.) - descriptive with units.
+        comment: 'Both axes have descriptive labels with units: Chemical Shift (ppm)
+          and Intensity (a.u.).'
     design_excellence:
       score: 13
       max: 20
@@ -91,24 +96,24 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Custom color palette, explicitly set typography, clean white background.
-          Above defaults but not publication-level.
+        comment: Custom color palette, intentional typography sizing, professional
+          look. Above defaults but monospace fonts limit polish.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Guides turned off, axis lines hidden via CSS injection, generous
-          margins.
+        comment: Axis lines hidden via CSS, y-axis-only grid, clean white background.
+          Good subtle grid styling.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Peaks labeled with functional group names and ppm values, telling
-          the ethanol structure story.
+        comment: Peak annotations with functional group labels create clear narrative.
+          Color-coded markers guide viewer. Visual hierarchy through peak heights.
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -116,27 +121,29 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Correct: line-based NMR spectrum with peaks rising from baseline.'
+        comment: 'Correct: NMR spectrum as XY line plot with signal intensity vs chemical
+          shift.'
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Reversed x-axis, sharp splitting patterns, labeled peaks, TMS reference,
-          clean baseline - all present.
+        comment: 'All features present: reversed x-axis, splitting patterns, peak
+          labels, TMS reference, clean baseline.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=chemical shift, Y=intensity, axes show all data correctly.
+        comment: X=chemical shift (ppm), Y=intensity (a.u.), correctly mapped with
+          full data visible.
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend labels correct but busy with 5 verbose
-          entries.
+        comment: Title follows correct format. Legend labels descriptive with functional
+          group names and ppm values.
     data_quality:
       score: 15
       max: 15
@@ -146,20 +153,21 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Shows all key NMR splitting patterns: singlet, triplet, quartet
-          with correct intensity ratios.'
+        comment: Demonstrates singlet, triplet, and quartet splitting patterns with
+          correct intensity ratios.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Ethanol 1H NMR is a classic, real-world chemistry example.
+        comment: Ethanol 1H NMR is a classic real-world chemistry example.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Chemical shifts realistic for ethanol. Coupling constant reasonable.
+        comment: Chemical shifts 0-12 ppm correct for 1H NMR. Peak positions match
+          known ethanol values.
     code_quality:
       score: 10
       max: 10
@@ -169,31 +177,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports, data generation, style, chart, save.'
+        comment: 'Linear flow: imports, data generation, style, chart config, add
+          data, save. No functions or classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) set for baseline noise.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: numpy, pygal, Style.'
+        comment: Only numpy, pygal, and Style imported - all used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Inline Lorentzian peak generation is elegant. Negation trick well-documented.
+        comment: Clean Lorentzian peak generation. Clever axis reversal via negation.
+          Well-organized.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via render_to_png.
+        comment: Saves as plot.png via render_to_png(). Current API.
     library_mastery:
       score: 7
       max: 10
@@ -203,25 +213,24 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of pygal.XY, Style class, chart config, x_value_formatter,
-          per-point dicts with labels.
+        comment: Good use of pygal.XY with Style, per-series config, print_labels,
+          x_value_formatter. Pragmatic negated-x trick.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: CSS injection for axis hiding, print_labels, dual SVG+PNG output,
-          tooltip config.
-  verdict: REJECTED
+        comment: Uses pygal CSS injection, tooltip_fancy_mode, dual PNG+HTML output,
+          and print_labels for annotations.
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
+  - custom-legend
   - html-export
   patterns:
   - data-generation
-  - iteration-over-groups
   dataprep: []
   styling:
-  - minimal-chrome
   - grid-styling

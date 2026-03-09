@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: heatmap-loss-triangle
 created: '2026-03-09T11:54:51Z'
-updated: '2026-03-09T11:58:33Z'
+updated: '2026-03-09T12:05:29Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22852106805
 issue: 4581
@@ -10,75 +10,78 @@ library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-loss-triangle/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-loss-triangle/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 78
+quality_score: 87
 review:
   strengths:
-  - Clean professional blue gradient color scheme with good contrast
-  - Well-structured code with elegant separation of actual/projected data into layers
-  - Realistic actuarial data with appropriate development factors
-  - All cell values properly formatted with thousands separators
-  - Good use of plotnine layered grammar for opacity differentiation
+  - Excellent spec compliance — every required feature implemented (actual/projected
+    distinction, annotations, dev factors, legend)
+  - Elegant use of scale_alpha_manual mapped to region for the actual vs projected
+    legend — idiomatic plotnine
+  - Clean, well-structured code following KISS principles with good reproducibility
+  - Realistic actuarial data with appropriate scales and domain context
   weaknesses:
-  - Missing development factors display (spec requirement)
-  - No explicit legend for actual vs projected regions
-  - Opacity difference between actual and projected could be more pronounced
-  - Design could benefit from stronger visual hierarchy at the diagonal boundary
-  image_description: The plot displays a 10x10 heatmap grid with accident years 2015-2024
-    on the y-axis and development periods 1-10 on the x-axis. Each cell contains a
-    formatted cumulative amount value with thousands separators. The color scheme
-    uses a sequential blue gradient from light blue/white (low values around 3,000)
-    to dark navy (high values around 30,000). Actual values in the upper-left triangle
-    appear with full opacity while projected values in the lower-right triangle appear
-    faded/translucent. White borders separate each cell. The title reads "heatmap-loss-triangle
-    · plotnine · pyplots.ai" in bold, with subtitle "Cumulative Paid Claims — Actual
-    (solid) vs Projected (faded)". A colorbar legend on the right shows "Cumulative
-    Amount" with the gradient scale. The layout is clean with no grid lines and a
-    white background.
+  - Cell annotation text size (6.5) could be slightly larger for better readability
+    on dense 5-digit values
+  - Color palette gradient2 midpoint creates a somewhat flat mid-range where tiles
+    look similar
+  - Layout has some unused space; the plot could fill the canvas more efficiently
+  image_description: The plot shows a 10×10 heatmap grid with accident years 2015–2024
+    on the Y-axis and development periods 1–10 on the X-axis. Tiles use a blue gradient
+    from very light (#e8f4f8) for low cumulative amounts to dark navy (#0d1b2a) for
+    high amounts. Each cell is annotated with the cumulative claim amount formatted
+    with thousands separators. Actual (observed) cells in the upper-left triangle
+    are fully opaque, while projected cells in the lower-right triangle are semi-transparent
+    (alpha ~0.35), creating a clear visual distinction. A "Region" legend shows Actual
+    vs Projected. Development factors (2.50 down to 1.01) appear in blue bold text
+    between columns below the grid, with a "Dev Factor" y-axis label. Title reads
+    "heatmap-loss-triangle · plotnine · pyplots.ai" with subtitle "Cumulative Paid
+    Claims — Actual vs Projected | Development Factors shown below". White borders
+    separate tiles, background is white, and grid lines are removed.
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 28
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set but slightly below ideal recommendations
-          (22 vs 24 title, 18 vs 20 axis)
+        comment: Font sizes explicitly set. Cell annotations at size=6.5 readable
+          but slightly small for 5-digit numbers.
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Annotations fit within tiles but some 5-digit values are snug against
-          cell edges
+        comment: No overlapping text. All annotations fit within cells.
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Tiles well-sized but actual vs projected opacity distinction is subtle
+        comment: Tiles well-sized, fill grid area properly.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Single blue sequential palette is colorblind-safe with good contrast
+        comment: Blue sequential palette is colorblind-safe. Alpha distinction works
+          well.
       - id: VQ-05
         name: Layout & Canvas
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: Plot fills canvas well with balanced margins
+        comment: Good utilization but some empty space above/below grid.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with units
+        comment: Descriptive labels with context.
     design_excellence:
-      score: 12
+      score: 13
       max: 20
       items:
       - id: DE-01
@@ -86,23 +89,24 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Custom blue gradient palette, white cell borders, opacity differentiation.
-          Above defaults but not publication-level
+        comment: Custom cohesive blue palette, white tile borders, intentional alpha.
+          Above defaults but not publication-level.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Grid removed, white background, clean borders. Good refinement
+        comment: Grid removed, white background, clean tile borders. Subtitle adds
+          context.
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Opacity distinction tells a story but diagonal boundary not strongly
-          emphasized
+        comment: Alpha differentiation tells the reserving story. Dev factors guide
+          viewer through chain-ladder method.
     spec_compliance:
-      score: 10
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -110,26 +114,25 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct heatmap triangular matrix
+        comment: Correct triangular heatmap visualization.
       - id: SC-02
         name: Required Features
-        score: 2
+        score: 4
         max: 4
-        passed: false
-        comment: Missing development factors display and explicit actual/projected
-          legend
+        passed: true
+        comment: All spec features present.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X and Y correctly mapped
+        comment: X=development period, Y=accident year. All 100 cells shown.
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Title format correct but missing actual/projected legend marker
+        comment: Title format correct. Legend shows Actual vs Projected.
     data_quality:
       score: 14
       max: 15
@@ -139,19 +142,20 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows actual and projected regions with triangular structure
+        comment: Full 10x10 triangle with actual/projected. Could benefit from anomalous
+          year.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Actuarial insurance claims context is realistic and neutral
+        comment: Insurance claims data is real-world actuarial scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values in thousands with realistic development factors
+        comment: Values 3,200-29,000 plausible. Dev factors 2.50-1.01 realistic.
     code_quality:
       score: 10
       max: 10
@@ -161,33 +165,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports-data-plot-save structure
+        comment: Clean imports-data-plot-save flow.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: All imports used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean code with elegant DataFrame splitting for layers
+        comment: Clean and Pythonic. Elegant alpha mapping for region legend.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300
+        comment: Saves as plot.png with dpi=300.
     library_mastery:
-      score: 6
+      score: 7
       max: 10
       items:
       - id: LM-01
@@ -195,14 +199,14 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of plotnine grammar with layered geoms and scales
+        comment: Good grammar-of-graphics pattern. Loop for annotate breaks pure chain.
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Layer composition with separate DataFrames is a ggplot pattern but
-          not highly distinctive
+        passed: true
+        comment: scale_alpha_manual for legend and scale_fill_gradient2 are distinctly
+          plotnine idioms.
   verdict: REJECTED
 impl_tags:
   dependencies: []

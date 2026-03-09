@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-loss-triangle: Actuarial Loss Development Triangle
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-09
@@ -47,6 +47,11 @@ for i, year in enumerate(accident_years):
         )
 
 df = pd.DataFrame(rows)
+
+# Legend entries for actual vs projected status
+legend_data = pd.DataFrame(
+    [{"legend_label": "Actual (Observed)", "legend_order": 0}, {"legend_label": "Projected (IBNR)", "legend_order": 1}]
+)
 
 # Development factors row
 factor_rows = []
@@ -111,7 +116,7 @@ projected_border = (
 # Text annotations on cells
 text = (
     alt.Chart(df)
-    .mark_text(fontSize=12, fontWeight="bold")
+    .mark_text(fontSize=14, fontWeight="bold")
     .encode(
         x=x_enc,
         y=y_enc,
@@ -134,9 +139,32 @@ factor_text = (
     .encode(x=alt.X("Development Period:O"), y=alt.Y("Accident Year:N", sort=year_order), text="Factor:N")
 )
 
+# Status legend: actual vs projected distinction
+status_legend = (
+    alt.Chart(legend_data)
+    .mark_square(size=200, stroke="black", strokeWidth=1)
+    .encode(
+        opacity=alt.Opacity(
+            "legend_label:N",
+            scale=alt.Scale(domain=["Actual (Observed)", "Projected (IBNR)"], range=[1.0, 0.4]),
+            legend=alt.Legend(
+                title="Status",
+                titleFontSize=14,
+                labelFontSize=12,
+                orient="right",
+                offset=16,
+                symbolType="square",
+                symbolSize=200,
+                symbolStrokeWidth=1.5,
+                symbolFillColor="#2171b5",
+            ),
+        )
+    )
+)
+
 # Combine all layers
 chart = (
-    (heatmap + projected_border + text + factor_bg + factor_text)
+    (heatmap + projected_border + text + factor_bg + factor_text + status_legend)
     .properties(
         width=1400,
         height=820,

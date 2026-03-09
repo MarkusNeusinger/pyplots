@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 calibration-beer-lambert: Beer-Lambert Calibration Curve
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-09
@@ -17,7 +17,7 @@ true_absorbance = epsilon_l * concentrations
 measured_absorbance = true_absorbance + np.random.normal(0, 0.008, len(concentrations))
 measured_absorbance[0] = max(measured_absorbance[0], 0.002)
 
-# Linear regression (manual)
+# Regression stats for annotation and prediction interval
 n = len(concentrations)
 x_mean = np.mean(concentrations)
 y_mean = np.mean(measured_absorbance)
@@ -31,12 +31,11 @@ ss_tot = np.sum((measured_absorbance - y_mean) ** 2)
 r_squared = 1 - ss_res / ss_tot
 
 # Prediction interval
-x_fit = np.linspace(-0.5, 16, 200)
+x_fit = np.linspace(0, 15, 200)
 y_fit = slope * x_fit + intercept
 mse = ss_res / (n - 2)
 se_pred = np.sqrt(mse * (1 + 1 / n + (x_fit - x_mean) ** 2 / ss_xx))
-# t-value for 95% prediction interval, df=6: ~2.447
-t_val = 2.447
+t_val = 2.447  # t-value for 95% PI, df=6
 upper = y_fit + t_val * se_pred
 lower = y_fit - t_val * se_pred
 
@@ -59,51 +58,62 @@ unknown_vline_df = pd.DataFrame(
     {"Concentration (mg/L)": [unknown_concentration, unknown_concentration], "Absorbance": [0, unknown_absorbance]}
 )
 
-# Plot - Prediction interval band
+# Shared scales with tighter axis ranges
+x_scale = alt.Scale(domain=[0, 15])
+y_scale = alt.Scale(domain=[0, 0.72])
+
+# Prediction interval band
 band = (
     alt.Chart(fit_df)
-    .mark_area(opacity=0.15, color="#306998")
-    .encode(x=alt.X("Concentration (mg/L):Q"), y=alt.Y("Lower:Q"), y2="Upper:Q")
+    .mark_area(opacity=0.12, color="#306998")
+    .encode(x=alt.X("Concentration (mg/L):Q", scale=x_scale), y=alt.Y("Lower:Q", scale=y_scale), y2="Upper:Q")
 )
 
-# Regression line
+# Regression line using transform_regression (idiomatic Altair)
 reg_line = (
-    alt.Chart(fit_df)
+    alt.Chart(standards_df)
     .mark_line(color="#306998", strokeWidth=3)
-    .encode(x=alt.X("Concentration (mg/L):Q"), y=alt.Y("Absorbance:Q"))
+    .transform_regression("Concentration (mg/L)", "Absorbance")
+    .encode(x=alt.X("Concentration (mg/L):Q", scale=x_scale), y=alt.Y("Absorbance:Q", scale=y_scale))
 )
 
-# Calibration standard points
+# Calibration standard points with selection for interactive highlighting
+highlight = alt.selection_point(on="pointerover", nearest=True, empty=False)
+
 points = (
     alt.Chart(standards_df)
-    .mark_point(size=350, filled=True, color="#306998", stroke="white", strokeWidth=1.5)
+    .mark_point(filled=True, color="#306998", stroke="white", strokeWidth=1.5)
     .encode(
-        x=alt.X("Concentration (mg/L):Q", scale=alt.Scale(domain=[-0.5, 16]), title="Concentration (mg/L)"),
-        y=alt.Y("Absorbance:Q", scale=alt.Scale(domain=[-0.02, 0.75]), title="Absorbance"),
+        x=alt.X("Concentration (mg/L):Q", scale=x_scale, title="Concentration (mg/L)"),
+        y=alt.Y("Absorbance:Q", scale=y_scale, title="Absorbance"),
+        size=alt.condition(highlight, alt.value(500), alt.value(350)),
         tooltip=[alt.Tooltip("Concentration (mg/L):Q", format=".1f"), alt.Tooltip("Absorbance:Q", format=".4f")],
     )
+    .add_params(highlight)
 )
 
-# Unknown sample dashed lines
+# Unknown sample dashed lines - dark orange for accessibility
+unknown_color = "#C46210"
+
 h_line = (
     alt.Chart(unknown_hline_df)
-    .mark_line(color="#E74C3C", strokeWidth=2.5, strokeDash=[8, 6])
-    .encode(x=alt.X("Concentration (mg/L):Q"), y=alt.Y("Absorbance:Q"))
+    .mark_line(color=unknown_color, strokeWidth=2, strokeDash=[8, 6])
+    .encode(x=alt.X("Concentration (mg/L):Q", scale=x_scale), y=alt.Y("Absorbance:Q", scale=y_scale))
 )
 
 v_line = (
     alt.Chart(unknown_vline_df)
-    .mark_line(color="#E74C3C", strokeWidth=2.5, strokeDash=[8, 6])
-    .encode(x=alt.X("Concentration (mg/L):Q"), y=alt.Y("Absorbance:Q"))
+    .mark_line(color=unknown_color, strokeWidth=2, strokeDash=[8, 6])
+    .encode(x=alt.X("Concentration (mg/L):Q", scale=x_scale), y=alt.Y("Absorbance:Q", scale=y_scale))
 )
 
 # Unknown sample point
 unknown_pt = (
     alt.Chart(unknown_point_df)
-    .mark_point(size=400, filled=True, color="#E74C3C", stroke="white", strokeWidth=1.5, shape="diamond")
+    .mark_point(size=400, filled=True, color=unknown_color, stroke="white", strokeWidth=1.5, shape="diamond")
     .encode(
-        x=alt.X("Concentration (mg/L):Q"),
-        y=alt.Y("Absorbance:Q"),
+        x=alt.X("Concentration (mg/L):Q", scale=x_scale),
+        y=alt.Y("Absorbance:Q", scale=y_scale),
         tooltip=[
             alt.Tooltip("Concentration (mg/L):Q", title="Predicted Conc.", format=".2f"),
             alt.Tooltip("Absorbance:Q", title="Measured Abs.", format=".4f"),
@@ -118,7 +128,7 @@ annotation_df = pd.DataFrame({"Concentration (mg/L)": [9.5], "Absorbance": [0.12
 eq_label = (
     alt.Chart(annotation_df)
     .mark_text(fontSize=20, align="left", fontWeight="bold", color="#306998")
-    .encode(x=alt.X("Concentration (mg/L):Q"), y=alt.Y("Absorbance:Q"), text="text:N")
+    .encode(x=alt.X("Concentration (mg/L):Q", scale=x_scale), y=alt.Y("Absorbance:Q", scale=y_scale), text="text:N")
 )
 
 # Unknown label
@@ -132,8 +142,8 @@ unknown_label_df = pd.DataFrame(
 
 unknown_label = (
     alt.Chart(unknown_label_df)
-    .mark_text(fontSize=18, align="left", fontWeight="bold", color="#E74C3C")
-    .encode(x=alt.X("Concentration (mg/L):Q"), y=alt.Y("Absorbance:Q"), text="text:N")
+    .mark_text(fontSize=18, align="left", fontWeight="bold", color=unknown_color)
+    .encode(x=alt.X("Concentration (mg/L):Q", scale=x_scale), y=alt.Y("Absorbance:Q", scale=y_scale), text="text:N")
 )
 
 # Combine all layers
@@ -142,7 +152,15 @@ chart = (
     .properties(
         width=1600, height=900, title=alt.Title("calibration-beer-lambert \u00b7 altair \u00b7 pyplots.ai", fontSize=28)
     )
-    .configure_axis(labelFontSize=18, titleFontSize=22, grid=False)
+    .configure_axis(
+        labelFontSize=18,
+        titleFontSize=22,
+        grid=False,
+        domainColor="#888888",
+        domainWidth=0.8,
+        tickColor="#888888",
+        tickSize=6,
+    )
     .configure_view(strokeWidth=0)
     .interactive()
 )

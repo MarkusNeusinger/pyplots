@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-loss-triangle: Actuarial Loss Development Triangle
 Library: bokeh 3.8.2 | Python 3.14.3
 Quality: 83/100 | Created: 2026-03-09
@@ -6,7 +6,16 @@ Quality: 83/100 | Created: 2026-03-09
 
 import numpy as np
 from bokeh.io import export_png, save
-from bokeh.models import BasicTicker, ColorBar, ColumnDataSource, LinearColorMapper, Title
+from bokeh.models import (
+    BasicTicker,
+    ColorBar,
+    ColumnDataSource,
+    HoverTool,
+    Legend,
+    LegendItem,
+    LinearColorMapper,
+    Title,
+)
 from bokeh.plotting import figure
 from bokeh.resources import Resources
 from bokeh.transform import transform
@@ -41,41 +50,52 @@ for i in range(10):
         if i + j < 10:
             is_actual[i, j] = True
 
-# Prepare data for bokeh heatmap
-x_coords = []
-y_coords = []
-values = []
-text_values = []
-text_colors = []
-projected_flags = []
-cell_alphas = []
+# Separate actual and projected data for distinct rendering
+actual_x, actual_y, actual_val, actual_text, actual_tc = [], [], [], [], []
+proj_x, proj_y, proj_val, proj_text, proj_tc = [], [], [], [], []
+all_x, all_y, all_text, all_tc = [], [], [], []
+all_status, all_val = [], []
 
 max_val = full_triangle.max()
 min_val = full_triangle.min()
 
 for i in range(10):
     for j in range(10):
-        x_coords.append(str(dev_periods[j]))
-        y_coords.append(str(accident_years[i]))
+        x = str(dev_periods[j])
+        y = str(accident_years[i])
         val = full_triangle[i, j]
-        values.append(val)
-        text_values.append(f"{val:,.0f}")
-        projected_flags.append("Projected" if not is_actual[i, j] else "Actual")
-        # White text for darker cells, dark text for lighter cells
+        txt = f"{val:,.0f}"
         norm_val = (val - min_val) / (max_val - min_val)
-        text_colors.append("white" if norm_val > 0.55 else "#1a1a2e")
-        cell_alphas.append(1.0 if is_actual[i, j] else 0.65)
+        tc = "white" if norm_val > 0.55 else "#1a1a2e"
+        status = "Actual" if is_actual[i, j] else "Projected (IBNR)"
+        # Collect for text layer
+        all_x.append(x)
+        all_y.append(y)
+        all_text.append(txt)
+        all_tc.append(tc)
+        all_status.append(status)
+        all_val.append(val)
+        if is_actual[i, j]:
+            actual_x.append(x)
+            actual_y.append(y)
+            actual_val.append(val)
+            actual_text.append(txt)
+            actual_tc.append(tc)
+        else:
+            proj_x.append(x)
+            proj_y.append(y)
+            proj_val.append(val)
+            proj_text.append(txt)
+            proj_tc.append(tc)
 
-source = ColumnDataSource(
-    data={
-        "x": x_coords,
-        "y": y_coords,
-        "value": values,
-        "text": text_values,
-        "text_color": text_colors,
-        "alpha": cell_alphas,
-        "status": projected_flags,
-    }
+source_actual = ColumnDataSource(
+    data={"x": actual_x, "y": actual_y, "value": actual_val, "text": actual_text, "text_color": actual_tc}
+)
+source_proj = ColumnDataSource(
+    data={"x": proj_x, "y": proj_y, "value": proj_val, "text": proj_text, "text_color": proj_tc}
+)
+source_text = ColumnDataSource(
+    data={"x": all_x, "y": all_y, "text": all_text, "text_color": all_tc, "status": all_status, "value": all_val}
 )
 
 # Color mapper: sequential blue palette for magnitude
@@ -96,30 +116,51 @@ p = figure(
     toolbar_location=None,
 )
 
-# Heatmap rectangles
-p.rect(
+# Actual cells: solid fill, solid border
+r_actual = p.rect(
     x="x",
     y="y",
     width=1,
     height=1,
-    source=source,
+    source=source_actual,
     fill_color=transform("value", mapper),
-    fill_alpha="alpha",
+    fill_alpha=1.0,
     line_color="white",
     line_width=3,
 )
 
-# Cell annotations
+# Projected cells: reduced alpha + dashed border for clear distinction
+r_proj = p.rect(
+    x="x",
+    y="y",
+    width=1,
+    height=1,
+    source=source_proj,
+    fill_color=transform("value", mapper),
+    fill_alpha=0.55,
+    line_color="#cccccc",
+    line_width=2,
+    line_dash="dashed",
+)
+
+# Cell annotations - increased font size for readability
 p.text(
     x="x",
     y="y",
     text="text",
-    source=source,
+    source=source_text,
     text_align="center",
     text_baseline="middle",
-    text_font_size="14pt",
+    text_font_size="17pt",
     text_color="text_color",
 )
+
+# HoverTool for interactivity (key Bokeh feature)
+hover = HoverTool(
+    renderers=[r_actual, r_proj],
+    tooltips=[("Accident Year", "@y"), ("Dev Period", "@x"), ("Cumulative Claims", "$@value{0,0}")],
+)
+p.add_tools(hover)
 
 # Development factors row: display below the heatmap as subtitle info
 factor_text = "  ".join([f"F{j + 1}-{j + 2}: {dev_factors[j]:.3f}" for j in range(len(dev_factors))])
@@ -137,23 +178,29 @@ p.axis.axis_line_color = None
 p.axis.major_tick_line_color = None
 p.grid.grid_line_color = None
 
+# Proper legend for actual vs projected
+legend = Legend(
+    items=[
+        LegendItem(label="Actual (Observed)", renderers=[r_actual]),
+        LegendItem(label="Projected (IBNR Estimate)", renderers=[r_proj]),
+    ],
+    location="bottom_center",
+    orientation="horizontal",
+    label_text_font_size="18pt",
+    glyph_width=40,
+    glyph_height=30,
+    border_line_color=None,
+    background_fill_alpha=0.0,
+    spacing=30,
+)
+p.add_layout(legend, "below")
+
 # Add subtitle with development factors
 p.add_layout(
     Title(
         text=f"Age-to-Age Development Factors:  {factor_text}",
-        text_font_size="14pt",
+        text_font_size="16pt",
         text_color="#555555",
-        align="center",
-    ),
-    "below",
-)
-
-# Add subtitle for legend distinction
-p.add_layout(
-    Title(
-        text="Full opacity = Actual (observed)  |  Reduced opacity = Projected (estimated IBNR)",
-        text_font_size="15pt",
-        text_color="#666666",
         align="center",
     ),
     "below",

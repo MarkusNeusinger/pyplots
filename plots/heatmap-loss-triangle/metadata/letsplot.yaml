@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: heatmap-loss-triangle
 created: '2026-03-09T11:54:11Z'
-updated: '2026-03-09T12:06:12Z'
+updated: '2026-03-09T12:15:04Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22852106910
 issue: 4581
@@ -10,36 +10,39 @@ library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-loss-triangle/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-loss-triangle/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-loss-triangle/letsplot/plot.html
-quality_score: 85
+quality_score: 89
 review:
   strengths:
-  - Excellent dark theme execution with flavor_darcula() creating professional, visually
-    striking output
-  - Strong actual vs projected distinction using gold borders and alpha transparency
-  - Development factors row adds valuable analytical context beyond basic spec requirements
-  - Perfect code quality with clean, well-organized linear structure
-  - Realistic actuarial data with appropriate scale and domain context
+  - Excellent spec compliance with all required features including factor row, cell
+    annotations, and actual/projected distinction
+  - Professional dark Darcula theme with cohesive blue color palette and gold accent
+    borders
+  - Adaptive text colors (white on dark, dark on light) ensure readability across
+    all cells
+  - Realistic actuarial data with proper chain-ladder development patterns
+  - Clean well-structured code following KISS principles
   weaknesses:
-  - No explicit legend element for actual vs projected regions — only conveyed through
-    subtitle text
-  - Title uses lets-plot (hyphenated) instead of letsplot as the library identifier
-  - Cell annotation text (size=9) could be slightly larger for better readability
-  - Layout has minor canvas utilization issues with coord_fixed compression
-  image_description: The plot displays an actuarial loss development triangle as a
-    heatmap with a dark Darcula theme. Rows represent accident years 2015–2024, columns
-    represent development periods 1–10. Each cell is annotated with cumulative claims
-    values formatted with thousands separators. The color gradient runs from light
-    blue (low values ~10,000) to dark navy blue (high values ~80,000). Actual observed
-    cells have white borders, while projected/estimated cells have gold/orange borders
-    with 70% opacity. A "Factor" row at the bottom displays age-to-age development
-    factors (2.500 down to 1.008) on a light gray background with bold blue text.
-    The title reads "heatmap-loss-triangle · lets-plot · pyplots.ai" with a subtitle
-    explaining the actual vs projected distinction. Axis labels are "Development Period
-    (Years)" and "Accident / Origin Year". A continuous color legend for "Cumulative
-    Claims ($)" appears on the right side.
+  - Cell annotation text could be slightly larger for better readability on dense
+    10x10 grid
+  - Some unused canvas space near the right legend area
+  - Visual refinement could be pushed further with more typographic hierarchy
+  image_description: 'The plot displays a 10x10 heatmap-style loss development triangle
+    on a dark (Darcula) background. Rows represent accident/origin years 2015-2024,
+    columns represent development periods 1-10. Each cell is annotated with the cumulative
+    claim amount formatted with thousands separators. Actual (observed) cells in the
+    upper-left triangle have white borders, while projected (estimated) cells in the
+    lower-right triangle have gold/orange borders with 70% opacity. The color gradient
+    runs from light blue (low values ~8,000) to dark navy (high values ~82,000). Text
+    color adapts - white on dark cells, dark on light cells - for readability. A bottom
+    Factor row on a light gray background displays age-to-age development factors
+    (2.500 down to 1.008) in bold blue text. The right side shows two legends: a continuous
+    Cumulative Claims ($) color bar and a Cell Region legend with square markers for
+    Actual (white border) and Projected (gold border). The subtitle reads Chain-Ladder
+    Loss Triangle with actual vs projected distinction noted, and a caption notes
+    Bottom row: Age-to-Age Development Factors.'
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -47,40 +50,41 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set. Cell annotations at size=9 slightly
-          small.
+        comment: All font sizes explicitly set. Cell annotations at size=11 adequate
+          but slightly small for dense 10x10 grid.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text. Clean grid layout.
+        comment: All cell values clearly separated within tiles, no text collisions.
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: All cells visible with good color differentiation. Some cells feel
-          slightly tight.
+        comment: Tiles well-sized, color gradient clear, all elements distinctly visible.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue sequential colormap is colorblind-safe. Gold vs white borders
-          distinct.
+        comment: Blue gradient is colorblind-safe. Gold vs white border distinction
+          does not rely on red-green.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good canvas use but coord_fixed compresses layout slightly.
+        comment: Plot fills ~60% of canvas. Some unused space near legend area on
+          right side.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with context.
+        comment: 'Descriptive labels with context: Development Period (Years) and
+          Accident / Origin Year.'
     design_excellence:
       score: 14
       max: 20
@@ -90,22 +94,24 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Strong design with Darcula theme, custom gradient, gold borders.
+        comment: Dark Darcula theme with custom blue gradient, gold/white border distinction,
+          adaptive text colors. Professional and cohesive.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Grid removed, dark theme, distinct factor row styling.
+        comment: Grid removed, dark theme provides clean background, generous whitespace
+          between cells.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Actual vs projected narrative, diagonal boundary visible, factor
-          row adds context.
+        comment: Actual/projected visual distinction creates clear hierarchy. Diagonal
+          boundary tells the reserving story. Factor row provides context.
     spec_compliance:
-      score: 13
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -113,49 +119,53 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct triangular heatmap matrix.
+        comment: Correct triangular heatmap matrix visualization.
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: All major features present. Missing explicit legend for actual vs
-          projected.
+        comment: 'All spec features present: actual/projected distinction, cell annotations,
+          development factors, color encoding, legend.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=dev periods, Y=accident years, correctly mapped.
+        comment: X = development periods, Y = accident years. Correct mapping with
+          proper ordering.
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Title uses lets-plot instead of letsplot. Missing formal actual/projected
-          legend.
+        comment: Title in correct format. Cell Region legend clearly distinguishes
+          Actual vs Projected.
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Shows actual/projected, factors, triangular pattern, varying claims.
+        comment: Full triangle with actual and projected values, development factors,
+          realistic development patterns.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Insurance actuarial domain, neutral and realistic.
+        comment: Insurance claims reserving with chain-ladder method. Realistic, neutral
+          actuarial domain.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Claims 8k-82k realistic. Development factors follow expected pattern.
+        comment: Values ~8K-82K reasonable for insurance claims. Factors 2.500-1.008
+          realistic chain-ladder pattern.
     code_quality:
       score: 10
       max: 10
@@ -165,7 +175,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear flow, no functions or classes.
+        comment: Clean imports, data, plot, save flow. No functions or classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -177,19 +187,20 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: 'All imports used: numpy, pandas, lets_plot.'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean separation of concerns, well-organized.
+        comment: Appropriate complexity. Legend via invisible points is necessary
+          workaround in lets-plot.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with scale=3.
+        comment: Saves as plot.png with scale=3 and plot.html. Current API.
     library_mastery:
       score: 7
       max: 10
@@ -199,19 +210,22 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good ggplot grammar usage with proper layering.
+        comment: 'Good ggplot grammar: geom_tile, geom_text, scale_fill_gradient,
+          scale_color_manual, coord_fixed, layered themes.'
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: flavor_darcula() and HTML export are lets-plot distinctive.
+        comment: Uses flavor_darcula() (lets-plot exclusive), HTML export, guide_legend
+          with override_aes.
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
   - layer-composition
+  - custom-legend
   - html-export
   patterns:
   - data-generation

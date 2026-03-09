@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-loss-triangle: Actuarial Loss Development Triangle
 Library: highcharts unknown | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-09
@@ -83,9 +83,9 @@ datalabel_fn = CallbackFunction.from_js_literal(
     var isProjected = (this.series.name === 'Projected (IBNR)');
     var color = this.point.value > {threshold} ? '#ffffff' : '#1a1a2e';
     if (isProjected) {{
-        return '<span style="color:' + color + ';font-size:24px;font-style:italic;letter-spacing:0.3px">' + val + '</span>';
+        return '<span style="color:' + color + ';font-size:28px;font-style:italic;letter-spacing:0.3px">' + val + '</span>';
     }}
-    return '<span style="color:' + color + ';font-size:24px;font-weight:700;letter-spacing:0.3px">' + val + '</span>';
+    return '<span style="color:' + color + ';font-size:28px;font-weight:700;letter-spacing:0.3px">' + val + '</span>';
 }}"""
 )
 
@@ -136,12 +136,12 @@ load_fn = CallbackFunction.from_js_literal(
     var totalW = plotRight - x;
 
     // Separator line between chart and factors
-    var sepY = chart.plotTop + chart.plotHeight + 40;
+    var sepY = chart.plotTop + chart.plotHeight + 50;
     chart.renderer.path(['M', x, sepY, 'L', plotRight, sepY])
         .attr({{stroke: '#d0d5dd', 'stroke-width': 1.5, 'stroke-dasharray': '8,4'}}).add();
 
     // Age-to-Age Development Factors header
-    var fy = chart.plotTop + chart.plotHeight + 80;
+    var fy = chart.plotTop + chart.plotHeight + 95;
     chart.renderer.text('Age-to-Age Development Factors', x, fy - 10)
         .css({{fontSize: '26px', color: '#2d2d44', fontWeight: '700'}}).add();
 
@@ -152,7 +152,7 @@ load_fn = CallbackFunction.from_js_literal(
     {factors_render}
 
     // Actual vs Projected legend
-    var ly = fy + 80;
+    var ly = fy + 100;
     chart.renderer.rect(x, ly, 40, 28, 4)
         .attr({{fill: '#4a9bbe', stroke: '#ffffff', 'stroke-width': 3}}).add();
     chart.renderer.text('Actual (Observed)', x + 52, ly + 20)
@@ -175,7 +175,7 @@ chart.options.chart = {
     "height": 2700,
     "backgroundColor": "#fafbfc",
     "marginTop": 180,
-    "marginBottom": 380,
+    "marginBottom": 440,
     "marginLeft": 220,
     "marginRight": 280,
     "style": {"fontFamily": "'Segoe UI', Helvetica, Arial, sans-serif"},

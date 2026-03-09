@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 calibration-beer-lambert: Beer-Lambert Calibration Curve
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-09
@@ -18,6 +18,8 @@ from plotnine import (
     ggplot,
     labs,
     scale_color_manual,
+    scale_fill_manual,
+    scale_shape_manual,
     scale_x_continuous,
     scale_y_continuous,
     stat_smooth,
@@ -34,7 +36,7 @@ molar_absorptivity = 0.045
 absorbances = molar_absorptivity * concentrations + np.random.normal(0, 0.008, len(concentrations))
 absorbances = np.clip(absorbances, 0, None)
 
-# Linear regression (for equation annotation and unknown sample calculation)
+# Linear regression
 slope, intercept, r_value, p_value, std_err = stats.linregress(concentrations, absorbances)
 r_squared = r_value**2
 
@@ -50,6 +52,9 @@ df_unknown = pd.DataFrame(
     {"concentration": [unknown_concentration], "absorbance": [unknown_absorbance], "series": "Unknown Sample"}
 )
 
+# Combined dataframe for unified legend
+df_all = pd.concat([df_standards, df_unknown], ignore_index=True)
+
 # Segments for unknown sample dashed lines
 df_seg_h = pd.DataFrame(
     {"x": [0.0], "xend": [unknown_concentration], "y": [unknown_absorbance], "yend": [unknown_absorbance]}
@@ -62,44 +67,48 @@ df_seg_v = pd.DataFrame(
 eq_text = f"y = {slope:.4f}x + {intercept:.4f}"
 r2_text = f"R² = {r_squared:.5f}"
 
-# Annotation label dataframe for geom_label
-df_eq = pd.DataFrame({"x": [1.5], "y": [0.49], "label": [eq_text]})
+df_eq = pd.DataFrame({"x": [1.5], "y": [0.50], "label": [eq_text]})
 df_r2 = pd.DataFrame({"x": [1.5], "y": [0.44], "label": [r2_text]})
 
 # Plot
 plot = (
     ggplot(df_standards, aes(x="concentration", y="absorbance"))
-    + stat_smooth(method="lm", color="#306998", fill="#306998", alpha=0.15, size=1.2, fullrange=True)
+    + stat_smooth(method="lm", color="#306998", fill="#306998", alpha=0.2, size=1.4, fullrange=True)
     + geom_segment(
         df_seg_h,
         aes(x="x", xend="xend", y="y", yend="yend"),
         linetype="dashed",
-        color="#888888",
-        size=0.8,
+        color="#999999",
+        size=0.7,
         inherit_aes=False,
     )
     + geom_segment(
         df_seg_v,
         aes(x="x", xend="xend", y="y", yend="yend"),
         linetype="dashed",
-        color="#888888",
-        size=0.8,
+        color="#999999",
+        size=0.7,
         inherit_aes=False,
     )
-    + geom_point(aes(color="series"), size=5.5, fill="white", stroke=1.5)
     + geom_point(
-        df_unknown, aes(x="concentration", y="absorbance", color="series"), size=6, shape="D", inherit_aes=False
+        df_all,
+        aes(x="concentration", y="absorbance", color="series", shape="series", fill="series"),
+        size=6,
+        stroke=1.2,
+        inherit_aes=False,
     )
     + scale_color_manual(values={"Calibration Standards": "#306998", "Unknown Sample": "#D04848"}, name=" ")
+    + scale_fill_manual(values={"Calibration Standards": "#306998", "Unknown Sample": "#D04848"}, name=" ")
+    + scale_shape_manual(values={"Calibration Standards": "o", "Unknown Sample": "D"}, name=" ")
     + geom_label(
         df_eq,
         aes(x="x", y="y", label="label"),
         ha="left",
         size=18,
         color="#2A2A2A",
-        fill="#F5F5F0",
+        fill="#F0F0EA",
         label_size=0.3,
-        label_r=0.02,
+        label_r=0.03,
         inherit_aes=False,
         show_legend=False,
     )
@@ -109,9 +118,9 @@ plot = (
         ha="left",
         size=18,
         color="#2A2A2A",
-        fill="#F5F5F0",
+        fill="#F0F0EA",
         label_size=0.3,
-        label_r=0.02,
+        label_r=0.03,
         inherit_aes=False,
         show_legend=False,
     )
@@ -122,18 +131,20 @@ plot = (
     + theme(
         figure_size=(16, 9),
         text=element_text(size=14, family="sans-serif"),
-        axis_title=element_text(size=20, weight="bold"),
-        axis_text=element_text(size=16, color="#444444"),
-        plot_title=element_text(size=24, weight="bold"),
+        axis_title=element_text(size=20, weight="bold", color="#2A2A2A"),
+        axis_text=element_text(size=16, color="#555555"),
+        plot_title=element_text(size=24, weight="bold", color="#1A1A1A"),
         plot_background=element_rect(fill="white", color="white"),
+        panel_background=element_rect(fill="#FAFAFA", color="white"),
         panel_grid_major_x=element_blank(),
         panel_grid_minor=element_blank(),
-        panel_grid_major_y=element_line(color="#E8E8E8", size=0.4),
+        panel_grid_major_y=element_line(color="#E0E0E0", size=0.4),
         axis_line_x=element_line(color="#333333", size=0.5),
         axis_line_y=element_line(color="#333333", size=0.5),
         legend_position="bottom",
         legend_text=element_text(size=15),
         legend_background=element_rect(fill="white", color="white"),
+        legend_key=element_rect(fill="white", color="white"),
         plot_margin=0.04,
     )
 )

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 calibration-beer-lambert: Beer-Lambert Calibration Curve
 Library: plotly 6.6.0 | Python 3.14.3
-Quality: 89/100 | Created: 2026-03-09
+Created: 2026-03-09
 """
 
 import numpy as np
@@ -63,7 +63,8 @@ fig.add_trace(
         y=abs_fit,
         mode="lines",
         name=f"Fit: y = {slope:.4f}x + {intercept:.4f}",
-        line={"color": "#306998", "width": 3},
+        line={"color": "#1a3a5c", "width": 3},
+        hovertemplate="Conc: %{x:.2f} mg/L<br>Predicted Abs: %{y:.4f}<extra></extra>",
     )
 )
 
@@ -75,6 +76,7 @@ fig.add_trace(
         mode="markers",
         name="Calibration Standards",
         marker={"size": 14, "color": "#306998", "line": {"color": "white", "width": 2}, "symbol": "circle"},
+        hovertemplate="<b>Standard %{pointNumber}</b><br>Concentration: %{x:.1f} mg/L<br>Absorbance: %{y:.4f}<extra></extra>",
     )
 )
 
@@ -86,6 +88,7 @@ fig.add_trace(
         mode="markers",
         name=f"Unknown ({unknown_concentration:.1f} mg/L)",
         marker={"size": 16, "color": "#E8453C", "line": {"color": "white", "width": 2}, "symbol": "diamond"},
+        hovertemplate="<b>Unknown Sample</b><br>Concentration: %{x:.2f} mg/L<br>Absorbance: %{y:.4f}<extra></extra>",
     )
 )
 
@@ -111,47 +114,63 @@ fig.add_shape(
 fig.add_annotation(
     x=3.0,
     y=0.55,
-    text=f"y = {slope:.4f}x + {intercept:.4f}<br>R² = {r_squared:.5f}",
+    text=f"<b>y = {slope:.4f}x + {intercept:.4f}</b><br>R² = {r_squared:.5f}",
     showarrow=False,
-    font={"size": 20, "color": "#306998"},
-    bgcolor="rgba(255,255,255,0.8)",
-    bordercolor="#306998",
-    borderwidth=1,
-    borderpad=6,
+    font={"size": 20, "color": "#1a3a5c", "family": "Arial, sans-serif"},
+    bgcolor="rgba(248, 250, 252, 0.92)",
+    bordercolor="rgba(48, 105, 152, 0.5)",
+    borderwidth=2,
+    borderpad=10,
     align="left",
 )
 
 # Layout
 fig.update_layout(
-    title={"text": "calibration-beer-lambert · plotly · pyplots.ai", "font": {"size": 28}, "x": 0.5, "xanchor": "center"},
+    title={
+        "text": "calibration-beer-lambert · plotly · pyplots.ai",
+        "font": {"size": 28, "color": "#1a3a5c", "family": "Arial, sans-serif"},
+        "x": 0.5,
+        "xanchor": "center",
+    },
     xaxis={
-        "title": {"text": "Concentration (mg/L)", "font": {"size": 22}},
-        "tickfont": {"size": 18},
+        "title": {"text": "Concentration (mg/L)", "font": {"size": 22, "color": "#2d4a6f"}},
+        "tickfont": {"size": 18, "color": "#4a4a4a"},
         "range": [-0.5, 15.5],
-        "gridcolor": "rgba(0,0,0,0.08)",
-        "gridwidth": 1,
+        "showgrid": False,
         "zeroline": False,
+        "linecolor": "#c0c0c0",
+        "linewidth": 1,
+        "ticks": "outside",
+        "tickwidth": 1,
+        "tickcolor": "#c0c0c0",
     },
     yaxis={
-        "title": {"text": "Absorbance", "font": {"size": 22}},
-        "tickfont": {"size": 18},
+        "title": {"text": "Absorbance", "font": {"size": 22, "color": "#2d4a6f"}},
+        "tickfont": {"size": 18, "color": "#4a4a4a"},
         "range": [-0.05, 0.75],
-        "gridcolor": "rgba(0,0,0,0.08)",
+        "gridcolor": "rgba(0,0,0,0.06)",
         "gridwidth": 1,
+        "griddash": "dash",
         "zeroline": False,
+        "linecolor": "#c0c0c0",
+        "linewidth": 1,
+        "ticks": "outside",
+        "tickwidth": 1,
+        "tickcolor": "#c0c0c0",
     },
     template="plotly_white",
     legend={
-        "font": {"size": 16},
+        "font": {"size": 16, "color": "#4a4a4a"},
         "x": 0.02,
         "y": 0.98,
         "xanchor": "left",
         "yanchor": "top",
-        "bgcolor": "rgba(255,255,255,0.85)",
-        "bordercolor": "#cccccc",
+        "bgcolor": "rgba(248, 250, 252, 0.92)",
+        "bordercolor": "rgba(0,0,0,0.15)",
         "borderwidth": 1,
     },
     margin={"l": 100, "r": 80, "t": 100, "b": 80},
+    plot_bgcolor="white",
 )
 
 # Save

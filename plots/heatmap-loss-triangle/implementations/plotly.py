@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-loss-triangle: Actuarial Loss Development Triangle
 Library: plotly 6.6.0 | Python 3.14.3
-Quality: 88/100 | Created: 2026-03-09
+Created: 2026-03-09
 """
 
 import numpy as np
@@ -70,13 +70,6 @@ fig.add_trace(
 )
 
 
-# Identify boundary cells (cells adjacent to the diagonal)
-def is_boundary_cell(row, col, n):
-    """Check if cell is on or adjacent to the actual/projected diagonal."""
-    diag_col = n - 1 - row  # diagonal column for this row
-    return abs(col - diag_col) <= 0
-
-
 # Cell value annotations with per-cell contrast colors
 annotations = []
 for i in range(n_years):
@@ -84,14 +77,14 @@ for i in range(n_years):
         val = cumulative[i, j]
         relative = (val - z_min) / (z_max - z_min)
         font_color = "white" if relative > 0.55 else "#222222"
-        boundary = is_boundary_cell(i, j, n_years)
+        boundary = j == n_years - 1 - i
         annotations.append(
             {
                 "x": j,
                 "y": i,
                 "text": f"{val:,.0f}",
                 "showarrow": False,
-                "font": {"size": 15, "color": font_color, "family": "Arial Black, Arial, sans-serif"},
+                "font": {"size": 17, "color": font_color, "family": "Arial Black, Arial, sans-serif"},
                 "bgcolor": "rgba(255,255,255,0.75)" if boundary else None,
                 "borderpad": 3 if boundary else 0,
             }

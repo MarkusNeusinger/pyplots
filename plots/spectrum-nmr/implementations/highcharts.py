@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 spectrum-nmr: NMR Spectrum (Nuclear Magnetic Resonance)
 Library: highcharts unknown | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-09
@@ -22,32 +22,30 @@ np.random.seed(42)
 
 chemical_shift = np.linspace(0, 12, 6000)
 
-
-def lorentzian(x, center, amplitude, width):
-    return amplitude * (width**2) / ((x - center) ** 2 + width**2)
-
-
 intensity = np.zeros_like(chemical_shift)
+x = chemical_shift
+w = 0.012  # peak width for multiplets
 
-# TMS reference peak at 0 ppm (singlet)
-intensity += lorentzian(chemical_shift, 0.0, 0.3, 0.008)
+# Lorentzian peak shape: a * w^2 / ((x - c)^2 + w^2)
+# TMS reference peak at 0 ppm (singlet, narrower)
+intensity += 0.3 * 0.008**2 / ((x - 0.0) ** 2 + 0.008**2)
 
 # CH3 triplet near 1.18 ppm (3 peaks, 1:2:1 pattern)
 ch3_center = 1.18
 j_coupling = 0.07
-intensity += lorentzian(chemical_shift, ch3_center - j_coupling, 0.65, 0.012)
-intensity += lorentzian(chemical_shift, ch3_center, 1.30, 0.012)
-intensity += lorentzian(chemical_shift, ch3_center + j_coupling, 0.65, 0.012)
+intensity += 0.65 * w**2 / ((x - (ch3_center - j_coupling)) ** 2 + w**2)
+intensity += 1.30 * w**2 / ((x - ch3_center) ** 2 + w**2)
+intensity += 0.65 * w**2 / ((x - (ch3_center + j_coupling)) ** 2 + w**2)
 
 # CH2 quartet near 3.69 ppm (4 peaks, 1:3:3:1 pattern)
 ch2_center = 3.69
-intensity += lorentzian(chemical_shift, ch2_center - 1.5 * j_coupling, 0.22, 0.012)
-intensity += lorentzian(chemical_shift, ch2_center - 0.5 * j_coupling, 0.66, 0.012)
-intensity += lorentzian(chemical_shift, ch2_center + 0.5 * j_coupling, 0.66, 0.012)
-intensity += lorentzian(chemical_shift, ch2_center + 1.5 * j_coupling, 0.22, 0.012)
+intensity += 0.22 * w**2 / ((x - (ch2_center - 1.5 * j_coupling)) ** 2 + w**2)
+intensity += 0.66 * w**2 / ((x - (ch2_center - 0.5 * j_coupling)) ** 2 + w**2)
+intensity += 0.66 * w**2 / ((x - (ch2_center + 0.5 * j_coupling)) ** 2 + w**2)
+intensity += 0.22 * w**2 / ((x - (ch2_center + 1.5 * j_coupling)) ** 2 + w**2)
 
-# OH singlet near 2.61 ppm
-intensity += lorentzian(chemical_shift, 2.61, 0.40, 0.015)
+# OH singlet near 2.61 ppm (slightly broader)
+intensity += 0.40 * 0.015**2 / ((x - 2.61) ** 2 + 0.015**2)
 
 # Add slight baseline noise
 intensity += np.random.normal(0, 0.003, len(chemical_shift))
@@ -70,6 +68,7 @@ chart.options.chart = {
     "spacingBottom": 80,
     "spacingLeft": 80,
     "spacingRight": 100,
+    "plotBorderWidth": 0,
     "style": {"fontFamily": "'Segoe UI', 'Helvetica Neue', Arial, sans-serif"},
 }
 
@@ -98,12 +97,14 @@ chart.options.x_axis = {
     "max": 5.5,
     "tickInterval": 0.5,
     "gridLineWidth": 0,
-    "lineColor": "#bdc3c7",
+    "lineColor": "#34495e",
     "lineWidth": 2,
-    "tickWidth": 0,
+    "tickWidth": 2,
+    "tickLength": 8,
+    "tickColor": "#34495e",
 }
 
-# Y-axis: intensity
+# Y-axis: intensity (tightened range to reduce whitespace above peaks)
 chart.options.y_axis = {
     "title": {
         "text": "Intensity (a.u.)",
@@ -112,12 +113,16 @@ chart.options.y_axis = {
     },
     "labels": {"style": {"fontSize": "28px", "color": "#666666"}},
     "min": 0,
+    "max": 1.42,
     "gridLineColor": "#e8e8e8",
     "gridLineDashStyle": "Dot",
     "gridLineWidth": 1,
-    "lineColor": "#bdc3c7",
+    "lineColor": "#34495e",
     "lineWidth": 2,
-    "tickWidth": 0,
+    "tickWidth": 2,
+    "tickLength": 8,
+    "tickColor": "#34495e",
+    "opposite": False,
 }
 
 chart.options.legend = {"enabled": False}
@@ -136,27 +141,30 @@ chart.options.plot_options = {
     "line": {"lineWidth": 2, "marker": {"enabled": False}, "turboThreshold": 10000},
 }
 
-# Annotations for peak labels
+# Annotations for peak labels with subtle connector lines
 chart.options.annotations = [
     {
         "draggable": "",
         "labelOptions": {
-            "backgroundColor": "rgba(255,255,255,0.0)",
+            "backgroundColor": "rgba(255,255,255,0.85)",
             "borderWidth": 0,
+            "borderRadius": 6,
+            "padding": 10,
             "style": {"fontSize": "30px", "color": "#306998", "fontWeight": "600"},
+            "shape": "connector",
         },
         "labels": [
-            {"point": {"x": 0.0, "y": 0.3, "xAxis": 0, "yAxis": 0}, "text": "TMS<br>\u03b4 0.00", "y": -40},
+            {"point": {"x": 0.0, "y": 0.3, "xAxis": 0, "yAxis": 0}, "text": "TMS<br>\u03b4 0.00", "y": -50, "x": 10},
             {
                 "point": {"x": 1.18, "y": 1.30, "xAxis": 0, "yAxis": 0},
                 "text": "CH\u2083 (triplet)<br>\u03b4 1.18",
-                "y": -40,
+                "y": -50,
             },
-            {"point": {"x": 2.61, "y": 0.40, "xAxis": 0, "yAxis": 0}, "text": "OH (singlet)<br>\u03b4 2.61", "y": -40},
+            {"point": {"x": 2.61, "y": 0.40, "xAxis": 0, "yAxis": 0}, "text": "OH (singlet)<br>\u03b4 2.61", "y": -55},
             {
                 "point": {"x": 3.69, "y": 0.66, "xAxis": 0, "yAxis": 0},
                 "text": "CH\u2082 (quartet)<br>\u03b4 3.69",
-                "y": -40,
+                "y": -55,
             },
         ],
     }

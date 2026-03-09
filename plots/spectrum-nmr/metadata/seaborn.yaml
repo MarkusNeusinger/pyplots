@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: spectrum-nmr
 created: '2026-03-09T12:53:25Z'
-updated: '2026-03-09T13:05:09Z'
+updated: '2026-03-09T13:14:56Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22854183187
 issue: 4676
@@ -10,68 +10,67 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/spectrum-nmr/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spectrum-nmr/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 88
+quality_score: 92
 review:
   strengths:
-  - Excellent spec compliance with all NMR conventions correctly followed (reversed
-    x-axis, TMS reference, splitting patterns)
-  - Strong data quality with realistic ethanol NMR data and correct coupling ratios
-  - Good visual refinement with domain-appropriate choices (no y-ticks, removed spines,
-    clean baseline)
-  - Color-coded peak regions with annotations create clear visual hierarchy
+  - Physically accurate Lorentzian peak shapes with correct splitting patterns and
+    coupling constants
+  - Excellent color accessibility using seaborn colorblind palette with meaningful
+    color-region mapping
+  - Clean NMR-convention presentation (reversed x-axis, hidden y-ticks, minimal baseline
+    noise)
+  - Distinctive use of seaborn features (rugplot, despine, set_context, color_palette)
+  - Professional annotation system with color-matched connector lines
   weaknesses:
-  - Color palette includes red and green which may challenge colorblind accessibility
-  - Region assignment loop is verbose (for-loop over 6000 values instead of vectorized
-    approach)
-  - Design could be more polished to reach publication quality (more refined typography,
-    stronger color harmony)
-  image_description: 'The plot displays a ¹H NMR spectrum of ethanol with chemical
-    shift (ppm) on the x-axis (correctly reversed, high ppm on left) and intensity
-    on the y-axis. Four peak regions are color-coded: CH₂ quartet (blue) near 3.69
-    ppm showing 4 distinct peaks, CH₃ triplet (orange) near 1.18 ppm showing 3 peaks,
-    OH singlet (green) near 2.61 ppm as a single broader peak, and TMS reference (red)
-    at 0.00 ppm. Each peak is annotated with arrows and labels showing chemical shift
-    values. A legend titled "Peak Assignment" sits in the upper right corner. Blue
-    rug marks appear along the x-axis at peak center positions. The baseline is clean
-    with subtle noise. Top, right, and left spines are removed. Y-axis ticks are hidden
-    (standard NMR convention). The title reads "¹H NMR Spectrum of Ethanol · spectrum-nmr
-    · seaborn · pyplots.ai".'
+  - Per-region plotting loop could potentially be replaced with a single hue-based
+    lineplot call for more idiomatic seaborn usage
+  image_description: 'The plot displays a 1H NMR spectrum of ethanol on a light gray
+    (#fafafa) background. The x-axis shows Chemical Shift (ppm) reversed from 5.5
+    to -0.5 (NMR convention), and the y-axis shows Intensity with no tick marks. Four
+    distinct peak groups are color-coded: blue CH2 quartet near 3.69 ppm with four
+    resolved peaks, pink/magenta OH singlet near 2.61 ppm, teal/green CH3 triplet
+    near 1.18 ppm with three resolved peaks (tallest signal), and orange TMS reference
+    at 0.00 ppm. Each peak is annotated with its assignment and chemical shift value
+    via colored connector lines. Semi-transparent fills appear under each peak region.
+    Small rug marks at peak centers along the x-axis. A Peak Assignment legend with
+    shadow appears in the upper right. Top and right spines are removed. The baseline
+    is rendered in muted gray with subtle noise. Serif font family is used throughout.'
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 30
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Title 24pt, ylabel 20pt, annotations 15pt, legend 14pt all explicitly
-          set. Tick labels via set_context.
+        comment: 'All font sizes explicitly set: title 24pt, labels 20pt, ticks 16pt,
+          annotations 14pt'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: All annotations staggered, no text collisions
+        comment: All annotations well-spaced with varying vertical offsets, no collisions
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Peak lines at 2.2 width, baseline at 0.8, all peaks clearly visible
+        comment: Line widths vary by region for emphasis, peaks sharp and well-resolved
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Red and green in same plot could be problematic for deuteranopia
+        comment: Seaborn colorblind palette, all colors distinguishable
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: 16:9 aspect ratio, plot fills canvas well, tight_layout applied
+        comment: 16:9 canvas well-utilized, plot fills ~65% of area
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
@@ -79,30 +78,30 @@ review:
         passed: true
         comment: Chemical Shift (ppm) with units, Intensity appropriate for NMR
     design_excellence:
-      score: 14
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Thoughtful color-coding, Unicode subscripts, annotation arrows. Above
-          defaults but not publication-stunning.
+        comment: Serif font, color-coded annotations, shadow legend, custom background,
+          clearly above defaults
       - id: DE-02
         name: Visual Refinement
         score: 5
         max: 6
         passed: true
-        comment: Spines removed, y-ticks hidden, no grid, clean whitespace. Good domain
-          conventions.
+        comment: Despine left+top+right, hidden y-ticks, subtle baseline, alpha-blended
+          fills
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Color-coding creates visual hierarchy, annotations guide viewer to
-          key peaks
+        comment: Color coding and varying linewidths create visual hierarchy, annotations
+          guide interpretation
     spec_compliance:
       score: 15
       max: 15
@@ -125,14 +124,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: X=chemical shift (ppm), Y=intensity, correct mapping
+        comment: Chemical shift on x-axis, intensity on y-axis, all data visible
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title follows format, legend with Peak Assignment title and correct
-          labels
+        comment: Correct title format, legend labels match data
     data_quality:
       score: 15
       max: 15
@@ -142,22 +140,21 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Singlet, triplet, quartet, and TMS reference all demonstrated
+        comment: Shows singlet, triplet, quartet, and TMS reference with correct ratios
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Ethanol NMR is a classic chemistry example, neutral scientific topic
+        comment: Ethanol 1H NMR is a classic real-world chemistry example
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Correct chemical shifts, realistic coupling constants, correct intensity
-          ratios
+        comment: Realistic chemical shifts and coupling constants for ethanol
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -177,19 +174,19 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: All four imports used
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Verbose for-loop over 6000 values for region assignment
+        passed: true
+        comment: Vectorized np.select, concise Lorentzian formula, no over-engineering
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png, dpi=300, bbox_inches=tight
+        comment: Saves as plot.png with dpi=300, no deprecated API
     library_mastery:
       score: 7
       max: 10
@@ -199,23 +196,24 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good seaborn patterns but manually iterates over groups
+        comment: Uses sns.lineplot with DataFrame, set_style/set_context, despine,
+          color_palette
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: sns.rugplot, sns.despine, sns.set_context are seaborn-specific
-  verdict: REJECTED
+        comment: sns.rugplot for peak markers, sns.despine(left=True), sns.set_context(talk)
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
-  - manual-ticks
+  - custom-legend
   patterns:
   - data-generation
   - iteration-over-groups
-  - explicit-figure
   dataprep: []
   styling:
+  - alpha-blending
   - minimal-chrome

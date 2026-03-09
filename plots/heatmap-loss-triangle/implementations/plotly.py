@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-loss-triangle: Actuarial Loss Development Triangle
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-09
@@ -69,6 +69,14 @@ fig.add_trace(
     )
 )
 
+
+# Identify boundary cells (cells adjacent to the diagonal)
+def is_boundary_cell(row, col, n):
+    """Check if cell is on or adjacent to the actual/projected diagonal."""
+    diag_col = n - 1 - row  # diagonal column for this row
+    return abs(col - diag_col) <= 0
+
+
 # Cell value annotations with per-cell contrast colors
 annotations = []
 for i in range(n_years):
@@ -76,8 +84,17 @@ for i in range(n_years):
         val = cumulative[i, j]
         relative = (val - z_min) / (z_max - z_min)
         font_color = "white" if relative > 0.55 else "#222222"
+        boundary = is_boundary_cell(i, j, n_years)
         annotations.append(
-            {"x": j, "y": i, "text": f"{val:,.0f}", "showarrow": False, "font": {"size": 13, "color": font_color}}
+            {
+                "x": j,
+                "y": i,
+                "text": f"{val:,.0f}",
+                "showarrow": False,
+                "font": {"size": 15, "color": font_color, "family": "Arial Black, Arial, sans-serif"},
+                "bgcolor": "rgba(255,255,255,0.75)" if boundary else None,
+                "borderpad": 3 if boundary else 0,
+            }
         )
 
 # Add amber overlay rectangles for projected cells
@@ -106,7 +123,7 @@ shapes.append(
         "y0": 0 - 0.5,
         "x1": 0 - 0.5,
         "y1": n_years - 1 + 0.5,
-        "line": {"color": "#333333", "width": 3, "dash": "dash"},
+        "line": {"color": "rgba(60, 60, 60, 0.6)", "width": 2, "dash": "dash"},
         "layer": "above",
     }
 )
@@ -121,7 +138,7 @@ for k, factor in enumerate(dev_factors):
             "yref": "paper",
             "text": f"{factor:.3f}",
             "showarrow": False,
-            "font": {"size": 12, "color": "#555555"},
+            "font": {"size": 13, "color": "#555555", "family": "Arial, Helvetica, sans-serif"},
             "xanchor": "center",
         }
     )
@@ -133,7 +150,7 @@ annotations.append(
         "yref": "paper",
         "text": "<b>Dev Factors</b>",
         "showarrow": False,
-        "font": {"size": 12, "color": "#555555"},
+        "font": {"size": 13, "color": "#555555", "family": "Arial, Helvetica, sans-serif"},
         "xanchor": "right",
     }
 )
@@ -145,9 +162,9 @@ annotations.append(
         "y": 1.06,
         "xref": "paper",
         "yref": "paper",
-        "text": "<b>Actual</b> (observed)",
+        "text": "■ <b>Actual</b> (observed)",
         "showarrow": False,
-        "font": {"size": 16, "color": "#306998"},
+        "font": {"size": 16, "color": "#306998", "family": "Arial, Helvetica, sans-serif"},
         "xanchor": "left",
     }
 )
@@ -157,9 +174,9 @@ annotations.append(
         "y": 1.06,
         "xref": "paper",
         "yref": "paper",
-        "text": "<b>Projected</b> (estimated IBNR)",
+        "text": "■ <b>Projected</b> (estimated IBNR)",
         "showarrow": False,
-        "font": {"size": 16, "color": "#CC7722"},
+        "font": {"size": 16, "color": "#CC7722", "family": "Arial, Helvetica, sans-serif"},
         "xanchor": "left",
     }
 )
@@ -168,21 +185,21 @@ annotations.append(
 fig.update_layout(
     title={
         "text": "heatmap-loss-triangle · plotly · pyplots.ai",
-        "font": {"size": 28},
+        "font": {"size": 28, "family": "Arial, Helvetica, sans-serif", "color": "#1a1a2e"},
         "x": 0.5,
         "xanchor": "center",
         "y": 0.97,
     },
     xaxis={
-        "title": {"text": "Development Period (Years)", "font": {"size": 22}},
-        "tickfont": {"size": 16},
+        "title": {"text": "Development Period (Years)", "font": {"size": 22, "color": "#2c3e50"}},
+        "tickfont": {"size": 17, "color": "#34495e"},
         "tickvals": list(range(n_periods)),
         "ticktext": [str(p) for p in development_periods],
         "side": "bottom",
     },
     yaxis={
-        "title": {"text": "Accident Year", "font": {"size": 22}},
-        "tickfont": {"size": 16},
+        "title": {"text": "Accident Year", "font": {"size": 22, "color": "#2c3e50"}},
+        "tickfont": {"size": 17, "color": "#34495e"},
         "tickvals": list(range(n_years)),
         "ticktext": [str(y) for y in accident_years],
         "autorange": "reversed",
@@ -191,6 +208,8 @@ fig.update_layout(
     shapes=shapes,
     annotations=annotations,
     margin={"l": 140, "r": 100, "t": 120, "b": 140},
+    paper_bgcolor="#fafafa",
+    plot_bgcolor="#fafafa",
 )
 
 # Save

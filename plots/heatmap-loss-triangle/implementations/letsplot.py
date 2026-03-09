@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-loss-triangle: Actuarial Loss Development Triangle
 Library: letsplot 4.8.2 | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-09
@@ -73,6 +73,20 @@ y_order = ["Factor"] + [str(y) for y in reversed(accident_years)]
 df_actual = df[df["region"] == "Actual"].copy()
 df_projected = df[df["region"] == "Projected"].copy()
 
+# Create legend data: two rows representing region types for the explicit legend
+df_legend = pd.DataFrame(
+    {
+        "x": [str(dev_periods[0]), str(dev_periods[0])],
+        "y": [str(accident_years[0]), str(accident_years[0])],
+        "region": ["■ Actual (white border)", "■ Projected (gold border)"],
+        "clr": ["white", "#E8A838"],
+    }
+)
+
+# Split text into light and dark for readability against varying backgrounds
+df_light_text = df[df["text_color"] == "white"].copy()
+df_dark_text = df[df["text_color"] != "white"].copy()
+
 # Plot with separate layers for actual vs projected (distinct border colors)
 plot = (
     ggplot()
@@ -86,8 +100,16 @@ plot = (
         size=1.4,
         alpha=0.7,
     )
-    # Cell value annotations
-    + geom_text(aes(x="dev_period", y="accident_year", label="label", color="text_color"), data=df, size=9)
+    # Cell value annotations (split by text color to avoid color scale conflict)
+    + geom_text(aes(x="dev_period", y="accident_year", label="label"), data=df_light_text, color="white", size=11)
+    + geom_text(aes(x="dev_period", y="accident_year", label="label"), data=df_dark_text, color="#1a1a1a", size=11)
+    # Invisible points for explicit actual/projected legend
+    + geom_point(aes(x="x", y="y", color="region"), data=df_legend, size=0, alpha=0)
+    + scale_color_manual(
+        values={"■ Actual (white border)": "white", "■ Projected (gold border)": "#E8A838"},
+        name="Cell Region",
+        guide=guide_legend(override_aes={"size": 8, "alpha": 1, "shape": 15}),
+    )
     # Factor row background
     + geom_tile(aes(x="dev_period", y="accident_year"), data=df_factors, fill="#F0F4F8", color="#B0BEC5", size=0.8)
     # Factor labels
@@ -98,18 +120,17 @@ plot = (
         size=10,
         fontface="bold",
     )
-    + scale_color_identity()
     + scale_fill_gradient(low="#E8F0FE", high="#1A3A6B", name="Cumulative\nClaims ($)")
     + scale_x_discrete(limits=[str(p) for p in dev_periods])
     + scale_y_discrete(limits=y_order)
     + labs(
         x="Development Period (Years)",
         y="Accident / Origin Year",
-        title="heatmap-loss-triangle · lets-plot · pyplots.ai",
+        title="heatmap-loss-triangle · letsplot · pyplots.ai",
         subtitle="Chain-Ladder Loss Triangle  ·  Actual (white border) vs Projected (gold border, 70% opacity)",
         caption="Bottom row: Age-to-Age Development Factors",
     )
-    + coord_fixed(ratio=0.85)
+    + coord_fixed(ratio=0.75)
     + theme_minimal()
     + flavor_darcula()
     + theme(
@@ -120,6 +141,7 @@ plot = (
         axis_text=element_text(size=16, color="#C0C0C0"),
         legend_title=element_text(size=16),
         legend_text=element_text(size=14),
+        legend_position="right",
         panel_grid=element_blank(),
     )
     + ggsize(1600, 900)

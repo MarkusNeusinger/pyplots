@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-loss-triangle: Actuarial Loss Development Triangle
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 79/100 | Created: 2026-03-09
@@ -33,15 +33,16 @@ class LossTriangleHeatmap(Graph):
         self.colormap = kwargs.pop("colormap", [])
         super().__init__(*args, **kwargs)
 
-    def _interpolate_color(self, value, min_val, max_val):
+    def _interpolate_color(self, value, min_val, max_val, colormap=None):
+        cmap = colormap or self.colormap
         if max_val == min_val:
-            return self.colormap[len(self.colormap) // 2]
+            return cmap[len(cmap) // 2]
         normalized = max(0, min(1, (value - min_val) / (max_val - min_val)))
-        pos = normalized * (len(self.colormap) - 1)
+        pos = normalized * (len(cmap) - 1)
         idx1 = int(pos)
-        idx2 = min(idx1 + 1, len(self.colormap) - 1)
+        idx2 = min(idx1 + 1, len(cmap) - 1)
         frac = pos - idx1
-        c1, c2 = self.colormap[idx1], self.colormap[idx2]
+        c1, c2 = cmap[idx1], cmap[idx2]
         r = int(int(c1[1:3], 16) + (int(c2[1:3], 16) - int(c1[1:3], 16)) * frac)
         g = int(int(c1[3:5], 16) + (int(c2[3:5], 16) - int(c1[3:5], 16)) * frac)
         b = int(int(c1[5:7], 16) + (int(c2[5:7], 16) - int(c1[5:7], 16)) * frac)
@@ -70,8 +71,8 @@ class LossTriangleHeatmap(Graph):
 
         label_margin_left = 380
         label_margin_right = 320
-        label_margin_top = 80
-        label_margin_bottom = 200
+        label_margin_top = 110
+        label_margin_bottom = 120
 
         available_width = plot_width - label_margin_left - label_margin_right
         available_height = plot_height - label_margin_top - label_margin_bottom
@@ -89,25 +90,25 @@ class LossTriangleHeatmap(Graph):
         plot_node = self.nodes["plot"]
         hm_group = self.svg.node(plot_node, class_="loss-triangle-heatmap")
 
-        # Column headers (development periods)
+        # Column header title (above column numbers with more spacing)
         col_font_size = min(36, int(cell_width * 0.45))
-        for j, label in enumerate(self.col_labels):
-            cx = x_offset + j * (cell_width + gap) + cell_width / 2
-            cy = y_offset - 20
-            text_node = self.svg.node(hm_group, "text", x=cx, y=cy)
-            text_node.set("text-anchor", "middle")
-            text_node.set("fill", "#333333")
-            text_node.set("style", f"font-size:{col_font_size}px;font-weight:700;font-family:sans-serif")
-            text_node.text = str(label)
-
-        # Column header title
-        header_title_y = y_offset - 55
+        header_title_y = y_offset - 65
         header_title_x = x_offset + grid_width / 2
         text_node = self.svg.node(hm_group, "text", x=header_title_x, y=header_title_y)
         text_node.set("text-anchor", "middle")
         text_node.set("fill", "#555555")
         text_node.set("style", f"font-size:{col_font_size + 4}px;font-weight:600;font-family:sans-serif")
         text_node.text = "Development Period (Years)"
+
+        # Column headers (development periods)
+        for j, label in enumerate(self.col_labels):
+            cx = x_offset + j * (cell_width + gap) + cell_width / 2
+            cy = y_offset - 18
+            text_node = self.svg.node(hm_group, "text", x=cx, y=cy)
+            text_node.set("text-anchor", "middle")
+            text_node.set("fill", "#333333")
+            text_node.set("style", f"font-size:{col_font_size}px;font-weight:700;font-family:sans-serif")
+            text_node.text = str(label)
 
         # Row labels (accident years)
         row_font_size = min(36, int(cell_height * 0.50))
@@ -130,8 +131,11 @@ class LossTriangleHeatmap(Graph):
         text_node.set("transform", f"rotate(-90, {row_title_x}, {row_title_y})")
         text_node.text = "Accident Year"
 
+        # Projected cells use a warm orange-amber colormap for clear distinction
+        projected_colormap = ["#fff3e0", "#ffe0b2", "#ffcc80", "#ffb74d", "#ffa726", "#fb8c00", "#ef6c00", "#e65100"]
+
         # Draw cells
-        value_font_size = min(28, int(min(cell_width, cell_height) * 0.28))
+        value_font_size = min(36, int(min(cell_width, cell_height) * 0.38))
         for i in range(n_rows):
             for j in range(n_cols):
                 value = self.matrix_data[i][j]
@@ -139,7 +143,10 @@ class LossTriangleHeatmap(Graph):
                     continue
 
                 is_proj = self.projected_mask[i][j]
-                color = self._interpolate_color(value, min_val, max_val)
+                if is_proj:
+                    color = self._interpolate_color(value, min_val, max_val, projected_colormap)
+                else:
+                    color = self._interpolate_color(value, min_val, max_val)
                 text_color = self._get_text_color(color)
 
                 cx = x_offset + j * (cell_width + gap)
@@ -150,23 +157,16 @@ class LossTriangleHeatmap(Graph):
                 rect.set("stroke", "#ffffff")
                 rect.set("stroke-width", "2")
 
-                # Hatching for projected cells
+                # Projected cells get a dashed border for additional distinction
                 if is_proj:
-                    hatch_spacing = 10
-                    for hi in range(int(cell_width + cell_height) // hatch_spacing + 1):
-                        hx1 = cx + hi * hatch_spacing
-                        hy1 = cy
-                        hx2 = hx1 - cell_height
-                        hy2 = cy + cell_height
-                        line = self.svg.node(hm_group, "line", x1=hx1, y1=hy1, x2=hx2, y2=hy2)
-                        line.set("stroke", "rgba(255,255,255,0.35)")
-                        line.set("stroke-width", "1.5")
-                        line.set("clip-path", f"url(#clip-{i}-{j})")
-
-                    # Clip path for hatching
-                    defs = self.svg.node(hm_group, "defs")
-                    clip = self.svg.node(defs, "clipPath", id=f"clip-{i}-{j}")
-                    self.svg.node(clip, "rect", x=cx, y=cy, width=cell_width, height=cell_height, rx=3, ry=3)
+                    border = self.svg.node(
+                        hm_group, "rect", x=cx + 2, y=cy + 2, width=cell_width - 4, height=cell_height - 4, rx=2, ry=2
+                    )
+                    border.set("fill", "none")
+                    border.set("stroke", "#e65100")
+                    border.set("stroke-width", "2")
+                    border.set("stroke-dasharray", "6,4")
+                    border.set("opacity", "0.5")
 
                 # Value annotation
                 formatted = f"{value:,.0f}"
@@ -184,18 +184,23 @@ class LossTriangleHeatmap(Graph):
                 )
                 text_node.text = formatted
 
-        # Diagonal line (latest evaluation date)
-        diag_group = self.svg.node(hm_group, "g")
-        for k in range(min(n_rows, n_cols)):
+        # Diagonal line (latest evaluation date) - draw a visible line along the boundary
+        diag_points = []
+        for k in range(n_rows + 1):
             row_idx = k
-            col_idx = n_cols - 1 - k
-            if col_idx < 0 or row_idx >= n_rows:
-                break
-            if self.matrix_data[row_idx][col_idx] is not None:
-                bx = x_offset + col_idx * (cell_width + gap) + cell_width
-                by = y_offset + row_idx * (cell_height + gap)
-                if k == 0:
-                    self.svg.node(diag_group, "circle", cx=bx, cy=by, r=5, fill="#e74c3c")
+            col_idx = n_years - k
+            if col_idx >= 0 and row_idx <= n_rows:
+                dx = x_offset + col_idx * (cell_width + gap) - gap / 2
+                dy = y_offset + row_idx * (cell_height + gap) - gap / 2
+                diag_points.append(f"{dx},{dy}")
+        if len(diag_points) > 1:
+            polyline = self.svg.node(hm_group, "polyline")
+            polyline.set("points", " ".join(diag_points))
+            polyline.set("fill", "none")
+            polyline.set("stroke", "#e74c3c")
+            polyline.set("stroke-width", "4")
+            polyline.set("stroke-dasharray", "12,6")
+            polyline.set("opacity", "0.8")
 
         # Development factors row below the grid
         if self.dev_factors:
@@ -249,33 +254,41 @@ class LossTriangleHeatmap(Graph):
         cb_title_node.set("style", f"font-size:{cb_label_size + 4}px;font-weight:bold;font-family:sans-serif")
         cb_title_node.text = "Cumulative ($k)"
 
-        # Legend: actual vs projected
-        legend_x = x_offset + grid_width - 400
-        legend_y = y_offset + grid_height + 80
+        # Legend: actual vs projected vs evaluation date
+        legend_font = 28
+        legend_x = x_offset + grid_width - 700
+        legend_y = y_offset + grid_height + 70
 
-        # Actual swatch
-        self.svg.node(hm_group, "rect", x=legend_x, y=legend_y, width=30, height=20, fill="#4a90d9", stroke="#333333")
-        text_node = self.svg.node(hm_group, "text", x=legend_x + 40, y=legend_y + 16)
+        # Actual swatch (blue)
+        self.svg.node(
+            hm_group, "rect", x=legend_x, y=legend_y, width=32, height=22, fill="#4a90d9", stroke="#333333", rx=3, ry=3
+        )
+        text_node = self.svg.node(hm_group, "text", x=legend_x + 44, y=legend_y + 18)
         text_node.set("fill", "#333333")
-        text_node.set("style", "font-size:26px;font-weight:600;font-family:sans-serif")
+        text_node.set("style", f"font-size:{legend_font}px;font-weight:600;font-family:sans-serif")
         text_node.text = "Actual"
 
-        # Projected swatch (with hatching)
-        proj_x = legend_x + 160
-        self.svg.node(hm_group, "rect", x=proj_x, y=legend_y, width=30, height=20, fill="#a3c4e0", stroke="#333333")
-        for lhi in range(6):
-            lx1 = proj_x + lhi * 7
-            ly1 = legend_y
-            lx2 = lx1 - 20
-            ly2 = legend_y + 20
-            line = self.svg.node(hm_group, "line", x1=lx1, y1=ly1, x2=lx2, y2=ly2)
-            line.set("stroke", "rgba(255,255,255,0.5)")
-            line.set("stroke-width", "1.5")
-
-        text_node = self.svg.node(hm_group, "text", x=proj_x + 40, y=legend_y + 16)
+        # Projected swatch (orange)
+        proj_x = legend_x + 190
+        self.svg.node(
+            hm_group, "rect", x=proj_x, y=legend_y, width=32, height=22, fill="#ffa726", stroke="#333333", rx=3, ry=3
+        )
+        text_node = self.svg.node(hm_group, "text", x=proj_x + 44, y=legend_y + 18)
         text_node.set("fill", "#333333")
-        text_node.set("style", "font-size:26px;font-weight:600;font-family:sans-serif")
+        text_node.set("style", f"font-size:{legend_font}px;font-weight:600;font-family:sans-serif")
         text_node.text = "Projected (IBNR)"
+
+        # Evaluation date line swatch
+        eval_x = proj_x + 340
+        line_y = legend_y + 11
+        line_node = self.svg.node(hm_group, "line", x1=eval_x, y1=line_y, x2=eval_x + 40, y2=line_y)
+        line_node.set("stroke", "#e74c3c")
+        line_node.set("stroke-width", "3")
+        line_node.set("stroke-dasharray", "8,4")
+        text_node = self.svg.node(hm_group, "text", x=eval_x + 52, y=legend_y + 18)
+        text_node.set("fill", "#333333")
+        text_node.set("style", f"font-size:{legend_font}px;font-weight:600;font-family:sans-serif")
+        text_node.text = "Evaluation Date"
 
     def _compute(self):
         n_rows = len(self.matrix_data) if self.matrix_data else 1
@@ -364,7 +377,7 @@ chart = LossTriangleHeatmap(
     show_legend=False,
     margin=100,
     margin_top=200,
-    margin_bottom=160,
+    margin_bottom=100,
     margin_left=120,
     margin_right=120,
     show_x_labels=False,

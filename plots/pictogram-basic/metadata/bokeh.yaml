@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: pictogram-basic
 created: '2026-03-10T22:46:04Z'
-updated: '2026-03-10T22:59:39Z'
+updated: '2026-03-10T23:08:25Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22927470258
 issue: 4674
@@ -13,31 +13,28 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/pictogram-basi
 quality_score: 87
 review:
   strengths:
-  - Perfect spec compliance with all required pictogram features correctly implemented
-  - 'Good data storytelling improvement: sorted by value, bold top-category emphasis,
-    alpha hierarchy'
-  - Clever use of Bokeh wedge glyph for partial icons with gray background circles
-  - Clean visual refinement with all spines/grid/ticks removed and white circle borders
-  - Clean, well-structured deterministic code with no unnecessary complexity
+  - Excellent partial icon implementation using wedge glyphs on gray circle backgrounds
+  - 'Strong visual hierarchy: descending sort, opacity gradients, bold emphasis on
+    top category'
+  - Clean professional design with removed spines, alternating row bands, and generous
+    whitespace
+  - Dual output (PNG + HTML) leveraging Bokeh strength
+  - Perfect code quality with deterministic data and KISS structure
   weaknesses:
-  - Square 3600x3600 format wastes significant right-side space for shorter category
-    rows — landscape 4800x2700 would better fit horizontal pictogram layout
-  - 'Value label text for non-top categories (20pt, #666666) is somewhat light and
-    could be more prominent'
-  - Subtitle left-aligned while title is centered creates slight visual inconsistency
+  - Title includes extra Fruit Production prefix beyond required format
+  - Right side of canvas has significant empty space reducing canvas utilization
+  - Yellow and orange hues could be closer in appearance for some colorblind viewers
   image_description: 'The plot displays a pictogram chart titled "Fruit Production
-    · pictogram-basic · bokeh · pyplots.ai" centered at the top, with a gray subtitle
-    "Annual output in thousands of tonnes" left-aligned below. Five fruit categories
-    are sorted by value descending: Apples (steel blue, 7 full circles, "35 k" in
-    bold 24pt), Grapes (muted purple, 5 full + 1 partial, "28 k"), Oranges (warm orange,
-    4 full + 1 partial, "22 k"), Bananas (golden yellow, 3 full + 1 partial, "18 k"),
-    and Mangoes (teal green, 2 full + 1 partial, "12 k"). Partial icons use colored
-    wedges over light gray background circles. Category labels appear on the left
-    y-axis in bold 26pt. Value annotations appear to the right of each row. The top
-    category has full opacity while lower rows fade slightly (alpha hierarchy). A
-    legend at the bottom reads "Each ● = 5,000 tonnes" in 26pt. All spines, grid lines,
-    and tick marks are removed. White borders separate each circle. Notable empty
-    space remains on the right side of the canvas for shorter category rows.'
+    · pictogram-basic · bokeh · pyplots.ai" with a subtitle "Annual output in thousands
+    of tonnes." Five fruit categories are arranged in horizontal rows, sorted by value
+    descending: Apples (dark blue, 7 full circles, 35k), Grapes (purple, 5 full +
+    1 partial, 28k), Oranges (orange, 4 full + 1 partial, 22k), Bananas (yellow, 3
+    full + 1 partial, 18k), and Mangoes (green, 2 full + 1 partial, 12k). Each full
+    circle represents 5,000 tonnes. Partial circles use wedge fills on a light gray
+    background to show fractional remainders. Alternating light gray row bands provide
+    visual structure. Category labels are on the left y-axis in bold. Value annotations
+    appear to the right of each row. A legend at the bottom reads "Each ● = 5,000
+    tonnes." The background is clean white with all spines and grid lines removed.'
   criteria_checklist:
     visual_quality:
       score: 27
@@ -48,72 +45,66 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: 'Title 36pt, subtitle 22pt, y-axis labels 26pt bold, value labels
-          20-24pt, legend 26pt — all explicitly set. Value labels for non-top categories
-          at 20pt in #666666 are slightly light but still readable.'
+        comment: All font sizes explicitly set (title 36pt, subtitle 22pt, y-axis
+          26pt, value labels 22-24pt). Subtitle slightly small.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping elements anywhere in the plot.
+        comment: No overlapping text or elements
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Circles are large, clearly visible, well-sized with radius=0.40.
-          Partial wedges clearly distinguishable over gray backgrounds.
+        comment: Circles well-sized with clear full and partial icons
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: Five distinct colorblind-friendly hues (blue, orange, yellow, purple,
-          green) with good contrast against white.
+        comment: Five distinct hues but yellow and orange may be hard to distinguish
+          for deuteranopia
       - id: VQ-05
         name: Layout & Canvas
-        score: 2
+        score: 3
         max: 4
-        passed: false
-        comment: Square 3600x3600 format still leaves significant empty space on the
-          right for shorter category rows. Content fills approximately 45-50% of canvas.
-          Landscape format would utilize space more efficiently.
+        passed: true
+        comment: Good left-aligned layout but significant empty space on right side
+          of canvas
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Title is descriptive, subtitle provides clear unit context. Appropriate
-          for pictogram chart type.
+        comment: Descriptive title with subtitle providing units
     design_excellence:
-      score: 14
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom cohesive 5-color palette, white circle borders add polish,
-          varying alpha creates visual depth. Above library defaults but not publication-level.
+        comment: Custom palette, white borders, alternating bands, sorted data, professional
+          polish
       - id: DE-02
         name: Visual Refinement
         score: 5
         max: 6
         passed: true
-        comment: All spines removed, no grid, tick marks removed, white border separation
-          on circles, generous left margin. Good attention to detail.
+        comment: All spines removed, no grid, alternating row bands, generous whitespace
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: 'Good improvement: sorted by value descending, top category emphasized
-          with bolder/larger label, alpha hierarchy fades lower categories. Clear
-          visual ranking.'
+        comment: Visual hierarchy through descending sort, opacity gradients, bold
+          emphasis on top category
     spec_compliance:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -121,26 +112,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct pictogram/isotype chart with repeated icons.
+        comment: Correct pictogram chart with repeated circle icons
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: consistent unit value, legend annotation,
-          partial icons, grid-like rows, left-aligned category labels, 5 categories.'
+        comment: 'All features present: unit value, legend, partial icons, grid layout,
+          category labels'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Categories on y-axis, quantities as repeated circles aligned left.
+        comment: Categories on y-axis, icon count on x-axis, values correctly represented
       - id: SC-04
         name: Title & Legend
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Title format correct. Legend annotation provides unit context.
+        comment: Title has extra Fruit Production prefix. Legend annotation present
+          but informal.
     data_quality:
       score: 14
       max: 15
@@ -150,20 +142,19 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows full and partial icons, varying quantities (12-35), 5 categories.
-          Good range but somewhat evenly spread.
+        comment: Shows 5 categories with varying values and partial icons
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Fruit production in thousands of tonnes — real-world, neutral, comprehensible.
+        comment: Fruit production in thousands of tonnes - neutral real-world scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values 12-35 thousand tonnes are plausible for fruit production volumes.
+        comment: Values 12k-35k tonnes plausible for fruit production
     code_quality:
       score: 10
       max: 10
@@ -173,33 +164,31 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports, data, sort, grid positions, figure,
-          glyphs, annotations, style, save.'
+        comment: Linear flow with no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: All data deterministic with hardcoded values.
+        comment: Fully deterministic with hardcoded data
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used.
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean loops for grid positions, appropriate wedge usage, value annotations
-          with rank-based emphasis.
+        comment: Clean wedge approach for partial icons
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via export_png. Current Bokeh API.
+        comment: Saves as plot.png and plot.html, current API
     library_mastery:
       score: 7
       max: 10
@@ -209,24 +198,22 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of ColumnDataSource, figure(), circle(), wedge() glyphs,
-          CustomJSTickFormatter, Label, Title.
+        comment: Good use of ColumnDataSource, figure glyphs, Bokeh models
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: 'Uses Bokeh-specific features: ColumnDataSource, CustomJSTickFormatter,
-          wedge glyph, Label annotations, HTML export.'
+        comment: 'Bokeh-specific: ColumnDataSource, BoxAnnotation, CustomJSTickFormatter,
+          dual export'
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
-  - manual-ticks
   - annotations
+  - manual-ticks
   - html-export
   patterns:
-  - data-generation
   - columndatasource
   - iteration-over-groups
   dataprep: []

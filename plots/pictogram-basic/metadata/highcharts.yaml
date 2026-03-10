@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: pictogram-basic
 created: '2026-03-10T22:44:59Z'
-updated: '2026-03-10T23:01:16Z'
+updated: '2026-03-10T23:09:58Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22927470302
 issue: 4674
@@ -10,76 +10,80 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/pictogram-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pictogram-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pictogram-basic/highcharts/plot.html
-quality_score: 78
+quality_score: 82
 review:
   strengths:
-  - Clean, well-structured code with good data choices (fruit production, 5 categories,
-    meaningful variation)
-  - Partial icon opacity technique effectively communicates fractional values
-  - Alternating row bands and white circle borders add visual polish
-  - Deterministic data with realistic context and appropriate scale
+  - Title/subtitle clipping issue from attempt 2 is now fixed — both fully visible
+    and centered
+  - Perfect code quality with clean KISS structure and deterministic data
+  - All spec requirements implemented correctly including partial icons and unit legend
+  - Effective use of alternating row bands and white circle borders for visual polish
+  - Realistic, neutral data scenario with appropriate scale values
   weaknesses:
-  - Title and subtitle are cut off on the left side of the rendered image — most critical
-    visual defect
-  - Rightmost circle for Apples may be clipped at the chart edge
-  - Library mastery is generic — no distinctive Highcharts features leveraged beyond
-    basic scatter
-  image_description: 'The plot displays a pictogram chart for annual fruit production
-    using rows of large circles. Five categories are shown vertically: Apples (dark
-    blue), Grapes (purple), Oranges (orange), Bananas (teal-green), and Strawberries
-    (red). Each full circle represents 5k tons. Partial circles are rendered with
-    reduced opacity to indicate fractional values. Category labels appear on the left
-    y-axis in bold text. Value annotations appear next to the last circle in each
-    row. Alternating light blue/white row bands provide visual separation. The title
-    "pictogram-basic · highcharts · pyplots.ai" and subtitle "Annual Fruit Production
-    — each ● = 5k tons" are present but cut off on the left side — only "ighcharts
-    · pyplots.ai" and "ion — each ■ = 5k tons" are visible. The rightmost Apples circle
-    also appears partially clipped at the edge.'
+  - Design excellence remains below publication quality — clean but not exceptional
+  - Generic scatter-based approach rather than leveraging Highcharts-specific pictogram
+    capabilities
+  - No strong data storytelling or focal point beyond simple largest-to-smallest ordering
+  - Green/blue color proximity may challenge some colorblind viewers
+  image_description: 'The plot displays a pictogram chart titled "pictogram-basic
+    · highcharts · pyplots.ai" with subtitle "Annual Fruit Production — each ● = 5k
+    tons", both fully visible and centered at the top. Five fruit categories are listed
+    vertically on the left y-axis in bold text: Apples, Grapes, Oranges, Bananas,
+    and Strawberries, ordered from highest to lowest production. Each category has
+    a row of large colored circles with white borders: dark blue for Apples (7 full
+    circles), purple for Grapes (5 full + 1 partial), orange for Oranges (4 full +
+    1 partial), green for Bananas (3 full + 1 partial), and red for Strawberries (2
+    full + 1 partial). Partial circles use reduced opacity to represent fractional
+    remainders. Value annotations (35k, 28k, 22k, 18k, 12k) appear in matching colors
+    beside the last icon in each row. Alternating light blue/white row bands provide
+    visual separation. The background is a light off-white (#FAFBFC). The Apples row
+    has slightly larger markers to emphasize the top producer. Grid lines, axis lines,
+    and tick marks are all hidden for a clean aesthetic.'
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 27
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set (48px, 32px, 36px) but title/subtitle cut
-          off on left
+        comment: Font sizes explicitly set (title 46px, subtitle 32px, y-axis 36px,
+          data labels 28px). All readable. Data labels slightly small.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text or elements; circles well-spaced
+        comment: No overlapping text or elements anywhere.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Large circle markers (radius 45) clearly visible with white borders
+        comment: Large circle markers (radius 44/48) with white borders clearly visible.
+          Partial icons distinguishable via opacity.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Five distinct hues generally distinguishable; Bananas color renders
-          differently than defined
+        comment: Five distinct hues. No red-green sole differentiator. Green/blue
+          proximity could challenge some deuteranopia viewers.
       - id: VQ-05
         name: Layout & Canvas
-        score: 2
+        score: 3
         max: 4
-        passed: false
-        comment: Title and subtitle clipped on left; rightmost Apples circle may be
-          clipped on right
+        passed: true
+        comment: Title fully visible now. Good vertical fill. Some wasted horizontal
+          space on right for shorter rows.
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Subtitle provides units but is cut off; no axis titles needed for
-          this chart type
+        comment: Subtitle provides clear units context. Category labels descriptive.
     design_excellence:
       score: 12
       max: 20
@@ -89,24 +93,24 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Custom palette, white circle borders, clean background; above defaults
-          but not publication-level
+        comment: Custom palette, white circle borders, off-white background, alternating
+          row bands. Above defaults but not publication-level.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Grid/axis lines hidden, alternating row bands, white circle outlines;
-          good refinement
+        comment: Grid/axis lines hidden. Alternating plot bands. White circle outlines.
+          Good refinement beyond defaults.
       - id: DE-03
         name: Data Storytelling
         score: 3
         max: 6
         passed: false
-        comment: Data ordered high-to-low creates hierarchy; no strong focal point
-          or emphasis technique
+        comment: Largest-to-smallest ordering and larger Apples markers provide some
+          hierarchy but no strong focal point or narrative.
     spec_compliance:
-      score: 13
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -114,27 +118,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct pictogram/isotype chart using repeated icons
+        comment: Correct pictogram/isotype chart using repeated icons.
       - id: SC-02
         name: Required Features
         score: 3
         max: 4
         passed: true
-        comment: All major features present; partial icons use opacity rather than
-          half-fill
+        comment: All features present. Partial icons via opacity rather than half-filled
+          as spec suggests.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Categories on y-axis, icon counts along x-axis; correct mapping
+        comment: Categories on y-axis, icon count on x-axis. Correct mapping.
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Title format correct but cut off in render; subtitle serves as unit
-          legend
+        comment: Title format correct and fully visible. Subtitle serves as unit legend.
     data_quality:
       score: 14
       max: 15
@@ -144,21 +147,21 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Five categories with varying values, partial icons demonstrated;
-          good range
+        comment: Five categories with varying values and partial icons. Could include
+          one exact multiple for contrast.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Annual Fruit Production is real-world, neutral, comprehensible
+        comment: Fruit production is real-world, neutral, comprehensible.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values 12k-35k tons plausible; unit of 5k creates manageable icon
-          counts
+        comment: Values 12k-35k tons plausible. Unit of 5k creates manageable icon
+          counts.
     code_quality:
       score: 10
       max: 10
@@ -168,31 +171,31 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, chart config, series loop, export'
+        comment: 'Clean linear flow: imports, data, config, series loop, export.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic data, no randomness
+        comment: Fully deterministic hardcoded data.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean loop with zip(), hex-to-rgba conversion for partial icons
+        comment: Clean loop with zip(), concise hex-to-rgba conversion.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png via Selenium; also saves plot.html
+        comment: Saves plot.png via Selenium and plot.html.
     library_mastery:
       score: 5
       max: 10
@@ -201,27 +204,28 @@ review:
         name: Idiomatic Usage
         score: 3
         max: 5
-        passed: true
-        comment: Correct use of Chart, HighchartsOptions, ScatterSeries; standard
-          dict config
+        passed: false
+        comment: Uses highcharts-core API correctly but scatter-as-pictogram is a
+          workaround.
       - id: LM-02
         name: Distinctive Features
         score: 2
         max: 5
         passed: false
-        comment: Alternating plot bands and tooltip formatting; scatter-as-pictogram
-          is creative but generic
+        comment: Uses plotBands, tooltip formatting, data labels. No truly unique
+          Highcharts capabilities leveraged.
   verdict: REJECTED
 impl_tags:
   dependencies:
   - selenium
   techniques:
   - html-export
+  - annotations
+  - hover-tooltips
   patterns:
-  - data-generation
   - iteration-over-groups
   dataprep: []
   styling:
   - minimal-chrome
-  - alpha-blending
   - edge-highlighting
+  - alpha-blending

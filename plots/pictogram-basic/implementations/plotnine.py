@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 pictogram-basic: Pictogram Chart (Isotype Visualization)
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-10
@@ -7,16 +7,15 @@ Quality: 87/100 | Created: 2026-03-10
 import pandas as pd
 from plotnine import (
     aes,
-    annotate,
     element_blank,
     element_text,
     geom_text,
     geom_tile,
     ggplot,
+    guide_legend,
     labs,
-    scale_alpha_identity,
     scale_color_identity,
-    scale_fill_identity,
+    scale_fill_manual,
     scale_x_continuous,
     scale_y_discrete,
     theme,
@@ -42,13 +41,9 @@ fruit_colors = {
 tile_w, tile_h = 0.82, 0.70
 
 # Build icon tiles: full icons + partial icons (half-filled approach)
-# Full icons: solid colored tiles
-# Partial icons: TWO tiles at same position:
-#   - Narrow filled tile (left portion, actual fraction width)
-#   - Full-width empty outline tile (dashed border, white fill)
 cat_order = categories[::-1]  # highest value at top
 
-tile_rows = []  # All tiles in one dataframe for unified geom_tile rendering
+tile_rows = []
 
 for cat, val in zip(categories, values, strict=True):
     full_icons = val // unit_value
@@ -57,47 +52,19 @@ for cat, val in zip(categories, values, strict=True):
 
     # Full icon tiles
     for i in range(full_icons):
-        tile_rows.append(
-            {
-                "category": cat,
-                "col": i + 1,
-                "fill": color,
-                "color": "none",
-                "width": tile_w,
-                "alpha": 1.0,
-                "layer": "full",
-            }
-        )
+        tile_rows.append({"category": cat, "col": i + 1, "border": "none", "width": tile_w, "layer": "full"})
 
-    # Partial icon: background outline (full-width, white fill, dashed border)
+    # Partial icon: background outline (dashed border) + left-aligned fill
     if remainder > 0:
         px = full_icons + 1
         frac = remainder / unit_value
-        # Empty outline tile at full width
-        tile_rows.append(
-            {
-                "category": cat,
-                "col": px,
-                "fill": "#FFFFFF",
-                "color": color,
-                "width": tile_w,
-                "alpha": 0.4,
-                "layer": "outline",
-            }
-        )
+        # Outline tile (dashed border in category color, tinted fill)
+        tile_rows.append({"category": cat, "col": px, "border": color, "width": tile_w, "layer": "outline"})
         # Filled portion — shifted left so it fills from the left edge
         filled_w = tile_w * frac
         offset = (tile_w - filled_w) / 2  # shift left
         tile_rows.append(
-            {
-                "category": cat,
-                "col": px - offset,
-                "fill": color,
-                "color": "none",
-                "width": filled_w,
-                "alpha": 1.0,
-                "layer": "partial_fill",
-            }
+            {"category": cat, "col": px - offset, "border": "none", "width": filled_w, "layer": "partial_fill"}
         )
 
 df = pd.DataFrame(tile_rows)
@@ -109,7 +76,9 @@ df_outline = df[df["layer"] == "outline"].copy()
 df_partial = df[df["layer"] == "partial_fill"].copy()
 
 # Value labels at end of each row
-max_cols = {cat: (val // unit_value) + (1 if val % unit_value > 0 else 0) for cat, val in zip(categories, values, strict=True)}
+max_cols = {
+    cat: (val // unit_value) + (1 if val % unit_value > 0 else 0) for cat, val in zip(categories, values, strict=True)
+}
 label_df = pd.DataFrame(
     {
         "category": pd.Categorical(categories, categories=cat_order, ordered=True),
@@ -121,41 +90,41 @@ label_df = pd.DataFrame(
 # Dynamic x-axis limit
 x_max = max(max_cols.values()) + 2.0
 
-# Build the plot with layered grammar of graphics
+# Build plot with layered grammar of graphics — fill mapped to category via scale_fill_manual
 plot = (
     ggplot(df_full, aes(x="col", y="category"))
-    # Layer 1: Full icon tiles (solid colored squares)
-    + geom_tile(aes(fill="fill"), width=tile_w, height=tile_h, show_legend=False)
-    # Layer 2: Partial icon outline (dashed border, transparent fill)
+    # Layer 1: Full icon tiles — fill mapped to category (grammar-of-graphics aesthetic mapping)
+    + geom_tile(aes(fill="category"), width=tile_w, height=tile_h)
+    # Layer 2: Partial icon outline (dashed border, tinted category fill at low alpha)
     + geom_tile(
-        aes(fill="fill", color="color", width="width", alpha="alpha"),
+        aes(fill="category", color="border"),
         data=df_outline,
         height=tile_h,
+        width=tile_w,
+        alpha=0.2,
         linetype="dashed",
         size=0.6,
         show_legend=False,
     )
     # Layer 3: Partial icon fill (left-aligned filled portion)
-    + geom_tile(aes(fill="fill", width="width"), data=df_partial, height=tile_h, show_legend=False)
+    + geom_tile(aes(fill="category", width="width"), data=df_partial, height=tile_h, show_legend=False)
     # Layer 4: Value labels
     + geom_text(
-        aes(x="col", y="category", label="label"), data=label_df, size=14, color="#444444", ha="left", fontweight="bold"
+        aes(x="col", y="category", label="label"), data=label_df, size=16, color="#444444", ha="left", fontweight="bold"
     )
-    # Legend icon annotation: sample square + text
-    + annotate("tile", x=x_max - 2.5, y=cat_order[0], width=tile_w * 0.6, height=tile_h * 0.6, fill="#999999")
-    + annotate("text", x=x_max - 1.8, y=cat_order[0], label="= 5k tonnes", size=12, color="#555555", ha="left")
-    # Identity scales (colors/alpha mapped directly from data)
-    + scale_fill_identity()
+    # Grammar-of-graphics scales: category-mapped fill with structured guide_legend
+    + scale_fill_manual(
+        name="Each \u25a0", values=fruit_colors, breaks=["Apples"], labels=["= 5k tonnes"], guide=guide_legend(nrow=1)
+    )
     + scale_color_identity()
-    + scale_alpha_identity()
     + scale_x_continuous(limits=(0.3, x_max), expand=(0, 0))
     + scale_y_discrete(expand=(0.2, 0.15))
     # Labels
     + labs(
         x="",
         y="",
-        title="pictogram-basic · plotnine · pyplots.ai",
-        caption="Partial squares show fractional units  ·  Source: FAO estimates",
+        title="pictogram-basic \u00b7 plotnine \u00b7 pyplots.ai",
+        caption="Partial squares show fractional units  \u00b7  Source: FAO estimates",
     )
     # Clean infographic theme
     + theme_void()
@@ -165,6 +134,9 @@ plot = (
         plot_caption=element_text(size=14, color="#777777", ha="left", margin={"t": 18}),
         axis_text_y=element_text(size=20, color="#333333", ha="right", margin={"r": 14}),
         axis_text_x=element_blank(),
+        legend_position="bottom",
+        legend_title=element_text(size=14, weight="bold", color="#555555"),
+        legend_text=element_text(size=14, color="#555555"),
         plot_margin=0.06,
     )
 )

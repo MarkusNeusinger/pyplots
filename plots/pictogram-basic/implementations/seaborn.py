@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 pictogram-basic: Pictogram Chart (Isotype Visualization)
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-10
@@ -15,105 +15,117 @@ categories = ["Apples", "Grapes", "Oranges", "Bananas", "Strawberries"]
 values = [35, 28, 22, 18, 12]
 unit_value = 5
 
-# Seaborn color palette
-palette = sns.color_palette(["#306998", "#7A6DAC", "#E4873D", "#F2C53D", "#C44E52"], as_cmap=False)
+# Colorblind-safe palette from seaborn's built-in "colorblind" palette
+base_palette = sns.color_palette("colorblind", n_colors=len(categories))
 
-# Build DataFrame for seaborn plotting
+# Build DataFrame for seaborn stripplot — each row is one icon
 rows = []
-for i, (cat, val, color) in enumerate(zip(categories, values, palette, strict=True)):
+for cat, val in zip(categories, values, strict=True):
     full_icons = int(val // unit_value)
     partial = (val % unit_value) / unit_value
 
     for j in range(full_icons):
-        rows.append({"category": cat, "x": j, "y": i, "alpha": 1.0, "color": color})
+        rows.append({"category": cat, "x": j, "icon_type": "full"})
 
     if partial > 0:
-        r, g, b = mcolors.to_rgb(color)
-        faded = (r + (1 - r) * (1 - partial), g + (1 - g) * (1 - partial), b + (1 - b) * (1 - partial))
-        rows.append({"category": cat, "x": full_icons, "y": i, "alpha": partial, "color": faded})
+        rows.append({"category": cat, "x": full_icons, "icon_type": "partial"})
 
 df = pd.DataFrame(rows)
 
-# Plot
-sns.set_style("white")
-sns.set_context("talk", font_scale=1.1)
+# Build color mapping per category for full and partial icons
+cat_color_map = {}
+cat_faded_map = {}
+for cat, color in zip(categories, base_palette, strict=True):
+    cat_color_map[cat] = mcolors.to_hex(color)
+    r, g, b = mcolors.to_rgb(color)
+    faded = (r + (1 - r) * 0.6, g + (1 - g) * 0.6, b + (1 - b) * 0.6)
+    cat_faded_map[cat] = mcolors.to_hex(faded)
+
+# Plot setup — use seaborn theming and styling
+sns.set_theme(style="white", context="talk", font_scale=1.1)
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Use sns.scatterplot with DataFrame — full icons
-df_full = df[df["alpha"] == 1.0]
+# Use sns.stripplot for categorical dot layout — distinctive seaborn feature
+# stripplot places individual observations along a categorical axis
+df_full = df[df["icon_type"] == "full"]
 if not df_full.empty:
-    sns.scatterplot(
+    sns.stripplot(
         data=df_full,
         x="x",
-        y="y",
+        y="category",
         hue="category",
-        palette=dict(zip(categories, [mcolors.to_hex(c) for c in palette], strict=True)),
-        s=900,
+        order=categories,
+        hue_order=categories,
+        palette=cat_color_map,
+        size=25,
         marker="o",
         edgecolor="white",
         linewidth=1.5,
+        jitter=False,
+        dodge=False,
         legend=False,
         zorder=3,
         ax=ax,
     )
 
-# Partial icons — plotted with faded colors
-df_partial = df[df["alpha"] < 1.0]
-for _, row in df_partial.iterrows():
-    sns.scatterplot(
-        x=[row["x"]],
-        y=[row["y"]],
-        color=row["color"],
-        s=900,
-        marker="o",
-        edgecolor="white",
-        linewidth=1.5,
-        legend=False,
-        zorder=3,
-        ax=ax,
-    )
+# Partial icons — use stripplot per category with faded colors
+df_partial = df[df["icon_type"] == "partial"]
+for cat in categories:
+    cat_partial = df_partial[df_partial["category"] == cat]
+    if not cat_partial.empty:
+        sns.stripplot(
+            data=cat_partial,
+            x="x",
+            y="category",
+            order=categories,
+            color=cat_faded_map[cat],
+            size=25,
+            marker="o",
+            edgecolor="white",
+            linewidth=1.5,
+            jitter=False,
+            dodge=False,
+            legend=False,
+            zorder=3,
+            ax=ax,
+        )
 
 # Highlight the top category with a subtle background band
-ax.axhspan(-0.4, 0.4, color="#306998", alpha=0.06, zorder=0)
+ax.axhspan(-0.4, 0.4, color=cat_color_map[categories[0]], alpha=0.06, zorder=0)
 
 # Value annotations on the right side for storytelling
-for i, (_cat, val) in enumerate(zip(categories, values, strict=True)):
+for idx, val in enumerate(values):
     total_icons = int(val // unit_value) + (1 if val % unit_value > 0 else 0)
     ax.text(
-        total_icons * 1.0 + 0.4,
-        i,
+        total_icons + 0.4,
+        idx,
         f"{val:,}k",
         fontsize=16,
         va="center",
         ha="left",
-        color="#555555",
-        fontweight="bold" if i == 0 else "normal",
+        color="#444444",
+        fontweight="bold" if idx == 0 else "normal",
     )
 
 # Labels and styling
-ax.set_yticks(range(len(categories)))
-ax.set_yticklabels(categories, fontsize=20, fontweight="medium")
-ax.tick_params(axis="y", length=0, pad=10)
+ax.tick_params(axis="y", length=0, pad=10, labelsize=20)
 ax.tick_params(axis="x", which="both", bottom=False, labelbottom=False)
 ax.set_xlabel("")
 ax.set_ylabel("")
 
 max_icons = max(val // unit_value for val in values) + 2
-ax.set_xlim(-0.7, max_icons * 1.0 + 0.8)
-ax.set_ylim(-0.8, (len(categories) - 1) + 0.8)
-ax.invert_yaxis()
+ax.set_xlim(-0.7, max_icons + 0.8)
 
 ax.set_title("pictogram-basic \u00b7 seaborn \u00b7 pyplots.ai", fontsize=24, fontweight="medium", pad=20)
 
 sns.despine(left=True, bottom=True)
 
-# Legend
-legend_y = -0.06
+# Legend annotation
 ax.annotate(
     f"\u25cf = {unit_value:,} thousand tonnes   (lighter = partial value)",
-    xy=(0.5, legend_y),
+    xy=(0.5, -0.06),
     xycoords="axes fraction",
-    fontsize=15,
+    fontsize=16,
     ha="center",
     va="top",
     color="#666666",

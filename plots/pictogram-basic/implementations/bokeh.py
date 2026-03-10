@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 pictogram-basic: Pictogram Chart (Isotype Visualization)
-Library: bokeh | Python 3.13
-Quality: pending | Created: 2026-03-10
+Library: bokeh 3.8.2 | Python 3.14.3
+Quality: 84/100 | Created: 2026-03-10
 """
 
 import numpy as np

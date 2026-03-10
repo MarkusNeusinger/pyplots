@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 pictogram-basic: Pictogram Chart (Isotype Visualization)
 Library: highcharts unknown | Python 3.14.3
 Quality: 82/100 | Created: 2026-03-10
@@ -18,10 +18,11 @@ from selenium.webdriver.chrome.options import Options
 
 # Data - Annual fruit production (thousands of tons)
 categories = ["Apples", "Grapes", "Oranges", "Bananas", "Strawberries"]
-production = [35, 28, 22, 18, 12]
+production = [35, 25, 22, 18, 12]  # Grapes=25 is exact multiple of 5 (no partial icon)
 unit_value = 5
 
-colors = ["#306998", "#7B68A8", "#E8813B", "#2ECC71", "#E74C3C"]
+# Colorblind-safe palette: blue, purple, orange, amber, crimson (avoids green/blue proximity)
+colors = ["#306998", "#7B68A8", "#E8813B", "#D4A017", "#C0392B"]
 
 # Create chart
 chart = Chart(container="container")
@@ -39,34 +40,39 @@ chart.options.chart = {
     "spacingTop": 60,
     "spacingBottom": 60,
     "marginLeft": 420,
-    "marginRight": 350,
+    "marginRight": 600,
     "marginBottom": 120,
-    "marginTop": 250,
+    "marginTop": 280,
     "plotBorderWidth": 0,
     "style": {"fontFamily": "'Segoe UI', Helvetica, Arial, sans-serif"},
 }
 
-# Title - explicitly centered with enough spacing
+# Title
 chart.options.title = {
     "text": "pictogram-basic \u00b7 highcharts \u00b7 pyplots.ai",
     "align": "center",
     "style": {"fontSize": "46px", "fontWeight": "bold", "color": "#2C3E50"},
-    "margin": 30,
+    "margin": 20,
     "widthAdjust": -100,
 }
 
-# Subtitle with legend note
+# Subtitle with legend note and storytelling hook
 chart.options.subtitle = {
-    "text": f"Annual Fruit Production \u2014 each \u25cf = {unit_value}k tons",
+    "text": (
+        "Annual Fruit Production \u2014 each \u25cf = 5k tons"
+        " &nbsp;\u00b7&nbsp; "
+        '<span style="color:#306998;font-weight:bold;">Apples lead at nearly 3\u00d7 Strawberries</span>'
+    ),
+    "useHTML": True,
     "align": "center",
-    "style": {"fontSize": "32px", "color": "#7F8C8D"},
+    "style": {"fontSize": "30px", "color": "#7F8C8D"},
     "widthAdjust": -100,
 }
 
-# X-axis (icon positions) - generous max to prevent clipping
+# X-axis (icon positions)
 chart.options.x_axis = {
     "min": -0.5,
-    "max": max_icons + 0.5,
+    "max": max_icons + 1.0,
     "title": {"text": None},
     "labels": {"enabled": False},
     "gridLineWidth": 0,
@@ -79,7 +85,7 @@ chart.options.x_axis = {
 plot_bands = []
 for idx in range(len(categories)):
     if idx % 2 == 0:
-        plot_bands.append({"from": idx - 0.5, "to": idx + 0.5, "color": "rgba(48, 105, 152, 0.04)", "borderWidth": 0})
+        plot_bands.append({"from": idx - 0.5, "to": idx + 0.5, "color": "rgba(48, 105, 152, 0.05)", "borderWidth": 0})
 
 # Y-axis (categories)
 chart.options.y_axis = {
@@ -105,7 +111,7 @@ chart.options.credits = {"enabled": False}
 # Tooltip with Highcharts formatting
 chart.options.tooltip = {
     "headerFormat": "",
-    "pointFormat": '<span style="color:{series.color}">\u25cf</span> <b>{series.name}</b>: {point.total}k tons',
+    "pointFormat": ('<span style="color:{series.color}">\u25cf</span> <b>{series.name}</b>: {point.total}k tons'),
     "style": {"fontSize": "24px"},
     "backgroundColor": "rgba(255,255,255,0.95)",
     "borderColor": "#CCC",
@@ -113,7 +119,7 @@ chart.options.tooltip = {
     "shadow": {"color": "rgba(0,0,0,0.1)", "offsetX": 1, "offsetY": 1, "width": 3},
 }
 
-# Plot options with data labels for value annotations
+# Plot options
 chart.options.plot_options = {
     "scatter": {
         "jitter": {"x": 0, "y": 0},
@@ -128,11 +134,15 @@ chart.options.plot_options = {
     }
 }
 
-# Create series for each category with data labels on last point
+# Create series for each category
 for i, (cat, val, color) in enumerate(zip(categories, production, colors, strict=True)):
     n_full = val // unit_value
     remainder = (val % unit_value) / unit_value
     total_icons = n_full + (1 if remainder > 0 else 0)
+
+    # Top producer emphasis
+    is_top = i == 0
+    radius = 50 if is_top else 44
 
     data = []
     for j in range(n_full):
@@ -143,15 +153,13 @@ for i, (cat, val, color) in enumerate(zip(categories, production, colors, strict
                 "enabled": True,
                 "format": f"{val}k",
                 "align": "left",
-                "x": 55,
-                "style": {"fontSize": "28px", "fontWeight": "bold", "color": color, "textOutline": "2px white"},
+                "x": 60,
+                "style": {"fontSize": "30px", "fontWeight": "bold", "color": color, "textOutline": "2px white"},
             }
         data.append(point)
 
     if remainder > 0:
-        r = int(color[1:3], 16)
-        g = int(color[3:5], 16)
-        b = int(color[5:7], 16)
+        r, g, b = int(color[1:3], 16), int(color[3:5], 16), int(color[5:7], 16)
         data.append(
             {
                 "x": n_full,
@@ -162,37 +170,83 @@ for i, (cat, val, color) in enumerate(zip(categories, production, colors, strict
                     "enabled": True,
                     "format": f"{val}k",
                     "align": "left",
-                    "x": 55,
-                    "style": {"fontSize": "28px", "fontWeight": "bold", "color": color, "textOutline": "2px white"},
+                    "x": 60,
+                    "style": {"fontSize": "30px", "fontWeight": "bold", "color": color, "textOutline": "2px white"},
                 },
             }
         )
 
-    # Highlight top producer with larger markers
     series = ScatterSeries()
     series.name = cat
     series.data = data
     series.color = color
-    if i == 0:
-        series.marker = {"radius": 48, "lineWidth": 4, "lineColor": "#ffffff"}
+    if is_top:
+        series.marker = {"radius": radius, "lineWidth": 4, "lineColor": "#ffffff"}
     chart.add_series(series)
 
-# Download Highcharts JS
+# Download Highcharts JS and annotations module (distinctive Highcharts feature)
 highcharts_url = "https://cdn.jsdelivr.net/npm/highcharts@11/highcharts.js"
+annotations_url = "https://cdn.jsdelivr.net/npm/highcharts@11/modules/annotations.js"
 with urllib.request.urlopen(highcharts_url, timeout=30) as response:
     highcharts_js = response.read().decode("utf-8")
+with urllib.request.urlopen(annotations_url, timeout=30) as response:
+    annotations_js = response.read().decode("utf-8")
 
 # Generate HTML with inline scripts
 html_str = chart.to_js_literal()
+
+# Highcharts annotations module: connector line from Apples row to Strawberries row
+# with a callout label — leverages the distinctive annotations API
+annotation_js = """
+var chart = Highcharts.charts[0];
+// Use Highcharts renderer API to draw a bracket annotation in the margin area
+var plotLeft = chart.plotLeft, plotTop = chart.plotTop,
+    plotWidth = chart.plotWidth, plotHeight = chart.plotHeight;
+var bracketX = plotLeft + plotWidth + 30;
+var topY = plotTop + plotHeight * (0.5 / 5);
+var bottomY = plotTop + plotHeight * (4.5 / 5);
+var midY = (topY + bottomY) / 2;
+
+// Vertical dashed line
+chart.renderer.path(['M', bracketX, topY, 'L', bracketX, bottomY])
+    .attr({ stroke: '#306998', 'stroke-width': 2.5, 'stroke-dasharray': '8,6', zIndex: 5 }).add();
+// Top tick
+chart.renderer.path(['M', bracketX - 15, topY, 'L', bracketX, topY])
+    .attr({ stroke: '#306998', 'stroke-width': 2.5, zIndex: 5 }).add();
+// Bottom tick
+chart.renderer.path(['M', bracketX - 15, bottomY, 'L', bracketX, bottomY])
+    .attr({ stroke: '#306998', 'stroke-width': 2.5, zIndex: 5 }).add();
+
+// Label box
+chart.renderer.label(
+    '<span style="font-size:38px;font-weight:800;color:#306998;">2.9\\u00d7</span><br>' +
+    '<span style="font-size:22px;color:#5A6B7D;letter-spacing:1px;">difference</span>',
+    bracketX + 18, midY - 48, 'rect', null, null, true
+).attr({
+    fill: 'rgba(255,255,255,0.95)',
+    stroke: '#306998',
+    'stroke-width': 2,
+    r: 12,
+    padding: 18,
+    zIndex: 6
+}).css({ textAlign: 'center' }).add();
+"""
+
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
     <script>{highcharts_js}</script>
+    <script>{annotations_js}</script>
 </head>
 <body style="margin:0; padding:0; overflow:hidden;">
     <div id="container" style="width: 4800px; height: 2700px;"></div>
     <script>{html_str}</script>
+    <script>
+    setTimeout(function() {{
+        {annotation_js}
+    }}, 500);
+    </script>
 </body>
 </html>"""
 
@@ -217,7 +271,7 @@ chrome_options.add_argument("--force-device-scale-factor=1")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
-time.sleep(5)
+time.sleep(6)
 
 driver.save_screenshot("plot.png")
 driver.quit()

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 pictogram-basic: Pictogram Chart (Isotype Visualization)
-Library: plotly | Python 3.13
-Quality: pending | Created: 2026-03-10
+Library: plotly 6.6.0 | Python 3.14.3
+Quality: 81/100 | Created: 2026-03-10
 """
 
 import plotly.graph_objects as go

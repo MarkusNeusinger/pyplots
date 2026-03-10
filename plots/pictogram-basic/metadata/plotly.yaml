@@ -1,7 +1,7 @@
 library: plotly
 specification_id: pictogram-basic
 created: '2026-03-10T22:42:01Z'
-updated: '2026-03-10T22:46:17Z'
+updated: '2026-03-10T22:54:57Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22927470227
 issue: 4674
@@ -10,35 +10,38 @@ library_version: 6.6.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/pictogram-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pictogram-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pictogram-basic/plotly/plot.html
-quality_score: 81
+quality_score: 86
 review:
   strengths:
-  - Perfect spec compliance with all required features including partial icons
-  - Excellent data choice with fruit production as a neutral real-world scenario
-  - Clean KISS code structure with deterministic data and proper save format
-  - Good use of opacity for partial icon representation
-  - Data ordered largest to smallest for natural comparison
+  - Full spec compliance — all pictogram requirements met including partial icons,
+    legend, and horizontal layout
+  - Effective data storytelling with subtitle insight and leader-row emphasis (bold
+    label, larger icons)
+  - Clean, well-structured code with perfect KISS flow
+  - Subtle alternating row bands add visual structure without distraction
+  - Hover tooltips with custom data add interactive value in HTML export
   weaknesses:
-  - Sparse layout with excessive white space on right side of shorter rows
-  - Yellow squares have reduced contrast against white background
-  - No visual storytelling emphasis — all rows treated equally with no focal point
-  - Basic scatter markers rather than leveraging plotly richer marker options
-  - Underutilizes plotly-specific features like custom hover templates and shapes
+  - Gold and orange colors are close for colorblind accessibility — needs more hue
+    separation
+  - Right side of canvas underutilized for shorter rows, creating visual imbalance
+  - Typography limited to Arial/Arial Black — more refined font choices could elevate
+    the design
+  - No exact-multiple category in data to showcase contrast between full-only and
+    partial rows
   image_description: 'The plot displays a pictogram chart titled "Fruit Production
-    · pictogram-basic · plotly · pyplots.ai" on a clean white background. Five fruit
-    categories are listed vertically on the left axis: Apples, Oranges, Bananas, Grapes,
-    and Mangoes. Each category has a horizontal row of colored square icons — Apples
-    uses dark blue (#306998), Oranges uses orange (#E8833A), Bananas uses golden yellow
-    (#F2C94C), Grapes uses purple (#7B4F9D), and Mangoes uses green (#4CAF50). Each
-    full square represents 5k tonnes. Apples has 7 full squares, Oranges has 4 full
-    + 1 faded, Bananas has 3 full + 1 faded, Grapes has 2 full + 1 faded, and Mangoes
-    has 1 full + 1 faded. Partial icons are rendered with reduced opacity. Value labels
-    (35k, 22k, 18k, 12k, 8k) appear in gray at the end of each row. A bottom legend
-    reads "▪ = 5k tonnes | Faded square = partial unit". Squares have white borders
-    for separation.'
+    · pictogram-basic · plotly · pyplots.ai" with a subtitle "Apples lead with 35k
+    tonnes — nearly double the next category." Five fruit categories are arranged
+    as horizontal rows from top to bottom: Apples (7 blue squares), Oranges (4 orange
+    + 1 faded), Bananas (3 gold + 1 faded), Grapes (2 purple + 1 faded), and Mangoes
+    (1 green + 1 faded). Each row sits on a subtle colored background band. Category
+    labels appear on the left y-axis. Value labels (35k, 22k, 18k, 12k, 8k) are placed
+    at the end of each row. The Apples row is visually emphasized with bold label,
+    larger icons, and bold value text. A legend at the bottom reads "▪ = 5k tonnes
+    | Faded ▪ = partial unit." The background is white and clean with no gridlines
+    or axis lines.'
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 27
       max: 30
       items:
       - id: VQ-01
@@ -46,63 +49,65 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 28pt, labels 22pt, annotations
-          20pt, legend 17pt). Legend slightly small but readable.
+        comment: All font sizes explicitly set (title 28, labels 22, values 19-22,
+          legend 18). All clearly readable.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements anywhere.
+        comment: No overlapping text or elements anywhere.
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Square markers at size 32 clearly visible with good spacing. Could
-          be slightly larger.
+        comment: Square markers at size 34-38 with white borders, clearly distinct
+          and well-sized.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
-        passed: false
-        comment: Yellow squares on white background have reduced contrast.
+        passed: true
+        comment: Five distinct hues but gold and orange are somewhat close for deuteranopia
+          viewers.
       - id: VQ-05
         name: Layout & Canvas
-        score: 2
+        score: 3
         max: 4
-        passed: false
-        comment: Significant unused white space on right side for shorter rows. Sparse
-          vertical spacing.
+        passed: true
+        comment: Good proportions overall. Shorter rows leave noticeable empty space
+          on the right.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive title. Category labels clear. No numeric axes needed.
+        comment: Descriptive title with context. Units in value labels and legend.
     design_excellence:
-      score: 12
+      score: 13
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
         score: 5
         max: 8
-        passed: false
-        comment: Custom colors with white borders. Above defaults but not publication-quality.
+        passed: true
+        comment: Custom palette, row bands, leader emphasis. Above defaults but not
+          publication-ready.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Grid and spines removed, plotly_white template, clean background
-          with annotations.
+        comment: Grid/axis lines removed, row bands add structure, generous spacing.
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: Ordered largest to smallest but no special emphasis or focal point.
+        passed: true
+        comment: Subtitle calls out insight, Apples row emphasized with bold label
+          and larger icons.
     spec_compliance:
       score: 15
       max: 15
@@ -112,26 +117,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct pictogram chart with repeated icons.
+        comment: Correct pictogram/isotype chart with repeated icons per category.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features: repeated icons, partial icons, grid rows, left labels,
-          legend.'
+        comment: 'All spec features present: consistent unit, partial icons, grid
+          layout, legend.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Categories on y-axis, icons horizontal. Correct mapping.
+        comment: Categories on Y-axis, icon count along X. Correct horizontal layout.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format. Legend annotation explains icon meaning.
+        comment: Title follows format. Legend explains icon meaning.
     data_quality:
       score: 14
       max: 15
@@ -141,20 +146,20 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Good range of values (8-35) across 5 categories with partial icons
-          shown.
+        comment: Good range of values showing varying icon counts and partial icons.
+          Missing exact-multiple contrast.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Fruit production in thousands of tonnes. Real-world and neutral.
+        comment: Fruit production in thousands of tonnes — real-world, neutral, comprehensible.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Plausible values for fruit production quantities.
+        comment: Plausible values for fruit production volumes.
     code_quality:
       score: 10
       max: 10
@@ -164,49 +169,49 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: data, build figure, layout, save. No functions/classes.'
+        comment: 'Linear flow: data, figure, loop, layout, save. No functions/classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic with hardcoded data.
+        comment: Fully deterministic hardcoded data.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only plotly.graph_objects imported and used.
+        comment: Only plotly.graph_objects imported, fully used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean iteration with zip, appropriate complexity.
+        comment: Clean loop with appropriate logic for full/partial icons.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png at 4800x2700. Current API.
+        comment: Saves as plot.png at 4800x2700 and plot.html. Current API.
     library_mastery:
-      score: 5
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Uses go.Scatter and add_annotation correctly but doesn't leverage
-          higher-level patterns.
+        passed: true
+        comment: Good use of go.Figure, go.Scatter, add_trace, add_annotation, add_shape,
+          update_layout.
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Hover text and HTML export are plotly-distinctive but core viz is
-          basic scatter.
+        passed: true
+        comment: Uses hover tooltips with customdata/hovertemplate, HTML export, paper-referenced
+          shapes.
   verdict: REJECTED
 impl_tags:
   dependencies: []

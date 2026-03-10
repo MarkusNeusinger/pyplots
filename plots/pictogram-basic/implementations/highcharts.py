@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 pictogram-basic: Pictogram Chart (Isotype Visualization)
 Library: highcharts unknown | Python 3.14.3
-Quality: 82/100 | Created: 2026-03-10
+Quality: 93/100 | Created: 2026-03-10
 """
 
 import tempfile

@@ -110,7 +110,7 @@ https://pyplots.ai/{category}/{value}/{category}/{value}/...
 | Event Name | Properties | Where | Description |
 |------------|-----------|-------|-------------|
 | `external_link` | `destination`, `spec`?, `library`? | Footer.tsx, LegalPage.tsx | User clicks external link |
-| `internal_link` | `destination`, `spec`, `library` | Footer.tsx | User clicks internal link in footer |
+| `internal_link` | `destination`, `spec`?, `library`? | Footer.tsx | User clicks internal link in footer |
 
 **External destinations (Footer)**: `github`, `stats`, `linkedin`
 **External destinations (LegalPage)**: `linkedin`, `x`, `github_personal`

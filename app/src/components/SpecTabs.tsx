@@ -209,11 +209,11 @@ export function SpecTabs({
 
     // Toggle: clicking same tab collapses it
     if (tabIndex === newValue) {
-      onTrackEvent?.('tab_toggle', { action: 'close', tab: tabNames[tabIndex], library: libraryId });
+      onTrackEvent?.('tab_toggle', { action: 'close', tab: tabNames[tabIndex], library: libraryId || undefined });
       setTabIndex(null);
     } else {
       setTabIndex(newValue);
-      onTrackEvent?.('tab_toggle', { action: 'open', tab: tabNames[newValue], library: libraryId });
+      onTrackEvent?.('tab_toggle', { action: 'open', tab: tabNames[newValue], library: libraryId || undefined });
     }
   };
 

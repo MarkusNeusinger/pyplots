@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 pictogram-basic: Pictogram Chart (Isotype Visualization)
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 83/100 | Created: 2026-03-10
 """
 
 import pygal
@@ -9,7 +8,7 @@ from pygal.style import Style
 
 
 # Data - Fruit production (thousands of tonnes)
-# Apples leads strongly; mix of exact multiples and remainders
+# Apples dominates at 35k — over 4× the smallest producer (Mangoes, 8k)
 categories = ["Apples", "Oranges", "Bananas", "Grapes", "Mangoes"]
 values = [35, 22, 18, 15, 8]  # 35 and 15 are exact multiples of 5
 icon_unit = 5  # Each dot represents 5 thousand tonnes
@@ -28,17 +27,17 @@ for cat, val in zip(categories, values, strict=True):
     row += [None] * (max_icons - len(row))
     dot_data[cat] = row
 
-# Cohesive colorblind-safe palette: deep blue leader, then amber/teal/violet/coral
-# Avoids green-teal confusion; warm-cool contrast for clear distinction
+# Palette: saturated leader color (Apples) vs muted earth tones for others
+# Creates strong focal point on the dominant category; colorblind-safe
 palette = (
-    "#1B4F72",  # Deep navy for leader (Apples) — bold focal point
-    "#D68910",  # Rich amber (Oranges)
-    "#148F77",  # Teal (Bananas) — distinct from navy
-    "#6C3483",  # Deep violet (Grapes)
-    "#C0392B",  # Warm coral-red (Mangoes)
+    "#1A5276",  # Bold steel blue for leader (Apples) — saturated focal point
+    "#B7950B",  # Muted gold (Oranges) — less saturated, recedes
+    "#117A65",  # Deep sage (Bananas) — quiet complement
+    "#76448A",  # Dusty violet (Grapes) — muted, secondary
+    "#A93226",  # Muted brick (Mangoes) — warm anchor, lower intensity
 )
 
-# Style — refined typography and clean background
+# Style — refined sans-serif typography, generous sizing for 4800×2700
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -46,43 +45,48 @@ custom_style = Style(
     foreground_strong="#1B2631",
     foreground_subtle="transparent",
     colors=palette,
-    title_font_size=52,
-    label_font_size=44,
-    major_label_font_size=36,
-    legend_font_size=36,
-    value_font_size=24,
+    title_font_size=54,
+    label_font_size=48,
+    major_label_font_size=38,
+    legend_font_size=38,
+    value_font_size=26,
     tooltip_font_size=24,
-    font_family="sans-serif",
+    font_family="Helvetica, Arial, sans-serif",
 )
 
 # Chart — pygal.Dot as pictogram approximation with large dots
+# Title tells the story: Apples dominate at 4× the smallest
 chart = pygal.Dot(
     width=4800,
     height=2700,
     style=custom_style,
-    title=("Fruit Production by Type (each dot ≈ 5 000 tonnes)\npictogram-basic · pygal · pyplots.ai"),
+    title=(
+        "Fruit Production — Apples Lead at 4× Mangoes (each dot ≈ 5 000 tonnes)\npictogram-basic · pygal · pyplots.ai"
+    ),
     show_legend=True,
     legend_at_bottom=True,
     legend_at_bottom_columns=5,
-    legend_box_size=28,
+    legend_box_size=30,
     show_x_guides=False,
     show_y_guides=False,
     show_x_labels=True,
     spacing=50,
     margin=60,
-    margin_left=100,
-    margin_right=60,
+    margin_left=120,
+    margin_right=40,
     margin_top=120,
     margin_bottom=180,
     x_label_rotation=0,
     truncate_label=-1,
     truncate_legend=-1,
-    dot_size=48,
+    dot_size=52,
     print_values=False,
+    stroke=False,
+    value_formatter=lambda v: f"{int(v * icon_unit)}k t" if v else "",
 )
 
-# X-axis labels show cumulative value scale
-chart.x_labels = [str((i + 1) * icon_unit) for i in range(max_icons)]
+# X-axis labels show cumulative value scale with unit
+chart.x_labels = [f"{(i + 1) * icon_unit}k" for i in range(max_icons)]
 
 # Add each category as a series in descending order — visual hierarchy
 for cat in categories:

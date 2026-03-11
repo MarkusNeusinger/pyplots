@@ -1,7 +1,7 @@
 library: pygal
 specification_id: spectrogram-mel
 created: '2026-03-11T19:41:13Z'
-updated: '2026-03-11T20:06:40Z'
+updated: '2026-03-11T20:15:48Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22970857385
 issue: 4672
@@ -17,29 +17,30 @@ review:
     mel-scaled Hz labels, colorbar, and correct STFT parameters
   - Excellent data quality with C-major arpeggio showing fundamentals, harmonics,
     and exponential decay envelopes
-  - Note annotations with circle markers and text shadows provide effective data storytelling
-  - Custom inferno colormap with 19-color interpolation and excellent colorblind accessibility
+  - Note annotations with circle markers and text shadows create effective data storytelling
+  - Custom inferno colormap with 19-color interpolation and strong colorblind accessibility
   - Manual mel filterbank computation avoids external librosa dependency
-  - 'Improved from previous attempts: helper functions inlined, annotation size increased'
+  - Improved margins and function extraction from previous attempts
   weaknesses:
-  - sys.path manipulation hack for import collision remains fragile and inelegant
-  - Custom class structure necessary but breaks KISS principle
-  - Manual SVG rendering is verbose though functional for pygal extensibility model
-  - Margins could be slightly tightened for better canvas utilization
+  - sys.path manipulation hack for import collision remains a necessary but inelegant
+    workaround
+  - Custom class and function structure breaks KISS principle (unavoidable for pygal
+    spectrogram)
+  - Manual SVG rendering is inherently verbose for this chart type
   image_description: The plot displays a mel-spectrogram of a synthesized C-major
-    arpeggio (C4→E4→G4→C5→G4→E4) over 3 seconds using the inferno colormap, ranging
-    from dark black/purple (low power, -80 dB) through orange to bright yellow (high
-    power, 0 dB). The title "spectrogram-mel · pygal · pyplots.ai" is centered at
-    the top in a clean sans-serif font. The x-axis is labeled "Time (s)" from 0.0
-    to 3.0 with evenly spaced tick marks. The y-axis is labeled "Frequency (Hz)" with
-    mel-scaled tick marks at 100, 200, 500, 1.0k, 2.0k, 4.0k, and 8.0k Hz. Six distinct
-    note segments are visible as bright horizontal bands at their fundamental frequencies
-    and 2nd/3rd harmonics, each with exponential decay envelopes. White circle markers
-    with text shadow labels (C4, E4, G4, C5, G4, E4) annotate each note onset near
-    its fundamental frequency. A vertical colorbar on the right labeled "dB" shows
-    the scale from 0 to -80. The background noise floor is visible as a consistent
-    purple layer. The overall layout is clean with a dark border around the spectrogram
-    area, white background, and good use of canvas space.
+    arpeggio (C4→E4→G4→C5→G4→E4) over 3 seconds using the inferno colormap. The color
+    scale ranges from dark black/purple (low power, -80 dB) through orange to bright
+    yellow (high power, 0 dB). The title "spectrogram-mel · pygal · pyplots.ai" is
+    centered at the top in clean sans-serif font. The x-axis is labeled "Time (s)"
+    from 0.0 to 3.0 with evenly spaced tick marks. The y-axis is labeled "Frequency
+    (Hz)" with mel-scaled tick marks at 100, 200, 500, 1.0k, 2.0k, 4.0k, and 8.0k
+    Hz. Six distinct note segments are visible as bright horizontal bands at their
+    fundamental frequencies with 2nd and 3rd harmonics visible above, each showing
+    exponential decay envelopes. White text labels with circle markers and text shadows
+    annotate each note onset (C4, E4, G4, C5, G4, E4) near their fundamental frequencies.
+    A vertical colorbar on the right labeled "dB" shows the scale from 0 to -80. The
+    noise floor is visible as a consistent purple/dark layer. The layout is clean
+    with a dark border around the spectrogram, white background, and good canvas utilization.
   criteria_checklist:
     visual_quality:
       score: 28
@@ -52,21 +53,21 @@ review:
         passed: true
         comment: 'All font sizes explicitly set: title=72px, axis labels=52px, ticks=38px,
           annotations=44px, colorbar ticks=36px, colorbar title=42px. All clearly
-          readable.'
+          readable. Slight deduction for tick labels being on the smaller side.'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text. Note annotations well-positioned with sufficient
-          spacing.
+        comment: No overlapping text elements. Note annotations well-spaced at fundamental
+          frequencies.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Spectrogram cells clearly visible with good color contrast. Harmonics
-          and decay envelopes easily distinguishable.
+        comment: Spectrogram cells clearly visible with excellent color contrast.
+          Harmonics, fundamentals, and decay envelopes easily distinguishable.
       - id: VQ-04
         name: Color Accessibility
         score: 4
@@ -78,14 +79,15 @@ review:
         score: 3
         max: 4
         passed: true
-        comment: Good proportions. Some natural empty space above 4kHz and slightly
-          generous margins.
+        comment: Good canvas utilization with tightened margins. Some natural empty
+          space above 4kHz.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Time (s), Frequency (Hz), dB - all descriptive with units.
+        comment: Time (s), Frequency (Hz), and dB colorbar label all present with
+          units.
     design_excellence:
       score: 14
       max: 20
@@ -96,21 +98,21 @@ review:
         max: 8
         passed: true
         comment: Custom 19-color inferno interpolation, clean white background, explicit
-          sans-serif font styling, professional border. Above defaults.
+          sans-serif typography, professional border. Clearly above defaults.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Pygal defaults hidden; custom-drawn axes, tick marks, clean border.
-          No visual clutter.
+        comment: Pygal defaults hidden, custom-drawn axes and ticks, clean border,
+          no visual clutter.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
         comment: Note annotations with circle markers guide viewer through ascending-descending
-          arpeggio pattern.
+          arpeggio pattern. Harmonics add musical depth.
     spec_compliance:
       score: 15
       max: 15
@@ -120,21 +122,22 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct mel-spectrogram with mel-warped frequency axis and dB power
-          spectrum.
+        comment: Correct mel-spectrogram with mel-warped frequency axis and power
+          spectrum in dB.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: dB scale, inferno colormap, time axis,
-          mel-scaled Hz labels, colorbar, correct STFT parameters.'
+        comment: 'All spec features present: dB scale, inferno colormap, time axis
+          in seconds, mel-scaled Hz labels, colorbar in dB, correct STFT parameters.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=time, Y=mel-frequency, color=dB. All correctly mapped.
+        comment: X=time, Y=mel-scaled frequency, color=power in dB. All correctly
+          mapped.
       - id: SC-04
         name: Title & Legend
         score: 3
@@ -151,21 +154,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows fundamentals, harmonics, exponential decay, noise floor, and
-          ascending-descending arpeggio.
+        comment: Shows fundamentals, harmonics, decay envelopes, noise floor, and
+          ascending-descending arpeggio pattern.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: C-major arpeggio is realistic, neutral audio/music scenario.
+        comment: C-major arpeggio with real musical note frequencies is a realistic,
+          neutral audio analysis scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Standard sample rate, real musical frequencies, realistic dB range,
-          3-second duration.
+        comment: Standard sample rate, real note frequencies, proper dB range, realistic
+          duration.
     code_quality:
       score: 6
       max: 10
@@ -175,32 +179,32 @@ review:
         score: 1
         max: 3
         passed: false
-        comment: Custom MelSpectrogramChart class with multiple methods departs from
-          flat KISS structure. Helper functions inlined vs previous attempt.
+        comment: Standalone function and class extending Graph. Necessary but departs
+          from flat KISS structure.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) set before data generation.
       - id: CQ-03
         name: Clean Imports
         score: 1
         max: 2
         passed: false
-        comment: All imports used but sys.path manipulation hack is fragile and inelegant.
+        comment: All imports used but sys.path manipulation is an inelegant workaround.
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
         passed: false
-        comment: sys.path workaround persists. Manual SVG is verbose but functional.
+        comment: sys.path workaround is a code smell. Manual SVG is verbose but functional.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.svg. Current API.
+        comment: Saves plot.png, plot.svg, plot.html. Uses current pygal API.
     library_mastery:
       score: 6
       max: 10
@@ -210,14 +214,14 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Correctly extends Graph with _plot()/_compute(). Uses Style class
-          and svg.node() API. Most rendering is manual SVG.
+        comment: Extends Graph with _plot()/_compute() overrides. Uses Style, svg.node(),
+          view/box coordinate system. Most rendering is manual SVG.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Custom Graph subclass pattern with _plot()/_compute() and svg.node()
+        comment: Graph subclass pattern with _plot()/_compute() overrides and svg.node()
           are pygal-specific extensibility patterns.
   verdict: REJECTED
 impl_tags:

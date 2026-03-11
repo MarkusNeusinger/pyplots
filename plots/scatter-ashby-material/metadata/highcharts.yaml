@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: scatter-ashby-material
 created: '2026-03-11T15:01:53Z'
-updated: '2026-03-11T15:20:03Z'
+updated: '2026-03-11T15:30:23Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22958872837
 issue: 4677
@@ -10,43 +10,43 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-ashby-material/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-ashby-material/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-ashby-material/highcharts/plot.html
-quality_score: 84
+quality_score: 85
 review:
   strengths:
-  - Full spec compliance including all required and optional features (convex hulls,
-    family labels, guide lines, log-log axes)
-  - Strong aesthetic design with custom color palette, themed backgrounds, and polished
-    typography hierarchy
-  - Effective use of Highcharts renderer API for custom SVG overlays (convex hulls
-    and performance guide lines)
-  - Realistic materials science data with 7 families spanning appropriate property
-    ranges
+  - Full spec compliance with all required and optional features (convex hulls, guide
+    lines, labels)
+  - Strong design with custom color palette, coordinated fills/borders, subtle grid,
+    and refined chrome
+  - Excellent use of Highcharts renderer API for custom SVG overlays (hulls, performance
+    index lines)
+  - Realistic materials science data with appropriate ranges per family
+  - Interactive HTML version also saved alongside PNG
   weaknesses:
-  - Helper functions and manual Graham scan violate KISS structure — adds 50+ lines
-    of algorithmic code
-  - E/rho guide lines are too faint (0.35 opacity stroke, 0.6 opacity labels) — nearly
-    invisible and their engineering value is lost
-  - Some hull region overlaps in the upper-right (Ceramics/Metals) crowd the visualization
-  - Family annotation label font size (26px) is slightly small relative to the 4800px
-    canvas
+  - Foams hull region extends excessively far right beyond actual data points due
+    to 1.12x expansion from centroid
+  - Some family region overlaps in the upper-right (Ceramics/Metals/Composites) create
+    visual clutter
+  - E/rho guide line labels are small and positioned at chart edges, reducing readability
+  - X-axis title Density (kg/m3) appears cut off in the rendered PNG output
+  - Red-green color choice (Ceramics vs Polymers) is not ideal for colorblind accessibility
   image_description: 'The plot displays a log-log scatter chart of Density (kg/m³)
-    on the x-axis vs. Young''s Modulus (GPa) on the y-axis — the classic Ashby material
-    selection chart. Seven material families are shown as colored scatter points surrounded
-    by dashed convex hull envelopes with semi-transparent fills: Metals & Alloys (steel
-    blue, upper right), Ceramics & Glasses (muted red, upper center-right), Polymers
-    (green, center-right), Elastomers (gold/yellow, lower right), Composites (purple,
-    upper center), Foams (orange, lower left spanning a wide area), and Natural Materials
-    (olive/brown, center). Each family region has a text label placed near its cluster.
-    The title reads "Density vs. Young''s Modulus · scatter-ashby-material · highcharts
-    · pyplots.ai" with a subtitle below. A vertical legend on the right lists all
-    7 families with colored circle markers. Faint dashed guide lines for E/ρ performance
-    indices (0.01, 1, 100) are barely visible. Both axes use logarithmic scales spanning
-    ~0.0001–1000 GPa and ~10–20,000 kg/m³. The background is light gray (#f8f9fb)
-    with a white plot area bordered by a thin gray line. Grid lines are subtle dashed
-    lines at very low opacity.'
+    vs. Young''s Modulus (GPa) — a classic Ashby material selection chart. Seven material
+    families are shown as colored scatter points enclosed within semi-transparent
+    convex hull envelopes with dashed borders: Metals & Alloys (steel blue), Ceramics
+    & Glasses (brick red), Polymers (forest green), Elastomers (golden yellow), Composites
+    (purple), Foams (orange), and Natural Materials (brown). Each family region has
+    a bold text label positioned near its cluster. The chart background is light gray
+    (#f8f9fb) with a white plot area. Both axes are logarithmic — x-axis spans 10
+    to ~20,000 kg/m³, y-axis spans 0.0001 to 1,000 GPa. Diagonal dashed guide lines
+    for E/ρ performance indices (E/ρ = 0.01, 1, 100) are drawn across the plot with
+    italic labels at their endpoints. A vertical legend on the right lists all 7 families
+    with colored circle markers. The title reads "Density vs. Young''s Modulus · scatter-ashby-material
+    · highcharts · pyplots.ai" with a subtitle below. Grid lines are subtle dashed
+    lines at ~5% opacity. Markers are large circles (radius 14) with darker border
+    strokes.'
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 24
       max: 30
       items:
       - id: VQ-01
@@ -54,45 +54,45 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set throughout (52px title, 40px axis titles,
-          30px ticks, 26-28px annotations/legend). All clearly readable. Annotation
-          labels slightly small for 4800px canvas.
+        comment: All font sizes explicitly set (title 52px, axes 40px, ticks 30px,
+          legend 28px, annotations 30px). Guide line labels at 26px are small at chart
+          edges.
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 4
         max: 6
         passed: true
-        comment: Hull envelopes for Ceramics/Metals overlap in upper right. Some Natural
-          Materials/Foams overlap. Text labels mostly readable but Metals & Alloys
-          label crowded near edge.
+        comment: Some overlap between Ceramics/Metals/Composites hull regions in upper-right.
+          Foams hull extends excessively beyond data points.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Markers at radius=14 with 2px borders clearly visible. ~128 points
-          with 0.7 alpha. Slightly large for denser clusters.
+        comment: Markers at radius 14 with 2px borders clearly visible. ~128 points
+          at this size is appropriate. Hull fills at 15% opacity allow points to show
+          through.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Seven distinct hues generally distinguishable. Green/gold could be
-          problematic for deuteranopia though spatially separated.
+        comment: Seven distinct hues with good variety. Red (Ceramics) vs green (Polymers)
+          could be problematic for deuteranopia.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good canvas utilization with generous margins. Right-side legend
-          well-positioned. Some empty space in upper-left quadrant.
+        comment: Good proportions with generous margins. X-axis title may be clipped
+          in rendered PNG.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Density (kg/m³) and Young's Modulus (GPa) — descriptive with correct
-          units.
+        comment: 'Both axes have descriptive labels with units: Density (kg/m³) and
+          Young''s Modulus (GPa).'
     design_excellence:
       score: 15
       max: 20
@@ -102,23 +102,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom RGBA palette with transparency, themed background, shadow
-          effects, dashed hull borders, clear typography hierarchy. Clearly above
-          defaults.
+        comment: Custom RGBA palette with coordinated fills/borders. Light gray background
+          with white plot area. Legend shadow. Clearly above defaults.
       - id: DE-02
         name: Visual Refinement
         score: 5
         max: 6
         passed: true
-        comment: Subtle dashed grid at 0.05 opacity, thin plot border, generous whitespace,
-          rounded legend with shadow. Minor room for improvement.
+        comment: Subtle dashed grid at 5% opacity. Axis lines and ticks hidden. Thin
+          muted plot border. Generous whitespace. Nearly all chrome refined.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Convex hulls create clear family groupings. E/rho guide lines add
-          engineering context but are too faint to be useful.
+        comment: Convex hull envelopes group families effectively. E/rho guide lines
+          add analytical context. Labels on regions guide the viewer.
     spec_compliance:
       score: 15
       max: 15
@@ -128,27 +127,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct log-log scatter plot.
+        comment: Log-log scatter plot, correct.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All required and optional features present: log scales, convex hulls,
-          family labels, axis labels with units, distinct colors, E/rho guide lines.'
+        comment: 'All required features present: log scales, hull regions, labels,
+          distinct colors, guide lines.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Density on X, Young's Modulus on Y — correct mapping. Axes span full
-          range.
+        comment: X=density, Y=modulus, both logarithmic with appropriate ranges.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title follows required format. Legend labels match all 7 family names.
+        comment: Title follows required format. Legend lists all 7 families with matching
+          colors.
     data_quality:
       score: 14
       max: 15
@@ -158,39 +157,38 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: 7 material families spanning wide ranges. Good variety across log-log
-          space. Could include more outlier materials.
+        comment: 7 families spanning wide density/modulus ranges with intra-family
+          correlation. Could benefit from more distinct separation.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Classic Ashby chart from materials science. Real-world engineering
-          tool. Neutral topic with realistic ranges.
+        comment: Classic Ashby chart with real material family names and realistic
+          property ranges.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Density 25-11000 kg/m³ and modulus 0.001-450 GPa are realistic. Log
-          scales correctly handle multi-order spans.
+        comment: Density and modulus values realistic for each family.
     code_quality:
-      score: 7
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 1
+        score: 2
         max: 3
-        passed: false
-        comment: Two helper functions (convex_hull_indices, compute_hull_polygon)
-          plus manual Graham scan. Violates flat structure expectation.
+        passed: true
+        comment: Follows imports-data-plot-save flow. Inline convex hull algorithm
+          adds significant complexity.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set at top.
+        comment: np.random.seed(42) set at start.
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -199,17 +197,18 @@ review:
         comment: All imports used.
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Manual Graham scan (~30 lines) adds complexity. Raw JS callback string
-          is verbose but necessary.
+        passed: true
+        comment: Well-structured data dictionary. Clean JS renderer callback. Appropriate
+          complexity.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via Selenium screenshot. Current API.
+        comment: Saves as plot.png via container screenshot. Current highcharts_core
+          API.
     library_mastery:
       score: 8
       max: 10
@@ -219,29 +218,29 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Good use of highcharts_core: Chart, HighchartsOptions, ScatterSeries,
-          annotations API, to_js_literal(). Minor: could leverage more options API.'
+        comment: 'Proper use of highcharts_core: Chart, HighchartsOptions, ScatterSeries,
+          to_js_literal(), Annotations API. Hull drawing uses raw JS renderer.'
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: Uses Highcharts renderer.path() and renderer.text() for custom SVG
-          overlays, annotations API for positioned labels, interactive tooltips in
-          HTML version.
+        comment: Leverages Highcharts renderer API for custom SVG paths, annotations
+          module, tooltip HTML templates, interactive hover states.
   verdict: REJECTED
 impl_tags:
   dependencies:
   - selenium
   techniques:
   - annotations
-  - html-export
   - custom-legend
+  - hover-tooltips
+  - html-export
   patterns:
   - data-generation
   - iteration-over-groups
   dataprep: []
   styling:
   - alpha-blending
-  - grid-styling
   - edge-highlighting
+  - grid-styling

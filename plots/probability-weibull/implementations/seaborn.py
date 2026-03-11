@@ -1,12 +1,19 @@
-""" pyplots.ai
+"""pyplots.ai
 probability-weibull: Weibull Probability Plot for Reliability Analysis
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-11
 """
 
+import sys
+
+
+# Prevent this file (seaborn.py) from shadowing the seaborn package
+sys.path = [p for p in sys.path if p not in ("", ".") and not p.endswith("/implementations")]
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import seaborn as sns
 from scipy import stats
 
 
@@ -47,6 +54,7 @@ eta = np.exp(-intercept / slope)
 # Fit line data
 x_fit = np.linspace(np.log(1000), np.log(20000), 200)
 y_fit = slope * x_fit + intercept
+df_fit = pd.DataFrame({"log_time": x_fit, "weibull_y": y_fit})
 
 # Build DataFrame
 df = pd.DataFrame(
@@ -54,32 +62,61 @@ df = pd.DataFrame(
         "log_time": log_times,
         "weibull_y": weibull_y,
         "censored": is_censored,
-        "label": np.where(is_censored, "Censored (suspended)", "Failure"),
+        "Status": np.where(is_censored, "Censored (suspended)", "Failure"),
     }
 )
+
+# Seaborn styling
+sns.set_style("ticks")
+palette = {"Failure": "#306998", "Censored (suspended)": "#D4782F"}
 
 # Plot
 fig, ax = plt.subplots(figsize=(16, 9))
 
-palette = {"Failure": "#306998", "Censored (suspended)": "#D4782F"}
-markers = {"Failure": "o", "Censored (suspended)": "D"}
+# Use sns.scatterplot for failure data points (filled markers)
+df_failures = df[df["Status"] == "Failure"]
+sns.scatterplot(
+    data=df_failures,
+    x="log_time",
+    y="weibull_y",
+    color="#306998",
+    s=180,
+    marker="o",
+    edgecolor="#306998",
+    linewidth=1.5,
+    label="Failure",
+    zorder=5,
+    ax=ax,
+)
 
-for label, marker in markers.items():
-    subset = df[df["label"] == label]
-    facecolor = palette[label] if label == "Failure" else "none"
-    ax.scatter(
-        subset["log_time"],
-        subset["weibull_y"],
-        s=180,
-        marker=marker,
-        facecolors=facecolor,
-        edgecolors=palette[label],
-        linewidths=2,
-        label=label,
-        zorder=5,
-    )
+# Use sns.scatterplot for censored data points (hollow diamond markers)
+df_censored = df[df["Status"] == "Censored (suspended)"]
+sns.scatterplot(
+    data=df_censored,
+    x="log_time",
+    y="weibull_y",
+    color="none",
+    s=180,
+    marker="D",
+    edgecolor="#D4782F",
+    linewidth=2,
+    label="Censored (suspended)",
+    zorder=5,
+    ax=ax,
+)
 
-ax.plot(x_fit, y_fit, color="#C04040", linewidth=2.5, linestyle="--", label="Weibull fit", zorder=4)
+# Use sns.lineplot for the Weibull fit line
+sns.lineplot(
+    data=df_fit,
+    x="log_time",
+    y="weibull_y",
+    color="#C04040",
+    linewidth=2.5,
+    linestyle="--",
+    label="Weibull fit",
+    zorder=4,
+    ax=ax,
+)
 
 # Reference line at 63.2% (characteristic life)
 y_632 = np.log(-np.log(1 - 0.632))
@@ -118,10 +155,9 @@ ax.set_ylabel("Cumulative Failure Probability", fontsize=20)
 ax.set_title(
     "Turbine Blade Fatigue Life · probability-weibull · seaborn · pyplots.ai", fontsize=24, fontweight="medium"
 )
-ax.tick_params(axis="both", labelsize=14)
+ax.tick_params(axis="both", labelsize=16)
 
-ax.spines["top"].set_visible(False)
-ax.spines["right"].set_visible(False)
+sns.despine(ax=ax)
 ax.grid(True, alpha=0.15, linewidth=0.8)
 
 ax.legend(fontsize=16, frameon=False, loc="upper left")

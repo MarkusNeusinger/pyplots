@@ -1,0 +1,167 @@
+"""pyplots.ai
+probability-weibull: Weibull Probability Plot for Reliability Analysis
+Library: pygal | Python 3.13
+Quality: pending | Created: 2026-03-11
+"""
+
+import numpy as np
+import pygal
+from pygal.style import Style
+from scipy import stats
+
+
+# Data — turbine blade fatigue-life (hours) with failures and suspensions
+np.random.seed(42)
+n_failures = 18
+n_censored = 5
+beta_true = 2.5
+eta_true = 8000
+
+failure_times = np.sort(stats.weibull_min.rvs(beta_true, scale=eta_true, size=n_failures))
+censored_times = np.sort(np.random.uniform(2000, 9000, n_censored))
+
+all_times = np.concatenate([failure_times, censored_times])
+is_failure = np.concatenate([np.ones(n_failures), np.zeros(n_censored)])
+
+sort_idx = np.argsort(all_times)
+all_times = all_times[sort_idx]
+is_failure = is_failure[sort_idx]
+
+# Median rank plotting positions (i-0.3)/(n+0.4) for failures only
+failure_ranks = np.cumsum(is_failure)
+total_failures = failure_ranks[-1]
+median_ranks = (failure_ranks - 0.3) / (total_failures + 0.4)
+
+failure_mask = is_failure.astype(bool)
+failure_x = all_times[failure_mask]
+failure_prob = median_ranks[failure_mask]
+
+# Weibull linearization: ln(-ln(1-F)) for y-axis, ln(time) for x-axis
+weibull_y_failures = np.log(-np.log(1.0 - failure_prob))
+ln_x_failures = np.log(failure_x)
+
+# Fit line using least squares on linearized data
+slope, intercept, r_value, _, _ = stats.linregress(ln_x_failures, weibull_y_failures)
+beta_est = slope
+eta_est = np.exp(-intercept / beta_est)
+
+# Fitted line spanning full data range
+x_fit_range = np.linspace(np.log(min(all_times) * 0.7), np.log(max(all_times) * 1.3), 100)
+y_fit_line = slope * x_fit_range + intercept
+
+# Censored points — place on the fitted line at their log-time
+censored_x = all_times[~failure_mask]
+ln_censored_x = np.log(censored_x)
+censored_y_on_line = slope * ln_censored_x + intercept
+
+# 63.2% reference line (characteristic life): F = 0.632 → ln(-ln(1-0.632)) ≈ 0.0
+ref_y = np.log(-np.log(1 - 0.632))
+
+# Axis labels — convert back from log/Weibull scale for readability
+x_tick_values = [1000, 2000, 3000, 5000, 7000, 10000, 15000]
+x_tick_ln = [np.log(v) for v in x_tick_values]
+
+prob_levels = [0.01, 0.05, 0.10, 0.20, 0.50, 0.632, 0.80, 0.90, 0.95, 0.99]
+y_tick_weibull = [np.log(-np.log(1.0 - p)) for p in prob_levels]
+y_tick_labels = [f"{p * 100:.1f}%" if p == 0.632 else f"{p * 100:.0f}%" for p in prob_levels]
+
+# Style
+font = "DejaVu Sans, Helvetica, Arial, sans-serif"
+custom_style = Style(
+    background="white",
+    plot_background="#f8f8f8",
+    foreground="#2a2a2a",
+    foreground_strong="#2a2a2a",
+    foreground_subtle="#e0e0e0",
+    guide_stroke_color="#e0e0e0",
+    guide_stroke_dasharray="4, 4",
+    colors=("#306998", "#d64541", "#888888"),
+    font_family=font,
+    title_font_family=font,
+    title_font_size=56,
+    label_font_size=40,
+    major_label_font_size=36,
+    legend_font_size=34,
+    legend_font_family=font,
+    value_font_size=28,
+    tooltip_font_size=28,
+    tooltip_font_family=font,
+    opacity=0.80,
+    opacity_hover=0.95,
+    stroke_opacity=1,
+    stroke_opacity_hover=1,
+)
+
+# Axis bounds
+x_min_ln = np.log(800)
+x_max_ln = np.log(18000)
+y_min_w = np.log(-np.log(1 - 0.005))
+y_max_w = np.log(-np.log(1 - 0.995))
+
+# Chart
+chart = pygal.XY(
+    width=4800,
+    height=2700,
+    style=custom_style,
+    title="Turbine Blade Fatigue Life · probability-weibull · pygal · pyplots.ai",
+    x_title="Time to Failure (hours, log scale)",
+    y_title="Cumulative Failure Probability",
+    show_legend=True,
+    legend_at_bottom=True,
+    legend_at_bottom_columns=4,
+    legend_box_size=24,
+    stroke=False,
+    dots_size=10,
+    show_x_guides=True,
+    show_y_guides=True,
+    margin_bottom=100,
+    margin_left=80,
+    margin_right=50,
+    margin_top=50,
+    truncate_legend=-1,
+    range=(y_min_w, y_max_w),
+    xrange=(x_min_ln, x_max_ln),
+    print_values=False,
+    print_zeroes=False,
+    js=[],
+    x_labels=[float(v) for v in x_tick_ln],
+    y_labels=[float(v) for v in y_tick_weibull],
+    x_value_formatter=lambda x: f"{np.exp(x):,.0f}",
+    value_formatter=lambda y: f"{(1 - np.exp(-np.exp(y))) * 100:.1f}%",
+)
+
+# Override label display for y-axis
+chart.y_labels = [{"value": float(v), "label": lbl} for v, lbl in zip(y_tick_weibull, y_tick_labels, strict=True)]
+chart.x_labels = [{"value": float(v), "label": f"{int(t):,}"} for v, t in zip(x_tick_ln, x_tick_values, strict=True)]
+
+# Fitted line
+fit_points = [(float(x), float(y)) for x, y in zip(x_fit_range, y_fit_line, strict=True)]
+chart.add(
+    f"Weibull Fit (β={beta_est:.2f}, η={eta_est:,.0f}h)",
+    fit_points,
+    stroke=True,
+    show_dots=False,
+    stroke_style={"width": 10, "linecap": "round", "linejoin": "round"},
+)
+
+# Failure data points
+failure_points = [(float(x), float(y)) for x, y in zip(ln_x_failures, weibull_y_failures, strict=True)]
+chart.add(f"Failures (n={n_failures})", failure_points, stroke=False, dots_size=12)
+
+# Censored data points
+censored_points = [(float(x), float(y)) for x, y in zip(ln_censored_x, censored_y_on_line, strict=True)]
+chart.add(f"Censored (n={n_censored})", censored_points, stroke=False, dots_size=10)
+
+# 63.2% reference line (characteristic life)
+ref_line = [(float(x_min_ln), float(ref_y)), (float(x_max_ln), float(ref_y))]
+chart.add(
+    "63.2% (Characteristic Life)",
+    ref_line,
+    stroke=True,
+    show_dots=False,
+    stroke_style={"width": 6, "dasharray": "24, 12", "linecap": "round"},
+)
+
+# Save
+chart.render_to_png("plot.png")
+chart.render_to_file("plot.html")

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 spectrogram-mel: Mel-Spectrogram for Audio Analysis
-Library: pygal | Python 3.13
-Quality: pending | Created: 2026-03-11
+Library: pygal 3.1.0 | Python 3.14.3
+Quality: 81/100 | Created: 2026-03-11
 """
 
 import sys

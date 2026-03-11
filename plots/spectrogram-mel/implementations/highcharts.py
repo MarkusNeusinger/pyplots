@@ -1,44 +1,66 @@
-""" pyplots.ai
+"""pyplots.ai
 spectrogram-mel: Mel-Spectrogram for Audio Analysis
 Library: highcharts unknown | Python 3.14.3
 Quality: 83/100 | Created: 2026-03-11
 """
 
-import json
 import tempfile
 import time
 import urllib.request
 from pathlib import Path
 
 import numpy as np
+from highcharts_core.chart import Chart
+from highcharts_core.options import HighchartsOptions
+from highcharts_core.options.series.heatmap import HeatmapSeries
 from scipy.signal import spectrogram
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data - Synthesize audio with speech-like frequency components
+# Data - Synthesize audio with distinct musical phrases
 np.random.seed(42)
 sample_rate = 22050
 duration = 4.0
 n_samples = int(sample_rate * duration)
 t = np.linspace(0, duration, n_samples, endpoint=False)
 
-# Combine multiple frequency components to simulate a musical phrase
-# Fundamental with vibrato
+# Create an ascending melodic phrase with distinct temporal sections
+# Section 1 (0-1s): Low fundamental with vibrato
+# Section 2 (1-2s): Rising pitch with added harmonics
+# Section 3 (2-3s): Peak intensity with rich harmonic content
+# Section 4 (3-4s): Fade out with descending pitch
+
+# Envelope shapes for each section
+env1 = np.clip(1 - np.abs(t - 0.5) / 0.5, 0, 1) * (t < 1.0)
+env2 = np.clip(1 - np.abs(t - 1.5) / 0.5, 0, 1) * ((t >= 1.0) & (t < 2.0))
+env3 = np.clip(1 - np.abs(t - 2.5) / 0.5, 0, 1) * ((t >= 2.0) & (t < 3.0))
+env4 = np.clip(1 - np.abs(t - 3.5) / 0.5, 0, 1) * (t >= 3.0)
+
+# Ascending fundamental frequencies per section
 vibrato = 5 * np.sin(2 * np.pi * 5.5 * t)
-signal = 0.6 * np.sin(2 * np.pi * (220 + vibrato) * t)
+f0_1, f0_2, f0_3, f0_4 = 196, 262, 330, 262  # G3, C4, E4, C4
 
-# Harmonics that fade in and out
-signal += 0.4 * np.sin(2 * np.pi * 440 * t) * np.clip(np.sin(2 * np.pi * 0.8 * t), 0, 1)
-signal += 0.25 * np.sin(2 * np.pi * 660 * t) * np.clip(np.sin(2 * np.pi * 0.5 * t), 0, 1)
-signal += 0.15 * np.sin(2 * np.pi * 880 * t) * np.clip(np.cos(2 * np.pi * 0.3 * t), 0, 1)
+signal = np.zeros(n_samples)
+signal += 0.6 * env1 * np.sin(2 * np.pi * (f0_1 + vibrato) * t)
+signal += 0.6 * env2 * np.sin(2 * np.pi * (f0_2 + vibrato) * t)
+signal += 0.6 * env3 * np.sin(2 * np.pi * (f0_3 + vibrato) * t)
+signal += 0.5 * env4 * np.sin(2 * np.pi * (f0_4 + vibrato) * t)
 
-# High-frequency transient bursts (percussive elements)
+# Harmonics that build up in intensity across sections
+signal += 0.3 * env1 * np.sin(2 * np.pi * (f0_1 * 2) * t)
+signal += 0.4 * env2 * np.sin(2 * np.pi * (f0_2 * 2) * t)
+signal += 0.5 * env3 * np.sin(2 * np.pi * (f0_3 * 2) * t)
+signal += 0.3 * env3 * np.sin(2 * np.pi * (f0_3 * 3) * t)
+signal += 0.35 * env4 * np.sin(2 * np.pi * (f0_4 * 2) * t)
+
+# Sharp percussive transient bursts with very fast decay
 for onset in [0.5, 1.3, 2.1, 2.9, 3.5]:
-    burst_env = np.exp(-30 * np.clip(t - onset, 0, None))
-    signal += 0.3 * burst_env * np.sin(2 * np.pi * 3200 * t)
+    burst_env = np.exp(-120 * np.clip(t - onset, 0, None))
+    burst_env *= (t >= onset).astype(float)
+    signal += 0.25 * burst_env * np.sin(2 * np.pi * 3200 * t)
 
-# Add gentle noise floor
+# Gentle noise floor
 signal += 0.02 * np.random.randn(n_samples)
 
 # Compute spectrogram
@@ -46,7 +68,7 @@ n_fft = 2048
 hop_length = 512
 freqs, times, Sxx = spectrogram(signal, fs=sample_rate, nperseg=n_fft, noverlap=n_fft - hop_length)
 
-# Convert to mel scale using mel filter bank
+# Mel filter bank
 n_mels = 128
 mel_low = 0
 mel_high = 2595 * np.log10(1 + (sample_rate / 2) / 700)
@@ -73,7 +95,6 @@ mel_spec_db = mel_spec_db - ref_db
 mel_spec_db = np.clip(mel_spec_db, -80, 0)
 
 # Prepare heatmap data for Highcharts: [time_idx, mel_idx, dB_value]
-# Downsample time axis for performance if needed
 time_step = max(1, len(times) // 200)
 mel_step = max(1, n_mels // 128)
 time_indices = list(range(0, len(times), time_step))
@@ -84,110 +105,141 @@ for mi, mel_idx in enumerate(mel_indices):
     for ti, time_idx in enumerate(time_indices):
         heatmap_data.append([ti, mi, round(float(mel_spec_db[mel_idx, time_idx]), 1)])
 
-# Create time and frequency labels
+# Create axis labels
 time_labels = [f"{times[i]:.2f}" for i in time_indices]
 freq_labels = [f"{int(hz_points[i + 1])}" for i in mel_indices]
 
-# Thin out axis tick labels for readability
 time_tick_interval = max(1, len(time_labels) // 10)
 freq_tick_interval = max(1, len(freq_labels) // 12)
 
-# Chart configuration
-chart_options = {
-    "chart": {
-        "type": "heatmap",
-        "width": 4800,
-        "height": 2700,
-        "backgroundColor": "#1a1a2e",
-        "marginTop": 160,
-        "marginBottom": 200,
-        "marginRight": 360,
-        "marginLeft": 280,
-        "style": {"fontFamily": "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"},
-    },
-    "title": {
-        "text": "spectrogram-mel \u00b7 highcharts \u00b7 pyplots.ai",
-        "style": {"fontSize": "52px", "fontWeight": "600", "color": "#e0e0e0"},
-        "y": 50,
-    },
-    "subtitle": {
-        "text": "Mel-scaled power spectrum of synthesized audio (dB)",
-        "style": {"fontSize": "30px", "fontWeight": "normal", "color": "#9e9e9e"},
-        "y": 100,
-    },
-    "xAxis": {
-        "categories": time_labels,
-        "title": {
-            "text": "Time (s)",
-            "style": {"fontSize": "34px", "fontWeight": "600", "color": "#b0b0b0"},
-            "margin": 20,
-        },
-        "labels": {"style": {"fontSize": "26px", "color": "#b0b0b0"}, "step": time_tick_interval, "y": 36},
-        "lineWidth": 0,
-        "tickLength": 0,
-        "gridLineWidth": 0,
-    },
-    "yAxis": {
-        "categories": freq_labels,
-        "title": {
-            "text": "Frequency (Hz, mel-scaled)",
-            "style": {"fontSize": "34px", "fontWeight": "600", "color": "#b0b0b0"},
-            "margin": 20,
-        },
-        "labels": {"style": {"fontSize": "26px", "color": "#b0b0b0"}, "step": freq_tick_interval},
-        "reversed": False,
-        "lineWidth": 0,
-        "gridLineWidth": 0,
-    },
-    "colorAxis": {
-        "min": -80,
-        "max": 0,
-        "stops": [
-            [0.0, "#000004"],
-            [0.15, "#1b0c41"],
-            [0.30, "#4a0c6b"],
-            [0.45, "#781c6d"],
-            [0.55, "#a52c60"],
-            [0.65, "#cf4446"],
-            [0.75, "#ed6925"],
-            [0.85, "#fb9b06"],
-            [0.95, "#f7d13d"],
-            [1.0, "#fcffa4"],
-        ],
-        "labels": {"style": {"fontSize": "26px", "color": "#b0b0b0"}, "format": "{value} dB"},
-    },
-    "legend": {
-        "title": {"text": "Power (dB)", "style": {"fontSize": "28px", "fontWeight": "600", "color": "#b0b0b0"}},
-        "align": "right",
-        "layout": "vertical",
-        "verticalAlign": "middle",
-        "symbolHeight": 900,
-        "symbolWidth": 36,
-        "itemStyle": {"fontSize": "24px", "color": "#b0b0b0"},
-        "x": -40,
-        "margin": 40,
-    },
-    "tooltip": {
-        "style": {"fontSize": "28px"},
-        "headerFormat": "",
-        "pointFormat": (
-            "Time: <b>{series.xAxis.categories.(point.x)} s</b><br>"
-            "Freq: <b>{series.yAxis.categories.(point.y)} Hz</b><br>"
-            "Power: <b>{point.value} dB</b>"
-        ),
-    },
-    "credits": {"enabled": False},
-    "plotOptions": {"heatmap": {"colsize": 1, "rowsize": 1, "borderWidth": 0, "nullColor": "#000004"}},
-    "series": [
+# Build chart using highcharts-core API
+chart = Chart(container="container")
+chart.options = HighchartsOptions()
+
+chart.options.chart = {
+    "type": "heatmap",
+    "width": 4800,
+    "height": 2700,
+    "backgroundColor": "#1a1a2e",
+    "marginTop": 160,
+    "marginBottom": 200,
+    "marginRight": 280,
+    "marginLeft": 280,
+    "style": {"fontFamily": "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"},
+}
+
+chart.options.title = {
+    "text": "spectrogram-mel \u00b7 highcharts \u00b7 pyplots.ai",
+    "style": {"fontSize": "52px", "fontWeight": "600", "color": "#e0e0e0"},
+    "y": 50,
+}
+
+chart.options.subtitle = {
+    "text": (
+        "Mel-scaled power spectrum \u2014 ascending melodic phrase "
+        "G3\u2192C4\u2192E4\u2192C4 with percussive transients"
+    ),
+    "style": {"fontSize": "30px", "fontWeight": "normal", "color": "#9e9e9e"},
+    "y": 100,
+}
+
+chart.options.x_axis = {
+    "categories": time_labels,
+    "title": {"text": "Time (s)", "style": {"fontSize": "34px", "fontWeight": "600", "color": "#b0b0b0"}, "margin": 20},
+    "labels": {"style": {"fontSize": "26px", "color": "#b0b0b0"}, "step": time_tick_interval, "y": 36},
+    "lineWidth": 0,
+    "tickLength": 0,
+    "gridLineWidth": 0,
+    "plotBands": [
         {
-            "type": "heatmap",
-            "name": "Mel Spectrogram",
-            "data": heatmap_data,
-            "borderWidth": 0,
-            "dataLabels": {"enabled": False},
-        }
+            "from": -0.5,
+            "to": len(time_labels) * 0.25 - 0.5,
+            "color": "rgba(255,255,255,0.02)",
+            "label": {
+                "text": "G3 phrase",
+                "style": {"color": "#888", "fontSize": "22px"},
+                "verticalAlign": "bottom",
+                "y": -20,
+            },
+        },
+        {
+            "from": len(time_labels) * 0.5 - 0.5,
+            "to": len(time_labels) * 0.75 - 0.5,
+            "color": "rgba(255,255,255,0.02)",
+            "label": {
+                "text": "E4 peak",
+                "style": {"color": "#888", "fontSize": "22px"},
+                "verticalAlign": "bottom",
+                "y": -20,
+            },
+        },
     ],
 }
+
+chart.options.y_axis = {
+    "categories": freq_labels,
+    "title": {
+        "text": "Frequency (Hz, mel-scaled)",
+        "style": {"fontSize": "34px", "fontWeight": "600", "color": "#b0b0b0"},
+        "margin": 20,
+    },
+    "labels": {"style": {"fontSize": "26px", "color": "#b0b0b0"}, "step": freq_tick_interval},
+    "reversed": False,
+    "lineWidth": 0,
+    "gridLineWidth": 0,
+}
+
+chart.options.color_axis = {
+    "min": -80,
+    "max": 0,
+    "stops": [
+        [0.0, "#000004"],
+        [0.15, "#1b0c41"],
+        [0.30, "#4a0c6b"],
+        [0.45, "#781c6d"],
+        [0.55, "#a52c60"],
+        [0.65, "#cf4446"],
+        [0.75, "#ed6925"],
+        [0.85, "#fb9b06"],
+        [0.95, "#f7d13d"],
+        [1.0, "#fcffa4"],
+    ],
+    "labels": {"style": {"fontSize": "26px", "color": "#b0b0b0"}, "format": "{value} dB"},
+}
+
+chart.options.legend = {
+    "title": {"text": "Power (dB)", "style": {"fontSize": "28px", "fontWeight": "600", "color": "#b0b0b0"}},
+    "align": "right",
+    "layout": "vertical",
+    "verticalAlign": "middle",
+    "symbolHeight": 1000,
+    "symbolWidth": 36,
+    "itemStyle": {"fontSize": "24px", "color": "#b0b0b0"},
+    "x": -20,
+    "margin": 20,
+}
+
+chart.options.tooltip = {
+    "style": {"fontSize": "28px"},
+    "headerFormat": "",
+    "pointFormat": (
+        "Time: <b>{series.xAxis.categories.(point.x)} s</b><br>"
+        "Freq: <b>{series.yAxis.categories.(point.y)} Hz</b><br>"
+        "Power: <b>{point.value} dB</b>"
+    ),
+}
+
+chart.options.credits = {"enabled": False}
+
+chart.options.plot_options = {"heatmap": {"colsize": 1, "rowsize": 1, "borderWidth": 0, "nullColor": "#000004"}}
+
+# Add heatmap series using highcharts-core API
+series = HeatmapSeries()
+series.name = "Mel Spectrogram"
+series.data = heatmap_data
+series.border_width = 0
+series.data_labels = {"enabled": False}
+chart.add_series(series)
 
 # Download Highcharts JS and heatmap module
 highcharts_url = "https://cdn.jsdelivr.net/npm/highcharts/highcharts.js"
@@ -203,10 +255,9 @@ req = urllib.request.Request(heatmap_url, headers=headers)
 with urllib.request.urlopen(req, timeout=30) as response:
     heatmap_js = response.read().decode("utf-8")
 
-# Convert options to JSON
-options_json = json.dumps(chart_options)
-
 # Generate HTML with inline scripts
+js_literal = chart.to_js_literal()
+
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -216,9 +267,7 @@ html_content = f"""<!DOCTYPE html>
 </head>
 <body style="margin:0; padding:0; overflow:hidden; background:#1a1a2e;">
     <div id="container" style="width:4800px; height:2700px;"></div>
-    <script>
-        Highcharts.chart('container', {options_json});
-    </script>
+    <script>{js_literal}</script>
 </body>
 </html>"""
 

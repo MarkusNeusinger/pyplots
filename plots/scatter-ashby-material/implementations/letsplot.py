@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-ashby-material: Ashby Material Selection Chart
 Library: letsplot 4.8.2 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-11
@@ -148,8 +148,8 @@ df_envelopes = pd.DataFrame(envelope_rows)
 # Compute label positions with manual offsets to separate crowded center labels
 label_offsets = {
     "Metals": (0.15, 0.2),
-    "Ceramics": (-0.25, 0.3),
-    "Composites": (0.25, 0.35),
+    "Ceramics": (-0.3, 0.45),
+    "Composites": (0.35, 0.15),
     "Polymers": (0.3, -0.25),
     "Elastomers": (0.0, -0.15),
     "Foams": (-0.15, 0.15),
@@ -181,10 +181,10 @@ for family in df["family"].unique():
 
 df_leaders = pd.DataFrame(leader_rows)
 
-# Palette: colorblind-safe with high distinction
-# Metals=dark blue, Polymers=warm orange, Ceramics=teal, Composites=magenta,
-# Elastomers=crimson, Foams=sky blue, Natural=brown
-palette = ["#1B4F72", "#E5883E", "#2A9D8F", "#C850C0", "#E63946", "#5DADE2", "#795548"]
+# Palette: colorblind-safe with high distinction (designed for deuteranopia/protanopia)
+# Metals=steel blue, Polymers=warm orange, Ceramics=teal, Composites=violet,
+# Elastomers=rose, Foams=sky blue, Natural=amber/gold
+palette = ["#2C5F8A", "#E5883E", "#2A9D8F", "#9B59B6", "#D4526E", "#5DADE2", "#D4A017"]
 
 # Plot
 plot = (
@@ -203,8 +203,8 @@ plot = (
             }
         ),
         mapping=aes(x="density", y="modulus", label="label"),
-        size=8,
-        color="#AAAAAA",
+        size=10,
+        color="#B0B0B0",
         angle=38,
         hjust=0,
     )
@@ -220,10 +220,11 @@ plot = (
         tooltips=layer_tooltips()
         .format("density", ".0f")
         .format("modulus", ".3g")
-        .line("@material")
+        .title("@material")
         .line("Family|@family")
         .line("Density|@{density} kg/m\u00b3")
-        .line("Modulus|@{modulus} GPa"),
+        .line("Modulus|@{modulus} GPa")
+        .min_width(180),
     )
     # Leader lines from envelope center to displaced labels
     + geom_segment(
@@ -247,15 +248,19 @@ plot = (
     + scale_color_manual(values=palette, name="Material Family")
     + scale_fill_manual(values=palette)
     + guides(fill="none")
-    + labs(title="scatter-ashby-material \u00b7 letsplot \u00b7 pyplots.ai")
+    + labs(
+        title="scatter-ashby-material \u00b7 letsplot \u00b7 pyplots.ai",
+        subtitle="Young\u2019s Modulus vs Density \u2014 Material Selection Landscape",
+    )
     + theme_minimal()
     + theme(
         axis_title=element_text(size=20, color="#333333", margin=[10, 10, 10, 10]),
         axis_text=element_text(size=16, color="#555555"),
-        plot_title=element_text(size=24, face="bold", color="#1A1A1A", margin=[0, 0, 14, 0]),
+        plot_title=element_text(size=24, face="bold", color="#1A1A1A", margin=[0, 0, 4, 0]),
+        plot_subtitle=element_text(size=16, color="#666666", margin=[0, 0, 14, 0]),
         plot_margin=[30, 40, 20, 20],
         plot_background=element_rect(fill="#F7F7F7", color="#F7F7F7"),
-        panel_background=element_rect(fill="#FFFFFF", color="#E8E8E8", size=0.5),
+        panel_background=element_rect(fill="#FFFFFF", color="#FFFFFF"),
         legend_title=element_text(size=16, face="bold"),
         legend_text=element_text(size=14),
         panel_grid_major=element_line(size=0.25, color="#ECECEC"),

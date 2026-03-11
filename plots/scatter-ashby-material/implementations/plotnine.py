@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-ashby-material: Ashby Material Selection Chart
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 82/100 | Created: 2026-03-11
@@ -8,13 +8,13 @@ import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
-    annotate,
     element_blank,
     element_line,
     element_rect,
     element_text,
     geom_point,
     geom_polygon,
+    geom_text,
     ggplot,
     guide_legend,
     guides,
@@ -75,18 +75,28 @@ for family in family_order:
         for i in range(len(expanded)):
             hull_rows.append({"family": family, "density": 10 ** expanded[i, 0], "modulus": 10 ** expanded[i, 1]})
 
-        # Label position at centroid
-        label_rows.append({"family": family, "density": 10 ** centroid[0], "modulus": 10 ** centroid[1]})
+        # Label position at centroid with nudge for crowded upper-right region
+        nudge_x, nudge_y = 0, 0
+        if family == "Ceramics":
+            nudge_y = 0.3  # push up in log space
+            nudge_x = -0.15
+        elif family == "Composites":
+            nudge_y = -0.25  # push down in log space
+        elif family == "Metals":
+            nudge_x = 0.15  # push right in log space
+        label_rows.append(
+            {"family": family, "density": 10 ** (centroid[0] + nudge_x), "modulus": 10 ** (centroid[1] + nudge_y)}
+        )
 
 df_hulls = pd.DataFrame(hull_rows)
 df_labels = pd.DataFrame(label_rows)
 
-# Colors
+# Colors - distinct hues with good colorblind separation
 palette = {
     "Metals": "#306998",
     "Ceramics": "#C75B39",
     "Polymers": "#4DAF4A",
-    "Composites": "#FF7F00",
+    "Composites": "#17BECF",
     "Elastomers": "#984EA3",
     "Foams": "#A6761D",
 }
@@ -100,12 +110,21 @@ df_labels["family"] = pd.Categorical(df_labels["family"], categories=family_orde
 plot = (
     ggplot()
     + geom_polygon(df_hulls, aes(x="density", y="modulus", fill="family", group="family"), alpha=0.15, color="none")
-    + geom_point(df, aes(x="density", y="modulus", color="family"), size=3.5, alpha=0.75, stroke=0.3)
+    + geom_point(df, aes(x="density", y="modulus", color="family"), size=4.5, alpha=0.8, stroke=0.3)
     + scale_x_log10()
     + scale_y_log10()
     + scale_color_manual(values=palette, name="Material Family")
     + scale_fill_manual(values=palette)
     + labs(x="Density (kg/m³)", y="Young's Modulus (GPa)", title="scatter-ashby-material · plotnine · pyplots.ai")
+    + geom_text(
+        df_labels,
+        aes(x="density", y="modulus", label="family"),
+        size=13,
+        fontweight="bold",
+        color="#2A2A2A",
+        alpha=0.85,
+        show_legend=False,
+    )
     + guides(color=guide_legend(override_aes={"size": 5, "alpha": 1}), fill="none")
     + theme_minimal()
     + theme(
@@ -119,25 +138,14 @@ plot = (
         legend_background=element_rect(fill="#FAFAFA", color="#E0E0E0", size=0.5),
         legend_key=element_rect(fill="white", color="none"),
         panel_grid_minor=element_blank(),
-        panel_grid_major=element_line(color="#E0E0E0", size=0.4, alpha=0.3),
-        panel_background=element_rect(fill="#FAFAFA", color="none"),
+        panel_grid_major=element_line(color="#DCDCDC", size=0.3, alpha=0.4),
+        panel_background=element_rect(fill="#F8F9FA", color="none"),
+        panel_border=element_blank(),
+        axis_line=element_line(color="#999999", size=0.5),
         plot_background=element_rect(fill="white", color="none"),
         plot_margin=0.04,
     )
 )
-
-# Add family labels at centroids
-for _, row in df_labels.iterrows():
-    plot = plot + annotate(
-        "text",
-        x=row["density"],
-        y=row["modulus"],
-        label=row["family"],
-        size=11,
-        fontweight="bold",
-        color="#333333",
-        alpha=0.7,
-    )
 
 # Save
 plot.save("plot.png", dpi=300, verbose=False)

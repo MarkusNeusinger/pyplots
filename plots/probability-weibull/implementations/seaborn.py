@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 probability-weibull: Weibull Probability Plot for Reliability Analysis
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-11
@@ -68,7 +68,8 @@ df = pd.DataFrame(
 
 # Seaborn styling
 sns.set_style("ticks")
-palette = {"Failure": "#306998", "Censored (suspended)": "#D4782F"}
+colors = sns.color_palette(["#306998", "#D4782F", "#C04040"])
+color_failure, color_censored, color_fit = colors
 
 # Plot
 fig, ax = plt.subplots(figsize=(16, 9))
@@ -79,10 +80,10 @@ sns.scatterplot(
     data=df_failures,
     x="log_time",
     y="weibull_y",
-    color="#306998",
+    color=color_failure,
     s=180,
     marker="o",
-    edgecolor="#306998",
+    edgecolor=color_failure,
     linewidth=1.5,
     label="Failure",
     zorder=5,
@@ -98,7 +99,7 @@ sns.scatterplot(
     color="none",
     s=180,
     marker="D",
-    edgecolor="#D4782F",
+    edgecolor=color_censored,
     linewidth=2,
     label="Censored (suspended)",
     zorder=5,
@@ -110,7 +111,7 @@ sns.lineplot(
     data=df_fit,
     x="log_time",
     y="weibull_y",
-    color="#C04040",
+    color=color_fit,
     linewidth=2.5,
     linestyle="--",
     label="Weibull fit",
@@ -158,7 +159,28 @@ ax.set_title(
 ax.tick_params(axis="both", labelsize=16)
 
 sns.despine(ax=ax)
-ax.grid(True, alpha=0.15, linewidth=0.8)
+ax.yaxis.grid(True, alpha=0.15, linewidth=0.8)
+ax.set_axisbelow(True)
+
+# Rugplot for failure time density on x-axis
+df_rug = pd.DataFrame({"log_time": log_times[failure_mask]})
+sns.rugplot(data=df_rug, x="log_time", color=color_failure, height=0.02, alpha=0.4, ax=ax)
+
+# B10 life annotation — time at 10% cumulative failure probability
+b10_y = np.log(-np.log(1 - 0.10))
+b10_x = (b10_y - intercept) / slope
+b10_time = np.exp(b10_x)
+ax.plot(b10_x, b10_y, "s", color=color_fit, markersize=10, zorder=6)
+ax.annotate(
+    f"B10 life ≈ {b10_time:,.0f} h\n(10% failure)",
+    xy=(b10_x, b10_y),
+    xytext=(b10_x + 0.35, b10_y - 0.6),
+    fontsize=14,
+    fontweight="medium",
+    color="#333333",
+    arrowprops={"arrowstyle": "->", "color": "#666666", "linewidth": 1.5},
+    bbox={"boxstyle": "round,pad=0.3", "facecolor": "#FFF8F0", "edgecolor": color_fit, "alpha": 0.9},
+)
 
 ax.legend(fontsize=16, frameon=False, loc="upper left")
 

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 spectrogram-mel: Mel-Spectrogram for Audio Analysis
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-11
@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
+    annotate,
     coord_cartesian,
     element_blank,
     element_rect,
@@ -84,12 +85,19 @@ time_grid, mel_idx_grid = np.meshgrid(time_bins, np.arange(n_mels))
 df = pd.DataFrame({"Time (s)": time_grid.ravel(), "mel_band": mel_idx_grid.ravel(), "Power (dB)": mel_spec_db.ravel()})
 
 # Y-axis tick positions: map Hz values to mel band indices
-y_ticks_hz = [64, 128, 256, 512, 1024, 2048, 4096, 8000]
+y_ticks_hz = [128, 256, 512, 1024, 2048, 4096, 8000]
 y_ticks_hz = [f for f in y_ticks_hz if f <= sample_rate / 2]
 # Convert Hz to mel band index via interpolation
 y_ticks_band = np.interp(y_ticks_hz, mel_center_freqs, np.arange(n_mels))
 
+
+# Annotation positions: convert Hz to mel band index for key frequency regions
+def hz_to_band(hz):
+    return float(np.interp(hz, mel_center_freqs, np.arange(n_mels)))
+
+
 # Plot - using geom_raster for smooth, gap-free rendering (plotnine-native)
+# annotate() layers add frequency region labels — a distinctive plotnine feature
 plot = (
     ggplot(df, aes(x="Time (s)", y="mel_band", fill="Power (dB)"))
     + geom_raster(interpolate=True)
@@ -108,6 +116,24 @@ plot = (
         ],
         name="Power (dB)",
     )
+    + annotate(
+        "text",
+        x=2.85,
+        y=hz_to_band(220),
+        label="F₀",
+        color="#fcffa4",
+        size=11,
+        ha="right",
+        fontweight="bold",
+        alpha=0.85,
+    )
+    + annotate("text", x=2.85, y=hz_to_band(880), label="3rd", color="#fb9b06", size=9, ha="right", alpha=0.7)
+    + annotate(
+        "segment", x=0.0, xend=duration, y=hz_to_band(220), yend=hz_to_band(220), color="#fcffa4", alpha=0.15, size=0.4
+    )
+    + annotate(
+        "segment", x=0.0, xend=duration, y=hz_to_band(880), yend=hz_to_band(880), color="#fb9b06", alpha=0.12, size=0.3
+    )
     + scale_x_continuous(expand=(0, 0))
     + scale_y_continuous(breaks=y_ticks_band.tolist(), labels=[str(f) for f in y_ticks_hz], expand=(0, 0))
     + coord_cartesian(ylim=(0, n_mels - 1))
@@ -116,20 +142,20 @@ plot = (
     + theme(
         figure_size=(16, 9),
         text=element_text(family="sans-serif"),
-        plot_title=element_text(size=24, ha="center", weight="bold", margin={"b": 8}),
-        axis_title_x=element_text(size=20, margin={"t": 10}),
-        axis_title_y=element_text(size=20, margin={"r": 8}),
-        axis_text_x=element_text(size=16),
-        axis_text_y=element_text(size=16),
-        legend_title=element_text(size=16, weight="bold"),
-        legend_text=element_text(size=14),
+        plot_title=element_text(size=24, ha="center", weight="bold", color="#e0e0e0", margin={"b": 8}),
+        axis_title_x=element_text(size=20, color="#cccccc", margin={"t": 10}),
+        axis_title_y=element_text(size=20, color="#cccccc", margin={"r": 8}),
+        axis_text_x=element_text(size=16, color="#aaaaaa"),
+        axis_text_y=element_text(size=16, color="#aaaaaa"),
+        legend_title=element_text(size=16, weight="bold", color="#cccccc"),
+        legend_text=element_text(size=14, color="#aaaaaa"),
         legend_position="right",
         legend_key_height=60,
         legend_key_width=14,
         panel_grid_major=element_blank(),
         panel_grid_minor=element_blank(),
         panel_background=element_rect(fill="#000004", color="none"),
-        plot_background=element_rect(fill="#f7f7f7", color="none"),
+        plot_background=element_rect(fill="#0e0e1a", color="none"),
         plot_margin=0.02,
     )
 )

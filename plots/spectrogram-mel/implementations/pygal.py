@@ -1,27 +1,37 @@
-""" pyplots.ai
+"""pyplots.ai
 spectrogram-mel: Mel-Spectrogram for Audio Analysis
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 84/100 | Created: 2026-03-11
 """
 
+import os
 import sys
 
 import numpy as np
 from scipy import signal
 
 
-# Temporarily exclude cwd from sys.path to avoid collision with this filename
-_orig_path = sys.path[:]
-try:
-    sys.path = [p for p in sys.path if p not in ("", ".") and not p.endswith("/implementations")]
-    from pygal.graph.graph import Graph
-    from pygal.style import Style
-finally:
-    sys.path = _orig_path
+# Remove script directory from sys.path to avoid name collision with pygal package
+sys.path = [p for p in sys.path if os.path.abspath(p) != os.path.dirname(os.path.abspath(__file__))]
+
+from pygal.graph.graph import Graph  # noqa: E402
+from pygal.style import Style  # noqa: E402
+
+
+def interpolate_color(value, min_val, max_val, colormap):
+    """Map a scalar value to an interpolated hex color from the colormap."""
+    normalized = max(0.0, min(1.0, (value - min_val) / (max_val - min_val))) if max_val != min_val else 1.0
+    pos = normalized * (len(colormap) - 1)
+    lo, hi = int(pos), min(int(pos) + 1, len(colormap) - 1)
+    frac = pos - lo
+    c1, c2 = colormap[lo], colormap[hi]
+    r = int(int(c1[1:3], 16) + (int(c2[1:3], 16) - int(c1[1:3], 16)) * frac)
+    g = int(int(c1[3:5], 16) + (int(c2[3:5], 16) - int(c1[3:5], 16)) * frac)
+    b = int(int(c1[5:7], 16) + (int(c2[5:7], 16) - int(c1[5:7], 16)) * frac)
+    return f"#{r:02x}{g:02x}{b:02x}"
 
 
 class MelSpectrogramChart(Graph):
-    """Custom mel-spectrogram visualization for pygal."""
+    """Custom mel-spectrogram chart extending pygal's Graph."""
 
     def __init__(self, *args, **kwargs):
         self.spectrogram_data = kwargs.pop("spectrogram_data", [])
@@ -34,20 +44,6 @@ class MelSpectrogramChart(Graph):
         self.colormap = kwargs.pop("colormap", [])
         super().__init__(*args, **kwargs)
 
-    def _interpolate_color(self, value, min_val, max_val):
-        if max_val == min_val:
-            return self.colormap[-1]
-        normalized = max(0, min(1, (value - min_val) / (max_val - min_val)))
-        pos = normalized * (len(self.colormap) - 1)
-        idx1 = int(pos)
-        idx2 = min(idx1 + 1, len(self.colormap) - 1)
-        frac = pos - idx1
-        c1, c2 = self.colormap[idx1], self.colormap[idx2]
-        r = int(int(c1[1:3], 16) + (int(c2[1:3], 16) - int(c1[1:3], 16)) * frac)
-        g = int(int(c1[3:5], 16) + (int(c2[3:5], 16) - int(c1[3:5], 16)) * frac)
-        b = int(int(c1[5:7], 16) + (int(c2[5:7], 16) - int(c1[5:7], 16)) * frac)
-        return f"#{r:02x}{g:02x}{b:02x}"
-
     def _plot(self):
         if len(self.spectrogram_data) == 0:
             return
@@ -59,8 +55,8 @@ class MelSpectrogramChart(Graph):
         plot_width = self.view.width
         plot_height = self.view.height
 
-        margin_left, margin_right = 280, 280
-        margin_top, margin_bottom = 60, 180
+        margin_left, margin_right = 250, 250
+        margin_top, margin_bottom = 40, 160
 
         avail_w = plot_width - margin_left - margin_right
         avail_h = plot_height - margin_bottom - margin_top
@@ -77,7 +73,7 @@ class MelSpectrogramChart(Graph):
         for i in range(n_mels):
             for j in range(n_time):
                 value = self.spectrogram_data[n_mels - 1 - i][j]
-                color = self._interpolate_color(value, min_val, max_val)
+                color = interpolate_color(value, min_val, max_val, self.colormap)
                 rect = self.svg.node(
                     grp, "rect", x=x0 + j * cell_w, y=y0 + i * cell_h, width=cell_w + 0.5, height=cell_h + 0.5
                 )
@@ -101,7 +97,7 @@ class MelSpectrogramChart(Graph):
         tx.text = "Time (s)"
 
         # Y-axis label
-        yl_x, yl_y = x0 - 210, y0 + avail_h / 2
+        yl_x, yl_y = x0 - 190, y0 + avail_h / 2
         ty = self.svg.node(grp, "text", x=yl_x, y=yl_y, transform=f"rotate(-90, {yl_x}, {yl_y})")
         ty.set("text-anchor", "middle")
         ty.set("fill", "#333333")
@@ -173,7 +169,7 @@ class MelSpectrogramChart(Graph):
         seg_h = cb_h / n_segments
         for i in range(n_segments):
             seg_val = min_val + (max_val - min_val) * (n_segments - 1 - i) / (n_segments - 1)
-            seg_color = self._interpolate_color(seg_val, min_val, max_val)
+            seg_color = interpolate_color(seg_val, min_val, max_val, self.colormap)
             self.svg.node(grp, "rect", x=cb_x, y=cb_y + i * seg_h, width=cb_w, height=seg_h + 1, fill=seg_color)
 
         # Colorbar border
@@ -239,8 +235,6 @@ audio_signal += 0.02 * np.random.randn(len(t))
 n_fft = 2048
 hop_length = 512
 n_mels_count = 128
-
-
 fmax = sample_rate / 2.0
 mel_min = 2595.0 * np.log10(1.0 + 0 / 700.0)
 mel_max = 2595.0 * np.log10(1.0 + fmax / 700.0)
@@ -347,9 +341,9 @@ chart = MelSpectrogramChart(
     db_max=0,
     colormap=inferno_colors,
     show_legend=False,
-    margin=80,
-    margin_top=180,
-    margin_bottom=60,
+    margin=60,
+    margin_top=160,
+    margin_bottom=40,
     show_x_labels=False,
     show_y_labels=False,
 )

@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: spectrogram-mel
 created: '2026-03-11T19:40:37Z'
-updated: '2026-03-11T19:44:20Z'
+updated: '2026-03-11T19:53:41Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22970857648
 issue: 4672
@@ -10,33 +10,34 @@ library_version: 4.9.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/spectrogram-mel/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spectrogram-mel/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/spectrogram-mel/letsplot/plot.html
-quality_score: 82
+quality_score: 90
 review:
   strengths:
-  - Perfect spec compliance with all required features implemented correctly
-  - Excellent manual STFT and mel filterbank computation without external dependencies
-  - Smart downsampling strategy for geom_tile performance
-  - Good font sizing with all text explicitly set
-  - Inferno colormap is an excellent choice for spectrograms
+  - Excellent dark theme aesthetic with custom color palette well-suited for spectrogram
+    visualization
+  - Perfect spec compliance with all required features implemented
+  - Manual STFT and mel filterbank computation without external dependencies
+  - Note annotations (C4, E4, G4, C5) add data storytelling and guide the viewer
+  - 'Good use of lets-plot distinctive features: formatted tooltips, flavor_darcula'
+  - dB range clipping effectively emphasizes musical content over noise
   weaknesses:
-  - Design is functional but not visually refined — could benefit from more polish
-  - Upper frequency range is mostly noise, creating visual dead space
-  - Tiles appear slightly blocky from downsampling resolution
-  - No distinctive lets-plot features leveraged beyond standard ggplot grammar
-  image_description: 'The plot displays a mel-spectrogram with time (0–3 seconds)
-    on the x-axis and mel-scaled frequency on the y-axis, labeled in Hz at key positions
-    (100, 200, 500, 1k, 2k, 5k, 10k). The inferno colormap ranges from dark purple/black
-    (low power, ~-20 dB) through magenta to bright yellow (high power, ~40+ dB). Four
-    distinct note segments are visible as horizontal bright bands: C4 (~262 Hz) from
-    0–0.75s, E4 (~330 Hz) from 0.75–1.5s, G4 (~392 Hz) from 1.5–2.25s, and C5 (~523
-    Hz) from 2.25–3s. Each note shows harmonics as additional bright bands at integer
-    multiples of the fundamental. Envelope shaping creates smooth onset/offset for
-    each note. A colorbar on the right is labeled "Power (dB)". The title reads "spectrogram-mel
-    · letsplot · pyplots.ai". The upper frequency range (>2kHz) is mostly uniform
-    dark purple noise. Overall layout is clean with theme_minimal styling.'
+  - Colorbar area slightly cramped on the right edge
+  - Could push design further with more dramatic visual hierarchy
+  image_description: 'The plot displays a mel-spectrogram on a dark navy/indigo background
+    (custom dark theme). The x-axis shows "Time (s)" from 0 to ~2.8s, and the y-axis
+    shows "Frequency (Hz)" with mel-scaled labels at 100, 200, 500, 1k, 2k, 5k, and
+    10k Hz. The inferno colormap renders power from dark purple (~-10 dB) through
+    magenta/orange to bright yellow (~45 dB). Four sequential notes are visible as
+    bright horizontal bands with clear harmonic overtones extending upward: C4 (~0-0.7s),
+    E4 (~0.7-1.4s), G4 (~1.4-2.1s), and C5 (~2.1-2.8s). White bold note labels (C4,
+    E4, G4, C5) are placed at each note''s fundamental frequency and midpoint time.
+    The colorbar on the right is labeled "Power (dB)". The title "spectrogram-mel
+    · letsplot · pyplots.ai" appears top-left in light gray. Grid lines are very subtle
+    dark blue. The overall aesthetic is a polished dark theme with good contrast between
+    the bright spectrogram content and the dark background.'
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 29
       max: 30
       items:
       - id: VQ-01
@@ -45,64 +46,65 @@ review:
         max: 8
         passed: true
         comment: 'All font sizes explicitly set: title=24, axis_title=20, axis_text=16,
-          legend_title=16, legend_text=14'
+          legend_title=16, legend_text=14, geom_text size=14'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text; y-axis Hz labels well-spaced
+        comment: No overlapping text; y-axis Hz labels well-spaced, note annotations
+          well-positioned
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Tiles clearly visible but slightly blocky due to downsampling (200x96
-          grid)
+        comment: Higher resolution downsampling produces smooth tiles; harmonics and
+          fundamentals clearly distinguishable
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Inferno is perceptually uniform and colorblind-safe
+        comment: Inferno is perceptually uniform and colorblind-safe with excellent
+          contrast on dark background
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good proportions but upper frequency range (>2kHz) is mostly empty
-          noise
+        comment: Good proportions; slight crowding of colorbar label on right edge
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Time (s) and Frequency (Hz) with units
+        comment: Time (s) and Frequency (Hz) - descriptive with units
     design_excellence:
-      score: 10
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 6
         max: 8
-        passed: false
-        comment: Well-configured default with inferno colormap and theme_minimal,
-          but no custom design beyond defaults
+        passed: true
+        comment: Custom dark theme with intentional color palette, inferno colormap,
+          flavor_darcula base, white bold note annotations
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: theme_minimal provides some refinement but no additional polish like
-          custom grid or whitespace tuning
+        passed: true
+        comment: Axis lines removed, subtle thin grid lines, minor grid removed, legend
+          background matched, custom margins
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: Melody progression creates natural narrative but no intentional visual
-          emphasis
+        passed: true
+        comment: Note annotations guide viewer through ascending arpeggio; dB clipping
+          emphasizes musical content
     spec_compliance:
       score: 15
       max: 15
@@ -112,49 +114,50 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct mel-spectrogram with mel filter bank
+        comment: Correct mel-spectrogram with manual mel filter bank and STFT computation
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: dB scale, inferno colormap, time axis,
-          mel-scaled Hz labels, colorbar, correct parameters'
+        comment: 'All spec features present: dB scale, inferno colormap, time x-axis,
+          mel-scaled y-axis with Hz labels, colorbar in dB'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=time, Y=mel band (mapped to Hz), fill=power in dB
+        comment: X=time(s), Y=mel band index mapped to Hz, fill=power in dB
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, colorbar properly labeled
+        comment: Title format correct; colorbar labeled Power (dB)
     data_quality:
-      score: 13
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Shows fundamentals, harmonics, envelope shaping, noise floor; could
-          benefit from richer audio content
+        comment: Shows fundamentals, harmonics, vibrato, envelope shaping, noise floor,
+          ascending frequency progression
       - id: DQ-02
         name: Realistic Context
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: C major arpeggio with harmonics is musically meaningful and realistic
+        comment: C major arpeggio with harmonics and vibrato is musically meaningful
+          and realistic
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Standard sample rate (22050 Hz), realistic musical frequencies, 3-second
+        comment: Standard sample rate (22050 Hz), correct musical frequencies, 3-second
           duration
     code_quality:
       score: 10
@@ -178,22 +181,21 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports used (numpy, pandas, lets_plot)
+        comment: 'All imports used: numpy, pandas, lets_plot'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Well-organized with appropriate complexity; smart downsampling for
-          performance
+        comment: Well-organized, appropriate complexity for manual STFT/mel computation
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png with scale=3 and plot.html
+        comment: Saves plot.png with scale=3 and plot.html via ggsave
     library_mastery:
-      score: 6
+      score: 7
       max: 10
       items:
       - id: LM-01
@@ -201,21 +203,23 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Good ggplot grammar: aes, geom_tile, scale_fill_viridis, scale_y_continuous
-          with custom breaks/labels'
+        comment: Good ggplot grammar with geom_tile, geom_text, scale_fill_viridis,
+          theme composition with flavor_darcula
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Uses scale_fill_viridis(option=inferno) and HTML export, but no highly
-          distinctive lets-plot features
-  verdict: REJECTED
+        passed: true
+        comment: Uses layer_tooltips() with formatting, flavor_darcula, HTML export
+          - recognizably lets-plot features
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - manual-ticks
-  - html-export
+  - annotations
+  - hover-tooltips
+  - layer-composition
   patterns:
   - data-generation
   - matrix-construction
@@ -223,4 +227,6 @@ impl_tags:
   dataprep:
   - binning
   styling:
+  - dark-theme
   - custom-colormap
+  - grid-styling

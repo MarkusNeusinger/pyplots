@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 probability-weibull: Weibull Probability Plot for Reliability Analysis
 Library: highcharts unknown | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-11
@@ -111,7 +111,10 @@ chart.options.chart = {
     "marginTop": 180,
     "marginBottom": 300,
     "marginLeft": 280,
-    "marginRight": 240,
+    "marginRight": 340,
+    "plotBorderWidth": 1,
+    "plotBorderColor": "rgba(0, 0, 0, 0.08)",
+    "plotBackgroundColor": "#ffffff",
 }
 
 chart.options.title = {
@@ -142,8 +145,8 @@ x_axis.max = float(np.log(20000))
 x_axis.grid_line_width = 1
 x_axis.grid_line_color = "rgba(0, 0, 0, 0.06)"
 x_axis.grid_line_dash_style = "Dot"
-x_axis.line_color = "#bdc3c7"
-x_axis.line_width = 2
+x_axis.line_width = 0
+x_axis.tick_width = 0
 chart.options.x_axis = x_axis
 
 # Y-axis (Weibull linearized scale with probability labels)
@@ -161,8 +164,8 @@ y_axis.tick_positions = weibull_ticks
 y_axis.grid_line_width = 1
 y_axis.grid_line_color = "rgba(0, 0, 0, 0.06)"
 y_axis.grid_line_dash_style = "Dot"
-y_axis.line_color = "#bdc3c7"
-y_axis.line_width = 2
+y_axis.line_width = 0
+y_axis.tick_width = 0
 y_axis.plot_lines = [
     {
         "value": y_632,
@@ -172,8 +175,8 @@ y_axis.plot_lines = [
         "label": {
             "text": "63.2% \u2014 Characteristic Life",
             "style": {"fontSize": "30px", "color": "rgba(231, 76, 60, 0.8)", "fontWeight": "500"},
-            "align": "right",
-            "x": -20,
+            "align": "left",
+            "x": 15,
             "y": -12,
         },
         "zIndex": 4,

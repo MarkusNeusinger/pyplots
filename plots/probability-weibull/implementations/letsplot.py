@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 probability-weibull: Weibull Probability Plot for Reliability Analysis
 Library: letsplot 4.9.0 | Python 3.14.3
 Quality: 81/100 | Created: 2026-03-11
@@ -39,18 +39,12 @@ median_ranks = (failure_rank - 0.3) / (n_total + 0.4)
 weibull_y = np.log(-np.log(1 - median_ranks))
 log_times = np.log(all_times)
 
-# Separate failures and censored for plotting
+# Single dataframe with status column for legend mapping
 df_all = pd.DataFrame(
-    {
-        "time": all_times,
-        "log_time": log_times,
-        "weibull_y": weibull_y,
-        "status": np.where(is_failure == 1, "Failure", "Censored"),
-    }
+    {"log_time": log_times, "weibull_y": weibull_y, "status": np.where(is_failure == 1, "Failure", "Censored")}
 )
 
 df_failures = df_all[df_all["status"] == "Failure"].copy()
-df_censored = df_all[df_all["status"] == "Censored"].copy()
 
 # Fit line through failure points only
 slope, intercept, r_value, _, _ = stats.linregress(df_failures["log_time"], df_failures["weibull_y"])
@@ -62,17 +56,11 @@ eta_fit = np.exp(-intercept / slope)
 # Fitted line data
 fit_x = np.linspace(np.log(np.min(all_times) * 0.7), np.log(np.max(all_times) * 1.3), 100)
 fit_y = slope * fit_x + intercept
-
 df_fit = pd.DataFrame({"log_time": fit_x, "weibull_y": fit_y})
 
 # 63.2% reference line (characteristic life)
 ref_y = np.log(-np.log(1 - 0.632))
-
-# Annotation data for parameter display
-beta_text = f"\u03b2 = {beta_fit:.2f}"
-eta_text = f"\u03b7 = {eta_fit:.0f} hrs"
-r2_text = f"R\u00b2 = {r_value**2:.4f}"
-annotation_label = f"{beta_text}\n{eta_text}\n{r2_text}"
+log_eta = np.log(eta_fit)
 
 # Y-axis tick positions and labels (cumulative probability)
 prob_levels = [0.01, 0.05, 0.10, 0.20, 0.50, 0.632, 0.90, 0.99]
@@ -81,51 +69,104 @@ y_labels = [f"{p * 100:.1f}%" if p == 0.632 else f"{p * 100:.0f}%" for p in prob
 
 # X-axis tick positions (log scale, labeled as original hours)
 x_tick_vals = [np.log(v) for v in [500, 1000, 2000, 3000, 5000, 8000]]
-x_tick_labels = ["500", "1000", "2000", "3000", "5000", "8000"]
+x_tick_labels = ["500", "1,000", "2,000", "3,000", "5,000", "8,000"]
 
-# Plot
+# Color palette - colorblind-safe (blue + amber, shape redundancy)
+color_failure = "#0077B6"
+color_censored = "#E69F00"
+color_fit = "#023E8A"
+color_ref = "#6C757D"
+color_eta = "#D62828"
+
+# Annotation text
+annotation_label = f"\u03b2 = {beta_fit:.2f}\n\u03b7 = {eta_fit:.0f} hrs\nR\u00b2 = {r_value**2:.4f}"
+
+# Crosshair segments at characteristic life intersection
+df_h_seg = pd.DataFrame({"x": [log_eta - 0.35], "xend": [log_eta + 0.35], "y": [ref_y], "yend": [ref_y]})
+df_v_seg = pd.DataFrame({"x": [log_eta], "xend": [log_eta], "y": [ref_y - 0.25], "yend": [ref_y + 0.25]})
+
+# Plot using single dataframe with mapped aesthetics for automatic legend
 plot = (
-    ggplot()  # noqa: F405
+    ggplot(df_all, aes(x="log_time", y="weibull_y", color="status", shape="status"))  # noqa: F405
+    # Fitted regression line (no legend)
     + geom_line(  # noqa: F405
         data=df_fit,
         mapping=aes(x="log_time", y="weibull_y"),  # noqa: F405
-        color="#306998",
-        size=1.5,
-        alpha=0.8,
+        color=color_fit,
+        size=1.8,
+        alpha=0.65,
+        inherit_aes=False,
     )
-    + geom_point(  # noqa: F405
-        data=df_failures,
-        mapping=aes(x="log_time", y="weibull_y"),  # noqa: F405
-        color="#306998",
-        size=5,
-        shape=16,
-        alpha=0.9,
-    )
-    + geom_point(  # noqa: F405
-        data=df_censored,
-        mapping=aes(x="log_time", y="weibull_y"),  # noqa: F405
-        color="#E74C3C",
-        size=5,
-        shape=1,
-        stroke=2,
-        alpha=0.9,
-    )
+    # 63.2% horizontal reference
     + geom_hline(  # noqa: F405
-        yintercept=ref_y, linetype="dashed", color="#888888", size=0.8
+        yintercept=ref_y, linetype="dashed", color=color_ref, size=0.7
     )
+    # Vertical reference at eta (characteristic life)
+    + geom_vline(  # noqa: F405
+        xintercept=log_eta, linetype="dotted", color=color_ref, size=0.7
+    )
+    # Crosshair emphasis at characteristic life intersection
+    + geom_segment(  # noqa: F405
+        data=df_h_seg,
+        mapping=aes(x="x", y="y", xend="xend", yend="yend"),  # noqa: F405
+        color=color_eta,
+        size=1.8,
+        alpha=0.6,
+        inherit_aes=False,
+    )
+    + geom_segment(  # noqa: F405
+        data=df_v_seg,
+        mapping=aes(x="x", y="y", xend="xend", yend="yend"),  # noqa: F405
+        color=color_eta,
+        size=1.8,
+        alpha=0.6,
+        inherit_aes=False,
+    )
+    # Data points with legend via mapped color + shape
+    + geom_point(size=7, alpha=0.9, stroke=1.5)  # noqa: F405
+    # Characteristic life intersection marker (diamond)
+    + geom_point(  # noqa: F405
+        data=pd.DataFrame({"x": [log_eta], "y": [ref_y]}),
+        mapping=aes(x="x", y="y"),  # noqa: F405
+        color=color_eta,
+        fill=color_eta,
+        size=9,
+        shape=18,
+        alpha=0.9,
+        inherit_aes=False,
+    )
+    # Parameter annotations
     + geom_text(  # noqa: F405
-        data=pd.DataFrame({"x": [max(fit_x) - 0.3], "y": [min(fit_y) + 0.8], "label": [annotation_label]}),
+        data=pd.DataFrame({"x": [max(fit_x) - 0.6], "y": [min(fit_y) + 0.6], "label": [annotation_label]}),
         mapping=aes(x="x", y="y", label="label"),  # noqa: F405
         size=14,
-        color="#333333",
+        color="#1A1A2E",
         hjust=1,
+        fontface="bold",
+        inherit_aes=False,
     )
+    # Characteristic life label
     + geom_text(  # noqa: F405
-        data=pd.DataFrame({"x": [min(fit_x) + 0.1], "y": [ref_y + 0.15], "label": ["63.2% (Characteristic Life)"]}),
+        data=pd.DataFrame(
+            {
+                "x": [log_eta + 0.08],
+                "y": [ref_y + 0.22],
+                "label": [f"\u03b7 = {eta_fit:.0f} hrs\n63.2% Characteristic Life"],
+            }
+        ),
         mapping=aes(x="x", y="y", label="label"),  # noqa: F405
         size=11,
-        color="#888888",
+        color=color_eta,
         hjust=0,
+        fontface="bold",
+        inherit_aes=False,
+    )
+    # Manual color and shape scales for legend (colorblind-safe)
+    + scale_color_manual(  # noqa: F405
+        name="Observation", values={"Failure": color_failure, "Censored": color_censored}
+    )
+    + scale_shape_manual(  # noqa: F405
+        name="Observation", values={"Failure": 16, "Censored": 1}
     )
     + scale_x_continuous(  # noqa: F405
         breaks=x_tick_vals, labels=x_tick_labels
@@ -139,12 +180,15 @@ plot = (
         title="probability-weibull \u00b7 letsplot \u00b7 pyplots.ai",
     )
     + ggsize(1600, 900)  # noqa: F405
-    + theme_minimal()  # noqa: F405
+    + flavor_high_contrast_light()  # noqa: F405
     + theme(  # noqa: F405
-        axis_text=element_text(size=16),  # noqa: F405
-        axis_title=element_text(size=20),  # noqa: F405
-        plot_title=element_text(size=24),  # noqa: F405
-        panel_grid_major=element_line(color="#CCCCCC", size=0.5, linetype="dashed"),  # noqa: F405
+        axis_text=element_text(size=16, color="#2B2D42"),  # noqa: F405
+        axis_title=element_text(size=20, color="#2B2D42", face="bold"),  # noqa: F405
+        plot_title=element_text(size=24, color="#1A1A2E", face="bold"),  # noqa: F405
+        legend_title=element_text(size=16, face="bold"),  # noqa: F405
+        legend_text=element_text(size=14),  # noqa: F405
+        legend_position=[0.15, 0.85],
+        panel_grid_major=element_line(color="#DEE2E6", size=0.4, linetype="dashed"),  # noqa: F405
         panel_grid_minor=element_blank(),  # noqa: F405
     )
 )

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 probability-weibull: Weibull Probability Plot for Reliability Analysis
 Library: highcharts unknown | Python 3.14.3
-Quality: 89/100 | Created: 2026-03-11
+Quality: 90/100 | Created: 2026-03-11
 """
 
 import tempfile

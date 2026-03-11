@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: probability-weibull
 created: '2026-03-11T21:55:51Z'
-updated: '2026-03-11T21:59:54Z'
+updated: '2026-03-11T22:08:18Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22976096861
 issue: 4668
@@ -10,39 +10,38 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/probability-weibull/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/probability-weibull/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/probability-weibull/highcharts/plot.html
-quality_score: 89
+quality_score: 90
 review:
   strengths:
-  - 'Perfect spec compliance with all required features: log x-axis, Weibull-linearized
-    y-axis, censored vs failure distinction, 63.2% reference line, fitted line with
-    parameter annotations'
-  - Excellent data quality with realistic turbine blade fatigue context and appropriate
-    Weibull parameters (β=2.44, η=7399h)
-  - Clean well-organized code with deterministic seed and appropriate complexity
-  - Good design with custom color palette, subtle dotted grid, informative subtitle,
-    and cohesive visual identity
+  - Complete spec compliance with all required features (log x-axis, Weibull y-axis,
+    fitted line, censored markers, 63.2% reference line, median rank positions)
+  - Strong visual design with custom palette, refined grid styling, and removed axis
+    chrome
+  - Excellent data storytelling through subtitle parameters, reference lines, and
+    color-coded visual hierarchy
+  - Clean, well-structured code with good use of Highcharts API
+  - Interactive HTML export alongside PNG is a nice Highcharts-specific addition
   weaknesses:
-  - The 63.2% Characteristic Life label is clipped at the right margin edge
-  - Design lacks final polish for publication quality — axis lines still visible,
-    room for more aesthetic sophistication
-  - Library mastery could leverage more distinctive Highcharts features
-  image_description: The plot displays a Weibull probability plot for turbine blade
-    fatigue life on a light gray (#fafbfc) background. The x-axis shows "Time to Failure
-    (hours)" with logarithmic-style tick labels (1,000 to 18,000), and the y-axis
-    shows "Cumulative Failure Probability" with Weibull-linearized probability labels
-    (1% to 99%). Blue filled circles represent 25 failure data points, while orange
-    hollow circles represent 5 censored (suspended) observations. A red solid fitted
-    line (Weibull fit) passes through the data. A horizontal dashed red reference
-    line at 63.2% is labeled "63.2% — Characteristic Life" near the right edge. A
-    vertical dotted red line marks the characteristic life (η = 7399h) on the x-axis.
-    The title reads "probability-weibull · highcharts · pyplots.ai" with a subtitle
-    "Turbine Blade Fatigue Life — β = 2.44, η = 7399 hours". A legend in the upper
-    right lists Failures, Censored (suspended), Weibull Fit (β=2.44, η=7399h), and
-    η = 7399h. The grid is subtle dotted lines with very low opacity. Data points
-    follow the fitted line well, showing good Weibull fit.
+  - Right margin is slightly generous (340px), causing minor canvas underutilization
+  - Legend eta entry as a separate series is slightly redundant — could use plotLines
+    for a cleaner legend
+  image_description: The plot displays a Weibull probability plot on a light gray
+    (#fafbfc) background with a white plot area. The title "probability-weibull ·
+    highcharts · pyplots.ai" is rendered in large dark text at the top, with a subtitle
+    "Turbine Blade Fatigue Life — β = 2.44, η = 7399 hours" in lighter gray below.
+    The x-axis is labeled "Time to Failure (hours)" with logarithmic-style tick values
+    (1,000 to 18,000). The y-axis is labeled "Cumulative Failure Probability" with
+    Weibull-linearized probability ticks (1% to 99%). Blue filled circles represent
+    failures (~25 points), and orange hollow circles represent censored/suspended
+    observations (~5 points). A solid red fitted line passes through the data showing
+    the Weibull fit. A dashed horizontal reference line at 63.2% is labeled "63.2%
+    — Characteristic Life" on the left. A dotted vertical line marks η = 7399h. The
+    legend in the upper right lists Failures, Censored (suspended), Weibull Fit (β=2.44,
+    η=7399h), and η = 7399h. Grid lines are subtle dotted lines with very low opacity.
+    Data points follow the fitted line closely, indicating good Weibull fit.
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 29
       max: 30
       items:
       - id: VQ-01
@@ -54,38 +53,36 @@ review:
           44px, tick labels 34px, legend 30px'
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Minor clustering in 4000-7000h range; 63.2% label tight against right
-          margin
+        comment: No overlapping text anywhere
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Markers radius 14 with white edge highlighting, perfectly visible
-          for ~30 data points
+        comment: Markers radius 14 with white edge highlighting, hollow vs filled
+          distinction clear
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue/orange/red palette is colorblind-safe with good contrast
+        comment: Blue/orange colorblind-safe palette with good contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good proportions but 63.2% Characteristic Life label clipped at right
-          edge
+        comment: Good layout but right margin slightly generous (340px)
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Time to Failure (hours) includes units; Cumulative Failure Probability
-          is descriptive
+        comment: Time to Failure (hours) and Cumulative Failure Probability with percentage
+          ticks
     design_excellence:
       score: 14
       max: 20
@@ -95,22 +92,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom palette, custom background, thoughtful typography with letter-spacing,
-          professional subtitle
+        comment: Custom palette, Segoe UI font, styled legend with rounded corners,
+          light gray/white background contrast
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Dotted grid with low opacity, subtle axis colors, generous whitespace,
-          but axis lines still visible
+        comment: Subtle dotted grids at 6% opacity, no axis lines/ticks, subtle plot
+          border, generous whitespace
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Visual hierarchy with subtitle parameters, 63.2% reference line,
-          vertical eta line, color differentiation
+        comment: Subtitle shows parameters, 63.2% reference line tells characteristic
+          life story, color hierarchy guides viewer
     spec_compliance:
       score: 15
       max: 15
@@ -120,27 +117,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct Weibull probability plot with log x-axis and linearized Weibull
-          y-axis
+        comment: Correct Weibull probability plot with log x and linearized Weibull
+          y
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: log x, Weibull y, fitted line, parameters,
-          median rank, censored distinction, 63.2% reference'
+        comment: 'All features: log x, Weibull y, fitted line, median rank, censored
+          distinction, 63.2% line'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Correct mapping of time-to-failure and cumulative probability
+        comment: X=time (log), Y=probability (Weibull-linearized), correct ranges
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title follows exact format, legend labels are descriptive and accurate
+        comment: Correct title format, descriptive legend labels
     data_quality:
       score: 15
       max: 15
@@ -150,21 +147,21 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows failures and censored, wide range, spans 1%-95% probability
+        comment: Shows failures and censored, full probability range, good time spread
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Turbine blade fatigue life is a classic real-world reliability engineering
+        comment: Turbine blade fatigue-life, classic neutral reliability engineering
           scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: β=2.44, η=7399h, failure times 1000-13000h — all plausible for turbine
-          blades
+        comment: Realistic hours for turbine blades, beta=2.44 wear-out mode, eta=7399h
+          plausible
     code_quality:
       score: 10
       max: 10
@@ -174,31 +171,31 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, computation, chart, export'
+        comment: 'Linear flow: imports, data, chart config, export'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) ensures deterministic output
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Appropriate complexity with necessary JS formatter callbacks
+        comment: Clean, well-organized, pragmatic JS callback approach
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via Selenium, uses current API
+        comment: Saves plot.png via screenshot, also generates interactive HTML
     library_mastery:
       score: 7
       max: 10
@@ -208,22 +205,23 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Good use of highcharts_core: Chart, HighchartsOptions, series types,
-          AxisLabelOptions, CallbackFunction, plot_lines'
+        comment: 'Good use of highcharts-core API: typed series, AxisLabelOptions,
+          plotLines, CallbackFunction'
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: JS callback formatters, plot_lines with labels, interactive tooltips,
-          hover states, HTML export
-  verdict: REJECTED
+        comment: JS callback formatters, plotLines with styled labels, interactive
+          tooltip config, dual HTML+PNG export
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - scipy
   - selenium
   techniques:
   - manual-ticks
+  - annotations
   - html-export
   - hover-tooltips
   patterns:

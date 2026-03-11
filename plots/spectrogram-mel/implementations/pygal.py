@@ -1,23 +1,23 @@
-""" pyplots.ai
+"""pyplots.ai
 spectrogram-mel: Mel-Spectrogram for Audio Analysis
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 83/100 | Created: 2026-03-11
 """
 
-import sys as _sys
+import sys
 
 import numpy as np
 from scipy import signal
 
 
-# Temporarily hide current directory to avoid pygal.py name collision
-_orig_path = _sys.path.copy()
-_sys.path = [p for p in _sys.path if p not in ("", ".") and not p.endswith("/implementations")]
-from pygal.graph.graph import Graph  # noqa: E402
-from pygal.style import Style  # noqa: E402
-
-
-_sys.path = _orig_path
+# Temporarily exclude cwd from sys.path to avoid collision with this filename
+_orig_path = sys.path[:]
+try:
+    sys.path = [p for p in sys.path if p not in ("", ".") and not p.endswith("/implementations")]
+    from pygal.graph.graph import Graph
+    from pygal.style import Style
+finally:
+    sys.path = _orig_path
 
 
 class MelSpectrogramChart(Graph):
@@ -138,17 +138,17 @@ class MelSpectrogramChart(Graph):
             lbl.text = f"{freq_hz / 1000:.1f}k" if freq_hz >= 1000 else f"{int(freq_hz)}"
 
         # Note annotations at each onset for storytelling emphasis
-        annot_size = 38
+        annot_size = 44
         for note_name, norm_y, time_frac in self.note_annotations:
             ax = x0 + time_frac * avail_w
             ay = y0 + (1 - norm_y) * avail_h
             # Circle marker with dark outline for visibility
-            marker = self.svg.node(grp, "circle", cx=ax, cy=ay, r=14)
+            marker = self.svg.node(grp, "circle", cx=ax, cy=ay, r=16)
             marker.set("fill", "none")
             marker.set("stroke", "#000000")
             marker.set("stroke-width", "4")
             marker.set("opacity", "0.6")
-            marker2 = self.svg.node(grp, "circle", cx=ax, cy=ay, r=14)
+            marker2 = self.svg.node(grp, "circle", cx=ax, cy=ay, r=16)
             marker2.set("fill", "none")
             marker2.set("stroke", "#ffffff")
             marker2.set("stroke-width", "2.5")
@@ -241,19 +241,11 @@ hop_length = 512
 n_mels_count = 128
 
 
-def hz_to_mel(hz):
-    return 2595.0 * np.log10(1.0 + hz / 700.0)
-
-
-def mel_to_hz(mel):
-    return 700.0 * (10.0 ** (mel / 2595.0) - 1.0)
-
-
 fmax = sample_rate / 2.0
-mel_min = hz_to_mel(0)
-mel_max = hz_to_mel(fmax)
+mel_min = 2595.0 * np.log10(1.0 + 0 / 700.0)
+mel_max = 2595.0 * np.log10(1.0 + fmax / 700.0)
 mel_points = np.linspace(mel_min, mel_max, n_mels_count + 2)
-hz_points = mel_to_hz(mel_points)
+hz_points = 700.0 * (10.0 ** (mel_points / 2595.0) - 1.0)
 bin_points = np.floor((n_fft + 1) * hz_points / sample_rate).astype(int)
 
 mel_filters = np.zeros((n_mels_count, n_fft // 2 + 1))
@@ -286,11 +278,11 @@ times_display = times_stft[::time_step]
 
 # Y-axis tick positions
 tick_freqs_hz = [100, 200, 500, 1000, 2000, 4000, 8000]
-mel_max_val = hz_to_mel(fmax)
+mel_max_val = 2595.0 * np.log10(1.0 + fmax / 700.0)
 mel_tick_positions = []
 mel_tick_labels = []
 for f in tick_freqs_hz:
-    norm_pos = hz_to_mel(f) / mel_max_val
+    norm_pos = 2595.0 * np.log10(1.0 + f / 700.0) / mel_max_val
     if 0 <= norm_pos <= 1:
         mel_tick_positions.append(norm_pos)
         mel_tick_labels.append(f)
@@ -299,7 +291,7 @@ for f in tick_freqs_hz:
 annotations = []
 for idx, (name, freq) in enumerate(zip(note_names, note_freqs, strict=True)):
     time_frac = (idx * note_duration + note_duration * 0.08) / duration
-    freq_norm = hz_to_mel(freq) / mel_max_val
+    freq_norm = 2595.0 * np.log10(1.0 + freq / 700.0) / mel_max_val
     annotations.append((name, freq_norm, time_frac))
 
 # Inferno colormap (extended for smoother gradients)

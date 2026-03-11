@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 probability-weibull: Weibull Probability Plot for Reliability Analysis
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-11
@@ -121,11 +121,11 @@ failures_chart = (
     .encode(x=x_enc, y=y_enc, tooltip=tooltip_enc)
 )
 
-# Censored points (open triangles)
+# Censored points (open triangles) - reuse shared axis encodings
 censored_chart = (
     alt.Chart(df[df["status"] == "Censored"])
     .mark_point(size=220, filled=False, shape="triangle-up", color=clr_censored, strokeWidth=2.5)
-    .encode(x=alt.X("time:Q"), y=alt.Y("weibull_y:Q"), tooltip=tooltip_enc)
+    .encode(x=x_enc, y=y_enc, tooltip=tooltip_enc)
 )
 
 # Legend layer using color+shape encoding on all data
@@ -163,18 +163,18 @@ ref_line = (
     .encode(x=alt.X("time:Q", scale=alt.Scale(type="log")), y=alt.Y("weibull_y:Q"))
 )
 
-# Annotation for parameters
+# Annotation for parameters - positioned with generous whitespace
 df_annotation = pd.DataFrame(
     {
-        "time": [all_times.max() * 0.9],
-        "weibull_y": [y_min + (y_max - y_min) * 0.12],
-        "text": [f"\u03b2 = {beta_est:.2f},  \u03b7 = {eta_est:.0f} hrs"],
+        "time": [all_times.max() * 0.85],
+        "weibull_y": [y_min + (y_max - y_min) * 0.10],
+        "text": [f"\u03b2 = {beta_est:.2f}   \u03b7 = {eta_est:.0f} hrs"],
     }
 )
 
 param_text = (
     alt.Chart(df_annotation)
-    .mark_text(fontSize=20, align="right", fontWeight="bold", color="#2C3E50")
+    .mark_text(fontSize=21, align="right", fontWeight="bold", color="#2C3E50")
     .encode(x=alt.X("time:Q", scale=alt.Scale(type="log")), y=alt.Y("weibull_y:Q"), text="text:N")
 )
 
@@ -207,23 +207,46 @@ chart = (
             fontSize=28,
             fontWeight="bold",
             color="#2C3E50",
-            subtitle="Turbine Blade Fatigue-Life Analysis  |  Weibull Distribution Fit",
+            subtitle="Turbine Blade Fatigue-Life Analysis  \u2014  Weibull Distribution Fit",
             subtitleFontSize=18,
-            subtitleColor="#666666",
+            subtitleColor="#777777",
+            subtitlePadding=8,
+            anchor="start",
+            offset=16,
         ),
     )
-    .configure_axis(
+    .configure_axisX(
         labelFontSize=18,
         titleFontSize=22,
-        gridOpacity=0.15,
-        gridDash=[3, 3],
-        domainColor="#CCCCCC",
-        tickColor="#CCCCCC",
+        grid=False,
+        domainColor="#AAAAAA",
+        tickColor="#AAAAAA",
         labelColor="#555555",
         titleColor="#333333",
+        titlePadding=12,
+    )
+    .configure_axisY(
+        labelFontSize=18,
+        titleFontSize=22,
+        gridOpacity=0.2,
+        gridDash=[3, 3],
+        gridColor="#BBBBBB",
+        domainColor="#AAAAAA",
+        tickColor="#AAAAAA",
+        labelColor="#555555",
+        titleColor="#333333",
+        titlePadding=12,
     )
     .configure_view(strokeWidth=0, fill=clr_bg)
-    .configure_legend(orient="top-right", padding=15, cornerRadius=6, strokeColor="#DDDDDD", fillColor="white")
+    .configure_legend(
+        orient="top-right",
+        padding=18,
+        cornerRadius=8,
+        strokeColor="#CCCCCC",
+        fillColor="white",
+        labelFontSize=16,
+        titleFontSize=18,
+    )
 )
 
 # Save

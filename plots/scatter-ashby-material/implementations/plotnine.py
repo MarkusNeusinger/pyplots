@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-ashby-material: Ashby Material Selection Chart
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-11
@@ -83,7 +83,7 @@ palette = {
     "Metals": "#306998",
     "Ceramics": "#C75B39",
     "Polymers": "#4DAF4A",
-    "Composites": "#17BECF",
+    "Composites": "#D4A017",
     "Elastomers": "#984EA3",
     "Foams": "#A6761D",
 }
@@ -115,7 +115,7 @@ plot = (
     + geom_text(
         guide_labels_data,
         aes(x="density", y="modulus", label="label"),
-        size=8,
+        size=11,
         color="#999999",
         fontstyle="italic",
         ha="left",
@@ -171,7 +171,7 @@ plot = (
         panel_grid_major=element_line(color="#DCDCDC", size=0.3, alpha=0.4),
         panel_background=element_rect(fill="#F8F9FA", color="none"),
         panel_border=element_blank(),
-        axis_line=element_line(color="#999999", size=0.4),
+        axis_line=element_blank(),
         plot_background=element_rect(fill="white", color="none"),
         plot_margin=0.04,
     )

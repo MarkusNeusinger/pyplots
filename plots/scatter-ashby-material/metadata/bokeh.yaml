@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: scatter-ashby-material
 created: '2026-03-11T15:00:40Z'
-updated: '2026-03-11T15:13:50Z'
+updated: '2026-03-11T15:22:30Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22958872826
 issue: 4677
@@ -10,37 +10,43 @@ library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-ashby-material/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-ashby-material/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-ashby-material/bokeh/plot.html
-quality_score: 83
+quality_score: 84
 review:
   strengths:
   - Perfect spec compliance and data quality with authentic materials science data
-    across all required Ashby chart features
-  - 'Significant improvement from attempt 1: scipy.ConvexHull replaces manual Graham
-    scan, legend restored, visual hierarchy added via emphasis dict'
+    across all 7 required families
+  - 'Progressive improvement across 3 attempts: manual Graham scan to scipy.ConvexHull,
+    restored legend, emphasis-based visual hierarchy, readable guide labels'
   - Clean flat code structure with no functions/classes, proper seed, all imports
     used
-  - 'Good use of Bokeh-specific features: HoverTool, HTML export, ColumnDataSource'
-  - Performance index guide lines add engineering context beyond basic spec requirements
+  - 'Good use of Bokeh-specific features: HoverTool tooltips, HTML export, ColumnDataSource,
+    Legend/LegendItem'
+  - Performance index guide lines now readable, adding engineering context beyond
+    basic spec requirements
+  - Visual hierarchy through emphasis dict creates perceptible primary/secondary family
+    distinction
   weaknesses:
-  - Guide line labels at 14pt/alpha 0.7/#999999 are nearly invisible — increase font
-    size and contrast
-  - Visual hierarchy via marker size differences (15-20px) is too subtle to perceive
-    at this resolution
-  - Ceramics/Metals hull overlap in upper-right makes that region cluttered
-  - Legend glyphs on right side are small — color swatches are tiny
-  image_description: 'The plot shows a log-log scatter chart at 4800x2700 with 7 material
-    families displayed as colored convex hull envelopes on a light gray (#FAFAFA)
-    background. Metals (steel blue) occupy the upper-right with high density and modulus.
-    Ceramics (muted red) overlap with Metals in the upper region. Composites (green)
-    sit in the upper-middle area. Natural Materials (brown/tan) span mid-range values.
-    Polymers (orange) cluster at moderate density with low-to-moderate modulus. Foams
-    (gold/yellow) form a diagonal band in the lower-left. Elastomers (purple) appear
-    at moderate density with very low modulus. Each family has a bold text label positioned
-    near the top of its hull. Two dashed guide lines for E/rho performance indices
-    are visible but very faint. A legend listing all 7 families appears on the right
-    side. Title "scatter-ashby-material · bokeh · pyplots.ai" is at top-left. X-axis:
-    "Density (kg/m³)", Y-axis: "Young''s Modulus (GPa)". Grid lines are subtle (alpha
-    0.15), tick marks removed, axis lines lightened.'
+  - Ceramics/Metals hull overlap in upper-right remains inherent to real data distribution
+  - Brown and gold colors may be confusable for deuteranopic viewers
+  - Guide line labels still italic gray that blends slightly with subtle background
+  - Legend glyphs could be larger for faster visual matching
+  image_description: 'The plot shows a log-log scatter chart at 4800x2700 pixels with
+    7 material families displayed as colored convex hull envelopes on a light gray
+    (#FAFAFA) background. Metals (steel blue #306998) occupy the upper-right region
+    with the largest markers (~28px) and thickest hull outlines. Ceramics (muted red
+    #B5494E) overlap with Metals in the upper-right, also with large markers (~26px).
+    Composites (green #5BA05B) sit in the upper-middle area. Natural Materials (brown
+    #8B6C42) span mid-range density and modulus values. Polymers (orange #E8833A)
+    cluster at moderate density with low-to-moderate modulus. Foams (gold #C4A632)
+    form a narrow diagonal band in the lower-left with the smallest markers (~14px).
+    Elastomers (purple #9B6FB8) appear at moderate density with very low modulus.
+    Each family has a bold 18pt text label positioned near the top of its hull with
+    manually tuned offsets. Two dashed guide lines for E/rho performance indices are
+    visible with 18pt italic labels in #666666 at alpha 0.9. A legend listing all
+    7 families with 35px glyphs and 16pt text appears on the right side. Title "scatter-ashby-material
+    · bokeh · pyplots.ai" at 28pt top-left. X-axis: "Density (kg/m³)" at 22pt, Y-axis:
+    "Young''s Modulus (GPa)" at 22pt. Grid lines subtle (alpha 0.15), tick marks removed,
+    axis lines lightened to #CCCCCC, outline removed.'
   criteria_checklist:
     visual_quality:
       score: 24
@@ -51,37 +57,40 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 28pt, labels 22pt, ticks 18pt,
-          hull labels 18pt, legend 16pt). Guide line labels at 14pt are borderline
-          too faint.
+        comment: 'All font sizes explicitly set: title 28pt, axis labels 22pt, tick
+          labels 18pt, hull labels 18pt bold, legend 16pt, guide line labels 18pt
+          italic. Guide line labels improved from attempt 2 but italic gray on light
+          background remains slightly subtle.'
       - id: VQ-02
         name: No Overlap
         score: 4
         max: 6
         passed: true
-        comment: Ceramics and Metals hull envelopes overlap significantly in upper-right.
-          Some label proximity issues with Natural Materials near Composites.
+        comment: Ceramics and Metals hull envelopes still overlap in upper-right,
+          inherent to real material data. Manually tuned label offsets prevent label-on-label
+          collisions.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Markers with variable sizes (15-20) and alpha=0.75 well-visible for
-          ~105 points. Markers within dense hulls slightly crowd.
+        comment: Marker sizes now range 14-28px with clear differentiation. Alpha=0.75
+          with white edge highlighting works well for ~105 data points. Hierarchy
+          is perceptible.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
         comment: 7-color palette avoids pure red-green pairs. Brown and gold could
-          be confused by some colorblind viewers.
+          be confused by deuteranopic viewers.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good canvas use at 4800x2700. Legend on right. Some empty space in
-          lower-right inherent to log-log data.
+        comment: Good canvas utilization at 4800x2700. Legend on right. Some empty
+          space in lower-right inherent to log-log data distribution.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
@@ -90,7 +99,7 @@ review:
         comment: 'Descriptive labels with units: Density (kg/m³) and Young''s Modulus
           (GPa).'
     design_excellence:
-      score: 12
+      score: 13
       max: 20
       items:
       - id: DE-01
@@ -98,22 +107,24 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Custom 7-color muted palette, emphasis hierarchy, clean light background,
-          white marker edges. Above defaults but not publication-ready.
+        comment: Custom 7-color muted palette, emphasis hierarchy varying fill_alpha/line_width/marker_size
+          per family. Clean background, white marker edges. Above defaults but not
+          publication-ready.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Grid alpha 0.15, ticks removed, outline removed, axis lines lightened.
-          Good refinement.
+        comment: 'Grid alpha 0.15, ticks removed, outline removed, axis lines lightened
+          to #CCCCCC, background #FAFAFA. Good refinement.'
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Visual hierarchy via emphasis dict and guide lines for E/rho. Hierarchy
-          is too subtle — size differences imperceptible, guide labels nearly invisible.
+        comment: Improved visual hierarchy via emphasis dict now perceptible. Guide
+          line labels readable at 18pt. Story of stiff-and-heavy vs light-and-compliant
+          emerges from layout.
     spec_compliance:
       score: 15
       max: 15
@@ -143,8 +154,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend with all 7 families present on right
-          side.
+        comment: Title format correct. Legend with all 7 families on right side.
     data_quality:
       score: 15
       max: 15
@@ -155,14 +165,14 @@ review:
         max: 6
         passed: true
         comment: 7 material families spanning 5 orders of magnitude in density and
-          6 in modulus. Overlapping regions and wide separations.
+          6 in modulus. Overlapping and separated families demonstrate full Ashby
+          chart behavior.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real-world material properties with plausible values. Authentic materials
-          science data.
+        comment: Authentic materials science data with real-world property values.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
@@ -197,14 +207,15 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Clean use of scipy.ConvexHull. Emphasis and label_offsets dicts well-organized.
+        comment: Clean scipy.ConvexHull usage. Well-organized emphasis and label_offsets
+          dicts.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
         comment: Saves plot.png via export_png and plot.html via save. Current Bokeh
-          API.
+          3.8.2 API.
     library_mastery:
       score: 7
       max: 10
@@ -221,7 +232,7 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: HoverTool tooltips, dual output (PNG + HTML), ColumnDataSource pattern
+        comment: HoverTool tooltips, dual PNG+HTML output, ColumnDataSource pattern
           — distinctively Bokeh.
   verdict: REJECTED
 impl_tags:

@@ -1,0 +1,43 @@
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+    patch:
+      default:
+        target: 80%
+
+  # Only report coverage for tested source code
+  # plots/ has 2242 .py files (59K lines) that are intentionally not unit tested
+  ignore:
+    - "plots/"
+    - "alembic/"
+    - "scripts/"
+    - "temp/"
+    - "docs/"
+    - "prompts/"
+    - "agentic/workflows/*.py"
+    - "agentic/commands/"
+    - "agentic/specs/"
+    - "agentic/context/"
+    - "agentic/docs/"
+    - "agentic/runs/"
+
+flags:
+  backend:
+    paths:
+      - core/
+      - api/
+      - automation/
+      - agentic/workflows/modules/
+    carryforward: true
+  frontend:
+    paths:
+      - app/src/
+    carryforward: true
+
+comment:
+  layout: "reach,diff,flags,components"
+  behavior: default
+  require_changes: false

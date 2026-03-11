@@ -49,8 +49,8 @@ uv run pytest tests/integration
 # Run only E2E tests (requires DATABASE_URL)
 uv run pytest tests/e2e
 
-# Run with coverage
-uv run pytest --cov=. --cov-report=html
+# Run with coverage (sources configured in pyproject.toml)
+uv run pytest tests/unit tests/integration --cov --cov-report=html
 
 # Run specific test file
 uv run pytest tests/unit/api/test_routers.py
@@ -357,7 +357,7 @@ def get_spec_by_id(spec_id: str, db: Session) -> Spec:
 
 ### Testing Standards
 
-- **Coverage Target**: 90%+
+- **Coverage Target**: 90%+ on tested modules (see `codecov.yml` and `pyproject.toml [tool.coverage]`)
 - **Test Structure**: Mirror source structure
 - **Naming**: `test_{what_it_does}`
 - **Fixtures**: Use pytest fixtures in `tests/conftest.py`

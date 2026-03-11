@@ -210,6 +210,19 @@ markers = [
     "e2e: End-to-end tests covering full API stack (slowest)",
 ]
 
+# ===== Coverage Configuration =====
+
+[tool.coverage.run]
+source = ["core", "api", "automation", "agentic/workflows/modules"]
+omit = ["*/tests/*", "*/migrations/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.",
+    "if TYPE_CHECKING:",
+]
+
 # ===== Build System =====
 
 [build-system]

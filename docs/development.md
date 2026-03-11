@@ -72,11 +72,12 @@ uv run pytest tests/integration
 # Only E2E tests (requires DATABASE_URL)
 uv run pytest tests/e2e
 
-# With coverage report
-uv run pytest --cov=. --cov-report=html
+# With coverage report (sources configured in pyproject.toml)
+uv run pytest tests/unit tests/integration --cov --cov-report=html
 ```
 
-**Coverage target**: 90%+
+**Coverage target**: 90%+ on tested modules (`core/`, `api/`, `automation/`, `agentic/workflows/modules/`).
+Coverage config is in `pyproject.toml` (`[tool.coverage]`) and `codecov.yml`.
 
 ---
 

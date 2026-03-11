@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-ashby-material: Ashby Material Selection Chart
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-11
@@ -12,14 +12,14 @@ from scipy.spatial import ConvexHull
 # Data - Density (kg/m^3) vs Young's Modulus (GPa) for material families
 np.random.seed(42)
 
-# Colorblind-safe palette: blue, red, purple, green, orange, olive, brown
+# Colorblind-safe palette avoiding red-green confusion
 families = {
     "Metals": {"density": (5000, 11000), "modulus": (50, 220), "n": 30, "color": "#306998", "corr": 0.4},
-    "Ceramics": {"density": (2200, 4000), "modulus": (180, 500), "n": 25, "color": "#D4513D", "corr": 0.3},
-    "Polymers": {"density": (900, 1500), "modulus": (0.2, 4), "n": 25, "color": "#9467BD", "corr": 0.5},
-    "Composites": {"density": (1400, 2200), "modulus": (10, 180), "n": 22, "color": "#2CA02C", "corr": 0.6},
-    "Elastomers": {"density": (900, 1300), "modulus": (0.001, 0.1), "n": 20, "color": "#FF7F0E", "corr": 0.3},
-    "Foams": {"density": (20, 300), "modulus": (0.001, 1), "n": 20, "color": "#BCBD22", "corr": 0.7},
+    "Ceramics": {"density": (2200, 4000), "modulus": (180, 500), "n": 25, "color": "#C44E52", "corr": 0.3},
+    "Polymers": {"density": (900, 1500), "modulus": (0.2, 4), "n": 25, "color": "#8172B3", "corr": 0.5},
+    "Composites": {"density": (1400, 2200), "modulus": (10, 180), "n": 22, "color": "#17BECF", "corr": 0.6},
+    "Elastomers": {"density": (900, 1300), "modulus": (0.001, 0.1), "n": 20, "color": "#E5A94F", "corr": 0.3},
+    "Foams": {"density": (20, 300), "modulus": (0.001, 1), "n": 20, "color": "#A1A832", "corr": 0.7},
     "Natural Materials": {"density": (150, 1300), "modulus": (0.5, 20), "n": 18, "color": "#8C564B", "corr": 0.5},
 }
 
@@ -79,7 +79,7 @@ for family, props in families.items():
             mode="markers",
             name=family,
             legendgroup=family,
-            marker={"size": 14, "color": color, "line": {"width": 1.5, "color": "white"}, "opacity": 0.85},
+            marker={"size": 12, "color": color, "line": {"width": 1.5, "color": "white"}, "opacity": 0.82},
             customdata=np.column_stack([e_over_rho]),
             hovertemplate=(
                 f"<b>{family}</b><br>"
@@ -101,9 +101,11 @@ for family, props in families.items():
         yref="y",
         text=f"<b>{family}</b>",
         showarrow=False,
-        font={"size": 15, "color": "#222222"},
-        bgcolor="rgba(255, 255, 255, 0.8)",
-        borderpad=4,
+        font={"size": 18, "color": "#333333", "family": "Arial, Helvetica, sans-serif"},
+        bgcolor="rgba(255, 255, 255, 0.85)",
+        borderpad=5,
+        bordercolor="rgba(0, 0, 0, 0.08)",
+        borderwidth=1,
     )
 
 # Performance index guide lines: E/rho = constant (lightweight stiffness)
@@ -130,11 +132,11 @@ fig.add_annotation(
     y=np.log10(40 * 1),
     xref="x",
     yref="y",
-    text="<b>E/ρ = const</b>",
+    text="<i>E/ρ = const</i>",
     showarrow=False,
-    font={"size": 15, "color": "#444444"},
+    font={"size": 16, "color": "#666666", "family": "Arial, Helvetica, sans-serif"},
     bgcolor="rgba(255, 255, 255, 0.85)",
-    borderpad=3,
+    borderpad=4,
     textangle=-38,
 )
 
@@ -142,53 +144,59 @@ fig.add_annotation(
 fig.update_layout(
     title={
         "text": "scatter-ashby-material · plotly · pyplots.ai",
-        "font": {"size": 28, "color": "#222222"},
+        "font": {"size": 28, "color": "#2B2B2B", "family": "Arial, Helvetica, sans-serif"},
         "x": 0.5,
         "xanchor": "center",
+        "y": 0.96,
     },
     xaxis={
-        "title": {"text": "Density (kg/m³)", "font": {"size": 22}},
-        "tickfont": {"size": 18},
+        "title": {"text": "Density (kg/m³)", "font": {"size": 22, "color": "#444444"}},
+        "tickfont": {"size": 18, "color": "#555555"},
         "type": "log",
         "showgrid": True,
-        "gridcolor": "rgba(0, 0, 0, 0.06)",
+        "gridcolor": "rgba(0, 0, 0, 0.04)",
         "gridwidth": 1,
         "showline": True,
-        "linecolor": "#333333",
+        "linecolor": "#AAAAAA",
         "linewidth": 1,
         "mirror": False,
         "range": [np.log10(10), np.log10(20000)],
+        "dtick": 1,
+        "minor": {"showgrid": True, "gridcolor": "rgba(0, 0, 0, 0.02)"},
     },
     yaxis={
-        "title": {"text": "Young's Modulus (GPa)", "font": {"size": 22}},
-        "tickfont": {"size": 18},
+        "title": {"text": "Young's Modulus (GPa)", "font": {"size": 22, "color": "#444444"}},
+        "tickfont": {"size": 18, "color": "#555555"},
         "type": "log",
         "showgrid": True,
-        "gridcolor": "rgba(0, 0, 0, 0.06)",
+        "gridcolor": "rgba(0, 0, 0, 0.04)",
         "gridwidth": 1,
         "showline": True,
-        "linecolor": "#333333",
+        "linecolor": "#AAAAAA",
         "linewidth": 1,
         "mirror": False,
         "range": [np.log10(0.0005), np.log10(1000)],
+        "minor": {"showgrid": True, "gridcolor": "rgba(0, 0, 0, 0.02)"},
     },
     template="plotly_white",
-    plot_bgcolor="#FAFAFA",
+    plot_bgcolor="#F8F9FA",
     paper_bgcolor="#FFFFFF",
     legend={
-        "title": {"text": "Material Family", "font": {"size": 18}},
+        "title": {"text": "Material Family", "font": {"size": 18, "color": "#333333"}},
         "font": {"size": 16},
-        "bgcolor": "rgba(255, 255, 255, 0.92)",
-        "bordercolor": "rgba(0, 0, 0, 0.15)",
+        "bgcolor": "rgba(255, 255, 255, 0.94)",
+        "bordercolor": "rgba(0, 0, 0, 0.1)",
         "borderwidth": 1,
         "x": 0.98,
         "y": 0.02,
         "xanchor": "right",
         "yanchor": "bottom",
+        "itemsizing": "constant",
     },
     width=1600,
     height=900,
     margin={"l": 80, "r": 60, "t": 100, "b": 80},
+    font={"family": "Arial, Helvetica, sans-serif"},
 )
 
 # Save

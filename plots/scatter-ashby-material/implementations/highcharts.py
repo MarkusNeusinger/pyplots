@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-ashby-material: Ashby Material Selection Chart
 Library: highcharts unknown | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-11
@@ -41,9 +41,9 @@ families = {
         "label_pos": {"x": 3000, "y": 380},
     },
     "Polymers": {
-        "color": "rgba(55, 150, 75, 0.7)",
-        "fill": "rgba(55, 150, 75, 0.15)",
-        "border": "#2a7a3a",
+        "color": "rgba(0, 150, 160, 0.7)",
+        "fill": "rgba(0, 150, 160, 0.15)",
+        "border": "#007a80",
         "density_range": (900, 1500),
         "modulus_range": (0.2, 4),
         "n": 20,
@@ -71,10 +71,10 @@ families = {
         "color": "rgba(220, 130, 50, 0.7)",
         "fill": "rgba(220, 130, 50, 0.15)",
         "border": "#b06820",
-        "density_range": (25, 300),
-        "modulus_range": (0.001, 1),
+        "density_range": (30, 200),
+        "modulus_range": (0.001, 0.5),
         "n": 15,
-        "label_pos": {"x": 60, "y": 1.5},
+        "label_pos": {"x": 60, "y": 0.7},
     },
     "Natural Materials": {
         "color": "rgba(120, 100, 70, 0.7)",
@@ -113,7 +113,7 @@ for family_name, props in families.items():
     s.name = family_name
     s.data = data
     s.color = props["color"]
-    s.marker = {"radius": 14, "symbol": "circle", "lineWidth": 2, "lineColor": props["border"]}
+    s.marker = {"radius": 12, "symbol": "circle", "lineWidth": 2, "lineColor": props["border"]}
     s.z_index = 3
     all_series.append(s)
 
@@ -139,7 +139,7 @@ for family_name, props in families.items():
         upper.append(p)
     hull_verts = np.array(lower[:-1] + upper[:-1])
     centroid = hull_verts.mean(axis=0)
-    expanded = centroid + 1.12 * (hull_verts - centroid)
+    expanded = centroid + 1.05 * (hull_verts - centroid)
     expanded = np.vstack([expanded, expanded[0]])
     hull_polygon = [[round(float(10**x), 4), round(float(10**y), 6)] for x, y in expanded]
     hull_data.append(
@@ -157,7 +157,7 @@ chart.options.chart = {
     "backgroundColor": "#f8f9fb",
     "style": {"fontFamily": "'Segoe UI', Helvetica, Arial, sans-serif"},
     "marginTop": 160,
-    "marginBottom": 200,
+    "marginBottom": 300,
     "marginLeft": 260,
     "marginRight": 200,
     "plotBackgroundColor": "#ffffff",
@@ -244,7 +244,7 @@ chart.options.tooltip = {
     "shadow": {"color": "rgba(0, 0, 0, 0.08)", "offsetX": 1, "offsetY": 2, "width": 4},
 }
 
-chart.options.plot_options = {"scatter": {"marker": {"radius": 14}, "states": {"hover": {"marker": {"radiusPlus": 5}}}}}
+chart.options.plot_options = {"scatter": {"marker": {"radius": 12}, "states": {"hover": {"marker": {"radiusPlus": 5}}}}}
 
 # Build annotation labels for family names
 label_annotations = []
@@ -318,6 +318,7 @@ function drawOverlays(chart) {
         var pathArr = [];
         var labelX = 0, labelY = 0;
         var firstPt = true;
+        var firstVisX = 0, firstVisY = 0;
         for (var logD = 1.0; logD <= 4.4; logD += 0.05) {
             var d = Math.pow(10, logD);
             var e = g.val * d / 1000;
@@ -328,6 +329,8 @@ function drawOverlays(chart) {
             if (py < chart.plotTop || py > chart.plotTop + chart.plotHeight) continue;
             if (firstPt) {
                 pathArr.push('M', px, py);
+                firstVisX = px;
+                firstVisY = py;
                 firstPt = false;
             } else {
                 pathArr.push('L', px, py);
@@ -335,6 +338,8 @@ function drawOverlays(chart) {
             labelX = px;
             labelY = py;
         }
+        // Place label at start of line (lower-left) for better visibility
+        if (firstVisX > 0) { labelX = firstVisX; labelY = firstVisY; }
         if (pathArr.length > 3) {
             chart.renderer.path(pathArr)
                 .attr({
@@ -344,12 +349,12 @@ function drawOverlays(chart) {
                     zIndex: 0
                 })
                 .add();
-            chart.renderer.text(g.label, labelX + 10, labelY - 10)
+            chart.renderer.text(g.label, labelX + 14, labelY - 14)
                 .css({
-                    color: 'rgba(80, 90, 120, 0.75)',
-                    fontSize: '26px',
+                    color: 'rgba(70, 80, 110, 0.85)',
+                    fontSize: '34px',
                     fontStyle: 'italic',
-                    fontWeight: '500'
+                    fontWeight: '600'
                 })
                 .attr({ zIndex: 0 })
                 .add();

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 spectrogram-mel: Mel-Spectrogram for Audio Analysis
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-11
@@ -74,11 +74,11 @@ mel_spec_db = 10.0 * np.log10(mel_spec)
 mel_spec_db -= mel_spec_db.max()
 mel_spec_db = np.maximum(mel_spec_db, -80.0)
 
-# Subsample for Altair (every 2nd frame and mel bin)
+# Use ALL mel bins (no subsampling) to fix blockiness at low frequencies
+# Only subsample time frames to keep data manageable
 frame_step = 2
-mel_step = 2
 time_idx = np.arange(0, n_frames, frame_step)
-mel_idx = np.arange(0, n_mels, mel_step)
+mel_idx = np.arange(0, n_mels)
 
 time_sec = time_idx * hop_length / sample_rate
 time_width = frame_step * hop_length / sample_rate
@@ -101,26 +101,52 @@ for mi in mel_idx:
 
 df = pd.DataFrame(rows)
 
-# Plot - mel spectrogram as explicit rectangles
-chart = (
+# Annotation labels for key audio features (data storytelling)
+annotations = pd.DataFrame(
+    [
+        {"x": 0.6, "y": 1200, "label": "Harmonic Sweep"},
+        {"x": 2.2, "y": 6500, "label": "Chirp Burst"},
+        {"x": 3.5, "y": 350, "label": "440 Hz Tone"},
+    ]
+)
+
+# Main spectrogram layer
+spectrogram = (
     alt.Chart(df)
     .mark_rect()
     .encode(
         x=alt.X(
             "t1:Q",
             title="Time (s)",
-            scale=alt.Scale(domain=[0, duration]),
+            scale=alt.Scale(domain=[0, duration], nice=False),
             axis=alt.Axis(
-                labelFontSize=18, titleFontSize=22, titlePadding=14, values=[0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
+                labelFontSize=18,
+                titleFontSize=22,
+                titlePadding=14,
+                values=[0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0],
+                domainColor="#444444",
+                tickColor="#444444",
+                labelColor="#333333",
+                titleColor="#222222",
+                tickSize=6,
             ),
         ),
         x2="t2:Q",
         y=alt.Y(
             "f1:Q",
             title="Frequency (Hz)",
-            scale=alt.Scale(type="log", domain=[20, 11025]),
+            scale=alt.Scale(type="log", domain=[20, 11025], nice=False),
             axis=alt.Axis(
-                labelFontSize=18, titleFontSize=22, titlePadding=14, values=[50, 100, 200, 500, 1000, 2000, 5000, 10000]
+                labelFontSize=18,
+                titleFontSize=22,
+                titlePadding=14,
+                values=[50, 100, 200, 500, 1000, 2000, 5000, 10000],
+                domainColor="#444444",
+                tickColor="#444444",
+                labelColor="#333333",
+                titleColor="#222222",
+                tickSize=6,
+                labelExpr="datum.value >= 1000 ? format(datum.value / 1000, '.0f') + 'k' : format(datum.value, '.0f')",
             ),
         ),
         y2="f2:Q",
@@ -131,11 +157,13 @@ chart = (
                 title="Power (dB)",
                 titleFontSize=18,
                 labelFontSize=16,
-                gradientLength=420,
+                gradientLength=480,
                 gradientThickness=18,
                 titlePadding=10,
                 offset=14,
                 direction="vertical",
+                titleColor="#222222",
+                labelColor="#333333",
             ),
         ),
         tooltip=[
@@ -145,22 +173,45 @@ chart = (
             alt.Tooltip("dB:Q", title="Power (dB)", format=".1f"),
         ],
     )
+)
+
+# Annotation text layer for data storytelling emphasis
+annotation_labels = (
+    alt.Chart(annotations)
+    .mark_text(
+        fontSize=16, fontWeight="bold", color="#ffffff", strokeWidth=3, stroke="#1a1a2e", align="left", dx=10, dy=-6
+    )
+    .encode(x="x:Q", y="y:Q", text="label:N")
+)
+
+# Small arrow markers pointing to features
+annotation_marks = (
+    alt.Chart(annotations)
+    .mark_point(shape="triangle-right", size=150, color="#ffffff", strokeWidth=2, stroke="#1a1a2e", filled=True)
+    .encode(x="x:Q", y="y:Q")
+)
+
+# Layer composition: spectrogram + annotations
+chart = (
+    alt.layer(spectrogram, annotation_marks, annotation_labels)
     .properties(
         width=1400,
         height=800,
         title=alt.Title(
             "spectrogram-mel · altair · pyplots.ai",
-            subtitle="Mel-scaled power spectrogram of a synthesized signal with frequency sweep, harmonics, and chirp burst",
+            subtitle="Mel-scaled power spectrogram of a synthesized signal — frequency sweep with harmonics, pulsed 440 Hz tone, and chirp burst",
             fontSize=28,
             subtitleFontSize=17,
-            subtitleColor="#666666",
+            subtitleColor="#555555",
             anchor="start",
-            offset=18,
+            offset=20,
+            color="#111111",
         ),
-        padding={"left": 20, "right": 20, "top": 20, "bottom": 20},
+        padding={"left": 24, "right": 24, "top": 24, "bottom": 20},
     )
     .configure_axis(grid=False)
     .configure_view(strokeWidth=0)
+    .configure(font="Helvetica Neue, Helvetica, Arial, sans-serif", background="#fafafa")
 )
 
 # Save

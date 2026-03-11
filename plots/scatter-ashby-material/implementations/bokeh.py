@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-ashby-material: Ashby Material Selection Chart
 Library: bokeh 3.8.2 | Python 3.14.3
 Quality: 83/100 | Created: 2026-03-11
@@ -81,13 +81,13 @@ colors = {
 
 # Emphasis levels for visual hierarchy (key structural families emphasized)
 emphasis = {
-    "Metals": {"fill_alpha": 0.20, "line_width": 3, "marker_size": 20},
-    "Ceramics": {"fill_alpha": 0.18, "line_width": 2.5, "marker_size": 19},
-    "Composites": {"fill_alpha": 0.16, "line_width": 2.5, "marker_size": 18},
-    "Polymers": {"fill_alpha": 0.14, "line_width": 2, "marker_size": 17},
-    "Natural Materials": {"fill_alpha": 0.12, "line_width": 2, "marker_size": 16},
-    "Elastomers": {"fill_alpha": 0.12, "line_width": 1.5, "marker_size": 15},
-    "Foams": {"fill_alpha": 0.12, "line_width": 1.5, "marker_size": 15},
+    "Metals": {"fill_alpha": 0.22, "line_width": 3.5, "marker_size": 28},
+    "Ceramics": {"fill_alpha": 0.18, "line_width": 3, "marker_size": 26},
+    "Composites": {"fill_alpha": 0.16, "line_width": 2.5, "marker_size": 22},
+    "Polymers": {"fill_alpha": 0.14, "line_width": 2, "marker_size": 20},
+    "Natural Materials": {"fill_alpha": 0.12, "line_width": 2, "marker_size": 18},
+    "Elastomers": {"fill_alpha": 0.12, "line_width": 1.5, "marker_size": 16},
+    "Foams": {"fill_alpha": 0.12, "line_width": 1.5, "marker_size": 14},
 }
 
 rows = []
@@ -122,16 +122,16 @@ p.add_tools(
 for c_val, label_text, lx, ly in [(0.01, "E/\u03c1 = 0.01", 5000, 0.01 * 5000), (1.0, "E/\u03c1 = 1", 500, 1.0 * 500)]:
     guide_x = [10, 50000]
     guide_y = [c_val * 10, c_val * 50000]
-    p.line(guide_x, guide_y, line_color="#AAAAAA", line_width=1.5, line_dash="dashed", line_alpha=0.5)
+    p.line(guide_x, guide_y, line_color="#888888", line_width=2, line_dash="dashed", line_alpha=0.6)
     p.add_layout(
         Label(
             x=lx,
             y=ly,
             text=label_text,
-            text_font_size="14pt",
+            text_font_size="18pt",
             text_font_style="italic",
-            text_color="#999999",
-            text_alpha=0.7,
+            text_color="#666666",
+            text_alpha=0.9,
             x_offset=10,
             y_offset=-15,
         )
@@ -139,13 +139,13 @@ for c_val, label_text, lx, ly in [(0.01, "E/\u03c1 = 0.01", 5000, 0.01 * 5000), 
 
 # Label offset map to avoid overlap (manually tuned for known data positions)
 label_offsets = {
-    "Metals": (30, 20),
-    "Ceramics": (-20, 30),
-    "Composites": (0, 25),
-    "Polymers": (0, -25),
-    "Elastomers": (0, -20),
-    "Foams": (-10, 20),
-    "Natural Materials": (20, -20),
+    "Metals": (40, 25),
+    "Ceramics": (-80, 35),
+    "Composites": (0, 30),
+    "Polymers": (0, -30),
+    "Elastomers": (0, -25),
+    "Foams": (-10, 25),
+    "Natural Materials": (25, -25),
 }
 
 # Draw convex hull envelopes for each family
@@ -165,12 +165,13 @@ for family_name in families:
 
         center_log_x = pts[hull.vertices, 0].mean()
         center_log_y = pts[hull.vertices, 1].mean()
+        expand_factor = 0.08 if family_name in ("Metals", "Ceramics") else 0.15
         expanded = hull_pts.copy()
         for i in range(len(expanded)):
             dx = expanded[i, 0] - center_log_x
             dy = expanded[i, 1] - center_log_y
-            expanded[i, 0] += dx * 0.15
-            expanded[i, 1] += dy * 0.15
+            expanded[i, 0] += dx * expand_factor
+            expanded[i, 1] += dy * expand_factor
 
         hull_x = list(10 ** expanded[:, 0])
         hull_y = list(10 ** expanded[:, 1])
@@ -226,8 +227,8 @@ legend = Legend(
     items=legend_items,
     location="top_right",
     label_text_font_size="16pt",
-    glyph_height=20,
-    glyph_width=20,
+    glyph_height=35,
+    glyph_width=35,
     spacing=10,
     padding=15,
     margin=20,

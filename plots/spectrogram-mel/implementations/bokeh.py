@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 spectrogram-mel: Mel-Spectrogram for Audio Analysis
 Library: bokeh 3.9.0 | Python 3.14.3
-Quality: 80/100 | Created: 2026-03-11
+Quality: 85/100 | Created: 2026-03-11
 """
 
 import numpy as np

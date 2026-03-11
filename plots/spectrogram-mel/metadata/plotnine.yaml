@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: spectrogram-mel
 created: '2026-03-11T19:40:09Z'
-updated: '2026-03-11T19:52:31Z'
+updated: '2026-03-11T20:01:33Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 22970857471
 issue: 4672
@@ -10,36 +10,39 @@ library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/spectrogram-mel/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spectrogram-mel/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 88
+quality_score: 89
 review:
   strengths:
   - Excellent data synthesis with harmonics, chirp sweep, and time-varying amplitudes
-    creating a visually compelling spectrogram
+    creating a visually compelling and information-rich spectrogram
+  - Custom inferno gradient with dark panel/plot backgrounds creates a cohesive, professional
+    dark theme aesthetic
   - Manual mel filterbank implementation avoids librosa dependency while remaining
     clean and vectorized
-  - Custom inferno gradient with dark panel background creates a cohesive, professional
-    aesthetic
-  - Full spec compliance — all required features present and correctly implemented
-  - Perfect code structure following KISS principle
+  - Full spec compliance with all required features correctly implemented
+  - Annotations (F0, 3rd harmonic) and reference lines add meaningful data storytelling
   weaknesses:
-  - Library Mastery could be improved — uses standard plotnine features without leveraging
-    more distinctive capabilities
-  - Light gray outer background does not fully harmonize with the dark spectrogram
-    panel
-  - Bottom y-axis labels (64, 128 Hz) are slightly crowded due to mel scale compression
-  image_description: The plot displays a mel-spectrogram with time (0–3 seconds) on
-    the x-axis and mel-scaled frequency (64–8000 Hz) on the y-axis. The colormap is
-    an inferno-like gradient from dark black/purple (low power ~-60 dB) through magenta
-    and orange to bright yellow (0 dB). Clear horizontal bands of energy are visible
-    at harmonic frequencies (~220, 440, 880, 1320, 3300 Hz), with the lower harmonics
-    being brightest and decaying over time. A prominent chirp sweep arcs from ~500
-    Hz at t≈0.8s up to ~4000 Hz at t≈2.0s, creating a striking curved bright line.
-    A colorbar on the right is labeled "Power (dB)". The title reads "spectrogram-mel
-    · plotnine · pyplots.ai". The panel background is dark (#000004) matching the
-    colormap floor, with a light gray outer background.
+  - Library Mastery remains the main gap — implementation uses standard plotnine features
+    without leveraging more distinctive capabilities like stat layers or custom geoms
+  - Small helper function hz_to_band() slightly breaks KISS linear-flow principle
+  image_description: The plot displays a mel-spectrogram on a dark background with
+    time (0–3 seconds) on the x-axis and mel-scaled frequency on the y-axis, with
+    Hz labels at key mel band edges (128, 256, 512, 1024, 2048, 4096, 8000 Hz). The
+    colormap is a custom inferno-like gradient progressing from very dark black/purple
+    (low power around -60 dB) through magenta and orange to bright yellow (0 dB).
+    Clear horizontal bands of energy are visible at harmonic frequencies (~220, 440,
+    880 Hz), with lower harmonics being brightest and decaying over time. A prominent
+    chirp sweep arcs from approximately 500 Hz at t≈0.8s up to ~4000 Hz at t≈2.0s,
+    creating a striking curved bright line that serves as a visual focal point. Annotations
+    label the fundamental frequency ("F₀") and "3rd" harmonic, with subtle reference
+    lines at those frequencies. A colorbar on the right is labeled "Power (dB)" with
+    a tall key. The title reads "spectrogram-mel · plotnine · pyplots.ai" in bold
+    light gray. The panel background is black (#000004) matching the colormap floor,
+    and the outer plot background is dark navy (#0e0e1a), creating a cohesive dark
+    theme.
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 29
       max: 30
       items:
       - id: VQ-01
@@ -48,33 +51,35 @@ review:
         max: 8
         passed: true
         comment: 'All font sizes explicitly set: title 24pt, axis titles 20pt, ticks
-          16pt, legend 14-16pt'
+          16pt, legend title 16pt, legend text 14pt'
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Minor crowding at bottom y-axis where 64 and 128 Hz labels are very
-          close
+        comment: All text fully readable, y-axis labels well-spaced on mel scale,
+          annotations positioned to avoid collisions
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: geom_raster with interpolation produces smooth gap-free spectrogram
+        comment: geom_raster with interpolate=True produces smooth gap-free spectrogram
+          rendering
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Inferno-like sequential colormap is perceptually uniform and colorblind-safe
+        comment: Custom inferno-like sequential colormap is perceptually uniform and
+          colorblind-safe
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good proportions, light gray outer background creates visible border
-          effect
+        comment: Good 16:9 proportions with dark cohesive background; colorbar area
+          takes some canvas space
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
@@ -82,7 +87,7 @@ review:
         passed: true
         comment: Time (s) and Frequency (Hz) with units, correct title format
     design_excellence:
-      score: 14
+      score: 15
       max: 20
       items:
       - id: DE-01
@@ -90,22 +95,23 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom inferno gradient, dark panel background matching colormap
-          floor, clean typography
+        comment: Custom 10-color gradient palette, dark panel matching colormap floor,
+          cohesive dark outer background, styled text color hierarchy, annotation
+          colors from palette
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Grid removed, dark panel, but light gray outer background could be
-          more polished
+        comment: Grid completely removed, dark theme throughout, generous legend key,
+          custom margins; very polished
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Chirp sweep creates focal point, decaying harmonics add temporal
-          narrative
+        comment: F0 and 3rd harmonic annotations guide the viewer, chirp sweep creates
+          natural focal point, subtle reference lines highlight harmonic structure
     spec_compliance:
       score: 15
       max: 15
@@ -115,26 +121,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct mel-spectrogram with mel-scaled frequency axis
+        comment: Correct mel-spectrogram with STFT, mel filterbank, and dB power conversion
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: dB scale, sequential colormap, time axis,
-          mel y-axis, colorbar, correct parameters'
+        comment: 'All spec features present: dB scale, sequential colormap, time x-axis,
+          mel y-axis with Hz labels, colorbar, correct parameters'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=time, Y=mel frequency bands, fill=power in dB
+        comment: X=time in seconds, Y=mel frequency bands with Hz labels, fill=power
+          in dB
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format, colorbar labeled Power (dB)
+        comment: Correct format spectrogram-mel · plotnine · pyplots.ai, colorbar
+          labeled Power (dB)
     data_quality:
       score: 15
       max: 15
@@ -144,54 +152,56 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Rich signal with harmonics, chirp sweep, time-varying amplitudes,
-          and noise
+        comment: Rich signal with fundamental, harmonics, chirp sweep, noise, and
+          time-varying amplitudes
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Audio signal with 220 Hz fundamental and harmonics is realistic
+        comment: Audio signal with 220 Hz fundamental (A3 note) and natural harmonics
+          is realistic
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 22050 Hz sample rate, 220 Hz fundamental, 3-second duration
+        comment: Standard 22050 Hz sample rate, 220 Hz fundamental, 3-second duration
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Linear flow with no functions or classes
+        comment: Mostly linear flow but contains a helper function hz_to_band() which
+          slightly breaks no-functions guideline
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) set at top
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used, scipy.signal.stft is appropriate
+        comment: All imports used; scipy.signal.stft is appropriate
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Vectorized mel filterbank using numpy broadcasting is clean
+        comment: Vectorized mel filterbank using numpy broadcasting is clean and efficient
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300
+        comment: Saves as plot.png with dpi=300, current API
     library_mastery:
       score: 6
       max: 10
@@ -201,15 +211,15 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good ggplot grammar usage with aes, geom_raster, scale_fill_gradientn,
-          theme layering
+        comment: 'Good ggplot grammar: aes mapping, geom_raster, scale_fill_gradientn,
+          scale_x/y_continuous, coord_cartesian, theme layering, annotate layers'
       - id: LM-02
         name: Distinctive Features
         score: 2
         max: 5
         passed: false
-        comment: Standard plotnine features used, could leverage more distinctive
-          capabilities
+        comment: Uses geom_raster(interpolate=True) and annotate() layers which are
+          plotnine-idiomatic but not truly distinctive features
   verdict: REJECTED
 impl_tags:
   dependencies:
@@ -217,6 +227,7 @@ impl_tags:
   techniques:
   - colorbar
   - manual-ticks
+  - annotations
   patterns:
   - data-generation
   - matrix-construction

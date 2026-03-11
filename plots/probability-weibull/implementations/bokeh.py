@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 probability-weibull: Weibull Probability Plot for Reliability Analysis
 Library: bokeh 3.9.0 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-11
@@ -6,7 +6,7 @@ Quality: 87/100 | Created: 2026-03-11
 
 import numpy as np
 from bokeh.io import export_png, save
-from bokeh.models import ColumnDataSource, HoverTool, Label, Span
+from bokeh.models import Band, ColumnDataSource, HoverTool, Label, Span
 from bokeh.plotting import figure
 from bokeh.resources import CDN
 from scipy import stats
@@ -56,8 +56,33 @@ b10_life = eta_fit * (-np.log(1 - 0.10)) ** (1 / beta_fit)
 # 63.2% characteristic life reference
 char_life_y = np.log(-np.log(1 - 0.632))
 
-# Censored points plotting positions (placed at approximate positions)
-censored_median_rank = np.array([0.75, 0.80, 0.85, 0.88, 0.92])
+# Compute censored plotting positions using Kaplan-Meier adjusted ranks
+# Merge all times and sort, tracking which are failures vs censored
+all_times = np.concatenate([failure_times, censored_times])
+all_censored = np.concatenate([np.zeros(n_failures), np.ones(n_censored)])
+sort_idx = np.argsort(all_times)
+all_times_sorted = all_times[sort_idx]
+all_censored_sorted = all_censored[sort_idx]
+
+# Compute adjusted ranks for censored points using reverse rank method
+reverse_ranks = np.arange(n_total, 0, -1)
+adjusted_rank = np.zeros(n_total)
+prev_adj = 0
+for i in range(n_total):
+    if all_censored_sorted[i] == 0:
+        prev_adj += 1
+        adjusted_rank[i] = prev_adj
+    else:
+        # For censored: use previous failure rank + increment based on reverse rank
+        increment = (n_total + 1 - prev_adj) / (reverse_ranks[i] + 1)
+        prev_adj += increment
+        adjusted_rank[i] = prev_adj
+
+# Extract censored median rank values
+censored_mask = all_censored_sorted == 1
+censored_adjusted_ranks = adjusted_rank[censored_mask]
+censored_median_rank = (censored_adjusted_ranks - 0.3) / (n_total + 0.4)
+censored_median_rank = np.clip(censored_median_rank, 0.001, 0.999)
 censored_weibull_y = np.log(-np.log(1 - censored_median_rank))
 
 # Data sources
@@ -80,6 +105,23 @@ censored_source = ColumnDataSource(
     }
 )
 
+# Confidence band around fit (approximate ±2 SE)
+se_y = np.sqrt(
+    (1 - r_squared)
+    * np.var(weibull_y)
+    * (
+        1 / len(weibull_y)
+        + (log_t_line - np.mean(log_failure_times)) ** 2 / np.sum((log_failure_times - np.mean(log_failure_times)) ** 2)
+    )
+)
+band_source = ColumnDataSource(
+    data={
+        "log_time": log_t_line,
+        "weibull_y": weibull_y_line,
+        "upper": weibull_y_line + 2 * se_y,
+        "lower": weibull_y_line - 2 * se_y,
+    }
+)
 line_source = ColumnDataSource(data={"log_time": log_t_line, "weibull_y": weibull_y_line})
 
 # Plot
@@ -93,15 +135,30 @@ p = figure(
     y_range=(weibull_y_levels[0] - 0.3, weibull_y_levels[-1] + 0.3),
 )
 
-# Background styling
-p.background_fill_color = "#F7F9FC"
+# Clean white background for publication-ready look
+p.background_fill_color = "#FFFFFF"
 p.border_fill_color = "#FFFFFF"
+p.toolbar_location = None
 
 # 63.2% characteristic life reference line
 char_life_span = Span(
     location=char_life_y, dimension="width", line_color="#E67E22", line_width=4, line_dash="dashed", line_alpha=0.6
 )
 p.add_layout(char_life_span)
+
+# 95% confidence band (Bokeh Band glyph)
+band = Band(
+    base="log_time",
+    lower="lower",
+    upper="upper",
+    source=band_source,
+    fill_color="#306998",
+    fill_alpha=0.1,
+    line_color="#306998",
+    line_alpha=0.15,
+    line_width=1,
+)
+p.add_layout(band)
 
 # Fitted line
 p.line("log_time", "weibull_y", source=line_source, line_color="#1A5276", line_width=5, legend_label="Weibull Fit")
@@ -152,21 +209,44 @@ param_label = Label(
     text_font_size="34pt",
     text_color="#1A5276",
     text_font_style="bold",
-    background_fill_color="#F7F9FC",
-    background_fill_alpha=0.9,
+    background_fill_color="#FFFFFF",
+    background_fill_alpha=0.95,
 )
 p.add_layout(param_label)
 
 # 63.2% label
 char_label = Label(
-    x=log_t_line.max() - 1.0,
-    y=char_life_y + 0.12,
+    x=log_t_line.max() - 0.5,
+    y=char_life_y + 0.15,
     text="63.2% (Characteristic Life)",
     text_font_size="24pt",
     text_color="#E67E22",
     text_font_style="italic",
 )
 p.add_layout(char_label)
+
+# B10 life annotation (10% failure probability)
+b10_label = Label(
+    x=np.log(b10_life) + 0.08,
+    y=b10_weibull_y - 0.25,
+    text=f"B10 = {b10_life:.0f} h",
+    text_font_size="22pt",
+    text_color="#1A5276",
+    text_font_style="italic",
+)
+p.add_layout(b10_label)
+
+# B10 reference marker on the fit line
+p.scatter(
+    [np.log(b10_life)],
+    [b10_weibull_y],
+    size=20,
+    marker="diamond",
+    color="#1A5276",
+    alpha=0.8,
+    line_color="white",
+    line_width=2,
+)
 
 # Custom y-axis tick labels showing probability percentages
 p.yaxis.ticker = list(weibull_y_levels)
@@ -195,7 +275,7 @@ p.yaxis.major_label_text_color = "#555555"
 
 p.legend.label_text_font_size = "26pt"
 p.legend.location = "bottom_right"
-p.legend.background_fill_color = "#F7F9FC"
+p.legend.background_fill_color = "#FFFFFF"
 p.legend.background_fill_alpha = 0.92
 p.legend.border_line_color = "#CCCCCC"
 p.legend.border_line_alpha = 0.4
@@ -205,18 +285,16 @@ p.legend.padding = 25
 p.legend.spacing = 15
 p.legend.margin = 20
 
-# Grid
-p.xgrid.grid_line_color = "#CCCCCC"
-p.ygrid.grid_line_color = "#CCCCCC"
-p.xgrid.grid_line_alpha = 0.3
-p.ygrid.grid_line_alpha = 0.3
-p.xgrid.grid_line_dash = [4, 4]
-p.ygrid.grid_line_dash = [4, 4]
+# Grid - minimal y-grid only for clean publication look
+p.xgrid.grid_line_color = None
+p.ygrid.grid_line_color = "#E0E0E0"
+p.ygrid.grid_line_alpha = 0.4
 
-p.axis.axis_line_color = "#AAAAAA"
-p.axis.axis_line_width = 1
+p.axis.axis_line_color = "#BBBBBB"
+p.axis.axis_line_width = 2
 p.axis.minor_tick_line_color = None
-p.axis.major_tick_line_color = "#AAAAAA"
+p.axis.major_tick_line_color = "#BBBBBB"
+p.axis.major_tick_out = 8
 
 p.outline_line_color = None
 

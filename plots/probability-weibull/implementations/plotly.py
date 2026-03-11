@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 probability-weibull: Weibull Probability Plot for Reliability Analysis
 Library: plotly 6.6.0 | Python 3.14.3
-Quality: 89/100 | Created: 2026-03-11
+Quality: 92/100 | Created: 2026-03-11
 """
 
 import numpy as np

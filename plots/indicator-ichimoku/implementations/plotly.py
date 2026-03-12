@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 indicator-ichimoku: Ichimoku Cloud Technical Indicator Chart
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-12
@@ -58,13 +58,13 @@ senkou_span_b = senkou_span_b.iloc[start_idx:].reset_index(drop=True)
 chikou_span = chikou_span.iloc[start_idx:].reset_index(drop=True)
 
 # Colors
-BULL_COLOR = "#306998"
-BEAR_COLOR = "#C0392B"
+BULL_COLOR = "#26A69A"
+BEAR_COLOR = "#EF5350"
 TENKAN_COLOR = "#E67E22"
 KIJUN_COLOR = "#8E44AD"
-CHIKOU_COLOR = "#27AE60"
-CLOUD_BULL = "rgba(48, 105, 152, 0.15)"
-CLOUD_BEAR = "rgba(192, 57, 43, 0.15)"
+CHIKOU_COLOR = "#306998"
+CLOUD_BULL = "rgba(38, 166, 154, 0.25)"
+CLOUD_BEAR = "rgba(239, 83, 80, 0.25)"
 
 # Plot
 fig = go.Figure()
@@ -223,9 +223,10 @@ fig.update_layout(
         "bordercolor": "#ddd",
         "borderwidth": 1,
         "x": 0.01,
-        "y": 0.99,
+        "y": 0.01,
         "xanchor": "left",
-        "yanchor": "top",
+        "yanchor": "bottom",
+        "orientation": "h",
     },
     template="plotly_white",
     plot_bgcolor="#FAFAFA",
@@ -234,6 +235,31 @@ fig.update_layout(
     hoverlabel={"bgcolor": "white", "font_size": 14, "bordercolor": "#ccc"},
     font={"family": "Arial"},
 )
+
+# Highlight key TK cross signal (Tenkan crosses above Kijun = bullish signal)
+tk_diff = tenkan_sen - kijun_sen
+for idx in range(1, len(tk_diff)):
+    if pd.notna(tk_diff.iloc[idx]) and pd.notna(tk_diff.iloc[idx - 1]):
+        if tk_diff.iloc[idx - 1] < 0 and tk_diff.iloc[idx] >= 0:
+            cross_date = df["date"].iloc[idx]
+            cross_price = tenkan_sen.iloc[idx]
+            fig.add_annotation(
+                x=cross_date,
+                y=cross_price,
+                text="<b>Bullish TK Cross</b>",
+                showarrow=True,
+                arrowhead=2,
+                arrowsize=1.2,
+                arrowcolor="#26A69A",
+                ax=0,
+                ay=-50,
+                font={"size": 14, "color": "#26A69A", "family": "Arial"},
+                bgcolor="rgba(255,255,255,0.9)",
+                bordercolor="#26A69A",
+                borderwidth=1.5,
+                borderpad=4,
+            )
+            break
 
 # Save
 fig.write_image("plot.png", width=1600, height=900, scale=3)

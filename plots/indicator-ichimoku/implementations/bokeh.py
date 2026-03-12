@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 indicator-ichimoku: Ichimoku Cloud Technical Indicator Chart
 Library: bokeh 3.9.0 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-12
@@ -7,7 +7,7 @@ Quality: 87/100 | Created: 2026-03-12
 import numpy as np
 import pandas as pd
 from bokeh.io import export_png, save
-from bokeh.models import ColumnDataSource, HoverTool, Legend, NumeralTickFormatter, Range1d
+from bokeh.models import BoxAnnotation, ColumnDataSource, HoverTool, Label, Legend, NumeralTickFormatter, Range1d
 from bokeh.plotting import figure
 from bokeh.resources import CDN
 
@@ -94,14 +94,14 @@ bearish_df = df[~df["bullish"]].copy()
 source_bull = ColumnDataSource(bullish_df)
 source_bear = ColumnDataSource(bearish_df)
 
-# Colors
-color_bull_candle = "#26A69A"
-color_bear_candle = "#EF5350"
-color_tenkan = "#2962FF"
-color_kijun = "#B71C1C"
-color_chikou = "#7B1FA2"
-color_cloud_bull = "#26A69A"
-color_cloud_bear = "#EF5350"
+# Colorblind-safe palette — blue/orange instead of red/green
+color_bull_candle = "#1976D2"
+color_bear_candle = "#E65100"
+color_tenkan = "#00838F"
+color_kijun = "#AD1457"
+color_chikou = "#6A1B9A"
+color_cloud_bull = "#0097A7"
+color_cloud_bear = "#E65100"
 
 # Create figure
 p = figure(
@@ -120,30 +120,30 @@ x_pad = pd.Timedelta(days=3)
 p.x_range = Range1d(start=dates[51] - x_pad, end=all_dates[-1] + x_pad)
 
 # Plot cloud (Kumo) - draw filled area between Span A and Span B
-# Use varea for each contiguous bullish/bearish segment
-cloud_source = ColumnDataSource(cloud_df)
-
-# Bullish cloud segments
 bull_cloud = cloud_df[cloud_df["bullish_cloud"]].copy()
 bear_cloud = cloud_df[~cloud_df["bullish_cloud"]].copy()
 
 if len(bull_cloud) > 0:
     src_bull_cloud = ColumnDataSource(bull_cloud)
     r_cloud_bull = p.varea(
-        x="date", y1="span_a", y2="span_b", source=src_bull_cloud, fill_color=color_cloud_bull, fill_alpha=0.25
+        x="date", y1="span_a", y2="span_b", source=src_bull_cloud, fill_color=color_cloud_bull, fill_alpha=0.22
     )
 
 if len(bear_cloud) > 0:
     src_bear_cloud = ColumnDataSource(bear_cloud)
     r_cloud_bear = p.varea(
-        x="date", y1="span_a", y2="span_b", source=src_bear_cloud, fill_color=color_cloud_bear, fill_alpha=0.25
+        x="date", y1="span_a", y2="span_b", source=src_bear_cloud, fill_color=color_cloud_bear, fill_alpha=0.22
     )
 
-# Cloud boundary lines
+# Cloud boundary lines — more prominent than before
 span_a_source = ColumnDataSource(cloud_df[["date", "span_a"]].rename(columns={"span_a": "value"}))
 span_b_source = ColumnDataSource(cloud_df[["date", "span_b"]].rename(columns={"span_b": "value"}))
-p.line(x="date", y="value", source=span_a_source, line_color=color_cloud_bull, line_width=2, line_alpha=0.6)
-p.line(x="date", y="value", source=span_b_source, line_color=color_cloud_bear, line_width=2, line_alpha=0.6)
+r_span_a = p.line(
+    x="date", y="value", source=span_a_source, line_color=color_cloud_bull, line_width=2.5, line_alpha=0.8
+)
+r_span_b = p.line(
+    x="date", y="value", source=span_b_source, line_color=color_cloud_bear, line_width=2.5, line_alpha=0.8
+)
 
 # Candlestick wicks
 candle_width = 0.6 * 24 * 60 * 60 * 1000
@@ -173,23 +173,61 @@ bear_bars = p.vbar(
     line_width=2,
 )
 
-# Ichimoku lines
+# Ichimoku lines — Tenkan and Kijun with stronger visual weight
 line_df = df.dropna(subset=["tenkan", "kijun"]).copy()
 line_source = ColumnDataSource(line_df)
 
-r_tenkan = p.line(x="date", y="tenkan", source=line_source, line_color=color_tenkan, line_width=3)
-r_kijun = p.line(x="date", y="kijun", source=line_source, line_color=color_kijun, line_width=3)
+r_tenkan = p.line(x="date", y="tenkan", source=line_source, line_color=color_tenkan, line_width=3.5)
+r_kijun = p.line(x="date", y="kijun", source=line_source, line_color=color_kijun, line_width=3.5)
 
 # Chikou Span
 chikou_df = df.dropna(subset=["chikou"]).copy()
 chikou_source = ColumnDataSource(chikou_df)
-r_chikou = p.line(x="date", y="chikou", source=chikou_source, line_color=color_chikou, line_width=2, line_dash="dashed")
+r_chikou = p.line(
+    x="date", y="chikou", source=chikou_source, line_color=color_chikou, line_width=2.5, line_dash="dashed"
+)
+
+# Data storytelling: highlight a key TK crossover zone using BoxAnnotation
+# Find a bullish TK crossover (tenkan crosses above kijun)
+valid = line_df.dropna(subset=["tenkan", "kijun"]).copy()
+valid["tk_diff"] = valid["tenkan"] - valid["kijun"]
+valid["cross"] = np.sign(valid["tk_diff"]).diff()
+bullish_crosses = valid[valid["cross"] == 2.0]
+
+if len(bullish_crosses) > 0:
+    cross_idx = bullish_crosses.index[0]
+    cross_date = valid.loc[cross_idx, "date"]
+    cross_price = valid.loc[cross_idx, "tenkan"]
+    highlight_start = cross_date - pd.Timedelta(days=8)
+    highlight_end = cross_date + pd.Timedelta(days=8)
+    cross_box = BoxAnnotation(
+        left=highlight_start,
+        right=highlight_end,
+        fill_alpha=0.08,
+        fill_color="#00838F",
+        line_color="#00838F",
+        line_alpha=0.3,
+        line_width=2,
+    )
+    p.add_layout(cross_box)
+    cross_label = Label(
+        x=cross_date,
+        y=cross_price + 3,
+        text="TK Cross",
+        text_font_size="20pt",
+        text_color="#00838F",
+        text_font_style="bold",
+        text_alpha=0.8,
+    )
+    p.add_layout(cross_label)
 
 # Legend
 legend_items = [
     ("Tenkan-sen (9)", [r_tenkan]),
     ("Kijun-sen (26)", [r_kijun]),
     ("Chikou Span", [r_chikou]),
+    ("Senkou A", [r_span_a]),
+    ("Senkou B", [r_span_b]),
     ("Kumo (bullish)", [r_cloud_bull]),
     ("Kumo (bearish)", [r_cloud_bear]),
 ]
@@ -199,21 +237,24 @@ legend.glyph_height = 30
 legend.glyph_width = 40
 legend.spacing = 12
 legend.padding = 15
-legend.background_fill_alpha = 0.85
-legend.background_fill_color = "#ffffff"
-legend.border_line_color = "#dddddd"
+legend.background_fill_alpha = 0.88
+legend.background_fill_color = "#FAFAFA"
+legend.border_line_color = "#CCCCCC"
+legend.border_line_width = 2
 p.add_layout(legend, "right")
 
-# Hover tooltip
+# Hover tooltip with Bokeh-specific HTML formatting
 hover = HoverTool(
     renderers=[bull_bars, bear_bars],
-    tooltips=[
-        ("Date", "@date_str"),
-        ("Open", "@open{$0.00}"),
-        ("High", "@high{$0.00}"),
-        ("Low", "@low{$0.00}"),
-        ("Close", "@close{$0.00}"),
-    ],
+    tooltips="""
+    <div style="font-size:16px; padding:8px;">
+        <strong>@date_str</strong><br/>
+        Open: @open{$0.00}<br/>
+        High: @high{$0.00}<br/>
+        Low: @low{$0.00}<br/>
+        Close: @close{$0.00}
+    </div>
+    """,
     mode="vline",
 )
 p.add_tools(hover)
@@ -221,25 +262,32 @@ p.add_tools(hover)
 # Text sizing for 4800x2700
 p.title.text_font_size = "36pt"
 p.title.text_font_style = "normal"
+p.title.text_color = "#263238"
 p.xaxis.axis_label_text_font_size = "28pt"
 p.yaxis.axis_label_text_font_size = "28pt"
+p.xaxis.axis_label_text_color = "#455A64"
+p.yaxis.axis_label_text_color = "#455A64"
 p.xaxis.major_label_text_font_size = "22pt"
 p.yaxis.major_label_text_font_size = "22pt"
+p.xaxis.major_label_text_color = "#546E7A"
+p.yaxis.major_label_text_color = "#546E7A"
 
 # Y-axis dollar formatting
 p.yaxis.formatter = NumeralTickFormatter(format="$0")
 
-# Grid - subtle y-axis only
+# Grid - subtle y-axis only with dashed style
 p.xgrid.grid_line_color = None
-p.ygrid.grid_line_alpha = 0.15
+p.ygrid.grid_line_alpha = 0.12
 p.ygrid.grid_line_width = 1
+p.ygrid.grid_line_dash = [4, 4]
+p.ygrid.grid_line_color = "#90A4AE"
 
 # Axis styling
 p.outline_line_color = None
 p.xaxis.axis_line_width = 1
 p.yaxis.axis_line_width = 1
-p.xaxis.axis_line_alpha = 0.5
-p.yaxis.axis_line_alpha = 0.5
+p.xaxis.axis_line_color = "#B0BEC5"
+p.yaxis.axis_line_color = "#B0BEC5"
 
 # Remove tick marks
 p.xaxis.minor_tick_line_color = None
@@ -247,9 +295,9 @@ p.yaxis.minor_tick_line_color = None
 p.xaxis.major_tick_line_color = None
 p.yaxis.major_tick_line_color = None
 
-# Background
-p.background_fill_color = "#fafafa"
-p.border_fill_color = "#ffffff"
+# Background — warm off-white
+p.background_fill_color = "#F8F9FA"
+p.border_fill_color = "#FFFFFF"
 
 # Save
 export_png(p, filename="plot.png")

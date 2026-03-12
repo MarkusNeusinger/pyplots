@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 indicator-ichimoku: Ichimoku Cloud Technical Indicator Chart
 Library: seaborn 0.13.2 | Python 3.14.3
-Quality: 83/100 | Created: 2026-03-12
+Quality: 87/100 | Created: 2026-03-12
 """
 
 import matplotlib.pyplot as plt

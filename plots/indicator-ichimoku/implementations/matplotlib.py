@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 indicator-ichimoku: Ichimoku Cloud Technical Indicator Chart
 Library: matplotlib 3.10.8 | Python 3.14.3
 Quality: 82/100 | Created: 2026-03-12
@@ -17,8 +17,18 @@ np.random.seed(42)
 n_days = 200
 dates = pd.bdate_range(start="2024-01-02", periods=n_days)
 
-returns = np.random.randn(n_days) * 0.015
-price_series = 180 * np.exp(np.cumsum(returns))
+# Create a trend story: uptrend → consolidation → breakdown → recovery
+trend = np.concatenate(
+    [
+        np.linspace(0, 0.12, 60),  # steady uptrend
+        np.linspace(0.12, 0.10, 30),  # consolidation / topping
+        np.linspace(0.10, -0.08, 50),  # bearish breakdown through cloud
+        np.linspace(-0.08, 0.02, 60),  # partial recovery
+    ]
+)
+noise = np.random.randn(n_days) * 0.008
+returns = np.diff(trend, prepend=trend[0]) + noise
+price_series = 155 * np.exp(np.cumsum(returns))
 
 open_prices = price_series * (1 + np.random.uniform(-0.005, 0.005, n_days))
 close_prices = price_series * (1 + np.random.uniform(-0.012, 0.012, n_days))
@@ -65,10 +75,10 @@ ax.set_facecolor("#fafafa")
 date_nums = mdates.date2num(df_plot["date"])
 bullish = df_plot["close"] >= df_plot["open"]
 
-color_up = "#26a69a"
-color_down = "#ef5350"
+color_up = "#1565c0"
+color_down = "#e65100"
 candle_colors = np.where(bullish, color_up, color_down)
-width = 0.55
+width = 0.65
 
 # Candlestick wicks
 ax.vlines(date_nums, df_plot["low"], df_plot["high"], colors=candle_colors, linewidth=1.2, zorder=3)
@@ -145,6 +155,43 @@ ax.plot(
     label="Chikou Span",
 )
 
+# Highlight TK crossover signals with subtle markers
+tenkan_vals = df_plot["tenkan_sen"].values
+kijun_vals = df_plot["kijun_sen"].values
+for i in range(1, len(df_plot)):
+    if np.isnan(tenkan_vals[i]) or np.isnan(kijun_vals[i]):
+        continue
+    if np.isnan(tenkan_vals[i - 1]) or np.isnan(kijun_vals[i - 1]):
+        continue
+    # Bearish cross: tenkan crosses below kijun
+    if tenkan_vals[i - 1] >= kijun_vals[i - 1] and tenkan_vals[i] < kijun_vals[i]:
+        ax.annotate(
+            "TK\u2193",
+            xy=(date_nums[i], kijun_vals[i]),
+            fontsize=13,
+            fontweight="bold",
+            color="#c62828",
+            ha="center",
+            va="bottom",
+            xytext=(0, 12),
+            textcoords="offset points",
+            zorder=10,
+        )
+    # Bullish cross: tenkan crosses above kijun
+    elif tenkan_vals[i - 1] <= kijun_vals[i - 1] and tenkan_vals[i] > kijun_vals[i]:
+        ax.annotate(
+            "TK\u2191",
+            xy=(date_nums[i], kijun_vals[i]),
+            fontsize=13,
+            fontweight="bold",
+            color="#1565c0",
+            ha="center",
+            va="top",
+            xytext=(0, -12),
+            textcoords="offset points",
+            zorder=10,
+        )
+
 # Date formatting
 ax.xaxis.set_major_locator(mdates.MonthLocator())
 ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
@@ -178,7 +225,16 @@ legend_handles = [
     mpatches.Patch(color=color_down, alpha=0.3, label="Bearish Cloud"),
 ]
 ax.legend(
-    handles=legend_handles, fontsize=14, loc="upper left", framealpha=0.9, edgecolor="none", facecolor="#fafafa", ncol=2
+    handles=legend_handles,
+    fontsize=16,
+    loc="upper center",
+    bbox_to_anchor=(0.5, -0.10),
+    framealpha=0.95,
+    edgecolor="none",
+    facecolor="#fafafa",
+    ncol=4,
+    columnspacing=1.5,
+    handletextpad=0.5,
 )
 
 # Axis limits with padding

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 indicator-ichimoku: Ichimoku Cloud Technical Indicator Chart
 Library: matplotlib 3.10.8 | Python 3.14.3
-Quality: 82/100 | Created: 2026-03-12
+Quality: 90/100 | Created: 2026-03-12
 """
 
 import matplotlib.dates as mdates

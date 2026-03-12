@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 indicator-ichimoku: Ichimoku Cloud Technical Indicator Chart
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 82/100 | Created: 2026-03-12
@@ -17,8 +17,10 @@ from plotnine import (
     geom_ribbon,
     geom_segment,
     ggplot,
+    guide_legend,
+    guides,
     labs,
-    scale_color_identity,
+    scale_color_manual,
     scale_fill_identity,
     scale_x_continuous,
     scale_y_continuous,
@@ -27,7 +29,7 @@ from plotnine import (
 )
 
 
-# Data - 200 trading days of simulated stock prices
+# Data - 200 trading days of simulated ACME Corp stock prices
 np.random.seed(42)
 n_days = 200
 
@@ -70,35 +72,61 @@ senkou_b_raw = (df["high"].rolling(window=52).max() + df["low"].rolling(window=5
 # Chikou Span (close shifted 26 periods back)
 df["chikou_span"] = df["close"].shift(-26)
 
-# Use integer day index for plotting (avoids date alignment complexity)
+# Use integer day index for plotting
 df["day"] = np.arange(n_days)
 
+# Colorblind-friendly palette: teal/orange instead of green/red
+BULL_COLOR = "#0077BB"  # Blue for bullish
+BEAR_COLOR = "#CC6633"  # Orange-brown for bearish
+
 # Candlestick columns
-df["direction"] = np.where(df["close"] >= df["open"], "up", "down")
 df["body_top"] = df[["open", "close"]].max(axis=1)
 df["body_bottom"] = df[["open", "close"]].min(axis=1)
-df["candle_fill"] = np.where(df["close"] >= df["open"], "#26A69A", "#EF5350")
-df["candle_edge"] = np.where(df["close"] >= df["open"], "#00897B", "#C62828")
+df["candle_fill"] = np.where(df["close"] >= df["open"], BULL_COLOR, BEAR_COLOR)
 
 # Build cloud DataFrame shifted 26 periods ahead
 cloud_df = pd.DataFrame(
     {"day": np.arange(n_days) + 26, "span_a": senkou_a.values, "span_b": senkou_b_raw.values}
 ).dropna()
 
-# Split cloud into bullish (span_a >= span_b) and bearish segments
-cloud_df["bullish_top"] = np.maximum(cloud_df["span_a"], cloud_df["span_b"])
-cloud_df["bullish_bottom"] = np.minimum(cloud_df["span_a"], cloud_df["span_b"])
-cloud_df["cloud_fill"] = np.where(cloud_df["span_a"] >= cloud_df["span_b"], "#26A69A", "#EF5350")
+cloud_df["cloud_top"] = np.maximum(cloud_df["span_a"], cloud_df["span_b"])
+cloud_df["cloud_bottom"] = np.minimum(cloud_df["span_a"], cloud_df["span_b"])
 
-# Ichimoku lines DataFrame (for Tenkan, Kijun, Chikou)
-lines_df = df[["day", "tenkan_sen", "kijun_sen", "chikou_span"]].copy()
-
-# Trim to visible range: start from day 52 so all indicators are computed
+# Build long-format lines DataFrame for mapped legend
 visible_start = 52
-visible_end = n_days + 26
 df_vis = df[df["day"] >= visible_start].copy()
+
+lines_data = []
+tk = df[["day", "tenkan_sen"]].dropna().query("day >= @visible_start")
+for _, row in tk.iterrows():
+    lines_data.append({"day": row["day"], "value": row["tenkan_sen"], "indicator": "Tenkan-sen"})
+
+kj = df[["day", "kijun_sen"]].dropna().query("day >= @visible_start")
+for _, row in kj.iterrows():
+    lines_data.append({"day": row["day"], "value": row["kijun_sen"], "indicator": "Kijun-sen"})
+
+ch = df[["day", "chikou_span"]].dropna().query("day >= @visible_start")
+for _, row in ch.iterrows():
+    lines_data.append({"day": row["day"], "value": row["chikou_span"], "indicator": "Chikou Span"})
+
+sa = cloud_df[["day", "span_a"]].query("day >= @visible_start").rename(columns={"span_a": "value"})
+sa["indicator"] = "Senkou Span A"
+sb = cloud_df[["day", "span_b"]].query("day >= @visible_start").rename(columns={"span_b": "value"})
+sb["indicator"] = "Senkou Span B"
+
+lines_long = pd.concat([pd.DataFrame(lines_data), sa, sb], ignore_index=True)
+
+# Indicator color mapping
+indicator_colors = {
+    "Tenkan-sen": "#1976D2",
+    "Kijun-sen": "#D84315",
+    "Chikou Span": "#7B1FA2",
+    "Senkou Span A": "#2E7D32",
+    "Senkou Span B": "#F9A825",
+}
+
+visible_end = n_days + 26
 cloud_vis = cloud_df[(cloud_df["day"] >= visible_start) & (cloud_df["day"] <= visible_end)].copy()
-lines_vis = lines_df[lines_df["day"] >= visible_start].copy()
 
 # X-axis tick labels (show every ~20 trading days)
 tick_indices = list(range(visible_start, n_days, 20))
@@ -109,65 +137,69 @@ plot = (
     ggplot()
     # Cloud (Kumo) - bullish fill
     + geom_ribbon(
-        aes(x="day", ymin="bullish_bottom", ymax="bullish_top"),
+        aes(x="day", ymin="cloud_bottom", ymax="cloud_top"),
         data=cloud_vis[cloud_vis["span_a"] >= cloud_vis["span_b"]],
-        fill="#26A69A",
-        alpha=0.25,
+        fill=BULL_COLOR,
+        alpha=0.15,
     )
     # Cloud (Kumo) - bearish fill
     + geom_ribbon(
-        aes(x="day", ymin="bullish_bottom", ymax="bullish_top"),
+        aes(x="day", ymin="cloud_bottom", ymax="cloud_top"),
         data=cloud_vis[cloud_vis["span_a"] < cloud_vis["span_b"]],
-        fill="#EF5350",
-        alpha=0.25,
+        fill=BEAR_COLOR,
+        alpha=0.15,
     )
-    # Cloud boundary lines
-    + geom_line(aes(x="day", y="span_a"), data=cloud_vis, color="#26A69A", size=0.4, alpha=0.6)
-    + geom_line(aes(x="day", y="span_b"), data=cloud_vis, color="#EF5350", size=0.4, alpha=0.6)
-    # Candlestick wicks
-    + geom_segment(aes(x="day", xend="day", y="low", yend="high", color="candle_edge"), data=df_vis, size=0.6)
-    # Candlestick bodies
-    + geom_rect(
-        aes(
-            xmin="day - 0.35",
-            xmax="day + 0.35",
-            ymin="body_bottom",
-            ymax="body_top",
-            fill="candle_fill",
-            color="candle_edge",
-        ),
-        data=df_vis,
-        size=0.2,
-    )
-    # Tenkan-sen (Conversion Line)
-    + geom_line(aes(x="day", y="tenkan_sen"), data=lines_vis.dropna(subset=["tenkan_sen"]), color="#1976D2", size=1.0)
-    # Kijun-sen (Base Line)
-    + geom_line(aes(x="day", y="kijun_sen"), data=lines_vis.dropna(subset=["kijun_sen"]), color="#E65100", size=1.0)
-    # Chikou Span (Lagging Span)
-    + geom_line(
-        aes(x="day", y="chikou_span"),
-        data=lines_vis.dropna(subset=["chikou_span"]),
-        color="#7B1FA2",
+    # Candlestick wicks - bullish
+    + geom_segment(
+        aes(x="day", xend="day", y="low", yend="high"),
+        data=df_vis[df_vis["close"] >= df_vis["open"]],
+        color="#005599",
         size=0.7,
-        alpha=0.7,
     )
+    # Candlestick wicks - bearish
+    + geom_segment(
+        aes(x="day", xend="day", y="low", yend="high"),
+        data=df_vis[df_vis["close"] < df_vis["open"]],
+        color="#AA4400",
+        size=0.7,
+    )
+    # Candlestick bodies - wider for better visibility
+    + geom_rect(
+        aes(xmin="day - 0.42", xmax="day + 0.42", ymin="body_bottom", ymax="body_top", fill="candle_fill"),
+        data=df_vis[df_vis["close"] >= df_vis["open"]],
+        color="#005599",
+        size=0.3,
+    )
+    + geom_rect(
+        aes(xmin="day - 0.42", xmax="day + 0.42", ymin="body_bottom", ymax="body_top", fill="candle_fill"),
+        data=df_vis[df_vis["close"] < df_vis["open"]],
+        color="#AA4400",
+        size=0.3,
+    )
+    # Indicator lines with mapped color aesthetic for legend
+    + geom_line(aes(x="day", y="value", color="indicator"), data=lines_long, size=1.2)
     + scale_fill_identity()
-    + scale_color_identity()
+    + scale_color_manual(values=indicator_colors, name="Ichimoku Indicators", breaks=list(indicator_colors.keys()))
+    + guides(color=guide_legend(override_aes={"size": 3}))
     + scale_x_continuous(breaks=tick_indices, labels=tick_labels, expand=(0.01, 0))
     + scale_y_continuous(labels=lambda vals: [f"${v:,.0f}" for v in vals])
     + labs(x="", y="Price ($)", title="indicator-ichimoku · plotnine · pyplots.ai")
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
-        text=element_text(size=14),
+        text=element_text(size=14, family="sans-serif"),
         axis_title=element_text(size=20),
         axis_text=element_text(size=16),
         plot_title=element_text(size=24, weight="bold"),
+        legend_title=element_text(size=16, weight="bold"),
+        legend_text=element_text(size=14),
+        legend_position="right",
+        legend_background=element_rect(fill="white", color="#cccccc", size=0.5),
+        legend_key_size=20,
         panel_grid_major_x=element_blank(),
         panel_grid_minor_x=element_blank(),
-        panel_grid_major_y=element_line(color="#d0d0d0", size=0.4, alpha=0.3),
+        panel_grid_major_y=element_line(color="#d0d0d0", size=0.3, alpha=0.4),
         panel_grid_minor_y=element_blank(),
-        legend_position="none",
         plot_background=element_rect(fill="white", color="none"),
         panel_background=element_rect(fill="white", color="none"),
     )

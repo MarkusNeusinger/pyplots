@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: indicator-ichimoku
 created: '2026-03-12T14:18:02Z'
-updated: '2026-03-12T14:22:02Z'
+updated: '2026-03-12T14:30:13Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23006287357
 issue: 4669
@@ -10,38 +10,41 @@ library_version: 3.9.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/indicator-ichimoku/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/indicator-ichimoku/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/indicator-ichimoku/bokeh/plot.html
-quality_score: 87
+quality_score: 92
 review:
   strengths:
   - Complete and correct Ichimoku implementation with all five components properly
-    computed and plotted
-  - Excellent synthetic data with multiple trending phases demonstrating bullish/bearish
-    cloud transitions and crossover signals
-  - Strong Bokeh idioms with ColumnDataSource, HoverTool, and proper Legend construction
-  - Professional text sizing and visual refinement (subtle grid, removed ticks, clean
-    axes)
-  - Both PNG and HTML output leveraging Bokeh interactive capabilities
+    computed using standard parameters (9, 26, 52)
+  - Colorblind-safe blue/orange palette for candlesticks addresses previous review
+    feedback
+  - TK Cross BoxAnnotation creates an effective focal point for data storytelling
+  - Strong Bokeh idioms with ColumnDataSource, HoverTool (HTML tooltips), and dual
+    PNG/HTML output
+  - 'Comprehensive visual refinement: subtle dashed grid, removed ticks, muted axis
+    colors, warm background'
   weaknesses:
-  - Red/green candlestick colors are not colorblind-accessible — consider teal/coral
-    or blue/orange
-  - Cloud boundary lines are faint (alpha 0.6) and could be more prominent
-  - Design lacks stronger focal point or visual emphasis to guide viewer to key Ichimoku
-    signals
+  - Chikou Span as a dashed line can be slightly difficult to follow in dense candlestick
+    areas
+  - Cloud fill at 0.22 alpha is appropriately subtle but could be marginally more
+    visible in thin cloud regions
   image_description: The plot displays an Ichimoku Cloud chart overlaid on candlestick
     price data spanning approximately April 2024 to November 2024, with prices ranging
-    from ~$140 to ~$200. Green (bullish) and red (bearish) candlesticks are clearly
-    visible throughout. The Tenkan-sen appears as a blue line and the Kijun-sen as
-    a dark red line, both tracking the price action. The Chikou Span is rendered as
-    a dashed purple line shifted into the past. The Kumo (cloud) is filled between
-    Senkou Span A and B — teal/green for bullish zones and pink/red for bearish zones.
-    The cloud extends approximately 26 periods beyond the last candlestick into the
-    future, showing the projected support/resistance. A legend on the right side identifies
-    all five components. The title reads "indicator-ichimoku · bokeh · pyplots.ai",
-    the y-axis shows "Price ($)" with dollar formatting, and the x-axis shows "Date".
-    The background is a subtle off-white with a light y-axis grid.
+    from ~$140 to $200. Blue (bullish) and orange (bearish) candlesticks are clearly
+    distinguishable throughout the chart. The Tenkan-sen appears as a teal line and
+    the Kijun-sen as a dark magenta/pink line, both tracking price action closely.
+    The Chikou Span is rendered as a dashed purple line shifted into the past. The
+    Kumo (cloud) is filled between Senkou Span A and B — light teal/cyan for bullish
+    zones and light peach/orange for bearish zones. Solid boundary lines for Span
+    A (teal) and Span B (orange) are clearly visible. The cloud extends approximately
+    26 periods beyond the last candlestick into the future, showing projected support/resistance.
+    A "TK Cross" annotation with a highlighted box annotation marks a bullish crossover
+    zone around April 2024. A legend on the right side identifies all seven components.
+    The title reads "indicator-ichimoku · bokeh · pyplots.ai", the y-axis shows "Price
+    ($)" with dollar formatting, and the x-axis shows "Date". The background is a
+    warm off-white with subtle dashed y-axis grid lines only.
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 29
       max: 30
       items:
       - id: VQ-01
@@ -56,59 +59,59 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: No text overlap. Legend positioned on right side away from data
+        comment: No text overlap. Legend on right side, TK Cross label clear
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Candlesticks well-sized, indicator lines visible. Cloud boundary
-          lines slightly faint at 0.6 alpha
+        comment: Candlesticks and lines well-sized. Chikou dashed line slightly hard
+          to follow in dense areas
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Red/green candles are standard financial convention but not colorblind-safe.
-          Indicator lines distinguishable
+        comment: Colorblind-safe blue/orange candlesticks. Distinct teal/magenta/purple
+          indicator lines
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Chart fills canvas well with appropriate padding. Legend near plot
-          on right
+        comment: Chart fills canvas well with future cloud projection. Legend near
+          plot
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Price ($) with units, Date is descriptive
+        comment: Price ($) with units, Date descriptive, dollar tick formatting
     design_excellence:
-      score: 12
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom color palette, off-white background, thoughtful colors. Above
-          defaults but not publication-level
+        comment: Custom colorblind-safe palette, warm background, intentional typography
+          hierarchy
       - id: DE-02
         name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: X-grid removed, subtle dashed y-grid, ticks removed, outline removed,
+          muted axis lines
+      - id: DE-03
+        name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: X-grid removed, y-grid subtle, tick marks removed, axis lines subtle,
-          outline removed
-      - id: DE-03
-        name: Data Storytelling
-        score: 3
-        max: 6
-        passed: true
-        comment: Multiple trending phases showing Ichimoku signals, cloud extends
-          into future. Some visual hierarchy through line styles
+        comment: TK Cross BoxAnnotation focal point, trending phases, cloud extending
+          into future
     spec_compliance:
       score: 15
       max: 15
@@ -124,8 +127,7 @@ review:
         score: 4
         max: 4
         passed: true
-        comment: All five Ichimoku components present with correct shifts and cloud
-          fill
+        comment: All five Ichimoku components with correct shifts and cloud fill
       - id: SC-03
         name: Data Mapping
         score: 3
@@ -147,15 +149,14 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Bullish/bearish candles, cloud transitions, crossovers, price above/below
-          cloud, multiple trends
+        comment: Bullish/bearish candles, cloud transitions, crossovers, multiple
+          trending phases
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Realistic stock price data in plausible range ($140-$200), 200 business
-          days
+        comment: Realistic stock price data ($140-$200), 200 business days
       - id: DQ-03
         name: Appropriate Scale
         score: 4
@@ -171,7 +172,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data generation, computation, plotting, save'
+        comment: 'Linear flow: imports, data gen, computation, plotting, save'
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -195,9 +196,9 @@ review:
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png and plot.html, current Bokeh API
+        comment: Saves plot.png and plot.html, current Bokeh 3.9 API
     library_mastery:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: LM-01
@@ -206,24 +207,26 @@ review:
         max: 5
         passed: true
         comment: 'Strong Bokeh idioms: ColumnDataSource, varea, segment, vbar, line,
-          manual Legend'
+          Legend, NumeralTickFormatter'
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: HoverTool with vline mode, HTML export, ColumnDataSource pattern,
+        comment: HoverTool with HTML tooltips and vline mode, HTML export, BoxAnnotation,
           Legend as layout
-  verdict: REJECTED
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - hover-tooltips
   - custom-legend
   - html-export
+  - annotations
   patterns:
   - data-generation
   - columndatasource
+  - iteration-over-groups
   dataprep:
   - time-series
   - rolling-window

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 indicator-ichimoku: Ichimoku Cloud Technical Indicator Chart
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-12
@@ -37,11 +37,11 @@ dates = pd.date_range("2024-01-02", periods=n_days, freq="B")
 price = 150.0
 drift = np.concatenate(
     [
-        np.linspace(0.15, 0.5, 60),
-        np.linspace(0.5, -0.2, 40),
-        np.linspace(-0.2, -0.4, 30),
-        np.linspace(-0.4, 0.3, 40),
-        np.linspace(0.3, 0.6, 30),
+        np.linspace(0.2, 0.7, 55),
+        np.linspace(0.7, -0.1, 35),
+        np.linspace(-0.1, -0.6, 35),
+        np.linspace(-0.6, 0.4, 40),
+        np.linspace(0.4, 0.8, 35),
     ]
 )
 opens, highs, lows, closes = [], [], [], []
@@ -82,21 +82,22 @@ visible_start = 80
 df_vis = df.iloc[visible_start:].copy()
 df_vis["x"] = range(len(df_vis))
 
-# Colorblind-safe palette derived via seaborn palette tools
+# Palette derived via seaborn palette tools — conventional green/red per spec
+# Colorblind safety maintained through filled vs hollow candle shapes
 base_palette = sns.color_palette("colorblind", n_colors=8)
-up_color = "#306998"
-down_color = "#d4820e"
+up_color = "#2a9d3e"  # green for bullish (spec-conventional)
+down_color = "#d63a3a"  # red for bearish (spec-conventional)
 up_edge = sns.dark_palette(up_color, n_colors=4)[2]
 down_edge = sns.dark_palette(down_color, n_colors=4)[2]
-tenkan_color = base_palette[0]  # blue from colorblind palette
-kijun_color = base_palette[1]  # orange from colorblind palette
+tenkan_color = "#306998"  # Python blue for Tenkan-sen
+kijun_color = base_palette[1]  # orange from colorblind palette for Kijun-sen
 chikou_color = base_palette[4]  # purple from colorblind palette
 
-# Cloud fill colors via seaborn light_palette for softer, cohesive tints
-cloud_bull_tint = sns.light_palette(base_palette[0], n_colors=6)[2]
-cloud_bear_tint = sns.light_palette(base_palette[3], n_colors=6)[2]
-cloud_bull_edge = base_palette[0]
-cloud_bear_edge = base_palette[3]
+# Cloud fill colors — green/red tints per spec via seaborn light_palette
+cloud_bull_tint = sns.light_palette(up_color, n_colors=6)[2]
+cloud_bear_tint = sns.light_palette(down_color, n_colors=6)[2]
+cloud_bull_edge = sns.dark_palette(up_color, n_colors=4)[1]
+cloud_bear_edge = sns.dark_palette(down_color, n_colors=4)[1]
 
 # Plot
 fig, ax = plt.subplots(figsize=(16, 9))
@@ -223,10 +224,10 @@ if cross_indices:
         )
     cross_df = pd.DataFrame(cross_data)
 
-    # Use seaborn blend_palette for signal-type color coding
+    # Use seaborn blend_palette for signal-type color coding (matching green/red scheme)
     signal_colors = {
-        "Bullish TK Cross": sns.blend_palette([base_palette[0], "#2ecc71"], n_colors=3)[1],
-        "Bearish TK Cross": sns.blend_palette([base_palette[3], "#e74c3c"], n_colors=3)[1],
+        "Bullish TK Cross": sns.blend_palette([up_color, "#2ecc71"], n_colors=3)[1],
+        "Bearish TK Cross": sns.blend_palette([down_color, "#e74c3c"], n_colors=3)[1],
     }
     sns.scatterplot(
         data=cross_df,
@@ -280,13 +281,15 @@ ax.set_axisbelow(True)
 legend_handles = [
     Patch(facecolor=up_color, edgecolor=up_edge, label="Bullish (filled)"),
     Patch(facecolor="none", edgecolor=down_edge, linewidth=1.4, label="Bearish (hollow)"),
-    Line2D([0], [0], color=tenkan_color, linewidth=1.8, label="Tenkan-sen (9)"),
+    Line2D([0], [0], color=tenkan_color, linewidth=2.0, label="Tenkan-sen (9)"),
     Line2D([0], [0], color=kijun_color, linewidth=1.8, label="Kijun-sen (26)"),
     Line2D([0], [0], color=chikou_color, linewidth=1.2, alpha=0.6, label="Chikou Span"),
     Patch(facecolor=cloud_bull_tint, alpha=0.55, label="Bullish Cloud"),
     Patch(facecolor=cloud_bear_tint, alpha=0.55, label="Bearish Cloud"),
 ]
-ax.legend(handles=legend_handles, fontsize=12, loc="upper left", framealpha=0.9, edgecolor="#dee2e6", ncol=2)
+ax.legend(
+    handles=legend_handles, fontsize=12, loc="lower left", framealpha=0.95, edgecolor="#dee2e6", ncol=2, fancybox=True
+)
 
 # Axis limits
 ax.set_xlim(-1, len(df_vis) + 0.5)

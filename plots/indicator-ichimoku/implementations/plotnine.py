@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 indicator-ichimoku: Ichimoku Cloud Technical Indicator Chart
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-12
@@ -76,9 +76,9 @@ df["chikou_span"] = df["close"].shift(-26)
 # Use integer day index for plotting
 df["day"] = np.arange(n_days)
 
-# Colorblind-friendly palette
-BULL_COLOR = "#0077BB"  # Blue for bullish
-BEAR_COLOR = "#CC6633"  # Orange-brown for bearish
+# Conventional green/red candlestick colors (spec requirement) with brightness difference for accessibility
+BULL_COLOR = "#2E7D32"  # Green for bullish (up)
+BEAR_COLOR = "#C62828"  # Red for bearish (down)
 
 # Candlestick columns
 df["body_top"] = df[["open", "close"]].max(axis=1)
@@ -132,7 +132,7 @@ indicator_colors = {
     "Kijun-sen": "#D84315",
     "Chikou Span": "#7B1FA2",
     "Senkou Span A": "#2E7D32",
-    "Senkou Span B": "#F9A825",
+    "Senkou Span B": "#E68A00",
 }
 
 visible_end = n_days + 26
@@ -171,26 +171,26 @@ plot = (
     + geom_segment(
         aes(x="day", xend="day", y="low", yend="high"),
         data=df_vis[df_vis["close"] >= df_vis["open"]],
-        color="#004477",
+        color="#1B5E20",
         size=0.8,
     )
     + geom_segment(
         aes(x="day", xend="day", y="low", yend="high"),
         data=df_vis[df_vis["close"] < df_vis["open"]],
-        color="#993300",
+        color="#8E0000",
         size=0.8,
     )
     # Candlestick bodies
     + geom_rect(
         aes(xmin="day - 0.42", xmax="day + 0.42", ymin="body_bottom", ymax="body_top", fill="candle_fill"),
         data=df_vis[df_vis["close"] >= df_vis["open"]],
-        color="#004477",
+        color="#1B5E20",
         size=0.3,
     )
     + geom_rect(
         aes(xmin="day - 0.42", xmax="day + 0.42", ymin="body_bottom", ymax="body_top", fill="candle_fill"),
         data=df_vis[df_vis["close"] < df_vis["open"]],
-        color="#993300",
+        color="#8E0000",
         size=0.3,
     )
     # TK crossover markers - focal points for data storytelling
@@ -198,7 +198,7 @@ plot = (
         aes(x="day", y="cross_price"), data=crossovers, shape="D", size=4, color="#222222", fill="#FFDD00", stroke=0.5
     )
     # Indicator lines with mapped color aesthetic for legend
-    + geom_line(aes(x="day", y="value", color="indicator"), data=lines_long, size=1.2)
+    + geom_line(aes(x="day", y="value", color="indicator"), data=lines_long, size=1.4)
     + scale_fill_identity()
     + scale_color_manual(values=indicator_colors, name="Ichimoku Indicators", breaks=list(indicator_colors.keys()))
     + guides(color=guide_legend(override_aes={"size": 3}))

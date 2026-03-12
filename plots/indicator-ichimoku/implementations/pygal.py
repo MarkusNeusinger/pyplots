@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 indicator-ichimoku: Ichimoku Cloud Technical Indicator Chart
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 71/100 | Created: 2026-03-12
@@ -68,14 +68,16 @@ for i in range(n_days):
 VIEW_START, VIEW_END = 60, n_days
 total_x = VIEW_END - VIEW_START + SHIFT
 
-# Colors — spec requires conventional green/red for candles
-BULL_CLR, BEAR_CLR = "#26A269", "#E03131"
+# Colors — distinct palettes for candles vs Ichimoku components
+# Candles: dark saturated tones for prominence against lighter cloud fills
+BULL_CLR, BEAR_CLR = "#1B7A3D", "#B91C1C"
+# Ichimoku lines: clearly different hues from candles
 TENKAN_CLR, KIJUN_CLR = "#E6550D", "#306998"
-SPAN_A_CLR, SPAN_B_CLR = "#2CA02C", "#D62728"
-CHIKOU_CLR = "#9467BD"
-# Cloud fills: green tint (bullish) / red tint (bearish) per spec
-CLOUD_BULL = "#26A269"
-CLOUD_BEAR = "#E03131"
+SPAN_A_CLR, SPAN_B_CLR = "#66BB6A", "#EF5350"
+CHIKOU_CLR = "#8E44AD"
+# Cloud fills: muted green/red tints so candles stand out
+CLOUD_BULL = "#A5D6A7"
+CLOUD_BEAR = "#EF9A9A"
 
 # Build candlestick segments (bullish/bearish)
 bull_wicks, bear_wicks = [], []
@@ -129,6 +131,7 @@ custom_style = Style(
     foreground_strong="#1a1a1a",
     foreground_subtle="#d8d8d8",
     colors=(BULL_CLR, BEAR_CLR, BULL_CLR, BEAR_CLR, TENKAN_CLR, KIJUN_CLR, SPAN_A_CLR, SPAN_B_CLR, CHIKOU_CLR),
+    stroke_width=3,
     title_font_size=72,
     label_font_size=40,
     major_label_font_size=36,
@@ -169,7 +172,7 @@ label_positions = list(range(1, VIEW_END - VIEW_START + SHIFT + 1, 20))
 chart.x_labels = label_positions
 chart.x_value_formatter = lambda x: date_map[int(round(x))].strftime("%b %d") if int(round(x)) in date_map else ""
 
-WICK_W, BODY_W = 18, 48
+WICK_W, BODY_W = 22, 64
 LINE_W = 5
 
 # Wicks (hidden from legend)
@@ -189,14 +192,14 @@ chart.add(
     "Tenkan-sen (9)", tenkan_pts, stroke=True, show_dots=False, stroke_style={"width": LINE_W, "linecap": "round"}
 )
 chart.add("Kijun-sen (26)", kijun_pts, stroke=True, show_dots=False, stroke_style={"width": LINE_W, "linecap": "round"})
-chart.add("Senkou A", span_a_pts, stroke=True, show_dots=False, stroke_style={"width": 4, "linecap": "round"})
-chart.add("Senkou B", span_b_pts, stroke=True, show_dots=False, stroke_style={"width": 4, "linecap": "round"})
+chart.add("Senkou A", span_a_pts, stroke=True, show_dots=False, stroke_style={"width": 3, "linecap": "round"})
+chart.add("Senkou B", span_b_pts, stroke=True, show_dots=False, stroke_style={"width": 3, "linecap": "round"})
 chart.add(
     "Chikou Span",
     chikou_pts,
     stroke=True,
     show_dots=False,
-    stroke_style={"width": 4, "linecap": "round", "dasharray": "12,6"},
+    stroke_style={"width": 3, "linecap": "round", "dasharray": "12,6"},
 )
 
 # Render SVG and post-process for cairosvg compatibility
@@ -210,9 +213,9 @@ stroke_specs = [
     (BODY_W, "butt"),  # bodies
     (LINE_W, "round"),
     (LINE_W, "round"),  # tenkan, kijun
-    (4, "round"),
-    (4, "round"),
-    (4, "round"),  # spans + chikou
+    (3, "round"),
+    (3, "round"),
+    (3, "round"),  # spans + chikou
 ]
 for sid, (w, cap) in enumerate(stroke_specs):
     svg = re.sub(
@@ -248,7 +251,7 @@ if len(bg_rects) >= 2:
             f"{(x - x_min_data) / x_range * inner_w:.1f},{inner_h - (y - y_min_data) / y_range * inner_h:.1f}"
             for x, y in pts
         )
-        polys.append(f'<polygon points="{coords}" fill="{color}" fill-opacity="0.30" stroke="none" />')
+        polys.append(f'<polygon points="{coords}" fill="{color}" fill-opacity="0.35" stroke="none" />')
 
     if polys:
         svg = svg.replace('<g class="series serie-0', "\n".join(polys) + '\n<g class="series serie-0')

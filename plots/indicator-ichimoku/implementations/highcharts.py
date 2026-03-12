@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 indicator-ichimoku: Ichimoku Cloud Technical Indicator Chart
 Library: highcharts unknown | Python 3.14.3
 Quality: 80/100 | Created: 2026-03-12
@@ -63,22 +63,17 @@ kijun_period = 26
 senkou_b_period = 52
 displacement = 26
 
-
-def period_midpoint(data_high, data_low, start, period):
-    high_val = max(data_high[start : start + period])
-    low_val = min(data_low[start : start + period])
-    return round((high_val + low_val) / 2, 2)
-
-
 # Tenkan-sen (conversion line): (9-period high + 9-period low) / 2
 tenkan_sen = [None] * (tenkan_period - 1)
 for i in range(tenkan_period - 1, n_days):
-    tenkan_sen.append(period_midpoint(highs, lows, i - tenkan_period + 1, tenkan_period))
+    s = i - tenkan_period + 1
+    tenkan_sen.append(round((max(highs[s : s + tenkan_period]) + min(lows[s : s + tenkan_period])) / 2, 2))
 
 # Kijun-sen (base line): (26-period high + 26-period low) / 2
 kijun_sen = [None] * (kijun_period - 1)
 for i in range(kijun_period - 1, n_days):
-    kijun_sen.append(period_midpoint(highs, lows, i - kijun_period + 1, kijun_period))
+    s = i - kijun_period + 1
+    kijun_sen.append(round((max(highs[s : s + kijun_period]) + min(lows[s : s + kijun_period])) / 2, 2))
 
 # Senkou Span A: (Tenkan + Kijun) / 2, plotted 26 periods ahead
 senkou_a_raw = []
@@ -91,7 +86,8 @@ for i in range(n_days):
 # Senkou Span B: (52-period high + 52-period low) / 2, plotted 26 periods ahead
 senkou_b_raw = [None] * (senkou_b_period - 1)
 for i in range(senkou_b_period - 1, n_days):
-    senkou_b_raw.append(period_midpoint(highs, lows, i - senkou_b_period + 1, senkou_b_period))
+    s = i - senkou_b_period + 1
+    senkou_b_raw.append(round((max(highs[s : s + senkou_b_period]) + min(lows[s : s + senkou_b_period])) / 2, 2))
 
 # Extend timestamps for future displacement
 future_dates = []
@@ -121,16 +117,13 @@ for i in range(n_days):
         chikou_data.append([timestamps[past_idx], closes[i]])
 
 # OHLC data for candlestick
-ohlc_data = []
-for i in range(n_days):
-    ohlc_data.append([timestamps[i], opens[i], highs[i], lows[i], closes[i]])
+ohlc_data = [[timestamps[i], opens[i], highs[i], lows[i], closes[i]] for i in range(n_days)]
 
 # Tenkan-sen and Kijun-sen line data
 tenkan_data = [[timestamps[i], tenkan_sen[i]] for i in range(n_days) if tenkan_sen[i] is not None]
 kijun_data = [[timestamps[i], kijun_sen[i]] for i in range(n_days) if kijun_sen[i] is not None]
 
 # Build cloud area ranges (Senkou A vs B) for filled area
-cloud_data = []
 span_a_map = {pt[0]: pt[1] for pt in senkou_a_shifted}
 span_b_map = {pt[0]: pt[1] for pt in senkou_b_shifted}
 all_cloud_ts = sorted(set(span_a_map.keys()) & set(span_b_map.keys()))
@@ -149,6 +142,28 @@ for ts in all_cloud_ts:
         cloud_bearish.append([ts, low_val, high_val])
         cloud_bullish.append([ts, None, None])
 
+# Detect Tenkan/Kijun crossover signals for flags
+crossover_flags = []
+for i in range(kijun_period, n_days):
+    if tenkan_sen[i] is None or kijun_sen[i] is None or tenkan_sen[i - 1] is None or kijun_sen[i - 1] is None:
+        continue
+    prev_diff = tenkan_sen[i - 1] - kijun_sen[i - 1]
+    curr_diff = tenkan_sen[i] - kijun_sen[i]
+    if prev_diff <= 0 < curr_diff:
+        crossover_flags.append(
+            {"x": timestamps[i], "title": "\u25b2", "text": f"Bullish crossover at ${closes[i]:.2f}"}
+        )
+    elif prev_diff >= 0 > curr_diff:
+        crossover_flags.append(
+            {"x": timestamps[i], "title": "\u25bc", "text": f"Bearish crossover at ${closes[i]:.2f}"}
+        )
+
+# Colorblind-safe palette
+BULLISH_COLOR = "#2E8B87"  # Teal
+BEARISH_COLOR = "#D94F6B"  # Coral
+BULLISH_LINE = "#1F6B67"
+BEARISH_LINE = "#B03A55"
+
 # Chart options
 chart_options = {
     "chart": {
@@ -158,18 +173,18 @@ chart_options = {
         "backgroundColor": "#FAFBFC",
         "marginBottom": 280,
         "spacingBottom": 40,
-        "marginLeft": 240,
+        "marginLeft": 200,
         "marginRight": 120,
         "marginTop": 180,
         "style": {"fontFamily": "'Segoe UI', Arial, sans-serif"},
     },
     "title": {
-        "text": "Ichimoku Cloud \u00b7 indicator-ichimoku \u00b7 highcharts \u00b7 pyplots.ai",
+        "text": "indicator-ichimoku \u00b7 highcharts \u00b7 pyplots.ai",
         "style": {"fontSize": "60px", "fontWeight": "600", "color": "#1a1a2e", "letterSpacing": "0.5px"},
         "y": 65,
     },
     "subtitle": {
-        "text": "Simulated equity \u2014 200 trading days with Tenkan/Kijun crossovers and Kumo cloud",
+        "text": "Ichimoku Cloud overlay on 200 simulated trading days \u2014 crossover signals marked with flags",
         "style": {"fontSize": "36px", "color": "#666680", "fontWeight": "300"},
         "y": 120,
     },
@@ -227,10 +242,10 @@ chart_options = {
     },
     "plotOptions": {
         "candlestick": {
-            "color": "#D94F3B",
-            "upColor": "#2E8B57",
-            "lineColor": "#B22222",
-            "upLineColor": "#1E6B3E",
+            "color": BEARISH_COLOR,
+            "upColor": BULLISH_COLOR,
+            "lineColor": BEARISH_LINE,
+            "upLineColor": BULLISH_LINE,
             "lineWidth": 3,
             "pointWidth": 18,
             "tooltip": {
@@ -272,7 +287,7 @@ chart_options = {
             "type": "line",
             "name": "Senkou Span A",
             "data": senkou_a_shifted,
-            "color": "rgba(46, 139, 87, 0.6)",
+            "color": "rgba(46, 139, 135, 0.6)",
             "lineWidth": 2,
             "marker": {"enabled": False},
             "zIndex": 1,
@@ -283,7 +298,7 @@ chart_options = {
             "type": "line",
             "name": "Senkou Span B",
             "data": senkou_b_shifted,
-            "color": "rgba(217, 79, 59, 0.6)",
+            "color": "rgba(217, 79, 107, 0.6)",
             "lineWidth": 2,
             "marker": {"enabled": False},
             "zIndex": 1,
@@ -306,7 +321,7 @@ chart_options = {
             "type": "arearange",
             "name": "Kumo (bullish)",
             "data": cloud_bullish,
-            "color": "rgba(46, 139, 87, 0.15)",
+            "color": "rgba(46, 139, 135, 0.22)",
             "lineWidth": 0,
             "marker": {"enabled": False},
             "zIndex": 0,
@@ -317,15 +332,32 @@ chart_options = {
             "type": "arearange",
             "name": "Kumo (bearish)",
             "data": cloud_bearish,
-            "color": "rgba(217, 79, 59, 0.15)",
+            "color": "rgba(217, 79, 107, 0.22)",
             "lineWidth": 0,
             "marker": {"enabled": False},
             "zIndex": 0,
             "enableMouseTracking": False,
             "showInLegend": False,
         },
+        {
+            "type": "flags",
+            "name": "Crossover Signals",
+            "data": crossover_flags,
+            "onSeries": "dataseries",
+            "shape": "squarepin",
+            "zIndex": 5,
+            "style": {"fontSize": "24px"},
+            "fillColor": "rgba(255, 255, 255, 0.92)",
+            "lineColor": "#444460",
+            "lineWidth": 2,
+            "width": 40,
+            "height": 30,
+        },
     ],
 }
+
+# Give the candlestick series an ID for flags to attach to
+chart_options["series"][0]["id"] = "dataseries"
 
 # Download Highstock JS and highcharts-more (for arearange)
 highstock_url = "https://cdn.jsdelivr.net/npm/highcharts@11/highstock.js"

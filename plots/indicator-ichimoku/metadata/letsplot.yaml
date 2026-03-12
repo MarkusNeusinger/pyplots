@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: indicator-ichimoku
 created: '2026-03-12T14:16:42Z'
-updated: '2026-03-12T14:20:45Z'
+updated: '2026-03-12T14:30:41Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23006287717
 issue: 4669
@@ -10,40 +10,37 @@ library_version: 4.9.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/indicator-ichimoku/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/indicator-ichimoku/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/indicator-ichimoku/letsplot/plot.html
-quality_score: 84
+quality_score: 89
 review:
   strengths:
-  - Excellent data quality with realistic financial context and all Ichimoku components
-    correctly computed
-  - All font sizes explicitly set for consistent readability at target resolution
-  - Colorblind-safe blue/orange palette with distinct line styles for each indicator
-    component
-  - Clean well-structured code with proper random seed and linear flow
-  - Cloud fill correctly changes color based on Span A vs Span B relationship
+  - Comprehensive Ichimoku implementation with all five indicator lines, properly
+    computed cloud, and crossover signal markers
+  - 'Excellent visual hierarchy: subtle cloud (alpha=0.2), medium indicator lines,
+    prominent candlesticks'
+  - Professional design with custom palette, refined typography, and informative subtitle
+    as inline legend
+  - Distinctive use of lets-plot layer_tooltips() with formatted financial data
+  - 'Perfect code quality: clean KISS structure, reproducible, appropriate complexity'
   weaknesses:
-  - Candlestick colors use blue/orange instead of spec-required conventional green
-    and red
-  - Design could be elevated with y-axis-only grid and stronger visual hierarchy at
-    key crossover points
-  - Library mastery is generic - lets-plot has more interactive features that could
-    be leveraged
-  - No proper legend element - subtitle is used as a workaround
-  image_description: The plot displays an Ichimoku Cloud (Ichimoku Kinko Hyo) technical
-    indicator overlaid on a candlestick price chart. The title reads "indicator-ichimoku
-    · letsplot · pyplots.ai" in bold black text, with a subtitle describing the components.
-    The x-axis shows trading dates from Mar 14 to Sep 26, 2024, labeled "Trading Day
-    (2024)". The y-axis shows "Price ($)" ranging from approximately $143 to $195.
-    Candlestick bodies are colored blue (bullish/up) and orange (bearish/down) with
-    matching thin wicks. The Tenkan-sen appears as a blue line, the Kijun-sen as a
-    rose/pink line, and the Chikou Span as a gray dashed line shifted into the past.
-    The Kumo cloud is filled between Senkou Span A and B with light blue shading for
-    bullish zones and light peach/orange shading for bearish zones. The cloud shows
-    a clear transition from bullish to bearish around mid-chart, with an extended
-    crossover region. The price action shows an uptrend from ~$143 to ~$190, followed
-    by a consolidation/pullback phase. The background is white with subtle gray gridlines.
+  - No formal legend element — relies entirely on subtitle text for component identification
+  - Green/red candlestick coloring is conventional but not colorblind-accessible
+  - Minor visual congestion in areas where cloud, indicator lines, and candlesticks
+    overlap
+  image_description: The plot displays an Ichimoku Kinko Hyo chart overlaid on a candlestick
+    price chart spanning approximately March–September 2024. Candlesticks use conventional
+    green (bullish) and red (bearish) coloring. The Tenkan-sen (conversion) line is
+    drawn in blue and the Kijun-sen (base) line in rose/pink — both are clearly visible
+    above the candlesticks. The Chikou Span appears as a gray dashed line shifted
+    into the past. The Kumo cloud is filled between Senkou Span A and B with a light
+    green tint when bullish (Span A > Span B) and a light red/pink tint when bearish.
+    Yellow diamond markers highlight Tenkan/Kijun crossover signals at approximately
+    4 locations. The title reads "indicator-ichimoku · letsplot · pyplots.ai" in bold,
+    with a descriptive subtitle listing all components. The y-axis shows "Price ($)"
+    ranging from ~$145 to $195, and the x-axis shows "Trading Day (2024)" with monthly
+    date labels. The background is white with subtle horizontal grid lines.
   criteria_checklist:
     visual_quality:
-      score: 29
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -51,66 +48,65 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title=24pt, subtitle=16pt, axis_title=20pt,
-          axis_text=16pt'
+        comment: 'All font sizes explicitly set: title=24, axis_title=20, axis_text=16,
+          subtitle=16'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements, date labels well-spaced
+        comment: No text collisions, date labels well-spaced
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: All elements visible; candlestick bodies could be slightly wider,
-          cloud alpha borderline subtle
+        comment: Minor congestion where cloud, indicator lines, and candles overlap
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: Blue/orange colorblind-safe palette with distinct line styles
+        comment: Green/red candlesticks conventional but not colorblind-safe
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Good proportions, balanced margins, correct 4800x2700 output
+        comment: Excellent canvas utilization with balanced margins
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Price ($) and Trading Day (2024) are descriptive with units
+        comment: Price ($) and Trading Day (2024) with units
     design_excellence:
-      score: 12
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom palette, thoughtful typography hierarchy, above defaults but
-          not publication-level
+        comment: Custom palette, professional typography, intentional hierarchy, clearly
+          above defaults
       - id: DE-02
         name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: Minimal theme, x-grid removed, subtle y-grid, ticks removed, white
+          background
+      - id: DE-03
+        name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: theme_minimal, custom grid colors, ticks removed; could use y-axis-only
-          grid
-      - id: DE-03
-        name: Data Storytelling
-        score: 3
-        max: 6
-        passed: false
-        comment: Cloud transition visible but no strong focal point or visual emphasis
-          on key signals
+        comment: Crossover markers create focal points, cloud transitions narrate
+          trend direction
     spec_compliance:
-      score: 13
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -121,25 +117,25 @@ review:
         comment: Correct Ichimoku Cloud overlay on candlestick chart
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: All components present; candlestick colors deviate from spec green/red
-          convention
+        comment: All five lines, cloud fill, conventional candlestick coloring
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=dates, Y=price, all data correctly mapped
+        comment: Date on X, Price on Y, all data correctly mapped
       - id: SC-04
         name: Title & Legend
         score: 2
         max: 3
         passed: true
-        comment: Title format correct; no proper legend, subtitle used as workaround
+        comment: Title format correct, no formal legend — subtitle serves as inline
+          legend
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
@@ -147,22 +143,21 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows bullish/bearish candles, cloud transitions, crossovers, all
-          five components
+        comment: Shows bullish/bearish candles, cloud transitions, crossover signals,
+          all components
       - id: DQ-02
         name: Realistic Context
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Realistic stock price data with business day frequency and appropriate
-          volatility
+        comment: Plausible stock data with realistic random walk and business day
+          frequency
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Price range $143-$195 realistic, standard Ichimoku parameters (9,
-          26, 52)
+        comment: Price range $145-$195 realistic for equities
     code_quality:
       score: 10
       max: 10
@@ -172,58 +167,59 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean linear flow with no functions or classes
+        comment: 'Clean linear flow: imports, data, plot, save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) ensures deterministic output
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only numpy, pandas, lets_plot imported and used
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Well-organized, appropriate complexity for dual-color cloud fills
+        comment: Appropriate complexity for Ichimoku, clean cloud splitting
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png with scale=3, also saves HTML
+        comment: Saves plot.png with scale=3, uses current API
     library_mastery:
-      score: 5
+      score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Correct ggplot2-style grammar but standard patterns
+        comment: Good ggplot grammar with layered composition, scales, and theme customization
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 4
         max: 5
-        passed: false
-        comment: Uses layer_tooltips and HTML export; could leverage more lets-plot
-          specific features
+        passed: true
+        comment: layer_tooltips() with title/line/format and HTML export are distinctive
+          lets-plot features
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - layer-composition
   - hover-tooltips
-  - manual-ticks
   - html-export
+  - manual-ticks
   patterns:
   - data-generation
+  - iteration-over-groups
   dataprep:
   - rolling-window
   - time-series

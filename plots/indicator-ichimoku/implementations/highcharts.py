@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 indicator-ichimoku: Ichimoku Cloud Technical Indicator Chart
 Library: highcharts unknown | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-12
@@ -12,6 +12,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 import numpy as np
+from highcharts_stock.chart import Chart
+from highcharts_stock.options import HighchartsStockOptions
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -164,200 +166,207 @@ BEARISH_COLOR = "#D94F6B"  # Coral
 BULLISH_LINE = "#1F6B67"
 BEARISH_LINE = "#B03A55"
 
-# Chart options
-chart_options = {
-    "chart": {
-        "type": "candlestick",
-        "width": 4800,
-        "height": 2700,
-        "backgroundColor": "#FAFBFC",
-        "marginBottom": 280,
-        "spacingBottom": 40,
-        "marginLeft": 200,
-        "marginRight": 120,
-        "marginTop": 180,
-        "style": {"fontFamily": "'Segoe UI', Arial, sans-serif"},
-    },
-    "title": {
-        "text": "indicator-ichimoku \u00b7 highcharts \u00b7 pyplots.ai",
-        "style": {"fontSize": "60px", "fontWeight": "600", "color": "#1a1a2e", "letterSpacing": "0.5px"},
-        "y": 65,
-    },
-    "subtitle": {
-        "text": "Ichimoku Cloud overlay on 200 simulated trading days \u2014 crossover signals marked with flags",
-        "style": {"fontSize": "36px", "color": "#666680", "fontWeight": "300"},
-        "y": 120,
-    },
-    "xAxis": {
-        "type": "datetime",
-        "title": {"text": "Date", "style": {"fontSize": "42px", "color": "#444460", "fontWeight": "500"}, "margin": 25},
-        "labels": {
-            "style": {"fontSize": "32px", "color": "#666680"},
-            "format": "{value:%b %Y}",
-            "y": 40,
-            "rotation": 0,
-            "step": 2,
-        },
-        "gridLineWidth": 0,
-        "lineWidth": 0,
-        "tickWidth": 0,
-        "crosshair": {"width": 2, "color": "rgba(100, 100, 120, 0.3)", "dashStyle": "Dash"},
-    },
-    "yAxis": {
-        "title": {
-            "text": "Price (USD)",
-            "style": {"fontSize": "42px", "color": "#444460", "fontWeight": "500"},
-            "margin": 25,
-        },
-        "labels": {"style": {"fontSize": "32px", "color": "#666680"}, "format": "${value:.0f}", "x": -15},
-        "gridLineWidth": 1,
-        "gridLineColor": "rgba(100, 100, 120, 0.10)",
-        "gridLineDashStyle": "Dot",
-        "lineWidth": 0,
-        "opposite": False,
-        "tickWidth": 0,
-    },
-    "legend": {
-        "enabled": True,
-        "align": "right",
-        "verticalAlign": "top",
-        "layout": "horizontal",
-        "x": -40,
-        "y": 60,
-        "floating": True,
-        "itemStyle": {"fontSize": "28px", "fontWeight": "400", "color": "#444460"},
-        "symbolWidth": 40,
-        "symbolRadius": 0,
-        "itemDistance": 40,
-    },
-    "tooltip": {
-        "split": False,
-        "shared": True,
-        "style": {"fontSize": "26px"},
-        "headerFormat": "<b>{point.x:%b %d, %Y}</b><br/>",
-        "backgroundColor": "rgba(255, 255, 255, 0.96)",
-        "borderColor": "#ccc",
-        "borderRadius": 8,
-        "shadow": True,
-    },
-    "plotOptions": {
-        "candlestick": {
-            "color": BEARISH_COLOR,
-            "upColor": BULLISH_COLOR,
-            "lineColor": BEARISH_LINE,
-            "upLineColor": BULLISH_LINE,
-            "lineWidth": 3,
-            "pointWidth": 18,
-            "tooltip": {
-                "pointFormat": "O: ${point.open:.2f} H: ${point.high:.2f}<br/>"
-                + "L: ${point.low:.2f} C: ${point.close:.2f}"
-            },
-        },
-        "series": {"animation": False},
-    },
-    "rangeSelector": {"enabled": False},
-    "navigator": {"enabled": False},
-    "scrollbar": {"enabled": False},
-    "credits": {"enabled": False},
-    "series": [
-        {"type": "candlestick", "name": "OHLC", "data": ohlc_data, "zIndex": 4},
-        {
-            "type": "line",
-            "name": "Tenkan-sen (9)",
-            "data": tenkan_data,
-            "color": "#306998",
-            "lineWidth": 4,
-            "marker": {"enabled": False},
-            "zIndex": 3,
-            "enableMouseTracking": True,
-            "tooltip": {"pointFormat": "Tenkan: <b>${point.y:.2f}</b><br/>"},
-        },
-        {
-            "type": "line",
-            "name": "Kijun-sen (26)",
-            "data": kijun_data,
-            "color": "#D35400",
-            "lineWidth": 4,
-            "marker": {"enabled": False},
-            "zIndex": 3,
-            "enableMouseTracking": True,
-            "tooltip": {"pointFormat": "Kijun: <b>${point.y:.2f}</b><br/>"},
-        },
-        {
-            "type": "line",
-            "name": "Senkou Span A",
-            "data": senkou_a_shifted,
-            "color": "rgba(46, 139, 135, 0.6)",
-            "lineWidth": 2,
-            "marker": {"enabled": False},
-            "zIndex": 1,
-            "dashStyle": "ShortDot",
-            "enableMouseTracking": False,
-        },
-        {
-            "type": "line",
-            "name": "Senkou Span B",
-            "data": senkou_b_shifted,
-            "color": "rgba(217, 79, 107, 0.6)",
-            "lineWidth": 2,
-            "marker": {"enabled": False},
-            "zIndex": 1,
-            "dashStyle": "ShortDot",
-            "enableMouseTracking": False,
-        },
-        {
-            "type": "line",
-            "name": "Chikou Span",
-            "data": chikou_data,
-            "color": "#8E44AD",
-            "lineWidth": 3,
-            "marker": {"enabled": False},
-            "zIndex": 2,
-            "dashStyle": "Dash",
-            "enableMouseTracking": True,
-            "tooltip": {"pointFormat": "Chikou: <b>${point.y:.2f}</b><br/>"},
-        },
-        {
-            "type": "arearange",
-            "name": "Kumo (bullish)",
-            "data": cloud_bullish,
-            "color": "rgba(46, 139, 135, 0.22)",
-            "lineWidth": 0,
-            "marker": {"enabled": False},
-            "zIndex": 0,
-            "enableMouseTracking": False,
-            "showInLegend": False,
-        },
-        {
-            "type": "arearange",
-            "name": "Kumo (bearish)",
-            "data": cloud_bearish,
-            "color": "rgba(217, 79, 107, 0.22)",
-            "lineWidth": 0,
-            "marker": {"enabled": False},
-            "zIndex": 0,
-            "enableMouseTracking": False,
-            "showInLegend": False,
-        },
-        {
-            "type": "flags",
-            "name": "Crossover Signals",
-            "data": crossover_flags,
-            "onSeries": "dataseries",
-            "shape": "squarepin",
-            "zIndex": 5,
-            "style": {"fontSize": "24px"},
-            "fillColor": "rgba(255, 255, 255, 0.92)",
-            "lineColor": "#444460",
-            "lineWidth": 2,
-            "width": 40,
-            "height": 30,
-        },
-    ],
+# Build chart using highcharts-stock Python API
+chart = Chart.from_options(HighchartsStockOptions())
+chart.container = "container"
+chart.options.chart = {
+    "type": "candlestick",
+    "width": 4800,
+    "height": 2700,
+    "backgroundColor": "#FAFBFC",
+    "marginBottom": 200,
+    "spacingBottom": 30,
+    "marginLeft": 200,
+    "marginRight": 120,
+    "marginTop": 180,
+    "style": {"fontFamily": "'Segoe UI', Arial, sans-serif"},
 }
+chart.options.title = {
+    "text": "indicator-ichimoku \u00b7 highcharts \u00b7 pyplots.ai",
+    "style": {"fontSize": "60px", "fontWeight": "600", "color": "#1a1a2e", "letterSpacing": "0.5px"},
+    "y": 65,
+}
+chart.options.subtitle = {
+    "text": "Ichimoku Cloud overlay on 200 simulated trading days \u2014 crossover signals marked with flags",
+    "style": {"fontSize": "36px", "color": "#666680", "fontWeight": "300"},
+    "y": 120,
+}
+chart.options.x_axis = {
+    "type": "datetime",
+    "title": {"text": "Date", "style": {"fontSize": "42px", "color": "#444460", "fontWeight": "500"}, "margin": 25},
+    "labels": {
+        "style": {"fontSize": "32px", "color": "#666680"},
+        "format": "{value:%b %Y}",
+        "y": 40,
+        "rotation": 0,
+        "step": 2,
+    },
+    "gridLineWidth": 0,
+    "lineWidth": 0,
+    "tickWidth": 0,
+    "crosshair": {"width": 2, "color": "rgba(100, 100, 120, 0.3)", "dashStyle": "Dash"},
+}
+chart.options.y_axis = {
+    "title": {
+        "text": "Price (USD)",
+        "style": {"fontSize": "42px", "color": "#444460", "fontWeight": "500"},
+        "margin": 25,
+    },
+    "labels": {"style": {"fontSize": "32px", "color": "#666680"}, "format": "${value:.0f}", "x": -15},
+    "gridLineWidth": 1,
+    "gridLineColor": "rgba(100, 100, 120, 0.10)",
+    "gridLineDashStyle": "Dot",
+    "lineWidth": 0,
+    "opposite": False,
+    "tickWidth": 0,
+}
+chart.options.legend = {
+    "enabled": True,
+    "align": "right",
+    "verticalAlign": "top",
+    "layout": "vertical",
+    "x": -40,
+    "y": 60,
+    "floating": True,
+    "itemStyle": {"fontSize": "28px", "fontWeight": "400", "color": "#444460"},
+    "symbolWidth": 40,
+    "symbolRadius": 0,
+    "itemMarginBottom": 8,
+}
+chart.options.tooltip = {
+    "split": False,
+    "shared": True,
+    "style": {"fontSize": "26px"},
+    "headerFormat": "<b>{point.x:%b %d, %Y}</b><br/>",
+    "backgroundColor": "rgba(255, 255, 255, 0.96)",
+    "borderColor": "#ccc",
+    "borderRadius": 8,
+    "shadow": {"color": "rgba(0, 0, 0, 0.15)", "offsetX": 2, "offsetY": 2, "width": 4},
+}
+chart.options.plot_options = {
+    "candlestick": {
+        "color": BEARISH_COLOR,
+        "upColor": BULLISH_COLOR,
+        "lineColor": BEARISH_LINE,
+        "upLineColor": BULLISH_LINE,
+        "lineWidth": 3,
+        "pointWidth": 18,
+        "tooltip": {
+            "pointFormat": "O: ${point.open:.2f} H: ${point.high:.2f}<br/>"
+            + "L: ${point.low:.2f} C: ${point.close:.2f}"
+        },
+    },
+    "series": {"animation": False},
+}
+chart.options.range_selector = {"enabled": False}
+chart.options.navigator = {"enabled": False}
+chart.options.scrollbar = {"enabled": False}
+chart.options.credits = {"enabled": False}
 
-# Give the candlestick series an ID for flags to attach to
-chart_options["series"][0]["id"] = "dataseries"
+chart.options.series = [
+    {"type": "candlestick", "id": "dataseries", "name": "OHLC", "data": ohlc_data, "zIndex": 4},
+    {
+        "type": "line",
+        "name": "Tenkan-sen (9)",
+        "data": tenkan_data,
+        "color": "#306998",
+        "lineWidth": 4,
+        "marker": {"enabled": False},
+        "zIndex": 3,
+        "enableMouseTracking": True,
+        "tooltip": {"pointFormat": "Tenkan: <b>${point.y:.2f}</b><br/>"},
+    },
+    {
+        "type": "line",
+        "name": "Kijun-sen (26)",
+        "data": kijun_data,
+        "color": "#D35400",
+        "lineWidth": 4,
+        "marker": {"enabled": False},
+        "zIndex": 3,
+        "enableMouseTracking": True,
+        "tooltip": {"pointFormat": "Kijun: <b>${point.y:.2f}</b><br/>"},
+    },
+    {
+        "type": "line",
+        "name": "Senkou Span A",
+        "data": senkou_a_shifted,
+        "color": "rgba(46, 139, 135, 0.6)",
+        "lineWidth": 2,
+        "marker": {"enabled": False},
+        "zIndex": 1,
+        "dashStyle": "ShortDot",
+        "enableMouseTracking": False,
+    },
+    {
+        "type": "line",
+        "name": "Senkou Span B",
+        "data": senkou_b_shifted,
+        "color": "rgba(217, 79, 107, 0.6)",
+        "lineWidth": 2,
+        "marker": {"enabled": False},
+        "zIndex": 1,
+        "dashStyle": "ShortDot",
+        "enableMouseTracking": False,
+    },
+    {
+        "type": "line",
+        "name": "Chikou Span",
+        "data": chikou_data,
+        "color": "#8E44AD",
+        "lineWidth": 3,
+        "marker": {"enabled": False},
+        "zIndex": 2,
+        "dashStyle": "Dash",
+        "enableMouseTracking": True,
+        "tooltip": {"pointFormat": "Chikou: <b>${point.y:.2f}</b><br/>"},
+    },
+    {
+        "type": "arearange",
+        "name": "Kumo (bullish)",
+        "data": cloud_bullish,
+        "color": "rgba(46, 139, 135, 0.22)",
+        "lineWidth": 0,
+        "marker": {"enabled": False},
+        "zIndex": 0,
+        "enableMouseTracking": False,
+        "showInLegend": False,
+    },
+    {
+        "type": "arearange",
+        "name": "Kumo (bearish)",
+        "data": cloud_bearish,
+        "color": "rgba(217, 79, 107, 0.22)",
+        "lineWidth": 0,
+        "marker": {"enabled": False},
+        "zIndex": 0,
+        "enableMouseTracking": False,
+        "showInLegend": False,
+    },
+    {
+        "type": "flags",
+        "name": "Crossover Signals",
+        "data": crossover_flags,
+        "onSeries": "dataseries",
+        "shape": "squarepin",
+        "zIndex": 5,
+        "style": "fontSize: 24px",
+        "fillColor": "rgba(255, 255, 255, 0.92)",
+        "lineColor": "#444460",
+        "lineWidth": 2,
+        "width": 40,
+        "height": 30,
+    },
+]
+
+# Serialize validated chart options to JSON for reliable inline rendering
+chart_dict = chart.options.to_dict()
+chart_dict["plotOptions"]["candlestick"]["lineColor"] = BEARISH_LINE
+# Clean up artifacts from Python API serialization
+chart_dict["plotOptions"]["candlestick"].pop("type", None)
+chart_dict["plotOptions"]["series"].pop("type", None)
+# margin array duplicates individual margin properties; keep both for clarity
+chart_options_json = json.dumps(chart_dict)
 
 # Download Highstock JS and highcharts-more (for arearange)
 highstock_url = "https://cdn.jsdelivr.net/npm/highcharts@11/highstock.js"
@@ -368,9 +377,6 @@ with urllib.request.urlopen(highstock_url, timeout=30) as response:
 with urllib.request.urlopen(more_url, timeout=30) as response:
     more_js = response.read().decode("utf-8")
 
-chart_options_json = json.dumps(chart_options)
-
-# Render
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -392,21 +398,19 @@ with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encodin
     f.write(html_content)
     temp_path = f.name
 
-with open("plot.html", "w", encoding="utf-8") as f:
-    f.write(html_content)
-
 # Screenshot
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=4800,2700")
+chrome_options.add_argument("--window-size=4800,2900")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
 time.sleep(5)
-driver.save_screenshot("plot.png")
+container = driver.find_element("id", "container")
+container.screenshot("plot.png")
 driver.quit()
 
 Path(temp_path).unlink()

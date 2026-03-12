@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: indicator-ichimoku
 created: '2026-03-12T14:16:42Z'
-updated: '2026-03-12T14:30:41Z'
+updated: '2026-03-12T14:41:25Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23006287717
 issue: 4669
@@ -10,34 +10,31 @@ library_version: 4.9.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/indicator-ichimoku/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/indicator-ichimoku/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/indicator-ichimoku/letsplot/plot.html
-quality_score: 89
+quality_score: 91
 review:
   strengths:
-  - Comprehensive Ichimoku implementation with all five indicator lines, properly
-    computed cloud, and crossover signal markers
-  - 'Excellent visual hierarchy: subtle cloud (alpha=0.2), medium indicator lines,
-    prominent candlesticks'
-  - Professional design with custom palette, refined typography, and informative subtitle
-    as inline legend
-  - Distinctive use of lets-plot layer_tooltips() with formatted financial data
-  - 'Perfect code quality: clean KISS structure, reproducible, appropriate complexity'
+  - Excellent use of letsplot-specific tooltip system (layer_tooltips with formatted
+    price data)
+  - Colorblind-safe palette throughout (blue/orange instead of red/green)
+  - Strong data storytelling with subtitle narrating the trend shift and gold diamond
+    crossover markers
+  - All five Ichimoku components correctly computed and rendered with proper shifts
+  - 'Clean visual refinement: subtle grid, removed ticks, styled legend with border'
   weaknesses:
-  - No formal legend element — relies entirely on subtitle text for component identification
-  - Green/red candlestick coloring is conventional but not colorblind-accessible
-  - Minor visual congestion in areas where cloud, indicator lines, and candlesticks
-    overlap
-  image_description: The plot displays an Ichimoku Kinko Hyo chart overlaid on a candlestick
-    price chart spanning approximately March–September 2024. Candlesticks use conventional
-    green (bullish) and red (bearish) coloring. The Tenkan-sen (conversion) line is
-    drawn in blue and the Kijun-sen (base) line in rose/pink — both are clearly visible
-    above the candlesticks. The Chikou Span appears as a gray dashed line shifted
-    into the past. The Kumo cloud is filled between Senkou Span A and B with a light
-    green tint when bullish (Span A > Span B) and a light red/pink tint when bearish.
-    Yellow diamond markers highlight Tenkan/Kijun crossover signals at approximately
-    4 locations. The title reads "indicator-ichimoku · letsplot · pyplots.ai" in bold,
-    with a descriptive subtitle listing all components. The y-axis shows "Price ($)"
-    ranging from ~$145 to $195, and the x-axis shows "Trading Day (2024)" with monthly
-    date labels. The background is white with subtle horizontal grid lines.
+  - Legend slightly overlaps candlestick data in upper right corner
+  - Chikou Span could be slightly more visible (alpha=0.6 with gray is faint)
+  image_description: The plot displays an Ichimoku Cloud chart overlaid on candlestick
+    price data spanning March-September 2024. The title "indicator-ichimoku · letsplot
+    · pyplots.ai" appears in bold at the top left, with an italic subtitle describing
+    the trend reversal. The x-axis is labeled "Trading Day (2024)" with date tick
+    marks from Mar 14 through Sep 26. The y-axis shows "Price ($)" from ~$145 to ~$195.
+    Candlesticks use blue for bullish and orange for bearish days. The Tenkan-sen
+    is a solid blue line, Kijun-sen a solid magenta/pink line, and Chikou Span a dashed
+    gray line shifted backward. The Kumo cloud is filled between Senkou Span A and
+    B with light blue (bullish) and light peach/orange (bearish) shading. Gold diamond
+    markers highlight TK Crossover points. A legend in the upper right identifies
+    Tenkan-sen, Kijun-sen, Chikou Span, and TK Crossover. The background is clean
+    white with subtle horizontal gridlines only.
   criteria_checklist:
     visual_quality:
       score: 28
@@ -48,40 +45,44 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title=24, axis_title=20, axis_text=16,
-          subtitle=16'
+        comment: All font sizes explicitly set (title=24, axis_title=20, axis_text=16,
+          legend=13-15), all perfectly readable
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: No text collisions, date labels well-spaced
+        comment: Minor overlap of legend box with some candlestick data in upper right;
+          all text remains readable
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Minor congestion where cloud, indicator lines, and candles overlap
+        comment: All elements visible; Chikou Span (dashed gray at alpha=0.6) is slightly
+          faint but discernible
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Green/red candlesticks conventional but not colorblind-safe
+        comment: Blue/orange candlesticks instead of red/green; all line colors distinguishable
+          for colorblind viewers
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Excellent canvas utilization with balanced margins
+        comment: Landscape format fills canvas well, balanced margins, good proportions
+          for time-series data
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Price ($) and Trading Day (2024) with units
+        comment: 'Descriptive labels with units: Trading Day (2024) and Price ($)'
     design_excellence:
-      score: 15
+      score: 16
       max: 20
       items:
       - id: DE-01
@@ -89,22 +90,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom palette, professional typography, intentional hierarchy, clearly
-          above defaults
+        comment: Custom colorblind-safe palette, intentional color hierarchy, bold
+          title with italic subtitle, professional polish above defaults
       - id: DE-02
         name: Visual Refinement
         score: 5
         max: 6
         passed: true
-        comment: Minimal theme, x-grid removed, subtle y-grid, ticks removed, white
-          background
+        comment: Minimal theme, x-grid removed, subtle y-grid, ticks removed, clean
+          white background, styled legend with border
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Crossover markers create focal points, cloud transitions narrate
-          trend direction
+        comment: Subtitle narrates trend reversal, gold diamond crossover markers
+          create focal points, data shows bullish-to-bearish transition
     spec_compliance:
       score: 14
       max: 15
@@ -114,26 +115,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct Ichimoku Cloud overlay on candlestick chart
+        comment: Correct candlestick chart with Ichimoku cloud overlay
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: All five lines, cloud fill, conventional candlestick coloring
+        comment: All five Ichimoku lines present, cloud filled with color-changing
+          fill, proper bullish/bearish coloring
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Date on X, Price on Y, all data correctly mapped
+        comment: X=trading dates, Y=price; axes show full data range
       - id: SC-04
         name: Title & Legend
         score: 2
         max: 3
         passed: true
-        comment: Title format correct, no formal legend — subtitle serves as inline
-          legend
+        comment: Title format correct; legend shows indicator lines but omits Senkou
+          Spans/cloud labels
     data_quality:
       score: 14
       max: 15
@@ -143,21 +145,21 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows bullish/bearish candles, cloud transitions, crossover signals,
-          all components
+        comment: Shows bullish and bearish candles, cloud transitions, TK crossover
+          signals, all five Ichimoku components
       - id: DQ-02
         name: Realistic Context
         score: 4
         max: 5
         passed: true
-        comment: Plausible stock data with realistic random walk and business day
-          frequency
+        comment: Simulated stock OHLC with realistic random walk; plausible but synthetic
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Price range $145-$195 realistic for equities
+        comment: Stock prices $145-$195, 200 trading days, standard Ichimoku parameters
+          (9, 26, 52)
     code_quality:
       score: 10
       max: 10
@@ -167,55 +169,57 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports, data, plot, save'
+        comment: 'Linear flow: imports, data generation, Ichimoku computation, plot
+          construction, save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) ensures deterministic output
+        comment: np.random.seed(42) set at the start
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: numpy, pandas, lets_plot - all used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Appropriate complexity for Ichimoku, clean cloud splitting
+        comment: Well-organized, clear variable names, appropriate complexity
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png with scale=3, uses current API
+        comment: Saves as plot.png via ggsave with scale=3
     library_mastery:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Good ggplot grammar with layered composition, scales, and theme customization
+        comment: 'Expert ggplot grammar: geom_ribbon, geom_rect, geom_segment, geom_line,
+          geom_point; proper scale_*_manual'
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: layer_tooltips() with title/line/format and HTML export are distinctive
-          lets-plot features
-  verdict: REJECTED
+        comment: Uses letsplot-specific layer_tooltips with formatted hover info,
+          manual_key/layer_key for legend, HTML export
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - layer-composition
+  - custom-legend
   - hover-tooltips
-  - html-export
   - manual-ticks
   patterns:
   - data-generation

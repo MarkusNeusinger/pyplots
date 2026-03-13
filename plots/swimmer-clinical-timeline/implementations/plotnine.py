@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 swimmer-clinical-timeline: Swimmer Plot for Clinical Trial Timelines
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-13
@@ -9,6 +9,7 @@ import pandas as pd
 from plotnine import (
     aes,
     annotate,
+    coord_cartesian,
     element_blank,
     element_line,
     element_rect,
@@ -113,48 +114,54 @@ plot = (
     + scale_shape_manual(values=event_shapes, name="Clinical Event")
     + scale_fill_manual(values=event_colors, name="Clinical Event")
     + scale_y_discrete(limits=bar_df["patient_id"].tolist())
-    + scale_x_continuous(breaks=range(0, 55, 6), limits=(0, 52))
-    # plotnine-specific guide customization
+    + scale_x_continuous(breaks=range(0, 55, 6))
+    # coord_cartesian for tight axis limits without clipping data
+    + coord_cartesian(xlim=(0, max(durations) + 2))
+    # plotnine-specific guide customization with override_aes
     + guides(
-        color=guide_legend(order=1, override_aes={"size": 4}),
-        shape=guide_legend(order=2, override_aes={"size": 4, "stroke": 0.3}),
+        color=guide_legend(order=1, override_aes={"size": 5}),
+        shape=guide_legend(order=2, override_aes={"size": 5, "stroke": 0.4}),
         fill=guide_legend(order=2),
     )
-    # Annotations for data storytelling emphasis
+    # Median annotations positioned clearly below bottom patients
     + annotate(
-        "text",
-        x=median_a,
-        y=0.5,
+        "label",
+        x=median_a + 0.5,
+        y=2,
         label=f"Median A: {median_a:.0f}w",
-        size=8,
+        size=10,
         color="#306998",
+        fill="#EAF0F7",
         fontweight="bold",
         ha="left",
-        va="bottom",
-    )
-    + annotate(
-        "text",
-        x=median_b,
-        y=1.5,
-        label=f"Median B: {median_b:.0f}w",
-        size=8,
-        color="#CF8A2E",
-        fontweight="bold",
-        ha="left",
-        va="bottom",
+        va="center",
+        label_padding=0.3,
     )
     + annotate(
         "label",
-        x=48,
-        y=n_patients,
-        label=f"ORR: {response_rate:.0f}%\n({n_responders}/{n_patients})",
-        size=9,
+        x=median_b + 0.5,
+        y=4,
+        label=f"Median B: {median_b:.0f}w",
+        size=10,
+        color="#CF8A2E",
+        fill="#FDF3E7",
+        fontweight="bold",
+        ha="left",
+        va="center",
+        label_padding=0.3,
+    )
+    + annotate(
+        "label",
+        x=max(durations) - 1,
+        y=n_patients - 1,
+        label=f"ORR: {response_rate:.0f}% ({n_responders}/{n_patients})",
+        size=11,
         color="#0072B2",
-        fill="#F0F8FF",
+        fill="#EDF6FC",
         ha="right",
         va="top",
-        alpha=0.9,
-        label_padding=0.4,
+        alpha=0.95,
+        label_padding=0.5,
     )
     + labs(
         title="swimmer-clinical-timeline \u00b7 plotnine \u00b7 pyplots.ai", x="Time on Study (weeks)", y="Patient ID"
@@ -162,20 +169,22 @@ plot = (
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
-        plot_title=element_text(size=22, weight="bold", margin={"b": 12}),
-        plot_subtitle=element_text(size=14, color="#555555"),
-        axis_title_x=element_text(size=18, margin={"t": 10}),
-        axis_title_y=element_text(size=18, margin={"r": 10}),
-        axis_text_x=element_text(size=14),
-        axis_text_y=element_text(size=11, family="monospace"),
-        legend_title=element_text(size=14, weight="bold"),
-        legend_text=element_text(size=12),
+        plot_title=element_text(size=24, weight="bold", margin={"b": 14}),
+        axis_title_x=element_text(size=20, margin={"t": 12}),
+        axis_title_y=element_text(size=20, margin={"r": 12}),
+        axis_text_x=element_text(size=16),
+        axis_text_y=element_text(size=14, family="monospace"),
+        legend_title=element_text(size=16, weight="bold"),
+        legend_text=element_text(size=14),
         legend_position="right",
-        legend_background=element_rect(fill="#FAFAFA", color="#DDDDDD", size=0.5),
+        legend_background=element_rect(fill="#FAFAFA", color="#CCCCCC", size=0.5),
         legend_key=element_rect(fill="white", color="none"),
+        legend_key_size=18,
+        legend_key_spacing=8,
         panel_grid_major_y=element_blank(),
         panel_grid_minor=element_blank(),
-        panel_grid_major_x=element_line(color="#E0E0E0", size=0.3, alpha=0.5),
+        panel_grid_major_x=element_line(color="#E8E8E8", size=0.3),
+        panel_border=element_blank(),
         plot_background=element_rect(fill="white", color="none"),
         panel_background=element_rect(fill="white", color="none"),
     )

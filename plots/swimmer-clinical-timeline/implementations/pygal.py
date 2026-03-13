@@ -1,10 +1,11 @@
-""" pyplots.ai
+"""pyplots.ai
 swimmer-clinical-timeline: Swimmer Plot for Clinical Trial Timelines
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 79/100 | Created: 2026-03-13
 """
 
 import re
+import xml.etree.ElementTree as ET
 
 import cairosvg
 import numpy as np
@@ -72,13 +73,13 @@ arm_colors = {"Arm A (Combo)": "#306998", "Arm B (Mono)": "#9370DB"}
 # Pygal style with refined aesthetics
 custom_style = Style(
     background="white",
-    plot_background="#FAFBFC",
+    plot_background="#F7F9FB",
     foreground="#333333",
     foreground_strong="#222222",
-    foreground_subtle="#E0E0E0",
+    foreground_subtle="#E8E8E8",
     colors=("#306998",),
-    opacity=".78",
-    opacity_hover=".92",
+    opacity=".82",
+    opacity_hover=".95",
     title_font_size=48,
     label_font_size=22,
     major_label_font_size=24,
@@ -93,7 +94,14 @@ custom_style = Style(
 num_patients = len(patient_ids)
 max_duration = float(np.ceil(max(durations) / 10) * 10)
 
-# Create pygal HorizontalBar with real data
+# Create pygal HorizontalBar - reversed for longest-at-top display
+# Pygal renders bars bottom-to-top, so we reverse data
+reversed_ids = list(reversed(patient_ids))
+reversed_arms = list(reversed(arms))
+reversed_durs = list(reversed(durations))
+reversed_events = list(reversed(events))
+reversed_ongoing = list(reversed(ongoing))
+
 chart = pygal.HorizontalBar(
     width=4800,
     height=2700,
@@ -103,7 +111,7 @@ chart = pygal.HorizontalBar(
     show_legend=False,
     print_values=False,
     show_y_guides=True,
-    show_x_guides=False,
+    show_x_guides=True,
     margin=50,
     margin_bottom=200,
     spacing=4,
@@ -113,16 +121,9 @@ chart = pygal.HorizontalBar(
     truncate_label=8,
 )
 
-# Pygal HorizontalBar renders bottom-to-top, so reverse data for longest-at-top
-reversed_ids = list(reversed(patient_ids))
-reversed_arms = list(reversed(arms))
-reversed_durs = list(reversed(durations))
-reversed_events = list(reversed(events))
-reversed_ongoing = list(reversed(ongoing))
-
 chart.x_labels = reversed_ids
 
-# Add real data with per-bar arm colors (pygal renders actual bars)
+# Add data with per-bar arm colors
 bar_data = []
 for i in range(num_patients):
     bar_data.append(
@@ -134,43 +135,55 @@ for i in range(num_patients):
     )
 chart.add("Duration", bar_data)
 
-# Render base SVG with pygal-drawn bars
+# Render base SVG
 svg_str = chart.render().decode("utf-8")
 
-# Extract bar positions from rendered SVG using pygal's class attribute
-bar_rects = re.findall(
-    r'<rect\s+x="([^"]+)"\s+y="([^"]+)"\s+rx="[^"]*"\s+ry="[^"]*"\s+'
-    r'width="([^"]+)"\s+height="([^"]+)"\s+class="rect reactive tooltip-trigger"',
-    svg_str,
-)
+# Parse SVG with XML to extract bar positions reliably (not regex)
+root = ET.fromstring(svg_str)
+ns = {"svg": "http://www.w3.org/2000/svg"}
 
-# Build bar position list (pygal renders bottom-to-top matching our reversed data)
-data_bars = []
-for match in bar_rects:
-    x, y, w, h = float(match[0]), float(match[1]), float(match[2]), float(match[3])
-    data_bars.append({"x": x, "y": y, "width": w, "height": h})
+# Find plot group transform offset (bars are in local coords inside a translated group)
+tx, ty = 0.0, 0.0
+for g in root.iter("{http://www.w3.org/2000/svg}g"):
+    cls = g.get("class", "")
+    if cls == "plot":
+        transform = g.get("transform", "")
+        m = re.search(r"translate\(([^,]+),\s*([^)]+)\)", transform)
+        if m:
+            tx, ty = float(m.group(1)), float(m.group(2))
+        break
 
-# Sort bars by y descending (bottom-to-top) to match pygal's rendering order
-# Pygal renders x_labels[0]/bar_data[0] at the bottom (largest y)
-data_bars.sort(key=lambda b: b["y"], reverse=True)
+# Find all rect elements with class "rect reactive tooltip-trigger"
+bar_rects = []
+for rect in root.iter("{http://www.w3.org/2000/svg}rect"):
+    cls = rect.get("class", "")
+    if "rect reactive tooltip-trigger" in cls:
+        x = float(rect.get("x", 0)) + tx
+        y = float(rect.get("y", 0)) + ty
+        w = float(rect.get("width", 0))
+        h = float(rect.get("height", 0))
+        bar_rects.append({"x": x, "y": y, "width": w, "height": h})
+
+# Sort bars by y descending (bottom-to-top) to match pygal rendering order
+# bar_data[0] = bottom bar (largest y), bar_data[-1] = top bar (smallest y)
+bar_rects.sort(key=lambda b: b["y"], reverse=True)
 
 # Build event marker SVG elements
 marker_elements = []
-marker_size = 30  # Much larger than before (was 18px)
+marker_size = 28
 
-if len(data_bars) == num_patients:
-    # Use actual bar positions from pygal's rendered SVG
+if len(bar_rects) == num_patients:
     for i in range(num_patients):
-        bar = data_bars[i]
+        bar = bar_rects[i]
         bar_x = bar["x"]
         bar_w = bar["width"]
         y_center = bar["y"] + bar["height"] / 2
         dur = reversed_durs[i]
 
-        # Ongoing arrow
+        # Ongoing arrow at end of bar
         if reversed_ongoing[i]:
             arrow_x = bar_x + bar_w
-            arrow_sz = 16
+            arrow_sz = 14
             marker_elements.append(
                 f'<polygon points="{arrow_x:.1f},{y_center - arrow_sz:.1f} '
                 f"{arrow_x + arrow_sz * 2.2:.1f},{y_center:.1f} "
@@ -178,7 +191,7 @@ if len(data_bars) == num_patients:
                 f'fill="{arm_colors[reversed_arms[i]]}" opacity="0.95"/>'
             )
 
-        # Event markers
+        # Event markers positioned proportionally along bar
         for event_type, event_time in reversed_events[i]:
             cfg = event_config[event_type]
             mx = bar_x + (event_time / dur) * bar_w
@@ -212,17 +225,16 @@ if len(data_bars) == num_patients:
                     f'fill="{cfg["color"]}" stroke="white" stroke-width="2.5"/>'
                 )
             elif event_type == "adverse_event":
-                # Square
+                # Rounded square
                 half = ms * 0.7
                 marker_elements.append(
                     f'<rect x="{mx - half:.1f}" y="{y_center - half:.1f}" '
                     f'width="{half * 2:.1f}" height="{half * 2:.1f}" '
-                    f'fill="{cfg["color"]}" stroke="white" stroke-width="2.5" rx="3"/>'
+                    f'fill="{cfg["color"]}" stroke="white" stroke-width="2.5" rx="4"/>'
                 )
 
-# Custom legend below chart: Row 1 = Arms, Row 2 = Events
-# Find chart bottom from the last bar or use estimated position
-legend_base_y = 2700 - 160
+# Custom legend below chart - Row 1: Arms, Row 2: Events
+legend_base_y = 2700 - 155
 arm_legend = [("#306998", "Arm A (Combo)"), ("#9370DB", "Arm B (Mono)")]
 arm_start_x = 1800
 arm_spacing = 420
@@ -230,7 +242,7 @@ for idx, (color, label) in enumerate(arm_legend):
     x_pos = arm_start_x + idx * arm_spacing
     marker_elements.append(
         f'<rect x="{x_pos:.1f}" y="{legend_base_y - 12:.1f}" '
-        f'width="32" height="20" fill="{color}" rx="3" opacity="0.78"/>'
+        f'width="32" height="20" fill="{color}" rx="3" opacity="0.82"/>'
     )
     marker_elements.append(
         f'<text x="{x_pos + 42:.1f}" y="{legend_base_y + 4:.1f}" '

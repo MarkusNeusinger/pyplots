@@ -1,13 +1,14 @@
-""" pyplots.ai
+"""pyplots.ai
 cartogram-area-distortion: Cartogram with Area Distortion by Data Value
 Library: matplotlib 3.10.8 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-13
 """
 
+import matplotlib.patheffects as pe
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.cm import ScalarMappable
-from matplotlib.colors import Normalize
+from matplotlib.colors import LinearSegmentedColormap, Normalize
 
 
 # Data - US states with approximate geographic centroids, population (thousands), and GDP per capita
@@ -73,57 +74,80 @@ gdp_per_capita = np.array([states[s][3] for s in names])
 # Scale circle radii proportional to sqrt(population) for area proportionality
 max_pop = populations.max()
 radii = np.sqrt(populations / max_pop) * 2.8
+# Enforce minimum radius so small states remain visible
+min_radius = 0.55
+radii = np.maximum(radii, min_radius)
 
 # Collision avoidance: push overlapping circles apart to reduce NE crowding
 adjusted_lons = lons.copy()
 adjusted_lats = lats.copy()
-for _ in range(40):
+for _ in range(60):
     for i in range(len(names)):
         for j in range(i + 1, len(names)):
             dx = adjusted_lons[j] - adjusted_lons[i]
             dy = adjusted_lats[j] - adjusted_lats[i]
             dist = np.sqrt(dx**2 + dy**2)
-            min_dist = (radii[i] + radii[j]) * 1.15
+            min_dist = (radii[i] + radii[j]) * 1.25
             if dist < min_dist and dist > 0:
                 overlap = min_dist - dist
                 push = overlap / 2
                 nx, ny = dx / dist, dy / dist
-                adjusted_lons[i] -= nx * push * 0.3
-                adjusted_lats[i] -= ny * push * 0.3
-                adjusted_lons[j] += nx * push * 0.3
-                adjusted_lats[j] += ny * push * 0.3
+                adjusted_lons[i] -= nx * push * 0.35
+                adjusted_lats[i] -= ny * push * 0.35
+                adjusted_lons[j] += nx * push * 0.35
+                adjusted_lats[j] += ny * push * 0.35
+
+# Custom colormap for richer visual palette
+colors_list = ["#fffdd0", "#b4d99e", "#46a5a5", "#1d6fa5", "#183270"]
+cmap = LinearSegmentedColormap.from_list("wealth", colors_list, N=256)
 
 # Plot
 fig = plt.figure(figsize=(16, 9))
-ax = fig.add_axes([0.05, 0.08, 0.70, 0.82])
+ax = fig.add_axes([0.04, 0.06, 0.72, 0.86])
 
 norm = Normalize(vmin=gdp_per_capita.min(), vmax=gdp_per_capita.max())
-cmap = plt.cm.YlGnBu
 
 # Draw circles with sorted order so smaller circles render on top
 sort_idx = np.argsort(-populations)
 for i in sort_idx:
+    color = cmap(norm(gdp_per_capita[i]))
     circle = plt.Circle(
         (adjusted_lons[i], adjusted_lats[i]),
         radii[i],
-        facecolor=cmap(norm(gdp_per_capita[i])),
+        facecolor=color,
         edgecolor="white",
-        linewidth=1.5,
-        alpha=0.92,
+        linewidth=1.8,
+        alpha=0.93,
         zorder=2 + (max_pop - populations[i]) / max_pop,
     )
     ax.add_patch(circle)
-    if populations[i] > 4000:
+
+    # Add drop shadow for larger circles using patheffects
+    if populations[i] > 8000:
+        shadow = plt.Circle(
+            (adjusted_lons[i] + 0.12, adjusted_lats[i] - 0.12),
+            radii[i],
+            facecolor="none",
+            edgecolor="#00000015",
+            linewidth=3,
+            zorder=1.9,
+        )
+        ax.add_patch(shadow)
+
+    # Label states: all states with population > 2500k get labels
+    if populations[i] > 2500:
+        fontsize = 16 if populations[i] > 5000 else 14
         ax.text(
             adjusted_lons[i],
             adjusted_lats[i],
             names[i],
             ha="center",
             va="center",
-            fontsize=13,
+            fontsize=fontsize,
             fontweight="bold",
             color="#1a1a2e",
             zorder=4,
+            path_effects=[pe.withStroke(linewidth=2.5, foreground="white")],
         )
 
 # Annotations: highlight key data insights
@@ -132,57 +156,62 @@ ax.annotate(
     "California\n39.5M people",
     xy=(adjusted_lons[ca_idx], adjusted_lats[ca_idx] - radii[ca_idx]),
     xytext=(adjusted_lons[ca_idx] + 4, adjusted_lats[ca_idx] - 6),
-    fontsize=14,
+    fontsize=16,
     fontweight="bold",
     color="#1a1a2e",
     ha="center",
-    arrowprops={"arrowstyle": "-|>", "color": "#555555", "lw": 1.5},
+    arrowprops={"arrowstyle": "-|>", "color": "#444444", "lw": 1.8, "connectionstyle": "arc3,rad=0.15"},
+    bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": "#cccccc", "alpha": 0.85},
     zorder=5,
 )
 
 ny_idx = names.index("NY")
 ax.annotate(
-    "New York  $82K GDP/cap",
+    "New York\n$82K GDP/cap",
     xy=(adjusted_lons[ny_idx], adjusted_lats[ny_idx] + radii[ny_idx]),
-    xytext=(adjusted_lons[ny_idx] - 8, adjusted_lats[ny_idx] + 5),
-    fontsize=14,
+    xytext=(adjusted_lons[ny_idx] - 10, adjusted_lats[ny_idx] + 5),
+    fontsize=16,
     fontweight="bold",
     color="#1a1a2e",
     ha="center",
-    arrowprops={"arrowstyle": "-|>", "color": "#555555", "lw": 1.5},
+    arrowprops={"arrowstyle": "-|>", "color": "#444444", "lw": 1.8, "connectionstyle": "arc3,rad=-0.15"},
+    bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": "#cccccc", "alpha": 0.85},
     zorder=5,
 )
 
 ms_idx = names.index("MS")
 ax.annotate(
-    "Mississippi\n$38K GDP/cap\n(lowest)",
+    "Mississippi\n$38K GDP/cap (lowest)",
     xy=(adjusted_lons[ms_idx], adjusted_lats[ms_idx]),
-    xytext=(adjusted_lons[ms_idx] - 8, adjusted_lats[ms_idx] + 3),
-    fontsize=12,
+    xytext=(adjusted_lons[ms_idx] - 10, adjusted_lats[ms_idx] + 4),
+    fontsize=14,
+    fontweight="bold",
     color="#555555",
     ha="center",
-    arrowprops={"arrowstyle": "-|>", "color": "#888888", "lw": 1.2},
+    arrowprops={"arrowstyle": "-|>", "color": "#777777", "lw": 1.5, "connectionstyle": "arc3,rad=0.1"},
+    bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": "#dddddd", "alpha": 0.85},
     zorder=5,
 )
 
-# Colorbar
+# Colorbar with refined styling
 sm = ScalarMappable(cmap=cmap, norm=norm)
 sm.set_array([])
-cbar_ax = fig.add_axes([0.78, 0.15, 0.02, 0.55])
+cbar_ax = fig.add_axes([0.79, 0.18, 0.018, 0.52])
 cbar = fig.colorbar(sm, cax=cbar_ax)
-cbar.set_label("GDP per Capita (USD)", fontsize=20, labelpad=10)
-cbar.ax.tick_params(labelsize=16)
+cbar.set_label("GDP per Capita (USD)", fontsize=20, labelpad=12)
+cbar.ax.tick_params(labelsize=16, length=0)
 cbar.ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f"${x / 1000:.0f}K"))
-cbar.outline.set_linewidth(0.5)
+cbar.outline.set_linewidth(0.3)
+cbar.outline.set_edgecolor("#bbbbbb")
 
-# Size legend (bottom-right of main axes)
-legend_x = -68.0
-legend_y_base = 27.5
+# Size legend
+legend_x = -67.5
+legend_y_base = 28.0
 ax.text(
     legend_x,
-    legend_y_base + 12.0,
+    legend_y_base + 11.5,
     "Population",
-    fontsize=16,
+    fontsize=18,
     fontweight="bold",
     ha="center",
     va="center",
@@ -196,14 +225,14 @@ y_pos = legend_y_base
 for r, label in zip(legend_radii, legend_labels, strict=True):
     circle_y = y_pos + r
     legend_circle = plt.Circle(
-        (legend_x - 1.5, circle_y), r, facecolor="#e8e8e8", edgecolor="#555555", linewidth=1.2, zorder=2
+        (legend_x - 1.5, circle_y), r, facecolor="#e0e6ec", edgecolor="#888888", linewidth=1.0, zorder=2
     )
     ax.add_patch(legend_circle)
     ax.text(legend_x + 1.8, circle_y, label, fontsize=16, va="center", ha="left", color="#555555")
     y_pos += r * 2 + 1.0
 
 # Reference inset: simplified US outline for geographic comparison
-inset_ax = fig.add_axes([0.05, 0.08, 0.16, 0.25])
+inset_ax = fig.add_axes([0.04, 0.06, 0.15, 0.24])
 us_outline_lon = [
     -124,
     -122,
@@ -338,31 +367,34 @@ inset_ax.fill(us_outline_lon, us_outline_lat, color="#d4e6f1", edgecolor="#7f8c8
 inset_ax.set_xlim(-128, -64)
 inset_ax.set_ylim(23, 52)
 inset_ax.set_aspect("equal")
-inset_ax.set_title("Actual Geography", fontsize=11, fontweight="bold", color="#777777", pad=2)
+inset_ax.set_title("Actual Geography", fontsize=12, fontweight="bold", color="#777777", pad=3)
 for spine in inset_ax.spines.values():
     spine.set_edgecolor("#cccccc")
-    spine.set_linewidth(0.6)
+    spine.set_linewidth(0.5)
 inset_ax.set_xticks([])
 inset_ax.set_yticks([])
-inset_ax.patch.set_alpha(0.85)
+inset_ax.patch.set_facecolor("#fafbfc")
+inset_ax.patch.set_alpha(0.9)
 
 # Main plot styling
-ax.set_xlim(-128, -64)
-ax.set_ylim(25, 50)
+ax.set_xlim(-128, -63)
+ax.set_ylim(24, 51)
 ax.set_aspect("equal")
 ax.set_facecolor("#fafbfc")
 fig.patch.set_facecolor("#fafbfc")
 
-# Title
+# Title with refined typography
+fig.text(
+    0.40, 0.96, "US States by Population", fontsize=28, fontweight="bold", ha="center", va="center", color="#1a1a2e"
+)
 fig.text(
     0.40,
-    0.95,
-    "US States by Population · cartogram-area-distortion · matplotlib · pyplots.ai",
-    fontsize=24,
-    fontweight="medium",
+    0.93,
+    "cartogram-area-distortion \u00b7 matplotlib \u00b7 pyplots.ai",
+    fontsize=18,
     ha="center",
     va="center",
-    color="#1a1a2e",
+    color="#666666",
 )
 
 # Subtitle

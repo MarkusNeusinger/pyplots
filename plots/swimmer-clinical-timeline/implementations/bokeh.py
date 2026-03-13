@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 swimmer-clinical-timeline: Swimmer Plot for Clinical Trial Timelines
 Library: bokeh 3.9.0 | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-13
@@ -6,7 +6,7 @@ Quality: 89/100 | Created: 2026-03-13
 
 import numpy as np
 from bokeh.io import export_png, save
-from bokeh.models import ColumnDataSource, FactorRange, HoverTool, Legend, LegendItem, Range1d, Span
+from bokeh.models import ColumnDataSource, FactorRange, HoverTool, Label, Legend, LegendItem, Range1d, Span
 from bokeh.plotting import figure
 from bokeh.resources import CDN
 
@@ -124,10 +124,10 @@ p.add_tools(bar_hover)
 
 # Colorblind-safe event marker palette (blue/orange/purple/teal — no red/green)
 event_marker_config = {
-    "partial_response": {"marker": "triangle", "color": "#0072B2", "size": 22},
-    "complete_response": {"marker": "star", "color": "#CC79A7", "size": 26},
-    "progressive_disease": {"marker": "diamond", "color": "#D55E00", "size": 22},
-    "adverse_event": {"marker": "square", "color": "#E69F00", "size": 18},
+    "partial_response": {"marker": "triangle", "color": "#009E73", "size": 24},
+    "complete_response": {"marker": "star", "color": "#CC79A7", "size": 28},
+    "progressive_disease": {"marker": "diamond", "color": "#D55E00", "size": 24},
+    "adverse_event": {"marker": "square", "color": "#F0E442", "size": 20},
 }
 
 # Plot event markers using scatter() with marker parameter
@@ -151,8 +151,8 @@ for etype, config in event_marker_config.items():
         marker=config["marker"],
         size=config["size"],
         color=config["color"],
-        line_color="#333333",
-        line_width=1.5,
+        line_color="#222222",
+        line_width=2.5,
     )
     event_renderers[etype] = r
 
@@ -193,6 +193,19 @@ median_span = Span(
 )
 p.add_layout(median_span)
 
+# Label for median line
+median_label = Label(
+    x=median_duration,
+    y=2350,
+    y_units="screen",
+    text=f"Median: {median_duration:.1f} wk",
+    text_font_size="20pt",
+    text_color="#555555",
+    text_font_style="italic",
+    x_offset=10,
+)
+p.add_layout(median_label)
+
 # Style
 p.title.text_font_size = "36pt"
 p.title.text_color = "#2B2B2B"
@@ -200,11 +213,11 @@ p.title.text_color = "#2B2B2B"
 p.xaxis.axis_label_text_font_size = "28pt"
 p.xaxis.major_label_text_font_size = "20pt"
 p.xaxis.axis_label_text_color = "#444444"
-p.x_range = Range1d(0, max(sorted_durations) + 6)
+p.x_range = Range1d(-0.5, max(sorted_durations) + 4)
 
 p.yaxis.axis_label = "Patient"
 p.yaxis.axis_label_text_font_size = "28pt"
-p.yaxis.major_label_text_font_size = "16pt"
+p.yaxis.major_label_text_font_size = "18pt"
 p.yaxis.axis_label_text_color = "#444444"
 
 p.xgrid.grid_line_color = None
@@ -237,7 +250,7 @@ for etype, label in [
 if ongoing_r is not None:
     legend_items.append(LegendItem(label="Ongoing", renderers=[ongoing_r]))
 
-legend = Legend(items=legend_items, location="bottom_right", orientation="vertical")
+legend = Legend(items=legend_items, location="center_right", orientation="vertical")
 legend.label_text_font_size = "22pt"
 legend.glyph_height = 35
 legend.glyph_width = 35

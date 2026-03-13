@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 cartogram-area-distortion: Cartogram with Area Distortion by Data Value
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 73/100 | Created: 2026-03-13
@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
+    annotate,
     coord_fixed,
     element_blank,
     element_rect,
@@ -17,6 +18,7 @@ from plotnine import (
     ggplot,
     labs,
     scale_fill_cmap,
+    scale_size_identity,
     theme,
 )
 
@@ -83,10 +85,19 @@ gdp_per_capita = {
     "Romania": 15.8,
 }
 
-# Non-contiguous cartogram: shrink all polygons first, then scale by population
-# This creates visible gaps so distorted regions don't overlap
+# Non-contiguous cartogram: shrink all polygons, then scale by population
+# Cap the scale factor to prevent large countries from overlapping
 median_pop = np.median(list(population.values()))
-base_shrink = 0.45  # Shrink base size to create gaps between regions
+base_shrink = 0.38
+
+# Build reference outline data (original boundaries, shown faintly for comparison)
+ref_rows = []
+for country, coords in countries_polygons.items():
+    closed_coords = coords + [coords[0]]
+    for i, (x, y) in enumerate(closed_coords):
+        ref_rows.append({"country": country, "x": x, "y": y, "order": i})
+
+df_reference = pd.DataFrame(ref_rows)
 
 # Build scaled polygon data and centroid data
 polygon_rows = []
@@ -96,26 +107,27 @@ for country, coords in countries_polygons.items():
     pop = population[country]
     gdp = gdp_per_capita[country]
 
-    # Compute centroid
     cx = np.mean([c[0] for c in coords])
     cy = np.mean([c[1] for c in coords])
 
-    # Scale factor: base_shrink * sqrt(population / median) so area ~ population
-    scale = base_shrink * np.sqrt(pop / median_pop)
+    # Scale factor: base_shrink * sqrt(population / median), capped to prevent overlap
+    raw_scale = base_shrink * np.sqrt(pop / median_pop)
+    scale = min(raw_scale, 0.72)
 
-    # Scale polygon around centroid
     closed_coords = coords + [coords[0]]
     for i, (x, y) in enumerate(closed_coords):
         sx = cx + (x - cx) * scale
         sy = cy + (y - cy) * scale
         polygon_rows.append({"country": country, "x": sx, "y": sy, "order": i, "gdp_pc": gdp, "population": pop})
 
-    centroid_rows.append({"country": country, "x": cx, "y": cy, "gdp_pc": gdp, "population": pop})
+    # Label size scales with polygon size for readability
+    label_sz = max(7, min(11, 6 + pop / 20))
+    centroid_rows.append({"country": country, "x": cx, "y": cy, "gdp_pc": gdp, "population": pop, "label_sz": label_sz})
 
 df_polygons = pd.DataFrame(polygon_rows)
 df_centroids = pd.DataFrame(centroid_rows)
 
-# Abbreviation labels for cleaner display
+# Abbreviation labels
 abbrevs = {
     "France": "FR",
     "Germany": "DE",
@@ -136,24 +148,55 @@ abbrevs = {
 }
 df_centroids["abbrev"] = df_centroids["country"].map(abbrevs)
 
-# Plot
+# Population label for subtitle context
+pop_fmt = f"{sum(population.values()):.0f}M total across {len(population)} countries"
+
+# Plot: reference outlines (faint) + distorted polygons + labels
 plot = (
     ggplot()
-    + geom_polygon(df_polygons, aes(x="x", y="y", group="country", fill="gdp_pc"), color="#333333", size=0.6, alpha=0.9)
-    + geom_text(df_centroids, aes(x="x", y="y", label="abbrev"), size=8, color="#111111", fontweight="bold")
-    + scale_fill_cmap(cmap_name="YlOrRd", name="GDP per Capita\n(k USD)")
+    # Layer 1: Reference outlines showing original geographic boundaries
+    + geom_polygon(
+        df_reference,
+        aes(x="x", y="y", group="country"),
+        fill="none",
+        color="#b0b8c4",
+        size=0.3,
+        linetype="dashed",
+        alpha=0.6,
+    )
+    # Layer 2: Distorted cartogram polygons colored by GDP per capita
+    + geom_polygon(
+        df_polygons, aes(x="x", y="y", group="country", fill="gdp_pc"), color="#2c3e50", size=0.7, alpha=0.92
+    )
+    # Layer 3: Country abbreviation labels
+    + geom_text(df_centroids, aes(x="x", y="y", label="abbrev", size="label_sz"), color="#1a1a2e", fontweight="bold")
+    + scale_size_identity()
+    + scale_fill_cmap(cmap_name="viridis", name="GDP per Capita\n(thousand USD)")
     + coord_fixed(ratio=1.0)
-    + labs(title="cartogram-area-distortion · plotnine · pyplots.ai")
+    + labs(
+        title="cartogram-area-distortion \u00b7 plotnine \u00b7 pyplots.ai",
+        subtitle=f"Area \u221d Population \u2014 {pop_fmt}  |  Dashed outlines = original borders",
+    )
+    # Annotation for area-legend context (bottom-left)
+    + annotate(
+        "text",
+        x=-3.5,
+        y=-4.2,
+        label="Larger polygon = larger population",
+        size=9,
+        color="#555555",
+        fontstyle="italic",
+        ha="left",
+    )
     + theme(
         figure_size=(16, 9),
-        plot_title=element_text(size=22, ha="center", weight="bold", margin={"b": 20}),
-        legend_title=element_text(size=18),
+        plot_title=element_text(size=24, ha="center", weight="bold", margin={"b": 6}),
+        plot_subtitle=element_text(size=16, ha="center", color="#444444", margin={"b": 16}),
+        legend_title=element_text(size=16),
         legend_text=element_text(size=14),
         legend_position="right",
-        legend_key_width=25,
-        legend_key_height=150,
         legend_background=element_rect(fill="white", alpha=0.9),
-        panel_background=element_rect(fill="#f4f7fa"),
+        panel_background=element_rect(fill="#f0f3f7"),
         plot_background=element_rect(fill="white"),
         axis_text=element_blank(),
         axis_title=element_blank(),

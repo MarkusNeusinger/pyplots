@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 cartogram-area-distortion: Cartogram with Area Distortion by Data Value
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 82/100 | Created: 2026-03-13
@@ -28,8 +28,6 @@ from plotnine import (
 
 
 # Data: European countries with population (millions) and GDP per capita (USD thousands)
-np.random.seed(42)
-
 countries_polygons = {
     "France": [(0, 0), (3, 0), (4, 2), (3, 4), (1, 4), (0, 2)],
     "Germany": [(4, 2), (7, 1), (8, 3), (7, 5), (4, 5), (3, 4)],
@@ -140,14 +138,6 @@ for country, coords in countries_polygons.items():
         sy = cy + (y - cy) * scale
         polygon_rows.append({"country": country, "x": sx, "y": sy, "order": i, "gdp_pc": gdp, "population": pop})
 
-    # Classify GDP tier for storytelling emphasis
-    if gdp >= 60:
-        tier = "High (>$60k)"
-    elif gdp >= 40:
-        tier = "Mid ($40-60k)"
-    else:
-        tier = "Low (<$40k)"
-
     centroid_rows.append(
         {
             "country": country,
@@ -157,13 +147,19 @@ for country, coords in countries_polygons.items():
             "gdp_pc": gdp,
             "population": pop,
             "label_sz": max(10, min(14, 8 + pop / 15)),
-            "tier": tier,
             "label_alpha": 1.0 if pop > 30 else 0.85,
         }
     )
 
 df_polygons = pd.DataFrame(polygon_rows)
 df_centroids = pd.DataFrame(centroid_rows)
+
+# Nudge labels in crowded central Europe to reduce overlap
+label_nudge = {"CH": (0.0, -0.7), "AT": (0.5, -0.5), "BE": (-0.5, 0.5)}
+for abbrev, (dx, dy) in label_nudge.items():
+    mask = df_centroids["abbrev"] == abbrev
+    df_centroids.loc[mask, "x"] += dx
+    df_centroids.loc[mask, "y"] += dy
 
 # Compute top-3 largest for storytelling highlight
 top3 = df_centroids.nlargest(3, "population")["country"].tolist()

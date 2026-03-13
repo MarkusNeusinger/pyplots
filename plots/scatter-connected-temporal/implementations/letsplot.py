@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-connected-temporal: Connected Scatter Plot with Temporal Path
 Library: letsplot 4.9.0 | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-13
@@ -51,19 +51,21 @@ df = pd.DataFrame(
 df["time_norm"] = df["time_idx"] / (n - 1)
 
 # Label only key years — reduced set to avoid crowding in dense areas
-key_years = {1990, 1995, 2000, 2007, 2009, 2020, 2023}
+key_years = {1990, 2000, 2007, 2009, 2020, 2023}
 df_labels = df[df["year"].isin(key_years)].copy()
 
 # Per-label offset to prevent overlap and clipping
 nudge_map = {
-    1990: (0.3, 0.6),
-    1995: (-0.3, -0.6),
-    2000: (0.3, -0.6),
-    2007: (0.3, -0.6),
-    2009: (-0.5, 0.6),
-    2020: (-0.3, 0.6),
-    2023: (0.3, 0.6),
+    1990: (0.35, 0.7),
+    2000: (0.35, -0.7),
+    2007: (0.35, -0.7),
+    2009: (-0.55, 0.7),
+    2020: (-0.35, 0.7),
+    2023: (0.35, 0.7),
 }
+
+# Highlight start and end points with larger markers
+df_endpoints = df[df["year"].isin([1990, 2023])].copy()
 df_labels["label_x"] = df_labels.apply(lambda r: r["unemployment"] + nudge_map.get(r["year"], (0, 0))[0], axis=1)
 df_labels["label_y"] = df_labels.apply(lambda r: r["inflation"] + nudge_map.get(r["year"], (0, 0))[1], axis=1)
 
@@ -94,14 +96,23 @@ plot = (
     + geom_point(  # noqa: F405
         aes(fill="time_idx"),  # noqa: F405
         color="white",
-        size=5,
-        stroke=1.0,
+        size=7,
+        stroke=1.2,
         shape=21,
         alpha=0.85,
         tooltips=layer_tooltips()  # noqa: F405
         .line("Year|@year")
         .line("Unemployment|@{unemployment}{.1f}%")
         .line("Inflation|@{inflation}{.1f}%"),
+    )
+    + geom_point(  # noqa: F405
+        data=df_endpoints,
+        mapping=aes(x="unemployment", y="inflation", fill="time_idx"),  # noqa: F405
+        color="#1a1a1a",
+        size=11,
+        stroke=2.0,
+        shape=21,
+        alpha=1.0,
     )
     + geom_text(  # noqa: F405
         data=df_labels,
@@ -136,6 +147,7 @@ plot = (
         legend_title=element_text(size=16, face="bold"),  # noqa: F405
         panel_grid_major=element_line(color="#E0E0E0", size=0.3),  # noqa: F405
         panel_grid_minor=element_blank(),  # noqa: F405
+        plot_background=element_rect(fill="#FAFBFC"),  # noqa: F405
         plot_margin=[60, 50, 20, 20],
     )
 )

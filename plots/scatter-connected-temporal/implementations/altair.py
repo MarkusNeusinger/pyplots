@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-connected-temporal: Connected Scatter Plot with Temporal Path
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-13
@@ -35,55 +35,83 @@ df = pd.DataFrame(
     {"year": years, "unemployment": np.round(unemployment, 1), "inflation": np.round(inflation, 1), "order": range(n)}
 )
 
+# Create line segments with midpoint year for color encoding
+segments = []
+for i in range(n - 1):
+    segments.append(
+        {
+            "x": df["unemployment"].iloc[i],
+            "y": df["inflation"].iloc[i],
+            "x2": df["unemployment"].iloc[i + 1],
+            "y2": df["inflation"].iloc[i + 1],
+            "year": (df["year"].iloc[i] + df["year"].iloc[i + 1]) / 2,
+        }
+    )
+df_segments = pd.DataFrame(segments)
+
 # Label key time points
 label_years = [1994, 2000, 2008, 2010, 2015, 2023]
 df_labels = df[df["year"].isin(label_years)].copy()
 
-# Connecting line path
-line = (
-    alt.Chart(df)
-    .mark_line(strokeWidth=2, opacity=0.5, color="#306998")
-    .encode(x=alt.X("unemployment:Q"), y=alt.Y("inflation:Q"), order=alt.Order("order:Q"))
+# Axis configuration shared between layers
+x_enc = alt.X(
+    "unemployment:Q",
+    title="Unemployment Rate (%)",
+    scale=alt.Scale(domain=[2.5, 8.5], nice=False),
+    axis=alt.Axis(
+        labelFontWeight="normal",
+        titleColor="#333333",
+        labelColor="#555555",
+        tickColor="#cccccc",
+        gridDash=[3, 3],
+        domain=False,
+    ),
+)
+
+y_enc = alt.Y(
+    "inflation:Q",
+    title="Inflation Rate (%)",
+    scale=alt.Scale(domain=[-1.5, 5.8], nice=False),
+    axis=alt.Axis(
+        labelFontWeight="normal",
+        titleColor="#333333",
+        labelColor="#555555",
+        tickColor="#cccccc",
+        gridDash=[3, 3],
+        domain=False,
+    ),
+)
+
+# Shared viridis color scale
+viridis_color = alt.Color(
+    "year:Q",
+    scale=alt.Scale(scheme="viridis", domain=[1994, 2023]),
+    legend=alt.Legend(
+        title="Year", titleFontSize=16, labelFontSize=15, format="d", gradientLength=300, gradientThickness=12
+    ),
+)
+
+# Temporal-gradient connecting line segments using mark_rule
+lines = (
+    alt.Chart(df_segments)
+    .mark_rule(strokeWidth=2.5, opacity=0.75)
+    .encode(
+        x=alt.X("x:Q", scale=alt.Scale(domain=[2.5, 8.5], nice=False)),
+        y=alt.Y("y:Q", scale=alt.Scale(domain=[-1.5, 5.8], nice=False)),
+        x2="x2:Q",
+        y2="y2:Q",
+        color=alt.Color("year:Q", scale=alt.Scale(scheme="viridis", domain=[1994, 2023]), legend=None),
+    )
 )
 
 # Points colored by temporal progression
 points = (
     alt.Chart(df)
-    .mark_point(filled=True, size=180, stroke="white", strokeWidth=1)
+    .mark_point(filled=True, size=180, stroke="white", strokeWidth=1.2)
     .encode(
-        x=alt.X(
-            "unemployment:Q",
-            title="Unemployment Rate (%)",
-            scale=alt.Scale(domain=[2.5, 8.5], nice=False),
-            axis=alt.Axis(
-                labelFontWeight="normal",
-                titleColor="#333333",
-                labelColor="#555555",
-                tickColor="#cccccc",
-                gridDash=[3, 3],
-                domain=False,
-            ),
-        ),
-        y=alt.Y(
-            "inflation:Q",
-            title="Inflation Rate (%)",
-            scale=alt.Scale(domain=[-1.5, 7], nice=False),
-            axis=alt.Axis(
-                labelFontWeight="normal",
-                titleColor="#333333",
-                labelColor="#555555",
-                tickColor="#cccccc",
-                gridDash=[3, 3],
-                domain=False,
-            ),
-        ),
-        color=alt.Color(
-            "year:Q",
-            scale=alt.Scale(scheme="viridis", domain=[1994, 2023]),
-            legend=alt.Legend(
-                title="Year", titleFontSize=16, labelFontSize=14, format="d", gradientLength=300, gradientThickness=12
-            ),
-        ),
+        x=x_enc,
+        y=y_enc,
+        color=viridis_color,
         tooltip=[
             alt.Tooltip("year:Q", title="Year", format="d"),
             alt.Tooltip("unemployment:Q", title="Unemployment (%)", format=".1f"),
@@ -101,7 +129,7 @@ annotations = (
 
 # Compose layers
 chart = (
-    (line + points + annotations)
+    (lines + points + annotations)
     .properties(
         width=1600,
         height=900,

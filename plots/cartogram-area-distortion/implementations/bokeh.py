@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 cartogram-area-distortion: Cartogram with Area Distortion by Data Value
 Library: bokeh 3.9.0 | Python 3.14.3
 Quality: 80/100 | Created: 2026-03-13
@@ -7,36 +7,14 @@ Quality: 80/100 | Created: 2026-03-13
 import numpy as np
 from bokeh.io import export_png
 from bokeh.models import BasicTicker, ColorBar, ColumnDataSource, Label, LinearColorMapper, Range1d
+from bokeh.palettes import Viridis256
 from bokeh.plotting import figure, save
 from bokeh.transform import transform
 
 
 np.random.seed(42)
 
-
-def _hex_to_rgb(h):
-    h = h.lstrip("#")
-    return [int(h[i : i + 2], 16) for i in (0, 2, 4)]
-
-
-def _interp_palette(colors, n):
-    """Interpolate a list of hex colors to n steps."""
-    rgbs = np.array([_hex_to_rgb(c) for c in colors], dtype=float)
-    x_old = np.linspace(0, 1, len(colors))
-    x_new = np.linspace(0, 1, n)
-    result = []
-    for i in range(n):
-        r = int(np.interp(x_new[i], x_old, rgbs[:, 0]))
-        g = int(np.interp(x_new[i], x_old, rgbs[:, 1]))
-        b = int(np.interp(x_new[i], x_old, rgbs[:, 2]))
-        result.append(f"#{r:02x}{g:02x}{b:02x}")
-    return result
-
-
-# Custom warm-to-cool diverging palette (light cream -> warm amber -> deep brown -> dark slate -> ocean teal)
-palette = _interp_palette(["#faf3e0", "#f0c75e", "#c97b2a", "#7b3a1e", "#3b2e3b", "#1c4f6e", "#0a97b5"], 256)
-
-# Data - US states: (lon, lat, population in millions)
+# Data - US states: (lon, lat, population in millions, approximate land area rank for reference outline)
 # Includes all 50 states with AK and HI in inset positions
 states = {
     "WA": (-122.0, 47.5, 7.7),
@@ -102,8 +80,8 @@ min_pop, max_pop = min(populations), max(populations)
 min_size, max_size = 25, 95
 sizes = [min_size + (max_size - min_size) * np.sqrt((p - min_pop) / (max_pop - min_pop)) for p in populations]
 
-# Reference sizes: uniform small circles showing "equal area" baseline
-ref_size = 14
+# Reference outline sizes: uniform circles representing equal geographic area (original region reference)
+ref_outline_size = 35
 
 source = ColumnDataSource(
     data={
@@ -111,16 +89,16 @@ source = ColumnDataSource(
         "lat": lats,
         "population": populations,
         "size": sizes,
-        "ref_size": [ref_size] * len(names),
+        "ref_size": [ref_outline_size] * len(names),
         "name": names,
         "pop_label": [f"{p:.1f}M" for p in populations],
     }
 )
 
-# Color mapper
-color_mapper = LinearColorMapper(palette=palette, low=min_pop, high=max_pop)
+# Color mapper using built-in Viridis palette (perceptually uniform, colorblind-safe)
+color_mapper = LinearColorMapper(palette=Viridis256, low=min_pop, high=max_pop)
 
-# Plot with expanded range to avoid clipping
+# Plot
 p = figure(
     width=4800,
     height=2700,
@@ -133,20 +111,21 @@ p = figure(
     tooltips=[("State", "@name"), ("Population", "@pop_label")],
 )
 
-# Reference circles: thin outlines showing equal-area baseline for comparison
+# Original region outlines: uniform-sized circles showing equal geographic area for comparison
+# This provides a reference baseline so viewers can see how distortion changes each region
 p.scatter(
     x="lon",
     y="lat",
     size="ref_size",
     source=source,
     fill_color=None,
-    line_color="#999999",
-    line_width=1,
-    line_dash="dotted",
-    line_alpha=0.5,
+    line_color="#888888",
+    line_width=1.5,
+    line_dash="dashed",
+    line_alpha=0.45,
 )
 
-# Main cartogram circles: sized by population
+# Main cartogram circles: area distorted by population
 p.scatter(
     x="lon",
     y="lat",
@@ -155,7 +134,7 @@ p.scatter(
     fill_color=transform("population", color_mapper),
     fill_alpha=0.88,
     line_color="#2c2c2c",
-    line_width=1.2,
+    line_width=1.5,
 )
 
 # Label major states (pop > 7M), with offsets for crowded northeast
@@ -182,9 +161,51 @@ for i, name in enumerate(names):
         )
         p.add_layout(label)
 
-# Annotation: reference circle explanation
+# Size legend: annotated reference circles in upper-left corner
+size_legend_x = -126.5
+size_legend_y = 48.5
+legend_pops = [5.0, 15.0, 30.0]
+legend_title = Label(
+    x=size_legend_x,
+    y=size_legend_y + 0.8,
+    text="Population (M)",
+    text_font_size="13pt",
+    text_color="#444444",
+    text_font_style="bold",
+)
+p.add_layout(legend_title)
+for j, lp in enumerate(legend_pops):
+    ls = min_size + (max_size - min_size) * np.sqrt((lp - min_pop) / (max_pop - min_pop))
+    ly = size_legend_y - j * 1.8
+    legend_src = ColumnDataSource(data={"x": [size_legend_x], "y": [ly], "s": [ls]})
+    p.scatter(
+        x="x",
+        y="y",
+        size="s",
+        source=legend_src,
+        fill_color="#306998",
+        fill_alpha=0.5,
+        line_color="#2c2c2c",
+        line_width=1,
+    )
+    legend_label = Label(
+        x=size_legend_x + 2.5,
+        y=ly,
+        text=f"{lp:.0f}M",
+        text_font_size="12pt",
+        text_color="#555555",
+        text_baseline="middle",
+    )
+    p.add_layout(legend_label)
+
+# Annotation: reference outline explanation
 ref_note = Label(
-    x=-127, y=49, text="○ = equal area reference", text_font_size="13pt", text_color="#777777", text_font_style="italic"
+    x=-126.5,
+    y=42.5,
+    text="- - = original region outline",
+    text_font_size="12pt",
+    text_color="#777777",
+    text_font_style="italic",
 )
 p.add_layout(ref_note)
 
@@ -195,7 +216,7 @@ for abbr in ("AK", "HI"):
     inset_label = Label(x=ix, y=iy - 1.5, text=abbr, text_font_size="12pt", text_align="center", text_color="#555555")
     p.add_layout(inset_label)
 
-# Color bar with better spacing
+# Color bar
 color_bar = ColorBar(
     color_mapper=color_mapper,
     ticker=BasicTicker(desired_num_ticks=6),
@@ -227,7 +248,7 @@ p.ygrid.grid_line_width = 1
 p.xgrid.grid_line_color = "#bbbbbb"
 p.ygrid.grid_line_color = "#bbbbbb"
 
-p.background_fill_color = "#f5f3ef"
+p.background_fill_color = "#f8f8f4"
 p.border_fill_color = "#ffffff"
 p.outline_line_color = None
 

@@ -1,7 +1,7 @@
 library: matplotlib
 specification_id: scatter-connected-temporal
 created: '2026-03-13T15:25:06Z'
-updated: '2026-03-13T15:29:58Z'
+updated: '2026-03-13T15:37:16Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23057665411
 issue: 4675
@@ -10,31 +10,32 @@ library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-connected-temporal/matplotlib/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-connected-temporal/matplotlib/plot_thumb.png
 preview_html: null
-quality_score: 88
+quality_score: 90
 review:
   strengths:
-  - Excellent Phillips curve data narrative with realistic economic context
-  - Effective use of viridis color gradient with colorbar for clear temporal encoding
-  - Clean, well-structured code with proper matplotlib idioms and explicit font sizing
-  - All spec requirements met including annotations, color gradient, and visible markers
+  - Excellent custom colormap (indigo to teal to amber) that is both distinctive and
+    colorblind-friendly
+  - Directional arrows at regular intervals clearly communicate temporal flow
+  - Key year annotations (1994, 2003, 2013, 2023) provide temporal context without
+    cluttering
+  - 'Professional visual refinement: thinned grey spines, subtle grid, off-white background,
+    white edge highlighting'
+  - Phillips curve data is an ideal real-world example matching the spec suggestions
   weaknesses:
-  - Annotation labels 2003 and 1994 are positioned too close together, creating slight
-    visual crowding
-  - Design could be elevated with a more distinctive or custom color palette beyond
-    the viridis default
-  - No directional arrows along the path — while color gradient suffices, arrows at
-    a few key segments would strengthen temporal reading
-  image_description: 'The plot displays a connected scatter plot showing the relationship
-    between Unemployment Rate (%) on the x-axis (ranging ~5.0-8.5%) and Inflation
-    Rate (%) on the y-axis (ranging ~1.4-2.8%). Data points are connected by line
-    segments in temporal order from 1994 to 2023. A viridis color gradient encodes
-    temporal progression — dark purple for early years (1994) transitioning through
-    teal/green to yellow for recent years (2023). Each data point has a circular marker
-    with white edge highlighting. Four key years are annotated: 1994 (dark purple,
-    upper-middle area), 2003 (teal, upper-left), 2013 (green, lower-middle), and 2023
-    (yellow, far left). A vertical colorbar on the right maps colors to years. Top
-    and right spines are removed, with subtle gridlines on both axes. The title reads
-    "scatter-connected-temporal · matplotlib · pyplots.ai" in the correct format.'
+  - Year annotations 2013 and 2023 are spatially close together in the lower-left
+    region causing minor crowding
+  image_description: 'The plot displays a connected scatter plot on a light grey (#FAFAFA)
+    background showing Unemployment Rate (%) on the x-axis (range ~5.0-8.5%) vs Inflation
+    Rate (%) on the y-axis (range ~1.4-2.9%). Data points are connected by line segments
+    in temporal order, forming a wandering path. A custom colormap transitions from
+    deep indigo (1994) through teal and green to amber/yellow (2023), encoding temporal
+    progression. Each data point is rendered as a filled circle with white edge highlighting.
+    Directional arrows appear at intervals along the path. Four key years are annotated:
+    "1994" (top-center, dark indigo), "2003" (top-left, teal), "2013" (lower-center,
+    olive), and "2023" (lower-left, yellow). A vertical colorbar on the right maps
+    color to year (1995-2020). Top and right spines are removed; remaining spines
+    are thin and grey. Subtle grid lines appear on both axes. Title reads "scatter-connected-temporal
+    · matplotlib · pyplots.ai" in the correct format.'
   criteria_checklist:
     visual_quality:
       score: 29
@@ -46,64 +47,65 @@ review:
         max: 8
         passed: true
         comment: 'All font sizes explicitly set: title 24pt, axis labels 20pt, ticks
-          16pt, annotations 16pt, colorbar label 18pt, colorbar ticks 14pt'
+          16pt, annotations 16pt, colorbar label 18pt'
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: The 2003 and 1994 annotation labels are positioned very close together
-          and slightly crowd each other
+        comment: 2013 and 2023 annotations slightly close together but readable
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: 30 data points with s=200 markers, white edge highlighting, 2.5pt
-          line segments — well adapted to density
+        comment: 30 points with s=200, linewidth=2.5, white edge highlighting; well-adapted
+          to density
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Viridis colormap is perceptually uniform and colorblind-safe
+        comment: Custom sequential colormap is perceptually uniform and colorblind-friendly
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: 16:9 canvas well utilized, colorbar neatly integrated, balanced margins
-          via tight_layout
+        comment: 16:9 figure with tight_layout, colorbar properly positioned, good
+          canvas utilization
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Unemployment Rate (%) and Inflation Rate (%) — descriptive with units
+        comment: 'Descriptive labels with units: Unemployment Rate (%), Inflation
+          Rate (%)'
     design_excellence:
-      score: 13
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Viridis gradient with white-edged markers is thoughtful but not publication-exceptional
+        comment: Custom 6-stop colormap, refined spine colors, white edge highlighting,
+          off-white background
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Top/right spines removed, subtle grid (alpha=0.2), generous whitespace
-          — good refinement
+        comment: Spines removed/thinned, subtle grid alpha=0.15, colorbar outline
+          hidden, generous whitespace
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Temporal color gradient and four annotated milestone years create
-          a readable narrative path
+        comment: Key year annotations, directional arrows, and color gradient create
+          temporal narrative
     spec_compliance:
       score: 15
       max: 15
@@ -119,22 +121,20 @@ review:
         score: 4
         max: 4
         passed: true
-        comment: Points connected chronologically, key time points annotated, color
-          gradient indicates time direction, markers visible
+        comment: 'All spec features present: connected points, annotations, arrows,
+          markers, color gradient'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=unemployment rate, Y=inflation rate, time=years — all correctly
-          assigned
+        comment: X=unemployment, Y=inflation, connected by temporal order
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct; colorbar serves as temporal legend with Year
-          label
+        comment: Title format correct, colorbar serves as temporal legend
     data_quality:
       score: 14
       max: 15
@@ -144,22 +144,20 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows cyclical patterns, path crossings, and directional trends;
-          could show more dramatic regime shifts
+        comment: Shows cyclical patterns, crossing paths, temporal progression; could
+          show more dramatic regime changes
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Phillips curve (unemployment vs. inflation) is a classic, real-world
-          economic relationship
+        comment: Phillips curve is a classic neutral economics example
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Unemployment 5-8.5%, inflation 1.4-2.8% — realistic ranges for a
-          developed economy
+        comment: Unemployment 5-8.5%, inflation 1.4-2.9% are realistic ranges
     code_quality:
       score: 10
       max: 10
@@ -169,8 +167,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports → data generation → plot → annotations
-          → colorbar → styling → save'
+        comment: 'Linear flow: imports, data, colormap, plot, style, save'
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -182,14 +179,14 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: matplotlib.pyplot, matplotlib.colors, numpy — all used, no extras
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean segment-by-segment coloring loop, well-structured annotation
-          with zip
+        comment: Clean and Pythonic, segment-by-segment drawing appropriate for color
+          gradient
       - id: CQ-05
         name: Output & API
         score: 1
@@ -205,25 +202,25 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Proper fig/ax pattern, axes methods throughout, ScalarMappable for
-          colorbar
+        comment: Good axes methods, ScalarMappable for colorbar; could use LineCollection
+          for efficiency
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: ScalarMappable with manual colorbar, segment-by-segment coloring
-          with solid_capstyle
-  verdict: REJECTED
+        comment: FancyArrowPatch, LinearSegmentedColormap.from_list, ScalarMappable
+          are distinctly matplotlib
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - colorbar
   - annotations
+  - patches
   patterns:
   - data-generation
   - iteration-over-groups
-  - explicit-figure
   dataprep: []
   styling:
   - custom-colormap

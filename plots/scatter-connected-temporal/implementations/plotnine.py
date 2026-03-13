@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-connected-temporal: Connected Scatter Plot with Temporal Path
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 79/100 | Created: 2026-03-13
@@ -8,10 +8,11 @@ import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
+    annotate,
     element_blank,
     element_line,
     element_text,
-    geom_line,
+    geom_path,
     geom_point,
     geom_text,
     ggplot,
@@ -103,22 +104,65 @@ df = pd.DataFrame(
     {"Unemployment": unemployment, "Inflation": inflation, "Year": years, "Year_num": np.arange(n, dtype=float)}
 )
 
-label_years = [1990, 1995, 2000, 2005, 2009, 2015, 2020]
-df_labels = df[df["Year"].isin(label_years)].copy()
-df_labels["Label"] = df_labels["Year"].astype(str)
+# Labels with custom offsets to avoid crowding
+label_config = {
+    1990: (0.25, 0.45),
+    1995: (-0.35, -0.45),
+    2000: (0.25, 0.45),
+    2005: (0.3, -0.45),
+    2015: (-0.3, -0.45),
+    2020: (0.35, 0.45),
+}
 
-# Plot
+label_rows = []
+for yr, (dx, dy) in label_config.items():
+    row = df[df["Year"] == yr].iloc[0]
+    label_rows.append({"x_label": row["Unemployment"] + dx, "y_label": row["Inflation"] + dy, "Label": str(yr)})
+df_labels = pd.DataFrame(label_rows)
+
+# Highlight the 2008-2009 recession (peak unemployment)
+recession_point = df[df["Year"] == 2009].copy()
+
+# Plot - using geom_path for correct temporal ordering (not geom_line which sorts by x)
 plot = (
     ggplot(df, aes(x="Unemployment", y="Inflation"))
-    + geom_line(aes(color="Year_num"), size=1.2, show_legend=False)
-    + geom_point(aes(fill="Year_num"), size=5, color="white", stroke=0.8, show_legend=False)
-    + geom_text(aes(label="Label"), data=df_labels, size=12, nudge_y=0.45, fontweight="bold", color="#333333")
-    + scale_color_gradient(low="#a8c4e0", high="#1a3a5c")
+    + geom_path(aes(color="Year_num"), size=1.2)
+    + geom_point(aes(fill="Year_num"), size=4.5, color="white", stroke=0.8, show_legend=False)
+    # Highlight recession peak with a larger red-outlined marker
+    + geom_point(
+        data=recession_point,
+        mapping=aes(x="Unemployment", y="Inflation"),
+        size=8,
+        color="#c0392b",
+        fill="none",
+        stroke=1.5,
+    )
+    + annotate(
+        "text",
+        x=recession_point["Unemployment"].values[0] - 0.6,
+        y=recession_point["Inflation"].values[0] + 0.5,
+        label="2009 Recession",
+        size=11,
+        fontweight="bold",
+        color="#c0392b",
+    )
+    # Year labels (positioned with per-label offsets)
+    + geom_text(
+        aes(x="x_label", y="y_label", label="Label"),
+        data=df_labels,
+        size=11,
+        fontweight="bold",
+        color="#444444",
+        inherit_aes=False,
+    )
+    + scale_color_gradient(
+        low="#a8c4e0", high="#1a3a5c", name="Year", breaks=[0, 10, 20, 30], labels=["1990", "2000", "2010", "2020"]
+    )
     + scale_fill_gradient(low="#a8c4e0", high="#1a3a5c")
     + labs(
         x="Unemployment Rate (%)",
         y="Inflation Rate (%)",
-        title="Phillips Curve Dynamics (1990-2020) · scatter-connected-temporal · plotnine · pyplots.ai",
+        title="Phillips Curve (1990\u20132020) \u00b7 scatter-connected-temporal \u00b7 plotnine \u00b7 pyplots.ai",
     )
     + theme_minimal()
     + theme(
@@ -126,7 +170,10 @@ plot = (
         text=element_text(size=14),
         axis_title=element_text(size=20),
         axis_text=element_text(size=16),
-        plot_title=element_text(size=20, fontweight="bold"),
+        plot_title=element_text(size=24, fontweight="bold"),
+        legend_title=element_text(size=16),
+        legend_text=element_text(size=14),
+        legend_position="right",
         panel_grid_major=element_line(color="#cccccc", size=0.5, alpha=0.2),
         panel_grid_minor=element_blank(),
     )

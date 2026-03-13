@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 swimmer-clinical-timeline: Swimmer Plot for Clinical Trial Timelines
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 82/100 | Created: 2026-03-13
@@ -42,7 +42,24 @@ sort_order = bars_df.sort_values("duration", ascending=True)["patient_id"].tolis
 events_df = pd.DataFrame(events_list)
 events_df = events_df.merge(bars_df[["patient_id", "arm"]], on="patient_id")
 
-# Plot - bars
+# Colorblind-safe event palette (no red-green pair)
+event_shape_map = {
+    "Partial Response": "triangle-up",
+    "Complete Response": "cross",
+    "Progressive Disease": "diamond",
+    "Ongoing": "triangle-right",
+}
+event_color_map = {
+    "Partial Response": "#4DAF4A",
+    "Complete Response": "#FF7F00",
+    "Progressive Disease": "#984EA3",
+    "Ongoing": "#777777",
+}
+
+# Interactive selection for highlighting by treatment arm
+arm_selection = alt.selection_point(fields=["arm"], bind="legend")
+
+# Plot - bars with selection-driven opacity for storytelling
 bars = (
     alt.Chart(bars_df)
     .mark_bar(height=16, cornerRadiusEnd=3)
@@ -52,7 +69,7 @@ bars = (
             title="Time on Study (Weeks)",
             axis=alt.Axis(titleFontSize=22, labelFontSize=16, tickSize=0, gridOpacity=0.15),
         ),
-        y=alt.Y("patient_id:N", title=None, sort=sort_order, axis=alt.Axis(labelFontSize=13, tickSize=0)),
+        y=alt.Y("patient_id:N", title=None, sort=sort_order, axis=alt.Axis(labelFontSize=14, tickSize=0)),
         color=alt.Color(
             "arm:N",
             title="Treatment Arm",
@@ -60,29 +77,35 @@ bars = (
             legend=alt.Legend(
                 titleFontSize=16,
                 labelFontSize=14,
-                orient="bottom-right",
-                direction="vertical",
+                orient="none",
+                legendX=20,
+                legendY=950,
+                direction="horizontal",
                 symbolSize=200,
                 symbolStrokeWidth=0,
+                titleOrient="left",
+                padding=8,
+                fillColor="white",
+                strokeColor="#ddd",
+                cornerRadius=4,
             ),
         ),
+        opacity=alt.condition(arm_selection, alt.value(1.0), alt.value(0.25)),
     )
+    .add_params(arm_selection)
 )
 
-# Plot - event markers
-event_shape_map = {
-    "Partial Response": "triangle-up",
-    "Complete Response": "cross",
-    "Progressive Disease": "diamond",
-    "Ongoing": "triangle-right",
-}
-event_color_map = {
-    "Partial Response": "#2CA02C",
-    "Complete Response": "#FFD700",
-    "Progressive Disease": "#D62728",
-    "Ongoing": "#555555",
-}
+# Median duration reference rule for visual context
+median_dur = float(np.median(durations))
+rule_df = pd.DataFrame({"median": [median_dur]})
+median_rule = alt.Chart(rule_df).mark_rule(strokeDash=[6, 4], strokeWidth=1.5, color="#888888").encode(x="median:Q")
+median_label = (
+    alt.Chart(rule_df)
+    .mark_text(align="left", dx=4, dy=-8, fontSize=13, color="#666666", fontStyle="italic")
+    .encode(x="median:Q", y=alt.value(0), text=alt.value(f"Median: {median_dur:.0f} wk"))
+)
 
+# Plot - event markers with colorblind-safe palette
 markers = (
     alt.Chart(events_df)
     .mark_point(filled=True, size=250, stroke="white", strokeWidth=1.0)
@@ -96,10 +119,17 @@ markers = (
             legend=alt.Legend(
                 titleFontSize=16,
                 labelFontSize=14,
-                orient="bottom-right",
-                direction="vertical",
+                orient="none",
+                legendX=370,
+                legendY=950,
+                direction="horizontal",
                 symbolSize=200,
                 symbolStrokeWidth=0,
+                titleOrient="left",
+                padding=8,
+                fillColor="white",
+                strokeColor="#ddd",
+                cornerRadius=4,
             ),
         ),
         color=alt.Color(
@@ -107,13 +137,14 @@ markers = (
             scale=alt.Scale(domain=list(event_color_map.keys()), range=list(event_color_map.values())),
             legend=None,
         ),
-        tooltip=["patient_id:N", "event_type:N", "time:Q"],
+        tooltip=["patient_id:N", "event_type:N", alt.Tooltip("time:Q", title="Week")],
+        opacity=alt.condition(arm_selection, alt.value(1.0), alt.value(0.25)),
     )
 )
 
 # Combine and style
 chart = (
-    (bars + markers)
+    (bars + median_rule + median_label + markers)
     .properties(
         width=1600,
         height=900,

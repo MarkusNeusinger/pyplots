@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 cartogram-area-distortion: Cartogram with Area Distortion by Data Value
 Library: matplotlib 3.10.8 | Python 3.14.3
-Quality: 86/100 | Created: 2026-03-13
+Quality: 89/100 | Created: 2026-03-13
 """
 
 import matplotlib.patches as mpatches

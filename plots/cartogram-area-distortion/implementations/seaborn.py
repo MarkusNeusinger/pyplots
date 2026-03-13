@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 cartogram-area-distortion: Cartogram with Area Distortion by Data Value
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-13
@@ -90,12 +90,13 @@ sns.set_theme(
 )
 
 fig = plt.figure(figsize=(16, 9))
-gs = fig.add_gridspec(1, 2, width_ratios=[3.2, 1], wspace=0.06)
-ax_main = fig.add_subplot(gs[0, 0])
+gs = fig.add_gridspec(2, 2, width_ratios=[3.2, 1], height_ratios=[1, 1], wspace=0.08, hspace=0.25)
+ax_main = fig.add_subplot(gs[:, 0])
 ax_ref = fig.add_subplot(gs[0, 1])
+ax_bar = fig.add_subplot(gs[1, 1])
 
 # Main cartogram using sns.scatterplot with size and hue encoding
-scatter = sns.scatterplot(
+sns.scatterplot(
     data=df,
     x="col",
     y="row",
@@ -113,29 +114,33 @@ scatter = sns.scatterplot(
     ax=ax_main,
 )
 
-# Use seaborn's move_legend to reposition and restyle the auto-generated legend
-# First filter to only show hue entries (not size entries)
+# Extract region-only handles from auto-generated legend, then reposition as compact horizontal
 handles, labels = ax_main.get_legend_handles_labels()
-# Find region handles (skip size legend entries)
 region_handles = []
 region_labels = []
 for handle, lbl in zip(handles, labels, strict=False):
     if lbl in region_order:
-        handle.set_markersize(14)
+        handle.set_markersize(12)
         handle.set_markeredgecolor("white")
         handle.set_markeredgewidth(1)
         region_handles.append(handle)
         region_labels.append(lbl)
 
+ax_main.get_legend().remove()
 ax_main.legend(
     handles=region_handles,
     labels=region_labels,
-    loc="lower left",
-    fontsize=14,
+    loc="upper center",
+    fontsize=12,
     title="Region",
-    title_fontsize=16,
-    framealpha=0.95,
+    title_fontsize=13,
+    framealpha=0.9,
     edgecolor="#cccccc",
+    ncol=4,
+    bbox_to_anchor=(0.45, 1.02),
+    borderpad=0.6,
+    columnspacing=1.0,
+    handletextpad=0.4,
 )
 
 # State abbreviation labels on main cartogram
@@ -211,7 +216,7 @@ sns.scatterplot(
     style="region",
     style_order=region_order,
     markers=dict.fromkeys(region_order, "s"),
-    s=180,
+    s=120,
     alpha=0.7,
     edgecolor="white",
     linewidth=0.8,
@@ -219,7 +224,7 @@ sns.scatterplot(
     ax=ax_ref,
 )
 
-# Labels on reference map - slightly larger for readability
+# Labels on reference map - increased to 8pt for readability
 for _, row in df.iterrows():
     ax_ref.text(
         row["col"],
@@ -227,7 +232,7 @@ for _, row in df.iterrows():
         row["state"],
         ha="center",
         va="center",
-        fontsize=7,
+        fontsize=8,
         fontweight="bold",
         color="white",
         zorder=5,
@@ -242,6 +247,64 @@ ax_ref.set_ylabel("")
 ax_ref.set_xticks([])
 ax_ref.set_yticks([])
 sns.despine(ax=ax_ref, left=True, bottom=True)
-ax_ref.set_title("Equal-Area\nReference", fontsize=14, fontweight="bold", pad=10)
+ax_ref.set_title("Equal-Area\nReference", fontsize=13, fontweight="bold", pad=8)
+
+# Subtle divider line between main and reference/bar panels
+divider_x = 0.74
+fig.add_artist(
+    plt.Line2D(
+        [divider_x, divider_x],
+        [0.05, 0.92],
+        transform=fig.transFigure,
+        color="#cccccc",
+        linewidth=1,
+        linestyle="--",
+        alpha=0.6,
+    )
+)
+
+# --- Population by region: seaborn barplot with statistical aggregation ---
+# Aggregate total population per region - leverages seaborn's categorical plotting
+region_totals = df.groupby("region", observed=True)["population"].sum().reset_index()
+region_totals.columns = ["region", "total_pop"]
+region_totals["total_pop"] = region_totals["total_pop"].round(1)
+
+sns.barplot(
+    data=region_totals,
+    x="total_pop",
+    y="region",
+    hue="region",
+    hue_order=region_order,
+    order=region_order,
+    palette=region_palette,
+    edgecolor="white",
+    linewidth=1.2,
+    legend=False,
+    ax=ax_bar,
+    saturation=0.85,
+)
+
+# Add value labels on bars
+for i, (_, rrow) in enumerate(region_totals.set_index("region").reindex(region_order).iterrows()):
+    ax_bar.text(
+        rrow["total_pop"] + 0.8,
+        i,
+        f"{rrow['total_pop']:.0f}M",
+        ha="left",
+        va="center",
+        fontsize=11,
+        fontweight="bold",
+        color="#444444",
+    )
+
+ax_bar.set_xlabel("Total Population (M)", fontsize=12)
+ax_bar.set_ylabel("")
+ax_bar.set_title("Regional Totals", fontsize=13, fontweight="bold", pad=8)
+ax_bar.tick_params(axis="y", labelsize=11)
+ax_bar.tick_params(axis="x", labelsize=10)
+ax_bar.set_xlim(0, region_totals["total_pop"].max() * 1.25)
+sns.despine(ax=ax_bar, left=True)
+ax_bar.yaxis.grid(False)
+ax_bar.xaxis.grid(True, alpha=0.15, linewidth=0.8)
 
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

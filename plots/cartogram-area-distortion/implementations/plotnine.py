@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 cartogram-area-distortion: Cartogram with Area Distortion by Data Value
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 82/100 | Created: 2026-03-13

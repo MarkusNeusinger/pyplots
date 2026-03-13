@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-connected-temporal: Connected Scatter Plot with Temporal Path
-Library: bokeh | Python 3.13
-Quality: pending | Created: 2026-03-13
+Library: bokeh 3.9.0 | Python 3.14.3
+Quality: 82/100 | Created: 2026-03-13
 """
 
 import numpy as np

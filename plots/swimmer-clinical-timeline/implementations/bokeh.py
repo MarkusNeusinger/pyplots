@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 swimmer-clinical-timeline: Swimmer Plot for Clinical Trial Timelines
 Library: bokeh 3.9.0 | Python 3.14.3
 Quality: 82/100 | Created: 2026-03-13
@@ -6,7 +6,7 @@ Quality: 82/100 | Created: 2026-03-13
 
 import numpy as np
 from bokeh.io import export_png, save
-from bokeh.models import ColumnDataSource, FactorRange, Legend, LegendItem, Range1d
+from bokeh.models import ColumnDataSource, FactorRange, HoverTool, Legend, LegendItem, Range1d, Span
 from bokeh.plotting import figure
 from bokeh.resources import CDN
 
@@ -24,7 +24,15 @@ durations = np.clip(durations, 4, 52)
 events_time = []
 events_type = []
 events_patient = []
+events_label = []
 ongoing_patients = set()
+
+event_labels = {
+    "partial_response": "Partial Response",
+    "complete_response": "Complete Response",
+    "progressive_disease": "Progressive Disease",
+    "adverse_event": "Adverse Event",
+}
 
 for i in range(n_patients):
     dur = durations[i]
@@ -53,6 +61,7 @@ for i in range(n_patients):
         events_time.append(t)
         events_type.append(etype)
         events_patient.append(patient_ids[i])
+        events_label.append(event_labels[etype])
 
 # Sort patients by duration (longest at top)
 sort_idx = np.argsort(durations)[::-1]
@@ -60,8 +69,11 @@ sorted_patient_ids = [patient_ids[i] for i in sort_idx]
 sorted_durations = [durations[i] for i in sort_idx]
 sorted_arms = [arms[i] for i in sort_idx]
 
-# Bar colors by treatment arm
-arm_colors = {"Arm A (Combo)": "#306998", "Arm B (Mono)": "#FFD43B"}
+# Muted, cohesive palette: deep teal for Arm A, warm terracotta for Arm B
+arm_colors = {"Arm A (Combo)": "#306998", "Arm B (Mono)": "#C46B4A"}
+
+# Compute median duration for reference line
+median_duration = float(np.median(durations))
 
 # Plot
 p = figure(
@@ -70,38 +82,52 @@ p = figure(
     height=2700,
     title="swimmer-clinical-timeline · bokeh · pyplots.ai",
     x_axis_label="Time on Study (Weeks)",
-    toolbar_location=None,
+    toolbar_location="above",
 )
 
-# Horizontal bars per treatment arm
-bars_a = p.hbar(
-    y=[sorted_patient_ids[i] for i, a in enumerate(sorted_arms) if a == "Arm A (Combo)"],
-    right=[sorted_durations[i] for i, a in enumerate(sorted_arms) if a == "Arm A (Combo)"],
-    left=0,
-    height=0.6,
-    color=arm_colors["Arm A (Combo)"],
-    alpha=0.85,
-    line_color="white",
-    line_width=1,
-)
+# Horizontal bars per treatment arm with hover data
+for arm_name, arm_color in arm_colors.items():
+    idx = [i for i, a in enumerate(sorted_arms) if a == arm_name]
+    source = ColumnDataSource(
+        data={
+            "y": [sorted_patient_ids[i] for i in idx],
+            "right": [sorted_durations[i] for i in idx],
+            "arm": [arm_name] * len(idx),
+            "dur_str": [f"{sorted_durations[i]:.1f} weeks" for i in idx],
+            "status": ["Ongoing" if sort_idx[i] in ongoing_patients else "Completed/Progressed" for i in idx],
+        }
+    )
+    renderer = p.hbar(
+        y="y",
+        right="right",
+        left=0,
+        height=0.6,
+        color=arm_color,
+        alpha=0.88,
+        line_color="#ffffff",
+        line_width=1,
+        source=source,
+    )
+    # Store renderers for legend
+    if arm_name == "Arm A (Combo)":
+        bars_a = renderer
+    else:
+        bars_b = renderer
 
-bars_b = p.hbar(
-    y=[sorted_patient_ids[i] for i, a in enumerate(sorted_arms) if a == "Arm B (Mono)"],
-    right=[sorted_durations[i] for i, a in enumerate(sorted_arms) if a == "Arm B (Mono)"],
-    left=0,
-    height=0.6,
-    color=arm_colors["Arm B (Mono)"],
-    alpha=0.85,
-    line_color="white",
-    line_width=1,
+# Add HoverTool for bars (Bokeh-specific interactivity)
+bar_hover = HoverTool(
+    renderers=[bars_a, bars_b],
+    tooltips=[("Patient", "@y"), ("Treatment", "@arm"), ("Duration", "@dur_str"), ("Status", "@status")],
+    point_policy="follow_mouse",
 )
+p.add_tools(bar_hover)
 
-# Event marker definitions
+# Colorblind-safe event marker palette (blue/orange/purple/teal — no red/green)
 event_marker_config = {
-    "partial_response": {"marker": "triangle", "color": "#2ca02c", "size": 22},
-    "complete_response": {"marker": "star", "color": "#e377c2", "size": 26},
-    "progressive_disease": {"marker": "diamond", "color": "#d62728", "size": 22},
-    "adverse_event": {"marker": "square", "color": "#ff7f0e", "size": 18},
+    "partial_response": {"marker": "triangle", "color": "#0072B2", "size": 22},
+    "complete_response": {"marker": "star", "color": "#CC79A7", "size": 26},
+    "progressive_disease": {"marker": "diamond", "color": "#D55E00", "size": 22},
+    "adverse_event": {"marker": "square", "color": "#E69F00", "size": 18},
 }
 
 # Plot event markers using scatter() with marker parameter
@@ -110,10 +136,14 @@ for etype, config in event_marker_config.items():
     mask = [j for j in range(len(events_type)) if events_type[j] == etype]
     if not mask:
         continue
-    ex = [events_time[j] for j in mask]
-    ey = [events_patient[j] for j in mask]
-    source_evt = ColumnDataSource(data={"x": ex, "y": ey})
-
+    source_evt = ColumnDataSource(
+        data={
+            "x": [events_time[j] for j in mask],
+            "y": [events_patient[j] for j in mask],
+            "event": [events_label[j] for j in mask],
+            "week": [f"Week {events_time[j]:.1f}" for j in mask],
+        }
+    )
     r = p.scatter(
         x="x",
         y="y",
@@ -125,6 +155,14 @@ for etype, config in event_marker_config.items():
         line_width=1.5,
     )
     event_renderers[etype] = r
+
+# HoverTool for event markers
+evt_hover = HoverTool(
+    renderers=list(event_renderers.values()),
+    tooltips=[("Patient", "@y"), ("Event", "@event"), ("Time", "@week")],
+    point_policy="snap_to_data",
+)
+p.add_tools(evt_hover)
 
 # Ongoing indicators (right-pointing triangles at bar ends)
 ongoing_idx_sorted = [i for i in range(n_patients) if sort_idx[i] in ongoing_patients]
@@ -139,28 +177,46 @@ if ongoing_idx_sorted:
         source=arrow_source,
         marker="triangle",
         size=24,
-        color="#333333",
+        color="#555555",
         angle=np.pi / 2 * 3,
-        line_color="#333333",
+        line_color="#555555",
     )
+
+# Median duration reference line for visual storytelling
+median_span = Span(
+    location=median_duration,
+    dimension="height",
+    line_color="#888888",
+    line_dash="dotted",
+    line_width=2.5,
+    line_alpha=0.7,
+)
+p.add_layout(median_span)
 
 # Style
 p.title.text_font_size = "36pt"
-p.title.text_color = "#333333"
+p.title.text_color = "#2B2B2B"
 
 p.xaxis.axis_label_text_font_size = "28pt"
 p.xaxis.major_label_text_font_size = "20pt"
+p.xaxis.axis_label_text_color = "#444444"
 p.x_range = Range1d(0, max(sorted_durations) + 6)
 
 p.yaxis.axis_label = "Patient"
 p.yaxis.axis_label_text_font_size = "28pt"
 p.yaxis.major_label_text_font_size = "16pt"
+p.yaxis.axis_label_text_color = "#444444"
 
 p.xgrid.grid_line_color = None
-p.ygrid.grid_line_alpha = 0.15
+p.ygrid.grid_line_alpha = 0.12
 p.ygrid.grid_line_dash = "dashed"
+p.ygrid.grid_line_color = "#cccccc"
 
-p.background_fill_color = "#fafafa"
+p.axis.axis_line_color = "#bbbbbb"
+p.axis.major_tick_line_color = "#bbbbbb"
+p.axis.minor_tick_line_color = None
+
+p.background_fill_color = "#f7f7f7"
 p.border_fill_color = "#ffffff"
 p.outline_line_color = None
 
@@ -188,6 +244,9 @@ legend.glyph_width = 35
 legend.spacing = 14
 legend.padding = 30
 legend.background_fill_alpha = 0.85
+legend.background_fill_color = "#ffffff"
+legend.border_line_color = "#dddddd"
+legend.border_line_width = 1
 p.add_layout(legend)
 
 # Save

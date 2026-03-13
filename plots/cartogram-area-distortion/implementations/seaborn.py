@@ -1,23 +1,21 @@
-""" pyplots.ai
+"""pyplots.ai
 cartogram-area-distortion: Cartogram with Area Distortion by Data Value
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 78/100 | Created: 2026-03-13
 """
 
-import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from matplotlib.lines import Line2D
 
 
 # Data: US states with population (millions) and grid positions
-# Tile cartogram where each tile's size is proportional to population
 np.random.seed(42)
 
 states_data = {
     # (row, col, population_millions, region)
-    # Row 0
     "WA": (0, 1, 7.7, "West"),
     "MT": (0, 3, 1.1, "West"),
     "ND": (0, 5, 0.8, "Midwest"),
@@ -27,7 +25,6 @@ states_data = {
     "NY": (0, 10, 19.5, "Northeast"),
     "VT": (0, 11, 0.6, "Northeast"),
     "ME": (0, 12, 1.4, "Northeast"),
-    # Row 1
     "OR": (1, 1, 4.2, "West"),
     "ID": (1, 2, 1.9, "West"),
     "WY": (1, 3, 0.6, "West"),
@@ -39,7 +36,6 @@ states_data = {
     "PA": (1, 10, 13.0, "Northeast"),
     "MA": (1, 11, 7.0, "Northeast"),
     "NH": (1, 12, 1.4, "Northeast"),
-    # Row 2
     "NV": (2, 1, 3.1, "West"),
     "UT": (2, 2, 3.3, "West"),
     "CO": (2, 3, 5.8, "West"),
@@ -51,7 +47,6 @@ states_data = {
     "VA": (2, 10, 8.6, "South"),
     "MD": (2, 11, 6.2, "South"),
     "NJ": (2, 12, 9.3, "Northeast"),
-    # Row 3
     "CA": (3, 1, 39.0, "West"),
     "AZ": (3, 2, 7.3, "West"),
     "NM": (3, 3, 2.1, "West"),
@@ -62,7 +57,6 @@ states_data = {
     "SC": (3, 10, 5.2, "South"),
     "DE": (3, 11, 1.0, "Northeast"),
     "CT": (3, 12, 3.6, "Northeast"),
-    # Row 4
     "TX": (4, 3, 29.5, "South"),
     "LA": (4, 5, 4.6, "South"),
     "MS": (4, 6, 3.0, "South"),
@@ -70,7 +64,6 @@ states_data = {
     "GA": (4, 8, 10.8, "South"),
     "FL": (4, 10, 22.2, "South"),
     "RI": (4, 12, 1.1, "Northeast"),
-    # Row 5
     "AK": (5, 0, 0.7, "West"),
     "HI": (5, 2, 1.4, "West"),
 }
@@ -81,117 +74,166 @@ for state, (r, c, pop, region) in states_data.items():
     rows.append({"state": state, "row": r, "col": c, "population": pop, "region": region})
 df = pd.DataFrame(rows)
 
-# Scale tile sizes: area proportional to population
-# Map population to tile side length (sqrt for area proportionality)
-max_pop = df["population"].max()
-min_scale = 0.25
-max_scale = 0.95
-df["tile_size"] = min_scale + (max_scale - min_scale) * np.sqrt(df["population"] / max_pop)
+# Marker size range for sns.scatterplot size mapping
+size_min = 80
+size_max = 4000
 
-# Region color palette
-region_colors = {"West": "#306998", "Midwest": "#5AAE61", "South": "#E07B53", "Northeast": "#9D6AB8"}
+# Colorblind-safe palette using seaborn's "colorblind" palette
+region_order = ["West", "Midwest", "South", "Northeast"]
+cb_palette = sns.color_palette("colorblind", n_colors=4)
+region_palette = dict(zip(region_order, cb_palette, strict=False))
 
-# Plot
-sns.set_theme(style="white", context="talk", font_scale=1.1)
-fig, ax = plt.subplots(figsize=(16, 9))
+# Setup theme using seaborn
+sns.set_theme(
+    style="white", context="talk", font_scale=1.1, rc={"figure.facecolor": "#f5f5f5", "axes.facecolor": "#f5f5f5"}
+)
 
-# Draw each state as a variably-sized tile centered on its grid position
+fig = plt.figure(figsize=(16, 9))
+gs = fig.add_gridspec(1, 2, width_ratios=[3.5, 1], wspace=0.08)
+ax_main = fig.add_subplot(gs[0, 0])
+ax_ref = fig.add_subplot(gs[0, 1])
+
+# Main cartogram using sns.scatterplot with size parameter
+sns.scatterplot(
+    data=df,
+    x="col",
+    y="row",
+    size="population",
+    sizes=(size_min, size_max),
+    hue="region",
+    hue_order=region_order,
+    palette=region_palette,
+    marker="s",
+    alpha=0.85,
+    edgecolor="white",
+    linewidth=1.5,
+    legend=False,
+    ax=ax_main,
+)
+
+# State abbreviation labels on main cartogram
 for _, row in df.iterrows():
-    cx = row["col"]
-    cy = row["row"]
-    size = row["tile_size"]
-    color = region_colors[row["region"]]
-
-    # Draw tile centered on grid position
-    rect = mpatches.FancyBboxPatch(
-        (cx - size / 2, cy - size / 2),
-        size,
-        size,
-        boxstyle="round,pad=0.02",
-        facecolor=color,
-        edgecolor="white",
-        linewidth=2,
-        alpha=0.85,
-        zorder=2,
-    )
-    ax.add_patch(rect)
-
-    # State abbreviation
-    fontsize = max(10, min(20, int(12 + size * 8)))
-    ax.text(
-        cx,
-        cy - 0.05,
+    pop_frac = row["population"] / df["population"].max()
+    fontsize = max(9, min(18, int(10 + pop_frac * 8)))
+    ax_main.text(
+        row["col"],
+        row["row"] - 0.03,
         row["state"],
         ha="center",
         va="center",
         fontsize=fontsize,
         fontweight="bold",
         color="white",
-        zorder=3,
+        zorder=5,
     )
-
-    # Population value (show for larger tiles)
-    if row["population"] >= 3.0:
-        ax.text(
-            cx,
-            cy + 0.22,
+    # Population label for larger states
+    if row["population"] >= 5.0:
+        ax_main.text(
+            row["col"],
+            row["row"] + 0.2,
             f"{row['population']:.0f}M",
             ha="center",
             va="center",
-            fontsize=max(8, int(fontsize * 0.65)),
+            fontsize=max(7, int(fontsize * 0.6)),
             color="white",
             alpha=0.9,
-            zorder=3,
+            zorder=5,
         )
 
-# Axis limits with padding
-ax.set_xlim(-1.2, 13.5)
-ax.set_ylim(-0.8, 6.2)
-ax.invert_yaxis()
-ax.set_aspect("equal")
-
-# Remove all axes
-ax.set_xticks([])
-ax.set_yticks([])
-for spine in ax.spines.values():
-    spine.set_visible(False)
-
-# Background
-fig.patch.set_facecolor("#f5f5f5")
-ax.set_facecolor("#f5f5f5")
+# Style main axes
+ax_main.invert_yaxis()
+ax_main.set_aspect("equal")
+ax_main.set_xlim(-1.0, 13.5)
+ax_main.set_ylim(6.0, -0.8)
+ax_main.set_xlabel("")
+ax_main.set_ylabel("")
+ax_main.set_xticks([])
+ax_main.set_yticks([])
+sns.despine(ax=ax_main, left=True, bottom=True)
 
 # Title
-ax.set_title(
-    "US States by Population · cartogram-area-distortion · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20
+ax_main.set_title(
+    "US States by Population\ncartogram-area-distortion · seaborn · pyplots.ai", fontsize=22, fontweight="bold", pad=16
 )
 
-# Region legend
-legend_patches = [
-    mpatches.Patch(facecolor=color, edgecolor="white", label=region, alpha=0.85)
-    for region, color in region_colors.items()
+# Build custom legend with seaborn palette colors
+legend_handles = [
+    Line2D(
+        [0],
+        [0],
+        marker="s",
+        color="none",
+        markerfacecolor=region_palette[r],
+        markersize=14,
+        markeredgecolor="white",
+        markeredgewidth=1,
+        label=r,
+    )
+    for r in region_order
 ]
-ax.legend(
-    handles=legend_patches,
+ax_main.legend(
+    handles=legend_handles,
     loc="lower left",
-    fontsize=15,
+    fontsize=14,
     title="Region",
-    title_fontsize=17,
+    title_fontsize=16,
     framealpha=0.95,
     edgecolor="#cccccc",
 )
 
-# Size reference annotation
-ax.text(
+# Size annotation
+ax_main.text(
     0.98,
     0.02,
-    "Tile area ∝ state population",
+    "Tile area \u221d state population",
     ha="right",
     va="bottom",
-    fontsize=14,
+    fontsize=13,
     color="#666666",
     fontstyle="italic",
-    transform=ax.transAxes,
+    transform=ax_main.transAxes,
 )
 
-plt.tight_layout()
+# --- Reference inset: equal-size tile map for comparison ---
+sns.scatterplot(
+    data=df,
+    x="col",
+    y="row",
+    hue="region",
+    hue_order=region_order,
+    palette=region_palette,
+    marker="s",
+    s=150,
+    alpha=0.7,
+    edgecolor="white",
+    linewidth=0.8,
+    legend=False,
+    ax=ax_ref,
+)
+
+# Labels on reference map
+for _, row in df.iterrows():
+    ax_ref.text(
+        row["col"],
+        row["row"],
+        row["state"],
+        ha="center",
+        va="center",
+        fontsize=6,
+        fontweight="bold",
+        color="white",
+        zorder=5,
+    )
+
+ax_ref.invert_yaxis()
+ax_ref.set_aspect("equal")
+ax_ref.set_xlim(-0.5, 13.0)
+ax_ref.set_ylim(5.8, -0.5)
+ax_ref.set_xlabel("")
+ax_ref.set_ylabel("")
+ax_ref.set_xticks([])
+ax_ref.set_yticks([])
+sns.despine(ax=ax_ref, left=True, bottom=True)
+ax_ref.set_title("Equal-Area\nReference", fontsize=13, fontweight="bold", pad=10)
+
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

@@ -1,16 +1,19 @@
-""" pyplots.ai
+"""pyplots.ai
 swimmer-clinical-timeline: Swimmer Plot for Clinical Trial Timelines
 Library: highcharts unknown | Python 3.14.3
 Quality: 81/100 | Created: 2026-03-13
 """
 
-import json
 import subprocess
 import tempfile
 import time
 from pathlib import Path
 
 import numpy as np
+from highcharts_core.chart import Chart
+from highcharts_core.options import HighchartsOptions
+from highcharts_core.options.series.bar import BarSeries
+from highcharts_core.options.series.scatter import ScatterSeries
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -49,13 +52,13 @@ for i in range(n_patients):
         patient_events.append({"time": ae_time, "type": "adverse_event"})
     events.append(patient_events)
 
-# Colors
+# Colorblind-safe palette
 arm_a_color = "#306998"
 arm_b_color = "#E8855E"
 event_colors = {
-    "partial_response": "#2CA02C",
-    "complete_response": "#FFD700",
-    "progressive_disease": "#D62728",
+    "partial_response": "#0072B2",
+    "complete_response": "#F0E442",
+    "progressive_disease": "#D55E00",
     "adverse_event": "#9467BD",
 }
 event_markers = {
@@ -71,11 +74,132 @@ event_labels = {
     "adverse_event": "Adverse Event",
 }
 
-# Single bar series with per-point color by arm
+# Create chart with typed highcharts-core API
+chart = Chart(container="container")
+chart.options = HighchartsOptions()
+
+chart.options.chart = {
+    "type": "bar",
+    "width": 4800,
+    "height": 2700,
+    "backgroundColor": "#fafbfc",
+    "style": {"fontFamily": "'Segoe UI', Helvetica, Arial, sans-serif"},
+    "marginLeft": 200,
+    "marginRight": 340,
+    "marginBottom": 160,
+    "marginTop": 120,
+}
+
+chart.options.title = {
+    "text": "swimmer-clinical-timeline \u00b7 highcharts \u00b7 pyplots.ai",
+    "style": {"fontSize": "52px", "fontWeight": "600", "color": "#2c3e50", "letterSpacing": "1px"},
+    "margin": 30,
+}
+
+chart.options.subtitle = {
+    "text": "Phase II Oncology Trial \u2014 Treatment duration and clinical events by patient",
+    "style": {"fontSize": "34px", "color": "#7f8c8d", "fontWeight": "400"},
+}
+
+chart.options.x_axis = {
+    "categories": patient_ids,
+    "title": {"text": None},
+    "labels": {"style": {"fontSize": "22px", "color": "#34495e", "fontWeight": "500"}},
+    "lineWidth": 0,
+    "tickWidth": 0,
+    "gridLineWidth": 0,
+}
+
+chart.options.y_axis = {
+    "title": {
+        "text": "Time on Study (Weeks)",
+        "style": {"fontSize": "36px", "color": "#34495e", "fontWeight": "500"},
+        "margin": 20,
+    },
+    "labels": {"style": {"fontSize": "26px", "color": "#7f8c8d"}},
+    "gridLineWidth": 1,
+    "gridLineColor": "rgba(0, 0, 0, 0.06)",
+    "gridLineDashStyle": "Dot",
+    "min": 0,
+    "lineWidth": 2,
+    "lineColor": "#bdc3c7",
+    "tickColor": "#bdc3c7",
+    "tickLength": 8,
+    "plotLines": [
+        {
+            "value": 24,
+            "color": "rgba(44, 62, 80, 0.3)",
+            "width": 3,
+            "dashStyle": "LongDash",
+            "label": {
+                "text": "24-Week Milestone",
+                "style": {"fontSize": "26px", "color": "rgba(44, 62, 80, 0.6)", "fontWeight": "500"},
+                "align": "right",
+                "x": -12,
+                "y": -8,
+            },
+            "zIndex": 3,
+        }
+    ],
+}
+
+chart.options.legend = {
+    "enabled": True,
+    "align": "right",
+    "verticalAlign": "top",
+    "layout": "vertical",
+    "x": -20,
+    "y": 80,
+    "floating": True,
+    "backgroundColor": "rgba(255, 255, 255, 0.92)",
+    "borderWidth": 1,
+    "borderColor": "#e0e0e0",
+    "borderRadius": 8,
+    "itemStyle": {"fontSize": "26px", "fontWeight": "400", "color": "#34495e"},
+    "padding": 18,
+    "symbolRadius": 4,
+    "itemMarginBottom": 6,
+}
+
+chart.options.plot_options = {
+    "bar": {"pointPadding": 0.02, "groupPadding": 0.05, "borderWidth": 0, "pointWidth": 28},
+    "scatter": {"jitter": {"x": 0, "y": 0}},
+    "series": {"animation": False},
+}
+
+chart.options.tooltip = {
+    "headerFormat": '<span style="font-size:22px;font-weight:bold">{point.key}</span><br/>',
+    "style": {"fontSize": "22px"},
+    "backgroundColor": "rgba(255, 255, 255, 0.95)",
+    "borderRadius": 8,
+    "borderWidth": 1,
+    "shadow": {"color": "rgba(0,0,0,0.1)", "offsetX": 2, "offsetY": 2, "width": 4},
+}
+
+chart.options.credits = {"enabled": False}
+
+# Duration bars — single BarSeries with per-point color by treatment arm
 bar_data = []
 for i in range(n_patients):
     color = arm_a_color if arms[i] == "Arm A (Combo)" else arm_b_color
     bar_data.append({"y": float(durations[i]), "color": color})
+
+bar_series = BarSeries()
+bar_series.data = bar_data
+bar_series.name = "Duration"
+bar_series.show_in_legend = False
+bar_series.border_radius = 2
+chart.add_series(bar_series)
+
+# Invisible scatter series for arm legend entries
+for arm_name, arm_color in [("Arm A (Combo)", arm_a_color), ("Arm B (Mono)", arm_b_color)]:
+    arm_legend = ScatterSeries()
+    arm_legend.data = []
+    arm_legend.name = arm_name
+    arm_legend.color = arm_color
+    arm_legend.marker = {"symbol": "square", "radius": 12, "fillColor": arm_color}
+    arm_legend.show_in_legend = True
+    chart.add_series(arm_legend)
 
 # Ongoing markers at bar endpoints
 ongoing_data = []
@@ -83,128 +207,44 @@ for i in range(n_patients):
     if ongoing_mask[i]:
         ongoing_data.append({"x": i, "y": float(durations[i])})
 
-# Event scatter data
-event_series_data = {etype: [] for etype in event_colors}
-for i in range(n_patients):
-    for ev in events[i]:
-        event_series_data[ev["type"]].append({"x": i, "y": float(ev["time"])})
-
-# Build series list
-all_series = [{"type": "bar", "name": "Duration", "data": bar_data, "showInLegend": False, "borderRadius": 0}]
-
-# Invisible scatter series for arm legend entries (avoids bar grouping)
-all_series.append(
-    {
-        "type": "scatter",
-        "name": "Arm A (Combo)",
-        "color": arm_a_color,
-        "marker": {"symbol": "square", "radius": 10, "fillColor": arm_a_color},
-        "data": [],
-        "showInLegend": True,
-    }
-)
-all_series.append(
-    {
-        "type": "scatter",
-        "name": "Arm B (Mono)",
-        "color": arm_b_color,
-        "marker": {"symbol": "square", "radius": 10, "fillColor": arm_b_color},
-        "data": [],
-        "showInLegend": True,
-    }
-)
-
 if ongoing_data:
-    all_series.append(
-        {
-            "type": "scatter",
-            "name": "Ongoing",
-            "color": "#333333",
-            "marker": {"symbol": "triangle", "radius": 12, "fillColor": "#333333"},
-            "data": ongoing_data,
-            "showInLegend": True,
-        }
-    )
+    ongoing_series = ScatterSeries()
+    ongoing_series.data = ongoing_data
+    ongoing_series.name = "Ongoing"
+    ongoing_series.color = "#2c3e50"
+    ongoing_series.marker = {
+        "symbol": "triangle",
+        "radius": 16,
+        "fillColor": "#2c3e50",
+        "lineColor": "#ffffff",
+        "lineWidth": 2,
+    }
+    ongoing_series.z_index = 5
+    ongoing_series.show_in_legend = True
+    chart.add_series(ongoing_series)
 
-for etype, etype_data in event_series_data.items():
+# Event scatter series
+for etype in event_colors:
+    etype_data = []
+    for i in range(n_patients):
+        for ev in events[i]:
+            if ev["type"] == etype:
+                etype_data.append({"x": i, "y": float(ev["time"])})
     if etype_data:
-        all_series.append(
-            {
-                "type": "scatter",
-                "name": event_labels[etype],
-                "color": event_colors[etype],
-                "marker": {
-                    "symbol": event_markers[etype],
-                    "radius": 14,
-                    "fillColor": event_colors[etype],
-                    "lineColor": "#ffffff",
-                    "lineWidth": 2,
-                },
-                "data": etype_data,
-                "showInLegend": True,
-            }
-        )
-
-# Chart options
-title_text = "swimmer-clinical-timeline \u00b7 highcharts \u00b7 pyplots.ai"
-
-options_dict = {
-    "chart": {
-        "type": "bar",
-        "width": 4800,
-        "height": 2700,
-        "backgroundColor": "#ffffff",
-        "marginLeft": 180,
-        "marginRight": 300,
-        "marginBottom": 80,
-        "marginTop": 70,
-        "spacingTop": 5,
-        "spacingBottom": 5,
-    },
-    "title": {
-        "text": title_text,
-        "style": {"fontSize": "28px", "fontWeight": "500", "color": "#333333"},
-        "align": "center",
-    },
-    "xAxis": {
-        "categories": patient_ids,
-        "title": {"text": None},
-        "labels": {"style": {"fontSize": "18px", "color": "#333333"}},
-        "lineWidth": 0,
-        "tickWidth": 0,
-        "gridLineWidth": 0,
-    },
-    "yAxis": {
-        "title": {"text": "Time on Study (Weeks)", "style": {"fontSize": "22px", "color": "#333333"}},
-        "labels": {"style": {"fontSize": "18px", "color": "#555555"}},
-        "gridLineWidth": 1,
-        "gridLineColor": "rgba(0,0,0,0.08)",
-        "min": 0,
-        "lineWidth": 1,
-        "lineColor": "#cccccc",
-    },
-    "legend": {
-        "enabled": True,
-        "itemStyle": {"fontSize": "20px", "fontWeight": "normal", "color": "#333333"},
-        "symbolRadius": 2,
-        "align": "right",
-        "verticalAlign": "top",
-        "layout": "vertical",
-        "x": -20,
-        "y": 60,
-        "itemMarginBottom": 8,
-    },
-    "plotOptions": {
-        "bar": {"pointPadding": 0.02, "groupPadding": 0.05, "borderWidth": 0, "pointWidth": 24},
-        "scatter": {"jitter": {"x": 0, "y": 0}},
-        "series": {"animation": False},
-    },
-    "tooltip": {"enabled": False},
-    "credits": {"enabled": False},
-    "series": all_series,
-}
-
-js_options = json.dumps(options_dict)
+        ev_series = ScatterSeries()
+        ev_series.data = etype_data
+        ev_series.name = event_labels[etype]
+        ev_series.color = event_colors[etype]
+        ev_series.marker = {
+            "symbol": event_markers[etype],
+            "radius": 16,
+            "fillColor": event_colors[etype],
+            "lineColor": "#ffffff",
+            "lineWidth": 3,
+        }
+        ev_series.z_index = 5
+        ev_series.show_in_legend = True
+        chart.add_series(ev_series)
 
 # Load Highcharts JS from npm package
 hc_js_path = Path(__file__).resolve().parents[3] / "node_modules" / "highcharts" / "highcharts.js"
@@ -212,18 +252,17 @@ if not hc_js_path.exists():
     subprocess.run(["npm", "install", "highcharts"], cwd=str(hc_js_path.parents[2]), check=True, capture_output=True)
 highcharts_js = hc_js_path.read_text(encoding="utf-8")
 
-# Generate HTML
+# Generate HTML with inline scripts via typed API
+html_str = chart.to_js_literal()
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
     <script>{highcharts_js}</script>
 </head>
-<body style="margin:0;">
+<body style="margin:0; background:#fafbfc;">
     <div id="container" style="width: 4800px; height: 2700px;"></div>
-    <script>
-        Highcharts.chart('container', {js_options});
-    </script>
+    <script>{html_str}</script>
 </body>
 </html>"""
 
@@ -231,8 +270,21 @@ with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encodin
     f.write(html_content)
     temp_path = f.name
 
-# Save HTML
-Path("plot.html").write_text(html_content, encoding="utf-8")
+# Save interactive HTML
+Path("plot.html").write_text(
+    f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+</head>
+<body style="margin:0; background:#fafbfc;">
+    <div id="container" style="width: 100%; height: 100vh;"></div>
+    <script>{html_str}</script>
+</body>
+</html>""",
+    encoding="utf-8",
+)
 
 # Screenshot with Selenium
 chrome_options = Options()
@@ -240,12 +292,14 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=4800,2900")
+chrome_options.add_argument("--window-size=4800,2700")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
 time.sleep(5)
-driver.save_screenshot("plot.png")
+
+container = driver.find_element("id", "container")
+container.screenshot("plot.png")
 driver.quit()
 
 Path(temp_path).unlink()

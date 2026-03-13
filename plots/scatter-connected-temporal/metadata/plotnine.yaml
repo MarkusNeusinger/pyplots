@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: scatter-connected-temporal
 created: '2026-03-13T15:26:01Z'
-updated: '2026-03-13T15:30:35Z'
+updated: '2026-03-13T15:40:20Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23057665538
 issue: 4675
@@ -10,75 +10,81 @@ library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-connected-temporal/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-connected-temporal/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 79
+quality_score: 86
 review:
   strengths:
-  - 'Excellent realistic data choice: Phillips curve dynamics is a classic, engaging
-    economics narrative'
-  - Clean code structure following KISS principles perfectly
-  - Thoughtful blue gradient palette that works well for temporal encoding
-  - Good use of white stroke on points for visibility against the line
+  - Excellent spec compliance - all required features present including temporal color
+    gradient and key year annotations
+  - Strong data storytelling with the 2009 recession focal point and chronological
+    year labels
+  - Clean idiomatic plotnine code using geom_path correctly for temporal ordering
+  - Realistic Phillips Curve data with appropriate economic ranges
   weaknesses:
-  - Uses geom_line (connects by x-order) instead of geom_path (connects by data order)
-    — critical for temporal path correctness
-  - Title font size is 20pt, should be 24pt per library guidelines
-  - No colorbar to decode the year-to-color mapping
-  - Some year labels crowd nearby data points (especially 1995 and 2009)
-  - No emphasis on key events (e.g., 2008 recession) that would strengthen storytelling
-  image_description: The plot displays a connected scatter plot showing US Phillips
-    Curve dynamics from 1990 to 2020. The x-axis shows "Unemployment Rate (%)" ranging
-    from ~3.5 to ~9.6, and the y-axis shows "Inflation Rate (%)" ranging from about
-    -0.4 to ~5.5. Points are connected by line segments and use a blue color gradient
-    from light blue (#a8c4e0 for earlier years) to dark navy (#1a3a5c for later years).
-    Each point has a white stroke border. Key years (1990, 1995, 2000, 2005, 2009,
-    2015, 2020) are annotated with bold text labels nudged slightly above their data
-    points. The title reads "Phillips Curve Dynamics (1990-2020) · scatter-connected-temporal
-    · plotnine · pyplots.ai". The background uses theme_minimal with subtle light
-    gray grid lines. The plot fills the canvas well at a 16:9 aspect ratio.
+  - Year labels and annotation text at size=11 are slightly small for the 4800x2700
+    canvas
+  - Early light blue points and path segments lack contrast against the white background
+  - Some unused canvas space on the right side due to the outlier recession point
+  image_description: The plot displays a connected scatter plot of the Phillips Curve
+    relationship between Unemployment Rate (%) on the x-axis and Inflation Rate (%)
+    on the y-axis for 1990-2020. Data points are connected by line segments in temporal
+    order using geom_path. A light-to-dark blue color gradient encodes temporal progression
+    from 1990 (light blue) to 2020 (dark navy). Each data point has a circular marker
+    with a white stroke border. Key years (1990, 1995, 2000, 2005, 2015, 2020) are
+    annotated with bold gray text labels positioned with custom offsets. The 2009
+    recession point (highest unemployment ~9.6%, lowest inflation ~-0.4%) is highlighted
+    with a larger red circle outline and a bold red "2009 Recession" annotation. A
+    "Year" color gradient legend appears on the right. The title reads "Phillips Curve
+    (1990-2020) · scatter-connected-temporal · plotnine · pyplots.ai" in bold. The
+    background uses theme_minimal with very subtle grid lines.
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 26
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set but title is 20pt not recommended 24pt
+        comment: All major font sizes explicitly set. Year labels at size=11 slightly
+          small for canvas resolution.
       - id: VQ-02
         name: No Overlap
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Some year labels crowd nearby data points, minor overlap
+        comment: Year labels use custom offsets. Minor visual density in 4-6% unemployment
+          region.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Points visible with white stroke, some lighter early-year points
-          faint
+        comment: Points well-sized with white stroke. Earlier lighter points slightly
+          less prominent against white background.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Single blue gradient is colorblind-safe
+        comment: Single-hue blue gradient is colorblind-safe. Red accent provides
+          strong contrast.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good 16:9 proportions, slight imbalance with empty space on right
+        comment: Good 16:9 proportions. Some unused space on right due to outlier
+          recession point.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive with units
+        comment: 'Descriptive labels with units: Unemployment Rate (%) and Inflation
+          Rate (%).'
     design_excellence:
-      score: 12
+      score: 14
       max: 20
       items:
       - id: DE-01
@@ -86,23 +92,24 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Custom blue gradient palette, white stroke, theme_minimal — above
-          defaults but not publication-level
+        comment: Cohesive blue gradient palette with red accent. White-stroked points
+          add polish.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: theme_minimal, subtle grid with alpha=0.2, minor grid removed
+        comment: theme_minimal removes spines. Subtle grid with alpha=0.2. Minor grid
+          removed.
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 5
         max: 6
         passed: true
-        comment: Color gradient conveys temporal progression, year annotations provide
-          context, but path is chaotic and no emphasis on key events
+        comment: Clear focal point with 2009 recession highlight. Year labels guide
+          viewer through temporal path.
     spec_compliance:
-      score: 13
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -110,25 +117,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct connected scatter plot with temporal path
+        comment: Correct connected scatter plot using geom_path for temporal ordering.
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Uses geom_line instead of geom_path — temporal ordering may be incorrect
+        comment: 'All features present: chronological connection, annotations, color
+          gradient, visible markers.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=Unemployment, Y=Inflation correctly mapped
+        comment: X=Unemployment, Y=Inflation correctly mapped. Full data range shown.
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Title format correct, no colorbar to decode year-color mapping
+        comment: Correct title format. Year gradient legend properly labeled.
     data_quality:
       score: 14
       max: 15
@@ -138,19 +146,21 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows cyclical patterns, regime changes, varying directions
+        comment: Shows cyclical patterns, recession spike, varying relationships.
+          Good trajectory variety.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: US Phillips curve — real-world, neutral economics example
+        comment: US Phillips Curve 1990-2020 is a classic neutral economics example.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Realistic unemployment and inflation values
+        comment: Unemployment 3.7-9.6%, Inflation -0.4-5.4% are realistic US economic
+          ranges.
     code_quality:
       score: 10
       max: 10
@@ -160,33 +170,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports-data-plot-save structure
+        comment: 'Clean linear flow: imports, data, labels, plot, save.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Seed set and data is hardcoded/deterministic
+        comment: np.random.seed(42) set and data is hardcoded deterministic.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: All imports are used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, appropriate complexity
+        comment: Well-structured with dictionary-based label offset configuration.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300
+        comment: Saves as plot.png with dpi=300, current plotnine API.
     library_mastery:
-      score: 6
+      score: 7
       max: 10
       items:
       - id: LM-01
@@ -194,15 +204,14 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good grammar of graphics usage but should use geom_path instead of
-          geom_line
+        comment: Proper grammar of graphics layering. Correct use of geom_path for
+          temporal ordering.
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
         passed: true
-        comment: Uses plotnine layered grammar and gradient scales but nothing strongly
-          unique
+        comment: Uses geom_path, inherit_aes=False, layered fill/color gradient scales.
   verdict: REJECTED
 impl_tags:
   dependencies: []

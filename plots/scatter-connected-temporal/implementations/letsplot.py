@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-connected-temporal: Connected Scatter Plot with Temporal Path
 Library: letsplot 4.9.0 | Python 3.14.3
 Quality: 83/100 | Created: 2026-03-13
@@ -50,9 +50,30 @@ df = pd.DataFrame(
 # Color gradient: map time index to a normalized value for color encoding
 df["time_norm"] = df["time_idx"] / (n - 1)
 
-# Label only key years for annotation
-key_years = {1990, 1995, 2000, 2003, 2007, 2009, 2015, 2020, 2023}
+# Label only key years — reduced set to avoid crowding in dense areas
+key_years = {1990, 1995, 2000, 2007, 2009, 2020, 2023}
 df_labels = df[df["year"].isin(key_years)].copy()
+
+# Per-label offset to prevent overlap and clipping
+nudge_map = {
+    1990: (0.3, 0.6),
+    1995: (-0.3, -0.6),
+    2000: (0.3, -0.6),
+    2007: (0.3, -0.6),
+    2009: (-0.5, 0.6),
+    2020: (-0.3, 0.6),
+    2023: (0.3, 0.6),
+}
+df_labels["label_x"] = df_labels.apply(lambda r: r["unemployment"] + nudge_map.get(r["year"], (0, 0))[0], axis=1)
+df_labels["label_y"] = df_labels.apply(lambda r: r["inflation"] + nudge_map.get(r["year"], (0, 0))[1], axis=1)
+
+# Arrow segment at end of path to show time direction
+last = df.iloc[-1]
+prev = df.iloc[-2]
+
+arrow_df = pd.DataFrame(
+    {"x": [prev["unemployment"]], "y": [prev["inflation"]], "xend": [last["unemployment"]], "yend": [last["inflation"]]}
+)
 
 # Plot
 plot = (
@@ -62,6 +83,13 @@ plot = (
         size=1.8,
         alpha=0.7,
         tooltips="none",
+    )
+    + geom_segment(  # noqa: F405
+        data=arrow_df,
+        mapping=aes(x="x", y="y", xend="xend", yend="yend"),  # noqa: F405
+        color="#1a3a5c",
+        size=2.5,
+        arrow=arrow(angle=25, length=12, type="closed"),  # noqa: F405
     )
     + geom_point(  # noqa: F405
         aes(fill="time_idx"),  # noqa: F405
@@ -77,11 +105,11 @@ plot = (
     )
     + geom_text(  # noqa: F405
         data=df_labels,
-        mapping=aes(x="unemployment", y="inflation", label="year_label"),  # noqa: F405
-        size=11,
-        color="#333333",
-        nudge_y=0.45,
+        mapping=aes(x="label_x", y="label_y", label="year_label"),  # noqa: F405
+        size=13,
+        color="#222222",
         family="monospace",
+        fontface="bold",
     )
     + scale_color_gradient(  # noqa: F405
         low="#a8d5e2", high="#1a3a5c", name="Year", breaks=[0, (n - 1) / 2, n - 1], labels=["1990", "2006", "2023"]
@@ -89,6 +117,8 @@ plot = (
     + scale_fill_gradient(  # noqa: F405
         low="#a8d5e2", high="#1a3a5c", guide="none"
     )
+    + scale_x_continuous(expand=[0.06, 0])  # noqa: F405
+    + scale_y_continuous(expand=[0.08, 0])  # noqa: F405
     + labs(  # noqa: F405
         x="Unemployment Rate (%)",
         y="Inflation Rate (%)",
@@ -100,13 +130,13 @@ plot = (
     + theme(  # noqa: F405
         axis_text=element_text(size=16, color="#555555"),  # noqa: F405
         axis_title=element_text(size=20, color="#333333"),  # noqa: F405
-        plot_title=element_text(size=24, color="#222222"),  # noqa: F405
-        plot_subtitle=element_text(size=16, color="#666666"),  # noqa: F405
+        plot_title=element_text(size=24, color="#1a1a1a", face="bold"),  # noqa: F405
+        plot_subtitle=element_text(size=16, color="#555555"),  # noqa: F405
         legend_text=element_text(size=14),  # noqa: F405
-        legend_title=element_text(size=16),  # noqa: F405
-        panel_grid_major=element_line(color="#E8E8E8", size=0.35),  # noqa: F405
+        legend_title=element_text(size=16, face="bold"),  # noqa: F405
+        panel_grid_major=element_line(color="#E0E0E0", size=0.3),  # noqa: F405
         panel_grid_minor=element_blank(),  # noqa: F405
-        plot_margin=[40, 50, 20, 20],
+        plot_margin=[60, 50, 20, 20],
     )
 )
 

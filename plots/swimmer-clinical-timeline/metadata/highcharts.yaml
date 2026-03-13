@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: swimmer-clinical-timeline
 created: '2026-03-13T22:08:12Z'
-updated: '2026-03-13T22:22:58Z'
+updated: '2026-03-13T22:33:34Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23072198048
 issue: 4670
@@ -10,101 +10,102 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/swimmer-clinical-timeline/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/swimmer-clinical-timeline/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/swimmer-clinical-timeline/highcharts/plot.html
-quality_score: 81
+quality_score: 87
 review:
   strengths:
-  - Full spec compliance with all required features (events, ongoing markers, treatment
-    arms, sorting)
-  - Realistic clinical trial data with appropriate scale and event distributions
-  - Clean visual design with custom palette and subtle gridlines
-  - Well-structured, reproducible code with clean KISS architecture
+  - 'Major improvement: now uses highcharts-core Python API (Chart, HighchartsOptions,
+    BarSeries, ScatterSeries) instead of raw JSON dict construction'
+  - Colorblind-safe event palette (Okabe-Ito style) replacing previous green/red combination
+  - 24-week milestone plotline adds clinical context and visual interest
+  - Excellent font sizing with all text explicitly set for 4800x2700 canvas
+  - Full spec compliance with all required features present
   weaknesses:
-  - Does not use highcharts-core Python API — relies on raw JSON dict construction
-  - Event colors include red-green combination that could be improved for colorblind
-    accessibility
-  - Some event markers appear small relative to the bars
-  - No strong visual focal point or data storytelling emphasis
-  image_description: 'The plot displays a swimmer plot with 25 patients (PT-001 through
-    PT-025) arranged as horizontal bars sorted by treatment duration (shortest at
-    top, longest at bottom). Bars are colored in two distinct hues: steel blue (#306998)
-    for Arm A (Combo) and salmon/coral (#E8855E) for Arm B (Mono). The x-axis shows
-    "Time on Study (Weeks)" ranging from 0 to approximately 53. Patient IDs appear
-    along the y-axis. Event markers overlay the bars: blue upward triangles for Partial
-    Response, yellow diamonds for Complete Response, pink downward triangles for Progressive
-    Disease, purple squares for Adverse Event, and dark outlined triangles at bar
-    endpoints for Ongoing patients. A vertical legend in the top-right corner lists
-    all series. The background is white with very subtle horizontal gridlines.'
+  - Ongoing markers and Partial Response markers both use triangle shape (differentiated
+    only by color and position)
+  - Options set as raw dicts rather than typed highcharts-core option classes
+  - No strong data storytelling focal point (e.g., highlighting responders vs non-responders)
+  image_description: 'The plot displays a horizontal swimmer plot with 25 patients
+    (PT-018 at top to PT-010 at bottom) sorted by treatment duration from shortest
+    to longest. Bars are color-coded: steel blue (#306998) for Arm A (Combo) and salmon/coral
+    (#E8855E) for Arm B (Mono). Event markers overlay the bars with distinct shapes
+    and colors: blue upward triangles for Partial Response (#0072B2), yellow diamonds
+    for Complete Response (#F0E442), orange-red downward triangles for Progressive
+    Disease (#D55E00), and purple squares for Adverse Event (#9467BD). Dark triangles
+    at bar endpoints indicate Ongoing patients. The x-axis shows "Time on Study (Weeks)"
+    ranging from 0 to ~52. A dashed vertical plotline marks the "24-Week Milestone."
+    The title reads "swimmer-clinical-timeline · highcharts · pyplots.ai" with a subtitle
+    "Phase II Oncology Trial — Treatment duration and clinical events by patient."
+    A vertical legend in the top-right corner lists all series with matching colors
+    and symbols. Background is light gray (#fafbfc) with subtle dotted gridlines at
+    6% opacity. Bar spacing is clean with no overlap.'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 28
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 28px, labels 18px, axis title
-          22px, legend 20px); all readable at full resolution
+        comment: 'All font sizes explicitly set: title 52px, subtitle 34px, axis title
+          36px, tick labels 22-26px, legend 26px'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text; bars well-spaced; legend doesn't overlap data
+        comment: No overlapping text or elements; bars well-spaced
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Bars and markers visible; marker radii 12-14 adequate but some event
-          markers appear slightly small relative to bar width
+        comment: Markers radius 16 with white borders; Ongoing and Partial Response
+          share triangle shape
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Blue/salmon arm colors are colorblind-safe; event colors include
-          green and red which could be problematic, though distinct marker shapes
-          mitigate this
+        comment: Colorblind-safe Okabe-Ito palette for events; accessible arm colors
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good overall layout; some wasted space on right side as x-axis extends
-          to 53 but most patients cluster below 30 weeks
+        comment: Good margins; some wasted space on right but natural data spread
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Time on Study (Weeks) with units; title follows spec format
+        comment: Time on Study (Weeks) with units; patient IDs on y-axis
     design_excellence:
-      score: 12
+      score: 13
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom blue/salmon palette is cohesive; white borders on event markers
-          add polish; above defaults but not publication-stunning
+        comment: Custom palette, Segoe UI font, letter-spacing, white marker borders,
+          off-white background
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: X-axis line/tick/grid removed; y-axis grid at 0.08 opacity; bar borderWidth
-          0; credits/tooltip disabled; deliberate refinement
+        comment: Removed x-axis chrome; subtle dotted grid at 6% opacity; floating
+          legend with rounded border
       - id: DE-03
         name: Data Storytelling
         score: 3
         max: 6
         passed: true
-        comment: Sorting by duration creates visual hierarchy; color coding supports
-          narrative; no strong focal point or emphasis
+        comment: Sorting by duration; 24-week milestone plotline; arm color coding;
+          no strong focal point
     spec_compliance:
       score: 15
       max: 15
@@ -114,26 +115,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct swimmer plot with horizontal bars
+        comment: Correct swimmer plot with horizontal bars and event overlays
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: sorted bars, distinct event markers,
-          ongoing indicators, legend, time axis, patient IDs, color by treatment arm'
+        comment: 'All spec features present: sorted bars, event markers, ongoing indicators,
+          legend, time axis, patient IDs, arm coloring'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Categories on y-axis, time on x-axis, all data visible
+        comment: Patients on y-axis, time on x-axis, events correctly positioned
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct; legend labels match all event types and arms
+        comment: Correct title format; legend labels descriptive and complete
     data_quality:
       score: 14
       max: 15
@@ -143,22 +144,21 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows 25 patients, two treatment arms, four event types, ongoing
-          patients, varying durations
+        comment: 25 patients, two arms, four event types, ongoing patients, wide duration
+          range
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Realistic Phase II oncology trial with plausible patient IDs, treatment
-          arms, and clinical events
+        comment: Realistic Phase II oncology trial with plausible event distributions
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Durations 3-52 weeks are clinically sensible; event times within
-          treatment durations
+        comment: Durations 3-52 weeks; clinically plausible event timing and ongoing
+          rate
     code_quality:
       score: 10
       max: 10
@@ -168,7 +168,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, chart config, HTML, screenshot'
+        comment: 'Linear flow: imports, data, chart config, series, HTML, screenshot'
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -186,8 +186,8 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Clean and well-structured; invisible scatter series for arm legend
-          is a smart workaround
+        comment: Clean and well-organized; invisible scatter series for legend is
+          a smart pattern
       - id: CQ-05
         name: Output & API
         score: 1
@@ -195,23 +195,23 @@ review:
         passed: true
         comment: Saves plot.png and plot.html
     library_mastery:
-      score: 4
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 2
+        score: 4
         max: 5
-        passed: false
-        comment: Raw JSON dict construction instead of highcharts-core Python API
-          (Chart, HighchartsOptions, series classes)
+        passed: true
+        comment: Uses highcharts-core API (Chart, HighchartsOptions, BarSeries, ScatterSeries);
+          options as dicts rather than typed classes
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Per-point bar coloring and scatter overlay; some Highcharts patterns
-          but doesn't leverage Python library's high-level API
+        passed: true
+        comment: Per-point bar coloring, scatter overlay, plotLines, invisible legend
+          series, element-level screenshot, npm-installed Highcharts JS
   verdict: REJECTED
 impl_tags:
   dependencies:
@@ -220,10 +220,11 @@ impl_tags:
   - custom-legend
   - layer-composition
   - html-export
+  - hover-tooltips
   patterns:
   - data-generation
   - iteration-over-groups
   dataprep: []
   styling:
-  - edge-highlighting
   - grid-styling
+  - edge-highlighting

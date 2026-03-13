@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-connected-temporal: Connected Scatter Plot with Temporal Path
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-13
@@ -19,6 +19,8 @@ from plotnine import (
     labs,
     scale_color_gradient,
     scale_fill_gradient,
+    scale_x_continuous,
+    scale_y_continuous,
     theme,
     theme_minimal,
 )
@@ -142,7 +144,7 @@ plot = (
         x=recession_point["Unemployment"].values[0] - 0.6,
         y=recession_point["Inflation"].values[0] + 0.5,
         label="2009 Recession",
-        size=11,
+        size=13,
         fontweight="bold",
         color="#c0392b",
     )
@@ -150,15 +152,17 @@ plot = (
     + geom_text(
         aes(x="x_label", y="y_label", label="Label"),
         data=df_labels,
-        size=11,
+        size=13,
         fontweight="bold",
         color="#444444",
         inherit_aes=False,
     )
     + scale_color_gradient(
-        low="#a8c4e0", high="#1a3a5c", name="Year", breaks=[0, 10, 20, 30], labels=["1990", "2000", "2010", "2020"]
+        low="#6a9bc5", high="#1a3a5c", name="Year", breaks=[0, 10, 20, 30], labels=["1990", "2000", "2010", "2020"]
     )
-    + scale_fill_gradient(low="#a8c4e0", high="#1a3a5c")
+    + scale_fill_gradient(low="#6a9bc5", high="#1a3a5c")
+    + scale_x_continuous(breaks=range(3, 11), expand=(0.05, 0.3))
+    + scale_y_continuous(breaks=range(-1, 7), expand=(0.05, 0.3))
     + labs(
         x="Unemployment Rate (%)",
         y="Inflation Rate (%)",

@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: scatter-connected-temporal
 created: '2026-03-13T15:25:33Z'
-updated: '2026-03-13T15:37:35Z'
+updated: '2026-03-13T15:46:24Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23057665455
 issue: 4675
@@ -10,35 +10,41 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-connected-temporal/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-connected-temporal/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 86
+quality_score: 88
 review:
   strengths:
-  - Excellent data storytelling through well-chosen annotation years marking economic
-    turning points (2009 recession, 2022 inflation spike)
-  - Cohesive monochromatic blue color scheme with custom colormap creates professional
-    polish
-  - Perfect spec compliance - all required features implemented correctly
-  - Clean deterministic code with explicit font sizing for all text elements
+  - 'Excellent data choice: Phillips curve dynamics is a perfect real-world application
+    for connected scatter temporal plots, with recognizable economic events'
+  - 'Strong seaborn integration: sns.lineplot with units parameter for per-segment
+    colored paths is a clever, idiomatic approach'
+  - Cohesive monochromatic blue design with custom blend palette creates a professional,
+    polished aesthetic
+  - Strategic annotation placement at key economic turning points creates effective
+    data storytelling
+  - Perfect spec compliance with all required features implemented correctly
   weaknesses:
-  - Library mastery limited - core connected-path visualization uses matplotlib LineCollection
-    rather than seaborn capabilities
-  - Minor annotation crowding in lower-left where multiple years cluster between 3.5-4.5%
-    unemployment
-  - Seaborn role is mainly decorative (scatter layer styling, theme) rather than structural
-  image_description: 'The plot shows a connected scatter plot of Unemployment Rate
-    (%) on the x-axis vs Inflation Rate (%) on the y-axis, tracing the Phillips curve
-    dynamics from 1990 to 2023. Points are connected by line segments in chronological
-    order. A blue sequential color gradient (light blue for 1990 to dark navy for
-    2023) encodes temporal progression on both the markers and connecting lines. Six
-    key years are annotated with bold labels: 1990 (top-center, high inflation ~5.4%),
-    2000 (left, low unemployment ~4.0%), 2009 (bottom-right, high unemployment ~9.3%
-    with negative inflation), 2012 (center-right), 2019 (left, pre-pandemic low unemployment),
-    and 2023 (upper-left, post-pandemic). The background is light gray (#fafafa),
-    top and right spines are removed, and subtle gridlines appear on both axes at
-    alpha=0.2. A vertical colorbar on the right maps color to year (1990-2023). The
-    title reads "scatter-connected-temporal · seaborn · pyplots.ai". The path clearly
-    shows cyclical economic patterns, the 2008-2009 recession excursion to high unemployment
-    with deflation, and the 2022 inflation spike.'
+  - Minor annotation crowding in the lower-left region where 2019, 2000, and 2023
+    labels cluster near unemployment 3.5-4.5%
+  - Lightest early-period markers have slightly reduced contrast against the light
+    gray background
+  - Both-axis grid adds slight visual noise compared to y-only grid
+  image_description: 'The plot displays a connected scatter plot of Unemployment Rate
+    (%) on the x-axis versus Inflation Rate (%) on the y-axis, tracing Phillips curve
+    dynamics from 1990 to 2023. Data points are connected by line segments in chronological
+    order, with a blue sequential color gradient transitioning from light blue (1990)
+    to dark navy (2023) encoding temporal progression on both markers and connecting
+    line segments. White edge highlighting on circular markers distinguishes individual
+    data points from the connecting lines. Six key years are annotated with bold labels
+    and curved arrow connectors: 1990 (upper center, high inflation ~5.4%), 2000 (left
+    side, low unemployment ~4.0%), 2009 (lower right, peak unemployment ~9.3% with
+    near-zero inflation), 2012 (center right), 2019 (lower left, pre-pandemic low
+    unemployment), and 2023 (upper left, post-pandemic with high inflation). A vertical
+    colorbar on the right maps the blue gradient to year. The background is light
+    gray (#f7f7f7), top and right spines are removed via sns.despine(), and subtle
+    gridlines (alpha=0.15) appear on both axes. The title reads "scatter-connected-temporal
+    · seaborn · pyplots.ai" in medium weight at the top. The path clearly shows cyclical
+    economic patterns, the dramatic 2008-2009 recession excursion to the right, and
+    the 2022 inflation spike shooting upward.'
   criteria_checklist:
     visual_quality:
       score: 28
@@ -49,22 +55,22 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 24pt, labels 20pt, ticks 16pt,
-          annotations 14pt bold'
+        comment: 'All font sizes explicitly set: title=24pt, labels=20pt, ticks=16pt,
+          annotations=14pt bold, colorbar=16/14pt'
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: Minor crowding of annotations in lower-left cluster (2019, 2000 area),
-          but all text readable
+        comment: Minor annotation crowding in lower-left cluster (2023, 2000, 2019)
+          but all readable
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Markers s=150 appropriate for 34 points, lines 2.5 width, white edge
-          highlighting helps
+        comment: 'Markers s=160 appropriate for 34 points; lightest early markers
+          slightly faint against #f7f7f7 background'
       - id: VQ-04
         name: Color Accessibility
         score: 4
@@ -76,7 +82,7 @@ review:
         score: 4
         max: 4
         passed: true
-        comment: Good 16:9 proportions, tight_layout with colorbar, balanced margins
+        comment: Good 16:9 proportions, compact colorbar, balanced margins
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
@@ -93,22 +99,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: 'Custom blue gradient colormap, white marker edges, #fafafa background,
-          cohesive monochromatic theme'
+        comment: 'Custom blue blend palette, white marker edges, #f7f7f7 background,
+          cohesive monochromatic theme above defaults'
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Spines removed, subtle grid alpha=0.2, colorbar well-integrated,
-          generous whitespace
+        comment: Spines removed via sns.despine(), subtle grid alpha=0.15, generous
+          whitespace; both-axis grid slightly busier than ideal
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Annotations at key economic turning points guide viewer, color gradient
-          reinforces temporal flow
+        comment: Strategic annotation of economic turning points creates narrative;
+          color gradient reinforces temporal flow
     spec_compliance:
       score: 15
       max: 15
@@ -118,26 +124,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Connected scatter plot with temporal path, correct chart type
+        comment: Correct connected scatter plot with temporal path
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Points connected chronologically, key years annotated, color gradient,
-          visible markers
+        comment: 'All spec requirements met: chronological connection, annotations,
+          color gradient, visible markers'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=unemployment, Y=inflation, time=year, all correctly mapped
+        comment: X=unemployment, Y=inflation, time=year correctly mapped
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, colorbar labeled Year serves as legend
+        comment: Title format correct, colorbar labeled Year serves as temporal legend
     data_quality:
       score: 14
       max: 15
@@ -147,22 +153,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows cyclical patterns, recession excursions, directional trends,
-          regime changes
+        comment: Shows cyclical patterns, recession excursion, inflation spike, directional
+          trends, regime changes
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Phillips curve dynamics 1990-2023, real-world plausible economic
-          data, neutral topic
+        comment: Phillips curve dynamics 1990-2023, realistic US-like economic data,
+          neutral topic
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Unemployment 3.6-9.6%, inflation -0.4-8.0% are realistic US-like
-          ranges
+        comment: Unemployment 3.6-9.6%, inflation -0.4-8.0% are realistic ranges with
+          appropriate axis padding
     code_quality:
       score: 10
       max: 10
@@ -172,60 +178,61 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports-data-plot-save flow, no functions or classes
+        comment: 'Clean linear flow: imports, data, plot, style, save. No functions
+          or classes'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set, data is hardcoded arrays
+        comment: np.random.seed(42) set, hardcoded arrays fully deterministic
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: matplotlib.collections, plt, np, pd, sns, LinearSegmentedColormap'
+        comment: 'All imports used: matplotlib.pyplot, numpy, pandas, seaborn'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: LineCollection for gradient path is standard approach, clean annotation
-          dict
+        comment: Segment DataFrame for sns.lineplot units is clean; annotation loop
+          well-structured
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png, dpi=300, bbox_inches=tight
+        comment: Saves as plot.png, dpi=300, bbox_inches=tight, current seaborn API
     library_mastery:
-      score: 5
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Good seaborn usage: sns.lineplot with units, sns.scatterplot with
+          hue/palette, sns.set_theme, sns.despine, sns.color_palette blend'
+      - id: LM-02
+        name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses sns.scatterplot with hue/palette, sns.set_theme, sns.despine;
-          but core path is matplotlib LineCollection
-      - id: LM-02
-        name: Distinctive Features
-        score: 2
-        max: 5
-        passed: false
-        comment: Seaborn mainly contributes scatter layer styling and theme; distinctive
-          connected-path is pure matplotlib
+        comment: Units parameter in lineplot is distinctive seaborn feature; blend
+          palette syntax is seaborn-specific; manual segment DF construction somewhat
+          verbose
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
-  - colorbar
   - annotations
-  - layer-composition
+  - colorbar
   patterns:
   - data-generation
-  - explicit-figure
+  - iteration-over-groups
   dataprep: []
   styling:
   - custom-colormap

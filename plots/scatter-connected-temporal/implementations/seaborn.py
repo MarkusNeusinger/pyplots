@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-connected-temporal: Connected Scatter Plot with Temporal Path
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 77/100 | Created: 2026-03-13
@@ -7,6 +7,8 @@ Quality: 77/100 | Created: 2026-03-13
 import matplotlib.collections as mcoll
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import seaborn as sns
 from matplotlib.colors import LinearSegmentedColormap
 
 
@@ -93,12 +95,16 @@ inflation = np.array(
     ]
 )
 
+df = pd.DataFrame({"Unemployment Rate (%)": unemployment, "Inflation Rate (%)": inflation, "Year": years})
+
 # Plot
+sns.set_theme(style="ticks", rc={"axes.facecolor": "#fafafa"})
 fig, ax = plt.subplots(figsize=(16, 9))
 
 cmap = LinearSegmentedColormap.from_list("temporal", ["#a8c4e0", "#306998", "#1a3a5c"])
 colors = cmap(np.linspace(0, 1, n))
 
+# Connected path segments with temporal color gradient
 segments = []
 for i in range(n - 1):
     segments.append([(unemployment[i], inflation[i]), (unemployment[i + 1], inflation[i + 1])])
@@ -106,8 +112,19 @@ for i in range(n - 1):
 lc = mcoll.LineCollection(segments, colors=colors[:-1], linewidths=2.5, zorder=2)
 ax.add_collection(lc)
 
-ax.scatter(
-    unemployment, inflation, c=np.linspace(0, 1, n), cmap=cmap, s=150, edgecolors="white", linewidth=1.2, zorder=3
+# Scatter layer using seaborn
+sns.scatterplot(
+    data=df,
+    x="Unemployment Rate (%)",
+    y="Inflation Rate (%)",
+    hue="Year",
+    palette=cmap,
+    s=150,
+    edgecolor="white",
+    linewidth=1.2,
+    legend=False,
+    zorder=3,
+    ax=ax,
 )
 
 # Annotate key time points
@@ -130,8 +147,7 @@ ax.set_xlabel("Unemployment Rate (%)", fontsize=20)
 ax.set_ylabel("Inflation Rate (%)", fontsize=20)
 ax.set_title("scatter-connected-temporal \u00b7 seaborn \u00b7 pyplots.ai", fontsize=24, fontweight="medium")
 ax.tick_params(axis="both", labelsize=16)
-ax.spines["top"].set_visible(False)
-ax.spines["right"].set_visible(False)
+sns.despine(ax=ax)
 ax.yaxis.grid(True, alpha=0.2, linewidth=0.8)
 ax.xaxis.grid(True, alpha=0.2, linewidth=0.8)
 

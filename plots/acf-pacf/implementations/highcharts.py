@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 acf-pacf: Autocorrelation and Partial Autocorrelation (ACF/PACF) Plot
 Library: highcharts unknown | Python 3.14.3
 Quality: 83/100 | Created: 2026-03-14
@@ -37,6 +37,12 @@ confidence_bound = 1.96 / np.sqrt(n_obs)
 lags = list(range(n_lags + 1))
 pacf_lags = list(range(1, n_lags + 1))
 
+# Colors - colorblind-friendly blue/orange
+COLOR_NONSIG = "#306998"
+COLOR_SIG = "#e67e22"
+COLOR_LAG0 = "#1a4971"
+COLOR_CONF = "#d35400"
+
 # Build chart
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
@@ -45,11 +51,12 @@ chart.options.chart = {
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
-    "marginTop": 120,
-    "marginBottom": 320,
+    "marginTop": 140,
+    "marginBottom": 310,
     "marginLeft": 280,
-    "marginRight": 120,
+    "marginRight": 180,
     "style": {"fontFamily": "Arial, Helvetica, sans-serif"},
+    "animation": {"duration": 800, "easing": "easeOutBounce"},
 }
 
 # Title
@@ -61,27 +68,46 @@ chart.options.title = {
 
 chart.options.subtitle = {
     "text": "AR(2) Process \u2014 Exponential ACF Decay with PACF Cutoff at Lag 2",
-    "style": {"fontSize": "30px", "color": "#7f8c8d", "fontWeight": "normal"},
+    "style": {"fontSize": "32px", "color": "#7f8c8d", "fontWeight": "normal"},
 }
 
-# Two y-axes stacked vertically
+# Tighter y-axis ranges, reduced gap between panels
+acf_min_val = float(np.min(acf_values))
+acf_max_val = float(np.max(acf_values))
+pacf_min_val = float(np.min(pacf_values[1:]))
+pacf_max_val = float(np.max(pacf_values[1:]))
+
 chart.options.y_axis = [
     {
         "title": {"text": "ACF", "style": {"fontSize": "34px", "color": "#306998", "fontWeight": "bold"}, "margin": 20},
         "labels": {"style": {"fontSize": "24px", "color": "#555555"}, "format": "{value:.1f}"},
-        "top": "4%",
-        "height": "42%",
+        "top": "5%",
+        "height": "43%",
         "offset": 0,
-        "min": -0.5,
+        "min": round(min(acf_min_val, -confidence_bound) - 0.08, 1),
         "max": 1.05,
         "endOnTick": False,
+        "startOnTick": False,
         "tickInterval": 0.2,
         "gridLineColor": "#eeeeee",
         "gridLineWidth": 1,
         "plotLines": [
             {"value": 0, "color": "#999999", "width": 2, "zIndex": 3},
-            {"value": confidence_bound, "color": "#e74c3c", "width": 2, "dashStyle": "Dash", "zIndex": 3},
-            {"value": -confidence_bound, "color": "#e74c3c", "width": 2, "dashStyle": "Dash", "zIndex": 3},
+            {
+                "value": confidence_bound,
+                "color": COLOR_CONF,
+                "width": 3,
+                "dashStyle": "Dash",
+                "zIndex": 3,
+                "label": {
+                    "text": "95% CI",
+                    "align": "left",
+                    "style": {"fontSize": "20px", "color": COLOR_CONF, "fontWeight": "bold"},
+                    "x": 100,
+                    "y": -8,
+                },
+            },
+            {"value": -confidence_bound, "color": COLOR_CONF, "width": 3, "dashStyle": "Dash", "zIndex": 3},
         ],
     },
     {
@@ -91,11 +117,11 @@ chart.options.y_axis = [
             "margin": 20,
         },
         "labels": {"style": {"fontSize": "24px", "color": "#555555"}, "format": "{value:.1f}"},
-        "top": "54%",
-        "height": "42%",
+        "top": "52%",
+        "height": "43%",
         "offset": 0,
-        "min": -0.5,
-        "max": 0.6,
+        "min": round(min(pacf_min_val, -confidence_bound) - 0.08, 1),
+        "max": round(max(pacf_max_val, confidence_bound) + 0.1, 1),
         "endOnTick": False,
         "startOnTick": False,
         "tickInterval": 0.2,
@@ -103,8 +129,8 @@ chart.options.y_axis = [
         "gridLineWidth": 1,
         "plotLines": [
             {"value": 0, "color": "#999999", "width": 2, "zIndex": 3},
-            {"value": confidence_bound, "color": "#e74c3c", "width": 2, "dashStyle": "Dash", "zIndex": 3},
-            {"value": -confidence_bound, "color": "#e74c3c", "width": 2, "dashStyle": "Dash", "zIndex": 3},
+            {"value": confidence_bound, "color": COLOR_CONF, "width": 3, "dashStyle": "Dash", "zIndex": 3},
+            {"value": -confidence_bound, "color": COLOR_CONF, "width": 3, "dashStyle": "Dash", "zIndex": 3},
         ],
     },
 ]
@@ -131,18 +157,39 @@ chart.options.x_axis = [
     },
 ]
 
-# Color bars based on significance
+# Color bars based on significance, add data labels on significant bars
 acf_data = []
 for i, val in enumerate(acf_values):
-    color = "#e74c3c" if abs(val) > confidence_bound and i > 0 else "#306998"
+    is_sig = abs(val) > confidence_bound and i > 0
+    color = COLOR_SIG if is_sig else COLOR_NONSIG
+    point = {"x": i, "y": round(float(val), 4), "color": color}
     if i == 0:
-        color = "#1a4971"
-    acf_data.append({"x": i, "y": round(float(val), 4), "color": color})
+        point["color"] = COLOR_LAG0
+        point["dataLabels"] = {
+            "enabled": True,
+            "format": "r=1.0",
+            "style": {"fontSize": "18px", "color": COLOR_LAG0, "fontWeight": "bold", "textOutline": "none"},
+        }
+    elif is_sig:
+        point["dataLabels"] = {
+            "enabled": True,
+            "format": "{y:.2f}",
+            "style": {"fontSize": "18px", "color": COLOR_SIG, "fontWeight": "bold", "textOutline": "none"},
+        }
+    acf_data.append(point)
 
 pacf_data = []
 for i, val in enumerate(pacf_values[1:], start=1):
-    color = "#e74c3c" if abs(val) > confidence_bound else "#306998"
-    pacf_data.append({"x": i, "y": round(float(val), 4), "color": color})
+    is_sig = abs(val) > confidence_bound
+    color = COLOR_SIG if is_sig else COLOR_NONSIG
+    point = {"x": i, "y": round(float(val), 4), "color": color}
+    if is_sig:
+        point["dataLabels"] = {
+            "enabled": True,
+            "format": "{y:.2f}",
+            "style": {"fontSize": "18px", "color": COLOR_SIG, "fontWeight": "bold", "textOutline": "none"},
+        }
+    pacf_data.append(point)
 
 # ACF series (top panel, yAxis 0, xAxis 0)
 acf_series = ColumnSeries.from_dict(
@@ -156,6 +203,9 @@ acf_series = ColumnSeries.from_dict(
         "borderWidth": 0,
         "groupPadding": 0,
         "pointPadding": 0,
+        "showInLegend": False,
+        "animation": {"duration": 1000},
+        "states": {"hover": {"brightness": 0.15, "borderWidth": 2, "borderColor": "#2c3e50"}},
     }
 )
 chart.add_series(acf_series)
@@ -172,26 +222,65 @@ pacf_series = ColumnSeries.from_dict(
         "borderWidth": 0,
         "groupPadding": 0,
         "pointPadding": 0,
+        "showInLegend": False,
+        "animation": {"duration": 1000},
+        "states": {"hover": {"brightness": 0.15, "borderWidth": 2, "borderColor": "#2c3e50"}},
     }
 )
 chart.add_series(pacf_series)
 
-# Tooltip
+# Rich HTML tooltip - distinctive Highcharts feature
 chart.options.tooltip = {
-    "headerFormat": '<span style="font-size:22px">Lag {point.x}</span><br/>',
-    "pointFormat": '<span style="font-size:20px">{series.name}: <b>{point.y:.4f}</b></span>',
-    "backgroundColor": "rgba(255, 255, 255, 0.95)",
+    "useHTML": True,
+    "headerFormat": '<table style="font-size:20px;min-width:200px;">',
+    "pointFormat": '<tr><td style="padding:4px 8px;color:{point.color};font-weight:bold;">'
+    "Lag {point.x}</td>"
+    '<td style="padding:4px 8px;text-align:right;"><b>{point.y:.4f}</b></td></tr>',
+    "footerFormat": "</table>",
+    "backgroundColor": "rgba(255, 255, 255, 0.96)",
     "borderColor": "#306998",
-    "borderRadius": 8,
+    "borderRadius": 10,
     "borderWidth": 2,
+    "shadow": {"color": "rgba(0,0,0,0.15)", "offsetX": 2, "offsetY": 2, "width": 5},
     "style": {"fontSize": "20px"},
 }
 
-# Plot options
-chart.options.plot_options = {"column": {"borderRadius": 2}}
+# Plot options with animation
+chart.options.plot_options = {
+    "column": {
+        "borderRadius": 3,
+        "animation": {"duration": 1000},
+        "dataLabels": {"allowOverlap": False, "crop": False, "overflow": "allow"},
+    }
+}
 
-# Disable legend and credits
-chart.options.legend = {"enabled": False}
+# Legend explaining significance colors
+chart.options.legend = {
+    "enabled": True,
+    "align": "right",
+    "verticalAlign": "top",
+    "layout": "horizontal",
+    "floating": True,
+    "x": -40,
+    "y": 70,
+    "itemStyle": {"fontSize": "22px", "fontWeight": "normal", "color": "#555555"},
+    "symbolRadius": 4,
+    "symbolHeight": 16,
+    "symbolWidth": 16,
+    "itemDistance": 40,
+}
+
+# Add invisible series for legend entries
+sig_legend = ColumnSeries.from_dict(
+    {"name": "Significant (|r| > 95% CI)", "data": [], "color": COLOR_SIG, "showInLegend": True, "type": "column"}
+)
+chart.add_series(sig_legend)
+
+nonsig_legend = ColumnSeries.from_dict(
+    {"name": "Non-significant", "data": [], "color": COLOR_NONSIG, "showInLegend": True, "type": "column"}
+)
+chart.add_series(nonsig_legend)
+
 chart.options.credits = {"enabled": False}
 
 # Download Highcharts JS (try multiple CDNs, fall back to local npm)

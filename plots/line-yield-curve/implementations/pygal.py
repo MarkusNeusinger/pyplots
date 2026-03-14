@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-yield-curve: Yield Curve (Interest Rate Term Structure)
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-14
@@ -27,8 +27,8 @@ custom_style = Style(
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
-    foreground_subtle="#cccccc",
-    colors=("#306998", "#E6A817", "#C0392B", "#C0392B"),
+    foreground_subtle="#e0e0e0",
+    colors=("#306998", "#E6A817", "#C0392B", "#555555"),
     title_font_size=72,
     label_font_size=44,
     major_label_font_size=40,
@@ -62,7 +62,7 @@ chart = pygal.XY(
     margin=80,
     margin_top=150,
     margin_bottom=150,
-    xrange=(0, 32),
+    xrange=(0, 31),
     range=(0, 5.5),
     x_labels=[0.083, 0.25, 0.5, 1, 2, 3, 5, 7, 10, 20, 30],
     x_labels_major=[0.083, 1, 2, 5, 10, 20, 30],

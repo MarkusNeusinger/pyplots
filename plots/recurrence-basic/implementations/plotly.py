@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 recurrence-basic: Recurrence Plot for Nonlinear Time Series
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-14
@@ -6,6 +6,7 @@ Quality: 88/100 | Created: 2026-03-14
 
 import numpy as np
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 from scipy.integrate import solve_ivp
 from scipy.spatial.distance import cdist
 
@@ -38,62 +39,103 @@ time_indices = np.arange(n_embedded)
 
 # Font
 font_family = "Palatino, Georgia, serif"
+accent = "#306998"
+text_dark = "#1a1a1a"
+text_mid = "#444"
 
-# Plot
-fig = go.Figure(
-    data=go.Heatmap(
+# Create figure with marginal time series subplot
+fig = make_subplots(rows=2, cols=1, row_heights=[0.15, 0.85], vertical_spacing=0.03, shared_xaxes=True)
+
+# Top panel: original Lorenz x-component time series
+fig.add_trace(
+    go.Scatter(
+        x=time_indices,
+        y=x_series[:n_embedded],
+        mode="lines",
+        line={"color": accent, "width": 1.5},
+        fill="tozeroy",
+        fillcolor="rgba(48,105,152,0.12)",
+        hovertemplate="t: %{x}<br>x(t): %{y:.2f}<extra></extra>",
+        showlegend=False,
+    ),
+    row=1,
+    col=1,
+)
+
+# Bottom panel: recurrence matrix heatmap
+fig.add_trace(
+    go.Heatmap(
         z=recurrence_matrix,
         x=time_indices,
         y=time_indices,
-        colorscale=[[0, "#FFFFFF"], [1, "#306998"]],
+        colorscale=[[0, "#F7F9FC"], [0.5, "#C8D8E8"], [1, "#1B4F72"]],
         showscale=False,
         hovertemplate="i: %{x}<br>j: %{y}<br>Recurrent: %{z}<extra></extra>",
         xgap=0,
         ygap=0,
-    )
+    ),
+    row=2,
+    col=1,
 )
 
-# Layout — square format for symmetric matrix
+# Layout — square-proportioned recurrence matrix with marginal context
 fig.update_layout(
     title={
         "text": (
             "Lorenz Attractor · recurrence-basic · plotly · pyplots.ai"
             "<br><sup style='color:#555; font-size:17px; letter-spacing:0.3px'>"
-            "Time-delay embedded recurrence plot reveals deterministic structure "
-            "— diagonal lines indicate chaotic but recurrent dynamics"
+            "Time-delay embedded recurrence plot with source signal"
+            " — diagonal lines reveal deterministic chaotic dynamics"
             "</sup>"
         ),
-        "font": {"size": 28, "family": font_family, "color": "#1a1a1a"},
+        "font": {"size": 28, "family": font_family, "color": text_dark},
         "x": 0.5,
         "xanchor": "center",
-        "y": 0.97,
+        "y": 0.98,
         "yanchor": "top",
     },
-    xaxis={
-        "title": {"text": "Time Index (i)", "font": {"size": 22, "family": font_family, "color": "#333"}},
-        "tickfont": {"size": 18, "family": font_family, "color": "#444"},
-        "scaleanchor": "y",
-        "scaleratio": 1,
-        "constrain": "domain",
-        "showgrid": False,
-        "zeroline": False,
-    },
-    yaxis={
-        "title": {"text": "Time Index (j)", "font": {"size": 22, "family": font_family, "color": "#333"}},
-        "tickfont": {"size": 18, "family": font_family, "color": "#444"},
-        "constrain": "domain",
-        "autorange": "reversed",
-        "showgrid": False,
-        "zeroline": False,
-    },
     template="plotly_white",
-    margin={"l": 100, "r": 40, "t": 120, "b": 80},
+    margin={"l": 80, "r": 60, "t": 120, "b": 70},
     width=1200,
-    height=1200,
-    paper_bgcolor="#FFFFFF",
+    height=1400,
+    paper_bgcolor="#FAFBFD",
     plot_bgcolor="#FFFFFF",
+    font={"family": font_family},
+)
+
+# Top subplot (time series) axis styling
+fig.update_yaxes(
+    title={"text": "x(t)", "font": {"size": 18, "family": font_family, "color": text_mid}},
+    tickfont={"size": 14, "family": font_family, "color": text_mid},
+    showgrid=False,
+    zeroline=False,
+    row=1,
+    col=1,
+)
+fig.update_xaxes(showticklabels=False, showgrid=False, zeroline=False, row=1, col=1)
+
+# Bottom subplot (recurrence matrix) axis styling
+fig.update_xaxes(
+    title={"text": "Time Index (i)", "font": {"size": 22, "family": font_family, "color": "#333"}},
+    tickfont={"size": 18, "family": font_family, "color": text_mid},
+    showgrid=False,
+    zeroline=False,
+    row=2,
+    col=1,
+)
+fig.update_yaxes(
+    title={"text": "Time Index (j)", "font": {"size": 22, "family": font_family, "color": "#333"}},
+    tickfont={"size": 18, "family": font_family, "color": text_mid},
+    scaleanchor="x2",
+    scaleratio=1,
+    constrain="domain",
+    autorange="reversed",
+    showgrid=False,
+    zeroline=False,
+    row=2,
+    col=1,
 )
 
 # Save
-fig.write_image("plot.png", width=1200, height=1200, scale=3)
+fig.write_image("plot.png", width=1200, height=1400, scale=3)
 fig.write_html("plot.html")

@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: flamegraph-basic
 created: '2026-03-14T20:27:56Z'
-updated: '2026-03-14T20:32:18Z'
+updated: '2026-03-14T20:46:18Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23095681621
 issue: 4665
@@ -10,40 +10,41 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/flamegraph-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/flamegraph-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/flamegraph-basic/highcharts/plot.html
-quality_score: 79
+quality_score: 85
 review:
   strengths:
-  - Accurate flame graph with proper bottom-to-top call stack hierarchy and proportional
-    bar widths
-  - Excellent realistic data context with believable web server CPU profiling function
-    names and sample counts
-  - Custom warm flame color palette following established Brendan Gregg convention
-  - 'Smart label handling: full name with percentage when space allows, name-only
-    fallback, then truncation with ellipsis'
+  - 'Excellent data choice: realistic web server CPU profiling scenario with meaningful
+    function names and hierarchical call structure'
+  - 'Smart label truncation: estimates bar pixel width and shows full label, name
+    only, truncated, or none based on available space'
+  - Professional flame graph aesthetic with warm color palette, monospace font, and
+    text outline for readability
+  - Good visual hierarchy — the hot path (query_database → execute_sql → fetch_rows)
+    is naturally prominent through proportional widths
+  - Clean code with well-structured iterative traversal (no recursion)
   weaknesses:
-  - Significant empty vertical space above flame graph wastes canvas area
-  - Bypasses highcharts-core Python library entirely, constructs raw JavaScript instead
-    of idiomatic Python API
-  - Helper functions break KISS flat-script pattern
-  - Does not leverage any Highcharts charting series types or modules
-  image_description: The plot displays a flame graph titled "flamegraph-basic · highcharts
-    · pyplots.ai" with subtitle "CPU Profile — Web Server Request Handling (668 samples)".
-    The visualization shows a hierarchical call stack growing bottom-to-top with 7
-    depth levels. At the base is "main (100%)" spanning the full width in a deep orange-red
-    color, above it "process_request (85%)" and smaller "log_metrics (9%)" and "gc_collect"
-    blocks. The hierarchy continues upward through parse_headers, authenticate, handle_route,
-    and into deeper calls like query_database, execute_sql, fetch_rows, render_template,
-    compile_template, etc. A warm color palette of yellows, oranges, and reds is used
-    throughout following the conventional flame graph aesthetic. Function names with
-    percentage labels are displayed in white monospace text inside bars when wide
-    enough; narrower bars show truncated names with ellipsis. A "Stack Depth" label
-    appears rotated on the left y-axis. White borders separate adjacent bars. There
-    is significant empty whitespace between the title/subtitle area and the topmost
-    bars of the flame graph, with the visualization occupying roughly the lower 60%
-    of the canvas.
+  - Root is at the TOP instead of the BOTTOM — spec explicitly says root at the bottom.
+    Current layout is icicle graph orientation, not flame graph orientation
+  - Similar warm color shades (multiple oranges/yellows) can be hard to differentiate
+    from each other
+  - Dict-based Highcharts configuration rather than leveraging the typed Python API
+    objects
+  image_description: The plot displays a flame graph visualization of CPU profiling
+    data for a web server request handling scenario (668 samples). Horizontal bars
+    are stacked vertically representing call stack depth levels. The root function
+    "main (100.0%)" spans the full width at the top of the chart. Below it, "process_request
+    (85.0%)" dominates the second level, with "log_metrics (9.0%)" and "gc_collect"
+    on the right. Deeper levels show functions like parse_headers, authenticate, handle_route,
+    query_database, render_template, and apply_middleware. The deepest visible level
+    contains build_query, fetch_rows (14.2%), and parse_result. Colors use a warm
+    flame palette of yellows, oranges, and reds. Function names appear in white monospace
+    text with dark outlines inside bars, with truncation (ellipsis) for narrow bars.
+    Title reads "flamegraph-basic · highcharts · pyplots.ai" with subtitle "CPU Profile
+    — Web Server Request Handling (668 samples)". The y-axis label reads "Stack Depth".
+    White borders separate adjacent bars. Legend and credits are disabled.
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 26
       max: 30
       items:
       - id: VQ-01
@@ -51,70 +52,70 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set (52px title, 34px subtitle, 32px bar labels,
-          36px axis label). All text clearly readable with smart truncation.
+        comment: Font sizes explicitly set (48px title, 32px subtitle, 28px data labels).
+          All text readable with smart truncation for narrow bars.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No text overlap. Labels properly truncated with ellipsis when bars
-          are narrow.
+        comment: No overlapping text. Labels truncated with ellipsis or hidden when
+          bars too narrow.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: All bars clearly visible with good sizing. White borders provide
-          clean separation.
+        comment: All bars clearly visible with good color differentiation and white
+          border separation.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Warm palette follows flame graph convention but all-warm tones may
-          be harder to distinguish for some viewers.
+        comment: Warm palette follows flame graph convention but similar shades can
+          be hard to distinguish.
       - id: VQ-05
         name: Layout & Canvas
-        score: 2
+        score: 3
         max: 4
-        passed: false
-        comment: Significant empty whitespace above flame graph. Visualization uses
-          roughly 55-60% of vertical canvas.
+        passed: true
+        comment: Good utilization but empty space in lower-right where deeper stacks
+          don't extend.
       - id: VQ-06
         name: Axis Labels & Title
         score: 1
         max: 2
         passed: true
-        comment: Stack Depth y-axis label is descriptive. No units but conventional
-          for flame graphs.
+        comment: Stack Depth label present, informative subtitle, but minimal axis
+          context.
     design_excellence:
-      score: 13
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom warm flame palette, monospace font, text shadows, white borders.
-          Above defaults, follows established convention.
+        comment: Custom warm flame palette, monospace font, white text with dark outline.
+          Professional appearance.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Clean white background, no unnecessary grid, white borders as separators,
-          minimal chrome.
+        comment: Clean white background, no grid, legend/credits disabled, white borders
+          for bar separation.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Hierarchy naturally guides viewer to identify hot paths. Percentage
-          labels aid interpretation.
+        comment: Hierarchical structure guides viewer. Hot path naturally prominent
+          through proportional widths.
     spec_compliance:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -122,27 +123,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct flame graph with stacked horizontal bars, bottom-to-top hierarchy.
+        comment: Correct flame graph using columnrange with inverted chart.
       - id: SC-02
         name: Required Features
-        score: 4
+        score: 3
         max: 4
-        passed: true
-        comment: 'All spec features present: hierarchical stacks, proportional widths,
-          warm colors, labels, adjacent bars.'
+        passed: false
+        comment: Root at TOP instead of BOTTOM as spec requires. Warm colors, labels,
+          adjacency all correct.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Width correctly encodes sample proportion, depth shown vertically
-          with root at bottom.
+        comment: Stack depth and sample counts correctly mapped.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title in correct format. No legend needed for this chart type.
+        comment: Title format correct. Legend appropriately disabled.
     data_quality:
       score: 15
       max: 15
@@ -152,39 +152,38 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 7 depth levels, wide width variation, mix of leaf/branch nodes, realistic
+        comment: Shows 6 depth levels, varying widths, multiple branches, realistic
           nested hierarchy.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Web server CPU profile with realistic function names. Neutral technology
-          domain.
+        comment: Web server request handling is excellent, realistic CPU profiling
+          scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 668 samples with sensible distribution. Proportions feel realistic
-          for a web server profile.
+        comment: 668 samples realistic for CPU profile. Individual counts 12-95 are
+          plausible.
     code_quality:
-      score: 7
+      score: 10
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 1
+        score: 3
         max: 3
-        passed: false
-        comment: Three helper functions (calc_size, build_flame_rects, get_flame_color)
-          break flat-script pattern.
+        passed: true
+        comment: Linear flow, no functions or classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set. Data is deterministic dictionary.
+        comment: np.random.seed(42) set, data is deterministic.
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -193,35 +192,34 @@ review:
         comment: All imports used.
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Manual rectangle construction via Highcharts renderer is somewhat
-          over-engineered with recursive traversal.
+        passed: true
+        comment: Clean iterative traversal, smart label truncation logic.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via screenshot and crop.
+        comment: Saves as plot.png, uses current highcharts-core API.
     library_mastery:
-      score: 4
+      score: 6
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Bypasses highcharts-core Python library. Constructs raw JavaScript
-          instead of using Chart() and series objects.
+        passed: true
+        comment: Correct usage but relies on dict-based config rather than typed Python
+          API objects.
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Uses Highcharts renderer API for custom shapes but treats Highcharts
-          as a canvas rather than a charting library.
+        passed: true
+        comment: Uses columnrange with inverted chart, per-point data labels and coloring,
+          HTML export.
   verdict: REJECTED
 impl_tags:
   dependencies:
@@ -229,7 +227,7 @@ impl_tags:
   - pillow
   techniques:
   - html-export
-  - annotations
+  - hover-tooltips
   patterns:
   - data-generation
   - iteration-over-groups

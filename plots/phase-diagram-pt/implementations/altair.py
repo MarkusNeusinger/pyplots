@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 phase-diagram-pt: Thermodynamic Phase Diagram (Pressure-Temperature)
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 82/100 | Created: 2026-03-14
@@ -65,7 +65,7 @@ y_scale = alt.Scale(type="log", domain=[1, 2e9])
 x_enc = alt.X("temperature:Q", title="Temperature (K)", scale=x_scale)
 y_enc = alt.Y("pressure:Q", title="Pressure (Pa)", scale=y_scale)
 
-boundary_colors = alt.Scale(domain=["Solid–Gas", "Liquid–Gas", "Solid–Liquid"], range=["#306998", "#e74c3c", "#2ecc71"])
+boundary_colors = alt.Scale(domain=["Solid–Gas", "Liquid–Gas", "Solid–Liquid"], range=["#306998", "#e68a00", "#8b5cf6"])
 
 # Phase boundary lines
 lines = (
@@ -74,7 +74,7 @@ lines = (
     .encode(
         x=x_enc,
         y=y_enc,
-        color=alt.Color("boundary:N", scale=boundary_colors, title="Boundary"),
+        color=alt.Color("boundary:N", scale=boundary_colors, legend=alt.Legend(title="Phase Boundary")),
         tooltip=[
             alt.Tooltip("temperature:Q", title="Temperature (K)", format=".1f"),
             alt.Tooltip("pressure:Q", title="Pressure (Pa)", format=".2e"),
@@ -93,7 +93,7 @@ points = (
         color=alt.Color(
             "point_type:N",
             scale=alt.Scale(domain=["Triple Point", "Critical Point"], range=["#f39c12", "#9b59b6"]),
-            title="Key Points",
+            legend=alt.Legend(title="Key Points"),
         ),
         tooltip=[alt.Tooltip("label:N", title="Point")],
     )
@@ -128,11 +128,16 @@ chart = (
     .properties(
         width=1600,
         height=900,
-        title=alt.Title("Water P-T Phase Diagram · phase-diagram-pt · altair · pyplots.ai", fontSize=28),
+        title=alt.Title(
+            "phase-diagram-pt · altair · pyplots.ai",
+            fontSize=28,
+            subtitle="Water Pressure-Temperature Phase Diagram",
+            subtitleFontSize=20,
+        ),
     )
     .configure_axis(labelFontSize=18, titleFontSize=22, gridOpacity=0.15)
     .configure_view(strokeWidth=0)
-    .configure_legend(titleFontSize=18, labelFontSize=16, symbolSize=200)
+    .configure_legend(titleFontSize=18, labelFontSize=16, symbolSize=200, titleLimit=300, labelLimit=300)
 )
 
 # Save

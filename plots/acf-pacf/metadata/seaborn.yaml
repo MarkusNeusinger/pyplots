@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: acf-pacf
 created: '2026-03-14T22:17:47Z'
-updated: '2026-03-14T22:29:44Z'
+updated: '2026-03-14T22:37:46Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23097477569
 issue: 4663
@@ -10,100 +10,102 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/acf-pacf/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/acf-pacf/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 86
+quality_score: 88
 review:
   strengths:
-  - Perfect spec compliance with all required features (lag 0 in ACF, PACF from lag
-    1, 95% CI bands, shared x-axis)
-  - Clean manual ACF/PACF computation using Durbin-Levinson recursion with no external
-    dependencies
-  - Thoughtful data storytelling with annotations on first significant lags and well-chosen
-    ARMA(1,1) process
-  - 'Well-polished visual refinement: despined, subtle grid, CI band shading, white-edged
-    markers'
+  - Excellent significance-based color coding differentiating important lags from
+    noise
+  - Manual ACF/PACF computation via Durbin-Levinson recursion avoids external dependencies
+  - FacetGrid with shared x-axis and custom stem_plot function is well-executed seaborn-native
+    approach
+  - CI confidence band with subtle fill and dashed lines is visually refined
+  - Annotations on first significant lags guide viewer attention effectively
   weaknesses:
-  - Library mastery is limited - seaborn primarily used for scatterplot markers and
-    theming while matplotlib handles core stem visualization
-  - Marker size (s=60) could be slightly larger for better visibility at full resolution
-  - Could leverage more seaborn-specific features like FacetGrid or objects API for
-    subplot layout
-  image_description: 'The plot displays two vertically stacked subplots sharing an
-    x-axis labeled "Lag (months)". The top subplot shows the Autocorrelation Function
-    (ACF) with blue vertical stem lines from zero to each correlation value, starting
-    at lag 0 (value 1.0) and decaying gradually. The bottom subplot shows the Partial
-    Autocorrelation Function (PACF) starting from lag 1, with a dominant spike at
-    lag 1 (~0.79) and a sharp negative spike at lag 2 (~-0.23). Both subplots have
-    dashed orange/salmon confidence interval lines at approximately ±0.139 with light
-    shaded bands between them. Blue dot markers cap each stem. Annotations with arrows
-    point to "lag 1: 0.79" in both subplots. The title reads "acf-pacf · seaborn ·
-    pyplots.ai" in medium weight. Top and right spines are removed. Subtle y-axis
-    gridlines are visible.'
+  - Annotation font sizes (13pt, 11pt) slightly undersized for large canvas
+  - ARMA context only visible in code comments, not communicated to viewer
+  - Stem plot simulation via narrow barplot is creative but not native seaborn
+  image_description: 'The plot displays two vertically stacked panels on a clean white
+    background. The top panel shows the Autocorrelation Function (ACF) with stem-like
+    narrow bars and circular markers from lag 0 to lag 35. Dark blue (Python Blue
+    #306998) stems indicate statistically significant lags, while light blue (#A8C4D8)
+    stems show values within the 95% confidence interval. The ACF exhibits a clear
+    exponential decay from 1.0 at lag 0, with the first ~8 lags being significant.
+    An annotation "lag 1: 0.79" with an arrow highlights the first significant lag.
+    Orange dashed horizontal lines mark the confidence bounds, with a subtle orange
+    fill between them. The bottom panel shows the Partial Autocorrelation Function
+    (PACF) starting from lag 1, with a sharp spike at lag 1 (~0.79, annotated similarly)
+    and a negative value at lag 2, then values mostly within the CI bounds. Y-axes
+    are labeled "Autocorrelation (ACF)" and "Partial Autocorrelation (PACF)", x-axis
+    reads "Lag (months)". A legend in the upper right shows Significant, Within CI,
+    and 95% CI entries. Title reads "acf-pacf · seaborn · pyplots.ai".'
   criteria_checklist:
     visual_quality:
-      score: 29
+      score: 28
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 24pt, labels 20pt, ticks 16pt,
-          context=talk with font_scale=1.1'
+        comment: Font sizes explicitly set for title/labels/ticks. Annotation fontsizes
+          (13pt, 11pt) slightly small.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text anywhere
+        comment: No overlapping text. X-axis ticks thinned to every 5th label.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Stem lines well-sized, markers slightly small (s=60) for this density
+        comment: Stems and markers visible. Light blue markers could be slightly larger
+          for canvas size.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Single blue color scheme with orange CI bounds, colorblind-safe
+        comment: Dark blue/light blue distinction is colorblind-safe. Orange CI lines
+          provide good contrast.
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: 16x9 figure with two subplots filling canvas well
+        comment: Two panels fill canvas well with aspect=3.55. Balanced margins.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with context: ACF, PACF, Lag (months)'
+        comment: Lag (months) with units. Descriptive y-axis labels.
     design_excellence:
-      score: 14
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom Python Blue, muted palette for CI, white-edged markers — above
-          defaults but not publication-showcase level
+        comment: Custom palette with significance-based hue, white edged markers,
+          CI band fill. Above defaults.
       - id: DE-02
         name: Visual Refinement
         score: 5
         max: 6
         passed: true
-        comment: Spines removed, subtle y-axis grid, CI band fill, generous whitespace
+        comment: Spines removed, subtle y-grid, thinned x-ticks, generous whitespace.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Annotations on first significant lags, ARMA(1,1) data creates recognizable
-          AR(1) decay pattern
+        comment: Significance coloring creates visual hierarchy. Annotations guide
+          attention to key lags.
     spec_compliance:
       score: 15
       max: 15
@@ -113,110 +115,114 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct stem plots in two vertically stacked subplots
+        comment: Correct ACF/PACF stem plots in two vertically stacked subplots.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: lag 0 in ACF, PACF from lag 1, 95% CI,
-          shared x-axis, 35 lags'
+        comment: 'All spec features present: shared x-axis, stems, CI lines, lag 0
+          in ACF, PACF from lag 1, 35 lags.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X = lag number, Y = correlation values, all data visible
+        comment: X=Lag, Y=correlation. Correct mapping.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, no legend needed for single-series
+        comment: Title format correct. Legend labels clear.
     data_quality:
-      score: 13
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Shows exponential ACF decay, sharp PACF cutoff, negative values,
-          CI crossings — could show seasonal spikes for fuller coverage
+        comment: ARMA(1,1) with seasonal component shows exponential ACF decay, sharp
+          PACF cutoff, both significant and non-significant lags.
       - id: DQ-02
         name: Realistic Context
         score: 4
         max: 5
         passed: true
-        comment: ARMA(1,1) process as airline passenger residuals — plausible but
-          purely synthetic
+        comment: Airline passenger residuals context in code. Monthly data plausible
+          but context not visible to viewer.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Correlations in [-1,1], CI bounds at ±0.139 for N=200
+        comment: Correlations bounded in [-1,1]. Confidence bounds correctly computed.
+          200 observations is sound.
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports, theme, data, compute, plot, style, save'
+        comment: stem_plot function necessary for FacetGrid but adds structural complexity.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: All imports used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Durbin-Levinson recursion appropriately complex for manual PACF
+        comment: Manual Durbin-Levinson PACF avoids external deps. Clean structure,
+          no fake functionality.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300
+        comment: Saves as plot.png at 300 DPI. Current seaborn API.
     library_mastery:
-      score: 5
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: FacetGrid with map_dataframe is idiomatic. barplot width=0.15 as
+          stem proxy is a creative workaround.
+      - id: LM-02
+        name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses sns.set_theme, sns.scatterplot, sns.despine, sns.color_palette
-          but core stems use matplotlib vlines
-      - id: LM-02
-        name: Distinctive Features
-        score: 2
-        max: 5
-        passed: false
-        comment: sns.set_theme theming and sns.despine are seaborn-specific but not
-          highly distinctive; heavy matplotlib reliance
+        comment: FacetGrid for multi-panel and hue-based significance coloring are
+          seaborn-distinctive.
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
-  - subplots
+  - faceting
   - annotations
+  - custom-legend
   patterns:
   - data-generation
+  - matrix-construction
   dataprep:
   - autocorrelation
   styling:

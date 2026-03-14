@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 recurrence-basic: Recurrence Plot for Nonlinear Time Series
-Library: seaborn | Python 3.13
-Quality: pending | Created: 2026-03-14
+Library: seaborn 0.13.2 | Python 3.14.3
+Quality: 80/100 | Created: 2026-03-14
 """
 
 import matplotlib.pyplot as plt

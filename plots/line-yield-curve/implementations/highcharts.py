@@ -1,7 +1,7 @@
 """ pyplots.ai
 line-yield-curve: Yield Curve (Interest Rate Term Structure)
 Library: highcharts unknown | Python 3.14.3
-Quality: 78/100 | Created: 2026-03-14
+Quality: 79/100 | Created: 2026-03-14
 """
 
 import json

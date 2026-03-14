@@ -1,7 +1,7 @@
 library: pygal
 specification_id: flamegraph-basic
 created: '2026-03-14T20:27:44Z'
-updated: '2026-03-14T20:31:36Z'
+updated: '2026-03-14T20:44:58Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23095681595
 issue: 4665
@@ -10,35 +10,41 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/flamegraph-basic/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/flamegraph-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/flamegraph-basic/pygal/plot.html
-quality_score: 73
+quality_score: 82
 review:
   strengths:
-  - Visually accurate flame graph with correct hierarchical structure and proportional
-    widths
-  - Excellent warm color palette following flame graph conventions
+  - Properly uses pygal HorizontalStackedBar API with idiomatic per-value styling
+    dicts
+  - Excellent warm flame color palette following conventional flame graph aesthetics
   - Realistic CPU profiling data with meaningful function names and plausible sample
     counts
-  - Clean layout with function names and sample counts displayed inside bars
-  - Good data storytelling with immediately visible hot path
+  - Clean spacer-based alignment ensures correct flame graph structure within pygal
+    stacked bar framework
+  - Good data storytelling — hot path is immediately visible
+  - Generates both PNG and interactive HTML output
   weaknesses:
-  - pygal is not used for plotting — entire chart is hand-built SVG, not a pygal implementation
-  - Unused imports (pygal, pygal.style.Style, numpy effectively unused)
-  - No x-axis label for samples/proportion
+  - Color assignment via hash is arbitrary rather than intentional depth-based gradient
+  - Some narrow bars at deeper depths have missing or cramped labels
+  - Tree-building and BFS rectangle computation code is verbose
+  - Y-axis guide lines unnecessary for flame graph
   image_description: 'The plot displays a flame graph visualization of CPU profiling
-    data for HTTP request processing. The root function "main (800)" spans the full
-    width at the bottom in a warm orange-red color. Above it, child functions are
-    stacked: "gc_collect (80)", "idle_wait (50)", "log_metrics (60)", and the dominant
-    "process_request (600)". The hierarchy continues upward through levels showing
-    "execute_handler (250)", "parse_headers (120)", "route_dispatch (180)", and their
-    children (db_query, serialize_json, execute_sql, regex_match, etc.). Colors use
-    a warm palette of yellows, oranges, and reds. Function names with sample counts
-    are displayed inside bars when wide enough. A "Call Stack Depth" label appears
-    rotated on the left. The title reads "flamegraph-basic · pygal · pyplots.ai" with
-    subtitle "CPU profiling — 800 samples — HTTP request processing". White background,
-    clean layout.'
+    data using pygal''s HorizontalStackedBar chart. The root function "main (800)"
+    spans the full width at Depth 0 (bottom) in a warm peach/orange color. Above at
+    Depth 1, child functions are shown: "gc_collect (80)", "idle_wait (50)", "log_metrics
+    (60)", and the dominant "process_request (600)" in warm red tones. The hierarchy
+    continues upward through Depth 2 with "compact_heap", "mark_sweep (55)", "format_json",
+    "write_buffer", "execute_handler (250)", "parse_headers (120)", "route_dispatch
+    (180)", and "send_response". Depth 3 shows "db_query (140)", "serialize_json (70)",
+    "template_render", "decode_base64 (55)", "validate_utf8", "lookup_handler (70)",
+    "regex_match (90)", and "compress_gzip". Depth 4 at the top has "connect_pool",
+    "execute_sql (80)", "fetch_rows", and "encode_utf8". Colors use a warm flame palette
+    (yellows, oranges, reds). Function names with sample counts are displayed inside
+    bars via pygal''s print_labels. Y-axis labeled "Call Stack Depth" with depth level
+    labels, X-axis labeled "Samples" with values 0-800. Title reads "flamegraph-basic
+    · pygal · pyplots.ai". White background, monospace font throughout.'
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 25
       max: 30
       items:
       - id: VQ-01
@@ -46,40 +52,45 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set (48px title, 28px labels, 34px axis). All
-          text clearly readable.
+        comment: Font sizes explicitly set (title=48, labels=24, major_labels=22,
+          values=20). Monospace font appropriate. Most labels readable, some narrow
+          bars have small labels.
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: No text overlap. Labels only rendered when bars wide enough.
+        comment: No significant text overlap. Labels inside bars well-placed. Some
+          narrow bars at Depth 3-4 slightly cramped.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: All bars clearly visible with good sizing and proportions.
+        comment: All bars clearly visible with proportional sizing. White stroke between
+          bars provides clear separation.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Warm palette distinguishable, function names reduce reliance on color
+        comment: Warm flame palette with 14 colors. Function names in bars mean color
+          not sole identifier. Adjacent similar tones hard to distinguish by color
           alone.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Chart fills ~60% of canvas. Good margins. Some empty space upper-right
-          inherent to flame graph structure.
+        comment: Chart fills ~65% of canvas. Good margins. Upper-right naturally empty
+          due to flame graph structure.
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Y-axis label present. Missing x-axis label for samples/proportion.
+        comment: Call Stack Depth y-axis, Samples x-axis, both descriptive. Title
+          format correct.
     design_excellence:
       score: 13
       max: 20
@@ -89,22 +100,24 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Custom warm flame palette, clean white background, rounded corners,
-          monospace font for function names.
+        comment: Custom warm flame palette, monospace typography, rounded bars, white
+          stroke separators. Above defaults but not publication-level. Hash-based
+          color assignment is arbitrary.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: No grid lines (appropriate), no spines, clean whitespace, subtle
-          white stroke between bars.
+        comment: No x-axis guides, subtle y-axis guides, clean white background, tight
+          spacing. White stroke between bars is nice. Good but y-axis guides unnecessary
+          for flame graph.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Subtitle provides context. Data reveals hot path naturally. Sample
-          counts reinforce the story.
+        comment: 'Hot path naturally visible: main → process_request → execute_handler
+          → db_query. Sample counts reinforce story. Good inherent storytelling.'
     spec_compliance:
       score: 15
       max: 15
@@ -114,26 +127,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct flame graph with horizontal bars stacked bottom-to-top.
+        comment: Correct flame graph using HorizontalStackedBar. Width proportional
+          to samples, bottom-to-top stacking.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec requirements met: depth levels, proportional widths, warm
-          palette, adjacent bars, labels.'
+        comment: 'All spec features present: depth levels, proportional widths, warm
+          colors, adjacent bars, function labels.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X = sample proportion, Y = call stack depth. Correct mapping.
+        comment: X-axis = samples (0-800), Y-axis = call stack depth. Correct mapping.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. No legend needed for flame graphs.
+        comment: Title format correct. show_legend=False appropriate for flame graphs.
     data_quality:
       score: 14
       max: 15
@@ -143,23 +157,24 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Multiple depth levels, varying widths, branching stacks, hot and
-          narrow functions.
+        comment: 5 depth levels, varying widths, multiple branching paths, wide and
+          narrow functions. Could benefit from deeper nesting.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: HTTP request processing with realistic function names. Neutral tech
+        comment: HTTP request processing with realistic function names. Neutral technology
           domain.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 800 total samples, consistent child sums, plausible CPU profile values.
+        comment: 800 total samples plausible for CPU profile. Child counts consistent
+          with parents.
     code_quality:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: CQ-01
@@ -167,57 +182,61 @@ review:
         score: 2
         max: 3
         passed: true
-        comment: Linear structure but manual SVG construction is lengthy.
+        comment: Linear structure but tree/BFS/segment logic is necessarily complex
+          for flame graph layout.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set, data is hardcoded/deterministic.
+        comment: Fully deterministic hardcoded data.
       - id: CQ-03
         name: Clean Imports
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: pygal and pygal.style.Style imported but never used. numpy barely
-          used.
+        passed: true
+        comment: 'All imports used: importlib, sys for pygal workaround, defaultdict
+          for grouping.'
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
         passed: true
-        comment: Tree-building logic is reasonable but manual SVG is verbose and over-engineered.
+        comment: Spacer alignment approach is clever but verbose. sys.path manipulation
+          adds complexity.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via cairosvg.
+        comment: Saves plot.png via render_to_png(). Also generates HTML. Current
+          API.
     library_mastery:
-      score: 0
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 0
+        score: 4
         max: 5
-        passed: false
-        comment: 'CRITICAL: pygal is imported but never used. Entire chart is hand-built
-          SVG strings. Zero pygal API usage.'
+        passed: true
+        comment: Proper use of HorizontalStackedBar, Style, chart.add(), render_to_png().
+          Per-value dict styling is pygal's recommended pattern.
       - id: LM-02
         name: Distinctive Features
-        score: 0
+        score: 3
         max: 5
-        passed: false
-        comment: No pygal features used whatsoever.
+        passed: true
+        comment: Uses pygal-distinctive per-value styling dicts, print_labels, rounded_bars,
+          render() for SVG string, tooltip configuration.
   verdict: REJECTED
 impl_tags:
-  dependencies:
-  - cairosvg
+  dependencies: []
   techniques:
   - html-export
   patterns:
   - data-generation
+  - iteration-over-groups
   dataprep: []
   styling:
   - edge-highlighting

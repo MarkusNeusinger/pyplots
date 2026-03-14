@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 recurrence-basic: Recurrence Plot for Nonlinear Time Series
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 80/100 | Created: 2026-03-14
@@ -24,52 +24,60 @@ delay = 1
 n_embedded = n_steps - (embedding_dim - 1) * delay
 embedded = np.column_stack([x[d * delay : d * delay + n_embedded] for d in range(embedding_dim)])
 
-# Compute pairwise Euclidean distance matrix and apply threshold
+# Compute pairwise Euclidean distance matrix
 diff = embedded[:, np.newaxis, :] - embedded[np.newaxis, :, :]
 distance_matrix = np.sqrt(np.sum(diff**2, axis=2))
 threshold = 0.15
 recurrence_matrix = distance_matrix < threshold
 
-# Build long-form dataframe for recurrence points only (sparse encoding)
-rows, cols = np.where(recurrence_matrix == 1)
-df = pd.DataFrame({"time_i": rows, "time_j": cols})
+# Build long-form dataframe for recurrence points with distance values
+rows, cols = np.where(recurrence_matrix)
+distances = distance_matrix[rows, cols]
+df = pd.DataFrame({"time_i": rows, "time_j": cols, "distance": distances})
 
-# Plot - binary recurrence plot using mark_point for sparse data
-recurrence = (
+# Plot - distance-colored recurrence plot using mark_rect for heatmap-style matrix
+chart = (
     alt.Chart(df)
-    .mark_square(size=4, opacity=1.0)
+    .mark_rect()
     .encode(
         x=alt.X(
-            "time_i:Q",
-            title="Time Index",
-            scale=alt.Scale(domain=[0, n_embedded - 1]),
-            axis=alt.Axis(labelFontSize=16, titleFontSize=20, tickCount=6, grid=False),
+            "time_i:O",
+            title="Time Index (step)",
+            axis=alt.Axis(labelFontSize=16, titleFontSize=20, values=list(range(0, n_embedded, 50)), grid=False),
+            scale=alt.Scale(paddingInner=0, paddingOuter=0),
         ),
         y=alt.Y(
-            "time_j:Q",
-            title="Time Index",
-            scale=alt.Scale(domain=[0, n_embedded - 1]),
-            axis=alt.Axis(labelFontSize=16, titleFontSize=20, tickCount=6, grid=False),
+            "time_j:O",
+            title="Time Index (step)",
+            axis=alt.Axis(labelFontSize=16, titleFontSize=20, values=list(range(0, n_embedded, 50)), grid=False),
+            scale=alt.Scale(paddingInner=0, paddingOuter=0),
         ),
-        color=alt.value("#306998"),
-        tooltip=[alt.Tooltip("time_i:Q", title="Time i"), alt.Tooltip("time_j:Q", title="Time j")],
+        color=alt.Color(
+            "distance:Q",
+            title="Distance",
+            scale=alt.Scale(scheme="viridis", reverse=True, domain=[0, threshold]),
+            legend=alt.Legend(
+                titleFontSize=16, labelFontSize=14, orient="right", gradientLength=300, gradientThickness=16
+            ),
+        ),
+        tooltip=[
+            alt.Tooltip("time_i:Q", title="Time i"),
+            alt.Tooltip("time_j:Q", title="Time j"),
+            alt.Tooltip("distance:Q", title="Distance", format=".4f"),
+        ],
     )
-)
-
-# Combine and configure
-chart = (
-    recurrence.properties(
-        width=780,
-        height=780,
+    .properties(
+        width=1000,
+        height=1000,
         title=alt.Title(
             "recurrence-basic · altair · pyplots.ai",
             subtitle=[
                 "Logistic map (r = 3.82) · Euclidean distance with ε = 0.15",
-                "Diagonal lines reveal deterministic structure near chaos onset",
+                "Bright cells = near-identical states · Diagonal lines reveal deterministic dynamics",
             ],
             fontSize=26,
-            subtitleFontSize=16,
-            subtitleColor="#666666",
+            subtitleFontSize=17,
+            subtitleColor="#555555",
             anchor="start",
             offset=16,
         ),

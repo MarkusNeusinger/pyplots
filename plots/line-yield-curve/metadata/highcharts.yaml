@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: line-yield-curve
 created: '2026-03-14T22:18:40Z'
-updated: '2026-03-14T22:39:00Z'
+updated: '2026-03-14T22:49:36Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23097460506
 issue: 4664
@@ -10,38 +10,38 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-yield-curve/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-yield-curve/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-yield-curve/highcharts/plot.html
-quality_score: 79
+quality_score: 92
 review:
   strengths:
-  - Excellent data choice showing three distinct yield curve regimes with realistic
-    Treasury values
-  - Clean professional financial aesthetic with muted palette and subtle grid styling
-  - Good use of numeric maturity_years spacing with custom tick formatter
-  - Distinct marker symbols per series aid differentiation
+  - Excellent data storytelling with three distinct yield curve regimes that immediately
+    convey the economic narrative
+  - Professional financial publication aesthetic with thoughtful color choices and
+    clean typography
+  - Inversion zone plot band is a smart use of Highcharts-specific functionality
+  - Perfect spec compliance with all requirements met including multiple curves, proper
+    x-axis spacing, and inversion highlighting
+  - Realistic, historically accurate yield data across three meaningful time periods
   weaknesses:
-  - Inversion zone highlight still missing from code (spec requirement not addressed
-    from attempt 1)
-  - Y-axis min=0 still wastes vertical space (flagged in attempt 1, not fixed)
-  - Dead tooltip headerFormatter code still present
-  - Not using highcharts_core Python API
-  image_description: 'The plot displays three U.S. Treasury yield curves on a white
-    background at 4800x2700 resolution. The title reads "U.S. Treasury Yield Curves
-    · line-yield-curve · highcharts · pyplots.ai" with subtitle "Term structure across
-    three market regimes." Three colored lines are plotted: a blue line (circles)
-    labeled "Jan 2022 (Normal)" rising from ~0.1% at 1M to ~2.3% at 20Y; a red line
-    (diamonds) labeled "Oct 2023 (Inverted)" starting high at ~5.5% and declining
-    to ~4.9%; and an orange/green line (triangles) labeled "Jan 2025 (Normalizing)"
-    relatively flat around 4.2-4.8%. A light pink/salmon shaded region appears on
-    the left portion of the chart with text "Inversion zone - short-term yields exceed
-    long-term" near the x-axis, though this feature is NOT present in the source code
-    (possible stale image). X-axis labeled "Maturity" with tick labels (1M, 6M, 1Y,
-    2Y, 3Y, 5Y, 7Y, 10Y, 20Y, 30Y). Y-axis labeled "Yield (%)" from 0.0% to ~5.8%.
-    Floating legend box in top-right with border and background. Dashed y-axis gridlines
-    at low opacity. Significant empty vertical space between the blue curve (0-2.3%)
-    and other curves (4.2-5.5%) due to y-axis starting at 0.'
+  - LineSeries imported from highcharts_core.options.series.area instead of highcharts_core.options.series.line
+    (works but non-canonical)
+  - Red-green color pairing could be improved for colorblind accessibility (mitigated
+    by marker shapes)
+  image_description: 'The plot displays three U.S. Treasury yield curves on a clean
+    white background. The title "line-yield-curve · highcharts · pyplots.ai" is prominently
+    displayed at the top with a subtitle "U.S. Treasury Yield Curves — Term Structure
+    Across Three Market Regimes." Three colored lines with distinct marker shapes
+    are plotted: a blue line with circle markers (Jan 2022 Normal) starting near 0.08%
+    and rising to ~2.3%, a red line with diamond markers (Oct 2023 Inverted) starting
+    at ~5.5% and declining to ~4.9%, and a green line with triangle markers (Jan 2025
+    Normalizing) staying relatively flat around 4.2–4.8%. The x-axis is labeled "Maturity"
+    with tick labels (1M, 6M, 1Y, 2Y, 3Y, 5Y, 7Y, 10Y, 20Y, 30Y) using proper numeric
+    spacing. The y-axis is labeled "Yield (%)" ranging from 0% to 6% with dashed grid
+    lines. A subtle pink plot band labeled "Inversion zone" covers the left portion
+    (0–7Y). A floating legend with a light border sits in the upper right corner.
+    Lines are thick with prominent markers featuring white borders.'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 29
       max: 30
       items:
       - id: VQ-01
@@ -49,69 +49,65 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 60px, axis titles 42px, tick
-          labels 34px, legend 36px'
+        comment: 'All font sizes explicitly set: title 60px, subtitle 36px, axis titles
+          42px, tick labels 34px, legend 36px'
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: 1M and 6M x-axis labels crowded at compressed left edge; 3M tick
-          omitted
+        comment: No overlapping text elements, well-spaced labels
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Lines thick (lineWidth 7), markers well-sized (radius 10) with white
-          borders
+        comment: Thick lines (lineWidth 7), large markers (radius 10) with white borders
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Blue/red/green palette - red+green together is a deuteranopia concern,
-          mitigated by distinct marker shapes
+        comment: Red-green pairing problematic for colorblind but mitigated by distinct
+          marker shapes
       - id: VQ-05
         name: Layout & Canvas
-        score: 2
+        score: 4
         max: 4
-        passed: false
-        comment: Y-axis min=0 creates large dead zone between ~2.5% and ~4% with no
-          data, wasting ~40% of vertical space
+        passed: true
+        comment: Explicit margins, plot fills canvas well with balanced whitespace
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Yield (%) with units, Maturity is descriptive
+        comment: Yield (%) includes units, Maturity is descriptive for domain
     design_excellence:
-      score: 12
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom muted palette, clean typography hierarchy, professional financial
-          aesthetic
+        comment: Thoughtful color semantics, custom markers, informative subtitle,
+          floating legend
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Subtle dashed grid, floating legend with border/radius, white marker
-          borders
+        comment: Subtle dashed grid lines, tick width removed, light axis lines
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 5
         max: 6
-        passed: false
-        comment: Regime labels communicate narrative but no inversion zone highlight
-          in code; y-axis min=0 dilutes comparison
+        passed: true
+        comment: Three-regime comparison tells economic narrative, inversion zone
+          highlighted
     spec_compliance:
-      score: 12
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -119,26 +115,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct line chart with multiple series
+        comment: Correct line chart type
       - id: SC-02
         name: Required Features
-        score: 2
+        score: 4
         max: 4
-        passed: false
-        comment: Missing inversion region highlight required by spec (shading or annotation)
+        passed: true
+        comment: Multiple curves, proper spacing, inversion highlight, legend with
+          dates
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X/Y correctly assigned using maturity_years for proper time spacing
+        comment: maturity_years on x-axis, yields on y-axis, correctly spaced
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Title includes required elements but has extra prefix; legend labels
-          clear with dates and curve types
+        comment: Correct title format, legend labels indicate date and regime
     data_quality:
       score: 15
       max: 15
@@ -148,23 +144,21 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows normal, inverted, and normalizing curves - all three key yield
-          curve shapes
+        comment: Normal, inverted, and normalizing curves across full maturity spectrum
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real U.S. Treasury context with plausible dates and realistic historical
-          values
+        comment: U.S. Treasury yield curves - classic neutral financial scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Yield values realistic for given dates
+        comment: Historically accurate yields for stated time periods
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -172,59 +166,58 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: data, chart config, HTML, screenshot'
+        comment: Clean linear structure, no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic hardcoded data
+        comment: All data hardcoded and deterministic
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: All imports used, LineSeries from area module works but unconventional
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Dead headerFormatter placeholder created then removed; placeholder
-          replacement pattern is workable but inelegant
+        comment: Appropriate complexity, JS formatter workaround is necessary
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via Selenium screenshot
+        comment: Saves as plot.png and plot.html, current API
     library_mastery:
-      score: 5
+      score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 2
-        max: 5
-        passed: false
-        comment: Does not use highcharts_core Python library; builds raw JSON config
-          manually
-      - id: LM-02
-        name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Uses shared tooltip, custom formatter, marker symbols, floating styled
-          legend, gridLineDashStyle
-  verdict: REJECTED
+        comment: Proper highcharts_core API usage, minor deduction for string replacement
+          hack
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: plotBands, shared tooltips, floating legend, custom marker symbols
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - selenium
   techniques:
-  - manual-ticks
   - html-export
+  - manual-ticks
   patterns:
   - data-generation
+  - iteration-over-groups
   dataprep: []
   styling:
   - grid-styling

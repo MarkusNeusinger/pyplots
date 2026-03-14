@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 line-yield-curve: Yield Curve (Interest Rate Term Structure)
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 84/100 | Created: 2026-03-14
 """
 
 import pygal
@@ -21,14 +20,14 @@ yields_flat = [2.36, 2.40, 2.56, 2.63, 2.49, 2.46, 2.51, 2.59, 2.69, 2.87, 3.02]
 # Inverted curve (Mar 2023)
 yields_inverted = [4.73, 4.90, 5.09, 4.95, 4.60, 4.27, 3.85, 3.76, 3.58, 3.89, 3.70]
 
-# Style
+# Style — 4th color is a soft red fill for inversion zone
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#cccccc",
-    colors=("#306998", "#D4A84B", "#C0392B"),
+    colors=("#306998", "#E6A817", "#C0392B", "#C0392B"),
     title_font_size=72,
     label_font_size=44,
     major_label_font_size=40,
@@ -54,7 +53,7 @@ chart = pygal.XY(
     show_y_guides=True,
     show_x_guides=False,
     legend_at_bottom=True,
-    legend_at_bottom_columns=3,
+    legend_at_bottom_columns=4,
     legend_box_size=36,
     truncate_legend=-1,
     x_value_formatter=lambda x: f"{x:.0f}Y" if x >= 1 else f"{x * 12:.0f}M",
@@ -77,6 +76,19 @@ inverted_points = list(zip(maturity_years, yields_inverted, strict=False))
 chart.add("Jan 2021 (Normal)", normal_points)
 chart.add("Dec 2018 (Flat)", flat_points)
 chart.add("Mar 2023 (Inverted)", inverted_points)
+
+# Highlight inversion zone: 2Y-10Y spread on the inverted curve
+# The 2Y yield (4.60%) exceeds the 10Y yield (3.58%) by 102 basis points
+# Show this as a dashed connector with enlarged markers at the endpoints
+spread_2y10y = 4.60 - 3.58  # +1.02% = inverted
+inversion_zone = [(2, 4.60), (10, 3.58)]
+chart.add(
+    f"⬍ 2Y–10Y Inversion (−{spread_2y10y * 100:.0f} bps)",
+    inversion_zone,
+    stroke_dasharray="15,10",
+    dots_size=16,
+    show_dots=True,
+)
 
 # Save
 chart.render_to_png("plot.png")

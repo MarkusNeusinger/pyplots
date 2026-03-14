@@ -1,16 +1,14 @@
-""" pyplots.ai
+"""pyplots.ai
 flamegraph-basic: Flame Graph for Performance Profiling
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-14
 """
 
 import altair as alt
-import numpy as np
 import pandas as pd
 
 
 # Data - simulated CPU profiling stacks with realistic function names
-np.random.seed(42)
 
 stacks = {
     "main": 500,
@@ -146,8 +144,7 @@ bars = (
         color=alt.Color(
             "depth:Q",
             scale=alt.Scale(
-                domain=[0, max_depth],
-                range=["#FFE066", "#FFD033", "#FFAA00", "#FF8800", "#FF6600", "#E64A19", "#C62828"],
+                domain=[0, max_depth], range=["#FEEDDE", "#FDBE85", "#FD8D3C", "#E6550D", "#BD0026", "#7F0000"]
             ),
             legend=None,
         ),
@@ -168,8 +165,24 @@ labels = (
     .transform_calculate(mid="(datum.x + datum.x2) / 2")
 )
 
+# Highlight selection for interactive exploration (distinctive Altair feature)
+highlight = alt.selection_point(on="pointerover", fields=["stack"], empty=False)
+
+highlight_bars = (
+    alt.Chart(df)
+    .mark_rect(stroke="#333333", strokeWidth=2, cornerRadius=2)
+    .encode(
+        x="x:Q",
+        x2="x2:Q",
+        y=alt.Y("depth:O", sort="descending"),
+        opacity=alt.condition(highlight, alt.value(1.0), alt.value(0)),
+        color=alt.value("transparent"),
+    )
+    .add_params(highlight)
+)
+
 chart = (
-    (bars + labels)
+    (bars + highlight_bars + labels)
     .interactive()
     .properties(
         width=1600,
@@ -177,18 +190,20 @@ chart = (
         title=alt.Title(
             "flamegraph-basic · altair · pyplots.ai",
             subtitle=[
-                "CPU profiling: 500 samples | Hot path: main → request_handler → process_request → db_query → execute_sql"
+                "CPU profiling: 500 samples | Hot path: main → request_handler → process_request → db_query → execute_sql",
+                "Hover over bars to highlight | Scroll to zoom | Drag to pan",
             ],
             fontSize=28,
             subtitleFontSize=18,
-            subtitleColor="#888888",
+            subtitleColor="#666666",
             anchor="start",
             offset=16,
         ),
         padding={"left": 20, "right": 20, "top": 20, "bottom": 20},
     )
     .configure_view(strokeWidth=0)
-    .configure_axis(grid=False, domainColor="#cccccc")
+    .configure_axis(grid=False, domainColor="#cccccc", labelColor="#444444", titleColor="#333333")
+    .configure_title(subtitlePadding=6)
 )
 
 # Save

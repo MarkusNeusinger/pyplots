@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: flamegraph-basic
 created: '2026-03-14T20:27:56Z'
-updated: '2026-03-14T20:56:41Z'
+updated: '2026-03-14T21:07:58Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23095681621
 issue: 4665
@@ -13,35 +13,31 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/flamegraph-bas
 quality_score: 87
 review:
   strengths:
-  - Excellent flame graph implementation using columnrange inverted — creative and
-    effective approach
-  - 'Intelligent label fitting: calculates pixel width per bar and shows full label,
-    name-only, truncated, or nothing based on available space'
-  - Professional warm color palette with 15 distinct flame colors and deterministic
-    color assignment
-  - Realistic CPU profiling data with meaningful function names and plausible call
-    hierarchy
-  - Clean code structure with iterative (non-recursive) stack traversal
-  - White monospace text with rgba outline for readability on colored backgrounds
+  - Excellent flame graph using columnrange inverted - creative Highcharts approach
+  - Intelligent label fitting with pixel-width estimation and graceful degradation
+  - Professional 15-color warm flame palette with deterministic assignment
+  - Realistic CPU profiling data with meaningful function names
+  - Clean iterative code structure avoiding recursion
+  - White monospace text with rgba outline for readability
   weaknesses:
-  - Some empty space at bottom of canvas could be utilized better
-  - Warm palette is conventional but not colorblind-optimized
-  - Could have more stack traces to match spec suggested 50-500 range
-  image_description: 'The plot displays a flame graph visualization of CPU profiling
-    data for web server request handling (668 samples). The chart uses Highcharts''
-    columnrange series type in inverted mode to create horizontal bars stacked bottom-to-top.
-    The root function "main (100.0%)" spans the full width at the bottom in a warm
-    orange. Above it, "process_request (85.8%)", "log_metrics (9.0%)", and "gc_collect"
-    are visible. The hierarchy continues upward through parse_headers, authenticate,
-    handle_route (56.9%), query_database (29.5%), render_template (20.4%), and leaf
-    functions like fetch_rows (14.3%), compile_template, serialize_json, etc. Colors
-    use a warm flame palette of yellows (#F4C430, #FFD700), oranges (#E25822, #D4602E),
-    and reds (#CC3300, #B8301C). Function names are displayed in white monospace font
-    with dark text outlines inside bars, with intelligent truncation (ellipsis) for
-    narrow bars. The title "flamegraph-basic · highcharts · pyplots.ai" appears at
-    top center in bold 48px, with a subtitle showing sample count. The "Stack Depth"
-    axis label is on the left. No legend is shown (appropriate for this chart type).
-    Layout fills most of the canvas with some empty space at the bottom.'
+  - Data density (~29 nodes) below spec suggested 50-500 stack traces
+  - Some vertical canvas space at bottom remains unused
+  - Warm-only palette limits colorblind accessibility
+  image_description: The plot displays a flame graph visualization of CPU profiling
+    data for web server request handling. The chart uses Highcharts' columnrange series
+    type in inverted mode to create horizontal bars stacked bottom-to-top. The root
+    function "main (100.0%)" spans the full width at the bottom (Depth 6) in a warm
+    orange tone. Above it, "process_request" dominates most of the width, with "log_metrics"
+    and "gc_collect" as smaller siblings. The hierarchy continues upward through parse_headers,
+    authenticate, handle_route (the widest mid-level bar), then query_database, render_template,
+    apply_middleware, and down to leaf functions like fetch_rows, compile_template,
+    build_query, serialize_json at the top depths. Colors use a warm flame palette
+    of yellows, oranges, and reds with varied assignment per bar. Function names are
+    displayed in white monospace font with dark rgba text outlines inside bars, with
+    intelligent truncation for narrow bars. The title "flamegraph-basic · highcharts
+    · pyplots.ai" appears at top center in bold, with a subtitle showing sample count.
+    The "Stack Depth" axis label is on the left. No legend is shown. The chart fills
+    most of the 4800x2700 canvas.
   criteria_checklist:
     visual_quality:
       score: 27
@@ -53,41 +49,39 @@ review:
         max: 8
         passed: true
         comment: All font sizes explicitly set (48px title, 32px subtitle, 28px data
-          labels, 32px axis title). Some narrow bars show truncated labels with ellipsis.
+          labels, 32px axis title). Some narrow bars show truncated labels.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text. Labels intelligently truncated or hidden when
-          space is insufficient.
+        comment: No overlapping text. Smart pixel-width calculation prevents collisions.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: All bars clearly visible with appropriate sizing. White 2px borders
-          provide clean separation.
+        comment: All bars clearly visible with 2px white borders providing clean separation.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Warm flame palette follows convention but not optimal for colorblind
-          users. Color does not encode categorical data.
+        comment: Warm palette follows flame graph convention but similar tones may
+          challenge colorblind users.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Chart fills ~65-70% of canvas. Some empty space at the bottom.
+        comment: Chart fills ~65-70% of canvas. Some unused vertical space at bottom.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Stack Depth axis label is descriptive. Units not applicable for this
-          chart type.
+        comment: Stack Depth axis label descriptive. Title follows required format
+          with subtitle context.
     design_excellence:
       score: 14
       max: 20
@@ -97,22 +91,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom warm flame palette, monospace font, white text with rgba outline.
+        comment: Custom 15-color warm flame palette, monospace font, rgba text outline.
           Clearly above defaults.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Value axis hidden, no grid lines, white borders between bars, custom
+        comment: Value axis hidden, no grid, white borders for separation, custom
           margins.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Proportional bar widths reveal hotspots. handle_route (56.9%) dominates
-          visually. Percentage labels guide viewer.
+        comment: Proportional widths reveal hotspots. Percentage labels guide viewer
+          to bottlenecks.
     spec_compliance:
       score: 15
       max: 15
@@ -128,21 +122,22 @@ review:
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: proportional bars, bottom-to-top, warm colors,
-          labels inside bars, adjacent bars.'
+        comment: 'All spec features present: proportional bars, bottom-to-top, warm
+          colors, labels, adjacent bars.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Stack depth on vertical axis, sample counts on horizontal. All data
-          correctly mapped.
+        comment: Stack depth on vertical axis, sample proportions on horizontal. All
+          data visible.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend appropriately disabled for flame graph.
+        comment: Title format correct with middle dot separators. Legend appropriately
+          disabled.
     data_quality:
       score: 14
       max: 15
@@ -152,21 +147,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows 6 depth levels, varying bar widths, intermediate and leaf nodes.
-          Could have more stack traces per spec suggestion.
+        comment: 6 depth levels, varying widths. ~29 nodes below spec's 50-500 suggestion
+          but adequate.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Web server request handling with realistic function names. Neutral,
+        comment: Web server request handling with realistic function names. Neutral
           technical scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 668 total samples with realistic distribution for CPU profiling.
+        comment: Sample counts sensible for CPU profile. Realistic distribution with
+          dominant and minor functions.
     code_quality:
       score: 10
       max: 10
@@ -182,7 +178,7 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Data is deterministic (hardcoded dictionary). Seed also set.
+        comment: Deterministic hardcoded data with np.random.seed(42).
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -201,7 +197,7 @@ review:
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via PIL crop. Current API.
+        comment: Saves as plot.png via PIL crop. Current API usage.
     library_mastery:
       score: 7
       max: 10
@@ -211,15 +207,15 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of highcharts-core API with per-point styling, columnrange
-          inverted.
+        comment: Good use of highcharts-core API with columnrange, per-point styling,
+          inverted chart.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Columnrange inverted, per-point dataLabels, tooltip customization.
-          Somewhat distinctive to Highcharts.
+        comment: Columnrange inverted, per-point dataLabels, borderRadius. Somewhat
+          distinctive to Highcharts.
   verdict: REJECTED
 impl_tags:
   dependencies:
@@ -227,7 +223,7 @@ impl_tags:
   - pillow
   techniques:
   - html-export
-  - annotations
+  - hover-tooltips
   patterns:
   - data-generation
   - iteration-over-groups

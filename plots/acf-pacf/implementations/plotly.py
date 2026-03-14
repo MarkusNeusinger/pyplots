@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 acf-pacf: Autocorrelation and Partial Autocorrelation (ACF/PACF) Plot
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-14
@@ -50,7 +50,6 @@ acf_significant = np.abs(acf_values) > conf_bound
 pacf_significant = np.abs(pacf_plot) > conf_bound
 
 # Colors
-python_blue = "#306998"
 sig_color = "#E8590C"
 nonsig_color = "#94A3B8"
 band_color = "rgba(148, 163, 184, 0.15)"
@@ -64,64 +63,102 @@ fig = make_subplots(
     subplot_titles=["Autocorrelation (ACF)", "Partial Autocorrelation (PACF)"],
 )
 
+hover_tpl = "Lag %{x}<br>Correlation: %{y:.3f}<extra></extra>"
 
-def add_stems(fig, lags, values, significant, row):
-    """Add stem lines and markers with significance coloring."""
-    for i, lag in enumerate(lags):
-        color = sig_color if significant[i] else nonsig_color
-        fig.add_trace(
-            go.Scatter(
-                x=[lag, lag],
-                y=[0, values[i]],
-                mode="lines",
-                line={"color": color, "width": 3},
-                showlegend=False,
-                hoverinfo="skip",
-            ),
-            row=row,
-            col=1,
-        )
-    # Significant markers
-    sig_mask = significant
-    nonsig_mask = ~significant
-    hover_tpl = "Lag %{x}<br>Correlation: %{y:.3f}<extra></extra>"
-    if np.any(sig_mask):
-        fig.add_trace(
-            go.Scatter(
-                x=lags[sig_mask],
-                y=values[sig_mask],
-                mode="markers",
-                marker={"size": 13, "color": sig_color, "line": {"color": "white", "width": 2}},
-                name="Significant",
-                showlegend=(row == 1),
-                hovertemplate=hover_tpl,
-            ),
-            row=row,
-            col=1,
-        )
-    if np.any(nonsig_mask):
-        fig.add_trace(
-            go.Scatter(
-                x=lags[nonsig_mask],
-                y=values[nonsig_mask],
-                mode="markers",
-                marker={"size": 10, "color": nonsig_color, "line": {"color": "white", "width": 1.5}},
-                name="Non-significant",
-                showlegend=(row == 1),
-                hovertemplate=hover_tpl,
-            ),
-            row=row,
-            col=1,
-        )
+# ACF stems and markers (row 1)
+for i, lag in enumerate(lags_acf):
+    color = sig_color if acf_significant[i] else nonsig_color
+    fig.add_trace(
+        go.Scatter(
+            x=[lag, lag],
+            y=[0, acf_values[i]],
+            mode="lines",
+            line={"color": color, "width": 3},
+            showlegend=False,
+            hoverinfo="skip",
+        ),
+        row=1,
+        col=1,
+    )
 
+sig_mask_acf = acf_significant
+if np.any(sig_mask_acf):
+    fig.add_trace(
+        go.Scatter(
+            x=lags_acf[sig_mask_acf],
+            y=acf_values[sig_mask_acf],
+            mode="markers",
+            marker={"size": 13, "color": sig_color, "line": {"color": "white", "width": 2}},
+            name="Significant",
+            showlegend=True,
+            hovertemplate=hover_tpl,
+        ),
+        row=1,
+        col=1,
+    )
+if np.any(~sig_mask_acf):
+    fig.add_trace(
+        go.Scatter(
+            x=lags_acf[~sig_mask_acf],
+            y=acf_values[~sig_mask_acf],
+            mode="markers",
+            marker={"size": 10, "color": nonsig_color, "line": {"color": "white", "width": 1.5}},
+            name="Non-significant",
+            showlegend=True,
+            hovertemplate=hover_tpl,
+        ),
+        row=1,
+        col=1,
+    )
 
-add_stems(fig, lags_acf, acf_values, acf_significant, row=1)
-add_stems(fig, lags_pacf, pacf_plot, pacf_significant, row=2)
+# PACF stems and markers (row 2)
+for i, lag in enumerate(lags_pacf):
+    color = sig_color if pacf_significant[i] else nonsig_color
+    fig.add_trace(
+        go.Scatter(
+            x=[lag, lag],
+            y=[0, pacf_plot[i]],
+            mode="lines",
+            line={"color": color, "width": 3},
+            showlegend=False,
+            hoverinfo="skip",
+        ),
+        row=2,
+        col=1,
+    )
+
+if np.any(pacf_significant):
+    fig.add_trace(
+        go.Scatter(
+            x=lags_pacf[pacf_significant],
+            y=pacf_plot[pacf_significant],
+            mode="markers",
+            marker={"size": 13, "color": sig_color, "line": {"color": "white", "width": 2}},
+            name="Significant",
+            showlegend=False,
+            hovertemplate=hover_tpl,
+        ),
+        row=2,
+        col=1,
+    )
+if np.any(~pacf_significant):
+    fig.add_trace(
+        go.Scatter(
+            x=lags_pacf[~pacf_significant],
+            y=pacf_plot[~pacf_significant],
+            mode="markers",
+            marker={"size": 10, "color": nonsig_color, "line": {"color": "white", "width": 1.5}},
+            name="Non-significant",
+            showlegend=False,
+            hovertemplate=hover_tpl,
+        ),
+        row=2,
+        col=1,
+    )
 
 # Shaded confidence bands and zero lines for both subplots
 for row in [1, 2]:
     x_start, x_end = (0, n_lags) if row == 1 else (1, n_lags)
-    # Shaded confidence band
     fig.add_trace(
         go.Scatter(
             x=[x_start, x_end, x_end, x_start],
@@ -136,7 +173,6 @@ for row in [1, 2]:
         row=row,
         col=1,
     )
-    # Zero line
     fig.add_trace(
         go.Scatter(
             x=[x_start, x_end],
@@ -153,7 +189,12 @@ for row in [1, 2]:
 # Layout
 fig.update_layout(
     title={
-        "text": "acf-pacf · plotly · pyplots.ai",
+        "text": (
+            "acf-pacf · plotly · pyplots.ai"
+            "<br><sup style='color:#64748B;font-size:16px'>"
+            "Monthly Retail Sales — AR(2) Process (n=200, φ₁=0.7, φ₂=−0.3)"
+            "</sup>"
+        ),
         "font": {"size": 28, "color": "#1E293B"},
         "x": 0.5,
         "xanchor": "center",
@@ -161,7 +202,7 @@ fig.update_layout(
     template="plotly_white",
     plot_bgcolor="#FAFBFC",
     paper_bgcolor="#FFFFFF",
-    margin={"l": 90, "r": 50, "t": 100, "b": 70},
+    margin={"l": 90, "r": 50, "t": 120, "b": 70},
     height=900,
     width=1600,
     legend={"orientation": "h", "yanchor": "bottom", "y": 1.02, "xanchor": "right", "x": 1, "font": {"size": 16}},
@@ -173,7 +214,7 @@ for annotation in fig.layout.annotations:
     annotation.font = {"size": 20, "color": "#475569"}
 
 # Y-axes
-for row, label in [(1, "ACF"), (2, "PACF")]:
+for row, label in [(1, "ACF (correlation)"), (2, "PACF (correlation)")]:
     fig.update_yaxes(
         title_text=label,
         title_font={"size": 22, "color": "#334155"},
@@ -188,7 +229,7 @@ for row, label in [(1, "ACF"), (2, "PACF")]:
 
 # X-axes
 fig.update_xaxes(
-    title_text="Lag",
+    title_text="Lag (periods)",
     title_font={"size": 22, "color": "#334155"},
     tickfont={"size": 18, "color": "#64748B"},
     showgrid=False,

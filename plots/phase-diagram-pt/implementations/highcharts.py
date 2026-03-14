@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 phase-diagram-pt: Thermodynamic Phase Diagram (Pressure-Temperature)
 Library: highcharts unknown | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-14
@@ -40,10 +40,10 @@ temp_sl_end = triple_t + (triple_p - y_max) / (-1.3e7)
 temp_sl = np.linspace(triple_t, temp_sl_end, 60)
 pressure_sl = triple_p + (temp_sl - triple_t) * (-1.3e7)
 
-# Intentional color palette for each boundary
+# Colorblind-safe palette (no red-green pairing)
 color_sublimation = "#306998"  # Python blue
-color_vaporization = "#D64045"  # Warm red
-color_melting = "#2D936C"  # Teal green
+color_vaporization = "#D4760A"  # Amber/orange
+color_melting = "#8B5CF6"  # Purple
 
 # Chart
 chart = Chart(container="container")
@@ -91,6 +91,7 @@ chart.options.y_axis = {
     "labels": {"style": {"fontSize": "24px", "color": "#4a5568"}},
     "min": 10,
     "max": 1e9,
+    "tickPositions": [1, 2, 3, 4, 5, 6, 7, 8, 9],
     "gridLineWidth": 1,
     "gridLineColor": "rgba(0,0,0,0.06)",
     "gridLineDashStyle": "Dot",
@@ -173,6 +174,7 @@ chart.add_series(
         "data": lg_data,
         "color": color_vaporization,
         "lineWidth": 6,
+        "dashStyle": "LongDash",
         "marker": {"enabled": False},
         "enableMouseTracking": True,
         "states": {"hover": {"lineWidth": 8}},
@@ -188,6 +190,7 @@ chart.add_series(
         "data": sl_data,
         "color": color_melting,
         "lineWidth": 6,
+        "dashStyle": "DashDot",
         "marker": {"enabled": False},
         "enableMouseTracking": True,
         "states": {"hover": {"lineWidth": 8}},
@@ -258,7 +261,7 @@ chart.add_series(
 phase_labels = [
     ("SOLID", [215, 3e7], "#306998", "700"),
     ("LIQUID", [400, 2e7], "#2980b9", "700"),
-    ("GAS", [500, 30], "#27ae60", "700"),
+    ("GAS", [500, 30], "#2D936C", "700"),
     ("SUPERCRITICAL<br>FLUID", [700, 2e8], "#e67e22", "600"),
 ]
 
@@ -302,8 +305,8 @@ chart.add_series(
             "format": (
                 '<div style="font-size:22px;line-height:2.0;color:#4a5568;">'
                 f'<span style="color:{color_sublimation};font-weight:700;">── ──</span> Sublimation<br>'
-                f'<span style="color:{color_vaporization};font-weight:700;">─────</span> Vaporization<br>'
-                f'<span style="color:{color_melting};font-weight:700;">─────</span> Melting'
+                f'<span style="color:{color_vaporization};font-weight:700;">─ ─ ─</span> Vaporization<br>'
+                f'<span style="color:{color_melting};font-weight:700;">─·─·─</span> Melting'
                 "</div>"
             ),
             "align": "left",

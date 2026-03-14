@@ -1,7 +1,7 @@
 library: pygal
 specification_id: flamegraph-basic
 created: '2026-03-14T20:27:44Z'
-updated: '2026-03-14T20:53:09Z'
+updated: '2026-03-14T21:06:23Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23095681595
 issue: 4665
@@ -10,42 +10,38 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/flamegraph-basic/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/flamegraph-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/flamegraph-basic/pygal/plot.html
-quality_score: 81
+quality_score: 80
 review:
   strengths:
-  - Depth-based warm flame color palette (pale yellows to deep reds) creates intentional
-    visual hierarchy matching flame graph conventions
-  - Properly uses pygal HorizontalStackedBar API with idiomatic per-value styling
-    dicts
-  - Realistic CPU profiling data with meaningful function names and plausible sample
-    counts
-  - Clean spacer-based alignment ensures correct flame graph structure within pygal
-    stacked bar framework
-  - Hot path (main to process_request to execute_handler to db_query) is immediately
-    visible through data storytelling
-  - Generates both PNG and interactive HTML output leveraging pygal dual rendering
+  - Depth-based warm color palette (yellow to orange to red) faithfully follows flame
+    graph conventions
+  - Realistic web server profiling data with plausible function names and sample counts
+  - Good use of pygal per-value styling for individual bar coloring
+  - Interactive HTML output leverages pygal SVG rendering capability
+  - Clean monospace typography appropriate for profiling context
   weaknesses:
-  - Vertical gaps between depth rows are larger than ideal for a flame graph aesthetic
-  - Some label truncation at the right edge of the chart
-  - White spacer areas are visually confusing as they resemble data bars
-  - The sys.path manipulation for import adds code complexity
-  image_description: The plot displays a flame graph visualization of CPU profiling
-    data using pygal's HorizontalStackedBar chart. Five depth levels are shown (Depth
-    0 at bottom to Depth 4 at top). Depth 0 shows "main (800)" spanning the full width
-    in pale yellow. Depth 1 shows gc_collect (80), idle_wait (50), log_metrics (60),
-    and the dominant process_request (600) in warm orange tones. Depth 2 displays
-    compact_heap, mark_sweep (55), format_json, write_buffer, execute_handler (250),
-    parse_headers (120), route_dispatch (180), and send_response (partially truncated)
-    in mid-orange hues. Depth 3 contains db_query (140), serialize_json (70), template_render,
-    decode_base64 (55), validate_utf8 (45), lookup_handler (70), regex_match (90),
-    and compress_gzip in deeper red tones. Depth 4 at the top has connect_pool, execute_sql
-    (80), fetch_rows, and encode_utf8 in dark reds/maroons. Colors follow a depth-based
-    warm flame gradient (pale yellows at root to deep reds at leaves). White background,
-    monospace font, no grid lines. Title reads "flamegraph-basic · pygal · pyplots.ai".
-    X-axis labeled "Samples" (0-800), Y-axis labeled "Call Stack Depth".
+  - Some labels truncated at right edge of chart (send_response, compress_gzip)
+  - Vertical gaps between depth rows break traditional flame graph appearance
+  - Only 25 stack traces vs spec suggested 50-500 range
+  - Importlib workaround for module name collision adds code complexity
+  image_description: 'The plot displays a horizontal stacked bar chart representing
+    a flame graph for CPU performance profiling. There are 5 depth levels (Depth 0
+    through Depth 4) on the y-axis labeled "Call Stack Depth", with "Samples" on the
+    x-axis ranging from 0 to 800. The title reads "flamegraph-basic · pygal · pyplots.ai"
+    in monospace font. Depth 0 (bottom) shows a single pale yellow bar "main (800)"
+    spanning the full width. Depth 1 has warm orange/yellow bars for gc_collect (80),
+    idle_wait (50), log_metrics (60), and a large process_request (600). Depth 2 shows
+    mid-orange bars including execute_handler (250), parse_headers (120), route_dispatch
+    (180), with some bars truncated at right edge. Depth 3 has salmon/red bars for
+    db_query (140), serialize_json (70), template_render, decode_base64 (55), validate_utf8
+    (45), lookup_handler (70), regex_match (90), and compress_gzip (truncated at edge).
+    Depth 4 has the darkest red bars: connect_pool, execute_sql (80), fetch_rows,
+    encode_utf8. Colors transition from pale yellow at root to dark red at deepest
+    level following flame graph conventions. White stroke borders separate adjacent
+    bars.'
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 24
       max: 30
       items:
       - id: VQ-01
@@ -53,41 +49,39 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title=48, labels=24, major_labels=22,
-          value=20). Monospace font appropriate. Some narrow bars have cramped labels.
+        comment: Font sizes explicitly set (title=48, label=24, major_label=22), monospace
+          font appropriate for profiling context
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 4
         max: 6
         passed: true
-        comment: No significant overlap. Minor truncation at right edge (send_respo...).
+        comment: Labels on narrow bars squeezed, some labels at right edge truncated
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: All bars visible with proportional sizing. White spacer areas somewhat
-          confusing visually.
+        comment: Bars well-sized and visible, transparent spacers create proper alignment
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Depth-based warm palette. Labels ensure color is not sole identifier.
-          Adjacent same-depth bars have limited contrast.
+        comment: Warm yellow-to-red palette is colorblind-safe with good contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Chart fills ~65% of canvas. Vertical gaps between depth rows larger
-          than ideal for flame graph.
+        comment: Plot fills canvas well but some bars clipped at right edge, large
+          vertical gaps between rows
       - id: VQ-06
         name: Axis Labels & Title
-        score: 2
+        score: 1
         max: 2
         passed: true
-        comment: Samples x-axis, Call Stack Depth y-axis. Both descriptive.
+        comment: Descriptive labels but lack units
     design_excellence:
       score: 14
       max: 20
@@ -97,22 +91,21 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Depth-based flame palette with 5 intentional palettes. Monospace
-          typography, rounded bars, white stroke separators. Above defaults.
+        comment: Thoughtful depth-based warm color palette, monospace font, white
+          stroke borders
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: No guides, clean background, tight spacing, white strokes. Large
-          vertical gaps between rows detract slightly.
+        comment: Grid hidden, rounded bars, clean background, some excessive vertical
+          spacing
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Depth-based color gradient draws attention to deeper functions. Hot
-          path immediately visible. Sample counts reinforce narrative.
+        comment: Color gradient tells depth story, hot path clearly visible
     spec_compliance:
       score: 13
       max: 15
@@ -122,28 +115,26 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Correct flame graph via HorizontalStackedBar. Vertical gaps make
-          it look like separated bars rather than cohesive flame graph.
+        comment: HorizontalStackedBar correct for pygal flame graph, gaps between
+          rows deviate from convention
       - id: SC-02
         name: Required Features
         score: 3
         max: 4
         passed: true
-        comment: All features present. Warm palette, labels in bars, proportional
-          widths, bottom-to-top. Inter-depth gaps larger than ideal.
+        comment: Most features present, only 25 stack traces vs 50-500 suggested
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X-axis represents samples (0-800), Y-axis represents call stack depth.
-          Correct mapping.
+        comment: X-axis shows samples, Y-axis shows depth, widths proportional
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. show_legend=False appropriate for flame graphs.
+        comment: Title format correct, legend appropriately hidden
     data_quality:
       score: 14
       max: 15
@@ -153,22 +144,19 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: 5 depth levels, varying widths, multiple branching paths. Good variety
-          of call patterns.
+        comment: Multiple depth levels, varying widths, nested hierarchies shown
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: HTTP request processing with realistic function names. Neutral technology
-          domain.
+        comment: Web server request processing with realistic function names
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 800 total samples plausible for CPU profile. Child sums consistent
-          with parents.
+        comment: 800 total samples with sensible distribution
     code_quality:
       score: 8
       max: 10
@@ -178,35 +166,31 @@ review:
         score: 2
         max: 3
         passed: true
-        comment: Linear structure, no functions/classes. Tree/BFS/segment logic necessarily
-          complex for flame graph layout.
+        comment: No functions/classes but tree-building BFS adds complexity
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic hardcoded data.
+        comment: Fully deterministic hardcoded data
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: importlib, sys for pygal workaround, defaultdict
-          for grouping.'
+        comment: All imports used, importlib workaround necessary
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
         passed: true
-        comment: Spacer approach clever but verbose. sys.path manipulation necessary
-          but adds complexity. Depth palette dictionary clean.
+        comment: Importlib workaround is ugly but necessary, tree building verbose
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png via render_to_png(). Also generates HTML. Current
-          API.
+        comment: Saves as plot.png via render_to_png
     library_mastery:
       score: 7
       max: 10
@@ -216,22 +200,23 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Properly uses HorizontalStackedBar, Style, chart.add(), render_to_png().
-          Per-value dict styling is pygal recommended pattern.
+        comment: Good use of HorizontalStackedBar with per-value dicts for styling
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Per-value styling dicts, print_labels, rounded_bars, dual SVG/PNG
-          rendering, tooltip config. Unique pygal features.
-  verdict: APPROVED
+        comment: Pygal-specific per-value styling dicts, transparent spacers, interactive
+          SVG/HTML
+  verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
-  - html-export
+  - annotations
   patterns:
+  - data-generation
   - iteration-over-groups
   dataprep: []
   styling:
   - edge-highlighting
+  - minimal-chrome

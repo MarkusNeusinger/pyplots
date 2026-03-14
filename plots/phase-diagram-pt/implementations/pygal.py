@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 phase-diagram-pt: Thermodynamic Phase Diagram (Pressure-Temperature)
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-14
@@ -110,18 +110,20 @@ chart = pygal.XY(
     spacing=20,
     margin=40,
     margin_bottom=120,
-    margin_left=160,
-    margin_right=120,
+    margin_left=220,
+    margin_right=160,
     tooltip_fancy_mode=True,
     tooltip_border_radius=8,
     interpolate="cubic",
     interpolation_precision=200,
-    xrange=(180, 750),
+    xrange=(180, 670),
     secondary_range=(0.1, critical_p * 20),
     print_values=False,
     human_readable=True,
     x_value_formatter=lambda x: f"{x:.0f} K",
     value_formatter=format_pressure,
+    y_labels=[1, 100, 1e4, 1e6, 1e8],
+    y_label_rotation=0,
 )
 
 # Sublimation curve (Solid-Gas boundary) with pygal metadata dicts
@@ -173,7 +175,7 @@ chart.add(
             "color": "#be123c",
         }
     ],
-    dots_size=24,
+    dots_size=18,
     stroke=False,
     formatter=format_pressure,
 )
@@ -188,7 +190,7 @@ chart.add(
             "color": "#6d28d9",
         }
     ],
-    dots_size=24,
+    dots_size=18,
     stroke=False,
     formatter=format_pressure,
 )
@@ -202,8 +204,8 @@ phase_labels = [
     {"text": "SOLID", "x": "1050", "y": "580", "size": "78", "color": "#0f766e", "opacity": "0.40"},
     {"text": "LIQUID", "x": "2650", "y": "520", "size": "78", "color": "#ea580c", "opacity": "0.40"},
     {"text": "GAS", "x": "2900", "y": "1850", "size": "78", "color": "#1d4ed8", "opacity": "0.40"},
-    {"text": "SUPERCRITICAL", "x": "3900", "y": "400", "size": "52", "color": "#6d28d9", "opacity": "0.35"},
-    {"text": "FLUID", "x": "4030", "y": "470", "size": "52", "color": "#6d28d9", "opacity": "0.35"},
+    {"text": "SUPERCRITICAL", "x": "3800", "y": "350", "size": "52", "color": "#6d28d9", "opacity": "0.35"},
+    {"text": "FLUID", "x": "3930", "y": "420", "size": "52", "color": "#6d28d9", "opacity": "0.35"},
 ]
 
 for label in phase_labels:

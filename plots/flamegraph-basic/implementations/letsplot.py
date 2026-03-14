@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 flamegraph-basic: Flame Graph for Performance Profiling
 Library: letsplot 4.9.0 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-14
@@ -9,15 +9,19 @@ import pandas as pd
 from lets_plot import (
     LetsPlot,
     aes,
+    coord_cartesian,
     element_rect,
     element_text,
     geom_rect,
+    geom_segment,
     geom_text,
     ggplot,
     ggsize,
     labs,
     layer_tooltips,
     scale_fill_identity,
+    scale_x_continuous,
+    scale_y_continuous,
     theme,
     theme_void,
 )
@@ -101,9 +105,11 @@ while current_path in children_map:
 
 # Build rectangles - no vertical gaps between depth levels
 records = []
+max_depth = 0
 for stack_path, samples in stacks.items():
     parts = stack_path.split(";")
     depth = len(parts) - 1
+    max_depth = max(max_depth, depth)
     func_name = parts[-1]
     xmin, xmax = positions[stack_path]
     is_hot = stack_path in hot_path
@@ -140,15 +146,40 @@ df["color"] = df.apply(
 # Border color: hot path gets dark border for emphasis, others get subtle white
 df["border_color"] = df["is_hot"].apply(lambda h: "#BF360C" if h else "#ffffff")
 
-# Label: show function name if bar is wide enough
-min_label_width = total_samples * 0.05
+# Label: show function name only if bar is wide enough, with per-depth overlap check
+min_label_width = total_samples * 0.07
 df["label"] = df.apply(lambda r: r["func"] if (r["xmax"] - r["xmin"]) >= min_label_width else "", axis=1)
+
+# Per-depth overlap detection: remove labels that would collide
+for depth in df["depth"].unique():
+    depth_mask = (df["depth"] == depth) & (df["label"] != "")
+    depth_bars = df.loc[depth_mask].sort_values("xmin")
+    if len(depth_bars) > 1:
+        prev_xmax = -float("inf")
+        for idx, row in depth_bars.iterrows():
+            bar_center = (row["xmin"] + row["xmax"]) / 2
+            half_label = len(row["func"]) * 4.5  # approximate char width in data units
+            label_left = bar_center - half_label
+            if label_left < prev_xmax:
+                df.at[idx, "label"] = ""
+            else:
+                prev_xmax = bar_center + half_label
+
 df["label_x"] = (df["xmin"] + df["xmax"]) / 2
 df["label_y"] = (df["ymin"] + df["ymax"]) / 2
 
 # Separate hot-path and non-hot-path for layered rendering
 df_cool = df[~df["is_hot"]].copy()
 df_hot = df[df["is_hot"]].copy()
+
+# Depth separator lines for visual structure
+depth_lines = pd.DataFrame(
+    {
+        "y": [float(d) for d in range(1, max_depth + 1)],
+        "xstart": [0.0] * max_depth,
+        "xend": [float(total_samples)] * max_depth,
+    }
+)
 
 # Plot - layer hot path on top for visual emphasis
 plot = (
@@ -175,14 +206,27 @@ plot = (
         .line("Percentage: @pct%")
         .line("Stack: @stack"),
     )
-    + geom_text(aes(x="label_x", y="label_y", label="label"), data=df, size=11, color="#1a1a1a", fontface="bold")
+    + geom_segment(
+        aes(x="xstart", xend="xend", y="y", yend="y"), data=depth_lines, color="#e0ddd5", size=0.3, alpha=0.5
+    )
+    + geom_text(
+        aes(x="label_x", y="label_y", label="label"),
+        data=df,
+        size=12,
+        color="#1a1a1a",
+        fontface="bold",
+        label_padding=0.15,
+    )
     + scale_fill_identity()
+    + scale_x_continuous(expand=[0.005, 0])
+    + scale_y_continuous(expand=[0.02, 0])
+    + coord_cartesian(ylim=[-0.1, max_depth + 1.15])
     + labs(title="flamegraph-basic · letsplot · pyplots.ai")
     + theme_void()
     + theme(
         plot_title=element_text(size=26, face="bold", color="#1a1a2e", hjust=0.5),
         plot_background=element_rect(fill="#f5f5f0", color="#f5f5f0"),
-        plot_margin=[40, 30, 30, 30],
+        plot_margin=[40, 30, 15, 30],
     )
     + ggsize(1600, 900)
 )

@@ -1,7 +1,7 @@
 library: plotly
 specification_id: flamegraph-basic
 created: '2026-03-14T20:27:37Z'
-updated: '2026-03-14T20:31:45Z'
+updated: '2026-03-14T20:40:29Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23095681470
 issue: 4665
@@ -10,32 +10,36 @@ library_version: 6.6.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/flamegraph-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/flamegraph-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/flamegraph-basic/plotly/plot.html
-quality_score: 82
+quality_score: 86
 review:
   strengths:
-  - Excellent spec compliance — all flame graph requirements fully implemented
-  - Realistic CPU profiling data with plausible web request processing scenario
-  - Custom warm color palette follows flame graph convention effectively
-  - Smart label truncation for narrow bars and omission for very small ones
-  - Interactive hover templates show full stack path and sample details
+  - Excellent data storytelling through hot path highlighting — viewer immediately
+    identifies the performance bottleneck
+  - Custom warm color palette with red/yellow differentiation follows flame graph
+    conventions
+  - Comprehensive, realistic CPU profiling data with diverse function categories
+  - Smart label truncation prevents overlap while preserving readability
+  - Full spec compliance with all required features implemented
   weaknesses:
-  - Bar label annotation font size (14pt) could be increased for better readability
-  - Warm-only palette lacks colorblind differentiation between similar hues
-  - No visual emphasis on the hot path to guide viewer attention
-  - One trace per bar is verbose — could explore more efficient data structuring
-  - Recursive function breaks the preferred flat script structure
+  - Numpy imported unnecessarily (only np.random.seed(42) called, but no random data
+    generated)
+  - One trace per bar is not idiomatic Plotly — should batch bars to reduce trace
+    count
+  - Non-hot-path bars use very similar yellow/orange shades that are hard to distinguish
   image_description: The plot displays a flame graph with horizontal bars stacked
-    by call stack depth (y-axis, 0-6) against proportion of total samples (x-axis,
-    0%-100%). The title reads "flamegraph-basic · plotly · pyplots.ai" centered at
-    the top. The bottom bar (depth 0) is "main" spanning the full width in a salmon/light
-    red color. Depth 1 shows "gc_collect" (small, dark orange), "log_metrics" (tiny,
-    gold), and "process_request" (large, orange) bars. Higher depths show functions
-    like "parse_body", "parse_headers", "route_handler", "auth_check", "query_db",
-    "execute_sql", "fetch_rows", "render_template", "send_response" etc. Colors use
-    a warm palette of yellows, oranges, and reds. Function name labels appear inside
-    bars when wide enough, with truncation for narrower bars (e.g., "verify_tok...",
-    "parse_head...", "send_respo..."). White thin lines separate adjacent bars. The
-    background is white with no gridlines.
+    by call stack depth (0–6 on the y-axis) against "Proportion of Total Samples"
+    (0%–100% on the x-axis). The title "flamegraph-basic · plotly · pyplots.ai" is
+    rendered in monospace font at the top. At depth 0, "main" spans the full width
+    in dark red. Depth 1 shows "process_request" (large, dark red) and a small "gc_coll…"
+    bar (yellow-green). Depth 2 contains "send_respo…", "route_handler" (large, red),
+    "parse_headers", "parse_body", and small bars. Deeper levels show functions like
+    "query_db", "execute_sql", "auth_check", "render_template", "fetch_rows", "verify_tok…",
+    etc. Hot path bars (the widest at each depth) are rendered in deep red/crimson
+    with white bold text and red borders, while other bars use warm yellows, oranges,
+    and wheat tones with dark text. A "Hot path (most samples)" legend annotation
+    appears in the top right. The background is light gray (#FAFAFA) with no grid
+    lines. Function names are displayed inside bars when wide enough, with ellipsis
+    truncation for narrow bars.
   criteria_checklist:
     visual_quality:
       score: 27
@@ -46,64 +50,64 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Title 28pt, axis labels 22pt, tick fonts 16pt explicitly set. Bar
-          label annotations at 14pt slightly below ideal.
+        comment: Font sizes explicitly set (title 28, axis labels 22, ticks 16, annotations
+          16). All readable. Some truncated labels reduce info density.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text; labels truncated for narrow bars and omitted
-          for very small bars.
+        comment: No overlapping text; labels smartly truncated when bars are narrow.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: All bars clearly visible. Some very narrow bars are thin but discernible.
+        comment: Bars well-sized with bar_height=0.82. Top-depth bars small but inherent
+          to data hierarchy.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Warm palette is conventional for flame graphs but similar hues may
-          be hard to distinguish for colorblind users.
+        comment: Warm palette conventional for flame graphs but many yellow/orange
+          shades very similar.
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Good canvas utilization with well-set margins.
+        comment: Good proportions, plot fills canvas well, balanced margins.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with percentage format on x-axis.
+        comment: Descriptive labels with % format.
     design_excellence:
-      score: 12
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom warm palette well-chosen for flame graph convention. Above
-          defaults but not publication-level.
+        comment: Custom warm palette, hot path highlighting, monospace font, differentiated
+          borders. Above defaults.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Grid disabled, clean white background, good margins.
+        comment: Grid removed, plotly_white template, custom background, clean margins.
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 5
         max: 6
         passed: true
-        comment: Hot path visible through bar widths but no explicit visual emphasis
-          guides the viewer.
+        comment: Hot path highlighting creates immediate visual story of performance
+          bottleneck.
     spec_compliance:
       score: 15
       max: 15
@@ -113,100 +117,99 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct flame graph with horizontal bars stacked by depth.
+        comment: Correct flame graph with horizontal bars stacked bottom-to-top.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec requirements met: depth layers, proportional widths, warm
-          colors, adjacent bars, function labels.'
+        comment: 'All spec features present: proportional width, warm colors, minimal
+          gaps, function labels.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X-axis maps proportion, y-axis maps stack depth correctly.
+        comment: X = proportion, Y = stack depth. Correct with alphabetical ordering.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format. No legend needed.
+        comment: Title follows exact format. Hot path annotation serves as legend.
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Multiple depth levels, varied widths, multiple branches. Missing
-          very deep stacks.
+        comment: Multiple depth levels, varying widths, diverse function categories.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: CPU profiling of web request handler with realistic function names.
+        comment: Realistic CPU profiling with plausible web request processing functions.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Sample counts realistic for profiling data.
+        comment: Sample counts 15-150 realistic for profiling data.
     code_quality:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Uses recursive function assign_positions, breaking flat structure.
+        comment: 'Linear flow: imports, data, processing, plot, save.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set, data is hardcoded and deterministic.
+        comment: Data is fully deterministic (hardcoded stacks).
       - id: CQ-03
         name: Clean Imports
+        score: 1
+        max: 2
+        passed: false
+        comment: numpy imported but only used for unnecessary np.random.seed(42).
+      - id: CQ-04
+        name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Only numpy and plotly.graph_objects imported, both used.
-      - id: CQ-04
-        name: Code Elegance
-        score: 1
-        max: 2
-        passed: true
-        comment: One go.Bar trace per bar (29 traces) is verbose.
+        comment: Well-structured iterative stack traversal, clean logic.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with correct dimensions. Also exports HTML.
+        comment: Correct output format and dimensions.
     library_mastery:
-      score: 6
+      score: 5
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 2
         max: 5
-        passed: true
-        comment: Standard plotly patterns but 29 individual Bar traces is not efficient.
+        passed: false
+        comment: Creates one go.Bar trace per individual bar. Idiomatic Plotly would
+          batch bars into fewer traces.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Hover templates with full stack path and HTML export leverage plotly
-          capabilities.
+        comment: Hover templates, HTML export, overlay barmode with base positioning.
   verdict: REJECTED
 impl_tags:
   dependencies: []

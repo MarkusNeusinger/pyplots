@@ -1,24 +1,21 @@
-""" pyplots.ai
+"""pyplots.ai
 flamegraph-basic: Flame Graph for Performance Profiling
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 80/100 | Created: 2026-03-14
 """
 
-import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
-import pandas as pd
+import numpy as np
 import seaborn as sns
 
 
-# Configure seaborn style
-sns.set_context("talk", font_scale=1.2)
-sns.set_style("white")
+# Configure seaborn theme
+sns.set_theme(style="white", context="talk", font_scale=1.2)
 
-# Warm flame color palette using seaborn's blend_palette
-flame_colors = sns.blend_palette(["#FFE066", "#FFB347", "#FF6B35", "#E8352B", "#C41E3A"], n_colors=256, as_cmap=True)
+# Warm flame colormap using seaborn's blend_palette
+flame_cmap = sns.blend_palette(["#FFE066", "#FFB347", "#FF6B35", "#E8352B", "#C41E3A"], n_colors=256, as_cmap=True)
 
 # Data - simulated CPU profiling stacks with sample counts (~65 stack traces)
-
 stacks = {
     "main": 950,
     # Depth 1
@@ -145,91 +142,105 @@ for depth in sorted(frames.keys()):
             positions[stack_path] = (current_x, samples)
             current_x += samples
 
-# Build DataFrame for seaborn color mapping
-records = []
+max_depth = max(frames.keys())
+
+# Build 2D grid for seaborn heatmap rendering
+# Each cell value maps to a color via the flame colormap
+n_rows = max_depth + 1
+n_cols = total_samples
+grid = np.full((n_rows, n_cols), np.nan)
+
 for stack_path, (x_pos, width) in positions.items():
     depth = stack_path.count(";")
     func_name = stack_path.split(";")[-1]
-    records.append(
-        {
-            "stack": stack_path,
-            "function": func_name,
-            "depth": depth,
-            "x": x_pos,
-            "width": width,
-            "fraction": width / total_samples,
-        }
-    )
-df = pd.DataFrame(records)
+    color_val = (hash(func_name) % 1000) / 1000.0
+    grid[depth, int(x_pos) : int(x_pos + width)] = 0.15 + color_val * 0.7
 
-# Plot
+# Flip grid so depth 0 appears at bottom (heatmap row 0 is at top)
+grid_display = grid[::-1]
+mask = np.isnan(grid_display)
+
+# Plot using seaborn heatmap as core rendering
 fig, ax = plt.subplots(figsize=(16, 9))
 
-bar_height = 0.85
-max_depth = max(frames.keys())
+sns.heatmap(
+    grid_display,
+    ax=ax,
+    cmap=flame_cmap,
+    mask=mask,
+    cbar=False,
+    linewidths=0,
+    xticklabels=False,
+    yticklabels=False,
+    vmin=0.0,
+    vmax=1.0,
+)
 
-for _, row in df.iterrows():
-    func_name = row["function"]
-    x_pos = row["x"]
-    width = row["width"]
-    depth = row["depth"]
-    fraction = row["fraction"]
+# Add function name labels on top of heatmap cells
+for stack_path, (x_pos, width) in positions.items():
+    depth = stack_path.count(";")
+    func_name = stack_path.split(";")[-1]
+    fraction = width / total_samples
 
-    # Color: use seaborn blend_palette - map by hash for variety within warm tones
-    color_val = (hash(func_name) % 1000) / 1000.0
-    color = flame_colors(0.15 + color_val * 0.7)
-
-    rect = mpatches.FancyBboxPatch(
-        (x_pos, depth),
-        width,
-        bar_height,
-        boxstyle="round,pad=0,rounding_size=0.05",
-        facecolor=color,
-        edgecolor="white",
-        linewidth=1.0,
-    )
-    ax.add_patch(rect)
-
-    # Add label if bar is wide enough
     if fraction > 0.045:
         label = func_name
         if fraction > 0.08:
             pct = fraction * 100
             label = f"{func_name} ({pct:.0f}%)"
 
-        # Improve text contrast: use white text on dark bars, dark on light
+        # Estimate max characters that fit in the bar width
+        # At fontsize 9: ~3.8 samples per char; fontsize 11: ~4.6 samples per char
+        fs = 11 if fraction > 0.1 else 9
+        samples_per_char = 4.6 if fs == 11 else 3.8
+        max_chars = int(width / samples_per_char)
+        if len(label) > max_chars:
+            label = label[: max(3, max_chars - 1)] + "\u2026"
+
+        # Heatmap coordinates: x = column index, y = row index (flipped)
+        hm_x = x_pos + width / 2
+        hm_y = (max_depth - depth) + 0.5
+
+        # Text contrast based on bar luminance
+        color_val = (hash(func_name) % 1000) / 1000.0
+        color = flame_cmap(0.15 + color_val * 0.7)
         r, g, b = color[:3]
         luminance = 0.299 * r + 0.587 * g + 0.114 * b
         text_color = "#ffffff" if luminance < 0.55 else "#2b2b2b"
 
         ax.text(
-            x_pos + width / 2,
-            depth + bar_height / 2,
+            hm_x,
+            hm_y,
             label,
             ha="center",
             va="center",
-            fontsize=11 if fraction > 0.1 else 9,
+            fontsize=fs,
             fontweight="bold" if fraction > 0.15 else "medium",
             color=text_color,
             clip_on=True,
         )
 
-# Style
-ax.set_xlim(-20, total_samples + 40)
-ax.set_ylim(-0.3, max_depth + 1.2)
+# Expand x-axis limits beyond data range to prevent text clipping at edges
+ax.set_xlim(-80, total_samples + 80)
+
+# Style axes
 ax.set_xlabel("Samples", fontsize=20)
 ax.set_ylabel("Stack Depth", fontsize=20)
 ax.set_title("flamegraph-basic · seaborn · pyplots.ai", fontsize=24, fontweight="medium")
 ax.tick_params(axis="both", labelsize=16)
 
-# Set y-ticks to integer depths
-ax.set_yticks(range(max_depth + 1))
-ax.set_yticklabels([f"Depth {i}" for i in range(max_depth + 1)])
+# Y-axis: depth labels (flipped order since heatmap row 0 = max depth)
+ax.set_yticks([i + 0.5 for i in range(n_rows)])
+ax.set_yticklabels([f"Depth {i}" for i in range(max_depth, -1, -1)])
 
-# Remove spines
+# X-axis: sample value ticks
+xtick_positions = np.arange(0, total_samples + 1, 200)
+ax.set_xticks(xtick_positions)
+ax.set_xticklabels([str(int(x)) for x in xtick_positions])
+
+# Remove top and right spines using seaborn
 sns.despine(ax=ax, top=True, right=True)
 
-# Subtle x-axis grid only
+# Subtle x-axis grid
 ax.xaxis.grid(True, alpha=0.15, linewidth=0.8)
 ax.yaxis.grid(False)
 

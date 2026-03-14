@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: flamegraph-basic
 created: '2026-03-14T20:27:08Z'
-updated: '2026-03-14T20:38:30Z'
+updated: '2026-03-14T20:47:42Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23095681554
 issue: 4665
@@ -10,32 +10,36 @@ library_version: 3.9.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/flamegraph-basic/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/flamegraph-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/flamegraph-basic/bokeh/plot.html
-quality_score: 87
+quality_score: 90
 review:
   strengths:
-  - Excellent spec compliance - all flame graph requirements met precisely
-  - Realistic CPU profiling data with believable function names and call hierarchy
-  - HoverTool with rich tooltips is a strong use of Bokeh interactive capabilities
-  - Clean iterative stack-based layout algorithm avoids recursion and maintains KISS
-  - Heat-based color encoding naturally highlights performance bottlenecks
+  - Perceptually uniform Inferno palette with adaptive text colors creates a visually
+    sophisticated flame graph
+  - 'All spec requirements met precisely: 55 stack traces, proportional widths, warm
+    colors, function labels, adjacent bars'
+  - HoverTool with rich tooltips (function, samples, CPU%, call stack) is an excellent
+    use of Bokeh interactivity
+  - Realistic web server profiling data with believable function names and call hierarchies
+  - Clean iterative layout algorithm avoids recursion while maintaining readability
   weaknesses:
-  - 'DE-01: Computed RGB gradient could use a perceptually uniform warm palette for
-    more visual polish'
-  - 'VQ-05: Wasted vertical space above the top stack level'
-  - 'DQ-01: Only 23 stack traces vs spec suggested 50-500 minimum'
-  image_description: The plot displays a flame graph for CPU profiling of a web server
-    application. The bottom bar is "main (100.0%)" in deep red/orange spanning the
-    full width. Above it, "handle_request (85.0%)" dominates in orange, with smaller
-    "log_metrics" and "gc_collect" bars flanking it. Higher levels show "process_query
-    (40.0%)", "authenticate (20.0%)", "send_response", "parse_headers" etc. The deepest
-    level (depth 5) shows "read_index" and "deserialize" in pale yellow. Colors transition
-    from deep red (high sample count) to pale yellow (low sample count), following
-    flame graph conventions. White borders separate bars cleanly. Function names and
-    percentages are displayed inside bars when wide enough. White background, no axes,
-    title "flamegraph-basic · bokeh · pyplots.ai" centered at top.
+  - Helper function heat_to_color breaks pure KISS structure (minor)
+  - Slight vertical whitespace at bottom margin could be tighter
+  image_description: The flame graph displays a hierarchical CPU profiling visualization
+    for a web server application. At the bottom, "main (100.0%)" spans the full width
+    in deep purple (Inferno colormap). Above it, "handle_request (85.0%)" dominates
+    in dark magenta, flanked by smaller "log_metrics" and "gc_collect" bars in pale
+    yellow. The next level shows "process_query (40.0%)" in warm orange, "authenticate
+    (20.0%)" in gold-yellow, alongside "parse_headers" and "send_response". Higher
+    levels include "execute (24.0%)", "fetch_rows (15.0%)", "verify_token (14.0%)"
+    with progressively lighter colors. The deepest level has "btree_search" and "decode_row"
+    in pale yellow. Colors transition from deep purple (high sample count) through
+    reds/oranges to pale yellow (low samples) using a perceptually uniform Inferno
+    palette. White borders cleanly separate bars. Function names with percentages
+    are displayed inside wider bars. Clean white background with no axes or grid.
+    Title "flamegraph-basic · bokeh · pyplots.ai" centered at top in bold 36pt font.
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -43,65 +47,66 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set (36pt title, 14-22pt labels). All text
-          readable, though labels on narrower bars are small.
+        comment: Title 36pt, labels 14-22pt explicitly set. All text readable; smallest
+          labels on narrow bars are small but legible.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text; labels fit cleanly within bars.
+        comment: No overlapping text. Labels only rendered when bars exceed 3% width.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: All bars clearly visible with 0.92 height and white borders providing
-          clean separation.
+        comment: All bars clearly visible with 0.92 height and white line borders
+          providing clean separation.
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Warm sequential palette appropriate for continuous heat data. Perceptually
-          uniform colormap would be stronger.
+        comment: Inferno is perceptually uniform and colorblind-safe. Adaptive text
+          colors ensure contrast.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good horizontal fill. Some empty vertical space above top stack level.
+        comment: Good horizontal fill. Slight vertical whitespace at bottom margin
+          but overall ~65% canvas utilization.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Title in correct format. Axes correctly hidden for flame graphs.
+        comment: Title in correct format. Axes appropriately hidden for flame graphs.
     design_excellence:
-      score: 13
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Warm color palette follows flame graph conventions with intentional
-          heat-based mapping. Above defaults but not publication-level.
+        comment: Inferno palette with perceptually uniform heat-based mapping. Adaptive
+          text colors and white borders create professional polish.
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Axes hidden, grid hidden, outline removed, clean white background.
-          White line borders are a nice touch.
+        comment: All axes hidden, grid removed, outline removed, clean white background.
+          White line borders and 0.92 bar height create polished separation.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Color encoding naturally draws attention to hot paths. Percentage
-          labels help identify bottlenecks.
+        comment: Color intensity guides attention to hot paths. Percentage labels
+          on wider bars create clear focal points.
     spec_compliance:
       score: 15
       max: 15
@@ -124,7 +129,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Width correctly maps to sample proportion, depth represents call
+        comment: Width correctly maps to sample proportion. Depth represents call
           stack level.
       - id: SC-04
         name: Title & Legend
@@ -133,39 +138,40 @@ review:
         passed: true
         comment: Title format correct. No legend needed for flame graph.
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Shows 6 depth levels, varying widths, multiple branches. Only 23
-          stack traces vs spec suggested 50-500.
+        comment: 55 unique stack traces within spec 50-500 range, 7 depth levels,
+          varying widths, multiple branches.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Web server CPU profiling with realistic function names. Very believable
-          scenario.
+        comment: Web server CPU profiling with realistic function names. Neutral,
+          comprehensible scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Sample counts realistic with plausible distribution across call paths.
+        comment: 10000 total samples with realistic distribution across call paths.
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Linear flow with iterative stack-based layout. No functions or classes.
+        comment: Linear flow with iterative layout, but includes a helper function
+          heat_to_color.
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -183,7 +189,8 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Clean iterative layout algorithm. Appropriate complexity.
+        comment: Clean iterative layout algorithm. Appropriate complexity for flame
+          graph.
       - id: CQ-05
         name: Output & API
         score: 1
@@ -199,16 +206,16 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of ColumnDataSource, rect glyphs, Label annotations. Proper
-          Bokeh patterns.
+        comment: Good use of ColumnDataSource, rect glyphs, Label annotations, and
+          figure API.
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: HoverTool with custom tooltips and HTML export are genuinely distinctive
-          Bokeh features.
-  verdict: REJECTED
+        comment: HoverTool with rich custom tooltips and HTML export are genuinely
+          distinctive Bokeh features.
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
@@ -223,3 +230,4 @@ impl_tags:
   styling:
   - minimal-chrome
   - edge-highlighting
+  - custom-colormap

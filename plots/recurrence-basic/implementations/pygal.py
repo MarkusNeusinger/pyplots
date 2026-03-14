@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 recurrence-basic: Recurrence Plot for Nonlinear Time Series
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 78/100 | Created: 2026-03-14
 """
 
 import sys
@@ -11,45 +10,36 @@ from scipy.integrate import solve_ivp
 from scipy.spatial.distance import cdist
 
 
-# Temporarily remove current directory from path to avoid name collision
-_cwd = sys.path[0] if sys.path[0] else "."
-if _cwd in sys.path:
-    sys.path.remove(_cwd)
+sys.path = [p for p in sys.path if "implementations" not in p]
 
 from pygal.graph.graph import Graph  # noqa: E402
 from pygal.style import Style  # noqa: E402
 
 
-sys.path.insert(0, _cwd)
-
-
 class RecurrencePlotChart(Graph):
-    """Custom recurrence plot chart for pygal."""
+    """Custom recurrence plot chart extending pygal's Graph base class."""
 
     def __init__(self, *args, **kwargs):
         self.distance_matrix = kwargs.pop("distance_matrix", [])
         self.threshold = kwargs.pop("threshold", 0.0)
-        self.time_labels = kwargs.pop("time_labels", [])
         self.colormap = kwargs.pop("colormap", [])
-        self.x_axis_title = kwargs.pop("x_axis_title", "Time Index")
-        self.y_axis_title = kwargs.pop("y_axis_title", "Time Index")
+        self.x_axis_title = kwargs.pop("x_axis_title", "")
+        self.y_axis_title = kwargs.pop("y_axis_title", "")
+        self.annotations = kwargs.pop("annotations", [])
         super().__init__(*args, **kwargs)
 
     def _interpolate_color(self, value, min_val, max_val):
         if max_val == min_val:
             return self.colormap[-1]
-        normalized = (value - min_val) / (max_val - min_val)
-        normalized = max(0.0, min(1.0, normalized))
+        normalized = max(0.0, min(1.0, (value - min_val) / (max_val - min_val)))
         pos = normalized * (len(self.colormap) - 1)
         idx1 = int(pos)
         idx2 = min(idx1 + 1, len(self.colormap) - 1)
         frac = pos - idx1
         c1, c2 = self.colormap[idx1], self.colormap[idx2]
-        r1, g1, b1 = int(c1[1:3], 16), int(c1[3:5], 16), int(c1[5:7], 16)
-        r2, g2, b2 = int(c2[1:3], 16), int(c2[3:5], 16), int(c2[5:7], 16)
-        r = int(r1 + (r2 - r1) * frac)
-        g = int(g1 + (g2 - g1) * frac)
-        b = int(b1 + (b2 - b1) * frac)
+        r = int(int(c1[1:3], 16) + (int(c2[1:3], 16) - int(c1[1:3], 16)) * frac)
+        g = int(int(c1[3:5], 16) + (int(c2[3:5], 16) - int(c1[3:5], 16)) * frac)
+        b = int(int(c1[5:7], 16) + (int(c2[5:7], 16) - int(c1[5:7], 16)) * frac)
         return f"#{r:02x}{g:02x}{b:02x}"
 
     def _plot(self):
@@ -60,10 +50,10 @@ class RecurrencePlotChart(Graph):
         plot_width = self.view.width
         plot_height = self.view.height
 
-        label_margin_left = 380
-        label_margin_bottom = 380
-        label_margin_top = 60
-        label_margin_right = 280
+        label_margin_left = 360
+        label_margin_bottom = 360
+        label_margin_top = 40
+        label_margin_right = 320
 
         available_width = plot_width - label_margin_left - label_margin_right
         available_height = plot_height - label_margin_bottom - label_margin_top
@@ -79,14 +69,18 @@ class RecurrencePlotChart(Graph):
 
         threshold = self.threshold
 
-        # Draw cells — only recurrent pairs (distance < threshold)
+        # Background fill for non-recurrent region
+        self.svg.node(rp_group, "rect", x=x_offset, y=y_offset, width=grid_size, height=grid_size).set(
+            "style", "fill:#f0f0f0;stroke:none"
+        )
+
+        # Draw cells — only recurrent pairs (distance <= threshold)
         for i in range(n):
             for j in range(n):
                 dist = self.distance_matrix[i][j]
                 if dist <= threshold:
                     x = x_offset + j * cell_size
                     y = y_offset + i * cell_size
-                    # Color by closeness: 0 distance = darkest, threshold = lightest recurrent
                     color = self._interpolate_color(threshold - dist, 0, threshold)
                     rect = self.svg.node(
                         rp_group, "rect", x=x, y=y, width=max(cell_size, 1.2), height=max(cell_size, 1.2)
@@ -94,63 +88,72 @@ class RecurrencePlotChart(Graph):
                     rect.set("fill", color)
                     rect.set("stroke", "none")
 
-        # Grid border
-        self.svg.node(
-            rp_group, "rect", x=x_offset, y=y_offset, width=grid_size, height=grid_size, fill="none", stroke="#999999"
-        )
+        # Outer border
         self.svg.node(rp_group, "rect", x=x_offset, y=y_offset, width=grid_size, height=grid_size).set(
-            "style", "fill:none;stroke:#666666;stroke-width:2"
+            "style", "fill:none;stroke:#444444;stroke-width:2.5"
         )
 
-        # Axis tick labels (every 50 time steps)
-        tick_font_size = 36
+        # Tick marks and labels
+        tick_font_size = 34
         tick_interval = 50
+        tick_length = 12
         for t in range(0, n + 1, tick_interval):
             if t >= n:
                 t = n - 1
-            # X-axis ticks (bottom)
             tx = x_offset + t * cell_size
-            text_node = self.svg.node(rp_group, "text", x=tx, y=y_offset + grid_size + 50)
+            ty = y_offset + t * cell_size
+
+            # X-axis tick marks (bottom)
+            self.svg.node(
+                rp_group, "line", x1=tx, y1=y_offset + grid_size, x2=tx, y2=y_offset + grid_size + tick_length
+            ).set("style", "stroke:#444444;stroke-width:2")
+
+            # X-axis tick labels
+            text_node = self.svg.node(rp_group, "text", x=tx, y=y_offset + grid_size + tick_length + 40)
             text_node.set("text-anchor", "middle")
             text_node.set("fill", "#333333")
             text_node.set("style", f"font-size:{tick_font_size}px;font-family:sans-serif")
             text_node.text = str(t)
 
-            # Y-axis ticks (left)
-            ty = y_offset + t * cell_size
-            text_node = self.svg.node(rp_group, "text", x=x_offset - 20, y=ty + tick_font_size * 0.35)
+            # Y-axis tick marks (left)
+            self.svg.node(rp_group, "line", x1=x_offset - tick_length, y1=ty, x2=x_offset, y2=ty).set(
+                "style", "stroke:#444444;stroke-width:2"
+            )
+
+            # Y-axis tick labels
+            text_node = self.svg.node(rp_group, "text", x=x_offset - tick_length - 12, y=ty + tick_font_size * 0.35)
             text_node.set("text-anchor", "end")
             text_node.set("fill", "#333333")
             text_node.set("style", f"font-size:{tick_font_size}px;font-family:sans-serif")
             text_node.text = str(t)
 
         # Y-axis title (rotated)
-        y_title_size = 48
+        y_title_size = 46
         y_title_x = x_offset - 280
         y_title_y = y_offset + grid_size / 2
         text_node = self.svg.node(rp_group, "text", x=y_title_x, y=y_title_y)
         text_node.set("text-anchor", "middle")
-        text_node.set("fill", "#333333")
-        text_node.set("style", f"font-size:{y_title_size}px;font-weight:bold;font-family:sans-serif")
+        text_node.set("fill", "#222222")
+        text_node.set("style", f"font-size:{y_title_size}px;font-weight:600;font-family:sans-serif")
         text_node.set("transform", f"rotate(-90, {y_title_x}, {y_title_y})")
         text_node.text = self.y_axis_title
 
         # X-axis title (bottom)
-        x_title_size = 48
+        x_title_size = 46
         x_title_x = x_offset + grid_size / 2
         x_title_y = y_offset + grid_size + 140
         text_node = self.svg.node(rp_group, "text", x=x_title_x, y=x_title_y)
         text_node.set("text-anchor", "middle")
-        text_node.set("fill", "#333333")
-        text_node.set("style", f"font-size:{x_title_size}px;font-weight:bold;font-family:sans-serif")
+        text_node.set("fill", "#222222")
+        text_node.set("style", f"font-size:{x_title_size}px;font-weight:600;font-family:sans-serif")
         text_node.text = self.x_axis_title
 
-        # Colorbar (right of grid)
-        cb_width = 50
-        cb_height = grid_size * 0.8
-        cb_x = x_offset + grid_size + 60
-        cb_y = y_offset + (grid_size - cb_height) / 2
-        n_segments = 50
+        # Colorbar
+        cb_width = 44
+        cb_height = grid_size
+        cb_x = x_offset + grid_size + 50
+        cb_y = y_offset
+        n_segments = 80
 
         for seg_i in range(n_segments):
             seg_val = threshold * (n_segments - 1 - seg_i) / (n_segments - 1)
@@ -160,37 +163,54 @@ class RecurrencePlotChart(Graph):
                 rp_group, "rect", x=cb_x, y=seg_y, width=cb_width, height=cb_height / n_segments + 1, fill=seg_color
             )
 
-        self.svg.node(rp_group, "rect", x=cb_x, y=cb_y, width=cb_width, height=cb_height, fill="none", stroke="#333333")
-
-        # Colorbar labels
-        cb_label_size = 34
-        # Top label (closest / distance 0)
-        text_node = self.svg.node(rp_group, "text", x=cb_x + cb_width + 14, y=cb_y + cb_label_size * 0.35)
-        text_node.set("fill", "#333333")
-        text_node.set("style", f"font-size:{cb_label_size}px;font-family:sans-serif")
-        text_node.text = "0.0"
-
-        # Mid label
-        text_node = self.svg.node(
-            rp_group, "text", x=cb_x + cb_width + 14, y=cb_y + cb_height / 2 + cb_label_size * 0.35
+        # Colorbar border
+        self.svg.node(rp_group, "rect", x=cb_x, y=cb_y, width=cb_width, height=cb_height).set(
+            "style", "fill:none;stroke:#444444;stroke-width:1.5"
         )
-        text_node.set("fill", "#333333")
-        text_node.set("style", f"font-size:{cb_label_size}px;font-family:sans-serif")
-        text_node.text = f"{threshold / 2:.1f}"
 
-        # Bottom label (threshold)
-        text_node = self.svg.node(rp_group, "text", x=cb_x + cb_width + 14, y=cb_y + cb_height + cb_label_size * 0.35)
-        text_node.set("fill", "#333333")
-        text_node.set("style", f"font-size:{cb_label_size}px;font-family:sans-serif")
-        text_node.text = f"{threshold:.1f}"
+        # Colorbar tick marks and labels
+        cb_label_size = 30
+        cb_ticks = [0.0, threshold * 0.25, threshold * 0.5, threshold * 0.75, threshold]
+        for tick_val in cb_ticks:
+            tick_y = cb_y + (1.0 - tick_val / threshold) * cb_height
+            # Tick mark
+            self.svg.node(rp_group, "line", x1=cb_x + cb_width, y1=tick_y, x2=cb_x + cb_width + 8, y2=tick_y).set(
+                "style", "stroke:#444444;stroke-width:1.5"
+            )
+            # Label
+            text_node = self.svg.node(rp_group, "text", x=cb_x + cb_width + 14, y=tick_y + cb_label_size * 0.35)
+            text_node.set("fill", "#333333")
+            text_node.set("style", f"font-size:{cb_label_size}px;font-family:sans-serif")
+            text_node.text = f"{tick_val:.1f}"
 
-        # Colorbar title
-        cb_title_size = 38
-        text_node = self.svg.node(rp_group, "text", x=cb_x + cb_width / 2, y=cb_y - 30)
+        # Colorbar title (rotated, right side)
+        cb_title_size = 34
+        cb_title_x = cb_x + cb_width + 90
+        cb_title_y = cb_y + cb_height / 2
+        text_node = self.svg.node(rp_group, "text", x=cb_title_x, y=cb_title_y)
         text_node.set("text-anchor", "middle")
-        text_node.set("fill", "#333333")
-        text_node.set("style", f"font-size:{cb_title_size}px;font-weight:bold;font-family:sans-serif")
-        text_node.text = "Distance"
+        text_node.set("fill", "#222222")
+        text_node.set("style", f"font-size:{cb_title_size}px;font-weight:600;font-family:sans-serif")
+        text_node.set("transform", f"rotate(90, {cb_title_x}, {cb_title_y})")
+        text_node.text = "Euclidean Distance"
+
+        # Annotations for key recurrence features
+        annotation_font = 28
+        annotation_color = "#cc3333"
+        for ann in self.annotations:
+            ax = x_offset + ann["x"] * cell_size
+            ay = y_offset + ann["y"] * cell_size
+            # Arrow line from label to point
+            lx = ax + ann.get("dx", 80)
+            ly = ay + ann.get("dy", -80)
+            self.svg.node(rp_group, "line", x1=lx, y1=ly, x2=ax, y2=ay).set(
+                "style", f"stroke:{annotation_color};stroke-width:2;stroke-dasharray:6,3"
+            )
+            # Label text
+            text_node = self.svg.node(rp_group, "text", x=lx + ann.get("tdx", 6), y=ly + ann.get("tdy", -10))
+            text_node.set("fill", annotation_color)
+            text_node.set("style", f"font-size:{annotation_font}px;font-style:italic;font-family:sans-serif")
+            text_node.text = ann["label"]
 
     def _compute(self):
         n = len(self.distance_matrix) if len(self.distance_matrix) > 0 else 1
@@ -200,23 +220,17 @@ class RecurrencePlotChart(Graph):
         self._box.ymax = n
 
 
-# Data — Lorenz attractor x-component
+# --- Data: Lorenz attractor x-component ---
 np.random.seed(42)
 
-lorenz_sigma = 10.0
-lorenz_rho = 28.0
-lorenz_beta = 8.0 / 3.0
-initial_state = [1.0, 1.0, 1.0]
-
 sol = solve_ivp(
-    lambda t, s: [lorenz_sigma * (s[1] - s[0]), s[0] * (lorenz_rho - s[2]) - s[1], s[0] * s[1] - lorenz_beta * s[2]],
+    lambda t, s: [10.0 * (s[1] - s[0]), s[0] * (28.0 - s[2]) - s[1], s[0] * s[1] - 8.0 / 3.0 * s[2]],
     [0, 40],
-    initial_state,
+    [1.0, 1.0, 1.0],
     t_eval=np.linspace(0, 40, 4000),
     method="RK45",
 )
 
-# Sample 300 points from the x-component (skip transient)
 x_series = sol.y[0, 1000:]
 step = len(x_series) // 300
 x_series = x_series[::step][:300]
@@ -227,33 +241,36 @@ delay = 5
 n_embedded = len(x_series) - (embedding_dim - 1) * delay
 embedded = np.array([[x_series[i + d * delay] for d in range(embedding_dim)] for i in range(n_embedded)])
 
-# Compute distance matrix
 dist_matrix = cdist(embedded, embedded, metric="euclidean")
 
 # Threshold: ~15% recurrence rate
 sorted_dists = np.sort(dist_matrix.ravel())
-recurrence_rate = 0.15
-epsilon = sorted_dists[int(recurrence_rate * len(sorted_dists))]
+epsilon = sorted_dists[int(0.15 * len(sorted_dists))]
+
+# Annotations pointing to key recurrence features
+annotations = [
+    {"x": 145, "y": 145, "dx": 120, "dy": -100, "tdx": 6, "tdy": -8, "label": "Main diagonal"},
+    {"x": 60, "y": 30, "dx": 120, "dy": -60, "tdx": 6, "tdy": -8, "label": "Diagonal lines (determinism)"},
+    {"x": 220, "y": 200, "dx": 120, "dy": 100, "tdx": 6, "tdy": -8, "label": "Block cluster (regime change)"},
+]
 
 # Style
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
-    foreground_strong="#333333",
-    foreground_subtle="#666666",
+    foreground_strong="#222222",
+    foreground_subtle="#999999",
     colors=("#306998",),
-    title_font_size=64,
-    legend_font_size=40,
-    label_font_size=38,
-    value_font_size=34,
+    title_font_size=58,
+    legend_font_size=36,
+    label_font_size=36,
+    value_font_size=30,
     font_family="sans-serif",
 )
 
-# Sequential blue colormap (light for far → dark for close)
 blue_colormap = ["#f7fbff", "#deebf7", "#c6dbef", "#9ecae1", "#6baed6", "#4292c6", "#2171b5", "#08519c", "#08306b"]
 
-# Plot
 chart = RecurrencePlotChart(
     width=3600,
     height=3600,
@@ -262,12 +279,13 @@ chart = RecurrencePlotChart(
     distance_matrix=dist_matrix.tolist(),
     threshold=float(epsilon),
     colormap=blue_colormap,
-    x_axis_title="Time Index",
-    y_axis_title="Time Index",
+    x_axis_title="Time Index (steps)",
+    y_axis_title="Time Index (steps)",
+    annotations=annotations,
     show_legend=False,
     margin=100,
-    margin_top=200,
-    margin_bottom=100,
+    margin_top=180,
+    margin_bottom=80,
     show_x_labels=False,
     show_y_labels=False,
 )

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 acf-pacf: Autocorrelation and Partial Autocorrelation (ACF/PACF) Plot
 Library: bokeh 3.9.0 | Python 3.14.3
-Quality: 81/100 | Created: 2026-03-14
+Quality: 88/100 | Created: 2026-03-14
 """
 
 import numpy as np

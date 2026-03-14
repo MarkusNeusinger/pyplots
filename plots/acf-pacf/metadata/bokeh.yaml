@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: acf-pacf
 created: '2026-03-14T22:19:13Z'
-updated: '2026-03-14T22:22:56Z'
+updated: '2026-03-14T22:30:45Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23097477556
 issue: 4663
@@ -10,40 +10,40 @@ library_version: 3.9.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/acf-pacf/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/acf-pacf/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/acf-pacf/bokeh/plot.html
-quality_score: 81
+quality_score: 88
 review:
   strengths:
-  - Perfect spec compliance - all required features implemented correctly including
-    stem lines, confidence bounds, lag 0 in ACF, PACF from lag 1, shared x-axis
-  - Clean well-structured code with good reproducibility (seed 42) and linear KISS
-    flow
-  - Appropriate AR(2) data choice that creates meaningful ACF/PACF patterns showing
-    exponential decay and sharp cutoff
-  - 'Good visual refinement: subtle dashed y-grid, removed x-grid, removed outlines,
-    hidden toolbar'
+  - Excellent spec compliance — all required features implemented correctly with proper
+    ACF/PACF computation
+  - Strong data storytelling through significant/non-significant color differentiation
+    that immediately highlights important lags
+  - Good visual refinement with subtle grid, removed toolbar, and custom axis styling
+  - Effective use of Bokeh-specific features (HoverTool, HTML export, shared ranges)
+  - Clean, well-organized code with proper reproducibility
   weaknesses:
-  - Does not leverage Bokeh interactive capabilities like HoverTool for correlation
-    values
-  - Generic simulated data context instead of real-world scenario
-  - No visual emphasis on significant lags to guide viewer attention
-  - Canvas slightly undersized at 2600px vs 2700px target height
-  image_description: The plot displays two vertically stacked subplots showing ACF
-    (top) and PACF (bottom) for a simulated AR(2) process. Both panels use blue (#306998)
-    vertical stem lines with circular dot markers extending from a gray zero baseline
-    to each correlation value. Red dashed horizontal lines mark the 95% confidence
-    bounds at approximately ±0.139. The ACF panel shows lag 0 at 1.0, a strong positive
-    correlation at lag 1 (~0.42), a negative dip at lag 3 (~-0.25), and exponential
-    decay pattern typical of AR processes. The PACF panel starts from lag 1, showing
-    a significant positive spike at lag 1 (~0.43) and a sharp negative spike at lag
-    2 (~-0.27), with all subsequent lags falling within the confidence bounds — the
-    classic AR(2) signature. X-axes are labeled "Lag" (shared range 0-35), y-axes
-    labeled "ACF" and "PACF". The title reads "acf-pacf · bokeh · pyplots.ai". The
-    background is clean with subtle dashed y-grid lines and no x-grid. Overall layout
-    is professional but the two panels occupy 4800x2600 pixels (slightly short of
-    the 4800x2700 target).
+  - Design could be elevated with a semi-transparent confidence band fill (BoxAnnotation)
+    instead of just dashed lines
+  - The 95% CI label is small and positioned at the far right edge — could be more
+    prominent or positioned near the band
+  - No annotation calling out the identified AR(2) structure (e.g., highlighting lags
+    1-2 in PACF)
+  image_description: The plot displays two vertically stacked subplots on a light
+    gray (#FAFAFA) background. The top subplot shows ACF values with the title "acf-pacf
+    · bokeh · pyplots.ai" in dark gray. The bottom subplot shows PACF values. Both
+    use vertical stem lines from a zero baseline to correlation values, topped with
+    circular markers (size 18). Significant lags (outside 95% CI) are rendered in
+    darker blue (#306998), while non-significant lags appear in muted blue (#8FAEC4),
+    creating immediate visual differentiation. Red dashed horizontal lines mark the
+    95% confidence interval bounds (~±0.139). A small "95% CI" label in red sits at
+    the right edge of the ACF plot. The x-axis is labeled "Lag" (0–35, shared between
+    subplots), y-axes are labeled "ACF" and "PACF". The ACF shows lag 0 at 1.0, strong
+    positive correlation at lag 1 (~0.42), negative at lag 3 (~-0.25), with exponential
+    decay consistent with the AR(2) generative process. The PACF shows sharp cutoff
+    after lag 2 (positive lag 1 ~0.43, negative lag 2 ~-0.3), correctly identifying
+    the AR(2) order. Grid lines are subtle dashed on y-axis only. No toolbar is visible.
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -58,54 +58,57 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text or elements
+        comment: No overlapping text elements anywhere
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Stem lines and markers visible but small stems at higher lags
+        comment: Stems and markers well-visible; muted non-significant stems slightly
+          hard to distinguish at higher lags
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue vs red, not red-green pair, good contrast
+        comment: Blue intensity differentiation is colorblind-safe
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Canvas 4800x2600, slightly under target, some wasted vertical space
+        comment: Two subplots fill canvas well; minor wasted space between subplots
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Descriptive labels but no units (though correlation and lag are unitless)
+        comment: Descriptive labels; correlation coefficients and lag counts are unitless
     design_excellence:
-      score: 11
+      score: 13
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
         passed: true
-        comment: Well-configured default, clean but not exceptional
+        comment: Custom color palette with significant/non-significant differentiation,
+          custom background, above defaults but not publication-level
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Subtle grid, removed outlines, hidden toolbar
+        comment: X-grid removed, y-grid subtle dashed, outline removed, minor ticks
+          hidden, axis lines lightened
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: AR(2) pattern tells a story but no visual emphasis on significant
-          lags
+        comment: Color differentiation guides viewer to significant lags; AR(2) structure
+          clearly visible
     spec_compliance:
       score: 15
       max: 15
@@ -115,48 +118,50 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct stem plots in two stacked subplots
+        comment: Correct ACF/PACF stem plots in two stacked subplots
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: stems, confidence bounds, lag 0 in ACF, PACF
-          from lag 1, shared x-axis'
+        comment: 'All features present: stems, CI bounds, lag 0 in ACF, PACF from
+          lag 1, shared x-axis, 35 lags'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=lag, Y=correlation, correct mapping
+        comment: X=lag, Y=correlation values, axes show full range
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, no legend needed for single series
+        comment: Correct title format; no legend needed for single-series stem plot
     data_quality:
-      score: 12
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Shows significant and insignificant lags, positive and negative correlations
+        comment: AR(2) process shows significant/non-significant lags, positive/negative
+          correlations, ACF decay, PACF cutoff
       - id: DQ-02
         name: Realistic Context
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Plausible AR(2) simulation but not a real-world named scenario
+        comment: Monthly retail sales with inventory cycles is plausible and neutral;
+          context in comments only
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 200 observations, 35 lags, correlation in [-1,1]
+        comment: 200 observations, 35 lags, realistic AR coefficients
     code_quality:
       score: 10
       max: 10
@@ -166,13 +171,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports, data, compute, plot, style, save'
+        comment: Clean linear structure, no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42)
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -184,15 +189,15 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Appropriate complexity, good styling loop
+        comment: Clean, well-organized with shared styling loop
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via export_png
+        comment: Saves as plot.png via export_png, current API
     library_mastery:
-      score: 6
+      score: 8
       max: 10
       items:
       - id: LM-01
@@ -200,24 +205,29 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of ColumnDataSource, segment, scatter, Span, column layout
+        comment: Good use of ColumnDataSource, segment+scatter, Span, Label, column
+          layout; could use Band/BoxAnnotation
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 4
         max: 5
-        passed: false
-        comment: No HoverTool or other Bokeh-specific interactive features
+        passed: true
+        comment: HoverTool with tooltips, HTML export, shared x_range — distinctive
+          Bokeh features
   verdict: REJECTED
 impl_tags:
   dependencies:
   - statsmodels
   techniques:
   - subplots
+  - hover-tooltips
+  - annotations
   - html-export
   patterns:
   - data-generation
   - columndatasource
-  dataprep: []
+  dataprep:
+  - acf-pacf
   styling:
-  - grid-styling
   - alpha-blending
+  - grid-styling

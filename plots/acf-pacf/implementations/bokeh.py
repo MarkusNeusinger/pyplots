@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 acf-pacf: Autocorrelation and Partial Autocorrelation (ACF/PACF) Plot
 Library: bokeh 3.9.0 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-14
@@ -7,7 +7,7 @@ Quality: 88/100 | Created: 2026-03-14
 import numpy as np
 from bokeh.io import export_png, output_file, save
 from bokeh.layouts import column
-from bokeh.models import ColumnDataSource, HoverTool, Label, Span
+from bokeh.models import BoxAnnotation, ColumnDataSource, HoverTool, Label, Span
 from bokeh.plotting import figure
 from statsmodels.tsa.stattools import acf, pacf
 
@@ -67,7 +67,8 @@ p_acf = figure(
 p_acf.segment(x0="x0", y0="y0", x1="x1", y1="y1", source=acf_stem_source, line_width=5, color="color", alpha=0.85)
 p_acf.scatter(x="x", y="y", source=acf_source, size=18, color="color", alpha=0.9)
 
-# Confidence bounds and zero line
+# Confidence band (shaded region) and bounds
+p_acf.add_layout(BoxAnnotation(bottom=-conf_bound, top=conf_bound, fill_alpha=0.08, fill_color=RED, line_alpha=0))
 p_acf.add_layout(
     Span(location=conf_bound, dimension="width", line_dash="dashed", line_width=3, line_color=RED, line_alpha=0.5)
 )
@@ -79,14 +80,14 @@ p_acf.add_layout(Span(location=0, dimension="width", line_width=2, line_color="#
 # Confidence band label
 p_acf.add_layout(
     Label(
-        x=n_lags - 1,
+        x=n_lags // 2,
         y=conf_bound,
-        text="95% CI",
-        text_font_size="18pt",
+        text="95% Confidence Interval",
+        text_font_size="22pt",
         text_color=RED,
-        text_alpha=0.7,
-        x_offset=10,
-        y_offset=5,
+        text_alpha=0.8,
+        x_offset=0,
+        y_offset=8,
     )
 )
 
@@ -125,7 +126,8 @@ p_pacf = figure(
 p_pacf.segment(x0="x0", y0="y0", x1="x1", y1="y1", source=pacf_stem_source, line_width=5, color="color", alpha=0.85)
 p_pacf.scatter(x="x", y="y", source=pacf_source, size=18, color="color", alpha=0.9)
 
-# Confidence bounds and zero line
+# Confidence band (shaded region) and bounds
+p_pacf.add_layout(BoxAnnotation(bottom=-conf_bound, top=conf_bound, fill_alpha=0.08, fill_color=RED, line_alpha=0))
 p_pacf.add_layout(
     Span(location=conf_bound, dimension="width", line_dash="dashed", line_width=3, line_color=RED, line_alpha=0.5)
 )
@@ -133,6 +135,41 @@ p_pacf.add_layout(
     Span(location=-conf_bound, dimension="width", line_dash="dashed", line_width=3, line_color=RED, line_alpha=0.5)
 )
 p_pacf.add_layout(Span(location=0, dimension="width", line_width=2, line_color="#999999", line_alpha=0.4))
+
+# Confidence band label on PACF
+p_pacf.add_layout(
+    Label(
+        x=n_lags // 2,
+        y=conf_bound,
+        text="95% Confidence Interval",
+        text_font_size="22pt",
+        text_color=RED,
+        text_alpha=0.8,
+        x_offset=0,
+        y_offset=8,
+    )
+)
+
+# Highlight AR(2) significant lags in PACF with gold accent markers
+ar_lags = [1, 2]
+ar_vals = [pacf_values[lag] for lag in ar_lags]
+ar_source = ColumnDataSource(data={"x": ar_lags, "y": ar_vals})
+p_pacf.scatter(x="x", y="y", source=ar_source, size=26, color=GOLD, alpha=0.9, line_color=BLUE, line_width=3)
+
+# AR(2) annotation
+p_pacf.add_layout(
+    Label(
+        x=3,
+        y=pacf_values[1],
+        text="AR(2) identified",
+        text_font_size="20pt",
+        text_color=GOLD,
+        text_font_style="bold",
+        text_alpha=0.9,
+        x_offset=5,
+        y_offset=-5,
+    )
+)
 
 # HoverTool for PACF
 pacf_hover = HoverTool(tooltips=[("Lag", "@x"), ("PACF", "@val"), ("Status", "@sig")], mode="vline")

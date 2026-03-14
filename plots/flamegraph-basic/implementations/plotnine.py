@@ -1,10 +1,9 @@
-""" pyplots.ai
+"""pyplots.ai
 flamegraph-basic: Flame Graph for Performance Profiling
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 79/100 | Created: 2026-03-14
 """
 
-import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
@@ -14,7 +13,7 @@ from plotnine import (
     geom_text,
     ggplot,
     labs,
-    scale_fill_identity,
+    scale_fill_gradientn,
     scale_x_continuous,
     scale_y_continuous,
     theme,
@@ -22,9 +21,7 @@ from plotnine import (
 )
 
 
-# Data - simulated CPU profiling stacks
-np.random.seed(42)
-
+# Data - simulated CPU profiling stacks (web server request handling)
 stacks = {
     "main": 1000,
     "main;request_handler": 800,
@@ -57,52 +54,35 @@ stacks = {
 
 # Build flame graph rectangles from stack data
 total_samples = stacks["main"]
-records = []
-
-warm_colors = ["#FFEB3B", "#FFC107", "#FF9800", "#FF7043", "#F44336", "#E53935", "#D32F2F"]
-
-
-def get_color(depth, func_name):
-    hash_val = sum(ord(c) for c in func_name)
-    base_idx = min(depth, len(warm_colors) - 1)
-    idx = (base_idx + hash_val) % len(warm_colors)
-    return warm_colors[idx]
-
 
 # Group stacks by depth and compute positions
-depth_children = {}
+depth_children: dict[tuple[int, str | None], list[tuple[str, str, int]]] = {}
 for stack_path, samples in stacks.items():
     parts = stack_path.split(";")
     depth = len(parts) - 1
     parent = ";".join(parts[:-1]) if depth > 0 else None
     func_name = parts[-1]
+    depth_children.setdefault((depth, parent), []).append((func_name, stack_path, samples))
 
-    if (depth, parent) not in depth_children:
-        depth_children[(depth, parent)] = []
-    depth_children[(depth, parent)].append((func_name, stack_path, samples))
-
-# Compute x positions recursively
-positions = {}
-positions["main"] = (0, total_samples)
-
+# Compute x positions level by level
+positions: dict[str, tuple[int, int]] = {"main": (0, total_samples)}
 for depth in range(1, 8):
     for (d, parent), children in sorted(depth_children.items()):
-        if d != depth:
+        if d != depth or parent not in positions:
             continue
-        if parent not in positions:
-            continue
-        parent_xmin = positions[parent][0]
-        x_cursor = parent_xmin
+        x_cursor = positions[parent][0]
         for _func_name, stack_path, samples in children:
             positions[stack_path] = (x_cursor, x_cursor + samples)
             x_cursor += samples
 
-# Build dataframe for plotting
+# Build dataframe — map sample count to color for data storytelling
+records = []
 for stack_path, (xmin, xmax) in positions.items():
     parts = stack_path.split(";")
     depth = len(parts) - 1
     func_name = parts[-1]
-    width_frac = (xmax - xmin) / total_samples
+    samples = xmax - xmin
+    width_frac = samples / total_samples
 
     records.append(
         {
@@ -112,7 +92,7 @@ for stack_path, (xmin, xmax) in positions.items():
             "ymax": depth + 0.45,
             "depth": depth,
             "func": func_name,
-            "fill_color": get_color(depth, func_name),
+            "samples": samples,
             "label": func_name if width_frac > 0.06 else "",
             "label_x": (xmin + xmax) / 2,
             "label_y": depth,
@@ -121,12 +101,15 @@ for stack_path, (xmin, xmax) in positions.items():
 
 df = pd.DataFrame(records)
 
-# Plot
+# Plot — use scale_fill_gradientn to map sample count to warm flame colors
+# Higher sample counts = hotter (redder), lower = cooler (yellower)
 plot = (
     ggplot(df)
-    + geom_rect(aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax", fill="fill_color"), color="white", size=0.3)
+    + geom_rect(aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax", fill="samples"), color="white", size=0.3)
     + geom_text(aes(x="label_x", y="label_y", label="label"), size=7, color="#1a1a1a", fontweight="bold")
-    + scale_fill_identity()
+    + scale_fill_gradientn(
+        colors=["#FFEB3B", "#FFC107", "#FF9800", "#FF5722", "#D32F2F"], name="Samples", breaks=[100, 500, 1000]
+    )
     + scale_x_continuous(expand=(0, 0))
     + scale_y_continuous(expand=(0.02, 0.02))
     + labs(title="flamegraph-basic · plotnine · pyplots.ai")
@@ -136,6 +119,13 @@ plot = (
         plot_title=element_text(size=24, ha="center", weight="bold", margin={"b": 15}),
         plot_background=element_rect(fill="white", color="white"),
         panel_background=element_rect(fill="#1a1a1a", color="#1a1a1a"),
+        legend_position="bottom",
+        legend_direction="horizontal",
+        legend_title=element_text(size=14, weight="bold"),
+        legend_text=element_text(size=12),
+        legend_key_width=120,
+        legend_key_height=12,
+        legend_margin={"t": 10},
     )
 )
 

@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: line-yield-curve
 created: '2026-03-14T22:15:13Z'
-updated: '2026-03-14T22:19:08Z'
+updated: '2026-03-14T22:29:13Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23097460574
 issue: 4664
@@ -10,102 +10,98 @@ library_version: 4.9.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-yield-curve/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-yield-curve/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-yield-curve/letsplot/plot.html
-quality_score: 77
+quality_score: 91
 review:
   strengths:
-  - Excellent data choice showing three distinct yield curve shapes (normal, inverted,
-    steep) with realistic historical context
-  - Clean visual design with thoughtful grid styling (x-grid removed, subtle y-grid)
-  - Proper use of numeric x-axis spacing with maturity label ticks
-  - Full marks on Data Quality — the financial data is perfectly calibrated
+  - Excellent data storytelling with inversion region shading and annotation highlighting
+    the recession signal
+  - Colorblind-safe palette with strong differentiation between three economic regimes
+  - Perfect spec compliance with all required features including maturity_years spacing
+    and multi-curve comparison
+  - Realistic Treasury yield data across three distinct economic periods
+  - Clean well-structured code with proper lets-plot idioms
   weaknesses:
-  - X-axis labels overlap at short maturities (1M, 3M, 6M) due to compressed numeric
-    spacing
-  - Missing spec-required inversion region highlight (shading or annotation)
-  - Red-green color pairing is suboptimal for colorblind accessibility
-  - Title format includes extra prefix before the required spec-id format
+  - Minor tick label crowding at short maturities (3M and 1Y are close together)
   image_description: 'The plot displays three U.S. Treasury yield curves on a clean
-    white background. The title reads "U.S. Treasury Yield Curves · line-yield-curve
-    · letsplot · pyplots.ai" at the top left. Three colored lines with circular markers
-    are shown: blue for "Jan 2018 (Normal)" rising steadily from ~1.28% at 1M to ~2.96%
-    at 30Y; red/salmon for "Aug 2019 (Inverted)" starting high at ~2.09% at 1M, dipping
-    to ~1.44% at 5Y, then recovering to ~1.97% at 30Y; and green for "Mar 2021 (Steep)"
-    starting near 0% and climbing steeply to ~2.35% at 30Y. The x-axis is labeled
-    "Maturity" with tick labels (1M, 6M, 1Y, 2Y, 3Y, 5Y, 7Y, 10Y, 20Y, 30Y) using
-    proper numeric spacing. The y-axis is labeled "Yield (%)". A legend sits at the
-    top center. Only subtle horizontal grid lines are shown. The short-maturity x-axis
-    labels (1M, 3M, 6M) are crowded together due to the numeric spacing compressing
-    short maturities.'
+    white background. The title "line-yield-curve · letsplot · pyplots.ai" appears
+    at the top left. A top-center legend identifies three series: "Jan 2018 (Normal)"
+    in dark blue, "Aug 2019 (Inverted)" in amber/gold, and "Mar 2021 (Steep)" in teal
+    green. The x-axis is labeled "Maturity" with ticks at 3M, 1Y, 2Y, 5Y, 10Y, 20Y,
+    30Y using proper numeric spacing. The y-axis is labeled "Yield (%)". A light pink/red
+    shaded ribbon in the upper-left highlights the inversion region where short-term
+    rates exceed the 10Y yield, with italic red "Inversion Region" text. The blue
+    normal curve rises smoothly from ~1.28% to ~2.96%. The amber inverted curve starts
+    high at ~2.09% and dips to ~1.44% before recovering. The teal steep curve starts
+    near 0% and rises sharply to ~2.35%. Each curve has circular markers at data points.
+    Only subtle horizontal y-axis gridlines are shown.'
   criteria_checklist:
     visual_quality:
-      score: 23
+      score: 29
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Font sizes explicitly set (axis_text=16, axis_title=20, legend_text=16)
-          but title is 22pt, slightly below 24pt recommendation
+        comment: 'All font sizes explicitly set: title=24, axis_title=20, axis_text=16,
+          legend_text=16'
       - id: VQ-02
         name: No Overlap
-        score: 3
-        max: 6
-        passed: false
-        comment: Short-maturity x-axis labels (1M, 3M, 6M, 1Y) are crowded/overlapping
-          due to compressed numeric spacing
-      - id: VQ-03
-        name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Lines and points well-sized and clearly visible
+        comment: 3M and 1Y tick labels slightly close due to numeric x-axis spacing
+          but readable
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 6
+        passed: true
+        comment: Lines size=2.5 and points size=5 well-visible for 33 data points
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Distinguishable palette but red-green combination not ideal for colorblind
-          users
+        comment: Okabe-Ito-inspired colorblind-safe palette
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Good canvas utilization with balanced margins
+        comment: 1600x900 at scale=3, plot fills canvas well
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with units on y-axis
+        comment: 'Descriptive labels with units: Maturity, Yield (%)'
     design_excellence:
-      score: 12
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom palette, theme_minimal, thoughtful grid removal — above defaults
-          but not publication-level
+        comment: Custom colorblind-safe palette, professional financial chart aesthetic
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Removed x-grid, subtle y-grid, removed minor gridlines
+        comment: theme_minimal, x-grid removed, subtle y-grid, legend at top
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 5
         max: 6
-        passed: false
-        comment: Good curve comparison but no annotation or shading highlights the
-          inversion phenomenon
+        passed: true
+        comment: Inversion region shading and annotation create clear recession signal
+          narrative
     spec_compliance:
-      score: 12
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -113,26 +109,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct line chart with yield curves
+        comment: Correct line chart for yield curves
       - id: SC-02
         name: Required Features
-        score: 2
+        score: 4
         max: 4
-        passed: false
-        comment: Missing inversion region highlight (shading or annotation) required
-          by spec
+        passed: true
+        comment: 'All spec features present: multi-curve, maturity_years spacing,
+          inversion highlight, legend'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Correct x/y mapping with numeric spacing and label ticks
+        comment: maturity_years on x, yield_pct on y, correctly mapped
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Title has extra prefix before required format; legend labels clear
+        comment: Correct title format, descriptive legend labels
     data_quality:
       score: 15
       max: 15
@@ -142,35 +138,36 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows normal, inverted, and steep curves — covers all key shapes
+        comment: Shows normal, inverted, and steep yield curve shapes
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real U.S. Treasury context with plausible dates and values
+        comment: Real U.S. Treasury yield curve scenarios with plausible dates and
+          rates
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Realistic yield values for the given periods
+        comment: Yields in 0-3% range, realistic for depicted periods
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: KISS structure but verbose row-building loop
+        comment: Clean imports-data-plot-save structure
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic hardcoded data
+        comment: Deterministic hardcoded data
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -182,15 +179,15 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Clean and straightforward
+        comment: Appropriate complexity, clean DataFrame and plot construction
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with export_ggsave
+        comment: Saves as plot.png via export_ggsave with scale=3
     library_mastery:
-      score: 6
+      score: 7
       max: 10
       items:
       - id: LM-01
@@ -198,23 +195,25 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good ggplot grammar usage with proper aes, geoms, scales, and themes
+        comment: Proper ggplot grammar with multiple geoms, scales, theme customization
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Uses ggsize and HTML export but doesn't leverage distinctive features
-          like tooltips or geom_ribbon
-  verdict: REJECTED
+        passed: true
+        comment: Uses layer_tooltips for interactive hover, HTML export, ggsize
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
+  - annotations
   - layer-composition
+  - hover-tooltips
   - manual-ticks
   - html-export
   patterns:
   - data-generation
+  - iteration-over-groups
   dataprep: []
   styling:
   - grid-styling

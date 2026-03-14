@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 flamegraph-basic: Flame Graph for Performance Profiling
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 81/100 | Created: 2026-03-14
@@ -9,12 +9,11 @@ import sys
 from collections import defaultdict
 
 
-# Import pygal avoiding name collision with this file
-_cwd = sys.path[0]
-sys.path[:] = [p for p in sys.path if p != _cwd]
+# Import pygal package (avoid name collision with this filename)
+_saved = sys.path.pop(0)
 _pygal = importlib.import_module("pygal")
 _Style = importlib.import_module("pygal.style").Style
-sys.path.insert(0, _cwd)
+sys.path.insert(0, _saved)
 
 # Data: Simulated CPU profiling stacks with sample counts
 stacks = [
@@ -106,6 +105,9 @@ for d in range(num_levels):
             segments.append((gap * total_samples, "", True))
         segments.append((samples, label, False))
         current_x = x_frac + w_frac
+    trailing = 1.0 - current_x
+    if trailing > 0.001:
+        segments.append((trailing * total_samples, "", True))
     all_segments.append(segments)
 
 max_segs = max(len(s) for s in all_segments)
@@ -127,7 +129,11 @@ custom_style = _Style(
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
-    foreground_subtle="#cccccc",
+    foreground_subtle="#ffffff",
+    guide_stroke_color="white",
+    guide_stroke_dasharray="0,0",
+    major_guide_stroke_color="white",
+    major_guide_stroke_dasharray="0,0",
     colors=tuple(flame_colors),
     title_font_size=48,
     label_font_size=24,
@@ -152,12 +158,14 @@ chart = _pygal.HorizontalStackedBar(
     show_x_guides=False,
     print_values=False,
     print_labels=True,
-    spacing=1,
-    rounded_bars=3,
+    spacing=0,
+    rounded_bars=2,
     tooltip_border_radius=5,
     margin_top=40,
     margin_bottom=60,
-    margin_right=80,
+    margin_right=100,
+    truncate_label=-1,
+    truncate_legend=-1,
 )
 
 # Row labels: depth levels (pygal renders last label at top, so natural order
@@ -175,19 +183,21 @@ for col in range(max_segs):
         if col < len(segs):
             value, label, is_spacer = segs[col]
             if is_spacer:
-                values.append({"value": value, "color": "white", "style": "stroke: white; stroke-width: 0"})
+                values.append(
+                    {"value": value, "color": "transparent", "style": "stroke: none; fill: transparent; opacity: 0"}
+                )
             else:
                 palette = depth_palettes.get(d, depth_palettes[4])
                 cidx = depth_color_idx[d] % len(palette)
                 depth_color_idx[d] += 1
                 color = palette[cidx]
-                display = f"{label} ({value})" if value >= 40 else label
+                display = f"{label} ({int(value)})" if value >= 45 else label
                 values.append(
                     {
                         "value": value,
                         "color": color,
                         "label": display,
-                        "style": f"stroke: white; stroke-width: 1.5; fill: {color}",
+                        "style": f"stroke: #ffffff; stroke-width: 1; fill: {color}",
                     }
                 )
         else:

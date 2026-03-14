@@ -1,7 +1,7 @@
 library: matplotlib
 specification_id: acf-pacf
 created: '2026-03-14T22:17:36Z'
-updated: '2026-03-14T22:22:02Z'
+updated: '2026-03-14T22:31:43Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23097477555
 issue: 4663
@@ -10,99 +10,103 @@ library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/acf-pacf/matplotlib/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/acf-pacf/matplotlib/plot_thumb.png
 preview_html: null
-quality_score: 85
+quality_score: 87
 review:
   strengths:
-  - Perfect spec compliance with all required features (stem lines, confidence bounds,
-    shared x-axis, lag 0 in ACF, PACF from lag 1)
-  - Excellent data choice showing seasonal ACF/PACF patterns that demonstrate diagnostic
-    value
-  - Clean well-structured code with proper seed and idiomatic matplotlib usage
-  - fill_between confidence bands add visual polish beyond basic dashed lines
+  - Excellent significant/insignificant visual distinction using both color and marker
+    size
+  - LineCollection for efficient, individually-colored stem segments is sophisticated
+    matplotlib usage
+  - Confidence band with subtle fill_between shading adds interpretive context
+  - All spec requirements fully met with correct ACF/PACF behavior
+  - Realistic airline-style data produces visually interesting seasonal patterns
   weaknesses:
-  - No visual distinction between significant and insignificant lags
-  - Stem markers slightly small for optimal high-resolution visibility
-  - Design is solid but not publication-level polish
-  image_description: The plot displays two vertically stacked stem plots sharing an
-    x-axis labeled "Lag" (0-36). The top subplot shows ACF values as blue (#306998)
-    vertical stem lines with circle markers, starting at 1.0 at lag 0 and exhibiting
-    a decaying sinusoidal pattern with seasonal peaks roughly every 12 lags. Red dashed
-    horizontal lines mark the 95% confidence bounds at approximately ±0.14, with a
-    light pink fill_between shading the confidence region. The bottom subplot shows
-    PACF values starting from lag 1, with a dominant spike at lag 1 (~0.9), followed
-    by smaller periodic values, many falling within the confidence bounds. Both subplots
-    have top/right spines removed, subtle y-axis-only grid (alpha=0.2), and clear
-    axis labels ("ACF", "PACF"). The title reads "acf-pacf · matplotlib · pyplots.ai"
-    at the top in medium-weight font.
+  - Helper function plot_correlogram breaks KISS convention (though pragmatically
+    justified)
+  - Could push design excellence further with annotation of key lags or refined typography
+  - Slight canvas utilization issue with vertical spacing
+  image_description: The plot displays two vertically stacked subplots sharing the
+    x-axis labeled "Lag" (0-36). The top subplot shows the ACF (Autocorrelation Function)
+    with vertical stem lines from 0 to each correlation value. Lag 0 has ACF=1.0,
+    with a slow decay pattern showing periodic spikes around lags 12, 24, and 36,
+    indicating seasonality. The bottom subplot shows the PACF (Partial Autocorrelation
+    Function) starting from lag 1, with a dominant spike at lag 1 (~0.92), significant
+    negative values at lags 2-4, and periodic significant values at early lags, with
+    most values beyond lag 16 falling within the confidence bounds. Both subplots
+    use dark blue (#306998) stems/markers for statistically significant values and
+    light blue (#a8c4d8) for insignificant ones, with marker size differentiation.
+    Red dashed horizontal lines mark the 95% confidence bounds, with a very subtle
+    pink shaded band between them. The background is a light blue-gray (#fafbfd).
+    Top and right spines are removed. Title reads "acf-pacf · matplotlib · pyplots.ai".
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 28
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 24, labels 20, ticks 16). Functional
-          but not refined typography.
+        comment: 'All font sizes explicitly set: title 24pt, axis labels 20pt, tick
+          labels 16pt'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping elements anywhere.
+        comment: No overlapping text or elements
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Stem linewidth=2.5 and marker size=7 are good; markers could be slightly
-          larger.
+        comment: Stems and markers well-sized with clear significant/insignificant
+          distinction
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Blue and red distinguishable for most colorblind types; thin red
-          dashed lines may be harder to perceive.
+        comment: Blue/light blue scheme is colorblind-friendly, red-blue pairing not
+          optimal
       - id: VQ-05
         name: Layout & Canvas
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: 16x9 figure with tight_layout, good canvas utilization.
+        comment: Good proportions, slight vertical whitespace imbalance
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: ACF, PACF, and Lag are standard domain-specific terms; correlation
-          is unitless.
+        comment: Descriptive labels, no units needed for correlation coefficients
     design_excellence:
-      score: 12
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom Python Blue, red confidence bounds, fill_between shading.
-          Above defaults but not publication-level.
+        comment: Custom palette, significant/insignificant distinction, custom background,
+          white-edged markers
       - id: DE-02
         name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: Spines removed, subtle grid, custom spine colors, confidence band
+          shading
+      - id: DE-03
+        name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Spines removed, subtle grid (alpha=0.2), decent whitespace.
-      - id: DE-03
-        name: Data Storytelling
-        score: 3
-        max: 6
-        passed: true
-        comment: Seasonal pattern and PACF cutoff tell a story, but no visual emphasis
-          on significant lags.
+        comment: Color/size distinction creates visual hierarchy, seasonal pattern
+          clearly visible
     spec_compliance:
       score: 15
       max: 15
@@ -112,26 +116,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct stem plots in two vertically stacked subplots.
+        comment: Correct ACF/PACF stem plots in vertically stacked subplots
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: stem lines, confidence bounds, shared x-axis,
-          lag 0 in ACF, PACF from lag 1, 36 lags.'
+        comment: 'All spec requirements met: stem lines, confidence bands, lag 0 in
+          ACF, PACF from lag 1'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=lag, Y=correlation. Both axes show full data range.
+        comment: X=lag, Y=correlation values correctly mapped
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. No legend needed for single-series.
+        comment: Title in correct format, no legend needed
     data_quality:
       score: 14
       max: 15
@@ -141,54 +145,53 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows seasonal autocorrelation, decaying ACF, sharp PACF cutoff.
-          Could show more negative ACF values.
+        comment: Shows slow ACF decay, periodic spikes, significant PACF early lags
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Airline-style passenger data is a classic neutral time series example.
+        comment: Airline-style monthly passenger data, realistic and neutral
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 200 observations, 36 lags, correlation in [-1, 1]. All sensible.
+        comment: 200 observations, 36 lags appropriate for monthly data
     code_quality:
-      score: 10
+      score: 8
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
-        passed: true
-        comment: 'Flat script: imports, data, compute, plot, save.'
+        passed: false
+        comment: Helper function plot_correlogram breaks no-functions KISS rule
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, appropriate complexity, no fake UI.
+        comment: Clean, well-structured, no fake UI
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png, dpi=300, bbox_inches=tight.
+        comment: Saves as plot.png with dpi=300
     library_mastery:
       score: 7
       max: 10
@@ -198,24 +201,27 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Axes methods, plt.subplots with sharex, plt.setp for bulk property
-          setting.
+        comment: Axes methods, subplots with sharex, LineCollection for batched stem
+          rendering
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: stem() is matplotlib-specific; plt.setp and fill_between are distinctive
-          techniques.
+        comment: LineCollection for individually colored stems is distinctive matplotlib
+          feature
   verdict: REJECTED
 impl_tags:
   dependencies:
   - statsmodels
   techniques:
   - subplots
+  - layer-composition
   patterns:
   - data-generation
-  dataprep: []
+  dataprep:
+  - time-series
   styling:
-  - alpha-blending
+  - edge-highlighting
   - grid-styling
+  - alpha-blending

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 flamegraph-basic: Flame Graph for Performance Profiling
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 82/100 | Created: 2026-03-14
@@ -110,23 +110,16 @@ for d in range(num_levels):
 
 max_segs = max(len(s) for s in all_segments)
 
-# Warm flame color palette
-flame_colors = [
-    "#fee090",
-    "#fdae61",
-    "#f46d43",
-    "#d73027",
-    "#e8853a",
-    "#fb9a29",
-    "#fdd49e",
-    "#fc8d59",
-    "#ef6548",
-    "#d7301f",
-    "#f7cb4d",
-    "#e67e22",
-    "#f4a460",
-    "#e06c47",
-]
+# Depth-based warm flame color palettes (lighter at root, intense red at leaves)
+depth_palettes = {
+    0: ["#fee090", "#fdd49e", "#fef0d9"],  # pale yellows
+    1: ["#fdae61", "#fb9a29", "#f7cb4d", "#fdb863"],  # warm oranges
+    2: ["#f46d43", "#e8853a", "#fc8d59", "#f4a460", "#e67e22"],  # mid oranges
+    3: ["#d73027", "#ef6548", "#e06c47", "#d7301f", "#c4451c"],  # deep reds
+    4: ["#a50026", "#b2182b", "#99000d", "#8b0000"],  # darkest reds
+}
+# Fallback palette for style (pygal requires colors tuple)
+flame_colors = ["#fee090", "#fdae61", "#f46d43", "#d73027", "#a50026"]
 
 # pygal style with warm flame aesthetic
 custom_style = _Style(
@@ -155,11 +148,11 @@ chart = _pygal.HorizontalStackedBar(
     x_title="Samples",
     y_title="Call Stack Depth",
     show_legend=False,
-    show_y_guides=True,
+    show_y_guides=False,
     show_x_guides=False,
     print_values=False,
     print_labels=True,
-    spacing=2,
+    spacing=1,
     rounded_bars=3,
     tooltip_border_radius=5,
     margin_top=40,
@@ -171,6 +164,9 @@ chart = _pygal.HorizontalStackedBar(
 # places root/depth 0 at bottom)
 chart.x_labels = [f"Depth {d}" for d in range(num_levels)]
 
+# Track color index per depth for sequential assignment
+depth_color_idx = defaultdict(int)
+
 # Add series — one per column position across depth levels
 for col in range(max_segs):
     values = []
@@ -181,14 +177,17 @@ for col in range(max_segs):
             if is_spacer:
                 values.append({"value": value, "color": "white", "style": "stroke: white; stroke-width: 0"})
             else:
-                color_idx = hash(label) % len(flame_colors)
-                display = f"{label} ({value})" if value >= 50 else label
+                palette = depth_palettes.get(d, depth_palettes[4])
+                cidx = depth_color_idx[d] % len(palette)
+                depth_color_idx[d] += 1
+                color = palette[cidx]
+                display = f"{label} ({value})" if value >= 40 else label
                 values.append(
                     {
                         "value": value,
-                        "color": flame_colors[color_idx],
+                        "color": color,
                         "label": display,
-                        "style": f"stroke: white; stroke-width: 1.5; fill: {flame_colors[color_idx]}",
+                        "style": f"stroke: white; stroke-width: 1.5; fill: {color}",
                     }
                 )
         else:

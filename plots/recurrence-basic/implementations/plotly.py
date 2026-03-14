@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 recurrence-basic: Recurrence Plot for Nonlinear Time Series
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-14
@@ -82,10 +82,10 @@ fig.add_trace(
 fig.update_layout(
     title={
         "text": (
-            "Lorenz Attractor · recurrence-basic · plotly · pyplots.ai"
+            "recurrence-basic · plotly · pyplots.ai"
             "<br><sup style='color:#555; font-size:17px; letter-spacing:0.3px'>"
-            "Time-delay embedded recurrence plot with source signal"
-            " — diagonal lines reveal deterministic chaotic dynamics"
+            "Lorenz attractor recurrence plot — diagonal lines reveal"
+            " deterministic chaotic dynamics"
             "</sup>"
         ),
         "font": {"size": 28, "family": font_family, "color": text_dark},
@@ -97,7 +97,7 @@ fig.update_layout(
     template="plotly_white",
     margin={"l": 80, "r": 60, "t": 120, "b": 70},
     width=1200,
-    height=1400,
+    height=1200,
     paper_bgcolor="#FAFBFD",
     plot_bgcolor="#FFFFFF",
     font={"family": font_family},
@@ -137,5 +137,5 @@ fig.update_yaxes(
 )
 
 # Save
-fig.write_image("plot.png", width=1200, height=1400, scale=3)
+fig.write_image("plot.png", width=1200, height=1200, scale=3)
 fig.write_html("plot.html")

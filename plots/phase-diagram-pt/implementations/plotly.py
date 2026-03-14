@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 phase-diagram-pt: Thermodynamic Phase Diagram (Pressure-Temperature)
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-14
@@ -37,11 +37,11 @@ color_sublimation = "#306998"  # Python blue
 color_vaporization = "#8B5CF6"  # Purple
 color_melting = "#059669"  # Teal green
 
-# Phase region fill colors
-fill_solid = "rgba(48, 105, 152, 0.08)"
-fill_liquid = "rgba(139, 92, 246, 0.08)"
-fill_gas = "rgba(249, 115, 22, 0.06)"
-fill_supercritical = "rgba(234, 179, 8, 0.06)"
+# Phase region fill colors (visible but not overwhelming)
+fill_solid = "rgba(48, 105, 152, 0.15)"
+fill_liquid = "rgba(139, 92, 246, 0.13)"
+fill_gas = "rgba(249, 115, 22, 0.12)"
+fill_supercritical = "rgba(234, 179, 8, 0.15)"
 
 # Plot
 fig = go.Figure()
@@ -65,7 +65,7 @@ fig.add_shape(
 fig.add_shape(
     type="rect",
     x0=200,
-    x1=647,
+    x1=800,
     y0=0,
     y1=np.log10(triple_P),
     xref="x",
@@ -77,7 +77,7 @@ fig.add_shape(
 fig.add_shape(
     type="rect",
     x0=647,
-    x1=750,
+    x1=800,
     y0=np.log10(critical_P),
     y1=10,
     xref="x",
@@ -152,10 +152,10 @@ fig.add_annotation(x=225, y=np.log10(1e7), text="SOLID", font=label_font, showar
 fig.add_annotation(x=430, y=np.log10(5e6), text="LIQUID", font=label_font, showarrow=False, yref="y")
 fig.add_annotation(x=450, y=np.log10(30), text="GAS", font=label_font, showarrow=False, yref="y")
 fig.add_annotation(
-    x=685,
+    x=720,
     y=np.log10(5e8),
     text="Supercritical<br>Fluid",
-    font={"size": 20, "color": "rgba(120, 120, 120, 0.6)", "family": "Arial"},
+    font={"size": 24, "color": "rgba(100, 100, 100, 0.65)", "family": "Arial Black"},
     showarrow=False,
     yref="y",
 )
@@ -167,27 +167,51 @@ fig.add_annotation(
     yref="y",
     text="Triple Point<br>(273.16 K, 611.73 Pa)",
     font={"size": 16},
-    ax=-140,
-    ay=50,
+    ax=-100,
+    ay=55,
     arrowhead=2,
-    arrowsize=1.5,
-    arrowwidth=2,
+    arrowsize=1.2,
+    arrowwidth=1.5,
     arrowcolor="#E74C3C",
 )
 
-# Critical point annotation
+# Critical point annotation (short arrow, positioned nearby)
 fig.add_annotation(
     x=critical_T,
     y=np.log10(critical_P),
     yref="y",
     text="Critical Point<br>(647.1 K, 2.206×10⁷ Pa)",
     font={"size": 16},
-    ax=-140,
-    ay=-50,
+    ax=60,
+    ay=-45,
     arrowhead=2,
-    arrowsize=1.5,
-    arrowwidth=2,
+    arrowsize=1.2,
+    arrowwidth=1.5,
     arrowcolor="#E67E22",
+)
+
+# Dashed line from critical point upward (supercritical boundary)
+fig.add_trace(
+    go.Scatter(
+        x=[critical_T, critical_T],
+        y=[critical_P, 1e10],
+        mode="lines",
+        line={"color": "#E67E22", "width": 2, "dash": "dot"},
+        showlegend=False,
+        hoverinfo="skip",
+    )
+)
+
+# Dashed line from critical point rightward (supercritical boundary)
+fig.add_trace(
+    go.Scatter(
+        x=[critical_T, 800],
+        y=[critical_P, critical_P],
+        mode="lines",
+        line={"color": "#E67E22", "width": 2, "dash": "dot"},
+        showlegend=False,
+        hoverinfo="skip",
+    )
 )
 
 # Layout
@@ -201,7 +225,7 @@ fig.update_layout(
     xaxis={
         "title": {"text": "Temperature (K)", "font": {"size": 22}},
         "tickfont": {"size": 18},
-        "range": [180, 760],
+        "range": [180, 800],
         "showgrid": True,
         "gridwidth": 1,
         "gridcolor": "rgba(200, 200, 200, 0.2)",
@@ -217,8 +241,24 @@ fig.update_layout(
     },
     template="plotly_white",
     legend={"font": {"size": 16}, "x": 0.02, "y": 0.98, "bgcolor": "rgba(255, 255, 255, 0.8)"},
-    margin={"l": 100, "r": 120, "t": 100, "b": 100},
+    margin={"l": 100, "r": 140, "t": 100, "b": 100},
     showlegend=True,
+    updatemenus=[
+        {
+            "type": "buttons",
+            "direction": "left",
+            "x": 0.98,
+            "y": -0.12,
+            "xanchor": "right",
+            "buttons": [
+                {"label": "Log Scale", "method": "relayout", "args": [{"yaxis.type": "log"}]},
+                {"label": "Linear Scale", "method": "relayout", "args": [{"yaxis.type": "linear"}]},
+            ],
+            "font": {"size": 14},
+            "bgcolor": "rgba(240, 240, 240, 0.8)",
+            "borderwidth": 1,
+        }
+    ],
 )
 
 # Save

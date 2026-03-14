@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 phase-diagram-pt: Thermodynamic Phase Diagram (Pressure-Temperature)
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-14
@@ -35,42 +35,60 @@ vaporization_pressures = triple_p * np.exp((L_vap / R) * (1 / triple_t - 1 / vap
 melting_pressures = np.logspace(np.log10(triple_p), np.log10(critical_p * 5), 80)
 melting_temps = triple_t - (melting_pressures - triple_p) * 7.5e-8
 
-# Style - refined palette with stronger visual hierarchy
+
+# Pressure formatter for readable y-axis labels and tooltips
+def format_pressure(val):
+    if isinstance(val, (list, tuple)):
+        t, p = val
+        return f"{t:.0f} K, {format_pressure(p)}"
+    p = val
+    if p >= 1e6:
+        v = p / 1e6
+        return f"{v:.0f} MPa" if v == int(v) else f"{v:.1f} MPa"
+    if p >= 1e3:
+        v = p / 1e3
+        return f"{v:.0f} kPa" if v == int(v) else f"{v:.1f} kPa"
+    if p >= 1:
+        return f"{p:.0f} Pa"
+    return f"{p:.1f} Pa"
+
+
+# Style - publication-quality palette with visual hierarchy
 custom_style = Style(
     background="white",
-    plot_background="#fafbfc",
-    foreground="#1a1a2e",
-    foreground_strong="#1a1a2e",
-    foreground_subtle="#e8e8e8",
+    plot_background="#f8f9fb",
+    foreground="#16213e",
+    foreground_strong="#16213e",
+    foreground_subtle="#e2e4e8",
     colors=(
-        "#2563eb",  # Solid-Gas (sublimation) - Vivid Blue
-        "#dc6b18",  # Liquid-Gas (vaporization) - Warm Orange
-        "#0d9488",  # Solid-Liquid (melting) - Teal
-        "#e11d48",  # Triple point - Rose
-        "#7c3aed",  # Critical point - Violet
+        "#1d4ed8",  # Solid-Gas (sublimation) - Deep Blue
+        "#ea580c",  # Liquid-Gas (vaporization) - Burnt Orange
+        "#0f766e",  # Solid-Liquid (melting) - Deep Teal
+        "#be123c",  # Triple point - Deep Rose
+        "#6d28d9",  # Critical point - Deep Violet
     ),
     font_family="DejaVu Sans, Helvetica, Arial, sans-serif",
     title_font_family="DejaVu Sans, Helvetica, Arial, sans-serif",
-    title_font_size=56,
-    label_font_size=38,
-    major_label_font_size=34,
-    value_font_size=28,
-    legend_font_size=32,
+    title_font_size=58,
+    label_font_size=36,
+    major_label_font_size=32,
+    value_font_size=26,
+    legend_font_size=30,
     legend_font_family="DejaVu Sans, Helvetica, Arial, sans-serif",
     label_font_family="DejaVu Sans, Helvetica, Arial, sans-serif",
     major_label_font_family="DejaVu Sans, Helvetica, Arial, sans-serif",
     value_font_family="DejaVu Sans, Helvetica, Arial, sans-serif",
     stroke_width=5,
-    opacity=0.95,
+    opacity=0.92,
     opacity_hover=1.0,
-    guide_stroke_color="#e0e0e0",
-    guide_stroke_dasharray="4,4",
-    tooltip_font_size=28,
+    guide_stroke_color="#eaedf0",
+    guide_stroke_dasharray="6,6",
+    tooltip_font_size=26,
     tooltip_font_family="DejaVu Sans, Helvetica, Arial, sans-serif",
     tooltip_border_radius=8,
 )
 
-# Chart - extended x-range to avoid clipping critical point
+# Chart configuration leveraging pygal's distinctive features
 chart = pygal.XY(
     width=4800,
     height=2700,
@@ -80,7 +98,7 @@ chart = pygal.XY(
     y_title="Pressure (Pa)",
     show_legend=True,
     legend_at_bottom=True,
-    legend_box_size=24,
+    legend_box_size=22,
     dots_size=2,
     stroke=True,
     show_x_guides=True,
@@ -91,89 +109,101 @@ chart = pygal.XY(
     truncate_legend=-1,
     spacing=20,
     margin=40,
-    margin_bottom=130,
-    margin_left=120,
-    margin_right=80,
+    margin_bottom=120,
+    margin_left=160,
+    margin_right=120,
     tooltip_fancy_mode=True,
+    tooltip_border_radius=8,
     interpolate="cubic",
     interpolation_precision=200,
-    xrange=(190, 710),
-    secondary_range=(0.1, critical_p * 15),
+    xrange=(180, 750),
+    secondary_range=(0.1, critical_p * 20),
     print_values=False,
+    human_readable=True,
+    x_value_formatter=lambda x: f"{x:.0f} K",
+    value_formatter=format_pressure,
 )
 
-# Sublimation curve (Solid-Gas boundary)
-sublimation_points = [(float(t), float(p)) for t, p in zip(sublimation_temps, sublimation_pressures, strict=True)]
+# Sublimation curve (Solid-Gas boundary) with pygal metadata dicts
+sublimation_points = [
+    {"value": (float(t), float(p)), "label": f"Sublimation: {t:.0f} K, {format_pressure(p)}"}
+    for t, p in zip(sublimation_temps[::4], sublimation_pressures[::4], strict=True)
+]
 chart.add(
     "Solid ↔ Gas (Sublimation)",
     sublimation_points,
     show_dots=False,
-    stroke_style={"width": 7, "linecap": "round", "linejoin": "round"},
+    stroke_style={"width": 8, "linecap": "round", "linejoin": "round"},
+    formatter=format_pressure,
 )
 
 # Vaporization curve (Liquid-Gas boundary)
-vaporization_points = [(float(t), float(p)) for t, p in zip(vaporization_temps, vaporization_pressures, strict=True)]
+vaporization_points = [
+    {"value": (float(t), float(p)), "label": f"Vaporization: {t:.0f} K, {format_pressure(p)}"}
+    for t, p in zip(vaporization_temps[::5], vaporization_pressures[::5], strict=True)
+]
 chart.add(
     "Liquid ↔ Gas (Vaporization)",
     vaporization_points,
     show_dots=False,
-    stroke_style={"width": 7, "linecap": "round", "linejoin": "round"},
+    stroke_style={"width": 8, "linecap": "round", "linejoin": "round"},
+    formatter=format_pressure,
 )
 
 # Melting curve (Solid-Liquid boundary) - nearly vertical, negative slope for water
-melting_points = [(float(t), float(p)) for t, p in zip(melting_temps, melting_pressures, strict=True)]
+melting_points = [
+    {"value": (float(t), float(p)), "label": f"Melting: {t:.2f} K, {format_pressure(p)}"}
+    for t, p in zip(melting_temps[::4], melting_pressures[::4], strict=True)
+]
 chart.add(
     "Solid ↔ Liquid (Melting)",
     melting_points,
     show_dots=False,
-    stroke_style={"width": 7, "linecap": "round", "linejoin": "round"},
+    stroke_style={"width": 8, "linecap": "round", "linejoin": "round"},
+    formatter=format_pressure,
 )
 
-# Triple point marker - prominent
+# Triple point marker with rich metadata
 chart.add(
     f"Triple Point ({triple_t} K, {triple_p:.0f} Pa)",
-    [{"value": (float(triple_t), float(triple_p)), "label": "Triple Point: All three phases coexist"}],
-    dots_size=22,
+    [
+        {
+            "value": (float(triple_t), float(triple_p)),
+            "label": "Triple Point — all three phases coexist\n273.16 K, 611.73 Pa",
+            "color": "#be123c",
+        }
+    ],
+    dots_size=24,
     stroke=False,
+    formatter=format_pressure,
 )
 
-# Critical point marker - prominent
+# Critical point marker with rich metadata
 chart.add(
     f"Critical Point ({critical_t} K, {critical_p / 1e6:.1f} MPa)",
-    [{"value": (float(critical_t), float(critical_p)), "label": "Critical Point: Liquid-gas distinction vanishes"}],
-    dots_size=22,
+    [
+        {
+            "value": (float(critical_t), float(critical_p)),
+            "label": "Critical Point — liquid-gas distinction vanishes\n647.1 K, 22.064 MPa",
+            "color": "#6d28d9",
+        }
+    ],
+    dots_size=24,
     stroke=False,
+    formatter=format_pressure,
 )
 
-# Render SVG and inject phase region labels
+# Render SVG and add phase region labels via post-processing
 svg_string = chart.render(is_unicode=True)
-
-# Parse SVG to add phase region text labels
 root = ET.fromstring(svg_string)
-ns = {"svg": "http://www.w3.org/2000/svg"}
 
-# Find the plot area to calculate label positions
-# pygal uses a viewBox-based coordinate system at 4800x2700
-# The plot area is roughly from x=120 to x=4720, y=80 to y=2400
-# Phase regions in data coordinates (approximate pixel positions):
-# - SOLID region: left side, upper area (low T, high P)
-# - LIQUID region: center-right, upper area (medium T, high P)
-# - GAS region: center-right, lower area (high T, low P)
-# - SUPERCRITICAL: far right, upper area (beyond critical point)
-
-# Find all graph-related groups to append labels
-graphs = root.findall(".//{http://www.w3.org/2000/svg}g[@class='plot overlay']")
-if not graphs:
-    graphs = root.findall(".//{http://www.w3.org/2000/svg}g")
-
-# We'll add text elements directly to the root SVG
-# Phase label positions (approximate pixel coordinates in the 4800x2700 canvas)
+# Phase region labels with colors keyed to boundaries for storytelling
 phase_labels = [
-    {"text": "SOLID", "x": "1050", "y": "600", "size": "72", "color": "#1a1a2e"},
-    {"text": "LIQUID", "x": "2600", "y": "550", "size": "72", "color": "#1a1a2e"},
-    {"text": "GAS", "x": "2800", "y": "1900", "size": "72", "color": "#1a1a2e"},
-    {"text": "SUPERCRITICAL", "x": "3700", "y": "420", "size": "48", "color": "#6b7280"},
-    {"text": "FLUID", "x": "3830", "y": "490", "size": "48", "color": "#6b7280"},
+    {"text": "SOLID", "x": "1050", "y": "580", "size": "78", "color": "#0f766e", "opacity": "0.40"},
+    {"text": "LIQUID", "x": "2650", "y": "520", "size": "78", "color": "#ea580c", "opacity": "0.40"},
+    {"text": "GAS", "x": "2900", "y": "1850", "size": "78", "color": "#1d4ed8", "opacity": "0.40"},
+    {"text": "SUPERCRITICAL", "x": "3900", "y": "400", "size": "52", "color": "#6d28d9", "opacity": "0.35"},
+    {"text": "FLUID", "x": "4030", "y": "470", "size": "52", "color": "#6d28d9", "opacity": "0.35"},
 ]
 
 for label in phase_labels:
@@ -185,9 +215,9 @@ for label in phase_labels:
         f"font-family: DejaVu Sans, Helvetica, Arial, sans-serif; "
         f"font-size: {label['size']}px; "
         f"fill: {label['color']}; "
-        f"font-weight: 600; "
-        f"letter-spacing: 4px; "
-        f"opacity: 0.55; "
+        f"font-weight: 700; "
+        f"letter-spacing: 5px; "
+        f"opacity: {label['opacity']}; "
         f"text-anchor: middle;",
     )
     text_elem.text = label["text"]
@@ -199,5 +229,5 @@ with open("plot.svg", "w") as f:
 
 cairosvg.svg2png(bytestring=modified_svg.encode("utf-8"), write_to="plot.png", output_width=4800, output_height=2700)
 
-# Also save interactive HTML version
+# Interactive HTML with pygal's native tooltip support
 chart.render_to_file("plot.html")

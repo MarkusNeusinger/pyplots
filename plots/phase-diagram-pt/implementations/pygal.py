@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 phase-diagram-pt: Thermodynamic Phase Diagram (Pressure-Temperature)
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-14

@@ -1,7 +1,7 @@
 library: pygal
 specification_id: phase-diagram-pt
 created: '2026-03-14T14:51:24Z'
-updated: '2026-03-14T15:05:28Z'
+updated: '2026-03-14T15:13:15Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23090166905
 issue: 4666
@@ -13,38 +13,35 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/phase-diagram-
 quality_score: 84
 review:
   strengths:
-  - Excellent real-world data using physically accurate Clausius-Clapeyron equations
-    for water
-  - Phase region labels (SOLID, LIQUID, GAS, SUPERCRITICAL FLUID) now present and
-    well-positioned
-  - Water characteristic negative-slope melting curve correctly implemented
-  - Custom color palette with strong colorblind-safe distinctions
-  - Clean code with creative SVG manipulation to overcome pygal annotation limitations
-  - Proper logarithmic y-axis for the wide pressure range
+  - Perfect spec compliance with all phase boundaries, special points, and region
+    labels
+  - Realistic water phase data using Clausius-Clapeyron equations with accurate physical
+    constants
+  - Excellent use of pygal distinctive features (metadata dicts, cubic interpolation,
+    interactive HTML)
+  - Strong color palette with good visual hierarchy and colorblind safety
+  - Phase region labels with semi-transparency provide clear orientation
   weaknesses:
-  - Y-axis tick labels show raw large numbers instead of readable format
-  - Critical point marker positioned near far right edge of plot area
-  - Design competent but lacks publication-quality polish
-  - Limited data storytelling beyond phase labels
-  - Generic library usage without leveraging distinctive pygal features
-  image_description: 'The plot displays a water pressure-temperature phase diagram.
-    The x-axis shows Temperature (K) from 200 to ~650+, and the y-axis shows Pressure
-    (Pa) on a logarithmic scale from ~0.4 to 100,000,000. Three phase boundary curves
-    are drawn: a blue sublimation curve (Solid-Gas) rising steeply from lower-left
-    to the triple point, an orange vaporization curve (Liquid-Gas) extending from
-    the triple point rightward/upward to the critical point, and a teal melting curve
-    (Solid-Liquid) running nearly vertically with a slight negative slope (correct
-    for water). A rose/red dot marks the triple point (~273 K, ~612 Pa) and a purple
-    dot marks the critical point (~647 K, high pressure) at the far right. Semi-transparent
-    phase region labels are present: SOLID in the upper-left area, LIQUID in the upper-center,
-    GAS in the lower-right, and SUPERCRITICAL FLUID in the upper-right beyond the
-    critical point. Labels use letter-spacing and reduced opacity for a subtle appearance.
-    The background is white with a light #fafbfc plot background and dashed grid lines.
-    The legend at the bottom lists all five series with descriptive labels including
-    coordinate values for the special points.'
+  - Y-axis tick labels severely crowded on logarithmic scale with multiple overlapping
+    label clusters
+  - Left margin area cramped due to dense y-axis labeling
+  image_description: 'The plot displays a water pressure-temperature phase diagram
+    on a white/light gray background. The x-axis shows Temperature (K) from 200 K
+    to 600 K, and the y-axis shows Pressure (Pa) on a logarithmic scale from ~0.2
+    Pa to ~60 MPa. Three phase boundary curves are drawn: a deep blue sublimation
+    curve (Solid-Gas) rising steeply from the lower left to the triple point, a burnt
+    orange vaporization curve (Liquid-Gas) extending from the triple point rightward/upward
+    to the critical point, and a deep teal melting curve (Solid-Liquid) running nearly
+    vertically with a slight negative slope (correct for water). The triple point
+    is marked with a deep rose dot at ~273 K / 612 Pa, and the critical point with
+    a deep violet dot at ~647 K / 22 MPa. Semi-transparent phase region labels (SOLID
+    in teal, LIQUID in orange, GAS in blue, SUPERCRITICAL FLUID in violet) are placed
+    in their respective regions. The legend at the bottom lists all five series. The
+    y-axis tick labels are very crowded due to the logarithmic scale showing many
+    intermediate values.'
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 23
       max: 30
       items:
       - id: VQ-01
@@ -52,65 +49,67 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title=56, labels=38, major_labels=34,
-          legend=32, phase labels=72/48px). Y-axis tick labels show raw large numbers.
+        comment: Font sizes explicitly set (title=58, labels=36, major_labels=32,
+          legend=30). All text readable.
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 2
         max: 6
-        passed: true
-        comment: No overlapping text elements anywhere.
+        passed: false
+        comment: Y-axis tick labels severely crowded on logarithmic scale. Multiple
+          clusters overlap throughout pressure range.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Lines visible at stroke width 7, markers prominent. Critical point
-          still near far right edge.
+        comment: Curves visible with stroke_width=8. Triple and critical point markers
+          prominent at dots_size=24.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue, orange, teal, rose, purple — all distinguishable and colorblind-safe.
+        comment: Deep blue, burnt orange, deep teal palette is colorblind-safe. Rose
+          and violet markers provide good contrast.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Reasonable canvas use. Some excess space below legend, critical point
-          near right edge.
+        comment: Plot fills canvas well. Legend at bottom well-positioned. Left margin
+          slightly cramped.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Temperature (K) and Pressure (Pa) — descriptive with units.
+        comment: Temperature (K) and Pressure (Pa) with units.
     design_excellence:
-      score: 11
+      score: 13
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom palette, light plot background, explicit fonts. Above defaults
-          but not publication-quality.
+        comment: Custom 5-color palette, semi-transparent phase labels, light plot
+          background, styled guide strokes.
       - id: DE-02
         name: Visual Refinement
         score: 3
         max: 6
         passed: true
-        comment: Dashed grid guides, semi-transparent phase labels with letter-spacing.
-          Some refinement but grid could be subtler.
+        comment: Dashed subtle guide strokes, generous margins. Crowded y-axis detracts
+          from polish.
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Phase region labels provide context. Triple/critical points highlighted.
-          Could have stronger visual emphasis.
+        comment: Phase region labels orient viewer. Triple and critical points highlighted.
+          Water anomalous melting slope adds interest.
     spec_compliance:
       score: 15
       max: 15
@@ -120,26 +119,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: XY chart with phase boundary curves — correct P-T phase diagram.
+        comment: XY chart with phase boundary curves - correct P-T phase diagram.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: phase boundaries, triple point, critical point,
-          log axis, region labels, supercritical.'
+        comment: All three boundaries, triple point, critical point, phase labels,
+          log pressure axis, supercritical region.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Temperature on x, pressure on y. All data correctly mapped.
+        comment: Temperature on X, Pressure on Y. All data visible.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title follows format. Legend labels descriptive with coordinates.
+        comment: Title follows format. Legend labels descriptive with boundary names.
     data_quality:
       score: 15
       max: 15
@@ -149,75 +148,76 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: All three boundaries, triple/critical points, supercritical region,
-          negative-slope melting curve.
+        comment: All boundaries, special points, supercritical region, water negative-slope
+          melting curve.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real water phase diagram with Clausius-Clapeyron equations and correct
-          physical values.
+        comment: Water phase diagram with Clausius-Clapeyron equations. Neutral scientific
+          topic.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Triple point 273.16 K/611.73 Pa, critical point 647.1 K/22.064 MPa
-          — physically correct.
+        comment: Triple point 273.16 K / 611.73 Pa, critical point 647.1 K / 22.064
+          MPa match accepted values.
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Clean linear structure with no functions or classes.
+        comment: Follows data-chart-save pattern but defines format_pressure helper
+          function.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic data using Clausius-Clapeyron equations.
+        comment: Fully deterministic data from Clausius-Clapeyron equations.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: ET, cairosvg, numpy, pygal, Style.'
+        comment: 'All imports used: xml.etree, cairosvg, numpy, pygal, Style.'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, appropriate complexity. SVG manipulation justified for annotation
-          support.
+        comment: Clean SVG post-processing for phase labels. Well-structured metadata
+          dicts.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png via cairosvg. Also saves SVG and HTML.
+        comment: Saves plot.png via cairosvg, also plot.svg and plot.html.
     library_mastery:
-      score: 6
+      score: 9
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: Expert pygal.XY usage with metadata dicts, Style config, cubic interpolation,
+          log axis, value formatters.
+      - id: LM-02
+        name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: Good use of pygal.XY, Style, logarithmic, cubic interpolation, tooltip_fancy_mode,
-          structured data dicts.
-      - id: LM-02
-        name: Distinctive Features
-        score: 2
-        max: 5
-        passed: false
-        comment: Some pygal features used but heavy SVG manipulation is a workaround,
-          not distinctive pygal usage.
+        comment: Metadata dicts for tooltips, cubic interpolation, tooltip_fancy_mode,
+          interactive HTML export.
   verdict: REJECTED
 impl_tags:
   dependencies:

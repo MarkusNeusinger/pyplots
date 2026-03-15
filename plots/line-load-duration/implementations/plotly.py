@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-load-duration: Load Duration Curve for Energy Systems
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-15
@@ -43,9 +43,9 @@ base_hours = np.searchsorted(-load_mw, -base_capacity)
 # Total energy (area under curve) in GWh
 total_energy_gwh = np.trapezoid(load_mw) / 1000
 
-# Color palette
-color_peak = "#D94F3D"
-color_intermediate = "#E8A838"
+# Color palette (colorblind-safe: red→magenta, orange→teal for deuteranopia distinction)
+color_peak = "#C44E93"
+color_intermediate = "#2A9D8F"
 color_base = "#306998"
 color_line = "#1A3A5C"
 
@@ -73,7 +73,7 @@ fig.add_trace(
         x=np.concatenate([hours, hours[::-1]]),
         y=np.concatenate([intermediate_top, np.full(8760, base_capacity)]),
         fill="toself",
-        fillcolor="rgba(232, 168, 56, 0.3)",
+        fillcolor="rgba(42, 157, 143, 0.25)",
         line={"width": 0},
         name="Intermediate Load",
         showlegend=True,
@@ -88,7 +88,7 @@ fig.add_trace(
         x=np.concatenate([hours, hours[::-1]]),
         y=np.concatenate([peak_top, np.full(8760, intermediate_capacity)]),
         fill="toself",
-        fillcolor="rgba(217, 79, 61, 0.25)",
+        fillcolor="rgba(196, 78, 147, 0.25)",
         line={"width": 0},
         name="Peak Load",
         showlegend=True,
@@ -108,7 +108,7 @@ fig.add_trace(
     )
 )
 
-# Horizontal dashed lines for capacity tiers
+# Horizontal dashed lines for capacity tiers (annotations on left to avoid right-edge clipping)
 for capacity, label, color in [
     (peak_capacity, f"Peak Capacity ({peak_capacity} MW)", color_peak),
     (intermediate_capacity, f"Intermediate Capacity ({intermediate_capacity} MW)", color_intermediate),
@@ -120,13 +120,17 @@ for capacity, label, color in [
         line_color=color,
         line_width=2,
         annotation_text=label,
-        annotation_position="top right",
+        annotation_position="top left",
         annotation_font={"size": 16, "color": color},
     )
 
 # Region labels
 fig.add_annotation(
-    x=peak_hours // 2, y=peak_capacity + 40, text="<b>Peak</b>", showarrow=False, font={"size": 18, "color": color_peak}
+    x=peak_hours // 2 + 200,
+    y=(peak_capacity + intermediate_capacity) // 2 + 50,
+    text="<b>Peak</b>",
+    showarrow=False,
+    font={"size": 18, "color": color_peak},
 )
 
 fig.add_annotation(
@@ -141,10 +145,10 @@ fig.add_annotation(
     x=6500, y=base_capacity // 2 + 50, text="<b>Base Load</b>", showarrow=False, font={"size": 18, "color": color_base}
 )
 
-# Total energy annotation
+# Total energy annotation (positioned in base load region to avoid overlap with capacity lines)
 fig.add_annotation(
     x=6000,
-    y=900,
+    y=750,
     text=f"Total Energy: {total_energy_gwh:,.0f} GWh/year",
     showarrow=False,
     font={"size": 18, "color": "#333333"},
@@ -176,14 +180,14 @@ fig.update_layout(
     template="plotly_white",
     showlegend=True,
     legend={
-        "x": 0.65,
-        "y": 0.95,
+        "x": 0.75,
+        "y": 0.45,
         "font": {"size": 16},
-        "bgcolor": "rgba(255, 255, 255, 0.8)",
+        "bgcolor": "rgba(255, 255, 255, 0.85)",
         "bordercolor": "rgba(0, 0, 0, 0.1)",
         "borderwidth": 1,
     },
-    margin={"l": 80, "r": 40, "t": 80, "b": 60},
+    margin={"l": 80, "r": 60, "t": 80, "b": 60},
     hovermode="x",
 )
 

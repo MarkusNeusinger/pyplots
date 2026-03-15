@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 area-elevation-profile: Terrain Elevation Profile Along Transect
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-15
@@ -7,6 +7,7 @@ Quality: 87/100 | Created: 2026-03-15
 import altair as alt
 import numpy as np
 import pandas as pd
+from PIL import Image
 
 
 # Data - Alpine hiking trail ~120 km with realistic terrain
@@ -88,7 +89,7 @@ landmark_rules = (
 # Landmark points with shape encoding by type
 landmark_points = (
     alt.Chart(landmarks)
-    .mark_point(size=120, filled=True, stroke="white", strokeWidth=1.5)
+    .mark_point(size=160, filled=True, stroke="white", strokeWidth=1.5)
     .encode(
         x="distance:Q",
         y="elevation:Q",
@@ -111,7 +112,7 @@ landmark_points = (
     )
 )
 
-# Combined label layers (name + elevation) - 3 layers by alignment instead of 6
+# Combined label layers (name + elevation) - 3 layers by alignment
 lm_start = landmarks[landmarks["distance"] == 0.0]
 lm_end = landmarks[landmarks["distance"] == 120.0]
 lm_mid = landmarks[(landmarks["distance"] > 0) & (landmarks["distance"] < 120)]
@@ -119,20 +120,42 @@ lm_mid = landmarks[(landmarks["distance"] > 0) & (landmarks["distance"] < 120)]
 label_start = (
     alt.Chart(lm_start)
     .mark_text(
-        align="left", dx=10, dy=-30, fontSize=14, fontWeight="bold", color="#3A3A3A", lineBreak="\n", lineHeight=18
+        align="left", dx=10, dy=-60, fontSize=16, fontWeight="bold", color="#3A3A3A", lineBreak="\n", lineHeight=20
     )
     .encode(x="distance:Q", y="elevation:Q", text="label:N")
 )
 label_end = (
     alt.Chart(lm_end)
     .mark_text(
-        align="right", dx=-10, dy=-30, fontSize=14, fontWeight="bold", color="#3A3A3A", lineBreak="\n", lineHeight=18
+        align="right", dx=-10, dy=-60, fontSize=16, fontWeight="bold", color="#3A3A3A", lineBreak="\n", lineHeight=20
     )
     .encode(x="distance:Q", y="elevation:Q", text="label:N")
 )
-label_mid = (
-    alt.Chart(lm_mid)
-    .mark_text(align="center", dy=-30, fontSize=14, fontWeight="bold", lineBreak="\n", lineHeight=18)
+
+# Split mid landmarks by elevation to apply different dy offsets
+lm_mid_low = lm_mid[lm_mid["elevation"] < 1500].copy()
+lm_mid_high = lm_mid[lm_mid["elevation"] >= 1500].copy()
+
+label_mid_low = (
+    alt.Chart(lm_mid_low)
+    .mark_text(align="center", dy=-60, fontSize=16, fontWeight="bold", lineBreak="\n", lineHeight=20)
+    .encode(
+        x="distance:Q",
+        y="elevation:Q",
+        text="label:N",
+        color=alt.Color(
+            "type:N",
+            legend=None,
+            scale=alt.Scale(
+                domain=["summit", "lake", "pass", "plateau", "town"],
+                range=["#6B3A1F", "#2E5E7E", "#5C4E3C", "#4A6317", "#3A3A3A"],
+            ),
+        ),
+    )
+)
+label_mid_high = (
+    alt.Chart(lm_mid_high)
+    .mark_text(align="center", dy=-35, fontSize=16, fontWeight="bold", lineBreak="\n", lineHeight=20)
     .encode(
         x="distance:Q",
         y="elevation:Q",
@@ -150,7 +173,7 @@ label_mid = (
 
 # Compose layered chart
 chart = (
-    alt.layer(area, landmark_rules, landmark_points, label_start, label_mid, label_end)
+    alt.layer(area, landmark_rules, landmark_points, label_start, label_mid_low, label_mid_high, label_end)
     .properties(
         width=1600,
         height=900,
@@ -164,12 +187,27 @@ chart = (
             offset=12,
         ),
     )
+    .configure(background="white")
     .configure_axis(
         labelFontSize=18, titleFontSize=22, gridOpacity=0.12, grid=True, domainColor="#999999", tickColor="#999999"
     )
     .configure_view(strokeWidth=0)
 )
 
-# Save
+# Save - render, trim bottom whitespace, resize to 4800x2700
 chart.save("plot.png", scale_factor=3.0)
+img = Image.open("plot.png").convert("RGB")
+
+# Trim empty whitespace from bottom by scanning rows
+as_array = np.array(img)
+# Find last row that's not all-white (threshold 250 for anti-aliasing)
+row_has_content = np.any(as_array < 250, axis=(1, 2))
+last_content_row = np.max(np.where(row_has_content)) + 40  # 40px padding
+last_content_row = min(last_content_row, img.height)
+img = img.crop((0, 0, img.width, last_content_row))
+
+# Resize to target 4800x2700
+img = img.resize((4800, 2700), Image.LANCZOS)
+img.save("plot.png")
+
 chart.interactive().save("plot.html")

@@ -1,27 +1,29 @@
-""" pyplots.ai
+"""pyplots.ai
 psychrometric-basic: Psychrometric Chart for HVAC
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 81/100 | Created: 2026-03-15
 """
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
     annotate,
+    arrow,
+    coord_cartesian,
     element_blank,
     element_line,
     element_rect,
     element_text,
     geom_line,
-    geom_path,
     geom_point,
-    geom_rect,
+    geom_polygon,
+    geom_segment,
     geom_text,
     ggplot,
     labs,
     scale_color_identity,
+    scale_linetype_identity,
     scale_size_identity,
     scale_x_continuous,
     scale_y_continuous,
@@ -72,13 +74,13 @@ df_rh_all = pd.concat(rh_frames, ignore_index=True)
 df_rh_all["color"] = np.where(df_rh_all["rh"] == 100, "#306998", "#8BAEC4")
 df_rh_all["lw"] = np.where(df_rh_all["rh"] == 100, 1.8, 0.6)
 
-# RH labels placed along curves at specific temperatures for readability
+# RH labels placed along curves at staggered temperatures to avoid crowding
 rh_labels = []
-label_temps = {10: 45, 20: 42, 30: 38, 40: 36, 50: 34, 60: 32, 70: 30, 80: 28, 90: 26, 100: 24}
+label_temps = {10: 46, 20: 40, 30: 35, 40: 32, 50: 30, 60: 28, 70: 25, 80: 22, 90: 18, 100: 14}
 for rh, t_label in label_temps.items():
     w_label = humidity_ratio(np.array([t_label]), rh)[0]
     if 0 < w_label < W_MAX:
-        rh_labels.append({"t": t_label, "w": w_label + 0.6, "label": f"{rh}%"})
+        rh_labels.append({"t": t_label, "w": w_label + 0.7, "label": f"{rh}%"})
 df_rh_labels = pd.DataFrame(rh_labels)
 
 # Data: Wet-bulb temperature lines
@@ -93,7 +95,7 @@ for twb in range(-5, 35, 5):
         wb_frames.append(pd.DataFrame({"t": t_line[mask], "w": w_line[mask], "group": f"WB {twb}°C"}))
 df_wb_all = pd.concat(wb_frames, ignore_index=True)
 
-# Wet-bulb labels near the saturation curve
+# Wet-bulb labels near the saturation curve, offset to avoid RH label overlap
 wb_labels = []
 for twb in range(0, 35, 5):
     grp = f"WB {twb}°C"
@@ -101,7 +103,7 @@ for twb in range(0, 35, 5):
     if len(sub) > 0:
         idx = sub["t"].idxmin()
         row = sub.loc[idx]
-        wb_labels.append({"t": row["t"] - 1.5, "w": row["w"] + 0.3, "label": f"{twb}°C"})
+        wb_labels.append({"t": row["t"] - 2.0, "w": row["w"] + 0.8, "label": f"{twb}°C"})
 df_wb_labels = pd.DataFrame(wb_labels)
 
 # Data: Enthalpy lines (kJ/kg dry air)
@@ -164,47 +166,54 @@ w_b = humidity_ratio(np.array([state_b_t]), state_b_rh)[0]
 df_process = pd.DataFrame({"t": [state_a_t, state_b_t], "w": [w_a, w_b], "group": "process"})
 df_states = pd.DataFrame({"t": [state_a_t, state_b_t], "w": [w_a, w_b]})
 
+# Prepare enthalpy/specific volume data with linetype column for scale_linetype_identity
+df_enth_all["lt"] = "dashed"
+df_sv_all["lt"] = "dotted"
+
+# Arrow data for process path (plotnine-native geom_segment + arrow)
+df_arrow = pd.DataFrame({"x": [state_a_t], "y": [w_a], "xend": [state_b_t], "yend": [w_b]})
+
 # Plot
 plot = (
     ggplot()
-    # Comfort zone shading
-    + geom_rect(
-        aes(xmin=20, xmax=26, ymin=comfort_w_lo.min(), ymax=comfort_w_hi.max()),
-        data=pd.DataFrame({"x": [0]}),
-        fill="#306998",
-        alpha=0.08,
+    # Comfort zone as polygon (follows RH curve boundaries more accurately)
+    + geom_polygon(
+        aes(x="t", y="w"), data=df_comfort, fill="#306998", alpha=0.10, color="#306998", size=0.7, linetype="solid"
     )
-    # Relative humidity curves
+    # Relative humidity curves with identity scales for per-group styling
     + geom_line(aes(x="t", y="w", group="group", color="color", size="lw"), data=df_rh_all)
     + scale_color_identity()
     + scale_size_identity()
-    # Wet-bulb lines
-    + geom_line(aes(x="t", y="w", group="group"), data=df_wb_all, color="#C47A2B", size=0.4, alpha=0.55)
-    # Enthalpy lines
+    # Wet-bulb lines (increased visibility)
+    + geom_line(aes(x="t", y="w", group="group"), data=df_wb_all, color="#C47A2B", size=0.5, alpha=0.6)
+    # Enthalpy lines (increased alpha and size for visibility)
     + geom_line(
-        aes(x="t", y="w", group="group"), data=df_enth_all, color="#7A9A5A", size=0.35, alpha=0.45, linetype="dashed"
+        aes(x="t", y="w", group="group", linetype="lt"), data=df_enth_all, color="#7A9A5A", size=0.55, alpha=0.65
     )
-    # Specific volume lines
-    + geom_line(
-        aes(x="t", y="w", group="group"), data=df_sv_all, color="#9B6B9E", size=0.35, alpha=0.45, linetype="dotted"
+    # Specific volume lines (increased alpha and size for visibility)
+    + geom_line(aes(x="t", y="w", group="group", linetype="lt"), data=df_sv_all, color="#9B6B9E", size=0.55, alpha=0.65)
+    + scale_linetype_identity()
+    # HVAC process arrow (plotnine-native)
+    + geom_segment(
+        aes(x="x", y="y", xend="xend", yend="yend"),
+        data=df_arrow,
+        color="#D04040",
+        size=1.8,
+        arrow=arrow(length=0.15, type="closed"),
     )
-    # Comfort zone border
-    + geom_path(aes(x="t", y="w"), data=df_comfort, color="#306998", size=0.8, alpha=0.5)
-    # HVAC process path
-    + geom_path(aes(x="t", y="w"), data=df_process, color="#D04040", size=1.5)
     # State points
-    + geom_point(aes(x="t", y="w"), data=df_states, color="#D04040", size=4)
-    # RH labels along curves
+    + geom_point(aes(x="t", y="w"), data=df_states, color="#D04040", size=4.5)
+    # RH labels along curves (staggered positions)
     + geom_text(aes(x="t", y="w", label="label"), data=df_rh_labels, size=7, color="#5A8AAD", fontweight="bold")
-    # Wet-bulb labels
-    + geom_text(aes(x="t", y="w", label="label"), data=df_wb_labels, size=6, color="#C47A2B")
-    # Enthalpy labels
-    + geom_text(aes(x="t", y="w", label="label"), data=df_enth_labels, size=5.5, color="#7A9A5A", ha="left")
-    # Specific volume labels
-    + geom_text(aes(x="t", y="w", label="label"), data=df_sv_labels, size=5.5, color="#9B6B9E")
+    # Wet-bulb labels (offset to avoid crowding)
+    + geom_text(aes(x="t", y="w", label="label"), data=df_wb_labels, size=6.5, color="#C47A2B")
+    # Enthalpy labels (increased size)
+    + geom_text(aes(x="t", y="w", label="label"), data=df_enth_labels, size=6, color="#7A9A5A", ha="left")
+    # Specific volume labels (increased size)
+    + geom_text(aes(x="t", y="w", label="label"), data=df_sv_labels, size=6, color="#9B6B9E")
     # State point annotations
-    + annotate("text", x=state_a_t + 1, y=w_a + 1, label="A (35°C, 50% RH)", size=8, color="#D04040", ha="left")
-    + annotate("text", x=state_b_t + 1.5, y=w_b + 1, label="B (24°C, 50% RH)", size=8, color="#D04040", ha="left")
+    + annotate("text", x=state_a_t + 1, y=w_a + 1.2, label="A (35°C, 50% RH)", size=8, color="#D04040", ha="left")
+    + annotate("text", x=state_b_t + 1.5, y=w_b - 1.5, label="B (24°C, 50% RH)", size=8, color="#D04040", ha="left")
     + annotate(
         "text",
         x=23,
@@ -212,7 +221,7 @@ plot = (
         label="Comfort Zone",
         size=9,
         color="#306998",
-        alpha=0.6,
+        alpha=0.7,
         fontweight="bold",
     )
     # Axes and title
@@ -221,8 +230,9 @@ plot = (
         y="Humidity Ratio (g/kg dry air)",
         title="psychrometric-basic · plotnine · pyplots.ai",
     )
-    + scale_x_continuous(limits=(T_MIN, T_MAX), breaks=range(T_MIN, T_MAX + 1, 5))
-    + scale_y_continuous(limits=(0, W_MAX), breaks=range(0, W_MAX + 1, 5))
+    + scale_x_continuous(breaks=range(T_MIN, T_MAX + 1, 5))
+    + scale_y_continuous(breaks=range(0, W_MAX + 1, 5))
+    + coord_cartesian(xlim=(T_MIN, T_MAX), ylim=(0, W_MAX))
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
@@ -236,13 +246,5 @@ plot = (
     )
 )
 
-# Draw and add arrow to process path via matplotlib
-fig = plot.draw()
-ax = fig.axes[0]
-ax.annotate(
-    "", xy=(state_b_t, w_b), xytext=(state_a_t, w_a), arrowprops={"arrowstyle": "-|>", "color": "#D04040", "lw": 2.5}
-)
-
 # Save
-fig.savefig("plot.png", dpi=300, bbox_inches="tight")
-plt.close(fig)
+plot.save("plot.png", dpi=300)

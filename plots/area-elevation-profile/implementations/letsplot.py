@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 area-elevation-profile: Terrain Elevation Profile Along Transect
 Library: letsplot 4.9.0 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-15
@@ -44,7 +44,16 @@ landmark_names = [
 landmark_distances = [0, 20, 38, 50, 65, 80, 95, 120]
 landmark_elevations = [float(np.interp(d, distance, elevation)) for d in landmark_distances]
 
-landmarks_df = pd.DataFrame({"distance": landmark_distances, "elevation": landmark_elevations, "name": landmark_names})
+# Stagger label offsets to avoid crowding in regions with similar elevations
+nudge_offsets = [100, 100, 100, 100, 100, 140, 180, 100]
+landmarks_df = pd.DataFrame(
+    {
+        "distance": landmark_distances,
+        "elevation": landmark_elevations,
+        "name": landmark_names,
+        "nudge_y": [e + n for e, n in zip(landmark_elevations, nudge_offsets, strict=True)],
+    }
+)
 
 # Compute slope for gradient coloring
 slope = np.gradient(elevation, distance)
@@ -62,7 +71,7 @@ vline_df = pd.DataFrame(vline_rows)
 
 # Y-axis range
 y_min = y_floor
-y_max = int(max(elevation) * 1.18)
+y_max = int(max(elevation) * 1.12)
 
 # Plot
 plot = (
@@ -78,7 +87,7 @@ plot = (
         .line("Distance: @distance km"),
     )
     + scale_color_manual(  # noqa: F405
-        values=["#306998", "#e6a817", "#c0392b"], name="Slope"
+        values=["#306998", "#d4780a", "#c0392b"], name="Slope"
     )
     # Vertical marker lines at landmarks
     + geom_line(  # noqa: F405
@@ -100,11 +109,10 @@ plot = (
         stroke=2.0,
         inherit_aes=False,
     )
-    # Landmark labels
+    # Landmark labels — positioned at staggered heights to avoid overlap
     + geom_text(  # noqa: F405
         data=landmarks_df,
-        mapping=aes(x="distance", y="elevation", label="name"),  # noqa: F405
-        nudge_y=90,
+        mapping=aes(x="distance", y="nudge_y", label="name"),  # noqa: F405
         size=10,
         color="#333333",
         angle=30,
@@ -113,7 +121,7 @@ plot = (
     )
     # Scales and labels
     + scale_x_continuous(  # noqa: F405
-        name="Distance (km)", breaks=list(range(0, 121, 20)), limits=[-2, 130]
+        name="Distance (km)", breaks=list(range(0, 121, 20)), limits=[-2, 135]
     )
     + scale_y_continuous(  # noqa: F405
         name="Elevation (m)", limits=[y_min, y_max]
@@ -127,7 +135,7 @@ plot = (
     + theme(  # noqa: F405
         axis_text=element_text(size=16),  # noqa: F405
         axis_title=element_text(size=20),  # noqa: F405
-        plot_title=element_text(size=22),  # noqa: F405
+        plot_title=element_text(size=24),  # noqa: F405
         plot_subtitle=element_text(size=16, color="#555555"),  # noqa: F405
         legend_text=element_text(size=14),  # noqa: F405
         legend_title=element_text(size=16),  # noqa: F405

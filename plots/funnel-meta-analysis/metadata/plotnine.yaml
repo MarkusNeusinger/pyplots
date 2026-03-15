@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: funnel-meta-analysis
 created: '2026-03-15T16:43:55Z'
-updated: '2026-03-15T16:47:32Z'
+updated: '2026-03-15T16:56:57Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23114663085
 issue: 4590
@@ -10,96 +10,104 @@ library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/funnel-meta-analysis/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/funnel-meta-analysis/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 84
+quality_score: 83
 review:
   strengths:
-  - Perfect spec compliance - all required funnel plot features implemented correctly
-  - Clean, well-structured code with proper seed and realistic data generation
-  - Good data design with deliberate publication bias asymmetry pattern
-  - Appropriate font sizing and readable layout
+  - Excellent spec compliance with all required funnel plot features implemented correctly
+  - Strong data storytelling through inside/outside funnel color classification and
+    publication bias annotation
+  - Clean well-structured code with proper reproducibility
+  - Good colorblind-safe blue/orange color pair
+  - Proper inverse-variance weighting for point sizing
   weaknesses:
-  - Design lacks visual sophistication beyond configured defaults
-  - All study points identical - missing opportunity for weight-based sizing or color
-  - No visual emphasis on the publication bias pattern
-  - Could leverage more plotnine-specific features like annotate or geom_ribbon
-  image_description: The plot displays a meta-analysis funnel plot with "Log Odds
-    Ratio" on the x-axis and "Standard Error" on the y-axis (reversed, with 0 at top
-    and 0.6 at bottom). Fifteen blue circular markers (#306998) represent individual
-    studies scattered across the plot. A solid blue vertical line marks the summary
-    effect at approximately 0.3, and a dotted gray vertical line marks the null effect
-    at 0. Two dashed gray diagonal lines form the inverted funnel shape representing
-    pseudo 95% confidence limits. The plot uses a minimal theme with subtle major
-    gridlines. Studies with lower standard error (more precise) cluster near the top
-    around the summary effect, while less precise studies with higher SE scatter more
-    widely at the bottom, showing visible rightward asymmetry suggesting publication
-    bias. The title reads "funnel-meta-analysis · plotnine · pyplots.ai" in bold at
-    the top.
+  - Legend header displays region instead of being hidden
+  - Annotation text size 9-10 is slightly small relative to axis text
+  - Extreme outlier stretches x-axis creating wasted space
+  - Funnel polygon shading barely visible at alpha 0.06
+  image_description: The plot displays a meta-analysis funnel plot on a white background
+    with a light gray (#FAFBFC) panel. The Y-axis shows "Standard Error" (reversed,
+    0.0 at top to 0.6 at bottom) and the X-axis shows "Log Odds Ratio" (ranging from
+    about -0.6 to 1.4). A solid dark blue vertical line marks the pooled effect at
+    ~0.26, with a small blue label "Pooled effect = 0.26" near the top. A dotted gray
+    vertical line marks the null effect at 0, labeled "Null" in gray. Dashed light
+    blue diagonal lines form the pseudo 95% CI funnel boundaries, with a very subtle
+    light blue shaded polygon filling the funnel region. 15 study points are plotted
+    with varying sizes (proportional to inverse-variance weight). Points inside the
+    funnel are blue (#306998) and those outside are orange (#D4652A). A legend at
+    the bottom-left shows "Inside funnel" (blue) and "Outside funnel" (orange) with
+    a "region" header. An italic orange annotation reads "Asymmetry suggests publication
+    bias" in the lower-right area. The title reads "funnel-meta-analysis · plotnine
+    · pyplots.ai" in bold dark text.
   criteria_checklist:
     visual_quality:
-      score: 29
+      score: 26
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title=24, axis_title=20, axis_text=16'
+        comment: Font sizes explicitly set (title=24, axis_title=20, axis_text=16,
+          legend=14). Annotations at size=9-10 slightly small.
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: No overlapping text or elements
+        comment: No text overlap. Some point clustering near top but distinguishable.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Points visible but could be slightly larger for <30 data points
+        comment: Points well-sized (range 3-9) for 15 studies with alpha=0.85.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Single blue color with gray references, fully colorblind-safe
+        comment: Excellent colorblind-safe blue/orange pair.
       - id: VQ-05
         name: Layout & Canvas
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: Good 16:9 proportions, balanced margins
+        comment: Good proportions but outlier stretches x-axis creating wasted space
+          on right.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels, units not applicable for log OR and SE
+        comment: Descriptive labels appropriate for the domain.
     design_excellence:
-      score: 10
+      score: 13
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
-        passed: false
-        comment: Well-configured default, not exceptional
+        passed: true
+        comment: Custom palette, shaded funnel polygon, custom backgrounds. Above
+          defaults but not publication-ready.
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: Minor grid removed, major grid alpha=0.2, some refinement but not
-          polished
+        passed: true
+        comment: theme_minimal, subtle grid, no minor grid, custom panel and axis
+          styling.
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: Data includes bias pattern but no visual emphasis on it
+        passed: true
+        comment: Inside/outside funnel color coding and publication bias annotation
+          create clear narrative.
     spec_compliance:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -107,27 +115,29 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct funnel plot type
+        comment: Correct funnel plot with inverted Y-axis.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: All spec features present
+        comment: 'All features present: inverted SE axis, summary line, pseudo 95%
+          CI, sized points, null reference.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Correct X/Y mapping with reversed Y-axis
+        comment: Correct X=effect size, Y=SE reversed mapping.
       - id: SC-04
         name: Title & Legend
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Correct title format, no legend needed
+        comment: Title correct. Legend header shows 'region' column name instead of
+          being hidden.
     data_quality:
-      score: 14
+      score: 13
       max: 15
       items:
       - id: DQ-01
@@ -135,19 +145,21 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows publication bias asymmetry and varying precision levels
+        comment: 15 RCTs with varied precision, publication bias simulation, inside/outside
+          classification.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Realistic RCT meta-analysis context
+        comment: Drug vs placebo RCTs with log odds ratios. Neutral, realistic.
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: Realistic log OR and SE values
+        comment: Realistic values overall. One outlier at x≈1.3 is plausible but stretches
+          the visual.
     code_quality:
       score: 10
       max: 10
@@ -157,33 +169,34 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean linear structure
+        comment: Flat script structure.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42)
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: All imports used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean Pythonic code
+        comment: Clean, well-organized. Good use of pd.Categorical and inverse-variance
+          weighting.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300
+        comment: Saves as plot.png with dpi=300.
     library_mastery:
-      score: 6
+      score: 7
       max: 10
       items:
       - id: LM-01
@@ -191,18 +204,22 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good ggplot grammar usage with layered geoms
+        comment: 'Excellent ggplot grammar: layered composition, proper aes, scales,
+          themes.'
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Generic usage, could be replicated in other libraries easily
+        passed: true
+        comment: geom_polygon, scale_y_reverse, scale_size_continuous(guide=None),
+          pd.Categorical for ordering.
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
+  - annotations
   - layer-composition
+  - custom-legend
   patterns:
   - data-generation
   dataprep: []

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-load-duration: Load Duration Curve for Energy Systems
 Library: matplotlib 3.10.8 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-15
@@ -8,9 +8,7 @@ import matplotlib.patheffects as pe
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
-from matplotlib.colors import LinearSegmentedColormap
-from matplotlib.patches import Patch, PathPatch
-from matplotlib.path import Path
+from matplotlib.patches import Patch
 
 
 # Data
@@ -50,37 +48,21 @@ fig, ax = plt.subplots(figsize=(16, 9))
 fig.set_facecolor("#fafafa")
 ax.set_facecolor("#fafafa")
 
-# Gradient fill under the curve using imshow + clip path
-gradient_cmap = LinearSegmentedColormap.from_list("load_gradient", ["#D32F2F", "#F57C00", "#1976D2"], N=256)
-gradient_img = ax.imshow(
-    np.linspace(0, 1, 256).reshape(1, -1),
-    aspect="auto",
-    cmap=gradient_cmap,
-    extent=[0, hours, base_load - 30, load_mw[0]],
-    alpha=0.28,
-    zorder=1,
-)
-# Clip gradient to area under curve
-verts = list(zip(hour, load_mw, strict=False))
-verts.append((hours, base_load - 30))
-verts.append((0, base_load - 30))
-verts.append(verts[0])
-clip_path = Path(verts)
-clip_patch = PathPatch(clip_path, transform=ax.transData, facecolor="none", edgecolor="none")
-ax.add_patch(clip_patch)
-gradient_img.set_clip_path(clip_patch)
+# Region fills with colorblind-safe palette
+color_peak = "#C62828"
+color_inter = "#F9A825"
+color_base = "#1565C0"
 
-# Region boundary fills with subtle coloring
-ax.fill_between(hour[: peak_end + 1], load_mw[: peak_end + 1], peak_threshold, color="#D32F2F", alpha=0.15, zorder=2)
+ax.fill_between(hour[: peak_end + 1], load_mw[: peak_end + 1], base_load - 30, color=color_peak, alpha=0.18, zorder=2)
 ax.fill_between(
     hour[peak_end : base_start + 1],
     load_mw[peak_end : base_start + 1],
-    intermediate_threshold,
-    color="#F57C00",
-    alpha=0.15,
+    base_load - 30,
+    color=color_inter,
+    alpha=0.18,
     zorder=2,
 )
-ax.fill_between(hour[base_start:], load_mw[base_start:], base_load, color="#1976D2", alpha=0.15, zorder=2)
+ax.fill_between(hour[base_start:], load_mw[base_start:], base_load - 30, color=color_base, alpha=0.18, zorder=2)
 
 # Main curve with path effects for depth
 curve_shadow = [pe.SimpleLineShadow(offset=(1.5, -1.5), shadow_color="#00000022", linewidth=4)]
@@ -88,9 +70,9 @@ ax.plot(hour, load_mw, color="#1a1a2e", linewidth=2.8, zorder=5, path_effects=cu
 
 # Capacity tier lines with refined styling
 tier_props = [
-    (peak_threshold, "#D32F2F", "Peak Capacity"),
-    (intermediate_threshold, "#E65100", "Intermediate Capacity"),
-    (base_load, "#1565C0", "Base Capacity"),
+    (peak_threshold, color_peak, "Peak Capacity"),
+    (intermediate_threshold, "#D68F00", "Intermediate Capacity"),
+    (base_load, color_base, "Base Capacity"),
 ]
 
 for y_val, color, label in tier_props:
@@ -99,7 +81,7 @@ for y_val, color, label in tier_props:
         hours * 0.62,
         y_val + 14,
         f"{label}  {y_val:,} MW",
-        fontsize=13,
+        fontsize=14,
         color=color,
         fontweight="semibold",
         path_effects=[pe.withStroke(linewidth=3, foreground="#fafafaee")],
@@ -108,9 +90,9 @@ for y_val, color, label in tier_props:
 
 # Region labels with path effects for legibility
 region_labels = [
-    (peak_end * 0.45, peak_threshold + 80, "PEAK\nLOAD", "#D32F2F"),
-    ((peak_end + base_start) / 2, (peak_threshold + intermediate_threshold) / 2 + 10, "INTERMEDIATE\nLOAD", "#E65100"),
-    ((base_start + hours) / 2 - 200, (intermediate_threshold + base_load) / 2 + 10, "BASE\nLOAD", "#1565C0"),
+    (peak_end * 0.45, peak_threshold + 80, "PEAK\nLOAD", color_peak),
+    ((peak_end + base_start) / 2, (peak_threshold + intermediate_threshold) / 2 + 10, "INTERMEDIATE\nLOAD", "#D68F00"),
+    ((base_start + hours) / 2 - 700, (intermediate_threshold + base_load) / 2 + 30, "BASE\nLOAD", color_base),
 ]
 
 for x, y, text, color in region_labels:
@@ -150,10 +132,10 @@ ax.annotate(
     f"Peak: {load_mw[0]:,.0f} MW",
     xy=(0, load_mw[0]),
     xytext=(hours * 0.12, load_mw[0] + 25),
-    fontsize=13,
+    fontsize=14,
     fontweight="semibold",
-    color="#D32F2F",
-    arrowprops={"arrowstyle": "->", "color": "#D32F2F", "linewidth": 1.0},
+    color=color_peak,
+    arrowprops={"arrowstyle": "->", "color": color_peak, "linewidth": 1.0},
     path_effects=[pe.withStroke(linewidth=3, foreground="#fafafa")],
     zorder=7,
 )
@@ -179,11 +161,11 @@ ax.tick_params(axis="both", colors="#555555")
 
 # Custom legend with region patches
 legend_elements = [
-    Patch(facecolor="#D32F2F", alpha=0.4, label="Peak Load"),
-    Patch(facecolor="#F57C00", alpha=0.4, label="Intermediate Load"),
-    Patch(facecolor="#1976D2", alpha=0.4, label="Base Load"),
+    Patch(facecolor=color_peak, alpha=0.4, label="Peak Load"),
+    Patch(facecolor=color_inter, alpha=0.4, label="Intermediate Load"),
+    Patch(facecolor=color_base, alpha=0.4, label="Base Load"),
 ]
 ax.legend(handles=legend_elements, fontsize=15, loc="upper right", framealpha=0.92, edgecolor="#cccccc", fancybox=True)
 
 plt.tight_layout()
-plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor=fig.get_facecolor())
+fig.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor=fig.get_facecolor())

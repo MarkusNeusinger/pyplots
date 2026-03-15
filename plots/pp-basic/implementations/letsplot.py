@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 pp-basic: Probability-Probability (P-P) Plot
-Library: letsplot | Python 3.13
-Quality: pending | Created: 2026-03-15
+Library: letsplot 4.9.0 | Python 3.14.3
+Quality: 81/100 | Created: 2026-03-15
 """
 
 from math import erf, sqrt

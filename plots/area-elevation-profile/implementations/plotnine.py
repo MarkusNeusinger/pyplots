@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 area-elevation-profile: Terrain Elevation Profile Along Transect
 Library: plotnine 0.15.3 | Python 3.14.3
-Quality: 82/100 | Created: 2026-03-15
+Quality: 91/100 | Created: 2026-03-15
 """
 
 import numpy as np

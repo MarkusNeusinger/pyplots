@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 area-elevation-profile: Terrain Elevation Profile Along Transect
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 82/100 | Created: 2026-03-15
@@ -8,14 +8,16 @@ import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
-    annotate,
+    coord_cartesian,
     element_blank,
     element_line,
     element_rect,
     element_text,
-    geom_area,
     geom_line,
+    geom_point,
+    geom_ribbon,
     geom_segment,
+    geom_text,
     ggplot,
     labs,
     scale_x_continuous,
@@ -49,92 +51,98 @@ elevation = pd.Series(elevation).rolling(window=8, center=True, min_periods=1).m
 elevation[:12] = np.linspace(580, elevation[12], 12)
 elevation[-12:] = np.linspace(elevation[-12], 620, 12)
 
-df = pd.DataFrame({"distance": distance, "elevation": elevation})
+# Y-axis — start closer to data minimum to reduce wasted space
+y_min = 450
+y_max = int(np.ceil(elevation.max() / 100) * 100) + 280
+
+df = pd.DataFrame({"distance": distance, "elevation": elevation, "y_min": y_min})
 
 # Landmarks
-landmark_distances = [0, 18, 35, 50, 62, 78, 98, 120]
-landmark_names = [
-    "Grindelwald",
-    "Kleine Scheidegg",
-    "Jungfraujoch",
-    "Lauterbrunnen",
-    "Mürren",
-    "Schilthorn",
-    "Kandersteg",
-    "Adelboden",
-]
-landmark_elevations = []
-for d in landmark_distances:
-    idx = np.argmin(np.abs(distance - d))
-    landmark_elevations.append(elevation[idx])
+landmarks = pd.DataFrame(
+    {
+        "name": [
+            "Grindelwald",
+            "Kleine Scheidegg",
+            "Jungfraujoch",
+            "Lauterbrunnen",
+            "Mürren",
+            "Schilthorn",
+            "Kandersteg",
+            "Adelboden",
+        ],
+        "distance": [0, 18, 35, 50, 62, 78, 98, 120],
+    }
+)
+# Look up elevation for each landmark from the profile data
+landmarks["elevation"] = landmarks["distance"].apply(lambda d: elevation[np.argmin(np.abs(distance - d))])
+# Label positioning
+landmarks["label_y"] = landmarks["elevation"] + 180
+landmarks["label"] = landmarks.apply(lambda r: f"{r['name']}\n{int(r['elevation']):,} m", axis=1)
+landmarks["ha"] = "center"
+landmarks.loc[landmarks["distance"] < 5, "ha"] = "left"
+landmarks.loc[landmarks["distance"] > 115, "ha"] = "right"
+# Segment endpoint for vertical marker lines
+landmarks["seg_top"] = landmarks["elevation"] + 140
 
-landmarks = pd.DataFrame({"name": landmark_names, "distance": landmark_distances, "elevation": landmark_elevations})
-
-# Y-axis
-y_min = 300
-y_max = int(np.ceil(elevation.max() / 100) * 100) + 250
-
-# Plot
+# Plot — idiomatic plotnine layer composition with DataFrame-mapped geoms
 plot = (
     ggplot(df, aes(x="distance", y="elevation"))
-    + geom_area(fill="#306998", alpha=0.3)
+    + geom_ribbon(aes(ymin="y_min", ymax="elevation"), fill="#306998", alpha=0.7)
     + geom_line(color="#1a3d5c", size=1.4)
-)
-
-# Landmark marker lines (vertical segments from elevation to label position)
-for _, row in landmarks.iterrows():
-    plot = plot + geom_segment(
-        aes(x="distance", xend="distance", y="elevation", yend="label_y"),
-        data=pd.DataFrame(
-            {"distance": [row["distance"]], "elevation": [row["elevation"]], "label_y": [row["elevation"] + 160]}
-        ),
+    # Vertical marker lines from landmark point to label
+    + geom_segment(
+        aes(x="distance", xend="distance", y="elevation", yend="seg_top"),
+        data=landmarks,
         color="#888888",
         linetype="dotted",
         size=0.5,
     )
-
-# Landmark points
-plot = plot + annotate(
-    "point",
-    x=landmarks["distance"].values,
-    y=landmarks["elevation"].values,
-    size=3.5,
-    color="#1a3d5c",
-    fill="#FFD43B",
-    stroke=0.8,
-)
-
-# Landmark labels
-for _, row in landmarks.iterrows():
-    ha = "center"
-    if row["distance"] < 5:
-        ha = "left"
-    elif row["distance"] > 115:
-        ha = "right"
-
-    plot = plot + annotate(
-        "text",
-        x=row["distance"],
-        y=row["elevation"] + 180,
-        label=f"{row['name']}\n{int(row['elevation']):,} m",
+    # Landmark points
+    + geom_point(
+        aes(x="distance", y="elevation"), data=landmarks, size=3.5, color="#1a3d5c", fill="#FFD43B", stroke=0.8
+    )
+    # Landmark labels — left-aligned group (edge, nudged inward)
+    + geom_text(
+        aes(x="distance", y="label_y", label="label"),
+        data=landmarks[landmarks["ha"] == "left"],
         size=7.5,
         color="#2d2d2d",
-        ha=ha,
+        ha="left",
+        va="bottom",
+        fontweight="bold",
+        nudge_x=3,
+    )
+    # Landmark labels — center-aligned group
+    + geom_text(
+        aes(x="distance", y="label_y", label="label"),
+        data=landmarks[landmarks["ha"] == "center"],
+        size=7.5,
+        color="#2d2d2d",
+        ha="center",
         va="bottom",
         fontweight="bold",
     )
-
-# Style
-plot = (
-    plot
+    # Landmark labels — right-aligned group (edge, nudged inward)
+    + geom_text(
+        aes(x="distance", y="label_y", label="label"),
+        data=landmarks[landmarks["ha"] == "right"],
+        size=7.5,
+        color="#2d2d2d",
+        ha="right",
+        va="bottom",
+        fontweight="bold",
+        nudge_x=-5,
+    )
+    # Scales and labels
     + labs(
         x="Distance (km)",
         y="Elevation (m)",
         title="area-elevation-profile · plotnine · pyplots.ai",
         subtitle="Alpine Trail: Grindelwald to Adelboden (120 km) · Vertical exaggeration ~10×",
     )
-    + scale_x_continuous(breaks=range(0, 130, 10))
-    + scale_y_continuous(limits=(y_min, y_max))
+    + scale_x_continuous(breaks=range(0, 130, 10), expand=(0.03, 2))
+    + scale_y_continuous(breaks=range(500, 2200, 250))
+    + coord_cartesian(ylim=(y_min, y_max))
     + theme_minimal()
     + theme(
         figure_size=(16, 9),

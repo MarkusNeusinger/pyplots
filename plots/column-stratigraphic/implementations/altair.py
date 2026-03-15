@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 column-stratigraphic: Stratigraphic Column with Lithology Patterns
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-15
@@ -9,10 +9,11 @@ import pandas as pd
 
 
 # Data: Grand Canyon sedimentary section with 10 layers spanning Cambrian to Permian
+# Dramatic thickness variation (10-35 m) to showcase the format
 layers = pd.DataFrame(
     {
-        "top": [0, 15, 35, 55, 70, 90, 110, 135, 155, 175],
-        "bottom": [15, 35, 55, 70, 90, 110, 135, 155, 175, 200],
+        "top": [0, 30, 45, 75, 85, 110, 120, 155, 170, 180],
+        "bottom": [30, 45, 75, 85, 110, 120, 155, 170, 180, 200],
         "lithology": [
             "Sandstone",
             "Shale",
@@ -66,20 +67,20 @@ lithology_colors = {
 
 lithology_order = ["Sandstone", "Shale", "Limestone", "Siltstone", "Conglomerate"]
 
-# Lithology pattern symbols for geological texture
+# Lithology pattern symbols — wider for better visibility
 pattern_symbols = {
-    "Sandstone": "·  ·  ·  ·  ·",
-    "Shale": "—  —  —  —",
-    "Limestone": "▤  ▤  ▤  ▤",
-    "Siltstone": "╌  ╌  ╌  ╌",
-    "Conglomerate": "◯  ◯  ◯  ◯",
+    "Sandstone": "· · · · · · · ·",
+    "Shale": "— — — — — —",
+    "Limestone": "▤ ▤ ▤ ▤ ▤ ▤",
+    "Siltstone": "╌ ╌ ╌ ╌ ╌ ╌",
+    "Conglomerate": "◯ ◯ ◯ ◯ ◯ ◯",
 }
 
 # Create multiple pattern rows per layer for denser texture fill
 pattern_rows = []
 for _, row in layers.iterrows():
     layer_height = row["bottom"] - row["top"]
-    n_rows = max(2, int(layer_height / 7))
+    n_rows = max(2, int(layer_height / 6))
     spacing = layer_height / (n_rows + 1)
     for i in range(n_rows):
         depth = row["top"] + spacing * (i + 1)
@@ -104,13 +105,13 @@ for _, row in layers.iterrows():
 age_df = pd.DataFrame(age_groups)
 
 # Unconformity markers at major geological transitions
-unconformity_df = pd.DataFrame({"depth": [110, 155], "label": ["— Unconformity —", "— Great Unconformity —"]})
+unconformity_df = pd.DataFrame({"depth": [120, 170], "label": ["Unconformity", "Great Unconformity"]})
 
-# Shared scales
-x_domain = [0, 16]
+# Shared scales — wider x domain for better canvas utilization
+x_domain = [0, 18]
 x_axis_none = alt.Axis(labels=False, ticks=False, domain=False, grid=False)
 
-# Layer rectangles
+# Layer rectangles — wider column (x: 2.5 to 10.5)
 rects = (
     alt.Chart(layers)
     .mark_rect(stroke="#2C3E50", strokeWidth=1.5)
@@ -123,9 +124,10 @@ rects = (
                 labelFontSize=18,
                 titleFontSize=22,
                 tickCount=10,
-                gridColor="#E0E0E0",
+                gridColor="#D5D8DC",
                 gridDash=[2, 4],
                 domainColor="#2C3E50",
+                domainWidth=1.5,
             ),
         ),
         y2="bottom:Q",
@@ -138,12 +140,13 @@ rects = (
             legend=alt.Legend(
                 titleFontSize=20,
                 labelFontSize=18,
-                symbolSize=500,
+                symbolSize=600,
                 orient="bottom",
                 titlePadding=12,
                 direction="horizontal",
                 labelLimit=200,
                 symbolStrokeWidth=1.5,
+                symbolStrokeColor="#2C3E50",
                 padding=20,
                 columns=5,
             ),
@@ -157,15 +160,15 @@ rects = (
             alt.Tooltip("thickness:Q", title="Thickness (m)"),
         ],
     )
-    .transform_calculate(x="3", x2="9")
+    .transform_calculate(x="2.5", x2="10.5")
 )
 
-# Dense pattern texture overlay
+# Dense pattern texture overlay — bolder and more prominent
 pattern_text = (
     alt.Chart(pattern_df)
-    .mark_text(fontSize=16, color="#2C3E50", opacity=0.6)
+    .mark_text(fontSize=17, color="#2C3E50", opacity=0.65, fontWeight="bold")
     .encode(y=alt.Y("depth:Q"), x=alt.X("x_mid:Q", scale=alt.Scale(domain=x_domain)), text="pattern:N")
-    .transform_calculate(x_mid="6")
+    .transform_calculate(x_mid="6.5")
 )
 
 # Formation name labels to the right
@@ -173,15 +176,15 @@ formation_labels = (
     alt.Chart(layers)
     .mark_text(fontSize=17, fontWeight="bold", align="left", color="#1B2631")
     .encode(y=alt.Y("mid_depth:Q"), x=alt.X("x_pos:Q", scale=alt.Scale(domain=x_domain)), text="formation:N")
-    .transform_calculate(x_pos="9.4")
+    .transform_calculate(x_pos="11.0")
 )
 
-# Thickness annotations (subtle, on the right)
+# Thickness annotations — larger font for readability
 thickness_labels = (
     alt.Chart(layers)
-    .mark_text(fontSize=13, align="right", color="#7F8C8D", fontStyle="italic")
+    .mark_text(fontSize=16, align="right", color="#7F8C8D", fontStyle="italic")
     .encode(y=alt.Y("mid_depth:Q"), x=alt.X("x_pos:Q", scale=alt.Scale(domain=x_domain)), text="label:N")
-    .transform_calculate(x_pos="15.8", label="datum.thickness + ' m'")
+    .transform_calculate(x_pos="17.8", label="datum.thickness + ' m'")
 )
 
 # Age period labels to the left
@@ -189,7 +192,7 @@ age_labels = (
     alt.Chart(age_df)
     .mark_text(fontSize=18, fontStyle="italic", fontWeight="bold", align="right", color="#2C3E50")
     .encode(y=alt.Y("mid_depth:Q"), x=alt.X("x_pos:Q", scale=alt.Scale(domain=x_domain)), text="age:N")
-    .transform_calculate(x_pos="2.0")
+    .transform_calculate(x_pos="1.8")
 )
 
 # Age bracket vertical lines
@@ -197,7 +200,7 @@ age_brackets_v = (
     alt.Chart(age_df)
     .mark_rule(strokeWidth=2.5, color="#2C3E50")
     .encode(y=alt.Y("top:Q"), y2="bottom:Q", x=alt.X("x_pos:Q", scale=alt.Scale(domain=x_domain)))
-    .transform_calculate(x_pos="2.5")
+    .transform_calculate(x_pos="2.2")
 )
 
 # Age bracket horizontal ticks (top and bottom of each age group)
@@ -211,7 +214,7 @@ age_bracket_ticks = (
     alt.Chart(bracket_ticks_df)
     .mark_rule(strokeWidth=2.5, color="#2C3E50")
     .encode(y=alt.Y("depth:Q"), x=alt.X("x1:Q", scale=alt.Scale(domain=x_domain)), x2="x2:Q")
-    .transform_calculate(x1="2.5", x2="2.8")
+    .transform_calculate(x1="2.2", x2="2.5")
 )
 
 # Unconformity markers — red dashed lines at key geological transitions
@@ -219,14 +222,15 @@ unconformity_rules = (
     alt.Chart(unconformity_df)
     .mark_rule(strokeWidth=4, color="#C0392B", strokeDash=[8, 4])
     .encode(y=alt.Y("depth:Q"), x=alt.X("x1:Q", scale=alt.Scale(domain=x_domain)), x2="x2:Q")
-    .transform_calculate(x1="3", x2="9")
+    .transform_calculate(x1="2.5", x2="10.5")
 )
 
+# Unconformity labels — positioned to the right of column to avoid overlapping patterns
 unconformity_labels_chart = (
     alt.Chart(unconformity_df)
-    .mark_text(fontSize=12, color="#C0392B", fontWeight="bold", align="center", dy=14)
+    .mark_text(fontSize=13, color="#C0392B", fontWeight="bold", align="left", dy=-10)
     .encode(y=alt.Y("depth:Q"), x=alt.X("x_mid:Q", scale=alt.Scale(domain=x_domain)), text="label:N")
-    .transform_calculate(x_mid="6")
+    .transform_calculate(x_mid="11.0")
 )
 
 # Combine all layers
@@ -243,7 +247,7 @@ chart = (
         + unconformity_labels_chart
     )
     .properties(
-        width=1200,
+        width=1400,
         height=900,
         title=alt.Title(
             "column-stratigraphic · altair · pyplots.ai",

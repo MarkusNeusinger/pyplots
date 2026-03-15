@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 stereonet-equal-area: Structural Geology Stereonet (Equal-Area Projection)
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-15
@@ -43,22 +43,32 @@ df["pole_y"] = pole_r * np.cos(pole_trend_rad)
 # Scale marker size by dip angle for visual hierarchy (steeper dips = larger markers)
 df["marker_size"] = 80 + (df["dip"] / 90) * 120
 
-# Set up seaborn theme and palette
-sns.set_theme(style="white", font_scale=1.2)
-palette = sns.color_palette(["#306998", "#E88D39", "#3AA655", "#C44E52"])
-palette_dict = dict(zip(["Bedding", "Joint Set 1", "Joint Set 2", "Fault"], palette, strict=True))
+# Colorblind-safe palette: blue, orange, purple, teal (avoids green-red pairing)
+sns.set_theme(style="white", font="DejaVu Sans", font_scale=1.2)
+sns.set_context("talk", rc={"font.family": "DejaVu Sans"})
+feature_colors = ["#306998", "#E88D39", "#8B5FC7", "#17A2B8"]
+palette = sns.color_palette(feature_colors)
+feature_names = ["Bedding", "Joint Set 1", "Joint Set 2", "Fault"]
+palette_dict = dict(zip(feature_names, palette, strict=True))
 
-fig, ax = plt.subplots(figsize=(12, 12))
+fig, ax = plt.subplots(figsize=(12, 12), facecolor="#FAFAFA")
+ax.set_facecolor("#FAFAFA")
 ax.set_aspect("equal")
 
-# Primitive circle
+# Subtle outer glow ring for depth
+for ring_r, ring_alpha in [(1.02, 0.04), (1.04, 0.02)]:
+    glow = plt.Circle((0, 0), ring_r, fill=False, color="#888888", linewidth=0.6, alpha=ring_alpha)
+    ax.add_patch(glow)
+
+# Primitive circle with refined styling
 theta_circle = np.linspace(0, 2 * np.pi, 300)
-ax.plot(np.sin(theta_circle), np.cos(theta_circle), "k-", linewidth=1.5, zorder=4)
+ax.fill(np.sin(theta_circle), np.cos(theta_circle), color="white", zorder=0)
+ax.plot(np.sin(theta_circle), np.cos(theta_circle), color="#2C2C2C", linewidth=1.8, zorder=4)
 
 # Grid: small circles (constant plunge)
 for plunge_deg in range(10, 90, 10):
     r = np.sqrt(2) * np.sin((np.pi / 2 - np.radians(plunge_deg)) / 2)
-    grid_circle = plt.Circle((0, 0), r, fill=False, color="#d0d0d0", linewidth=0.4, zorder=1)
+    grid_circle = plt.Circle((0, 0), r, fill=False, color="#CCCCCC", linewidth=0.3, linestyle=(0, (5, 5)), zorder=1)
     ax.add_patch(grid_circle)
 
 # Grid: great circles for N-S and E-W reference planes
@@ -75,31 +85,38 @@ for ref_strike in [0, 90]:
         gc_r = np.sqrt(2) * np.sin((np.pi / 2 - gc_plunge) / 2)
         gc_x = gc_r * np.sin(gc_trend)
         gc_y = gc_r * np.cos(gc_trend)
-        ax.plot(gc_x, gc_y, color="#d0d0d0", linewidth=0.4, zorder=1)
+        ax.plot(gc_x, gc_y, color="#CCCCCC", linewidth=0.3, linestyle=(0, (5, 5)), zorder=1)
 
-# Tick marks every 10 degrees
+# Tick marks every 10 degrees with graduated lengths
 for azimuth in range(0, 360, 10):
     az_rad = np.radians(azimuth)
-    tick_inner = 0.97 if azimuth % 30 != 0 else 0.95
+    if azimuth % 90 == 0:
+        tick_inner, tick_lw = 0.93, 1.2
+    elif azimuth % 30 == 0:
+        tick_inner, tick_lw = 0.95, 0.9
+    else:
+        tick_inner, tick_lw = 0.97, 0.6
     ax.plot(
         [tick_inner * np.sin(az_rad), np.sin(az_rad)],
         [tick_inner * np.cos(az_rad), np.cos(az_rad)],
-        "k-",
-        linewidth=0.8,
+        color="#2C2C2C",
+        linewidth=tick_lw,
         zorder=4,
     )
 
-# Cardinal direction labels
+# Cardinal direction labels with refined typography
 for az, label in [(0, "N"), (90, "E"), (180, "S"), (270, "W")]:
     az_rad = np.radians(az)
+    fontsize = 26 if label == "N" else 22
     ax.text(
-        1.08 * np.sin(az_rad),
-        1.08 * np.cos(az_rad),
+        1.09 * np.sin(az_rad),
+        1.09 * np.cos(az_rad),
         label,
         ha="center",
         va="center",
-        fontsize=22,
+        fontsize=fontsize,
         fontweight="bold",
+        color="#1A1A1A",
         zorder=6,
     )
 
@@ -109,18 +126,17 @@ for az in range(30, 360, 30):
         continue
     az_rad = np.radians(az)
     ax.text(
-        1.07 * np.sin(az_rad),
-        1.07 * np.cos(az_rad),
+        1.08 * np.sin(az_rad),
+        1.08 * np.cos(az_rad),
         f"{az}°",
         ha="center",
         va="center",
-        fontsize=16,
-        color="#555555",
+        fontsize=14,
+        color="#777777",
         zorder=6,
     )
 
-# Density contours using seaborn kdeplot (Kamb-style)
-# Track existing artists to clip only KDE additions
+# Density contours per feature type using seaborn kdeplot with hue
 n_collections_before = len(ax.collections)
 n_lines_before = len(ax.lines)
 
@@ -128,26 +144,32 @@ sns.kdeplot(
     data=df,
     x="pole_x",
     y="pole_y",
+    hue="feature_type",
+    hue_order=feature_names,
+    palette=[sns.desaturate(c, 0.3) for c in feature_colors],
     fill=True,
-    levels=8,
-    thresh=0.1,
-    cmap="Greys",
-    alpha=0.35,
-    bw_adjust=0.6,
+    levels=5,
+    thresh=0.2,
+    alpha=0.15,
+    bw_adjust=0.7,
     ax=ax,
     zorder=2,
+    legend=False,
 )
 sns.kdeplot(
     data=df,
     x="pole_x",
     y="pole_y",
-    levels=8,
-    thresh=0.1,
-    color="#777777",
-    linewidths=0.8,
-    bw_adjust=0.6,
+    hue="feature_type",
+    hue_order=feature_names,
+    palette=[sns.desaturate(c, 0.5) for c in feature_colors],
+    levels=5,
+    thresh=0.2,
+    linewidths=0.6,
+    bw_adjust=0.7,
     ax=ax,
     zorder=2,
+    legend=False,
 )
 
 # Clip density contours to the primitive circle
@@ -176,23 +198,27 @@ for feature_type in df["feature_type"].unique():
         gc_r = np.sqrt(2) * np.sin((np.pi / 2 - gc_plunge) / 2)
         gc_x = gc_r * np.sin(gc_trend)
         gc_y = gc_r * np.cos(gc_trend)
-        ax.plot(gc_x, gc_y, color=palette_dict[feature_type], linewidth=1.8, alpha=0.5, zorder=3)
+        ax.plot(gc_x, gc_y, color=palette_dict[feature_type], linewidth=2.0, alpha=0.45, zorder=3)
 
-# Poles using seaborn scatterplot with size encoding for visual hierarchy
+# Poles using seaborn scatterplot with hue and size encoding
 sns.scatterplot(
     data=df,
     x="pole_x",
     y="pole_y",
     hue="feature_type",
+    hue_order=feature_names,
+    style="feature_type",
+    style_order=feature_names,
+    markers={"Bedding": "o", "Joint Set 1": "s", "Joint Set 2": "D", "Fault": "^"},
     size="marker_size",
     sizes=(80, 200),
     palette=palette_dict,
     edgecolor="white",
-    linewidth=0.8,
-    alpha=0.85,
+    linewidth=0.9,
+    alpha=0.88,
     ax=ax,
     zorder=5,
-    legend="brief",
+    legend=False,
 )
 
 # Style
@@ -204,36 +230,54 @@ ax.set_xticks([])
 ax.set_yticks([])
 sns.despine(ax=ax, left=True, bottom=True)
 
-# Build a custom legend (feature types only, excluding size legend)
+# Build a custom legend with marker shapes matching the plot
+marker_map = {"Bedding": "o", "Joint Set 1": "s", "Joint Set 2": "D", "Fault": "^"}
 handles = []
-for ft, color in palette_dict.items():
+for ft in feature_names:
     handles.append(
         plt.Line2D(
             [0],
             [0],
-            marker="o",
-            color="w",
-            markerfacecolor=color,
-            markersize=10,
+            marker=marker_map[ft],
+            color="none",
+            markerfacecolor=palette_dict[ft],
+            markersize=11,
             markeredgecolor="white",
-            markeredgewidth=0.5,
+            markeredgewidth=0.6,
             label=ft,
         )
     )
 
-ax.legend(
+legend = ax.legend(
     handles=handles,
     title="Feature Type",
     loc="upper left",
     fontsize=15,
     title_fontsize=17,
-    framealpha=0.95,
-    edgecolor="#cccccc",
+    framealpha=0.92,
+    edgecolor="#BBBBBB",
+    fancybox=True,
+    shadow=False,
     bbox_to_anchor=(-0.02, 1.02),
 )
+legend.get_title().set_fontweight("semibold")
 
-ax.set_title("stereonet-equal-area · seaborn · pyplots.ai", fontsize=24, fontweight="medium", pad=25)
+# Measurement count annotation
+n_total = len(df)
+ax.text(
+    0.98,
+    -0.02,
+    f"n = {n_total} measurements",
+    transform=ax.transAxes,
+    fontsize=13,
+    color="#888888",
+    ha="right",
+    va="top",
+    style="italic",
+)
+
+ax.set_title("stereonet-equal-area · seaborn · pyplots.ai", fontsize=24, fontweight="medium", color="#2C2C2C", pad=30)
 
 # Save
 plt.tight_layout()
-plt.savefig("plot.png", dpi=300, bbox_inches="tight")
+plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="#FAFAFA")

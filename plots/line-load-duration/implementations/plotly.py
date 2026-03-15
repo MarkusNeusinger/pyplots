@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-load-duration: Load Duration Curve for Energy Systems
-Library: plotly | Python 3.13
-Quality: pending | Created: 2026-03-15
+Library: plotly 6.6.0 | Python 3.14.3
+Quality: 86/100 | Created: 2026-03-15
 """
 
 import numpy as np

@@ -1,10 +1,11 @@
-""" pyplots.ai
+"""pyplots.ai
 psychrometric-basic: Psychrometric Chart for HVAC
 Library: matplotlib 3.10.8 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-15
 """
 
 import matplotlib.patches as mpatches
+import matplotlib.patheffects as pe
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.lines import Line2D
@@ -24,10 +25,15 @@ W_MAX = 30  # g/kg
 # Plot
 fig, ax = plt.subplots(figsize=(16, 9))
 
+# White outline for label readability over lines
+label_outline = [pe.withStroke(linewidth=3, foreground="white")]
+
 rh_color = "#306998"
-wb_color = "#1B7F8E"
+wb_color = "#B5651D"  # warm brown - distinct from blue for colorblind safety
 enth_color = "#C75B2A"
 vol_color = "#8B6BAE"
+
+INLINE_FONTSIZE = 13
 
 # Relative humidity curves (10% to 100%)
 for rh in np.arange(0.1, 1.01, 0.1):
@@ -41,18 +47,20 @@ for rh in np.arange(0.1, 1.01, 0.1):
         rh_pct = int(rh * 100)
         if rh_pct == 100:
             continue
-        frac = 0.75 if rh_pct <= 30 else 0.65 if rh_pct <= 60 else 0.42 + 0.025 * (100 - rh_pct)
+        # Place RH labels at right side of chart to avoid crowding with wet-bulb labels
+        frac = 0.85 if rh_pct <= 30 else 0.80 if rh_pct <= 60 else 0.75
         idx = min(int(len(t_p) * frac), len(t_p) - 1)
         if w_p[idx] < W_MAX - 3:
             ax.text(
                 t_p[idx],
                 w_p[idx] + 0.4,
                 f"{rh_pct}%",
-                fontsize=11,
+                fontsize=INLINE_FONTSIZE,
                 color=rh_color,
-                alpha=0.85,
+                alpha=0.9,
                 ha="center",
                 fontweight="medium",
+                path_effects=label_outline,
             )
 
 # Wet-bulb temperature lines
@@ -65,18 +73,20 @@ for t_wb in np.arange(0, 35, 5):
     t_p, w_p = t_range[mask], w[mask]
     if len(t_p) > 2:
         ax.plot(t_p, w_p, color=wb_color, linewidth=1.5, alpha=0.7, linestyle="--")
-        # Place label along the line away from saturation curve to avoid crowding
-        label_idx = min(len(t_p) - 1, max(1, int(len(t_p) * 0.15)))
-        ax.text(
-            t_p[label_idx],
-            w_p[label_idx] + 0.5,
-            f"{int(t_wb)}°C",
-            fontsize=11,
-            color=wb_color,
-            alpha=0.85,
-            rotation=-45,
-            ha="center",
-        )
+        # Place wet-bulb labels near bottom-right end of each line to avoid crowding
+        label_idx = min(len(t_p) - 1, max(1, int(len(t_p) * 0.85)))
+        if w_p[label_idx] < W_MAX - 2:
+            ax.text(
+                t_p[label_idx],
+                w_p[label_idx] + 0.5,
+                f"{int(t_wb)}°C",
+                fontsize=INLINE_FONTSIZE,
+                color=wb_color,
+                alpha=0.9,
+                rotation=-45,
+                ha="center",
+                path_effects=label_outline,
+            )
 
 # Enthalpy lines (kJ/kg dry air)
 for h in np.arange(10, 120, 10):
@@ -87,19 +97,28 @@ for h in np.arange(10, 120, 10):
         ax.plot(t_p, w_p, color=enth_color, linewidth=1.5, alpha=0.7, linestyle="-.")
         # Place label along the line, skip if too close to top to avoid title overlap
         if w_p[0] <= W_MAX - 5:
-            ax.text(t_p[0] - 0.5, w_p[0] + 0.3, f"{int(h)}", fontsize=11, color=enth_color, alpha=0.85, rotation=-30)
+            ax.text(
+                t_p[0] - 0.5,
+                w_p[0] + 0.3,
+                f"{int(h)}",
+                fontsize=INLINE_FONTSIZE,
+                color=enth_color,
+                alpha=0.9,
+                rotation=-30,
+                path_effects=label_outline,
+            )
         elif len(t_p) > 10:
-            # For high-enthalpy lines, place label further along the line
             label_idx = min(len(t_p) - 1, int(len(t_p) * 0.2))
             if w_p[label_idx] < W_MAX - 3:
                 ax.text(
                     t_p[label_idx],
                     w_p[label_idx] + 0.3,
                     f"{int(h)}",
-                    fontsize=11,
+                    fontsize=INLINE_FONTSIZE,
                     color=enth_color,
-                    alpha=0.85,
+                    alpha=0.9,
                     rotation=-30,
+                    path_effects=label_outline,
                 )
 
 # Specific volume lines (m³/kg dry air)
@@ -111,7 +130,16 @@ for v in np.arange(0.78, 0.96, 0.02):
     if len(t_p) > 2:
         ax.plot(t_p, w_p, color=vol_color, linewidth=1.5, alpha=0.7, linestyle=":")
         if 0 <= w_p[-1] <= W_MAX:
-            ax.text(t_p[-1] + 0.3, w_p[-1], f"{v:.2f}", fontsize=11, color=vol_color, alpha=0.85, rotation=-75)
+            ax.text(
+                t_p[-1] + 0.3,
+                w_p[-1],
+                f"{v:.2f}",
+                fontsize=INLINE_FONTSIZE,
+                color=vol_color,
+                alpha=0.9,
+                rotation=-75,
+                path_effects=label_outline,
+            )
 
 # Comfort zone (20-26°C, 30-60% RH) - inline humidity ratio calculation
 comfort_temps = np.array([20, 26])
@@ -128,7 +156,7 @@ ax.text(
     23,
     np.mean(comfort_polygon[:, 1]) - 0.8,
     "Comfort\nZone",
-    fontsize=11,
+    fontsize=14,
     color=rh_color,
     ha="center",
     va="center",
@@ -150,17 +178,20 @@ ax.add_patch(FancyArrowPatch((13, state_2_w), (24, state_3_w), **arrow_kw))
 
 for t, w, label in [(35, state_1_w, "1"), (13, state_2_w, "2"), (24, state_3_w, "3")]:
     ax.plot(t, w, "o", color="#D32F2F", markersize=10, zorder=6, markeredgecolor="white", markeredgewidth=1.5)
-    ax.text(t + 0.8, w + 0.5, label, fontsize=12, color="#D32F2F", fontweight="bold", zorder=6)
+    ax.text(
+        t + 0.8, w + 0.5, label, fontsize=14, color="#D32F2F", fontweight="bold", zorder=6, path_effects=label_outline
+    )
 
 ax.text(
-    36,
-    state_1_w - 2.5,
+    28,
+    state_1_w + 1.5,
     "Cool + Dehumidify \u2192 Reheat",
-    fontsize=10,
+    fontsize=13,
     color="#D32F2F",
     alpha=0.85,
     fontstyle="italic",
     ha="center",
+    path_effects=label_outline,
 )
 
 # Style
@@ -177,7 +208,7 @@ ax.xaxis.grid(True, alpha=0.15, linewidth=0.6)
 
 legend_elements = [
     Line2D([0], [0], color=rh_color, linewidth=2, label="Relative Humidity"),
-    Line2D([0], [0], color=wb_color, linewidth=1.5, linestyle="--", label="Wet-Bulb Temp"),
+    Line2D([0], [0], color=wb_color, linewidth=2, linestyle="--", label="Wet-Bulb Temp"),
     Line2D([0], [0], color=enth_color, linewidth=1.5, linestyle="-.", label="Enthalpy (kJ/kg)"),
     Line2D([0], [0], color=vol_color, linewidth=1.5, linestyle=":", label="Specific Volume (m\u00b3/kg)"),
     Line2D([0], [0], color="#D32F2F", linewidth=2, marker="o", markersize=6, label="HVAC Process"),

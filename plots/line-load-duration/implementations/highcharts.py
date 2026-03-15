@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-load-duration: Load Duration Curve for Energy Systems
 Library: highcharts unknown | Python 3.14.3
 Quality: 81/100 | Created: 2026-03-15
@@ -67,69 +67,75 @@ chart.options.chart = {
     "type": "area",
     "width": 4800,
     "height": 2700,
-    "backgroundColor": "#ffffff",
-    "marginBottom": 250,
-    "marginLeft": 250,
-    "marginRight": 150,
-    "marginTop": 200,
+    "backgroundColor": "#fafafa",
+    "marginBottom": 320,
+    "marginLeft": 280,
+    "marginRight": 200,
+    "marginTop": 220,
 }
 
 chart.options.title = {
     "text": "line-load-duration \u00b7 highcharts \u00b7 pyplots.ai",
-    "style": {"fontSize": "64px", "fontWeight": "bold"},
+    "style": {"fontSize": "64px", "fontWeight": "700", "fontFamily": "Georgia, serif", "color": "#1a1a2e"},
 }
 
 chart.options.subtitle = {
     "text": f"Annual Load Duration Curve \u2014 Total Energy: {total_energy_gwh:,.0f} GWh",
-    "style": {"fontSize": "42px", "color": "#555555"},
+    "style": {"fontSize": "44px", "color": "#444444", "fontFamily": "Georgia, serif", "fontStyle": "italic"},
 }
 
 chart.options.x_axis = {
-    "title": {"text": "Hours of Year (Ranked)", "style": {"fontSize": "44px"}, "margin": 30},
-    "labels": {"style": {"fontSize": "34px"}, "y": 50},
+    "title": {"text": "Hours of Year (Ranked)", "style": {"fontSize": "44px", "color": "#333333"}, "margin": 40},
+    "labels": {"style": {"fontSize": "34px", "color": "#333333"}},
     "gridLineWidth": 0,
+    "lineColor": "#999999",
+    "lineWidth": 2,
     "min": 0,
     "max": 8760,
     "tickInterval": 1000,
+    "tickColor": "#999999",
     "plotBands": [
         {
             "from": 0,
             "to": peak_hours,
-            "color": "rgba(0,0,0,0)",
+            "color": "rgba(192, 57, 43, 0.06)",
             "label": {
-                "text": "Peak Load",
-                "style": {"fontSize": "36px", "color": "#c0392b", "fontWeight": "bold"},
-                "y": -20,
+                "text": f"Peak<br/>{peak_hours} hrs",
+                "style": {"fontSize": "34px", "color": "#c0392b", "fontWeight": "bold"},
+                "y": -15,
             },
         },
         {
             "from": peak_hours,
             "to": intermediate_hours,
-            "color": "rgba(0,0,0,0)",
+            "color": "rgba(142, 68, 173, 0.06)",
             "label": {
-                "text": "Intermediate Load",
-                "style": {"fontSize": "36px", "color": "#e67e22", "fontWeight": "bold"},
-                "y": -20,
+                "text": f"Intermediate<br/>{intermediate_hours - peak_hours:,} hrs",
+                "style": {"fontSize": "34px", "color": "#7d3c98", "fontWeight": "bold"},
+                "y": -15,
             },
         },
         {
             "from": intermediate_hours,
             "to": 8760,
-            "color": "rgba(0,0,0,0)",
+            "color": "rgba(48, 105, 152, 0.06)",
             "label": {
-                "text": "Base Load",
-                "style": {"fontSize": "36px", "color": "#306998", "fontWeight": "bold"},
-                "y": -20,
+                "text": f"Base Load<br/>{8760 - intermediate_hours:,} hrs",
+                "style": {"fontSize": "34px", "color": "#306998", "fontWeight": "bold"},
+                "y": -15,
             },
         },
     ],
 }
 
 chart.options.y_axis = {
-    "title": {"text": "Power Demand (MW)", "style": {"fontSize": "44px"}},
-    "labels": {"style": {"fontSize": "34px"}},
+    "title": {"text": "Power Demand (MW)", "style": {"fontSize": "44px", "color": "#333333"}},
+    "labels": {"style": {"fontSize": "34px", "color": "#333333"}},
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.08)",
+    "gridLineColor": "rgba(0, 0, 0, 0.06)",
+    "gridLineDashStyle": "Dot",
+    "lineColor": "#999999",
+    "lineWidth": 2,
     "min": 300,
     "max": 1350,
     "plotLines": [
@@ -137,59 +143,69 @@ chart.options.y_axis = {
             "value": peak_capacity,
             "color": "#c0392b",
             "width": 4,
-            "dashStyle": "Dash",
+            "dashStyle": "LongDash",
             "zIndex": 5,
             "label": {
                 "text": f"Peak Capacity: {peak_capacity} MW",
-                "align": "right",
-                "x": -20,
-                "y": -12,
-                "style": {"fontSize": "32px", "color": "#c0392b", "fontWeight": "bold"},
+                "align": "left",
+                "x": 20,
+                "y": -14,
+                "style": {"fontSize": "30px", "color": "#c0392b", "fontWeight": "bold"},
             },
         },
         {
             "value": intermediate_capacity,
-            "color": "#e67e22",
+            "color": "#7d3c98",
             "width": 4,
-            "dashStyle": "Dash",
+            "dashStyle": "LongDash",
             "zIndex": 5,
             "label": {
                 "text": f"Intermediate Capacity: {intermediate_capacity} MW",
-                "align": "right",
-                "x": -20,
-                "y": -12,
-                "style": {"fontSize": "32px", "color": "#e67e22", "fontWeight": "bold"},
+                "align": "left",
+                "x": 20,
+                "y": -14,
+                "style": {"fontSize": "30px", "color": "#7d3c98", "fontWeight": "bold"},
             },
         },
         {
             "value": base_capacity,
             "color": "#306998",
             "width": 4,
-            "dashStyle": "Dash",
+            "dashStyle": "LongDash",
             "zIndex": 5,
             "label": {
                 "text": f"Base Capacity: {base_capacity} MW",
-                "align": "right",
-                "x": -20,
-                "y": -12,
-                "style": {"fontSize": "32px", "color": "#306998", "fontWeight": "bold"},
+                "align": "left",
+                "x": 20,
+                "y": -14,
+                "style": {"fontSize": "30px", "color": "#306998", "fontWeight": "bold"},
             },
         },
     ],
 }
 
 chart.options.plot_options = {
-    "area": {"lineWidth": 0, "marker": {"enabled": False}, "states": {"hover": {"lineWidthPlus": 0}}, "threshold": 300}
+    "area": {
+        "lineWidth": 3,
+        "lineColor": None,
+        "marker": {"enabled": False},
+        "states": {"hover": {"lineWidthPlus": 0}},
+        "threshold": 300,
+    }
 }
 
 chart.options.legend = {
     "enabled": True,
-    "itemStyle": {"fontSize": "34px", "fontWeight": "normal"},
+    "itemStyle": {"fontSize": "32px", "fontWeight": "normal", "color": "#333333"},
     "align": "right",
     "verticalAlign": "top",
     "layout": "vertical",
-    "x": -40,
-    "y": 100,
+    "x": -60,
+    "y": 80,
+    "backgroundColor": "rgba(255,255,255,0.85)",
+    "borderRadius": 8,
+    "padding": 20,
+    "symbolRadius": 4,
 }
 
 chart.options.credits = {"enabled": False}
@@ -207,21 +223,21 @@ peak_series = AreaSeries()
 peak_series.data = peak_data
 peak_series.name = "Peak Load"
 peak_series.color = "#c0392b"
-peak_series.fill_opacity = 0.6
+peak_series.fill_opacity = 0.65
 
 # Intermediate load series
 intermediate_series = AreaSeries()
 intermediate_series.data = intermediate_data
 intermediate_series.name = "Intermediate Load"
-intermediate_series.color = "#e67e22"
-intermediate_series.fill_opacity = 0.6
+intermediate_series.color = "#7d3c98"
+intermediate_series.fill_opacity = 0.55
 
 # Base load series
 base_series = AreaSeries()
 base_series.data = base_data
 base_series.name = "Base Load"
 base_series.color = "#306998"
-base_series.fill_opacity = 0.6
+base_series.fill_opacity = 0.5
 
 chart.add_series(peak_series)
 chart.add_series(intermediate_series)

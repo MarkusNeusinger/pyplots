@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: pp-basic
 created: '2026-03-15T20:18:14Z'
-updated: '2026-03-15T20:31:25Z'
+updated: '2026-03-15T20:39:00Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23118400267
 issue: 4587
@@ -10,73 +10,80 @@ library_version: 4.9.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/pp-basic/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pp-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pp-basic/letsplot/plot.html
-quality_score: 83
+quality_score: 86
 review:
   strengths:
-  - Excellent spec compliance with all required features plus confidence envelope
-  - Strong data storytelling through deviation color mapping and size encoding
-  - Clean elegant code avoiding scipy dependency by using math.erf directly
-  - Well-structured theme with explicit font sizes and subtle visual refinement
+  - Perfect spec compliance with all required P-P plot features plus a confidence
+    envelope
+  - Excellent real-world pharmaceutical QC data scenario with realistic right-skew
+    pattern
+  - Effective data storytelling through deviation color mapping, size encoding, and
+    max deviation annotation
+  - Clean code that avoids scipy dependency by using math.erf for normal CDF computation
+  - Uses distinctive lets-plot features (flavor themes, layer tooltips)
   weaknesses:
-  - 'Diverging color scale has poor discriminability: mid and high colors are both
-    blue shades'
-  - Data context is generic with no real-world domain framing
-  - Library mastery is average - does not leverage lets-plot distinctive features
-  image_description: The plot displays a P-P (Probability-Probability) plot on a square
-    canvas with both axes ranging from 0 to 1. The x-axis is labeled "Theoretical
-    CDF (Normal)" and the y-axis "Empirical CDF". The title reads "pp-basic · letsplot
-    · pyplots.ai" in bold dark text. 200 data points are plotted along the diagonal,
-    colored using a diverging blue-to-red gradient representing deviation from perfect
-    fit, with point sizes also mapped to absolute deviation. A dashed gray diagonal
-    reference line indicates perfect distributional fit. A light blue semi-transparent
-    confidence envelope (Kolmogorov band) surrounds the diagonal. Points in the lower-left
-    region (~0.15-0.25 theoretical) show red coloring indicating the empirical CDF
-    falls below the theoretical, consistent with right-skewed data. The background
-    is a light off-white panel with subtle gray grid lines. A "Deviation" color legend
-    appears on the right side.
+  - Near-fit points (beige) blend with the solarized light background, reducing visibility
+    of well-fitting data points
+  - Size mapping makes small-deviation points very small, especially clustered at
+    lower-left
+  - Annotation text size (12) is slightly small relative to other text elements
+  image_description: 'The plot displays a P-P (Probability-Probability) plot on a
+    square canvas with a warm solarized light background. Data points are scattered
+    along a 45-degree dashed gray reference line running from (0,0) to (1,1). Points
+    are colored using a diverging red-to-beige-to-blue palette representing deviation
+    from the diagonal: blue points (positive deviation, empirical > theoretical) cluster
+    in the upper-center region around 0.6-0.7 on the x-axis, while red/salmon points
+    (negative deviation) appear in the lower-center region around 0.2-0.5. A light
+    blue confidence ribbon (95% Kolmogorov band) envelopes the diagonal. An italic
+    annotation reads "Max deviation: +0.052" near the peak deviation area. The title
+    "pp-basic · letsplot · pyplots.ai" is bold at top-left, with subtitle "QC Check:
+    Tablet Weight Distribution vs. Normal Reference (n=200)". Axes are labeled "Theoretical
+    CDF (Normal)" (x) and "Empirical CDF" (y), both ranging 0 to 1. A color legend
+    for "Deviation (Empirical - Theoretical)" appears on the right side.'
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 26
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 24pt, axis titles 20pt, axis
-          text 16pt, legend 16/14pt'
+        comment: All font sizes explicitly set. Annotation text at size=12 slightly
+          small but readable.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping text elements.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Points well-sized with alpha=0.75, minor clustering in middle section
+        comment: Points visible but size mapping makes near-diagonal points small;
+          clustering at lower-left.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Diverging blue-red scale but mid and high colors too similar
+        comment: Red-blue diverging is colorblind-friendly but beige midpoint blends
+          with solarized background.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Square aspect ratio correct, inherent empty corners from diagonal
-          data
+        comment: Good square layout with coord_fixed. Legend takes some space on right.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with distribution type specified
+        comment: Descriptive axis labels appropriate for probability axes.
     design_excellence:
       score: 13
       max: 20
@@ -86,21 +93,22 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Custom diverging palette and styled backgrounds, above defaults but
-          not publication-ready
+        comment: Solarized theme, custom diverging palette, subtitle, annotation.
+          Above defaults but beige-on-solarized blending.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: theme_minimal, subtle grid, custom panel background
+        comment: Minor grid removed, major grid subtle, solarized theme provides refined
+          background.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Color-mapped deviation shows where data departs from normality, size
-          reinforces
+        comment: Color and size mapping communicate deviation pattern. Confidence
+          envelope and annotation create focal points.
     spec_compliance:
       score: 15
       max: 15
@@ -110,48 +118,48 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct P-P plot comparing empirical vs theoretical CDF
+        comment: Correct P-P plot comparing empirical vs theoretical CDF.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: All required features present plus confidence envelope
+        comment: All spec features present plus confidence envelope.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=theoretical CDF, Y=empirical CDF, both correctly 0-1
+        comment: X=theoretical CDF, Y=empirical CDF, both 0-1.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, deviation legend appropriate
+        comment: Correct title format. Meaningful legend label.
     data_quality:
-      score: 12
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Shows S-shaped deviation from right skew, points above and below
-          diagonal
+        comment: Shows S-shaped deviation, above/below diagonal regions, diagnostic
+          behavior from spec.
       - id: DQ-02
         name: Realistic Context
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Statistically plausible synthetic data but no real-world domain framing
+        comment: Pharmaceutical tablet weight QC scenario. Neutral, specific, real-world.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values appropriate for CDF context
+        comment: 500mg tablets with ~8mg std is realistic for pharmaceutical QC.
     code_quality:
       score: 10
       max: 10
@@ -161,33 +169,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports-data-plot-save flow
+        comment: 'Clean linear flow: imports, data, CDF, DataFrame, plot, save.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: All imports used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Elegant math.erf usage avoiding scipy dependency
+        comment: Clean, Pythonic. Avoids scipy with math.erf.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png with scale=3 and plot.html
+        comment: Saves as plot.png with scale=3. Current API.
     library_mastery:
-      score: 6
+      score: 7
       max: 10
       items:
       - id: LM-01
@@ -195,24 +203,24 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Proper ggplot grammar with layered geoms, scales, coord_fixed
+        comment: Good idiomatic ggplot grammar with layered geoms, aes, scales, coord_fixed.
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Mostly standard ggplot features available in plotnine too
+        passed: true
+        comment: Uses flavor_solarized_light() and layer_tooltips() (lets-plot exclusive).
+          Tooltips only in HTML.
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
+  - annotations
   - layer-composition
-  - html-export
   patterns:
   - data-generation
   dataprep:
-  - cumulative-sum
+  - normalization
   styling:
-  - custom-colormap
   - alpha-blending
   - grid-styling

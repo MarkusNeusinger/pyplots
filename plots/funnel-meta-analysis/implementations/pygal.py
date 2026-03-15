@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 funnel-meta-analysis: Meta-Analysis Funnel Plot for Publication Bias
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-15
@@ -30,13 +30,12 @@ study_names = [
 ]
 
 # Effect sizes (log odds ratios) and standard errors
-# Larger studies (small SE) cluster near the pooled effect
-# Smaller studies (large SE) scatter more widely
-# Slight rightward asymmetry to suggest possible publication bias
+# High-precision studies cluster near pooled effect; low-precision studies
+# show rightward asymmetry with a visible gap in the lower-left (missing negative studies)
 effect_sizes = np.array(
-    [-0.52, -0.38, -0.71, -0.45, -0.30, -0.62, -0.48, -0.41, -0.55, -0.35, -0.80, -0.43, -0.28, -0.50, -0.65]
+    [-0.50, -0.42, -0.68, -0.46, -0.25, -0.55, -0.48, -0.44, -0.38, -0.20, -0.72, -0.43, -0.15, -0.51, -0.58]
 )
-std_errors = np.array([0.08, 0.12, 0.18, 0.10, 0.15, 0.22, 0.14, 0.09, 0.20, 0.16, 0.25, 0.11, 0.19, 0.13, 0.24])
+std_errors = np.array([0.08, 0.11, 0.17, 0.09, 0.16, 0.21, 0.13, 0.07, 0.22, 0.18, 0.26, 0.10, 0.23, 0.12, 0.24])
 
 # Summary (pooled) effect size
 pooled_effect = -0.47
@@ -53,19 +52,19 @@ custom_style = Style(
     plot_background="#FAFAFA",
     foreground="#2D2D2D",
     foreground_strong="#1A1A1A",
-    foreground_subtle="#E0E0E0",
+    foreground_subtle="#F0F0F0",
     colors=(
-        "#7BA7CC",  # 0: CI left boundary (muted blue)
-        "#7BA7CC",  # 1: CI right boundary (same muted blue)
-        "#444444",  # 2: Pooled effect line (dark grey)
-        "#AAAAAA",  # 3: Null effect line (light grey)
+        "#5A8FAE",  # 0: CI left boundary (steel blue, prominent)
+        "#5A8FAE",  # 1: CI right boundary (same steel blue)
+        "#2D2D2D",  # 2: Pooled effect line (near-black)
+        "#999999",  # 3: Null effect line (medium grey)
         "#306998",  # 4: High-precision studies (Python blue, bold)
         "#E8792B",  # 5: Low-precision studies (orange, draws attention to asymmetry)
     ),
     title_font_size=44,
     label_font_size=26,
     major_label_font_size=22,
-    legend_font_size=22,
+    legend_font_size=24,
     value_font_size=18,
     tooltip_font_size=22,
     stroke_width=3,
@@ -86,7 +85,7 @@ chart = pygal.XY(
     legend_box_size=18,
     dots_size=12,
     stroke=False,
-    show_y_guides=True,
+    show_y_guides=False,
     show_x_guides=False,
     margin=60,
     inverse_y_axis=True,
@@ -95,15 +94,19 @@ chart = pygal.XY(
     y_value_formatter=lambda y: f"{y:.2f}",
     print_values=False,
     print_zeroes=False,
+    range=(0, 0.30),
+    xrange=(-1.06, 0.12),
+    spacing=20,
+    tooltip_border_radius=6,
 )
 
 # Funnel boundaries (pseudo 95% CI) - left boundary
 funnel_left = [(float(pooled_effect - 1.96 * se), float(se)) for se in np.linspace(0, 0.30, 50)]
-chart.add("95% Pseudo CI", funnel_left, stroke=True, show_dots=False, stroke_style={"width": 4, "dasharray": "12, 6"})
+chart.add("95% Pseudo CI", funnel_left, stroke=True, show_dots=False, stroke_style={"width": 5, "dasharray": "14, 6"})
 
 # Funnel boundaries - right boundary (same legend group via None, now same color)
 funnel_right = [(float(pooled_effect + 1.96 * se), float(se)) for se in np.linspace(0, 0.30, 50)]
-chart.add(None, funnel_right, stroke=True, show_dots=False, stroke_style={"width": 4, "dasharray": "12, 6"})
+chart.add(None, funnel_right, stroke=True, show_dots=False, stroke_style={"width": 5, "dasharray": "14, 6"})
 
 # Vertical line at pooled effect
 chart.add(
@@ -111,7 +114,7 @@ chart.add(
     [(float(pooled_effect), 0.0), (float(pooled_effect), 0.30)],
     stroke=True,
     show_dots=False,
-    stroke_style={"width": 5},
+    stroke_style={"width": 6},
 )
 
 # Vertical dashed line at null effect (0)
@@ -145,6 +148,6 @@ for name, es, se in zip(
     lp_points.append({"value": (float(es), float(se)), "label": f"{name}: LOR={es:.2f}, SE={se:.2f}"})
 chart.add("Low-precision studies (bias region)", lp_points, stroke=False, dots_size=12)
 
-# Save
-chart.render_to_png("plot.png")
+# Save with explicit dpi for crisp PNG rendering
+chart.render_to_png("plot.png", dpi=192)
 chart.render_to_file("plot.html")

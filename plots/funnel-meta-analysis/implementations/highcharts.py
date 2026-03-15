@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 funnel-meta-analysis: Meta-Analysis Funnel Plot for Publication Bias
 Library: highcharts unknown | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-15
@@ -12,7 +12,9 @@ from pathlib import Path
 import numpy as np
 from highcharts_core.chart import Chart
 from highcharts_core.options import HighchartsOptions
+from highcharts_core.options.series.area import LineSeries
 from highcharts_core.options.series.scatter import ScatterSeries
+from highcharts_core.utility_classes.javascript_functions import CallbackFunction
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -66,27 +68,32 @@ chart.options.chart = {
     "type": "scatter",
     "width": 4800,
     "height": 2700,
-    "backgroundColor": "#ffffff",
+    "backgroundColor": "#fafbfc",
     "marginLeft": 200,
     "marginRight": 150,
     "marginBottom": 200,
     "marginTop": 150,
+    "style": {"fontFamily": "'Segoe UI', Arial, sans-serif"},
 }
 
 chart.options.title = {
     "text": "funnel-meta-analysis \u00b7 highcharts \u00b7 pyplots.ai",
-    "style": {"fontSize": "48px", "fontWeight": "bold"},
+    "style": {"fontSize": "48px", "fontWeight": "bold", "color": "#1a1a2e"},
 }
 
 chart.options.subtitle = {
     "text": "Drug vs Placebo \u2014 15 Randomized Controlled Trials",
-    "style": {"fontSize": "32px", "color": "#666666"},
+    "style": {"fontSize": "32px", "color": "#555555"},
 }
 
-# X-axis: effect size
+# X-axis: effect size with plotLines (Highcharts-distinctive feature)
 chart.options.x_axis = {
-    "title": {"text": "Log Odds Ratio", "style": {"fontSize": "36px", "fontWeight": "bold"}, "margin": 25},
-    "labels": {"style": {"fontSize": "26px"}},
+    "title": {
+        "text": "Log Odds Ratio",
+        "style": {"fontSize": "36px", "fontWeight": "bold", "color": "#333333"},
+        "margin": 25,
+    },
+    "labels": {"style": {"fontSize": "26px", "color": "#444444"}},
     "plotLines": [
         {
             "value": float(pooled_effect),
@@ -105,13 +112,13 @@ chart.options.x_axis = {
         },
         {
             "value": 0,
-            "color": "#999999",
+            "color": "#888888",
             "width": 3,
             "dashStyle": "Dash",
             "zIndex": 2,
             "label": {
-                "text": "Null Effect",
-                "style": {"fontSize": "22px", "color": "#999999"},
+                "text": "Null Effect (0)",
+                "style": {"fontSize": "22px", "color": "#888888"},
                 "rotation": 0,
                 "align": "right",
                 "verticalAlign": "top",
@@ -121,79 +128,127 @@ chart.options.x_axis = {
         },
     ],
     "gridLineWidth": 0,
+    "lineWidth": 2,
+    "lineColor": "#cccccc",
     "min": -1.1,
     "max": 0.5,
-    "tickInterval": 0.1,
+    "tickInterval": 0.2,
 }
 
-# Y-axis: standard error (inverted so precise studies at top)
+# Y-axis: standard error (inverted) with plotBands for precision zones
 chart.options.y_axis = {
-    "title": {"text": "Standard Error", "style": {"fontSize": "36px", "fontWeight": "bold"}, "margin": 20},
-    "labels": {"style": {"fontSize": "26px"}},
+    "title": {
+        "text": "Standard Error",
+        "style": {"fontSize": "36px", "fontWeight": "bold", "color": "#333333"},
+        "margin": 20,
+    },
+    "labels": {"style": {"fontSize": "26px", "color": "#444444"}},
     "reversed": True,
     "min": 0,
     "max": 0.40,
     "gridLineWidth": 1,
-    "gridLineColor": "#f0f0f0",
+    "gridLineColor": "#e8e8e8",
     "gridLineDashStyle": "Dot",
     "tickInterval": 0.05,
+    "lineWidth": 2,
+    "lineColor": "#cccccc",
+    "plotBands": [
+        {
+            "from": 0,
+            "to": 0.12,
+            "color": "rgba(48, 105, 152, 0.04)",
+            "label": {
+                "text": "High precision",
+                "style": {"fontSize": "20px", "color": "#99aabb"},
+                "align": "right",
+                "x": -15,
+            },
+        }
+    ],
 }
 
 chart.options.legend = {"enabled": False}
 chart.options.credits = {"enabled": False}
 
-# Study points (use [x, y] tuples - dict format drops x values in highcharts-core)
-study_data = [[float(effect_sizes[i]), float(std_errors[i])] for i in range(len(studies))]
+chart.options.plot_options = {"series": {"animation": False}, "line": {"lineWidth": 3, "marker": {"enabled": False}}}
 
-study_series = ScatterSeries()
-study_series.data = study_data
-study_series.name = "Studies"
-study_series.color = "#306998"
-study_series.marker = {"radius": 18, "symbol": "circle", "lineWidth": 3, "lineColor": "#ffffff", "fillColor": "#306998"}
-study_series.z_index = 5
-
-chart.add_series(study_series)
-
-# Left funnel boundary (line series)
+# Left funnel boundary using LineSeries (idiomatic Highcharts)
 left_line_data = [[float(funnel_left[i]), float(se_values[i])] for i in range(len(se_values))]
 
-left_series = ScatterSeries()
+left_series = LineSeries()
 left_series.data = left_line_data
 left_series.name = "95% CI Left"
-left_series.color = "#999999"
-left_series.marker = {"enabled": False}
+left_series.color = "#7a9bb5"
 left_series.line_width = 3
-left_series.type = "line"
 left_series.dash_style = "ShortDash"
 left_series.enable_mouse_tracking = False
 left_series.show_in_legend = False
 
 chart.add_series(left_series)
 
-# Right funnel boundary
+# Right funnel boundary using LineSeries
 right_line_data = [[float(funnel_right[i]), float(se_values[i])] for i in range(len(se_values))]
 
-right_series = ScatterSeries()
+right_series = LineSeries()
 right_series.data = right_line_data
 right_series.name = "95% CI Right"
-right_series.color = "#999999"
-right_series.marker = {"enabled": False}
+right_series.color = "#7a9bb5"
 right_series.line_width = 3
-right_series.type = "line"
 right_series.dash_style = "ShortDash"
 right_series.enable_mouse_tracking = False
 right_series.show_in_legend = False
 
 chart.add_series(right_series)
 
-# Tooltip
+# Study points with marker size varying by inverse-variance weight
+weight_normalized = weights / weights.max()
+marker_radii = 10 + 18 * weight_normalized
+
+study_data = [
+    {
+        "x": float(effect_sizes[i]),
+        "y": float(std_errors[i]),
+        "marker": {
+            "radius": int(marker_radii[i]),
+            "lineWidth": 3,
+            "lineColor": "#ffffff",
+            "fillColor": "#306998",
+            "symbol": "circle",
+        },
+        "name": studies[i],
+    }
+    for i in range(len(studies))
+]
+
+study_series = ScatterSeries()
+study_series.data = study_data
+study_series.name = "Studies"
+study_series.color = "#306998"
+study_series.z_index = 5
+
+chart.add_series(study_series)
+
+# Custom tooltip formatter using CallbackFunction (Highcharts-distinctive)
+tooltip_formatter = CallbackFunction.from_js_literal(
+    """function() {
+        if (!this.point.name) return false;
+        return '<div style="padding:8px;font-size:22px;line-height:1.6">' +
+            '<b style="font-size:24px;color:#306998">' + this.point.name + '</b><br/>' +
+            'Log OR: <b>' + this.x.toFixed(3) + '</b><br/>' +
+            'SE: <b>' + this.y.toFixed(3) + '</b><br/>' +
+            'Weight: <b>' + (1 / (this.y * this.y)).toFixed(1) + '</b>' +
+            '</div>';
+    }"""
+)
+
 chart.options.tooltip = {
-    "headerFormat": "",
-    "pointFormat": ("Log OR: {point.x:.2f}<br/>SE: {point.y:.2f}"),
-    "style": {"fontSize": "24px"},
-    "backgroundColor": "rgba(255, 255, 255, 0.95)",
+    "useHTML": True,
+    "formatter": tooltip_formatter,
+    "backgroundColor": "rgba(255, 255, 255, 0.96)",
     "borderWidth": 2,
     "borderColor": "#306998",
+    "borderRadius": 8,
+    "shadow": {"offsetX": 2, "offsetY": 2, "opacity": 0.15, "width": 4},
 }
 
 # Load Highcharts JS for inline embedding

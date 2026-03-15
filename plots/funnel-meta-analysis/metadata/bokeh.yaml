@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: funnel-meta-analysis
 created: '2026-03-15T16:44:14Z'
-updated: '2026-03-15T16:55:50Z'
+updated: '2026-03-15T17:04:40Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23114663099
 issue: 4590
@@ -10,108 +10,99 @@ library_version: 3.9.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/funnel-meta-analysis/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/funnel-meta-analysis/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/funnel-meta-analysis/bokeh/plot.html
-quality_score: 87
+quality_score: 91
 review:
   strengths:
-  - Perfect spec compliance with all funnel plot features implemented correctly
-  - Good data storytelling with publication bias annotation and marker size/alpha
-    encoding study weight
-  - Clean well-structured code with proper reproducibility seed
-  - Effective use of Bokeh HoverTool for interactive tooltips with formatted study
-    details
-  - 'Well-customized visual refinement: subtle grid, removed outline, custom background'
+  - Excellent spec compliance with all required features including inverted Y-axis,
+    summary effect line, pseudo 95% CI funnel, null reference line, and weight-based
+    marker sizing
+  - Strong data storytelling through color-coded outlier detection, asymmetry annotation,
+    and publication bias simulation
+  - Idiomatic Bokeh usage with ColumnDataSource, HoverTool tooltips, and dual PNG/HTML
+    export
+  - Clean, well-structured code with appropriate complexity for the visualization
   weaknesses:
-  - All study points use same blue color with no differentiation between studies inside
-    vs outside the funnel confidence region
-  - Some wasted canvas space on right side due to wide x_range extending beyond data
-    extent
-  - Axis lines could be styled more subtly for a cleaner look
+  - 'VQ-04: Coral color (#C05746) could be replaced with a more clearly colorblind-safe
+    alternative like orange (#E69F00)'
   image_description: 'The plot displays a meta-analysis funnel plot on a light gray
-    (#FAFAFA) background with a 4800x2700 canvas. The Y-axis shows Standard Error
-    (inverted, 0 at top to ~0.55 at bottom) and the X-axis shows Log Odds Ratio (ranging
-    from about -0.8 to 1.4). A light blue filled polygon with dashed borders forms
-    the inverted funnel shape representing the pseudo 95% confidence interval. A solid
-    blue vertical line marks the summary effect at ~0.26, with a "Summary: 0.26" label
-    near the top. A dashed gray vertical line marks the null effect at 0, labeled
-    "Null (0)". Fifteen study points are plotted as blue circles with white borders,
-    varying in size (larger = more precise/higher weight) and opacity (darker = more
-    precise). Most precise studies cluster near the top around the summary effect,
-    while smaller, less precise studies scatter more widely. Notably, the less precise
-    studies (bottom of plot) are shifted rightward, showing clear funnel asymmetry.
-    A bold red annotation reads "← Asymmetry suggests publication bias" in the lower-right
-    area. The title reads "funnel-meta-analysis · bokeh · pyplots.ai" centered at
-    the top. Grid lines are very subtle (alpha 0.15).'
+    (#FAFAFA) background at 4800x2700px. The Y-axis shows "Standard Error" inverted
+    (0 at top, ~0.55 at bottom), and the X-axis shows "Log Odds Ratio". A light blue
+    shaded funnel region represents pseudo 95% confidence limits with dashed blue
+    borders. A solid blue vertical line marks the summary effect at ~0.26, and a dashed
+    gray vertical line marks the null effect at 0. Fifteen study points are scattered
+    as circles — 12 blue (#306998) inside the funnel and 3 coral/red (#C05746) outside.
+    Marker sizes vary proportionally to study weight (inverse variance), creating
+    clear visual hierarchy with larger, darker markers for more precise studies at
+    the top. Labels include "Null (0)", "Summary: 0.26", and a red annotation "← Asymmetry
+    suggests publication bias" in the lower-right area. A manual color legend at the
+    bottom-left indicates inside/outside funnel counts. Title reads "funnel-meta-analysis
+    · bokeh · pyplots.ai" centered at top.'
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 29
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 36pt, axis labels 22pt, ticks
-          18pt, annotations 22-26pt). All clearly readable.
+        comment: 'All font sizes explicitly set: title 36pt, axis labels 22pt, ticks
+          18pt, annotations 20-26pt'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements. Labels, annotations, and data points
-          well-separated.
+        comment: No overlapping text elements
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Marker sizes 22-52px for 15 points with alpha variation 0.55-0.95.
-          Well-adapted to density.
+        comment: Markers 22-52px with alpha 0.55-0.95, well-adapted for 15 data points
       - id: VQ-04
         name: Color Accessibility
-        score: 4
-        max: 4
-        passed: true
-        comment: Single-series Python Blue with gray null line and red accent. Colorblind-safe.
-      - id: VQ-05
-        name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good layout but x_range extends to 1.4 creating empty space beyond
-          data extent.
+        comment: Blue vs coral distinguishable but coral could be more colorblind-safe
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: Good canvas utilization with balanced margins
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive domain-appropriate labels: Log Odds Ratio, Standard
-          Error.'
+        comment: Descriptive labels appropriate for the domain
     design_excellence:
-      score: 13
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Above defaults with custom background, consistent theme, marker size/alpha
-          encoding. Not yet publication-quality.
+        comment: Thoughtful color scheme, funnel shading, weight-based sizing, white
+          edge highlights
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Outline removed, minor ticks removed, subtle grid alpha 0.15, custom
-          background. Good refinement.
+        comment: Outline removed, minor ticks removed, subtle grid. Spines still present.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Red publication bias annotation tells key story. Marker sizing creates
-          visual hierarchy.
+        comment: Color-coded outliers, asymmetry annotation, weight-based hierarchy
+          guide the viewer
     spec_compliance:
       score: 15
       max: 15
@@ -121,26 +112,25 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct funnel plot with inverted Y-axis and effect sizes on X-axis.
+        comment: Correct funnel plot with inverted Y-axis
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: inverted Y-axis, summary effect line,
-          pseudo 95% CI funnel, sized points, null reference line.'
+        comment: All spec features present
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X = effect size, Y = standard error (inverted). Correct mapping.
+        comment: Correct X/Y mapping with all data visible
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title in correct format. No legend needed for single-series.
+        comment: Correct title format, legend labels with counts
     data_quality:
       score: 14
       max: 15
@@ -150,22 +140,19 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows publication bias asymmetry, varying precision levels. Could
-          show more diversity in effect sizes.
+        comment: Shows asymmetry, outliers, varying precision levels
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Drug vs placebo RCTs with log odds ratios. Authentic clinical meta-analysis
-          context.
+        comment: Realistic RCT meta-analysis scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Log odds ratios around 0.3 with SEs 0.05-0.50. Realistic for clinical
-          trials.
+        comment: Realistic log odds ratios and standard errors
     code_quality:
       score: 10
       max: 10
@@ -175,62 +162,60 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports, data generation, plot construction,
-          styling, save.'
+        comment: Clean linear structure with no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) ensures reproducibility.
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, appropriate complexity. No fake functionality.
+        comment: Appropriate complexity, clean structure
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via export_png and plot.html via save. Current
-          API.
+        comment: Saves as plot.png via export_png, current API
     library_mastery:
-      score: 7
+      score: 9
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: Expert use of ColumnDataSource, figure, Span, Label, patch
+      - id: LM-02
+        name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: Good use of ColumnDataSource, figure, scatter, patch, Span, Label,
-          HoverTool.
-      - id: LM-02
-        name: Distinctive Features
-        score: 3
-        max: 5
-        passed: true
-        comment: HoverTool with formatted tooltips and HTML export are distinctive
-          Bokeh features.
-  verdict: REJECTED
+        comment: HoverTool with custom tooltips and dual PNG/HTML export
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
   - hover-tooltips
   - html-export
+  - custom-legend
   patterns:
   - data-generation
   - columndatasource
-  dataprep: []
+  dataprep:
+  - normalization
   styling:
   - alpha-blending
   - edge-highlighting

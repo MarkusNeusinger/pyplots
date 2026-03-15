@@ -1,0 +1,228 @@
+library: seaborn
+specification_id: area-elevation-profile
+created: '2026-03-15T21:51:44Z'
+updated: '2026-03-15T22:05:03Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 23120069377
+issue: 4578
+python_version: 3.14.3
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/area-elevation-profile/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-elevation-profile/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 88
+review:
+  strengths:
+  - Excellent gradient fill effect creating a visually appealing terrain silhouette
+  - All spec requirements fully implemented including landmarks, vertical lines, elevation
+    labels, and vertical exaggeration note
+  - Custom green color palette that evokes natural terrain
+  - Clean, well-structured code with proper reproducibility
+  - Professional annotation boxes with rounded corners and subtle styling
+  weaknesses:
+  - Seaborn is underutilized — the core visualization (gradient fill_between, annotations,
+    vlines) is all matplotlib; seaborn is mainly used for theming and basic line/scatter
+  - End Station annotation is slightly cramped at the right edge of the canvas
+  - Grid styling could be more refined (e.g., dashed style, custom tick spacing)
+  image_description: The plot displays a terrain elevation profile along a 120 km
+    hiking transect. The x-axis shows "Distance (km)" from 0 to 120, and the y-axis
+    shows "Elevation (m)" ranging from ~900 to ~1700. The title reads "area-elevation-profile
+    · seaborn · pyplots.ai" in medium-weight font. The terrain silhouette is filled
+    with a green gradient that transitions from light sage green at lower elevations
+    to deeper forest green at higher elevations, creating an attractive topographic
+    effect. A blue (#306998) profile line traces the elevation contour, with blue
+    circular markers at seven landmark positions. Each landmark is annotated with
+    bold text showing the name and elevation (e.g., "Summit 1702 m") inside rounded
+    white boxes with subtle gray borders, connected to the profile by dashed vertical
+    lines. Landmarks include Trailhead (1328 m), North Peak (1491 m), Lake Valley
+    (1052 m), Ridge Pass (1300 m), River Crossing (936 m), Summit (1702 m), and End
+    Station (1438 m). A "Vertical exaggeration ~10×" note appears in gray at the lower
+    right. Top and right spines are removed, with a subtle y-axis grid. The background
+    is a light off-white (#fafaf8).
+  criteria_checklist:
+    visual_quality:
+      score: 29
+      max: 30
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 8
+        max: 8
+        passed: true
+        comment: 'All font sizes explicitly set: title 24pt, labels 20pt, ticks 16pt,
+          annotations 13pt bold'
+      - id: VQ-02
+        name: No Overlap
+        score: 5
+        max: 6
+        passed: true
+        comment: End Station annotation slightly cramped at right canvas edge
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 6
+        passed: true
+        comment: Profile line, gradient fill, and markers all clearly visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 4
+        passed: true
+        comment: Green gradient colorblind-safe, blue markers provide good contrast
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: 16:9 aspect ratio, plot fills canvas well with balanced margins
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
+        max: 2
+        passed: true
+        comment: Distance (km) and Elevation (m) — descriptive with units
+    design_excellence:
+      score: 14
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 6
+        max: 8
+        passed: true
+        comment: Custom green gradient palette, Python Blue accents, rounded annotation
+          boxes, custom background
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Spines removed, subtle y-axis grid, custom facecolor, but grid styling
+          could be more refined
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Gradient fill creates terrain silhouette, landmarks tell hiking story,
+          Summit as natural focal point
+    spec_compliance:
+      score: 15
+      max: 15
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 5
+        max: 5
+        passed: true
+        comment: Correct area/line chart with filled terrain silhouette
+      - id: SC-02
+        name: Required Features
+        score: 4
+        max: 4
+        passed: true
+        comment: 'All spec features present: filled area, landmarks, vertical lines,
+          exaggeration note, gradient'
+      - id: SC-03
+        name: Data Mapping
+        score: 3
+        max: 3
+        passed: true
+        comment: X = distance (km), Y = elevation (m), correctly mapped
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
+        passed: true
+        comment: Title format correct, no legend needed for single series
+    data_quality:
+      score: 15
+      max: 15
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 6
+        passed: true
+        comment: Peaks, valleys, gradual ascents, steep descents, pass — varied topography
+          with 7 landmarks
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 5
+        passed: true
+        comment: Plausible mountain hiking trail with realistic landmark names
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Elevations 900-1700 m and 120 km distance realistic for mountain
+          trail
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 2
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports used
+      - id: CQ-04
+        name: Code Elegance
+        score: 2
+        max: 2
+        passed: true
+        comment: Gradient band approach appropriately complex for the effect
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png at dpi=300
+    library_mastery:
+      score: 5
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 3
+        max: 5
+        passed: false
+        comment: Uses set_theme, set_context, lineplot, scatterplot, despine, color_palette
+          but core viz is matplotlib
+      - id: LM-02
+        name: Distinctive Features
+        score: 2
+        max: 5
+        passed: false
+        comment: blend palette syntax is seaborn-specific but gradient fill/annotations/vlines
+          are pure matplotlib
+  verdict: REJECTED
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - layer-composition
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - gradient-fill
+  - alpha-blending
+  - edge-highlighting
+  - grid-styling

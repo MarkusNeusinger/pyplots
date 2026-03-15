@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 psychrometric-basic: Psychrometric Chart for HVAC
 Library: matplotlib 3.10.8 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-15
@@ -25,7 +25,7 @@ W_MAX = 30  # g/kg
 fig, ax = plt.subplots(figsize=(16, 9))
 
 rh_color = "#306998"
-wb_color = "#7B9E3A"
+wb_color = "#1B7F8E"
 enth_color = "#C75B2A"
 vol_color = "#8B6BAE"
 
@@ -38,15 +38,19 @@ for rh in np.arange(0.1, 1.01, 0.1):
         lw = 2.5 if abs(rh - 1.0) < 0.01 else 1.2
         alpha = 1.0 if abs(rh - 1.0) < 0.01 else 0.6
         ax.plot(t_p, w_p, color=rh_color, linewidth=lw, alpha=alpha)
-        idx = min(int(len(t_p) * 0.75), len(t_p) - 1)
-        if w_p[idx] < W_MAX - 1:
+        rh_pct = int(rh * 100)
+        if rh_pct == 100:
+            continue
+        frac = 0.75 if rh_pct <= 30 else 0.65 if rh_pct <= 60 else 0.42 + 0.025 * (100 - rh_pct)
+        idx = min(int(len(t_p) * frac), len(t_p) - 1)
+        if w_p[idx] < W_MAX - 3:
             ax.text(
                 t_p[idx],
-                w_p[idx] + 0.3,
-                f"{int(rh * 100)}%",
+                w_p[idx] + 0.4,
+                f"{rh_pct}%",
                 fontsize=10,
                 color=rh_color,
-                alpha=0.8,
+                alpha=0.85,
                 ha="center",
                 fontweight="medium",
             )
@@ -60,14 +64,14 @@ for t_wb in np.arange(0, 35, 5):
     mask = (w >= 0) & (w <= W_MAX) & (t_range >= -10) & (t_range <= 50)
     t_p, w_p = t_range[mask], w[mask]
     if len(t_p) > 2:
-        ax.plot(t_p, w_p, color=wb_color, linewidth=0.9, alpha=0.5, linestyle="--")
+        ax.plot(t_p, w_p, color=wb_color, linewidth=1.0, alpha=0.55, linestyle="--")
         ax.text(
             t_p[0] - 0.3,
             w_p[0] + 0.3,
             f"{int(t_wb)}°C",
-            fontsize=8,
+            fontsize=10,
             color=wb_color,
-            alpha=0.7,
+            alpha=0.8,
             rotation=-45,
             ha="right",
         )
@@ -78,9 +82,9 @@ for h in np.arange(10, 120, 10):
     mask = (w >= 0) & (w <= W_MAX) & (t_db >= -10) & (t_db <= 50)
     t_p, w_p = t_db[mask], w[mask]
     if len(t_p) > 2:
-        ax.plot(t_p, w_p, color=enth_color, linewidth=0.7, alpha=0.35, linestyle="-.")
+        ax.plot(t_p, w_p, color=enth_color, linewidth=1.0, alpha=0.55, linestyle="-.")
         if w_p[0] <= W_MAX:
-            ax.text(t_p[0] - 0.5, w_p[0] + 0.2, f"{int(h)}", fontsize=7, color=enth_color, alpha=0.6, rotation=-30)
+            ax.text(t_p[0] - 0.5, w_p[0] + 0.2, f"{int(h)}", fontsize=9, color=enth_color, alpha=0.75, rotation=-30)
 
 # Specific volume lines (m³/kg dry air)
 for v in np.arange(0.78, 0.96, 0.02):
@@ -89,9 +93,9 @@ for v in np.arange(0.78, 0.96, 0.02):
     mask = (w >= 0) & (w <= W_MAX) & (t_db >= -10) & (t_db <= 50)
     t_p, w_p = t_db[mask], w[mask]
     if len(t_p) > 2:
-        ax.plot(t_p, w_p, color=vol_color, linewidth=0.7, alpha=0.35, linestyle=":")
+        ax.plot(t_p, w_p, color=vol_color, linewidth=1.0, alpha=0.55, linestyle=":")
         if 0 <= w_p[-1] <= W_MAX:
-            ax.text(t_p[-1] + 0.3, w_p[-1], f"{v:.2f}", fontsize=7, color=vol_color, alpha=0.6, rotation=-75)
+            ax.text(t_p[-1] + 0.3, w_p[-1], f"{v:.2f}", fontsize=9, color=vol_color, alpha=0.75, rotation=-75)
 
 # Comfort zone (20-26°C, 30-60% RH) - inline humidity ratio calculation
 comfort_temps = np.array([20, 26])
@@ -106,7 +110,7 @@ ax.add_patch(
 )
 ax.text(
     23,
-    np.mean(comfort_polygon[:, 1]),
+    np.mean(comfort_polygon[:, 1]) - 0.8,
     "Comfort\nZone",
     fontsize=11,
     color=rh_color,
@@ -133,7 +137,14 @@ for t, w, label in [(35, state_1_w, "1"), (13, state_2_w, "2"), (24, state_3_w, 
     ax.text(t + 0.8, w + 0.5, label, fontsize=12, color="#D32F2F", fontweight="bold", zorder=6)
 
 ax.text(
-    26, state_1_w + 1.2, "Cool + Dehumidify \u2192 Reheat", fontsize=10, color="#D32F2F", alpha=0.8, fontstyle="italic"
+    36,
+    state_1_w - 2.5,
+    "Cool + Dehumidify \u2192 Reheat",
+    fontsize=10,
+    color="#D32F2F",
+    alpha=0.85,
+    fontstyle="italic",
+    ha="center",
 )
 
 # Style
@@ -155,7 +166,7 @@ legend_elements = [
     Line2D([0], [0], color=vol_color, linewidth=1, linestyle=":", label="Specific Volume (m\u00b3/kg)"),
     Line2D([0], [0], color="#D32F2F", linewidth=2, marker="o", markersize=6, label="HVAC Process"),
 ]
-ax.legend(handles=legend_elements, fontsize=13, loc="upper left", framealpha=0.9, edgecolor="none")
+ax.legend(handles=legend_elements, fontsize=16, loc="upper left", framealpha=0.9, edgecolor="none")
 
 # Save
 plt.tight_layout()

@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 column-stratigraphic: Stratigraphic Column with Lithology Patterns
 Library: seaborn 0.13.2 | Python 3.14.3
-Quality: 86/100 | Created: 2026-03-15
 """
 
 import matplotlib.patches as mpatches
@@ -12,7 +11,12 @@ import seaborn as sns
 
 
 # Set seaborn theme for polished styling
-sns.set_theme(style="ticks", context="talk", font_scale=1.0)
+sns.set_theme(
+    style="ticks",
+    context="talk",
+    font_scale=1.0,
+    rc={"axes.linewidth": 1.2, "patch.linewidth": 1.5, "hatch.linewidth": 1.0},
+)
 
 # Data - synthetic sedimentary section (Western Interior Seaway)
 layers = [
@@ -31,6 +35,7 @@ layers = [
 df = pd.DataFrame(layers)
 df["thickness"] = df["bottom"] - df["top"]
 df["mid_depth"] = (df["top"] + df["bottom"]) / 2
+df["col_width"] = 1.0
 
 # Use seaborn color palette for distinct lithology colors (colorblind-safe)
 lith_types = ["sandstone", "shale", "limestone", "siltstone", "conglomerate", "dolomite"]
@@ -54,26 +59,40 @@ age_bg_colors = {age: (*age_bg_palette[i], 0.10) for i, age in enumerate(age_lis
 total_depth = 180
 
 # Plot - two-panel layout: age brackets on left, column on right
-fig, (ax_age, ax) = plt.subplots(1, 2, figsize=(16, 9), width_ratios=[0.18, 0.82], sharey=True)
+fig, (ax_age, ax) = plt.subplots(1, 2, figsize=(16, 9), width_ratios=[0.18, 0.82])
 
-# Draw lithology layers as patches with hatching
-for _, row in df.iterrows():
+# Use sns.barplot for the lithology layers (seaborn plotting function)
+sns.barplot(
+    data=df,
+    y="formation",
+    x="col_width",
+    color="#306998",
+    ax=ax,
+    edgecolor="black",
+    linewidth=1.5,
+    order=df["formation"].tolist(),
+    width=0.98,
+)
+
+# Reposition bars from categorical to proportional depth scale and add hatching
+for i, (_, row) in enumerate(df.iterrows()):
+    bar = ax.patches[i]
     style = lithology_styles[row["lithology"]]
-    rect = mpatches.FancyBboxPatch(
-        (0, row["top"]),
-        0.50,
-        row["thickness"],
-        boxstyle="square,pad=0",
-        facecolor=style["color"],
-        edgecolor="black",
-        linewidth=1.5,
-        hatch=style["hatch"],
-    )
-    ax.add_patch(rect)
+    bar.set_facecolor(style["color"])
+    bar.set_hatch(style["hatch"])
+    bar.set_y(row["top"])
+    bar.set_height(row["thickness"])
+    bar.set_x(0)
+    bar.set_width(0.65)
 
-    # Formation labels to the right
+# Switch to continuous depth axis
+ax.set_ylim(total_depth, 0)
+ax.set_yticks([])
+
+# Formation labels to the right of each layer
+for _, row in df.iterrows():
     ax.text(
-        0.55,
+        0.70,
         row["mid_depth"],
         row["formation"],
         fontsize=16,
@@ -87,12 +106,14 @@ for _, row in df.iterrows():
 unconformities = [(100, "Cretaceous–Jurassic"), (140, "Jurassic–Triassic"), (162, "Triassic–Permian")]
 
 for depth, label in unconformities:
-    x_wave = np.linspace(0, 0.50, 80)
+    x_wave = np.linspace(0, 0.65, 80)
     y_wave = depth + 0.8 * np.sin(x_wave * 40)
     ax.plot(x_wave, y_wave, color="#CC3333", linewidth=2.5, zorder=5)
+    # Offset the last label downward to avoid crowding with Kaibab Fm
+    y_offset = 3.0 if depth == 162 else 1.5
     ax.text(
-        0.55,
-        depth + 1.5,
+        0.70,
+        depth + y_offset,
         label,
         fontsize=12,
         fontweight="bold",
@@ -113,8 +134,7 @@ for _, row in df.iterrows():
 
 ax_age.set_xlim(0, 1)
 ax_age.set_ylim(total_depth, 0)
-ax.set_xlim(-0.02, 1.0)
-ax.set_ylim(total_depth, 0)
+ax.set_xlim(-0.02, 1.15)
 
 for age, pos in age_positions.items():
     mid_y = (pos["top"] + pos["bottom"]) / 2
@@ -131,7 +151,7 @@ for age, pos in age_positions.items():
     ax_age.plot([0.80, 0.90], [pos["top"] + 1, pos["top"] + 1], color="#555555", linewidth=2)
     ax_age.plot([0.80, 0.90], [pos["bottom"] - 1, pos["bottom"] - 1], color="#555555", linewidth=2)
 
-    # Age text - horizontal, wrapped short
+    # Age text
     ax_age.text(
         0.35,
         mid_y,
@@ -152,14 +172,15 @@ ax_age.set_xticks([])
 sns.despine(ax=ax_age, top=True, right=True, bottom=True)
 
 ax.set_xticks([])
+ax.set_xlabel("")
 ax.set_ylabel("")
-ax.tick_params(axis="y", left=False)
+ax.tick_params(axis="y", left=False, labelleft=False)
 sns.despine(ax=ax, left=True, bottom=True, top=True, right=True)
 
 # Title
 fig.suptitle("column-stratigraphic · seaborn · pyplots.ai", fontsize=24, fontweight="medium", y=0.97)
 
-# Legend
+# Legend using seaborn's move_legend pattern
 legend_handles = [
     mpatches.Patch(facecolor=style["color"], edgecolor="black", hatch=style["hatch"], label=style["label"])
     for style in lithology_styles.values()

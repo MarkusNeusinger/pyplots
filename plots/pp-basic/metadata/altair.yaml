@@ -1,7 +1,7 @@
 library: altair
 specification_id: pp-basic
 created: '2026-03-15T20:18:36Z'
-updated: '2026-03-15T20:23:17Z'
+updated: '2026-03-15T20:31:09Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23118400194
 issue: 4587
@@ -10,97 +10,103 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/pp-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pp-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pp-basic/altair/plot.html
-quality_score: 81
+quality_score: 89
 review:
   strengths:
-  - Perfect spec compliance with all P-P plot requirements met including square aspect
-    ratio, reference diagonal, and correct CDF formula
-  - Clean idiomatic Altair code with proper declarative layer composition
-  - 'Good use of Altair-distinctive features: tooltips, HTML export, layer composition'
-  - Excellent code quality with flat KISS structure and reproducibility seed
+  - Excellent spec compliance with all P-P plot features plus statistical confidence
+    band (KS bound)
+  - Strong visual storytelling through deviation-based color and size encoding
+  - Clean monochromatic blue design theme with polished typography and subtle grid
+  - Perfect code quality with clean KISS structure and reproducible seed
   weaknesses:
-  - Design lacks visual hierarchy or storytelling emphasis - S-shaped deviation is
-    the key insight but nothing draws attention to it
-  - Aesthetic sophistication at well-configured default level with no custom palette
-    refinement
-  - Data context is abstract with no real-world domain framing
-  image_description: The plot displays a P-P (Probability-Probability) plot with blue
-    circular markers (#306998) with white edge strokes plotted against a dashed gray
-    45-degree reference line. The x-axis is labeled "Theoretical CDF (Normal)" and
-    the y-axis "Empirical CDF", both ranging from 0 to 1.00 with tick marks at 0.05
-    intervals. The title reads "pp-basic · altair · pyplots.ai" in bold at the top.
-    The plot has a square aspect ratio. Points follow the diagonal closely at the
-    extremes but show a characteristic S-shaped deviation in the middle region (roughly
-    0.3-0.6), indicating the observed data has slightly heavier tails or skewness
-    compared to the fitted normal distribution. The grid is very subtle (low opacity),
-    and the view border is removed, giving a clean appearance.
+  - Point alpha of 0.8 is slightly high for 200 data points causing mild crowding
+    in the center cluster
+  - Domain context (blood pressure measurements) exists only in code comment not visible
+    in the plot
+  - Could leverage more distinctive Altair features like selection parameters or conditional
+    encoding
+  image_description: The plot displays a P-P (Probability-Probability) plot with a
+    square aspect ratio (3600x3600 px). The title "pp-basic · altair · pyplots.ai"
+    is rendered in bold at the top, with a subtitle "Normality check — points colored
+    by deviation from perfect fit" in gray below it. Both axes range from 0 to 1 with
+    tick marks at 0.05 intervals. The x-axis is labeled "Theoretical CDF (Normal)"
+    and the y-axis "Empirical CDF". A dashed gray 45-degree reference line runs diagonally
+    from (0,0) to (1,1). A light blue confidence band (KS bound) surrounds the diagonal.
+    Data points are rendered as circles with dark blue outlines, colored by a sequential
+    blues gradient encoding deviation from the diagonal — lighter circles have near-zero
+    deviation, darker/larger circles deviate more. The data shows a characteristic
+    S-shaped departure from the diagonal in the lower-left quadrant consistent with
+    a heavier-tailed distribution. A "Deviation" color legend is positioned in the
+    bottom-right corner with values from 0.00 to ~0.04. Grid lines are very subtle.
+    The overall look is clean and professional with a monochromatic blue theme.
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 29
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: 'Font sizes explicitly set (title=28, axis titles=22, tick labels=18).
-          All readable. Minor: tick labels could be slightly larger.'
+        comment: 'All font sizes explicitly set: title=28, subtitle=18, axis titles=22,
+          tick labels=18, legend title=16, legend labels=14'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text or elements.
+        comment: No overlapping text elements
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: 200 points with size=120 and opacity=0.7. Slightly above recommended
-          range but markers remain distinguishable.
+        comment: Variable sizing works well but alpha=0.8 causes mild crowding in
+          center cluster for 200 points
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Single color (Python Blue) with good contrast.
+        comment: Sequential blues scheme is colorblind-safe with good contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Square 3600x3600. Plot fills canvas well with balanced margins.
+        comment: Square 3600x3600 fills canvas well with balanced margins
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels. No units needed for probabilities.
+        comment: 'Descriptive labels: Theoretical CDF (Normal) and Empirical CDF'
     design_excellence:
-      score: 9
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 6
         max: 8
-        passed: false
-        comment: Well-configured default with Python Blue and white edges. Not exceptional.
+        passed: true
+        comment: 'Strong design: monochromatic blue theme, deviation encoding, confidence
+          band, clean typography'
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: Grid opacity reduced, view stroke removed. Some refinement but not
-          fully polished.
+        passed: true
+        comment: View border removed, grid subtle at opacity 0.15, legend styled with
+          border/background
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 5
         max: 6
-        passed: false
-        comment: S-shaped deviation visible but no visual hierarchy or emphasis to
-          guide the viewer.
+        passed: true
+        comment: Deviation color+size encoding creates visual hierarchy; subtitle
+          guides interpretation
     spec_compliance:
       score: 15
       max: 15
@@ -110,28 +116,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct P-P plot.
+        comment: Correct P-P plot comparing empirical vs theoretical CDF
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: reference line, 0-1 axes, square aspect,
-          correct CDF formula.'
+        comment: 'All features present: reference line, square ratio, axes 0-1, CDF
+          formula, plus KS confidence band'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=theoretical CDF, Y=empirical CDF. Correct mapping.
+        comment: Theoretical CDF on x, empirical CDF on y, both scaled 0-1
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. No legend needed for single series.
+        comment: Title format correct, deviation legend appropriate and well-labeled
     data_quality:
-      score: 12
+      score: 13
       max: 15
       items:
       - id: DQ-01
@@ -139,21 +145,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows S-shaped deviation from diagonal demonstrating departure from
-          normality with 200 points.
+        comment: Shows S-shaped deviation pattern from normal+exponential mixture,
+          demonstrating key P-P diagnostic feature
       - id: DQ-02
         name: Realistic Context
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Plausible statistical scenario but abstract with no real-world domain
-          context.
+        passed: true
+        comment: Blood pressure normality check is plausible and neutral, but context
+          only in code comment not plot
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: CDF values properly bounded 0-1, underlying data sensible.
+        comment: 200 data points within spec range, realistic values with meaningful
+          deviation
     code_quality:
       score: 10
       max: 10
@@ -163,31 +170,32 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Flat script with no functions or classes.
+        comment: 'Clean linear flow: imports, data, CDF computation, plot layers,
+          configure, save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: 'All imports used: NormalDist, altair, numpy, pandas'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, appropriate complexity.
+        comment: Clean Pythonic code, KS band adds value without over-engineering
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html. Current API.
+        comment: Saves as plot.png and plot.html, current API
     library_mastery:
       score: 7
       max: 10
@@ -197,15 +205,15 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good declarative grammar with encode, mark_circle, layer composition,
-          configure methods.
+        comment: 'Good declarative grammar: layered composition, proper encoding channels,
+          properties/configure chain'
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses tooltips, HTML export, and declarative layer composition with
-          + operator.
+        comment: Uses interactive tooltips, HTML export, gradient color legend, layered
+          chart composition
   verdict: REJECTED
 impl_tags:
   dependencies: []
@@ -217,6 +225,7 @@ impl_tags:
   - data-generation
   dataprep: []
   styling:
+  - custom-colormap
   - alpha-blending
-  - edge-highlighting
   - grid-styling
+  - edge-highlighting

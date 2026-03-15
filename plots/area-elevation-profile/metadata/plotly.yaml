@@ -1,0 +1,225 @@
+library: plotly
+specification_id: area-elevation-profile
+created: '2026-03-15T21:51:30Z'
+updated: '2026-03-15T22:07:32Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 23120069459
+issue: 4578
+python_version: 3.14.3
+library_version: 6.6.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/area-elevation-profile/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-elevation-profile/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/area-elevation-profile/plotly/plot.html
+quality_score: 89
+review:
+  strengths:
+  - Excellent use of Plotly fillgradient for terrain silhouette - a genuinely distinctive
+    feature
+  - Slope color-coding adds meaningful data storytelling beyond a basic profile
+  - Real-world Swiss hiking data with authentic landmarks creates compelling context
+  - All spec requirements fully implemented including vertical exaggeration note
+  - Clean professional design with cohesive blue palette
+  weaknesses:
+  - 'Color accessibility: green/amber/red slope scheme is problematic for colorblind
+    users'
+  - 299 individual traces for slope coloring is inefficient
+  - Minor annotation crowding at canvas edges for Grindelwald and Wengen labels
+  image_description: 'The plot displays a terrain elevation profile of the "Bernese
+    Oberland Traverse" hiking trail spanning 120 km. The x-axis shows Distance (km)
+    from 0 to ~125, and the y-axis shows Elevation (m) from 0 to ~3200. The profile
+    line is color-coded by slope steepness: green segments for gentle slopes, amber/yellow
+    for moderate, and red for steep. The area beneath the profile is filled with a
+    vertical blue gradient that transitions from nearly transparent at the bottom
+    to a soft blue at higher elevations, creating a terrain silhouette effect. Seven
+    landmarks are annotated with bold text labels and elevation values: Grindelwald
+    (1,034 m) at the start, Bachalpsee (2,265 m), Faulhorn (2,681 m) at the highest
+    peak, Schynige Platte (2,076 m), Männlichen (1,100 m) at a valley, Kleine Scheidegg
+    (2,061 m), and Wengen (1,274 m) at the endpoint. Dotted vertical lines extend
+    from each landmark to the x-axis. A slope legend at the bottom-left shows green/amber/red
+    squares with labels. A vertical exaggeration note (~20x) appears at the bottom-right.
+    The background is clean white with subtle horizontal gridlines on the y-axis only.'
+  criteria_checklist:
+    visual_quality:
+      score: 27
+      max: 30
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 8
+        max: 8
+        passed: true
+        comment: 'All font sizes explicitly set: title 28pt, axis labels 22pt, ticks
+          18pt, annotations 16pt'
+      - id: VQ-02
+        name: No Overlap
+        score: 5
+        max: 6
+        passed: true
+        comment: Minor crowding at canvas edges for Grindelwald and Wengen labels
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 6
+        passed: true
+        comment: Line width 3-3.5, marker size 16 with white borders, all clearly
+          visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 2
+        max: 4
+        passed: false
+        comment: Green/amber/red slope scheme problematic for red-green colorblind
+          users
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: Plot fills canvas well with balanced margins
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
+        max: 2
+        passed: true
+        comment: Distance (km) and Elevation (m) with units
+    design_excellence:
+      score: 15
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 6
+        max: 8
+        passed: true
+        comment: Strong design with cohesive blue palette, gradient fill, slope coloring,
+          clean typography
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Y-axis-only subtle grid, clean white background, good whitespace
+      - id: DE-03
+        name: Data Storytelling
+        score: 5
+        max: 6
+        passed: true
+        comment: Slope color-coding tells terrain difficulty story, landmarks create
+          focal points
+    spec_compliance:
+      score: 15
+      max: 15
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 5
+        max: 5
+        passed: true
+        comment: Correct area/elevation profile with filled terrain silhouette
+      - id: SC-02
+        name: Required Features
+        score: 4
+        max: 4
+        passed: true
+        comment: 'All spec features present: gradient fill, landmarks, vertical lines,
+          slope coloring, vertical exaggeration note'
+      - id: SC-03
+        name: Data Mapping
+        score: 3
+        max: 3
+        passed: true
+        comment: Distance on x-axis, elevation on y-axis, correct mapping
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
+        passed: true
+        comment: Title includes required format, slope legend provided
+    data_quality:
+      score: 15
+      max: 15
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 6
+        passed: true
+        comment: Shows ascents, descents, peaks, valleys, and varying steepness
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 5
+        passed: true
+        comment: Real Swiss hiking trail with authentic place names and realistic
+          elevations
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Elevations 1034-2681m realistic for Swiss Alps, 120km traverse plausible
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports-data-plot-save flow, no functions or classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 2
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy and plotly.graph_objects, both used
+      - id: CQ-04
+        name: Code Elegance
+        score: 1
+        max: 2
+        passed: false
+        comment: 299 individual Scatter traces for slope coloring is heavy
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png at 1600x900 scale=3, plus HTML export
+    library_mastery:
+      score: 8
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of go.Figure, go.Scatter, shapes, annotations, update_layout
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Uses fillgradient (Plotly-distinctive), hovertemplate, HTML export
+  verdict: REJECTED
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep:
+  - interpolation
+  styling:
+  - gradient-fill
+  - grid-styling

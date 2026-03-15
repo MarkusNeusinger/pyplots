@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 column-stratigraphic: Stratigraphic Column with Lithology Patterns
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-15
@@ -7,7 +7,7 @@ Quality: 86/100 | Created: 2026-03-15
 import plotly.graph_objects as go
 
 
-# Data - synthetic sedimentary section with 10 layers
+# Data - synthetic sedimentary section based on Western Interior Seaway formations
 layers = [
     {"top": 0, "bottom": 15, "lithology": "Sandstone", "formation": "Dakota Fm", "age": "Late Cretaceous"},
     {"top": 15, "bottom": 30, "lithology": "Shale", "formation": "Graneros Sh", "age": "Late Cretaceous"},
@@ -21,17 +21,66 @@ layers = [
     {"top": 170, "bottom": 195, "lithology": "Sandstone", "formation": "Wasatch Fm", "age": "Eocene"},
 ]
 
+# Refined earth-tone palette with Python Blue accent for limestone
 lithology_styles = {
-    "Sandstone": {"color": "#F5DEB3", "pattern_shape": ".", "pattern_size": 8},
-    "Shale": {"color": "#8B8682", "pattern_shape": "-", "pattern_size": 6},
-    "Limestone": {"color": "#87CEEB", "pattern_shape": "+", "pattern_size": 8},
-    "Siltstone": {"color": "#C4A882", "pattern_shape": "/", "pattern_size": 6},
-    "Conglomerate": {"color": "#D2691E", "pattern_shape": "x", "pattern_size": 10},
+    "Sandstone": {"color": "#E8D5A3", "pattern_shape": ".", "pattern_size": 8},
+    "Shale": {"color": "#9E9A91", "pattern_shape": "-", "pattern_size": 6},
+    "Limestone": {"color": "#7BA7C9", "pattern_shape": "+", "pattern_size": 8},
+    "Siltstone": {"color": "#C9B897", "pattern_shape": "/", "pattern_size": 6},
+    "Conglomerate": {"color": "#B8763C", "pattern_shape": "x", "pattern_size": 10},
+}
+
+# Age boundary colors for subtle background shading
+age_colors = {
+    "Late Cretaceous": "rgba(48, 105, 152, 0.04)",
+    "Maastrichtian": "rgba(48, 105, 152, 0.08)",
+    "Paleocene": "rgba(48, 105, 152, 0.12)",
+    "Eocene": "rgba(48, 105, 152, 0.16)",
 }
 
 # Plot
 fig = go.Figure()
 
+# Group consecutive layers by age for boundary markers and left-side labels
+age_groups = []
+current_age = layers[0]["age"]
+current_top = layers[0]["top"]
+prev_bottom = layers[0]["bottom"]
+for layer in layers:
+    if layer["age"] != current_age:
+        age_groups.append({"age": current_age, "top": current_top, "bottom": prev_bottom})
+        current_age = layer["age"]
+        current_top = layer["top"]
+    prev_bottom = layer["bottom"]
+age_groups.append({"age": current_age, "top": current_top, "bottom": prev_bottom})
+
+# Add subtle age-period background shading using shapes
+for group in age_groups:
+    fig.add_shape(
+        type="rect",
+        x0=0.3,
+        x1=1.95,
+        y0=group["top"],
+        y1=group["bottom"],
+        fillcolor=age_colors.get(group["age"], "rgba(0,0,0,0.02)"),
+        line={"width": 0},
+        layer="below",
+    )
+
+# Add age boundary lines (heavier horizontal lines at period transitions)
+for i in range(1, len(age_groups)):
+    boundary_depth = age_groups[i]["top"]
+    fig.add_shape(
+        type="line",
+        x0=0.3,
+        x1=1.95,
+        y0=boundary_depth,
+        y1=boundary_depth,
+        line={"color": "#306998", "width": 2.5, "dash": "dot"},
+        layer="above",
+    )
+
+# Add layer bars
 for layer in layers:
     style = lithology_styles[layer["lithology"]]
     thickness = layer["bottom"] - layer["top"]
@@ -49,59 +98,48 @@ for layer in layers:
                     "shape": style["pattern_shape"],
                     "size": style["pattern_size"],
                     "solidity": 0.6,
-                    "fgcolor": "rgba(0,0,0,0.5)",
+                    "fgcolor": "rgba(0,0,0,0.45)",
                 },
-                "line": {"color": "black", "width": 1.5},
+                "line": {"color": "#2C2C2C", "width": 1.5},
             },
-            width=0.6,
+            width=0.65,
             showlegend=False,
             hovertemplate=(
                 f"<b>{layer['formation']}</b><br>"
                 f"Lithology: {layer['lithology']}<br>"
                 f"Depth: {layer['top']}–{layer['bottom']} m<br>"
+                f"Thickness: {thickness} m<br>"
                 f"Age: {layer['age']}"
                 "<extra></extra>"
             ),
         )
     )
 
-    # Formation name annotation (right side)
+    # Formation name annotation (right side) - increased font size
     fig.add_annotation(
-        x=1.42,
+        x=1.38,
         y=mid_depth,
         text=f"<b>{layer['formation']}</b><br><i>{layer['lithology']}</i>",
         showarrow=False,
-        font={"size": 13},
+        font={"size": 15, "color": "#1A1A1A"},
         xanchor="left",
         yanchor="middle",
     )
 
-# Group consecutive layers by age for left-side labels
-age_groups = []
-current_age = layers[0]["age"]
-current_top = layers[0]["top"]
-prev_bottom = layers[0]["bottom"]
-for layer in layers:
-    if layer["age"] != current_age:
-        age_groups.append({"age": current_age, "top": current_top, "bottom": prev_bottom})
-        current_age = layer["age"]
-        current_top = layer["top"]
-    prev_bottom = layer["bottom"]
-age_groups.append({"age": current_age, "top": current_top, "bottom": prev_bottom})
-
+# Age labels on the left side
 for group in age_groups:
     mid = (group["top"] + group["bottom"]) / 2
     fig.add_annotation(
-        x=0.58,
+        x=0.55,
         y=mid,
-        text=f"<i>{group['age']}</i>",
+        text=f"<b>{group['age']}</b>",
         showarrow=False,
-        font={"size": 12, "color": "#444444"},
+        font={"size": 14, "color": "#306998"},
         xanchor="right",
         yanchor="middle",
     )
 
-# Legend for lithology types
+# Legend for lithology types with pattern swatches
 for lithology, style in lithology_styles.items():
     fig.add_trace(
         go.Bar(
@@ -113,9 +151,9 @@ for lithology, style in lithology_styles.items():
                     "shape": style["pattern_shape"],
                     "size": style["pattern_size"],
                     "solidity": 0.6,
-                    "fgcolor": "rgba(0,0,0,0.5)",
+                    "fgcolor": "rgba(0,0,0,0.45)",
                 },
-                "line": {"color": "black", "width": 1},
+                "line": {"color": "#2C2C2C", "width": 1},
             },
             name=lithology,
             showlegend=True,
@@ -124,32 +162,38 @@ for lithology, style in lithology_styles.items():
 
 # Style
 fig.update_layout(
-    title={"text": "column-stratigraphic · plotly · pyplots.ai", "font": {"size": 28}, "x": 0.5, "xanchor": "center"},
+    title={
+        "text": "column-stratigraphic · plotly · pyplots.ai",
+        "font": {"size": 28, "color": "#1A1A1A"},
+        "x": 0.5,
+        "xanchor": "center",
+    },
     yaxis={
-        "title": {"text": "Depth (m)", "font": {"size": 22}},
+        "title": {"text": "Depth (m)", "font": {"size": 22, "color": "#2C2C2C"}},
         "tickfont": {"size": 16},
         "autorange": "reversed",
         "dtick": 20,
-        "gridcolor": "rgba(0,0,0,0.1)",
+        "gridcolor": "rgba(0,0,0,0.07)",
         "gridwidth": 1,
         "zeroline": False,
+        "side": "left",
     },
-    xaxis={"showticklabels": False, "showgrid": False, "zeroline": False, "range": [0.2, 2.0], "fixedrange": True},
+    xaxis={"showticklabels": False, "showgrid": False, "zeroline": False, "range": [0.3, 1.95], "fixedrange": True},
     template="plotly_white",
     plot_bgcolor="white",
     paper_bgcolor="white",
     barmode="overlay",
     bargap=0,
     legend={
-        "title": {"text": "Lithology", "font": {"size": 18}},
-        "font": {"size": 14},
-        "x": 0.92,
+        "title": {"text": "<b>Lithology</b>", "font": {"size": 18}},
+        "font": {"size": 15},
+        "x": 0.88,
         "y": 0.98,
-        "bgcolor": "rgba(255,255,255,0.9)",
-        "bordercolor": "rgba(0,0,0,0.2)",
+        "bgcolor": "rgba(255,255,255,0.95)",
+        "bordercolor": "rgba(48,105,152,0.3)",
         "borderwidth": 1,
     },
-    margin={"l": 140, "r": 200, "t": 80, "b": 40},
+    margin={"l": 130, "r": 140, "t": 80, "b": 40},
     height=900,
     width=1600,
 )

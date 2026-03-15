@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 column-stratigraphic: Stratigraphic Column with Lithology Patterns
 Library: letsplot 4.9.0 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-15
@@ -62,13 +62,13 @@ layers["thickness"] = layers["bottom"] - layers["top"]
 layers["xmin"] = 0.0
 layers["xmax"] = 1.0
 
-# Lithology color palette (improved contrast between types)
+# Lithology color palette (refined earth tones for geological context)
 lithology_colors = {
-    "Sandstone": "#F5D76E",
-    "Shale": "#7A7A7A",
-    "Limestone": "#6BAED6",
-    "Siltstone": "#C4956A",
-    "Conglomerate": "#D4726A",
+    "Sandstone": "#F2D16B",
+    "Shale": "#8C8C8C",
+    "Limestone": "#6AAED6",
+    "Siltstone": "#C08C5A",
+    "Conglomerate": "#D06A62",
 }
 lithology_order = ["Sandstone", "Shale", "Limestone", "Siltstone", "Conglomerate"]
 
@@ -82,17 +82,17 @@ for _, row in layers.iterrows():
     margin = 0.03
 
     if lith == "Shale":
-        # Horizontal dashes
-        spacing = 4
+        # Horizontal dashes - denser pattern
+        spacing = 2.5
         n_lines = max(1, int(thickness / spacing))
         for i in range(n_lines):
             y = top + (i + 0.5) * thickness / n_lines
-            for x_start in [0.05, 0.25, 0.5, 0.75]:
-                pattern_segments.append({"x": x_start, "y": y, "xend": x_start + 0.15, "yend": y})
+            for x_start in [0.04, 0.20, 0.36, 0.52, 0.68, 0.84]:
+                pattern_segments.append({"x": x_start, "y": y, "xend": x_start + 0.12, "yend": y})
 
     elif lith == "Limestone":
-        # Brick pattern: horizontal lines + offset vertical lines
-        spacing = 5
+        # Brick pattern: horizontal lines + offset vertical lines - denser
+        spacing = 3.5
         n_rows = max(1, int(thickness / spacing))
         for i in range(n_rows + 1):
             y = top + margin + i * (thickness - 2 * margin) / max(n_rows, 1)
@@ -101,43 +101,43 @@ for _, row in layers.iterrows():
         for i in range(n_rows):
             y_top = top + margin + i * (thickness - 2 * margin) / max(n_rows, 1)
             y_bot = top + margin + (i + 1) * (thickness - 2 * margin) / max(n_rows, 1)
-            offset = 0.25 if i % 2 == 0 else 0.0
-            for vx in [0.25 + offset, 0.5 + offset, 0.75 + offset]:
+            offset = 0.2 if i % 2 == 0 else 0.0
+            for vx in [0.2 + offset, 0.4 + offset, 0.6 + offset, 0.8 + offset]:
                 if 0.02 < vx < 0.98:
                     pattern_segments.append({"x": vx, "y": y_top, "xend": vx, "yend": y_bot})
 
     elif lith == "Sandstone":
-        # Stipple dots
-        spacing_y = 4
-        spacing_x = 0.12
+        # Stipple dots - denser grid
+        spacing_y = 2.8
+        spacing_x = 0.08
         n_rows = max(1, int(thickness / spacing_y))
         for i in range(n_rows):
             y = top + (i + 0.5) * thickness / n_rows
-            offset = 0.06 if i % 2 == 0 else 0.0
-            x = 0.08 + offset
-            while x < 0.95:
+            offset = 0.04 if i % 2 == 0 else 0.0
+            x = 0.06 + offset
+            while x < 0.96:
                 pattern_points.append({"x": x, "y": y, "shape": "dot"})
                 x += spacing_x
 
     elif lith == "Siltstone":
-        # Short random-angle dashes (tilted segments)
-        spacing_y = 5
+        # Short tilted dashes - denser
+        spacing_y = 3.5
+        n_rows = max(1, int(thickness / spacing_y))
+        for i in range(n_rows):
+            y = top + (i + 0.5) * thickness / n_rows
+            offset = 0.06 if i % 2 == 0 else 0.0
+            for x in [0.08 + offset, 0.22 + offset, 0.36 + offset, 0.50 + offset, 0.64 + offset, 0.78 + offset]:
+                if x < 0.95:
+                    pattern_segments.append({"x": x, "y": y - 0.8, "xend": x + 0.06, "yend": y + 0.8})
+
+    elif lith == "Conglomerate":
+        # Circles (larger dots) - denser
+        spacing_y = 4.5
         n_rows = max(1, int(thickness / spacing_y))
         for i in range(n_rows):
             y = top + (i + 0.5) * thickness / n_rows
             offset = 0.08 if i % 2 == 0 else 0.0
             for x in [0.12 + offset, 0.32 + offset, 0.52 + offset, 0.72 + offset]:
-                if x < 0.95:
-                    pattern_segments.append({"x": x, "y": y - 0.8, "xend": x + 0.06, "yend": y + 0.8})
-
-    elif lith == "Conglomerate":
-        # Circles (larger dots)
-        spacing_y = 6
-        n_rows = max(1, int(thickness / spacing_y))
-        for i in range(n_rows):
-            y = top + (i + 0.5) * thickness / n_rows
-            offset = 0.1 if i % 2 == 0 else 0.0
-            for x in [0.15 + offset, 0.4 + offset, 0.65 + offset]:
                 if x < 0.95:
                     pattern_points.append({"x": x, "y": y, "shape": "circle"})
 
@@ -203,29 +203,29 @@ if pattern_seg_df is not None and len(pattern_seg_df) > 0:
         aes(x="x", y="y", xend="xend", yend="yend"),
         data=pattern_seg_df,
         color="#2A2A2A",
-        size=0.5,
-        alpha=0.7,
+        size=0.6,
+        alpha=0.75,
         show_legend=False,
     )
 
 if pattern_dot_df is not None and len(pattern_dot_df) > 0:
     plot = plot + geom_point(
-        aes(x="x", y="y"), data=pattern_dot_df, color="#4A3A10", size=1.5, alpha=0.65, shape=16, show_legend=False
+        aes(x="x", y="y"), data=pattern_dot_df, color="#4A3A10", size=1.8, alpha=0.7, shape=16, show_legend=False
     )
 
 if pattern_circle_df is not None and len(pattern_circle_df) > 0:
     plot = plot + geom_point(
-        aes(x="x", y="y"), data=pattern_circle_df, color="#5A2A2A", size=4.5, alpha=0.65, shape=1, show_legend=False
+        aes(x="x", y="y"), data=pattern_circle_df, color="#5A2A2A", size=5.0, alpha=0.7, shape=1, show_legend=False
     )
 
 # Unconformity wavy line at 110m with label
-plot = plot + geom_line(aes(x="x", y="y"), data=wavy_df, color="#C44E52", size=1.5, show_legend=False)
+plot = plot + geom_line(aes(x="x", y="y"), data=wavy_df, color="#C0392B", size=2.0, show_legend=False)
 unconformity_label = pd.DataFrame({"x": [1.08], "y": [110], "label": ["Unconformity"]})
 plot = plot + geom_text(
     aes(x="x", y="y", label="label"),
     data=unconformity_label,
-    color="#C44E52",
-    size=12,
+    color="#C0392B",
+    size=13,
     fontface="bold",
     hjust=0,
     show_legend=False,
@@ -250,7 +250,7 @@ plot = plot + geom_segment(
 )
 
 # Formation labels (right side)
-plot = plot + geom_text(aes(x="x", y="y", label="label"), data=form_df, size=14, color="#2C2C2C", hjust=0)
+plot = plot + geom_text(aes(x="x", y="y", label="label"), data=form_df, size=15, color="#2C2C2C", hjust=0)
 
 # Age labels (left side)
 plot = plot + geom_text(aes(x="x", y="y", label="label"), data=age_df, size=15, color="#2C2C2C", fontface="italic")
@@ -260,24 +260,32 @@ plot = (
     plot
     + scale_fill_manual(values=lithology_colors, name="Lithology", limits=lithology_order)
     + scale_y_reverse()
-    + labs(title="column-stratigraphic \u00b7 letsplot \u00b7 pyplots.ai", y="Depth (m)", x="")
-    + scale_x_continuous(limits=[-0.35, 1.65])
+    + labs(
+        title="column-stratigraphic \u00b7 letsplot \u00b7 pyplots.ai",
+        subtitle="Synthetic Mesozoic\u2013Cenozoic sedimentary section \u00b7 Triassic to Paleogene",
+        y="Depth (m)",
+        x="",
+    )
+    + scale_x_continuous(limits=[-0.28, 1.52])
     + flavor_high_contrast_light()
     + theme(
-        plot_title=element_text(size=24, face="bold", color="#1A1A1A"),
-        axis_title_y=element_text(size=20, color="#333333"),
+        plot_title=element_text(size=26, face="bold", color="#1A1A1A", margin=[0, 0, 12, 0]),
+        plot_subtitle=element_text(size=16, color="#666666", face="italic"),
+        axis_title_y=element_text(size=20, color="#333333", margin=[0, 8, 0, 0]),
         axis_title_x=element_blank(),
         axis_text_y=element_text(size=16, color="#444444"),
         axis_text_x=element_blank(),
         axis_ticks_x=element_blank(),
+        axis_line_y=element_line(size=0.8, color="#333333"),
         legend_title=element_text(size=16, face="bold"),
         legend_text=element_text(size=14),
         legend_position="bottom",
         panel_grid_major_x=element_blank(),
         panel_grid_minor_x=element_blank(),
-        panel_grid_major_y=element_line(size=0.3, color="#E0E0E0"),
+        panel_grid_major_y=element_line(size=0.2, color="#D8D8D8"),
         panel_grid_minor_y=element_blank(),
         plot_background=element_rect(color="white", fill="white"),
+        plot_margin=[16, 16, 16, 16],
     )
     + ggsize(1600, 900)
 )

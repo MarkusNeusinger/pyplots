@@ -1,7 +1,7 @@
 library: plotly
 specification_id: psychrometric-basic
 created: '2026-03-15T21:52:08Z'
-updated: '2026-03-15T22:09:17Z'
+updated: '2026-03-15T22:19:18Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23120046561
 issue: 4583
@@ -10,40 +10,44 @@ library_version: 6.6.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/psychrometric-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/psychrometric-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/psychrometric-basic/plotly/plot.html
-quality_score: 81
+quality_score: 85
 review:
   strengths:
-  - Excellent spec compliance — all required psychrometric properties present with
-    correct ASHRAE formulas
-  - Strong data storytelling with HVAC cooling/dehumidification process path and comfort
-    zone highlighting
-  - 'Good use of Plotly-specific features: custom hover templates with customdata,
-    HTML export, interactive tooltips'
-  - Cohesive color palette with intentional opacity gradients for RH curves
-  - Deterministic, well-structured code with realistic engineering data
+  - Comprehensive psychrometric calculations using real ASHRAE formulas — scientifically
+    accurate
+  - All spec-required features present with thoughtful visual differentiation (color
+    + dash patterns)
+  - 'Excellent use of Plotly interactivity: rich hovertemplates with customdata showing
+    enthalpy, RH%, and humidity ratio at each point'
+  - Strong visual hierarchy with the bold red process path creating a clear focal
+    point
+  - Staggered RH label placement reduces overlap compared to uniform positioning
   weaknesses:
-  - Label overlap near saturation curve where wet-bulb, enthalpy, and specific volume
-    annotations cluster together
-  - RH percentage labels crowd in the lower-left area around 0-10°C
-  - Enthalpy and specific volume lines too faint (opacity 0.35-0.4) to trace easily
-  - Some annotation font sizes (10pt) are small for the output resolution
-  image_description: 'The plot displays a psychrometric chart with the title "psychrometric-basic
-    · plotly · pyplots.ai" centered at the top. The x-axis shows "Dry-Bulb Temperature
-    (°C)" ranging from -10 to 50, and the y-axis shows "Humidity Ratio (g/kg dry air)"
-    ranging from 0 to 30. A prominent dark navy saturation curve (100% RH) forms the
-    upper boundary. Below it, nine RH curves (10%–90%) are drawn in graduated blue
-    opacities with percentage labels. Green diagonal wet-bulb temperature lines (0°C
-    to 30°C in 5°C steps) run from upper-left to lower-right with labels at the saturation
-    boundary. Red-orange dotted enthalpy lines (10–110 kJ/kg) and purple dash-dot
-    specific volume lines (0.78–0.94 m³/kg) are overlaid with labels near the saturation
-    curve. A dashed blue rectangle highlights the "Comfort Zone" (20–26°C, 30–60%
-    RH) with a bold label inside. A red process path with an arrow connects two state
-    points: "32°C, 60% RH" to "24°C, 50% RH", representing cooling and dehumidification.
-    A legend in the upper-left identifies all line types. The background is a very
-    light blue-white with subtle gridlines.'
+  - Some label crowding in the 20-30°C comfort zone region where multiple annotations
+    converge
+  - Saturation pressure calculation repeated 5+ times — code is verbose at ~515 lines
+  - Process path arrow is positioned horizontally at the midpoint rather than following
+    the diagonal path direction
+  - Enthalpy and specific volume lines could use slightly higher opacity for better
+    visibility
+  image_description: 'The plot displays a psychrometric chart with dry-bulb temperature
+    (°C) on the x-axis ranging from -10 to 50, and humidity ratio (g/kg dry air) on
+    the y-axis from 0 to 30. A thick dark navy saturation curve (100% RH) forms the
+    upper boundary. Nine RH curves (10%–90%) are drawn in progressively darker navy
+    blue with percentage labels staggered along the curves. Green solid diagonal lines
+    represent wet-bulb temperatures (0°C through 30°C in 5°C steps) with rotated labels.
+    Red-orange dotted diagonal lines show enthalpy values (labeled every 20 kJ/kg:
+    20, 40, 60, 80, 100). Purple dash-dot diagonal lines indicate specific volume.
+    A dashed blue rectangle marks the ASHRAE comfort zone (20–26°C, 30–60% RH) with
+    a "Comfort Zone" label inside. A bold red process path with large circular markers
+    connects state point "32°C, 60% RH" to "24°C, 50% RH" with a large red arrow indicating
+    cooling and dehumidification direction. A legend in the upper left identifies
+    all line types. The background is a very light blue-white, with extremely subtle
+    gridlines. Title reads "psychrometric-basic · plotly · pyplots.ai" centered at
+    the top.'
   criteria_checklist:
     visual_quality:
-      score: 22
+      score: 25
       max: 30
       items:
       - id: VQ-01
@@ -51,35 +55,36 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title 32, labels 22, ticks 18). Some annotations
-          at 10pt are small in crowded areas.
+        comment: All font sizes explicitly set (title 32pt, axes 24pt, ticks 18pt,
+          annotations 13-16pt). Annotation labels at 12-13pt slightly small but readable.
       - id: VQ-02
         name: No Overlap
-        score: 3
-        max: 6
-        passed: false
-        comment: Label overlap near saturation curve (wet-bulb, enthalpy, volume labels
-          cluster). RH% labels crowd in lower-left.
-      - id: VQ-03
-        name: Element Visibility
         score: 4
         max: 6
         passed: true
-        comment: All line types visible with distinct colors/dashes. Enthalpy and
-          specific volume lines quite faint at opacity 0.35-0.4.
+        comment: Some crowding in 20-30°C region where state point labels, comfort
+          zone label, wet-bulb labels, and RH percentages converge.
+      - id: VQ-03
+        name: Element Visibility
+        score: 5
+        max: 6
+        passed: true
+        comment: Saturation curve prominent (width 5). Property lines distinguishable
+          via color and dash. Some lines slightly faint at 0.50-0.55 alpha.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Good differentiation with blue, green, red-orange, purple. Dash patterns
-          provide secondary distinction.
+        comment: Good color differentiation with dash pattern redundancy. Red process
+          path and red-orange enthalpy could be confused at small scale.
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Good proportions, balanced margins, nothing cut off.
+        comment: Good proportions at 4800x2700. Margins well balanced. Plot fills
+          canvas appropriately.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
@@ -87,7 +92,7 @@ review:
         passed: true
         comment: Descriptive labels with units on both axes.
     design_excellence:
-      score: 12
+      score: 13
       max: 20
       items:
       - id: DE-01
@@ -95,22 +100,22 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Cohesive blue palette with opacity gradients. plotly_white template.
-          Above defaults but not publication-level.
+        comment: Thoughtful custom color palette, Arial Black title, clearly above
+          defaults but not publication-level.
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: plotly_white removes spines. Subtle grid. Custom background. Annotation
-          placement needs polish.
+        comment: plotly_white template, subtle 5% opacity grid, light blue background,
+          clean legend with border.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: HVAC process path with labeled states creates clear focal point and
-          narrative. Comfort zone highlights practical use.
+        comment: Clear visual hierarchy with dominant saturation curve and bold red
+          process path as focal point.
     spec_compliance:
       score: 15
       max: 15
@@ -120,26 +125,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct psychrometric chart with all property lines.
+        comment: Correct psychrometric chart with all property line types.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All required features present: RH curves, wet-bulb, enthalpy, specific
-          volume, comfort zone, process path.'
+        comment: 'All spec features present: RH curves, wet-bulb, enthalpy, specific
+          volume, comfort zone, process path with arrow, direct labels.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Correct axes and ranges.
+        comment: Correct axes with full specified range covered.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend entries identify all line types.
+        comment: Title matches required format. Legend identifies all line types clearly.
     data_quality:
       score: 15
       max: 15
@@ -149,36 +154,37 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows all psychrometric properties.
+        comment: All psychrometric properties shown. Process path demonstrates real
+          HVAC operation.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: ASHRAE formulas, real HVAC scenario, standard atmospheric pressure.
+        comment: Real ASHRAE formulas at standard atmospheric pressure. Realistic
+          summer cooling scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Sensible ranges for all values.
+        comment: Standard psychrometric chart ranges with physically correct values.
     code_quality:
       score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 2
+        score: 3
         max: 3
-        passed: false
-        comment: Uses helper functions for psychrometric equations. Practical but
-          deviates from flat structure.
+        passed: true
+        comment: Linear flow from constants through property lines to layout and save.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic from equations.
+        comment: Fully deterministic — computed from equations, no random data.
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -187,16 +193,17 @@ review:
         comment: Only numpy and plotly.graph_objects, both used.
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Well-structured with efficient loops. Appropriate complexity.
+        passed: false
+        comment: Saturation pressure calculation duplicated 5+ times making code verbose
+          at ~515 lines.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with correct dimensions. Also generates HTML.
+        comment: Saves as plot.png with correct dimensions. Also exports HTML.
     library_mastery:
       score: 8
       max: 10
@@ -206,15 +213,15 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Idiomatic go.Figure, go.Scatter, update_layout. Effective customdata
-          with hovertemplate.
+        comment: Proper go.Figure/add_trace pattern, go.Scatter with all parameters,
+          comprehensive update_layout.
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: Custom hover templates with customdata arrays, HTML export, plotly_white
-          template, hovermode.
+        comment: Custom hovertemplates with customdata, HTML export, fill=toself for
+          comfort zone, hoverlabel customization.
   verdict: REJECTED
 impl_tags:
   dependencies: []

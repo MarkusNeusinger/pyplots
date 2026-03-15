@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 funnel-meta-analysis: Meta-Analysis Funnel Plot for Publication Bias
 Library: bokeh 3.9.0 | Python 3.14.3
 Quality: 81/100 | Created: 2026-03-15
@@ -6,7 +6,7 @@ Quality: 81/100 | Created: 2026-03-15
 
 import numpy as np
 from bokeh.io import export_png, output_file, save
-from bokeh.models import ColumnDataSource, Label, Span
+from bokeh.models import ColumnDataSource, HoverTool, Label, Span
 from bokeh.plotting import figure
 
 
@@ -29,6 +29,13 @@ effect_sizes[small_study_mask] += np.random.uniform(0.05, 0.20, small_study_mask
 weights = 1 / std_errors**2
 summary_effect = np.sum(weights * effect_sizes) / np.sum(weights)
 
+# Marker sizes proportional to study weight (inverse variance)
+normalized_weights = weights / weights.max()
+marker_sizes = 22 + normalized_weights * 30  # range 22-52px
+
+# Color intensity by precision (more precise = darker)
+marker_alphas = 0.55 + normalized_weights * 0.40  # range 0.55-0.95
+
 # Funnel confidence limits
 se_range = np.linspace(0, 0.55, 100)
 upper_limit = summary_effect + 1.96 * se_range
@@ -38,7 +45,16 @@ lower_limit = summary_effect - 1.96 * se_range
 studies = [f"Study {i + 1}" for i in range(n_studies)]
 
 # Plot
-source = ColumnDataSource(data={"effect_size": effect_sizes, "std_error": std_errors, "study": studies})
+source = ColumnDataSource(
+    data={
+        "effect_size": effect_sizes,
+        "std_error": std_errors,
+        "study": studies,
+        "weight": np.round(weights, 1),
+        "marker_size": marker_sizes,
+        "marker_alpha": marker_alphas,
+    }
+)
 
 p = figure(
     width=4800,
@@ -59,54 +75,82 @@ p.patch(
     funnel_xs,
     funnel_ys,
     fill_color="#306998",
-    fill_alpha=0.08,
+    fill_alpha=0.15,
     line_color="#306998",
-    line_alpha=0.4,
-    line_width=2,
+    line_alpha=0.5,
+    line_width=2.5,
     line_dash="dashed",
 )
 
 # Summary effect line
-p.add_layout(Span(location=summary_effect, dimension="height", line_color="#306998", line_width=3, line_alpha=0.7))
+p.add_layout(Span(location=summary_effect, dimension="height", line_color="#306998", line_width=4, line_alpha=0.85))
 
 # Null effect line (0 for log scale)
 p.add_layout(
-    Span(location=0, dimension="height", line_color="#999999", line_width=2, line_dash="dashed", line_alpha=0.6)
+    Span(location=0, dimension="height", line_color="#888888", line_width=2.5, line_dash="dashed", line_alpha=0.7)
 )
 
-# Study points
-p.scatter(
+# Study points - sized by weight for visual hierarchy
+scatter = p.scatter(
     x="effect_size",
     y="std_error",
     source=source,
-    size=22,
-    color="#306998",
-    alpha=0.85,
+    size="marker_size",
+    fill_alpha="marker_alpha",
+    fill_color="#306998",
     line_color="white",
     line_width=2.5,
 )
 
-# Summary effect label
+# HoverTool - distinctive Bokeh interactive feature
+hover = HoverTool(
+    renderers=[scatter],
+    tooltips=[
+        ("Study", "@study"),
+        ("Effect Size", "@effect_size{0.3f}"),
+        ("Std Error", "@std_error{0.3f}"),
+        ("Weight", "@weight{0.1f}"),
+    ],
+)
+p.add_tools(hover)
+
+# Summary effect label - positioned in visible area
 p.add_layout(
     Label(
-        x=summary_effect + 0.02,
-        y=0.56,
+        x=summary_effect + 0.03,
+        y=0.03,
         text=f"Summary: {summary_effect:.2f}",
-        text_font_size="20pt",
+        text_font_size="22pt",
         text_color="#306998",
+        text_font_style="bold",
         text_align="left",
-        text_baseline="middle",
+        text_baseline="top",
     )
 )
 
 # Null label
 p.add_layout(
     Label(
-        x=0.02,
-        y=0.56,
+        x=0.03,
+        y=0.03,
         text="Null (0)",
-        text_font_size="20pt",
-        text_color="#999999",
+        text_font_size="22pt",
+        text_color="#888888",
+        text_font_style="bold",
+        text_align="left",
+        text_baseline="top",
+    )
+)
+
+# Asymmetry annotation for storytelling
+p.add_layout(
+    Label(
+        x=0.62,
+        y=0.42,
+        text="← Asymmetry suggests publication bias",
+        text_font_size="26pt",
+        text_color="#C05746",
+        text_font_style="bold",
         text_align="left",
         text_baseline="middle",
     )
@@ -130,6 +174,8 @@ p.ygrid.grid_line_width = 1
 p.outline_line_color = None
 p.xaxis.minor_tick_line_color = None
 p.yaxis.minor_tick_line_color = None
+
+p.background_fill_color = "#FAFAFA"
 
 # Save
 export_png(p, filename="plot.png")

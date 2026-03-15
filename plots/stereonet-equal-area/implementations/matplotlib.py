@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 stereonet-equal-area: Structural Geology Stereonet (Equal-Area Projection)
 Library: matplotlib 3.10.8 | Python 3.14.3
 Quality: 82/100 | Created: 2026-03-15
@@ -23,7 +23,7 @@ fault_dip = np.clip(np.random.normal(58, 10, 20), 2, 88)
 all_strikes = np.concatenate([bedding_strike, joint_strike, fault_strike])
 all_dips = np.concatenate([bedding_dip, joint_dip, fault_dip])
 feature_types = ["Bedding"] * 30 + ["Joint"] * 25 + ["Fault"] * 20
-colors = {"Bedding": "#306998", "Joint": "#E8833A", "Fault": "#9B2335"}
+colors = {"Bedding": "#306998", "Joint": "#E8833A", "Fault": "#8B2252"}
 markers = {"Bedding": "o", "Joint": "s", "Fault": "^"}
 
 # Pole orientations in equal-area (Schmidt) projection
@@ -59,9 +59,10 @@ for j in range(len(all_dips)):
     cos_dist = gx * pole_vx[j] + gy * pole_vy[j] + gz * pole_vz[j]
     Z += np.exp(-(np.arccos(np.clip(cos_dist, -1, 1)) ** 2) / (2 * sigma**2))
 
-ax.contourf(THETA, R, Z, levels=8, cmap="Greys", alpha=0.25, zorder=1)
+contour_fill = ax.contourf(THETA, R, Z, levels=8, cmap="YlOrBr", alpha=0.3, zorder=1)
+ax.contour(THETA, R, Z, levels=8, colors="#B87333", alpha=0.4, linewidths=0.6, zorder=1)
 
-# Great circles for each plane
+# Great circles for each plane - increased visibility
 t_param = np.linspace(0, np.pi, 180)
 for i in range(len(all_strikes)):
     alpha = np.deg2rad(all_strikes[i])
@@ -74,7 +75,7 @@ for i in range(len(all_strikes)):
     plunge = np.arctan2(pz, horiz)
     colat = np.pi / 2 - plunge
     r = np.sqrt(2) * np.sin(colat / 2)
-    ax.plot(trend, r, color=colors[feature_types[i]], alpha=0.15, linewidth=0.7, zorder=2)
+    ax.plot(trend, r, color=colors[feature_types[i]], alpha=0.35, linewidth=1.2, zorder=2)
 
 # Poles as scatter points with distinct markers per feature type
 for feat in colors:
@@ -83,13 +84,25 @@ for feat in colors:
         pole_trend_rad[mask],
         pole_r[mask],
         c=colors[feat],
-        s=150,
+        s=160,
         marker=markers[feat],
         edgecolors="white",
-        linewidth=0.8,
+        linewidth=1.0,
         label=f"{feat} poles",
         zorder=5,
     )
+
+# N label emphasis at top
+ax.annotate(
+    "N",
+    xy=(0, 1.08),
+    xycoords="axes fraction",
+    ha="center",
+    va="center",
+    fontsize=24,
+    fontweight="bold",
+    color="#333333",
+)
 
 # Style
 ax.set_rlim(0, 1)
@@ -99,7 +112,7 @@ ax.set_xticks(np.deg2rad(theta_ticks))
 tick_labels = []
 for d in theta_ticks:
     if d == 0:
-        tick_labels.append("N")
+        tick_labels.append("")
     elif d == 90:
         tick_labels.append("E")
     elif d == 180:
@@ -113,10 +126,21 @@ for d in theta_ticks:
 ax.set_xticklabels(tick_labels, fontsize=16)
 ax.grid(True, alpha=0.15, linewidth=0.5, color="gray")
 
+# Primitive circle emphasis
+circle_theta = np.linspace(0, 2 * np.pi, 200)
+ax.plot(circle_theta, np.ones_like(circle_theta), color="#444444", linewidth=1.5, zorder=3)
+
+# Legend inside the plot area for better layout balance
 ax.legend(
-    loc="upper right", bbox_to_anchor=(1.22, 1.05), fontsize=16, framealpha=0.9, edgecolor="none", markerscale=1.2
+    loc="upper left",
+    bbox_to_anchor=(0.02, 0.98),
+    fontsize=16,
+    framealpha=0.92,
+    edgecolor="#cccccc",
+    fancybox=True,
+    markerscale=1.2,
 )
-ax.set_title("stereonet-equal-area · matplotlib · pyplots.ai", fontsize=22, fontweight="medium", pad=30)
+ax.set_title("stereonet-equal-area · matplotlib · pyplots.ai", fontsize=24, fontweight="medium", pad=35)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

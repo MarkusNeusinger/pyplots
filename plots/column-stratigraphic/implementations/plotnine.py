@@ -1,13 +1,13 @@
-""" pyplots.ai
+"""pyplots.ai
 column-stratigraphic: Stratigraphic Column with Lithology Patterns
 Library: plotnine 0.15.3 | Python 3.14.3
-Quality: 81/100 | Created: 2026-03-15
 """
 
 import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
+    annotate,
     element_blank,
     element_line,
     element_rect,
@@ -17,6 +17,8 @@ from plotnine import (
     geom_segment,
     geom_text,
     ggplot,
+    guide_legend,
+    guides,
     labs,
     scale_fill_manual,
     scale_x_continuous,
@@ -26,7 +28,7 @@ from plotnine import (
 )
 
 
-# Data - synthetic sedimentary borehole section
+# Data - synthetic sedimentary borehole section (Western US)
 layers = pd.DataFrame(
     {
         "top": [0, 12, 28, 45, 58, 72, 95, 115, 138, 160],
@@ -76,14 +78,13 @@ layers["thickness"] = layers["bottom"] - layers["top"]
 # Column position constants
 col_left = 0.0
 col_right = 4.0
-col_mid = 2.0
 
-# Lithology colors (geologically conventional tones)
+# Lithology colors - improved contrast between siltstone and shale
 lith_colors = {
     "Sandstone": "#F5D76E",
-    "Shale": "#8E8E8E",
+    "Shale": "#7A7A7A",
     "Limestone": "#6DAEDB",
-    "Siltstone": "#B5C7D3",
+    "Siltstone": "#C8DCC0",
     "Conglomerate": "#D4785C",
     "Mudstone": "#7B6B5E",
 }
@@ -94,6 +95,10 @@ rect_df["xmin"] = col_left
 rect_df["xmax"] = col_right
 rect_df["ymin"] = rect_df["top"]
 rect_df["ymax"] = rect_df["bottom"]
+
+# Highlight the unconformity between Kootenai Fm and Morrison Fm (J/K boundary)
+# This adds storytelling: a major geological event
+unconformity_depth = 95.0
 
 # Generate pattern overlay data for each lithology
 pattern_rows = []
@@ -106,8 +111,8 @@ for _, row in layers.iterrows():
     thickness = bot_val - top_val
 
     if lith == "Sandstone":
-        # Stipple dots pattern
-        n_dots = int(thickness * 3)
+        # Stipple dots pattern - denser
+        n_dots = int(thickness * 4)
         for _ in range(n_dots):
             px = np.random.uniform(col_left + 0.3, col_right - 0.3)
             py = np.random.uniform(top_val + 0.5, bot_val - 0.5)
@@ -115,9 +120,9 @@ for _, row in layers.iterrows():
 
     elif lith == "Shale":
         # Horizontal dashes
-        spacing = 3.0
-        y_pos = top_val + 1.5
-        while y_pos < bot_val - 1.0:
+        spacing = 2.5
+        y_pos = top_val + 1.0
+        while y_pos < bot_val - 0.5:
             for x_start in np.arange(col_left + 0.3, col_right - 0.5, 0.8):
                 pattern_rows.append(
                     {"x": x_start, "y": y_pos, "xend": x_start + 0.5, "yend": y_pos, "ptype": "dash", "lithology": lith}
@@ -130,7 +135,6 @@ for _, row in layers.iterrows():
         y_pos = top_val + 2.0
         row_idx = 0
         while y_pos < bot_val - 1.0:
-            # Horizontal line
             pattern_rows.append(
                 {
                     "x": col_left + 0.2,
@@ -141,7 +145,6 @@ for _, row in layers.iterrows():
                     "lithology": lith,
                 }
             )
-            # Vertical lines (offset every other row)
             offset = 1.0 if row_idx % 2 == 0 else 0.0
             for vx in np.arange(col_left + 0.5 + offset, col_right - 0.3, 2.0):
                 y_top = max(y_pos - spacing, top_val + 0.2)
@@ -152,19 +155,19 @@ for _, row in layers.iterrows():
             row_idx += 1
 
     elif lith == "Siltstone":
-        # Short random dashes at various angles
-        n_dashes = int(thickness * 2)
+        # Short random dashes - much denser for visibility
+        n_dashes = int(thickness * 6)
         for _ in range(n_dashes):
-            px = np.random.uniform(col_left + 0.4, col_right - 0.4)
-            py = np.random.uniform(top_val + 1.0, bot_val - 1.0)
-            dx = np.random.uniform(-0.2, 0.2)
+            px = np.random.uniform(col_left + 0.3, col_right - 0.3)
+            py = np.random.uniform(top_val + 0.5, bot_val - 0.5)
+            dx = np.random.uniform(-0.15, 0.15)
             pattern_rows.append(
-                {"x": px, "y": py, "xend": px + dx, "yend": py + 0.3, "ptype": "short_dash", "lithology": lith}
+                {"x": px, "y": py, "xend": px + dx, "yend": py + 0.2, "ptype": "short_dash", "lithology": lith}
             )
 
     elif lith == "Conglomerate":
         # Scattered circles (represented as large dots)
-        n_circles = int(thickness * 1.5)
+        n_circles = int(thickness * 2)
         for _ in range(n_circles):
             px = np.random.uniform(col_left + 0.5, col_right - 0.5)
             py = np.random.uniform(top_val + 1.0, bot_val - 1.0)
@@ -172,15 +175,15 @@ for _, row in layers.iterrows():
 
     elif lith == "Mudstone":
         # Dense horizontal dashes (finer than shale)
-        spacing = 2.5
-        y_pos = top_val + 1.0
-        while y_pos < bot_val - 0.5:
-            for x_start in np.arange(col_left + 0.2, col_right - 0.3, 0.6):
+        spacing = 2.0
+        y_pos = top_val + 0.8
+        while y_pos < bot_val - 0.3:
+            for x_start in np.arange(col_left + 0.2, col_right - 0.3, 0.5):
                 pattern_rows.append(
                     {
                         "x": x_start,
                         "y": y_pos,
-                        "xend": x_start + 0.3,
+                        "xend": x_start + 0.25,
                         "yend": y_pos,
                         "ptype": "fine_dash",
                         "lithology": lith,
@@ -205,11 +208,22 @@ age_groups = layers.groupby("age", sort=False).agg({"top": "min", "bottom": "max
 age_groups["mid"] = (age_groups["top"] + age_groups["bottom"]) / 2
 age_labels = pd.DataFrame({"x": col_left - 0.3, "y": age_groups["mid"].values, "label": age_groups.index.tolist()})
 
+# Age bracket lines connecting age labels to the column
+age_brackets = []
+for _, grp in age_groups.iterrows():
+    age_brackets.append({"x": col_left - 0.15, "y": grp["top"], "xend": col_left - 0.15, "yend": grp["bottom"]})
+age_bracket_df = pd.DataFrame(age_brackets)
+
 # Layer boundary lines
 boundaries = sorted(set(layers["top"].tolist() + layers["bottom"].tolist()))
 boundary_df = pd.DataFrame(
     {"x": [col_left] * len(boundaries), "xend": [col_right] * len(boundaries), "y": boundaries, "yend": boundaries}
 )
+
+# Unconformity wavy line data (zigzag at Jurassic/Cretaceous boundary)
+wavy_x = np.linspace(col_left, col_right, 40)
+wavy_y = unconformity_depth + np.sin(wavy_x * 8) * 0.8
+wavy_df = pd.DataFrame({"x": wavy_x[:-1], "y": wavy_y[:-1], "xend": wavy_x[1:], "yend": wavy_y[1:]})
 
 # Plot
 plot = (
@@ -220,66 +234,94 @@ plot = (
         mapping=aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax", fill="lithology"),
         color="#2C2C2C",
         size=0.8,
-        alpha=0.55,
+        alpha=0.6,
     )
     # Pattern overlays - line segments
     + geom_segment(
-        data=lines_df, mapping=aes(x="x", y="y", xend="xend", yend="yend"), color="#2C2C2C", size=0.6, alpha=0.7
+        data=lines_df, mapping=aes(x="x", y="y", xend="xend", yend="yend"), color="#2C2C2C", size=0.6, alpha=0.75
     )
     # Pattern overlays - dots (sandstone)
-    + geom_point(data=dots_df, mapping=aes(x="x", y="y"), color="#2C2C2C", size=0.8, alpha=0.6)
+    + geom_point(data=dots_df, mapping=aes(x="x", y="y"), color="#2C2C2C", size=1.0, alpha=0.65)
     # Pattern overlays - circles (conglomerate)
     + geom_point(
         data=circles_df,
         mapping=aes(x="x", y="y"),
         color="#2C2C2C",
-        size=3,
-        alpha=0.5,
+        size=3.5,
+        alpha=0.55,
         shape="o",
         fill="none",
-        stroke=0.8,
+        stroke=0.9,
     )
     # Layer boundary lines
     + geom_segment(data=boundary_df, mapping=aes(x="x", y="y", xend="xend", yend="yend"), color="#2C2C2C", size=0.8)
-    # Formation labels (right side)
+    # Unconformity wavy line (focal point - major geological event)
+    + geom_segment(
+        data=wavy_df, mapping=aes(x="x", y="y", xend="xend", yend="yend"), color="#B22222", size=1.8, alpha=0.9
+    )
+    # Unconformity annotation
+    + annotate(
+        "text",
+        x=col_right + 0.3,
+        y=unconformity_depth,
+        label="~ Unconformity ~",
+        ha="left",
+        size=12,
+        color="#B22222",
+        fontstyle="italic",
+        fontweight="bold",
+    )
+    # Age bracket lines
+    + geom_segment(data=age_bracket_df, mapping=aes(x="x", y="y", xend="xend", yend="yend"), color="#444444", size=0.7)
+    # Formation labels (right side) - larger font
     + geom_text(
         data=form_labels,
         mapping=aes(x="x", y="y", label="label"),
         ha="left",
-        size=11,
+        size=14,
         fontstyle="italic",
         color="#1A1A1A",
     )
-    # Age labels (left side)
-    + geom_text(data=age_labels, mapping=aes(x="x", y="y", label="label"), ha="right", size=10, color="#1A1A1A")
+    # Age labels (left side) - larger font
+    + geom_text(
+        data=age_labels,
+        mapping=aes(x="x", y="y", label="label"),
+        ha="right",
+        size=13,
+        fontweight="bold",
+        color="#333333",
+    )
     # Scales
     + scale_fill_manual(values=lith_colors)
     + scale_y_reverse(name="Depth (m)", breaks=list(range(0, 200, 20)))
-    + scale_x_continuous(limits=(-3.5, 8.5), breaks=[])
+    + scale_x_continuous(limits=(-4.0, 9.5), breaks=[])
     # Labels
     + labs(title="column-stratigraphic · plotnine · pyplots.ai", fill="Lithology", x="")
+    # Legend styling
+    + guides(fill=guide_legend(nrow=1))
     # Theme
     + theme_minimal()
     + theme(
-        figure_size=(10, 16),
-        plot_title=element_text(size=22, face="bold", ha="center"),
-        axis_title_y=element_text(size=18),
+        figure_size=(11, 16),
+        plot_title=element_text(size=24, face="bold", ha="center"),
+        axis_title_y=element_text(size=20),
         axis_title_x=element_blank(),
-        axis_text_y=element_text(size=14),
+        axis_text_y=element_text(size=16),
         axis_text_x=element_blank(),
         axis_ticks_major_x=element_blank(),
         legend_title=element_text(size=16, face="bold"),
-        legend_text=element_text(size=13),
+        legend_text=element_text(size=14),
         legend_position="bottom",
         legend_direction="horizontal",
+        legend_key_size=20,
         panel_grid_major_x=element_blank(),
         panel_grid_minor_x=element_blank(),
-        panel_grid_major_y=element_line(color="#E0E0E0", size=0.3, alpha=0.4),
+        panel_grid_major_y=element_line(color="#E8E8E8", size=0.25, alpha=0.3),
         panel_grid_minor_y=element_blank(),
-        panel_background=element_rect(fill="white", color="none"),
+        panel_background=element_rect(fill="#FAFAFA", color="none"),
         plot_background=element_rect(fill="white", color="none"),
     )
 )
 
 # Save
-plot.save("plot.png", dpi=300, width=10, height=16)
+plot.save("plot.png", dpi=300, width=11, height=16)

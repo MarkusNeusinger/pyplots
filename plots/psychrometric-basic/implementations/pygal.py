@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 psychrometric-basic: Psychrometric Chart for HVAC
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 77/100 | Created: 2026-03-15
@@ -17,7 +17,7 @@ P_ATM = 101325.0  # Pa (standard atmosphere)
 
 
 def sat_pressure(t_celsius):
-    """ASHRAE saturation vapor pressure (Pa) from dry-bulb temperature (°C)."""
+    """ASHRAE saturation vapor pressure (Pa) from dry-bulb temperature."""
     tk = t_celsius + 273.15
     if t_celsius >= 0:
         ln_p = (
@@ -45,6 +45,12 @@ def humidity_ratio(t_celsius, rh):
     """Humidity ratio (g/kg) from temperature and relative humidity (0-1)."""
     pw = rh * sat_pressure(t_celsius)
     return 0.62198 * pw / (P_ATM - pw) * 1000
+
+
+def specific_volume_w(t_celsius, sv_target):
+    """Solve analytically for humidity ratio (kg/kg) given temperature and target specific volume."""
+    tk = t_celsius + 273.15
+    return (sv_target * P_ATM / 1000 / (0.287042 * tk) - 1) / 1.6078
 
 
 # Data — precompute all psychrometric curves
@@ -88,22 +94,18 @@ for tw_target in wb_temps:
         step = max(1, len(pts) // 30)
         wb_lines[tw_target] = pts[::step]
 
-# Specific volume lines
+# Specific volume lines — analytical solution
 sv_values = [0.80, 0.84, 0.88, 0.92, 0.96]
 sv_lines = {}
 for sv_target in sv_values:
     pts = []
     for t in np.linspace(-10, 50, 200):
         t_f = float(t)
-        tk = t_f + 273.15
-        for w_test in np.linspace(0, 0.030, 300):
-            sv_calc = 0.287042 * tk * (1 + 1.6078 * w_test) / (P_ATM / 1000)
-            if abs(sv_calc - sv_target) < 0.0008:
-                w_g = w_test * 1000
-                w_sat = humidity_ratio(t_f, 1.0)
-                if 0 <= w_g <= min(30, w_sat + 0.2):
-                    pts.append((round(t_f, 2), round(w_g, 3)))
-                break
+        w_kgkg = specific_volume_w(t_f, sv_target)
+        w_gkg = w_kgkg * 1000
+        w_sat = humidity_ratio(t_f, 1.0)
+        if 0 <= w_gkg <= min(30, w_sat + 0.2):
+            pts.append((round(t_f, 2), round(w_gkg, 3)))
     if len(pts) > 2:
         pts.sort(key=lambda p: p[0])
         step = max(1, len(pts) // 25)
@@ -141,7 +143,7 @@ hvac_states = [(35.0, round(humidity_ratio(35, 0.60), 3)), (24.0, round(humidity
 # Color palette — distinct families per property type
 blue_rh = ["#0d3b66", "#1a4d80", "#276099", "#3572b0", "#4384c4", "#5195d4", "#5fa5e0", "#6db5ea", "#7bc4f2", "#89d1f8"]
 orange_wb = "#d4792a"
-purple_sv = "#7b5ea7"
+purple_sv = "#6a4c93"
 teal_enth = "#2a8a8a"
 
 palette = tuple(blue_rh + [orange_wb] * 7 + [purple_sv] * 5 + [teal_enth] * 10 + ["#4caf6e", "#c62828"])
@@ -175,7 +177,7 @@ custom_style = Style(
     major_guide_stroke_color="#dde1e6",
 )
 
-# Chart
+# Chart — increased right margin to prevent label truncation
 chart = pygal.XY(
     width=4800,
     height=2700,
@@ -204,12 +206,12 @@ chart = pygal.XY(
     margin_bottom=60,
     margin_top=70,
     margin_left=80,
-    margin_right=50,
+    margin_right=180,
     truncate_legend=-1,
     js=[],
 )
 
-# RH curves — saturation (100%) thickest, all visible
+# RH curves — saturation (100%) thickest
 for rh in rh_levels:
     rh_pct = int(rh * 100)
     w = 5.5 if rh == 1.0 else max(2.2, 1.5 + rh * 2)
@@ -221,16 +223,16 @@ for tw in wb_temps:
         f"Tw={tw}°C",
         wb_lines.get(tw, []),
         show_dots=False,
-        stroke_style={"width": 1.8, "dasharray": "12, 6", "linecap": "round"},
+        stroke_style={"width": 2.0, "dasharray": "12, 6", "linecap": "round"},
     )
 
-# Specific volume lines — dotted purple
+# Specific volume lines — dotted purple, increased width for visibility
 for sv in sv_values:
     chart.add(
-        f"v={sv} m³/kg",
+        f"v={sv} m\u00b3/kg",
         sv_lines.get(sv, []),
         show_dots=False,
-        stroke_style={"width": 1.5, "dasharray": "4, 8", "linecap": "round"},
+        stroke_style={"width": 2.2, "dasharray": "4, 8", "linecap": "round"},
     )
 
 # Enthalpy lines — dash-dot teal
@@ -239,12 +241,12 @@ for h in enthalpy_values:
         f"h={h} kJ/kg",
         enthalpy_lines.get(h, []),
         show_dots=False,
-        stroke_style={"width": 1.4, "dasharray": "14, 4, 4, 4", "linecap": "round"},
+        stroke_style={"width": 1.6, "dasharray": "14, 4, 4, 4", "linecap": "round"},
     )
 
 # Comfort zone — filled green
 chart.add(
-    "Comfort Zone (20–26°C, 30–60% RH)",
+    "Comfort Zone (20\u201326\u00b0C, 30\u201360% RH)",
     comfort_pts,
     show_dots=False,
     fill=True,
@@ -253,24 +255,22 @@ chart.add(
 
 # HVAC process — bold red with dots at state points
 chart.add(
-    "Cooling & Dehumidification (A→B)",
+    "Cooling & Dehumidification (A\u2192B)",
     [
-        {"value": hvac_states[0], "label": "State A: 35°C, 60% RH"},
-        {"value": hvac_states[1], "label": "State B: 24°C, 50% RH"},
+        {"value": hvac_states[0], "label": "State A: 35\u00b0C, 60% RH"},
+        {"value": hvac_states[1], "label": "State B: 24\u00b0C, 50% RH"},
     ],
     show_dots=True,
     dots_size=14,
     stroke_style={"width": 4.5, "linecap": "round"},
 )
 
-# Render SVG first, then inject text labels directly into SVG before PNG export
+# Render SVG, then add direct labels via SVG text elements
 svg_content = chart.render(is_unicode=True)
 
-# Inject direct labels onto curves by adding SVG <text> elements
-# Compute chart area coordinates from pygal's viewBox
-# pygal uses viewBox="0 0 4800 2700" with margins
+# Coordinate mapping for label placement
 plot_left = 80 + 120  # margin_left + y-axis labels space
-plot_right = 4800 - 50  # width - margin_right
+plot_right = 4800 - 180  # width - margin_right
 plot_top = 70 + 80  # margin_top + title space
 plot_bottom = 2700 - 60 - 80  # height - margin_bottom - x-axis space
 
@@ -288,8 +288,8 @@ def to_svg_y(val):
 
 labels_svg = []
 
-# RH labels at right edge of each curve
-rh_label_temps = {1.0: 18, 0.9: 22, 0.8: 26, 0.7: 29, 0.6: 32, 0.5: 35, 0.4: 38, 0.3: 41, 0.2: 44, 0.1: 47}
+# RH labels — positioned along curves where they're readable
+rh_label_temps = {1.0: 16, 0.9: 20, 0.8: 24, 0.7: 27, 0.6: 30, 0.5: 33, 0.4: 36, 0.3: 39, 0.2: 42, 0.1: 45}
 for rh in rh_levels:
     rh_pct = int(rh * 100)
     t_l = rh_label_temps[rh]
@@ -297,48 +297,70 @@ for rh in rh_levels:
     if 0 < w_l < 30:
         sx, sy = to_svg_x(t_l), to_svg_y(w_l)
         labels_svg.append(
-            f'<text x="{sx}" y="{sy - 8}" font-size="34" font-family="Trebuchet MS, sans-serif" '
+            f'<text x="{sx}" y="{sy - 10}" font-size="34" font-family="Trebuchet MS, sans-serif" '
             f'fill="#0d3b66" font-weight="bold" text-anchor="middle">{rh_pct}%</text>'
         )
 
-# Wet-bulb labels near lower-right end of each line (avoid overlap with RH labels)
+# Wet-bulb labels — placed at 2/5 along line to separate from enthalpy labels
 for tw in wb_temps:
     pts = wb_lines.get(tw, [])
-    if pts:
-        p = pts[-2] if len(pts) > 2 else pts[-1]
+    if len(pts) > 4:
+        idx = 2 * len(pts) // 5  # place label at 2/5 of the line from left
+        p = pts[idx]
         sx, sy = to_svg_x(p[0]), to_svg_y(p[1])
+        # Compute rotation angle from nearby points for alignment
+        p_prev = pts[max(0, idx - 1)]
+        p_next = pts[min(len(pts) - 1, idx + 1)]
+        dx = to_svg_x(p_next[0]) - to_svg_x(p_prev[0])
+        dy = to_svg_y(p_next[1]) - to_svg_y(p_prev[1])
+        angle = math.degrees(math.atan2(dy, dx))
         labels_svg.append(
-            f'<text x="{sx + 10}" y="{sy + 5}" font-size="28" font-family="Trebuchet MS, sans-serif" '
-            f'fill="{orange_wb}" font-weight="bold" text-anchor="start">Tw {tw}°C</text>'
+            f'<text x="{sx}" y="{sy - 10}" font-size="30" font-family="Trebuchet MS, sans-serif" '
+            f'fill="{orange_wb}" font-weight="bold" text-anchor="middle" '
+            f'transform="rotate({angle:.1f},{sx},{sy - 10})">Tw {tw}\u00b0C</text>'
         )
 
-# Specific volume labels
+# Specific volume labels — larger and placed at 1/3 position for visibility
 for sv in sv_values:
     pts = sv_lines.get(sv, [])
-    if pts:
-        p = pts[len(pts) // 4]
+    if len(pts) > 4:
+        idx = len(pts) // 3
+        p = pts[idx]
         sx, sy = to_svg_x(p[0]), to_svg_y(p[1])
+        p_prev = pts[max(0, idx - 1)]
+        p_next = pts[min(len(pts) - 1, idx + 1)]
+        dx = to_svg_x(p_next[0]) - to_svg_x(p_prev[0])
+        dy = to_svg_y(p_next[1]) - to_svg_y(p_prev[1])
+        angle = math.degrees(math.atan2(dy, dx))
         labels_svg.append(
-            f'<text x="{sx}" y="{sy - 8}" font-size="28" font-family="Trebuchet MS, sans-serif" '
-            f'fill="{purple_sv}" text-anchor="middle">{sv}</text>'
+            f'<text x="{sx}" y="{sy - 10}" font-size="32" font-family="Trebuchet MS, sans-serif" '
+            f'fill="{purple_sv}" font-weight="bold" text-anchor="middle" '
+            f'transform="rotate({angle:.1f},{sx},{sy - 10})">{sv} m\u00b3/kg</text>'
         )
 
-# Enthalpy labels near lower end of line (every other to reduce clutter)
+# Enthalpy labels — placed at 2/3 along line (separated from wet-bulb labels at 2/5)
 for h in [10, 30, 50, 70, 90]:
     pts = enthalpy_lines.get(h, [])
-    if pts:
-        p = pts[-2] if len(pts) > 2 else pts[-1]
+    if len(pts) > 4:
+        idx = 2 * len(pts) // 3
+        p = pts[idx]
         sx, sy = to_svg_x(p[0]), to_svg_y(p[1])
+        p_prev = pts[max(0, idx - 1)]
+        p_next = pts[min(len(pts) - 1, idx + 1)]
+        dx = to_svg_x(p_next[0]) - to_svg_x(p_prev[0])
+        dy = to_svg_y(p_next[1]) - to_svg_y(p_prev[1])
+        angle = math.degrees(math.atan2(dy, dx))
         labels_svg.append(
-            f'<text x="{sx}" y="{sy + 30}" font-size="28" font-family="Trebuchet MS, sans-serif" '
-            f'fill="{teal_enth}" font-weight="bold" text-anchor="middle">h={h}</text>'
+            f'<text x="{sx}" y="{sy - 10}" font-size="30" font-family="Trebuchet MS, sans-serif" '
+            f'fill="{teal_enth}" font-weight="bold" text-anchor="middle" '
+            f'transform="rotate({angle:.1f},{sx},{sy - 10})">h={h} kJ/kg</text>'
         )
 
 # Comfort zone label
-cz_x, cz_y = 23, (humidity_ratio(23, 0.45))
+cz_x, cz_y = 23, humidity_ratio(23, 0.45)
 sx, sy = to_svg_x(cz_x), to_svg_y(cz_y)
 labels_svg.append(
-    f'<text x="{sx}" y="{sy}" font-size="36" font-family="Trebuchet MS, sans-serif" '
+    f'<text x="{sx}" y="{sy}" font-size="38" font-family="Trebuchet MS, sans-serif" '
     f'fill="#2e7d32" font-weight="bold" text-anchor="middle">Comfort Zone</text>'
 )
 
@@ -346,19 +368,18 @@ labels_svg.append(
 sx_a, sy_a = to_svg_x(hvac_states[0][0]), to_svg_y(hvac_states[0][1])
 labels_svg.append(
     f'<text x="{sx_a + 20}" y="{sy_a - 20}" font-size="36" font-family="Trebuchet MS, sans-serif" '
-    f'fill="#c62828" font-weight="bold" text-anchor="start">A (35°C)</text>'
+    f'fill="#c62828" font-weight="bold" text-anchor="start">A (35\u00b0C, 60%RH)</text>'
 )
 sx_b, sy_b = to_svg_x(hvac_states[1][0]), to_svg_y(hvac_states[1][1])
 labels_svg.append(
     f'<text x="{sx_b - 20}" y="{sy_b - 20}" font-size="36" font-family="Trebuchet MS, sans-serif" '
-    f'fill="#c62828" font-weight="bold" text-anchor="end">B (24°C)</text>'
+    f'fill="#c62828" font-weight="bold" text-anchor="end">B (24\u00b0C, 50%RH)</text>'
 )
 
 # Insert labels before closing </svg>
 label_block = "\n".join(labels_svg)
 svg_labeled = svg_content.replace("</svg>", f"{label_block}\n</svg>")
 
-# Save labeled SVG as HTML and render to PNG via cairosvg
 with open("plot.html", "w") as f:
     f.write(svg_labeled)
 

@@ -1,7 +1,7 @@
 library: altair
 specification_id: column-stratigraphic
 created: '2026-03-15T22:59:28Z'
-updated: '2026-03-15T23:25:10Z'
+updated: '2026-03-15T23:37:05Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23121198787
 issue: 4573
@@ -10,39 +10,38 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/column-stratigraphic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/column-stratigraphic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/column-stratigraphic/altair/plot.html
-quality_score: 85
+quality_score: 87
 review:
   strengths:
-  - Excellent geological context with real Grand Canyon formation data and accurate
-    stratigraphy
-  - Strong visual hierarchy with bold formations, italic ages, and red unconformity
-    focal points
-  - Clean declarative Altair code with well-organized layer composition
-  - Good use of age brackets and unconformity markers to organize the geological narrative
-  - Professional color palette with colorblind-safe distinct lithology colors
+  - Excellent spec compliance with all required features including unconformity markers,
+    age brackets, and 5 distinct lithology patterns
+  - Highly realistic data using real Grand Canyon formation names with correct geological
+    ordering
+  - Professional design with custom color palette, typography hierarchy, and clean
+    visual refinement
+  - Red unconformity lines create effective focal points that tell a geological story
+  - Clean, well-organized code with deterministic data
   weaknesses:
-  - Text-based pattern approximations are less distinct than true geological hatching
-    (Altair limitation)
-  - Column width could be wider to better fill the horizontal canvas space
-  - Minor visual crowding near unconformity labels where they overlap with pattern
-    text
-  - Thickness variation in layers is modest (15-25 m range)
-  image_description: 'The plot displays a vertical stratigraphic column of the Grand
-    Canyon sedimentary section spanning Cambrian to Permian periods. Ten geological
-    layers are shown as colored horizontal rectangles stacked vertically with depth
-    increasing downward (0-200 m). Colors used: yellow (Sandstone), gray (Shale),
-    blue (Limestone), purple (Siltstone), orange (Conglomerate). Each layer has text-based
-    pattern overlays approximating geological symbols (dots for sandstone, dashes
-    for shale, squares for limestone, dashes for siltstone, circles for conglomerate).
-    Formation names (Cedar Mesa Fm, Organ Rock Fm, White Rim Fm, De Chelly Fm, Coconino
-    Fm, Hermit Fm, Supai Group, Redwall Fm, Temple Butte Fm, Muav Fm) are labeled
-    to the right in bold. Thickness annotations (15 m, 20 m, 25 m) appear on the far
-    right in italic gray. Age period labels (Permian, Pennsylvanian, Mississippian,
-    Devonian, Cambrian) are on the left with vertical bracket lines. Two red dashed
-    unconformity lines appear at depths 110 and 155 m with labels. The title reads
-    "column-stratigraphic · altair · pyplots.ai" with subtitle "Grand Canyon Sedimentary
-    Section — Cambrian to Permian". A horizontal legend at the bottom shows all 5
-    lithology types. Background is light gray.'
+  - Pattern text overlays could be more prominent — some are subtle against their
+    background colors
+  - Minor crowding near unconformity labels and adjacent formation names at 120m and
+    170m depth
+  - Some canvas space at edges could be better utilized
+  image_description: 'The plot displays a vertical stratigraphic column representing
+    a Grand Canyon sedimentary section spanning Cambrian to Permian periods (0–200m
+    depth). Ten rectangular layers are stacked vertically with depth increasing downward.
+    Each layer is colored by lithology: yellow (Sandstone), gray (Shale), blue (Limestone),
+    purple (Siltstone), and orange (Conglomerate). Text-based pattern overlays differentiate
+    lithologies (dots for sandstone, dashes for shale, squares for limestone, small
+    dashes for siltstone, circles for conglomerate). Formation names (Cedar Mesa Fm,
+    Organ Rock Fm, White Rim Fm, etc.) appear in bold black text to the right of the
+    column. Thickness values in italic gray text appear on the far right. Age period
+    labels (Permian, Pennsylvanian, Mississippian, Devonian, Cambrian) in bold italic
+    dark text appear on the left with vertical bracket lines connecting them to their
+    respective layer ranges. Two red dashed unconformity lines cross the column at
+    120m and 170m with red labels. A horizontal legend at the bottom shows all 5 lithology
+    types. Title reads "column-stratigraphic · altair · pyplots.ai" with subtitle.
+    Background is light off-white.'
   criteria_checklist:
     visual_quality:
       score: 26
@@ -53,42 +52,40 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 28pt, axis 18/22pt, formation
-          17pt, age 18pt, patterns 16pt). Thickness labels at 13pt slightly small
-          but readable.
+        comment: All font sizes explicitly set (title 28pt, labels 18-22pt, ticks
+          16-18pt). Pattern overlay text slightly less crisp.
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: Generally clean layout, minor crowding near unconformity label at
-          depth 110 with Supai Group pattern dashes.
+        comment: Minor crowding near unconformity labels and adjacent formation names
+          around 120m and 170m depth.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Layer rectangles well-sized with clear boundaries. Text-based patterns
-          visible but inherently less distinct than true hatching.
+        comment: Layer rectangles clear. Pattern text overlays visible but some patterns
+          subtle against background.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Five distinct colorblind-safe colors with good contrast.
+        comment: Custom colorblind-safe palette with 5 well-differentiated colors.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good vertical space usage. Column width narrow relative to full canvas;
-          some horizontal space underutilized.
+        comment: Good proportions but some empty space at left and right edges.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Y-axis labeled Depth (m) with units. X-axis appropriately hidden.
+        comment: Depth (m) with units on y-axis.
     design_excellence:
       score: 14
       max: 20
@@ -98,24 +95,24 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom geological color palette, good typography hierarchy, custom
-          background. Clearly above defaults with professional geological chart appearance.
+        comment: Custom geological color palette, professional typography hierarchy,
+          clean dark borders, thoughtful subtitle.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: View stroke removed, subtle dashed grid, clean background, bracket
-          tick marks for age groups.
+        comment: View stroke removed, custom background, subtle dashed grid, clean
+          domain styling.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Grand Canyon stratigraphy through time. Red unconformity markers
-          create focal points. Age brackets organize the narrative.
+        comment: Red unconformity lines create focal points. Age brackets group formations
+          logically. Visual hierarchy guides viewer.
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -123,53 +120,53 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct vertical stratigraphic column with stacked rectangular layers.
+        comment: Correct stratigraphic column with stacked rectangular blocks and
+          lithology differentiation.
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: All major features present. Patterns are text approximations rather
-          than true geological hatching (Altair limitation).
+        comment: All spec features present including patterns, labels, age groups,
+          unconformities.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Depth correctly mapped to Y-axis with proper reversal. Layers properly
-          positioned.
+        comment: Depth axis correctly oriented 0-200m increasing downward.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend shows all 5 lithology types with correct
+        comment: Title format correct. Legend shows all 5 lithology types with matching
           labels.
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Shows 5 lithology types, varying thicknesses, 5 geological periods,
-          2 unconformities, 10 layers.
+        comment: Shows all 5 lithology types, varying thicknesses, multiple geological
+          periods, unconformities.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Grand Canyon stratigraphy with real formation names and correct geological
+        comment: Grand Canyon section with real formation names and correct geological
           ages.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Depths 0-200 m realistic. Layer thicknesses 15-25 m sensible. Geologically
-          accurate.
+        comment: Depths 0-200m reasonable. Thicknesses 10-35m appropriate. Ages in
+          correct stratigraphic order.
     code_quality:
       score: 10
       max: 10
@@ -179,13 +176,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear structure with no functions or classes.
+        comment: Clean imports-data-plot-save flow. No functions or classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic data.
+        comment: Fully deterministic hardcoded data.
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -197,13 +194,13 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Clean, well-organized code with creative text mark pattern approximation.
+        comment: Well-structured with appropriate complexity. Creative pattern approach.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html with current API.
+        comment: Saves as plot.png with scale_factor=3.0 and plot.html.
     library_mastery:
       score: 7
       max: 10
@@ -213,15 +210,15 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Good declarative patterns: layer composition, transform_calculate,
-          proper encoding types, tooltip encoding.'
+        comment: Good declarative grammar usage with mark_rect, mark_text, mark_rule,
+          layered composition, transform_calculate.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses declarative layer composition, transform_calculate, interactive
-          tooltips in HTML, dual PNG/HTML output.
+        comment: Declarative layer composition, transform_calculate, native tooltips,
+          dual HTML+PNG export.
   verdict: REJECTED
 impl_tags:
   dependencies: []

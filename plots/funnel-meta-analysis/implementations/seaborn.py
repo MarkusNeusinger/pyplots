@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 funnel-meta-analysis: Meta-Analysis Funnel Plot for Publication Bias
-Library: seaborn | Python 3.13
-Quality: pending | Created: 2026-03-15
+Library: seaborn 0.13.2 | Python 3.14.3
+Quality: 84/100 | Created: 2026-03-15
 """
 
 import matplotlib.pyplot as plt

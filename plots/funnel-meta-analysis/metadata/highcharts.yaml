@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: funnel-meta-analysis
 created: '2026-03-15T16:47:01Z'
-updated: '2026-03-15T17:02:50Z'
+updated: '2026-03-15T17:13:47Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23114663093
 issue: 4590
@@ -10,79 +10,85 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/funnel-meta-analysis/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/funnel-meta-analysis/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/funnel-meta-analysis/highcharts/plot.html
-quality_score: 86
+quality_score: 87
 review:
   strengths:
-  - Full spec compliance with all required funnel plot features including pooled effect,
-    null effect, and 95% CI boundaries
-  - Excellent realistic meta-analysis data with appropriate asymmetry demonstrating
-    publication bias
-  - Clean professional visual design with well-sized explicit font settings and subtle
-    grid styling
-  - Good data storytelling through deliberate funnel asymmetry and interpretive reference
-    lines
+  - Complete spec compliance with all funnel plot features (inverted SE axis, pooled
+    effect line, 95% CI funnel, null effect line, weight-sized markers)
+  - 'Excellent use of Highcharts-distinctive features: plotLines, plotBands, CallbackFunction
+    tooltip formatter'
+  - Realistic medical research data with named studies and plausible effect sizes
+    showing publication bias asymmetry
+  - Clean well-structured code with appropriate complexity
+  - 'Good visual refinement: subtle dotted grid, removed x-axis grid, custom background,
+    edge-highlighted markers'
   weaknesses:
-  - Uses ScatterSeries with type=line for funnel boundaries instead of LineSeries
-    (non-idiomatic)
-  - Fixed marker size rather than varying by study precision/weight
-  - Does not leverage Highcharts-distinctive features like AreaRangeSeries for funnel
-    shading or custom tooltip formatters
-  image_description: The plot displays a funnel plot for meta-analysis of 15 RCTs
-    comparing drug vs placebo. The x-axis shows "Log Odds Ratio" ranging from -1.0
-    to 0.4, and the y-axis shows "Standard Error" inverted from 0 at the top to 0.4
-    at the bottom. Blue circular markers (#306998) represent individual studies scattered
-    across the plot. A solid blue vertical line marks the pooled effect at approximately
+  - PlotLine and plotBand labels appear small in rendered output despite explicit
+    sizing
+  - High precision plotBand label is barely readable
+  - Monochromatic blue palette limits aesthetic sophistication
+  - Some unused canvas space on the right side beyond the null effect line
+  image_description: The plot displays a meta-analysis funnel plot on a light gray
+    (#fafbfc) background. The title "funnel-meta-analysis · highcharts · pyplots.ai"
+    appears in bold dark text at the top, with the subtitle "Drug vs Placebo — 15
+    Randomized Controlled Trials" below it. The x-axis shows "Log Odds Ratio" ranging
+    from -1.0 to 0.4, and the y-axis shows "Standard Error" inverted from 0 (top)
+    to 0.4 (bottom). A solid blue vertical line marks the pooled effect at approximately
     -0.37, labeled "Pooled Effect (-0.37)" at the top. A dashed gray vertical line
-    marks the null effect at 0, labeled "Null Effect (0)". Two diagonal dashed lines
-    form the funnel shape representing pseudo 95% confidence intervals, with a light
-    beige/tan shaded region between them. The title reads "funnel-meta-analysis ·
-    highcharts · pyplots.ai" with a subtitle. More precise studies (lower SE) cluster
-    near the top, while less precise studies spread wider at the bottom. The scatter
-    shows slight asymmetry suggesting publication bias — fewer small studies with
-    positive/null effects.
+    marks the null effect at 0, labeled "Null Effect (0)". Two dashed diagonal lines
+    form the inverted funnel shape representing pseudo 95% confidence intervals. Fifteen
+    blue circular markers of varying sizes (larger circles for more precise/higher-weight
+    studies) are scattered within and around the funnel. The distribution shows slight
+    rightward asymmetry at higher SE values, suggesting possible publication bias.
+    A faint "High precision" label appears in the upper-right area within a subtle
+    blue-tinted plotBand. The overall design is clean and professional with a monochromatic
+    blue palette.
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 27
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 48px, subtitle 32px, axis titles
-          36px, tick labels 26px, plotLine labels 22-24px'
+        comment: All main font sizes explicitly set (title 48px, subtitle 32px, axes
+          36px, ticks 26px). PlotLine labels slightly small, plotBand label barely
+          readable.
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Minor clustering of study points near SE 0.08-0.12, but all distinguishable
+        comment: No overlapping text or data elements. Clustered markers near top
+          are distinguishable.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Markers clearly visible at radius 18 with white border, but fixed
-          size does not differentiate by study weight
+        comment: Markers well-sized with weight-based radius variation. Funnel lines
+          visible. Smallest markers could be slightly larger.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Single blue color scheme with gray references, no colorblind issues
+        comment: Monochromatic blue palette with gray reference. No colorblind issues.
       - id: VQ-05
         name: Layout & Canvas
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: Well-proportioned margins, chart fills canvas appropriately
+        comment: Good proportions with explicit margins. Some unused space on right
+          side.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive axis labels: Log Odds Ratio and Standard Error'
+        comment: 'Correct scientific terms: Log Odds Ratio and Standard Error.'
     design_excellence:
       score: 13
       max: 20
@@ -92,22 +98,22 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Clean professional design with Python Blue, custom typography, subtle
-          dotted grid. Above defaults but not publication-showcase level
+        comment: Custom color palette, off-white background, white edge highlighting
+          on markers. Above defaults but monochromatic limits richness.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Subtle dotted grid on y-axis only, no x-axis grid, credits disabled,
-          generous margins
+        comment: Subtle dotted grid, x-axis grid removed, ShortDash funnel lines,
+          plotBand for precision zone.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Funnel asymmetry visually tells publication bias story, pooled/null
-          effect lines provide interpretive context
+        comment: Marker sizes vary by weight creating hierarchy. Asymmetric scatter
+          demonstrates publication bias. Reference lines guide interpretation.
     spec_compliance:
       score: 15
       max: 15
@@ -117,51 +123,51 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct funnel plot with scatter points and confidence funnel
+        comment: Correct funnel plot with inverted SE axis.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: inverted SE y-axis, pooled effect line,
-          null effect dashed line, 95% CI funnel boundaries'
+        comment: 'All spec features present: inverted y-axis, summary line, 95% CI
+          funnel, sized points, null effect line.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=effect size, Y=standard error, y-axis correctly inverted
+        comment: X=log OR, Y=SE correctly mapped.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format, legend disabled appropriately for single-series
+        comment: Exact title format. Legend appropriately disabled.
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Shows asymmetry suggesting publication bias, varying precision, studies
-          inside and outside funnel
+        comment: Shows asymmetric distribution, varying precision, both positive and
+          negative effects. Missing only extreme outliers.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Drug vs placebo RCT meta-analysis with realistic study names and
-          years
+        comment: Drug vs Placebo RCT meta-analysis with realistic named studies. Neutral
+          topic.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Log odds ratios (-0.65 to 0.05) and standard errors (0.08 to 0.35)
-          are realistic for clinical meta-analysis
+        comment: Log ORs -0.65 to 0.05, SEs 0.08 to 0.35 are realistic for drug trial
+          meta-analysis.
     code_quality:
       score: 10
       max: 10
@@ -171,59 +177,58 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, chart config, series, export'
+        comment: Linear flow, no functions or classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set, data is hardcoded/deterministic
+        comment: np.random.seed(42) set, data is hardcoded/deterministic.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: All imports used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, appropriate complexity, no fake UI
+        comment: Clean, well-organized with concise weight computation and list comprehension.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via container screenshot
+        comment: Saves as plot.png via container screenshot. Current API.
     library_mastery:
-      score: 5
+      score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Uses ScatterSeries with type=line override for funnel boundaries
-          instead of LineSeries
+        passed: true
+        comment: Proper Chart/HighchartsOptions/Series pattern with add_series.
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 4
         max: 5
-        passed: false
-        comment: plotLines for reference lines is Highcharts-specific but does not
-          deeply leverage unique features like AreaRangeSeries or custom formatters
+        passed: true
+        comment: plotLines, plotBands, CallbackFunction tooltip formatter, per-point
+          marker config.
   verdict: REJECTED
 impl_tags:
   dependencies:
   - selenium
   techniques:
-  - html-export
   - hover-tooltips
+  - html-export
   patterns:
   - data-generation
   dataprep: []
   styling:
-  - grid-styling
   - edge-highlighting
+  - grid-styling

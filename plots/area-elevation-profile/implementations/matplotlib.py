@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 area-elevation-profile: Terrain Elevation Profile Along Transect
 Library: matplotlib 3.10.8 | Python 3.14.3
 Quality: 81/100 | Created: 2026-03-15
@@ -30,16 +30,7 @@ elevation += np.cumsum(np.random.normal(0, 1.5, num_points))
 elevation = np.maximum(elevation, 800)
 
 # Landmarks
-landmark_names = [
-    "Bergdorf\n800 m",
-    "Sonnalm\n1620 m",
-    "Hoher Kamm\n2080 m",
-    "Talbach\n1180 m",
-    "Gipfelkreuz\n2290 m",
-    "Seefeld Hut\n1750 m",
-    "Felsgrat\n1950 m",
-    "Alpstadt\n1080 m",
-]
+landmark_labels = ["Bergdorf", "Sonnalm", "Hoher Kamm", "Talbach", "Gipfelkreuz", "Seefeld Hut", "Felsgrat", "Alpstadt"]
 landmark_distances = [0, 18, 28, 42, 55, 72, 88, 120]
 landmark_elevations = [
     elevation[0],
@@ -50,6 +41,10 @@ landmark_elevations = [
     elevation[np.argmin(np.abs(distance - 72))],
     elevation[np.argmin(np.abs(distance - 88))],
     elevation[-1],
+]
+# Build display names with actual elevations from the terrain data
+landmark_names = [
+    f"{name}\n{int(round(elev))} m" for name, elev in zip(landmark_labels, landmark_elevations, strict=True)
 ]
 
 # Plot
@@ -79,6 +74,13 @@ ax.plot(distance, elevation, color="#1b4332", linewidth=2.5, zorder=3)
 for name, d, e in zip(landmark_names, landmark_distances, landmark_elevations, strict=True):
     ax.plot([d, d], [y_min, e], color="#555555", linewidth=1, linestyle="--", alpha=0.5, zorder=2)
     ax.plot(d, e, "o", color="#1b4332", markersize=7, zorder=4, markeredgecolor="white", markeredgewidth=1)
+    # Align edge labels inward to avoid clipping
+    if d <= 5:
+        ha = "left"
+    elif d >= 115:
+        ha = "right"
+    else:
+        ha = "center"
     ax.annotate(
         name,
         xy=(d, e),
@@ -86,7 +88,7 @@ for name, d, e in zip(landmark_names, landmark_distances, landmark_elevations, s
         textcoords="offset points",
         fontsize=11,
         fontweight="bold",
-        ha="center",
+        ha=ha,
         va="bottom",
         color="#1b4332",
     )
@@ -115,8 +117,9 @@ ax.text(
     fontsize=12,
     ha="right",
     va="bottom",
-    color="#666666",
+    color="#444444",
     fontstyle="italic",
+    bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": "none", "alpha": 0.75},
 )
 
 plt.tight_layout()

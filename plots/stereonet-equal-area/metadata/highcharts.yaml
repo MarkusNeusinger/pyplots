@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: stereonet-equal-area
 created: '2026-03-15T23:05:23Z'
-updated: '2026-03-15T23:31:57Z'
+updated: '2026-03-15T23:41:51Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23121188982
 issue: 4576
@@ -13,31 +13,37 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/stereonet-equa
 quality_score: 84
 review:
   strengths:
-  - Excellent spec compliance with all required features implemented correctly
-  - Geologically accurate equal-area projection mathematics
-  - Clean colorblind-safe palette with three well-differentiated feature types
-  - Density contours effectively highlight preferred orientations using Kamb-style
-    KDE
-  - Good use of Highcharts annotations for perimeter labels
+  - Mathematically correct equal-area (Schmidt) projection with proper pole and great
+    circle calculations
+  - 'Excellent spec compliance with all required features: density contours, great
+    circles, poles, tick marks, compass labels'
+  - Strong colorblind-safe palette (blue, orange, purple) with good visual hierarchy
+    between data layers
+  - Professional design with subtle dotted grid, clean background, and thoughtful
+    typography
+  - Realistic geological data with three distinct feature types showing different
+    clustering patterns
+  - Interactive HTML output alongside static PNG leverages Highcharts web capabilities
   weaknesses:
-  - except AttributeError, TypeError syntax is Python 2-style and incorrect in Python
-    3
-  - LineSeries imported from wrong module path (area instead of line)
-  - Legend with 7 items in single horizontal row is cramped
-  - Great circles lack differentiated line styles per feature type
-  image_description: 'The plot displays a stereonet (equal-area Schmidt projection)
-    on a square canvas with a light gray (#FAFAFA) background. A dark circular primitive
-    circle encloses the projection area. Cardinal directions (N at top, E at right,
-    S at bottom, W at left) are labeled in bold, with degree labels (30°, 60°, 120°,
-    150°, 210°, 240°, 300°, 330°) placed around the perimeter. Tick marks appear every
-    10° around the circle edge. Inside, dotted concentric circles and radial lines
-    form a subtle grid. Three types of geological features are plotted: dark teal/blue
-    Bedding poles (clustered in the lower-center), orange Joints poles (clustered
-    in the upper-right quadrant), and purple Faults poles (scattered on the right
-    side). Great circles in matching colors represent planar features. Green semi-transparent
-    density contours (Kamb-style) surround the pole clusters, highlighting preferred
-    orientations. A horizontal legend at the bottom lists all 7 series: Bedding/Joints/Faults
-    (planes), Bedding/Joints/Faults (poles), and Density contours. Title reads "stereonet-equal-area
+  - LineSeries imported from wrong submodule (area instead of line)
+  - Python 2 exception syntax on lines 305 and 324 should use parenthesized tuple
+    form
+  - Great circle lines are somewhat thin and hard to trace across the full stereonet
+  - Legend is slightly disconnected from the main plot area
+  image_description: 'The plot displays a Schmidt equal-area (lower-hemisphere) stereonet
+    projection on a square canvas with a light gray (#FAFAFA) background. A solid
+    dark circle forms the primitive boundary, with dotted concentric circles at 15-degree
+    dip intervals and dotted radial lines every 30 degrees forming a subtle grid.
+    Cardinal directions (N, S, E, W) are labeled in bold around the perimeter, with
+    intermediate degree markings (30, 60, 120, 150, 210, 240, 300, 330 degrees) and
+    tick marks every 10 degrees. Three feature types are plotted: Bedding (blue #306998)
+    with poles clustered in the central-south area and great circles arcing across
+    the SW quadrant; Joints (orange #E5863D) with poles tightly clustered in the NE
+    quadrant and great circles crossing the S-SW area; and Faults (purple #8B5CF6)
+    with poles more scattered in the E and SE areas. Green semi-transparent density
+    contours (Kamb-style) overlay the pole data highlighting the two main concentration
+    zones. A horizontal legend at the bottom lists all seven series: Bedding/Joints/Faults
+    planes and poles, plus density contours. The title reads "stereonet-equal-area
     · highcharts · pyplots.ai" with subtitle "Lower Hemisphere Equal-Area (Schmidt)
     Projection".'
   criteria_checklist:
@@ -51,65 +57,66 @@ review:
         max: 8
         passed: true
         comment: Font sizes explicitly set (56px title, 38px subtitle, 30-38px labels).
-          Legend items relatively small for 7 entries.
+          All readable. Legend text slightly small.
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: No significant overlap. Legend with 7 items in single row slightly
-          cramped.
+        comment: Generally clean layout. Minor crowding near degree labels in NE quadrant
+          where data is dense.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Poles visible with radius 10 and white edges. Great circles and density
-          contours discernible.
+        comment: Poles well-sized with white border. Great circles somewhat thin at
+          2.5px with 0.7 opacity.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: 'Colorblind-safe palette: blue, orange, purple — all distinguishable.'
+        comment: 'Excellent colorblind-safe palette: blue, orange, purple easily distinguishable.'
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Square format ideal for stereonets. Legend somewhat detached at bottom.
+        comment: Square format ideal for stereonet. Legend floats somewhat isolated
+          at bottom.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Cardinal directions and degree labels appropriate for stereonet.
-          Descriptive subtitle.
+        comment: Descriptive title, informative subtitle, compass directions and degree
+          markings.
     design_excellence:
-      score: 13
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom palette, intentional typography hierarchy, clean background.
-          Above defaults but not publication-quality.
+        comment: Strong design with custom palette, professional typography, intentional
+          color hierarchy.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Dotted grid with low opacity, axes hidden, white marker edges, clean
-          whitespace.
+        comment: Subtle dotted grid at low opacity, axes hidden, clean background,
+          tick mark differentiation.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Three distinct feature types with clear spatial clustering. Density
-          contours highlight preferred orientations.
+        comment: Density contours highlight preferred orientations, color coding distinguishes
+          feature types.
     spec_compliance:
       score: 15
       max: 15
@@ -125,42 +132,45 @@ review:
         score: 4
         max: 4
         passed: true
-        comment: 'All features: great circles, poles, density contours, tick marks,
-          N label, color-coding, legend, subtle grid.'
+        comment: 'All features present: great circles, poles, density contours, color-coding,
+          ticks, N label, legend.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Strike/dip correctly converted to equal-area projection coordinates.
+        comment: Strike/dip correctly mapped using proper equal-area projection formulas.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title follows exact format. Legend comprehensively labels all 7 series.
+        comment: Title matches required format. Legend distinguishes planes vs poles
+          per feature type.
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Three feature types with distinct orientations and dip angles.
+        comment: Three feature types with different orientations and clustering. Could
+          show wider dip range.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: 'Geological field measurements: NE bedding, NW joints, N-S faults.'
+        comment: 'Realistic structural geology field measurements: bedding, joints,
+          faults.'
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Realistic strike/dip ranges for structural geology.
+        comment: 90 measurements in 30-200 range. Strike 0-360, dip 5-89 degrees.
     code_quality:
       score: 8
       max: 10
@@ -170,32 +180,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, projection, chart, render.'
+        comment: 'Linear flow: imports, data, config, grid, contours, great circles,
+          poles, render.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) set at start.
       - id: CQ-03
         name: Clean Imports
         score: 1
         max: 2
         passed: false
-        comment: LineSeries imported from area module instead of line module.
+        comment: LineSeries imported from area submodule instead of line submodule.
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
         passed: false
-        comment: Python 2 except syntax on lines 304/323. Should be except (AttributeError,
-          TypeError).
+        comment: Python 2 exception syntax on lines 305/324. Contour fallback logic
+          verbose.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png and plot.html.
+        comment: Saves plot.png via Selenium and plot.html for interactive use.
     library_mastery:
       score: 7
       max: 10
@@ -205,26 +216,25 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Good use of highcharts_core API: Chart, series types, annotations,
-          to_js_literal().'
+        comment: 'Good use of highcharts_core API: Chart, HighchartsOptions, typed
+          series, annotations, to_js_literal().'
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Highcharts annotations for perimeter labels, interactive tooltips,
-          HTML export.
-  verdict: REJECTED
+        comment: Annotations API for compass labels, interactive tooltips, HTML export
+          alongside PNG.
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - scipy
   - selenium
   techniques:
-  - annotations
   - polar-projection
+  - annotations
   - html-export
   - custom-legend
-  - layer-composition
   patterns:
   - data-generation
   - iteration-over-groups
@@ -234,4 +244,3 @@ impl_tags:
   - minimal-chrome
   - alpha-blending
   - grid-styling
-  - edge-highlighting

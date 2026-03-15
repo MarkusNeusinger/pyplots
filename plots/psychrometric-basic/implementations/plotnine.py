@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 psychrometric-basic: Psychrometric Chart for HVAC
 Library: plotnine 0.15.3 | Python 3.14.3
-Quality: 82/100 | Created: 2026-03-15
 """
 
 import numpy as np
@@ -18,10 +17,12 @@ from plotnine import (
     geom_line,
     geom_point,
     geom_polygon,
+    geom_ribbon,
     geom_segment,
     geom_text,
     ggplot,
     labs,
+    scale_alpha_identity,
     scale_color_identity,
     scale_linetype_identity,
     scale_size_identity,
@@ -34,197 +35,196 @@ from plotnine import (
 
 # Constants
 PATM = 101.325  # kPa, standard atmospheric pressure
-T_MIN, T_MAX = -10, 50  # Dry-bulb temperature range (°C)
-W_MAX = 30  # Max humidity ratio for chart (g/kg)
+T_MIN, T_MAX = -10, 50
+W_MAX = 30
+
+# Inline psychrometric calculations using vectorized expressions
+t_range = np.linspace(T_MIN, T_MAX, 300)
 
 
-# Psychrometric calculations
-def sat_pressure(t):
-    """Saturation vapor pressure (kPa) using Magnus formula."""
+# Saturation vapor pressure (Magnus formula)
+def psat(t):
     return 0.61078 * np.exp(17.27 * t / (t + 237.3))
 
 
-def humidity_ratio(t, rh):
-    """Humidity ratio (g/kg) from dry-bulb temp and relative humidity."""
-    pws = sat_pressure(t)
-    pw = rh / 100.0 * pws
-    pw = np.minimum(pw, PATM - 0.01)
+def w_from_rh(t, rh):
+    pw = np.minimum(rh / 100.0 * psat(t), PATM - 0.01)
     return 622.0 * pw / (PATM - pw)
 
 
-def enthalpy_w(t, h):
-    """Humidity ratio (g/kg) for constant enthalpy h (kJ/kg dry air)."""
-    return (h - 1.006 * t) / (2.501 + 0.00186 * t)
-
-
-def specific_volume_w(t, v):
-    """Humidity ratio (g/kg) for constant specific volume v (m³/kg)."""
-    return (v * PATM / (0.287055 * (t + 273.15)) - 1.0) / 1.6078 * 1000.0
-
-
-# Data: Relative humidity curves (10% to 100%)
-t_range = np.linspace(T_MIN, T_MAX, 300)
+# Relative humidity curves (10%-100%)
 rh_frames = []
 for rh in range(10, 110, 10):
-    w = humidity_ratio(t_range, rh)
+    w = w_from_rh(t_range, rh)
     mask = (w >= 0) & (w <= W_MAX)
-    df_rh = pd.DataFrame({"t": t_range[mask], "w": w[mask], "group": f"RH {rh}%", "rh": rh})
-    rh_frames.append(df_rh)
-df_rh_all = pd.concat(rh_frames, ignore_index=True)
-df_rh_all["color"] = np.where(df_rh_all["rh"] == 100, "#306998", "#8BAEC4")
-df_rh_all["lw"] = np.where(df_rh_all["rh"] == 100, 1.8, 0.6)
+    rh_frames.append(
+        pd.DataFrame(
+            {
+                "t": t_range[mask],
+                "w": w[mask],
+                "group": f"RH {rh}%",
+                "color": "#1B4F72" if rh == 100 else "#7FB3D8",
+                "sz": 2.2 if rh == 100 else 0.55,
+                "alpha": 1.0 if rh == 100 else 0.7,
+            }
+        )
+    )
+df_rh = pd.concat(rh_frames, ignore_index=True)
 
-# RH labels placed along curves at staggered temperatures to avoid crowding
+# RH labels: carefully staggered to avoid overlap with wet-bulb labels
+rh_label_pos = {10: 48, 20: 44, 30: 40, 40: 37, 50: 34, 60: 31, 70: 27, 80: 23, 90: 18, 100: 8}
 rh_labels = []
-label_temps = {10: 46, 20: 40, 30: 35, 40: 32, 50: 30, 60: 28, 70: 25, 80: 22, 90: 18, 100: 14}
-for rh, t_label in label_temps.items():
-    w_label = humidity_ratio(np.array([t_label]), rh)[0]
-    if 0 < w_label < W_MAX:
-        rh_labels.append({"t": t_label, "w": w_label + 0.7, "label": f"{rh}%"})
+for rh, t_l in rh_label_pos.items():
+    w_l = w_from_rh(np.array([t_l]), rh)[0]
+    if 0 < w_l < W_MAX:
+        rh_labels.append({"t": t_l, "w": w_l + 0.9, "label": f"{rh}%"})
 df_rh_labels = pd.DataFrame(rh_labels)
 
-# Data: Wet-bulb temperature lines
+# Wet-bulb temperature lines
 wb_frames = []
 for twb in range(-5, 35, 5):
-    pws_wb = sat_pressure(twb)
+    pws_wb = psat(twb)
     ws_wb = 622.0 * pws_wb / (PATM - pws_wb)
     t_line = np.linspace(twb, min(twb + 30, T_MAX), 150)
     w_line = ((2501.0 - 2.326 * twb) * ws_wb - 1006.0 * (t_line - twb)) / (2501.0 + 1.86 * t_line - 4.186 * twb)
     mask = (w_line >= 0) & (w_line <= W_MAX) & (t_line >= T_MIN)
     if np.sum(mask) > 2:
         wb_frames.append(pd.DataFrame({"t": t_line[mask], "w": w_line[mask], "group": f"WB {twb}°C"}))
-df_wb_all = pd.concat(wb_frames, ignore_index=True)
+df_wb = pd.concat(wb_frames, ignore_index=True)
 
-# Wet-bulb labels near the saturation curve, offset to avoid RH label overlap
+# Wet-bulb labels: placed at upper-left end of lines, offset to not overlap RH labels
 wb_labels = []
 for twb in range(0, 35, 5):
-    grp = f"WB {twb}°C"
-    sub = df_wb_all[df_wb_all["group"] == grp]
+    sub = df_wb[df_wb["group"] == f"WB {twb}°C"]
     if len(sub) > 0:
-        idx = sub["t"].idxmin()
-        row = sub.loc[idx]
-        wb_labels.append({"t": row["t"] - 2.0, "w": row["w"] + 0.8, "label": f"{twb}°C"})
+        row = sub.loc[sub["t"].idxmin()]
+        wb_labels.append({"t": row["t"] - 3.0, "w": min(row["w"] + 1.5, W_MAX - 0.5), "label": f"{twb}°C"})
 df_wb_labels = pd.DataFrame(wb_labels)
 
-# Data: Enthalpy lines (kJ/kg dry air)
+# Enthalpy lines (kJ/kg dry air) - wider spacing to reduce overlap
 enth_frames = []
 for h in range(10, 130, 20):
     t_line = np.linspace(T_MIN, T_MAX, 200)
-    w_line = enthalpy_w(t_line, h)
+    w_line = (h - 1.006 * t_line) / (2.501 + 0.00186 * t_line)
     mask = (w_line >= 0) & (w_line <= W_MAX) & (t_line >= T_MIN) & (t_line <= T_MAX)
     if np.sum(mask) > 2:
         enth_frames.append(pd.DataFrame({"t": t_line[mask], "w": w_line[mask], "group": f"h={h}"}))
-df_enth_all = pd.concat(enth_frames, ignore_index=True) if enth_frames else pd.DataFrame()
+df_enth = pd.concat(enth_frames, ignore_index=True) if enth_frames else pd.DataFrame(columns=["t", "w", "group"])
 
-# Enthalpy labels at lower-right end of each line
+# Enthalpy labels at top-left end of each line (away from volume labels)
 enth_labels = []
 for h in range(10, 130, 20):
-    grp = f"h={h}"
-    sub = df_enth_all[df_enth_all["group"] == grp]
+    sub = df_enth[df_enth["group"] == f"h={h}"]
     if len(sub) > 0:
-        idx = sub["w"].idxmin()
-        row = sub.loc[idx]
-        if row["t"] <= T_MAX and row["w"] >= 0:
-            enth_labels.append({"t": row["t"], "w": max(row["w"] - 0.5, 0.3), "label": f"{h} kJ/kg"})
+        row = sub.loc[sub["w"].idxmax()]
+        if row["t"] >= T_MIN:
+            enth_labels.append(
+                {"t": max(row["t"] - 1.5, T_MIN + 0.5), "w": min(row["w"] + 0.5, W_MAX - 0.3), "label": f"{h} kJ/kg"}
+            )
 df_enth_labels = pd.DataFrame(enth_labels)
 
-# Data: Specific volume lines (m³/kg dry air)
+# Specific volume lines (m³/kg dry air) - wider step for clarity
 sv_frames = []
 for v_10 in range(80, 94, 2):
     v = v_10 / 100.0
     t_line = np.linspace(T_MIN, T_MAX, 200)
-    w_line = specific_volume_w(t_line, v)
+    w_line = (v * PATM / (0.287055 * (t_line + 273.15)) - 1.0) / 1.6078 * 1000.0
     mask = (w_line >= 0) & (w_line <= W_MAX) & (t_line >= T_MIN) & (t_line <= T_MAX)
     if np.sum(mask) > 2:
         sv_frames.append(pd.DataFrame({"t": t_line[mask], "w": w_line[mask], "group": f"v={v:.2f}"}))
-df_sv_all = pd.concat(sv_frames, ignore_index=True) if sv_frames else pd.DataFrame()
+df_sv = pd.concat(sv_frames, ignore_index=True) if sv_frames else pd.DataFrame(columns=["t", "w", "group"])
 
-# Specific volume labels at bottom of each line
+# Specific volume labels at bottom-right end (well separated from enthalpy labels)
 sv_labels = []
 for v_10 in range(80, 94, 4):
     v = v_10 / 100.0
-    grp = f"v={v:.2f}"
-    sub = df_sv_all[df_sv_all["group"] == grp]
+    sub = df_sv[df_sv["group"] == f"v={v:.2f}"]
     if len(sub) > 0:
-        idx = sub["w"].idxmin()
-        row = sub.loc[idx]
-        sv_labels.append({"t": row["t"] + 0.5, "w": max(row["w"] - 0.3, 0.3), "label": f"{v:.2f}"})
+        row = sub.loc[sub["t"].idxmax()]
+        sv_labels.append(
+            {"t": min(row["t"] + 1.0, T_MAX - 1), "w": max(row["w"] - 0.8, 0.5), "label": f"{v:.2f} m³/kg"}
+        )
 df_sv_labels = pd.DataFrame(sv_labels)
 
-# Comfort zone: 20-26°C, 30-60% RH boundary
-comfort_w_lo = humidity_ratio(np.array([20, 26]), 30)
-comfort_w_hi = humidity_ratio(np.array([20, 26]), 60)
-comfort_t = [20, 26, 26, 20, 20]
-comfort_w = [comfort_w_lo[0], comfort_w_lo[1], comfort_w_hi[1], comfort_w_hi[0], comfort_w_lo[0]]
-df_comfort = pd.DataFrame({"t": comfort_t, "w": comfort_w})
+# Comfort zone polygon (20-26°C, 30-60% RH)
+c_w_lo = w_from_rh(np.array([20, 26]), 30)
+c_w_hi = w_from_rh(np.array([20, 26]), 60)
+df_comfort = pd.DataFrame({"t": [20, 26, 26, 20, 20], "w": [c_w_lo[0], c_w_lo[1], c_w_hi[1], c_w_hi[0], c_w_lo[0]]})
 
-# HVAC process: cooling and dehumidification (35°C, 50%RH → 24°C, 50%RH)
-state_a_t, state_a_rh = 35, 50
-state_b_t, state_b_rh = 24, 50
-w_a = humidity_ratio(np.array([state_a_t]), state_a_rh)[0]
-w_b = humidity_ratio(np.array([state_b_t]), state_b_rh)[0]
-df_process = pd.DataFrame({"t": [state_a_t, state_b_t], "w": [w_a, w_b], "group": "process"})
-df_states = pd.DataFrame({"t": [state_a_t, state_b_t], "w": [w_a, w_b]})
+# Comfort zone ribbon for shading between RH 30% and 60% within 20-26°C
+t_comfort = np.linspace(20, 26, 50)
+df_comfort_ribbon = pd.DataFrame({"t": t_comfort, "w_lo": w_from_rh(t_comfort, 30), "w_hi": w_from_rh(t_comfort, 60)})
 
-# Prepare enthalpy/specific volume data with linetype column for scale_linetype_identity
-df_enth_all["lt"] = "dashed"
-df_sv_all["lt"] = "dotted"
+# HVAC process: cooling and dehumidification
+w_a = w_from_rh(np.array([35]), 50)[0]
+w_b = w_from_rh(np.array([24]), 50)[0]
+df_states = pd.DataFrame({"t": [35, 24], "w": [w_a, w_b], "label": ["A", "B"]})
+df_arrow = pd.DataFrame({"x": [35], "y": [w_a], "xend": [24], "yend": [w_b]})
 
-# Arrow data for process path (plotnine-native geom_segment + arrow)
-df_arrow = pd.DataFrame({"x": [state_a_t], "y": [w_a], "xend": [state_b_t], "yend": [w_b]})
+# Add linetype columns for identity scale
+df_enth["lt"] = "dashed"
+df_sv["lt"] = "dotted"
 
-# Plot
+# Build plot using plotnine grammar of graphics with layered composition
 plot = (
     ggplot()
-    # Comfort zone as polygon (follows RH curve boundaries more accurately)
+    # Comfort zone ribbon (plotnine-distinctive: geom_ribbon with ymin/ymax mapping)
+    + geom_ribbon(aes(x="t", ymin="w_lo", ymax="w_hi"), data=df_comfort_ribbon, fill="#306998", alpha=0.12)
+    # Comfort zone border
     + geom_polygon(
-        aes(x="t", y="w"), data=df_comfort, fill="#306998", alpha=0.10, color="#306998", size=0.7, linetype="solid"
+        aes(x="t", y="w"), data=df_comfort, fill="none", color="#306998", size=0.8, linetype="solid", alpha=0.6
     )
-    # Relative humidity curves with identity scales for per-group styling
-    + geom_line(aes(x="t", y="w", group="group", color="color", size="lw"), data=df_rh_all)
+    # RH curves with identity aesthetics for per-group color/size/alpha
+    + geom_line(aes(x="t", y="w", group="group", color="color", size="sz", alpha="alpha"), data=df_rh)
     + scale_color_identity()
     + scale_size_identity()
-    # Wet-bulb lines (increased visibility)
-    + geom_line(aes(x="t", y="w", group="group"), data=df_wb_all, color="#C47A2B", size=0.5, alpha=0.6)
-    # Enthalpy lines (increased alpha and size for visibility)
-    + geom_line(
-        aes(x="t", y="w", group="group", linetype="lt"), data=df_enth_all, color="#7A9A5A", size=0.55, alpha=0.65
-    )
-    # Specific volume lines (increased alpha and size for visibility)
-    + geom_line(aes(x="t", y="w", group="group", linetype="lt"), data=df_sv_all, color="#9B6B9E", size=0.55, alpha=0.65)
+    + scale_alpha_identity()
+    # Wet-bulb lines - warm orange, distinct from RH blues
+    + geom_line(aes(x="t", y="w", group="group"), data=df_wb, color="#D4760A", size=0.55, alpha=0.65)
+    # Enthalpy lines - olive green, dashed, increased visibility
+    + geom_line(aes(x="t", y="w", group="group", linetype="lt"), data=df_enth, color="#5B8C3E", size=0.6, alpha=0.75)
+    # Specific volume lines - muted purple, dotted, distinct from enthalpy
+    + geom_line(aes(x="t", y="w", group="group", linetype="lt"), data=df_sv, color="#8E5EA2", size=0.5, alpha=0.6)
     + scale_linetype_identity()
-    # HVAC process arrow (plotnine-native)
+    # HVAC process arrow
     + geom_segment(
         aes(x="x", y="y", xend="xend", yend="yend"),
         data=df_arrow,
-        color="#D04040",
-        size=1.8,
-        arrow=arrow(length=0.15, type="closed"),
+        color="#C0392B",
+        size=2.0,
+        arrow=arrow(length=0.18, type="closed"),
     )
-    # State points
-    + geom_point(aes(x="t", y="w"), data=df_states, color="#D04040", size=4.5)
-    # RH labels along curves (staggered positions)
-    + geom_text(aes(x="t", y="w", label="label"), data=df_rh_labels, size=7, color="#5A8AAD", fontweight="bold")
-    # Wet-bulb labels (offset to avoid crowding)
-    + geom_text(aes(x="t", y="w", label="label"), data=df_wb_labels, size=6.5, color="#C47A2B")
-    # Enthalpy labels (increased size)
-    + geom_text(aes(x="t", y="w", label="label"), data=df_enth_labels, size=6, color="#7A9A5A", ha="left")
-    # Specific volume labels (increased size)
-    + geom_text(aes(x="t", y="w", label="label"), data=df_sv_labels, size=6, color="#9B6B9E")
-    # State point annotations
-    + annotate("text", x=state_a_t + 1, y=w_a + 1.2, label="A (35°C, 50% RH)", size=8, color="#D04040", ha="left")
-    + annotate("text", x=state_b_t + 1.5, y=w_b - 1.5, label="B (24°C, 50% RH)", size=8, color="#D04040", ha="left")
+    # State points with fill identity
+    + geom_point(aes(x="t", y="w"), data=df_states, color="#C0392B", fill="#E74C3C", size=5, shape="o")
+    # RH labels - larger, bold, staggered to avoid crowding
+    + geom_text(aes(x="t", y="w", label="label"), data=df_rh_labels, size=8.5, color="#2471A3", fontweight="bold")
+    # Wet-bulb labels - offset and larger
+    + geom_text(aes(x="t", y="w", label="label"), data=df_wb_labels, size=8, color="#D4760A", fontstyle="italic")
+    # Enthalpy labels at top-left of lines
+    + geom_text(aes(x="t", y="w", label="label"), data=df_enth_labels, size=7.5, color="#5B8C3E", ha="right")
+    # Specific volume labels at bottom-right of lines
+    + geom_text(aes(x="t", y="w", label="label"), data=df_sv_labels, size=7.5, color="#8E5EA2", ha="left")
+    # State point annotations - repositioned to avoid comfort zone overlap
+    + annotate(
+        "text", x=36.5, y=w_a + 1.8, label="A (35°C, 50% RH)", size=9, color="#C0392B", ha="left", fontweight="bold"
+    )
+    + annotate(
+        "text", x=28, y=w_b - 1.8, label="B (24°C, 50% RH)", size=8.5, color="#C0392B", ha="left", fontweight="bold"
+    )
+    # Comfort zone label - lower portion of zone, below the HVAC arrow path
     + annotate(
         "text",
         x=23,
-        y=comfort_w_lo.min() + 1.5,
+        y=c_w_lo.mean() + 1.5,
         label="Comfort Zone",
-        size=9,
+        size=8.5,
         color="#306998",
         alpha=0.7,
         fontweight="bold",
+        ha="center",
+        va="center",
     )
-    # Axes and title
+    # Axes
     + labs(
         x="Dry-Bulb Temperature (°C)",
         y="Humidity Ratio (g/kg dry air)",
@@ -232,19 +232,21 @@ plot = (
     )
     + scale_x_continuous(breaks=range(T_MIN, T_MAX + 1, 5))
     + scale_y_continuous(breaks=range(0, W_MAX + 1, 5))
-    + coord_cartesian(xlim=(T_MIN, T_MAX), ylim=(0, W_MAX))
+    + coord_cartesian(xlim=(T_MIN - 1, T_MAX + 3), ylim=(0, W_MAX))
+    # Theme: polished publication style
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
-        plot_title=element_text(size=24, weight="bold", color="#222222"),
-        axis_title=element_text(size=20, color="#444444"),
-        axis_text=element_text(size=16, color="#666666"),
-        panel_grid_major=element_line(color="#EEEEEE", size=0.3),
+        plot_title=element_text(size=24, weight="bold", color="#1B2631"),
+        axis_title_x=element_text(size=20, color="#2C3E50"),
+        axis_title_y=element_text(size=20, color="#2C3E50"),
+        axis_text=element_text(size=16, color="#566573"),
+        panel_grid_major=element_line(color="#E8E8E8", size=0.25),
         panel_grid_minor=element_blank(),
         legend_position="none",
-        plot_background=element_rect(fill="#FAFAFA", color="none"),
+        plot_background=element_rect(fill="#FAFBFC", color="none"),
+        panel_background=element_rect(fill="#FAFBFC", color="none"),
     )
 )
 
-# Save
 plot.save("plot.png", dpi=300)

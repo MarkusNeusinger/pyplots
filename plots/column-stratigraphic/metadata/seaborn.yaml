@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: column-stratigraphic
 created: '2026-03-15T22:54:50Z'
-updated: '2026-03-15T23:18:53Z'
+updated: '2026-03-15T23:27:46Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23121198560
 issue: 4573
@@ -13,31 +13,33 @@ preview_html: null
 quality_score: 89
 review:
   strengths:
-  - Geologically authentic Western Interior Seaway data with real formation names
-  - Excellent data storytelling with red wavy unconformity lines as visual focal points
-    and pastel age bands
-  - Two-panel layout with age brackets is professional and well-executed
-  - Perfect spec compliance with all required features including wavy unconformities
-  - Significant improvement in seaborn usage with sns.barplot() as base plotting function
+  - Excellent three-panel layout with age brackets, stratigraphic column, and thickness
+    strip plot
+  - Real-world geological formations from the Western Interior Seaway provide authentic
+    context
+  - Red wavy unconformity lines with labels create strong visual storytelling and
+    focal points
+  - All 6 lithology types have distinct hatching patterns and colorblind-safe colors
+  - Full spec compliance — every required feature is present and well-executed
   weaknesses:
-  - Library mastery remains moderate — sns.barplot() bars manually repositioned, bypassing
-    seaborn layout engine
-  - Minor crowding at bottom of column near Kaibab Fm / Triassic-Permian boundary
-  image_description: 'The plot shows a vertical stratigraphic column spanning 0–180m
-    depth (increasing downward). A two-panel layout is used: the left panel displays
-    geological age labels (Late Cretaceous, Late Jurassic, Middle Jurassic, Late Triassic,
-    Early Permian) in bold italic text with vertical bracket lines and subtle pastel
-    background bands at ~10% opacity. The right panel contains the stratigraphic column
-    built from 10 stacked rectangular blocks with distinct hatching patterns and desaturated
-    colorblind-palette colors: blue dots for sandstone, orange dashes for shale, teal
-    plus signs for limestone, pink-orange diagonal lines for siltstone, purple circles
-    for conglomerate, and brown x-patterns for dolomite. Formation names (Dakota Fm,
-    Graneros Sh, Greenhorn Ls, Carlile Sh, Niobrara Fm, Fort Hays Ls, Morrison Fm,
-    Entrada Ss, Chinle Fm, Kaibab Fm) are labeled to the right of each layer in 16pt
-    text. Three red wavy unconformity lines mark major geological boundaries at ~100m
-    (Cretaceous–Jurassic), ~140m (Jurassic–Triassic), and ~162m (Triassic–Permian)
-    with italic red labels. A lithology legend with pattern swatches sits in the upper
-    right. Title reads "column-stratigraphic · seaborn · pyplots.ai" at 24pt.'
+  - Strip plot tick labels (13pt) slightly small relative to other text
+  - Barplot repositioning approach is a code smell — bars created categorically then
+    manually moved to continuous coordinates
+  - Minor gap between age panel and column panel could be tighter
+  image_description: 'The plot displays a three-panel stratigraphic column visualization.
+    The left panel shows geological age labels (Late Cretaceous, Late Jurassic, Middle
+    Jurassic, Late Triassic, Early Permian) with bracket notation and a depth scale
+    from 0–180 m. Subtle pastel background bands color-code each age period across
+    both the age and column panels. The center panel contains the stratigraphic column
+    with 10 stacked layers, each filled with distinct hatching patterns and desaturated
+    colorblind-safe colors: blue dotted for sandstone, orange dashed for shale, green
+    cross-hatched for limestone, orange diagonal for siltstone, purple circles for
+    conglomerate, and brown x-pattern for dolomite. Formation names (Dakota Fm, Graneros
+    Sh, Greenhorn Ls, etc.) are labeled to the right. Three red wavy lines mark unconformities
+    (Cretaceous–Jurassic, Jurassic–Triassic, Triassic–Permian) with italic red labels.
+    The right panel shows a seaborn strip plot of layer thickness by lithology using
+    diamond markers, with a lithology legend in the lower right corner. The title
+    reads "column-stratigraphic · seaborn · pyplots.ai" at the top.'
   criteria_checklist:
     visual_quality:
       score: 28
@@ -45,45 +47,43 @@ review:
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 24pt, ylabel 20pt, ticks 16pt,
-          formation labels 16pt, age labels 16pt, legend 14/16pt'
+        comment: All font sizes explicitly set. Strip plot tick labels at 13pt slightly
+          small.
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Minor crowding at bottom where Triassic-Permian label and Kaibab
-          Fm are close together
+        comment: All text fully readable with no collisions.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: All lithology layers clearly visible with distinct hatching patterns
-          and colors
+        comment: Layers clearly visible with distinct hatching and colors. Diamond
+          markers well-sized.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Colorblind palette with desaturation; hatching provides redundant
-          encoding
+        comment: Colorblind palette with desaturation. Good contrast.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good two-panel layout but column leaves some unused space to the
-          right
+        comment: Three-panel layout with sensible width ratios. Minor gap between
+          panels.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Depth (m) with units on left axis
+        comment: Depth (m) and Thickness (m) both include units.
     design_excellence:
       score: 16
       max: 20
@@ -93,22 +93,21 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Desaturated colorblind palette, pastel age bands, red unconformity
-          highlights, bracket annotations - clearly above defaults
+        comment: Custom desaturated palette, pastel age bands, wavy unconformity lines,
+          bracket notation. Above defaults.
       - id: DE-02
         name: Visual Refinement
         score: 5
         max: 6
         passed: true
-        comment: Spines removed via sns.despine(), subtle background bands, tight
-          panel spacing, clean axis handling
+        comment: Spines removed via sns.despine, subtle grid, good whitespace.
       - id: DE-03
         name: Data Storytelling
         score: 5
         max: 6
         passed: true
-        comment: Red wavy unconformity lines as focal points, age brackets provide
-          temporal context, pastel bands group layers by period
+        comment: Unconformity markers create focal points. Age brackets provide context.
+          Strip plot adds analytical dimension.
     spec_compliance:
       score: 15
       max: 15
@@ -118,27 +117,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct vertical stratigraphic column with stacked blocks and lithology
-          patterns
+        comment: Correct vertical stratigraphic column with lithology patterns.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: All required features present including 6 lithology patterns, wavy
-          unconformities, formation labels, age labels
+        comment: 'All features present: hatching, formation labels, age labels, depth
+          scale, unconformities.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Depth axis correctly inverted, layers properly positioned
+        comment: Depth axis 0-180m correctly oriented downward.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format and legend with all 6 lithology types
+        comment: Title format correct. Legend shows all 6 lithology types with hatching.
     data_quality:
       score: 15
       max: 15
@@ -148,22 +146,21 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 10 layers, 6 lithologies, varying thicknesses, 3 unconformities,
-          5 geological periods
+        comment: 10 layers, 6 lithologies, varying thicknesses, 5 periods, 3 unconformities.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real Western Interior Seaway formations - geologically authentic
+        comment: Real Western Interior Seaway formations. Neutral scientific topic.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Realistic 0-180m depth range and layer thicknesses
+        comment: 0-180m depth realistic. Layer thicknesses 13-22m plausible.
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -171,50 +168,49 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, plot, save - no functions/classes'
+        comment: 'Linear flow: imports, theme, data, plot, save.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic with hardcoded geological data
+        comment: All data deterministic (hardcoded).
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: matplotlib.patches, plt, np, pd, sns'
+        comment: All imports used.
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Clean, well-organized code with appropriate complexity
+        passed: false
+        comment: Barplot repositioning hack — bars created then fully repositioned.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png, dpi=300, bbox_inches=tight
+        comment: Saves as plot.png, dpi=300, current API.
     library_mastery:
-      score: 5
+      score: 6
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
         score: 3
         max: 5
-        passed: true
-        comment: Uses sns.barplot() as base plus set_theme, color_palette, desaturate,
-          despine - but bars manually repositioned
+        passed: false
+        comment: Uses seaborn functions but barplot bars are entirely repositioned,
+          not idiomatic.
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Seaborn-specific utilities used (desaturate, colorblind palette,
-          set_theme context) but these are styling functions not distinctive visualization
-          features
+        passed: true
+        comment: sns.stripplot, sns.desaturate, sns.color_palette('colorblind') are
+          distinctive.
   verdict: REJECTED
 impl_tags:
   dependencies: []
@@ -227,7 +223,7 @@ impl_tags:
   patterns:
   - data-generation
   - iteration-over-groups
-  - explicit-figure
   dataprep: []
   styling:
   - edge-highlighting
+  - grid-styling

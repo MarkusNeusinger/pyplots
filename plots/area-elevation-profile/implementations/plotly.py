@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 area-elevation-profile: Terrain Elevation Profile Along Transect
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-15
@@ -66,26 +66,36 @@ fig.add_trace(
 )
 
 # Slope-colored segments as overlay for visual storytelling
-slope_colors = []
+# Colorblind-safe palette: blue (gentle), orange (moderate), dark purple (steep)
+slope_palette = {"gentle": "#306998", "moderate": "#d4820a", "steep": "#7b2d8e"}
+
+slope_labels = []
 for s in abs_slope:
     if s < 15:
-        slope_colors.append("#4a8c5c")  # green - gentle
+        slope_labels.append("gentle")
     elif s < 35:
-        slope_colors.append("#c4a035")  # amber - moderate
+        slope_labels.append("moderate")
     else:
-        slope_colors.append("#b5443a")  # red - steep
+        slope_labels.append("steep")
 
-for i in range(len(distance) - 1):
+# Group consecutive segments with same slope category to reduce trace count
+i = 0
+while i < len(distance) - 1:
+    label = slope_labels[i]
+    j = i + 1
+    while j < len(distance) - 1 and slope_labels[j] == label:
+        j += 1
     fig.add_trace(
         go.Scatter(
-            x=distance[i : i + 2],
-            y=elevation[i : i + 2],
+            x=distance[i : j + 1],
+            y=elevation[i : j + 1],
             mode="lines",
-            line={"color": slope_colors[i], "width": 3.5},
+            line={"color": slope_palette[label], "width": 3.5},
             showlegend=False,
             hoverinfo="skip",
         )
     )
+    i = j
 
 # Landmark markers
 fig.add_trace(
@@ -100,11 +110,13 @@ fig.add_trace(
     )
 )
 
-# Annotations with elevation values (fix SC-02)
+# Annotations with elevation values
 annotations = []
-offsets_y = [50, 50, 50, 50, -50, 50, -50]
-anchors_y = ["bottom", "bottom", "bottom", "bottom", "top", "bottom", "top"]
-arrow_ay = [-40, -40, -40, -40, 40, -40, 40]
+offsets_y = [50, 50, 50, 50, -50, 50, 50]
+anchors_y = ["bottom", "bottom", "bottom", "bottom", "top", "bottom", "bottom"]
+arrow_ay = [-40, -40, -40, -40, 40, -40, -40]
+# Horizontal shifts to avoid edge crowding for Grindelwald (first) and Wengen (last)
+anchors_x = ["left", "center", "center", "center", "center", "center", "right"]
 
 for i, lm in enumerate(landmarks):
     # Vertical reference line
@@ -130,6 +142,7 @@ for i, lm in enumerate(landmarks):
             "ay": arrow_ay[i],
             "font": {"size": 16, "color": "#2a2a2a"},
             "align": "center",
+            "xanchor": anchors_x[i],
             "yanchor": anchors_y[i],
         }
     )
@@ -157,9 +170,9 @@ annotations.append(
         "xref": "paper",
         "yref": "paper",
         "text": (
-            '<span style="color:#4a8c5c">\u2588</span> Gentle  '
-            '<span style="color:#c4a035">\u2588</span> Moderate  '
-            '<span style="color:#b5443a">\u2588</span> Steep'
+            '<span style="color:#306998">\u2588</span> Gentle  '
+            '<span style="color:#d4820a">\u2588</span> Moderate  '
+            '<span style="color:#7b2d8e">\u2588</span> Steep'
         ),
         "showarrow": False,
         "font": {"size": 14, "color": "#666666"},

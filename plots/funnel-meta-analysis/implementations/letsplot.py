@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 funnel-meta-analysis: Meta-Analysis Funnel Plot for Publication Bias
 Library: letsplot 4.9.0 | Python 3.14.3
-Quality: 88/100 | Created: 2026-03-15
+Created: 2026-03-15
 """
 
 import numpy as np
@@ -95,16 +95,21 @@ plot = (
     + geom_vline(xintercept=pooled_effect, color=blue_main, size=1.2, alpha=0.8)
     # Vertical dashed reference line at null effect (0)
     + geom_vline(xintercept=0, color=gray_mid, size=0.7, linetype="dashed")
-    # Study points — colored by position, sized by weight
+    # Study points — colored by position, sized by weight, with interactive tooltips
     + geom_point(
         aes(x="effect_size", y="std_error", color="position", size="weight"),
         data=df,
         shape=16,
         alpha=0.85,
-        show_legend=False,
+        tooltips=layer_tooltips()
+        .line("@study")
+        .line("Effect size|@effect_size")
+        .line("Std. error|@std_error")
+        .line("N|@n")
+        .line("@position"),
     )
-    + scale_color_manual(values=[blue_main, orange_accent])
-    + scale_size_identity()
+    + scale_color_manual(values=[blue_main, orange_accent], name="Classification")
+    + scale_size_identity(guide="none")
     # Study labels for key studies (largest and outliers)
     + geom_text(
         aes(x="effect_size", y="std_error", label="study"),
@@ -113,6 +118,7 @@ plot = (
         size=11,
         nudge_y=-0.025,
         fontface="bold",
+        show_legend=False,
     )
     + geom_text(
         aes(x="effect_size", y="std_error", label="study"),
@@ -120,6 +126,19 @@ plot = (
         color=gray_dark,
         size=10,
         nudge_y=-0.02,
+        show_legend=False,
+    )
+    # Annotation: pooled effect value
+    + geom_text(
+        aes(x="x", y="y", label="label"),
+        data=pd.DataFrame(
+            {"x": [pooled_effect + 0.03], "y": [0.005], "label": [f"Pooled OR = {np.exp(pooled_effect):.2f}"]}
+        ),
+        color=blue_main,
+        size=11,
+        fontface="bold",
+        hjust=0,
+        show_legend=False,
     )
     # Inverted y-axis (more precise studies at top)
     + scale_y_reverse()
@@ -135,9 +154,14 @@ plot = (
         plot_title=element_text(size=24, face="bold", color=gray_dark),
         axis_title=element_text(size=20, color=gray_dark),
         axis_text=element_text(size=16, color=gray_mid),
-        panel_grid_major=element_line(color=gray_light, size=0.4),
+        panel_grid_major_x=element_blank(),
+        panel_grid_major_y=element_line(color="#F0F0F0", size=0.3),
         panel_grid_minor=element_blank(),
         axis_line=element_blank(),
+        legend_position=[0.88, 0.88],
+        legend_title=element_text(size=16, face="bold", color=gray_dark),
+        legend_text=element_text(size=14, color=gray_dark),
+        legend_background=element_rect(fill="white", color=gray_light, size=0.5),
         plot_background=element_rect(fill="white", color="white"),
         panel_background=element_rect(fill="white", color="white"),
     )

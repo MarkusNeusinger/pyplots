@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 stereonet-equal-area: Structural Geology Stereonet (Equal-Area Projection)
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 81/100 | Created: 2026-03-15
@@ -157,7 +157,7 @@ for ft in ["Bedding", "Fault", "Joint"]:
 df_means = pd.DataFrame(mean_rows)
 
 # Plot
-color_map = {"Bedding": "#306998", "Fault": "#C1432E", "Joint": "#2A9D8F"}
+color_map = {"Bedding": "#306998", "Fault": "#C1432E", "Joint": "#D4A017"}
 color_scale = alt.Scale(domain=list(color_map.keys()), range=list(color_map.values()))
 x_enc = alt.X("x:Q", axis=None, scale=alt.Scale(domain=[-1.25, 1.25]))
 y_enc = alt.Y("y:Q", axis=None, scale=alt.Scale(domain=[-1.25, 1.25]))
@@ -175,8 +175,11 @@ contour_layer = (
             y=y_enc,
             detail="seg_id:N",
             order="order:O",
-            color=alt.Color("level:Q", scale=alt.Scale(scheme="greys", domain=[0, len(contour_levels)]), legend=None),
-            opacity=alt.value(0.35),
+            color=alt.Color(
+                "level:Q", scale=alt.Scale(scheme="oranges", domain=[-1, len(contour_levels)]), legend=None
+            ),
+            opacity=alt.value(0.55),
+            strokeWidth=alt.value(1.5),
         )
     )
     if len(df_contours) > 0
@@ -267,7 +270,7 @@ mean_markers = (
 
 mean_labels = (
     alt.Chart(df_means)
-    .mark_text(fontSize=16, fontWeight="bold", dy=-18, color="#333333")
+    .mark_text(fontSize=19, fontWeight="bold", dy=-20, color="#222222")
     .encode(x=x_enc, y=y_enc, text="label:N", opacity=alt.condition(selection, alt.value(0.9), alt.value(0.1)))
     .add_params(selection)
 )

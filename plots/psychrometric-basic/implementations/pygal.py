@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 psychrometric-basic: Psychrometric Chart for HVAC
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 72/100 | Created: 2026-03-15
@@ -6,6 +6,7 @@ Quality: 72/100 | Created: 2026-03-15
 
 import math
 
+import cairosvg
 import numpy as np
 import pygal
 from pygal.style import Style
@@ -14,15 +15,11 @@ from pygal.style import Style
 # Constants
 P_ATM = 101325.0  # Pa (standard atmosphere)
 
-# Data — precompute all psychrometric curves
-t_range = np.linspace(-10, 50, 250)
-rh_levels = [1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
 
-# Precompute saturation vapor pressure for each temperature (ASHRAE formula)
-pws_arr = np.zeros(len(t_range))
-for i, t in enumerate(t_range):
-    tk = t + 273.15
-    if t >= 0:
+def sat_pressure(t_celsius):
+    """ASHRAE saturation vapor pressure (Pa) from dry-bulb temperature (°C)."""
+    tk = t_celsius + 273.15
+    if t_celsius >= 0:
         ln_p = (
             -5.8002206e3 / tk
             + 1.3914993
@@ -41,9 +38,20 @@ for i, t in enumerate(t_range):
             - 9.4840240e-13 * tk**4
             + 4.1635019 * math.log(tk)
         )
-    pws_arr[i] = math.exp(ln_p)
+    return math.exp(ln_p)
 
-# Humidity ratio (g/kg) for each (temperature, RH) pair
+
+def humidity_ratio(t_celsius, rh):
+    """Humidity ratio (g/kg) from temperature and relative humidity (0-1)."""
+    pw = rh * sat_pressure(t_celsius)
+    return 0.62198 * pw / (P_ATM - pw) * 1000
+
+
+# Data — precompute all psychrometric curves
+t_range = np.linspace(-10, 50, 250)
+pws_arr = np.array([sat_pressure(float(t)) for t in t_range])
+
+rh_levels = [1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
 rh_curves = {}
 for rh in rh_levels:
     pts = []
@@ -70,31 +78,8 @@ for tw_target in wb_temps:
                 - 4.686035
             )
             if abs(tw - tw_target) < 0.25:
-                tk = t_f + 273.15
-                ln_p = (
-                    (
-                        -5.8002206e3 / tk
-                        + 1.3914993
-                        - 4.8640239e-2 * tk
-                        + 4.1764768e-5 * tk**2
-                        - 1.4452093e-8 * tk**3
-                        + 6.5459673 * math.log(tk)
-                    )
-                    if t_f >= 0
-                    else (
-                        -5.6745359e3 / tk
-                        + 6.3925247
-                        - 9.6778430e-3 * tk
-                        + 6.2215701e-7 * tk**2
-                        + 2.0747825e-9 * tk**3
-                        - 9.4840240e-13 * tk**4
-                        + 4.1635019 * math.log(tk)
-                    )
-                )
-                pw = (rh_pct / 100) * math.exp(ln_p)
-                w_gkg = 0.62198 * pw / (P_ATM - pw) * 1000
-                pw_sat = math.exp(ln_p)
-                w_sat = 0.62198 * pw_sat / (P_ATM - pw_sat) * 1000
+                w_gkg = humidity_ratio(t_f, rh_pct / 100)
+                w_sat = humidity_ratio(t_f, 1.0)
                 if 0 <= w_gkg <= min(30, w_sat + 0.2):
                     pts.append((round(t_f, 2), round(w_gkg, 3)))
                 break
@@ -115,27 +100,7 @@ for sv_target in sv_values:
             sv_calc = 0.287042 * tk * (1 + 1.6078 * w_test) / (P_ATM / 1000)
             if abs(sv_calc - sv_target) < 0.0008:
                 w_g = w_test * 1000
-                ln_p = (
-                    (
-                        -5.8002206e3 / tk
-                        + 1.3914993
-                        - 4.8640239e-2 * tk
-                        + 4.1764768e-5 * tk**2
-                        - 1.4452093e-8 * tk**3
-                        + 6.5459673 * math.log(tk)
-                    )
-                    if t_f >= 0
-                    else (
-                        -5.6745359e3 / tk
-                        + 6.3925247
-                        - 9.6778430e-3 * tk
-                        + 6.2215701e-7 * tk**2
-                        + 2.0747825e-9 * tk**3
-                        - 9.4840240e-13 * tk**4
-                        + 4.1635019 * math.log(tk)
-                    )
-                )
-                w_sat = 0.62198 * math.exp(ln_p) / (P_ATM - math.exp(ln_p)) * 1000
+                w_sat = humidity_ratio(t_f, 1.0)
                 if 0 <= w_g <= min(30, w_sat + 0.2):
                     pts.append((round(t_f, 2), round(w_g, 3)))
                 break
@@ -144,78 +109,42 @@ for sv_target in sv_values:
         step = max(1, len(pts) // 25)
         sv_lines[sv_target] = pts[::step]
 
+# Enthalpy lines (h = 1.006*t + w*(2501 + 1.86*t), w in kg/kg)
+enthalpy_values = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+enthalpy_lines = {}
+for h_target in enthalpy_values:
+    pts = []
+    for t in np.linspace(-10, 50, 200):
+        t_f = float(t)
+        w_kgkg = (h_target - 1.006 * t_f) / (2501 + 1.86 * t_f)
+        w_gkg = w_kgkg * 1000
+        w_sat = humidity_ratio(t_f, 1.0)
+        if 0 <= w_gkg <= min(30, w_sat + 0.2):
+            pts.append((round(t_f, 2), round(w_gkg, 3)))
+    if len(pts) > 2:
+        pts.sort(key=lambda p: p[0])
+        step = max(1, len(pts) // 25)
+        enthalpy_lines[h_target] = pts[::step]
+
 # Comfort zone polygon (20-26°C, 30-60% RH)
 comfort_t = np.linspace(20, 26, 40)
-comfort_bottom = []
-comfort_top = []
-for t in comfort_t:
-    tk = float(t) + 273.15
-    ln_p = (
-        -5.8002206e3 / tk
-        + 1.3914993
-        - 4.8640239e-2 * tk
-        + 4.1764768e-5 * tk**2
-        - 1.4452093e-8 * tk**3
-        + 6.5459673 * math.log(tk)
-    )
-    pws = math.exp(ln_p)
-    pw_30 = 0.30 * pws
-    pw_60 = 0.60 * pws
-    comfort_bottom.append(0.62198 * pw_30 / (P_ATM - pw_30) * 1000)
-    comfort_top.append(0.62198 * pw_60 / (P_ATM - pw_60) * 1000)
-
-comfort_pts = [
-    (round(float(t), 2), round(w, 3)) for t, w in zip(comfort_t, comfort_bottom, strict=True)
-] + [
-    (round(float(t), 2), round(w, 3))
-    for t, w in zip(reversed(comfort_t), reversed(comfort_top), strict=False)
+comfort_bottom = [humidity_ratio(float(t), 0.30) for t in comfort_t]
+comfort_top = [humidity_ratio(float(t), 0.60) for t in comfort_t]
+comfort_pts = [(round(float(t), 2), round(w, 3)) for t, w in zip(comfort_t, comfort_bottom, strict=True)] + [
+    (round(float(t), 2), round(w, 3)) for t, w in zip(reversed(comfort_t), reversed(comfort_top), strict=False)
 ]
 comfort_pts.append(comfort_pts[0])
 
 # HVAC process: cooling and dehumidification (35°C/60%RH → 24°C/50%RH)
-hvac_states = []
-for t_s, rh_s in [(35, 0.60), (24, 0.50)]:
-    tk = t_s + 273.15
-    ln_p = (
-        -5.8002206e3 / tk
-        + 1.3914993
-        - 4.8640239e-2 * tk
-        + 4.1764768e-5 * tk**2
-        - 1.4452093e-8 * tk**3
-        + 6.5459673 * math.log(tk)
-    )
-    pw = rh_s * math.exp(ln_p)
-    w_gkg = 0.62198 * pw / (P_ATM - pw) * 1000
-    hvac_states.append((float(t_s), round(w_gkg, 3)))
+hvac_states = [(35.0, round(humidity_ratio(35, 0.60), 3)), (24.0, round(humidity_ratio(24, 0.50), 3))]
 
-# Color palette — one per series in order
-# 10 RH (blue gradient) + 7 wet-bulb (orange) + 5 volume (purple) + comfort + HVAC
-palette = (
-    "#1a4971",
-    "#306998",
-    "#4a82ad",
-    "#6399be",
-    "#7baece",
-    "#93c1da",
-    "#a9d0e3",
-    "#bfddeb",
-    "#d4e9f2",
-    "#e6f1f7",
-    "#e8913a",
-    "#e8913a",
-    "#e8913a",
-    "#e8913a",
-    "#e8913a",
-    "#e8913a",
-    "#e8913a",
-    "#9575b5",
-    "#9575b5",
-    "#9575b5",
-    "#9575b5",
-    "#9575b5",
-    "#4caf6e",
-    "#d04a3e",
-)
+# Color palette — distinct families per property type
+blue_rh = ["#0d3b66", "#1a4d80", "#276099", "#3572b0", "#4384c4", "#5195d4", "#5fa5e0", "#6db5ea", "#7bc4f2", "#89d1f8"]
+orange_wb = "#d4792a"
+purple_sv = "#7b5ea7"
+teal_enth = "#2a8a8a"
+
+palette = tuple(blue_rh + [orange_wb] * 7 + [purple_sv] * 5 + [teal_enth] * 10 + ["#4caf6e", "#c62828"])
 
 # Style
 custom_style = Style(
@@ -224,14 +153,14 @@ custom_style = Style(
     foreground="#2d2d2d",
     foreground_strong="#111111",
     foreground_subtle="#e8ebef",
-    opacity=".80",
+    opacity=".85",
     opacity_hover="1",
     colors=palette,
     title_font_size=72,
     label_font_size=42,
     major_label_font_size=46,
-    legend_font_size=30,
-    value_font_size=24,
+    legend_font_size=34,
+    value_font_size=34,
     stroke_width=2.5,
     title_font_family="Trebuchet MS, Helvetica Neue, sans-serif",
     label_font_family="Trebuchet MS, Helvetica Neue, sans-serif",
@@ -254,9 +183,7 @@ chart = pygal.XY(
     title="psychrometric-basic · pygal · pyplots.ai",
     x_title="Dry-Bulb Temperature (°C)",
     y_title="Humidity Ratio (g/kg)",
-    show_legend=True,
-    legend_at_bottom=True,
-    legend_box_size=22,
+    show_legend=False,
     dots_size=0,
     stroke=True,
     show_x_guides=True,
@@ -274,7 +201,7 @@ chart = pygal.XY(
     tooltip_fancy_mode=True,
     explicit_size=True,
     spacing=25,
-    margin_bottom=120,
+    margin_bottom=60,
     margin_top=70,
     margin_left=80,
     margin_right=50,
@@ -282,44 +209,42 @@ chart = pygal.XY(
     js=[],
 )
 
-# RH curves — saturation (100%) drawn thickest
-rh_names = {
-    1.0: "100% RH (Saturation)",
-    0.9: "90% RH",
-    0.8: "80% RH",
-    0.7: "70% RH",
-    0.6: "60% RH",
-    0.5: "50% RH",
-    0.4: "40% RH",
-    0.3: "30% RH",
-    0.2: "20% RH",
-    0.1: "10% RH",
-}
+# RH curves — saturation (100%) thickest, all visible
 for rh in rh_levels:
-    w = 5 if rh == 1.0 else 2.0
-    chart.add(rh_names[rh], rh_curves[rh], show_dots=False, stroke_style={"width": w, "linecap": "round"})
+    rh_pct = int(rh * 100)
+    w = 5.5 if rh == 1.0 else max(2.2, 1.5 + rh * 2)
+    chart.add(f"{rh_pct}% RH", rh_curves[rh], show_dots=False, stroke_style={"width": w, "linecap": "round"})
 
 # Wet-bulb lines — dashed orange
 for tw in wb_temps:
     chart.add(
-        "Tw = {}°C".format(tw),
+        f"Tw={tw}°C",
         wb_lines.get(tw, []),
         show_dots=False,
-        stroke_style={"width": 1.5, "dasharray": "10, 6", "linecap": "round"},
+        stroke_style={"width": 1.8, "dasharray": "12, 6", "linecap": "round"},
     )
 
 # Specific volume lines — dotted purple
 for sv in sv_values:
     chart.add(
-        "v = {} m³/kg".format(sv),
+        f"v={sv} m³/kg",
         sv_lines.get(sv, []),
         show_dots=False,
-        stroke_style={"width": 1.2, "dasharray": "4, 7", "linecap": "round"},
+        stroke_style={"width": 1.5, "dasharray": "4, 8", "linecap": "round"},
+    )
+
+# Enthalpy lines — dash-dot teal
+for h in enthalpy_values:
+    chart.add(
+        f"h={h} kJ/kg",
+        enthalpy_lines.get(h, []),
+        show_dots=False,
+        stroke_style={"width": 1.4, "dasharray": "14, 4, 4, 4", "linecap": "round"},
     )
 
 # Comfort zone — filled green
 chart.add(
-    "Comfort Zone (20-26°C, 30-60% RH)",
+    "Comfort Zone (20–26°C, 30–60% RH)",
     comfort_pts,
     show_dots=False,
     fill=True,
@@ -328,13 +253,113 @@ chart.add(
 
 # HVAC process — bold red with dots at state points
 chart.add(
-    "Cooling & Dehumidification",
-    hvac_states,
+    "Cooling & Dehumidification (A→B)",
+    [
+        {"value": hvac_states[0], "label": "State A: 35°C, 60% RH"},
+        {"value": hvac_states[1], "label": "State B: 24°C, 50% RH"},
+    ],
     show_dots=True,
     dots_size=14,
     stroke_style={"width": 4.5, "linecap": "round"},
 )
 
-# Save
-chart.render_to_png("plot.png")
-chart.render_to_file("plot.html")
+# Render SVG first, then inject text labels directly into SVG before PNG export
+svg_content = chart.render(is_unicode=True)
+
+# Inject direct labels onto curves by adding SVG <text> elements
+# Compute chart area coordinates from pygal's viewBox
+# pygal uses viewBox="0 0 4800 2700" with margins
+plot_left = 80 + 120  # margin_left + y-axis labels space
+plot_right = 4800 - 50  # width - margin_right
+plot_top = 70 + 80  # margin_top + title space
+plot_bottom = 2700 - 60 - 80  # height - margin_bottom - x-axis space
+
+x_min, x_max = -10, 50
+y_min, y_max = 0, 30
+
+
+def to_svg_x(val):
+    return plot_left + (val - x_min) / (x_max - x_min) * (plot_right - plot_left)
+
+
+def to_svg_y(val):
+    return plot_bottom - (val - y_min) / (y_max - y_min) * (plot_bottom - plot_top)
+
+
+labels_svg = []
+
+# RH labels at right edge of each curve
+rh_label_temps = {1.0: 18, 0.9: 22, 0.8: 26, 0.7: 29, 0.6: 32, 0.5: 35, 0.4: 38, 0.3: 41, 0.2: 44, 0.1: 47}
+for rh in rh_levels:
+    rh_pct = int(rh * 100)
+    t_l = rh_label_temps[rh]
+    w_l = humidity_ratio(t_l, rh)
+    if 0 < w_l < 30:
+        sx, sy = to_svg_x(t_l), to_svg_y(w_l)
+        labels_svg.append(
+            f'<text x="{sx}" y="{sy - 8}" font-size="34" font-family="Trebuchet MS, sans-serif" '
+            f'fill="#0d3b66" font-weight="bold" text-anchor="middle">{rh_pct}%</text>'
+        )
+
+# Wet-bulb labels near lower-right end of each line (avoid overlap with RH labels)
+for tw in wb_temps:
+    pts = wb_lines.get(tw, [])
+    if pts:
+        p = pts[-2] if len(pts) > 2 else pts[-1]
+        sx, sy = to_svg_x(p[0]), to_svg_y(p[1])
+        labels_svg.append(
+            f'<text x="{sx + 10}" y="{sy + 5}" font-size="28" font-family="Trebuchet MS, sans-serif" '
+            f'fill="{orange_wb}" font-weight="bold" text-anchor="start">Tw {tw}°C</text>'
+        )
+
+# Specific volume labels
+for sv in sv_values:
+    pts = sv_lines.get(sv, [])
+    if pts:
+        p = pts[len(pts) // 4]
+        sx, sy = to_svg_x(p[0]), to_svg_y(p[1])
+        labels_svg.append(
+            f'<text x="{sx}" y="{sy - 8}" font-size="28" font-family="Trebuchet MS, sans-serif" '
+            f'fill="{purple_sv}" text-anchor="middle">{sv}</text>'
+        )
+
+# Enthalpy labels near lower end of line (every other to reduce clutter)
+for h in [10, 30, 50, 70, 90]:
+    pts = enthalpy_lines.get(h, [])
+    if pts:
+        p = pts[-2] if len(pts) > 2 else pts[-1]
+        sx, sy = to_svg_x(p[0]), to_svg_y(p[1])
+        labels_svg.append(
+            f'<text x="{sx}" y="{sy + 30}" font-size="28" font-family="Trebuchet MS, sans-serif" '
+            f'fill="{teal_enth}" font-weight="bold" text-anchor="middle">h={h}</text>'
+        )
+
+# Comfort zone label
+cz_x, cz_y = 23, (humidity_ratio(23, 0.45))
+sx, sy = to_svg_x(cz_x), to_svg_y(cz_y)
+labels_svg.append(
+    f'<text x="{sx}" y="{sy}" font-size="36" font-family="Trebuchet MS, sans-serif" '
+    f'fill="#2e7d32" font-weight="bold" text-anchor="middle">Comfort Zone</text>'
+)
+
+# HVAC state point labels
+sx_a, sy_a = to_svg_x(hvac_states[0][0]), to_svg_y(hvac_states[0][1])
+labels_svg.append(
+    f'<text x="{sx_a + 20}" y="{sy_a - 20}" font-size="36" font-family="Trebuchet MS, sans-serif" '
+    f'fill="#c62828" font-weight="bold" text-anchor="start">A (35°C)</text>'
+)
+sx_b, sy_b = to_svg_x(hvac_states[1][0]), to_svg_y(hvac_states[1][1])
+labels_svg.append(
+    f'<text x="{sx_b - 20}" y="{sy_b - 20}" font-size="36" font-family="Trebuchet MS, sans-serif" '
+    f'fill="#c62828" font-weight="bold" text-anchor="end">B (24°C)</text>'
+)
+
+# Insert labels before closing </svg>
+label_block = "\n".join(labels_svg)
+svg_labeled = svg_content.replace("</svg>", f"{label_block}\n</svg>")
+
+# Save labeled SVG as HTML and render to PNG via cairosvg
+with open("plot.html", "w") as f:
+    f.write(svg_labeled)
+
+cairosvg.svg2png(bytestring=svg_labeled.encode("utf-8"), write_to="plot.png")

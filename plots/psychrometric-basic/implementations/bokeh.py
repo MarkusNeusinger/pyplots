@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 psychrometric-basic: Psychrometric Chart for HVAC
 Library: bokeh 3.9.0 | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-15
@@ -6,7 +6,7 @@ Quality: 85/100 | Created: 2026-03-15
 
 import numpy as np
 from bokeh.io import export_png, save
-from bokeh.models import ColumnDataSource, HoverTool, Label
+from bokeh.models import Band, ColumnDataSource, HoverTool, Label, Title
 from bokeh.plotting import figure
 from bokeh.resources import CDN
 
@@ -54,12 +54,12 @@ p = figure(
 # --- Relative humidity curves (10% to 100%) ---
 rh_colors = {
     1.0: "#1a5276",
-    0.9: "#2471a3",
-    0.8: "#2e86c1",
-    0.7: "#3498db",
-    0.6: "#5dade2",
-    0.5: "#7fb3d8",
-    0.4: "#85c1e9",
+    0.9: "#21618c",
+    0.8: "#2874a6",
+    0.7: "#2e86c1",
+    0.6: "#3498db",
+    0.5: "#5499c7",
+    0.4: "#7fb3d8",
     0.3: "#6ca0c1",
     0.2: "#5b8fa8",
     0.1: "#4a7e90",
@@ -71,7 +71,7 @@ for rh_val in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]:
     mask = (w >= 0) & (w <= 30)
     t_plot = t_db[mask]
     w_plot = w[mask]
-    lw = 4.5 if rh_val == 1.0 else 2.0
+    lw = 5.0 if rh_val == 1.0 else 2.2
     alpha = 1.0 if rh_val == 1.0 else 0.85
 
     source = ColumnDataSource(data={"t": t_plot, "w": w_plot})
@@ -84,11 +84,11 @@ for rh_val in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]:
         )
     )
 
-    # Label - position to avoid overlap: stagger labels along the curves
+    # Label - staggered positions along curves for readability
     if len(t_plot) > 0:
         label_text = f"{int(rh_val * 100)}%"
-        # Place labels at staggered x-positions to avoid clustering
-        rh_label_x = {1.0: 28, 0.9: 33, 0.8: 37, 0.7: 40, 0.6: 43, 0.5: 45, 0.4: 47, 0.3: 48, 0.2: 49, 0.1: 49.5}
+        # Place labels at staggered x-positions along the upper part of each curve
+        rh_label_x = {1.0: 26, 0.9: 31, 0.8: 35, 0.7: 38, 0.6: 41, 0.5: 43, 0.4: 45, 0.3: 46, 0.2: 47, 0.1: 48}
         target_x = rh_label_x[rh_val]
         idx = np.argmin(np.abs(t_plot - target_x))
         if w_plot[idx] > 28:
@@ -98,7 +98,7 @@ for rh_val in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]:
                 x=t_plot[idx],
                 y=w_plot[idx],
                 text=label_text,
-                text_font_size="17pt",
+                text_font_size="19pt",
                 text_color=rh_colors[rh_val],
                 text_font_style="bold" if rh_val == 1.0 else "normal",
                 x_offset=6,
@@ -123,7 +123,9 @@ for twb in wb_temps:
         t_plot = t_range[mask]
         w_plot = w[mask]
         source = ColumnDataSource(data={"t": t_plot, "w": w_plot})
-        wb_r = p.line("t", "w", source=source, line_color="#e07b39", line_width=1.6, line_alpha=0.7, line_dash="dashed")
+        wb_r = p.line(
+            "t", "w", source=source, line_color="#e07b39", line_width=1.8, line_alpha=0.75, line_dash="dashed"
+        )
         p.add_tools(
             HoverTool(
                 renderers=[wb_r],
@@ -131,7 +133,7 @@ for twb in wb_temps:
                 line_policy="nearest",
             )
         )
-        # Label at mid-point of line to avoid saturation curve overlap
+        # Label at upper-left portion of line (near saturation curve)
         if len(t_plot) > 5:
             mid = len(t_plot) // 3
             p.add_layout(
@@ -139,15 +141,17 @@ for twb in wb_temps:
                     x=t_plot[mid],
                     y=w_plot[mid],
                     text=f"{twb}°C wb",
-                    text_font_size="17pt",
+                    text_font_size="18pt",
                     text_color="#c96a2d",
                     x_offset=2,
                     y_offset=-14,
-                    text_alpha=0.85,
+                    text_alpha=0.9,
                 )
             )
 
-# --- Enthalpy lines (kJ/kg) ---
+# --- Enthalpy lines (kJ/kg) - changed to warm rose/magenta for better separation from blue RH ---
+enthalpy_color = "#b5338a"
+enthalpy_label_color = "#9e2d78"
 enthalpy_values = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 for h in enthalpy_values:
     t_range = np.linspace(-10, 50, 300)
@@ -158,7 +162,7 @@ for h in enthalpy_values:
         w_plot = w[mask]
         source = ColumnDataSource(data={"t": t_plot, "w": w_plot})
         enth_r = p.line(
-            "t", "w", source=source, line_color="#7b2d8e", line_width=1.4, line_alpha=0.65, line_dash="dotted"
+            "t", "w", source=source, line_color=enthalpy_color, line_width=1.5, line_alpha=0.65, line_dash="dotted"
         )
         p.add_tools(
             HoverTool(
@@ -167,27 +171,32 @@ for h in enthalpy_values:
                 line_policy="nearest",
             )
         )
-        # Label at lower-right end of each line (where w is small) to avoid top-left crowding
+        # Label at upper-left end of each enthalpy line (high w) to separate from specific volume labels
         if len(t_plot) > 2:
-            idx = len(t_plot) - 1
-            for ii in range(len(t_plot) - 1, -1, -1):
-                if w_plot[ii] < 3 and w_plot[ii] > 0.3:
+            # Place label near top of line (high humidity ratio end)
+            idx = 0
+            for ii in range(len(t_plot)):
+                if w_plot[ii] > 22:
                     idx = ii
                     break
+                if w_plot[ii] > 12:
+                    idx = ii
             p.add_layout(
                 Label(
                     x=t_plot[idx],
                     y=w_plot[idx],
                     text=f"{h} kJ/kg",
-                    text_font_size="17pt",
-                    text_color="#7b2d8e",
-                    text_alpha=0.85,
-                    x_offset=3,
-                    y_offset=-12,
+                    text_font_size="16pt",
+                    text_color=enthalpy_label_color,
+                    text_alpha=0.9,
+                    x_offset=-65,
+                    y_offset=8,
                 )
             )
 
 # --- Specific volume lines (m³/kg) ---
+sv_color = "#4e8c3f"
+sv_label_color = "#3d7030"
 sv_values = [0.78, 0.80, 0.82, 0.84, 0.86, 0.88, 0.90, 0.92]
 for v in sv_values:
     t_range = np.linspace(-10, 50, 300)
@@ -198,7 +207,7 @@ for v in sv_values:
         w_plot = w[mask]
         source = ColumnDataSource(data={"t": t_plot, "w": w_plot})
         sv_r = p.line(
-            "t", "w", source=source, line_color="#6b8e5e", line_width=1.4, line_alpha=0.65, line_dash="dashdot"
+            "t", "w", source=source, line_color=sv_color, line_width=1.5, line_alpha=0.65, line_dash="dashdot"
         )
         p.add_tools(
             HoverTool(
@@ -207,7 +216,7 @@ for v in sv_values:
                 line_policy="nearest",
             )
         )
-        # Label at bottom of line
+        # Label at bottom of line (low w end)
         if len(t_plot) > 2:
             idx = -1
             for ii in range(len(t_plot) - 1, -1, -1):
@@ -219,15 +228,15 @@ for v in sv_values:
                     x=t_plot[idx],
                     y=w_plot[idx],
                     text=f"{v} m³/kg",
-                    text_font_size="17pt",
-                    text_color="#6b8e5e",
-                    text_alpha=0.85,
+                    text_font_size="16pt",
+                    text_color=sv_label_color,
+                    text_alpha=0.9,
                     x_offset=0,
                     y_offset=-18,
                 )
             )
 
-# --- Comfort zone (20-26°C, 30-60% RH) ---
+# --- Comfort zone using Band for idiomatic Bokeh ---
 comfort_t = np.linspace(20, 26, 50)
 comfort_psat = np.exp(
     C8 / (comfort_t + 273.15)
@@ -241,23 +250,29 @@ pw_lo = 0.3 * comfort_psat
 pw_hi = 0.6 * comfort_psat
 w_bottom = 0.621998 * pw_lo / (P_ATM - pw_lo) * 1000
 w_top = 0.621998 * pw_hi / (P_ATM - pw_hi) * 1000
-comfort_xs = np.concatenate([comfort_t, comfort_t[::-1]]).tolist()
-comfort_ys = np.concatenate([w_bottom, w_top[::-1]]).tolist()
 
-p.patch(
-    comfort_xs, comfort_ys, fill_color="#2980b9", fill_alpha=0.12, line_color="#2980b9", line_width=2.5, line_alpha=0.5
+comfort_source = ColumnDataSource(data={"t": comfort_t, "w_lo": w_bottom, "w_hi": w_top})
+band = Band(
+    base="t",
+    lower="w_lo",
+    upper="w_hi",
+    source=comfort_source,
+    fill_color="#2980b9",
+    fill_alpha=0.15,
+    line_color="#2980b9",
+    line_width=2.5,
+    line_alpha=0.6,
 )
-mid_w = (
-    0.621998 * 0.3 * comfort_psat[25] / (P_ATM - 0.3 * comfort_psat[25]) * 1000
-    + 0.621998 * 0.6 * comfort_psat[25] / (P_ATM - 0.6 * comfort_psat[25]) * 1000
-) / 2
+p.add_layout(band)
+
+mid_w = (w_bottom[25] + w_top[25]) / 2
 p.add_layout(
     Label(
         x=23,
         y=mid_w,
         text="Comfort Zone",
-        text_font_size="18pt",
-        text_color="#2471a3",
+        text_font_size="20pt",
+        text_color="#1a6da0",
         text_font_style="bold",
         text_align="center",
     )
@@ -275,10 +290,15 @@ tk2 = state2_t + 273.15
 ps2 = np.exp(C8 / tk2 + C9 + C10 * tk2 + C11 * tk2**2 + C12 * tk2**3 + C13 * np.log(tk2))
 state2_w = 0.621998 * (state2_rh * ps2) / (P_ATM - state2_rh * ps2) * 1000
 
+# Compute enthalpy change for annotation
+h1 = 1.006 * state1_t + (state1_w / 1000) * (2501.0 + 1.86 * state1_t)
+h2 = 1.006 * state2_t + (state2_w / 1000) * (2501.0 + 1.86 * state2_t)
+delta_h = h2 - h1
+
 process_source = ColumnDataSource(
     data={"t": [state1_t, state2_t], "w": [state1_w, state2_w], "label": ["Outdoor Air", "Supply Air"]}
 )
-p.line("t", "w", source=process_source, line_color="#c0392b", line_width=4.5, line_alpha=0.9)
+p.line("t", "w", source=process_source, line_color="#c0392b", line_width=5.0, line_alpha=0.9)
 
 # Arrowhead
 x_span, y_span = 64.0, 30.0
@@ -287,7 +307,7 @@ dy_n = (state2_w - state1_w) / y_span
 length_n = np.sqrt(dx_n**2 + dy_n**2)
 ux_n, uy_n = dx_n / length_n, dy_n / length_n
 px_n, py_n = -uy_n, ux_n
-ah_len, ah_w = 0.014, 0.006
+ah_len, ah_w = 0.016, 0.007
 p.patch(
     x=[
         state2_t,
@@ -309,11 +329,15 @@ state_source = ColumnDataSource(
         "t": [state1_t, state2_t],
         "w": [state1_w, state2_w],
         "name": ["Outdoor Air (35°C, 60% RH)", "Supply Air (15°C, 90% RH)"],
+        "h": [f"{h1:.1f}", f"{h2:.1f}"],
     }
 )
-scatter_r = p.scatter("t", "w", source=state_source, size=18, color="#c0392b", line_color="white", line_width=2.5)
+scatter_r = p.scatter("t", "w", source=state_source, size=20, color="#c0392b", line_color="white", line_width=3)
 p.add_tools(
-    HoverTool(renderers=[scatter_r], tooltips=[("State", "@name"), ("Dry-Bulb", "@t °C"), ("W", "@w{0.1} g/kg")])
+    HoverTool(
+        renderers=[scatter_r],
+        tooltips=[("State", "@name"), ("Dry-Bulb", "@t °C"), ("W", "@w{0.1} g/kg"), ("Enthalpy", "@h kJ/kg")],
+    )
 )
 
 p.add_layout(
@@ -321,11 +345,11 @@ p.add_layout(
         x=state1_t,
         y=state1_w,
         text="Outdoor Air (35°C, 60% RH)",
-        text_font_size="16pt",
+        text_font_size="17pt",
         text_color="#c0392b",
         text_font_style="bold",
-        x_offset=10,
-        y_offset=12,
+        x_offset=12,
+        y_offset=14,
     )
 )
 p.add_layout(
@@ -333,37 +357,81 @@ p.add_layout(
         x=state2_t,
         y=state2_w,
         text="Supply Air (15°C, 90% RH)",
-        text_font_size="16pt",
+        text_font_size="17pt",
         text_color="#c0392b",
         text_font_style="bold",
-        x_offset=10,
-        y_offset=-22,
+        x_offset=12,
+        y_offset=-24,
+    )
+)
+
+# Energy annotation on the process path - data storytelling
+mid_process_t = (state1_t + state2_t) / 2
+mid_process_w = (state1_w + state2_w) / 2
+p.add_layout(
+    Label(
+        x=mid_process_t,
+        y=mid_process_w,
+        text=f"Δh = {delta_h:.1f} kJ/kg",
+        text_font_size="16pt",
+        text_color="#922b21",
+        text_font_style="italic",
+        x_offset=-80,
+        y_offset=16,
+        background_fill_color="white",
+        background_fill_alpha=0.7,
     )
 )
 
 # --- Style ---
-p.title.text_font_size = "28pt"
+p.title.text_font_size = "30pt"
+p.title.text_color = "#1a2a3a"
+p.title.text_font_style = "bold"
+p.title.offset = 10
+
 p.xaxis.axis_label_text_font_size = "22pt"
 p.yaxis.axis_label_text_font_size = "22pt"
+p.xaxis.axis_label_text_font_style = "bold"
+p.yaxis.axis_label_text_font_style = "bold"
+p.xaxis.axis_label_text_color = "#2c3e50"
+p.yaxis.axis_label_text_color = "#2c3e50"
 p.xaxis.major_label_text_font_size = "18pt"
 p.yaxis.major_label_text_font_size = "18pt"
+p.xaxis.major_label_text_color = "#555555"
+p.yaxis.major_label_text_color = "#555555"
 
-p.xgrid.grid_line_color = "#cccccc"
-p.ygrid.grid_line_color = "#cccccc"
-p.xgrid.grid_line_alpha = 0.2
-p.ygrid.grid_line_alpha = 0.2
+p.xaxis.axis_line_width = 2
+p.yaxis.axis_line_width = 2
+p.xaxis.axis_line_color = "#555555"
+p.yaxis.axis_line_color = "#555555"
+p.xaxis.major_tick_line_color = "#777777"
+p.yaxis.major_tick_line_color = "#777777"
+p.xaxis.major_tick_line_width = 1.5
+p.yaxis.major_tick_line_width = 1.5
+p.xaxis.minor_tick_line_color = None
+p.yaxis.minor_tick_line_color = None
 
-p.background_fill_color = "#fafafa"
+p.xgrid.grid_line_color = "#d5d5d5"
+p.ygrid.grid_line_color = "#d5d5d5"
+p.xgrid.grid_line_alpha = 0.3
+p.ygrid.grid_line_alpha = 0.3
+p.xgrid.grid_line_dash = [4, 4]
+p.ygrid.grid_line_dash = [4, 4]
+
+p.background_fill_color = "#f7f9fb"
 p.border_fill_color = "white"
 p.outline_line_color = None
 
-p.xaxis.axis_line_color = "#666666"
-p.yaxis.axis_line_color = "#666666"
-p.xaxis.major_tick_line_color = "#666666"
-p.yaxis.major_tick_line_color = "#666666"
-p.xaxis.minor_tick_line_color = None
-p.yaxis.minor_tick_line_color = None
-p.title.text_color = "#2c3e50"
+# Subtitle for context
+p.add_layout(
+    Title(
+        text="Standard Atmosphere (101.325 kPa) · ASHRAE Psychrometric Properties",
+        text_font_size="16pt",
+        text_color="#7f8c8d",
+        text_font_style="italic",
+    ),
+    "above",
+)
 
 # Save
 export_png(p, filename="plot.png")

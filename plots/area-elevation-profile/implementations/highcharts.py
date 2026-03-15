@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 area-elevation-profile: Terrain Elevation Profile Along Transect
 Library: highcharts unknown | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-15
@@ -64,7 +64,7 @@ chart.options.chart = {
     "backgroundColor": "#ffffff",
     "marginBottom": 230,
     "marginLeft": 250,
-    "marginRight": 250,
+    "marginRight": 320,
     "marginTop": 300,
 }
 
@@ -100,13 +100,18 @@ chart.options.x_axis = {
                 "rotation": 0,
                 "verticalAlign": "bottom",
                 "y": -25,
-                "x": 0,
-                "textAlign": "center",
+                "x": 20 if i == 0 else (-20 if i == len(landmarks) - 1 else 0),
+                "textAlign": "left" if i == 0 else ("right" if i == len(landmarks) - 1 else "center"),
                 "useHTML": True,
-                "style": {"fontSize": "28px", "color": "#333333", "fontWeight": "bold", "textAlign": "center"},
+                "style": {
+                    "fontSize": "28px",
+                    "color": "#333333",
+                    "fontWeight": "bold",
+                    "textAlign": "left" if i == 0 else ("right" if i == len(landmarks) - 1 else "center"),
+                },
             },
         }
-        for lm in landmarks
+        for i, lm in enumerate(landmarks)
     ],
 }
 

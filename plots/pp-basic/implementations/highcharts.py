@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 pp-basic: Probability-Probability (P-P) Plot
 Library: highcharts unknown | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-15
@@ -14,7 +14,7 @@ from highcharts_core.chart import Chart
 from highcharts_core.options import HighchartsOptions
 from highcharts_core.options.series.area import LineSeries
 from highcharts_core.options.series.scatter import ScatterSeries
-from scipy.stats import norm
+from scipy.stats import kstest, norm
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -34,6 +34,10 @@ theoretical_cdf = norm.cdf(sample_sorted, loc=mu, scale=sigma)
 # Compute deviation from diagonal for color coding
 deviation = np.abs(empirical_cdf - theoretical_cdf)
 max_dev = deviation.max()
+max_dev_idx = int(np.argmax(deviation))
+
+# KS test statistic for annotation
+ks_stat, ks_pvalue = kstest(sample_sorted, "norm", args=(mu, sigma))
 
 # Chart
 chart = Chart(container="container")
@@ -47,8 +51,21 @@ chart.options.chart = {
     "borderWidth": 0,
     "plotBorderWidth": 2,
     "plotBorderColor": "#d0d7de",
-    "spacing": [60, 80, 80, 80],
+    "spacing": [50, 60, 70, 70],
     "style": {"fontFamily": "'Segoe UI', 'Helvetica Neue', Arial, sans-serif"},
+    "zoomType": "xy",
+    "panning": {"enabled": True, "type": "xy"},
+    "panKey": "shift",
+    "resetZoomButton": {
+        "theme": {
+            "fill": "#306998",
+            "stroke": "#1a4971",
+            "style": {"color": "#ffffff", "fontSize": "24px"},
+            "r": 6,
+            "states": {"hover": {"fill": "#1a4971"}},
+        },
+        "position": {"align": "right", "verticalAlign": "top", "x": -20, "y": 20},
+    },
 }
 
 chart.options.title = {
@@ -58,12 +75,14 @@ chart.options.title = {
 }
 
 chart.options.subtitle = {
-    "text": "Mixed Normal + Exponential vs. Normal Reference \u2014 Deviation Highlights Distributional Mismatch",
+    "text": (
+        f"Mixed Normal + Exponential vs. Normal Reference \u2014 KS Statistic = {ks_stat:.3f} (p = {ks_pvalue:.4f})"
+    ),
     "style": {"fontSize": "34px", "color": "#57606a"},
 }
 
-# Confidence band as plotBand on y-axis
-confidence_band_color = "rgba(48, 105, 152, 0.06)"
+# Confidence band as plotBand on x-axis
+confidence_band_color = "rgba(48, 105, 152, 0.07)"
 
 chart.options.x_axis = {
     "title": {
@@ -73,7 +92,7 @@ chart.options.x_axis = {
     },
     "labels": {"style": {"fontSize": "34px", "color": "#57606a"}},
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.08)",
+    "gridLineColor": "rgba(0, 0, 0, 0.06)",
     "gridLineDashStyle": "Dot",
     "lineColor": "#d0d7de",
     "lineWidth": 1,
@@ -81,15 +100,14 @@ chart.options.x_axis = {
     "min": 0,
     "max": 1,
     "tickInterval": 0.2,
-    "plotLines": [{"value": 0.5, "color": "rgba(0, 0, 0, 0.12)", "width": 2, "dashStyle": "LongDash", "zIndex": 1}],
     "plotBands": [
         {
             "from": 0.3,
             "to": 0.7,
             "color": confidence_band_color,
             "label": {
-                "text": "Central region",
-                "style": {"fontSize": "28px", "color": "rgba(48, 105, 152, 0.4)"},
+                "text": "Central Region",
+                "style": {"fontSize": "30px", "color": "rgba(48, 105, 152, 0.65)", "fontWeight": "500"},
                 "align": "left",
                 "x": 20,
                 "y": -15,
@@ -106,7 +124,7 @@ chart.options.y_axis = {
     },
     "labels": {"style": {"fontSize": "34px", "color": "#57606a"}},
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.08)",
+    "gridLineColor": "rgba(0, 0, 0, 0.06)",
     "gridLineDashStyle": "Dot",
     "lineColor": "#d0d7de",
     "lineWidth": 1,
@@ -114,7 +132,6 @@ chart.options.y_axis = {
     "min": 0,
     "max": 1,
     "tickInterval": 0.2,
-    "plotLines": [{"value": 0.5, "color": "rgba(0, 0, 0, 0.12)", "width": 2, "dashStyle": "LongDash", "zIndex": 1}],
 }
 
 chart.options.legend = {
@@ -124,9 +141,9 @@ chart.options.legend = {
     "align": "right",
     "verticalAlign": "top",
     "layout": "vertical",
-    "x": -40,
-    "y": 80,
-    "backgroundColor": "rgba(255, 255, 255, 0.85)",
+    "x": -30,
+    "y": 70,
+    "backgroundColor": "rgba(255, 255, 255, 0.88)",
     "borderColor": "#d0d7de",
     "borderWidth": 1,
     "borderRadius": 8,
@@ -150,6 +167,7 @@ chart.options.tooltip = {
     "borderRadius": 8,
     "shadow": {"color": "rgba(0,0,0,0.1)", "offsetX": 2, "offsetY": 2, "width": 4},
     "style": {"fontSize": "26px"},
+    "snap": 12,
 }
 
 # Reference line (perfect fit diagonal)
@@ -167,22 +185,36 @@ chart.add_series(line_series)
 
 # P-P scatter points with deviation-based coloring
 scatter_data = []
-for t, e, d in zip(theoretical_cdf, empirical_cdf, deviation, strict=True):
+for i, (t, e, d) in enumerate(zip(theoretical_cdf, empirical_cdf, deviation, strict=True)):
     ratio = d / max_dev if max_dev > 0 else 0
-    # Interpolate from Python Blue (close to diagonal) to warm coral (far from diagonal)
     r = int(48 + ratio * (207 - 48))
     g = int(105 + ratio * (72 - 105))
     b = int(152 + ratio * (65 - 152))
     alpha = 0.55 + ratio * 0.35
-    scatter_data.append(
-        {"x": float(t), "y": float(e), "dev": round(float(d), 4), "color": f"rgba({r},{g},{b},{alpha})"}
-    )
+    point = {"x": float(t), "y": float(e), "dev": round(float(d), 4), "color": f"rgba({r},{g},{b},{alpha})"}
+    # Highlight the max deviation point with a diamond marker and data label
+    if i == max_dev_idx:
+        point["marker"] = {
+            "radius": 18,
+            "symbol": "diamond",
+            "lineWidth": 3,
+            "lineColor": "#cf4848",
+            "fillColor": "rgba(207, 72, 65, 0.9)",
+        }
+        point["dataLabels"] = {
+            "enabled": True,
+            "format": f"Max \u0394 = {max_dev:.3f}",
+            "style": {"fontSize": "28px", "fontWeight": "700", "color": "#cf4848", "textOutline": "3px #ffffff"},
+            "y": -30,
+            "x": 15,
+        }
+    scatter_data.append(point)
 
 scatter_series = ScatterSeries()
 scatter_series.data = scatter_data
 scatter_series.name = "P-P Points (N=200)"
 scatter_series.color = "#306998"
-scatter_series.marker = {"radius": 9, "symbol": "circle", "lineWidth": 1, "lineColor": "rgba(0,0,0,0.15)"}
+scatter_series.marker = {"radius": 12, "symbol": "circle", "lineWidth": 1, "lineColor": "rgba(0,0,0,0.15)"}
 scatter_series.z_index = 2
 
 chart.add_series(scatter_series)
@@ -231,7 +263,7 @@ driver.quit()
 
 Path(temp_path).unlink()
 
-# Save interactive HTML
+# Save interactive HTML with zoom/pan enabled
 with open("plot.html", "w", encoding="utf-8") as f:
     interactive_html = f"""<!DOCTYPE html>
 <html>

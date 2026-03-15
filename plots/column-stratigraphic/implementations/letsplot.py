@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 column-stratigraphic: Stratigraphic Column with Lithology Patterns
 Library: letsplot 4.9.0 | Python 3.14.3
 Quality: 82/100 | Created: 2026-03-15
@@ -165,12 +165,6 @@ for age_name, (age_top, age_bottom) in age_spans.items():
 age_df = pd.DataFrame(age_labels)
 bracket_df = pd.DataFrame(age_brackets)
 
-# Age boundary dashed lines
-age_boundary_depths = [35, 110, 195]
-boundaries_df = pd.DataFrame(
-    {"x": [-0.02] * 3, "y": age_boundary_depths, "xend": [1.02] * 3, "yend": age_boundary_depths}
-)
-
 # Unconformity wavy line at Jurassic/Cretaceous boundary (110m)
 wavy_x = []
 wavy_y = []
@@ -193,11 +187,13 @@ plot = (
         size=1.0,
         alpha=0.8,
         tooltips=layer_tooltips()
-        .line("@lithology")
+        .format("@top", ".0f")
+        .format("@bottom", ".0f")
+        .format("@thickness", ".0f")
+        .title("@formation")
+        .line("@lithology | @age")
         .line("Depth: @top\u2013@bottom m")
-        .line("Thickness: @thickness m")
-        .line("Formation: @formation")
-        .line("Age: @age"),
+        .line("Thickness: @thickness m"),
     )
 )
 
@@ -206,24 +202,34 @@ if pattern_seg_df is not None and len(pattern_seg_df) > 0:
     plot = plot + geom_segment(
         aes(x="x", y="y", xend="xend", yend="yend"),
         data=pattern_seg_df,
-        color="#3C3C3C",
-        size=0.4,
-        alpha=0.55,
+        color="#2A2A2A",
+        size=0.5,
+        alpha=0.7,
         show_legend=False,
     )
 
 if pattern_dot_df is not None and len(pattern_dot_df) > 0:
     plot = plot + geom_point(
-        aes(x="x", y="y"), data=pattern_dot_df, color="#5C4A1E", size=1.2, alpha=0.5, shape=16, show_legend=False
+        aes(x="x", y="y"), data=pattern_dot_df, color="#4A3A10", size=1.5, alpha=0.65, shape=16, show_legend=False
     )
 
 if pattern_circle_df is not None and len(pattern_circle_df) > 0:
     plot = plot + geom_point(
-        aes(x="x", y="y"), data=pattern_circle_df, color="#6B3A3A", size=4, alpha=0.45, shape=1, show_legend=False
+        aes(x="x", y="y"), data=pattern_circle_df, color="#5A2A2A", size=4.5, alpha=0.65, shape=1, show_legend=False
     )
 
-# Unconformity wavy line at 110m
-plot = plot + geom_line(aes(x="x", y="y"), data=wavy_df, color="#C44E52", size=1.2, show_legend=False)
+# Unconformity wavy line at 110m with label
+plot = plot + geom_line(aes(x="x", y="y"), data=wavy_df, color="#C44E52", size=1.5, show_legend=False)
+unconformity_label = pd.DataFrame({"x": [1.08], "y": [110], "label": ["Unconformity"]})
+plot = plot + geom_text(
+    aes(x="x", y="y", label="label"),
+    data=unconformity_label,
+    color="#C44E52",
+    size=12,
+    fontface="bold",
+    hjust=0,
+    show_legend=False,
+)
 
 # Age boundary dashed lines (non-unconformity)
 non_unconformity_boundaries = pd.DataFrame(
@@ -244,19 +250,19 @@ plot = plot + geom_segment(
 )
 
 # Formation labels (right side)
-plot = plot + geom_text(aes(x="x", y="y", label="label"), data=form_df, size=12, color="#2C2C2C", hjust=0)
+plot = plot + geom_text(aes(x="x", y="y", label="label"), data=form_df, size=14, color="#2C2C2C", hjust=0)
 
 # Age labels (left side)
-plot = plot + geom_text(aes(x="x", y="y", label="label"), data=age_df, size=13, color="#2C2C2C", fontface="italic")
+plot = plot + geom_text(aes(x="x", y="y", label="label"), data=age_df, size=15, color="#2C2C2C", fontface="italic")
 
 # Scales and theme
 plot = (
     plot
     + scale_fill_manual(values=lithology_colors, name="Lithology", limits=lithology_order)
     + scale_y_reverse()
-    + scale_x_continuous(limits=[-0.35, 1.65])
     + labs(title="column-stratigraphic \u00b7 letsplot \u00b7 pyplots.ai", y="Depth (m)", x="")
-    + theme_minimal()
+    + scale_x_continuous(limits=[-0.35, 1.65])
+    + flavor_high_contrast_light()
     + theme(
         plot_title=element_text(size=24, face="bold", color="#1A1A1A"),
         axis_title_y=element_text(size=20, color="#333333"),

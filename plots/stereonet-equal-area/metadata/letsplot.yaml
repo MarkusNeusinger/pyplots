@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: stereonet-equal-area
 created: '2026-03-15T23:03:21Z'
-updated: '2026-03-15T23:07:49Z'
+updated: '2026-03-15T23:19:07Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23121189167
 issue: 4576
@@ -10,82 +10,83 @@ library_version: 4.9.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/stereonet-equal-area/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/stereonet-equal-area/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/stereonet-equal-area/letsplot/plot.html
-quality_score: 79
+quality_score: 84
 review:
   strengths:
-  - Mathematically correct equal-area projection with proper Lambert azimuthal formulas
-  - 'All spec requirements implemented: great circles, poles, density contours, tick
-    marks, cardinal labels, legend'
-  - Clean colorblind-safe palette with intentional visual layering
-  - Realistic geological data with meaningful feature type clusters
-  - Good visual refinement with removed axes and custom stereonet chrome
+  - Mathematically correct Lambert azimuthal equal-area projection implemented from
+    scratch
+  - Excellent data quality with four realistic geological feature types at distinct
+    orientations
+  - 'Good visual hierarchy: great circles (faint) to poles (visible) to mean poles
+    (emphasized diamonds)'
+  - Density contours via geom_density2d effectively highlight clustering
+  - Mean pole annotations with circular-mean strike/dip values add geological context
+  - Interactive tooltips via layer_tooltips showing strike/dip per pole
   weaknesses:
-  - Manual marching squares contour extraction is overly verbose and complex (~45
-    lines)
-  - No lets-plot distinctive features used — the library is only used for final rendering
-  - Great circle visual clutter in the southern hemisphere where many arcs converge
-  - No visual emphasis or annotation to guide the viewer to key structural relationships
-  image_description: 'The plot shows a Schmidt equal-area (lower-hemisphere) stereonet
-    projection rendered as a square image. A black primitive circle forms the boundary
-    with tick marks every 10° around the perimeter (longer ticks at 30° intervals).
-    Bold cardinal direction labels (N, E, S, W) are positioned outside the circle.
-    Dashed light-gray reference cross lines mark the N-S and E-W axes. Three feature
-    types are color-coded: Bedding (steel blue), Joint (pink), and Fault (amber/orange).
-    Great circles are drawn as thin, semi-transparent arcs for each measurement plane.
-    Poles to planes appear as colored dots clustered in distinct regions — Bedding
-    poles cluster in the center-south area, Joint poles spread along the eastern edge,
-    and Fault poles cluster in the southwest. Gray concentric contour segments (Kamb-style
-    density) are visible around the main pole clusters. The legend is positioned to
-    the right showing "Feature Type" with three entries. The title reads "stereonet-equal-area
-    · letsplot · pyplots.ai" at top center.'
+  - Great circle arcs extend beyond the primitive circle boundary (need clipping to
+    unit circle)
+  - Mean pole annotation labels (size 11) are small and overlap with nearby data points
+  - Legend placement offsets the stereonet from visual center
+  image_description: 'The plot displays a Schmidt equal-area (lower-hemisphere) stereonet
+    projection on a white/light gray circular canvas. The primitive circle is drawn
+    as a thick black outline with tick marks every 10 degrees (longer every 30 degrees)
+    around the perimeter. Cardinal directions N, E, S, W are labeled in bold black
+    text outside the circle. Dashed light gray reference cross-lines mark the N-S
+    and E-W axes. Four feature types are plotted: Bedding (blue), Joint (pink), Fault
+    (amber), and Foliation (green). Great circles are drawn as thin colored arcs at
+    low opacity. Poles to planes appear as colored dots clustered in distinct groups.
+    Gray density contours overlay the pole data highlighting preferred orientations.
+    Dark diamond markers with italic labels show mean pole positions with circular-mean
+    strike/dip values (Bedding 43/33, Joint 356/78, Fault 151/55, Foliation 268/28).
+    A legend titled Feature Type appears on the right side. The title stereonet-equal-area
+    letsplot pyplots.ai is centered at the top.'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 25
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title=24, legend=18/16, cardinal=18
-          bold). All readable at 3600x3600.
+        comment: Font sizes explicitly set (title 24, legend 18/16, cardinal 18).
+          Mean pole labels at size 11 are small.
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: No text overlap. Great circles create visual clutter in southern
-          region but inherent to stereonets.
+        comment: Minor overlap between mean pole labels and nearby data points.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Poles clearly visible (size=5, alpha=0.85). Great circles intentionally
-          subtle. Contours faint but visible.
+        comment: Poles well-sized. Great circles subtle at alpha 0.3. Some arcs extend
+          beyond primitive circle.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Colorblind-safe palette (blue, pink, orange) with good contrast.
+        comment: Excellent colorblind-safe palette with good contrast.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Well-centered stereonet, ~55% canvas utilization. Some wasted space
-          in corners.
+        comment: Square aspect ratio appropriate. Legend offsets stereonet slightly
+          from center.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Axes correctly hidden. Cardinal directions labeled. Title in correct
-          format.
+        comment: Title correctly formatted. Cardinal directions serve as orientation
+          labels.
     design_excellence:
-      score: 12
+      score: 13
       max: 20
       items:
       - id: DE-01
@@ -93,22 +94,22 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Custom palette, intentional layering, subtle alpha. Above defaults
-          but not publication-level.
+        comment: Custom palette, intentional hierarchy, subtle background. Above defaults
+          but not publication-quality.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: All axes/grid removed. Custom tick marks. Dashed reference lines.
-          Good whitespace.
+        comment: All axes/grid removed, manual stereonet elements, subtle reference
+          lines. Good refinement.
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Three distinct clusters visible. Density contours help. No annotation
-          or emphasis on key relationships.
+        comment: Mean pole annotations and density contours guide the viewer. Visual
+          hierarchy creates reading order.
     spec_compliance:
       score: 15
       max: 15
@@ -118,59 +119,58 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct Schmidt equal-area lower-hemisphere projection.
+        comment: Correct Schmidt equal-area lower-hemisphere stereonet.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: great circles, poles, density contours, tick
-          marks, cardinal labels, legend.'
+        comment: 'All spec features present: great circles, poles, density contours,
+          ticks, color-coding, legend.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Strike/dip correctly converted to Lambert azimuthal equal-area coordinates.
+        comment: Strike/dip correctly mapped through equal-area projection.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend labels match data.
+        comment: Title format correct. Legend Feature Type with matching labels.
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Three feature types with distinct orientations. Good variety but
-          a fourth type would show more range.
+        comment: Four distinct structural feature types with different orientations.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Realistic structural geology field measurements with plausible values.
+        comment: Realistic structural geology field campaign data.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Strike 0-360, dip 5-89, realistic cluster spreads.
+        comment: 70 measurements within 30-200 range, proper strike/dip values.
     code_quality:
-      score: 8
+      score: 10
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Linear flow but manual marching squares and KDE make code very verbose.
+        comment: Flat script structure.
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -182,48 +182,48 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: All imports used, specific imports.
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Manual marching squares is overly complex. Could use scipy for KDE/contouring.
+        passed: true
+        comment: Well-structured, clear naming, no fake UI.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via ggsave with scale=3.
+        comment: ggsave to plot.png with scale=3.
     library_mastery:
-      score: 4
+      score: 6
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Uses ggplot grammar correctly with layers, aes, scales, themes. Most
-          computation is manual numpy.
+        comment: Good ggplot grammar, layer_tooltips, coord_fixed, theme customization.
       - id: LM-02
         name: Distinctive Features
-        score: 1
+        score: 2
         max: 5
         passed: false
-        comment: Generic usage. No lets-plot specific features leveraged.
+        comment: Uses layer_tooltips and geom_density2d but mostly manual geometry
+          construction.
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - layer-composition
-  - polar-projection
-  - manual-ticks
   - annotations
+  - hover-tooltips
+  - html-export
+  - polar-projection
   patterns:
   - data-generation
   - iteration-over-groups
-  - matrix-construction
   dataprep:
   - kde
   styling:

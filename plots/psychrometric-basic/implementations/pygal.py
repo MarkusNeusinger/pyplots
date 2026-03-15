@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 psychrometric-basic: Psychrometric Chart for HVAC
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 77/100 | Created: 2026-03-15

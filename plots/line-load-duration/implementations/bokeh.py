@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-load-duration: Load Duration Curve for Energy Systems
 Library: bokeh 3.9.0 | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-15
@@ -6,7 +6,7 @@ Quality: 85/100 | Created: 2026-03-15
 
 import numpy as np
 from bokeh.io import export_png, save
-from bokeh.models import ColumnDataSource, Label, Legend, Span
+from bokeh.models import ColumnDataSource, Label, Legend, NumeralTickFormatter, Span
 from bokeh.plotting import figure
 from bokeh.resources import CDN
 
@@ -48,6 +48,12 @@ intermediate_end = np.searchsorted(-load_mw, -base_capacity)
 # Total energy consumption (area under curve)
 total_energy_gwh = np.trapezoid(load_mw) / 1000
 
+# Colorblind-safe palette: Python Blue, Teal, Amber (distinct in luminance and hue)
+color_peak = "#D4A017"
+color_inter = "#2AA198"
+color_base = "#306998"
+color_curve = "#1A3A5C"
+
 # Plot
 p = figure(
     width=4800,
@@ -56,15 +62,18 @@ p = figure(
     x_axis_label="Hours of the Year",
     y_axis_label="Power Demand (MW)",
     x_range=(-100, hours_in_year + 100),
-    y_range=(0, peak_load * 1.12),
+    y_range=(0, peak_load * 1.15),
 )
+
+# Hide toolbar for clean PNG output
+p.toolbar_location = None
 
 # Shaded regions under the curve
 # Peak region (0 to peak_end)
 peak_source = ColumnDataSource(
     data={"x": hour[: peak_end + 1], "y": load_mw[: peak_end + 1], "zero": np.full(peak_end + 1, 0)}
 )
-r_peak = p.varea(x="x", y1="zero", y2="y", source=peak_source, fill_color="#E74C3C", fill_alpha=0.3)
+r_peak = p.varea(x="x", y1="zero", y2="y", source=peak_source, fill_color=color_peak, fill_alpha=0.25)
 
 # Intermediate region (peak_end to intermediate_end)
 inter_source = ColumnDataSource(
@@ -74,7 +83,7 @@ inter_source = ColumnDataSource(
         "zero": np.full(intermediate_end - peak_end + 1, 0),
     }
 )
-r_inter = p.varea(x="x", y1="zero", y2="y", source=inter_source, fill_color="#F39C12", fill_alpha=0.3)
+r_inter = p.varea(x="x", y1="zero", y2="y", source=inter_source, fill_color=color_inter, fill_alpha=0.25)
 
 # Base region (intermediate_end to end)
 base_source = ColumnDataSource(
@@ -84,45 +93,48 @@ base_source = ColumnDataSource(
         "zero": np.full(hours_in_year - intermediate_end, 0),
     }
 )
-r_base = p.varea(x="x", y1="zero", y2="y", source=base_source, fill_color="#306998", fill_alpha=0.3)
+r_base = p.varea(x="x", y1="zero", y2="y", source=base_source, fill_color=color_base, fill_alpha=0.25)
 
-# Main load duration curve
+# Main load duration curve - prominent dark line
 curve_source = ColumnDataSource(data={"x": hour, "y": load_mw})
-p.line(x="x", y="y", source=curve_source, line_width=3.5, color="#306998")
+p.line(x="x", y="y", source=curve_source, line_width=4.5, color=color_curve)
 
 # Horizontal dashed lines for capacity tiers
-peak_span = Span(location=peak_load, dimension="width", line_color="#E74C3C", line_dash="dashed", line_width=2.5)
+peak_span = Span(location=peak_load, dimension="width", line_color=color_peak, line_dash="dashed", line_width=2.5)
 inter_span = Span(
-    location=intermediate_capacity, dimension="width", line_color="#F39C12", line_dash="dashed", line_width=2.5
+    location=intermediate_capacity, dimension="width", line_color=color_inter, line_dash="dashed", line_width=2.5
 )
-base_span = Span(location=base_capacity, dimension="width", line_color="#306998", line_dash="dashed", line_width=2.5)
+base_span = Span(location=base_capacity, dimension="width", line_color=color_base, line_dash="dashed", line_width=2.5)
 p.add_layout(peak_span)
 p.add_layout(inter_span)
 p.add_layout(base_span)
 
-# Capacity tier labels
+# Capacity tier labels (positioned with padding from right edge)
 peak_label = Label(
-    x=hours_in_year - 400,
-    y=peak_load + 15,
-    text=f"Peak Capacity: {peak_load} MW",
+    x=hours_in_year - 200,
+    y=peak_load + 20,
+    text=f"Peak Capacity: {peak_load:,} MW",
     text_font_size="20pt",
-    text_color="#E74C3C",
+    text_color=color_peak,
+    text_font_style="bold",
     text_align="right",
 )
 inter_label = Label(
-    x=hours_in_year - 400,
-    y=intermediate_capacity + 15,
+    x=hours_in_year - 200,
+    y=intermediate_capacity + 20,
     text=f"Intermediate Capacity: {intermediate_capacity} MW",
     text_font_size="20pt",
-    text_color="#F39C12",
+    text_color=color_inter,
+    text_font_style="bold",
     text_align="right",
 )
 base_label = Label(
-    x=hours_in_year - 400,
-    y=base_capacity + 15,
+    x=hours_in_year - 200,
+    y=base_capacity + 20,
     text=f"Base Load Capacity: {base_capacity} MW",
     text_font_size="20pt",
-    text_color="#306998",
+    text_color=color_base,
+    text_font_style="bold",
     text_align="right",
 )
 p.add_layout(peak_label)
@@ -134,8 +146,8 @@ peak_region_label = Label(
     x=peak_end // 2,
     y=load_mw[0] * 0.55,
     text="Peak\nLoad",
-    text_font_size="22pt",
-    text_color="#E74C3C",
+    text_font_size="24pt",
+    text_color="#8B6914",
     text_font_style="bold",
     text_align="center",
 )
@@ -143,8 +155,8 @@ inter_region_label = Label(
     x=(peak_end + intermediate_end) // 2,
     y=load_mw[0] * 0.40,
     text="Intermediate\nLoad",
-    text_font_size="22pt",
-    text_color="#F39C12",
+    text_font_size="24pt",
+    text_color="#1B7A72",
     text_font_style="bold",
     text_align="center",
 )
@@ -152,8 +164,8 @@ base_region_label = Label(
     x=(intermediate_end + hours_in_year) // 2,
     y=load_mw[0] * 0.25,
     text="Base\nLoad",
-    text_font_size="22pt",
-    text_color="#306998",
+    text_font_size="24pt",
+    text_color="#1E4670",
     text_font_style="bold",
     text_align="center",
 )
@@ -164,9 +176,9 @@ p.add_layout(base_region_label)
 # Total energy annotation
 energy_label = Label(
     x=hours_in_year // 2,
-    y=peak_load * 0.95,
+    y=peak_load * 1.0,
     text=f"Total Energy: {total_energy_gwh:,.0f} GWh/year",
-    text_font_size="22pt",
+    text_font_size="24pt",
     text_color="#333333",
     text_font_style="bold",
     text_align="center",
@@ -182,29 +194,43 @@ legend.glyph_height = 35
 legend.glyph_width = 35
 legend.spacing = 12
 legend.padding = 15
-legend.background_fill_alpha = 0.85
-legend.border_line_color = "#cccccc"
+legend.background_fill_alpha = 0.9
+legend.border_line_color = None
 p.add_layout(legend, "right")
 
 # Style
 p.title.text_font_size = "36pt"
 p.title.text_font_style = "normal"
+p.title.text_color = "#2C3E50"
 p.xaxis.axis_label_text_font_size = "24pt"
 p.yaxis.axis_label_text_font_size = "24pt"
+p.xaxis.axis_label_text_color = "#444444"
+p.yaxis.axis_label_text_color = "#444444"
 p.xaxis.major_label_text_font_size = "18pt"
 p.yaxis.major_label_text_font_size = "18pt"
+p.xaxis.major_label_text_color = "#555555"
+p.yaxis.major_label_text_color = "#555555"
 
-# Remove top and right spines
+# Format tick labels for readability
+p.xaxis.formatter = NumeralTickFormatter(format="0,0")
+p.yaxis.formatter = NumeralTickFormatter(format="0,0")
+
+# Remove spines and ticks for clean look
 p.outline_line_color = None
 p.xaxis.minor_tick_line_color = None
 p.yaxis.minor_tick_line_color = None
+p.xaxis.major_tick_line_color = "#CCCCCC"
+p.yaxis.major_tick_line_color = "#CCCCCC"
+p.xaxis.axis_line_color = "#AAAAAA"
+p.yaxis.axis_line_color = "#AAAAAA"
 
-# Grid
-p.xgrid.grid_line_alpha = 0.2
-p.ygrid.grid_line_alpha = 0.2
+# Grid - y-axis only for line chart, subtle
+p.xgrid.grid_line_color = None
+p.ygrid.grid_line_alpha = 0.18
+p.ygrid.grid_line_color = "#888888"
 
 # Background
-p.background_fill_color = "#fafafa"
+p.background_fill_color = "#FFFFFF"
 p.border_fill_color = "white"
 
 # Save

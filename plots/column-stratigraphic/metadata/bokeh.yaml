@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: column-stratigraphic
 created: '2026-03-15T22:55:12Z'
-updated: '2026-03-15T22:58:41Z'
+updated: '2026-03-15T23:07:08Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23121198781
 issue: 4573
@@ -10,33 +10,36 @@ library_version: 3.9.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/column-stratigraphic/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/column-stratigraphic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/column-stratigraphic/bokeh/plot.html
-quality_score: 83
+quality_score: 85
 review:
   strengths:
-  - Full spec compliance with all required features (lithology patterns, formation
-    labels, age brackets, depth scale)
-  - Thoughtful earth-tone color palette matching the geological domain
-  - Interactive hover tooltips providing rich layer information
-  - Clean well-structured code with elegant age-grouping logic
-  - Good visual refinement (hidden x-axis, subtle grid, removed outline)
+  - K-Pg boundary annotation with red dashed line adds geological storytelling and
+    visual interest
+  - Earth-tone color palette with matching hatch patterns is contextually appropriate
+    for geological data
+  - 'Good use of Bokeh-specific features: HoverTool with rich tooltips, hatch patterns,
+    dual HTML+PNG export'
+  - Age brackets on the left side provide clear temporal organization
+  - Perfect spec compliance with all required features implemented
   weaknesses:
-  - Poor horizontal canvas utilization with legend isolated in far corner
-  - No visual emphasis on key geological transitions like the K-Pg boundary
-  - Sandstone and Siltstone colors are somewhat similar for colorblind viewers
-  - Layer thicknesses are fairly uniform reducing visual variety
-  image_description: 'The plot displays a vertical stratigraphic column spanning 0–200m
-    depth (increasing downward). Ten geological layers are stacked as rectangular
-    blocks, each filled with a distinct color and hatch pattern: Sandstone (wheat/tan
-    with dots), Shale (gray with horizontal dashes), Limestone (sky blue with crosses),
-    Siltstone (brown-gray with diagonal lines), and Conglomerate (dark orange with
-    circles). Formation names (Dakota Fm, Mancos Fm, Niobrara Fm, Pierre Fm, Fox Hills
-    Fm, Dawson Fm, Green River Fm, Leadville Fm, Wasatch Fm, Uinta Fm) are labeled
-    to the right of each layer. Age labels (Late Cretaceous, Paleocene, Eocene) appear
-    on the left with bracket lines spanning their respective intervals. The y-axis
-    shows "Depth (m)" with tick marks at 0, 50, 100, 150, 200. The title reads "column-stratigraphic
-    · bokeh · pyplots.ai" in the top left. A "Lithology" legend is in the bottom-right
-    corner showing all five rock types. The x-axis is hidden. Subtle dashed horizontal
-    grid lines are visible.'
+  - 'Canvas utilization is poor: significant empty space between formation labels
+    and legend; column occupies only ~35% of width'
+  - Legend is isolated in the far top-right, disconnected from the data
+  - 'Color accessibility could improve: sandstone/siltstone distinction is subtle
+    for colorblind users'
+  image_description: 'The plot displays a vertical stratigraphic column showing 10
+    geological layers from 0m to 200m depth (increasing downward). Each layer is rendered
+    as a rectangular block with a distinct fill color and hatch pattern: sandstone
+    in wheat with dot pattern, shale in gray with horizontal dashes, limestone in
+    light blue with cross-hatch, siltstone in dark brown with diagonal lines, and
+    conglomerate in orange with circle pattern. Formation names (Dakota Fm, Mancos
+    Fm, Niobrara Fm, Pierre Fm, Fox Hills Fm, Dawson Fm, Green River Fm, Leadville
+    Fm, Wasatch Fm, Uinta Fm) are labeled to the right of the column. Age labels (Late
+    Cretaceous, Paleocene, Eocene) appear on the left with bracket lines grouping
+    the relevant layers. A red dashed horizontal line marks the K-Pg Boundary (~66
+    Ma) at 88m depth. The y-axis shows "Depth (m)" and a lithology legend titled "Lithology"
+    is in the top-right corner. Title reads "column-stratigraphic · bokeh · pyplots.ai".
+    Background is off-white (#FAFAFA).'
   criteria_checklist:
     visual_quality:
       score: 26
@@ -47,42 +50,43 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 36pt, axis 28pt, ticks 22pt,
-          labels 18pt, legend 20pt). Legend in far corner appears small.
+        comment: All font sizes explicitly set (36pt title, 28pt axis label, 22pt
+          ticks, 18pt labels, 20pt legend). K-Pg boundary label at 16pt slightly small.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text. All labels well-separated.
+        comment: No overlapping text elements; all labels clearly separated.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: All layers clearly visible with distinct colors and hatch patterns.
+        comment: All layer rectangles clearly visible with distinct colors and hatch
+          patterns.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Earth-tone palette differentiates well but Sandstone/Siltstone similarity
-          may challenge colorblind viewers.
+        comment: Five distinct colors generally distinguishable but sandstone/siltstone
+          may be hard for colorblind users.
       - id: VQ-05
         name: Layout & Canvas
         score: 2
         max: 4
-        passed: false
-        comment: Significant wasted horizontal space. Legend isolated in far bottom-right
-          corner.
+        passed: true
+        comment: Column occupies ~35% of canvas width; significant empty space; legend
+          isolated in far top-right.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Y-axis 'Depth (m)' with units. X-axis appropriately hidden.
+        comment: Y-axis labeled Depth (m) with units; x-axis correctly hidden.
     design_excellence:
-      score: 12
+      score: 13
       max: 20
       items:
       - id: DE-01
@@ -90,21 +94,22 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Thoughtful earth-tone palette, hatch patterns, age brackets. Above
-          defaults but not publication-level.
+        comment: Thoughtful earth-tone palette matching geological context. Custom
+          hatch patterns. Above defaults but not publication-quality.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: X-axis hidden, outline removed, subtle dashed grid, minor ticks removed.
+        comment: 'X-grid removed, y-grid subtle (alpha=0.15, dashed), outline removed,
+          background #FAFAFA.'
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: Age brackets create narrative but no emphasis on key transitions
-          like K-Pg boundary.
+        passed: true
+        comment: K-Pg boundary creates geological narrative. Age brackets organize
+          temporal progression.
     spec_compliance:
       score: 15
       max: 15
@@ -114,26 +119,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct vertical stratigraphic column with stacked rectangular blocks.
+        comment: Correct vertical stratigraphic column with stacked rectangular layers.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All required features present: 5 lithology patterns, formation labels,
-          age labels, depth scale.'
+        comment: 'All spec features present: lithology patterns, formation names,
+          age labels, depth scale, layer boundaries.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Depth correctly mapped 0-200m increasing downward.
+        comment: Y-axis represents depth correctly, layers at correct intervals.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format. Legend shows all 5 lithology types.
+        comment: Title follows exact format. Legend titled Lithology with correct
+          labels.
     data_quality:
       score: 13
       max: 15
@@ -143,22 +149,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: 5 lithology types, 10 layers, 3 geological periods. Thicknesses fairly
-          uniform.
+        comment: Shows 5 lithology types, varying thicknesses, three geological periods,
+          K-Pg boundary event.
       - id: DQ-02
         name: Realistic Context
         score: 4
         max: 5
         passed: true
-        comment: Real formation names from Western Interior context. Some stratigraphic
-          ordering liberties.
+        comment: Real formation names from Western Interior. Some stratigraphic ordering
+          geologically questionable.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 0-200m depth range and 15-25m thicknesses realistic for borehole
-          section.
+        comment: Depths 0-200m realistic for borehole/outcrop. Layer thicknesses geologically
+          plausible.
     code_quality:
       score: 10
       max: 10
@@ -168,13 +174,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear flow, no functions or classes.
+        comment: 'Clean linear flow: imports, data, plot, styling, save.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: All data hardcoded and deterministic.
+        comment: Fully deterministic with hardcoded data.
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -186,15 +192,15 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Clean, well-structured with elegant age-grouping logic.
+        comment: Appropriate use of loops and dictionary-based style mapping.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png via export_png. Current API.
+        comment: Saves as plot.png via export_png and plot.html. Current Bokeh API.
     library_mastery:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: LM-01
@@ -202,26 +208,26 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of ColumnDataSource, rect glyphs, Label, Legend/LegendItem,
-          HoverTool.
+        comment: Good use of ColumnDataSource, figure().rect(), Label/Legend/Span
+          models.
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: 'Bokeh-specific: HoverTool with formatted tooltips, hatch patterns,
-          dual HTML+PNG export.'
+        comment: HoverTool with rich tooltips, hatch_pattern, dual HTML+PNG export
+          are distinctive Bokeh features.
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
-  - hover-tooltips
   - annotations
+  - hover-tooltips
   - custom-legend
   - html-export
   patterns:
-  - columndatasource
   - iteration-over-groups
+  - columndatasource
   dataprep: []
   styling:
   - grid-styling

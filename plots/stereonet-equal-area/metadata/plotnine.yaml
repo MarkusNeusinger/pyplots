@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: stereonet-equal-area
 created: '2026-03-15T22:58:28Z'
-updated: '2026-03-15T23:02:46Z'
+updated: '2026-03-15T23:09:34Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23121188785
 issue: 4576
@@ -10,74 +10,76 @@ library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/stereonet-equal-area/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/stereonet-equal-area/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 82
+quality_score: 79
 review:
   strengths:
-  - Mathematically correct equal-area (Schmidt net) projection implementation
-  - Clean, minimal design with all unnecessary chrome removed
-  - Excellent data quality with realistic geological measurements
-  - Well-layered visualization combining poles, great circles, and density contours
-  - Good use of plotnine grammar of graphics for layer composition
+  - Mathematically correct equal-area projection with proper pole and great circle
+    computations
+  - Excellent data quality with realistic geological measurements and three well-separated
+    feature types
+  - Clean visual design with all unnecessary chrome removed and colorblind-safe palette
+    with shape redundancy
+  - Kamb-style density contours properly computed and displayed
   weaknesses:
-  - Red-green color combination not ideal for colorblind accessibility
-  - Density contours are quite subtle and could be more prominent
-  - No degree labels around the perimeter (only tick marks)
-  - Library mastery limited - plotnine used primarily as a rendering layer
+  - Missing stereonet grid lines (equal-area net) required by spec
+  - Degree labels (30deg, 60deg, etc.) are too small at size=10 and nearly invisible
+  - Great circle computation is verbose — could be more concise
+  - No distinctive plotnine features used beyond basic grammar of graphics
   image_description: 'The plot shows a Schmidt equal-area (lower-hemisphere) stereonet
-    projection on a clean white background. A dark primitive circle forms the outer
-    boundary with small tick marks every 10 degrees around the perimeter. Cardinal
-    directions (N, E, S, W) are labeled in bold outside the circle. Three geological
-    feature types are plotted: Bedding (steel blue), Fault (salmon red), and Joint
-    (green). Poles to planes are shown as colored dots — bedding poles cluster in
-    the south-center, fault poles in the southwest, and joint poles in the north-northeast.
-    Representative great circles are drawn as curved lines for each feature type.
-    Gray dashed density contours (Kamb-style) surround each pole cluster, highlighting
-    preferred orientations. A legend on the right identifies the three feature types.
-    The title reads "stereonet-equal-area · plotnine · pyplots.ai".'
+    projection with a bold primitive circle and tick marks every 10 degrees around
+    the perimeter. Cardinal directions (N, E, S, W) are labeled in bold at the four
+    poles. Three geological feature types are plotted: Bedding (blue circles), Fault
+    (pink/salmon diamonds), and Joint (green squares). Poles to planes are shown as
+    colored scatter points clustered in three distinct groups — Joints cluster in
+    the NNE quadrant, Bedding poles cluster in the SSE quadrant, and Fault poles cluster
+    in the WSW quadrant. Great circles (curved lines) are drawn for representative
+    planes of each type, color-coded to match. Dashed gray contour lines (Kamb-style
+    density) surround the pole clusters. Degree labels at 30-degree intervals are
+    present but very faint. The legend (Feature Type) is positioned to the right outside
+    the circle. The title reads stereonet-equal-area · plotnine · pyplots.ai at the
+    top.'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 25
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 24pt, legend 14/16pt, direction
-          labels 16pt). Clearly readable.
+        comment: Title and cardinal labels clear; degree labels at size=10 too small
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: No text overlaps. Some inherent pole cluster overlap from data density.
+        comment: No overlapping text or data elements
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Good marker size and alpha for ~100 points. Contours could be slightly
-          more prominent.
+        comment: Poles well-sized, great circles visible, contours could be more prominent
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Blue/red/green palette - red and green could be problematic for deuteranopia.
+        comment: Colorblind-safe palette with shape redundancy; fault color renders
+          pinkish
       - id: VQ-05
         name: Layout & Canvas
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: 12x12 square figure, stereonet fills canvas well, nothing cut off.
+        comment: Good canvas utilization; some empty space below circle
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Title follows spec format. Axis labels appropriately removed for
-          stereonet.
+        comment: Axes correctly hidden; cardinal directions serve as labels
     design_excellence:
       score: 12
       max: 20
@@ -87,20 +89,20 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Custom palette, clean minimal design. Above defaults but not publication-ready.
+        comment: Custom palette, clean chrome removal, above defaults but not exceptional
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: All chrome removed, subtle dashed contours with alpha, clean background.
+        comment: All panel elements removed, subtle dashed contours, clean background
       - id: DE-03
         name: Data Storytelling
         score: 3
         max: 6
         passed: true
-        comment: Three distinct clusters clearly separated, density contours highlight
-          orientations.
+        comment: Clear spatial clustering visible; density contours help; no annotation
+          of clusters
     spec_compliance:
       score: 14
       max: 15
@@ -110,51 +112,50 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct Schmidt equal-area lower-hemisphere projection.
+        comment: Correct lower-hemisphere equal-area stereonet
       - id: SC-02
         name: Required Features
         score: 3
         max: 4
         passed: true
-        comment: Has great circles, poles, density contours, tick marks, color coding,
-          legend. Missing degree labels.
+        comment: Missing equal-area net grid lines
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Correct equal-area projection formula for poles and great circles.
+        comment: Strike/dip correctly projected
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, legend identifies all three feature types.
+        comment: Correct title format and legend labels
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Three feature types with different orientations and dips, great circles,
-          density contours.
+        comment: Three feature types with distinct orientations, great circles, poles,
+          and density contours
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Realistic geological measurements with plausible strike/dip values.
+        comment: Realistic geological field measurements
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 100 measurements total, all within valid ranges.
+        comment: Strike and dip values realistic for each feature type
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -162,57 +163,55 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear script with no functions or classes.
+        comment: Linear flow, no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
         passed: true
-        comment: Appropriate complexity, pragmatic contour extraction approach.
+        comment: Great circle loop verbose; matplotlib contour extraction adds complexity
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300.
+        comment: Saves as plot.png
     library_mastery:
-      score: 6
+      score: 4
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: Good grammar of graphics composition with multiple layers, scales,
-          and theme customization.
+        comment: Proper grammar of graphics with layered geoms and aes mappings
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 1
         max: 5
         passed: false
-        comment: Plotnine used primarily as rendering layer; heavy lifting done outside
-          the library.
+        comment: Generic usage; no distinctive plotnine features leveraged
   verdict: REJECTED
 impl_tags:
   dependencies:
   - scipy
   techniques:
+  - polar-projection
   - layer-composition
   - annotations
-  - polar-projection
   patterns:
   - data-generation
   - iteration-over-groups

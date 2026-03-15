@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 funnel-meta-analysis: Meta-Analysis Funnel Plot for Publication Bias
 Library: bokeh 3.9.0 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-15
@@ -36,6 +36,12 @@ marker_sizes = 22 + normalized_weights * 30  # range 22-52px
 # Color intensity by precision (more precise = darker)
 marker_alphas = 0.55 + normalized_weights * 0.40  # range 0.55-0.95
 
+# Determine which studies fall outside the funnel (potential outliers)
+expected_lower = summary_effect - 1.96 * std_errors
+expected_upper = summary_effect + 1.96 * std_errors
+outside_funnel = (effect_sizes < expected_lower) | (effect_sizes > expected_upper)
+marker_colors = np.where(outside_funnel, "#C05746", "#306998")
+
 # Funnel confidence limits
 se_range = np.linspace(0, 0.55, 100)
 upper_limit = summary_effect + 1.96 * se_range
@@ -53,6 +59,8 @@ source = ColumnDataSource(
         "weight": np.round(weights, 1),
         "marker_size": marker_sizes,
         "marker_alpha": marker_alphas,
+        "marker_color": marker_colors.tolist(),
+        "status": ["Outside funnel" if o else "Inside funnel" for o in outside_funnel],
     }
 )
 
@@ -63,7 +71,7 @@ p = figure(
     x_axis_label="Log Odds Ratio",
     y_axis_label="Standard Error",
     y_range=(0.60, -0.02),
-    x_range=(-0.8, 1.4),
+    x_range=(-0.85, 1.15),
     tools="",
     toolbar_location=None,
 )
@@ -97,7 +105,7 @@ scatter = p.scatter(
     source=source,
     size="marker_size",
     fill_alpha="marker_alpha",
-    fill_color="#306998",
+    fill_color="marker_color",
     line_color="white",
     line_width=2.5,
 )
@@ -110,6 +118,7 @@ hover = HoverTool(
         ("Effect Size", "@effect_size{0.3f}"),
         ("Std Error", "@std_error{0.3f}"),
         ("Weight", "@weight{0.1f}"),
+        ("Status", "@status"),
     ],
 )
 p.add_tools(hover)
@@ -145,12 +154,39 @@ p.add_layout(
 # Asymmetry annotation for storytelling
 p.add_layout(
     Label(
-        x=0.62,
+        x=0.55,
         y=0.42,
         text="← Asymmetry suggests publication bias",
         text_font_size="26pt",
         text_color="#C05746",
         text_font_style="bold",
+        text_align="left",
+        text_baseline="middle",
+    )
+)
+
+# Legend annotations for color coding
+n_outside = int(outside_funnel.sum())
+p.add_layout(
+    Label(
+        x=-0.78,
+        y=0.53,
+        text=f"● Inside funnel ({n_studies - n_outside} studies)",
+        text_font_size="20pt",
+        text_color="#306998",
+        text_font_style="normal",
+        text_align="left",
+        text_baseline="middle",
+    )
+)
+p.add_layout(
+    Label(
+        x=-0.78,
+        y=0.49,
+        text=f"● Outside funnel ({n_outside} studies)",
+        text_font_size="20pt",
+        text_color="#C05746",
+        text_font_style="normal",
         text_align="left",
         text_baseline="middle",
     )
@@ -164,8 +200,12 @@ p.yaxis.axis_label_text_font_size = "22pt"
 p.xaxis.major_label_text_font_size = "18pt"
 p.yaxis.major_label_text_font_size = "18pt"
 
-p.xaxis.axis_line_color = "#333333"
-p.yaxis.axis_line_color = "#333333"
+p.xaxis.axis_line_color = "#999999"
+p.yaxis.axis_line_color = "#999999"
+p.xaxis.axis_line_width = 1
+p.yaxis.axis_line_width = 1
+p.xaxis.major_tick_line_color = "#999999"
+p.yaxis.major_tick_line_color = "#999999"
 p.xgrid.grid_line_alpha = 0.15
 p.ygrid.grid_line_alpha = 0.15
 p.xgrid.grid_line_width = 1

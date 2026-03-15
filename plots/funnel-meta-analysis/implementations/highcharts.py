@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 funnel-meta-analysis: Meta-Analysis Funnel Plot for Publication Bias
 Library: highcharts unknown | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-15
@@ -70,7 +70,7 @@ chart.options.chart = {
     "height": 2700,
     "backgroundColor": "#fafbfc",
     "marginLeft": 200,
-    "marginRight": 150,
+    "marginRight": 100,
     "marginBottom": 200,
     "marginTop": 150,
     "style": {"fontFamily": "'Segoe UI', Arial, sans-serif"},
@@ -102,7 +102,7 @@ chart.options.x_axis = {
             "zIndex": 3,
             "label": {
                 "text": f"Pooled Effect ({pooled_effect:.2f})",
-                "style": {"fontSize": "24px", "color": "#306998", "fontWeight": "bold"},
+                "style": {"fontSize": "30px", "color": "#306998", "fontWeight": "bold"},
                 "rotation": 0,
                 "align": "left",
                 "verticalAlign": "top",
@@ -118,7 +118,7 @@ chart.options.x_axis = {
             "zIndex": 2,
             "label": {
                 "text": "Null Effect (0)",
-                "style": {"fontSize": "22px", "color": "#888888"},
+                "style": {"fontSize": "28px", "color": "#888888", "fontWeight": "bold"},
                 "rotation": 0,
                 "align": "right",
                 "verticalAlign": "top",
@@ -131,7 +131,7 @@ chart.options.x_axis = {
     "lineWidth": 2,
     "lineColor": "#cccccc",
     "min": -1.1,
-    "max": 0.5,
+    "max": 0.4,
     "tickInterval": 0.2,
 }
 
@@ -156,14 +156,25 @@ chart.options.y_axis = {
         {
             "from": 0,
             "to": 0.12,
-            "color": "rgba(48, 105, 152, 0.04)",
+            "color": "rgba(48, 105, 152, 0.07)",
             "label": {
                 "text": "High precision",
-                "style": {"fontSize": "20px", "color": "#99aabb"},
+                "style": {"fontSize": "28px", "color": "#7a9bb5", "fontWeight": "bold"},
                 "align": "right",
                 "x": -15,
             },
-        }
+        },
+        {
+            "from": 0.28,
+            "to": 0.40,
+            "color": "rgba(196, 119, 60, 0.05)",
+            "label": {
+                "text": "Low precision",
+                "style": {"fontSize": "28px", "color": "#c4976a", "fontWeight": "bold"},
+                "align": "right",
+                "x": -15,
+            },
+        },
     ],
 }
 
@@ -178,7 +189,7 @@ left_line_data = [[float(funnel_left[i]), float(se_values[i])] for i in range(le
 left_series = LineSeries()
 left_series.data = left_line_data
 left_series.name = "95% CI Left"
-left_series.color = "#7a9bb5"
+left_series.color = "#5a8aa8"
 left_series.line_width = 3
 left_series.dash_style = "ShortDash"
 left_series.enable_mouse_tracking = False
@@ -192,7 +203,7 @@ right_line_data = [[float(funnel_right[i]), float(se_values[i])] for i in range(
 right_series = LineSeries()
 right_series.data = right_line_data
 right_series.name = "95% CI Right"
-right_series.color = "#7a9bb5"
+right_series.color = "#5a8aa8"
 right_series.line_width = 3
 right_series.dash_style = "ShortDash"
 right_series.enable_mouse_tracking = False
@@ -202,23 +213,33 @@ chart.add_series(right_series)
 
 # Study points with marker size varying by inverse-variance weight
 weight_normalized = weights / weights.max()
-marker_radii = 10 + 18 * weight_normalized
+marker_radii = 14 + 16 * weight_normalized
 
-study_data = [
-    {
-        "x": float(effect_sizes[i]),
-        "y": float(std_errors[i]),
-        "marker": {
-            "radius": int(marker_radii[i]),
-            "lineWidth": 3,
-            "lineColor": "#ffffff",
-            "fillColor": "#306998",
-            "symbol": "circle",
-        },
-        "name": studies[i],
-    }
-    for i in range(len(studies))
-]
+# Color studies by precision: high-precision (low SE) in deep blue, low-precision in warm amber
+# This creates a meaningful visual gradient and tells the publication bias story
+se_normalized = (std_errors - std_errors.min()) / (std_errors.max() - std_errors.min())
+
+
+# Interpolate between deep blue (#306998) and warm amber (#c4773c)
+study_data = []
+for i in range(len(studies)):
+    t = float(se_normalized[i])
+    r, g, b = int(48 + t * 148), int(105 + t * 14), int(152 - t * 92)
+    fill_color = f"#{r:02x}{g:02x}{b:02x}"
+    study_data.append(
+        {
+            "x": float(effect_sizes[i]),
+            "y": float(std_errors[i]),
+            "marker": {
+                "radius": int(marker_radii[i]),
+                "lineWidth": 3,
+                "lineColor": "#ffffff",
+                "fillColor": fill_color,
+                "symbol": "circle",
+            },
+            "name": studies[i],
+        }
+    )
 
 study_series = ScatterSeries()
 study_series.data = study_data

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 stereonet-equal-area: Structural Geology Stereonet (Equal-Area Projection)
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-15
@@ -34,7 +34,7 @@ feature_types = ["Bedding"] * 20 + ["Joint Set 1"] * 15 + ["Joint Set 2"] * 12 +
 strikes = strikes % 360
 dips = np.clip(dips, 0, 90)
 
-type_colors = {"Bedding": "#306998", "Joint Set 1": "#E07B39", "Joint Set 2": "#4CAF50", "Fault": "#8E24AA"}
+type_colors = {"Bedding": "#306998", "Joint Set 1": "#E07B39", "Joint Set 2": "#00897B", "Fault": "#8E24AA"}
 
 # Equal-area (Schmidt) projection of poles to planes
 # Pole to plane: trend = dip direction = strike + 90°, plunge = 90° - dip
@@ -64,9 +64,10 @@ fig.add_trace(
         z=Z,
         colorscale=[
             [0, "rgba(255,255,255,0)"],
-            [0.3, "rgba(255,235,170,0.25)"],
-            [0.6, "rgba(255,180,80,0.35)"],
-            [1, "rgba(220,60,40,0.45)"],
+            [0.25, "rgba(255,235,170,0.4)"],
+            [0.5, "rgba(255,180,80,0.55)"],
+            [0.75, "rgba(230,100,50,0.65)"],
+            [1, "rgba(200,40,30,0.75)"],
         ],
         showscale=False,
         contours={"coloring": "fill", "showlines": True, "showlabels": False},
@@ -161,34 +162,39 @@ for idx in gc_indices:
             x=gc_proj_x.tolist(),
             y=gc_proj_y.tolist(),
             mode="lines",
-            line={"color": type_colors[feature_types[idx]], "width": 1.8},
-            opacity=0.45,
+            line={"color": type_colors[feature_types[idx]], "width": 2.2},
+            opacity=0.7,
+            legendgroup=feature_types[idx],
             showlegend=False,
             hoverinfo="skip",
         )
     )
 
-# Plot poles by feature type
+# Plot poles by feature type with Plotly customdata + hovertemplate
 for feat_type in ["Bedding", "Joint Set 1", "Joint Set 2", "Fault"]:
     mask = np.array([t == feat_type for t in feature_types])
-    hover_texts = [
-        f"<b>{feat_type}</b><br>Strike: {s:.0f}°<br>Dip: {d:.0f}°"
-        for s, d in zip(strikes[mask], dips[mask], strict=True)
-    ]
+    customdata = np.column_stack([strikes[mask], dips[mask], (strikes[mask] + 90) % 360])
     fig.add_trace(
         go.Scatter(
             x=pole_x[mask].tolist(),
             y=pole_y[mask].tolist(),
             mode="markers",
             name=feat_type,
+            legendgroup=feat_type,
             marker={
                 "size": 13,
                 "color": type_colors[feat_type],
                 "line": {"width": 1.5, "color": "white"},
                 "symbol": "circle",
             },
-            hovertext=hover_texts,
-            hoverinfo="text",
+            customdata=customdata,
+            hovertemplate=(
+                f"<b>{feat_type}</b><br>"
+                "Strike: %{customdata[0]:.0f}°<br>"
+                "Dip: %{customdata[1]:.0f}°<br>"
+                "Dip Direction: %{customdata[2]:.0f}°"
+                "<extra></extra>"
+            ),
         )
     )
 
@@ -218,8 +224,31 @@ for deg in range(0, 360, 30):
         yanchor="middle",
     )
 
+# Interactive buttons for density contour toggle (Plotly-specific feature)
+n_traces = len(fig.data)
+density_visible_on = [True] * n_traces
+density_visible_off = [True] * n_traces
+density_visible_off[0] = False  # First trace is the density contour
+
 # Style
 fig.update_layout(
+    updatemenus=[
+        {
+            "type": "buttons",
+            "direction": "left",
+            "buttons": [
+                {"label": "Show Density", "method": "update", "args": [{"visible": density_visible_on}]},
+                {"label": "Hide Density", "method": "update", "args": [{"visible": density_visible_off}]},
+            ],
+            "x": 0.01,
+            "y": -0.02,
+            "xanchor": "left",
+            "yanchor": "top",
+            "bgcolor": "rgba(255,255,255,0.9)",
+            "bordercolor": "rgba(0,0,0,0.2)",
+            "font": {"size": 14},
+        }
+    ],
     title={
         "text": "stereonet-equal-area · plotly · pyplots.ai<br><sup>Lower Hemisphere, Equal-Area (Schmidt) Projection</sup>",
         "font": {"size": 28},

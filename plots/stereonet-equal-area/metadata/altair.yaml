@@ -1,7 +1,7 @@
 library: altair
 specification_id: stereonet-equal-area
 created: '2026-03-15T23:00:08Z'
-updated: '2026-03-15T23:04:38Z'
+updated: '2026-03-15T23:15:13Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23121188868
 issue: 4576
@@ -10,36 +10,40 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/stereonet-equal-area/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/stereonet-equal-area/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/stereonet-equal-area/altair/plot.html
-quality_score: 78
+quality_score: 79
 review:
   strengths:
-  - Mathematically correct equal-area (Schmidt) projection implementation
-  - Clean code structure with well-organized data preparation
-  - Thoughtful visual design with custom colors, white marker strokes, and subtle
-    grid
-  - 'Complete feature set: great circles, poles, density, cardinal labels, tick marks'
-  - Interactive tooltips showing strike/dip values add value
+  - Correct equal-area (Schmidt) projection mathematics for both poles and great circles
+  - Well-layered composition with appropriate opacity hierarchy (density < grid <
+    great circles < poles)
+  - Custom color palette with white-stroke poles for visual distinction
+  - 'Comprehensive stereonet elements: primitive circle, tick marks, cardinal labels,
+    grid circles, cross lines'
+  - Interactive tooltips on poles showing strike/dip values (Altair-distinctive)
   weaknesses:
-  - 'Bedding and Joint colors (#306998 blue vs #2A9D8F teal) are too similar, reducing
-    distinguishability'
-  - Great circles at 0.35 opacity are very faint and hard to trace visually
-  - Density is shown as blocky rectangular bins rather than smooth contours
-  - No visual emphasis or annotations highlighting key geological patterns
+  - Density representation uses mark_rect heatmap grid instead of smooth Kamb contour
+    lines — creates a pixelated/blocky appearance
+  - No mean orientation annotations or summary statistics to guide viewer interpretation
+  - Library mastery is limited — Altair used primarily as a rendering engine for manually
+    computed geometry
+  - Joint color appears inconsistently between legend and plot
   image_description: 'The plot shows a lower-hemisphere equal-area (Schmidt) stereonet
-    projection inside a circular primitive circle with tick marks every 10 degrees.
-    Cardinal directions (N, E, S, W) are labeled in bold around the perimeter. Three
-    geological feature types are plotted: Bedding (dark blue, #306998), Fault (red/coral,
-    #C1432E), and Joint (teal, #2A9D8F). Poles to planes are shown as filled circles
-    with white stroke, and great circles are drawn as curved lines across the stereonet
-    at 0.35 opacity. A density heatmap using gray rectangular bins is visible in the
-    background highlighting pole concentration areas. Grid circles at 30 and 60 degree
-    dip and cross lines are rendered as subtle light gray lines. The title reads "stereonet-equal-area
-    · altair · pyplots.ai" with subtitle "Lower-Hemisphere Equal-Area (Schmidt) Projection".
-    A "Feature Type" legend is positioned in the upper right corner. The plot uses
-    a 1200x1200 square layout.'
+    projection rendered as a 1:1 square chart. A bold black primitive circle defines
+    the projection boundary, with tick marks every 10 degrees (longer ticks at 30-degree
+    intervals) and cardinal direction labels (N, E, S, W) in bold dark text. Three
+    geological feature types are plotted: Bedding (blue), Fault (red/coral), and Joint
+    (teal/gold). Poles to planes appear as filled circles with white stroke, clustered
+    in three distinct groups — Bedding poles in the center-left area, Fault poles
+    in the upper-right (NE quadrant), and Joint poles in the lower portion (S). Great
+    circles are drawn as semi-transparent colored lines for each measurement. A gray
+    rectangular heatmap grid approximates density contours within the primitive circle.
+    Subtle gray grid circles at 30 and 60 degree dip and N-S/E-W cross lines provide
+    reference. The title reads "stereonet-equal-area · altair · pyplots.ai" with subtitle
+    "Lower-Hemisphere Equal-Area (Schmidt) Projection". A legend in the top-right
+    shows Feature Type with colored symbols.'
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 25
       max: 30
       items:
       - id: VQ-01
@@ -48,39 +52,42 @@ review:
         max: 8
         passed: true
         comment: 'Font sizes explicitly set: title=28, subtitle=20, cardinal labels=24,
-          legend title=20, legend labels=18'
+          legend title=20, legend labels=18. All readable.'
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: Minor overlap among clustered pole data points, no text overlap
+        comment: Text elements well-separated. Some density grid rectangles create
+          minor visual clutter near poles.
       - id: VQ-03
         name: Element Visibility
-        score: 4
+        score: 5
         max: 6
-        passed: false
-        comment: Great circles at 0.35 opacity are very faint. Bedding and Joint colors
-          appear similar
+        passed: true
+        comment: Poles well-sized (180) with white stroke. Great circles at opacity=0.35
+          visible but not overwhelming.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
-        passed: false
-        comment: Bedding (#306998) and Joint (#2A9D8F) both blue-spectrum, hard to
-          distinguish
+        passed: true
+        comment: Blue/red/teal palette distinguishable for most colorblind types.
+          Red and teal could be difficult for some deuteranopia cases.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Square canvas appropriate for stereonet, legend slightly isolated
+        comment: Square 1200x1200 appropriate for stereonet. Circle fills canvas well.
+          Some empty space in corners inherent to circular projection.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Cardinal directions labeled, descriptive title and subtitle
+        comment: Axes hidden (appropriate for stereonet). Cardinal directions serve
+          as orientation labels.
     design_excellence:
       score: 12
       max: 20
@@ -90,21 +97,24 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Custom palette, white marker strokes, clean design above defaults
+        comment: Custom color palette, layered opacity hierarchy, white stroke on
+          poles. Above defaults but not publication-quality.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: View stroke removed, subtle grid, tick mark differentiation
+        comment: View stroke removed, subtle grid, differentiated tick lengths at
+          30-degree intervals.
       - id: DE-03
         name: Data Storytelling
         score: 3
         max: 6
-        passed: false
-        comment: Three clusters visible with density but no emphasis guiding the viewer
+        passed: true
+        comment: Three distinct clusters visible. Great circles + poles tell structural
+          geology story. No annotations guide interpretation.
     spec_compliance:
-      score: 13
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -112,25 +122,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct equal-area Schmidt lower-hemisphere projection
+        comment: Correct equal-area Schmidt net lower-hemisphere stereographic projection.
       - id: SC-02
         name: Required Features
         score: 3
         max: 4
-        passed: false
-        comment: Density shown as blocky rectangles rather than smooth Kamb contours
+        passed: true
+        comment: All features present except density shown as rect heatmap instead
+          of Kamb contour lines.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Strike/dip correctly converted to equal-area projection
+        comment: Strike/dip correctly projected using equal-area formulas.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format, legend labels match feature types
+        comment: Title format correct. Legend labels match data categories.
     data_quality:
       score: 14
       max: 15
@@ -140,21 +151,24 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Three feature types with different orientations and dip angles
+        comment: 'Three feature types with distinct orientations: Bedding (~35 dip),
+          Fault (~70 dip), Joint (~80 dip).'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Geological structural measurements, realistic and neutral
+        comment: Geological structural data with realistic feature types and plausible
+          orientations.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Realistic strike and dip values for geological structures
+        comment: Strike and dip values are realistic with natural-looking cluster
+          scatter.
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -162,31 +176,32 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, projection, layers, compose, save'
+        comment: 'Linear flow: imports, data, projection, layers, composition, save.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only altair, numpy, pandas imported and all used
+        comment: Only altair, numpy, pandas imported; all used.
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
         passed: true
-        comment: Well-structured, appropriate complexity for the projection math
+        comment: Verbose but appropriate for stereonet complexity. Density grid approach
+          is a workaround.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with scale_factor=3.0 and plot.html
+        comment: Saves as plot.png and plot.html. Current API.
     library_mastery:
       score: 5
       max: 10
@@ -195,22 +210,24 @@ review:
         name: Idiomatic Usage
         score: 3
         max: 5
-        passed: false
-        comment: Most computation is numpy-based; Altair serves primarily as renderer
+        passed: true
+        comment: Uses alt.layer(), proper encodings, mark_* functions. Most computation
+          is manual numpy.
       - id: LM-02
         name: Distinctive Features
         score: 2
         max: 5
-        passed: false
-        comment: Tooltips and HTML export used but no selections or parameters
+        passed: true
+        comment: Interactive tooltips on poles showing strike/dip. HTML export. Core
+          visualization doesn't leverage declarative grammar.
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
+  - polar-projection
   - layer-composition
   - hover-tooltips
   - html-export
-  - polar-projection
   - manual-ticks
   patterns:
   - data-generation

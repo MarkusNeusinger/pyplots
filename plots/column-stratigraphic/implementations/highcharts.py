@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 column-stratigraphic: Stratigraphic Column with Lithology Patterns
 Library: highcharts unknown | Python 3.14.3
-Quality: 83/100 | Created: 2026-03-15
+Quality: 90/100 | Created: 2026-03-15
 """
 
 import json

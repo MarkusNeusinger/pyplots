@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: column-stratigraphic
 created: '2026-03-15T23:06:41Z'
-updated: '2026-03-15T23:10:58Z'
+updated: '2026-03-15T23:25:09Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23121199001
 issue: 4573
@@ -10,108 +10,103 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/column-stratigraphic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/column-stratigraphic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/column-stratigraphic/highcharts/plot.html
-quality_score: 83
+quality_score: 90
 review:
   strengths:
-  - Excellent use of Highcharts pattern-fill module to create distinct geological
-    lithology patterns (dots, dashes, brick grid, circles)
-  - Real Colorado Plateau stratigraphy with correct formation names, ages, and stratigraphic
-    ordering
-  - Thoughtful design with subtle period background bands, dashed boundary lines,
-    and appropriate geological color palette
-  - Full spec compliance with all required features present
-  - Clean, well-structured deterministic code
+  - Excellent use of Highcharts pattern-fill module for geological lithology patterns
+    approximating USGS standards
+  - Realistic Colorado Plateau stratigraphy with actual formation names and correct
+    geological ages
+  - Thoughtful visual design with subtle period-colored bands, dashed boundary lines,
+    and professional typography
+  - Interactive tooltips showing formation name, lithology, depth range, and thickness
+  - Both PNG and interactive HTML outputs
   weaknesses:
-  - Column is too narrow relative to the canvas, leaving excessive empty space on
-    both sides (VQ-05)
-  - Formation name labels partially overlap with the column edge in several places
-    (VQ-02)
-  - Sandstone and conglomerate colors are similar warm tones, reducing quick visual
-    distinction (VQ-04)
-  - Does not use highcharts-core Python library as recommended (LM-01)
-  image_description: 'The plot shows a vertical stratigraphic column centered on a
-    white canvas. The column displays 10 geological layers from 0 to 200m depth (increasing
-    downward), each filled with a distinct lithology pattern: sandstone (wheat background
-    with brown dots), shale (gray with horizontal dashes), limestone (light blue with
-    brick-like grid), siltstone (tan with short horizontal dashes), and conglomerate
-    (golden-brown with circles). The title reads "column-stratigraphic · highcharts
-    · pyplots.ai" with a subtitle "Synthetic Sedimentary Section — Colorado Plateau
-    Stratigraphy". The y-axis is labeled "Depth (m)" with 20m tick intervals. Geological
-    period labels (Cretaceous, Jurassic, Triassic, Permian) appear rotated on the
-    left side within subtle colored background bands (green, blue, orange, purple
-    at very low opacity). Dashed horizontal lines mark period boundaries. Formation
-    names (Dakota Sandstone, Morrison Formation, etc.) are labeled to the right of
-    each layer. A vertical legend on the far right lists the 5 lithology types with
-    pattern swatches. The column itself is quite narrow relative to the total canvas
-    width, leaving significant empty space on both sides.'
+  - Layout could be more balanced — some wasted space between formation labels and
+    legend
+  - Raw JSON config bypasses highcharts-core Python API (though justified by pattern-fill
+    limitations)
+  image_description: 'The plot displays a vertical stratigraphic column showing 10
+    geological layers spanning 0–200m depth (increasing downward). Each layer is filled
+    with a distinct SVG pattern: sandstone layers (Dakota, Navajo, Coconino) use stipple
+    dots on a wheat-colored background; shale layers (Morrison, Chinle, Hermit) use
+    horizontal dashes on gray; limestone layers (Sundance, Kaibab) use a brick/grid
+    pattern on light blue; siltstone (Carmel) uses short dashes on tan; and conglomerate
+    (Kayenta) uses circles on purple. Formation names are labeled to the right of
+    the column. Geological period labels (Cretaceous, Jurassic, Triassic, Permian)
+    appear rotated vertically on the left, within very subtle colored background bands.
+    Dashed horizontal lines mark period boundaries at 18m, 100m, and 142m. The y-axis
+    shows "Depth (m)" with tick marks every 20m. A vertical legend titled "Lithology"
+    on the right lists all 5 rock types with pattern swatches. Title reads "column-stratigraphic
+    · highcharts · pyplots.ai" with subtitle "Synthetic Sedimentary Section — Colorado
+    Plateau Stratigraphy". Background is off-white (#FAFAF8).'
   criteria_checklist:
     visual_quality:
-      score: 23
+      score: 29
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: All font sizes explicitly set (56px title, 44px axis, 34px ticks,
-          30px labels). Formation labels slightly hard to read against patterned backgrounds.
+        comment: 'All font sizes explicitly set: title 52px, subtitle 34px, axis title
+          42px, tick labels 32px, formation labels 30px, legend 30px, age labels 30px'
       - id: VQ-02
         name: No Overlap
-        score: 4
+        score: 6
         max: 6
         passed: true
-        comment: Formation name labels partially overlap with column edge/pattern.
-          Bottom label nearly cut off.
+        comment: No overlapping text elements
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: All 5 lithology patterns visible and distinguishable. Column could
-          be wider.
+        comment: All layers clearly visible with distinct patterns and 2.5px borders
       - id: VQ-04
         name: Color Accessibility
+        score: 4
+        max: 4
+        passed: true
+        comment: Five distinct hues with pattern redundancy, no red-green reliance
+      - id: VQ-05
+        name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Colors reasonably distinguishable but sandstone and conglomerate
-          share similar warm tones.
-      - id: VQ-05
-        name: Layout & Canvas
-        score: 2
-        max: 4
-        passed: true
-        comment: Column is narrow relative to canvas. Data area uses ~20-25% of width.
+        comment: Column uses ~45% horizontal space, some wasted space between labels
+          and legend
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Depth (m) with units present.
+        comment: Y-axis labeled Depth (m) with units
     design_excellence:
-      score: 13
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom lithology patterns, geological color choices, subtle period
-          bands. Above defaults.
+        comment: Custom SVG lithology patterns, earthy palette, professional typography,
+          subtle period bands
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Subtle grid (8% opacity), plotBands, dashed plotLines, clean background.
+        comment: Subtle grid, hidden x-axis, dashed period boundaries, off-white background
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Clear geological narrative with age progression and period delineation.
+        comment: Clear geological narrative with period bands and boundaries creating
+          visual hierarchy
     spec_compliance:
       score: 15
       max: 15
@@ -121,26 +116,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct columnrange chart type for stacked layer blocks.
+        comment: Correct vertical column with stacked rectangular blocks and lithology
+          patterns
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: 5 patterns, depth downward, formation names,
-          age labels, depth scale, boundaries.'
+        comment: 'All spec features present: 5 patterns, formation labels, age labels,
+          depth scale, boundaries'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Top/bottom correctly mapped, y-axis reversed.
+        comment: Depth correctly mapped to reversed y-axis, all 10 layers visible
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend with Lithology heading and correct labels.
+        comment: Title matches required format, legend shows all 5 lithology types
     data_quality:
       score: 15
       max: 15
@@ -150,19 +146,20 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 10 layers, 5 lithology types, 4 geological periods, varying thicknesses.
+        comment: 5 lithologies, 10 layers, 4 geological periods, varying thicknesses
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real Colorado Plateau formations with correct geological ages.
+        comment: Real Colorado Plateau stratigraphy with actual formation names and
+          ages
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Depths 0-200m with realistic formation thicknesses.
+        comment: 0-200m depth range realistic for stratigraphic section
     code_quality:
       score: 10
       max: 10
@@ -172,31 +169,31 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear structure, no functions or classes.
+        comment: Linear flow with no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic data.
+        comment: Fully deterministic with hardcoded data
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, well-organized code with good use of comprehensions.
+        comment: Clean structure, list comprehensions, justified raw JSON approach
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html.
+        comment: Saves plot.png and plot.html
     library_mastery:
       score: 7
       max: 10
@@ -206,14 +203,15 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Raw JSON config instead of highcharts-core Python library.
+        comment: Uses Chart with container but bypasses Python API for raw JSON config
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: Pattern-fill module, plotBands, plotLines, columnrange, custom tooltips.
-  verdict: REJECTED
+        comment: Pattern-fill module, plotBands, plotLines, interactive tooltips,
+          HTML export
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - selenium
@@ -221,8 +219,8 @@ impl_tags:
   - annotations
   - html-export
   - custom-legend
+  - hover-tooltips
   patterns:
-  - data-generation
   - iteration-over-groups
   dataprep: []
   styling:

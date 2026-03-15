@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 pp-basic: Probability-Probability (P-P) Plot
 Library: plotly 6.6.0 | Python 3.14.3
+Quality: 91/100 | Created: 2026-03-15
 """
 
 import numpy as np

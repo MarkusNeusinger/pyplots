@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 stereonet-equal-area: Structural Geology Stereonet (Equal-Area Projection)
-Library: highcharts | Python 3.14.3
+Library: highcharts unknown | Python 3.14.3
+Quality: 84/100 | Created: 2026-03-15
 """
 
 import tempfile

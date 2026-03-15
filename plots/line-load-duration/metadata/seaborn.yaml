@@ -1,0 +1,233 @@
+library: seaborn
+specification_id: line-load-duration
+created: '2026-03-15T21:41:24Z'
+updated: '2026-03-15T22:05:56Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 23119898931
+issue: 4586
+python_version: 3.14.3
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-load-duration/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-load-duration/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 87
+review:
+  strengths:
+  - Excellent data quality with realistic energy systems context and plausible values
+  - All specification features fully implemented (regions, capacity lines, labels,
+    energy annotation)
+  - Good visual hierarchy and data storytelling through the three load regions
+  - Colorblind-accessible palette throughout
+  - Clean, well-structured code with proper reproducibility
+  weaknesses:
+  - Marginal density/KDE distributions appear as artifacts on the right edge from
+    seaborn hue-mapped lineplot, adding visual clutter and a stray Density label
+  - Legend shows a region header from seaborn auto-legend leaking through custom legend
+    setup
+  - Library mastery could be stronger — most visual elements rely on matplotlib rather
+    than seaborn-specific features
+  image_description: 'The plot shows a load duration curve with a monotonically decreasing
+    line from ~1,260 MW down to ~360 MW across 8,760 hours. Three shaded regions are
+    visible: Peak (orange, leftmost, above 850 MW), Intermediate (pink/purple, middle,
+    between 500-850 MW), and Base (light blue, rightmost/bottom, below 500 MW). Three
+    horizontal dashed capacity lines are drawn at 1,100 MW, 850 MW, and 500 MW with
+    corresponding labels. Bold region labels "PEAK", "INTERMEDIATE", and "BASE" are
+    placed within their respective shaded areas. A boxed annotation shows "Total Energy:
+    6,493 GWh/year" in the lower-left. The title reads "line-load-duration · seaborn
+    · pyplots.ai". A legend in the upper-right shows the three load regions with a
+    "region" header. Marginal density/KDE distributions are visible on the right edge
+    of the plot with a "Density" label — an unintended artifact from seaborn''s hue-mapped
+    lineplot.'
+  criteria_checklist:
+    visual_quality:
+      score: 27
+      max: 30
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 8
+        max: 8
+        passed: true
+        comment: 'All font sizes explicitly set: title 24pt, labels 20pt, ticks 16pt,
+          annotations 14-18pt'
+      - id: VQ-02
+        name: No Overlap
+        score: 5
+        max: 6
+        passed: true
+        comment: Text elements well-positioned; minor clutter from density artifact
+          on right margin
+      - id: VQ-03
+        name: Element Visibility
+        score: 5
+        max: 6
+        passed: true
+        comment: Main elements clearly visible; density artifacts add unwanted visual
+          noise on right edge
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 4
+        passed: true
+        comment: Colorblind palette used throughout with good contrast
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 3
+        max: 4
+        passed: true
+        comment: Good 16:9 proportions but marginal density distributions break layout
+          balance on right side
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: Hours of Year (ranked), Power Demand
+          (MW)'
+    design_excellence:
+      score: 15
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 6
+        max: 8
+        passed: true
+        comment: Thoughtful colorblind palette, good typography hierarchy, shaded
+          regions with alpha create depth
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Spines removed, subtle y-grid (alpha=0.15), good whitespace; density
+          artifacts detract from polish
+      - id: DE-03
+        name: Data Storytelling
+        score: 5
+        max: 6
+        passed: true
+        comment: Clear visual hierarchy guiding viewer through peak/intermediate/base
+          regions with capacity tiers and energy annotation
+    spec_compliance:
+      score: 14
+      max: 15
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 5
+        max: 5
+        passed: true
+        comment: Correct load duration curve with monotonically decreasing line and
+          filled area regions
+      - id: SC-02
+        name: Required Features
+        score: 4
+        max: 4
+        passed: true
+        comment: 'All spec features present: regions, capacity lines, labels, energy
+          annotation, professional style'
+      - id: SC-03
+        name: Data Mapping
+        score: 3
+        max: 3
+        passed: true
+        comment: X=rank-ordered hours, Y=power demand in MW sorted descending
+      - id: SC-04
+        name: Title & Legend
+        score: 2
+        max: 3
+        passed: true
+        comment: Title format correct; legend has leaked 'region' header from seaborn
+          auto-legend
+    data_quality:
+      score: 15
+      max: 15
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 6
+        passed: true
+        comment: Full load duration curve with distinct peak, intermediate, and base
+          regions
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Realistic energy systems scenario: mid-sized utility, 400-1200 MW
+          range, neutral topic'
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: 'All values plausible for a mid-sized utility: 400 MW base, 1200
+          MW peak, 6493 GWh/year'
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear flow: imports, data, plot, style, save. No functions
+          or classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 2
+        passed: true
+        comment: np.random.seed(42) set at start
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: 'All imports used: matplotlib, numpy, pandas, seaborn'
+      - id: CQ-04
+        name: Code Elegance
+        score: 2
+        max: 2
+        passed: true
+        comment: Clean, well-organized, appropriate complexity
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png, uses np.trapezoid (current API)
+    library_mastery:
+      score: 6
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses sns.lineplot, set_theme, despine, color_palette; but hue-mapped
+          lineplot produces unintended density artifacts
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses seaborn-specific features (set_theme, despine, colorblind palette,
+          hue coloring) but most visual work is matplotlib
+  verdict: REJECTED
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - custom-legend
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling:
+  - alpha-blending
+  - grid-styling

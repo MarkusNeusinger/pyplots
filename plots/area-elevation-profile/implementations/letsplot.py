@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 area-elevation-profile: Terrain Elevation Profile Along Transect
 Library: letsplot 4.9.0 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-15
@@ -44,21 +44,26 @@ landmark_names = [
 landmark_distances = [0, 20, 38, 50, 65, 80, 95, 120]
 landmark_elevations = [float(np.interp(d, distance, elevation)) for d in landmark_distances]
 
-# Stagger label offsets with larger gaps in crowded 80-100 km region
-nudge_offsets = [120, 150, 120, 120, 120, 250, 420, 120]
+# Stagger label offsets — alternate high/low in crowded 50-100 km region
+# Alternating low/high nudge with horizontal shifts to prevent overlap
+nudge_y = [80, 250, 80, 250, 80, 250, 80, 80]
+nudge_x = [0, -2, 2, -3, 0, 0, 0, 0]
 landmarks_df = pd.DataFrame(
     {
         "distance": landmark_distances,
         "elevation": landmark_elevations,
         "name": landmark_names,
-        "label_y": [e + n for e, n in zip(landmark_elevations, nudge_offsets, strict=True)],
+        "label_y": [e + n for e, n in zip(landmark_elevations, nudge_y, strict=True)],
+        "label_x": [d + n for d, n in zip(landmark_distances, nudge_x, strict=True)],
     }
 )
 
-# Compute slope for gradient coloring
+# Compute slope for gradient coloring — smoothed to reduce visual fragmentation
 slope = np.gradient(elevation, distance)
 slope_abs = np.abs(slope)
-slope_category = pd.cut(slope_abs, bins=[0, 15, 40, np.inf], labels=["Flat/Gentle", "Moderate", "Steep"])
+# Rolling average to prevent rapid color switching on steep transitions
+slope_smooth = pd.Series(slope_abs).rolling(window=25, center=True, min_periods=1).mean()
+slope_category = pd.cut(slope_smooth, bins=[0, 15, 40, np.inf], labels=["Flat/Gentle", "Moderate", "Steep"])
 df["slope_category"] = slope_category
 
 # Segment data for vertical landmark lines (using geom_segment)
@@ -115,23 +120,32 @@ plot = (
         .line("Elevation: @elevation m")
         .line("Distance: @distance km"),
     )
-    # Landmark labels — larger font with better staggering to prevent overlap
+    # Connector lines from labels to landmark points
+    + geom_segment(  # noqa: F405
+        data=landmarks_df,
+        mapping=aes(x="distance", y="elevation", xend="label_x", yend="label_y"),  # noqa: F405
+        color="#BBBBBB",
+        size=0.4,
+        linetype="dotted",
+        inherit_aes=False,
+    )
+    # Landmark labels — sized to match other text elements, well-staggered
     + geom_text(  # noqa: F405
         data=landmarks_df,
-        mapping=aes(x="distance", y="label_y", label="name"),  # noqa: F405
-        size=12,
+        mapping=aes(x="label_x", y="label_y", label="name"),  # noqa: F405
+        size=14,
         color="#2C3E50",
-        angle=35,
+        angle=40,
         hjust=0,
         fontface="bold",
         inherit_aes=False,
     )
     # Scales and labels
     + scale_x_continuous(  # noqa: F405
-        name="Distance (km)", breaks=list(range(0, 121, 20)), limits=[-2, 138]
+        name="Distance (km)", breaks=list(range(0, 121, 20)), limits=[-2, 150]
     )
     + scale_y_continuous(  # noqa: F405
-        name="Elevation (m)", limits=[y_floor, y_max], breaks=list(range(1000, y_max, 200))
+        name="Elevation (m)", limits=[y_floor, y_max + 200], breaks=list(range(1000, y_max + 200, 200))
     )
     + labs(  # noqa: F405
         title="Alpine Trail Elevation Profile · area-elevation-profile · letsplot · pyplots.ai",

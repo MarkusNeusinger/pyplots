@@ -1,9 +1,12 @@
-""" pyplots.ai
+"""pyplots.ai
 area-elevation-profile: Terrain Elevation Profile Along Transect
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 79/100 | Created: 2026-03-15
 """
 
+import xml.etree.ElementTree as ET
+
+import cairosvg
 import numpy as np
 import pygal
 from pygal.style import Style
@@ -29,13 +32,13 @@ elevation_m = np.maximum(elevation_m, 650)
 
 # Landmarks along the trail
 landmarks = [
-    {"name": "Grindelwald", "km": 0, "note": "Start"},
-    {"name": "Kleine Scheidegg", "km": 22, "note": "Pass"},
-    {"name": "Lauterbrunnen Valley", "km": 38, "note": "Valley"},
-    {"name": "Mürren", "km": 55, "note": "Summit Viewpoint"},
-    {"name": "Blüemlisalp Hut", "km": 72, "note": "Mountain Hut"},
-    {"name": "Hohtürli Pass", "km": 85, "note": "High Pass"},
-    {"name": "Kandersteg", "km": 120, "note": "End"},
+    {"name": "Grindelwald", "km": 0},
+    {"name": "Kleine Scheidegg", "km": 22},
+    {"name": "Lauterbrunnen", "km": 38},
+    {"name": "Mürren", "km": 55},
+    {"name": "Blüemlisalp Hut", "km": 72},
+    {"name": "Hohtürli Pass", "km": 85},
+    {"name": "Kandersteg", "km": 120},
 ]
 
 # Get elevation at landmark positions
@@ -50,7 +53,7 @@ custom_style = Style(
     foreground="#2d2d2d",
     foreground_strong="#2d2d2d",
     foreground_subtle="#e0e0e0",
-    colors=("#306998", "#c45a00", "#0e7c6b", "#7b2d8e", "#cc3333", "#2277aa", "#e6960d"),
+    colors=("#4a7fb5", "#c45a00"),
     font_family="DejaVu Sans, Helvetica, Arial, sans-serif",
     title_font_family="DejaVu Sans, Helvetica, Arial, sans-serif",
     title_font_size=52,
@@ -62,7 +65,7 @@ custom_style = Style(
     label_font_family="DejaVu Sans, Helvetica, Arial, sans-serif",
     major_label_font_family="DejaVu Sans, Helvetica, Arial, sans-serif",
     value_font_family="DejaVu Sans, Helvetica, Arial, sans-serif",
-    opacity=0.50,
+    opacity=0.55,
     opacity_hover=0.65,
     guide_stroke_color="#e0e0e0",
     guide_stroke_dasharray="3,3",
@@ -75,7 +78,7 @@ custom_style = Style(
     tooltip_border_radius=8,
 )
 
-# Chart
+# Chart - wider y-range to accommodate text labels above peaks
 chart = pygal.XY(
     width=4800,
     height=2700,
@@ -97,29 +100,123 @@ chart = pygal.XY(
     interpolation_precision=300,
     min_scale=5,
     max_scale=10,
-    margin_bottom=120,
+    margin_bottom=80,
     margin_left=100,
-    margin_right=60,
+    margin_right=100,
     margin_top=60,
     spacing=12,
     tooltip_fancy_mode=True,
-    range=(600, 2200),
+    range=(500, 2400),
     xrange=(0, 125),
 )
 
 # Elevation profile as filled XY series
 profile_data = [
-    {"value": (float(d), float(e)), "label": f"{d:.1f} km — {e:.0f} m"} for d, e in zip(distances_km, elevation_m, strict=True)
+    {"value": (float(d), float(e)), "label": f"{d:.1f} km — {e:.0f} m"}
+    for d, e in zip(distances_km, elevation_m, strict=True)
 ]
 chart.add("Elevation Profile", profile_data)
 
-# Landmark markers as separate series
+# Landmark markers as separate series with visible dots
 landmark_data = [
-    {"value": (float(lm["km"]), lm["elev"]), "label": f"{lm['name']} ({lm['note']}) — {lm['elev']:.0f} m"}
-    for lm in landmarks
+    {"value": (float(lm["km"]), lm["elev"]), "label": f"{lm['name']} — {lm['elev']:.0f} m"} for lm in landmarks
 ]
-chart.add("Landmarks", landmark_data, fill=False, show_dots=True, dots_size=14, stroke=False)
+chart.add("Landmarks", landmark_data, fill=False, show_dots=True, dots_size=16, stroke=False)
 
-# Save
+# Save interactive HTML version
 chart.render_to_file("plot.html")
-chart.render_to_png("plot.png")
+
+# Render SVG, add text annotations and vertical markers, then convert to PNG
+svg_bytes = chart.render()
+
+# Parse SVG
+SVG_NS = "http://www.w3.org/2000/svg"
+XLINK_NS = "http://www.w3.org/1999/xlink"
+ET.register_namespace("", SVG_NS)
+ET.register_namespace("xlink", XLINK_NS)
+root = ET.fromstring(svg_bytes)
+
+# Build parent map to find circle parents (for coordinate-space matching)
+parent_map = {child: parent for parent in root.iter() for child in parent}
+
+# Find landmark circles (main series has show_dots=False, so only landmark dots exist)
+landmark_circles = []
+for elem in root.iter(f"{{{SVG_NS}}}circle"):
+    r_val = elem.get("r", "0")
+    try:
+        if float(r_val) > 3:
+            landmark_circles.append(elem)
+    except ValueError:
+        pass
+
+# Sort circles left to right by cx
+landmark_circles.sort(key=lambda c: float(c.get("cx", "0")))
+
+# Find the bottom of the plot area by locating the lowest horizontal guide line
+plot_bottom_y = 0
+for line_elem in root.iter(f"{{{SVG_NS}}}line"):
+    y1 = line_elem.get("y1", "0")
+    y2 = line_elem.get("y2", "0")
+    try:
+        plot_bottom_y = max(plot_bottom_y, float(y1), float(y2))
+    except ValueError:
+        pass
+
+# Add annotations as siblings of circles (same coordinate transform)
+for i, circle in enumerate(landmark_circles[: len(landmarks)]):
+    parent_elem = parent_map.get(circle)
+    if parent_elem is None:
+        continue
+
+    cx = float(circle.get("cx", "0"))
+    cy = float(circle.get("cy", "0"))
+    lm = landmarks[i]
+
+    # Determine tag namespace prefix
+    ns_prefix = f"{{{SVG_NS}}}"
+
+    # Vertical dashed marker line from dot down to plot bottom
+    vline = ET.SubElement(parent_elem, f"{ns_prefix}line")
+    vline.set("x1", f"{cx:.1f}")
+    vline.set("y1", f"{cy:.1f}")
+    vline.set("x2", f"{cx:.1f}")
+    vline.set("y2", f"{plot_bottom_y:.1f}")
+    vline.set("stroke", "#888888")
+    vline.set("stroke-width", "2")
+    vline.set("stroke-dasharray", "10,6")
+    vline.set("opacity", "0.5")
+
+    # Text anchor: left-align for start, right-align for end, center for middle
+    anchor = "middle"
+    dx = 0
+    if i == 0:
+        anchor = "start"
+        dx = 8
+    elif i == len(landmarks) - 1:
+        anchor = "end"
+        dx = -8
+
+    # Landmark name label above the dot
+    name_text = ET.SubElement(parent_elem, f"{ns_prefix}text")
+    name_text.set("x", f"{cx + dx:.1f}")
+    name_text.set("y", f"{cy - 45:.1f}")
+    name_text.set("text-anchor", anchor)
+    name_text.set("font-size", "30")
+    name_text.set("font-family", "DejaVu Sans, Helvetica, Arial, sans-serif")
+    name_text.set("fill", "#2d2d2d")
+    name_text.set("font-weight", "bold")
+    name_text.text = lm["name"]
+
+    # Elevation label below the name
+    elev_text = ET.SubElement(parent_elem, f"{ns_prefix}text")
+    elev_text.set("x", f"{cx + dx:.1f}")
+    elev_text.set("y", f"{cy - 22:.1f}")
+    elev_text.set("text-anchor", anchor)
+    elev_text.set("font-size", "26")
+    elev_text.set("font-family", "DejaVu Sans, Helvetica, Arial, sans-serif")
+    elev_text.set("fill", "#666666")
+    elev_text.text = f"{lm['elev']:.0f} m"
+
+# Convert modified SVG to PNG
+modified_svg = ET.tostring(root, encoding="unicode")
+cairosvg.svg2png(bytestring=modified_svg.encode("utf-8"), write_to="plot.png")

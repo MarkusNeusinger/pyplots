@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 area-elevation-profile: Terrain Elevation Profile Along Transect
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-15
@@ -8,8 +8,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from matplotlib.colors import LinearSegmentedColormap
 
+
+# Seaborn theming and context for consistent styling
+sns.set_theme(
+    style="ticks",
+    rc={"axes.facecolor": "#fafaf8", "figure.facecolor": "white", "grid.color": "#dddddd", "grid.linewidth": 0.8},
+)
+sns.set_context("talk", font_scale=1.1, rc={"lines.linewidth": 2.5})
 
 # Data
 np.random.seed(42)
@@ -44,29 +50,52 @@ for d in landmarks["distance_km"]:
     landmark_elevations.append(elevation[idx])
 landmarks["elevation_m"] = landmark_elevations
 
+# Build gradient fill data using seaborn color palette
+gradient_colors = sns.color_palette("blend:#a8c686,#5a8a3c,#306998", n_colors=40)
+elev_min_val, elev_max_val = elevation.min(), elevation.max()
+elev_range = elev_max_val - elev_min_val
+
+# Segment the profile by elevation for gradient coloring
+n_bands = len(gradient_colors)
+segment_rows = []
+for i in range(n_bands):
+    frac = i / n_bands
+    band_low = elev_min_val + frac * elev_range
+    band_high = elev_min_val + (i + 1) / n_bands * elev_range
+    segment_rows.append({"band": i, "frac": frac, "band_low": band_low, "band_high": band_high})
+segments_df = pd.DataFrame(segment_rows)
+
 # Plot
 fig, ax = plt.subplots(figsize=(16, 9))
 
+# Gradient terrain fill
+y_min = elev_min_val - 0.05 * elev_range
+for _, seg in segments_df.iterrows():
+    clipped = np.clip(elevation, seg["band_low"], seg["band_high"])
+    bottom = np.full_like(distance, seg["band_low"])
+    ax.fill_between(distance, bottom, clipped, color=gradient_colors[int(seg["band"])], alpha=0.85, linewidth=0)
+ax.fill_between(
+    distance, y_min, np.full_like(distance, elev_min_val), color=gradient_colors[0], alpha=0.85, linewidth=0
+)
+
+# Profile line using seaborn lineplot
 sns.lineplot(data=df, x="distance_km", y="elevation_m", ax=ax, color="#306998", linewidth=2.5, legend=False)
 
-cmap = LinearSegmentedColormap.from_list("terrain_fill", ["#a8c686", "#5a8a3c", "#306998"])
-y_min = ax.get_ylim()[0]
-n_bands = 80
-elev_min_val = elevation.min()
-elev_max_val = elevation.max()
-for i in range(n_bands):
-    frac_low = i / n_bands
-    frac_high = (i + 1) / n_bands
-    band_low = elev_min_val + frac_low * (elev_max_val - elev_min_val)
-    band_high = elev_min_val + frac_high * (elev_max_val - elev_min_val)
-    clipped = np.clip(elevation, band_low, band_high)
-    bottom = np.full_like(distance, band_low)
-    color = cmap(frac_low)
-    ax.fill_between(distance, bottom, clipped, color=color, alpha=0.85, linewidth=0)
+# Landmark markers using seaborn scatterplot
+sns.scatterplot(
+    data=landmarks,
+    x="distance_km",
+    y="elevation_m",
+    ax=ax,
+    color="#306998",
+    s=120,
+    edgecolor="white",
+    linewidth=1.5,
+    zorder=5,
+    legend=False,
+)
 
-ax.fill_between(distance, y_min, np.full_like(distance, elev_min_val), color="#a8c686", alpha=0.85, linewidth=0)
-
-# Landmarks
+# Landmark annotations
 for _, lm in landmarks.iterrows():
     ax.vlines(lm["distance_km"], y_min, lm["elevation_m"], color="#555555", linewidth=1, linestyle="--", alpha=0.5)
     label_text = f"{lm['name']}\n{int(lm['elevation_m'])} m"
@@ -76,36 +105,34 @@ for _, lm in landmarks.iterrows():
         xy=(lm["distance_km"], lm["elevation_m"]),
         xytext=(0, y_offset),
         textcoords="offset points",
-        fontsize=11,
+        fontsize=13,
         fontweight="bold",
         color="#333333",
         ha="center",
         va="bottom" if y_offset > 0 else "top",
         bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": "#cccccc", "alpha": 0.85},
     )
-    ax.plot(
-        lm["distance_km"],
-        lm["elevation_m"],
-        "o",
-        color="#306998",
-        markersize=8,
-        markeredgecolor="white",
-        markeredgewidth=1.5,
-        zorder=5,
-    )
 
-# Style
+# Style using seaborn utilities
 ax.set_xlabel("Distance (km)", fontsize=20)
 ax.set_ylabel("Elevation (m)", fontsize=20)
 ax.set_title("area-elevation-profile · seaborn · pyplots.ai", fontsize=24, fontweight="medium")
 ax.tick_params(axis="both", labelsize=16)
-ax.spines["top"].set_visible(False)
-ax.spines["right"].set_visible(False)
-ax.yaxis.grid(True, alpha=0.2, linewidth=0.8)
+sns.despine(ax=ax)
+ax.yaxis.grid(True, alpha=0.2)
 ax.set_xlim(0, total_distance)
+ax.set_ylim(bottom=y_min)
 
-note_text = "Vertical exaggeration ~10×"
-ax.text(0.98, 0.02, note_text, transform=ax.transAxes, fontsize=12, color="#888888", ha="right", va="bottom")
+ax.text(
+    0.98,
+    0.02,
+    "Vertical exaggeration ~10×",
+    transform=ax.transAxes,
+    fontsize=13,
+    color="#888888",
+    ha="right",
+    va="bottom",
+)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

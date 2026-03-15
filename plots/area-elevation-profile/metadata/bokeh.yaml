@@ -1,0 +1,231 @@
+library: bokeh
+specification_id: area-elevation-profile
+created: '2026-03-15T21:51:53Z'
+updated: '2026-03-15T22:06:32Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 23120069541
+issue: 4578
+python_version: 3.14.3
+library_version: 3.9.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/area-elevation-profile/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-elevation-profile/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/area-elevation-profile/bokeh/plot.html
+quality_score: 86
+review:
+  strengths:
+  - Full spec compliance with all required features including slope-based coloring
+  - HoverTool added for interactive HTML output leveraging Bokeh key strength
+  - Excellent vertical space utilization with y-axis starting near minimum elevation
+  - Realistic Swiss Alpine trail data with 7 named landmarks and compelling terrain
+    variation
+  - Clean well-structured code with all Bokeh idioms
+  weaknesses:
+  - Green-to-red slope color palette is not colorblind-safe — needs perceptually uniform
+    alternative
+  - Kandersteg label still slightly tight at right canvas edge
+  - Scatter points overlaid on profile line create visual noise
+  image_description: 'The plot shows an alpine trail elevation profile spanning 0-120
+    km on the x-axis (Distance in km) and ~350-2100 m on the y-axis (Elevation in
+    m). The area below the profile line is filled with semi-transparent blue, creating
+    a terrain silhouette. A darker blue line traces the elevation profile. Overlaid
+    scatter points are colored by slope steepness using a green-to-red gradient (green=flat,
+    amber=moderate, red=steep). Seven landmarks are annotated with dashed brown vertical
+    lines, brown dot markers, and bold dark text labels showing name and elevation:
+    Grindelwald (1138 m), Kleine Scheidegg (1822 m), Männlichen (1043 m), Lauterbrunnen
+    (1730 m), Mürren (907 m), Schilthorn Pass (863 m), and Kandersteg (1077 m). The
+    title reads "Alpine Trail Profile · area-elevation-profile · bokeh · pyplots.ai".
+    An italic note "Note: Vertical exaggeration ~10×" and slope color legend appear
+    in the upper left. X-grid is hidden, y-grid is subtle dashed. The y-axis starts
+    near minimum elevation for efficient vertical space usage.'
+  criteria_checklist:
+    visual_quality:
+      score: 26
+      max: 30
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 8
+        max: 8
+        passed: true
+        comment: 'All font sizes explicitly set: title 42pt, axis labels 32pt, ticks
+          26pt, landmarks 22pt, notes 26pt/22pt'
+      - id: VQ-02
+        name: No Overlap
+        score: 5
+        max: 6
+        passed: true
+        comment: Generally clean, Kandersteg label slightly tight at right edge
+      - id: VQ-03
+        name: Element Visibility
+        score: 5
+        max: 6
+        passed: true
+        comment: Profile line, area fill, and landmarks clear. Slope scatter points
+          dense but visible at size 9 with 480 points
+      - id: VQ-04
+        name: Color Accessibility
+        score: 2
+        max: 4
+        passed: false
+        comment: Green-to-red slope palette is problematic for deuteranopia/protanopia.
+          Should use colorblind-safe sequential palette
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: Good canvas utilization. Y-axis starts near minimum elevation. Generous
+          margins
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
+        max: 2
+        passed: true
+        comment: Distance (km) and Elevation (m) — descriptive with units
+    design_excellence:
+      score: 13
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: true
+        comment: Custom color scheme with blue fill, slope-colored profile, brown
+          landmarks. Above defaults but scatter noise reduces polish
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: X-grid hidden, Y-grid subtle dashed, outline removed, toolbar removed,
+          axis colors customized
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Real Swiss Alpine trail with named landmarks guides viewer. Slope
+          coloring tells terrain difficulty story
+    spec_compliance:
+      score: 14
+      max: 15
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 5
+        max: 5
+        passed: true
+        comment: Correct area/line chart with filled terrain silhouette
+      - id: SC-02
+        name: Required Features
+        score: 4
+        max: 4
+        passed: true
+        comment: Filled area, labeled endpoints, landmark annotations, vertical exaggeration
+          note, slope coloring all present
+      - id: SC-03
+        name: Data Mapping
+        score: 3
+        max: 3
+        passed: true
+        comment: Distance on X, elevation on Y, correctly mapped
+      - id: SC-04
+        name: Title & Legend
+        score: 2
+        max: 3
+        passed: true
+        comment: Title includes required format. Legend hidden for single series with
+          slope annotation text
+    data_quality:
+      score: 15
+      max: 15
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 6
+        passed: true
+        comment: Multiple peaks and valleys, varying steepness, 7 landmarks at different
+          elevations
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 5
+        passed: true
+        comment: Real Swiss Alpine locations. Neutral geographic topic
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Elevations 450-2050m and 120km distance plausible for Alpine terrain
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → style → save. No functions or classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 2
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports used
+      - id: CQ-04
+        name: Code Elegance
+        score: 2
+        max: 2
+        passed: true
+        comment: Clean, Pythonic. Good use of zip with strict, list comprehensions
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png via export_png. Also exports HTML
+    library_mastery:
+      score: 8
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: Uses ColumnDataSource, varea, scatter with linear_cmap, HoverTool,
+          Label, Span — idiomatic Bokeh patterns
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: HoverTool with vline mode, linear_cmap, varea, dual PNG+HTML export
+          — distinctively Bokeh capabilities
+  verdict: REJECTED
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - hover-tooltips
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  - columndatasource
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - custom-colormap
+  - alpha-blending
+  - grid-styling

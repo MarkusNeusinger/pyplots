@@ -1,0 +1,237 @@
+library: altair
+specification_id: area-elevation-profile
+created: '2026-03-15T21:50:13Z'
+updated: '2026-03-15T22:02:07Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 23120069446
+issue: 4578
+python_version: 3.14.3
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/area-elevation-profile/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-elevation-profile/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/area-elevation-profile/altair/plot.html
+quality_score: 84
+review:
+  strengths:
+  - Excellent spec compliance - all required features implemented faithfully including
+    gradient fill, landmark annotations, vertical exaggeration note
+  - Outstanding data quality - real Swiss Alpine trail locations with realistic elevation
+    values
+  - Good use of Altair gradient feature for terrain silhouette effect
+  - Thoughtful label alignment handling (left/center/right for start/middle/end landmarks)
+  - Subtle grid styling and clean view configuration
+  weaknesses:
+  - Y-axis domain extends far below actual data (400m vs ~850m minimum), wasting canvas
+    space
+  - All landmarks treated uniformly with no visual differentiation between summits,
+    valleys, and endpoints
+  - Six separate text mark layers for label alignment is verbose
+  image_description: 'The plot displays a terrain elevation profile of the Bernese
+    Oberland Trail as an area chart. The x-axis shows "Distance (km)" from 0 to ~130,
+    and the y-axis shows "Elevation (m)" from 400 to 2,800. The area beneath the profile
+    line is filled with a light-blue linear gradient that transitions from nearly
+    transparent at the bottom to semi-opaque blue at the top, creating a terrain silhouette
+    effect. The profile line itself is a darker blue (#306998) with 2.5px stroke width.
+    Seven landmarks are marked with brown (#8B4513) dots and dashed vertical rule
+    lines: Grindelwald (Start) at ~878m, Bachsee Lake at ~1313m, Faulhorn Summit at
+    ~2542m, Schynige Platte at ~1038m, Kleine Scheidegg at ~1337m, Männlichen Pass
+    at ~2595m, and Wengen (End) at ~876m. Each landmark has a name label and elevation
+    value displayed above the marker. The title reads "Bernese Oberland Trail · area-elevation-profile
+    · altair · pyplots.ai" in large font with a subtitle noting the 120 km transect
+    and ~10× vertical exaggeration. Grid lines are very subtle (0.15 opacity). The
+    view has no border stroke.'
+  criteria_checklist:
+    visual_quality:
+      score: 25
+      max: 30
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 7
+        max: 8
+        passed: true
+        comment: 'Font sizes explicitly set: title 28pt, axis titles 22pt, ticks 18pt,
+          landmark names 14pt, elevation values 13pt. Landmark labels slightly small
+          but legible.'
+      - id: VQ-02
+        name: No Overlap
+        score: 5
+        max: 6
+        passed: true
+        comment: Minor crowding between landmark name labels and elevation values
+          at some points, particularly around Männlichen Pass. All text remains readable.
+      - id: VQ-03
+        name: Element Visibility
+        score: 5
+        max: 6
+        passed: true
+        comment: Area fill, profile line (2.5px), and landmark markers (size=100)
+          clearly visible. Brown dashed rule lines slightly thin.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 4
+        passed: true
+        comment: Single blue color scheme with brown landmarks provides excellent
+          contrast. No colorblind issues.
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 2
+        max: 4
+        passed: false
+        comment: Y-axis domain starts at 400 but lowest data is ~850m, creating significant
+          unused space at bottom. X-axis extends beyond trail endpoint.
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Both axes have descriptive labels with units: Distance (km) and
+          Elevation (m).'
+    design_excellence:
+      score: 13
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: true
+        comment: Custom gradient fill, brown landmark markers, intentional color scheme.
+          Above defaults but not publication-ready.
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: View stroke removed, grid opacity 0.15 (very subtle), clean appearance.
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Real hiking trail with named landmarks creates narrative. Two major
+          peaks form focal points. Elevation annotations guide the viewer.
+    spec_compliance:
+      score: 15
+      max: 15
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 5
+        max: 5
+        passed: true
+        comment: Correct area chart with filled terrain profile silhouette.
+      - id: SC-02
+        name: Required Features
+        score: 4
+        max: 4
+        passed: true
+        comment: 'All required features present: filled area, labeled start/end, landmark
+          annotations with vertical lines, vertical exaggeration noted, gradient fill.'
+      - id: SC-03
+        name: Data Mapping
+        score: 3
+        max: 3
+        passed: true
+        comment: Distance on x-axis, elevation on y-axis. 480 sample points with 7
+          landmarks.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
+        passed: true
+        comment: Title includes required format. No legend needed for single-series
+          area chart.
+    data_quality:
+      score: 15
+      max: 15
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 6
+        passed: true
+        comment: Shows peaks, valleys, varied terrain, multiple landmark types (summit,
+          lake, pass, plateau, town).
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 5
+        passed: true
+        comment: Real Bernese Oberland trail locations in the Swiss Alps. Neutral
+          geographic context.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Realistic Swiss Alps elevations (878m to ~2600m). 120km trail distance
+          plausible.
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → chart → save. No functions or classes.
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 2
+        passed: true
+        comment: np.random.seed(42) set for reproducible terrain generation.
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports (altair, numpy, pandas) are used.
+      - id: CQ-04
+        name: Code Elegance
+        score: 1
+        max: 2
+        passed: false
+        comment: 'Verbose: 6 separate text mark layers for start/mid/end label alignment.'
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with scale_factor=3.0. Also saves interactive HTML.
+    library_mastery:
+      score: 7
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Good declarative grammar: alt.Chart, mark_area, alt.layer, proper
+          encoding types.'
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses alt.Gradient with custom stops, alt.layer composition, chart.interactive(),
+          tooltips.
+  verdict: REJECTED
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - layer-composition
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - interpolation
+  styling:
+  - gradient-fill
+  - grid-styling

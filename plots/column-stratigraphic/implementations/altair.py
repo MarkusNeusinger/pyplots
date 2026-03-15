@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 column-stratigraphic: Stratigraphic Column with Lithology Patterns
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 79/100 | Created: 2026-03-15
@@ -60,7 +60,7 @@ lithology_colors = {
     "Sandstone": "#F5D76E",
     "Shale": "#7B8D8E",
     "Limestone": "#5DADE2",
-    "Siltstone": "#A9CCE3",
+    "Siltstone": "#C39BD3",
     "Conglomerate": "#E67E22",
 }
 
@@ -101,7 +101,7 @@ rects = (
         y=alt.Y(
             "top:Q",
             title="Depth (m)",
-            scale=alt.Scale(domain=[0, 200]),
+            scale=alt.Scale(domain=[0, 200], reverse=True),
             axis=alt.Axis(labelFontSize=18, titleFontSize=22),
         ),
         y2="bottom:Q",
@@ -136,7 +136,7 @@ rects = (
 # Pattern texture labels inside each layer
 pattern_text = (
     alt.Chart(layers)
-    .mark_text(fontSize=16, color="#555555", opacity=0.6)
+    .mark_text(fontSize=18, color="#333333", opacity=0.85)
     .encode(y=alt.Y("mid_depth:Q"), x=alt.X("x_mid:Q", scale=alt.Scale(domain=[0, 14])), text="pattern_label:N")
     .transform_calculate(x_mid="5")
 )
@@ -174,9 +174,7 @@ chart = (
     .properties(
         width=1200,
         height=900,
-        title=alt.Title(
-            "Stratigraphic Column · column-stratigraphic · altair · pyplots.ai", fontSize=26, anchor="middle", offset=20
-        ),
+        title=alt.Title("column-stratigraphic · altair · pyplots.ai", fontSize=26, anchor="middle", offset=20),
     )
     .configure_view(strokeWidth=0)
 )

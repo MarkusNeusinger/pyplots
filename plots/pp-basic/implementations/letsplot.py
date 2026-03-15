@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 pp-basic: Probability-Probability (P-P) Plot
 Library: letsplot 4.9.0 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-15
@@ -87,15 +87,15 @@ plot = (
         aes(x="x", ymin="y_lower", ymax="y_upper"),
         data=df_envelope,
         fill="#306998",
-        alpha=0.1,
+        alpha=0.2,
         size=0.3,
         tooltips=layer_tooltips().line("95% Kolmogorov band"),
     )
-    + geom_line(aes(x="x", y="y"), data=df_ref, color="#8C9EAF", size=1.2, linetype="dashed", tooltips="none")
+    + geom_line(aes(x="x", y="y"), data=df_ref, color="#A0A8B0", size=1.2, linetype="dashed", tooltips="none")
     + geom_point(
         aes(x="theoretical", y="empirical", color="deviation", size="abs_deviation"),
         data=df_pp,
-        alpha=0.75,
+        alpha=0.85,
         shape=16,
         tooltips=layer_tooltips()
         .format("weight", ".1f")
@@ -105,12 +105,12 @@ plot = (
         .line("@region"),
     )
     + geom_text(
-        aes(x="x", y="y", label="label"), data=df_annotation, size=12, color="#2C3E50", nudge_y=0.06, fontface="italic"
+        aes(x="x", y="y", label="label"), data=df_annotation, size=15, color="#E8E8E8", nudge_y=0.06, fontface="italic"
     )
     + scale_color_gradient2(
-        low="#D64541", mid="#F5F5DC", high="#306998", midpoint=0, name="Deviation\n(Empirical - Theoretical)"
+        low="#E86B56", mid="#C8CDD0", high="#5B9BD5", midpoint=0, name="Deviation\n(Empirical − Theoretical)"
     )
-    + scale_size(range=[3, 7], guide="none")
+    + scale_size(range=[4.5, 8], guide="none")
     + labs(
         x="Theoretical CDF (Normal)",
         y="Empirical CDF",
@@ -120,13 +120,13 @@ plot = (
     + scale_x_continuous(limits=[0, 1], breaks=[0, 0.2, 0.4, 0.6, 0.8, 1.0])
     + scale_y_continuous(limits=[0, 1], breaks=[0, 0.2, 0.4, 0.6, 0.8, 1.0])
     + coord_fixed(ratio=1)
-    + flavor_solarized_light()
+    + flavor_darcula()
     + theme(
-        plot_title=element_text(size=24, face="bold", color="#2C3E50"),
-        plot_subtitle=element_text(size=16, color="#566573"),
-        axis_title=element_text(size=20, color="#34495E"),
-        axis_text=element_text(size=16, color="#566573"),
-        panel_grid_major=element_line(color="#E8E4D8", size=0.4),
+        plot_title=element_text(size=24, face="bold"),
+        plot_subtitle=element_text(size=16),
+        axis_title=element_text(size=20),
+        axis_text=element_text(size=16),
+        panel_grid_major=element_line(size=0.3),
         panel_grid_minor=element_blank(),
         legend_title=element_text(size=16),
         legend_text=element_text(size=14),

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-load-duration: Load Duration Curve for Energy Systems
 Library: highcharts unknown | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-15
@@ -68,10 +68,10 @@ chart.options.chart = {
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#fafafa",
-    "marginBottom": 320,
-    "marginLeft": 280,
-    "marginRight": 200,
-    "marginTop": 220,
+    "marginBottom": 260,
+    "marginLeft": 240,
+    "marginRight": 160,
+    "marginTop": 200,
 }
 
 chart.options.title = {
@@ -132,12 +132,13 @@ chart.options.y_axis = {
     "title": {"text": "Power Demand (MW)", "style": {"fontSize": "44px", "color": "#333333"}},
     "labels": {"style": {"fontSize": "34px", "color": "#333333"}},
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.06)",
+    "gridLineColor": "rgba(0, 0, 0, 0.08)",
     "gridLineDashStyle": "Dot",
     "lineColor": "#999999",
     "lineWidth": 2,
     "min": 300,
     "max": 1350,
+    "tickInterval": 100,
     "plotLines": [
         {
             "value": peak_capacity,
@@ -218,26 +219,35 @@ chart.options.tooltip = {
     "borderRadius": 8,
 }
 
-# Peak load series
+# Peak load series with gradient fill
 peak_series = AreaSeries()
 peak_series.data = peak_data
 peak_series.name = "Peak Load"
 peak_series.color = "#c0392b"
-peak_series.fill_opacity = 0.65
+peak_series.fill_color = {
+    "linearGradient": {"x1": 0, "y1": 0, "x2": 0, "y2": 1},
+    "stops": [[0, "rgba(192, 57, 43, 0.75)"], [1, "rgba(192, 57, 43, 0.15)"]],
+}
 
-# Intermediate load series
+# Intermediate load series with gradient fill
 intermediate_series = AreaSeries()
 intermediate_series.data = intermediate_data
 intermediate_series.name = "Intermediate Load"
 intermediate_series.color = "#7d3c98"
-intermediate_series.fill_opacity = 0.55
+intermediate_series.fill_color = {
+    "linearGradient": {"x1": 0, "y1": 0, "x2": 0, "y2": 1},
+    "stops": [[0, "rgba(125, 60, 152, 0.65)"], [1, "rgba(125, 60, 152, 0.1)"]],
+}
 
-# Base load series
+# Base load series with gradient fill
 base_series = AreaSeries()
 base_series.data = base_data
 base_series.name = "Base Load"
 base_series.color = "#306998"
-base_series.fill_opacity = 0.5
+base_series.fill_color = {
+    "linearGradient": {"x1": 0, "y1": 0, "x2": 0, "y2": 1},
+    "stops": [[0, "rgba(48, 105, 152, 0.6)"], [1, "rgba(48, 105, 152, 0.08)"]],
+}
 
 chart.add_series(peak_series)
 chart.add_series(intermediate_series)

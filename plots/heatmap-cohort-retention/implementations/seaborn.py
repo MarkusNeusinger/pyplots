@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 heatmap-cohort-retention: Cohort Retention Heatmap
 Library: seaborn 0.13.2 | Python 3.14.3
-Quality: 86/100 | Created: 2026-03-16
+Quality: 90/100 | Created: 2026-03-16
 """
 
 import matplotlib.colors as mcolors

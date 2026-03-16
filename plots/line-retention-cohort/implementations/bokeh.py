@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-retention-cohort: User Retention Curve by Cohort
 Library: bokeh 3.9.0 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-16
@@ -6,7 +6,7 @@ Quality: 87/100 | Created: 2026-03-16
 
 import numpy as np
 from bokeh.io import export_png, output_file, save
-from bokeh.models import ColumnDataSource, Legend, Span
+from bokeh.models import ColumnDataSource, HoverTool, Label, Legend, Span
 from bokeh.plotting import figure
 
 
@@ -30,10 +30,10 @@ for cohort, params in cohorts.items():
     retention[0] = 100.0
     retention_data[cohort] = retention
 
-# Plot
-colors = ["#8FAFC1", "#7B9DB7", "#5A8BA8", "#306998", "#1A4D6E"]
+# Plot — diverse hue palette (colorblind-safe)
+colors = ["#D4A03C", "#2A9D8F", "#306998", "#7B4F9E", "#1A4D6E"]
 line_widths = [3, 3.5, 4, 4.5, 5]
-alphas = [0.55, 0.65, 0.75, 0.85, 1.0]
+alphas = [0.70, 0.75, 0.82, 0.90, 1.0]
 
 p = figure(
     width=4800,
@@ -45,7 +45,15 @@ p = figure(
 
 legend_items = []
 for i, (cohort, params) in enumerate(cohorts.items()):
-    source = ColumnDataSource(data={"week": weeks, "retention": retention_data[cohort]})
+    source = ColumnDataSource(
+        data={
+            "week": weeks,
+            "retention": retention_data[cohort],
+            "cohort": [cohort] * len(weeks),
+            "size": [params["size"]] * len(weeks),
+            "retention_fmt": [f"{r:.1f}" for r in retention_data[cohort]],
+        }
+    )
     label = f"{cohort} (n={params['size']:,})"
 
     line = p.line(
@@ -63,9 +71,31 @@ for i, (cohort, params) in enumerate(cohorts.items()):
     )
     legend_items.append((label, [line, scatter]))
 
+# HoverTool for interactive HTML output
+hover = HoverTool(
+    tooltips=[("Cohort", "@cohort"), ("Week", "@week"), ("Retention", "@retention_fmt%"), ("Cohort Size", "@size{,}")],
+    mode="mouse",
+)
+p.add_tools(hover)
+
 # Reference line at 20% retention threshold
-threshold = Span(location=20, dimension="width", line_color="#999999", line_dash="dashed", line_width=2, line_alpha=0.7)
+threshold = Span(
+    location=20, dimension="width", line_color="#888888", line_dash="dashed", line_width=2.5, line_alpha=0.6
+)
 p.add_layout(threshold)
+
+# Label for the threshold line
+threshold_label = Label(
+    x=12,
+    y=20,
+    text="20% Threshold",
+    text_font_size="20pt",
+    text_color="#666666",
+    x_offset=-10,
+    y_offset=8,
+    text_align="right",
+)
+p.add_layout(threshold_label)
 
 # Legend
 legend = Legend(items=legend_items, location="top_right")
@@ -74,27 +104,32 @@ legend.glyph_height = 30
 legend.glyph_width = 30
 legend.spacing = 12
 legend.padding = 20
-legend.background_fill_alpha = 0.8
-legend.border_line_alpha = 0.3
+legend.background_fill_alpha = 0.85
+legend.background_fill_color = "white"
+legend.border_line_alpha = 0.2
+legend.border_line_color = "#cccccc"
 p.add_layout(legend)
 
 # Style
 p.title.text_font_size = "42pt"
+p.title.text_color = "#2c3e50"
 p.xaxis.axis_label_text_font_size = "32pt"
 p.yaxis.axis_label_text_font_size = "32pt"
 p.xaxis.major_label_text_font_size = "24pt"
 p.yaxis.major_label_text_font_size = "24pt"
+p.xaxis.axis_label_text_color = "#444444"
+p.yaxis.axis_label_text_color = "#444444"
 
 p.y_range.start = 0
 p.y_range.end = 105
 p.x_range.start = -0.3
 p.x_range.end = 12.3
 
-p.ygrid.grid_line_alpha = 0.2
+p.ygrid.grid_line_alpha = 0.15
 p.ygrid.grid_line_dash = "dashed"
 p.xgrid.grid_line_alpha = 0
 
-p.background_fill_color = "#fafafa"
+p.background_fill_color = "#f8f9fa"
 p.border_fill_color = "white"
 
 p.axis.axis_line_width = 2
@@ -104,8 +139,10 @@ p.axis.minor_tick_line_width = 0
 
 p.toolbar_location = None
 
-# Save
+# Save PNG (toolbar hidden)
 export_png(p, filename="plot.png")
 
+# Save interactive HTML with toolbar
+p.toolbar_location = "above"
 output_file("plot.html")
 save(p)

@@ -1,7 +1,7 @@
 """ pyplots.ai
 line-retention-cohort: User Retention Curve by Cohort
 Library: plotly 6.6.0 | Python 3.14.3
-Quality: 86/100 | Created: 2026-03-16
+Quality: 85/100 | Created: 2026-03-16
 """
 
 import numpy as np

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-retention-cohort: User Retention Curve by Cohort
 Library: highcharts unknown | Python 3.14.3
 Quality: 82/100 | Created: 2026-03-16
@@ -78,8 +78,9 @@ chart.options.y_axis = {
     "labels": {"style": {"fontSize": "28px"}, "format": "{value}%"},
     "min": 0,
     "max": 100,
+    "tickInterval": 20,
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.12)",
+    "gridLineColor": "rgba(0, 0, 0, 0.08)",
     "plotLines": [
         {
             "value": 20,
@@ -109,13 +110,26 @@ chart.options.legend = {
     "x": -30,
 }
 
-# Plot options
-chart.options.plot_options = {
-    "line": {"lineWidth": 5, "marker": {"enabled": True, "radius": 9, "lineWidth": 2, "lineColor": "#ffffff"}}
+# Tooltip - distinctive Highcharts feature
+chart.options.tooltip = {
+    "shared": True,
+    "valueSuffix": "%",
+    "headerFormat": '<span style="font-size:24px;font-weight:bold">{point.key}</span><br/>',
+    "pointFormat": '<span style="color:{series.color}">\u25cf</span> {series.name}: <b>{point.y}%</b><br/>',
+    "style": {"fontSize": "20px"},
 }
 
-# Colors - cohesive palette starting with Python Blue, older cohorts lighter
-colors = ["#a3c4d9", "#7baac4", "#5290ae", "#306998", "#1a4d6e"]
+# Plot options
+chart.options.plot_options = {
+    "line": {
+        "lineWidth": 5,
+        "marker": {"enabled": True, "radius": 9, "lineWidth": 2, "lineColor": "#ffffff"},
+        "animation": False,
+    }
+}
+
+# Colors - distinct, colorblind-safe palette starting with Python Blue
+colors = ["#306998", "#e07b39", "#2ca02c", "#d62728", "#8c564b"]
 
 # Add series - older cohorts first (thinner), newest last (thickest)
 for i, (cohort, rates) in enumerate(retention_data.items()):
@@ -125,6 +139,9 @@ for i, (cohort, rates) in enumerate(retention_data.items()):
     series.color = colors[i]
     series.line_width = 3 + i
     series.marker = {"radius": 5 + i}
+    # Zones: dash line below 20% retention target (distinctive Highcharts feature)
+    series.zone_axis = "y"
+    series.zones = [{"value": 20, "dashStyle": "Dot"}, {"dashStyle": "Solid"}]
     chart.add_series(series)
 
 # Export

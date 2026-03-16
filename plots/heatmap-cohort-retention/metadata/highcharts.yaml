@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: heatmap-cohort-retention
 created: '2026-03-16T20:46:45Z'
-updated: '2026-03-16T20:51:24Z'
+updated: '2026-03-16T21:00:52Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23165008487
 issue: 4570
@@ -10,34 +10,38 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-cohort-retention/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-cohort-retention/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-cohort-retention/highcharts/plot.html
-quality_score: 85
+quality_score: 90
 review:
   strengths:
-  - Perfect spec compliance with all required features including triangular shape,
-    retention percentages in cells, cohort sizes, and color bar
-  - Strong data quality with realistic SaaS retention scenario and plausible values
-  - Custom 7-stop blue colorAxis with adaptive white/dark text labels via JS formatter
-  - Clean code structure with fallback CDN URLs for reliability
+  - Excellent data storytelling with highlighted best/worst cohorts, star annotations,
+    and color-coded labels explaining the narrative
+  - Adaptive data label colors (white on dark, dark on light cells) ensure readability
+    across the full retention range
+  - Clean triangular shape with transparent null cells and matching border colors
+  - Realistic SaaS retention data with differentiated cohort curves and plausible
+    context
   weaknesses:
-  - Subtitle, x-axis title, and x-axis category labels are crowded at the top
-  - No data storytelling emphasis — all cohorts look similar with no focal point
-  - Right margin is generous, slightly reducing chart area
-  image_description: 'The plot displays a triangular heatmap of cohort retention data
-    with a blue sequential colormap. The title reads "heatmap-cohort-retention · highcharts
-    · pyplots.ai" at the top, followed by a subtitle "Monthly cohort retention rates
-    — percentage of users returning each month after signup" and the x-axis title
-    "Months Since Signup" — all three lines stacked closely together at the top. The
-    x-axis shows "Month 0" through "Month 9" along the top edge. The y-axis on the
-    left shows cohort labels from "Oct 2024 (1,290)" at the top to "Jan 2024 (1,240)"
-    at the bottom, with "Signup Cohort (Users)" as the axis title. Each cell contains
-    the retention percentage as text — white text on dark blue cells, dark text on
-    light blue cells. The triangular shape is correct: Oct 2024 has only 1 column
-    (100%), while Jan 2024 spans all 10 months (100% to 22.5%). A vertical color bar
-    on the right shows "Retention %" from 0% to 100%. The background is a subtle off-white
-    (#fafafa). Cell borders match the background, creating clean visual separation.'
+  - Does not use the highcharts-core Python library; constructs raw JSON configuration
+    instead
+  image_description: 'The plot displays a triangular cohort retention heatmap with
+    the title "heatmap-cohort-retention · highcharts · pyplots.ai" at the top. Below
+    the title is a subtitle: "Monthly cohort retention rates — percentage of users
+    returning each month after signup" with colored annotations highlighting the best
+    cohort (Jun 2024 — new onboarding, in blue with a star) and worst cohort (Apr
+    2024 — buggy release, in red). The x-axis at the top shows "Month 0" through "Month
+    9" with the label "Months Since Signup." The y-axis on the left shows cohort labels
+    with user counts (e.g., "Jan 2024 (1,240)"). The heatmap uses a blue sequential
+    colormap from very light blue (low retention) to very dark navy (high retention/100%).
+    Each cell displays its retention percentage with adaptive text color (white on
+    dark cells, dark on light cells). The triangular shape is correctly formed — Jan
+    2024 at the bottom has all 10 periods, while Oct 2024 at the top has only 1. A
+    vertical color bar on the right shows "Retention %" from 0% to 100%. The Jun 2024
+    row has a subtle blue plotBand and its y-axis label is bold with a star; the Apr
+    2024 row has a subtle red plotBand and red-colored label. The background is a
+    soft off-white (#fafafa).'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -45,35 +49,36 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 48px, subtitle 28px, axis titles
-          30px, labels 26-28px, data labels 24px). All readable.
+        comment: All font sizes explicitly set (title 48px, subtitle 26px, axis titles
+          28px, labels 24-26px, data labels 24px). Subtitle annotations slightly small.
       - id: VQ-02
         name: No Overlap
-        score: 4
+        score: 6
         max: 6
         passed: true
-        comment: Subtitle, x-axis title, and category labels stacked closely at top
-          creating visual crowding.
+        comment: No overlapping text. Data labels fit within cells. Y-axis labels
+          well-spaced.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Heatmap cells well-sized with clear border separation. Adaptive data
-          label colors.
+        comment: Heatmap cells well-sized with 3px borders creating crisp separation.
+          Triangular shape well-defined.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue sequential colormap is colorblind-safe. Adaptive white/dark
-          text for contrast.
+        comment: Blue sequential colormap is colorblind-safe. Adaptive text colors
+          ensure contrast.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Chart fills canvas reasonably. Right margin for colorbar is generous.
+        comment: Good canvas usage. Triangular shape inherently leaves empty space
+          in upper-right.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
@@ -81,7 +86,7 @@ review:
         passed: true
         comment: 'Descriptive labels: Months Since Signup, Signup Cohort (Users).'
     design_excellence:
-      score: 13
+      score: 15
       max: 20
       items:
       - id: DE-01
@@ -89,22 +94,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: 'Custom 7-stop blue gradient, custom font family, #fafafa background,
-          adaptive data label colors. Above defaults.'
+        comment: Custom 8-stop blue palette, adaptive text colors, highlighted cohorts
+          with star/color, off-white background, custom font stack.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Grid lines removed, axis lines removed, cell borders match background
-          for clean separation.
+        comment: Grid/axis lines removed, clean borders matching background, subtle
+          plotBands for emphasis rows.
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 5
         max: 6
-        passed: false
-        comment: Triangular shape and gradient convey retention decay but no focal
-          point or emphasis on insights.
+        passed: true
+        comment: Best cohort starred and blue-highlighted, worst in red, subtitle
+          explains why, plotBands draw attention. Clear narrative.
     spec_compliance:
       score: 15
       max: 15
@@ -114,51 +119,51 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct heatmap with triangular shape.
+        comment: Correct triangular heatmap with proper cohort structure.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: period 0=100%, triangular shape, sequential
-          colormap, retention % in cells, cohort sizes, Month labels, color bar.'
+        comment: 'All spec features present: triangular shape, percentages in cells,
+          cohort sizes, blue colormap, color bar, Month N labels.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=periods, Y=cohorts, color=retention rate. All correct.
+        comment: X=periods, Y=cohorts. Period 0=100%. Triangular shape correct.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title follows spec-id · library · pyplots.ai format. Color bar labeled
-          Retention %.
+        comment: Title format correct. Color bar labeled Retention %.
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Shows retention decay, triangular shape, cohort variation. Cohorts
-          are somewhat similar in decay pattern.
+        comment: Differentiated retention curves, best/worst cohorts, varied sizes,
+          proper triangular structure.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: SaaS monthly cohort retention is a classic realistic business scenario.
+        comment: SaaS monthly cohort retention — real, neutral business scenario with
+          plausible narratives.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Retention 100% to ~17-22% over 9 months is realistic. Cohort sizes
-          1190-1680 are plausible.
+        comment: Retention 100% to ~20% realistic. Cohort sizes 1,190-1,680 plausible
+          for SaaS.
     code_quality:
       score: 10
       max: 10
@@ -168,7 +173,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data generation, chart config, HTML, screenshot.'
+        comment: 'Linear flow: imports, data, config, HTML, screenshot. No functions/classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -180,45 +185,46 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports are used.
+        comment: All imports used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, well-organized. Chart config as dict is idiomatic. Fallback
-          URLs.
+        comment: Clean code, appropriate complexity. No fake UI.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html.
+        comment: Saves as plot.png via Selenium.
     library_mastery:
       score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
-        max: 5
-        passed: true
-        comment: Constructs Highcharts heatmap via JSON config + Selenium. Valid approach.
-      - id: LM-02
-        name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses heatmap module, colorAxis with stops, custom JS formatter, tooltip
-          pointFormat, opposite x-axis.
-  verdict: REJECTED
+        comment: Raw JSON config approach instead of highcharts-core Python API. Works
+          correctly but bypasses Python wrapper.
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of colorAxis, plotBands, useHTML formatters, heatmap module,
+          tooltip config.
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - selenium
   techniques:
-  - annotations
-  - html-export
   - colorbar
+  - annotations
+  - hover-tooltips
+  - html-export
   patterns:
   - data-generation
   - matrix-construction

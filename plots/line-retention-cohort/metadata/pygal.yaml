@@ -1,7 +1,7 @@
 library: pygal
 specification_id: line-retention-cohort
 created: '2026-03-16T20:43:49Z'
-updated: '2026-03-16T21:05:42Z'
+updated: '2026-03-16T21:18:16Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23164943848
 issue: 4572
@@ -10,101 +10,101 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-retention-cohort/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-retention-cohort/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-retention-cohort/pygal/plot.html
-quality_score: 85
+quality_score: 88
 review:
   strengths:
-  - Perfect spec compliance with all required features including threshold line and
-    cohort sizes in legend
-  - Effective visual hierarchy through progressively thicker lines for newer cohorts
-  - Clean well-structured code with appropriate data generation model
-  - Good use of pygal-specific features like cubic interpolation and per-series styling
-  - Strong data storytelling showing improving retention across cohorts
+  - Excellent spec compliance - every requirement implemented
+  - Strong visual hierarchy through progressive stroke widths and opacity for newer
+    cohorts
+  - Rich tooltip data with per-point user count calculations
+  - Clean well-structured code with realistic synthetic data generation
+  - Good use of 20% retention threshold as storytelling reference line
   weaknesses:
-  - Legend text could be slightly larger for better readability at full canvas size
-  - Some older cohort lines with lower opacity are less visually distinct
-  - Vertical space between lowest data and 0% baseline is somewhat wasted
-  image_description: 'The plot displays a line chart titled "line-retention-cohort
-    · pygal · pyplots.ai" on a light gray (#fafafa) background. Six series are shown:
-    a red dashed "20% Retention Threshold" horizontal line at 20%, and five cohort
-    curves for Jan-May 2025 in distinct colors (blue-gray, orange, green, gold, purple).
-    All cohort curves start at 100% at week 0 and decay downward with cubic interpolation
-    smoothing. Jan 2025 (oldest, thinnest line) decays fastest to approximately 21%
-    by week 12, while May 2025 (newest, thickest line at approximately 7px) decays
-    slowest to approximately 40%. The y-axis labeled "Retained Users (%)" ranges 0-100%
-    with gridlines every 10%. The x-axis labeled "Weeks Since Signup" shows major
-    labels at 0, 3, 6, 9, 12. A bottom legend in 3 columns displays all series with
-    cohort sizes (e.g., "Jan 2025 (n=1,245)"). The visual hierarchy through increasing
-    stroke width effectively emphasizes newer cohorts.'
+  - Lines converge in weeks 8-12 reducing distinguishability between cohorts
+  - Green-gold color pair weak under deuteranopia
+  - Default pygal axis framing still visible - further refinement would elevate design
+  image_description: The plot displays a line chart titled "line-retention-cohort
+    · pygal · pyplots.ai" on a light gray background with a near-white plot area.
+    The Y-axis shows "Retained Users (%)" from 0% to 100% with gridlines at every
+    10%. The X-axis shows "Weeks Since Signup" with major labels at 0, 3, 6, 9, and
+    12. Five cohort curves (Jan-May 2025) all start at 100% and decay downward with
+    different rates - Jan 2025 (blue) decays fastest to approximately 20%, while May
+    2025 (purple) retains best at approximately 40%. A dashed dark red horizontal
+    line marks the 20% retention threshold. Lines use cubic interpolation for smooth
+    curves, with increasing stroke widths and dot sizes for newer cohorts creating
+    visual hierarchy. The legend at the bottom shows all 6 series in 3 columns, including
+    cohort sizes.
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 28
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title=72, label=48, major_label=42,
-          legend=40, value=36). All text clearly readable. Legend text slightly small
-          relative to overall canvas.
+        comment: All font sizes explicitly set (title=74, labels=48, major_labels=44,
+          legend=46, values=36), all clearly readable
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text. Legend organized in 3 columns with no collisions.
+        comment: No text overlap; legend entries clear, axis labels well-spaced with
+          major-only x-labels
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Lines visible with varying stroke widths (3-7px). Older cohorts with
-          lower opacity slightly less prominent.
+        comment: Lines visible with progressive stroke widths; convergence in weeks
+          8-12 reduces distinguishability
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Colors distinguishable. Opacity variations reduce contrast on some
-          lines. No red-green reliance.
+        comment: Mostly accessible palette; green-gold distinction challenging for
+          some color vision deficiencies
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Plot fills most of canvas. Some wasted vertical space between lowest
-          data and 0%.
+        comment: Plot fills canvas well, balanced margins, clean bottom legend
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive with units: Retained Users (%) and Weeks Since Signup.'
+        comment: 'Descriptive labels with units: Retained Users (%) and Weeks Since
+          Signup'
     design_excellence:
-      score: 13
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom palette with opacity gradients, custom font family, varying
-          stroke widths. Above defaults but not publication-level.
+        comment: Custom rgba palette with opacity progression, Segoe UI font, subtle
+          background layering, intentional stroke width hierarchy
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Custom background, x-guides hidden, subtle y-guides, margins customized.
+        comment: X-guides removed, custom margins and spacing, subtle grid; default
+          axis framing still visible
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Newer cohorts emphasized with thicker lines, threshold reference
-          line adds context, improving trend visible.
+        comment: Clear improving retention narrative, stroke width emphasis on newest
+          cohort, 20% threshold benchmark
     spec_compliance:
       score: 15
       max: 15
@@ -114,27 +114,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct line chart with multiple cohort curves.
+        comment: Correct line chart showing retention curves over time
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
         comment: 'All spec features present: 100% start, distinct colors, legend with
-          sizes, threshold line.'
+          sizes, gridlines, threshold line, emphasis on newer cohorts'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=weeks since signup, Y=retention percentage. Correct mapping.
+        comment: X=weeks since signup, Y=retention percentage, correctly mapped
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title follows spec-id · library · pyplots.ai format. Legend labels
-          show cohort name and size.
+        comment: Title format correct, legend labels include cohort name and size
     data_quality:
       score: 14
       max: 15
@@ -144,21 +143,21 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: 5 cohorts with different decay rates showing improving retention.
-          Good variety.
+        comment: 5 cohorts with different decay rates showing separation and convergence;
+          could show more variation
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Monthly signup cohorts for SaaS product. Realistic product analytics
-          scenario.
+        comment: Monthly signup cohorts with plausible sizes, realistic product analytics
+          scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Retention 100% to 20-40% over 12 weeks is realistic for digital products.
+        comment: Realistic retention decay from 100% to 20-45% over 12 weeks
     code_quality:
       score: 10
       max: 10
@@ -168,31 +167,32 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports-data-style-plot-save structure. No functions or classes.
+        comment: Clean imports-data-style-plot-save flow, no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only numpy, pygal, Style - all used.
+        comment: 'All imports used: numpy, pygal, Style'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, well-structured with appropriate complexity.
+        comment: Clean loop with zip, dict-based values with rich tooltips, appropriate
+          complexity
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png. Current API.
+        comment: Saves as plot.png and plot.html, current pygal API
     library_mastery:
       score: 7
       max: 10
@@ -202,21 +202,22 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Good idiomatic pygal: Style class, x_labels_major, per-series config,
-          value_formatter, interpolate.'
+        comment: Good use of Style class, x_labels_major, value_formatter, per-series
+          stroke_style, dict-based data points
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses tooltip_fancy_mode, cubic interpolation, per-series value dicts
-          with labels, dual HTML+PNG output.
+        comment: Uses tooltip_fancy_mode, interpolate=cubic, dynamic_print_values,
+          allow_interruptions, dual HTML+PNG output
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - hover-tooltips
   - html-export
+  - manual-ticks
   patterns:
   - data-generation
   - iteration-over-groups

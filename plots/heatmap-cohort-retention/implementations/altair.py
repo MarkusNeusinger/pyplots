@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-cohort-retention: Cohort Retention Heatmap
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-16
@@ -32,7 +32,6 @@ cohort_sizes = np.random.randint(800, 2500, size=n_cohorts)
 rows = []
 for i, cohort in enumerate(cohort_labels):
     max_periods = n_cohorts - i
-    base_retention = 100.0
     for period in range(max_periods):
         if period == 0:
             retention = 100.0
@@ -59,52 +58,112 @@ df = pd.DataFrame(rows)
 cohort_order = [f"{c} (n={s:,})" for c, s in zip(cohort_labels, cohort_sizes, strict=True)]
 period_order = [f"Month {p}" for p in range(n_periods)]
 
+# Custom dark teal-to-gold diverging-inspired sequential palette for sophistication
+color_domain = [0, 20, 40, 60, 80, 100]
+color_range = ["#f7f7f7", "#d4e8e0", "#7bc8b5", "#2a9d8f", "#264653", "#1d3557"]
+
 # Heatmap rectangles
 heatmap = (
     alt.Chart(df)
-    .mark_rect(stroke="white", strokeWidth=2.5)
+    .mark_rect(stroke="#e8e8e8", strokeWidth=1.5, cornerRadius=3)
     .encode(
         x=alt.X(
             "period_label:O",
             title="Months Since Signup",
             sort=period_order,
-            axis=alt.Axis(labelFontSize=17, titleFontSize=22, labelAngle=0),
+            axis=alt.Axis(
+                labelFontSize=17,
+                titleFontSize=22,
+                titleFontWeight="bold",
+                labelAngle=0,
+                domainWidth=0,
+                tickWidth=0,
+                titlePadding=16,
+                labelPadding=8,
+            ),
         ),
         y=alt.Y(
             "cohort_label:O",
             title="Signup Cohort",
             sort=cohort_order,
-            axis=alt.Axis(labelFontSize=15, titleFontSize=22),
+            axis=alt.Axis(
+                labelFontSize=17,
+                titleFontSize=22,
+                titleFontWeight="bold",
+                domainWidth=0,
+                tickWidth=0,
+                titlePadding=16,
+                labelPadding=8,
+            ),
         ),
         color=alt.Color(
             "retention_rate:Q",
-            scale=alt.Scale(scheme="blues", domain=[0, 100]),
-            legend=alt.Legend(title="Retention %", titleFontSize=18, labelFontSize=16, gradientLength=400),
+            scale=alt.Scale(domain=color_domain, range=color_range),
+            legend=alt.Legend(
+                title="Retention %",
+                titleFontSize=18,
+                titleFontWeight="bold",
+                labelFontSize=16,
+                gradientLength=400,
+                gradientThickness=18,
+                orient="right",
+                offset=12,
+            ),
         ),
+        tooltip=[
+            alt.Tooltip("cohort:N", title="Cohort"),
+            alt.Tooltip("period_label:O", title="Period"),
+            alt.Tooltip("retention_rate:Q", title="Retention %", format=".1f"),
+        ],
     )
 )
 
-# Text annotations inside cells
+# Text annotations with suffix
 text = (
     alt.Chart(df)
-    .mark_text(fontSize=16, fontWeight="bold")
+    .mark_text(fontSize=15, fontWeight="bold")
     .encode(
         x=alt.X("period_label:O", sort=period_order),
         y=alt.Y("cohort_label:O", sort=cohort_order),
         text=alt.Text("retention_rate:Q", format=".1f"),
-        color=alt.condition(alt.datum.retention_rate > 55, alt.value("white"), alt.value("#333333")),
+        color=alt.condition(alt.datum.retention_rate > 50, alt.value("white"), alt.value("#333333")),
+    )
+)
+
+# Percent symbol as separate smaller text layer for polish
+pct = (
+    alt.Chart(df)
+    .mark_text(fontSize=10, fontWeight="normal", dx=20)
+    .encode(
+        x=alt.X("period_label:O", sort=period_order),
+        y=alt.Y("cohort_label:O", sort=cohort_order),
+        text=alt.value("%"),
+        color=alt.condition(
+            alt.datum.retention_rate > 50, alt.value("rgba(255,255,255,0.7)"), alt.value("rgba(51,51,51,0.5)")
+        ),
     )
 )
 
 # Combine
 chart = (
-    (heatmap + text)
+    alt.layer(heatmap, text, pct)
     .properties(
         width=1400,
         height=900,
-        title=alt.Title("heatmap-cohort-retention · altair · pyplots.ai", fontSize=28, anchor="middle"),
+        title=alt.Title(
+            "heatmap-cohort-retention · altair · pyplots.ai",
+            fontSize=28,
+            fontWeight="bold",
+            anchor="middle",
+            subtitle="Monthly SaaS user retention — earliest cohorts show strongest long-term engagement",
+            subtitleFontSize=18,
+            subtitleColor="#666666",
+            subtitlePadding=8,
+        ),
     )
     .configure_view(strokeWidth=0)
+    .configure(padding={"left": 20, "right": 20, "top": 20, "bottom": 20}, background="#ffffff")
+    .configure_axis(labelColor="#444444", titleColor="#333333")
 )
 
 # Save

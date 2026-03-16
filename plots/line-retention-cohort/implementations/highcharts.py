@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-retention-cohort: User Retention Curve by Cohort
 Library: highcharts unknown | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-16
@@ -47,52 +47,58 @@ chart.options.chart = {
     "type": "line",
     "width": 4800,
     "height": 2700,
-    "backgroundColor": "#ffffff",
-    "marginBottom": 200,
+    "backgroundColor": "#fafafa",
+    "marginBottom": 240,
     "marginLeft": 200,
     "marginRight": 180,
     "marginTop": 160,
+    "style": {"fontFamily": "'Segoe UI', 'Helvetica Neue', Arial, sans-serif"},
 }
 
 chart.options.title = {
     "text": "line-retention-cohort \u00b7 highcharts \u00b7 pyplots.ai",
-    "style": {"fontSize": "48px", "fontWeight": "bold"},
+    "style": {"fontSize": "48px", "fontWeight": "bold", "color": "#2a2a2a"},
 }
 
 chart.options.subtitle = {
     "text": "User Retention by Monthly Signup Cohort",
-    "style": {"fontSize": "32px", "color": "#666666"},
+    "style": {"fontSize": "32px", "color": "#777777"},
 }
 
 # X-axis
 chart.options.x_axis = {
     "categories": week_labels,
-    "title": {"text": "Weeks Since Signup", "style": {"fontSize": "36px"}},
-    "labels": {"style": {"fontSize": "28px"}},
+    "title": {"text": "Weeks Since Signup", "style": {"fontSize": "36px", "color": "#444444"}},
+    "labels": {"style": {"fontSize": "28px", "color": "#555555"}},
     "gridLineWidth": 0,
+    "lineColor": "#cccccc",
+    "lineWidth": 1,
+    "tickWidth": 0,
 }
 
 # Y-axis
 chart.options.y_axis = {
-    "title": {"text": "Retained Users (%)", "style": {"fontSize": "36px"}},
-    "labels": {"style": {"fontSize": "28px"}, "format": "{value}%"},
+    "title": {"text": "Retained Users (%)", "style": {"fontSize": "36px", "color": "#444444"}},
+    "labels": {"style": {"fontSize": "28px", "color": "#555555"}, "format": "{value}%"},
     "min": 0,
     "max": 100,
     "tickInterval": 20,
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.08)",
+    "gridLineColor": "rgba(0, 0, 0, 0.06)",
+    "gridLineDashStyle": "Dot",
+    "lineWidth": 0,
     "plotLines": [
         {
             "value": 20,
-            "color": "#999999",
-            "dashStyle": "Dash",
+            "color": "#b0413e",
+            "dashStyle": "LongDash",
             "width": 3,
             "label": {
                 "text": "20% Retention Target",
                 "align": "right",
-                "style": {"fontSize": "24px", "color": "#999999", "fontStyle": "italic"},
+                "style": {"fontSize": "24px", "color": "#b0413e", "fontWeight": "600"},
                 "x": -20,
-                "y": -12,
+                "y": -14,
             },
         }
     ],
@@ -101,7 +107,8 @@ chart.options.y_axis = {
 # Legend
 chart.options.legend = {
     "enabled": True,
-    "itemStyle": {"fontSize": "30px"},
+    "itemStyle": {"fontSize": "30px", "fontWeight": "normal", "color": "#444444"},
+    "itemHoverStyle": {"color": "#222222"},
     "symbolWidth": 80,
     "symbolHeight": 20,
     "layout": "vertical",
@@ -128,8 +135,8 @@ chart.options.plot_options = {
     }
 }
 
-# Colors - distinct, colorblind-safe palette starting with Python Blue
-colors = ["#306998", "#e07b39", "#2ca02c", "#d62728", "#8c564b"]
+# Colors - colorblind-safe palette starting with Python Blue
+colors = ["#306998", "#e07b39", "#8c564b", "#7b4f8a", "#d4a84b"]
 
 # Add series - older cohorts first (thinner), newest last (thickest)
 for i, (cohort, rates) in enumerate(retention_data.items()):

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-cohort-retention: Cohort Retention Heatmap
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-16
@@ -51,7 +51,7 @@ for i, cohort in enumerate(cohorts):
         else:
             base_decay = 100 * np.exp(-0.25 * period)
             noise = np.random.uniform(-3, 3)
-            trend_bonus = i * 0.4
+            trend_bonus = i * 1.5
             retention = np.clip(base_decay + noise + trend_bonus, 5, 100)
         rows.append(
             {"cohort": cohort, "period": period, "retention_rate": round(retention, 1), "cohort_size": cohort_sizes[i]}
@@ -72,30 +72,31 @@ df["text_color"] = df["retention_rate"].apply(lambda v: "#ffffff" if v > 55 else
 # Format retention text
 df["label"] = df["retention_rate"].apply(lambda v: f"{v:.0f}%")
 
-# Highlight best-performing cohort at month 3 for storytelling
-month3 = df[df["period"] == 3].copy()
-best_cohort_idx = month3["retention_rate"].idxmax()
-best_cohort = df.loc[best_cohort_idx]
+# Compare earliest vs latest cohort at same period for storytelling
+compare_period = 4
+earliest = df[(df["cohort"] == "Jan 2024") & (df["period"] == compare_period)]["retention_rate"].values[0]
+latest = df[(df["cohort"] == "Jun 2024") & (df["period"] == compare_period)]["retention_rate"].values[0]
+improvement = latest - earliest
 
-# Multi-stop color palette: deep navy → teal → warm amber for high retention
-colors = ["#0d1b2a", "#1b2838", "#1b4965", "#2a6f97", "#62b6cb", "#bee9e8", "#fefae0", "#dda15e"]
+# Clean 3-stop color palette: cream → teal → deep navy
+colors = ["#0d1b2a", "#2a9d8f", "#fefae0"]
 
 # Plot
 plot = (
     ggplot(df, aes(x="period", y="cohort_label", fill="retention_rate"))
     + geom_tile(color="#f8f9fa", size=0.6)
-    + geom_text(aes(label="label", color="text_color"), size=11, fontweight="bold")
+    + geom_text(aes(label="label", color="text_color"), size=13, fontweight="bold")
     + scale_fill_gradientn(colors=colors[::-1], limits=(0, 100), name="Retention %")
     + scale_color_identity()
     + scale_x_continuous(breaks=range(n_cohorts), labels=[f"Month {i}" for i in range(n_cohorts)])
     + scale_y_discrete(expand=(0.05, 0))
     + annotate(
         "text",
-        x=n_cohorts - 1.5,
+        x=n_cohorts - 2,
         y=3,
-        label=f"Best Month 3:\n{best_cohort['cohort']}\n{best_cohort['retention_rate']:.0f}%",
-        size=10,
-        color="#2a6f97",
+        label=f"Month {compare_period} retention improved\n+{improvement:.0f}pp from Jan→Jun 2024",
+        size=11,
+        color="#0d1b2a",
         ha="center",
         fontweight="bold",
     )
@@ -103,7 +104,7 @@ plot = (
         x="Months Since Signup",
         y="",
         title="heatmap-cohort-retention · plotnine · pyplots.ai",
-        subtitle="Monthly cohort retention — later cohorts show improving retention trends",
+        subtitle="Monthly cohort retention — newer cohorts retain significantly better over time",
     )
     + theme_minimal()
     + theme(

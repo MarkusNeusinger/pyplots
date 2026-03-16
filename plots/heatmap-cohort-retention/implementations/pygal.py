@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-cohort-retention: Cohort Retention Heatmap
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-16
@@ -57,6 +57,18 @@ class CohortRetentionHeatmap(Graph):
         if not self.matrix_data:
             return
 
+        # Inject CSS to suppress pygal's default focus/active/hover outlines
+        defs_node = self.svg.node(self.svg.root, "defs")
+        style_node = self.svg.node(defs_node, "style", type="text/css")
+        style_node.text = (
+            ".cell rect, .cell { outline: none !important; stroke-opacity: 1; } "
+            ".cell:focus rect, .cell:hover rect, .cell:active rect, "
+            ".active .cell rect, .cell .active rect "
+            "{ outline: none !important; } "
+            "g.cell:focus, g.cell:active { outline: none; } "
+            ".activate-serie, .active .reactive { outline: none !important; }"
+        )
+
         n_rows = len(self.matrix_data)
         n_cols = max(len(row) for row in self.matrix_data)
 
@@ -110,7 +122,7 @@ class CohortRetentionHeatmap(Graph):
 
         # Row labels with cohort sizes
         row_font_size = min(36, int(cell_height * 0.50))
-        size_font_size = int(row_font_size * 0.78)
+        size_font_size = int(row_font_size * 0.88)
         for i, label in enumerate(self.row_labels):
             ry = y_offset + i * (cell_height + gap) + cell_height / 2
             rx = x_offset - 20
@@ -155,10 +167,12 @@ class CohortRetentionHeatmap(Graph):
                 cy = y_offset + i * (cell_height + gap)
 
                 cell_group = self.svg.node(plot_node, "g", class_="cell")
+                cell_group.set("style", "outline:none;stroke:none;")
                 rect = self.svg.node(cell_group, "rect", x=cx, y=cy, width=cell_width, height=cell_height, rx=3, ry=3)
                 rect.set("fill", color)
                 rect.set("stroke", "#ffffff")
                 rect.set("stroke-width", "2")
+                rect.set("style", "outline:none;")
 
                 # Tooltip
                 cohort_label = self.row_labels[i] if i < len(self.row_labels) else ""
@@ -253,9 +267,9 @@ n_max_periods = 10
 cohort_sizes = [1200, 1350, 980, 1520, 1100, 1430, 1280, 1050, 1380, 1150]
 
 # Base retention curve that decays over time
-base_retention = np.array([100.0, 68.0, 52.0, 43.0, 37.0, 33.0, 30.0, 28.0, 26.5, 25.0])
+base_retention = np.array([100.0, 65.0, 48.0, 40.0, 34.0, 30.0, 27.0, 25.0, 23.5, 22.0])
 
-# Build triangular retention matrix
+# Build triangular retention matrix with visible cohort variation
 matrix = []
 for i in range(n_cohorts):
     n_periods = n_max_periods - i
@@ -264,9 +278,12 @@ for i in range(n_cohorts):
         if j == 0:
             row.append(100.0)
         else:
-            # Add cohort-specific variation — later cohorts slightly better retention
-            improvement = i * 0.8
-            noise = np.random.uniform(-2.5, 2.5)
+            # Later cohorts show progressively better retention (product improvements)
+            improvement = i * 1.8
+            # Apr 2024 (i=3) had a bad onboarding change — worse retention
+            if i == 3:
+                improvement = -4.0
+            noise = np.random.uniform(-2.0, 2.0)
             val = base_retention[j] + improvement + noise
             val = max(5.0, min(100.0, val))
             row.append(round(val, 1))

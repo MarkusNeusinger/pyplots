@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-cohort-retention: Cohort Retention Heatmap
 Library: highcharts unknown | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-16
@@ -15,7 +15,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data - Monthly signup cohorts with weekly retention
+# Data - Monthly signup cohorts with realistic retention variation
 np.random.seed(42)
 cohorts = [
     "Jan 2024",
@@ -32,26 +32,29 @@ cohorts = [
 num_cohorts = len(cohorts)
 num_periods = 10
 
-# Cohort sizes (number of signups per month)
+# Cohort sizes - varied to reflect marketing pushes
 cohort_sizes = [1240, 1385, 1520, 1190, 1450, 1680, 1310, 1575, 1420, 1290]
 
-# Generate realistic retention curves with natural decay
-# Period 0 is always 100%, then exponential-ish decay with noise
+# Generate differentiated retention curves to tell a story:
+# - Jun 2024 (idx 5): best cohort — new onboarding flow launched
+# - Apr 2024 (idx 3): worst cohort — buggy release hurt retention
+# - Others vary moderately
 retention = np.zeros((num_cohorts, num_periods))
 retention[:, 0] = 100.0
 
 base_decay = np.array([1.0, 0.58, 0.45, 0.38, 0.33, 0.30, 0.27, 0.25, 0.23, 0.21])
 
+# Per-cohort quality multipliers for storytelling
+cohort_multipliers = [1.0, 0.98, 1.04, 0.82, 0.95, 1.18, 1.06, 1.02, 1.10, 1.05]
+
 for i in range(num_cohorts):
-    cohort_quality = 1.0 + np.random.uniform(-0.08, 0.08)
-    noise = np.random.normal(0, 0.02, num_periods)
-    curve = base_decay * cohort_quality + noise
+    noise = np.random.normal(0, 0.015, num_periods)
+    curve = base_decay * cohort_multipliers[i] + noise
     curve[0] = 1.0
     curve = np.clip(curve, 0.05, 1.0)
     retention[i, :] = np.round(curve * 100, 1)
 
 # Triangular shape: recent cohorts have fewer periods
-# Cohort i (0-indexed) can have at most (num_periods - i) periods
 heatmap_data = []
 for row in range(num_cohorts):
     max_periods = num_periods - row
@@ -62,6 +65,10 @@ for row in range(num_cohorts):
 y_labels = [f"{cohort} ({size:,})" for cohort, size in zip(cohorts, cohort_sizes, strict=True)]
 x_labels = [f"Month {i}" for i in range(num_periods)]
 
+# Find best and worst cohorts for storytelling emphasis
+best_cohort_idx = 5  # Jun 2024 - new onboarding
+worst_cohort_idx = 3  # Apr 2024 - buggy release
+
 # Chart configuration
 chart_options = {
     "chart": {
@@ -69,42 +76,48 @@ chart_options = {
         "width": 4800,
         "height": 2700,
         "backgroundColor": "#fafafa",
-        "marginTop": 160,
-        "marginBottom": 140,
-        "marginLeft": 380,
-        "marginRight": 340,
+        "marginTop": 260,
+        "marginBottom": 100,
+        "marginLeft": 400,
+        "marginRight": 280,
         "style": {"fontFamily": "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"},
     },
     "title": {
         "text": "heatmap-cohort-retention \u00b7 highcharts \u00b7 pyplots.ai",
-        "style": {"fontSize": "48px", "fontWeight": "600", "color": "#2c3e50"},
-        "y": 30,
+        "style": {"fontSize": "48px", "fontWeight": "700", "color": "#1a2634"},
+        "y": 28,
     },
     "subtitle": {
-        "text": "Monthly cohort retention rates \u2014 percentage of users returning each month after signup",
-        "style": {"fontSize": "28px", "fontWeight": "normal", "color": "#7f8c8d"},
-        "y": 72,
+        "text": "Monthly cohort retention rates \u2014 percentage of users returning each month after signup<br/>"
+        '<span style="font-size:22px;color:#084594;">\u2605 Best: Jun 2024 (new onboarding)</span>'
+        "&nbsp;&nbsp;&nbsp;"
+        '<span style="font-size:22px;color:#c0392b;">Apr 2024: lowest retention (buggy release)</span>',
+        "style": {"fontSize": "26px", "fontWeight": "normal", "color": "#7f8c8d"},
+        "useHTML": True,
+        "y": 78,
     },
     "xAxis": {
         "categories": x_labels,
         "title": {
             "text": "Months Since Signup",
-            "style": {"fontSize": "30px", "fontWeight": "600", "color": "#34495e"},
-            "margin": 16,
+            "style": {"fontSize": "28px", "fontWeight": "600", "color": "#34495e"},
+            "margin": 20,
+            "y": -8,
         },
-        "labels": {"style": {"fontSize": "28px", "color": "#34495e"}, "y": 36},
+        "labels": {"style": {"fontSize": "26px", "color": "#34495e"}, "y": 32},
         "lineWidth": 0,
         "tickLength": 0,
         "opposite": True,
+        "offset": 30,
     },
     "yAxis": {
         "categories": y_labels,
         "title": {
             "text": "Signup Cohort (Users)",
-            "style": {"fontSize": "30px", "fontWeight": "600", "color": "#34495e"},
+            "style": {"fontSize": "28px", "fontWeight": "600", "color": "#34495e"},
             "margin": 20,
         },
-        "labels": {"style": {"fontSize": "26px", "color": "#34495e"}},
+        "labels": {"style": {"fontSize": "24px", "color": "#34495e"}},
         "reversed": False,
         "lineWidth": 0,
         "gridLineWidth": 0,
@@ -114,28 +127,29 @@ chart_options = {
         "max": 100,
         "stops": [
             [0, "#f7fbff"],
-            [0.15, "#d2e3f3"],
-            [0.30, "#9ecae1"],
-            [0.50, "#4292c6"],
-            [0.70, "#2171b5"],
+            [0.12, "#deebf7"],
+            [0.25, "#9ecae1"],
+            [0.40, "#4292c6"],
+            [0.55, "#2171b5"],
+            [0.70, "#08519c"],
             [0.85, "#084594"],
             [1, "#042a5e"],
         ],
-        "labels": {"style": {"fontSize": "24px", "color": "#34495e"}, "format": "{value}%"},
+        "labels": {"style": {"fontSize": "22px", "color": "#34495e"}, "format": "{value}%"},
     },
     "legend": {
-        "title": {"text": "Retention %", "style": {"fontSize": "26px", "fontWeight": "600", "color": "#34495e"}},
+        "title": {"text": "Retention %", "style": {"fontSize": "24px", "fontWeight": "600", "color": "#34495e"}},
         "align": "right",
         "layout": "vertical",
         "verticalAlign": "middle",
-        "symbolHeight": 800,
-        "symbolWidth": 32,
-        "itemStyle": {"fontSize": "22px", "color": "#34495e"},
-        "x": -40,
-        "margin": 30,
+        "symbolHeight": 700,
+        "symbolWidth": 28,
+        "itemStyle": {"fontSize": "20px", "color": "#34495e"},
+        "x": -20,
+        "margin": 20,
     },
     "tooltip": {
-        "style": {"fontSize": "28px"},
+        "style": {"fontSize": "26px"},
         "headerFormat": "",
         "pointFormat": (
             "<b>{series.yAxis.categories.(point.y)}</b><br>{series.xAxis.categories.(point.x)}: <b>{point.value}%</b>"
@@ -186,12 +200,29 @@ html_content = f"""<!DOCTYPE html>
     <div id="container" style="width:4800px; height:2700px;"></div>
     <script>
         var opts = {options_json};
+        // Adaptive data label colors based on cell value
         opts.series[0].dataLabels.formatter = function() {{
             var v = this.point.value;
             var color = v > 45 ? '#ffffff' : '#1a1a1a';
             return '<span style="color:' + color + ';font-size:24px;font-weight:bold">' + v.toFixed(1) + '%</span>';
         }};
         opts.series[0].dataLabels.useHTML = true;
+        // Highlight best/worst cohort y-axis labels
+        opts.yAxis.labels.formatter = function() {{
+            var val = this.value;
+            if (this.pos === {best_cohort_idx}) {{
+                return '<span style="color:#084594;font-weight:bold;font-size:26px">\u2605 ' + val + '</span>';
+            }} else if (this.pos === {worst_cohort_idx}) {{
+                return '<span style="color:#c0392b;font-size:24px">' + val + '</span>';
+            }}
+            return '<span style="font-size:24px">' + val + '</span>';
+        }};
+        opts.yAxis.labels.useHTML = true;
+        // Add plotBands for best/worst cohort rows
+        opts.yAxis.plotBands = [
+            {{from: {best_cohort_idx} - 0.5, to: {best_cohort_idx} + 0.5, color: 'rgba(8,69,148,0.06)'}},
+            {{from: {worst_cohort_idx} - 0.5, to: {worst_cohort_idx} + 0.5, color: 'rgba(192,57,43,0.06)'}}
+        ];
         Highcharts.chart('container', opts);
     </script>
 </body>

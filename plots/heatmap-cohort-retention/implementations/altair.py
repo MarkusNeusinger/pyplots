@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 heatmap-cohort-retention: Cohort Retention Heatmap
 Library: altair 6.0.0 | Python 3.14.3
-Quality: 86/100 | Created: 2026-03-16
+Quality: 90/100 | Created: 2026-03-16
 """
 
 import altair as alt

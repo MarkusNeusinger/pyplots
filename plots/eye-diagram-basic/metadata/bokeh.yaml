@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: eye-diagram-basic
 created: '2026-03-17T23:36:15Z'
-updated: '2026-03-17T23:40:21Z'
+updated: '2026-03-17T23:51:44Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23221365313
 issue: 4561
@@ -10,32 +10,36 @@ library_version: 3.9.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/eye-diagram-basic/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/eye-diagram-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/eye-diagram-basic/bokeh/plot.html
-quality_score: 85
+quality_score: 87
 review:
   strengths:
-  - 'Excellent domain-appropriate design: black background with Inferno colormap is
-    the standard for eye diagrams in industry tools'
-  - Perfect spec compliance and data quality with realistic NRZ signal simulation
-    parameters
-  - Clean well-structured code with good reproducibility and log-scale density transformation
-  - HTML export with CDN resources leverages bokeh-distinctive capability
+  - Excellent domain-appropriate dark background aesthetic matching oscilloscope displays
+  - Inferno colormap provides outstanding density visualization with clear hot/cold
+    regions
+  - Eye height and width annotations with computed values add real engineering context
+  - Complete spec compliance with all features implemented (density heatmap, sigmoid
+    transitions, noise, jitter, annotations)
+  - Clean data generation with realistic NRZ parameters
   weaknesses:
-  - 'No data storytelling: eye opening is the key indicator but nothing draws attention
-    to it'
-  - Colorbar lacks a descriptive label
-  - Grid lines visible on dark background add visual noise
-  - Colorbar top tick labels slightly cramped
-  image_description: The plot displays an eye diagram as a 2D density heatmap on a
-    black background using the Inferno colormap (black to purple to orange to yellow).
-    Two horizontal high-density bands (yellow/orange) sit at the 0V and 1V signal
-    levels, connected by sigmoid transitions at approximately 0.5 UI and 1.5 UI. A
-    clear eye opening is visible in the center of the plot between the two transition
-    regions. The x-axis is labeled "Time (UI)" ranging from 0 to 2, the y-axis is
-    labeled "Voltage (V)" ranging from approximately -0.3 to 1.3. The title reads
-    "eye-diagram-basic · bokeh · pyplots.ai" in the top-left. A colorbar on the right
-    shows log-density values from 0 to ~3.5, though the topmost tick labels appear
-    slightly cut off. Grid lines are faintly visible in dark gray against the black
-    background.
+  - Signal level labels at 16pt are slightly small for the canvas size
+  - Blue dashed reference lines at 0V/1V are barely visible against bright density
+    bands
+  - Right margin slightly oversized creating minor layout asymmetry
+  - Eye measurement computation uses verbose while-loop walking instead of concise
+    numpy operations
+  image_description: 'The plot displays an NRZ eye diagram on a black background using
+    the Inferno colormap for density visualization. Two high-density horizontal bands
+    (yellow/orange) appear at the 0V and 1V logic levels, representing the two NRZ
+    signal states. The characteristic eye-shaped opening is clearly visible in the
+    center spanning approximately 0.5–1.5 UI. A green rectangular box annotation outlines
+    the eye opening region. Green vertical and horizontal measurement lines mark eye
+    height (~0.76 V) and eye width (~0.95 UI), with corresponding labels in green
+    text on black backgrounds. Blue "Logic 1 (1.0 V)" and "Logic 0 (0.0 V)" labels
+    appear at the upper-left and lower-left. Blue dashed reference lines at 0V and
+    1V are present but subtle. The colorbar on the right shows "Log Density" ranging
+    from 0 to ~3.5. Title reads "eye-diagram-basic · bokeh · pyplots.ai". X-axis:
+    "Time (UI)" [0, 2]. Y-axis: "Voltage (V)" [-0.2, 1.2]. Transition regions show
+    purple/magenta traces fanning out, indicating jitter and ISI effects.'
   criteria_checklist:
     visual_quality:
       score: 27
@@ -46,32 +50,35 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set (28pt title, 22pt labels, 18pt ticks).
-          All readable but title appears relatively small.
+        comment: All font sizes explicitly set (title 30pt, axis labels 22pt, ticks
+          18pt, annotations 16-18pt). Signal level labels at 16pt are slightly small.
       - id: VQ-02
         name: No Overlap
-        score: 5
-        max: 6
-        passed: true
-        comment: Colorbar tick labels at top slightly cut off/cramped near upper edge.
-      - id: VQ-03
-        name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Density heatmap renders clearly with excellent contrast.
+        comment: No overlapping text elements. All labels well-positioned.
+      - id: VQ-03
+        name: Element Visibility
+        score: 5
+        max: 6
+        passed: true
+        comment: Heatmap density well-visualized. Blue dashed reference lines at 0V/1V
+          are subtle and partially lost against bright density bands.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Inferno256 is perceptually uniform and colorblind-safe.
+        comment: Inferno256 is perceptually uniform and colorblind-safe. Green annotations
+          contrast well.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good proportions but colorbar lacks descriptive label.
+        comment: Good layout. Right margin (min_border_right=280) creates slight horizontal
+          asymmetry.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
@@ -79,7 +86,7 @@ review:
         passed: true
         comment: Time (UI) and Voltage (V) - descriptive with units.
     design_excellence:
-      score: 12
+      score: 14
       max: 20
       items:
       - id: DE-01
@@ -87,22 +94,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Black background with Inferno is domain-appropriate and visually
-          striking. Custom axis colors, removed outline.
+        comment: Dark background is domain-appropriate. Inferno colormap excellent
+          for density. Green annotations provide professional engineering feel.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Subtle grid, removed outline, custom axis/tick colors. Grid still
-          visible on dark background.
+        comment: Grid lines removed, outline removed, axis colors customized. Deliberate
+          refinement visible.
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 4
         max: 6
-        passed: false
-        comment: Heatmap conveys density but no visual emphasis on the eye opening
-          or signal quality metrics.
+        passed: true
+        comment: Eye opening annotations with measured values tell a clear signal
+          integrity story. Density heatmap guides viewer to focal point.
     spec_compliance:
       score: 15
       max: 15
@@ -112,26 +119,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Correct: eye diagram as density heatmap.'
+        comment: Correct eye diagram with density heatmap coloring.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All required features present: density coloring, NRZ, noise, jitter,
-          sigmoid transitions.'
+        comment: 'All spec features present: density heatmap, sigmoid transitions,
+          noise, jitter, eye annotations.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=Time(UI), Y=Voltage(V). Correct mapping.
+        comment: X=time [0,2] UI, Y=voltage [-0.3, 1.3] V. Correct mapping.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Colorbar present for density.
+        comment: Title in correct format. Colorbar serves as density scale.
     data_quality:
       score: 15
       max: 15
@@ -141,22 +148,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows both signal levels, transitions, noise, jitter, and clear eye
-          opening.
+        comment: Shows transitions, noise, jitter, density variation. Both logic levels
+          visible. Eye opening well-formed.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Simulated NRZ signal with realistic telecom parameters.
+        comment: Simulated NRZ signal with realistic engineering parameters.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 0-1V NRZ, 5% noise, 3% jitter — realistic values.
+        comment: 400 traces, 150 samples/UI, 5% noise, 3% jitter - appropriate values.
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -164,61 +171,64 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear flow with necessary loops for trace simulation.
+        comment: Linear structure with no functions or classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) set at start.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: All imports used including save, CDN for HTML export.
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
         passed: true
-        comment: Clean, well-organized, appropriate complexity.
+        comment: Eye measurement walking algorithm is slightly verbose. Could use
+          numpy operations.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png. No deprecated API.
+        comment: Saves as plot.png via export_png. Also saves HTML.
     library_mastery:
-      score: 6
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Correct usage of figure, image, LinearColorMapper, ColorBar. Doesn't
-          use ColumnDataSource.
+        comment: Uses Bokeh figure, image glyph, ColumnDataSource, LinearColorMapper,
+          ColorBar, Span, BoxAnnotation, Label.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: HTML export with CDN resources, image glyph with LinearColorMapper.
-          Could use HoverTool.
+        comment: Uses BoxAnnotation, Span, image glyph, and dual HTML+PNG export -
+          distinctive Bokeh features.
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - colorbar
+  - annotations
   - html-export
   patterns:
   - data-generation
   - iteration-over-groups
+  - matrix-construction
+  - columndatasource
   dataprep:
   - binning
   styling:
   - dark-theme
   - custom-colormap
-  - grid-styling

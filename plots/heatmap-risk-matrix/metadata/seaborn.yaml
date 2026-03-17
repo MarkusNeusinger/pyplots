@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: heatmap-risk-matrix
 created: '2026-03-17T21:54:49Z'
-updated: '2026-03-17T22:17:39Z'
+updated: '2026-03-17T22:25:03Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23217984782
 issue: 4567
@@ -10,37 +10,32 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-risk-matrix/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-risk-matrix/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 88
+quality_score: 87
 review:
   strengths:
-  - Full spec compliance with all required features correctly implemented including
-    zone legend, descriptive labels, and category markers
-  - Strong design with custom colormap, category-specific marker shapes, critical
-    risk highlighting with outer rings and bordered labels
-  - Improved label sizes (11-11.5pt vs previous 9.5pt) and annotation visibility (alpha=0.55
-    vs 0.3) from previous attempt
-  - Excellent realistic data with 15 risks across 4 categories spanning all risk zones
-  - Clean, well-structured code with effective offset system for multi-risk cells
+  - Excellent data storytelling with critical risk emphasis (outer rings + bordered
+    labels)
+  - Custom perceptually-uniform colormap with thoughtful accessibility consideration
+  - Clean multi-item cell positioning with offset system
+  - Comprehensive legend with categories, zones, critical indicator, and size reference
+  - Perfect data quality with realistic risk management scenario
   weaknesses:
-  - Risk item labels still slightly small (11pt) for optimal readability on 4800x2700
-    canvas
-  - Some cell score numbers partially obscured by overlaid markers in populated cells
-  - Color gradient (green-to-red) not fully perceptually uniform for accessibility
-  image_description: 'The plot displays a 5×5 risk assessment matrix heatmap with
-    "Impact" on the x-axis (Negligible, Minor, Moderate, Major, Catastrophic) and
-    "Likelihood" on the y-axis (Rare, Unlikely, Possible, Likely, Almost Certain).
-    Background cells use a green-yellow-orange-red gradient colored by risk score
-    (likelihood × impact, 1–25), with semi-transparent bold score numbers (alpha=0.55)
-    in each cell. 15 risk items are plotted as labeled markers using distinct shapes
-    and colors per category: Technical (blue circles), Financial (orange squares),
-    Operational (purple diamonds), Project (green triangles). Each marker has a white
-    edge for contrast. Critical risks (Supply Delay, Data Breach) have dark red outer
-    rings for emphasis. Text labels below markers use white background boxes, with
-    critical risk labels having dark red borders. A comprehensive legend on the right
-    displays category markers, zone color patches (Low 1–4, Medium 5–9, High 10–16,
-    Critical 20–25), critical risk indicator, and marker size meaning. A colorbar
-    labeled "Risk Score" sits between the plot and legend. Title reads "heatmap-risk-matrix
-    · seaborn · pyplots.ai" in bold. Spines are removed via sns.despine.'
+  - Risk item label font size (13pt) slightly below ideal for maximum legibility
+  - Colormap omits green start per spec (yellow-to-red instead of green-to-red)
+  - Minor crowding in cells with multiple items (e.g., Staff Loss / Defects)
+  image_description: 'The plot displays a 5x5 risk assessment matrix heatmap with
+    "Impact" (Negligible to Catastrophic) on the x-axis and "Likelihood" (Rare to
+    Almost Certain) on the y-axis. Cells are colored using a yellow-orange-red gradient
+    based on risk score (likelihood x impact), with scores shown in the bottom-right
+    corner of each cell. 15 risk items are plotted as labeled markers with different
+    shapes per category: circles (Technical/blue), squares (Financial/orange), diamonds
+    (Operational/purple), and triangles (Project/green). Critical risks like "Supply
+    Delay" and "Cyber Attack" have dark-bordered label boxes and outer ring emphasis.
+    A colorbar on the right shows the Risk Score scale (1-25). An external legend
+    shows categories, zone color patches (Low 1-4, Medium 5-9, High 10-16, Critical
+    20-25), critical risk indicator, and size legend. Title reads "heatmap-risk-matrix
+    · seaborn · pyplots.ai". Spines are removed, white cell borders provide clean
+    separation.'
   criteria_checklist:
     visual_quality:
       score: 25
@@ -51,44 +46,40 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 24pt, labels 20pt, ticks 16pt,
-          annotations 24pt). Risk item labels at 11-11.5pt improved but still slightly
+        comment: All font sizes explicitly set. Risk item labels at 13pt slightly
           below ideal.
       - id: VQ-02
         name: No Overlap
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Offset system handles multi-risk cells well. Some cell score numbers
-          partially obscured by overlaid markers. Staff Loss and Defects tightly packed.
+        comment: Cell offset system works well. Minor crowding in multi-item cells.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Markers clearly visible with distinct shapes, white edges, and size
-          variation. Cell annotations at alpha=0.55 adequately visible.
+        comment: Markers visible with white edges and shape differentiation. Size
+          variation adds hierarchy.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Green-to-red gradient uses yellow/orange intermediaries. Category
-          colors reasonably distinguishable but not fully optimized for all colorblind
-          types.
+        comment: Yellow-orange-red avoids green-red confusion. Category colors differentiated
+          by shape and color.
       - id: VQ-05
         name: Layout & Canvas
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: Good canvas utilization with plot filling ~60% of area. Legend positioned
-          outside with adequate spacing.
+        comment: Good proportions with external legend. Adequate canvas utilization.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels appropriate for categorical ordinal axes.
+        comment: Descriptive labels. Units not applicable for ordinal ratings.
     design_excellence:
       score: 16
       max: 20
@@ -98,24 +89,23 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Strong design with custom colormap, category-specific markers, critical
-          risk highlighting. Clearly above defaults.
+        comment: Custom colormap, cohesive category palette, marker shape hierarchy,
+          critical risk emphasis. Above defaults.
       - id: DE-02
         name: Visual Refinement
         score: 5
         max: 6
         passed: true
-        comment: Spines removed, white cell dividers, generous padding, colorbar refined.
-          Good attention to detail.
+        comment: Spines removed, white cell borders, refined colorbar, generous whitespace.
       - id: DE-03
         name: Data Storytelling
         score: 5
         max: 6
         passed: true
-        comment: Critical risks emphasized with outer rings and bordered labels. Size
-          varies by score. Color gradient guides viewer from low to critical.
+        comment: Critical risks immediately identifiable through outer rings and bordered
+          labels. Size encoding reinforces severity.
     spec_compliance:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -126,24 +116,24 @@ review:
         comment: Correct 5x5 heatmap risk matrix.
       - id: SC-02
         name: Required Features
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: 'All spec features present: gradient, labels, markers with jitter,
-          zone legend, grid lines.'
+        comment: All features present except green start in colormap (uses yellow-orange-red
+          for accessibility).
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Likelihood on Y, Impact on X, scores = likelihood x impact.
+        comment: Likelihood on Y, Impact on X. All 15 risks correctly positioned.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format and comprehensive legend with categories, zones,
-          critical indicator.
+        comment: Title format correct. Legend includes categories, zones, critical
+          indicator, size reference.
     data_quality:
       score: 15
       max: 15
@@ -153,20 +143,20 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 15 risks across 4 categories, spread from low to critical zones.
-          Multiple risks per cell demonstrate offset system.
+        comment: 15 items across 4 categories spanning all risk zones. Multi-item
+          cells demonstrated.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Enterprise risk management with plausible, neutral business/IT risks.
+        comment: Real-world IT/business risk management. Neutral business context.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Standard 1-5 ratings with sensible risk placements.
+        comment: 1-5 ordinal ratings match industry standard risk matrices.
     code_quality:
       score: 10
       max: 10
@@ -176,7 +166,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, plot, save.'
+        comment: Linear flow, no functions or classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -194,13 +184,13 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Appropriate complexity. Clean offset mapping. No fake UI.
+        comment: Well-structured, appropriate complexity.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png, dpi=300, bbox_inches=tight. Current API.
+        comment: Saves as plot.png, no deprecated API.
     library_mastery:
       score: 7
       max: 10
@@ -210,15 +200,15 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of sns.heatmap, sns.scatterplot, sns.set_style/context,
-          sns.despine, sns.color_palette. Some matplotlib reliance for legend.
+        comment: Uses sns.heatmap, sns.scatterplot, set_style, set_context, despine,
+          color_palette idiomatically.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: sns.heatmap with annot/fmt/cbar_kws and sns.set_context are distinctive
-          seaborn features.
+        comment: Leverages seaborn heatmap with colorbar, set_context for scaling,
+          despine. Manual annotation layer dilutes library character.
   verdict: REJECTED
 impl_tags:
   dependencies: []
@@ -230,7 +220,10 @@ impl_tags:
   patterns:
   - data-generation
   - iteration-over-groups
+  - matrix-construction
+  - explicit-figure
   dataprep: []
   styling:
   - custom-colormap
   - edge-highlighting
+  - alpha-blending

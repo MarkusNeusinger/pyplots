@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 eye-diagram-basic: Signal Integrity Eye Diagram
 Library: letsplot 4.9.0 | Python 3.14.3
 Quality: 83/100 | Created: 2026-03-17
@@ -43,8 +43,8 @@ amplitude = 1.0
 noise_sigma = 0.05 * amplitude
 jitter_sigma = 0.03
 
-# Sigmoid steepness for bandwidth-limited edges
-steepness = 8.0 / 0.15
+# Sigmoid steepness for bandwidth-limited edges (lower = smoother S-curves)
+steepness = 8.0 / 0.7
 
 # Generate overlaid traces
 all_time = []
@@ -132,7 +132,7 @@ eye_width = eye_right - eye_left
 
 # Annotation DataFrames
 ann_color = "#00e5ff"
-height_x = 1.38
+height_x = 1.32
 height_seg = pd.DataFrame({"x": [height_x], "y": [eye_bottom], "xend": [height_x], "yend": [eye_top]})
 width_seg = pd.DataFrame({"x": [eye_left], "y": [eye_mid_v], "xend": [eye_right], "yend": [eye_mid_v]})
 height_label = pd.DataFrame({"x": [height_x + 0.04], "y": [eye_mid_v], "label": [f"Eye Height: {eye_height:.2f} V"]})

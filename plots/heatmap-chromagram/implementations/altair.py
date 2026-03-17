@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 heatmap-chromagram: Music Chromagram (Pitch Class Distribution over Time)
-Library: altair | Python 3.13
-Quality: pending | Created: 2026-03-17
+Library: altair 6.0.0 | Python 3.14.3
+Quality: 90/100 | Created: 2026-03-17
 """
 
 import altair as alt

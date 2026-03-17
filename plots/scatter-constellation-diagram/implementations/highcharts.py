@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-constellation-diagram: Digital Modulation Constellation Diagram
 Library: highcharts unknown | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-17
@@ -49,50 +49,55 @@ chart.options.chart = {
     "type": "scatter",
     "width": 3600,
     "height": 3600,
-    "backgroundColor": "#f8f9fa",
-    "marginBottom": 250,
-    "marginLeft": 250,
-    "marginRight": 200,
-    "marginTop": 180,
-    "plotBorderWidth": 1,
-    "plotBorderColor": "#cccccc",
+    "backgroundColor": "#ffffff",
+    "marginBottom": 220,
+    "marginLeft": 220,
+    "marginRight": 160,
+    "marginTop": 160,
+    "plotBorderWidth": 0,
     "plotBackgroundColor": "#ffffff",
 }
 
 # Title
 chart.options.title = {
     "text": "16-QAM Constellation · scatter-constellation-diagram · highcharts · pyplots.ai",
-    "style": {"fontSize": "42px", "fontWeight": "bold", "color": "#222222"},
+    "style": {"fontSize": "42px", "fontWeight": "bold", "color": "#2c3e50"},
 }
 
 # Axes
 axis_limit = 5.0
+decision_boundaries = [
+    {"value": v, "color": "#999999", "width": 2, "dashStyle": "Dash", "zIndex": 1} for v in [-2, 0, 2]
+]
+
 chart.options.x_axis = {
-    "title": {"text": "In-Phase (I)", "style": {"fontSize": "36px", "color": "#333333"}, "margin": 20},
+    "title": {"text": "In-Phase (I)", "style": {"fontSize": "36px", "color": "#2c3e50"}, "margin": 20},
     "labels": {"style": {"fontSize": "24px", "color": "#555555"}},
     "min": -axis_limit,
     "max": axis_limit,
     "tickInterval": 1,
     "gridLineWidth": 0,
-    "lineWidth": 2,
-    "lineColor": "#444444",
-    "tickWidth": 2,
+    "lineWidth": 1,
+    "lineColor": "#555555",
+    "tickWidth": 1,
     "tickLength": 8,
-    "tickColor": "#444444",
+    "tickColor": "#555555",
+    "plotLines": decision_boundaries,
 }
 
 chart.options.y_axis = {
-    "title": {"text": "Quadrature (Q)", "style": {"fontSize": "36px", "color": "#333333"}, "margin": 20},
+    "title": {"text": "Quadrature (Q)", "style": {"fontSize": "36px", "color": "#2c3e50"}, "margin": 20},
     "labels": {"style": {"fontSize": "24px", "color": "#555555"}},
     "min": -axis_limit,
     "max": axis_limit,
     "tickInterval": 1,
     "gridLineWidth": 0,
-    "lineWidth": 2,
-    "lineColor": "#444444",
-    "tickWidth": 2,
+    "lineWidth": 1,
+    "lineColor": "#555555",
+    "tickWidth": 1,
     "tickLength": 8,
-    "tickColor": "#444444",
+    "tickColor": "#555555",
+    "plotLines": decision_boundaries,
 }
 
 # Legend - positioned inside plot area at top-right
@@ -105,8 +110,7 @@ chart.options.legend = {
     "x": -30,
     "y": 30,
     "backgroundColor": "rgba(255, 255, 255, 0.85)",
-    "borderWidth": 1,
-    "borderColor": "#cccccc",
+    "borderWidth": 0,
     "borderRadius": 6,
     "padding": 14,
     "itemStyle": {"fontSize": "28px", "fontWeight": "normal", "color": "#333333"},
@@ -121,21 +125,21 @@ chart.options.legend = {
 received_series = ScatterSeries()
 received_series.name = "Received Symbols"
 received_series.data = [{"x": float(received_i[j]), "y": float(received_q[j])} for j in range(num_symbols)]
-received_series.color = "rgba(48, 105, 152, 0.5)"
-received_series.marker = {"radius": 9, "symbol": "circle"}
+received_series.color = "rgba(48, 105, 152, 0.45)"
+received_series.marker = {"radius": 11, "symbol": "circle"}
 chart.add_series(received_series)
 
 # Ideal constellation points series
 ideal_series = ScatterSeries()
 ideal_series.name = "Ideal Points"
 ideal_series.data = [{"x": float(ideal_i[k]), "y": float(ideal_q[k])} for k in range(16)]
-ideal_series.color = "#E74C3C"
+ideal_series.color = "#E67E22"
 ideal_series.marker = {
-    "radius": 16,
+    "radius": 18,
     "symbol": "diamond",
     "lineWidth": 3,
-    "lineColor": "#C0392B",
-    "fillColor": "#E74C3C",
+    "lineColor": "#D35400",
+    "fillColor": "#E67E22",
 }
 chart.add_series(ideal_series)
 
@@ -165,58 +169,26 @@ for url in js_urls:
 # Generate JS literal
 html_str = chart.to_js_literal()
 
-# Custom JS for decision boundaries and EVM annotation
+# Custom JS for EVM annotation
 custom_js = f"""
 Highcharts.addEvent(Highcharts.Chart, 'load', function() {{
     var chart = this;
     var renderer = chart.renderer;
-    var xAxis = chart.xAxis[0];
-    var yAxis = chart.yAxis[0];
-
-    // Decision boundary lines (at +/-2, 0 on both axes)
-    var boundaries = [-2, 0, 2];
-    boundaries.forEach(function(val) {{
-        // Vertical decision boundaries
-        var x = xAxis.toPixels(val);
-        var yTop = yAxis.toPixels({axis_limit});
-        var yBot = yAxis.toPixels(-{axis_limit});
-        renderer.path(['M', x, yTop, 'L', x, yBot])
-            .attr({{
-                stroke: '#aaaaaa',
-                'stroke-width': 2,
-                'stroke-dasharray': '12,8',
-                zIndex: 1
-            }})
-            .add();
-
-        // Horizontal decision boundaries
-        var y = yAxis.toPixels(val);
-        var xLeft = xAxis.toPixels(-{axis_limit});
-        var xRight = xAxis.toPixels({axis_limit});
-        renderer.path(['M', xLeft, y, 'L', xRight, y])
-            .attr({{
-                stroke: '#aaaaaa',
-                'stroke-width': 2,
-                'stroke-dasharray': '12,8',
-                zIndex: 1
-            }})
-            .add();
-    }});
 
     // EVM annotation
     renderer.label('EVM = {evm:.1f}%', chart.plotLeft + 40, chart.plotTop + 40)
         .attr({{
-            fill: 'rgba(255, 255, 255, 0.85)',
-            stroke: '#333333',
-            'stroke-width': 2,
+            fill: 'rgba(255, 255, 255, 0.9)',
+            stroke: '#2c3e50',
+            'stroke-width': 1.5,
             padding: 18,
-            r: 8,
+            r: 6,
             zIndex: 12
         }})
         .css({{
             fontSize: '34px',
             fontWeight: 'bold',
-            color: '#333333'
+            color: '#2c3e50'
         }})
         .add();
 }});

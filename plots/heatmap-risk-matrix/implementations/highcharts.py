@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-risk-matrix: Risk Assessment Matrix (Probability vs Impact)
 Library: highcharts unknown | Python 3.14.3
 Quality: 83/100 | Created: 2026-03-17
@@ -11,6 +11,8 @@ import urllib.request
 from pathlib import Path
 
 import numpy as np
+from highcharts_core.chart import Chart
+from highcharts_core.options import HighchartsOptions
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -45,18 +47,37 @@ for li in range(5):
         score = (li + 1) * (im + 1)
         heatmap_data.append([im, li, score])
 
-# Colorblind-friendly gradient: blue → yellow → orange → dark red
+# Green-yellow-orange-red gradient per spec requirement
 color_stops = [
-    [0, "#4575b4"],  # Low (blue)
-    [0.16, "#91bfdb"],  # Low-medium (light blue)
-    [0.36, "#fee090"],  # Medium (yellow)
-    [0.56, "#fc8d59"],  # High (orange)
-    [0.76, "#d73027"],  # Critical (red)
-    [1.0, "#a50026"],  # Critical (dark red)
+    [0, "#2b8c3e"],
+    [0.12, "#5aad5e"],
+    [0.28, "#b5cc3e"],
+    [0.40, "#fee090"],
+    [0.56, "#fc8d59"],
+    [0.76, "#d73027"],
+    [1.0, "#a50026"],
 ]
 
 # Category colors for risk markers
 category_colors = {"Technical": "#306998", "Financial": "#8e44ad", "Operational": "#16a085"}
+
+# Per-point label offsets to prevent overlaps (alternate above/below)
+label_y_offsets = {
+    "Server Outage": -38,
+    "Data Breach": -38,
+    "Budget Overrun": -38,
+    "Key Staff Loss": 52,
+    "Vendor Delay": -38,
+    "Scope Creep": 52,
+    "Currency Risk": 52,
+    "Reg. Change": 52,
+    "Tech Debt": 52,
+    "Minor Bug": -38,
+    "Supply Issue": -38,
+    "IP Dispute": -38,
+    "Power Failure": -38,
+    "PR Crisis": -38,
+}
 
 # Build scatter series for each category with jitter
 scatter_series = []
@@ -72,6 +93,7 @@ for category in ["Technical", "Financial", "Operational"]:
                 "y": risk["likelihood"] - 1 + jitter_y,
                 "name": risk["name"],
                 "score": risk["likelihood"] * risk["impact"],
+                "dataLabels": {"y": label_y_offsets.get(risk["name"], -38)},
             }
         )
     scatter_series.append(
@@ -80,13 +102,15 @@ for category in ["Technical", "Financial", "Operational"]:
             "name": category,
             "data": data_points,
             "color": category_colors[category],
-            "marker": {"radius": 20, "symbol": "circle", "lineWidth": 3, "lineColor": "#ffffff"},
+            "marker": {"radius": 22, "symbol": "circle", "lineWidth": 3, "lineColor": "#ffffff"},
             "dataLabels": {
                 "enabled": True,
                 "format": "{point.name}",
-                "style": {"fontSize": "26px", "fontWeight": "600", "color": "#2c3e50", "textOutline": "3px #ffffff"},
-                "y": -34,
+                "style": {"fontSize": "28px", "fontWeight": "600", "color": "#2c3e50", "textOutline": "3px #ffffff"},
+                "y": -38,
                 "allowOverlap": True,
+                "crop": False,
+                "overflow": "allow",
             },
             "tooltip": {"pointFormat": "<b>{point.name}</b><br>Risk Score: <b>{point.score}</b>"},
             "zIndex": 5,
@@ -95,109 +119,117 @@ for category in ["Technical", "Financial", "Operational"]:
         }
     )
 
-# Zone definitions for risk level annotations
-# Low (1-4), Medium (5-9), High (10-16), Critical (20-25)
+# Zone annotation labels
 zone_annotations = [
-    {"label": "LOW", "x": 0, "y": 0, "color": "#4575b4"},
-    {"label": "MEDIUM", "x": 2, "y": 1, "color": "#fee090"},
-    {"label": "HIGH", "x": 3, "y": 2, "color": "#fc8d59"},
+    {"label": "LOW", "x": 0, "y": 0, "color": "#1a6b2d"},
+    {"label": "MEDIUM", "x": 1, "y": 1, "color": "#8a7d00"},
+    {"label": "HIGH", "x": 3, "y": 3, "color": "#c44600"},
     {"label": "CRITICAL", "x": 4, "y": 4, "color": "#a50026"},
 ]
 
-# Chart configuration
-chart_options = {
-    "chart": {
-        "type": "heatmap",
-        "width": 4800,
-        "height": 2700,
-        "backgroundColor": "#fafafa",
-        "marginTop": 200,
-        "marginBottom": 200,
-        "marginRight": 300,
-        "marginLeft": 360,
-        "style": {"fontFamily": "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"},
-    },
-    "title": {
-        "text": "heatmap-risk-matrix \u00b7 highcharts \u00b7 pyplots.ai",
-        "style": {"fontSize": "52px", "fontWeight": "600", "color": "#2c3e50"},
-        "y": 40,
-    },
-    "subtitle": {
-        "text": "Risk score = Likelihood \u00d7 Impact \u2014 zones: Low (1\u20134) \u00b7 Medium (5\u20139) \u00b7 High (10\u201316) \u00b7 Critical (20\u201325)",
-        "style": {"fontSize": "30px", "fontWeight": "normal", "color": "#7f8c8d"},
-        "y": 90,
-    },
-    "xAxis": {
-        "categories": impact_labels,
-        "title": {
-            "text": "Impact",
-            "style": {"fontSize": "36px", "fontWeight": "600", "color": "#2c3e50"},
-            "margin": 24,
-        },
-        "labels": {"style": {"fontSize": "30px", "color": "#34495e"}, "y": 40},
-        "lineWidth": 0,
-        "tickLength": 0,
-        "opposite": False,
-        "min": 0,
-        "max": 4,
-    },
-    "yAxis": {
-        "categories": likelihood_labels,
-        "title": {
-            "text": "Likelihood",
-            "style": {"fontSize": "36px", "fontWeight": "600", "color": "#2c3e50"},
-            "margin": 24,
-        },
-        "labels": {"style": {"fontSize": "30px", "color": "#34495e"}},
-        "reversed": False,
-        "lineWidth": 0,
-        "gridLineWidth": 0,
-        "min": 0,
-        "max": 4,
-    },
-    "colorAxis": {
-        "min": 1,
-        "max": 25,
-        "stops": color_stops,
-        "labels": {"style": {"fontSize": "24px", "color": "#34495e"}},
-        "showInLegend": False,
-    },
-    "legend": {
-        "align": "right",
-        "layout": "vertical",
-        "verticalAlign": "middle",
-        "itemStyle": {"fontSize": "28px", "color": "#34495e"},
-        "itemMarginBottom": 16,
-        "x": -40,
-        "y": 0,
-        "symbolRadius": 12,
-        "symbolHeight": 24,
-        "symbolWidth": 24,
-    },
-    "tooltip": {"style": {"fontSize": "28px"}},
-    "credits": {"enabled": False},
-    "plotOptions": {"heatmap": {"colsize": 1, "rowsize": 1}},
-    "series": [
-        {
-            "type": "heatmap",
-            "name": "Risk Score",
-            "data": heatmap_data,
-            "borderWidth": 4,
-            "borderColor": "#fafafa",
-            "dataLabels": {"enabled": True, "style": {"fontSize": "34px", "fontWeight": "bold", "textOutline": "none"}},
-            "tooltip": {
-                "headerFormat": "",
-                "pointFormat": (
-                    "Impact: <b>{series.xAxis.categories.(point.x)}</b><br>"
-                    "Likelihood: <b>{series.yAxis.categories.(point.y)}</b><br>"
-                    "Risk Score: <b>{point.value}</b>"
-                ),
-            },
-            "showInLegend": False,
-        },
-        *scatter_series,
-    ],
+# Build chart options using highcharts-core Python API
+chart = Chart(container="container")
+chart.options = HighchartsOptions()
+
+chart.options.chart = {
+    "type": "heatmap",
+    "width": 4800,
+    "height": 2700,
+    "backgroundColor": "#fafafa",
+    "marginTop": 200,
+    "marginBottom": 200,
+    "marginRight": 300,
+    "marginLeft": 360,
+    "style": {"fontFamily": "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"},
 }
+
+chart.options.title = {
+    "text": "heatmap-risk-matrix \u00b7 highcharts \u00b7 pyplots.ai",
+    "style": {"fontSize": "52px", "fontWeight": "600", "color": "#2c3e50"},
+    "y": 40,
+}
+
+chart.options.subtitle = {
+    "text": "Risk score = Likelihood \u00d7 Impact \u2014 zones: Low (1\u20134) \u00b7 Medium (5\u20139) \u00b7 High (10\u201316) \u00b7 Critical (20\u201325)",
+    "style": {"fontSize": "30px", "fontWeight": "normal", "color": "#7f8c8d"},
+    "y": 90,
+}
+
+chart.options.x_axis = {
+    "categories": impact_labels,
+    "title": {"text": "Impact", "style": {"fontSize": "36px", "fontWeight": "600", "color": "#2c3e50"}, "margin": 24},
+    "labels": {"style": {"fontSize": "30px", "color": "#34495e"}, "y": 40},
+    "lineWidth": 0,
+    "tickLength": 0,
+    "opposite": False,
+    "min": 0,
+    "max": 4,
+}
+
+chart.options.y_axis = {
+    "categories": likelihood_labels,
+    "title": {
+        "text": "Likelihood",
+        "style": {"fontSize": "36px", "fontWeight": "600", "color": "#2c3e50"},
+        "margin": 24,
+    },
+    "labels": {"style": {"fontSize": "30px", "color": "#34495e"}},
+    "reversed": False,
+    "lineWidth": 0,
+    "gridLineWidth": 0,
+    "min": 0,
+    "max": 4,
+}
+
+chart.options.color_axis = {
+    "min": 1,
+    "max": 25,
+    "stops": color_stops,
+    "labels": {"style": {"fontSize": "24px", "color": "#34495e"}},
+    "showInLegend": False,
+}
+
+chart.options.legend = {
+    "align": "right",
+    "layout": "vertical",
+    "verticalAlign": "middle",
+    "itemStyle": {"fontSize": "28px", "color": "#34495e"},
+    "itemMarginBottom": 16,
+    "x": -40,
+    "y": 0,
+    "symbolRadius": 12,
+    "symbolHeight": 24,
+    "symbolWidth": 24,
+}
+
+chart.options.tooltip = {"style": {"fontSize": "28px"}}
+chart.options.credits = {"enabled": False}
+chart.options.plot_options = {"heatmap": {"colsize": 1, "rowsize": 1}}
+
+# Build series
+heatmap_series_config = {
+    "type": "heatmap",
+    "name": "Risk Score",
+    "data": heatmap_data,
+    "borderWidth": 4,
+    "borderColor": "#fafafa",
+    "dataLabels": {"enabled": True, "style": {"fontSize": "34px", "fontWeight": "bold", "textOutline": "none"}},
+    "tooltip": {
+        "headerFormat": "",
+        "pointFormat": (
+            "Impact: <b>{series.xAxis.categories.(point.x)}</b><br>"
+            "Likelihood: <b>{series.yAxis.categories.(point.y)}</b><br>"
+            "Risk Score: <b>{point.value}</b>"
+        ),
+    },
+    "showInLegend": False,
+}
+
+chart.options.series = [heatmap_series_config, *scatter_series]
+
+# Export options as JSON dict via highcharts-core serialization
+options_dict = chart.options.to_dict()
+options_json = json.dumps(options_dict)
 
 # Download Highcharts JS, heatmap module, and annotations module
 js_urls = [
@@ -220,11 +252,9 @@ for primary, fallback in js_urls:
             continue
 all_js = "\n".join(js_parts)
 
-# Convert options to JSON
-options_json = json.dumps(chart_options)
 zone_json = json.dumps(zone_annotations)
 
-# Generate HTML with inline scripts, adaptive label colors, and zone annotations
+# HTML template with highcharts-core options, adaptive colors, and zone annotations
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -245,26 +275,26 @@ html_content = f"""<!DOCTYPE html>
         }};
         opts.series[0].dataLabels.useHTML = true;
 
-        // Add zone label annotations using Highcharts annotations API
+        // Add zone annotations via Highcharts annotations API
         opts.annotations = [{{
             draggable: '',
             labelOptions: {{
-                backgroundColor: 'rgba(255,255,255,0.75)',
-                borderWidth: 2,
-                borderRadius: 8,
+                backgroundColor: 'rgba(255,255,255,0.82)',
+                borderWidth: 3,
+                borderRadius: 10,
                 style: {{
-                    fontSize: '28px',
+                    fontSize: '30px',
                     fontWeight: '700'
                 }},
                 verticalAlign: 'middle',
-                padding: 12
+                padding: 14
             }},
             labels: zones.map(function(z) {{
                 return {{
                     point: {{ x: z.x, y: z.y, xAxis: 0, yAxis: 0 }},
                     text: z.label,
-                    style: {{ color: z.color === '#fee090' ? '#856404' : (z.color === '#fc8d59' ? '#7c3a00' : z.color) }},
-                    borderColor: z.color === '#fee090' ? '#856404' : z.color,
+                    style: {{ color: z.color }},
+                    borderColor: z.color,
                     y: 60
                 }};
             }})

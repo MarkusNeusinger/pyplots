@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-risk-matrix: Risk Assessment Matrix (Probability vs Impact)
 Library: highcharts unknown | Python 3.14.3
 Quality: 76/100 | Created: 2026-03-17
@@ -45,15 +45,14 @@ for li in range(5):
         score = (li + 1) * (im + 1)
         heatmap_data.append([im, li, score])
 
-# Color stops for green-yellow-orange-red risk gradient
-# Scores range from 1 to 25
+# Colorblind-friendly gradient: blue → yellow → orange → dark red
 color_stops = [
-    [0, "#2ecc71"],  # Low (green)
-    [0.16, "#27ae60"],  # Low-medium
-    [0.36, "#f1c40f"],  # Medium (yellow)
-    [0.56, "#e67e22"],  # High (orange)
-    [0.76, "#e74c3c"],  # Critical (red)
-    [1.0, "#c0392b"],  # Critical (dark red)
+    [0, "#4575b4"],  # Low (blue)
+    [0.16, "#91bfdb"],  # Low-medium (light blue)
+    [0.36, "#fee090"],  # Medium (yellow)
+    [0.56, "#fc8d59"],  # High (orange)
+    [0.76, "#d73027"],  # Critical (red)
+    [1.0, "#a50026"],  # Critical (dark red)
 ]
 
 # Category colors for risk markers
@@ -81,20 +80,29 @@ for category in ["Technical", "Financial", "Operational"]:
             "name": category,
             "data": data_points,
             "color": category_colors[category],
-            "marker": {"radius": 18, "symbol": "circle", "lineWidth": 3, "lineColor": "#ffffff"},
+            "marker": {"radius": 20, "symbol": "circle", "lineWidth": 3, "lineColor": "#ffffff"},
             "dataLabels": {
                 "enabled": True,
                 "format": "{point.name}",
-                "style": {"fontSize": "22px", "fontWeight": "600", "color": "#2c3e50", "textOutline": "3px #ffffff"},
-                "y": -30,
-                "allowOverlap": False,
+                "style": {"fontSize": "26px", "fontWeight": "600", "color": "#2c3e50", "textOutline": "3px #ffffff"},
+                "y": -34,
+                "allowOverlap": True,
             },
-            "tooltip": {"pointFormat": ("<b>{point.name}</b><br>Risk Score: <b>{point.score}</b>")},
+            "tooltip": {"pointFormat": "<b>{point.name}</b><br>Risk Score: <b>{point.score}</b>"},
             "zIndex": 5,
             "colorAxis": False,
             "showInLegend": True,
         }
     )
+
+# Zone definitions for risk level annotations
+# Low (1-4), Medium (5-9), High (10-16), Critical (20-25)
+zone_annotations = [
+    {"label": "LOW", "x": 0, "y": 0, "color": "#4575b4"},
+    {"label": "MEDIUM", "x": 2, "y": 1, "color": "#fee090"},
+    {"label": "HIGH", "x": 3, "y": 2, "color": "#fc8d59"},
+    {"label": "CRITICAL", "x": 4, "y": 4, "color": "#a50026"},
+]
 
 # Chart configuration
 chart_options = {
@@ -110,12 +118,12 @@ chart_options = {
         "style": {"fontFamily": "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"},
     },
     "title": {
-        "text": "heatmap-risk-matrix · highcharts · pyplots.ai",
+        "text": "heatmap-risk-matrix \u00b7 highcharts \u00b7 pyplots.ai",
         "style": {"fontSize": "52px", "fontWeight": "600", "color": "#2c3e50"},
         "y": 40,
     },
     "subtitle": {
-        "text": "Risk score = Likelihood × Impact — markers show individual risk items by category",
+        "text": "Risk score = Likelihood \u00d7 Impact \u2014 zones: Low (1\u20134) \u00b7 Medium (5\u20139) \u00b7 High (10\u201316) \u00b7 Critical (20\u201325)",
         "style": {"fontSize": "30px", "fontWeight": "normal", "color": "#7f8c8d"},
         "y": 90,
     },
@@ -157,14 +165,14 @@ chart_options = {
     "legend": {
         "align": "right",
         "layout": "vertical",
-        "verticalAlign": "bottom",
-        "itemStyle": {"fontSize": "26px", "color": "#34495e"},
-        "itemMarginBottom": 12,
+        "verticalAlign": "middle",
+        "itemStyle": {"fontSize": "28px", "color": "#34495e"},
+        "itemMarginBottom": 16,
         "x": -40,
-        "y": -40,
-        "symbolRadius": 10,
-        "symbolHeight": 20,
-        "symbolWidth": 20,
+        "y": 0,
+        "symbolRadius": 12,
+        "symbolHeight": 24,
+        "symbolWidth": 24,
     },
     "tooltip": {"style": {"fontSize": "28px"}},
     "credits": {"enabled": False},
@@ -191,10 +199,14 @@ chart_options = {
     ],
 }
 
-# Download Highcharts JS and heatmap module
+# Download Highcharts JS, heatmap module, and annotations module
 js_urls = [
     ("https://code.highcharts.com/highcharts.js", "https://cdn.jsdelivr.net/npm/highcharts@11/highcharts.js"),
     ("https://code.highcharts.com/modules/heatmap.js", "https://cdn.jsdelivr.net/npm/highcharts@11/modules/heatmap.js"),
+    (
+        "https://code.highcharts.com/modules/annotations.js",
+        "https://cdn.jsdelivr.net/npm/highcharts@11/modules/annotations.js",
+    ),
 ]
 js_parts = []
 for primary, fallback in js_urls:
@@ -210,8 +222,9 @@ all_js = "\n".join(js_parts)
 
 # Convert options to JSON
 options_json = json.dumps(chart_options)
+zone_json = json.dumps(zone_annotations)
 
-# Generate HTML with inline scripts and adaptive data label colors
+# Generate HTML with inline scripts, adaptive label colors, and zone annotations
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -222,12 +235,41 @@ html_content = f"""<!DOCTYPE html>
     <div id="container" style="width:4800px; height:2700px;"></div>
     <script>
         var opts = {options_json};
+        var zones = {zone_json};
+
+        // Adaptive text color for heatmap cell scores
         opts.series[0].dataLabels.formatter = function() {{
             var v = this.point.value;
             var color = v >= 15 ? '#ffffff' : '#333333';
             return '<span style="color:' + color + ';font-size:34px;font-weight:bold">' + v + '</span>';
         }};
         opts.series[0].dataLabels.useHTML = true;
+
+        // Add zone label annotations using Highcharts annotations API
+        opts.annotations = [{{
+            draggable: '',
+            labelOptions: {{
+                backgroundColor: 'rgba(255,255,255,0.75)',
+                borderWidth: 2,
+                borderRadius: 8,
+                style: {{
+                    fontSize: '28px',
+                    fontWeight: '700'
+                }},
+                verticalAlign: 'middle',
+                padding: 12
+            }},
+            labels: zones.map(function(z) {{
+                return {{
+                    point: {{ x: z.x, y: z.y, xAxis: 0, yAxis: 0 }},
+                    text: z.label,
+                    style: {{ color: z.color === '#fee090' ? '#856404' : (z.color === '#fc8d59' ? '#7c3a00' : z.color) }},
+                    borderColor: z.color === '#fee090' ? '#856404' : z.color,
+                    y: 60
+                }};
+            }})
+        }}];
+
         Highcharts.chart('container', opts);
     </script>
 </body>

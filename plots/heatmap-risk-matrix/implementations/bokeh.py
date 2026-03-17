@@ -1,8 +1,10 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-risk-matrix: Risk Assessment Matrix (Probability vs Impact)
 Library: bokeh 3.9.0 | Python 3.14.3
 Quality: 82/100 | Created: 2026-03-17
 """
+
+from collections import defaultdict
 
 import numpy as np
 from bokeh.io import export_png, save
@@ -68,22 +70,49 @@ risks = [
     ("System Migration", 2, 4, "Technical"),
 ]
 
-cat_colors = {"Technical": "#1A237E", "Financial": "#4A148C", "Operational": "#004D40", "Legal": "#BF360C"}
+cat_colors = {"Technical": "#306998", "Financial": "#9C27B0", "Operational": "#00897B", "Legal": "#E65100"}
 
-# Apply jitter to numeric coordinates
-jitter_vals = np.random.uniform(-0.28, 0.28, size=(len(risks), 2))
-risk_x = []
-risk_y = []
-risk_names = []
-risk_marker_colors = []
-
+# Group risks by cell to apply structured offsets (avoids overlap)
+cell_groups = defaultdict(list)
 for idx, (name, likelihood, impact, category) in enumerate(risks):
-    risk_x.append(impact - 1 + 0.5 + jitter_vals[idx, 0])
-    risk_y.append(likelihood - 1 + 0.5 + jitter_vals[idx, 1])
-    risk_names.append(name)
-    risk_marker_colors.append(cat_colors[category])
+    cell_groups[(impact, likelihood)].append((idx, name, category))
 
-risk_source = ColumnDataSource(data={"x": risk_x, "y": risk_y, "label": risk_names, "color": risk_marker_colors})
+# Structured offsets for multiple items in the same cell (vertical spread avoids label overlap)
+cell_offsets = {
+    1: [(0, 0)],
+    2: [(-0.12, 0.22), (0.12, -0.22)],
+    3: [(-0.2, 0.25), (0.2, 0.25), (0, -0.22)],
+    4: [(-0.18, 0.22), (0.18, 0.22), (-0.18, -0.22), (0.18, -0.22)],
+}
+
+risk_x = [0.0] * len(risks)
+risk_y = [0.0] * len(risks)
+risk_names = [""] * len(risks)
+risk_marker_colors = [""] * len(risks)
+risk_sizes = [0] * len(risks)
+
+for (impact, likelihood), items in cell_groups.items():
+    offsets = cell_offsets.get(len(items), cell_offsets[4][: len(items)])
+    for pos, (idx, name, category) in enumerate(items):
+        ox, oy = offsets[pos]
+        risk_x[idx] = impact - 1 + 0.5 + ox
+        risk_y[idx] = likelihood - 1 + 0.5 + oy
+        risk_names[idx] = name
+        risk_marker_colors[idx] = cat_colors[category]
+        # Vary marker size by risk score for visual hierarchy
+        score = likelihood * impact
+        if score >= 20:
+            risk_sizes[idx] = 44
+        elif score >= 10:
+            risk_sizes[idx] = 36
+        elif score >= 5:
+            risk_sizes[idx] = 28
+        else:
+            risk_sizes[idx] = 22
+
+risk_source = ColumnDataSource(
+    data={"x": risk_x, "y": risk_y, "label": risk_names, "color": risk_marker_colors, "size": risk_sizes}
+)
 
 # Plot — extend x_range to make room for legend on the right
 p = figure(
@@ -120,8 +149,8 @@ p.text(
     text_font_style="bold",
 )
 
-# Risk markers
-p.scatter(x="x", y="y", source=risk_source, size=30, color="color", line_color="white", line_width=2.5, alpha=0.9)
+# Risk markers (size varies by risk score)
+p.scatter(x="x", y="y", source=risk_source, size="size", color="color", line_color="white", line_width=2.5, alpha=0.9)
 
 # Risk name labels
 labels = LabelSet(
@@ -133,7 +162,7 @@ labels = LabelSet(
     y_offset=-24,
     text_align="center",
     text_baseline="top",
-    text_font_size="14pt",
+    text_font_size="16pt",
     text_color="#222222",
     text_font_style="bold",
     background_fill_color="white",
@@ -190,8 +219,8 @@ for idx, (cat_name, cat_color) in enumerate(cat_colors.items()):
 # Style
 p.title.text_font_size = "28pt"
 p.title.align = "center"
-p.xaxis.axis_label = "Impact"
-p.yaxis.axis_label = "Likelihood"
+p.xaxis.axis_label = "Impact (Consequence Severity)"
+p.yaxis.axis_label = "Likelihood (Probability of Occurrence)"
 p.xaxis.axis_label_text_font_size = "22pt"
 p.yaxis.axis_label_text_font_size = "22pt"
 p.xaxis.major_label_text_font_size = "18pt"

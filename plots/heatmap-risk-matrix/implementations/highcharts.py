@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-risk-matrix: Risk Assessment Matrix (Probability vs Impact)
 Library: highcharts unknown | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-17
@@ -47,36 +47,38 @@ for li in range(5):
         score = (li + 1) * (im + 1)
         heatmap_data.append([im, li, score])
 
-# Green-yellow-orange-red gradient per spec requirement
+# Green-yellow-orange-red gradient per spec requirement (colorblind-friendly tuned)
 color_stops = [
-    [0, "#2b8c3e"],
-    [0.12, "#5aad5e"],
-    [0.28, "#b5cc3e"],
-    [0.40, "#fee090"],
-    [0.56, "#fc8d59"],
-    [0.76, "#d73027"],
-    [1.0, "#a50026"],
+    [0, "#237a3b"],
+    [0.08, "#4a9e55"],
+    [0.20, "#8aba4f"],
+    [0.32, "#c9cf3a"],
+    [0.44, "#f0d648"],
+    [0.56, "#f2a134"],
+    [0.72, "#e05a2b"],
+    [0.88, "#c62828"],
+    [1.0, "#7f0000"],
 ]
 
-# Category colors for risk markers
-category_colors = {"Technical": "#306998", "Financial": "#8e44ad", "Operational": "#16a085"}
+# Category colors for risk markers (colorblind-safe: blue, orange, teal)
+category_colors = {"Technical": "#306998", "Financial": "#d4760a", "Operational": "#0d7c72"}
 
-# Per-point label offsets to prevent overlaps (alternate above/below)
-label_y_offsets = {
-    "Server Outage": -38,
-    "Data Breach": -38,
-    "Budget Overrun": -38,
-    "Key Staff Loss": 52,
-    "Vendor Delay": -38,
-    "Scope Creep": 52,
-    "Currency Risk": 52,
-    "Reg. Change": 52,
-    "Tech Debt": 52,
-    "Minor Bug": -38,
-    "Supply Issue": -38,
-    "IP Dispute": -38,
-    "Power Failure": -38,
-    "PR Crisis": -38,
+# Per-point label offsets to prevent overlaps (alternate above/below/left/right)
+label_offsets = {
+    "Server Outage": {"y": -42, "x": 0},
+    "Data Breach": {"y": 56, "x": 0},
+    "Budget Overrun": {"y": -42, "x": 0},
+    "Key Staff Loss": {"y": 56, "x": 0},
+    "Vendor Delay": {"y": -42, "x": 0},
+    "Scope Creep": {"y": 56, "x": 0},
+    "Currency Risk": {"y": 56, "x": 0},
+    "Reg. Change": {"y": 60, "x": 40},
+    "Tech Debt": {"y": 56, "x": 0},
+    "Minor Bug": {"y": -42, "x": 0},
+    "Supply Issue": {"y": -42, "x": 0},
+    "IP Dispute": {"y": -42, "x": 0},
+    "Power Failure": {"y": -42, "x": 0},
+    "PR Crisis": {"y": -42, "x": -40},
 }
 
 # Build scatter series for each category with jitter
@@ -87,13 +89,18 @@ for category in ["Technical", "Financial", "Operational"]:
     for risk in cat_risks:
         jitter_x = np.random.uniform(-0.25, 0.25)
         jitter_y = np.random.uniform(-0.25, 0.25)
+        offsets = label_offsets.get(risk["name"], {"y": -42, "x": 0})
+        score = risk["likelihood"] * risk["impact"]
+        # Scale marker size by risk score for visual storytelling
+        marker_radius = 18 + int(score * 0.5)
         data_points.append(
             {
                 "x": risk["impact"] - 1 + jitter_x,
                 "y": risk["likelihood"] - 1 + jitter_y,
                 "name": risk["name"],
-                "score": risk["likelihood"] * risk["impact"],
-                "dataLabels": {"y": label_y_offsets.get(risk["name"], -38)},
+                "score": score,
+                "marker": {"radius": marker_radius},
+                "dataLabels": {"y": offsets["y"], "x": offsets["x"]},
             }
         )
     scatter_series.append(
@@ -106,9 +113,14 @@ for category in ["Technical", "Financial", "Operational"]:
             "dataLabels": {
                 "enabled": True,
                 "format": "{point.name}",
-                "style": {"fontSize": "28px", "fontWeight": "600", "color": "#2c3e50", "textOutline": "3px #ffffff"},
-                "y": -38,
-                "allowOverlap": True,
+                "style": {
+                    "fontSize": "26px",
+                    "fontWeight": "700",
+                    "color": "#1a2332",
+                    "textOutline": "3px rgba(255,255,255,0.9)",
+                },
+                "y": -42,
+                "allowOverlap": False,
                 "crop": False,
                 "overflow": "allow",
             },
@@ -135,30 +147,34 @@ chart.options.chart = {
     "type": "heatmap",
     "width": 4800,
     "height": 2700,
-    "backgroundColor": "#fafafa",
+    "backgroundColor": "#f7f9fc",
     "marginTop": 200,
     "marginBottom": 200,
-    "marginRight": 300,
-    "marginLeft": 360,
-    "style": {"fontFamily": "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"},
+    "marginRight": 320,
+    "marginLeft": 380,
+    "style": {"fontFamily": "'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"},
 }
 
 chart.options.title = {
     "text": "heatmap-risk-matrix \u00b7 highcharts \u00b7 pyplots.ai",
-    "style": {"fontSize": "52px", "fontWeight": "600", "color": "#2c3e50"},
+    "style": {"fontSize": "52px", "fontWeight": "700", "color": "#1a2332", "letterSpacing": "0.5px"},
     "y": 40,
 }
 
 chart.options.subtitle = {
-    "text": "Risk score = Likelihood \u00d7 Impact \u2014 zones: Low (1\u20134) \u00b7 Medium (5\u20139) \u00b7 High (10\u201316) \u00b7 Critical (20\u201325)",
-    "style": {"fontSize": "30px", "fontWeight": "normal", "color": "#7f8c8d"},
+    "text": "Risk score = Likelihood \u00d7 Impact  |  Low (1\u20134) \u00b7 Medium (5\u20139) \u00b7 High (10\u201316) \u00b7 Critical (20\u201325)",
+    "style": {"fontSize": "30px", "fontWeight": "400", "color": "#5a6878", "letterSpacing": "0.3px"},
     "y": 90,
 }
 
 chart.options.x_axis = {
     "categories": impact_labels,
-    "title": {"text": "Impact", "style": {"fontSize": "36px", "fontWeight": "600", "color": "#2c3e50"}, "margin": 24},
-    "labels": {"style": {"fontSize": "30px", "color": "#34495e"}, "y": 40},
+    "title": {
+        "text": "IMPACT \u25b6",
+        "style": {"fontSize": "34px", "fontWeight": "700", "color": "#1a2332", "letterSpacing": "2px"},
+        "margin": 28,
+    },
+    "labels": {"style": {"fontSize": "30px", "fontWeight": "500", "color": "#3a4a5c"}, "y": 40},
     "lineWidth": 0,
     "tickLength": 0,
     "opposite": False,
@@ -169,11 +185,11 @@ chart.options.x_axis = {
 chart.options.y_axis = {
     "categories": likelihood_labels,
     "title": {
-        "text": "Likelihood",
-        "style": {"fontSize": "36px", "fontWeight": "600", "color": "#2c3e50"},
-        "margin": 24,
+        "text": "\u25b2 LIKELIHOOD",
+        "style": {"fontSize": "34px", "fontWeight": "700", "color": "#1a2332", "letterSpacing": "2px"},
+        "margin": 28,
     },
-    "labels": {"style": {"fontSize": "30px", "color": "#34495e"}},
+    "labels": {"style": {"fontSize": "30px", "fontWeight": "500", "color": "#3a4a5c"}},
     "reversed": False,
     "lineWidth": 0,
     "gridLineWidth": 0,
@@ -185,7 +201,7 @@ chart.options.color_axis = {
     "min": 1,
     "max": 25,
     "stops": color_stops,
-    "labels": {"style": {"fontSize": "24px", "color": "#34495e"}},
+    "labels": {"style": {"fontSize": "24px", "color": "#3a4a5c"}},
     "showInLegend": False,
 }
 
@@ -193,16 +209,22 @@ chart.options.legend = {
     "align": "right",
     "layout": "vertical",
     "verticalAlign": "middle",
-    "itemStyle": {"fontSize": "28px", "color": "#34495e"},
-    "itemMarginBottom": 16,
-    "x": -40,
+    "title": {"text": "Risk Category", "style": {"fontSize": "26px", "fontWeight": "700", "color": "#1a2332"}},
+    "itemStyle": {"fontSize": "28px", "fontWeight": "500", "color": "#3a4a5c"},
+    "itemMarginBottom": 20,
+    "x": -30,
     "y": 0,
-    "symbolRadius": 12,
-    "symbolHeight": 24,
-    "symbolWidth": 24,
+    "symbolRadius": 14,
+    "symbolHeight": 28,
+    "symbolWidth": 28,
+    "padding": 20,
+    "backgroundColor": "rgba(255,255,255,0.6)",
+    "borderRadius": 12,
+    "borderWidth": 1,
+    "borderColor": "#dde3eb",
 }
 
-chart.options.tooltip = {"style": {"fontSize": "28px"}}
+chart.options.tooltip = {"style": {"fontSize": "28px"}, "borderRadius": 10}
 chart.options.credits = {"enabled": False}
 chart.options.plot_options = {"heatmap": {"colsize": 1, "rowsize": 1}}
 
@@ -211,9 +233,10 @@ heatmap_series_config = {
     "type": "heatmap",
     "name": "Risk Score",
     "data": heatmap_data,
-    "borderWidth": 4,
-    "borderColor": "#fafafa",
-    "dataLabels": {"enabled": True, "style": {"fontSize": "34px", "fontWeight": "bold", "textOutline": "none"}},
+    "borderWidth": 5,
+    "borderColor": "#f7f9fc",
+    "borderRadius": 6,
+    "dataLabels": {"enabled": True, "style": {"fontSize": "36px", "fontWeight": "bold", "textOutline": "none"}},
     "tooltip": {
         "headerFormat": "",
         "pointFormat": (
@@ -261,7 +284,7 @@ html_content = f"""<!DOCTYPE html>
     <meta charset="utf-8">
     <script>{all_js}</script>
 </head>
-<body style="margin:0; padding:0; overflow:hidden; background:#fafafa;">
+<body style="margin:0; padding:0; overflow:hidden; background:#f7f9fc;">
     <div id="container" style="width:4800px; height:2700px;"></div>
     <script>
         var opts = {options_json};
@@ -279,15 +302,17 @@ html_content = f"""<!DOCTYPE html>
         opts.annotations = [{{
             draggable: '',
             labelOptions: {{
-                backgroundColor: 'rgba(255,255,255,0.82)',
-                borderWidth: 3,
-                borderRadius: 10,
+                backgroundColor: 'rgba(255,255,255,0.88)',
+                borderWidth: 2,
+                borderRadius: 14,
+                shadow: true,
                 style: {{
-                    fontSize: '30px',
-                    fontWeight: '700'
+                    fontSize: '28px',
+                    fontWeight: '800',
+                    letterSpacing: '3px'
                 }},
                 verticalAlign: 'middle',
-                padding: 14
+                padding: 16
             }},
             labels: zones.map(function(z) {{
                 return {{

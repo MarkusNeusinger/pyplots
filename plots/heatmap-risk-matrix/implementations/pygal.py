@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-risk-matrix: Risk Assessment Matrix (Probability vs Impact)
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 84/100 | Created: 2026-03-17
+Quality: repair-2 | Created: 2026-03-17
 """
 
 import sys
@@ -51,7 +51,7 @@ class RiskMatrixHeatmap(Graph):
     def _text_color(self, bg_color):
         r, g, b = int(bg_color[1:3], 16), int(bg_color[3:5], 16), int(bg_color[5:7], 16)
         brightness = (r * 299 + g * 587 + b * 114) / 1000
-        return "#ffffff" if brightness < 150 else "#222222"
+        return "#ffffff" if brightness < 140 else "#222222"
 
     def _plot(self):
         if not self.risk_scores:
@@ -88,7 +88,7 @@ class RiskMatrixHeatmap(Graph):
         score_font = int(cell_size * 0.24)
         zone_font = int(cell_size * 0.15)
         marker_font = int(cell_size * 0.12)
-        marker_r = int(cell_size * 0.07)
+        marker_r = int(cell_size * 0.085)
         label_font = int(cell_size * 0.16)
         title_font = int(cell_size * 0.22)
         legend_font = int(cell_size * 0.15)
@@ -139,11 +139,16 @@ class RiskMatrixHeatmap(Graph):
             row_display = n_rows - item["likelihood"]
             color = item.get("color", "#306998")
 
-            jitter_x = np.random.uniform(-cell_size * 0.18, cell_size * 0.18)
+            jitter_x = np.random.uniform(-cell_size * 0.22, cell_size * 0.22)
             jitter_y = np.random.uniform(-cell_size * 0.06, cell_size * 0.06)
 
-            cx = x0 + col_idx * (cell_size + gap) + cell_size / 2 + jitter_x
-            cy = y0 + row_display * (cell_size + gap) + cell_size * 0.76 + jitter_y
+            cell_x = x0 + col_idx * (cell_size + gap)
+            cell_y = y0 + row_display * (cell_size + gap)
+            cx = cell_x + cell_size / 2 + jitter_x
+            cy = cell_y + cell_size * 0.76 + jitter_y
+            # Clamp marker within cell bounds
+            cx = max(cell_x + marker_r + 4, min(cx, cell_x + cell_size - marker_r - 4))
+            cy = max(cell_y + marker_r + 4, min(cy, cell_y + cell_size - marker_r - 4))
 
             # Marker group with tooltip
             mg = self.svg.node(group, "g", class_="risk-marker")
@@ -220,10 +225,10 @@ class RiskMatrixHeatmap(Graph):
         lx = x0 + grid_w + 60
         ly = y0 + 10
         zone_items = [
-            ("Low (1\u20134)", "#4caf50"),
-            ("Medium (5\u20139)", "#ffc107"),
-            ("High (10\u201316)", "#ff9800"),
-            ("Critical (20\u201325)", "#d32f2f"),
+            ("Low (1\u20134)", "#a8d5e2"),
+            ("Medium (5\u20139)", "#f5c842"),
+            ("High (10\u201316)", "#e8873d"),
+            ("Critical (20\u201325)", "#c62828"),
         ]
         # Legend title
         lt = self.svg.node(group, "text", x=lx, y=ly)
@@ -285,7 +290,8 @@ impact_labels = ["Negligible", "Minor", "Moderate", "Major", "Catastrophic"]
 
 risk_scores = [[li * im for im in range(1, 6)] for li in range(1, 6)]
 
-zone_colors = [(4, "#4caf50"), (9, "#ffc107"), (16, "#ff9800"), (25, "#d32f2f")]
+# Colorblind-safe sequential palette: light blue → amber → deep vermilion
+zone_colors = [(4, "#a8d5e2"), (9, "#f5c842"), (16, "#e8873d"), (25, "#c62828")]
 
 # Changed External color from green (#2e7d32) to teal (#00838f) for better contrast on green cells
 category_colors = {"Technical": "#1565c0", "Financial": "#6a1b9a", "Operational": "#e65100", "External": "#00838f"}
@@ -315,7 +321,7 @@ custom_style = Style(
     foreground_strong="#333333",
     foreground_subtle="#999999",
     colors=("#306998",),
-    title_font_size=64,
+    title_font_size=80,
     legend_font_size=40,
     label_font_size=38,
     value_font_size=34,

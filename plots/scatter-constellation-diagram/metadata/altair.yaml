@@ -1,7 +1,7 @@
 library: altair
 specification_id: scatter-constellation-diagram
 created: '2026-03-17T23:22:50Z'
-updated: '2026-03-17T23:47:35Z'
+updated: '2026-03-17T23:56:47Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23220948598
 issue: 4562
@@ -10,39 +10,35 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-constellation-diagram/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-constellation-diagram/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-constellation-diagram/altair/plot.html
-quality_score: 83
+quality_score: 87
 review:
   strengths:
-  - Perfect spec compliance with all 8 required features correctly implemented (16-QAM,
-    ideal crosses, received dots, decision boundaries, equal aspect, EVM, axis labels,
-    title format)
-  - Mathematically correct EVM calculation consistent with the 20 dB SNR setting
-  - Excellent visual hierarchy between ideal constellation points and received symbols
-    through size, opacity, and shape differentiation
-  - Clean, well-structured code following KISS principles with proper reproducibility
-  weaknesses:
-  - Canvas dimensions still 900x900 (2700x2700 output) instead of target 1200x1200
-    (3600x3600) - unfixed across all 3 attempts
-  - Library mastery limited to basic Altair features; no use of selections, conditional
-    encoding, or parameter-driven interactivity
-  - Color pairing functional but not optimally colorblind-safe
-  - Design is clean but not publication-quality - lacks subtle refinements that would
-    elevate it
-  image_description: The plot displays a 16-QAM constellation diagram on a square
-    canvas. Sixteen ideal constellation points are shown as orange/red cross markers
-    arranged in a 4x4 grid at I/Q coordinates ±1 and ±3. Approximately 1000 received
-    symbols appear as semi-transparent teal/mint-green dots clustered around each
-    ideal point with Gaussian noise spread. Dashed grey decision boundary lines are
-    drawn at I/Q values -4, -2, 0, 2, and 4 on both axes, separating the 16 symbol
-    decision regions. The title "scatter-constellation-diagram · altair · pyplots.ai"
-    appears at the top in moderate font. Axes are labeled "In-Phase (I)" (x) and "Quadrature
-    (Q)" (y) with range approximately -5 to 5. A bold "EVM = 14.0%" annotation is
-    positioned in the upper-right quadrant. The background is white with no default
-    grid lines; the view border stroke is removed. The overall layout is clean and
-    square, preserving constellation geometry.
+  - Perfect spec compliance with all required features correctly implemented (16-QAM,
+    ideal crosses, received dots, decision boundaries, EVM, axis labels, title format)
+  - Viridis color encoding of error magnitude adds a meaningful analytical dimension
+    beyond spec requirements
+  - Interactive features (selection highlighting, conditional encoding, tooltips)
+    showcase Altair distinctive capabilities
+  - Mathematically correct EVM calculation consistent with 20 dB SNR
+  - Clean, well-structured code following KISS principles
+  weaknesses: []
+  image_description: The plot displays a 16-QAM constellation diagram on a near-square
+    canvas (1020x1100). Sixteen ideal constellation points appear as red/salmon cross
+    markers (#E45756) arranged in a 4x4 grid at I/Q coordinates +/-1 and +/-3. Approximately
+    1000 received symbols are shown as semi-transparent circles color-encoded by error
+    magnitude using the viridis colormap — dark purple clusters near ideal points
+    (low error) transitioning to teal/green and yellow for higher-error outliers.
+    Dashed gray decision boundary lines are drawn at I/Q values -4, -2, 0, 2, 4 on
+    both axes. The title "scatter-constellation-diagram · altair · pyplots.ai" is
+    displayed at top center in 28pt font. Axes are labeled "In-Phase (I)" (x) and
+    "Quadrature (Q)" (y) with tick labels at 18pt. A bold monospace "EVM = 14.0%"
+    annotation sits in the upper-right quadrant. A viridis color legend labeled "Error
+    Mag." appears on the right side. The background is white with no default grid;
+    view border stroke is removed. The overall layout is clean and approximately square
+    with the constellation geometry well-preserved.
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 27
       max: 30
       items:
       - id: VQ-01
@@ -50,41 +46,44 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: 'Font sizes explicitly set: title=28, axis titles=22, tick labels=18,
-          EVM=20. All clearly readable.'
+        comment: 'Font sizes explicitly set: title=28, axis titles=22, ticks=18, EVM=22,
+          legend title=16, legend labels=14. All readable. Legend labels slightly
+          small at 14pt.'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No text or element overlap anywhere.
+        comment: No text or element overlap anywhere in the plot.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Received symbols size=40/opacity=0.35 appropriate for 1000 points.
-          Ideal crosses prominent at size=350.
+        comment: Size=45, opacity=0.3 for 1000 points is within guidelines. Ideal
+          crosses at size=400 are prominent. Some peripheral points faint at base
+          opacity.
       - id: VQ-04
         name: Color Accessibility
+        score: 4
+        max: 4
+        passed: true
+        comment: Viridis colormap is perceptually uniform and colorblind-safe. Red
+          crosses provide strong luminance contrast.
+      - id: VQ-05
+        name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Blue vs red distinguishable for most colorblind types but not optimally
-          designed.
-      - id: VQ-05
-        name: Layout & Canvas
-        score: 2
-        max: 4
-        passed: false
-        comment: Canvas 900x900 produces 2700x2700 instead of target 3600x3600.
+        comment: Canvas 1020x1100 at scale 3.0 = 3060x3300 px. Improved from 2700x2700
+          but below 3600x3600 target. Not perfectly square.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive domain-standard labels: In-Phase (I) and Quadrature
-          (Q).'
+        comment: In-Phase (I) and Quadrature (Q) are descriptive with standard domain
+          notation.
     design_excellence:
       score: 13
       max: 20
@@ -94,22 +93,22 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Thoughtful color differentiation, clean layout, above defaults but
-          not publication-level.
+        comment: Viridis error magnitude encoding is thoughtful. Red crosses contrast
+          well. Monospace EVM annotation. Above defaults but not publication-level.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: View stroke removed, grid disabled, decision boundaries provide subtle
-          structure.
+        comment: Grid disabled, view stroke removed, custom domain/tick colors, dashed
+          decision boundaries as structural context.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Clear visual hierarchy with size/opacity/shape differentiation. EVM
-          annotation adds quantitative context.
+        comment: Error magnitude color encoding creates visual hierarchy. EVM annotation
+          quantifies modulation quality. Viewer immediately understands signal integrity.
     spec_compliance:
       score: 15
       max: 15
@@ -119,14 +118,14 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct I/Q constellation scatter diagram.
+        comment: Correct I/Q scatter constellation diagram for 16-QAM.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: 16-QAM, ideal crosses, received dots,
-          decision boundaries, equal aspect, EVM.'
+        comment: 'All spec features present: ideal crosses, received dots, decision
+          boundaries, equal aspect, EVM annotation, axis labels.'
       - id: SC-03
         name: Data Mapping
         score: 3
@@ -138,7 +137,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Title follows exact required format. No legend needed.
+        comment: Title follows exact format. Legend shows Error Mag. which is appropriate.
     data_quality:
       score: 14
       max: 15
@@ -148,21 +147,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows all 16 ideal points with noisy clusters, boundaries, and EVM.
-          Could add color-coded symbol mapping.
+        comment: Shows all 16 ideal points, noisy received symbols, error magnitude
+          via color, decision boundaries, EVM. Color adds analytical depth.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: 16-QAM is a real digital modulation scheme. Neutral technical domain.
+        comment: 16-QAM is a real digital modulation scheme used in Wi-Fi, 5G NR,
+          DVB. Neutral technical domain.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Standard 16-QAM grid, 20dB SNR, 1000 symbols. EVM=14.0% mathematically
-          consistent.
+        comment: Standard grid values for 16-QAM, 20 dB SNR realistic, 1000 symbols
+          appropriate, EVM=14.0% consistent.
     code_quality:
       score: 10
       max: 10
@@ -172,7 +172,8 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports, data, plot layers, composition, save.'
+        comment: 'Clean linear flow: imports, data generation, plot layers, composition,
+          save.'
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -184,21 +185,22 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: All three imports (altair, numpy, pandas) are used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, well-structured. Correct EVM math. No over-engineering.
+        comment: Clean, well-structured. Proper EVM calculation with correct signal
+          processing math.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html. Current API.
+        comment: Saves as plot.png and plot.html. Current Altair 6.0 API.
     library_mastery:
-      score: 6
+      score: 8
       max: 10
       items:
       - id: LM-01
@@ -206,16 +208,17 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of alt.layer(), encoding types, alt.Scale, alt.Title, configure
-          methods.
+        comment: 'Good declarative grammar: alt.layer(), proper encoding types, Scale/Legend/Title
+          configs, configure_axis/configure_view.'
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 4
         max: 5
-        passed: false
-        comment: 'Basic features only: .interactive(), tooltips, HTML export. No selections
-          or conditional encoding.'
-  verdict: REJECTED
+        passed: true
+        comment: Uses alt.selection_point for nearest-point highlighting, alt.condition
+          for dynamic opacity/size, rich formatted tooltips, HTML export. Distinctive
+          Altair features.
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
@@ -223,8 +226,10 @@ impl_tags:
   - annotations
   - hover-tooltips
   - html-export
+  - custom-legend
   patterns:
   - data-generation
   dataprep: []
   styling:
+  - custom-colormap
   - alpha-blending

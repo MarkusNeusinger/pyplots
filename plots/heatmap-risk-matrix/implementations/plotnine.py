@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-risk-matrix: Risk Assessment Matrix (Probability vs Impact)
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-17
@@ -109,8 +109,8 @@ risks["label_x"] = risks["impact"].astype(float)
 likelihood_labels = {1: "Rare", 2: "Unlikely", 3: "Possible", 4: "Likely", 5: "Almost\nCertain"}
 impact_labels = {1: "Negligible", 2: "Minor", 3: "Moderate", 4: "Major", 5: "Catastrophic"}
 
-# Colorblind-friendly palette: blue to dark red (avoids pure green-red)
-risk_colors = ["#2166ac", "#67a9cf", "#fddbc7", "#fcbba1", "#ef6548", "#d7301f", "#7f0000"]
+# Spec palette: green-yellow-orange-red with colorblind-safe tones
+risk_colors = ["#1a9641", "#a6d96a", "#ffffbf", "#fdae61", "#f46d43", "#d73027", "#a50026"]
 
 
 # Plot
@@ -135,7 +135,7 @@ plot = (
         mapping=aes(x="label_x", y="label_y", label="risk_name"),
         color="white",
         fill="#1a1a2e",
-        size=7.5,
+        size=9,
         alpha=0.9,
         label_padding=0.2,
         label_size=0.3,
@@ -145,7 +145,7 @@ plot = (
     + annotate(
         "text",
         x=3,
-        y=5.65,
+        y=5.55,
         label="Zones:  Low (1\u20134)  \u00b7  Medium (5\u20139)  \u00b7  High (10\u201316)  \u00b7  Critical (20\u201325)",
         size=9,
         color="#555555",
@@ -154,7 +154,7 @@ plot = (
     # Axes
     + scale_x_continuous(breaks=impact_levels, labels=[impact_labels[i] for i in impact_levels], expand=(0, 0.55))
     + scale_y_continuous(
-        breaks=likelihood_levels, labels=[likelihood_labels[i] for i in likelihood_levels], expand=(0, 0.85)
+        breaks=likelihood_levels, labels=[likelihood_labels[i] for i in likelihood_levels], expand=(0, 0.65)
     )
     + labs(x="Impact \u2192", y="Likelihood \u2192", title="heatmap-risk-matrix \u00b7 plotnine \u00b7 pyplots.ai")
     # Theme

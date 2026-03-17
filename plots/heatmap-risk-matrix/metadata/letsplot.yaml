@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: heatmap-risk-matrix
 created: '2026-03-17T21:56:02Z'
-updated: '2026-03-17T22:00:07Z'
+updated: '2026-03-17T22:07:49Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23217984766
 issue: 4567
@@ -13,76 +13,74 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-risk-m
 quality_score: 80
 review:
   strengths:
-  - Perfect spec compliance with all required features implemented correctly
-  - Excellent realistic enterprise risk management data with 15 well-distributed risk
-    items
-  - Clean well-structured code with proper seed and KISS pattern
-  - Semi-transparent score labels in cells add visual depth without clutter
-  - Good use of layered ggplot grammar (tiles + score text + points + labels)
+  - Excellent data quality with realistic risk management context and good distribution
+    across zones
+  - Smart jitter system to handle overlapping risks in same cell
+  - Interactive tooltips via layer_tooltips() showcase lets-plot distinctive capabilities
+  - Clean well-organized code with proper seed and linear structure
+  - Colorblind-friendly zone palette adaptation
   weaknesses:
-  - Multiple risk label pairs overlap where risks share the same cell
-  - Green-to-red color gradient is not colorblind-safe
-  - No risks placed in Critical zone cells (scores 20-25)
-  - Library mastery could be improved with lets-plot-specific features
+  - Label overlap/crowding when risk items are in adjacent cells
+  - All risk markers identical size with no visual emphasis on critical vs low risks
+  - Risk item label font size could be larger for better readability
+  - No visual storytelling emphasis for critical risks
   image_description: 'The plot displays a 5x5 risk assessment matrix with Likelihood
-    on the x-axis (Rare to Almost Certain) and Impact on the y-axis (Negligible to
-    Catastrophic). Background tiles are color-coded: green for Low risk (scores 1-4),
-    yellow for Medium (5-9), orange for High (10-16), and red for Critical (20-25).
-    Each cell shows its risk score in semi-transparent gray text. Fifteen risk items
-    are plotted as colored dots — blue for Technical, purple for Financial, orange
-    for Operational — with bold black labels and slight jitter. Two legends appear
-    on the right: Risk Level (color tiles) and Category (dot colors). White borders
-    separate cells. Title reads "heatmap-risk-matrix · lets-plot · pyplots.ai". Several
-    label pairs overlap: "Server Outage"/"Data Breach" at (2,5), "Key Staff Loss"/"Regulatory
-    Change" at (3,4), and "Budget Overrun"/"Supply Delay" at (4,3).'
+    (Rare to Almost Certain) on the x-axis and Impact (Negligible to Catastrophic)
+    on the y-axis. Background tiles are colored by risk zone: blue (Low, scores 1-4),
+    yellow (Medium, scores 5-9), orange (High, scores 10-16), and dark red (Critical,
+    scores 20-25). Each cell shows its risk score as a semi-transparent number. Fifteen
+    risk items are plotted as colored dots (blue for Technical, purple for Financial,
+    orange for Operational) with bold labels above them. Two legends appear on the
+    right: Risk Level and Category. The title reads heatmap-risk-matrix lets-plot
+    pyplots.ai. White borders separate the cells. Some label crowding is visible in
+    the Moderate row and Catastrophic row.'
   criteria_checklist:
     visual_quality:
-      score: 22
+      score: 23
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title=24, axis_title=20, axis_text=16,
-          legend_title=18, legend_text=14'
+        comment: Font sizes explicitly set for title, axes, legend. Risk item labels
+          slightly small but readable.
       - id: VQ-02
         name: No Overlap
-        score: 3
+        score: 4
         max: 6
         passed: false
-        comment: 'Multiple label pairs overlap: Server Outage/Data Breach, Key Staff
-          Loss/Regulatory Change, Budget Overrun/Supply Delay'
+        comment: Label crowding in Moderate row and Catastrophic row where risk names
+          overlap at cell boundaries.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Points well-sized with jitter, but clustering in shared cells causes
-          some visual clutter
+        comment: Points and tiles clearly visible; semi-transparent score numbers
+          are subtle but readable.
       - id: VQ-04
         name: Color Accessibility
-        score: 2
+        score: 3
         max: 4
-        passed: false
-        comment: Green-to-red risk zone gradient is problematic for red-green colorblind
-          viewers
+        passed: true
+        comment: Blue-yellow-orange-red zone palette is colorblind-friendly; category
+          colors distinguishable.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good proportions overall, legend positioned slightly far from plot
-          area
+        comment: Good canvas utilization, legend positioned well on right side.
       - id: VQ-06
         name: Axis Labels & Title
         score: 1
         max: 2
         passed: true
-        comment: Descriptive labels but no units (ordinal scale)
+        comment: Descriptive labels but no units (ordinal scale).
     design_excellence:
-      score: 13
+      score: 12
       max: 20
       items:
       - id: DE-01
@@ -90,22 +88,24 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Custom color palette for zones and categories, semi-transparent score
-          labels, domain-appropriate design
+        comment: Custom colorblind-safe palette, white tile borders, semi-transparent
+          score overlays. Above defaults.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Panel grid removed, white cell borders, clean theme_minimal base
+        comment: Panel grid removed, white cell borders, minimal theme with generous
+          whitespace.
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 3
         max: 6
-        passed: true
-        comment: Color zones create inherent visual hierarchy; categories add dimensionality
+        passed: false
+        comment: Zone colors create some hierarchy but all markers same size. No emphasis
+          on critical risks.
     spec_compliance:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -113,26 +113,25 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct 5x5 grid heatmap risk matrix
+        comment: Correct 5x5 heatmap risk matrix.
       - id: SC-02
         name: Required Features
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: 'All features present: color-coded zones, labeled markers with jitter,
-          zone legend, grid lines'
+        comment: Blue instead of green for Low risk. All other features present.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=Likelihood, Y=Impact correctly mapped with ordinal labels
+        comment: Likelihood on X, Impact on Y, all 5 levels present.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, both legends match data
+        comment: Correct title format, both legends present and labeled.
     data_quality:
       score: 14
       max: 15
@@ -142,21 +141,19 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: 15 risks across Low/Medium/High zones with 3 categories; no risks
-          in Critical zone
+        comment: 15 risks across all zones, 3 categories, good distribution.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Authentic enterprise risk management scenario with realistic risk
-          names
+        comment: Real-world IT/project risk management scenario, neutral topic.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 1-5 ordinal scale with sensible risk placements
+        comment: Risk ratings 1-5 appropriate for standard risk matrices.
     code_quality:
       score: 10
       max: 10
@@ -166,33 +163,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports, data, plot, save flow
+        comment: 'Clean linear flow: imports, data, plot, save.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set for jitter
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: All imports used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Appropriate complexity, clean layered construction
+        comment: Well-structured jitter logic, appropriate complexity.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with scale=3
+        comment: Saves plot.png with scale=3 and HTML export.
     library_mastery:
-      score: 6
+      score: 7
       max: 10
       items:
       - id: LM-01
@@ -200,24 +197,24 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good ggplot grammar with layered geoms, manual scales, and theme
-          customization
+        comment: Good ggplot grammar usage with layered geoms and scales.
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: HTML export is lets-plot specific, but no truly distinctive features
-          used
+        passed: true
+        comment: Uses layer_tooltips() for interactive hover and HTML export.
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
   - layer-composition
+  - hover-tooltips
   - html-export
   patterns:
   - data-generation
+  - iteration-over-groups
   dataprep: []
   styling:
   - alpha-blending

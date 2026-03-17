@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 heatmap-risk-matrix: Risk Assessment Matrix (Probability vs Impact)
 Library: letsplot 4.9.0 | Python 3.14.3
 Quality: 80/100 | Created: 2026-03-17

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 eye-diagram-basic: Signal Integrity Eye Diagram
-Library: altair | Python 3.13
-Quality: pending | Created: 2026-03-17
+Library: altair 6.0.0 | Python 3.14.3
+Quality: 73/100 | Created: 2026-03-17
 """
 
 import altair as alt

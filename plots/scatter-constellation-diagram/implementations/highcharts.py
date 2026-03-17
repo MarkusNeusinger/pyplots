@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-constellation-diagram: Digital Modulation Constellation Diagram
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2026-03-17
+Library: highcharts unknown | Python 3.14.3
+Quality: 80/100 | Created: 2026-03-17
 """
 
 import tempfile

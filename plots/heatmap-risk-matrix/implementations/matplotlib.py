@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 heatmap-risk-matrix: Risk Assessment Matrix (Probability vs Impact)
-Library: matplotlib | Python 3.13
-Quality: pending | Created: 2026-03-17
+Library: matplotlib 3.10.8 | Python 3.14.3
+Quality: 82/100 | Created: 2026-03-17
 """
 
 import matplotlib.patches as mpatches

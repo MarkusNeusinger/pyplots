@@ -1,7 +1,7 @@
 library: plotly
 specification_id: scatter-constellation-diagram
 created: '2026-03-17T23:24:17Z'
-updated: '2026-03-17T23:27:59Z'
+updated: '2026-03-17T23:35:42Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23220948511
 issue: 4562
@@ -10,37 +10,39 @@ library_version: 6.6.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-constellation-diagram/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-constellation-diagram/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-constellation-diagram/plotly/plot.html
-quality_score: 86
+quality_score: 93
 review:
   strengths:
-  - Perfect spec compliance — all required features implemented correctly including
-    decision boundaries, EVM annotation, and equal aspect ratio
-  - Proper engineering-grade noise model using SNR-based calculation rather than arbitrary
-    noise values
-  - Good data storytelling with clear visual hierarchy between ideal points and received
-    symbols
-  - Clean, well-structured code with appropriate complexity
+  - Excellent domain expertise with proper 16-QAM signal processing including AWGN,
+    phase offset, and EVM calculation
+  - Error magnitude color-coding adds genuine data storytelling beyond spec requirements
+  - Clean professional design with intentional color hierarchy (Viridis, orange ideal
+    markers, dark text) and refined visual details
+  - All spec requirements fully satisfied including EVM annotation, decision boundaries,
+    and equal aspect ratio
+  - Smart use of ScatterGL for performance and hover templates for interactivity
   weaknesses:
-  - Received symbol markers could be slightly larger (size 8-10) for better visibility
-  - Could add color mapping by symbol index or error distance to add visual depth
-  - Design could be elevated with more refined typography to push toward publication
-    quality
-  - Only noise impairment demonstrated — spec mentions phase offset and amplitude
-    distortion too
-  image_description: The plot shows a 16-QAM constellation diagram on a white background
-    in square format (3600x3600 px). Sixteen red "X" markers represent ideal constellation
-    points arranged in a 4x4 grid at I/Q coordinates ±1, ±3. Light blue semi-transparent
-    dots (~1000 received symbols) are scattered around each ideal point, showing Gaussian
-    noise spread. Dashed gray decision boundary lines are drawn at -2, 0, and 2 on
-    both axes, creating 16 decision regions. Solid gray zero-lines mark the origin.
-    The title reads "scatter-constellation-diagram · plotly · pyplots.ai" at the top.
-    Axes are labeled "In-Phase (I)" (x) and "Quadrature (Q)" (y). An EVM annotation
-    box in the top-right corner shows "EVM = 9.9%". A legend in the top-left identifies
-    "Received symbols" (blue dots) and "Ideal points" (red X). The plot uses equal
-    aspect ratio with symmetric axis limits of approximately ±4.8.
+  - Minor intra-cluster marker overlap at current size/opacity settings (cosmetic,
+    acceptable for constellation diagrams)
+  image_description: The plot displays a 16-QAM constellation diagram on a square
+    canvas with a light gray background (#FAFBFC). Sixteen clusters of received symbols
+    (semi-transparent dots) are arranged in a 4×4 grid at ±1, ±3 positions on both
+    axes. The received symbols are color-coded by error magnitude using the Viridis
+    colorscale (dark purple for low error, yellow for high error), with a vertical
+    colorbar on the right side labeled "Error Magnitude" ranging from 0 to ~0.7. Ideal
+    constellation points are marked with orange X markers (hollow, with orange outlines).
+    Dashed gray decision boundary lines appear at ±2 on both axes. The title reads
+    "scatter-constellation-diagram · plotly · pyplots.ai" centered at the top. Axes
+    are labeled "In-Phase (I)" (x-axis) and "Quadrature (Q)" (y-axis) with tick marks
+    at integer intervals. An annotation box in the upper right displays "EVM = 13.2%"
+    with "SNR = 20 dB · Phase offset = 5°" beneath it, styled with a white background
+    and subtle border. A legend in the upper left identifies "Received symbols" and
+    "Ideal points". Zero lines are visible as subtle gray lines through the origin.
+    The phase offset creates a visible slight rotation of the clusters relative to
+    the ideal grid positions.
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 29
       max: 30
       items:
       - id: VQ-01
@@ -48,62 +50,67 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 28, axis labels 22, ticks 18,
-          legend 18, annotation 20'
+        comment: 'All font sizes explicitly set: title 28pt, axis labels 22pt, ticks
+          18pt, annotation 20pt, legend 18pt, colorbar title 16pt, colorbar ticks
+          14pt'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements
+        comment: Legend, annotation, and colorbar well separated with no collisions
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Received symbols could be slightly larger for better corner visibility
+        comment: 1200 points at size 9 with opacity 0.6; clusters distinct though
+          some intra-cluster overlap
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Blue vs red distinguishable but not ideal for all colorblind types
+        comment: Viridis colorscale is colorblind-safe; orange ideal markers contrast
+          well
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Square format appropriate but some empty space in corners
+        comment: Square 1200x1200 layout perfect for constellation diagram with balanced
+          margins
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Standard domain-appropriate labels
+        comment: In-Phase (I) and Quadrature (Q) are descriptive domain-specific labels
     design_excellence:
-      score: 13
+      score: 16
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Above defaults with custom colors and clean template, not publication-showcase
-          level
+        comment: Strong design with intentional color hierarchy, custom background,
+          styled annotation box
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Grid disabled, subtle zeroline, dashed boundaries at low opacity
+        comment: Grid removed, plotly_white template, subtle zero lines, refined colorbar
+          positioning
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Clear hierarchy between ideal and received, EVM provides quantitative
-          insight
+        comment: Error magnitude color-coding creates visual insight; EVM annotation
+          provides quantitative context
     spec_compliance:
       score: 15
       max: 15
@@ -113,47 +120,50 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct I/Q constellation diagram
+        comment: Correct I/Q scatter constellation diagram
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: All spec features present
+        comment: 'All spec requirements met: 16-QAM, ideal markers, decision boundaries,
+          equal aspect ratio, EVM annotation'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: I on x-axis, Q on y-axis, correct mapping
+        comment: I/Q correctly mapped to x/y axes with symmetric range
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format and legend labels
+        comment: Correct title format and accurate legend labels
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Shows all 16 points with noise but only noise impairment demonstrated
+        comment: Shows noise spreading, phase offset effects, varying error magnitudes,
+          all 16 QAM positions
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: 16-QAM is real-world modulation scheme
+        comment: Authentic 16-QAM communications scenario with proper AWGN and phase
+          offset modeling
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Realistic SNR, symbol count, and EVM values
+        comment: Standard 16-QAM grid, realistic SNR and phase offset values
     code_quality:
       score: 10
       max: 10
@@ -163,33 +173,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear flow, no functions or classes
+        comment: Clean linear flow with no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) set at top
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only numpy and plotly.graph_objects, both used
+        comment: Only numpy and plotly.graph_objects, both fully used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean and Pythonic with proper engineering noise model
+        comment: Clean Pythonic code with appropriate domain complexity
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png and plot.html, current API
+        comment: Saves as plot.png with scale=3, also exports HTML
     library_mastery:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: LM-01
@@ -197,17 +207,20 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good graph objects pattern with shapes and annotations
+        comment: Good use of go.Figure, add_trace, add_shape, add_annotation, update_layout
+          with dict-style params
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Uses hovertemplate, HTML export, and shape annotations
-  verdict: REJECTED
+        comment: ScatterGL for WebGL rendering, custom hovertemplates, HTML export,
+          colorbar integration
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
+  - colorbar
   - annotations
   - hover-tooltips
   - html-export
@@ -215,4 +228,5 @@ impl_tags:
   - data-generation
   dataprep: []
   styling:
+  - custom-colormap
   - alpha-blending

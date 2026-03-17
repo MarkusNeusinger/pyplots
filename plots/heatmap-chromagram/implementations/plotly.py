@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-chromagram: Music Chromagram (Pitch Class Distribution over Time)
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-17
@@ -22,7 +22,8 @@ g_major = np.array([0.1, 0.05, 0.7, 0.05, 0.1, 0.05, 0.05, 1.0, 0.05, 0.1, 0.05,
 a_minor = np.array([0.7, 0.05, 0.1, 0.05, 0.8, 0.1, 0.05, 0.1, 0.05, 1.0, 0.05, 0.1])
 f_major = np.array([0.8, 0.05, 0.1, 0.05, 0.1, 1.0, 0.05, 0.1, 0.05, 0.7, 0.05, 0.1])
 
-# Build chromagram with chord progression: C -> G -> Am -> F (repeated)
+# Build chromagram with chord progression: C -> G -> Am -> F
+chord_names = ["C maj", "G maj", "A min", "F maj"]
 chords = [c_major, g_major, a_minor, f_major]
 segment_length = n_frames // len(chords)
 
@@ -48,43 +49,121 @@ for i in range(1, len(chords)):
             noise = np.random.normal(0, 0.04, 12)
             energy[:, t] = np.clip(blended + noise, 0, 1.2)
 
+# Custom colorscale: dark navy -> deep purple -> hot magenta -> warm orange -> bright gold
+custom_colorscale = [
+    [0.0, "#0d0628"],
+    [0.15, "#1b0c42"],
+    [0.3, "#44146e"],
+    [0.45, "#721f81"],
+    [0.55, "#b5367a"],
+    [0.7, "#e55c30"],
+    [0.85, "#f9a242"],
+    [1.0, "#fcffa4"],
+]
+
 # Plot
 fig = go.Figure(
     data=go.Heatmap(
         z=energy,
         x=np.round(time_frames, 2),
         y=pitch_classes,
-        colorscale="Inferno",
+        colorscale=custom_colorscale,
+        zmin=0,
+        zmax=1.2,
         colorbar={
-            "title": {"text": "Energy", "font": {"size": 20}},
-            "tickfont": {"size": 16},
-            "thickness": 18,
-            "len": 0.85,
+            "title": {"text": "Energy", "font": {"size": 20, "family": "Arial Black"}},
+            "tickfont": {"size": 16, "family": "Arial"},
+            "thickness": 20,
+            "len": 0.75,
+            "outlinewidth": 0,
+            "tickvals": [0, 0.3, 0.6, 0.9, 1.2],
         },
         hoverongaps=False,
-        hovertemplate="Time: %{x}s<br>Pitch: %{y}<br>Energy: %{z:.2f}<extra></extra>",
+        hovertemplate="<b>%{y}</b> at %{x}s<br>Energy: %{z:.3f}<extra></extra>",
+        xgap=0.5,
+        ygap=1,
     )
+)
+
+# Add vertical lines and annotations for chord sections
+for i in range(len(chords)):
+    start_time = i * segment_length * frame_duration
+    end_time = (i + 1) * segment_length * frame_duration if i < len(chords) - 1 else n_frames * frame_duration
+    mid_time = (start_time + end_time) / 2
+
+    # Chord label annotation above the heatmap
+    fig.add_annotation(
+        x=mid_time,
+        y=1.08,
+        yref="paper",
+        text=f"<b>{chord_names[i]}</b>",
+        showarrow=False,
+        font={"size": 20, "color": "#444444", "family": "Arial"},
+    )
+
+    # Dashed vertical separator lines between chord sections
+    if i > 0:
+        boundary_time = start_time
+        fig.add_shape(
+            type="line",
+            x0=boundary_time,
+            x1=boundary_time,
+            y0=-0.5,
+            y1=11.5,
+            line={"color": "rgba(255,255,255,0.6)", "width": 2, "dash": "dot"},
+        )
+
+# Bracket line connecting chord labels
+fig.add_shape(
+    type="line",
+    x0=0,
+    x1=n_frames * frame_duration - frame_duration,
+    y0=1.04,
+    y1=1.04,
+    yref="paper",
+    line={"color": "#bbbbbb", "width": 1.5},
 )
 
 # Style
 fig.update_layout(
-    title={"text": "heatmap-chromagram · plotly · pyplots.ai", "font": {"size": 28}, "x": 0.5, "xanchor": "center"},
+    title={
+        "text": "heatmap-chromagram · plotly · pyplots.ai",
+        "font": {"size": 28, "family": "Arial Black", "color": "#333333"},
+        "x": 0.5,
+        "xanchor": "center",
+        "y": 0.97,
+    },
     xaxis={
-        "title": {"text": "Time (seconds)", "font": {"size": 22}},
-        "tickfont": {"size": 16},
+        "title": {"text": "Time (seconds)", "font": {"size": 22, "family": "Arial"}, "standoff": 12},
+        "tickfont": {"size": 16, "family": "Arial"},
         "showgrid": False,
         "dtick": 0.5,
+        "zeroline": False,
+        "showline": True,
+        "linecolor": "#cccccc",
+        "linewidth": 1,
+        "ticks": "outside",
+        "tickcolor": "#cccccc",
+        "ticklen": 6,
     },
     yaxis={
-        "title": {"text": "Pitch Class", "font": {"size": 22}},
-        "tickfont": {"size": 16},
+        "title": {"text": "Pitch Class", "font": {"size": 22, "family": "Arial"}, "standoff": 8},
+        "tickfont": {"size": 16, "family": "Arial", "color": "#333333"},
         "showgrid": False,
         "categoryorder": "array",
         "categoryarray": pitch_classes,
+        "zeroline": False,
+        "showline": True,
+        "linecolor": "#cccccc",
+        "linewidth": 1,
+        "ticks": "outside",
+        "tickcolor": "#cccccc",
+        "ticklen": 6,
     },
     template="plotly_white",
-    plot_bgcolor="white",
-    margin={"l": 80, "r": 40, "t": 80, "b": 60},
+    plot_bgcolor="#0d0628",
+    paper_bgcolor="#fafafa",
+    margin={"l": 90, "r": 50, "t": 110, "b": 70},
 )
 
 # Save

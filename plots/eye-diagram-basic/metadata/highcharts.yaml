@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: eye-diagram-basic
 created: '2026-03-17T23:35:39Z'
-updated: '2026-03-17T23:39:53Z'
+updated: '2026-03-17T23:53:24Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23221365514
 issue: 4561
@@ -10,32 +10,35 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/eye-diagram-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/eye-diagram-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/eye-diagram-basic/highcharts/plot.html
-quality_score: 88
+quality_score: 89
 review:
   strengths:
-  - Excellent eye diagram rendering with clear characteristic eye opening pattern
-  - Professional dark theme perfectly suited to the signal engineering domain
-  - Custom multi-stop color palette that effectively communicates trace density
-  - Perfect spec compliance with all required features implemented
-  - Realistic NRZ signal simulation with appropriate noise and jitter parameters
-  - Clean well-organized code with proper reproducibility
+  - Excellent dark theme authentically matching oscilloscope aesthetics
+  - Custom 11-stop color gradient effectively communicating trace density
+  - Complete spec compliance with all required features including optional eye measurements
+  - Realistic NRZ signal simulation with appropriate engineering parameters
+  - Clean removal of visual chrome with subtle reference lines
   weaknesses:
-  - Missing eye height/width annotations that would elevate data storytelling
-  - Color bar legend could be more tightly integrated with the plot area
-  - No explicit visual emphasis or focal point beyond natural density patterns
-  image_description: The plot displays an NRZ signal integrity eye diagram rendered
-    as a density heatmap on a dark navy/black background (#0a0a14). Two high-density
-    horizontal bands are clearly visible at the 0V and 1V signal levels, rendered
-    in warm yellow/orange/green colors indicating high trace concentration. The characteristic
-    eye-shaped opening is prominently visible in the center, formed by lower-density
-    blue transition regions between the two voltage levels. A dashed vertical line
-    marks the 1 UI boundary at the center. The x-axis is labeled "Time (Unit Intervals)"
-    with tick marks from 0.00 to ~1.78, and the y-axis shows "Voltage (V)" ranging
-    from -0.3 to 1.0. Faint dotted horizontal reference lines mark the 0V and 1V levels.
-    A vertical color bar on the right labeled "Trace Density" shows the density scale
-    from 0 to 1, transitioning from dark blue through teal/green to yellow/orange/white.
+  - Manual density binning loops are verbose — np.histogram2d would be more Pythonic
+    and performant
+  - Right margin slightly oversized for the color bar legend creating minor layout
+    asymmetry
+  - X-axis tick labels could be cleaner with fewer explicit ticks
+  - Could leverage Highcharts built-in annotations API for eye height/width markers
+  image_description: 'The plot displays an eye diagram as a density heatmap on a dark
+    navy-black background (#0a0a14). Two horizontal bands of high trace density (yellow-orange-white)
+    are visible at approximately 0V and 1.0V, representing the NRZ signal''s two logic
+    levels. Between these bands, the characteristic "eye opening" is clearly visible
+    — a diamond-shaped region of low density (dark) bounded by blue transition traces.
+    The color gradient runs from dark background through deep blue, teal, green, yellow,
+    orange to white for maximum density. The x-axis is labeled "Time (Unit Intervals)"
+    spanning 0.00 to ~1.76 UI with tick labels at 0.25 intervals. The y-axis is labeled
+    "Voltage (V)" spanning -0.3 to 1.0V. A vertical dashed line at 1.0 UI marks the
+    unit interval boundary. Horizontal dotted lines mark the 0V and 1V signal levels.
     The title reads "eye-diagram-basic · highcharts · pyplots.ai" with a subtitle
-    "NRZ Signal — 300 Overlaid Traces with Noise (σ=5%) and Jitter (σ=3%)".
+    showing NRZ signal parameters. Annotation labels for "Eye Height: 0.699 V" and
+    "Eye Width: 0.900 UI" are visible in the eye opening area. A vertical "Trace Density"
+    color bar legend appears on the right side, ranging from 0 to 1.'
   criteria_checklist:
     visual_quality:
       score: 28
@@ -46,42 +49,43 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title=48px, axis=34px, ticks=28px). Subtitle
-          slightly small at 28px.
+        comment: All font sizes explicitly set (48px title, 34px axis titles, 28px
+          labels). X-axis tick labels slightly rotated.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No text collisions or overlap anywhere.
+        comment: No overlapping text elements. Categories well-spaced.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Heatmap cells clearly show density variation; eye pattern unmistakable.
+        comment: Heatmap cells clearly visible, density gradient effective. Eye opening
+          immediately apparent.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Custom sequential palette avoids red-green issues, good contrast
-          against dark background.
+        comment: Sequential colorblind-safe palette with good contrast against dark
+          background.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good canvas utilization but bottom region underutilized and right
-          margin generous for color bar.
+        comment: Plot fills ~55-60% of canvas. Right margin slightly wide for color
+          bar legend.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Time (Unit Intervals) and Voltage (V) both descriptive with units.
+        comment: Time (Unit Intervals) and Voltage (V) — descriptive with units.
     design_excellence:
-      score: 13
+      score: 15
       max: 20
       items:
       - id: DE-01
@@ -89,22 +93,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: 'Strong design: intentional dark theme, custom multi-stop color palette,
-          good typography hierarchy.'
+        comment: Dark theme evokes oscilloscope displays. Custom 11-stop color gradient.
+          Custom font stack. Clearly above defaults.
       - id: DE-02
         name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: Grid/axis lines removed. Subtle dashed/dotted reference lines with
+          low opacity. Generous margins.
+      - id: DE-03
+        name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Grid removed, axes hidden, subtle reference lines. Color bar could
-          be more tightly integrated.
-      - id: DE-03
-        name: Data Storytelling
-        score: 3
-        max: 6
-        passed: false
-        comment: Subtitle provides context and reference lines guide interpretation,
-          but no annotations for eye height/width metrics.
+        comment: Color density creates natural visual hierarchy. Eye opening is focal
+          point. Annotations guide viewer to key metrics.
     spec_compliance:
       score: 15
       max: 15
@@ -114,26 +118,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct density heatmap representation of overlaid signal traces.
+        comment: Density heatmap of overlaid NRZ traces — correct for eye diagram.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All required features present: density coloring, UI time axis, voltage
-          levels, NRZ with noise/jitter, raised-cosine transitions.'
+        comment: 'All spec features present: density coloring, UI time axis, voltage
+          levels, noise/jitter, raised cosine transitions, eye measurements.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=time in UI, Y=voltage, color=density. All correct.
+        comment: X=time in UI [0,2], Y=voltage in volts. Correctly mapped.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Exact format title and Trace Density color bar legend.
+        comment: Title format correct. Color bar labeled Trace Density.
     data_quality:
       score: 15
       max: 15
@@ -143,24 +147,23 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Shows all key eye diagram features: eye opening, high-density bands,
-          transitions, noise spread, jitter effects.'
+        comment: Shows both signal levels, transitions, noise spread, jitter effects,
+          and eye opening.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: NRZ signal with realistic noise and jitter parameters. Engineering
-          context, neutral topic.
+        comment: NRZ signal with realistic noise (5%) and jitter (3%) engineering
+          parameters.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 0-1V NRZ levels, 0-2 UI window, 300 traces — all realistic for signal
-          integrity analysis.
+        comment: Voltage 0-1V for NRZ, 2 UI window, realistic noise/jitter levels.
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -168,13 +171,14 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear flow with no functions or classes.
+        comment: 'Linear flow: imports, params, density accumulation, chart config,
+          export.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set at start.
+        comment: np.random.seed(42) set at top.
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -183,10 +187,11 @@ review:
         comment: All imports used.
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Appropriate complexity for density histogram construction.
+        passed: false
+        comment: Manual nested loops for density binning; np.histogram2d would be
+          cleaner and faster.
       - id: CQ-05
         name: Output & API
         score: 1
@@ -202,21 +207,22 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of HeatmapSeries, colorAxis with custom stops, plotLines
-          for references.
+        comment: Good use of HighchartsOptions, HeatmapSeries, color_axis, plotLines,
+          to_js_literal(). Could use annotations API.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses colorAxis multi-stop gradient, heatmap module, plotLines, interactive
-          tooltips in HTML export.
+        comment: Highcharts heatmap module with color_axis custom stops. PlotLines
+          for references. Tooltip configuration.
   verdict: REJECTED
 impl_tags:
   dependencies:
   - selenium
   techniques:
   - html-export
+  - hover-tooltips
   patterns:
   - data-generation
   - matrix-construction

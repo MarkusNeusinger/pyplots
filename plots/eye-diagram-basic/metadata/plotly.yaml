@@ -1,7 +1,7 @@
 library: plotly
 specification_id: eye-diagram-basic
 created: '2026-03-17T23:34:38Z'
-updated: '2026-03-17T23:38:40Z'
+updated: '2026-03-17T23:45:41Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23221365376
 issue: 4561
@@ -10,28 +10,31 @@ library_version: 6.6.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/eye-diagram-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/eye-diagram-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/eye-diagram-basic/plotly/plot.html
-quality_score: 89
+quality_score: 90
 review:
   strengths:
-  - Excellent dark oscilloscope-inspired theme perfectly suited for eye diagram visualization
-  - Custom sequential colorscale with good perceptual progression (dark blue to purple
-    to magenta to yellow)
-  - Complete spec compliance with all required data parameters (noise, jitter, trace
-    count, samples)
-  - Good use of Plotly Histogram2d for automatic density computation
+  - Excellent oscilloscope-inspired aesthetic with custom colorscale perfectly suited
+    to the signal integrity domain
+  - Vectorized signal generation is efficient and produces realistic NRZ waveforms
+  - Eye height annotation with bracket line adds meaningful measurement context
+  - All font sizes explicitly set for consistent readability at output resolution
+  - Full spec compliance including all required and optional features
   weaknesses:
-  - Signal generation uses nested Python loops instead of vectorized numpy operations
-  - Heatmap bin resolution (300x200) produces slightly blocky appearance
-  image_description: The plot displays an eye diagram on a dark navy (#0d0d2b) background.
-    Two clear eye openings span the x-axis from 0 to 2 UI (Time). The y-axis shows
-    Voltage (V) from approximately -0.05 to 1.05. A 2D density heatmap uses a custom
-    colorscale progressing from dark blue/purple (low density) through magenta/pink
-    to bright yellow (high density). High-density yellow bands are visible at the
-    0V and 1V signal levels where traces accumulate. The characteristic "X" crossing
-    patterns appear at approximately 0 UI and 1 UI where bit transitions occur. A
-    colorbar on the right labeled "Trace Density" ranges from 0 to ~45. The title
-    reads "eye-diagram-basic · plotly · pyplots.ai" in light gray text centered at
-    the top.
+  - Minor vertical graininess in the density heatmap
+  - Mirror borders on all four sides feel slightly heavier than necessary for the
+    dark theme
+  image_description: 'The plot displays a signal integrity eye diagram on a deep dark
+    navy background (#0d0d2b), evoking an oscilloscope aesthetic. Two clear eye-shaped
+    openings span the x-axis from 0 to 2 UI. A density heatmap using a purple-to-yellow
+    colorscale (dark purple for low density, bright yellow for high density) shows
+    trace concentration, with hot spots at the 0V and 1V signal levels where traces
+    accumulate. The title "eye-diagram-basic · plotly · pyplots.ai" appears centered
+    at the top in light gray. The x-axis is labeled "Time (UI)" with tick marks at
+    0, 0.5, 1.0, 1.5, 2.0. The y-axis is labeled "Voltage (V)" ranging from about
+    -0.2 to 1.1. A cyan-bordered annotation "Eye Height: 0.99 V" sits near the center
+    of the first eye opening with a dashed cyan vertical bracket line. A "Trace Density"
+    colorbar on the right shows the scale from 0 to ~18. The eye openings are well-defined
+    with visible transition regions forming the characteristic X-crossing pattern.'
   criteria_checklist:
     visual_quality:
       score: 29
@@ -43,37 +46,40 @@ review:
         max: 8
         passed: true
         comment: 'All font sizes explicitly set: title 28pt, axis labels 22pt, ticks
-          18pt, colorbar title 20pt, colorbar ticks 16pt'
+          18pt, annotation 17pt, colorbar 18/16pt'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements
+        comment: No text collisions; annotation well-positioned within eye opening
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Heatmap bins slightly blocky at 300x200 resolution
+        comment: Good density resolution (500x350 bins) but slight vertical graininess
+          visible
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Custom sequential colorscale, no red-green dependency
+        comment: Purple-to-yellow sequential colorscale is colorblind-safe with high
+          contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Plot fills canvas well with balanced margins
+        comment: Plot fills canvas well with tight margins, colorbar doesn't waste
+          excess space
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Time (UI) and Voltage (V) with units
+        comment: Time (UI) and Voltage (V) are descriptive with units
     design_excellence:
       score: 14
       max: 20
@@ -83,19 +89,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Dark oscilloscope theme with custom colorscale, professional look
+        comment: Strong oscilloscope-inspired design with custom 11-stop colorscale,
+          cyan accent annotations, monospace font
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Subtle grid, zeroline disabled, refined colorbar
+        comment: Subtle grid at 6% opacity, clean borders, zeroline removed; mirror
+          borders slightly heavy
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Density mapping creates natural visual hierarchy
+        comment: Eye height annotation with bracket provides measurement focal point;
+          density coloring guides attention
     spec_compliance:
       score: 15
       max: 15
@@ -105,26 +114,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct eye diagram using density heatmap
+        comment: Correct eye diagram using density heatmap overlay
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: density coloring, smooth transitions, noise,
-          jitter'
+        comment: 'All spec features present: density heatmap, UI time axis, NRZ signal,
+          noise, jitter, smooth transitions, eye height annotation'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=time in UI, Y=voltage in V
+        comment: X=time in UI [0,2], Y=voltage in V; axes show full range
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format, colorbar as density legend
+        comment: Title format correct; colorbar serves as density legend
     data_quality:
       score: 15
       max: 15
@@ -134,21 +143,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Both eye openings, transitions, noise, jitter all visible
+        comment: Shows eye openings, transition crossings, noise, jitter, density
+          variation; 400 traces
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Simulated NRZ signal with realistic engineering parameters
+        comment: NRZ signal integrity simulation is a real engineering scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 0-1V NRZ, 5% noise, 3% jitter all realistic
+        comment: 0-1V NRZ levels, 5% noise, 3% jitter are realistic values
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -156,31 +166,31 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean linear structure
+        comment: 'Linear flow: imports, seed, data generation, plot, layout, save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42)
+        comment: np.random.seed(42) set at top
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only numpy and plotly.graph_objects
+        comment: Only numpy and plotly.graph_objects, both used
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Nested Python loops could be vectorized
+        passed: true
+        comment: Clean vectorized signal generation, appropriate complexity
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png and plot.html
+        comment: Saves as plot.png with 1600x900 scale=3; also writes HTML
     library_mastery:
       score: 7
       max: 10
@@ -190,24 +200,24 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of go.Histogram2d for density visualization
+        comment: Good use of go.Histogram2d, update_layout, add_annotation, add_shape
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Histogram2d, custom hovertemplate, HTML export
-  verdict: REJECTED
+        comment: Histogram2d for density, custom hovertemplate, HTML export with CDN
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
+  - annotations
   - colorbar
   - hover-tooltips
   - html-export
   - manual-ticks
   patterns:
   - data-generation
-  - iteration-over-groups
   dataprep: []
   styling:
   - custom-colormap

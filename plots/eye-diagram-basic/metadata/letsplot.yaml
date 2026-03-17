@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: eye-diagram-basic
 created: '2026-03-17T23:34:53Z'
-updated: '2026-03-17T23:39:54Z'
+updated: '2026-03-17T23:49:48Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23221365710
 issue: 4561
@@ -10,36 +10,32 @@ library_version: 4.9.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/eye-diagram-basic/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/eye-diagram-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/eye-diagram-basic/letsplot/plot.html
-quality_score: 85
+quality_score: 83
 review:
   strengths:
-  - Excellent dark theme design with custom hot colormap appropriate for eye diagram
-    visualization
-  - Clean signal simulation with realistic NRZ parameters (noise, jitter, sigmoid
-    transitions)
-  - Full spec compliance with all required features implemented correctly
-  - Perfect code quality with KISS structure and reproducible seed
-  - Good use of lets-plot specific features (layer_tooltips, guide_colorbar, HTML
-    export)
+  - Excellent dark theme design with coherent inferno palette, dark background, and
+    cyan accent annotations
+  - Eye height/width annotations add meaningful signal quality context and data storytelling
+  - Clean well-structured code with proper reproducibility (seed 42)
+  - Good lets-plot feature usage including layer_tooltips and custom guide_colorbar
+  - Perfect text legibility with all font sizes explicitly set
   weaknesses:
-  - Raster cells appear slightly granular in transition regions — increasing bin resolution
-    could help
-  - No eye height/width annotations — would elevate design excellence and data storytelling
-  - Hot colormap not perceptually uniform — viridis or inferno variants could improve
-    accessibility
-  - Limited data storytelling — no visual emphasis guiding viewer to specific insights
-  image_description: The plot displays an eye diagram on a dark (#1a1a1a) background.
-    It uses a 2D density heatmap (geom_raster) to show overlaid NRZ signal traces.
-    The x-axis is labeled "Time (UI)" ranging from 0 to 2, and the y-axis is labeled
-    "Voltage (V)" with ticks at 0.0, 0.5, and 1.0. The title reads "eye-diagram-basic
-    · letsplot · pyplots.ai" in bold light gray text. A vertical color bar on the
-    right labeled "Trace Density" maps density values from ~0.2 (dark red) to 1.0
-    (white), using a custom hot colormap that transitions through dark red, bright
-    red, orange, yellow, and white. Two characteristic eye openings are clearly visible
-    — dense horizontal bands cluster at the 0V and 1V signal levels, with transition
-    regions connecting them at approximately 0.5 and 1.5 UI. The eye openings are
-    wide and clean, indicating good simulated signal quality. The overall aesthetic
-    is professional with a dark-themed design appropriate for engineering visualization.
+  - Sigmoid steepness too high (~53) making transitions nearly instantaneous and eye
+    opening rectangular instead of characteristic curved S-shape
+  - Eye diagram should show smooth bandwidth-limited transitions creating almond-shaped
+    eye opening per spec requirements
+  image_description: 'The plot displays an eye diagram on a dark navy/black background
+    (#0d0d2b plot, #000004 panel). A density heatmap uses an inferno-inspired color
+    palette (dark purple to magenta to orange to yellow) to show overlaid NRZ signal
+    traces across 2 unit intervals (0-2 UI). Dense horizontal bands at 0V and 1V represent
+    settled bit levels. Vertical transition bands at approximately 0.5, 1.0, and 1.5
+    UI show signal crossings. A rectangular eye opening is visible in the center.
+    Cyan-colored annotations mark "Eye Height: 0.68 V" (vertical segment on right
+    side) and "Eye Width: 0.79 UI" (horizontal segment in center of eye opening).
+    Title reads "eye-diagram-basic · letsplot · pyplots.ai". X-axis labeled "Time
+    (UI)" with ticks at 0, 0.5, 1.0, 1.5, 2.0. Y-axis labeled "Voltage (V)" with ticks
+    at 0.0, 0.5, 1.0. A colorbar on the right shows "Trace Density" ranging from 0
+    to approximately 1.0.'
   criteria_checklist:
     visual_quality:
       score: 26
@@ -47,46 +43,45 @@ review:
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title=28, axis titles=20, ticks=16,
-          legend=14-16). All readable.
+        comment: 'All font sizes explicitly set: title 28pt, axis titles 20pt, tick
+          labels 16pt, legend 14pt/16pt'
       - id: VQ-02
         name: No Overlap
-        score: 6
-        max: 6
-        passed: true
-        comment: No overlapping text elements anywhere
-      - id: VQ-03
-        name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Density pattern clear but raster cells slightly granular in transition
-          regions
+        comment: Minor crowding between Eye Height annotation and colorbar
+      - id: VQ-03
+        name: Element Visibility
+        score: 4
+        max: 6
+        passed: true
+        comment: Transitions appear as thin vertical bands due to high steepness,
+          eye opening looks rectangular
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Hot colormap provides good contrast on dark bg but is not perceptually
-          uniform
+        comment: Inferno palette is perceptually uniform and colorblind-safe, cyan
+          annotations contrast well
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good proportions, slight wasted space due to -0.3 to 1.3 voltage
-          range
+        comment: Good proportions, slight excess margin space
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Time (UI) and Voltage (V) with proper units
+        comment: Time (UI) and Voltage (V) with units
     design_excellence:
-      score: 13
+      score: 15
       max: 20
       items:
       - id: DE-01
@@ -94,76 +89,76 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Dark theme with custom 15-stop hot colormap, clearly above defaults,
-          professional engineering aesthetic
+        comment: Strong dark theme, custom 12-stop inferno gradient, cyan accents,
+          above defaults
       - id: DE-02
         name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: Spines/ticks removed, no grid, generous margins, coherent dark theme
+      - id: DE-03
+        name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Spines removed, grid removed, coordinated dark backgrounds, good
-          whitespace
-      - id: DE-03
-        name: Data Storytelling
-        score: 3
-        max: 6
-        passed: true
-        comment: Eye shape creates natural focal point but no annotations or additional
-          visual hierarchy
+        comment: Eye height/width annotations guide viewer to signal quality metrics,
+          natural visual hierarchy
     spec_compliance:
-      score: 15
+      score: 13
       max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Eye diagram as density heatmap — correct approach
+        comment: Correct density heatmap eye diagram, but rectangular eye shape instead
+          of characteristic almond shape
       - id: SC-02
         name: Required Features
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: 'All required features present: density heatmap, UI time axis, voltage
-          levels, NRZ signal with noise/jitter, sigmoid transitions'
+        comment: All features present but transitions too steep for realistic bandwidth-limited
+          appearance
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=time(UI), Y=voltage(V), fill=density — all correct
+        comment: X=time in UI, Y=voltage in V, correct ranges
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, Trace Density legend appropriate
+        comment: Correct format title, appropriate Trace Density colorbar label
     data_quality:
-      score: 14
+      score: 12
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 4
         max: 6
         passed: true
-        comment: 400 traces with eye openings, transitions, noise, jitter. Could show
-          partial eye closure for more variation
+        comment: Shows density, noise, jitter, but rectangular eye fails to show characteristic
+          S-curve transitions
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: NRZ signal simulation with realistic engineering parameters, neutral
-          context
+        comment: NRZ signal with noise and jitter is realistic telecommunications
+          engineering context
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: 0-2 UI, 0-1V, 5% noise, 3% jitter — all realistic for digital signal
-          integrity
+        comment: Noise/jitter params sensible but steepness too high for bandwidth-limited
+          signal
     code_quality:
       score: 10
       max: 10
@@ -173,19 +168,19 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Flat script with no functions or classes
+        comment: Linear imports-data-plot-save flow, no functions/classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set at start
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used, no unused imports
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
         score: 2
@@ -197,7 +192,7 @@ review:
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with scale=3
+        comment: Saves plot.png via ggsave with scale=3
     library_mastery:
       score: 7
       max: 10
@@ -207,25 +202,28 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good ggplot grammar usage with geom_raster, scale_fill_gradientn,
-          comprehensive theme
+        comment: 'Good grammar-of-graphics usage: geom_raster, scale_fill_gradientn,
+          layer_tooltips, guide_colorbar'
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses layer_tooltips, guide_colorbar customization, HTML export —
-          lets-plot distinctive features
+        comment: Uses lets-plot-specific layer_tooltips, guide_colorbar params, dual
+          HTML+PNG export
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
+  - annotations
+  - colorbar
   - hover-tooltips
   - html-export
+  - layer-composition
   patterns:
   - data-generation
-  - iteration-over-groups
   - matrix-construction
+  - iteration-over-groups
   dataprep:
   - binning
   - normalization

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-chromagram: Music Chromagram (Pitch Class Distribution over Time)
 Library: bokeh 3.9.0 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-17
@@ -53,8 +53,14 @@ for i in range(1, len(chord_sequence)):
 
 energy = np.clip(energy, 0, 1)
 
-# Flatten to DataFrame with numeric y-axis (reversed so C is at top, B at bottom)
+# Prepare data for rendering
 dt = time_seconds[1] - time_seconds[0]
+
+# Reverse energy rows so C is at top (row 0 in image = bottom of plot = B)
+# image glyph renders row 0 at the bottom, so reversed energy puts C at top
+energy_image = energy[::-1, :]
+
+# Flatten to DataFrame for HoverTool interactivity
 records = []
 for i, pitch in enumerate(pitch_classes):
     y_pos = n_pitch - 1 - i  # C=11 (top), B=0 (bottom)
@@ -91,7 +97,7 @@ magma_palette = [
 # Color mapper
 mapper = LinearColorMapper(palette=magma_palette, low=0, high=1)
 
-# Create figure with numeric axes (no gaps between rows)
+# Create figure with numeric axes
 p = figure(
     width=4800,
     height=2700,
@@ -108,29 +114,24 @@ p = figure(
 p.yaxis.ticker = FixedTicker(ticks=list(range(n_pitch)))
 p.yaxis.major_label_overrides = {i: pitch_classes[n_pitch - 1 - i] for i in range(n_pitch)}
 
-# Plot heatmap rectangles — seamless tiling with numeric coordinates
-r = p.rect(
-    x="time",
-    y="y",
-    width=dt,
-    height=1.1,
-    source=source,
-    fill_color={"field": "energy", "transform": mapper},
-    line_color=None,
-)
+# Seamless heatmap using image glyph (no gaps between cells)
+p.image(image=[energy_image], x=-dt / 2, y=-0.5, dw=8 + dt, dh=n_pitch, color_mapper=mapper)
+
+# Invisible rect layer for HoverTool interactivity (HTML only)
+r = p.rect(x="time", y="y", width=dt, height=1, source=source, fill_alpha=0, line_alpha=0)
 
 # Color bar — wider with larger labels for 4800px canvas
 color_bar = ColorBar(
     color_mapper=mapper,
-    width=80,
+    width=100,
     ticker=BasicTicker(desired_num_ticks=8),
-    label_standoff=20,
-    major_label_text_font_size="22pt",
+    label_standoff=25,
+    major_label_text_font_size="24pt",
     border_line_color=None,
-    padding=15,
+    padding=20,
     title="Energy",
-    title_text_font_size="24pt",
-    title_standoff=25,
+    title_text_font_size="26pt",
+    title_standoff=30,
 )
 p.add_layout(color_bar, "right")
 
@@ -155,7 +156,10 @@ p.axis.major_tick_line_color = None
 p.outline_line_color = None
 
 # Dark background to complement magma colormap
-p.min_border_right = 400
+p.min_border_right = 200
+p.min_border_left = 40
+p.min_border_top = 30
+p.min_border_bottom = 40
 p.background_fill_color = "#0a0a0a"
 p.border_fill_color = "#1a1a1a"
 p.title.text_color = "#e0e0e0"
@@ -165,6 +169,10 @@ p.xaxis.major_label_text_color = "#aaaaaa"
 p.yaxis.major_label_text_color = "#cccccc"
 color_bar.major_label_text_color = "#cccccc"
 color_bar.title_text_color = "#cccccc"
+color_bar.background_fill_color = "#1a1a1a"
+color_bar.bar_line_color = None
+color_bar.major_tick_line_color = "#666666"
+color_bar.minor_tick_line_color = None
 
 # Save
 export_png(p, filename="plot.png")

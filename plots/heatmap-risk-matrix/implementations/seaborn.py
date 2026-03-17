@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-risk-matrix: Risk Assessment Matrix (Probability vs Impact)
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-17
@@ -40,19 +40,21 @@ risks = [
     {"name": "IP Theft", "likelihood": 1, "impact": 5, "category": "Technical"},
 ]
 
-# Colorblind-safe colormap: amber-based gradient (avoids red-green)
-colors_list = ["#ffffcc", "#fed976", "#fd8d3c", "#e31a1c", "#800026"]
-cmap = LinearSegmentedColormap.from_list("risk_cb", colors_list, N=256)
+# Perceptually-uniform colormap for accessibility (plasma-inspired risk gradient)
+cmap = LinearSegmentedColormap.from_list(
+    "risk_pu", ["#f0f9e8", "#bae4bc", "#f7c948", "#e8871e", "#b5122a", "#6e0025"], N=256
+)
 
-# Seaborn style setup
+# Seaborn style setup with custom palette
 sns.set_style("white")
-sns.set_context("talk", font_scale=0.95)
+sns.set_context("talk", font_scale=1.0)
+category_colors = sns.color_palette(["#306998", "#e8871e", "#7b4f9d", "#2ca02c"])
 
 # Plot with extra space on right for legend
 fig, ax = plt.subplots(figsize=(16, 9))
-fig.subplots_adjust(right=0.78)
+fig.subplots_adjust(right=0.76)
 
-# Heatmap with seaborn
+# Heatmap with seaborn - increased annotation visibility
 sns.heatmap(
     risk_scores,
     annot=True,
@@ -60,16 +62,16 @@ sns.heatmap(
     cmap=cmap,
     vmin=1,
     vmax=25,
-    linewidths=3,
-    linecolor="#f0f0f0",
-    cbar_kws={"shrink": 0.65, "label": "Risk Score", "pad": 0.02},
-    annot_kws={"size": 22, "weight": "bold", "color": "#333333", "alpha": 0.3},
+    linewidths=2.5,
+    linecolor="white",
+    cbar_kws={"shrink": 0.6, "label": "Risk Score", "pad": 0.02, "aspect": 20},
+    annot_kws={"size": 24, "weight": "bold", "color": "#2a2a2a", "alpha": 0.55},
     square=False,
     ax=ax,
 )
 
-# Build DataFrame for risk items with computed positions (for seaborn scatterplot)
-category_palette = {"Technical": "#306998", "Financial": "#e8871e", "Operational": "#7b4f9d", "Project": "#2ca02c"}
+# Category styling
+category_palette = dict(zip(["Technical", "Financial", "Operational", "Project"], category_colors, strict=True))
 category_markers = {"Technical": "o", "Financial": "s", "Operational": "D", "Project": "^"}
 
 # Count items per cell for positioning
@@ -97,13 +99,14 @@ for _cell_key, items in cell_items.items():
                 "name": risk["name"],
                 "category": risk["category"],
                 "score": score,
-                "size": 150 + score * 12,
+                "size": 160 + score * 14,
+                "is_critical": score >= 16,
             }
         )
 
 df_risks = pd.DataFrame(plot_data)
 
-# Plot markers per category using seaborn scatterplot for each marker style
+# Plot markers per category using seaborn scatterplot
 for cat, marker in category_markers.items():
     cat_df = df_risks[df_risks["category"] == cat]
     if cat_df.empty:
@@ -117,26 +120,40 @@ for cat, marker in category_markers.items():
         color=category_palette[cat],
         marker=marker,
         edgecolor="white",
-        linewidth=2,
+        linewidth=2.5,
         legend=False,
         ax=ax,
         zorder=5,
     )
 
-# Add labels with improved positioning and larger font
+# Highlight critical risks (score >= 16) with a second outer ring
+critical_df = df_risks[df_risks["is_critical"]]
+for _, row in critical_df.iterrows():
+    ax.scatter(
+        row["x"], row["y"], s=row["size"] + 200, facecolors="none", edgecolors="#6e0025", linewidths=2.5, zorder=4
+    )
+
+# Add labels with larger font size for readability
 for _, row in df_risks.iterrows():
     label_y_offset = 0.30 if row["score"] >= 12 else 0.26
+    fontsize = 11.5 if row["is_critical"] else 11
     ax.text(
         row["x"],
         row["y"] + label_y_offset,
         row["name"],
         ha="center",
         va="top",
-        fontsize=9.5,
+        fontsize=fontsize,
         fontweight="bold",
         color="#1a1a1a",
         zorder=6,
-        bbox={"boxstyle": "round,pad=0.12", "facecolor": "white", "edgecolor": "none", "alpha": 0.7},
+        bbox={
+            "boxstyle": "round,pad=0.15",
+            "facecolor": "white",
+            "edgecolor": "#6e0025" if row["is_critical"] else "none",
+            "linewidth": 1.2 if row["is_critical"] else 0,
+            "alpha": 0.85,
+        },
     )
 
 # Style axes
@@ -148,8 +165,9 @@ ax.set_title("heatmap-risk-matrix · seaborn · pyplots.ai", fontsize=24, fontwe
 
 # Colorbar styling
 cbar = ax.collections[0].colorbar
-cbar.ax.tick_params(labelsize=13)
-cbar.ax.set_ylabel("Risk Score", fontsize=15, fontweight="medium")
+cbar.ax.tick_params(labelsize=14)
+cbar.ax.set_ylabel("Risk Score", fontsize=16, fontweight="medium")
+cbar.outline.set_linewidth(0.5)
 
 # Legend positioned outside the plot area
 legend_handles = [
@@ -168,17 +186,34 @@ legend_handles = [
 ]
 legend_handles.append(plt.Line2D([0], [0], color="w", label=""))
 
+# Zone color patches using colors from the colormap
 zone_levels = [
-    ("Low (1–4)", "#ffffcc"),
-    ("Medium (5–9)", "#fed976"),
-    ("High (10–16)", "#fd8d3c"),
-    ("Critical (20–25)", "#800026"),
+    ("Low (1–4)", "#f0f9e8"),
+    ("Medium (5–9)", "#bae4bc"),
+    ("High (10–16)", "#e8871e"),
+    ("Critical (20–25)", "#6e0025"),
 ]
 for label, color in zone_levels:
     legend_handles.append(mpatches.Patch(facecolor=color, edgecolor="#999999", linewidth=1, label=label))
 
-# Small vs large marker size legend
 legend_handles.append(plt.Line2D([0], [0], color="w", label=""))
+
+# Critical emphasis indicator
+legend_handles.append(
+    plt.Line2D(
+        [0],
+        [0],
+        marker="o",
+        color="w",
+        markerfacecolor="none",
+        markersize=14,
+        markeredgecolor="#6e0025",
+        markeredgewidth=2,
+        label="Critical risk",
+    )
+)
+
+# Small vs large marker size legend
 legend_handles.append(
     plt.Line2D([0], [0], marker="o", color="w", markerfacecolor="#888888", markersize=8, label="Low score")
 )
@@ -186,21 +221,22 @@ legend_handles.append(
     plt.Line2D([0], [0], marker="o", color="w", markerfacecolor="#888888", markersize=14, label="High score")
 )
 
-ax.legend(
+leg = ax.legend(
     handles=legend_handles,
     loc="center left",
     bbox_to_anchor=(1.12, 0.5),
-    fontsize=11,
+    fontsize=12,
     framealpha=0.95,
     edgecolor="#cccccc",
     fancybox=True,
     shadow=False,
     title="Categories & Zones",
-    title_fontsize=13,
+    title_fontsize=14,
     ncol=1,
-    borderpad=1,
-    labelspacing=0.8,
+    borderpad=1.0,
+    labelspacing=0.9,
 )
+leg.get_title().set_fontweight("bold")
 
 sns.despine(ax=ax, left=True, bottom=True)
 

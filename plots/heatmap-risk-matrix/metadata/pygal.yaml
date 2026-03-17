@@ -1,7 +1,7 @@
 library: pygal
 specification_id: heatmap-risk-matrix
 created: '2026-03-17T21:54:04Z'
-updated: '2026-03-17T22:06:38Z'
+updated: '2026-03-17T22:14:15Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23217984897
 issue: 4567
@@ -10,35 +10,35 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-risk-matrix/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-risk-matrix/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-risk-matrix/pygal/plot.html
-quality_score: 84
+quality_score: 82
 review:
   strengths:
-  - Full spec compliance with all required features (5x5 grid, color gradient, descriptive
-    labels, risk markers with jitter, zone legend)
-  - Excellent data quality with 14 realistic enterprise risk items across 4 categories
-  - Strong library mastery — extends pygal Graph class idiomatically and uses SVG
-    tooltips and HTML export
-  - Professional design with rounded corners, white borders, text shadows on markers,
-    and clean color progression
-  - Interactive HTML output with native SVG tooltips is a genuine pygal strength
+  - Excellent spec compliance with all required features implemented (color gradient,
+    descriptive labels, risk markers with jitter, zone legend)
+  - 'Strong library mastery: idiomatic pygal Graph subclass with SVG tooltip support
+    and HTML export'
+  - Realistic, well-distributed risk data covering all zones and categories
+  - Good visual design with custom color palette, rounded corners, and text shadow
+    technique for marker labels
+  - Data storytelling through color gradient naturally emphasizes critical risks
   weaknesses:
-  - 'Color accessibility: green-to-red gradient is not colorblind-safe (VQ-04: 2/4)'
-  - 'Minor label crowding in the Likely row between adjacent risk items (VQ-02: 5/6)'
-  - Title font size is relatively small compared to the chart body
-  image_description: 'The plot displays a 5×5 risk assessment matrix with "LIKELIHOOD"
+  - Marker label overlap/crowding in cells with nearby risk items
+  - Orange operational markers have reduced contrast on orange High-risk cells
+  - Complex class structure with sys.path manipulation reduces code quality score
+  - Some wasted canvas space at top and bottom margins
+  image_description: 'The plot displays a 5x5 risk assessment matrix with "LIKELIHOOD"
     on the y-axis (1. Rare through 5. Almost Certain) and "IMPACT" on the x-axis (1.
-    Negligible through 5. Catastrophic). Each cell contains a large bold risk score
-    (likelihood × impact) and a zone label (Low, Medium, High, Critical). Cells are
-    color-coded with a green-yellow-orange-red gradient: green for Low (1–4), yellow
-    for Medium (5–9), orange for High (10–16), and red for Critical (20–25). Cells
-    have rounded corners with white borders. 14 risk items are plotted as small colored
-    circle markers with bold text labels — blue circles for Technical risks (Server
-    Outage, Data Breach, Tech Debt, Cyber Attack), purple for Financial (Budget Overrun,
-    Currency Risk, Market Shift), orange for Operational (Vendor Delay, Staff Turnover,
-    Scope Creep, Key Person), and teal for External (Reg. Change, Supply Chain, Pandemic).
-    A legend on the right side shows Risk Zones with colored squares and Risk Categories
-    with colored circles. The title reads "heatmap-risk-matrix · pygal · pyplots.ai"
-    at the top center.'
+    Negligible through 5. Catastrophic). Cells are color-coded using a four-tone palette:
+    light blue for Low (scores 1-4), yellow for Medium (5-9), orange for High (10-16),
+    and deep red for Critical (20-25). Each cell shows its risk score in large bold
+    text and a zone label beneath it. Fourteen risk items are plotted as colored circle
+    markers with text labels: blue circles for Technical risks (Server Outage, Data
+    Breach, Tech Debt, Cyber Attack), purple for Financial (Budget Overrun, Currency
+    Risk, Market Shift), orange for Operational (Vendor Delay, Staff Turnover, Scope
+    Creep, Key Person), and teal for External (Reg. Change, Supply Chain, Pandemic).
+    Cells have rounded corners with white borders. A legend on the right side shows
+    both Risk Zones and Risk Categories. The title reads "heatmap-risk-matrix · pygal
+    · pyplots.ai". X-axis labels are rotated at -35 degrees.'
   criteria_checklist:
     visual_quality:
       score: 24
@@ -49,68 +49,68 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly calculated from cell size; all text readable.
-          Title slightly small relative to chart body.
+        comment: Font sizes explicitly calculated relative to cell size; all text
+          readable. Marker label font slightly small.
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 4
         max: 6
         passed: true
-        comment: Minor crowding between Budget Overrun and Vendor Delay labels; Key
-          Person extends slightly past grid boundary.
+        comment: Several marker labels crowd near cell boundaries; Budget Overrun/Vendor
+          Delay close, Key Person/Data Breach at edges.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Cell colors, scores, zone labels clearly visible. Risk markers small
-          but distinguishable with white stroke.
+        comment: Circle markers visible with white strokes and shadow text. Slightly
+          small marker radius relative to cell size.
       - id: VQ-04
         name: Color Accessibility
-        score: 2
+        score: 3
         max: 4
-        passed: false
-        comment: Green-yellow-orange-red gradient is standard for risk matrices but
-          problematic for red-green colorblind users.
+        passed: true
+        comment: Sequential palette works for colorblind users. Orange markers on
+          orange cells have reduced contrast.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Grid well-centered with legend space. Some unused whitespace at top-left
-          and bottom-left.
+        comment: Grid fills reasonable canvas area with legend well-positioned. Some
+          wasted whitespace at top and bottom.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: LIKELIHOOD and IMPACT axis titles descriptive. Row/column labels
-          use descriptive terms as spec requires.
+        comment: Descriptive axis titles with semantic tick labels. No units needed
+          for ordinal scales.
     design_excellence:
-      score: 14
+      score: 13
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 6
+        score: 5
         max: 8
         passed: true
-        comment: Strong design with custom palette, rounded corners, white borders,
-          text shadows. Clearly above defaults.
+        comment: Custom color palette, rounded corners, white borders, category-colored
+          markers. Above defaults but not publication-level.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Rounded corners, clean white borders, shadow text, generous cell
-          gaps. Some legend/axis title polish needed.
+        comment: Rounded corners, white borders, font weight hierarchy, paint-order
+          stroke technique for shadows.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Color gradient guides eye from low-risk green to critical red. Realistic
-          risk placement tells coherent story.
+        comment: Color gradient draws attention to critical risks. Category colors
+          add analytical dimension.
     spec_compliance:
       score: 15
       max: 15
@@ -120,28 +120,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct 5x5 grid heatmap risk matrix.
+        comment: Correct 5x5 grid heatmap with color-coded cells based on risk score.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: gradient, descriptive labels, markers
-          with jitter, zone legend, grid lines.'
+        comment: 'All spec features present: color gradient, descriptive labels, risk
+          markers with jitter, zone legend, cell delineation.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Likelihood on Y-axis, Impact on X-axis, risk scores as products.
-          All correct.
+        comment: Likelihood on Y-axis, Impact on X-axis, scores correctly computed
+          as products.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title follows spec-id · library · pyplots.ai format. Legend shows
-          Risk Zones and Risk Categories.
+        comment: Correct title format. Legend shows both risk zones and risk categories.
     data_quality:
       score: 15
       max: 15
@@ -151,38 +150,37 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 14 risk items across 4 categories covering all risk zones. Multiple
-          items in cells demonstrate jitter.
+        comment: 14 risk items across all four zones and four categories, spanning
+          full range of values.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Enterprise risk management with realistic risks. Neutral and plausible
-          scenario.
+        comment: Real-world enterprise risk items in neutral business/technology domain.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Sensible likelihood and impact ratings for all risk items.
+        comment: Integer values 1-5, risk scores correctly range 1-25.
     code_quality:
-      score: 8
+      score: 7
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 2
+        score: 1
         max: 3
         passed: false
-        comment: Custom class extending Graph is necessary but adds complexity beyond
-          flat script pattern.
+        comment: Uses class extending Graph with multiple methods. Necessary for pygal
+          but adds complexity.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set for jitter reproducibility.
+        comment: np.random.seed(42) set for marker jitter.
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -191,16 +189,17 @@ review:
         comment: 'All imports used: sys, numpy, pygal Graph and Style.'
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Well-organized class with clean helpers. No fake UI elements.
+        passed: false
+        comment: sys.path manipulation hack is inelegant. Class well-structured internally
+          but high overall complexity.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png, also generates plot.svg and plot.html.
+        comment: Saves as plot.png via render_to_png, also generates SVG and HTML.
     library_mastery:
       score: 8
       max: 10
@@ -210,14 +209,14 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Advanced pygal: extends Graph base class, uses SVG node system,
-          Style, render methods.'
+        comment: Graph subclass with SVG node manipulation, Style class, and view
+          coordinate system.
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: Leverages pygal SVG architecture, SVG title tooltips, interactive
+        comment: SVG-native tooltips, Graph subclassing, render pipeline, interactive
           HTML export.
   verdict: REJECTED
 impl_tags:
@@ -225,11 +224,11 @@ impl_tags:
   techniques:
   - annotations
   - custom-legend
-  - hover-tooltips
-  - html-export
   patterns:
   - data-generation
   - matrix-construction
   dataprep: []
   styling:
+  - custom-colormap
   - edge-highlighting
+  - alpha-blending

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 heatmap-risk-matrix: Risk Assessment Matrix (Probability vs Impact)
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: repair-2 | Created: 2026-03-17
+Quality: 82/100 | Created: 2026-03-17
 """
 
 import sys

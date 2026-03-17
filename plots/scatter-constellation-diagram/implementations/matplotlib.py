@@ -1,9 +1,10 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-constellation-diagram: Digital Modulation Constellation Diagram
 Library: matplotlib 3.10.8 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-17
 """
 
+import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -27,48 +28,59 @@ noise_std = np.sqrt(signal_power / snr_linear)
 received_i = ideal_i[symbol_indices] + np.random.normal(0, noise_std, n_symbols)
 received_q = ideal_q[symbol_indices] + np.random.normal(0, noise_std, n_symbols)
 
-evm_values = np.sqrt((received_i - ideal_i[symbol_indices]) ** 2 + (received_q - ideal_q[symbol_indices]) ** 2)
-rms_evm = np.sqrt(np.mean(evm_values**2)) / np.sqrt(signal_power) * 100
+error_vectors = np.sqrt((received_i - ideal_i[symbol_indices]) ** 2 + (received_q - ideal_q[symbol_indices]) ** 2)
+rms_evm = np.sqrt(np.mean(error_vectors**2)) / np.sqrt(signal_power) * 100
 
 # Plot
-fig, ax = plt.subplots(figsize=(10, 10))
+fig, ax = plt.subplots(figsize=(12, 12))
 
-ax.scatter(received_i, received_q, s=18, alpha=0.35, color="#306998", edgecolors="none", zorder=2)
+# Received symbols colored by error magnitude using a perceptually-uniform colormap
+norm = mcolors.Normalize(vmin=error_vectors.min(), vmax=error_vectors.max())
+scatter = ax.scatter(
+    received_i, received_q, c=error_vectors, cmap="plasma", norm=norm, s=28, alpha=0.55, edgecolors="none", zorder=2
+)
 
+# Colorbar showing error magnitude
+cbar = fig.colorbar(scatter, ax=ax, shrink=0.72, pad=0.02, aspect=30)
+cbar.set_label("Error Magnitude", fontsize=18)
+cbar.ax.tick_params(labelsize=14)
+
+# Ideal constellation points
 ax.scatter(
     ideal_i,
     ideal_q,
-    s=280,
+    s=320,
     marker="X",
     color="#C0392B",
     edgecolors="white",
-    linewidth=0.8,
+    linewidth=1.0,
     zorder=3,
     label="Ideal symbols",
 )
 
 # Decision boundaries
 for boundary in [-2, 0, 2]:
-    ax.axhline(boundary, color="#888888", linestyle="--", linewidth=0.8, alpha=0.4)
-    ax.axvline(boundary, color="#888888", linestyle="--", linewidth=0.8, alpha=0.4)
+    ax.axhline(boundary, color="#888888", linestyle="--", linewidth=0.8, alpha=0.35)
+    ax.axvline(boundary, color="#888888", linestyle="--", linewidth=0.8, alpha=0.35)
+
+# Origin lines
+ax.axhline(0, color="#CCCCCC", linewidth=0.5, zorder=0)
+ax.axvline(0, color="#CCCCCC", linewidth=0.5, zorder=0)
 
 # Style
 ax.set_xlabel("In-Phase (I)", fontsize=20)
 ax.set_ylabel("Quadrature (Q)", fontsize=20)
-ax.set_title("scatter-constellation-diagram · matplotlib · pyplots.ai", fontsize=22, fontweight="medium")
+ax.set_title("scatter-constellation-diagram · matplotlib · pyplots.ai", fontsize=24, fontweight="medium")
 ax.tick_params(axis="both", labelsize=16)
 
 ax.set_xlim(-5, 5)
 ax.set_ylim(-5, 5)
 ax.set_aspect("equal")
 
-ax.axhline(0, color="#CCCCCC", linewidth=0.5, zorder=0)
-ax.axvline(0, color="#CCCCCC", linewidth=0.5, zorder=0)
-
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 
-ax.legend(fontsize=16, loc="upper left")
+ax.legend(fontsize=16, loc="upper left", framealpha=0.9, edgecolor="#CCCCCC")
 
 ax.text(
     0.97,

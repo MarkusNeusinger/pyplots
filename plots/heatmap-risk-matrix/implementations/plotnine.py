@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-risk-matrix: Risk Assessment Matrix (Probability vs Impact)
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-17
@@ -45,6 +45,10 @@ for li in likelihood_levels:
 
 grid_df = pd.DataFrame(grid_rows)
 
+# Position score numbers in top-left corner of each cell to avoid label overlap
+grid_df["score_x"] = grid_df["impact"] - 0.38
+grid_df["score_y"] = grid_df["likelihood"] + 0.35
+
 # Risk items
 np.random.seed(42)
 risks = pd.DataFrame(
@@ -64,7 +68,7 @@ risks = pd.DataFrame(
             "Compliance Gap",
         ],
         "likelihood": [3, 4, 2, 5, 2, 3, 1, 4, 3, 4, 1, 3],
-        "impact": [3, 4, 5, 3, 4, 2, 5, 2, 4, 3, 1, 4],
+        "impact": [3, 4, 5, 3, 4, 2, 5, 2, 4, 3, 4, 4],
         "category": [
             "Operational",
             "Financial",
@@ -92,10 +96,9 @@ for idx in range(len(risks)):
     count = cell_counts.iloc[idx]
     total = cell_totals.iloc[idx]
     if total > 1:
-        # Spread labels vertically: first up, second down
-        offset = 0.22 if count == 0 else -0.22
+        offset = 0.18 if count == 0 else -0.18
     else:
-        offset = 0.0
+        offset = -0.05
     label_offsets.append(offset)
 
 risks["y_offset"] = label_offsets
@@ -106,8 +109,8 @@ risks["label_x"] = risks["impact"].astype(float)
 likelihood_labels = {1: "Rare", 2: "Unlikely", 3: "Possible", 4: "Likely", 5: "Almost\nCertain"}
 impact_labels = {1: "Negligible", 2: "Minor", 3: "Moderate", 4: "Major", 5: "Catastrophic"}
 
-# Color scale: green → yellow → orange → red with intermediate steps
-risk_colors = ["#1b5e20", "#4caf50", "#c6ff00", "#ffeb3b", "#ff9800", "#e65100", "#b71c1c"]
+# Colorblind-friendly palette: blue to dark red (avoids pure green-red)
+risk_colors = ["#2166ac", "#67a9cf", "#fddbc7", "#fcbba1", "#ef6548", "#d7301f", "#7f0000"]
 
 
 # Plot
@@ -116,13 +119,15 @@ plot = (
     # Background heatmap tiles
     + geom_tile(data=grid_df, mapping=aes(x="impact", y="likelihood", fill="risk_score"), color="#2c2c3a", size=1.2)
     + scale_fill_gradientn(colors=risk_colors, limits=(1, 25), name="Risk\nScore", breaks=[1, 5, 10, 15, 20, 25])
-    # Risk score numbers in each cell (redundant encoding for accessibility)
+    # Risk score numbers in top-left corner of each cell (avoids overlap with labels)
     + geom_text(
         data=grid_df,
-        mapping=aes(x="impact", y="likelihood", label="risk_score"),
-        color="#00000044",
-        size=18,
+        mapping=aes(x="score_x", y="score_y", label="risk_score"),
+        color="#00000055",
+        size=11,
         fontweight="bold",
+        ha="left",
+        va="top",
     )
     # Risk item labels
     + geom_label(
@@ -136,22 +141,22 @@ plot = (
         label_size=0.3,
         label_r=0.08,
     )
-    # Axes
-    + scale_x_continuous(breaks=impact_levels, labels=[impact_labels[i] for i in impact_levels], expand=(0, 0.55))
-    + scale_y_continuous(
-        breaks=likelihood_levels, labels=[likelihood_labels[i] for i in likelihood_levels], expand=(0, 0.55)
-    )
-    + labs(x="Impact →", y="Likelihood →", title="heatmap-risk-matrix · plotnine · pyplots.ai")
-    # Zone legend as subtitle annotation
+    # Zone annotation above the grid
     + annotate(
         "text",
         x=3,
-        y=0.15,
-        label="Zones:  Low (1–4)  ·  Medium (5–9)  ·  High (10–16)  ·  Critical (20–25)",
+        y=5.65,
+        label="Zones:  Low (1\u20134)  \u00b7  Medium (5\u20139)  \u00b7  High (10\u201316)  \u00b7  Critical (20\u201325)",
         size=9,
         color="#555555",
         fontstyle="italic",
     )
+    # Axes
+    + scale_x_continuous(breaks=impact_levels, labels=[impact_labels[i] for i in impact_levels], expand=(0, 0.55))
+    + scale_y_continuous(
+        breaks=likelihood_levels, labels=[likelihood_labels[i] for i in likelihood_levels], expand=(0, 0.85)
+    )
+    + labs(x="Impact \u2192", y="Likelihood \u2192", title="heatmap-risk-matrix \u00b7 plotnine \u00b7 pyplots.ai")
     # Theme
     + theme_minimal()
     + theme(
@@ -163,7 +168,7 @@ plot = (
         axis_text_y=element_text(size=15),
         legend_title=element_text(size=16, weight="bold"),
         legend_text=element_text(size=14),
-        legend_key_height=40,
+        legend_key_height=60,
         panel_grid_major=element_blank(),
         panel_grid_minor=element_blank(),
         plot_background=element_rect(fill="#fafafa", color="#fafafa"),

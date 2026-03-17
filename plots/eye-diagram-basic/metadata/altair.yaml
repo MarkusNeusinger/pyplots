@@ -1,7 +1,7 @@
 library: altair
 specification_id: eye-diagram-basic
 created: '2026-03-17T23:34:52Z'
-updated: '2026-03-17T23:38:47Z'
+updated: '2026-03-17T23:48:28Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23221365349
 issue: 4561
@@ -10,57 +10,59 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/eye-diagram-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/eye-diagram-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/eye-diagram-basic/altair/plot.html
-quality_score: 73
+quality_score: 79
 review:
   strengths:
-  - Excellent data generation with realistic NRZ signal simulation including proper
-    sigmoid transitions, noise, and jitter
-  - Smart pre-binning approach to handle Altair data row limits
-  - Good colormap choice (inferno) for density visualization
-  - Perfect spec compliance with all required features present
-  - Log-density transform improves visual contrast
+  - Correct eye diagram pattern with realistic NRZ signal simulation
+  - Inferno colormap is an excellent choice for density visualization
+  - Explicit font sizing for readability
+  - Grid and view border removed for cleaner appearance
+  - Good signal generation with sigmoid transitions, noise, and jitter
+  - Dual output (PNG + HTML)
   weaknesses:
-  - Tick labels on both axes are extremely dense and overlap, severely hurting readability
-  - No colorbar to indicate what color intensity represents
-  - Layout feels compressed with too many auto-generated tick marks
-  - Code uses numpy binning rather than Altair native aggregation capabilities
+  - Double-binning (numpy histogram2d + Altair Bin) creates coarse, blocky appearance
+    instead of smooth density
+  - White background is not ideal for eye diagrams — dark background would better
+    suit signal integrity visualization
+  - No annotations for eye height/width measurements
+  - Axis spines and tick styling remain at defaults
+  - Altair-specific features like tooltips (for HTML) or layered annotations are underutilized
   image_description: The plot displays a density heatmap eye diagram using the inferno
-    colormap on a white background. Two horizontal bands of high density (bright yellow/orange)
-    are visible at the 0V and 1V signal levels, connected by diagonal transition regions
-    forming the classic eye-shaped opening. The x-axis is labeled "Time (UI)" ranging
-    from 0 to ~2, and the y-axis is labeled "Voltage (V)" ranging from approximately
-    -0.19 to 1.17. The title reads "eye-diagram-basic · altair · pyplots.ai" at the
-    top. The tick labels on both axes are extremely dense — the y-axis shows values
-    at ~0.04V increments and the x-axis at ~0.07 UI increments, causing significant
-    crowding and partial overlap. There is no colorbar or legend indicating what the
-    color intensity represents. The eye opening is clearly visible with lower-density
-    scattered points in the transition regions.
+    colormap on a light/white background. The x-axis is labeled "Time (UI)" ranging
+    from 0.00 to 2.00, and the y-axis shows voltage values from approximately -0.10
+    to 1.20. Two characteristic eye openings are clearly visible between the high-density
+    horizontal bands at the 0V and 1V signal levels. The high-density regions (yellow/orange)
+    show where traces overlap most at the stable voltage levels, while transition
+    regions between levels display scattered lower-density cells in purple and dark
+    colors. The title reads "eye-diagram-basic · altair · pyplots.ai" with a subtitle.
+    A "Log Density" color legend appears on the right side. The overall eye pattern
+    demonstrates good signal integrity with visible noise and jitter effects on the
+    transitions.
   criteria_checklist:
     visual_quality:
-      score: 20
+      score: 26
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title 28pt, labels 18pt, titles 22pt)
-          but tick labels are cramped due to excessive bin-generated ticks
+        comment: Font sizes explicitly set (title=28, labels=22, ticks=18). All text
+          readable, subtitle is small.
       - id: VQ-02
         name: No Overlap
-        score: 2
-        max: 6
-        passed: false
-        comment: Y-axis tick labels extremely dense (~0.04V increments) and overlap.
-          X-axis ticks also crowded at ~0.07 UI intervals
-      - id: VQ-03
-        name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Heatmap cells well-sized, eye pattern clearly visible, density variation
-          apparent through color
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 4
+        max: 6
+        passed: false
+        comment: Heatmap bins appear coarse and blocky due to double-binning (numpy
+          + Altair Bin)
       - id: VQ-04
         name: Color Accessibility
         score: 4
@@ -69,10 +71,10 @@ review:
         comment: Inferno is perceptually uniform and colorblind-safe
       - id: VQ-05
         name: Layout & Canvas
-        score: 1
+        score: 3
         max: 4
-        passed: false
-        comment: Dense tick labels eat into usable space, overall image appears compressed
+        passed: true
+        comment: Good canvas utilization, minor wasted space at edges
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
@@ -80,30 +82,29 @@ review:
         passed: true
         comment: Time (UI) and Voltage (V) are descriptive with units
     design_excellence:
-      score: 10
+      score: 11
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
-        passed: true
-        comment: Good inferno colormap choice but no additional design refinement
-          beyond that
+        passed: false
+        comment: Inferno colormap is strong choice. Above default but not publication-level.
+          Dark background would suit eye diagrams better.
       - id: DE-02
         name: Visual Refinement
         score: 3
         max: 6
-        passed: true
-        comment: Grid disabled and view stroke removed, but excessive auto-generated
-          ticks hurt clean look
+        passed: false
+        comment: Grid removed, view stroke removed. Axis spines and ticks remain default.
       - id: DE-03
         name: Data Storytelling
         score: 3
         max: 6
-        passed: true
-        comment: Density mapping naturally communicates signal quality. Log-density
-          transform helps differentiate areas
+        passed: false
+        comment: Density coloring tells signal integrity story. Subtitle adds context.
+          No focal point emphasis on eye openings.
     spec_compliance:
       score: 14
       max: 15
@@ -113,51 +114,48 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct density heatmap of overlaid NRZ signal traces forming eye
-          diagram
+        comment: Correct eye diagram using density heatmap
       - id: SC-02
         name: Required Features
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: 'All required features present: density coloring, UI time axis, voltage
-          axis, sigmoid transitions, noise, jitter'
+        comment: Has density coloring, NRZ signal, noise/jitter, sigmoid transitions.
+          Optional eye annotations missing.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=Time (UI), Y=Voltage (V), Color=density correctly mapped
+        comment: X = Time in UI [0,2], Y = Voltage in V. Correct.
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Title format correct, but no colorbar/legend for density scale
+        comment: 'Title format correct: eye-diagram-basic · altair · pyplots.ai'
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Shows both signal levels, transitions, noise effects, jitter, and
-          clear eye opening
+        comment: Shows eye opening, noise, jitter, both signal levels, 300 traces
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: NRZ signal simulation is realistic telecommunications engineering
-          scenario
+        comment: Simulated NRZ signal with realistic telecom parameters
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Voltage 0-1V, time 0-2 UI, 5% noise, 3% jitter all appropriate
+        comment: 300 traces, 5% noise, 3% jitter, 0-1V amplitude all sensible
     code_quality:
       score: 9
       max: 10
@@ -167,7 +165,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean Imports-Data-Plot-Save structure, no functions or classes
+        comment: Imports → Data → Plot → Save structure, no functions/classes
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -179,20 +177,19 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports (altair, numpy, pandas) are used
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
-        passed: true
-        comment: Pre-binning approach is smart but nested loop for building rows is
-          verbose
+        passed: false
+        comment: Double-binning approach is redundant and creates artifacts
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html, current API
+        comment: Saves as plot.png and plot.html
     library_mastery:
       score: 5
       max: 10
@@ -201,16 +198,16 @@ review:
         name: Idiomatic Usage
         score: 3
         max: 5
-        passed: true
-        comment: Uses mark_rect() for heatmap with bin encoding, but binning done
-          in numpy rather than Altair
+        passed: false
+        comment: Uses mark_rect correctly but double-binning is not idiomatic. Pre-binned
+          data should use direct positional encoding.
       - id: LM-02
         name: Distinctive Features
         score: 2
         max: 5
         passed: false
-        comment: HTML export is nice but no interactive selections, tooltips, or layered
-          compositions
+        comment: HTML export and configure helpers used. Doesn't leverage tooltips,
+          selections, or layered annotations.
   verdict: REJECTED
 impl_tags:
   dependencies: []

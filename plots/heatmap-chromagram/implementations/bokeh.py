@@ -1,13 +1,13 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-chromagram: Music Chromagram (Pitch Class Distribution over Time)
 Library: bokeh 3.9.0 | Python 3.14.3
-Quality: 87/100 | Created: 2026-03-17
+Created: 2026-03-17
 """
 
 import numpy as np
 import pandas as pd
 from bokeh.io import export_png, save
-from bokeh.models import BasicTicker, ColorBar, ColumnDataSource, HoverTool, LinearColorMapper
+from bokeh.models import BasicTicker, ColorBar, ColumnDataSource, FixedTicker, HoverTool, LinearColorMapper, Range1d
 from bokeh.plotting import figure
 from bokeh.resources import CDN
 
@@ -15,6 +15,7 @@ from bokeh.resources import CDN
 # Data - Simulated chromagram: 12 pitch classes over 80 time frames
 np.random.seed(42)
 pitch_classes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+n_pitch = len(pitch_classes)
 n_frames = 80
 time_seconds = np.linspace(0, 8, n_frames)
 
@@ -52,12 +53,15 @@ for i in range(1, len(chord_sequence)):
 
 energy = np.clip(energy, 0, 1)
 
-# Flatten to DataFrame with pitch as categorical y-axis, time as numeric x
+# Flatten to DataFrame with numeric y-axis (reversed so C is at top, B at bottom)
 dt = time_seconds[1] - time_seconds[0]
 records = []
 for i, pitch in enumerate(pitch_classes):
+    y_pos = n_pitch - 1 - i  # C=11 (top), B=0 (bottom)
     for j in range(n_frames):
-        records.append({"time": float(time_seconds[j]), "pitch": pitch, "energy": round(float(energy[i, j]), 3)})
+        records.append(
+            {"time": float(time_seconds[j]), "pitch": pitch, "y": y_pos, "energy": round(float(energy[i, j]), 3)}
+        )
 
 source = ColumnDataSource(pd.DataFrame(records))
 
@@ -87,11 +91,11 @@ magma_palette = [
 # Color mapper
 mapper = LinearColorMapper(palette=magma_palette, low=0, high=1)
 
-# Create figure with categorical y-axis and numeric x-axis
+# Create figure with numeric axes (no gaps between rows)
 p = figure(
     width=4800,
     height=2700,
-    y_range=list(reversed(pitch_classes)),
+    y_range=Range1d(-0.5, n_pitch - 0.5),
     x_range=(-dt / 2, 8 + dt / 2),
     title="heatmap-chromagram · bokeh · pyplots.ai",
     x_axis_label="Time (seconds)",
@@ -100,29 +104,33 @@ p = figure(
     tools="",
 )
 
-# Plot heatmap rectangles
+# Custom y-axis tick labels for pitch classes
+p.yaxis.ticker = FixedTicker(ticks=list(range(n_pitch)))
+p.yaxis.major_label_overrides = {i: pitch_classes[n_pitch - 1 - i] for i in range(n_pitch)}
+
+# Plot heatmap rectangles — seamless tiling with numeric coordinates
 r = p.rect(
     x="time",
-    y="pitch",
+    y="y",
     width=dt,
-    height=1,
+    height=1.1,
     source=source,
     fill_color={"field": "energy", "transform": mapper},
     line_color=None,
 )
 
-# Color bar
+# Color bar — wider with larger labels for 4800px canvas
 color_bar = ColorBar(
     color_mapper=mapper,
-    width=40,
+    width=80,
     ticker=BasicTicker(desired_num_ticks=8),
-    label_standoff=16,
-    major_label_text_font_size="18pt",
+    label_standoff=20,
+    major_label_text_font_size="22pt",
     border_line_color=None,
-    padding=10,
+    padding=15,
     title="Energy",
-    title_text_font_size="20pt",
-    title_standoff=20,
+    title_text_font_size="24pt",
+    title_standoff=25,
 )
 p.add_layout(color_bar, "right")
 
@@ -133,11 +141,11 @@ hover = HoverTool(
 p.add_tools(hover)
 
 # Styling for 4800x2700 px
-p.title.text_font_size = "28pt"
-p.xaxis.axis_label_text_font_size = "22pt"
-p.yaxis.axis_label_text_font_size = "22pt"
-p.xaxis.major_label_text_font_size = "18pt"
-p.yaxis.major_label_text_font_size = "18pt"
+p.title.text_font_size = "32pt"
+p.xaxis.axis_label_text_font_size = "26pt"
+p.yaxis.axis_label_text_font_size = "26pt"
+p.xaxis.major_label_text_font_size = "20pt"
+p.yaxis.major_label_text_font_size = "20pt"
 
 # Grid and axes
 p.xgrid.grid_line_color = None
@@ -147,7 +155,7 @@ p.axis.major_tick_line_color = None
 p.outline_line_color = None
 
 # Dark background to complement magma colormap
-p.min_border_right = 300
+p.min_border_right = 400
 p.background_fill_color = "#0a0a0a"
 p.border_fill_color = "#1a1a1a"
 p.title.text_color = "#e0e0e0"

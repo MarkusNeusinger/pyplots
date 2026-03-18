@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: lightcurve-transit
 created: '2026-03-18T21:19:07Z'
-updated: '2026-03-18T21:22:45Z'
+updated: '2026-03-18T21:31:00Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23267445440
 issue: 4559
@@ -10,34 +10,35 @@ library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/lightcurve-transit/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/lightcurve-transit/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 83
+quality_score: 88
 review:
   strengths:
-  - Clean, scientifically accurate transit light curve with realistic limb-darkened
-    model
-  - 'Strong visual hierarchy: red model line as focal point, blue data as context,
-    transparent error bars receding'
-  - Good theme refinement with removed grids, subtle y-grid, and clean minimal styling
-  - Proper grammar-of-graphics layering with separate data frames for observations
-    and model
+  - Excellent data quality with realistic exoplanet transit parameters and comprehensive
+    feature coverage
+  - Strong color palette harmony (blue/orange/brown) with good colorblind accessibility
+  - Effective data storytelling through transit depth annotation and dashed measurement
+    line
+  - Well-refined theme with subtle grid, removed backgrounds, and intentional visual
+    hierarchy
   weaknesses:
-  - No legend distinguishing observed data points from the fitted transit model curve
-  - Data point markers slightly too small (size=1.5) for this density at 4800x2700
-  - Transit model code is duplicated for data and fine-resolution model arrays
-  - Could leverage more distinctive plotnine features (geom_ribbon, annotate, scale_color_manual)
-  image_description: The plot displays a phase-folded exoplanet transit light curve
-    on a clean white background. Blue scatter points (#306998) with semi-transparent
-    light blue vertical error bars (#92b4cc) show 400 photometric observations distributed
-    across orbital phase 0.0-1.0. A bold red model curve (#e8453c) overlays the data,
-    showing a flat baseline at ~1.000 relative flux with a characteristic U-shaped
-    dip centered at phase 0.5, reaching down to ~0.988 (approximately 1.2% transit
-    depth) with smooth ingress/egress shaped by quadratic limb darkening. The X-axis
-    is labeled "Orbital Phase" (0.00 to 1.00), Y-axis is labeled "Relative Flux" with
-    values formatted to 3 decimal places. Title reads "lightcurve-transit · plotnine
-    · pyplots.ai" in bold. Minimal theme with subtle y-axis grid lines only.
+  - Legend displays visible series title that should be fully suppressed
+  - compute_transit function definition breaks KISS convention
+  - Out-of-transit uncertainty ribbon adds visual noise without clear benefit
+  image_description: 'The plot displays a phase-folded exoplanet transit light curve
+    on a clean white background. Blue scatter points (#306998) represent 400 photometric
+    observations with light blue vertical error bars (geom_linerange, alpha=0.35).
+    A thick orange (#c46210) transit model curve overlays the data, showing a characteristic
+    U-shaped dip centered at orbital phase 0.5, reaching a minimum near relative flux
+    0.988. A subtle tan/beige uncertainty ribbon surrounds the model curve. An italic
+    annotation "Depth: 1.20%" in dark brown (#5a3e1b) appears near the transit bottom,
+    with a dashed vertical segment at phase 0.54 indicating the depth measurement.
+    Title reads "lightcurve-transit · plotnine · pyplots.ai" in bold. X-axis: "Orbital
+    Phase" (0.0-1.0), Y-axis: "Relative Flux" (formatted to 3 decimal places). Legend
+    in upper-right shows "Observations" (blue) and "Transit Model" (orange), with
+    a small "series" legend title visible.'
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 29
       max: 30
       items:
       - id: VQ-01
@@ -45,63 +46,63 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title=24pt, axis_title=20pt, axis_text=16pt'
+        comment: 'All font sizes explicitly set: title=24, axis_title=20, axis_text=16,
+          legend_text=16'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text or data elements
+        comment: No overlapping text elements
       - id: VQ-03
         name: Element Visibility
-        score: 4
+        score: 5
         max: 6
-        passed: false
-        comment: Data points at size=1.5 somewhat small for 400 points; error bars
-          subtle at alpha=0.4
+        passed: true
+        comment: 400 points at size=2.5 with alpha=0.65 well-visible; could be slightly
+          more optimized for density
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
-        passed: false
-        comment: Blue and red distinguishable for most colorblind types but red not
-          optimal
+        passed: true
+        comment: Blue/orange palette is colorblind-safe with excellent contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Good 16:9 proportions, plot fills canvas well
+        comment: 16:9 layout, plot fills canvas well with balanced margins
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels; phase and normalized flux are inherently unitless
+        comment: Orbital Phase and Relative Flux are domain-appropriate labels
     design_excellence:
-      score: 13
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
-        passed: false
-        comment: Intentional color palette, custom theme. Above defaults but not publication-level
-          polish
+        passed: true
+        comment: Custom blue/orange palette with warm brown annotation creates visual
+          harmony
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Spines removed, x-grid removed, y-grid subtle, blank backgrounds
+        comment: Good refinement but visible series legend title detracts from polish
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Clear visual hierarchy with red model as focal point, transit centered
-          at phase 0.5
+        comment: Transit dip focal point with depth annotation guides viewer to key
+          insight
     spec_compliance:
       score: 14
       max: 15
@@ -111,58 +112,61 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct scatter + line overlay for light curve
+        comment: Correct scatter + line overlay for transit light curve
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Error bars, model overlay, phase-folded data all present
+        comment: Error bars, model overlay, phase-folded data, limb darkening all
+          present
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=orbital phase, Y=relative flux, transit dip downward
+        comment: X=orbital phase, Y=relative flux, transit dip goes downward
       - id: SC-04
         name: Title & Legend
         score: 2
         max: 3
-        passed: false
-        comment: Title format correct but no legend for data vs model
+        passed: true
+        comment: Title format correct but legend shows visible series title
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
-        passed: false
-        comment: Shows transit dip, limb darkening, baseline scatter, varying errors.
-          Could show more variability
+        passed: true
+        comment: Shows transit dip, baseline, error bars, limb darkening, uncertainty
+          ribbon
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Realistic exoplanet transit with ~1.2% depth and quadratic limb darkening
+        comment: Realistic exoplanet transit with ~1.2% depth and realistic error
+          magnitudes
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Flux ~1.0, depth ~1.2%, errors 0.08-0.25% — physically plausible
+        comment: Flux near 1.0, transit depth ~1.2%, errors 0.08-0.25% consistent
+          with Kepler/TESS
     code_quality:
       score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Clean imports-data-plot-save structure
+        comment: Function definition breaks KISS but reuse is justified
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -177,10 +181,10 @@ review:
         comment: All imports used
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Transit model computation duplicated verbatim for data and fine model
+        passed: true
+        comment: Clean, appropriate complexity, no fake UI
       - id: CQ-05
         name: Output & API
         score: 1
@@ -188,27 +192,27 @@ review:
         passed: true
         comment: Saves as plot.png with dpi=300
     library_mastery:
-      score: 6
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
         score: 4
         max: 5
-        passed: false
-        comment: Good grammar-of-graphics layering with separate data frames but could
-          leverage stat layers more
+        passed: true
+        comment: Good grammar-of-graphics layering with proper scale and theme usage
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Uses layer composition and custom scale labels but misses plotnine-specific
-          features like geom_ribbon, annotate, scale_color_manual
+        passed: true
+        comment: Uses ggplot layer composition, annotate for text+segment, and theme
+          system
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
+  - annotations
   - layer-composition
   patterns:
   - data-generation

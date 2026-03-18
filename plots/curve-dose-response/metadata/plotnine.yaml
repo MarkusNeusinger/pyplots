@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: curve-dose-response
 created: '2026-03-18T22:29:46Z'
-updated: '2026-03-18T22:35:08Z'
+updated: '2026-03-18T22:46:50Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23270128875
 issue: 4556
@@ -10,34 +10,36 @@ library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/curve-dose-response/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/curve-dose-response/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 88
+quality_score: 90
 review:
   strengths:
-  - Excellent spec compliance — every required feature implemented correctly (4PL
-    fit, EC50 lines, CI bands, error bars, asymptotes, multi-compound comparison)
-  - Realistic pharmacological data with appropriate parameter differentiation between
-    compounds
-  - Clean color palette with good colorblind accessibility (blue/orange)
-  - Confidence interval computation using delta method is scientifically sound
-  - Good grammar-of-graphics layer composition demonstrating plotnine strengths
+  - Full spec compliance with all required features implemented correctly (4PL fit,
+    EC50 references, asymptotes, error bars, confidence bands)
+  - Strong visual design with custom color palette, open circle markers, and thorough
+    theme refinement
+  - Pharmacologically accurate data generation with realistic concentration ranges
+    and distinct compound profiles
+  - Clean, well-structured code with appropriate use of scipy for curve fitting and
+    delta method for confidence intervals
   weaknesses:
-  - Design could be more polished — open circles and reference lines functional but
-    could benefit from refinement
-  - Marker size slightly small (size=4) for the data density
-  - No EC50 value annotations on the plot to enhance data storytelling
+  - EC50 annotation labels are positioned close together, causing minor visual crowding
+    in the mid-plot region
+  - Compound names are generic rather than using plausible drug names
   image_description: The plot displays two sigmoidal dose-response curves on a logarithmic
-    x-axis (Concentration in M) vs Response (%). Compound A is rendered in steel blue
-    (#306998) and Compound B in burnt orange (#E0652B). Both curves show characteristic
-    S-shaped 4PL logistic fits. Data points are open circles (white fill, colored
-    stroke) with vertical SEM error bars overlaid on the fitted curves. Semi-transparent
-    95% confidence interval ribbons (blue and peach) surround each fitted curve. Dashed
-    vertical and horizontal EC50 reference lines intersect each curve at the half-maximal
-    response (~50% for Compound A near 1e-7 M, ~48% for Compound B near 5e-7 M). Faint
-    dotted horizontal lines mark top and bottom asymptotes for each compound. Title
-    reads "curve-dose-response · plotnine · pyplots.ai" in bold at top. Legend in
-    lower-right shows both compounds. Y-axis labeled "Response (%)", x-axis labeled
-    "Concentration (M)" with log-scale tick labels (1e-9, 1e-7, 1e-5). Subtle horizontal
-    grid lines on y-axis only. Clean minimal theme with axis lines.
+    x-axis. Compound A is rendered in dark blue (#306998) and Compound B in burnt
+    orange (#E0652B). Both curves follow the classic S-shape from low baseline responses
+    (~5% and ~10%) to upper plateaus (~95% and ~85%). Data points are shown as open
+    circles with white fill and colored borders, accompanied by vertical error bars
+    (SEM). Smooth fitted curves are overlaid as solid lines with semi-transparent
+    confidence bands (ribbons). Dashed vertical and horizontal reference lines mark
+    the EC50 values for each compound — approximately 9.7×10⁻⁸ M for Compound A and
+    6.2×10⁻⁷ M for Compound B. Bold EC50 annotations appear near the intersection
+    points. Dotted horizontal lines indicate the top and bottom asymptotes for each
+    compound. The x-axis shows "Concentration (M)" with superscript log-scale labels
+    (10⁻⁹ to 10⁻⁵), and the y-axis shows "Response (%)" from 0 to 100. A boxed legend
+    labeled "Compound" sits in the lower-right area. The title reads "curve-dose-response
+    · plotnine · pyplots.ai". The background is a subtle off-white (#fafafa) with
+    light horizontal gridlines only.
   criteria_checklist:
     visual_quality:
       score: 29
@@ -48,62 +50,60 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 24pt bold, axis titles 20pt,
-          axis text 16pt, legend text 16pt'
+        comment: 'All font sizes explicitly set: title 24pt, axis titles 20pt bold,
+          axis text 16pt, legend 16-18pt'
       - id: VQ-02
         name: No Overlap
-        score: 6
-        max: 6
-        passed: true
-        comment: No overlapping text elements, legend positioned in clear area
-      - id: VQ-03
-        name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Open circle markers at size=4 slightly small for 16 points per compound
+        comment: EC50 annotations slightly crowded but readable
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 6
+        passed: true
+        comment: Points, lines, error bars, ribbons all well-sized
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue and orange are colorblind-safe with excellent contrast
+        comment: Blue/orange colorblind-safe with strong luminance contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: 16:9 figure fills canvas well with balanced margins
+        comment: Good 16:9 layout with balanced margins
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Concentration (M) and Response (%) are descriptive with units
+        comment: Descriptive labels with units
     design_excellence:
-      score: 13
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom palette, open circles, CI ribbons — above defaults but not
-          publication-exceptional
+        comment: Custom palette, open circles, bold typography hierarchy, subtle ribbons
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: theme_minimal, removed minor/x grids, subtle y-grid, added axis lines
+        comment: X-grid removed, subtle y-grid only, axis lines styled, custom background
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Two compounds with different EC50 values create comparison story,
-          EC50 lines guide viewer
+        comment: EC50 annotations create focal points, reference lines guide viewer
     spec_compliance:
       score: 15
       max: 15
@@ -113,28 +113,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct sigmoidal dose-response curve with 4PL logistic model
+        comment: Correct sigmoidal dose-response with 4PL model
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: log x-axis, 4PL fit, EC50 lines, error
-          bars, asymptotes, 2 compounds, legend, CI bands'
+        comment: 'All spec features present: log x, 4PL fit, EC50 lines, error bars,
+          asymptotes, 2 compounds, legend, CI bands'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=concentration (log), Y=response (%). Full data range shown
+        comment: X=concentration (log), Y=response (%). Full range shown
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title matches format, legend labels match data
+        comment: Correct title format, clear legend labels
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
@@ -142,54 +142,53 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows different EC50s, Hill slopes, asymptotes, error bars, CI bands
+        comment: Two compounds with distinct EC50, Hill slopes, and asymptotes
       - id: DQ-02
         name: Realistic Context
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Pharmacological dose-response with realistic concentrations and response
-          values
+        comment: Real pharmacological context, generic compound names
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Concentrations 1e-9 to 1e-4 M, response 0-100%, plausible EC50 values
+        comment: Realistic concentration range (1e-9 to 1e-4 M) and response values
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Function defined for curve_fit (necessary), otherwise linear structure
+        comment: Linear flow; function required by curve_fit API
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set at start
+        comment: np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used, no unused imports
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean implementation, delta method CI is appropriate complexity
+        comment: Clean code, appropriate complexity
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300, current API
+        comment: Saves as plot.png with dpi=300
     library_mastery:
       score: 7
       max: 10
@@ -199,22 +198,21 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Good grammar-of-graphics usage: ggplot + aes + geom layers + scales
-          + guides + theme'
+        comment: Fluent ggplot grammar with layers, scales, guides, theme
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Layer composition, guide_legend, scale_x_log10 with custom labels,
-          open-circle styling
-  verdict: REJECTED
+        comment: scale_x_log10 with lambda, guide_legend override_aes, element theming
+          system
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - scipy
   techniques:
+  - annotations
   - layer-composition
-  - custom-legend
   patterns:
   - data-generation
   - iteration-over-groups

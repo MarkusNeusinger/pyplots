@@ -1,7 +1,7 @@
 library: altair
 specification_id: spirometry-flow-volume
 created: '2026-03-18T22:16:42Z'
-updated: '2026-03-18T22:21:30Z'
+updated: '2026-03-18T22:31:05Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23269660919
 issue: 4557
@@ -10,105 +10,105 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/spirometry-flow-volume/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spirometry-flow-volume/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/spirometry-flow-volume/altair/plot.html
-quality_score: 77
+quality_score: 85
 review:
   strengths:
-  - Clinically accurate spirometry data with meaningful FEV1/FVC ratio suggesting
-    mild obstruction
-  - Clean PEF annotation with red accent creates a clear focal point
-  - Clinical values text box provides essential diagnostic context
-  - Proper closed loop connecting expiratory and inspiratory limbs
-  - Good use of solid vs dashed styling for measured vs predicted
+  - Excellent data quality with realistic spirometry values showing mild obstruction
+    pattern
+  - Clear visual hierarchy differentiating measured vs predicted curves
+  - All spec requirements fully implemented including PEF annotation and clinical
+    values
+  - Well-set font sizes throughout for legibility at target resolution
+  - Good use of the zero-flow reference line for clinical context
   weaknesses:
-  - Legend is missing from rendered chart - legend_marks variable defined but never
-    added to chart composition
-  - Excessive empty space on right side of plot (x-axis domain extends to 6.5 but
-    data only reaches 5.2)
-  - Dead code in implementation (unused legend_marks variable)
-  - Visual design is competent but not polished enough for publication quality
-  image_description: The plot displays a spirometry flow-volume loop with the title
-    "spirometry-flow-volume · altair · pyplots.ai" in the top-left. The x-axis is
-    labeled "Volume (L)" ranging from -0.4 to 6.4, and the y-axis is labeled "Flow
-    (L/s)" ranging from -8 to 12. A solid blue measured loop shows the expiratory
-    limb rising sharply to ~9.5 L/s (PEF) then declining roughly linearly, with the
-    inspiratory limb forming a U-shaped curve reaching ~-5.5 L/s below zero. A dashed
-    gray predicted normal loop overlay is larger than the measured loop. A red filled
-    circle marks PEF with a bold red label "PEF = 9.5 L/s". A clinical values text
-    block in the upper right reads "FVC = 4.8 L / FEV1 = 3.2 L / PEF = 9.5 L/s". A
-    dashed horizontal zero-flow reference line is present. The grid is subtle (low
-    opacity). No legend is visible distinguishing "Measured" from "Predicted" despite
-    the code defining legend marks. There is significant empty space on the right
-    side of the plot (volumes 5.2-6.4).
+  - 'Dead code: df_legend and legend_marks defined but not included in chart composition'
+  - Design could be elevated further toward publication quality
+  - Some code duplication in measured vs predicted data generation logic
+  - Altair-distinctive features (tooltips, selections) not leveraged for HTML export
+  image_description: 'The plot displays a spirometry flow-volume loop on a white background.
+    The title "spirometry-flow-volume · altair · pyplots.ai" appears at the top left
+    in bold black text (~28pt). The x-axis is labeled "Volume (L)" ranging from -0.4
+    to 6.0, and the y-axis "Flow (L/s)" ranging from -8 to 12, both with clearly readable
+    tick labels. A solid blue line (#306998, strokeWidth=3) traces the measured flow-volume
+    loop: the expiratory limb rises sharply from the origin to Peak Expiratory Flow
+    (~9.5 L/s) at ~0.6 L volume, then declines roughly linearly to zero flow at ~4.8
+    L (FVC). The inspiratory limb curves below zero in a symmetric U-shape reaching
+    about -5.5 L/s, returning to the origin. A gray dashed line (#999999, strokeWidth=2)
+    shows the predicted normal loop, which is larger (FVC ~5.2 L, PEF ~10.5 L/s).
+    A red filled circle marks the PEF point with a bold red label "PEF = 9.5 L/s"
+    offset to the right. A clinical values text box in the upper right area displays
+    "FVC = 4.8 L / FEV1 = 3.2 L / PEF = 9.5 L/s" in dark gray bold text. A subtle
+    dashed horizontal reference line marks the zero-flow axis. A legend in the top
+    right shows "Measured" (solid) and "Predicted" (dashed).'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 29
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title=28, axis titles=22, ticks=18, annotations=17-18).
-          All text clearly readable.
+        comment: 'All font sizes explicitly set: title 28pt, axis title 22pt, ticks
+          18pt, annotations 17-18pt'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text or elements.
+        comment: No overlapping text elements anywhere
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Lines well-sized, PEF point visible. Slight jaggedness from random
-          noise on measured curve.
+        comment: Lines well-visible with good stroke widths; minor crossing point
+          differentiation issue
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue vs gray vs red - colorblind-safe differentiation.
+        comment: Blue/gray/red palette is colorblind-safe with strong contrast
       - id: VQ-05
         name: Layout & Canvas
-        score: 2
+        score: 4
         max: 4
-        passed: false
-        comment: Significant wasted space on right side. X-axis domain extends to
-          6.5 but data only reaches ~5.2.
+        passed: true
+        comment: Good proportions, plot fills canvas well
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Volume (L) and Flow (L/s) with proper units.
+        comment: Volume (L) and Flow (L/s) with units
     design_excellence:
-      score: 11
+      score: 13
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
-        passed: false
-        comment: Well-configured default with Python Blue, gray, red accent. Not publication-level.
+        passed: true
+        comment: Intentional color palette, custom typography, above defaults but
+          not publication-level
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: Grid opacity reduced, view stroke removed. Some refinement but not
-          fully polished.
+        passed: true
+        comment: Grid opacity 0.2, view stroke removed, domain color customized
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Clear focal point at PEF, measured vs predicted comparison creates
-          clinical narrative.
+        comment: Clear visual hierarchy with measured vs predicted, PEF highlighted,
+          clinical values annotated
     spec_compliance:
-      score: 13
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -116,48 +116,49 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct flow-volume loop with both limbs forming closed shape.
+        comment: Correct flow-volume loop with expiratory and inspiratory limbs
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 4
         max: 4
-        passed: false
-        comment: Legend missing from rendered chart - legend_marks defined but not
-          added to chart composition.
+        passed: true
+        comment: 'All spec requirements met: PEF, clinical values, predicted overlay,
+          distinct styling'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=Volume, Y=Flow correctly mapped.
+        comment: X=Volume, Y=Flow correctly assigned
       - id: SC-04
         name: Title & Legend
         score: 2
         max: 3
-        passed: false
-        comment: Title format correct. Legend missing from output.
+        passed: true
+        comment: Title format correct; legend_marks defined but not included in chart
+          composition (dead code)
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Shows both limbs, predicted overlay, PEF, and clinical values.
+        comment: Both limbs, measured vs predicted, PEF, clinical values all shown
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real spirometry scenario with clinically meaningful FEV1/FVC ratio.
+        comment: Realistic spirometry values for adult with mild obstruction
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Realistic adult spirometry values.
+        comment: FVC=4.8L, FEV1=3.2L, PEF=9.5 L/s are clinically plausible
     code_quality:
       score: 8
       max: 10
@@ -167,50 +168,48 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, plot, save.'
+        comment: Imports, data, plot, save structure followed
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only altair, numpy, pandas - all used.
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
         passed: false
-        comment: 'Dead code: legend_marks defined but never used. Duplicated curve
-          generation logic.'
+        comment: 'Dead code: df_legend and legend_marks defined but not in chart composition;
+          some duplication'
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html. Current API.
+        comment: Saves as plot.png and plot.html with current API
     library_mastery:
-      score: 5
+      score: 6
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Uses declarative API and layer composition but legend approach is
-          broken.
+        passed: true
+        comment: Good declarative API usage, layer composition, proper encodings
       - id: LM-02
         name: Distinctive Features
         score: 2
         max: 5
         passed: false
-        comment: Layer composition and HTML export are Altair-specific but broken
-          legend limits score.
+        comment: HTML export is Altair-distinctive but tooltips/selections not leveraged
   verdict: REJECTED
 impl_tags:
   dependencies: []

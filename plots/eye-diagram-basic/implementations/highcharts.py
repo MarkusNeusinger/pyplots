@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 eye-diagram-basic: Signal Integrity Eye Diagram
 Library: highcharts unknown | Python 3.14.3
-Quality: 89/100 | Created: 2026-03-17
+Quality: 91/100 | Updated: 2026-03-18
 """
 
 import tempfile

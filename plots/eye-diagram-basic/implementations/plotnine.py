@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 eye-diagram-basic: Signal Integrity Eye Diagram
 Library: plotnine 0.15.3 | Python 3.14.3
-Quality: 89/100 | Created: 2026-03-17
+Quality: 93/100 | Updated: 2026-03-18
 """
 
 import numpy as np

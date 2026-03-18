@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: eye-diagram-basic
 created: '2026-03-17T23:34:55Z'
-updated: '2026-03-17T23:48:00Z'
+updated: '2026-03-18T00:02:48Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23221365271
 issue: 4561
@@ -10,30 +10,26 @@ library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/eye-diagram-basic/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/eye-diagram-basic/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 89
+quality_score: 93
 review:
   strengths:
-  - Excellent domain-appropriate dark theme evoking oscilloscope displays
-  - Inferno colormap creates clear density visualization with intuitive hot/cold mapping
-  - Clean well-structured code with thoughtful signal generation including per-sample
-    dither
-  - Perfect spec compliance with all required features and correct parameters
-  - All font sizes explicitly set for high-resolution output
+  - Exceptional domain-appropriate dark theme mimicking oscilloscope displays
+  - Inferno colormap perfectly suited for density visualization
+  - Eye height and width annotations add real analytical value
+  - Realistic NRZ signal generation with proper noise and jitter parameters
+  - Clean plotnine grammar-of-graphics composition
   weaknesses:
-  - Missing eye height/width annotations that would enhance data storytelling
-  - Grid lines could be removed entirely for cleaner oscilloscope aesthetic
-  - No use of advanced plotnine features like annotate or custom stat layers
-  image_description: The plot displays a signal integrity eye diagram on a deep dark
-    purple-blue background (#0d0221). Two complete eye-shaped openings span the 2
-    unit interval (UI) window on the x-axis (labeled "Time (UI)" with ticks at 0.0,
-    0.5, 1.0, 1.5, 2.0). The y-axis shows "Voltage (V)" with ticks at 0.0, 0.5, and
-    1.0. The inferno colormap renders trace density — bright yellow/white at the high-density
-    0V and 1V stable levels, orange-pink at transitions, fading to dark purple/black
-    in the open eye regions. The characteristic eye openings are well-defined with
-    clear transitions between bit levels. A "Trace Density" colorbar legend on the
-    right shows values from ~25 to ~200+. The title "eye-diagram-basic · plotnine
-    · pyplots.ai" appears in bold white at the top. Subtle dark grid lines are visible
-    against the dark background.
+  - Legend could be better integrated with the main plot area
+  image_description: The plot displays a signal integrity eye diagram on a dark navy
+    (#0d0221) background using the inferno colormap. Two eye openings are clearly
+    visible spanning 0–1 UI and 1–2 UI on the x-axis (labeled "Time (UI)"). The y-axis
+    shows "Voltage (V)" with ticks at 0.0, 0.5, and 1.0. High-density trace regions
+    along the 0V and 1V rails glow bright yellow/white, while transition zones between
+    bit levels show magenta/pink gradients. A green dashed vertical segment at t=0.5
+    UI marks the eye height (0.87 V), and a cyan dashed horizontal segment at y=0.5
+    V marks the eye width (0.86 UI), both with labeled annotations. The legend on
+    the right shows "Trace Density" with a colorbar ranging from ~50 to ~200. The
+    title reads "eye-diagram-basic · plotnine · pyplots.ai" in bold white text.
   criteria_checklist:
     visual_quality:
       score: 29
@@ -44,66 +40,60 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 24pt bold, axis titles 20pt,
-          tick labels 16pt, legend text 14-16pt'
+        comment: 'All font sizes explicitly set: title=24, axis_title=20, axis_text=16,
+          legend=14/16'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements anywhere
+        comment: No overlapping text elements
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: 250x150 bin resolution creates excellent density visualization with
-          crisp eye pattern
+        comment: geom_bin2d with 250x150 bins perfectly adapted to high-density data
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Inferno is perceptually uniform and colorblind-safe with excellent
-          contrast on dark background
+        comment: Inferno is perceptually uniform and colorblind-safe
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good 16:9 layout with expand=(0,0) but minor dead space at top/bottom
-          margins
+        comment: Good layout, legend slightly isolated on right edge
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Time (UI) and Voltage (V) — descriptive with units
+        comment: Time (UI) and Voltage (V) with units
     design_excellence:
-      score: 14
+      score: 17
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Dark oscilloscope-themed background with inferno colormap is domain-appropriate
-          and visually striking
+        comment: Dark oscilloscope theme is domain-perfect, inferno colormap excellent
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Minor grid removed, major grid subtle, custom dark backgrounds. Could
-          push further with complete grid removal
+        comment: theme_void removes all chrome, dark background, generous whitespace
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Density coloring naturally creates visual hierarchy showing eye opening
-          and signal quality
+        comment: Eye metric annotations guide viewer to key signal quality metrics
     spec_compliance:
       score: 15
       max: 15
@@ -113,51 +103,49 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct eye diagram using 2D density binning for overlaid traces
+        comment: Correct eye diagram as 2D density heatmap
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All required features present: density coloring, UI time axis, voltage
-          levels, noise/jitter parameters'
+        comment: 'All spec features present: density coloring, NRZ, noise, jitter,
+          smooth transitions, annotations'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=time in UI [0,2], Y=voltage [0,1]. Correct mapping
+        comment: X=time in UI, Y=voltage in volts
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, Trace Density legend is descriptive and appropriate
+        comment: Title format correct, Trace Density legend label appropriate
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Shows eye opening, stable levels, transitions, noise spread, jitter
-          effects. Missing optional annotations
+        comment: Shows eye openings, noise on rails, jitter in transitions, density
+          variation
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: NRZ signal integrity testing is a real engineering domain with realistic
-          parameters
+        comment: NRZ signal integrity is real engineering domain
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 0-1V NRZ levels, 2 UI window, 400 traces with 150 samples/UI — all
-          sensible
+        comment: 0-1V, 5% noise, 3% jitter, 400 traces - all realistic
     code_quality:
       score: 10
       max: 10
@@ -167,33 +155,31 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean Imports → Data → Plot → Save structure with no functions or
-          classes
+        comment: Clean Imports-Data-Plot-Save structure
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set at the top
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports used, specific imports
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Appropriate complexity with thoughtful per-sample dither to prevent
-          bin aliasing
+        comment: Appropriate complexity for eye diagram
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png using current plotnine API
+        comment: Saves as plot.png with dpi=300
     library_mastery:
       score: 7
       max: 10
@@ -203,19 +189,18 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good grammar-of-graphics composition with after_stat for density
-          mapping
+        comment: Good idiomatic plotnine grammar-of-graphics composition
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: geom_bin2d with after_stat and scale_fill_cmap are plotnine-specific
-          but no advanced features used
-  verdict: REJECTED
+        comment: Uses after_stat, geom_bin2d, theme_void, scale_fill_cmap
+  verdict: APPROVED
 impl_tags:
   dependencies: []
-  techniques: []
+  techniques:
+  - annotations
   patterns:
   - data-generation
   - iteration-over-groups
@@ -224,4 +209,4 @@ impl_tags:
   styling:
   - dark-theme
   - custom-colormap
-  - grid-styling
+  - minimal-chrome

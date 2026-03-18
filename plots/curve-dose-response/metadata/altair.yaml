@@ -1,7 +1,7 @@
 library: altair
 specification_id: curve-dose-response
 created: '2026-03-18T22:31:38Z'
-updated: '2026-03-18T22:36:47Z'
+updated: '2026-03-18T22:46:52Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23270128726
 issue: 4556
@@ -10,82 +10,78 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/curve-dose-response/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/curve-dose-response/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/curve-dose-response/altair/plot.html
-quality_score: 81
+quality_score: 86
 review:
   strengths:
-  - Complete spec compliance with all required features (4PL fit, EC50 lines, error
-    bars, asymptotes, CI bands, 2 compounds)
-  - Excellent colorblind-safe palette with blue/orange combination
-  - Good use of Altair layer composition and interactive features (tooltips, zoom/pan)
-  - Proper 95% CI calculation using delta method with Jacobian
-  - Clean data pipeline building separate DataFrames for fits, CIs, and reference
-    lines
+  - Excellent pharmacological data with real drug names and realistic parameters
+  - Sophisticated 95% CI calculation using delta method with proper Jacobian
+  - Clean visual design with subtle grid, removed spines, and custom color palette
+  - All major spec features implemented including asymptote lines, EC50 markers, and
+    error bars
+  - Good use of Altair layer composition and interactive features
   weaknesses:
-  - X-axis tick labels too dense with 0.2 increments across 6 log units
-  - No EC50 value annotations on plot to make comparison immediately quantitative
-  - Generic compound names (A, B) rather than realistic pharmacological names
-  - Spines still visible; further visual refinement possible
-  - Code is somewhat verbose with manual Jacobian computation
-  image_description: 'The plot displays two sigmoidal dose-response curves for Compound
-    A (blue, #306998) and Compound B (orange, #E8792B) on a landscape canvas. The
-    x-axis shows "log₁₀ Concentration (M)" ranging from -9.4 to -3.6, and the y-axis
-    shows "Response (%)" from -10 to 110. Both compounds exhibit classic S-shaped
-    sigmoidal curves fitted with 4PL models. Data points are filled circles with white
-    stroke, overlaid with SEM error bars. Dashed vertical and horizontal reference
-    lines mark EC50 values for each compound (~10⁻⁷ M for Compound A, ~3×10⁻⁶ M for
-    Compound B). Faint dashed horizontal lines indicate top and bottom asymptotes
-    for each compound. Semi-transparent confidence bands (95% CI) surround both fitted
-    curves. The title "curve-dose-response · altair · pyplots.ai" appears top-left
-    at 28pt. A legend labeled "Compound" appears in the upper area. Grid lines are
-    subtle at 0.15 opacity. View stroke is removed.'
+  - Legend not visible in rendered PNG despite being configured in code
+  - EC50 labels positioned close together creating slight visual congestion
+  - Design excellence could be elevated further with more refined styling
+  image_description: 'The plot displays two sigmoidal dose-response curves for Atorvastatin
+    (blue, #306998) and Simvastatin (orange, #E8792B) on a logarithmic concentration
+    axis. The x-axis is labeled "log₁₀ Concentration (M)" ranging from -9.5 to -3.5,
+    and the y-axis is "Response (%)" from -10 to 110. Both compounds show classic
+    S-shaped 4PL curves with data points (filled circles with white stroke) and SEM
+    error bars overlaid on smooth fitted lines. Shaded 95% confidence bands surround
+    each curve. Dashed vertical and horizontal reference lines mark the EC50 values
+    (blue: EC₅₀ = 1.1e-07 M; orange: EC₅₀ = 2.9e-06 M). Lighter dashed horizontal
+    lines indicate top and bottom asymptotes for each compound. EC50 value labels
+    are positioned near the intersection points. The title "curve-dose-response ·
+    altair · pyplots.ai" is at top-left. No legend box is visible in the rendered
+    PNG. The layout is clean with subtle grid lines and no visible spines.'
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 29
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title 28, axis labels 22, ticks 18, legend
-          20/18). All readable. Tick labels slightly dense on x-axis.
+        comment: 'All font sizes explicitly set: title 28pt, axis titles 22pt, ticks
+          18pt, annotations 16pt'
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: No text collisions but x-axis tick labels are quite dense with 0.2
-          increments across 6 log units.
+        comment: EC50 labels slightly congested near each other but readable
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Data points at size=180 with white stroke clearly visible. Lines
-          at strokeWidth=3 prominent. Error bars and CI bands well-calibrated.
+        comment: Points size=180, lines strokeWidth=3, error bars strokeWidth=2, all
+          perfectly sized
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue (#306998) and orange (#E8792B) is excellent colorblind-safe
-          combination.
+        comment: Blue/orange colorblind-safe palette with strong contrast
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Good canvas usage at 1600x900. Slight wasted space on right where
-          curves plateau.
+        comment: 1600x900 with scale_factor=3 produces 4800x2700, plot fills canvas
+          well
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: log₁₀ Concentration (M) and Response (%) are descriptive with units.
+        comment: 'Descriptive labels with units: log10 Concentration (M), Response
+          (%)'
     design_excellence:
-      score: 11
+      score: 13
       max: 20
       items:
       - id: DE-01
@@ -93,24 +89,23 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Custom palette with Python Blue, white stroke on markers, confidence
-          bands add depth. Above defaults but not publication-showcase.
+        comment: Custom palette, explicit typography, clean look above defaults but
+          not publication-ready
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Grid opacity 0.15, view stroke removed. Some refinement but spines
-          still present.
+        comment: Grid opacity 0.12, view strokeWidth=0, domainWidth=0, good refinement
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Two compounds with different EC50 values create natural comparison.
-          EC50 reference lines guide viewer. Missing EC50 value annotations.
+        comment: EC50 annotations create pharmacological narrative, enables potency
+          comparison
     spec_compliance:
-      score: 15
+      score: 13
       max: 15
       items:
       - id: SC-01
@@ -118,53 +113,50 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct sigmoidal dose-response curve with 4PL logistic fit.
+        comment: Correct sigmoidal dose-response with 4PL logistic fit
       - id: SC-02
         name: Required Features
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: 'All spec features present: log x-axis, 4PL fit, EC50 lines, error
-          bars, asymptotes, CI bands, 2 compounds, legend.'
+        comment: All features present except legend not visible in rendered PNG
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=log10 concentration, Y=response (%). Full data range shown.
+        comment: X=log10 concentration, Y=response%, axes show full range
       - id: SC-04
         name: Title & Legend
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Title format correct. Legend shows Compound with A and B.
+        comment: Title format correct, legend configured but not visible in output
     data_quality:
-      score: 13
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Two compounds with different EC50, Hill slopes, and baselines. Good
-          variation.
+        comment: Two compounds with different EC50, Hill slopes, asymptotes, varying
+          error bars
       - id: DQ-02
         name: Realistic Context
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Pharmacological dose-response is real-world. Generic compound names
-          A/B rather than realistic drug names.
+        comment: Real statin drugs, scientifically accurate pharmacological context
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Concentrations 1e-9 to 1e-4 M, response 0-100%, EC50 in realistic
-          range.
+        comment: Concentrations 1e-9 to 1e-4 M, response 5-95%, biologically plausible
     code_quality:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -172,34 +164,31 @@ review:
         score: 2
         max: 3
         passed: true
-        comment: Mostly linear flow. logistic_4pl function necessary for curve_fit.
-          Multiple DataFrames and loops add complexity.
+        comment: Follows Imports-Data-Plot-Save but has function definition for curve_fit
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) set at top
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: altair, numpy, pandas, scipy.optimize.curve_fit,
-          scipy.stats.t.'
+        comment: 'All imports used: altair, numpy, pandas, scipy.optimize, scipy.stats'
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Jacobian CI computation is correct but verbose. Functional but could
-          be more concise.
+        comment: Clean, well-organized, appropriate complexity for CI calculation
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html using current API.
+        comment: Saves plot.png with scale_factor=3.0 and plot.html
     library_mastery:
       score: 7
       max: 10
@@ -209,20 +198,20 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good declarative layer composition with + operator, proper encoding
-          types, alt.Scale, alt.Title, alt.Tooltip, configure_* methods.
+        comment: Good declarative grammar, layer composition, encoding types, configure
+          methods
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses interactive(), tooltips, HTML export, declarative layer composition
-          - Altair's web-native interactive strengths.
+        comment: Uses .interactive(), tooltips, HTML export, layer composition operator
   verdict: REJECTED
 impl_tags:
   dependencies:
   - scipy
   techniques:
+  - annotations
   - layer-composition
   - hover-tooltips
   - html-export
@@ -233,5 +222,5 @@ impl_tags:
   - regression
   styling:
   - alpha-blending
-  - edge-highlighting
   - grid-styling
+  - edge-highlighting

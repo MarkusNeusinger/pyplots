@@ -1,7 +1,7 @@
 library: altair
 specification_id: star-chart-constellation
 created: '2026-03-18T21:13:27Z'
-updated: '2026-03-18T21:17:43Z'
+updated: '2026-03-18T21:31:28Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23267218074
 issue: 4560
@@ -10,37 +10,39 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/star-chart-constellation/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/star-chart-constellation/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/star-chart-constellation/altair/plot.html
-quality_score: 82
+quality_score: 86
 review:
   strengths:
-  - Excellent night-sky aesthetic with cohesive dark theme and two-tone star coloring
-  - Real astronomical data with accurate star positions, magnitudes, and constellation
-    patterns
-  - Clean, well-organized code with proper layer composition
-  - Good use of magnitude-based sizing to create visual hierarchy
-  - Comprehensive coverage with 14 constellations and 260+ stars
+  - Excellent atmospheric design with dark navy background and cohesive color palette
+    (two-tone star colors and teal labels)
+  - Comprehensive real-world astronomical data with accurate star positions, magnitudes,
+    and 15 well-defined constellations
+  - Full spec compliance with all required features including stereographic projection,
+    coordinate grid, magnitude legend
+  - Polished manual magnitude legend and very subtle coordinate grid
   weaknesses:
-  - Flat Cartesian projection instead of stereographic/azimuthal as spec requests
-  - X-axis extends beyond 360 degrees creating dead space on the left edge
-  - Several constellation labels overlap with star markers in dense regions
-  - No magnitude scale legend to help viewers interpret star sizes
-  - Constellation lines are quite faint (opacity=0.35) making some patterns hard to
-    trace
-  image_description: 'The plot displays a star chart on a dark navy background (#0A1628).
-    Stars are rendered as circles in two colors: pale yellow (#FFFDE7) for bright
-    stars (magnitude < 2.0) and light blue-gray (#B0BEC5) for dimmer stars. Star sizes
-    vary proportionally with brightness — Sirius is the largest point, while filler
-    stars are tiny dots. Thin, semi-transparent light blue (#5C9DC8) lines connect
-    stars to form 14 constellation stick figures (Orion, Ursa Major, Cassiopeia, Leo,
-    Cygnus, Lyra, Gemini, Taurus, Boötes, Aquila, Scorpius, Canis Major, Perseus,
-    Auriga). Constellation names appear in teal (#80CBC4) bold text offset above each
-    group''s centroid. The x-axis shows "Right Ascension (°)" from ~400 to 0 (reversed),
-    the y-axis shows "Declination (°)" from -50 to 70. Faint dashed grid lines are
-    visible at 30° RA intervals and 15° Dec intervals. The title "star-chart-constellation
-    · altair · pyplots.ai" is centered at the top in light gray.'
+  - Label crowding in the central region — several constellation names overlap or
+    are very close together
+  - Some wasted canvas space at the bottom of the chart below the projection boundary
+  - Helper function violates KISS principle slightly
+  - Projection math and grid generation done externally rather than using Altair transforms
+  image_description: The plot displays a star chart on a dark navy (#0A1628) background
+    using stereographic projection from the North Celestial Pole. Stars are rendered
+    as circles with magnitude-based sizing — brighter stars (e.g., Vega, Arcturus,
+    Capella) appear as large pale-yellow/white dots while dimmer stars are smaller
+    blue-grey circles. 15 constellations are connected by semi-transparent blue (#5C9DC8)
+    stick-figure lines, including Orion, Ursa Major, Cassiopeia, Leo, Cygnus, Lyra,
+    Gemini, Taurus, Boötes, Aquila, Corona Borealis, Hercules, Draco, Perseus, and
+    Auriga. Each constellation is labeled in teal (#80CBC4) near its centroid. A subtle
+    coordinate grid shows declination circles (0°, 30°, 60°) as dashed lines and RA
+    radial lines at 3-hour intervals, both in muted grey at very low opacity. A boundary
+    circle at dec=-10° frames the projection. A manual magnitude legend in the lower-right
+    shows four size classes. The title reads "star-chart-constellation · altair ·
+    pyplots.ai" with subtitle "Stereographic Projection from North Celestial Pole".
+    Approximately 200 random filler stars populate the background.
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 25
       max: 30
       items:
       - id: VQ-01
@@ -48,45 +50,43 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: 'Font sizes explicitly set: title 28pt, axis labels 20pt, ticks 16pt,
-          constellation labels 16pt. All readable.'
+        comment: All font sizes explicitly set (title 28, subtitle 18, labels 15,
+          legend 13, axis 16/20). Legend text slightly small but readable.
       - id: VQ-02
         name: No Overlap
         score: 4
         max: 6
-        passed: true
-        comment: Several constellation labels overlap with nearby star markers in
-          dense regions.
+        passed: false
+        comment: 'Label crowding in central region: Cassiopeia/Perseus close, Ursa
+          Major overlaps nearby content.'
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Star sizing well-adapted. Constellation lines could be slightly more
-          visible (opacity=0.35 is faint).
+        comment: Good magnitude-based sizing. Constellation lines at 0.55 opacity
+          visible without overpowering. Some faint filler stars blend.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: No red-green issues. Yellow/gray on dark background provides excellent
-          contrast.
+        comment: Excellent contrast on dark background. No colorblind issues.
       - id: VQ-05
         name: Layout & Canvas
-        score: 2
+        score: 3
         max: 4
         passed: true
-        comment: X-axis extends to 400° beyond the 360° RA domain, creating wasted
-          space on the left.
+        comment: Square canvas ideal for circular projection. Some wasted space at
+          bottom.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: Right Ascension (°) and Declination
-          (°).'
+        comment: Axes appropriately hidden for star chart. Title and subtitle descriptive.
     design_excellence:
-      score: 14
+      score: 15
       max: 20
       items:
       - id: DE-01
@@ -94,52 +94,51 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Strong night-sky aesthetic with cohesive dark theme, two-tone star
-          coloring, teal labels, blue lines.
+        comment: Dark navy background evokes night sky. Two-tone star colors and cohesive
+          teal/blue palette. Clearly above defaults.
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Custom grid styling, view stroke removed, themed axis colors. Grid
-          lines appropriately subtle.
+        comment: Axes hidden, grid at 0.2 opacity, boundary subtle, manually crafted
+          legend polished.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Magnitude-based sizing creates visual hierarchy. Constellation lines
-          and labels guide the viewer.
+        comment: Magnitude sizing draws eye to brightest stars. Constellation lines
+          guide viewer. Effective sky map but no specific narrative focal point.
     spec_compliance:
-      score: 12
+      score: 15
       max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Star chart with constellation lines is correct. Missing stereographic/azimuthal
-          projection.
+        comment: Correct scatter + network on stereographic projection.
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Has magnitude sizing, constellation lines, labels, dark background,
-          grid. Missing projection.
+        comment: 'All required features present: projection, magnitude sizing, constellation
+          lines, labels, dark background, coordinate grid.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: RA converted to degrees, Dec mapped properly, RA axis reversed correctly.
+        comment: RA/Dec correctly projected. Magnitude correctly inverted for sizing.
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Title format correct. No magnitude scale legend present.
+        comment: Title format correct. Magnitude legend with four size classes.
     data_quality:
       score: 15
       max: 15
@@ -149,30 +148,33 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 14 constellations, 60+ named stars, 200 filler stars. Full magnitude
-          range -1.46 to 5.5.
+        comment: 15 constellations with distinct shapes, full magnitude range, 200
+          filler stars.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real astronomical data with accurate RA/Dec and apparent magnitudes.
+        comment: Real star names, accurate RA/Dec coordinates, realistic magnitudes.
+          Astronomy domain neutral.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: All values astronomically accurate.
+        comment: RA 0-24h, Dec -20 to 75 deg, magnitudes -0.05 to 5.5. All astronomically
+          correct.
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
-        passed: true
-        comment: 'Clean linear flow: imports, data, plot layers, combine, save.'
+        passed: false
+        comment: Has stereo_project helper function rather than inline code. Minor
+          KISS deviation.
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -184,19 +186,19 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: altair, numpy, pandas.'
+        comment: Only altair, numpy, pandas imported — all used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Appropriate complexity. Clean layer composition.
+        comment: Clean, well-organized. No fake UI or over-engineering.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html. Current API.
+        comment: Saves as plot.png and plot.html. Current Altair 6.0 API.
     library_mastery:
       score: 7
       max: 10
@@ -206,27 +208,31 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Good declarative grammar: layered composition, encoding channels,
-          alt.condition, configure theming.'
+        comment: Good declarative grammar, layer composition with +, alt.condition,
+          proper configure methods.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses alt.condition, mark_rule with x/x2/y/y2, tooltip, HTML export.
+        comment: alt.condition, tooltips, mark_rule with x/x2/y/y2, HTML export. Projection
+          math done in pandas/numpy rather than Altair transforms.
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - layer-composition
+  - custom-legend
   - annotations
   - hover-tooltips
   - html-export
   patterns:
   - data-generation
+  - iteration-over-groups
   - groupby-aggregation
   dataprep:
   - normalization
+  - binning
   styling:
   - dark-theme
   - alpha-blending

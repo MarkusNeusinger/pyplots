@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 spirometry-flow-volume: Spirometry Flow-Volume Loop
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-18

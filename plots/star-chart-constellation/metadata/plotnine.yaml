@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: star-chart-constellation
 created: '2026-03-18T21:15:06Z'
-updated: '2026-03-18T21:28:45Z'
+updated: '2026-03-18T21:37:06Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23267218057
 issue: 4560
@@ -10,35 +10,36 @@ library_version: 0.15.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/star-chart-constellation/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/star-chart-constellation/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 84
+quality_score: 85
 review:
   strengths:
-  - Scientifically accurate real star data with correct RA/Dec positions and magnitudes
-  - Atmospheric dark theme with well-chosen star color tiers by magnitude
-  - Effective stereographic projection implementation
-  - All 10 constellation stick-figure patterns correctly rendered
-  - Manual label nudging prevents overlap in crowded areas
-  - Clean grammar-of-graphics layer composition
+  - Excellent dark-sky aesthetic that authentically mimics a real star chart with
+    custom color palette
+  - Real astronomical data with accurate star positions and magnitudes creates genuine
+    educational value
+  - Well-crafted magnitude legend with graduated sizes and colors
+  - Clean stereographic projection implementation with proper RA/Dec grid overlay
+  - Manual label nudges to reduce overlap show attention to visual polish
   weaknesses:
-  - Significant wasted canvas space at the bottom (~25-30% empty)
-  - RA/Dec grid tick labels too faint (size=8, alpha=0.65) to read comfortably
-  - Manual magnitude legend could be better positioned and styled
-  - Figure dimensions (16x16 @ 300dpi = 4800x4800) do not match allowed formats (4800x2700
-    or 3600x3600)
-  image_description: 'The plot displays a star chart on a deep dark navy background
-    (#060d1f). Ten constellations are visible: Orion, Ursa Major, Cassiopeia, Leo,
-    Cygnus, Scorpius, Gemini, Lyra, Aquila, and Taurus, each connected by thin semi-transparent
-    steel-blue constellation lines. Stars vary in size according to apparent magnitude
-    — bright stars like Vega, Betelgeuse, and Rigel appear as large pale-yellow/white
-    circles, while dimmer stars are smaller blue-grey dots. Approximately 250 background
-    stars are scattered across the field. Constellation names are labeled in italic
-    blue text below each group''s centroid. A faint RA/Dec coordinate grid (declination
-    rings and RA meridians) is visible in very dark blue. RA tick labels (6h, 9h,
-    15h, 18h) and a Dec label (40°) appear in faint text. A hand-crafted magnitude
-    legend in the bottom-right shows six reference sizes from mag 0 to mag 5 with
-    a bold "Magnitude" title. The title "star-chart-constellation · plotnine · pyplots.ai"
-    is centered at the bottom of the canvas. Significant empty dark space exists below
-    the star chart area.'
+  - Only 10 constellations included vs the spec suggested 20-30 range
+  - Some minor text overlaps remain (60° label on star, RA ticks near constellation
+    names)
+  - Constellation line visibility could be slightly increased
+  - Font sizes could be larger for the output resolution
+  image_description: 'The plot displays a star chart on a deep navy (#060d1f) background
+    with stereographic projection centered on the northern sky. Ten constellations
+    are shown: Orion, Ursa Major, Cassiopeia, Leo, Cygnus, Scorpius, Gemini, Lyra,
+    Aquila, and Taurus. Stars are rendered as circular points with magnitude-based
+    sizing — brighter stars (Vega, Rigel, Betelgeuse) appear as large pale-yellow/white
+    circles while dimmer stars are smaller blue-gray dots. Constellation stick-figure
+    lines connect stars in muted blue (#4a6fa5) with semi-transparency. Constellation
+    names appear in italic muted-blue text below each group. A coordinate grid of
+    RA (labeled in hours: 6h, 9h, 12h, 15h, 18h) and Dec (labeled in degrees: 40°,
+    60°) is drawn as very subtle dark blue arcs and meridians. A magnitude legend
+    in the lower-right corner shows six reference stars from mag 0 to mag 5 with corresponding
+    sizes and colors. The title "star-chart-constellation · plotnine · pyplots.ai"
+    appears centered at the bottom. Approximately 250 faint background stars fill
+    the sky.'
   criteria_checklist:
     visual_quality:
       score: 24
@@ -49,70 +50,69 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Font sizes explicitly set but grid tick labels (size=8, alpha=0.65)
-          are too faint and small to read comfortably
+        comment: Font sizes explicitly set but relatively small for output resolution;
+          readable but not generous
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 4
         max: 6
         passed: true
-        comment: Manual nudges prevent major overlaps; minor crowding in central area
-          around URSA MAJOR/LEO/GEMINI
+        comment: 'Minor overlaps: 60° label on star, RA ticks close to constellation
+          names; manual nudges help but don''t fully resolve'
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Star sizes well-adapted to magnitude range; constellation lines appropriately
-          subtle
+        comment: Good magnitude-based sizing; background stars appropriately subtle;
+          constellation lines could be slightly more visible
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Dark background with white/yellow/blue-grey stars provides excellent
-          contrast, no colorblind issues
+        comment: No colorblind issues; warm yellow-to-cool gray palette; excellent
+          contrast on dark background
       - id: VQ-05
         name: Layout & Canvas
-        score: 2
+        score: 3
         max: 4
-        passed: false
-        comment: Significant wasted dark space at bottom (~25-30% empty); figure 4800x4800
-          doesn't match allowed formats
+        passed: true
+        comment: Square format suits circular projection; natural empty corners; legend
+          slightly far from main chart
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: RA in hours and Dec in degrees with proper units; title present and
-          correct
+        comment: RA in hours, Dec in degrees with units; title in correct format
     design_excellence:
-      score: 14
+      score: 16
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Atmospheric dark navy background, magnitude-based star coloring,
-          semi-transparent constellation lines — genuinely evocative
+        comment: Excellent dark theme; custom star color palette by magnitude; elegant
+          constellation lines; professional astronomy-chart aesthetic
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: theme_void removes chrome, grid extremely subtle, good layer separation;
-          wasted canvas space and crude legend prevent higher score
+        comment: theme_void() removes chrome; very subtle grid; clean composition;
+          minor grid label placement issue
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Natural visual hierarchy through magnitude-based sizing; bright stars
-          draw the eye, constellation lines guide recognition
+        comment: Magnitude-based visual hierarchy; bright stars as focal points; constellation
+          patterns guide the eye
     spec_compliance:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -120,52 +120,51 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct star chart with stereographic projection and constellation
-          stick-figure lines
+        comment: Correct stereographic projection star chart with constellation stick
+          figures
       - id: SC-02
         name: Required Features
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: 'All required features present: projection, constellation lines,
-          magnitude sizing, coordinate grid, dark background, labels, legend'
+        comment: Most features present; only 10 constellations vs 20-30 suggested;
+          ecliptic/Milky Way optional not included
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: RA/Dec correctly projected via stereographic formulas; magnitude
-          correctly inverted for sizing
+        comment: RA/Dec correctly projected; star positions match real sky
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct; magnitude legend with proper labels present
+        comment: Title format correct; magnitude legend clearly shows size-to-brightness
+          mapping
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: 10 constellations, ~48 named stars, 250 background stars, wide magnitude
-          and sky coverage
+        comment: Wide range of magnitudes, multiple constellation shapes, background
+          stars; could benefit from more constellations
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real star names, real RA/Dec coordinates, real apparent magnitudes
-          — scientifically accurate
+        comment: Real star names with accurate RA/Dec and apparent magnitudes
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Magnitudes 0-5.5, RA 0-24h, Dec -50 to +70 — all astronomically correct
+        comment: All values astronomically accurate
     code_quality:
       score: 10
       max: 10
@@ -175,35 +174,34 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, projection, edges, labels, grid, legend,
-          plot, save — no functions or classes'
+        comment: 'Clean linear flow: imports, data, projection, plot layers, save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set for background star generation
+        comment: np.random.seed(42) set for background stars
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used, no unused imports
+        comment: All imports used, no extras
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Well-organized, appropriate complexity for specialized visualization,
-          no fake UI
+        comment: Well-organized; projection math clean; manual nudges show attention
+          to detail
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300, uses current plotnine API
+        comment: Saves as plot.png with dpi=300
     library_mastery:
-      score: 6
+      score: 7
       max: 10
       items:
       - id: LM-01
@@ -211,15 +209,15 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good grammar-of-graphics layering with scale_*_identity and theme_void;
-          manual grid/legend construction reduces score
+        comment: Good grammar-of-graphics layered composition; proper aes mappings
+          and scale_*_identity()
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Uses scale_*_identity and theme_void idioms but most heavy lifting
-          is manual, making library somewhat interchangeable
+        passed: true
+        comment: Uses scale_*_identity(), theme_void(), coord_fixed(), annotate();
+          layered grammar is idiomatic
   verdict: REJECTED
 impl_tags:
   dependencies: []
@@ -229,7 +227,6 @@ impl_tags:
   - custom-legend
   patterns:
   - data-generation
-  - iteration-over-groups
   dataprep:
   - normalization
   styling:

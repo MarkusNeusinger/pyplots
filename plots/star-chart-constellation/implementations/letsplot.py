@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 star-chart-constellation: Star Chart with Constellations
 Library: letsplot 4.9.0 | Python 3.14.3
-Quality: 84/100 | Created: 2026-03-18
+Quality: repair-2 | Created: 2026-03-18
 """
 
 import numpy as np
@@ -223,20 +223,21 @@ const_labels = (
     named_stars.groupby("constellation").agg(ra_center=("ra", "mean"), dec_center=("dec", "mean")).reset_index()
 )
 # Per-constellation offsets to avoid overlap with stars and lines
+# Tuned to prevent label-star/line collisions (RA in degrees, Dec in degrees)
 label_offsets = {
-    "Aql": (5, 5),
-    "Boo": (0, 5),
-    "Cas": (0, 5),
-    "CMa": (10, 3),
-    "Cyg": (15, 5),
-    "Gem": (0, 5),
-    "Leo": (-10, 5),
-    "Lyr": (-15, 3),
-    "Ori": (-5, 5),
-    "Per": (0, 5),
-    "Sco": (-15, 5),
-    "Tau": (0, 5),
-    "UMa": (0, 5),
+    "Aql": (12, -8),
+    "Boo": (-20, 10),
+    "Cas": (0, 8),
+    "CMa": (12, 5),
+    "Cyg": (25, 5),
+    "Gem": (-22, -10),
+    "Leo": (-12, 8),
+    "Lyr": (-18, -6),
+    "Ori": (-12, 10),
+    "Per": (-5, 9),
+    "Sco": (-25, 12),
+    "Tau": (0, 8),
+    "UMa": (0, 8),
 }
 const_labels["ra_center"] = const_labels.apply(
     lambda r: r["ra_center"] + label_offsets.get(r["constellation"], (0, 0))[0], axis=1
@@ -278,11 +279,11 @@ for dec_val in dec_grid_vals:
         dec_grid_rows.append({"ra": r, "dec": dec_val, "group": f"dec_{dec_val}"})
 df_dec_grid = pd.DataFrame(dec_grid_rows)
 
-# Magnitude legend data (positioned in lower-right area)
+# Magnitude legend data - positioned outside main data area (far right margin)
 legend_mags = [0, 1, 2, 3, 4, 5]
-legend_x = 340
-legend_y_start = -38
-legend_spacing = 6
+legend_x = 375
+legend_y_start = 20
+legend_spacing = 8
 df_legend = pd.DataFrame(
     {
         "ra": [legend_x] * len(legend_mags),
@@ -291,6 +292,8 @@ df_legend = pd.DataFrame(
         "label": [f"mag {m}" for m in legend_mags],
     }
 )
+# Legend title
+df_legend_title = pd.DataFrame({"ra": [legend_x], "dec": [legend_y_start + len(legend_mags) * legend_spacing + 4]})
 
 # Plot
 plot = (
@@ -302,7 +305,24 @@ plot = (
     + geom_segment(aes(x="x", y="y", xend="xend", yend="yend"), data=df_edges, color="#4a7fb5", size=0.8, alpha=0.45)
     # Background/faint stars
     + geom_point(
-        aes(x="ra", y="dec", size="size"), data=df[df["constellation"] == ""], color="#888888", alpha=0.5, shape=16
+        aes(x="ra", y="dec", size="size"), data=df[df["constellation"] == ""], color="#888888", alpha=0.55, shape=16
+    )
+    # Glow halo for the brightest stars (translucent larger circle beneath)
+    + geom_point(
+        aes(x="ra", y="dec"),
+        data=df[(df["constellation"] != "") & (df["magnitude"] < 0.5)],
+        color="#FFFDE0",
+        alpha=0.08,
+        size=18,
+        shape=16,
+    )
+    + geom_point(
+        aes(x="ra", y="dec"),
+        data=df[(df["constellation"] != "") & (df["magnitude"] < 1.0)],
+        color="#FFFDE0",
+        alpha=0.06,
+        size=14,
+        shape=16,
     )
     # Constellation stars with tooltips (lets-plot interactive feature)
     + geom_point(
@@ -310,7 +330,12 @@ plot = (
         data=df[df["constellation"] != ""],
         alpha=0.95,
         shape=16,
-        tooltips=layer_tooltips().line("@star_id").line("Magnitude: @magnitude").line("RA: @{ra} | Dec: @{dec}°"),
+        tooltips=layer_tooltips()
+        .line("@star_id")
+        .line("Magnitude: @magnitude")
+        .line("Constellation: @constellation")
+        .line("RA: @{ra}° | Dec: @{dec}°")
+        .format("@magnitude", ".2f"),
     )
     + scale_color_identity()
     + scale_size_identity()
@@ -319,20 +344,26 @@ plot = (
         aes(x="ra_center", y="dec_center", label="name"),
         data=const_labels,
         color="#6BAED6",
-        size=12,
+        size=14,
         fontface="italic",
         alpha=0.9,
     )
     # Axis labels and title
     + scale_x_continuous(
-        name="Right Ascension (hours)", breaks=ra_grid_vals, labels=[f"{int(v / 15)}h" for v in ra_grid_vals]
+        name="Right Ascension (hours)",
+        breaks=ra_grid_vals,
+        labels=[f"{int(v / 15)}h" for v in ra_grid_vals],
+        limits=[0, 400],
     )
     + scale_y_continuous(
         name="Declination (degrees)", breaks=list(range(-30, 75, 15)), labels=[f"{v}°" for v in range(-30, 75, 15)]
     )
-    # Magnitude legend key
+    # Magnitude legend key (placed in right margin outside data)
     + geom_point(aes(x="ra", y="dec", size="size"), data=df_legend, color="#FFFDE0", alpha=0.9, shape=16)
-    + geom_text(aes(x="ra", y="dec", label="label"), data=df_legend, color="#8899aa", size=10, nudge_x=12)
+    + geom_text(aes(x="ra", y="dec", label="label"), data=df_legend, color="#8899aa", size=10, nudge_x=14)
+    + geom_text(
+        aes(x="ra", y="dec"), data=df_legend_title, label="Magnitude", color="#8899aa", size=11, fontface="bold"
+    )
     + labs(
         title="star-chart-constellation · lets-plot · pyplots.ai",
         caption="Star size ∝ brightness (lower magnitude = brighter)",

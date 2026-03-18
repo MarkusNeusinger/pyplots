@@ -1,7 +1,7 @@
 library: plotly
 specification_id: star-chart-constellation
 created: '2026-03-18T21:16:10Z'
-updated: '2026-03-18T21:20:48Z'
+updated: '2026-03-18T21:32:34Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23267218428
 issue: 4560
@@ -10,81 +10,81 @@ library_version: 6.6.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/star-chart-constellation/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/star-chart-constellation/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/star-chart-constellation/plotly/plot.html
-quality_score: 78
+quality_score: 86
 review:
   strengths:
-  - Excellent real-world astronomical data with accurate star positions and magnitudes
-  - Attractive dark theme with thematic color palette (warm stars, cool constellation
-    lines)
-  - Good magnitude-to-size mapping creating clear visual hierarchy
-  - Interactive hover tooltips showing star details (plotly-specific feature)
-  - Proper RA axis reversal following astronomical convention
+  - Excellent astronomical data quality with real star names, positions, and magnitudes
+    across 25+ constellations
+  - Strong dark-sky aesthetic with carefully chosen warm cream star colors and blue
+    constellation lines
+  - Good use of Plotly Scattergl for WebGL performance with many data points
+  - Ecliptic line adds scientific depth beyond basic spec requirements
+  - Clean, well-structured code with appropriate complexity
   weaknesses:
-  - Constellation name labels are nearly invisible (too faint opacity/size on dark
-    background)
-  - Each constellation edge is a separate trace (~50 line traces) instead of consolidated
-    traces
-  - No sky projection (stereographic/azimuthal) as spec suggests — uses flat RA/Dec
-  - Constellation lines at 0.35 opacity are too subtle, reducing readability
-  image_description: The plot shows a star chart on a dark navy background (#0A0E1A)
-    with stars rendered as pale yellow/white circles of varying sizes based on magnitude.
-    Brighter stars like Sirius, Vega, and Arcturus appear as large circles while dimmer
-    stars are small dots. Approximately 200 tiny background stars are scattered across
-    the field. Thin semi-transparent cornflower blue lines connect stars within constellations
-    (Orion, Ursa Major, Cygnus, Scorpius, etc.). The x-axis shows Right Ascension
-    in hours (24h to 0h, reversed) and the y-axis shows Declination in degrees (-75
-    to 75). The title reads "star-chart-constellation · plotly · pyplots.ai" in a
-    muted blue color. A subtle grid is visible. Constellation name labels are present
-    but extremely faint — only "Piscis Au..." is partially legible; most labels are
-    nearly invisible against the dark background. The overall layout is a 16:9 landscape
-    format.
+  - Label overlap in crowded regions (Cygnus/Lyra, Perseus, Orion area) reduces readability
+  - Uses equirectangular projection instead of stereographic/azimuthal as specified
+  - Constellation lines could be slightly more prominent for better visibility
+  - Star name annotations at 11pt could be slightly larger
+  image_description: The plot displays a star chart on a deep dark navy background
+    (#0A0E1A). Stars are rendered as circles in warm cream/pale yellow tones, with
+    sizes proportional to brightness (brighter stars like Sirius, Vega, and Rigil
+    Kentaurus appear as large circles, dimmer stars are smaller). Semi-transparent
+    cornflower blue lines connect stars within 25+ constellations (Orion, Ursa Major,
+    Cassiopeia, Leo, Scorpius, Cygnus, Lyra, Gemini, Taurus, Canis Major, etc.). Constellation
+    names are labeled in light blue text near each group's centroid. The brightest
+    stars (mag < 0.5) have individual name labels. ~200 tiny dim background stars
+    add depth. A dashed orange ecliptic line curves sinusoidally across the chart.
+    The x-axis shows Right Ascension (24h to 0h, reversed per convention) and the
+    y-axis shows Declination (-75° to 75°). A subtle grid overlays the chart. Title
+    reads "star-chart-constellation · plotly · pyplots.ai" in light blue.
   criteria_checklist:
     visual_quality:
-      score: 23
+      score: 26
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 5
+        score: 7
         max: 8
         passed: true
-        comment: Title/axis/tick fonts explicitly set and readable. Constellation
-          labels at 13pt with 0.75 opacity barely visible on dark background.
+        comment: Font sizes explicitly set (title 28pt, labels 22pt, ticks 16pt, constellation
+          labels 14pt). Star name annotations at 11pt slightly small.
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 4
         max: 6
         passed: true
-        comment: No significant text overlap. Minor potential for label-star overlap.
+        comment: 'Some label overlap in crowded regions: Cygnus/Lyra, Perseus/Auriga,
+          Betelgeuse/Orion areas.'
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Stars well-sized with magnitude mapping. Constellation lines at 0.35
-          opacity very faint.
+        comment: Stars well-differentiated by size. Background stars appropriately
+          subtle. Constellation lines could be slightly more prominent.
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Good star contrast on dark background. No colorblind issues. Lines
-          could use more contrast.
+        comment: Excellent contrast on dark background. No red-green reliance. Cream
+          stars, blue lines, orange ecliptic all distinguishable.
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Good 16:9 canvas utilization. Some empty space at edges.
+        comment: Chart fills canvas well with balanced margins. Good 16:9 landscape
+          usage.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Right Ascension and Declination with degree units. Hour-format RA
-          ticks.
+        comment: Right Ascension with hour notation, Declination with degree suffix.
     design_excellence:
-      score: 13
+      score: 15
       max: 20
       items:
       - id: DE-01
@@ -92,21 +92,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Thematic dark theme, custom star colors by magnitude, complementary
-          constellation line color.
+        comment: 'Strong design: custom dark palette, warm cream star colors, blue
+          constellation lines. Above defaults.'
       - id: DE-02
         name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: Subtle grid (opacity 0.18), dark theme, no distracting spines, generous
+          whitespace.
+      - id: DE-03
+        name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Subtle grid at 0.15 opacity, dark themed backgrounds, good margins.
-      - id: DE-03
-        name: Data Storytelling
-        score: 3
-        max: 6
-        passed: true
-        comment: Star size hierarchy guides viewer. Constellation labels too faint
-          to support narrative.
+        comment: Magnitude-based sizing creates visual hierarchy. Bright star labels
+          and ecliptic add context.
     spec_compliance:
       score: 13
       max: 15
@@ -116,51 +117,54 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Correct star chart with scatter and constellation lines. Flat RA/Dec
-          instead of stereographic projection.
+        comment: Correct star chart with constellation lines. Uses equirectangular
+          instead of stereographic/azimuthal projection.
       - id: SC-02
         name: Required Features
         score: 3
         max: 4
         passed: true
-        comment: All major features present. Constellation labels practically invisible.
+        comment: 'Most features present. Missing: stereographic projection, Milky
+          Way band (optional).'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: RA/Dec correctly mapped with proper axis reversal.
+        comment: RA on x-axis reversed per convention, Dec on y-axis. Correct magnitude-to-size
+          inversion.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. No legend needed.
+        comment: Title format correct. No legend needed for this chart type.
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: 26 constellations, ~90 named stars, 200 background stars. Good magnitude
-          range.
+        comment: ~90 named stars across 25+ constellations, 200 background stars,
+          wide magnitude range.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real star names, coordinates, and magnitudes.
+        comment: Real astronomical data with actual star names, accurate RA/Dec, realistic
+          magnitudes.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Astronomically accurate values.
+        comment: All coordinates and magnitudes astronomically accurate.
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -168,56 +172,55 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean linear flow.
+        comment: Clean imports-data-plot-save flow. No functions or classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42).
+        comment: np.random.seed(42) set for background stars.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: 'All imports used: defaultdict, numpy, plotly.graph_objects.'
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: ~50 separate traces for constellation lines; should consolidate with
-          None separators.
+        comment: Well-organized, appropriate complexity. No fake functionality.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png and plot.html with current API.
+        comment: Saves plot.png and plot.html. Current Plotly API.
     library_mastery:
-      score: 6
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Uses Scattergl and go.Figure. Many separate traces for lines is not
-          idiomatic.
+        comment: Good use of Scattergl for WebGL, None separators for line traces,
+          annotations for labels.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Scattergl for WebGL, HTML export, interactive hover tooltips.
+        comment: Uses Scattergl (WebGL), hover tooltips, HTML export with interactivity.
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
-  - hover-tooltips
   - manual-ticks
+  - hover-tooltips
   - html-export
   patterns:
   - data-generation
@@ -227,3 +230,4 @@ impl_tags:
   styling:
   - dark-theme
   - alpha-blending
+  - grid-styling

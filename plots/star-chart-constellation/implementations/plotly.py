@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 star-chart-constellation: Star Chart with Constellations
 Library: plotly 6.6.0 | Python 3.14.3
+Quality: 86/100 | Created: 2026-03-18
 """
 
 from collections import defaultdict

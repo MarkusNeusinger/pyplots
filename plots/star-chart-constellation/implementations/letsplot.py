@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 star-chart-constellation: Star Chart with Constellations
 Library: letsplot 4.9.0 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-18
@@ -229,14 +229,14 @@ label_offsets = {
     "Boo": (-20, 10),
     "Cas": (0, 8),
     "CMa": (12, 5),
-    "Cyg": (25, 5),
-    "Gem": (-22, -10),
+    "Cyg": (25, -8),
+    "Gem": (20, 8),
     "Leo": (-12, 8),
     "Lyr": (-18, -6),
-    "Ori": (-12, 10),
+    "Ori": (-25, 15),
     "Per": (-5, 9),
-    "Sco": (-25, 12),
-    "Tau": (0, 8),
+    "Sco": (-25, 18),
+    "Tau": (-15, 12),
     "UMa": (0, 8),
 }
 const_labels["ra_center"] = const_labels.apply(
@@ -279,11 +279,11 @@ for dec_val in dec_grid_vals:
         dec_grid_rows.append({"ra": r, "dec": dec_val, "group": f"dec_{dec_val}"})
 df_dec_grid = pd.DataFrame(dec_grid_rows)
 
-# Magnitude legend data - positioned outside main data area (far right margin)
+# Magnitude legend data - positioned inside the chart (upper-right area)
 legend_mags = [0, 1, 2, 3, 4, 5]
-legend_x = 375
-legend_y_start = 20
-legend_spacing = 8
+legend_x = 340
+legend_y_start = 38
+legend_spacing = 6
 df_legend = pd.DataFrame(
     {
         "ra": [legend_x] * len(legend_mags),
@@ -294,6 +294,12 @@ df_legend = pd.DataFrame(
 )
 # Legend title
 df_legend_title = pd.DataFrame({"ra": [legend_x], "dec": [legend_y_start + len(legend_mags) * legend_spacing + 4]})
+# Legend background rectangle
+legend_bg_y_min = legend_y_start - 4
+legend_bg_y_max = legend_y_start + len(legend_mags) * legend_spacing + 10
+df_legend_bg = pd.DataFrame(
+    {"xmin": [legend_x - 15], "xmax": [legend_x + 28], "ymin": [legend_bg_y_min], "ymax": [legend_bg_y_max]}
+)
 
 # Plot
 plot = (
@@ -331,11 +337,14 @@ plot = (
         alpha=0.95,
         shape=16,
         tooltips=layer_tooltips()
-        .line("@star_id")
-        .line("Magnitude: @magnitude")
-        .line("Constellation: @constellation")
-        .line("RA: @{ra}° | Dec: @{dec}°")
-        .format("@magnitude", ".2f"),
+        .title("@star_id")
+        .line("Magnitude|@magnitude")
+        .line("Constellation|@constellation")
+        .line("RA|@{ra}°")
+        .line("Dec|@{dec}°")
+        .format("@magnitude", ".2f")
+        .format("@ra", ".1f")
+        .format("@dec", ".1f"),
     )
     + scale_color_identity()
     + scale_size_identity()
@@ -353,12 +362,21 @@ plot = (
         name="Right Ascension (hours)",
         breaks=ra_grid_vals,
         labels=[f"{int(v / 15)}h" for v in ra_grid_vals],
-        limits=[0, 400],
+        limits=[0, 370],
     )
     + scale_y_continuous(
         name="Declination (degrees)", breaks=list(range(-30, 75, 15)), labels=[f"{v}°" for v in range(-30, 75, 15)]
     )
-    # Magnitude legend key (placed in right margin outside data)
+    # Magnitude legend background
+    + geom_rect(
+        aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax"),
+        data=df_legend_bg,
+        fill="#0a0e1a",
+        color="#334455",
+        alpha=0.85,
+        size=0.5,
+    )
+    # Magnitude legend key (overlay inside chart)
     + geom_point(aes(x="ra", y="dec", size="size"), data=df_legend, color="#FFFDE0", alpha=0.9, shape=16)
     + geom_text(aes(x="ra", y="dec", label="label"), data=df_legend, color="#8899aa", size=10, nudge_x=14)
     + geom_text(

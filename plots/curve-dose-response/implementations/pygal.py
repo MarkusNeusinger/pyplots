@@ -1,9 +1,12 @@
-""" pyplots.ai
+"""pyplots.ai
 curve-dose-response: Pharmacological Dose-Response Curve
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 79/100 | Created: 2026-03-18
 """
 
+import re
+
+import cairosvg
 import numpy as np
 import pygal
 from pygal.style import Style
@@ -55,62 +58,35 @@ fit_ensemble = np.array([four_pl(conc_smooth, *p) for p in param_samples])
 ci_lower = np.percentile(fit_ensemble, 2.5, axis=0)
 ci_upper = np.percentile(fit_ensemble, 97.5, axis=0)
 
-# Build error bar segments as single series per compound using node={'r': 0} to hide markers
-cap = 0.06
-
-
-def pt(x, y):
-    return {"value": (x, y), "node": {"r": 0}}
-
-
-err_bar_a = []
-for i in range(len(log_conc)):
-    x, y, sem = log_conc[i], response_a[i], response_a_sem[i]
-    err_bar_a.extend([pt(x, y - sem), pt(x, y + sem), None])
-    err_bar_a.extend([pt(x - cap, y - sem), pt(x + cap, y - sem), None])
-    err_bar_a.extend([pt(x - cap, y + sem), pt(x + cap, y + sem), None])
-
-err_bar_b = []
-for i in range(len(log_conc)):
-    x, y, sem = log_conc[i], response_b[i], response_b_sem[i]
-    err_bar_b.extend([pt(x, y - sem), pt(x, y + sem), None])
-    err_bar_b.extend([pt(x - cap, y - sem), pt(x + cap, y - sem), None])
-    err_bar_b.extend([pt(x - cap, y + sem), pt(x + cap, y + sem), None])
-
 # Colors — colorblind-safe blue + orange
-palette_a = "#306998"
-palette_b = "#E68A00"
-palette_ci = "#89ABD0"
-palette_asym = "#888888"
+C_A = "#306998"
+C_B = "#E68A00"
+C_CI = "#89ABD0"
+C_ASYM = "#999999"
 
 custom_style = Style(
     background="white",
-    plot_background="#FAFAFA",
+    plot_background="#F5F5F0",
     foreground="#333",
     foreground_strong="#222",
     foreground_subtle="#DDDDDD",
     colors=(
-        palette_a,
-        palette_b,  # fitted curves
-        palette_a,
-        palette_b,  # data points
-        palette_ci,
-        palette_ci,  # CI bounds
-        palette_a,
-        palette_a,  # EC50 A (vert + horiz)
-        palette_b,
-        palette_b,  # EC50 B (vert + horiz)
-        palette_asym,
-        palette_asym,  # asymptote A (top + bottom)
-        palette_asym,
-        palette_asym,  # asymptote B (top + bottom)
-        palette_a,
-        palette_b,  # error bars
+        C_A,
+        C_B,  # fitted curves
+        C_A,
+        C_B,  # data points
+        C_CI,
+        C_CI,  # CI bounds
+        C_A,
+        C_B,  # EC50 ref lines
+        C_ASYM,  # asymptotes
+        C_A,
+        C_B,  # error bars
     ),
-    title_font_size=36,
-    label_font_size=22,
-    major_label_font_size=20,
-    legend_font_size=20,
+    title_font_size=38,
+    label_font_size=24,
+    major_label_font_size=22,
+    legend_font_size=22,
     value_font_size=16,
     stroke_width=3,
 )
@@ -123,17 +99,18 @@ chart = pygal.XY(
     x_title="log\u2081\u2080 Concentration (M)",
     y_title="Response (%)",
     show_dots=False,
-    dots_size=4,
+    dots_size=0,
     stroke=True,
     show_x_guides=False,
     show_y_guides=True,
     legend_at_bottom=True,
-    legend_at_bottom_columns=5,
+    legend_at_bottom_columns=4,
     x_label_rotation=0,
     truncate_legend=-1,
+    range=(0, 100),
 )
 
-# Fitted curves
+# --- Fitted curves ---
 chart.add(
     f"Compound A (EC\u2085\u2080={ec50_a:.1e} M)",
     list(zip(log_smooth.tolist(), fit_a.tolist(), strict=True)),
@@ -147,23 +124,23 @@ chart.add(
     stroke_style={"width": 7, "linecap": "round", "linejoin": "round"},
 )
 
-# Data points
+# --- Data points ---
 chart.add(
-    "Compound A data",
+    "Data A \u00b1 SEM",
     list(zip(log_conc.tolist(), response_a.tolist(), strict=True)),
     stroke=False,
     show_dots=True,
-    dots_size=14,
+    dots_size=12,
 )
 chart.add(
-    "Compound B data",
+    "Data B \u00b1 SEM",
     list(zip(log_conc.tolist(), response_b.tolist(), strict=True)),
     stroke=False,
     show_dots=True,
-    dots_size=14,
+    dots_size=12,
 )
 
-# 95% CI bounds for Compound A
+# --- 95% CI bounds for Compound A ---
 chart.add(
     "95% CI (A)",
     list(zip(log_smooth.tolist(), ci_upper.tolist(), strict=True)),
@@ -177,64 +154,124 @@ chart.add(
     stroke_style={"width": 2, "dasharray": "8, 6", "linecap": "round"},
 )
 
-# EC50 reference lines — Compound A
+# --- EC50 reference lines ---
 chart.add(
-    "EC\u2085\u2080 ref. lines",
-    [pt(log_ec50_a, 0), pt(log_ec50_a, half_a)],
+    "EC\u2085\u2080 ref.",
+    [(log_ec50_a, 0), (log_ec50_a, half_a), None, (log_smooth[0], half_a), (log_ec50_a, half_a)],
     show_dots=False,
+    dots_size=0,
     stroke_style={"width": 3, "dasharray": "12, 8"},
 )
 chart.add(
     None,
-    [pt(log_smooth[0], half_a), pt(log_ec50_a, half_a)],
+    [(log_ec50_b, 0), (log_ec50_b, half_b), None, (log_smooth[0], half_b), (log_ec50_b, half_b)],
     show_dots=False,
+    dots_size=0,
     stroke_style={"width": 3, "dasharray": "12, 8"},
 )
 
-# EC50 reference lines — Compound B
-chart.add(
-    None, [pt(log_ec50_b, 0), pt(log_ec50_b, half_b)], show_dots=False, stroke_style={"width": 3, "dasharray": "12, 8"}
-)
-chart.add(
-    None,
-    [pt(log_smooth[0], half_b), pt(log_ec50_b, half_b)],
-    show_dots=False,
-    stroke_style={"width": 3, "dasharray": "12, 8"},
-)
-
-# Top and bottom asymptote lines — Compound A
-x_range = [log_smooth[0], log_smooth[-1]]
+# --- Asymptote lines ---
+x_lo, x_hi = log_smooth[0], log_smooth[-1]
 chart.add(
     "Asymptotes",
-    [pt(x_range[0], top_a), pt(x_range[1], top_a)],
+    [
+        (x_lo, top_a),
+        (x_hi, top_a),
+        None,
+        (x_lo, bottom_a),
+        (x_hi, bottom_a),
+        None,
+        (x_lo, top_b),
+        (x_hi, top_b),
+        None,
+        (x_lo, bottom_b),
+        (x_hi, bottom_b),
+    ],
     show_dots=False,
-    stroke_style={"width": 2, "dasharray": "4, 6"},
-)
-chart.add(
-    None,
-    [pt(x_range[0], bottom_a), pt(x_range[1], bottom_a)],
-    show_dots=False,
-    stroke_style={"width": 2, "dasharray": "4, 6"},
-)
-
-# Top and bottom asymptote lines — Compound B
-chart.add(
-    None,
-    [pt(x_range[0], top_b), pt(x_range[1], top_b)],
-    show_dots=False,
-    stroke_style={"width": 2, "dasharray": "4, 6"},
-)
-chart.add(
-    None,
-    [pt(x_range[0], bottom_b), pt(x_range[1], bottom_b)],
-    show_dots=False,
+    dots_size=0,
     stroke_style={"width": 2, "dasharray": "4, 6"},
 )
 
-# Error bars — consolidated into one series per compound
-chart.add(None, err_bar_a, stroke=True, show_dots=False, stroke_style={"width": 2})
-chart.add(None, err_bar_b, stroke=True, show_dots=False, stroke_style={"width": 2})
+# --- Error bars (stems + caps) ---
+cap = 0.06
+for label, resp, sem in [(None, response_a, response_a_sem), (None, response_b, response_b_sem)]:
+    pts = []
+    for i in range(len(log_conc)):
+        x = log_conc[i]
+        lo, hi = resp[i] - sem[i], resp[i] + sem[i]
+        pts.extend(
+            [
+                (x, lo),
+                (x, hi),
+                None,  # vertical stem
+                (x - cap, lo),
+                (x + cap, lo),
+                None,  # bottom cap
+                (x - cap, hi),
+                (x + cap, hi),
+                None,  # top cap
+            ]
+        )
+    chart.add(label, pts, stroke=True, show_dots=False, dots_size=0, stroke_style={"width": 2})
 
-# Save
-chart.render_to_png("plot.png")
-chart.render_to_file("plot.html")
+# Render SVG, fix broken None-breaks by splitting continuous paths into
+# proper sub-paths with M (move-to) commands every 2 coordinate pairs
+svg = chart.render(is_unicode=True)
+
+
+def fix_path_breaks(path_d, points_per_segment=2):
+    """Split a continuous path into segments of N coordinate pairs each."""
+    # Parse all coordinate pairs from path data
+    coords = re.findall(r"(-?[\d.]+)\s+(-?[\d.]+)", path_d)
+    if len(coords) <= points_per_segment:
+        return path_d
+    segments = []
+    for i in range(0, len(coords), points_per_segment):
+        chunk = coords[i : i + points_per_segment]
+        if len(chunk) == points_per_segment:
+            seg = f"M{chunk[0][0]} {chunk[0][1]} L{chunk[1][0]} {chunk[1][1]}"
+            segments.append(seg)
+    return " ".join(segments)
+
+
+# Fix paths for series that use None breaks (EC50 refs, asymptotes, error bars)
+# These are series 6-10 in the first set of <g class="series..."> groups
+series_to_fix = {"serie-6", "serie-7", "serie-8", "serie-9", "serie-10"}
+fixed_count = 0
+
+
+def fix_series_path(match):
+    global fixed_count
+    serie_class = re.search(r"serie-\d+", match.group(0))
+    if serie_class and serie_class.group() in series_to_fix:
+        path_match = re.search(r'd="([^"]+)"', match.group(0))
+        if path_match:
+            old_d = path_match.group(1)
+            new_d = fix_path_breaks(old_d)
+            if new_d != old_d:
+                fixed_count += 1
+                return match.group(0).replace(old_d, new_d)
+    return match.group(0)
+
+
+svg = re.sub(r'<g class="series serie-\d+ color-\d+">\s*<path[^/]*/>\s*</g>', fix_series_path, svg)
+
+
+# Also remove dot circles from non-data series (keep only serie-2, serie-3)
+def remove_non_data_dots(match):
+    content = match.group(0)
+    serie = re.search(r"serie-(\d+)", content)
+    if serie and serie.group(1) not in ("2", "3"):
+        # Remove all <g class="dots">...</g> within this group
+        content = re.sub(r'<g class="dots">.*?</g>', "", content, flags=re.DOTALL)
+    return content
+
+
+svg = re.sub(r'<g class="series serie-\d+ color-\d+">.*?</g>', remove_non_data_dots, svg, flags=re.DOTALL)
+
+# Write SVG for HTML output
+with open("plot.html", "w") as f:
+    f.write(svg)
+
+# Convert to PNG
+cairosvg.svg2png(bytestring=svg.encode("utf-8"), write_to="plot.png", dpi=96)

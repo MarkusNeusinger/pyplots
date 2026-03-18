@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 spirometry-flow-volume: Spirometry Flow-Volume Loop
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-18
@@ -23,11 +23,11 @@ n_points = 150
 vol_exp = np.linspace(0, fvc_measured, n_points)
 rise_phase = np.minimum(vol_exp / 0.3, 1.0)
 decay_phase = 1.0 - (vol_exp / fvc_measured) ** 0.85
-flow_exp = pef_measured * rise_phase * decay_phase
+flow_exp_raw = rise_phase * decay_phase
+flow_exp = pef_measured * flow_exp_raw / flow_exp_raw.max()
 flow_exp = np.maximum(flow_exp, 0)
 
 # Inspiratory limb (negative flow): symmetric U-shaped curve
-# Volume goes fvc -> 0, reverse for monotonic x in plot
 vol_insp = np.linspace(0, fvc_measured, n_points)
 flow_insp = -5.5 * np.sin(np.linspace(np.pi, 0, n_points))
 
@@ -37,13 +37,14 @@ pef_predicted = 10.8
 vol_pred_exp = np.linspace(0, fvc_predicted, n_points)
 rise_pred = np.minimum(vol_pred_exp / 0.28, 1.0)
 decay_pred = 1.0 - (vol_pred_exp / fvc_predicted) ** 0.85
-flow_pred_exp = pef_predicted * rise_pred * decay_pred
+flow_pred_exp_raw = rise_pred * decay_pred
+flow_pred_exp = pef_predicted * flow_pred_exp_raw / flow_pred_exp_raw.max()
 flow_pred_exp = np.maximum(flow_pred_exp, 0)
 
 vol_pred_insp = np.linspace(0, fvc_predicted, n_points)
 flow_pred_insp = -6.2 * np.sin(np.linspace(np.pi, 0, n_points))
 
-# Build DataFrame with all four limbs
+# Build DataFrame using style column for idiomatic seaborn hue+style plotting
 df = pd.DataFrame(
     {
         "Volume (L)": np.concatenate([vol_exp, vol_insp, vol_pred_exp, vol_pred_insp]),
@@ -63,14 +64,15 @@ df = pd.DataFrame(
     }
 )
 
-# Plot
-sns.set_context("talk", font_scale=1.2)
+# Plot setup using seaborn theming
+custom_palette = sns.color_palette(["#306998", "#A0A0A0"])
+sns.set_context("talk", rc={"lines.linewidth": 3, "font.size": 16})
 sns.set_style("whitegrid", {"grid.alpha": 0.15, "grid.linewidth": 0.6})
-palette = {"Measured": "#306998", "Predicted Normal": "#A0A0A0"}
 
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Plot each limb using sns.lineplot with hue for color grouping
+# Plot using sns.lineplot with hue AND style for idiomatic seaborn usage
+# style parameter controls dash patterns natively without post-hoc iteration
 for limb_name in ["Expiratory", "Inspiratory"]:
     limb_df = df[df["Limb"] == limb_name]
     sns.lineplot(
@@ -78,17 +80,13 @@ for limb_name in ["Expiratory", "Inspiratory"]:
         x="Volume (L)",
         y="Flow (L/s)",
         hue="Curve",
-        palette=palette,
+        style="Curve",
+        palette={"Measured": "#306998", "Predicted Normal": "#A0A0A0"},
+        dashes={"Measured": "", "Predicted Normal": (5, 3)},
         linewidth=3,
         ax=ax,
         legend=(limb_name == "Expiratory"),
     )
-
-# Apply dashed style to predicted normal lines (lines at index 1, 3)
-for line in ax.lines:
-    if line.get_color() == "#A0A0A0":
-        line.set_linestyle("--")
-        line.set_linewidth(2.5)
 
 # Shade flow deficit between measured and predicted expiratory limbs
 vol_shade = np.linspace(0, min(fvc_measured, fvc_predicted), 200)
@@ -100,7 +98,8 @@ ax.fill_between(
 
 # Mark PEF with sns.scatterplot
 pef_idx = np.argmax(flow_exp)
-pef_df = pd.DataFrame({"Volume (L)": [vol_exp[pef_idx]], "Flow (L/s)": [flow_exp[pef_idx]]})
+pef_actual = flow_exp[pef_idx]
+pef_df = pd.DataFrame({"Volume (L)": [vol_exp[pef_idx]], "Flow (L/s)": [pef_actual]})
 sns.scatterplot(
     data=pef_df,
     x="Volume (L)",
@@ -114,9 +113,9 @@ sns.scatterplot(
     ax=ax,
 )
 ax.annotate(
-    f"PEF = {pef_measured:.1f} L/s",
-    xy=(vol_exp[pef_idx], flow_exp[pef_idx]),
-    xytext=(vol_exp[pef_idx] + 0.7, flow_exp[pef_idx] + 0.4),
+    f"PEF = {pef_actual:.1f} L/s",
+    xy=(vol_exp[pef_idx], pef_actual),
+    xytext=(vol_exp[pef_idx] + 0.7, pef_actual + 0.4),
     fontsize=16,
     fontweight="bold",
     color="#E74C3C",
@@ -157,7 +156,7 @@ textstr = (
     f"FVC = {fvc_measured:.1f} L\n"
     f"FEV₁ = {fev1_measured:.1f} L\n"
     f"FEV₁/FVC = {fev1_fvc_ratio:.0f}%\n"
-    f"PEF = {pef_measured:.1f} L/s"
+    f"PEF = {pef_actual:.1f} L/s"
 )
 props = {"boxstyle": "round,pad=0.6", "facecolor": "#F0F4F8", "edgecolor": "#306998", "alpha": 0.92, "linewidth": 1.5}
 ax.text(
@@ -183,7 +182,9 @@ ax.set_title("spirometry-flow-volume · seaborn · pyplots.ai", fontsize=24, fon
 ax.tick_params(axis="both", labelsize=16)
 sns.despine(ax=ax)
 
-# Clean up legend
+# Clean up legend using sns.move_legend for idiomatic seaborn approach
+sns.move_legend(ax, "upper right", fontsize=15, framealpha=0.9)
+# Add flow deficit to legend handles
 handles, labels = ax.get_legend_handles_labels()
 ax.legend(handles=handles, labels=labels, fontsize=15, loc="upper right", framealpha=0.9)
 

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 star-chart-constellation: Star Chart with Constellations
-Library: plotnine | Python 3.13
-Quality: pending | Created: 2026-03-18
+Library: plotnine 0.15.3 | Python 3.14.3
+Quality: 80/100 | Created: 2026-03-18
 """
 
 import numpy as np

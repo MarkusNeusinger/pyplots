@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 lightcurve-transit: Astronomical Light Curve
 Library: highcharts unknown | Python 3.14.3
-Quality: 87/100 | Created: 2026-03-18
+Quality: 90/100 | Created: 2026-03-18
 """
 
 import tempfile

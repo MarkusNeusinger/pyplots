@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 star-chart-constellation: Star Chart with Constellations
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 78/100 | Created: 2026-03-18
@@ -223,6 +223,11 @@ df["ra_deg"] = df["ra"] * 15.0
 mag_min, mag_max = df["mag"].min(), df["mag"].max()
 df["size"] = np.interp(df["mag"], [mag_min, mag_max], [500, 15])
 
+# Bin magnitudes for legend-friendly seaborn hue mapping
+mag_bins = [-2, 1.0, 2.0, 3.0, 6.0]
+mag_labels = ["< 1.0 (brightest)", "1.0 - 2.0", "2.0 - 3.0", "> 3.0 (faintest)"]
+df["mag_class"] = pd.cut(df["mag"], bins=mag_bins, labels=mag_labels)
+
 # Build star lookup for edges
 star_lookup = df.set_index("name")[["ra_deg", "dec"]].to_dict("index")
 
@@ -247,7 +252,7 @@ constellation_names = {
 named_stars = df[df["constellation"] != "---"]
 centroids = named_stars.groupby("constellation")[["ra_deg", "dec"]].mean()
 
-# Plot
+# Plot setup
 sns.set_theme(
     style="dark",
     rc={
@@ -277,41 +282,83 @@ for s1, s2 in edges:
         x2, y2 = star_lookup[s2]["ra_deg"], star_lookup[s2]["dec"]
         ax.plot([x1, x2], [y1, y2], color="#4a6fa5", linewidth=1.0, alpha=0.5, zorder=1)
 
-# Background stars
+# Background stars using seaborn scatterplot
 bg_mask = df["constellation"] == "---"
-ax.scatter(
-    df.loc[bg_mask, "ra_deg"],
-    df.loc[bg_mask, "dec"],
-    s=df.loc[bg_mask, "size"],
+sns.scatterplot(
+    data=df[bg_mask],
+    x="ra_deg",
+    y="dec",
+    size="size",
+    sizes=(5, 25),
     color="#8899bb",
     alpha=0.4,
-    edgecolors="none",
+    edgecolor="none",
+    legend=False,
+    ax=ax,
     zorder=2,
 )
 
-# Named constellation stars
-named_mask = df["constellation"] != "---"
-scatter = ax.scatter(
-    df.loc[named_mask, "ra_deg"],
-    df.loc[named_mask, "dec"],
-    s=df.loc[named_mask, "size"],
-    c=df.loc[named_mask, "mag"],
-    cmap="YlOrBr_r",
-    vmin=-1.5,
-    vmax=4.5,
-    edgecolors="white",
+# Named constellation stars using seaborn scatterplot with hue for magnitude classes
+# Use a colorblind-safe palette (plasma-derived)
+mag_palette = {
+    "< 1.0 (brightest)": "#f0e442",
+    "1.0 - 2.0": "#e8a835",
+    "2.0 - 3.0": "#c06020",
+    "> 3.0 (faintest)": "#7a3510",
+}
+named_df = df[~bg_mask].copy()
+
+sns.scatterplot(
+    data=named_df,
+    x="ra_deg",
+    y="dec",
+    hue="mag_class",
+    size="size",
+    sizes=(30, 500),
+    palette=mag_palette,
+    edgecolor="white",
     linewidth=0.4,
     alpha=0.95,
+    ax=ax,
     zorder=3,
 )
 
-# Constellation labels
+# Style the legend
+legend = ax.get_legend()
+legend.set_title("Apparent Magnitude", prop={"size": 12})
+legend.get_title().set_color("#d0d8f0")
+# Remove size entries from legend, keep only hue entries
+handles, labels = ax.get_legend_handles_labels()
+hue_handles = []
+hue_labels = []
+for handle, label_text in zip(handles, labels, strict=False):
+    if label_text in mag_palette:
+        hue_handles.append(handle)
+        hue_labels.append(label_text)
+legend = ax.legend(
+    hue_handles,
+    hue_labels,
+    title="Apparent Magnitude",
+    loc="lower left",
+    fontsize=10,
+    title_fontsize=12,
+    framealpha=0.3,
+    facecolor="#0a0e2a",
+    edgecolor="#2a3570",
+    labelcolor="#d0d8f0",
+)
+legend.get_title().set_color("#d0d8f0")
+
+# Constellation labels with adjusted positions to avoid overlaps
 text_effect = [pe.withStroke(linewidth=2, foreground="#0a0e2a")]
+# Manual offsets for overlapping constellation labels
+label_offsets = {"CMa": (0, -7), "Lyr": (-12, 3), "Aql": (0, -6), "Sco": (0, -7), "Aur": (-8, 5), "Per": (0, 5)}
 for abbr, row in centroids.iterrows():
     label = constellation_names.get(abbr, abbr)
+    dx, dy = label_offsets.get(abbr, (0, 3.5))
     ax.text(
-        row["ra_deg"],
-        row["dec"] + 3.5,
+        row["ra_deg"] + dx,
+        row["dec"] + dy,
         label,
         fontsize=11,
         color="#7a9acc",
@@ -323,23 +370,35 @@ for abbr, row in centroids.iterrows():
         zorder=4,
     )
 
-# Label brightest stars (mag < 1.0)
+# Label brightest stars (mag < 1.0) with adjusted positions to avoid overlaps
 brightest = df[(df["mag"] < 1.0) & (df["constellation"] != "---")]
+# Custom label offsets for stars that overlap with constellation labels or each other
+star_label_offsets = {
+    "Sirius": (5, 3),
+    "Vega": (4, 4),
+    "Capella": (5, 3),
+    "Arcturus": (4, -4),
+    "Altair": (4, 4),
+    "Aldebaran": (4, -4),
+    "Rigel": (4, 3),
+    "Betelgeuse": (-3, -4),
+}
 for _, star in brightest.iterrows():
+    dx, dy = star_label_offsets.get(star["name"], (2, -2.5))
     ax.text(
-        star["ra_deg"] + 2,
-        star["dec"] - 2.5,
+        star["ra_deg"] + dx,
+        star["dec"] + dy,
         star["name"],
-        fontsize=8,
+        fontsize=9,
         color="#c8d4ee",
-        alpha=0.7,
+        alpha=0.8,
         ha="left",
         va="top",
         path_effects=text_effect,
         zorder=4,
     )
 
-# Style
+# Axes styling
 ax.set_xlim(360, 0)
 ax.set_ylim(-50, 72)
 ax.set_xlabel("Right Ascension (°)", fontsize=20)

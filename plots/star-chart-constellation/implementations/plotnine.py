@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 star-chart-constellation: Star Chart with Constellations
 Library: plotnine 0.15.3 | Python 3.14.3
-Quality: 84/100 | Created: 2026-03-18
 """
 
 import numpy as np
@@ -369,28 +368,28 @@ plot = (
         data=df_labels,
         mapping=aes(x="x", y="y", label="label"),
         color="#7a9cca",
-        size=11,
-        alpha=0.8,
+        size=12,
+        alpha=0.85,
         fontstyle="italic",
     )
     # RA tick labels
-    + geom_text(data=df_ra_ticks, mapping=aes(x="x", y="y", label="label"), color="#3a5575", size=8, alpha=0.65)
+    + geom_text(data=df_ra_ticks, mapping=aes(x="x", y="y", label="label"), color="#5a7a9a", size=10, alpha=0.8)
     # Dec tick labels
     + geom_text(
-        data=df_dec_ticks, mapping=aes(x="x", y="y", label="label"), color="#3a5575", size=8, alpha=0.65, ha="left"
+        data=df_dec_ticks, mapping=aes(x="x", y="y", label="label"), color="#5a7a9a", size=10, alpha=0.8, ha="left"
     )
     # Magnitude legend
     + geom_point(data=df_legend_stars, mapping=aes(x="x", y="y", size="size", color="color"), alpha=0.9)
     + geom_text(
-        data=df_legend_labels, mapping=aes(x="x", y="y", label="label"), color="#7799bb", size=8, ha="left", alpha=0.8
+        data=df_legend_labels, mapping=aes(x="x", y="y", label="label"), color="#8899bb", size=9, ha="left", alpha=0.85
     )
     + annotate(
         "text",
         x=legend_x_base,
         y=legend_y_base - 0.25,
         label="Magnitude",
-        color="#8899aa",
-        size=9,
+        color="#99aabb",
+        size=10,
         ha="center",
         fontweight="bold",
     )
@@ -398,7 +397,7 @@ plot = (
     + annotate(
         "text",
         x=0,
-        y=-radius_limit - 0.3,
+        y=-radius_limit + 0.05,
         label="star-chart-constellation · plotnine · pyplots.ai",
         color="#8899aa",
         size=14,
@@ -406,11 +405,11 @@ plot = (
     )
     + coord_fixed(ratio=1)
     + xlim(-radius_limit - 0.3, radius_limit + 0.6)
-    + ylim(-radius_limit - 0.6, radius_limit + 0.3)
+    + ylim(-radius_limit - 0.1, radius_limit + 0.3)
     + labs(x="", y="")
     + theme_void()
     + theme(
-        figure_size=(16, 16),
+        figure_size=(12, 12),
         plot_background=element_rect(fill="#060d1f", color="#060d1f"),
         panel_background=element_rect(fill="#060d1f", color="#060d1f"),
         text=element_text(color="#aabbcc", size=14),

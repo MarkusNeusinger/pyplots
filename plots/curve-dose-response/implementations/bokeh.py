@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 curve-dose-response: Pharmacological Dose-Response Curve
 Library: bokeh 3.9.0 | Python 3.14.3
-Quality: 85/100 | Created: 2026-03-18
+Quality: 89/100 | Created: 2026-03-18
 """
 
 import numpy as np

@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: star-chart-constellation
 created: '2026-03-18T21:14:48Z'
-updated: '2026-03-18T21:28:56Z'
+updated: '2026-03-18T21:40:28Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23267218063
 issue: 4560
@@ -10,38 +10,37 @@ library_version: 3.9.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/star-chart-constellation/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/star-chart-constellation/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/star-chart-constellation/bokeh/plot.html
-quality_score: 85
+quality_score: 87
 review:
   strengths:
-  - Authentic astronomical data with accurate star positions and magnitudes for 23
-    constellations
-  - Beautiful dark sky aesthetic with thoughtful color choices (pale yellow bright
-    stars, blue-white dimmer stars)
-  - Correct stereographic projection with RA flipped per astronomical convention
-  - Interactive hover tooltips showing star name and magnitude (Bokeh-specific feature)
-  - Well-designed magnitude scale legend
-  - Custom label offsets to reduce overlap in crowded areas
+  - Excellent astronomical accuracy with real star catalog data for 23 constellations
+  - Beautiful dark sky aesthetic with thoughtful color progression for star magnitudes
+  - Stereographic projection correctly implemented with RA convention flip
+  - Interactive tooltips showing star name and magnitude (Bokeh strength)
+  - Custom magnitude scale legend adds professional polish
+  - Well-organized label offset system to reduce overlaps
   weaknesses:
-  - Canvas size 4800x4800 is non-standard (should be 3600x3600 for square format)
-  - Some label overlap persists in crowded regions (Lyra/Cygnus area)
-  - Grid and legend labels are slightly small for the canvas resolution
-  - Star colors computed via manual loop instead of Bokeh's ColorMapper
-  image_description: The plot displays a star chart on a dark navy background (#0a0e2a)
-    using a north-pole-centered stereographic projection. Stars are rendered as circles
-    with sizes inversely proportional to magnitude — bright stars like Sirius, Vega,
-    and Capella appear as large pale-yellow circles, while dimmer stars are smaller
-    blue-white dots. Constellation stick-figure lines connect stars in semi-transparent
-    blue (#4a6fa5) lines across 23 constellations including Orion, Ursa Major, Cassiopeia,
-    Cygnus, Scorpius, and Crux. Constellation names appear in italic blue-gray text
-    near each group's centroid. Bright star names (mag < 1.0) are labeled in lighter
-    text. A dotted coordinate grid shows RA lines (0h–21h) and declination circles
-    (-60° to 60°). A magnitude scale legend in the bottom-left shows circles for magnitudes
-    0–5 with decreasing sizes. The title "star-chart-constellation · bokeh · pyplots.ai"
-    is centered at the top in light blue-gray. Approximately 200 random background
-    stars fill the field for realism.
+  - Minor label overlaps in crowded areas (Auriga/Capella, Lyra/Vega, Aquila/Altair)
+  - Canvas size 4800x4800 deviates from standard 4800x2700 or 3600x3600
+  - Some grid labels (Dec at 13pt) could be slightly larger for consistency
+  image_description: The plot displays a star chart on a deep navy (#0a0e2a) background
+    using a stereographic projection centered on the north celestial pole. Stars are
+    rendered as circular markers with sizes inversely proportional to magnitude —
+    bright stars like Sirius, Vega, and Arcturus appear as large yellow-white circles,
+    while dimmer stars are small blue-gray dots. Constellation stick-figure lines
+    connect stars in semi-transparent blue (#4a6fa5). Twenty-three constellation names
+    (Orion, Ursa Major, Cassiopeia, Leo, Cygnus, Scorpius, Gemini, Lyra, Aquila, Taurus,
+    Canis Major, Perseus, Auriga, Boötes, Corona Bor., Andromeda, Pegasus, Draco,
+    Centaurus, Crux, Puppis, Vela, Carina) are labeled in italic blue-gray text near
+    their centroids. Bright star names (mag < 1.0) are labeled in lighter text. A
+    dotted RA/Dec coordinate grid is visible with RA labels (0h, 3h, 6h, 9h, 12h,
+    15h, 18h, 21h) and Dec labels (-60, -30, 0, 30, 60 degrees). A magnitude scale
+    legend in the bottom-left shows circle sizes for magnitudes 0-5. The title "star-chart-constellation
+    · bokeh · pyplots.ai" appears at the top center. Approximately 200 random background
+    stars add realism to the chart.
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 25
       max: 30
       items:
       - id: VQ-01
@@ -49,46 +48,46 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 36pt, constellation 18pt, star
-          names 15pt, grid 13-14pt). Grid and legend labels slightly small for 4800px
-          canvas.
+        comment: Font sizes explicitly set throughout (title 36pt, constellation labels
+          18pt, star labels 15pt, RA/Dec 13-14pt). Dec grid labels slightly small
+          at 13pt.
       - id: VQ-02
         name: No Overlap
         score: 4
         max: 6
         passed: true
-        comment: Minor overlap in Lyra/Cygnus area where Vega and Lyra labels crowd
-          together. Some grid declination labels overlap grid lines.
+        comment: 'Minor overlaps in crowded areas: Auriga/Capella, Lyra/Vega, Aquila/Altair
+          labels compete.'
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Star sizes well-adapted to magnitude. Some faint background stars
-          very hard to see against dark background.
+        comment: Stars clearly visible with good size differentiation (3-42px). Constellation
+          lines appropriately subtle. Background stars add depth.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Excellent colorblind-safe palette using pale yellow, blue-white,
-          and gray on dark navy.
+        comment: Excellent contrast on dark background. Yellow-white to blue-gray
+          star color progression. No red-green issues.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good canvas utilization but uses non-standard 4800x4800 instead of
-          3600x3600 for square format.
+        comment: Canvas 4800x4800 deviates from standard sizes but square format is
+          reasonable for star chart. Good space utilization.
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: RA/Dec grid labels include units (h, degrees) but no overall axis
-          label text.
+        comment: Axes appropriately hidden. RA/Dec grid labels with units. Title follows
+          required format.
     design_excellence:
-      score: 14
+      score: 15
       max: 20
       items:
       - id: DE-01
@@ -96,22 +95,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Strong design with dark sky background, star color gradient by magnitude,
-          italic constellation names. Clearly above defaults.
+        comment: 'Strong design: dark sky background, magnitude-based star colors,
+          semi-transparent constellation lines, italic labels, custom legend.'
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Axes hidden, default grids removed, custom dotted coordinate grid,
-          styled outline. Could add glow effects on bright stars.
+        comment: Axes hidden, custom dotted coordinate grid, subtle outline, carefully
+          layered background colors.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Natural visual hierarchy through magnitude-based sizing creates clear
-          focal points. Constellation lines guide viewer through patterns.
+        comment: Magnitude-based sizing creates natural visual hierarchy. Constellation
+          lines guide viewer. Magnitude legend aids interpretation.
     spec_compliance:
       score: 15
       max: 15
@@ -121,29 +120,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct stereographic projection star chart with constellation stick
-          figures.
+        comment: Correct star chart with stereographic projection and constellation
+          stick-figure lines.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
         comment: 'All required features present: projection, magnitude sizing, constellation
-          lines/labels, coordinate grid, dark background.'
+          lines/labels, dark background, RA/Dec grid.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: RA/Dec correctly mapped through stereographic projection with RA
-          flipped for astronomical convention.
+        comment: RA/Dec correctly projected, RA flipped for astronomical convention,
+          magnitudes correctly inverted.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Magnitude scale legend with sized circles is
-          appropriate.
+        comment: Title format correct. Magnitude scale legend present and well-designed.
     data_quality:
       score: 15
       max: 15
@@ -153,21 +151,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 23 constellations, ~90 named stars, 200 background stars, both hemispheres
-          covered.
+        comment: 23 constellations, ~90 named stars plus 200 background stars, magnitudes
+          -1.46 to 5.5, both hemispheres.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real star catalog data with accurate positions and magnitudes. Neutral
-          scientific content.
+        comment: Accurate real-world star catalog data with correct RA, Dec, and apparent
+          magnitude values.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: All RA, Dec, and magnitude values are astronomically accurate.
+        comment: 'All astronomical values accurate: RA 0-24h, Dec -70 to +65 degrees,
+          magnitudes -1.46 to 5.5.'
     code_quality:
       score: 10
       max: 10
@@ -177,7 +176,8 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: data → projection → plotting → styling → save.'
+        comment: 'Linear flow: data -> projection -> plotting -> styling -> save.
+          No functions or classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -195,14 +195,14 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Well-organized with clear sections and manual label offsets for attention
-          to detail.
+        comment: Clean, well-organized. Label offset dictionaries handle overlap cases
+          elegantly.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html. Uses current Bokeh API.
+        comment: Saves as plot.png and plot.html. Current Bokeh API.
     library_mastery:
       score: 7
       max: 10
@@ -212,16 +212,16 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of ColumnDataSource, LabelSet, Label, figure, scatter/line.
-          Could use ColorMapper for star colors.
+        comment: Good use of ColumnDataSource, figure, scatter, line, LabelSet, Label.
+          Data-driven approach.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses hover tooltips, HTML export, and ColumnDataSource data binding
-          — distinctive Bokeh features.
-  verdict: REJECTED
+        comment: Interactive hover tooltips, HTML export alongside PNG, ColumnDataSource
+          pattern.
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:

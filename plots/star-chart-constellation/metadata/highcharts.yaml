@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: star-chart-constellation
 created: '2026-03-18T21:15:11Z'
-updated: '2026-03-18T21:19:58Z'
+updated: '2026-03-18T21:29:25Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23267218114
 issue: 4560
@@ -10,38 +10,42 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/star-chart-constellation/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/star-chart-constellation/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/star-chart-constellation/highcharts/plot.html
-quality_score: 89
+quality_score: 86
 review:
   strengths:
-  - Excellent astronomical data with real star names, positions, and magnitudes
-  - Beautiful dark sky aesthetic with radial gradient star markers creating a convincing
-    glow effect
-  - Per-constellation color palette with matching labels and lines
-  - Strong visual hierarchy through magnitude-proportional marker sizing
-  - Background stars add atmospheric depth
+  - Exceptional visual design with dark sky gradient, glowing radial-gradient stars,
+    and per-constellation color coding
+  - Real astronomical data with accurate star names, positions, and magnitudes across
+    15 constellations
+  - Excellent magnitude-to-size mapping creating natural visual hierarchy
+  - Background stars adding realistic atmosphere
+  - Interactive HTML version alongside static PNG leveraging Highcharts interactive
+    capabilities
+  - Perfect code quality with clean KISS structure
   weaknesses:
-  - Constellation colors for Lyra and Aquila are too similar (both light cyan-blue)
-  - No stereographic/azimuthal projection (flat Cartesian), though this is a Highcharts
-    limitation
-  - Grid lines slightly break the night-sky illusion — could use lower opacity or
-    remove
-  image_description: The plot displays a star chart on a deep dark navy background
-    with a subtle vertical gradient. 15 constellations are plotted across the chart
-    using Right Ascension (degrees, reversed from ~360° to 0°) on the x-axis and Declination
-    (degrees, -50° to 70°) on the y-axis. Stars appear as white/pale circular markers
-    with radial gradients — brighter stars (lower magnitude) are noticeably larger
-    (e.g., Sirius in Canis Major is the largest). Constellation stick-figure lines
-    connect stars in thin, semi-transparent lines, each constellation colored distinctly
-    (e.g., Orion in light blue, Scorpius in red, Ursa Major in gold). Constellation
-    names are labeled in their respective colors near the centroid of each star group.
-    Faint background stars are scattered across the entire field. The title reads
-    "star-chart-constellation · highcharts · pyplots.ai" in light gray, with a subtitle
-    "Northern & Southern Hemisphere — 15 Constellations, 70+ Stars to mag 3.7". Axis
-    labels include "Right Ascension (°)" and "Declination (°)" with dotted grid lines
-    at low opacity.
+  - Uses flat rectangular RA/Dec projection instead of the spec-requested stereographic
+    or azimuthal equidistant projection with circular sky boundary
+  - Minor label crowding between Cygnus and Lyra constellation names
+  - Some constellation colors may be challenging for colorblind viewers (multiple
+    warm tones)
+  - Could leverage more advanced Highcharts features (e.g., custom plot bands for
+    Milky Way)
+  image_description: The plot displays a star chart on a dark navy background with
+    a subtle vertical gradient. Stars are rendered as white/pale circular markers
+    with radial gradients giving them a realistic glow effect. Brighter stars (like
+    Sirius, Vega, Arcturus) appear significantly larger than dimmer ones. 15 constellations
+    are shown with colored stick-figure lines connecting their stars — each constellation
+    has a unique color (e.g., Orion in light blue, Ursa Major in yellow, Scorpius
+    in red, Cassiopeia in purple). Constellation names are labeled in matching colors
+    near the centroid of each group. The x-axis shows Right Ascension in degrees (reversed
+    from 360° to 0°), and the y-axis shows Declination from -50° to 70°. A subtle
+    dotted coordinate grid is overlaid. Approximately 300 faint background stars add
+    atmosphere. The title reads "star-chart-constellation · highcharts · pyplots.ai"
+    with a descriptive subtitle "Northern & Southern Hemisphere — 15 Constellations,
+    70+ Stars to mag 3.7".
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 26
       max: 30
       items:
       - id: VQ-01
@@ -49,35 +53,34 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 56px, subtitle 34px, axis titles
-          36px, ticks 28px, labels 26px). All clearly readable.
+        comment: All font sizes explicitly set (title 56px, axis titles 36px, tick
+          labels 28px, constellation labels 26px). All readable.
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: No overlapping text or elements. Constellation labels well-placed
-          near centroids.
+        comment: Mostly clean layout. Minor crowding between Cygnus and Lyra labels.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Star markers well-adapted with magnitude-proportional sizing. Background
-          stars add atmosphere without cluttering.
+        comment: Excellent magnitude-to-size mapping. Background stars add depth without
+          clutter.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Good contrast against dark background but Lyra and Aquila colors
-          too similar for colorblind viewers.
+        comment: Good color variety against dark background. Some warm-toned constellations
+          may be hard to distinguish for colorblind viewers.
       - id: VQ-05
         name: Layout & Canvas
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: Chart fills canvas well with appropriate margins and balanced whitespace.
+        comment: Good canvas utilization. Minor right-edge tightness.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
@@ -85,60 +88,62 @@ review:
         passed: true
         comment: Right Ascension (°) and Declination (°) — descriptive with units.
     design_excellence:
-      score: 15
+      score: 16
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: 'Strong design: dark sky theme, radial gradients on stars, per-constellation
-          color palette, gradient background, refined typography.'
+        comment: Dark sky gradient, radial gradient star markers, per-constellation
+          color palette, thoughtful typography. Approaching publication quality.
       - id: DE-02
         name: Visual Refinement
         score: 5
         max: 6
         passed: true
-        comment: Dotted grid at low opacity, subtle axis lines, generous margins.
-          Grid could be even more minimal.
+        comment: Subtle dotted grid, no heavy spines, gradient plot background, faint
+          background stars. Well-polished.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Magnitude-based sizing creates visual hierarchy. Color-coding helps
-          differentiate constellations. More of a reference chart than a narrative.
+        comment: Magnitude-to-size mapping creates visual hierarchy. Color-coded constellations
+          guide the viewer. Subtitle provides context.
     spec_compliance:
-      score: 14
+      score: 12
       max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 5
+        score: 3
         max: 5
-        passed: true
-        comment: 'Correct: scatter plot with constellation stick-figure lines on celestial
-          coordinate system.'
+        passed: false
+        comment: Correct base type but uses flat rectangular RA/Dec projection instead
+          of stereographic/azimuthal with circular sky boundary.
       - id: SC-02
         name: Required Features
         score: 3
         max: 4
         passed: true
-        comment: Has magnitude sizing, constellation lines/labels, dark background,
-          RA/Dec grid. Missing stereographic projection.
+        comment: Has stars, constellation lines, labels, grid, dark background. Missing
+          proper sky projection, ecliptic, Milky Way.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: RA on x-axis reversed, Dec on y-axis. All data visible.
+        comment: RA correctly converted to degrees, Dec in degrees, RA axis properly
+          reversed.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title follows spec format. Legend disabled appropriately.
+        comment: Correct title format. Legend disabled appropriately — constellation
+          labels serve this role.
     data_quality:
       score: 15
       max: 15
@@ -148,7 +153,8 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 15 constellations, 70+ real stars, both hemispheres. Excellent coverage.
+        comment: 70+ real stars across 15 constellations, both hemispheres, wide magnitude
+          range.
       - id: DQ-02
         name: Realistic Context
         score: 5
@@ -160,7 +166,7 @@ review:
         score: 4
         max: 4
         passed: true
-        comment: All values astronomically correct.
+        comment: All values are real-world accurate astronomical data.
     code_quality:
       score: 10
       max: 10
@@ -170,19 +176,19 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Follows imports → data → chart config → series → export pattern.
+        comment: 'Clean linear flow: imports → data → chart config → series → export.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) and seed(99) set for deterministic generation.
+        comment: np.random.seed(42) and np.random.seed(99) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: All imports are used.
       - id: CQ-04
         name: Code Elegance
         score: 2
@@ -194,7 +200,7 @@ review:
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via container screenshot. Current API.
+        comment: Saves as plot.png via Selenium. Also generates interactive HTML.
     library_mastery:
       score: 7
       max: 10
@@ -204,15 +210,15 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Good use of highcharts-core: Chart, ScatterSeries, SplineSeries,
-          per-point marker config.'
+        comment: Good use of Chart, HighchartsOptions, ScatterSeries, SplineSeries,
+          add_series(), to_js_literal().
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Radial gradients on markers, SplineSeries for lines, data labels
-          with textOutline, linearGradient on background.
+        comment: Radial gradient fills, rich HTML tooltips, per-point marker config,
+          interactive HTML export.
   verdict: REJECTED
 impl_tags:
   dependencies:
@@ -230,3 +236,4 @@ impl_tags:
   - dark-theme
   - gradient-fill
   - alpha-blending
+  - grid-styling

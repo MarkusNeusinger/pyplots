@@ -1,7 +1,7 @@
 """ pyplots.ai
 star-chart-constellation: Star Chart with Constellations
 Library: highcharts unknown | Python 3.14.3
-Quality: 89/100 | Created: 2026-03-18
+Quality: 86/100 | Created: 2026-03-18
 """
 
 import tempfile

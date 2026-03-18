@@ -1,7 +1,7 @@
 library: pygal
 specification_id: curve-dose-response
 created: '2026-03-18T22:36:44Z'
-updated: '2026-03-18T22:40:31Z'
+updated: '2026-03-18T22:56:52Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23270128955
 issue: 4556
@@ -10,33 +10,34 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/curve-dose-response/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/curve-dose-response/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/curve-dose-response/pygal/plot.html
-quality_score: 75
+quality_score: 79
 review:
   strengths:
-  - Solid 4PL curve fitting with scipy including proper covariance-based 95% CI band
-    via parameter sampling
-  - EC50 reference lines with labeled values in the legend are informative and well-executed
-  - Good color distinction between compounds with consistent color mapping across
-    fits points and reference lines
-  - Clean data generation with realistic pharmacological parameters
+  - Full spec compliance with all required features (4PL fit, EC50 lines, CI, error
+    bars, asymptotes, 2 compounds)
+  - Colorblind-safe blue/orange palette with good contrast
+  - EC50 values displayed in legend labels for pharmacological interpretation
+  - Proper 95% CI via parameter covariance sampling
+  - Good data storytelling with two compounds showing ~10x potency difference
   weaknesses:
-  - Missing top and bottom asymptote horizontal dashed lines as required by spec
-  - Error bar implementation is extremely verbose with 48 hidden series polluting
-    the chart structure
-  - Legend text at bottom is small and hard to read
-  - No direct on-chart annotations for EC50 values
-  - Design could be elevated with better visual hierarchy and storytelling emphasis
-  image_description: The plot displays two sigmoidal dose-response curves on a white
-    background. Compound A is shown in blue (#306998) and Compound B in red (#E74C3C).
-    The x-axis is labeled "log₁₀ Concentration (M)" ranging from approximately -9
-    to -4, and the y-axis is labeled "Response (%)" ranging from 0 to about 95. Compound
-    A (blue) has a steeper sigmoid shifting left (more potent, EC50 ~1e-7 M), while
-    Compound B (red) shifts right (EC50 ~1e-6 M). Both fitted curves are solid lines
-    with data points (filled circles) overlaid with error bars (SEM). Dashed blue
-    lines form a 95% CI band around Compound A's fit. EC50 reference lines are shown
-    as dashed vertical and horizontal lines for both compounds, intersecting at the
-    half-maximal response. The legend is placed at the bottom with 6 labeled entries
-    across multiple columns. The title reads "curve-dose-response · pygal · pyplots.ai".
+  - Error bars render with unwanted open triangle/diamond node markers instead of
+    clean I-bars
+  - Error bar construction is verbose and node:{r:0} does not fully suppress markers
+    in PNG output
+  - Legend has many entries (7 visible) making it somewhat cluttered
+  image_description: 'The plot displays two sigmoidal dose-response curves on a light
+    gray (#FAFAFA) background. Compound A is rendered in blue (#306998) and Compound
+    B in orange (#E68A00), both as thick solid lines following classic sigmoid shapes.
+    Data points appear as filled circles at 8 concentration levels. Error bars are
+    drawn as connected line segments with caps, but render with visible open triangle/diamond
+    node markers at each segment endpoint, creating visual clutter around data points.
+    Dashed reference lines mark EC50 positions (vertical + horizontal) for both compounds
+    in their respective colors. Gray dashed asymptote lines span the full x-range
+    for top and bottom plateaus of both compounds. Two dashed blue lines show the
+    95% CI bounds for Compound A. The x-axis reads "log10 Concentration (M)" ranging
+    from ~-9.5 to ~-3.5, y-axis reads "Response (%)" from 0 to ~95. Title: "curve-dose-response
+    · pygal · pyplots.ai". Legend at bottom in a row with entries for fitted curves
+    (including EC50 values), data series, CI, EC50 ref lines, and asymptotes.'
   criteria_checklist:
     visual_quality:
       score: 24
@@ -44,71 +45,72 @@ review:
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set in Style but legend text at bottom is quite
-          small
+        comment: Font sizes explicitly set (title=36, label=22, major_label=20, legend=20).
+          All text readable, legend slightly small.
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: No significant overlap; some error bar caps slightly tight in dense
-          areas
+        comment: No severe text overlap. Some visual busyness from overlapping reference
+          lines and error bar markers.
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 3
         max: 6
-        passed: true
-        comment: Data points well-sized, curves visible, CI dashed lines subtle but
-          visible
+        passed: false
+        comment: Error bars render with unwanted open triangle/diamond node markers
+          creating significant visual noise.
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Blue/red distinguishable for most colorblind types but not ideal
-          for deuteranopia
+        comment: Blue/orange palette is colorblind-safe with good contrast.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good canvas utilization with some unused whitespace below legend
+        comment: Plot fills good portion of canvas. Legend at bottom. Minor wasted
+          space at edges.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
         comment: 'Descriptive labels with units: log10 Concentration (M) and Response
-          (%)'
+          (%).'
     design_excellence:
-      score: 10
+      score: 12
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
-        passed: false
-        comment: Well-configured default with custom palette but not exceptional design
+        passed: true
+        comment: Custom palette, explicit font sizing, styled background. Above defaults
+          but not publication-level.
       - id: DE-02
         name: Visual Refinement
         score: 3
         max: 6
-        passed: false
-        comment: Y-guides only, subtle grid color, white backgrounds. Some refinement
-          but fairly standard
+        passed: true
+        comment: Y-guides only, subtle foreground, custom plot background. Some intentional
+          refinement.
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: Two compounds with different potencies create comparison narrative;
-          EC50 lines help but no on-chart annotations
+        passed: true
+        comment: EC50 values in legend, reference lines guide interpretation, two
+          compounds with ~10x potency difference.
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -116,101 +118,106 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct sigmoidal dose-response XY plot with 4PL fitted curves
+        comment: Correct sigmoidal dose-response curves with 4PL logistic fit.
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Most features present; missing top/bottom asymptote dashed lines
+        comment: 'All features present: log x-axis, 4PL fit, EC50 lines, error bars,
+          asymptotes, 2 compounds, legend, 95% CI.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X = log10 concentration, Y = response %. Correct mapping
+        comment: X=log10 concentration, Y=response %. Correct mapping.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title matches format, legend labels are descriptive with EC50 values
+        comment: Title matches required format. Legend includes compound names with
+          EC50 values.
     data_quality:
-      score: 13
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Two compounds with different potencies and Hill slopes, error bars,
-          CI band, EC50 markers
+        comment: Two compounds with distinct EC50, Hill slopes, and asymptotes demonstrate
+          comparison capability.
       - id: DQ-02
         name: Realistic Context
         score: 4
         max: 5
         passed: true
-        comment: Realistic pharma concentrations nM to uM range; compound names generic
-          but standard
+        comment: Pharmacological dose-response with molar concentrations and percent
+          response. Generic compound names.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: EC50 values and response range are realistic for drug compounds
+        comment: 1e-9 to 1e-4 M and 0-100% response appropriate for pharmacological
+          assays.
     code_quality:
-      score: 9
+      score: 8
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
-        passed: true
-        comment: Linear flow with concise lambda for 4PL
+        passed: false
+        comment: Has four_pl function (justified for curve_fit) and pt helper. Not
+          strictly KISS.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set at start
+        comment: np.random.seed(42) for data, seed(99) for CI sampling.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: 'All imports used: numpy, pygal, Style, scipy curve_fit.'
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
         passed: false
-        comment: Error bars require 48 hidden series; color_sequence tuple is complex
+        comment: Error bar construction verbose (30+ lines). pt() approach doesn't
+          fully suppress markers.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via render_to_png
+        comment: Saves as plot.png via render_to_png. Also generates plot.html.
     library_mastery:
-      score: 5
+      score: 6
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Correct pygal.XY usage with Style but error bar workaround fights
-          pygal design
+        passed: true
+        comment: Good use of pygal.XY, per-series stroke_style, Style class, show_dots
+          per-series, legend_at_bottom_columns.
       - id: LM-02
         name: Distinctive Features
         score: 2
         max: 5
         passed: false
-        comment: Uses stroke_style, legend_at_bottom_columns, HTML export; somewhat
-          pygal-specific
+        comment: Uses some pygal-specific features but error bar workaround doesn't
+          render correctly.
   verdict: REJECTED
 impl_tags:
   dependencies:

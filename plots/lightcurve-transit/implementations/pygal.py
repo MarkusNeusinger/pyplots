@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 lightcurve-transit: Astronomical Light Curve
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 80/100 | Created: 2026-03-18
 """
 
 import numpy as np
@@ -32,40 +31,15 @@ model_flux = np.interp(phase, model_phase, model_flux_curve)
 flux_err = np.random.uniform(0.0015, 0.003, n_points)
 flux = model_flux + np.random.normal(0, 1, n_points) * flux_err
 
-# Separate in-transit and out-of-transit points for visual storytelling
+# Separate in-transit and out-of-transit points
 in_transit = np.abs(phase - transit_center) < transit_duration * 1.8
 
-# Error bar segments: vertical lines from (x, y-err) to (x, y+err) with None separators
-error_bar_points = []
+# Error bar endpoints as tiny dots (avoids connected zigzag issue)
+err_cap_points = []
 for i in range(n_points):
     x = round(float(phase[i]), 5)
-    y_lo = round(float(flux[i] - flux_err[i]), 6)
-    y_hi = round(float(flux[i] + flux_err[i]), 6)
-    error_bar_points.append((x, y_lo))
-    error_bar_points.append((x, y_hi))
-    error_bar_points.append(None)
-
-# Colors: series order is Error Bars, Out-of-Transit, In-Transit, Transit Model
-custom_style = Style(
-    background="#FAFAFA",
-    plot_background="#FAFAFA",
-    foreground="#2D2D2D",
-    foreground_strong="#1A1A1A",
-    foreground_subtle="#D8D8D8",
-    colors=("#B0B0B0", "#306998", "#C44E52", "#E67E22"),
-    title_font_size=56,
-    label_font_size=40,
-    major_label_font_size=36,
-    legend_font_size=34,
-    value_font_size=28,
-    stroke_width=3,
-    opacity=0.75,
-    opacity_hover=0.9,
-    title_font_family="sans-serif",
-    label_font_family="sans-serif",
-    major_label_font_family="sans-serif",
-    legend_font_family="sans-serif",
-)
+    err_cap_points.append((x, round(float(flux[i] - flux_err[i]), 6)))
+    err_cap_points.append((x, round(float(flux[i] + flux_err[i]), 6)))
 
 # Model curve points (dense, for smooth line)
 model_points = [
@@ -78,22 +52,44 @@ in_transit_points = []
 for i in range(n_points):
     pt = {
         "value": (round(float(phase[i]), 5), round(float(flux[i]), 6)),
-        "label": f"φ={phase[i]:.3f}  F={flux[i]:.4f}±{flux_err[i]:.4f}",
+        "label": f"\u03c6={phase[i]:.3f}  F={flux[i]:.4f}\u00b1{flux_err[i]:.4f}",
     }
     if in_transit[i]:
         in_transit_points.append(pt)
     else:
         out_transit_points.append(pt)
 
+# Colors: error caps light gray, out-of-transit blue, in-transit magenta, model orange
+custom_style = Style(
+    background="#FAFAFA",
+    plot_background="#FAFAFA",
+    foreground="#2D2D2D",
+    foreground_strong="#1A1A1A",
+    foreground_subtle="#D8D8D8",
+    colors=("#BBBBBB", "#306998", "#8B2B8B", "#E67E22"),
+    title_font_size=56,
+    label_font_size=40,
+    major_label_font_size=38,
+    legend_font_size=34,
+    value_font_size=28,
+    stroke_width=3,
+    opacity=0.80,
+    opacity_hover=0.95,
+    title_font_family="sans-serif",
+    label_font_family="sans-serif",
+    major_label_font_family="sans-serif",
+    legend_font_family="sans-serif",
+)
+
 # Plot
-flux_min = float(np.min(flux)) - 0.004
-flux_max = float(np.max(flux)) + 0.004
+flux_min = float(np.min(flux)) - 0.003
+flux_max = float(np.max(flux)) + 0.003
 
 chart = pygal.XY(
     style=custom_style,
     width=4800,
     height=2700,
-    title="lightcurve-transit · pygal · pyplots.ai",
+    title="lightcurve-transit \u00b7 pygal \u00b7 pyplots.ai",
     x_title="Orbital Phase",
     y_title="Relative Flux",
     show_x_guides=False,
@@ -110,13 +106,13 @@ chart = pygal.XY(
     y_value_formatter=lambda y: f"{y:.4f}",
 )
 
-# Error bars first (renders behind data points) - subtle gray
-chart.add("1σ Error Bars", error_bar_points, stroke=True, show_dots=False, stroke_width=1)
+# Error bar caps as tiny dots (renders behind data) - subtle gray
+chart.add("1\u03c3 Error", err_cap_points, stroke=False, dots_size=2)
 
 # Out-of-transit data points - blue
 chart.add("Out-of-Transit", out_transit_points, stroke=False, dots_size=5)
 
-# In-transit data points - red, larger for emphasis
+# In-transit data points - magenta, larger for emphasis
 chart.add("In-Transit", in_transit_points, stroke=False, dots_size=8)
 
 # Transit model overlay - orange, prominent

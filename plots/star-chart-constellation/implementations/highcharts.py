@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 star-chart-constellation: Star Chart with Constellations
 Library: highcharts unknown | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-18
@@ -20,20 +20,6 @@ from selenium.webdriver.chrome.options import Options
 
 
 np.random.seed(42)
-
-
-# --- Azimuthal equidistant projection centered on north celestial pole ---
-def project(ra_deg, dec_deg):
-    """Project RA/Dec to x,y using azimuthal equidistant from north pole.
-
-    r = 90 - dec (angular distance from pole in degrees)
-    Oriented so RA=0h is at top, RA increases clockwise (sky-view convention).
-    """
-    ra_rad = np.radians(ra_deg)
-    r = 90.0 - dec_deg
-    x = r * np.sin(ra_rad)
-    y = r * np.cos(ra_rad)
-    return x, y
 
 
 # --- Star catalog: (name, RA hours, Dec degrees, apparent magnitude, constellation) ---
@@ -216,7 +202,11 @@ magnitudes = np.array([s[3] for s in star_catalog])
 constellations = [s[4] for s in star_catalog]
 
 ra_deg = ra_hours * 15.0
-proj_x, proj_y = project(ra_deg, dec_deg)
+# Azimuthal equidistant projection from north pole: r = 90 - dec, RA=0h at top
+ra_rad = np.radians(ra_deg)
+proj_r = 90.0 - dec_deg
+proj_x = proj_r * np.sin(ra_rad)
+proj_y = proj_r * np.cos(ra_rad)
 
 # Magnitude to marker radius (brighter = larger)
 mag_min, mag_max = magnitudes.min(), magnitudes.max()
@@ -244,7 +234,7 @@ constellation_names = {
     "And": "Andromeda",
 }
 
-# Colorblind-safe palette: maximise hue diversity, avoid similar warm tones
+# Colorblind-safe palette: maximise hue diversity, distinct for deuteranopia/protanopia
 constellation_colors = {
     "Ori": "#6EC6FF",  # sky blue
     "UMa": "#FFD54F",  # gold
@@ -253,12 +243,12 @@ constellation_colors = {
     "Cyg": "#66BB6A",  # green
     "Lyr": "#26C6DA",  # teal cyan
     "Gem": "#C5E1A5",  # lime
-    "Tau": "#FFCC80",  # light amber
+    "Tau": "#A1887F",  # warm taupe (was amber — too close to gold)
     "Sco": "#EF5350",  # red
-    "Boo": "#80CBC4",  # teal (was salmon — now distinct from red/orange)
+    "Boo": "#80CBC4",  # mint teal
     "Aql": "#42A5F5",  # medium blue
     "CMa": "#B3E5FC",  # ice blue
-    "Aur": "#FFF176",  # lemon yellow
+    "Aur": "#E0E0E0",  # silver (was lemon yellow — too close to gold)
     "Per": "#B39DDB",  # lavender
     "And": "#F48FB1",  # pink
 }
@@ -422,7 +412,7 @@ for dec_val in [-30, 0, 30, 60]:
                 "enabled": True,
                 "format": f"{dec_val:+d}°",
                 "align": "left",
-                "style": {"fontSize": "22px", "color": "#576574", "textOutline": "2px #0a0e1a", "fontWeight": "400"},
+                "style": {"fontSize": "28px", "color": "#576574", "textOutline": "2px #0a0e1a", "fontWeight": "400"},
                 "x": 8,
                 "y": -4,
             },
@@ -459,6 +449,52 @@ for abbr in constellation_colors:
         line.show_in_legend = False
         line.z_index = 1
         chart.add_series(line)
+
+# --- Summer Triangle asterism (Vega–Deneb–Altair) for storytelling emphasis ---
+summer_triangle_stars = ["Vega", "Deneb", "Altair"]
+st_edges = [("Vega", "Deneb"), ("Deneb", "Altair"), ("Altair", "Vega")]
+for s1, s2 in st_edges:
+    i1, i2 = star_lookup[s1], star_lookup[s2]
+    tri_line = SplineSeries()
+    tri_line.data = [[float(proj_x[i1]), float(proj_y[i1])], [float(proj_x[i2]), float(proj_y[i2])]]
+    tri_line.color = "rgba(255, 255, 200, 0.18)"
+    tri_line.line_width = 3
+    tri_line.dash_style = "ShortDash"
+    tri_line.marker = {"enabled": False}
+    tri_line.enable_mouse_tracking = False
+    tri_line.show_in_legend = False
+    tri_line.z_index = 1
+    chart.add_series(tri_line)
+
+# Summer Triangle label at centroid
+st_cx = float(np.mean([proj_x[star_lookup[s]] for s in summer_triangle_stars]))
+st_cy = float(np.mean([proj_y[star_lookup[s]] for s in summer_triangle_stars]))
+st_label = ScatterSeries()
+st_label.data = [
+    {
+        "x": st_cx,
+        "y": st_cy,
+        "dataLabels": {
+            "enabled": True,
+            "format": "Summer Triangle",
+            "style": {
+                "fontSize": "22px",
+                "color": "rgba(255, 255, 200, 0.45)",
+                "textOutline": "2px #0a0e1a",
+                "fontStyle": "italic",
+                "fontWeight": "400",
+            },
+            "y": -14,
+        },
+        "marker": {"radius": 0, "states": {"hover": {"enabled": False}}},
+    }
+]
+st_label.color = "rgba(0,0,0,0)"
+st_label.enable_mouse_tracking = False
+st_label.show_in_legend = False
+st_label.z_index = 4
+st_label.marker = {"radius": 0}
+chart.add_series(st_label)
 
 # --- Star scatter points ---
 star_data_points = []
@@ -558,7 +594,10 @@ bg_mag = np.random.uniform(4.0, 6.5, n_bg_stars)
 bg_radius = 1 + (6.5 - bg_mag) / 2.5
 
 bg_ra_deg = bg_ra_h * 15.0
-bg_px, bg_py = project(bg_ra_deg, bg_dec)
+bg_ra_rad = np.radians(bg_ra_deg)
+bg_r = 90.0 - bg_dec
+bg_px = bg_r * np.sin(bg_ra_rad)
+bg_py = bg_r * np.cos(bg_ra_rad)
 
 # Filter to within boundary circle
 mask = np.sqrt(bg_px**2 + bg_py**2) <= R_BOUNDARY
@@ -593,10 +632,13 @@ chart.add_series(bg_series)
 ecliptic_pts = []
 for ra_d in np.linspace(0, 360, 300):
     ecl_dec = 23.44 * math.sin(math.radians(ra_d - 90))
-    ex, ey = project(np.array([ra_d]), np.array([ecl_dec]))
-    r = math.sqrt(float(ex[0]) ** 2 + float(ey[0]) ** 2)
+    ecl_r = 90.0 - ecl_dec
+    ecl_ra_rad = math.radians(ra_d)
+    ex = ecl_r * math.sin(ecl_ra_rad)
+    ey = ecl_r * math.cos(ecl_ra_rad)
+    r = math.sqrt(ex**2 + ey**2)
     if r <= R_BOUNDARY:
-        ecliptic_pts.append([round(float(ex[0]), 2), round(float(ey[0]), 2)])
+        ecliptic_pts.append([round(ex, 2), round(ey, 2)])
 
 ecliptic = SplineSeries()
 ecliptic.data = ecliptic_pts
@@ -612,18 +654,21 @@ chart.add_series(ecliptic)
 # --- Ecliptic label ---
 ecl_label_ra = 270
 ecl_label_dec = 23.44 * math.sin(math.radians(ecl_label_ra - 90))
-elx, ely = project(np.array([ecl_label_ra]), np.array([ecl_label_dec]))
+ecl_label_r = 90.0 - ecl_label_dec
+ecl_label_ra_rad = math.radians(ecl_label_ra)
+elx = ecl_label_r * math.sin(ecl_label_ra_rad)
+ely = ecl_label_r * math.cos(ecl_label_ra_rad)
 ecl_label = ScatterSeries()
 ecl_label.data = [
     {
-        "x": float(elx[0]),
-        "y": float(ely[0]),
+        "x": round(elx, 2),
+        "y": round(ely, 2),
         "dataLabels": {
             "enabled": True,
             "format": "Ecliptic",
             "style": {
-                "fontSize": "20px",
-                "color": "rgba(255, 183, 77, 0.6)",
+                "fontSize": "28px",
+                "color": "rgba(255, 183, 77, 0.65)",
                 "textOutline": "2px #0a0e1a",
                 "fontStyle": "italic",
             },

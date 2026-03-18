@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 curve-dose-response: Pharmacological Dose-Response Curve
 Library: highcharts unknown | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-18
@@ -65,11 +65,16 @@ ec50_b = 10 ** popt_b[2]
 half_response_a = popt_a[0] + (popt_a[1] - popt_a[0]) / 2
 half_response_b = popt_b[0] + (popt_b[1] - popt_b[0]) / 2
 
+# Pre-format x-axis tick labels as Unicode superscript strings
+superscript_map = str.maketrans("-0123456789", "\u207b\u2070\u00b9\u00b2\u00b3\u2074\u2075\u2076\u2077\u2078\u2079")
+x_tick_values = list(range(-9, -3))
+x_tick_categories = {v: f"10{str(v).translate(superscript_map)}" for v in x_tick_values}
+
 # Create chart using highcharts-core API
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-# Chart configuration - clean frame with no border
+# Chart configuration
 chart.options.chart = {
     "width": 4800,
     "height": 2700,
@@ -77,7 +82,7 @@ chart.options.chart = {
     "borderWidth": 0,
     "spacingTop": 80,
     "spacingBottom": 100,
-    "spacingLeft": 60,
+    "spacingLeft": 80,
     "spacingRight": 60,
     "style": {"fontFamily": "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"},
 }
@@ -92,7 +97,7 @@ chart.options.subtitle = {
     "style": {"fontSize": "34px", "color": "#555555", "fontWeight": "400"},
 }
 
-# X-axis with plotLines for EC50 markers
+# X-axis with plotLines for EC50 markers — horizontal labels for better readability
 chart.options.x_axis = {
     "title": {
         "text": "Concentration (M, log\u2081\u2080 scale)",
@@ -104,7 +109,7 @@ chart.options.x_axis = {
     "max": float(np.log10(2e-4)),
     "tickInterval": 1,
     "gridLineWidth": 1,
-    "gridLineColor": "#e8e8e8",
+    "gridLineColor": "#f0f0f0",
     "lineColor": "#cccccc",
     "lineWidth": 1,
     "tickColor": "#cccccc",
@@ -116,10 +121,12 @@ chart.options.x_axis = {
             "dashStyle": "Dash",
             "zIndex": 3,
             "label": {
-                "text": "EC\u2085\u2080 A",
+                "text": f"EC\u2085\u2080 A = {ec50_a:.1e} M",
                 "style": {"fontSize": "26px", "color": "#306998", "fontWeight": "bold"},
-                "rotation": 90,
-                "y": 30,
+                "rotation": 0,
+                "align": "left",
+                "x": 8,
+                "y": 200,
             },
         },
         {
@@ -129,16 +136,18 @@ chart.options.x_axis = {
             "dashStyle": "Dash",
             "zIndex": 3,
             "label": {
-                "text": "EC\u2085\u2080 B",
+                "text": f"EC\u2085\u2080 B = {ec50_b:.1e} M",
                 "style": {"fontSize": "26px", "color": "#D4526E", "fontWeight": "bold"},
-                "rotation": 90,
-                "y": 30,
+                "rotation": 0,
+                "align": "left",
+                "x": 8,
+                "y": 200,
             },
         },
     ],
 }
 
-# Y-axis with half-maximal and asymptote plotLines
+# Y-axis with half-maximal and asymptote plotLines — tighter max, better label positioning
 chart.options.y_axis = {
     "title": {
         "text": "Response (%)",
@@ -146,10 +155,10 @@ chart.options.y_axis = {
         "margin": 24,
     },
     "labels": {"style": {"fontSize": "28px", "color": "#444444"}},
-    "min": 0,
-    "max": 105,
+    "min": -2,
+    "max": 102,
     "gridLineWidth": 1,
-    "gridLineColor": "#e8e8e8",
+    "gridLineColor": "#f0f0f0",
     "lineColor": "#cccccc",
     "lineWidth": 1,
     "plotLines": [
@@ -157,28 +166,30 @@ chart.options.y_axis = {
         {"value": float(half_response_b), "color": "#D4526E", "width": 2, "dashStyle": "Dot", "zIndex": 2},
         {
             "value": float(popt_a[1]),
-            "color": "rgba(48, 105, 152, 0.5)",
+            "color": "rgba(48, 105, 152, 0.55)",
             "width": 3,
             "dashStyle": "LongDash",
             "zIndex": 1,
             "label": {
-                "text": "Top asymptote",
+                "text": f"Top asymptote ({popt_a[1]:.0f}%)",
                 "align": "left",
-                "style": {"fontSize": "22px", "color": "rgba(48, 105, 152, 0.65)"},
+                "style": {"fontSize": "24px", "color": "rgba(48, 105, 152, 0.7)"},
                 "x": 10,
+                "y": -8,
             },
         },
         {
             "value": float(popt_a[0]),
-            "color": "rgba(48, 105, 152, 0.5)",
+            "color": "rgba(48, 105, 152, 0.55)",
             "width": 3,
             "dashStyle": "LongDash",
             "zIndex": 1,
             "label": {
-                "text": "Bottom asymptote",
+                "text": f"Bottom asymptote ({popt_a[0]:.0f}%)",
                 "align": "left",
-                "style": {"fontSize": "22px", "color": "rgba(48, 105, 152, 0.65)"},
+                "style": {"fontSize": "24px", "color": "rgba(48, 105, 152, 0.7)"},
                 "x": 10,
+                "y": -12,
             },
         },
     ],
@@ -296,25 +307,18 @@ eb_b_series.show_in_legend = False
 eb_b_series.z_index = 1
 chart.add_series(eb_b_series)
 
-# Generate JS literal from Chart API, then inject custom x-axis formatter
+# Generate JS literal from Chart API
 html_str = chart.to_js_literal()
 
-# Inject scientific superscript formatter into xAxis labels only (not yAxis)
-# Find xAxis section and replace only the first occurrence of the labels pattern
-x_formatter_fn = """formatter: function() {
-    var exp = Math.round(this.value);
-    var supers = '\\u2070\\u00b9\\u00b2\\u00b3\\u2074\\u2075\\u2076\\u2077\\u2078\\u2079';
-    var s = '10\\u207b';
-    var abs_exp = Math.abs(exp);
-    if (abs_exp >= 10) { s += supers.charAt(Math.floor(abs_exp / 10)); }
-    s += supers.charAt(abs_exp % 10);
-    return s;
-},
-  style"""
-# Target only the xAxis labels by using the unique xAxis context (tickColor follows only in xAxis)
-target = "labels: {\n  style: {'fontSize': '28px', 'color': '#444444'}\n},\n  max: -"
-replacement = "labels: {\n  " + x_formatter_fn + ": {'fontSize': '28px', 'color': '#444444'}\n},\n  max: -"
-html_str = html_str.replace(target, replacement, 1)
+# Inject x-axis label formatter using Highcharts native callback approach
+# Build a mapping object for tick values to superscript labels
+tick_map_js = ", ".join(f"'{v}': '{label}'" for v, label in x_tick_categories.items())
+formatter_js = (
+    f"formatter: function() {{ var m = {{{tick_map_js}}}; return m[Math.round(this.value)] || this.value; }},"
+)
+
+# Insert formatter into xAxis labels block via targeted replacement
+html_str = html_str.replace("labels: {\n  style:", "labels: {\n  " + formatter_js + "\n  style:", 1)
 
 # Download Highcharts JS and highcharts-more (for arearange/errorbar)
 highcharts_url = "https://cdn.jsdelivr.net/npm/highcharts@11/highcharts.js"

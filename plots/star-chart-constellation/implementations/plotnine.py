@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 star-chart-constellation: Star Chart with Constellations
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 80/100 | Created: 2026-03-18
@@ -9,6 +9,7 @@ import pandas as pd
 from plotnine import (
     aes,
     annotate,
+    coord_fixed,
     element_blank,
     element_rect,
     element_text,
@@ -17,6 +18,7 @@ from plotnine import (
     geom_text,
     ggplot,
     labs,
+    scale_alpha_identity,
     scale_color_identity,
     scale_size_identity,
     theme,
@@ -206,6 +208,9 @@ for mag in magnitudes:
     else:
         star_colors.append("#B0BEC5")
 
+# Alpha based on magnitude (brighter stars more opaque)
+star_alphas = np.clip(0.4 + 0.6 * (max_mag - magnitudes) / (max_mag - min_mag), 0.3, 0.95)
+
 df_stars = pd.DataFrame(
     {
         "x": proj_x,
@@ -213,6 +218,7 @@ df_stars = pd.DataFrame(
         "magnitude": magnitudes,
         "size": star_sizes,
         "color": star_colors,
+        "alpha": star_alphas,
         "name": star_names,
         "constellation": constellations,
     }
@@ -233,7 +239,7 @@ for s1, s2 in edges_raw:
 
 df_edges = pd.DataFrame(edge_data)
 
-# Constellation labels at centroid of each group
+# Constellation labels at centroid of each group with manual nudge for overlaps
 named_stars = df_stars[df_stars["constellation"] != "bg"].copy()
 constellation_names = {
     "Ori": "ORION",
@@ -247,11 +253,19 @@ constellation_names = {
     "Aql": "AQUILA",
     "Tau": "TAURUS",
 }
+# Manual nudges to prevent label overlap (dx, dy)
+label_nudge = {
+    "Cyg": (0.25, 0.15),  # Push CYGNUS right and up to avoid LYRA
+    "Lyr": (-0.25, -0.05),  # Push LYRA left and slightly down
+    "UMa": (0.0, 0.05),  # Nudge URSA MAJOR up slightly
+    "Gem": (0.0, -0.05),  # Nudge GEMINI down slightly
+}
 label_data = []
 for abbr, full_name in constellation_names.items():
     group = named_stars[named_stars["constellation"] == abbr]
     if len(group) > 0:
-        label_data.append({"x": group["x"].mean(), "y": group["y"].min() - 0.12, "label": full_name})
+        dx, dy = label_nudge.get(abbr, (0.0, 0.0))
+        label_data.append({"x": group["x"].mean() + dx, "y": group["y"].min() - 0.15 + dy, "label": full_name})
 
 df_labels = pd.DataFrame(label_data)
 
@@ -294,6 +308,50 @@ df_ra_grid = pd.DataFrame(ra_grid_segs) if ra_grid_segs else pd.DataFrame(column
 # Combine all grid segments
 df_all_grid = pd.concat([df_grid, df_ra_grid], ignore_index=True)
 
+# RA tick labels at Dec=0° ring endpoints
+ra_tick_labels = []
+for ra_h in range(0, 24, 3):
+    ra_g = np.radians(ra_h * 15.0)
+    dec_g = np.radians(0)
+    cos_c_t = np.sin(dec0) * np.sin(dec_g) + np.cos(dec0) * np.cos(dec_g) * np.cos(ra_g - ra0)
+    k_t = 2.0 / (1.0 + cos_c_t)
+    tx = -k_t * np.cos(dec_g) * np.sin(ra_g - ra0)
+    ty = k_t * (np.cos(dec0) * np.sin(dec_g) - np.sin(dec0) * np.cos(dec_g) * np.cos(ra_g - ra0))
+    if np.sqrt(tx**2 + ty**2) < radius_limit - 0.1:
+        ra_tick_labels.append({"x": tx, "y": ty - 0.12, "label": f"{ra_h}h"})
+
+df_ra_ticks = pd.DataFrame(ra_tick_labels)
+
+# Dec tick labels along RA=0h meridian
+dec_tick_labels = []
+for dec_val in [0, 20, 40, 60]:
+    ra_g = np.radians(0)
+    dec_g = np.radians(dec_val)
+    cos_c_t = np.sin(dec0) * np.sin(dec_g) + np.cos(dec0) * np.cos(dec_g) * np.cos(ra_g - ra0)
+    k_t = 2.0 / (1.0 + cos_c_t)
+    tx = -k_t * np.cos(dec_g) * np.sin(ra_g - ra0)
+    ty = k_t * (np.cos(dec0) * np.sin(dec_g) - np.sin(dec0) * np.cos(dec_g) * np.cos(ra_g - ra0))
+    if np.sqrt(tx**2 + ty**2) < radius_limit - 0.1:
+        dec_tick_labels.append({"x": tx + 0.12, "y": ty, "label": f"{dec_val}°"})
+
+df_dec_ticks = pd.DataFrame(dec_tick_labels)
+
+# Magnitude legend data (sample stars at key magnitudes)
+legend_mags = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
+legend_x_base = radius_limit - 0.3
+legend_y_base = -radius_limit + 1.2
+legend_stars = []
+legend_labels_list = []
+for i, lm in enumerate(legend_mags):
+    ly = legend_y_base + i * 0.28
+    lsize = np.clip((max_mag - lm) / (max_mag - min_mag), 0.05, 1.0) ** 1.5 * 8.0 + 0.3
+    lcolor = "#FFFDE7" if lm < 1 else "#FFF9C4" if lm < 2 else "#E8EAF6" if lm < 3 else "#B0BEC5"
+    legend_stars.append({"x": legend_x_base, "y": ly, "size": lsize, "color": lcolor})
+    legend_labels_list.append({"x": legend_x_base + 0.22, "y": ly, "label": f"mag {lm:.0f}"})
+
+df_legend_stars = pd.DataFrame(legend_stars)
+df_legend_labels = pd.DataFrame(legend_labels_list)
+
 # Plot
 plot = (
     ggplot()
@@ -301,30 +359,61 @@ plot = (
         data=df_all_grid, mapping=aes(x="x", y="y", xend="xend", yend="yend"), color="#1a2744", size=0.3, alpha=0.5
     )
     + geom_segment(
-        data=df_edges, mapping=aes(x="x", y="y", xend="xend", yend="yend"), color="#4a6fa5", size=0.6, alpha=0.55
+        data=df_edges, mapping=aes(x="x", y="y", xend="xend", yend="yend"), color="#4a6fa5", size=0.7, alpha=0.6
     )
-    + geom_point(data=df_stars, mapping=aes(x="x", y="y", size="size", color="color"), alpha=0.92)
+    + geom_point(data=df_stars, mapping=aes(x="x", y="y", size="size", color="color", alpha="alpha"))
     + scale_size_identity()
     + scale_color_identity()
-    + geom_text(data=df_labels, mapping=aes(x="x", y="y", label="label"), color="#6a8cba", size=8, alpha=0.7)
+    + scale_alpha_identity()
+    + geom_text(
+        data=df_labels,
+        mapping=aes(x="x", y="y", label="label"),
+        color="#7a9cca",
+        size=11,
+        alpha=0.8,
+        fontstyle="italic",
+    )
+    # RA tick labels
+    + geom_text(data=df_ra_ticks, mapping=aes(x="x", y="y", label="label"), color="#3a5575", size=8, alpha=0.65)
+    # Dec tick labels
+    + geom_text(
+        data=df_dec_ticks, mapping=aes(x="x", y="y", label="label"), color="#3a5575", size=8, alpha=0.65, ha="left"
+    )
+    # Magnitude legend
+    + geom_point(data=df_legend_stars, mapping=aes(x="x", y="y", size="size", color="color"), alpha=0.9)
+    + geom_text(
+        data=df_legend_labels, mapping=aes(x="x", y="y", label="label"), color="#7799bb", size=8, ha="left", alpha=0.8
+    )
+    + annotate(
+        "text",
+        x=legend_x_base,
+        y=legend_y_base - 0.25,
+        label="Magnitude",
+        color="#8899aa",
+        size=9,
+        ha="center",
+        fontweight="bold",
+    )
+    # Title
     + annotate(
         "text",
         x=0,
-        y=-radius_limit - 0.25,
+        y=-radius_limit - 0.3,
         label="star-chart-constellation · plotnine · pyplots.ai",
         color="#8899aa",
-        size=12,
+        size=14,
         ha="center",
     )
-    + xlim(-radius_limit - 0.2, radius_limit + 0.2)
-    + ylim(-radius_limit - 0.5, radius_limit + 0.2)
+    + coord_fixed(ratio=1)
+    + xlim(-radius_limit - 0.3, radius_limit + 0.6)
+    + ylim(-radius_limit - 0.6, radius_limit + 0.3)
     + labs(x="", y="")
     + theme_void()
     + theme(
         figure_size=(16, 16),
         plot_background=element_rect(fill="#060d1f", color="#060d1f"),
         panel_background=element_rect(fill="#060d1f", color="#060d1f"),
-        text=element_text(color="#aabbcc"),
+        text=element_text(color="#aabbcc", size=14),
         axis_text=element_blank(),
         axis_ticks=element_blank(),
         plot_margin=0.02,

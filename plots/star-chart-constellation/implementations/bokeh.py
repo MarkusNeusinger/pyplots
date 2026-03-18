@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 star-chart-constellation: Star Chart with Constellations
 Library: bokeh 3.9.0 | Python 3.14.3
-Quality: 87/100 | Created: 2026-03-18
+Quality: 87/100 | Repair: 3/3 | Created: 2026-03-18
 """
 
 import numpy as np
@@ -279,8 +279,8 @@ name_to_idx = {name: i for i, name in enumerate(star_names)}
 
 # Plot
 p = figure(
-    width=4800,
-    height=4800,
+    width=3600,
+    height=3600,
     title="star-chart-constellation · bokeh · pyplots.ai",
     x_axis_label="",
     y_axis_label="",
@@ -312,7 +312,7 @@ for dec_grid in range(-60, 90, 30):
         x=lx,
         y=ly,
         text=f"{dec_grid}°",
-        text_font_size="13pt",
+        text_font_size="16pt",
         text_color="#5577aa",
         text_alpha=0.85,
         x_offset=5,
@@ -396,7 +396,15 @@ constellation_full_names = {
 }
 
 # Custom label offsets to avoid overlap with bright star labels
-constellation_offsets = {"Aur": (25, 25), "Lyr": (-60, 25), "CrB": (15, 20), "Boo": (-50, 20)}
+constellation_offsets = {
+    "Aur": (30, 30),
+    "Lyr": (-70, -20),
+    "Aql": (20, 25),
+    "CrB": (15, 25),
+    "Boo": (20, 30),
+    "Cyg": (20, 30),
+    "Per": (-55, 20),
+}
 
 label_x = []
 label_y = []
@@ -433,7 +441,15 @@ labels = LabelSet(
 p.add_layout(labels)
 
 # Label bright named stars (mag < 1.0) with offset adjustments to avoid overlap
-bright_star_offsets = {"Capella": (18, 15), "Vega": (18, 15), "Canopus": (18, -25), "Rigil Kent": (18, -25)}
+bright_star_offsets = {
+    "Capella": (18, -30),
+    "Vega": (18, -30),
+    "Altair": (-60, -10),
+    "Canopus": (18, -25),
+    "Rigil Kent": (18, -25),
+    "Deneb": (18, 15),
+    "Arcturus": (-70, -10),
+}
 
 bright_names_x = []
 bright_names_y = []

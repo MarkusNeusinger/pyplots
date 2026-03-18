@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: curve-dose-response
 created: '2026-03-18T22:36:01Z'
-updated: '2026-03-18T23:07:37Z'
+updated: '2026-03-18T23:16:53Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23270129364
 issue: 4556
@@ -10,38 +10,34 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/curve-dose-response/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/curve-dose-response/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/curve-dose-response/highcharts/plot.html
-quality_score: 89
+quality_score: 91
 review:
   strengths:
-  - Perfect spec compliance with all required features (4PL fit, EC50 markers, error
-    bars, CI band, asymptotes, 2 compounds)
-  - Excellent data quality with realistic pharmacological context and good feature
-    variation between compounds
-  - Professional color-matched annotations with EC50 values in subtitle for immediate
-    potency comparison
-  - Strong visual design with custom typography hierarchy, subtle grid, and professional
-    legend with shadow
-  - Bootstrap-based 95% CI calculation from parameter covariance is scientifically
-    sound
+  - Full spec compliance with all required features (4PL fit, EC50 markers, error
+    bars, asymptotes, CI band, 2 compounds)
+  - Professional color palette and typography hierarchy create polished appearance
+  - Data storytelling through subtitle EC50 comparison and visual emphasis via CI
+    band
+  - Excellent use of highcharts-core typed series API with proper plotLines and linked
+    error bars
+  - Realistic pharmacological data with appropriate scales and units
   weaknesses:
-  - Asymptote labels at left edge slightly cramped against y-axis boundary
-  - Full chart chrome with all border lines still visible — removing outer frame would
-    elevate polish
-  - Library mastery could be deeper with more typed highcharts-core API objects instead
-    of raw dicts
-  image_description: 'The plot displays two pharmacological dose-response curves on
-    a light gray (#fafbfc) background. Compound A (blue, #306998) shows a steep sigmoidal
-    rise around 10^-7 M, while Compound B (pink/red, #D4526E) rises more gradually
-    around 10^-5 M. Both curves have data points (filled circles with white borders)
-    overlaid with vertical error bars (SEM). A translucent blue 95% confidence interval
-    band surrounds Compound A''s fitted curve. Vertical dashed lines mark EC50 positions
-    for both compounds, with color-matched labels. Horizontal dashed lines indicate
-    top asymptote (~96%) and bottom asymptote (~6%) with labels at the left edge.
-    Dotted horizontal lines mark half-maximal response levels. The x-axis uses superscript
-    notation (10^-9 to 10^-4) labeled "Concentration (M, log10 scale)". The y-axis
-    shows "Response (%)" from -2 to 102. Title reads "curve-dose-response · highcharts
-    · pyplots.ai" with a subtitle displaying both EC50 values. A floating legend in
-    the top-right corner with shadow lists all series.'
+  - Y-axis ticks every 2 units create unnecessary density; wider tick intervals would
+    be cleaner
+  - Multiple reference lines (asymptotes, EC50, half-maximal) add visual busyness
+  image_description: The plot displays two pharmacological dose-response curves on
+    a light gray (#fafbfc) background. The x-axis shows "Concentration (M, log₁₀ scale)"
+    with superscript-formatted tick labels (10⁻⁹ through 10⁻⁴). The y-axis shows "Response
+    (%)" ranging from -2 to 102. Compound A is rendered in steel blue (#306998) and
+    Compound B in rose pink (#D4526E). Both compounds have circular data points (white-bordered)
+    with vertical SEM error bars overlaid on smooth spline-fitted 4PL sigmoid curves.
+    A light blue 95% CI band surrounds the Compound A curve. Vertical dashed lines
+    mark EC₅₀ positions for both compounds (~10⁻⁷ for A, ~3×10⁻⁶ for B) with labeled
+    annotations. Horizontal dashed lines indicate the top asymptote (~96%) and bottom
+    asymptote (~6%) for Compound A, and dotted horizontal lines mark half-maximal
+    response levels for both compounds. The title reads "curve-dose-response · highcharts
+    · pyplots.ai" with a subtitle showing EC₅₀ values. A floating legend with shadow
+    sits in the top-right corner listing all series.
   criteria_checklist:
     visual_quality:
       score: 29
@@ -52,42 +48,42 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 52px, axis titles 36px, ticks
-          28px, legend 26px, subtitle 34px'
+        comment: 'All font sizes explicitly set: title 52px, subtitle 34px, axis titles
+          36px, ticks 28px, legend 26px, plotLine labels 24-26px'
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: Minor crowding of asymptote labels against left y-axis edge
+        comment: Minor density from y-axis ticking every 2 units; legend slightly
+          crowds rightmost data points but no severe text-on-text overlap
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Markers radius 13, error bars stemWidth 3, curves lineWidth 5, CI
-          band well-distinguished
+        comment: Markers radius 13 with white borders, line width 5, error bars properly
+          sized, CI band visible without overwhelming
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue vs pink provides excellent contrast and colorblind-safe distinction
+        comment: Blue and pink colorblind-safe with good contrast against light background
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Good canvas utilization ~60%, generous balanced spacing
+        comment: Generous spacing, chart fills canvas proportionally
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive with units: Concentration (M, log10 scale) and Response
-          (%)'
+        comment: Both axes have descriptive labels with units
     design_excellence:
-      score: 14
+      score: 15
       max: 20
       items:
       - id: DE-01
@@ -95,22 +91,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom palette, thoughtful typography hierarchy, professional legend
-          with shadow, color-matched annotations
+        comment: Custom palette, intentional typography hierarchy, off-white background,
+          legend with shadow and rounded corners
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Subtle grid, refined line colors, semi-transparent legend, but full
-          chart chrome still present
+        comment: Subtle grid, light axis lines, generous whitespace; some visual busyness
+          from multiple reference lines
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: EC50 in subtitle for comparison, vertical dashed lines as focal points,
-          CI band shows uncertainty
+        comment: Subtitle communicates EC50 comparison, CI band creates emphasis,
+          vertical EC50 lines guide the eye
     spec_compliance:
       score: 15
       max: 15
@@ -120,7 +116,7 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct sigmoidal dose-response curves with 4PL model
+        comment: Correct sigmoidal dose-response curves with 4PL fit
       - id: SC-02
         name: Required Features
         score: 4
@@ -133,13 +129,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: X=log10(concentration), Y=response(%). All data visible
+        comment: X = log10(concentration), Y = response (%), correct mapping
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, legend labels descriptive and clear
+        comment: Title follows correct format, legend labels clear and descriptive
     data_quality:
       score: 15
       max: 15
@@ -149,21 +145,21 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Two compounds with different EC50 values and Hill slopes, error bars,
-          CI band, labeled asymptotes
+        comment: Two compounds with different potencies, Hill slopes, and asymptotes
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Pharmacological dose-response with realistic scientific context
+        comment: Pharmacological dose-response with proper units and realistic EC50
+          values
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Concentrations 1e-9 to 1e-4 M, EC50 values, and 0-100% response realistic
-          for pharmacology
+        comment: Concentrations span 5 orders of magnitude, response 0-100%, all values
+          plausible
     code_quality:
       score: 9
       max: 10
@@ -173,8 +169,7 @@ review:
         score: 2
         max: 3
         passed: true
-        comment: Function definition for four_pl needed for curve_fit but breaks strict
-          no-functions rule
+        comment: Linear flow but defines a four_pl function (necessary for curve_fit)
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -186,38 +181,38 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: All imports are used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, appropriate complexity with justified bootstrap CI calculation
+        comment: Clean, well-structured code with appropriate complexity
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png, current API
+        comment: Saves as plot.png via Selenium screenshot
     library_mastery:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Proper highcharts-core API with typed series, plotLines, linked_to,
-          to_js_literal()
+        comment: Excellent use of highcharts-core API with typed series classes, plotLines,
+          to_js_literal(), linked_to
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: plotLines for reference lines, linked_to for error bars, AreaRangeSeries
-          for CI, custom JS formatter injection
-  verdict: REJECTED
+        comment: Uses plotLines with labels, ErrorBarSeries with linked_to, AreaRangeSeries,
+          SplineSeries
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - scipy
@@ -226,12 +221,10 @@ impl_tags:
   - annotations
   - html-export
   - custom-legend
-  - layer-composition
   patterns:
   - data-generation
   dataprep:
   - regression
   styling:
-  - grid-styling
   - edge-highlighting
-  - alpha-blending
+  - grid-styling

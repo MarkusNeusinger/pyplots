@@ -1,7 +1,7 @@
 library: plotly
 specification_id: ecg-twelve-lead
 created: '2026-03-19T20:06:39Z'
-updated: '2026-03-19T20:11:10Z'
+updated: '2026-03-19T20:19:48Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23314441221
 issue: 4554
@@ -10,80 +10,74 @@ library_version: 6.6.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/ecg-twelve-lead/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ecg-twelve-lead/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/ecg-twelve-lead/plotly/plot.html
-quality_score: 88
+quality_score: 87
 review:
   strengths:
-  - Authentic ECG paper styling with domain-appropriate pink/salmon background and
-    light/bold grid lines
-  - Clinically correct 3x4 lead arrangement with proper morphologies (inverted aVR,
-    R-wave progression)
-  - Calibration pulses included showing medical domain knowledge
-  - Dual PNG/HTML output leverages Plotly interactive capabilities
-  - Clean lead transform dictionary for generating 12 distinct lead signals
+  - Authentic ECG paper styling with pink background and dual-weight grid lines creates
+    a professional medical visualization
+  - Correct clinical 3x4 grid layout with full-width Lead II rhythm strip
+  - Realistic lead morphologies with R-wave progression (V1→V4) and inverted aVR
+  - Calibration pulses present on all leads
+  - Interactive hover tooltips and HTML export leverage Plotly strengths
   weaknesses:
-  - Subplot title font size (18pt) slightly small for full resolution - increase to
-    20-22pt
-  - Signal line width could be increased to 2.5-3 for better visibility in smaller
-    grid panels
-  - Helper functions violate strict KISS structure
-  - Axis styling loop could use more idiomatic fig.for_each_xaxis()/for_each_yaxis()
-  image_description: 'The plot displays a 12-lead ECG in standard clinical 3x4 grid
-    layout with a Lead II rhythm strip spanning the bottom. The arrangement follows
-    clinical convention: Row 1 (I, aVR, V1, V4), Row 2 (II, aVL, V2, V5), Row 3 (III,
-    aVF, V3, V6). Each panel shows dark navy ECG waveforms on a warm pink/salmon ECG
-    paper background with light and bold grid lines mimicking standard ECG graph paper.
-    Lead aVR is correctly inverted. Precordial leads show R-wave progression from
-    V1 to V6. Small calibration pulses (1mV square waves) are visible at the left
-    margin of each panel. The y-axis shows mV labels on the leftmost column and rhythm
-    strip. The x-axis shows Time (s) on the rhythm strip only. Subplot titles in blue
-    label each lead. The title ecg-twelve-lead · plotly · pyplots.ai is centered at
-    the top.'
+  - Tick font size (14pt) is below the recommended 16pt minimum
+  - Height mismatch between layout (1000px) and write_image (900px) causes vertical
+    compression
+  - Subplot spacing feels slightly cramped
+  image_description: The plot displays a 12-lead ECG in a 3x4 grid layout plus a full-width
+    Lead II rhythm strip at the bottom. The background uses an authentic ECG paper
+    style with a light pink/salmon color (#FFF5F0) featuring light reddish grid lines
+    at fine intervals and bolder grid lines at larger intervals. All 12 leads (I,
+    aVR, V1, V4 / II, aVL, V2, V5 / III, aVF, V3, V6) are labeled in blue text above
+    each subplot. The ECG signals are rendered in dark navy (#1A1A2E) with clearly
+    visible P-QRS-T complexes. Lead aVR shows inverted morphology. Precordial leads
+    show R-wave progression from V1 to V4. Small rectangular calibration pulses (1
+    mV) appear at the start of each lead. The y-axis shows "mV" on the left subplots,
+    the x-axis shows "Time (s)" on the rhythm strip. The title "ecg-twelve-lead ·
+    plotly · pyplots.ai" is centered at top.
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 27
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title 28pt, axis labels 16pt, ticks 14pt,
-          subplot titles 18pt). Subplot titles could be slightly larger (20-22pt)
-          for optimal readability.
+        comment: Font sizes explicitly set but tick font is 14pt, below the 16pt threshold
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements anywhere.
+        comment: No overlapping text or elements
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Signal lines at width=2 are visible. Calibration pulses present but
-          small in grid panels.
+        comment: Waveforms clearly visible; dark navy on pink paper provides excellent
+          contrast
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Dark navy on pink paper provides excellent contrast. No colorblind
-          concerns.
+        comment: Single dark signal color, no colorblind issues
       - id: VQ-05
         name: Layout & Canvas
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: 4-row grid fills canvas well. Rhythm strip spans full width. Good
-          margins.
+        comment: Height mismatch (1000 layout vs 900 write_image) causes vertical
+          compression
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: mV and Time (s) with proper units.
+        comment: mV and Time (s) labels with units
     design_excellence:
       score: 14
       max: 20
@@ -93,22 +87,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom ECG paper color, authentic grid styling, domain-appropriate
-          design clearly above defaults.
+        comment: Authentic ECG paper styling with custom pink background, dual-weight
+          grid lines, professional medical visualization
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Good grid customization with minor/major lines, zeroline styling,
-          hidden inner tick labels.
+        comment: Custom grid styling with light/bold distinction, hidden tick labels,
+          zeroline, plotly_white base
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: 'Clinical layout tells a story: R-wave progression, inverted aVR,
-          rhythm strip for continuous assessment.'
+        comment: Clinical 3x4 layout recognizable to healthcare professionals; lead
+          morphology variation tells physiological story
     spec_compliance:
       score: 15
       max: 15
@@ -118,26 +112,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct multi-channel ECG display with 12 leads in clinical format.
+        comment: Correct multi-channel ECG waveform display
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: 3x4 grid, rhythm strip, ECG paper grid,
-          calibration pulse, lead labels, P-QRS-T morphology.'
+        comment: 'All features present: 3x4 grid, rhythm strip, grid background, calibration
+          pulse, lead labels'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Time on x-axis, voltage (mV) on y-axis, all leads correctly mapped.
+        comment: Time on x-axis, voltage on y-axis, correct mapping
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title in correct format. No legend needed for single-signal display.
+        comment: Correct title format, no legend needed
     data_quality:
       score: 15
       max: 15
@@ -147,21 +141,20 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: All 12 leads with distinct morphologies, inverted aVR, R-wave progression.
+        comment: All 12 leads with distinct morphologies, R-wave progression, inverted
+          aVR
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Normal sinus rhythm with realistic P-QRS-T wave shapes. Neutral healthcare
-          context.
+        comment: Medical/scientific ECG context, normal sinus rhythm
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: P-wave ~0.15mV, QRS ~1.2mV, T-wave ~0.3mV, HR ~75 BPM. All clinically
-          normal.
+        comment: Physiologically normal ranges for P-QRS-T amplitudes
     code_quality:
       score: 9
       max: 10
@@ -170,34 +163,32 @@ review:
         name: KISS Structure
         score: 2
         max: 3
-        passed: false
-        comment: Uses helper functions (_ecg_component, _generate_beat) which deviates
-          from strict flat structure.
+        passed: true
+        comment: Uses helper functions deviating from flat KISS structure
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Well-structured, domain-appropriate complexity. Lead transforms dictionary
-          is elegant.
+        comment: Clean, well-structured code, no fake UI
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html. Current API.
+        comment: Saves as plot.png with correct dimensions
     library_mastery:
       score: 7
       max: 10
@@ -207,14 +198,15 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of make_subplots, go.Scatter, update_xaxes/update_yaxes
-          with minor grids.
+        comment: Good use of make_subplots, go.Scatter, update_xaxes/yaxes with minor
+          grids
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses Plotly minor grid feature, hovertemplate, dual PNG/HTML output.
+        comment: Interactive hover tooltips via hovertemplate, HTML export, minor
+          gridlines
   verdict: REJECTED
 impl_tags:
   dependencies: []

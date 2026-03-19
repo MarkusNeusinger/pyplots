@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 ecg-twelve-lead: ECG/EKG 12-Lead Waveform Display
 Library: highcharts unknown | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-19
@@ -29,33 +29,6 @@ heart_rate = 72
 beat_interval = 60.0 / heart_rate
 n_beats = int(duration / beat_interval) + 1
 
-
-# Simple ECG beat model using Gaussian pulses
-def _gaussian(t_arr, center, width, amplitude):
-    return amplitude * np.exp(-((t_arr - center) ** 2) / (2 * width**2))
-
-
-def _single_beat(t_arr, offset):
-    p_wave = _gaussian(t_arr, offset - 0.16, 0.025, 0.15)
-    q_wave = _gaussian(t_arr, offset - 0.04, 0.008, -0.12)
-    r_wave = _gaussian(t_arr, offset, 0.006, 1.2)
-    s_wave = _gaussian(t_arr, offset + 0.025, 0.008, -0.25)
-    t_wave = _gaussian(t_arr, offset + 0.22, 0.045, 0.3)
-    return p_wave + q_wave + r_wave + s_wave + t_wave
-
-
-def _generate_lead(t_arr, scale=1.0, invert=False):
-    signal = np.zeros_like(t_arr)
-    for i in range(n_beats + 1):
-        beat_center = 0.3 + i * beat_interval
-        signal += _single_beat(t_arr, beat_center)
-    signal *= scale
-    if invert:
-        signal *= -1
-    signal += np.random.normal(0, 0.005, len(t_arr))
-    return signal
-
-
 # Lead morphology parameters: (scale, invert)
 lead_params = {
     "I": (0.8, False),
@@ -72,17 +45,34 @@ lead_params = {
     "V6": (0.8, False),
 }
 
-# Adjust precordial leads for R-wave progression (V1-V2 have dominant S, V4-V6 dominant R)
+# Generate all lead signals inline (flat KISS structure)
 leads_data = {}
 for name, (scale, invert) in lead_params.items():
-    leads_data[name] = _generate_lead(t, scale=scale, invert=invert)
+    signal = np.zeros_like(t)
+    for i in range(n_beats + 1):
+        bc = 0.3 + i * beat_interval
+        # P-wave
+        signal += 0.15 * np.exp(-((t - (bc - 0.16)) ** 2) / (2 * 0.025**2))
+        # Q-wave
+        signal += -0.12 * np.exp(-((t - (bc - 0.04)) ** 2) / (2 * 0.008**2))
+        # R-wave
+        signal += 1.2 * np.exp(-((t - bc) ** 2) / (2 * 0.006**2))
+        # S-wave
+        signal += -0.25 * np.exp(-((t - (bc + 0.025)) ** 2) / (2 * 0.008**2))
+        # T-wave
+        signal += 0.3 * np.exp(-((t - (bc + 0.22)) ** 2) / (2 * 0.045**2))
+    signal *= scale
+    if invert:
+        signal *= -1
+    signal += np.random.normal(0, 0.005, len(t))
+    leads_data[name] = signal
 
-# V1-V2: make S-wave more prominent (rS pattern)
+# V1-V2: make S-wave more prominent (rS pattern) for R-wave progression
 for name in ["V1", "V2"]:
     for i in range(n_beats + 1):
         center = 0.3 + i * beat_interval
-        leads_data[name] += _gaussian(t, center + 0.025, 0.01, -0.6)
-        leads_data[name] += _gaussian(t, center, 0.006, -0.5)
+        leads_data[name] += -0.6 * np.exp(-((t - (center + 0.025)) ** 2) / (2 * 0.01**2))
+        leads_data[name] += -0.5 * np.exp(-((t - center) ** 2) / (2 * 0.006**2))
 
 # Clinical 3x4 grid layout
 # Columns: (I, aVR, V1, V4), (II, aVL, V2, V5), (III, aVF, V3, V6)
@@ -174,10 +164,31 @@ label_annotations.append(
     }
 )
 
-# Calibration pulse (1mV) annotation
+# 1mV calibration pulse - drawn as a square wave series at the left margin
+cal_y_base = (n_rows - 1) * row_height + row_height / 2
+cal_x = -0.3
+cal_data = [
+    [cal_x, cal_y_base],
+    [cal_x, cal_y_base],
+    [cal_x, cal_y_base + 1.0],
+    [cal_x + 0.15, cal_y_base + 1.0],
+    [cal_x + 0.15, cal_y_base],
+    [cal_x + 0.15, cal_y_base],
+]
+cal_series = LineSeries()
+cal_series.data = [[round(float(x), 4), round(float(y), 4)] for x, y in cal_data]
+cal_series.name = "1 mV cal"
+cal_series.color = "#1a1a2e"
+cal_series.line_width = 3
+cal_series.marker = {"enabled": False}
+cal_series.enable_mouse_tracking = False
+cal_series.show_in_legend = False
+all_series.append(cal_series)
+
+# Calibration text label next to the pulse
 label_annotations.append(
     {
-        "point": {"x": -0.15, "y": (n_rows - 1) * row_height + row_height / 2, "xAxis": 0, "yAxis": 0},
+        "point": {"x": cal_x + 0.07, "y": cal_y_base + 1.15, "xAxis": 0, "yAxis": 0},
         "text": "1 mV",
         "style": {"fontSize": "24px", "fontWeight": "600", "color": "#555"},
         "backgroundColor": "transparent",
@@ -255,7 +266,7 @@ chart.options.subtitle = {
 }
 
 chart.options.x_axis = {
-    "min": -0.2,
+    "min": -0.5,
     "max": total_time + 0.1,
     "title": {"text": None},
     "labels": {"enabled": False},

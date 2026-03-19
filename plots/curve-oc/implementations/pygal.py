@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 curve-oc: Operating Characteristic (OC) Curve
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 84/100 | Created: 2026-03-19
 """
 
 from math import comb
@@ -12,13 +11,13 @@ import pygal
 from pygal.style import Style
 
 
-# Data — tighter x-range to reduce empty space on right
+# Data — tighter x-range for practical readability
 fraction_defective = np.linspace(0, 0.15, 150)
 
 # Sampling plans: (sample_size, acceptance_number, label)
 plans = [(50, 1, "n=50, c=1"), (50, 2, "n=50, c=2"), (100, 2, "n=100, c=2"), (100, 3, "n=100, c=3")]
 
-# Compute OC curves inline — P(accept) = sum C(n,k) * p^k * (1-p)^(n-k) for k=0..c
+# Compute OC curves — P(accept) = sum C(n,k) * p^k * (1-p)^(n-k) for k=0..c
 oc_curves = {}
 for n, c, label in plans:
     p = fraction_defective
@@ -30,29 +29,28 @@ ltpd = 0.08  # Lot Tolerance Percent Defective (8%)
 
 # Risks for reference plan n=100, c=2
 pa_at_aql = float(sum(comb(100, k) * aql**k * (1 - aql) ** (100 - k) for k in range(3)))
-alpha = 1 - pa_at_aql  # Producer's risk
+alpha = 1 - pa_at_aql
 beta = float(sum(comb(100, k) * ltpd**k * (1 - ltpd) ** (100 - k) for k in range(3)))
 
-# Style — distinct reference line colors from grid
-C_PLAN1 = "#306998"
-C_PLAN2 = "#E68A00"
-C_PLAN3 = "#2CA02C"
-C_PLAN4 = "#9467BD"
-C_REF_AQL = "#555555"
-C_REF_LTPD = "#777777"
-C_RISK = "#D62728"
+# Colorblind-safe palette — blue, orange, teal, purple avoid deuteranopia confusion
+C_PLAN1 = "#306998"  # Steel blue (Python blue)
+C_PLAN2 = "#E68A00"  # Warm orange
+C_PLAN3 = "#17BECF"  # Teal — distinct from blue under colorblindness
+C_PLAN4 = "#9467BD"  # Muted purple
+C_REF = "#888888"  # Neutral gray for reference lines
+C_RISK = "#C44E52"  # Muted red for risk markers
 
 custom_style = Style(
-    background="white",
-    plot_background="#F7F7F2",
-    foreground="#2A2A2A",
+    background="#FAFAFA",
+    plot_background="#F4F3EE",
+    foreground="#333333",
     foreground_strong="#1A1A1A",
-    foreground_subtle="#E0DEDA",
-    colors=(C_PLAN1, C_PLAN2, C_PLAN3, C_PLAN4, C_REF_AQL, C_REF_LTPD, C_RISK, C_RISK),
-    title_font_size=42,
-    label_font_size=26,
-    major_label_font_size=24,
-    legend_font_size=24,
+    foreground_subtle="#DAD8D2",
+    colors=(C_PLAN1, C_PLAN2, C_PLAN3, C_PLAN4, C_REF, C_REF, C_RISK, C_RISK),
+    title_font_size=46,
+    label_font_size=28,
+    major_label_font_size=26,
+    legend_font_size=22,
     value_font_size=16,
     stroke_width=3,
     font_family="sans-serif",
@@ -73,7 +71,7 @@ chart = pygal.XY(
     show_y_guides=True,
     legend_at_bottom=True,
     legend_at_bottom_columns=4,
-    legend_box_size=24,
+    legend_box_size=20,
     truncate_legend=-1,
     interpolate="hermite",
     interpolation_parameters={"type": "cardinal", "c": 0.75},
@@ -86,34 +84,37 @@ chart = pygal.XY(
     y_labels=[0, 0.2, 0.4, 0.6, 0.8, 1.0],
     js=[],
     print_values=False,
+    margin_top=40,
+    margin_bottom=60,
+    spacing=20,
 )
 
-# Plot OC curves with thick strokes
+# OC curves — primary visual elements with prominent strokes
 for _n, _c, label in plans:
     curve_data = list(zip(fraction_defective.tolist(), oc_curves[label].tolist(), strict=True))
-    chart.add(label, curve_data, show_dots=False, stroke_style={"width": 7, "linecap": "round", "linejoin": "round"})
+    chart.add(label, curve_data, show_dots=False, stroke_style={"width": 8, "linecap": "round", "linejoin": "round"})
 
-# AQL vertical reference line — darker than grid, clearly distinct
+# AQL vertical reference line — thin dashed, subordinate to curves
 chart.add(
-    f"AQL = {aql:.0%}",
+    f"AQL ({aql:.0%})",
     [(aql, 0), (aql, 1.05)],
     show_dots=False,
-    stroke_style={"width": 4, "dasharray": "16, 8", "linecap": "round"},
+    stroke_style={"width": 3, "dasharray": "12, 8", "linecap": "round"},
 )
 
 # LTPD vertical reference line
 chart.add(
-    f"LTPD = {ltpd:.0%}",
+    f"LTPD ({ltpd:.0%})",
     [(ltpd, 0), (ltpd, 1.05)],
     show_dots=False,
-    stroke_style={"width": 4, "dasharray": "16, 8", "linecap": "round"},
+    stroke_style={"width": 3, "dasharray": "12, 8", "linecap": "round"},
 )
 
 # Producer's risk point (alpha at AQL for n=100, c=2)
-chart.add(f"\u03b1 = {alpha:.3f} (producer's risk)", [(aql, pa_at_aql)], stroke=False, show_dots=True, dots_size=16)
+chart.add(f"\u03b1={alpha:.1%}", [(aql, pa_at_aql)], stroke=False, show_dots=True, dots_size=20)
 
 # Consumer's risk point (beta at LTPD for n=100, c=2)
-chart.add(f"\u03b2 = {beta:.3f} (consumer's risk)", [(ltpd, beta)], stroke=False, show_dots=True, dots_size=16)
+chart.add(f"\u03b2={beta:.1%}", [(ltpd, beta)], stroke=False, show_dots=True, dots_size=20)
 
 # Render
 svg = chart.render(is_unicode=True)

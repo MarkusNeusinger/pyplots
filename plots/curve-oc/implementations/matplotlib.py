@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 curve-oc: Operating Characteristic (OC) Curve
 Library: matplotlib 3.10.8 | Python 3.14.3
-Quality: 85/100 | Created: 2026-03-19
+Quality: 91/100 | Created: 2026-03-19
 """
 
 from math import comb

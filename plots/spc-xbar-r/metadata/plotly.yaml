@@ -1,7 +1,7 @@
 library: plotly
 specification_id: spc-xbar-r
 created: '2026-03-19T21:47:12Z'
-updated: '2026-03-19T21:51:14Z'
+updated: '2026-03-19T22:01:05Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23318370223
 issue: 4551
@@ -10,107 +10,109 @@ library_version: 6.6.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/spc-xbar-r/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spc-xbar-r/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/spc-xbar-r/plotly/plot.html
-quality_score: 79
+quality_score: 89
 review:
   strengths:
-  - Excellent spec compliance with all required SPC features (UCL/LCL, CL, warning
-    limits, OOC highlighting, standard constants A2/D3/D4) correctly implemented
-  - Realistic CNC shaft diameter data with appropriate scale (25mm, 0.05mm std) and
-    meaningful out-of-control points
-  - Clean well-structured code with proper use of plotly make_subplots and shared
-    x-axis
-  - HTML export leverages plotly interactive capabilities as a distinctive library
-    feature
+  - Perfect visual quality with explicitly set font sizes, no overlap, and excellent
+    marker visibility
+  - 'Full spec compliance: all required SPC features implemented correctly with standard
+    control chart constants'
+  - Strong design with zone shading, annotated OOC points, and colorblind-safe custom
+    palette
+  - Realistic CNC manufacturing context with appropriate scale values
+  - Interactive hover tooltips and HTML export leverage Plotly strengths
   weaknesses:
-  - Red-green color scheme for UCL/LCL vs center line is not colorblind-safe
-  - Design stays at well-configured default level with no zone shading or visual hierarchy
-    beyond basic OOC highlighting
-  - Right-side limit labels (UCL/CL/LCL) are slightly cramped and small at 14pt
-  - No data storytelling emphasis — OOC points lack sample number annotations
-  image_description: The plot displays two vertically stacked charts for CNC Shaft
-    Diameter Monitoring. The top chart is the X-bar Chart (Sample Means) showing a
-    blue line with circular markers tracking sample means around 25.0 mm across 30
-    samples. Red dashed lines mark UCL (~25.07) and LCL (~24.94), a green solid line
-    marks the center line (CL ~25.0), and orange dotted lines show warning limits.
-    Three red diamond markers highlight out-of-control points at approximately samples
-    8 (above UCL), 19 (below LCL), and 25 (above UCL). The bottom R Chart (Sample
-    Ranges) shows sample ranges from 0 to ~0.25 mm with the same control limit styling.
-    UCL, CL, and LCL labels appear on the right edge of both charts. The title reads
-    "CNC Shaft Diameter Monitoring · spc-xbar-r · plotly · pyplots.ai". Legend shows
-    "X-bar" and "Out of Control" entries. Background is white (plotly_white template).
+  - Helper function add_zone_shading is a minor KISS violation
+  - No OOC points demonstrated in R chart, slightly reducing feature coverage
+  - Library mastery could be deeper with more distinctive Plotly features like spike
+    lines or range sliders
+  - Data storytelling could be enhanced with a summary annotation showing process
+    capability metrics
+  image_description: 'The plot displays two vertically stacked SPC charts for CNC
+    Shaft Diameter Monitoring. The top chart (X̄ Chart - Sample Means) shows 30 sample
+    means plotted as blue circular markers connected by a blue line, with a green
+    solid center line (CL) at ~25.0 mm, dark red dashed UCL and LCL lines, and orange
+    dotted warning limits. Three out-of-control points (#8, #19, #25) are highlighted
+    as large red diamond markers with white borders and annotated with sample numbers
+    in bordered labels with arrows. Subtle zone shading bands (light red for Zone
+    A, light orange for Zone B) appear between the control limits. The bottom chart
+    (R Chart - Sample Ranges) follows the same structure with range values, showing
+    no OOC points. The background is light gray (#FAFAFA) with white plot areas. Right-side
+    labels identify UCL, CL, and LCL on both charts. The subtitle includes "spc-xbar-r
+    · plotly · pyplots.ai" with control chart constants.'
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 30
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title 28, labels 22, ticks 18, subplot
-          titles 18). Annotation labels at 14pt slightly small.
+        comment: 'All font sizes explicitly set: title 26pt, axis labels 22pt, ticks
+          18pt, subplot titles 18pt, annotations 13-14pt, legend 15pt'
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: UCL/CL/LCL labels on right edge slightly cramped in X-bar chart.
-          Warning limits unlabeled.
+        comment: No overlapping text. OOC annotations well-positioned with directional
+          arrows
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Markers size 9 and lines width 2.5 visible. OOC diamonds size 14
-          stand out well. Could be slightly larger for 30 data points.
+        comment: Marker size 10 appropriate for 30 points. OOC markers enlarged to
+          16 with diamond shape
       - id: VQ-04
         name: Color Accessibility
-        score: 2
-        max: 4
-        passed: false
-        comment: Red for UCL/LCL and green for center line is problematic for colorblind
-          users. Line styles provide secondary encoding.
-      - id: VQ-05
-        name: Layout & Canvas
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Good two-panel layout filling canvas. Right margin accommodates labels.
+        comment: Colorblind-safe palette with blue, dark red, green, orange. No red-green-only
+          distinction
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: Good 55/45 split, balanced margins, content fills canvas appropriately
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Sample Mean (mm), Sample Range (mm), Sample Number — descriptive
-          with units.
+        comment: Sample Mean (mm), Sample Range (mm) with units, Sample Number on
+          x-axis
     design_excellence:
-      score: 10
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 6
         max: 8
-        passed: false
-        comment: plotly_white with Python Blue. Professional but essentially well-configured
-          default.
+        passed: true
+        comment: Strong design with custom palette, zone shading, styled OOC annotations.
+          Above defaults but not publication-level
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: plotly_white removes chrome. Decent spacing. Some refinement but
-          not polished.
+        passed: true
+        comment: plotly_white template, grid opacity 0.06, zone shading depth, differentiated
+          backgrounds
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: OOC points visually distinct with red diamonds. Reasonable for SPC
-          but could emphasize story more.
+        passed: true
+        comment: Good visual hierarchy via color/size/shape contrast for OOC points.
+          Zone shading provides context. Could add summary insight
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -118,27 +120,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct vertically stacked X-bar and R charts with shared x-axis.
+        comment: Correct X-bar/R dual chart with shared x-axis
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: UCL/LCL dashed and labeled, CL solid, OOC
-          highlighted, warning limits, standard constants.'
+        comment: 'All features: dashed UCL/LCL, solid CL, OOC highlighting, warning
+          limits, A2/D3/D4 constants'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=sample number, Y=means/ranges. All data correctly mapped.
+        comment: Correct X/Y mapping for both charts
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Title format correct with context prefix. Legend only in X-bar chart;
-          R chart traces have showlegend=False.
+        comment: Subtitle has spc-xbar-r · plotly · pyplots.ai. Legend shows X-bar
+          and Out of Control
     data_quality:
       score: 14
       max: 15
@@ -148,55 +150,55 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows in-control and OOC points above and below limits. Could benefit
-          from OOC in R chart.
+        comment: Both charts with control structure. 3 OOC in X-bar (2 high, 1 low).
+          No OOC in R chart
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: CNC shaft diameter monitoring is classic realistic SPC application.
+        comment: CNC shaft diameter 25.0mm with 0.05mm std — realistic manufacturing
+          QC
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 25mm shaft with 0.05mm std dev realistic for CNC machining.
+        comment: Realistic CNC tolerances, 30 samples, subgroup size 5
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Clean Imports-Data-Plot-Save structure, no functions or classes.
+        comment: Mostly flat but defines add_zone_shading helper function
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: numpy, plotly.graph_objects, plotly.subplots.'
+        comment: 'All imports used: numpy, go, make_subplots'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Well-organized, appropriate complexity. Clean boolean indexing for
-          OOC detection.
+        comment: Clean, well-organized, no fake UI
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png with correct 1600x900 scale=3. Also exports HTML.
+        comment: Saves plot.png and plot.html with current API
     library_mastery:
       score: 7
       max: 10
@@ -206,22 +208,27 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of make_subplots, go.Scatter, add_hline, add_annotation.
-          Idiomatic plotly.
+        comment: Good use of make_subplots, go.Scatter, add_hline, add_annotation,
+          add_shape
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses add_hline, HTML export for interactivity, plotly_white template.
+        comment: hovertemplate, HTML export, shapes for zones — Plotly-specific but
+          not deeply unique
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - subplots
   - annotations
+  - hover-tooltips
   - html-export
   patterns:
   - data-generation
+  - iteration-over-groups
   dataprep: []
-  styling: []
+  styling:
+  - grid-styling
+  - edge-highlighting

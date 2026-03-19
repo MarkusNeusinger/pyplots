@@ -1,7 +1,7 @@
 library: pygal
 specification_id: line-growth-percentile
 created: '2026-03-19T19:54:03Z'
-updated: '2026-03-19T19:57:32Z'
+updated: '2026-03-19T20:08:46Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23313901356
 issue: 4555
@@ -10,36 +10,34 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-growth-percentile/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-growth-percentile/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-growth-percentile/pygal/plot.html
-quality_score: 77
+quality_score: 83
 review:
   strengths:
-  - Excellent data quality with realistic WHO-approximating growth data for boys
-  - Clean, well-structured code with elegant polygon band construction
-  - Correct blue-tone color convention for boys chart with graduated intensity
-  - Perfect code quality — KISS structure, reproducible, clean imports
-  - Good title and legend formatting
+  - Excellent clinical data realism with WHO-approximating values
+  - Thoughtful graduated blue palette with good color contrast for patient data
+  - Right-margin percentile labels add authentic growth chart appearance
+  - Creative use of pygal XY fill polygons for percentile bands
+  - Comprehensive legend and proper title format
   weaknesses:
-  - Patient data line and markers are barely visible — the most important clinical
-    element is nearly invisible
-  - Missing percentile labels (P3, P10, etc.) on the right margin as required by spec
-  - P50 median line not sufficiently emphasized visually
-  - Y-axis value formatter adds redundant kg suffix alongside y-title units
-  image_description: The plot displays a WHO Weight-for-Age growth chart for boys
-    aged 0–36 months. Six graduated blue-toned percentile bands (P3–P10, P10–P25,
-    P25–P50, P50–P75, P75–P90, P90–P97) fan outward from a narrow origin near birth
-    weight ~2–4 kg to a wider spread at 36 months (~11–17.5 kg). The bands are semi-transparent
-    with lighter blues at the extremes and medium blues near the center. A dark blue
-    P50 median line runs through the center of the bands but appears quite thin. A
-    red patient data line is present but barely visible — it is extremely thin with
-    no discernible individual data point markers, making it very difficult to distinguish
-    from the background. The x-axis reads "Age (months)" with labels 0–36, the y-axis
-    reads "Weight (kg)" with values "10.0 kg" and "20.0 kg". The title reads "WHO
-    Weight-for-Age (Boys) · line-growth-percentile · pygal · pyplots.ai". A legend
-    at the bottom shows all 8 series in two rows. The overall layout is clean with
-    a white background and subtle dashed horizontal grid lines.
+  - 'Dead code: SVG parsing block (lines 168-177) finds plot_area but never uses it'
+  - Band color gradient is inverted vs spec (darker near median instead of extremes)
+  - Y-axis range could be tighter (0-18 instead of 0-20) to reduce wasted space
+  - Heavy PIL dependency for right-margin labels bypasses pygal capabilities
+  - P50 median dashed line could be more visually prominent against the blue bands
+  image_description: The plot displays a WHO weight-for-age growth chart for boys
+    (0-36 months). Graduated blue percentile bands span from P3 (outermost, lightest
+    blue) through P10, P25, P50, P75, P90 to P97, with the bands getting darker toward
+    the median (deeper blue near P25-P50 and P50-P75). A dashed dark navy line marks
+    the P50 median. Red connected dots represent an individual patient's weight trajectory
+    tracking between the 25th and 50th percentiles. Right-margin labels (P3 through
+    P97) are rendered in gray/navy text. The x-axis shows "Age (months)" from 0 to
+    36, and the y-axis shows "Weight (kg)" from 0 to 20. A bottom legend lists all
+    8 series. The title reads "WHO Weight-for-Age (Boys) · line-growth-percentile
+    · pygal · pyplots.ai". The overall palette is cohesive blue tones with a subtle
+    off-white plot background.
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 26
       max: 30
       items:
       - id: VQ-01
@@ -47,63 +45,69 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set in Style. Y-axis labels redundantly
-          show kg suffix.
+        comment: Font sizes explicitly set (title=58, labels=40, major_labels=42,
+          legend=36). PIL-rendered right-margin labels at 36px slightly small but
+          legible.
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: No overlapping text anywhere.
+        comment: No significant overlap. Right-margin percentile labels are close
+          together but readable.
       - id: VQ-03
         name: Element Visibility
-        score: 2
+        score: 5
         max: 6
-        passed: false
-        comment: Patient data line barely visible, dots not rendering, P50 median
-          line too thin.
+        passed: true
+        comment: Patient markers and red line clearly visible. P50 dashed line visible
+          but could be more prominent against blue bands.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue/red palette is colorblind-safe.
+        comment: Blue-red contrast is colorblind-safe for all common types.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good canvas utilization, slight wasted space at top.
+        comment: Good layout but y-axis extends to 20 while data tops at ~17.5, leaving
+          unused space.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with units.
+        comment: Age (months) and Weight (kg) — descriptive with units.
     design_excellence:
-      score: 10
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom blue palette with graduated intensity, above defaults.
+        comment: Thoughtful custom blue palette with graduated intensity. Custom plot
+          background, navy median, red patient contrast. Clearly above defaults.
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: Subtle dashed grid, white background, but spines present.
+        passed: true
+        comment: Dashed grid lines, x-guides hidden, subtle guide stroke color. Right-margin
+          labels add clinical authenticity.
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 4
         max: 6
-        passed: false
-        comment: Patient data nearly invisible, undermining the clinical narrative.
+        passed: true
+        comment: Patient trajectory between P25-P50 creates focal point. Graduated
+          bands create visual hierarchy. Red patient line draws the eye.
     spec_compliance:
-      score: 13
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -111,25 +115,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct line/area chart with filled percentile bands.
+        comment: Correct growth chart with percentile curves and individual patient
+          overlay.
       - id: SC-02
         name: Required Features
-        score: 2
+        score: 3
         max: 4
-        passed: false
-        comment: Missing percentile labels on right margin. Patient markers not visible.
+        passed: true
+        comment: 'All features present. Minor: band color gradient inverted vs spec
+          (darker near median instead of extremes).'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=age months, Y=weight kg, correctly mapped.
+        comment: X=age months, Y=weight kg. Correct mapping.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format and legend labels.
+        comment: Title format correct. Legend labels match data series.
     data_quality:
       score: 14
       max: 15
@@ -139,21 +145,23 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: All percentile bands, median, and patient tracking shown.
+        comment: All 7 percentile curves, filled bands, median emphasis, individual
+          patient tracking across 0-36 months.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: WHO weight-for-age boys, realistic medical context.
+        comment: WHO weight-for-age for boys — real clinical scenario, neutral topic.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values closely approximate WHO standards.
+        comment: Birth weight ~3.3kg, 36mo ~14.3kg. Values closely approximate actual
+          WHO growth standards.
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -161,7 +169,8 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports-data-style-chart-save flow.
+        comment: Linear imports-data-chart-render-save structure. No functions or
+          classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -176,16 +185,16 @@ review:
         comment: All imports used.
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Elegant polygon construction with zip/reverse.
+        passed: false
+        comment: 'Dead code: SVG parsing block finds plot_area but never uses it.'
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png, current API.
+        comment: Saves as plot.png with DPI setting. Also saves HTML version.
     library_mastery:
       score: 6
       max: 10
@@ -195,18 +204,24 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of pygal.XY with fill, custom Style, polygon technique.
+        comment: Good use of pygal.XY with fill=True for polygon bands. Style class
+          properly configured. stroke_style, x_labels_major, legend_at_bottom_columns.
       - id: LM-02
         name: Distinctive Features
         score: 2
         max: 5
         passed: false
-        comment: Some pygal-specific patterns but mostly generic charting.
+        comment: SVG-native rendering and HTML export used. Polygon fill via XY is
+          creative. But heavily relies on PIL for post-processing, bypassing pygal's
+          own capabilities.
   verdict: REJECTED
 impl_tags:
-  dependencies: []
+  dependencies:
+  - pillow
+  - cairosvg
   techniques:
-  - layer-composition
+  - annotations
+  - custom-legend
   - html-export
   patterns:
   - data-generation
@@ -214,4 +229,5 @@ impl_tags:
   dataprep: []
   styling:
   - alpha-blending
+  - gradient-fill
   - grid-styling

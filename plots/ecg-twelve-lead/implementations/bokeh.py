@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 ecg-twelve-lead: ECG/EKG 12-Lead Waveform Display
 Library: bokeh 3.9.0 | Python 3.14.3
-Quality: 87/100 | Created: 2026-03-19
 """
 
 import numpy as np
@@ -68,15 +67,50 @@ grid_layout = [["I", "aVR", "V1", "V4"], ["II", "aVL", "V2", "V5"], ["III", "aVF
 
 # Colors
 ecg_trace_color = "#1B5E20"
-grid_minor_color = "#F8D0C0"
-grid_major_color = "#E8978A"
+grid_minor_color = "#F5D4C8"
+grid_major_color = "#E08878"
 paper_bg_color = "#FFF5F0"
 label_color = "#333333"
 
 # Plot - Create individual lead figures in a grid
 fig_width = 1200
-fig_height = 620
+fig_height = 640
 y_range_mv = 2.0
+
+
+def add_ecg_grid(p, x_max, y_min, y_max):
+    """Add ECG paper grid lines to a figure."""
+    for x_major in np.arange(0, x_max + 0.01, 0.2):
+        p.add_layout(
+            Span(location=x_major, dimension="height", line_color=grid_major_color, line_width=2, line_alpha=0.65)
+        )
+    for y_major in np.arange(y_min, y_max + 0.01, 0.5):
+        p.add_layout(
+            Span(location=y_major, dimension="width", line_color=grid_major_color, line_width=2, line_alpha=0.65)
+        )
+    for x_minor in np.arange(0, x_max + 0.01, 0.04):
+        p.add_layout(
+            Span(location=x_minor, dimension="height", line_color=grid_minor_color, line_width=1, line_alpha=0.35)
+        )
+    for y_minor in np.arange(y_min, y_max + 0.01, 0.1):
+        p.add_layout(
+            Span(location=y_minor, dimension="width", line_color=grid_minor_color, line_width=1, line_alpha=0.35)
+        )
+
+
+def style_ecg_panel(p):
+    """Apply common ECG panel styling."""
+    p.xaxis.visible = False
+    p.yaxis.visible = False
+    p.xgrid.grid_line_color = None
+    p.ygrid.grid_line_color = None
+    p.background_fill_color = paper_bg_color
+    p.border_fill_color = paper_bg_color
+    p.outline_line_color = grid_major_color
+    p.outline_line_width = 1
+    p.outline_line_alpha = 0.4
+    p.min_border = 2
+
 
 figures = []
 for _row_idx, lead_row in enumerate(grid_layout):
@@ -93,25 +127,7 @@ for _row_idx, lead_row in enumerate(grid_layout):
             toolbar_location=None,
         )
 
-        # ECG paper grid - major lines every 0.2s and 0.5mV
-        for x_major in np.arange(0, duration + 0.01, 0.2):
-            p.add_layout(
-                Span(location=x_major, dimension="height", line_color=grid_major_color, line_width=2, line_alpha=0.7)
-            )
-        for y_major in np.arange(-y_range_mv, y_range_mv + 0.01, 0.5):
-            p.add_layout(
-                Span(location=y_major, dimension="width", line_color=grid_major_color, line_width=2, line_alpha=0.7)
-            )
-
-        # Minor grid lines every 0.04s and 0.1mV
-        for x_minor in np.arange(0, duration + 0.01, 0.04):
-            p.add_layout(
-                Span(location=x_minor, dimension="height", line_color=grid_minor_color, line_width=1, line_alpha=0.5)
-            )
-        for y_minor in np.arange(-y_range_mv, y_range_mv + 0.01, 0.1):
-            p.add_layout(
-                Span(location=y_minor, dimension="width", line_color=grid_minor_color, line_width=1, line_alpha=0.5)
-            )
+        add_ecg_grid(p, duration, -y_range_mv, y_range_mv)
 
         # ECG trace
         source = ColumnDataSource(data={"time": t, "voltage": signal})
@@ -139,17 +155,7 @@ for _row_idx, lead_row in enumerate(grid_layout):
                 line_alpha=0.6,
             )
 
-        # Style
-        p.xaxis.visible = False
-        p.yaxis.visible = False
-        p.xgrid.grid_line_color = None
-        p.ygrid.grid_line_color = None
-        p.background_fill_color = paper_bg_color
-        p.border_fill_color = "white"
-        p.outline_line_color = "#D0D0D0"
-        p.outline_line_width = 1
-        p.min_border = 5
-
+        style_ecg_panel(p)
         fig_row.append(p)
     figures.append(fig_row)
 
@@ -170,30 +176,14 @@ rhythm_signal += np.random.normal(0, 0.015, len(rhythm_t))
 
 p_rhythm = figure(
     width=fig_width * 4,
-    height=500,
+    height=520,
     x_range=Range1d(0, rhythm_duration),
     y_range=Range1d(-y_range_mv, y_range_mv),
     tools="",
     toolbar_location=None,
 )
 
-# Rhythm strip grid
-for x_major in np.arange(0, rhythm_duration + 0.01, 0.2):
-    p_rhythm.add_layout(
-        Span(location=x_major, dimension="height", line_color=grid_major_color, line_width=2, line_alpha=0.7)
-    )
-for y_major in np.arange(-y_range_mv, y_range_mv + 0.01, 0.5):
-    p_rhythm.add_layout(
-        Span(location=y_major, dimension="width", line_color=grid_major_color, line_width=2, line_alpha=0.7)
-    )
-for x_minor in np.arange(0, rhythm_duration + 0.01, 0.04):
-    p_rhythm.add_layout(
-        Span(location=x_minor, dimension="height", line_color=grid_minor_color, line_width=1, line_alpha=0.5)
-    )
-for y_minor in np.arange(-y_range_mv, y_range_mv + 0.01, 0.1):
-    p_rhythm.add_layout(
-        Span(location=y_minor, dimension="width", line_color=grid_minor_color, line_width=1, line_alpha=0.5)
-    )
+add_ecg_grid(p_rhythm, rhythm_duration, -y_range_mv, y_range_mv)
 
 rhythm_source = ColumnDataSource(data={"time": rhythm_t, "voltage": rhythm_signal})
 p_rhythm.line(x="time", y="voltage", source=rhythm_source, line_color=ecg_trace_color, line_width=2.5, line_alpha=0.95)
@@ -209,39 +199,31 @@ p_rhythm.add_layout(
     )
 )
 
-p_rhythm.xaxis.visible = False
-p_rhythm.yaxis.visible = False
-p_rhythm.xgrid.grid_line_color = None
-p_rhythm.ygrid.grid_line_color = None
-p_rhythm.background_fill_color = paper_bg_color
-p_rhythm.border_fill_color = "white"
-p_rhythm.outline_line_color = "#D0D0D0"
-p_rhythm.outline_line_width = 1
-p_rhythm.min_border = 5
+style_ecg_panel(p_rhythm)
 
 # Title
 p_title = figure(
-    width=fig_width * 4, height=160, tools="", toolbar_location=None, x_range=Range1d(0, 1), y_range=Range1d(0, 1)
+    width=fig_width * 4, height=180, tools="", toolbar_location=None, x_range=Range1d(0, 1), y_range=Range1d(0, 1)
 )
 p_title.add_layout(
     Label(
         x=0.5,
         y=0.55,
         text="ecg-twelve-lead · bokeh · pyplots.ai",
-        text_font_size="36pt",
+        text_font_size="38pt",
         text_font_style="normal",
-        text_color="#333333",
+        text_color="#2E2E2E",
         text_align="center",
     )
 )
 p_title.add_layout(
     Label(
         x=0.5,
-        y=0.1,
+        y=0.08,
         text="25 mm/s  ·  10 mm/mV  ·  Normal Sinus Rhythm  ·  72 BPM",
-        text_font_size="20pt",
+        text_font_size="24pt",
         text_font_style="normal",
-        text_color="#777777",
+        text_color="#666666",
         text_align="center",
     )
 )
@@ -256,7 +238,7 @@ p_title.min_border = 0
 
 # Assemble layout
 grid = gridplot(figures, toolbar_location=None, merge_tools=False)
-layout = column(p_title, grid, p_rhythm)
+layout = column(p_title, grid, p_rhythm, spacing=0)
 
 # Save
 export_png(layout, filename="plot.png")

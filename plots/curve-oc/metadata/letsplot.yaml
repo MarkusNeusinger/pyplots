@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: curve-oc
 created: '2026-03-19T20:35:57Z'
-updated: '2026-03-19T21:00:27Z'
+updated: '2026-03-19T21:13:02Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23315609119
 issue: 4553
@@ -10,38 +10,38 @@ library_version: 4.9.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/curve-oc/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/curve-oc/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/curve-oc/letsplot/plot.html
-quality_score: 86
+quality_score: 93
 review:
   strengths:
-  - 'Perfect spec compliance with all required features: AQL/LTPD markers, risk annotations,
-    multiple sampling plans, proper x-axis range'
-  - Strong data storytelling with colored quality zones and red risk point markers
-    creating clear focal points
-  - Correct binomial CDF computation producing accurate OC curves
-  - Good use of letsplot-specific features (tooltips, HTML export)
-  - Clean, deterministic code with explicit font sizing
+  - Excellent quality zone shading (green/yellow/pink) creates immediate visual context
+    for interpreting curves
+  - Four well-chosen sampling plans with independently varying n and c demonstrate
+    discrimination power differences
+  - Risk annotations (α=0.264, β=0.034) with styled red markers provide precise quantitative
+    storytelling
+  - Colorblind-safe Okabe-Ito palette with good luminance differentiation
+  - Clean refined theme with removed x-grid, subtle y-grid, and light axis lines
+  - layer_tooltips() with formatting leverages lets-plot distinctive interactive features
   weaknesses:
-  - Minor label crowding between beta and LTPD labels at the bottom
-  - Orange-green color combination could be improved for deuteranopia accessibility
-  - Verbose annotation data construction with multiple small DataFrames
-  - Negative y-limit (-0.1) hack for label placement creates slight wasted space
-  image_description: 'The plot displays three Operating Characteristic (OC) curves
-    for acceptance sampling plans: n=50 c=1 (blue), n=100 c=2 (orange), and n=150
-    c=3 (teal). The x-axis shows "Fraction Defective (p)" ranging from 0 to 0.20,
-    and the y-axis shows "Probability of Acceptance P(a)" from 0 to 1.0. The title
-    reads "curve-oc · letsplot · pyplots.ai" in bold black at the top left. Vertical
-    dotted gray lines mark AQL at 0.02 and LTPD at 0.10, with bold "AQL" and "LTPD"
-    labels near the bottom. Two red circle markers with white borders highlight risk
-    points: α = 0.264 at AQL and β = 0.034 at LTPD, with red label text. Horizontal
-    dashed gray lines extend from these risk points to the y-axis. Three colored background
-    zones divide the plot: light green (left of AQL, acceptable quality), light beige/yellow
-    (between AQL and LTPD, indifference zone), and light pink (right of LTPD, rejectable
-    quality), with italic zone labels. The legend titled "Sampling Plan" sits in the
-    upper right. The background is white with subtle horizontal grid lines on the
-    y-axis only.'
+  - Manual construction of reference line dataframes instead of using geom_vline/geom_hline
+  - Zone labels could use slightly more refined positioning or sizing
+  image_description: 'The plot displays four Operating Characteristic (OC) curves
+    comparing acceptance sampling plans. The x-axis shows "Fraction Defective (p)"
+    ranging from 0 to 0.20, and the y-axis shows "Probability of Acceptance P(a)"
+    from 0 to 1. Three colored background zones divide the chart: a green "Acceptable
+    Quality" zone (0 to AQL=0.02), a pale yellow "Indifference Zone" (AQL to LTPD),
+    and a pink "Rejectable Quality" zone (LTPD=0.10 to 0.20). Four curves are plotted
+    in colorblind-safe colors: dark blue (n=50, c=1), vermillion/orange (n=100, c=2),
+    light blue (n=80, c=1), and teal (n=150, c=3). Two red circle markers with white
+    stroke highlight risk points on the n=50 c=1 curve: producer''s risk α=0.264 at
+    AQL and consumer''s risk β=0.034 at LTPD, with bold red labels. Dotted vertical
+    reference lines mark AQL and LTPD, with dashed horizontal lines connecting to
+    the y-axis. Bold "AQL" and "LTPD" labels are positioned near the bottom of the
+    chart. The title reads "curve-oc · letsplot · pyplots.ai" with an italic subtitle.
+    A legend box in the upper right lists all four sampling plans.'
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 30
       max: 30
       items:
       - id: VQ-01
@@ -49,44 +49,44 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title=24, axis_title=20, axis_text=16,
-          legend_text=16, legend_title=18'
+        comment: 'All font sizes explicitly set: title 24pt, axis titles 20pt, axis
+          text 16pt, legend text 16pt, legend title 18pt'
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Minor crowding between beta label and LTPD label at bottom right
+        comment: All labels well-positioned with appropriate nudges, no overlapping
+          elements
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: OC curves at size=2.2, risk markers at size=6 with red fill and white
-          stroke
+        comment: Lines at size=2.2 clearly distinguishable, risk markers at size=7
+          stand out
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Blue/orange/teal distinguishable but orange-green not optimal for
-          deuteranopia
+        comment: Okabe-Ito inspired colorblind-safe palette with good luminance variation
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Good utilization, slight wasted space from negative y-limit for label
-          placement
+        comment: Plot fills canvas well, balanced margins, legend positioned in unused
+          space
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with proper notation: Fraction Defective (p),
-          Probability of Acceptance P(a)'
+        comment: 'Descriptive labels with notation: Fraction Defective (p) and Probability
+          of Acceptance P(a)'
     design_excellence:
-      score: 14
+      score: 16
       max: 20
       items:
       - id: DE-01
@@ -94,22 +94,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom palette, red risk markers with white stroke, colored zones,
-          above defaults
+        comment: Custom palette, zone shading, styled risk markers, intentional typographic
+          hierarchy
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Y-only grid, custom axis colors, clean background, negative y-limit
-          slightly inelegant
+        comment: X-grid removed, subtle y-grid, clean white background, light axis
+          lines, generous margins
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Red risk markers create focal points, reference lines guide viewer,
-          colored zones communicate quality regions
+        comment: Quality zones create immediate context, risk markers as focal points,
+          subtitle contextualizes comparison
     spec_compliance:
       score: 15
       max: 15
@@ -119,54 +119,51 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct OC curves with S-shaped probability curves
+        comment: Correct OC curve with smooth S-shaped curves
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: AQL/LTPD annotated, risks marked, multiple plans, smooth curves,
-          proper x range
+        comment: 'All spec features: binomial CDF, AQL/LTPD lines, alpha/beta markers,
+          4 curves, x 0-0.20'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Fraction defective on x, probability of acceptance on y, full range
-          visible
+        comment: X=fraction defective, Y=probability of acceptance, correct ranges
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, legend titled Sampling Plan with matching labels
+        comment: Title follows exact format, legend labels match sampling plan descriptions
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Three plans showing discrimination differences, could show varying
-          c independently
+        comment: Four plans with varying n and c, both risks annotated, full acceptance
+          range shown
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real quality inspection scenario with industry-standard AQL and LTPD
-          values
+        comment: Real-world quality inspection scenario with standard AQL/LTPD terminology
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Realistic sample sizes and acceptance numbers, correctly computed
-          risk values
+        comment: Standard industry AQL=0.02, LTPD=0.10, realistic sample sizes 50-150
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -174,14 +171,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports, data generation, plot construction,
-          save'
+        comment: Clean imports-data-plot-save flow, no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic using binomial CDF, no random elements
+        comment: Fully deterministic binomial CDF calculations
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -190,16 +186,16 @@ review:
         comment: 'All imports used: numpy, pandas, lets_plot, scipy.stats.binom'
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Slightly verbose with separate DataFrames for each annotation element
+        comment: Appropriate complexity, clean loop for curve computation
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with scale=3 plus HTML export
+        comment: Saves plot.png with scale=3 and plot.html, current API
     library_mastery:
       score: 7
       max: 10
@@ -209,16 +205,16 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good ggplot grammar with proper layer composition, aes mappings,
-          scales, themes
+        comment: Strong ggplot grammar usage, could use geom_vline/geom_hline instead
+          of manual line dataframes
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses layer_tooltips(), coordinate-based legend positioning, HTML
-          export
-  verdict: REJECTED
+        comment: layer_tooltips() with format/line chaining, dual PNG+HTML export,
+          scale_fill_identity()
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - scipy
@@ -226,10 +222,11 @@ impl_tags:
   - annotations
   - layer-composition
   - hover-tooltips
+  - html-export
   patterns:
   - data-generation
   - iteration-over-groups
-  dataprep:
-  - binomial-cdf
+  dataprep: []
   styling:
+  - alpha-blending
   - grid-styling

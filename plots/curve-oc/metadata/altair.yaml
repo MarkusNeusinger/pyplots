@@ -1,7 +1,7 @@
 library: altair
 specification_id: curve-oc
 created: '2026-03-19T20:35:59Z'
-updated: '2026-03-19T20:48:22Z'
+updated: '2026-03-19T20:56:52Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23315609091
 issue: 4553
@@ -10,106 +10,102 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/curve-oc/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/curve-oc/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/curve-oc/altair/plot.html
-quality_score: 88
+quality_score: 94
 review:
   strengths:
-  - Excellent spec compliance with all required features (AQL/LTPD, risk annotations,
+  - Excellent spec compliance with all required features (AQL, LTPD, risk annotations,
     multiple plans)
-  - 'Strong interactive features: hover tooltips, vertical rule, highlighted points'
-  - Good color accessibility with dual encoding (color + dash pattern)
-  - Clean visual styling with subtle grid and removed spines
-  - Descriptive plan labels (lenient, moderate, strict) aid interpretation
+  - Strong data storytelling through shaded risk regions, reference lines, and labeled
+    risk points
+  - Professional visual polish with custom palette, styled legend, subtle grid, and
+    removed spines
+  - Effective use of Altair interactive capabilities (hover tooltips, selection-based
+    highlighting)
+  - Clean, well-structured code with deterministic binomial computation
   weaknesses:
-  - Beta risk label near bottom overlaps/crowds x-axis tick labels at 10%
-  - Manual in-chart legend construction is verbose (~50 lines)
-  - Design could push further toward publication quality with more refined typography
-    hierarchy
+  - 'Minor: x-axis extends to 20% where all curves are at zero from ~12% onward, creating
+    some unused space (though spec-compliant)'
   image_description: 'The plot displays three Operating Characteristic (OC) curves
-    on a clean white background. The title "curve-oc · altair · pyplots.ai" is top-left
-    with subtitle "Acceptance Sampling Plans — Producer''s & Consumer''s Risk". The
-    x-axis shows "Fraction Defective (p)" from 0% to 20% with percentage formatting,
-    and the y-axis shows "Probability of Acceptance P(a)" from 0.00 to 1.00. Three
-    S-shaped curves are plotted: a solid blue line for n=50, c=1 (lenient), a dashed
-    orange line for n=100, c=3 (moderate), and a dotted purple line for n=200, c=2
-    (strict). Vertical dashed reference lines mark AQL at 2% (blue) and LTPD at 10%
-    (red) with bold labels above. Dark points with white stroke mark risk values on
-    the n=100, c=3 curve: "α = 14.1% (Producer''s Risk)" near AQL and "β = 0.8% (Consumer''s
-    Risk)" near LTPD. A manually constructed legend box with light background and
-    rounded corners sits in the upper-right chart area. Grid lines are very subtle,
-    spines are removed, and the overall look is clean and professional.'
+    on a clean white canvas. The x-axis shows "Fraction Defective (p)" from 0% to
+    20%, and the y-axis shows "Probability of Acceptance P(a)" from 0.00 to 1.00.
+    Three sampling plans are plotted: a solid blue line for n=50, c=1 (lenient), an
+    orange dashed line for n=100, c=3 (moderate), and a purple dotted line for n=200,
+    c=2 (strict). Two vertical dashed reference lines mark AQL at 2% (blue) and LTPD
+    at 10% (red/pink), with labels above. Very subtle shaded regions highlight the
+    AQL zone (light blue, left) and LTPD zone (light pink, right). Two annotated risk
+    points on the n=100 curve show α = 14.1% (Producer''s Risk) at AQL and β = 0.8%
+    (Consumer''s Risk) at LTPD. A styled legend box with rounded corners sits in the
+    top-right corner. The title reads "curve-oc · altair · pyplots.ai" with subtitle
+    "Acceptance Sampling Plans — Producer''s & Consumer''s Risk".'
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 29
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 28, subtitle 18, axis titles
-          22, ticks 18, annotations 17, legend 16-17). All readable; legend text slightly
-          small but legible.
+        comment: 'All font sizes explicitly set: title 28pt, subtitle 18pt, axis titles
+          22pt, ticks 18pt, legend 16-17pt, annotations 17-18pt'
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Minor crowding of beta risk label near x-axis tick labels at 10%
-          mark. All other text well-separated.
+        comment: No overlapping text. Risk labels offset with dx/dy to avoid collisions
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Lines at strokeWidth=3 with distinct dash patterns. Risk points at
-          size=300 with white stroke are prominent.
+        comment: Lines at strokeWidth=3 with distinct dash patterns. Risk points size=300
+          clearly visible
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue/orange/purple palette is colorblind-safe, further distinguished
-          by solid/dashed/dotted line patterns.
+        comment: Blue/orange/purple palette is colorblind-safe
       - id: VQ-05
         name: Layout & Canvas
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: 1600x900 chart fills canvas well with balanced margins. Legend positioned
-          efficiently in upper-right.
+        comment: Good proportions but right ~35% of plot shows all curves at zero
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive axis labels with notation: Fraction Defective (p) and
-          Probability of Acceptance P(a).'
+        comment: 'Descriptive labels with notation: Fraction Defective (p), Probability
+          of Acceptance P(a)'
     design_excellence:
-      score: 13
+      score: 16
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom cohesive palette, dash patterns for dual encoding, professional
-          subtitle. Above defaults but not publication-flagship.
+        comment: Custom palette, styled legend with background/border/rounded corners,
+          intentional hierarchy
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Grid opacity 0.15, spines removed, clean whitespace, rounded-corner
-          legend box.
+        comment: View stroke removed, axis domain hidden, subtle grid opacity 0.12,
+          custom colors
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Plan labels (lenient/moderate/strict) guide interpretation. AQL/LTPD
-          lines with risk annotations create focal points.
+        comment: Shaded risk regions, AQL/LTPD reference lines, risk annotations create
+          clear narrative
     spec_compliance:
       score: 15
       max: 15
@@ -119,28 +115,25 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct OC curve showing probability of acceptance vs fraction defective.
+        comment: Correct OC curves using binomial CDF
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features: multiple OC curves, AQL/LTPD reference lines, risk
-          annotations, smooth lines, 0-0.20 range.'
+        comment: 'All spec requirements met: multiple plans, AQL/LTPD, risk annotations'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X = fraction defective, Y = probability of acceptance. Full range
-          shown.
+        comment: X=fraction_defective, Y=probability_acceptance correctly mapped
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title matches required format. Legend labels correctly identify each
-          plan with descriptive qualifiers.
+        comment: Title format correct, legend labels match sampling plans
     data_quality:
       score: 15
       max: 15
@@ -150,24 +143,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Three plans with varied n/c ratios show distinct curve shapes from
-          lenient to strict discrimination.
+        comment: Three plans with varied n/c ratios demonstrating different discrimination
+          levels
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real-world quality control with industry-standard AQL=2% and LTPD=10%.
-          Neutral domain.
+        comment: Standard quality control scenario with real-world terminology
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Realistic sample sizes (50, 100, 200), sensible acceptance numbers
-          (1-3), standard AQL/LTPD values.
+        comment: Realistic sample sizes and standard AQL/LTPD values
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -175,60 +166,56 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Imports -> data -> plot -> save flow. No functions or classes.
+        comment: Clean Imports-Data-Plot-Save flow, no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic binomial calculations with no randomness.
+        comment: Fully deterministic binomial computation
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: math.comb, altair, numpy, pandas.'
+        comment: 'All imports used: math.comb, altair, numpy, pandas'
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Manual in-chart legend construction is verbose (~50 lines with loops).
-          Functional but could be leaner.
+        passed: true
+        comment: Appropriate complexity for multi-layer interactive chart
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html. Current Altair API.
+        comment: Saves as plot.png with scale_factor=3.0 and plot.html
     library_mastery:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: 'Good declarative grammar usage: encoding channels, marks, layer
-          composition. Manual legend bypasses built-in system.'
+        comment: Expert use of declarative grammar, encoding channels, layer composition
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: 'Altair-specific interactivity: selection_point with nearest hover,
-          transform_filter, tooltips, hover rule + highlight pattern.'
-  verdict: REJECTED
+        comment: selection_point, transform_filter, tooltip encoding, HTML export
+          - Altair-distinctive
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
-  - custom-legend
-  - hover-tooltips
   - layer-composition
+  - hover-tooltips
   - html-export
-  - manual-ticks
   patterns:
   - data-generation
   - iteration-over-groups

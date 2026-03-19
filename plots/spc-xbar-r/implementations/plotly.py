@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 spc-xbar-r: Statistical Process Control Chart (X-bar/R)
 Library: plotly 6.6.0 | Python 3.14.3
-Quality: 89/100 | Created: 2026-03-19
+Quality: 92/100 | Created: 2026-03-19
 """
 
 import numpy as np

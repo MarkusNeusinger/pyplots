@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 histogram-capability: Process Capability Plot with Specification Limits
 Library: letsplot 4.9.0 | Python 3.14.3
 Quality: 81/100 | Created: 2026-03-19
@@ -66,9 +66,10 @@ stats_text = f"Mean = {sample_mean:.4f} mm  |  Std = {sample_std:.4f} mm"
 hist_counts, _ = np.histogram(measurements, bins=30)
 y_max = float(hist_counts.max())
 
-ann_df = pd.DataFrame({"x": [sample_mean], "y": [y_max * 0.95], "label": [cap_text]})
+ann_x = (lsl + sample_mean) / 2  # Centered between LSL and data center
+ann_df = pd.DataFrame({"x": [ann_x], "y": [y_max * 0.95], "label": [cap_text]})
 
-stats_ann_df = pd.DataFrame({"x": [sample_mean], "y": [y_max * 0.85], "label": [stats_text]})
+stats_ann_df = pd.DataFrame({"x": [ann_x], "y": [y_max * 0.85], "label": [stats_text]})
 
 # Plot
 plot = (
@@ -90,32 +91,32 @@ plot = (
         size=1.5,
         inherit_aes=False,
     )
-    # Specification limits
-    + geom_vline(xintercept=lsl, color="#D64541", size=1.5, linetype="dashed")
-    + geom_vline(xintercept=usl, color="#D64541", size=1.5, linetype="dashed")
-    + geom_vline(xintercept=target, color="#27AE60", size=1.5, linetype="dashed")
-    # Spec limit labels
+    # Specification limits — colorblind-safe: orange for limits, dark teal for target
+    + geom_vline(xintercept=lsl, color="#E67E22", size=1.5, linetype="dashed")
+    + geom_vline(xintercept=usl, color="#E67E22", size=1.5, linetype="dashed")
+    + geom_vline(xintercept=target, color="#1A7A6D", size=1.5, linetype="dashed")
+    # Spec limit labels — positioned outside data range to avoid overlap
     + geom_text(
-        data=pd.DataFrame({"x": [lsl - 0.003], "y": [y_max * 0.7], "label": ["LSL\n9.950"]}),
+        data=pd.DataFrame({"x": [lsl - 0.004], "y": [y_max * 0.75], "label": ["LSL\n9.950"]}),
         mapping=aes(x="x", y="y", label="label"),
         size=11,
-        color="#D64541",
+        color="#E67E22",
         fontface="bold",
         inherit_aes=False,
     )
     + geom_text(
-        data=pd.DataFrame({"x": [usl + 0.003], "y": [y_max * 0.7], "label": ["USL\n10.050"]}),
+        data=pd.DataFrame({"x": [usl + 0.005], "y": [y_max * 0.75], "label": ["USL\n10.050"]}),
         mapping=aes(x="x", y="y", label="label"),
         size=11,
-        color="#D64541",
+        color="#E67E22",
         fontface="bold",
         inherit_aes=False,
     )
     + geom_text(
-        data=pd.DataFrame({"x": [target], "y": [y_max * 0.55], "label": ["Target\n10.000"]}),
+        data=pd.DataFrame({"x": [usl - 0.008], "y": [y_max * 0.45], "label": ["← Target\n   10.000"]}),
         mapping=aes(x="x", y="y", label="label"),
         size=11,
-        color="#27AE60",
+        color="#1A7A6D",
         fontface="bold",
         inherit_aes=False,
     )
@@ -131,8 +132,8 @@ plot = (
     + geom_text(
         data=stats_ann_df, mapping=aes(x="x", y="y", label="label"), size=11, color="#666666", inherit_aes=False
     )
-    + scale_x_continuous(name="Shaft Diameter (mm)", format=".3f")
-    + scale_y_continuous(name="Frequency", format="d")
+    + scale_x_continuous(name="Shaft Diameter (mm)", format=".3f", limits=[lsl - 0.012, usl + 0.018])
+    + scale_y_continuous(name="Frequency", format="d", expand=[0, 0, 0.15, 0])
     + labs(
         title="histogram-capability · letsplot · pyplots.ai",
         subtitle="Process capability analysis — shaft diameter measurements against specification limits",

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 curve-oc: Operating Characteristic (OC) Curve
 Library: bokeh 3.9.0 | Python 3.14.3
-Quality: 88/100 | Created: 2026-03-19
+Quality: 90/100 | Created: 2026-03-19
 """
 
 from math import comb

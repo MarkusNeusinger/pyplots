@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 ecg-twelve-lead: ECG/EKG 12-Lead Waveform Display
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 80/100 | Created: 2026-03-19
@@ -70,9 +70,9 @@ lead_params = {
     "V6": 0.50,
 }
 
-# Standard clinical 4×3 grid order
-# Row 0: I, II, III | Row 1: aVR, aVL, aVF | Row 2: V1, V2, V3 | Row 3: V4, V5, V6
-grid_order = ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"]
+# Standard clinical 3×4 grid order (3 rows, 4 columns)
+# Row 0: I, aVR, V1, V4 | Row 1: II, aVL, V2, V5 | Row 2: III, aVF, V3, V6
+grid_order = ["I", "aVR", "V1", "V4", "II", "aVL", "V2", "V5", "III", "aVF", "V3", "V6"]
 
 frames = []
 for lead_name in grid_order:
@@ -93,37 +93,55 @@ label_df = pd.DataFrame(
     }
 )
 
+# 1mV calibration pulse — shown in the first facet (Lead I)
+cal_t = [0.0, 0.0, 0.05, 0.05]
+cal_v = [0.0, 1.0, 1.0, 0.0]
+cal_df = pd.DataFrame(
+    {"time": cal_t, "voltage": cal_v, "lead": pd.Categorical(["I"] * 4, categories=grid_order, ordered=True)}
+)
+# Calibration label
+cal_label_df = pd.DataFrame(
+    {
+        "time": [0.025],
+        "voltage": [-0.25],
+        "lead": pd.Categorical(["I"], categories=grid_order, ordered=True),
+        "label": ["1 mV"],
+    }
+)
+
 # Plot
 ecg_paper = "#FFF5EE"
 major_grid = "#E8A090"
 minor_grid = "#F0C8BC"
 signal_color = "#1a1a2e"
 
-x_major = np.arange(0, duration + 0.01, 0.2).tolist()
-x_minor = np.arange(0, duration + 0.01, 0.04).tolist()
+x_major = np.arange(0, duration + 0.01, 0.5).tolist()
+x_minor = np.arange(0, duration + 0.01, 0.1).tolist()
 y_major = np.arange(-2.0, 2.1, 0.5).tolist()
 y_minor = np.arange(-2.0, 2.1, 0.1).tolist()
 
 plot = (
     ggplot(df, aes(x="time", y="voltage"))
-    + geom_line(color=signal_color, size=0.45)
-    + geom_text(aes(label="label"), data=label_df, size=11, ha="left", va="top", fontweight="bold", color="#333333")
-    + facet_wrap("lead", ncol=3, scales="free_y")
+    + geom_line(color=signal_color, size=0.7)
+    + geom_line(aes(x="time", y="voltage"), data=cal_df, color=signal_color, size=0.9)
+    + geom_text(aes(label="label"), data=label_df, size=13, ha="left", va="top", fontweight="bold", color="#333333")
+    + geom_text(aes(label="label"), data=cal_label_df, size=9, ha="center", va="top", color="#333333")
+    + facet_wrap("lead", ncol=4, scales="free_y")
     + scale_x_continuous(breaks=x_major, minor_breaks=x_minor, limits=(0, duration), expand=(0.01, 0.01))
     + scale_y_continuous(breaks=y_major, minor_breaks=y_minor, limits=(-1.6, 1.6), expand=(0, 0))
     + labs(title="ecg-twelve-lead · plotnine · pyplots.ai", x="Time (s)", y="Voltage (mV)")
     + theme(
-        figure_size=(16, 14),
+        figure_size=(16, 9),
         panel_background=element_rect(fill=ecg_paper),
         plot_background=element_rect(fill="white"),
         panel_grid_major=element_line(color=major_grid, size=0.5),
         panel_grid_minor=element_line(color=minor_grid, size=0.25),
         strip_background=element_blank(),
         strip_text=element_blank(),
-        text=element_text(size=14),
-        axis_title=element_text(size=18),
-        axis_text=element_text(size=11, color="#666666"),
-        plot_title=element_text(size=22, weight="bold", margin={"b": 12}),
+        text=element_text(size=16),
+        axis_title=element_text(size=20),
+        axis_text=element_text(size=16, color="#666666"),
+        plot_title=element_text(size=24, weight="bold", margin={"b": 12}),
         panel_spacing_x=0.06,
         panel_spacing_y=0.04,
         axis_ticks=element_blank(),

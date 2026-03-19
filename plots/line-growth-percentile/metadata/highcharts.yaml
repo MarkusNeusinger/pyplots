@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: line-growth-percentile
 created: '2026-03-19T19:53:43Z'
-updated: '2026-03-19T19:58:12Z'
+updated: '2026-03-19T20:08:32Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23313901195
 issue: 4555
@@ -10,35 +10,36 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-growth-percentile/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-growth-percentile/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-growth-percentile/highcharts/plot.html
-quality_score: 88
+quality_score: 91
 review:
   strengths:
-  - Excellent spec compliance — all required features implemented correctly
-  - Strong visual hierarchy with graduated blue bands and contrasting orange patient
-    line
-  - Professional typography with explicitly set font sizes throughout
-  - Clean, well-organized code with appropriate use of Highcharts arearange for percentile
-    bands
-  - Good use of Highcharts-specific features (arearange, dataLabels filter, dashStyle
-    variations)
+  - Excellent clinical realism with WHO-style percentile data and plausible patient
+    trajectory
+  - Strong visual hierarchy with orange patient line against blue percentile bands
+  - Professional typography with custom font family and explicit sizing throughout
+  - Graduated band transparency creates natural visual depth
+  - Effective use of Highcharts arearange for percentile bands and data label filters
+    for right-margin annotations
+  - Birth annotation adds narrative context to the patient growth story
   weaknesses:
-  - Right-margin percentile labels are slightly cramped where curves converge (VQ-02)
-  - Patient trajectory falls below P3 at 36 months which is somewhat extreme for illustration
-    purposes (DQ-01)
-  - Y-axis extends beyond the data range, leaving unused vertical space (VQ-05)
+  - Normal Range plotBand label is very faint and oddly positioned at a fixed y-range
+    at the top of the chart
+  - Right-margin percentile labels slightly crowded where curves converge
+  - 36 mo patient data label may be partially clipped at the chart right boundary
   image_description: The plot displays a pediatric growth chart for boys' weight-for-age
-    from birth to 36 months. Seven percentile curves (P3, P10, P25, P50, P75, P90,
-    P97) are rendered as graduated blue-toned bands — darker at the extremes (P3–P10,
-    P90–P97) and lighter near the median (P25–P75). The 50th percentile median line
-    is drawn as a thicker solid dark blue line. Each percentile is labeled on the
-    right margin (P3 through P97). An orange spline with filled circle markers traces
-    an individual patient's weight trajectory from ~3.5 kg at birth to 15.5 kg at
-    36 months, crossing from near the median down toward P3 range. The x-axis reads
-    "Age (months)" from 0–36 with ticks every 3 months; the y-axis reads "Weight (kg)"
-    from 0–24. The title is "Boys Weight-for-Age · line-growth-percentile · highcharts
-    · pyplots.ai" with a subtitle "WHO Growth Standards, Birth to 36 Months". A floating
-    legend in the upper-right identifies the 50th Percentile (Median) and Patient
-    (Boy, Age 0–36m). Background is white with subtle dotted grid lines.
+    from birth to 36 months. Five graduated blue percentile bands span from P3 to
+    P97, with darker blue at the extremes (P3-P10, P90-P97) and lighter blue near
+    the median (P25-P75). Individual percentile lines are drawn with distinct dash
+    styles - the P50 median is a thick solid dark blue line, while others use dashed/dotted
+    styles with lower opacity. Percentile labels (P3, P10, P25, P50, P75, P90, P97)
+    appear at the right margin with staggered offsets. An orange/red patient trajectory
+    is overlaid as a smooth spline with filled circular markers (white border), tracking
+    near the P25-P40 range. A "Birth / 3.3 kg" annotation appears at the first data
+    point. The title reads "Boys Weight-for-Age - line-growth-percentile - highcharts
+    - pyplots.ai" with a subtitle "WHO Growth Standards, Birth to 36 Months". X-axis
+    shows "Age (months)" 0-36, Y-axis shows "Weight (kg)" 0-24. A floating legend
+    in the top-right shows "50th Percentile (Median)" and "Patient (Boy, Age 0-36m)".
+    Background is a soft off-white with subtle dotted grid lines.
   criteria_checklist:
     visual_quality:
       score: 28
@@ -50,41 +51,43 @@ review:
         max: 8
         passed: true
         comment: 'All font sizes explicitly set: title 46px, axis titles 34px, tick
-          labels 26px, legend 26px, data labels 22px'
+          labels 26px, data labels 22-24px'
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: Right-margin percentile labels slightly cramped where curves converge
+        comment: Minor crowding of percentile labels at right margin where curves
+          converge; 36mo label may be clipped
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Bands graduated, P50 emphasized, patient markers large with white
-          border
+        comment: Patient markers radius 11, line width 5, median width 6 all clearly
+          visible with good graduated band opacity
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue vs orange provides excellent colorblind-safe contrast
+        comment: Blue percentile tones vs orange patient data provides excellent colorblind-safe
+          contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good margins but y-axis extends beyond data range leaving unused
-          vertical space
+        comment: Good explicit margins but Normal Range plotBand label is faint and
+          oddly positioned at fixed y-range
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Age (months) and Weight (kg) — descriptive with units
+        comment: Age (months) and Weight (kg) - descriptive with units
     design_excellence:
-      score: 14
+      score: 15
       max: 20
       items:
       - id: DE-01
@@ -92,22 +95,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom blue palette with graduated opacity, contrasting orange, custom
-          font family. Above defaults but not FiveThirtyEight-level
+        comment: Custom blue palette with graduated transparency, professional typography,
+          subtle background and legend shadow
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Subtle dotted grid, credits disabled, generous whitespace. Good but
-          not fully polished
+        comment: Subtle dotted grid at 0.05 opacity, custom axis colors, legend with
+          shadow and rounded corners
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Orange patient trajectory creates strong focal point against blue
-          bands. Graduated intensity guides viewer
+        comment: Strong visual hierarchy with patient trajectory as focal point, birth
+          annotation anchors narrative, graduated bands guide viewer
     spec_compliance:
       score: 15
       max: 15
@@ -117,49 +120,53 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct line/area chart with percentile bands and patient overlay
+        comment: Correct WHO-style growth chart with percentile curves and patient
+          overlay
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features: 7 percentile bands, emphasized P50, right-margin labels,
-          patient overlay, blue tones for boys'
+        comment: All 7 percentiles, filled bands, graduated colors, emphasized P50,
+          blue for boys, right-margin labels, patient overlay
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=age months, Y=weight kg, all data visible
+        comment: X=age months, Y=weight kg, correct assignment
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, legend labels match data
+        comment: Title includes spec-id/library/pyplots.ai, legend labels match data
+          series
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: All percentile curves and patient trajectory shown. Patient falls
-          below P3 at 36m which is somewhat extreme
+        comment: All 7 percentile curves, 5 graduated bands, patient trajectory with
+          annotations
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: WHO weight-for-age for boys, clinical pediatric scenario, neutral
+        comment: WHO-style weight-for-age for boys 0-36 months, standard clinical
+          scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Realistic WHO-approximating values for birth to 36 months
+        comment: Birth weight 3.3 kg, 36-month weight 19.0 kg, clinically plausible
+          values
     code_quality:
       score: 10
       max: 10
@@ -187,15 +194,16 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Clean iteration, appropriate complexity, no fake UI
+        comment: Well-organized with data structures for band colors and percentile
+          styles
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via Selenium screenshot
+        comment: Saves as plot.png via Selenium, current highcharts_core API
     library_mastery:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: LM-01
@@ -203,21 +211,23 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of HighchartsOptions and dict-based config. Could use typed
-          Series classes more
+        comment: HighchartsOptions with dict config, inline CDN embedding for headless
+          Chrome
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Uses arearange, dataLabels filter, dashStyle variations, spline series
-  verdict: REJECTED
+        comment: arearange series, dataLabels.filter, zIndex layering, series shadow,
+          mixed series types
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - selenium
   techniques:
-  - html-export
+  - annotations
   - layer-composition
+  - html-export
   patterns:
   - data-generation
   - iteration-over-groups

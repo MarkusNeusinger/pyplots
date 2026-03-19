@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 ecg-twelve-lead: ECG/EKG 12-Lead Waveform Display
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-19
@@ -16,29 +16,24 @@ sampling_rate = 1000
 duration = 2.5
 t = np.linspace(0, duration, int(sampling_rate * duration))
 
-
-def _ecg_component(t_arr, center, width, amplitude):
-    return amplitude * np.exp(-((t_arr - center) ** 2) / (2 * width**2))
-
-
-def _generate_beat(t_beat):
-    p_wave = _ecg_component(t_beat, 0.12, 0.035, 0.15)
-    q_wave = _ecg_component(t_beat, 0.20, 0.012, -0.12)
-    r_wave = _ecg_component(t_beat, 0.23, 0.012, 1.2)
-    s_wave = _ecg_component(t_beat, 0.26, 0.012, -0.25)
-    t_wave = _ecg_component(t_beat, 0.38, 0.045, 0.3)
-    return p_wave + q_wave + r_wave + s_wave + t_wave
-
-
+# Generate Lead II base signal inline (KISS - no helper functions)
 beat_interval = 0.8
 lead_II_signal = np.zeros_like(t)
 for beat_start in np.arange(0, duration, beat_interval):
     t_shifted = t - beat_start
     mask = (t_shifted >= 0) & (t_shifted < beat_interval)
-    lead_II_signal[mask] += _generate_beat(t_shifted[mask])
+    tb = t_shifted[mask]
+    lead_II_signal[mask] += (
+        0.15 * np.exp(-((tb - 0.12) ** 2) / (2 * 0.035**2))  # P wave
+        + (-0.12) * np.exp(-((tb - 0.20) ** 2) / (2 * 0.012**2))  # Q wave
+        + 1.2 * np.exp(-((tb - 0.23) ** 2) / (2 * 0.012**2))  # R wave
+        + (-0.25) * np.exp(-((tb - 0.26) ** 2) / (2 * 0.012**2))  # S wave
+        + 0.3 * np.exp(-((tb - 0.38) ** 2) / (2 * 0.045**2))  # T wave
+    )
 
 lead_II_signal += np.random.normal(0, 0.005, len(t))
 
+# Lead transforms for deriving all 12 leads from Lead II
 lead_transforms = {
     "I": {"scale": 0.65, "t_inv": False},
     "II": {"scale": 1.0, "t_inv": False},
@@ -64,10 +59,10 @@ for name, params in lead_transforms.items():
         for beat_start in np.arange(0, duration, beat_interval):
             t_shifted = t - beat_start
             mask = (t_shifted >= 0.19) & (t_shifted < 0.27)
-            r_component = _ecg_component(t_shifted, 0.23, 0.012, 1.2) * params["scale"]
+            r_component = 1.2 * np.exp(-((t_shifted - 0.23) ** 2) / (2 * 0.012**2)) * params["scale"]
             if r_ratio < 0:
                 signal[mask] += r_component[mask] * abs(r_ratio) * 0.5
-                s_extra = _ecg_component(t_shifted, 0.24, 0.015, -0.8) * params["scale"]
+                s_extra = (-0.8) * np.exp(-((t_shifted - 0.24) ** 2) / (2 * 0.015**2)) * params["scale"]
                 signal[mask] += s_extra[mask] * abs(r_ratio)
     leads[name] = signal
 
@@ -79,8 +74,8 @@ fig = make_subplots(
     rows=4,
     cols=4,
     specs=[[{}, {}, {}, {}], [{}, {}, {}, {}], [{}, {}, {}, {}], [{"colspan": 4}, None, None, None]],
-    row_heights=[0.25, 0.25, 0.25, 0.25],
-    vertical_spacing=0.04,
+    row_heights=[0.24, 0.24, 0.24, 0.28],
+    vertical_spacing=0.06,
     horizontal_spacing=0.04,
     subplot_titles=[
         "I",
@@ -104,6 +99,7 @@ grid_color_light = "rgba(220, 160, 150, 0.25)"
 grid_color_bold = "rgba(200, 120, 110, 0.45)"
 signal_color = "#1A1A2E"
 
+# Add ECG signal traces with custom hover data
 for row_idx, row_leads in enumerate(grid_layout):
     for col_idx, lead_name in enumerate(row_leads):
         signal = leads[lead_name]
@@ -114,7 +110,8 @@ for row_idx, row_leads in enumerate(grid_layout):
                 mode="lines",
                 line={"color": signal_color, "width": 2},
                 showlegend=False,
-                hovertemplate=f"{lead_name}<br>Time: %{{x:.3f}}s<br>Voltage: %{{y:.2f}}mV<extra></extra>",
+                name=lead_name,
+                hovertemplate=f"<b>{lead_name}</b><br>Time: %{{x:.3f}}s<br>Voltage: %{{y:.2f}}mV<extra></extra>",
             ),
             row=row_idx + 1,
             col=col_idx + 1,
@@ -126,15 +123,16 @@ fig.add_trace(
         x=t,
         y=leads["II"],
         mode="lines",
-        line={"color": signal_color, "width": 2},
+        line={"color": signal_color, "width": 2.5},
         showlegend=False,
-        hovertemplate="Lead II<br>Time: %{x:.3f}s<br>Voltage: %{y:.2f}mV<extra></extra>",
+        name="Lead II",
+        hovertemplate="<b>Lead II</b><br>Time: %{x:.3f}s<br>Voltage: %{y:.2f}mV<extra></extra>",
     ),
     row=4,
     col=1,
 )
 
-# Add calibration pulse (1mV) to each subplot
+# Calibration pulse (1mV) for each subplot
 cal_t = np.array([0.0, 0.0, 0.02, 0.02, 0.04, 0.04])
 cal_v = np.array([0.0, 1.0, 1.0, 0.0, 0.0, 0.0])
 cal_t_offset = -0.08
@@ -171,9 +169,8 @@ fig.add_trace(
 for row_idx in range(1, 5):
     cols = [1, 2, 3, 4] if row_idx <= 3 else [1]
     for col_idx in cols:
-        x_range = [-0.12, duration] if row_idx <= 3 else [-0.12, duration]
         fig.update_xaxes(
-            range=x_range,
+            range=[-0.12, duration],
             dtick=0.2,
             minor={"dtick": 0.04, "gridcolor": grid_color_light, "gridwidth": 1, "showgrid": True},
             gridcolor=grid_color_bold,
@@ -181,7 +178,10 @@ for row_idx in range(1, 5):
             showgrid=True,
             zeroline=False,
             showticklabels=(row_idx == 4),
-            tickfont={"size": 14},
+            tickfont={"size": 16},
+            spikemode="across",
+            spikethickness=1,
+            spikecolor="rgba(100, 100, 100, 0.5)",
             row=row_idx,
             col=col_idx,
         )
@@ -200,9 +200,10 @@ for row_idx in range(1, 5):
             col=col_idx,
         )
 
-fig.update_yaxes(showticklabels=True, tickfont={"size": 14}, title_text="mV", title_font={"size": 16}, row=1, col=1)
-fig.update_yaxes(showticklabels=True, tickfont={"size": 14}, title_text="mV", title_font={"size": 16}, row=4, col=1)
-fig.update_xaxes(title_text="Time (s)", title_font={"size": 16}, row=4, col=1)
+# Axis labels with proper font sizes
+fig.update_yaxes(showticklabels=True, tickfont={"size": 16}, title_text="mV", title_font={"size": 22}, row=1, col=1)
+fig.update_yaxes(showticklabels=True, tickfont={"size": 16}, title_text="mV", title_font={"size": 22}, row=4, col=1)
+fig.update_xaxes(title_text="Time (s)", title_font={"size": 22}, tickfont={"size": 16}, row=4, col=1)
 
 fig.update_layout(
     title={
@@ -216,12 +217,28 @@ fig.update_layout(
     plot_bgcolor=ecg_paper_color,
     paper_bgcolor="#FFFFFF",
     showlegend=False,
-    margin={"l": 70, "r": 40, "t": 80, "b": 60},
-    height=1000,
+    margin={"l": 80, "r": 40, "t": 110, "b": 60},
+    height=900,
     width=1600,
+    hoverlabel={"bgcolor": "white", "font_size": 16, "font_family": "Arial"},
+    hovermode="closest",
 )
 
-fig.update_annotations(font_size=18, font_color="#306998", font_family="Arial Black")
+# Subplot title styling
+fig.update_annotations(font_size=20, font_color="#306998", font_family="Arial Black")
+
+# Add heart rate annotation for clinical context
+fig.add_annotation(
+    text="<b>HR: 75 bpm</b>  |  Normal Sinus Rhythm",
+    xref="paper",
+    yref="paper",
+    x=0.5,
+    y=1.06,
+    showarrow=False,
+    font={"size": 16, "color": "#555", "family": "Arial"},
+    xanchor="center",
+    yanchor="bottom",
+)
 
 # Save
 fig.write_image("plot.png", width=1600, height=900, scale=3)

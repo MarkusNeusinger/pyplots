@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 curve-oc: Operating Characteristic (OC) Curve
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-19
@@ -15,9 +15,9 @@ import pandas as pd
 fraction_defective = np.linspace(0, 0.20, 200)
 
 sampling_plans = [
-    {"n": 50, "c": 1, "label": "n=50, c=1"},
-    {"n": 100, "c": 3, "label": "n=100, c=3"},
-    {"n": 200, "c": 2, "label": "n=200, c=2"},
+    {"n": 50, "c": 1, "label": "n=50, c=1 (lenient)"},
+    {"n": 100, "c": 3, "label": "n=100, c=3 (moderate)"},
+    {"n": 200, "c": 2, "label": "n=200, c=2 (strict)"},
 ]
 
 rows = []
@@ -36,37 +36,23 @@ aql = 0.02
 ltpd = 0.10
 
 # Compute risk values for the primary plan (n=100, c=3)
-pa_at_aql_arr = np.zeros(1, dtype=float)
-for k in range(4):
-    pa_at_aql_arr += comb(100, k) * np.array([aql]) ** k * (1 - np.array([aql])) ** (100 - k)
-pa_at_aql = pa_at_aql_arr[0]
+pa_at_aql = sum(comb(100, k) * aql**k * (1 - aql) ** (100 - k) for k in range(4))
 alpha = 1 - pa_at_aql
 
-pa_at_ltpd_arr = np.zeros(1, dtype=float)
-for k in range(4):
-    pa_at_ltpd_arr += comb(100, k) * np.array([ltpd]) ** k * (1 - np.array([ltpd])) ** (100 - k)
-pa_at_ltpd = pa_at_ltpd_arr[0]
+pa_at_ltpd = sum(comb(100, k) * ltpd**k * (1 - ltpd) ** (100 - k) for k in range(4))
 beta = pa_at_ltpd
 
 ref_data = pd.DataFrame(
     [
-        {"x": aql, "y": pa_at_aql, "label": f"AQL = {aql:.0%}", "risk": f"α = {alpha:.1%} (Producer's Risk)"},
-        {"x": ltpd, "y": pa_at_ltpd, "label": f"LTPD = {ltpd:.0%}", "risk": f"β = {beta:.1%} (Consumer's Risk)"},
+        {"x": aql, "y": pa_at_aql, "risk": f"\u03b1 = {alpha:.1%} (Producer\u2019s Risk)"},
+        {"x": ltpd, "y": pa_at_ltpd, "risk": f"\u03b2 = {beta:.1%} (Consumer\u2019s Risk)"},
     ]
 )
 
-# In-chart legend data (positioned in upper-right where curves have dropped)
-legend_data = pd.DataFrame(
-    [
-        {"x1": 0.125, "x2": 0.14, "y": 0.85, "label": "  n=50, c=1  (lenient)", "color": "#306998"},
-        {"x1": 0.125, "x2": 0.14, "y": 0.78, "label": "  n=100, c=3  (moderate)", "color": "#E8792B"},
-        {"x1": 0.125, "x2": 0.14, "y": 0.71, "label": "  n=200, c=2  (strict)", "color": "#8B5CF6"},
-    ]
-)
-
-# Plot
-plan_labels = ["n=50, c=1", "n=100, c=3", "n=200, c=2"]
-color_scale = alt.Scale(domain=plan_labels, range=["#306998", "#E8792B", "#8B5CF6"])
+# Scales and encodings
+plan_order = [p["label"] for p in sampling_plans]
+color_scale = alt.Scale(domain=plan_order, range=["#306998", "#E8792B", "#8B5CF6"])
+dash_scale = alt.Scale(domain=plan_order, range=[[1, 0], [8, 4], [2, 2]])
 
 nearest = alt.selection_point(nearest=True, on="pointerover", fields=["fraction_defective"], empty=False)
 
@@ -74,26 +60,45 @@ base_x = alt.X(
     "fraction_defective:Q",
     title="Fraction Defective (p)",
     scale=alt.Scale(domain=[0, 0.20]),
-    axis=alt.Axis(format=".0%", values=[0, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12, 0.14, 0.16, 0.18, 0.20]),
+    axis=alt.Axis(format=".0%", values=np.arange(0, 0.21, 0.02).tolist()),
 )
 base_y = alt.Y(
     "probability_acceptance:Q",
     title="Probability of Acceptance P(a)",
     scale=alt.Scale(domain=[0, 1.05]),
-    axis=alt.Axis(values=[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]),
+    axis=alt.Axis(values=np.arange(0, 1.1, 0.1).tolist()),
 )
 
-# OC curves (no Vega legend — using in-chart legend instead)
+# OC curves with native Altair legend
 oc_lines = (
     alt.Chart(df)
     .mark_line(strokeWidth=3)
     .encode(
         x=base_x,
         y=base_y,
-        color=alt.Color("plan:N", scale=color_scale, legend=None),
-        strokeDash=alt.StrokeDash(
-            "plan:N", scale=alt.Scale(domain=plan_labels, range=[[1, 0], [8, 4], [2, 2]]), legend=None
+        color=alt.Color(
+            "plan:N",
+            scale=color_scale,
+            sort=plan_order,
+            legend=alt.Legend(
+                title="Sampling Plan",
+                titleFontSize=17,
+                titleFontWeight="bold",
+                titleColor="#333333",
+                labelFontSize=16,
+                labelColor="#444444",
+                symbolStrokeWidth=3,
+                symbolSize=200,
+                orient="top-right",
+                offset=10,
+                padding=12,
+                cornerRadius=8,
+                fillColor="#fafafa",
+                strokeColor="#cccccc",
+                direction="vertical",
+            ),
         ),
+        strokeDash=alt.StrokeDash("plan:N", scale=dash_scale, sort=plan_order, legend=None),
     )
 )
 
@@ -163,74 +168,79 @@ risk_points = (
     .encode(
         x=alt.X("x:Q"),
         y=alt.Y("y:Q"),
-        tooltip=[
-            alt.Tooltip("label:N", title="Reference"),
-            alt.Tooltip("risk:N", title="Risk"),
-            alt.Tooltip("y:Q", title="P(Accept)", format=".3f"),
-        ],
+        tooltip=[alt.Tooltip("risk:N", title="Risk"), alt.Tooltip("y:Q", title="P(Accept)", format=".3f")],
     )
 )
 
-risk_labels = (
-    alt.Chart(ref_data)
+# Position alpha label to the right, beta label above to avoid x-axis crowding
+alpha_label = (
+    alt.Chart(ref_data.iloc[:1])
     .mark_text(fontSize=17, fontWeight="bold", align="left", dx=12, dy=-12, color="#333333")
     .encode(x=alt.X("x:Q"), y=alt.Y("y:Q"), text="risk:N")
 )
 
-# In-chart legend background
-legend_bg = (
-    alt.Chart(pd.DataFrame([{"x": 0.123, "y": 0.91, "x2": 0.197, "y2": 0.66}]))
-    .mark_rect(cornerRadius=8, fill="#fafafa", stroke="#cccccc", strokeWidth=1.5, opacity=0.92)
-    .encode(x=alt.X("x:Q"), y=alt.Y("y:Q"), x2="x2:Q", y2="y2:Q")
+beta_label = (
+    alt.Chart(ref_data.iloc[1:])
+    .mark_text(fontSize=17, fontWeight="bold", align="left", dx=14, dy=-24, color="#333333")
+    .encode(x=alt.X("x:Q"), y=alt.Y("y:Q"), text="risk:N")
 )
 
-legend_title = (
-    alt.Chart(pd.DataFrame([{"x": 0.16, "y": 0.895, "text": "Sampling Plan"}]))
-    .mark_text(fontSize=17, fontWeight="bold", color="#333333")
-    .encode(x=alt.X("x:Q"), y=alt.Y("y:Q"), text="text:N")
+# Shaded risk regions for storytelling
+alpha_area = (
+    alt.Chart(pd.DataFrame([{"x": 0, "x2": aql, "y": 0, "y2": 1.05}]))
+    .mark_rect(fill="#306998", opacity=0.04)
+    .encode(x=alt.X("x:Q"), x2="x2:Q", y=alt.Y("y:Q"), y2="y2:Q")
 )
 
-# Legend color swatches (small line segments)
-legend_lines = []
-legend_texts = []
-for _, row in legend_data.iterrows():
-    line_df = pd.DataFrame([{"x": row["x1"], "y": row["y"], "x2": row["x2"], "y2": row["y"]}])
-    legend_lines.append(
-        alt.Chart(line_df)
-        .mark_rule(strokeWidth=3, color=row["color"])
-        .encode(x=alt.X("x:Q"), y=alt.Y("y:Q"), x2="x2:Q")
-    )
-    text_df = pd.DataFrame([{"x": row["x2"], "y": row["y"], "text": row["label"]}])
-    legend_texts.append(
-        alt.Chart(text_df)
-        .mark_text(fontSize=16, align="left", color="#444444", dx=4)
-        .encode(x=alt.X("x:Q"), y=alt.Y("y:Q"), text="text:N")
-    )
+beta_area = (
+    alt.Chart(pd.DataFrame([{"x": ltpd, "x2": 0.20, "y": 0, "y2": 1.05}]))
+    .mark_rect(fill="#D62728", opacity=0.04)
+    .encode(x=alt.X("x:Q"), x2="x2:Q", y=alt.Y("y:Q"), y2="y2:Q")
+)
 
 # Combine layers
-chart = aql_rule + ltpd_rule + oc_lines + hover_points + risk_points + risk_labels + aql_label + ltpd_label
-chart = chart + legend_bg + legend_title
-for ll in legend_lines:
-    chart = chart + ll
-for lt in legend_texts:
-    chart = chart + lt
-chart = chart + select_layer + hover_rule
+chart = (
+    alpha_area
+    + beta_area
+    + aql_rule
+    + ltpd_rule
+    + oc_lines
+    + hover_points
+    + risk_points
+    + alpha_label
+    + beta_label
+    + aql_label
+    + ltpd_label
+    + select_layer
+    + hover_rule
+)
 
 chart = (
     chart.properties(
         width=1600,
         height=900,
         title=alt.Title(
-            "curve-oc · altair · pyplots.ai",
-            subtitle="Acceptance Sampling Plans — Producer's & Consumer's Risk",
+            "curve-oc \u00b7 altair \u00b7 pyplots.ai",
+            subtitle="Acceptance Sampling Plans \u2014 Producer\u2019s & Consumer\u2019s Risk",
             fontSize=28,
             subtitleFontSize=18,
             subtitleColor="#666666",
             anchor="start",
+            offset=16,
         ),
     )
-    .configure_axis(labelFontSize=18, titleFontSize=22, gridOpacity=0.15, domainWidth=0)
+    .configure_axis(
+        labelFontSize=18,
+        titleFontSize=22,
+        titleColor="#333333",
+        labelColor="#555555",
+        gridOpacity=0.12,
+        gridColor="#cccccc",
+        domainWidth=0,
+        tickColor="#cccccc",
+    )
     .configure_view(strokeWidth=0)
+    .configure_legend(titlePadding=8, labelLimit=300)
 )
 
 # Save

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 curve-oc: Operating Characteristic (OC) Curve
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 82/100 | Created: 2026-03-19
@@ -12,55 +12,47 @@ import pygal
 from pygal.style import Style
 
 
-# Data
-fraction_defective = np.linspace(0, 0.20, 150)
+# Data — tighter x-range to reduce empty space on right
+fraction_defective = np.linspace(0, 0.15, 150)
 
-
-# Binomial CDF: P(X <= c) for X ~ Bin(n, p)
-def binom_cdf(c, n, p):
-    p = np.asarray(p, dtype=float)
-    result = np.zeros_like(p)
-    for k in range(c + 1):
-        result += comb(n, k) * p**k * (1 - p) ** (n - k)
-    return result
-
-
-# Sampling plans: (sample_size, acceptance_number)
+# Sampling plans: (sample_size, acceptance_number, label)
 plans = [(50, 1, "n=50, c=1"), (50, 2, "n=50, c=2"), (100, 2, "n=100, c=2"), (100, 3, "n=100, c=3")]
 
-# Compute OC curves
+# Compute OC curves inline — P(accept) = sum C(n,k) * p^k * (1-p)^(n-k) for k=0..c
 oc_curves = {}
 for n, c, label in plans:
-    prob_accept = binom_cdf(c, n, fraction_defective)
-    oc_curves[label] = prob_accept
+    p = fraction_defective
+    oc_curves[label] = sum(comb(n, k) * p**k * (1 - p) ** (n - k) for k in range(c + 1))
 
 # Quality levels
 aql = 0.01  # Acceptable Quality Level (1%)
 ltpd = 0.08  # Lot Tolerance Percent Defective (8%)
 
-# Risks for plan n=100, c=2
-alpha = float(1 - binom_cdf(2, 100, aql))  # Producer's risk at AQL
-beta = float(binom_cdf(2, 100, ltpd))  # Consumer's risk at LTPD
+# Risks for reference plan n=100, c=2
+pa_at_aql = float(sum(comb(100, k) * aql**k * (1 - aql) ** (100 - k) for k in range(3)))
+alpha = 1 - pa_at_aql  # Producer's risk
+beta = float(sum(comb(100, k) * ltpd**k * (1 - ltpd) ** (100 - k) for k in range(3)))
 
-# Style
+# Style — distinct reference line colors from grid
 C_PLAN1 = "#306998"
 C_PLAN2 = "#E68A00"
 C_PLAN3 = "#2CA02C"
 C_PLAN4 = "#9467BD"
-C_REF = "#999999"
+C_REF_AQL = "#555555"
+C_REF_LTPD = "#777777"
 C_RISK = "#D62728"
 
 custom_style = Style(
     background="white",
-    plot_background="#FAFAFA",
+    plot_background="#F7F7F2",
     foreground="#2A2A2A",
     foreground_strong="#1A1A1A",
     foreground_subtle="#E0DEDA",
-    colors=(C_PLAN1, C_PLAN2, C_PLAN3, C_PLAN4, C_REF, C_REF, C_RISK, C_RISK),
-    title_font_size=40,
+    colors=(C_PLAN1, C_PLAN2, C_PLAN3, C_PLAN4, C_REF_AQL, C_REF_LTPD, C_RISK, C_RISK),
+    title_font_size=42,
     label_font_size=26,
     major_label_font_size=24,
-    legend_font_size=22,
+    legend_font_size=24,
     value_font_size=16,
     stroke_width=3,
     font_family="sans-serif",
@@ -76,38 +68,52 @@ chart = pygal.XY(
     show_dots=False,
     dots_size=0,
     stroke=True,
+    fill=False,
     show_x_guides=False,
     show_y_guides=True,
     legend_at_bottom=True,
     legend_at_bottom_columns=4,
-    legend_box_size=20,
+    legend_box_size=24,
     truncate_legend=-1,
+    interpolate="hermite",
+    interpolation_parameters={"type": "cardinal", "c": 0.75},
     range=(0, 1.05),
-    xrange=(0, 0.20),
+    xrange=(0, 0.15),
+    x_value_formatter=lambda x: f"{x:.0%}",
+    value_formatter=lambda y: f"{y:.2f}",
     allow_interruptions=True,
+    x_labels=[0, 0.01, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12, 0.15],
+    y_labels=[0, 0.2, 0.4, 0.6, 0.8, 1.0],
     js=[],
     print_values=False,
 )
 
-# Plot OC curves
+# Plot OC curves with thick strokes
 for _n, _c, label in plans:
     curve_data = list(zip(fraction_defective.tolist(), oc_curves[label].tolist(), strict=True))
-    chart.add(label, curve_data, show_dots=False, stroke_style={"width": 6, "linecap": "round", "linejoin": "round"})
+    chart.add(label, curve_data, show_dots=False, stroke_style={"width": 7, "linecap": "round", "linejoin": "round"})
 
-# AQL vertical reference line
-chart.add(f"AQL = {aql:.0%}", [(aql, 0), (aql, 1.05)], show_dots=False, stroke_style={"width": 3, "dasharray": "12, 8"})
+# AQL vertical reference line — darker than grid, clearly distinct
+chart.add(
+    f"AQL = {aql:.0%}",
+    [(aql, 0), (aql, 1.05)],
+    show_dots=False,
+    stroke_style={"width": 4, "dasharray": "16, 8", "linecap": "round"},
+)
 
 # LTPD vertical reference line
 chart.add(
-    f"LTPD = {ltpd:.0%}", [(ltpd, 0), (ltpd, 1.05)], show_dots=False, stroke_style={"width": 3, "dasharray": "12, 8"}
+    f"LTPD = {ltpd:.0%}",
+    [(ltpd, 0), (ltpd, 1.05)],
+    show_dots=False,
+    stroke_style={"width": 4, "dasharray": "16, 8", "linecap": "round"},
 )
 
 # Producer's risk point (alpha at AQL for n=100, c=2)
-pa_at_aql = float(binom_cdf(2, 100, aql))
-chart.add(f"\u03b1 = {alpha:.3f} (n=100,c=2)", [(aql, pa_at_aql)], stroke=False, show_dots=True, dots_size=14)
+chart.add(f"\u03b1 = {alpha:.3f} (producer's risk)", [(aql, pa_at_aql)], stroke=False, show_dots=True, dots_size=16)
 
 # Consumer's risk point (beta at LTPD for n=100, c=2)
-chart.add(f"\u03b2 = {beta:.3f} (n=100,c=2)", [(ltpd, beta)], stroke=False, show_dots=True, dots_size=14)
+chart.add(f"\u03b2 = {beta:.3f} (consumer's risk)", [(ltpd, beta)], stroke=False, show_dots=True, dots_size=16)
 
 # Render
 svg = chart.render(is_unicode=True)

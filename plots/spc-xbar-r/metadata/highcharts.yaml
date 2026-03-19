@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: spc-xbar-r
 created: '2026-03-19T21:49:14Z'
-updated: '2026-03-19T22:13:41Z'
+updated: '2026-03-19T22:31:05Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23318370430
 issue: 4551
@@ -10,40 +10,40 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/spc-xbar-r/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spc-xbar-r/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/spc-xbar-r/highcharts/plot.html
-quality_score: 86
+quality_score: 84
 review:
   strengths:
-  - Excellent spec compliance with all SPC features implemented correctly (dual chart,
-    control limits, warning limits, OOC highlighting, standard constants)
-  - Strong data storytelling with red OOC points creating clear focal points against
-    blue baseline
-  - Realistic CNC machining context with appropriate scale values
-  - Clean well-structured code with proper data/chart separation
-  - Good use of Highcharts plotLines for labeled control limit visualization
-  - Interactive HTML output alongside PNG
+  - Perfect spec compliance (15/15) with all SPC chart features correctly implemented
+    including X-bar/R stacked layout, control limits, warning limits, and OOC highlighting
+  - Excellent data quality (15/15) with realistic CNC machining scenario, appropriate
+    scale, and complete feature coverage
+  - Strong design with custom palette, refined markers, and clear visual hierarchy
+    between normal and out-of-control points
+  - Good use of Highcharts-specific plotLines for labeled horizontal reference lines
+  - Interactive HTML output alongside PNG provides additional value
   weaknesses:
-  - Raw JS configuration instead of highcharts_core Python API reduces library mastery
-    score
-  - Right-side control limit labels slightly crowded in X-bar chart
-  - Bottom margin has some wasted space below the x-axis
-  - Color palette functional but could be more refined for publication quality
-  image_description: The plot displays a vertically stacked pair of SPC charts for
-    CNC shaft diameter monitoring at 4800x2700px. The top chart is the X-bar (sample
-    mean) chart showing 30 samples plotted as a blue line with circular markers around
-    25.000 mm. Red dashed UCL (~25.013) and LCL (~24.987) lines are labeled on the
-    right side. Orange dotted warning lines (UWL/LWL) are labeled on the left. A solid
-    blue center line (CL = 24.9999) runs through the middle. Three out-of-control
-    points are highlighted as larger red circles at approximately samples 9 (high),
-    19 (low), and 25 (high). The bottom chart is the R (sample range) chart showing
-    ranges as a blue line with markers. It has a red dashed UCL (~0.049), orange UWL
-    warning line, and blue center line (CL = 0.0232). No R-chart points exceed control
-    limits. The shared x-axis shows Sample Number 1-30. Y-axes are labeled X-bar (Sample
-    Mean, mm) and R (Sample Range, mm). Title reads CNC Shaft Diameter Monitoring
-    · spc-xbar-r · highcharts · pyplots.ai. Legend displays X-bar (Sample Mean), Out
-    of Control, and R (Sample Range).
+  - Right-side control limit labels slightly cramped near canvas edge despite generous
+    spacing allocation
+  - Helper function make_plot_line breaks flat KISS structure
+  - Hybrid API usage (Python objects for series, raw dicts for config) is pragmatic
+    but not fully idiomatic highcharts_core
+  image_description: 'The plot displays two vertically stacked Highcharts line charts
+    on a light gray (#FAFBFC) background. The top chart shows X-bar (Sample Mean)
+    values for CNC shaft diameter measurements across 30 samples, plotted as a blue
+    line with circular markers (white-bordered). Three out-of-control points are highlighted
+    as large red diamond markers — one above UCL around sample 9, one below LCL around
+    sample 19, and one above UCL around sample 25. Horizontal reference lines include:
+    a solid teal center line (CL approximately 24.999), dashed red UCL (approximately
+    25.013) and LCL (approximately 24.987), and dotted amber UWL/LWL warning limits.
+    The bottom chart shows R (Sample Range) values with the same blue line style,
+    a teal CL (approximately 0.023), dashed red UCL (approximately 0.048), and dotted
+    amber UWL. The title reads "CNC Shaft Diameter Monitoring · spc-xbar-r · highcharts
+    · pyplots.ai". A legend at the top shows three entries: X-bar (Sample Mean), Out
+    of Control, and R (Sample Range). All axis labels include units (mm). The x-axis
+    shows sample numbers 1 through 30.'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 24
       max: 30
       items:
       - id: VQ-01
@@ -51,64 +51,69 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 44px, axis titles 26-28px, tick
-          labels 22-24px). Minor smallness on UWL/LWL labels.
+        comment: All font sizes explicitly set (title 42px, axis titles 26px, tick
+          labels 20-22px, plotLine labels 20px). Minor right-side label cramping near
+          canvas edge.
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: Mostly clean. Right-side control limit labels slightly crowded.
+        comment: No major overlap. Labels positioned on opposite sides to avoid collision.
+          Minor crowding where UCL and UWL lines are close.
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Markers well-sized, OOC points prominent with larger radius and red
-          color.
+        comment: Markers well-sized (radius 7 normal, 13 OOC). Lines clear at width
+          3. Could be slightly larger for 4800px canvas.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Blue-red-orange scheme distinguishable for most colorblind types
-          but not optimal for protanopia.
+        comment: Blue/red/teal/amber palette distinguishable for most colorblind types.
+          Red used for both OOC points and UCL/LCL lines.
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 2
         max: 4
-        passed: true
-        comment: Good dual-panel layout. Some wasted space at bottom of canvas.
+        passed: false
+        comment: Charts use vertical space well but large right spacing causes control
+          limit labels to sit close to canvas edge.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with units on both y-axes.
+        comment: 'Descriptive with units: X-bar (Sample Mean, mm), R (Sample Range,
+          mm), Sample Number.'
     design_excellence:
-      score: 13
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom color palette, intentional typography hierarchy, above defaults
-          but not publication-level.
+        comment: Custom color palette, custom font family, light background, white-bordered
+          markers. Clearly above defaults.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Subtle grid at 8% opacity, clean line styling, good dash style differentiation.
+        comment: Subtle grid (low-opacity rgba), clean background, custom spacing.
+          Good refinement but not fully polished.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: OOC points create clear focal points. Warning/control zones tell
-          the SPC story.
+        comment: OOC points as red diamonds create clear focal points. Warning zones
+          guide attention. Clear SPC narrative.
     spec_compliance:
       score: 15
       max: 15
@@ -118,27 +123,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct dual X-bar/R chart vertically stacked sharing x-axis.
+        comment: Correct X-bar chart on top, R chart on bottom, vertically stacked
+          pair sharing x-axis.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: UCL/LCL dashed, center line solid, OOC highlighted,
-          warning limits, standard constants.'
+        comment: 'All features present: UCL/LCL dashed and labeled, CL solid, OOC
+          highlighted, warning limits shown, standard constants used.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X-axis sample number, Y-axes correctly show means and ranges.
+        comment: Sample number on X, means on top Y, ranges on bottom Y. Correct mapping.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct with spec-id, library, pyplots.ai. Legend labels
-          match.
+        comment: Title follows required format. Legend labels match data series.
     data_quality:
       score: 15
       max: 15
@@ -148,54 +153,57 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows OOC points both above and below limits, in-control variation,
-          warning zone proximity.
+        comment: Shows OOC above and below limits, normal variation, R chart variation.
+          Complete coverage.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: CNC shaft diameter at 25.000 mm target is textbook SPC scenario.
+        comment: CNC shaft diameter measurements - realistic manufacturing QC scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 30 samples, subgroups of 5, realistic process parameters and constants.
+        comment: 25mm target with thousandths-of-mm variation - realistic for precision
+          machining.
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
-        passed: true
-        comment: Linear flow with no functions or classes.
+        passed: false
+        comment: Helper function make_plot_line breaks flat structure rule, though
+          pragmatic for 8 plotLine definitions.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) set at the top.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: All imports used. No unused imports.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean separation of data and chart config. No fake UI.
+        comment: Well-structured code with appropriate complexity. Hybrid approach
+          is pragmatic.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png via Selenium. Also saves interactive plot.html.
+        comment: Saves as plot.png via Selenium. Also saves interactive plot.html.
     library_mastery:
       score: 7
       max: 10
@@ -205,23 +213,23 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Raw JS f-string instead of highcharts_core Python API. Works but
-          bypasses high-level API.
+        comment: 'Hybrid approach: Python API for series, dict for full config. Pragmatic
+          but not purely idiomatic.'
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: plotLines with labels, multiple yAxis with percentage positioning,
-          scatter overlay, tooltip config, HTML export.
+        comment: Uses Highcharts-specific plotLines, multiple y-axes with height/top
+          positioning, interactive tooltips with formatting.
   verdict: REJECTED
 impl_tags:
   dependencies:
   - selenium
   techniques:
-  - subplots
-  - annotations
   - html-export
+  - hover-tooltips
+  - custom-legend
   patterns:
   - data-generation
   - iteration-over-groups

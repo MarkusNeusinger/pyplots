@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-growth-percentile: Pediatric Growth Chart with Percentile Curves
 Library: bokeh 3.9.0 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-19
@@ -6,7 +6,7 @@ Quality: 84/100 | Created: 2026-03-19
 
 import numpy as np
 from bokeh.io import export_png, output_file, save
-from bokeh.models import ColumnDataSource, Label, Legend
+from bokeh.models import ColumnDataSource, HoverTool, Label, Legend
 from bokeh.plotting import figure
 
 
@@ -50,7 +50,7 @@ band_colors = [
     "#2980b9",  # P75-P90
     "#1a5276",  # P90-P97
 ]
-band_alphas = [0.35, 0.30, 0.25, 0.25, 0.30, 0.35]
+band_alphas = [0.55, 0.45, 0.40, 0.40, 0.45, 0.55]
 
 # Draw filled percentile bands (from outer to inner)
 bands = [
@@ -87,7 +87,7 @@ for values, label, width, alpha in percentile_data:
         x=age_months[-1] + 0.5,
         y=values[-1],
         text=label,
-        text_font_size="18pt",
+        text_font_size="20pt",
         text_color="#1a5276",
         text_alpha=0.8,
         text_baseline="middle",
@@ -98,6 +98,10 @@ for values, label, width, alpha in percentile_data:
 patient_source = ColumnDataSource(data={"x": patient_age, "y": patient_weight})
 r_line = p.line(x="x", y="y", source=patient_source, line_color="#e74c3c", line_width=4)
 r_scatter = p.scatter(x="x", y="y", source=patient_source, size=18, color="#e74c3c", line_color="white", line_width=2)
+
+# HoverTool for patient data points (interactive in HTML export)
+hover = HoverTool(renderers=[r_scatter], tooltips=[("Age", "@x months"), ("Weight", "@y kg")], mode="mouse")
+p.add_tools(hover)
 
 # Legend
 legend = Legend(
@@ -119,18 +123,27 @@ p.legend.spacing = 12
 p.legend.padding = 20
 p.legend.background_fill_alpha = 0.85
 
-p.xgrid.grid_line_color = "gray"
-p.xgrid.grid_line_alpha = 0.2
+p.xgrid.grid_line_color = "#cccccc"
+p.xgrid.grid_line_alpha = 0.3
 p.xgrid.grid_line_dash = "dashed"
-p.ygrid.grid_line_color = "gray"
-p.ygrid.grid_line_alpha = 0.2
+p.ygrid.grid_line_color = "#cccccc"
+p.ygrid.grid_line_alpha = 0.3
 p.ygrid.grid_line_dash = "dashed"
 
-p.axis.axis_line_width = 2
-p.axis.major_tick_line_width = 2
+# Refined axis styling - remove heavy default chrome
+p.outline_line_color = None
+p.axis.axis_line_color = "#666666"
+p.axis.axis_line_width = 1.5
+p.axis.major_tick_line_color = "#666666"
+p.axis.major_tick_line_width = 1.5
+p.axis.minor_tick_line_color = None
+
+# Background styling
+p.background_fill_color = "#f8f9fa"
+p.border_fill_color = "white"
 
 p.y_range.start = 0
-p.x_range.end = 40
+p.x_range.end = 37.5
 
 p.min_border_left = 100
 p.min_border_right = 120

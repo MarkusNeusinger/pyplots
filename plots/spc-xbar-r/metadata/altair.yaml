@@ -1,7 +1,7 @@
 library: altair
 specification_id: spc-xbar-r
 created: '2026-03-19T21:47:30Z'
-updated: '2026-03-19T21:52:27Z'
+updated: '2026-03-19T22:02:05Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23318370349
 issue: 4551
@@ -13,33 +13,37 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/spc-xbar-r/alt
 quality_score: 83
 review:
   strengths:
-  - Perfect spec compliance with all SPC features including standard control chart
-    constants A2/D3/D4
-  - Excellent data quality with realistic CNC machining context and well-placed OOC
-    points in both directions
-  - Clean well-structured code with good Altair declarative layer composition
-  - Direct labeling of limit lines (UCL, LCL, CL, ±2σ) on right side instead of legend
-  - OOC points clearly distinguished with both color (red) and shape (diamond) encoding
+  - Perfect spec compliance with all required SPC features and proper control chart
+    constants (A2, D3, D4)
+  - Excellent realistic data context — CNC shaft diameter is a textbook SPC application
+    with plausible values
+  - Good visual hierarchy — OOC points immediately stand out through red diamond markers
+    vs blue circles
+  - Thoughtful label overlap resolution ensures limit labels remain readable
+  - Clean Altair-idiomatic declarative composition with vconcat and layered marks
   weaknesses:
-  - Right-side limit labels overlap when control/warning limits are close together
-    in X-bar chart
-  - X-axis extends beyond data range to ~35 due to label placement, wasting horizontal
-    space
-  - Default Altair gridlines remain with no refinement
-  - Red/yellow limit line distinction may be difficult for color-impaired viewers
-  image_description: The plot displays two vertically stacked SPC charts for CNC Shaft
-    Diameter Monitoring. The top X-bar chart shows sample means (30 samples) plotted
-    as a blue line with filled circle markers against a center line (black solid,
-    ~25.00 mm), UCL and LCL (red dashed), and ±2σ warning limits (yellow/orange dashed).
-    Three out-of-control points are highlighted as red diamond markers at samples
-    8 (upward shift ~25.10), 17 (downward shift ~24.82), and 24 (upward shift ~25.21).
-    The bottom R chart shows sample ranges with the same limit line styling. Right-side
-    text labels identify each limit line (UCL, LCL, CL, +2σ, -2σ). The title reads
-    "CNC Shaft Diameter Monitoring · spc-xbar-r · altair · pyplots.ai" in large font
-    at the top. The background is clean white with no view borders.
+  - Limit label font size (14pt) slightly below tick label size (16pt), reducing consistency
+  - Helper function make_limit_labels violates KISS principle
+  - Structural duplication between X-bar and R chart sections adds verbosity
+  - Blue-red color distinction could be improved for stronger colorblind accessibility
+  - Design could push further toward publication quality with zone shading or more
+    refinement
+  image_description: The plot displays two vertically stacked control charts for CNC
+    Shaft Diameter Monitoring. The top chart is the X-bar chart showing sample means
+    (mm) with a center line at ~25.00 mm, red dashed UCL/LCL lines, and amber dashed
+    warning limits (+2σ/−2σ). Normal points are blue filled circles connected by a
+    blue line; three out-of-control points (samples 8, 17, 24) are shown as larger
+    red diamonds. Sample 8 shows an upward shift above UCL, sample 17 a downward shift
+    below LCL, and sample 24 a strong upward shift. The bottom chart is the Range
+    (R) chart with similar control/warning limit structure showing natural range variation
+    with no OOC points. Labels (UCL, LCL, CL, ±2σ) are positioned near their respective
+    lines in both charts. The title reads "CNC Shaft Diameter Monitoring · spc-xbar-r
+    · altair · pyplots.ai" at the top. Both charts share the x-axis labeled "Sample
+    Number" (0-31). The background is clean white with subtle dotted grid lines on
+    y-axes only. View strokes are removed for a clean look.
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 26
       max: 30
       items:
       - id: VQ-01
@@ -47,45 +51,44 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title 28, axis labels 20, ticks 16). Limit
-          labels at fontSize=14 slightly below 16pt guideline.
+        comment: Font sizes explicitly set for title (28), axis titles (20), ticks
+          (16). Limit labels at 14pt slightly below tick threshold.
       - id: VQ-02
         name: No Overlap
-        score: 4
-        max: 6
-        passed: false
-        comment: Right-side limit labels (UCL, +2σ, CL, -2σ, LCL) overlap in X-bar
-          chart where values are tightly spaced.
-      - id: VQ-03
-        name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Points well-sized (120/200), OOC diamonds visually distinct with
-          larger size and different shape.
+        comment: Overlap resolution function helps but UCL/+2σ and −2σ/LCL label pairs
+          still visually tight in X-bar chart.
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 6
+        passed: true
+        comment: Points well-sized (120 normal, 200 OOC), diamond shape for OOC creates
+          clear distinction.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Blue/red/yellow palette mostly accessible. Red and yellow limit lines
-          could be hard to distinguish for protanopia.
+        comment: Blue/red/amber palette distinguishable for most colorblind types
+          but blue-red can challenge some protanopia variants.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good vertical stacking but x-axis extends to ~35 while data only
-          goes to 30, wasting horizontal space.
+        comment: Good two-panel layout filling canvas well. Charts proportionate with
+          minor height optimization possible.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: X-bar (mm), Range R (mm), Sample
-          Number.'
+        comment: 'Descriptive with units: X̄ (mm), Range R (mm), Sample Number.'
     design_excellence:
-      score: 12
+      score: 13
       max: 20
       items:
       - id: DE-01
@@ -93,22 +96,22 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Custom color palette, diamond OOC markers, direct limit labels. Above
-          defaults with intentional design.
+        comment: Custom blue/red/amber palette with intentional hierarchy. Above defaults
+          but not publication-level.
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: View border removed but default gridlines remain. Right-side label
-          placement wastes space.
+        passed: true
+        comment: View strokes removed, x-grid disabled, y-grid styled subtly, white
+          stroke on points for edge highlighting.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: OOC points create clear focal points through color and shape contrast.
-          Dual-chart layout guides viewer.
+        comment: OOC points draw attention through color and shape contrast. Three
+          shifts demonstrate different failure modes.
     spec_compliance:
       score: 15
       max: 15
@@ -118,14 +121,15 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct X-bar on top, R on bottom, vertically stacked sharing x-axis.
+        comment: Correct X-bar on top, R on bottom, vertically stacked with shared
+          x-axis.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
         comment: 'All features present: UCL/LCL dashed, center line solid, OOC highlighted,
-          warning limits, A2/D3/D4 constants.'
+          warning limits, standard constants, 3 OOC points.'
       - id: SC-03
         name: Data Mapping
         score: 3
@@ -137,8 +141,8 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Title follows spec format with descriptive prefix. Limit lines labeled
-          directly, no legend needed.
+        comment: Title follows spec-id · library · pyplots.ai format with descriptive
+          prefix. No legend needed.
     data_quality:
       score: 15
       max: 15
@@ -148,30 +152,32 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: OOC shifts in both directions, normal variation, R chart variability
-          all demonstrated.
+        comment: Normal variation plus 3 OOC points with upward and downward shifts
+          in X-bar. R chart shows natural range variation.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: CNC shaft diameter monitoring - classic neutral SPC application.
+        comment: CNC shaft diameter measurements — textbook SPC application with realistic
+          25mm target and 0.05mm process std.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 25mm target, 0.05mm std - realistic for precision CNC machining.
+        comment: 25mm diameter, 0.05mm std, subgroups of n=5, 30 samples — all realistic
+          for precision machining.
     code_quality:
-      score: 10
+      score: 7
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
-        passed: true
-        comment: 'Linear flow: imports, data, X-bar chart, R chart, combine, save.'
+        passed: false
+        comment: Contains make_limit_labels helper function, violating pure KISS structure.
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -183,20 +189,20 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: altair, numpy, pandas.'
+        comment: All imports (altair, numpy, pandas) are used.
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Clean code, repetition inherent to dual-chart structure. Tooltips
-          are legitimate Altair feature.
+        passed: false
+        comment: Structural duplication between X-bar and R chart sections. Helper
+          function adds complexity.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png with scale_factor=3.0 and plot.html.
+        comment: Saves plot.png and plot.html. Current Altair API.
     library_mastery:
       score: 7
       max: 10
@@ -206,15 +212,15 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Good declarative API: layer composition with +, vconcat, encoding
-          types, multiple mark types, configure methods.'
+        comment: Good declarative Altair usage with mark_*, encoding channels, vconcat,
+          configure. Could use condition encoding instead of pre-filtering.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Tooltips, HTML export, vconcat, mark_text for direct labeling are
-          Altair-distinctive features.
+        comment: Uses vconcat, tooltips, mark_text labels, color encoding with custom
+          Scale, HTML export — Altair-distinctive features.
   verdict: REJECTED
 impl_tags:
   dependencies: []
@@ -227,4 +233,5 @@ impl_tags:
   - data-generation
   dataprep: []
   styling:
+  - grid-styling
   - edge-highlighting

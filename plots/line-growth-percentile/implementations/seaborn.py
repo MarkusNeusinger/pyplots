@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-growth-percentile: Pediatric Growth Chart with Percentile Curves
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-19
@@ -10,93 +10,123 @@ import pandas as pd
 import seaborn as sns
 
 
-sns.set_style("whitegrid", {"grid.alpha": 0.2, "grid.linewidth": 0.8})
+# Seaborn theming and context — distinctive seaborn features
+sns.set_theme(
+    style="whitegrid",
+    rc={"grid.alpha": 0.15, "grid.linewidth": 0.6, "axes.edgecolor": "#cccccc", "font.family": "sans-serif"},
+)
+sns.set_context("talk", font_scale=1.1, rc={"lines.linewidth": 2.0})
 
 # Data — WHO-style weight-for-age reference for boys, 0-36 months
 np.random.seed(42)
 
 age_months = np.arange(0, 37, 1)
-
 median_weight = 3.3 + 0.8 * age_months - 0.008 * age_months**2 + 0.00005 * age_months**3
 sd = 0.4 + 0.04 * age_months
 
 # Z-scores for standard normal percentiles
-percentile_values = {
-    "P3": -1.8808,
-    "P10": -1.2816,
-    "P25": -0.6745,
-    "P50": 0.0,
-    "P75": 0.6745,
-    "P90": 1.2816,
-    "P97": 1.8808,
-}
+percentile_z = {"P3": -1.8808, "P10": -1.2816, "P25": -0.6745, "P50": 0.0, "P75": 0.6745, "P90": 1.2816, "P97": 1.8808}
 
-percentiles = {}
-for label, z in percentile_values.items():
-    percentiles[label] = median_weight + z * sd
+percentiles = {label: median_weight + z * sd for label, z in percentile_z.items()}
 
-# Individual patient data — healthy boy tracked at well-child visits
+# Build long-format DataFrame for percentile curves — seaborn-idiomatic approach
+records = []
+for label, values in percentiles.items():
+    for i, age in enumerate(age_months):
+        records.append({"Age (months)": age, "Weight (kg)": values[i], "Percentile": label})
+percentile_df = pd.DataFrame(records)
+
+# Individual patient data — boy with gradual drift below P25
 patient_ages = np.array([0, 1, 2, 4, 6, 9, 12, 15, 18, 24, 30, 36])
 patient_weights = np.array([3.5, 4.3, 5.4, 7.0, 8.1, 9.2, 10.1, 10.9, 11.5, 12.8, 14.0, 15.2])
+patient_df = pd.DataFrame({"Age (months)": patient_ages, "Weight (kg)": patient_weights})
+
+# Generate graduated blue palette using seaborn's color utilities
+blue_palette = sns.light_palette("#08306b", n_colors=8, reverse=True)
+band_colors = [blue_palette[1], blue_palette[2], blue_palette[3], blue_palette[3], blue_palette[2], blue_palette[1]]
+band_alphas = [0.30, 0.25, 0.20, 0.20, 0.25, 0.30]
 
 # Plot
 fig, ax = plt.subplots(figsize=(16, 9))
 
-blue_shades = [
-    "#08306b",  # P3-P10 (darkest)
-    "#2171b5",  # P10-P25
-    "#6baed6",  # P25-P50
-    "#6baed6",  # P50-P75
-    "#2171b5",  # P75-P90
-    "#08306b",  # P90-P97 (darkest)
-]
-
+# Percentile bands (fill_between is the only part requiring matplotlib directly)
 band_labels = list(percentiles.keys())
-band_alphas = [0.25, 0.30, 0.35, 0.35, 0.30, 0.25]
-
 for i in range(len(band_labels) - 1):
-    lower = percentiles[band_labels[i]]
-    upper = percentiles[band_labels[i + 1]]
-    ax.fill_between(age_months, lower, upper, color=blue_shades[i], alpha=band_alphas[i])
+    ax.fill_between(
+        age_months,
+        percentiles[band_labels[i]],
+        percentiles[band_labels[i + 1]],
+        color=band_colors[i],
+        alpha=band_alphas[i],
+    )
 
-# Percentile lines
-line_alphas = {"P3": 0.5, "P10": 0.5, "P25": 0.6, "P50": 1.0, "P75": 0.6, "P90": 0.5, "P97": 0.5}
-line_widths = {"P3": 1.0, "P10": 1.0, "P25": 1.2, "P50": 2.5, "P75": 1.2, "P90": 1.0, "P97": 1.0}
+# Percentile lines via seaborn lineplot with hue — core library usage
+line_sizes = {"P3": 1.0, "P10": 1.0, "P25": 1.2, "P50": 2.8, "P75": 1.2, "P90": 1.0, "P97": 1.0}
+line_palette = sns.dark_palette("#08306b", n_colors=7, reverse=False)
+percentile_color_map = dict(zip(percentile_z.keys(), line_palette, strict=False))
+percentile_color_map["P50"] = "#08306b"
 
-for label, values in percentiles.items():
-    ax.plot(age_months, values, color="#08306b", alpha=line_alphas[label], linewidth=line_widths[label])
+sns.lineplot(
+    data=percentile_df,
+    x="Age (months)",
+    y="Weight (kg)",
+    hue="Percentile",
+    hue_order=list(percentile_z.keys()),
+    palette=percentile_color_map,
+    size="Percentile",
+    sizes=line_sizes,
+    alpha=0.6,
+    legend=False,
+    ax=ax,
+)
+# Emphasize P50 with stronger alpha
+p50_data = percentile_df[percentile_df["Percentile"] == "P50"]
+sns.lineplot(
+    data=p50_data, x="Age (months)", y="Weight (kg)", color="#08306b", linewidth=2.8, alpha=1.0, legend=False, ax=ax
+)
 
-# Percentile labels on the right margin
+# Patient trajectory — seaborn lineplot + scatterplot with larger markers
+sns.lineplot(
+    data=patient_df, x="Age (months)", y="Weight (kg)", color="#c0392b", linewidth=3.0, zorder=5, legend=False, ax=ax
+)
+sns.scatterplot(
+    data=patient_df,
+    x="Age (months)",
+    y="Weight (kg)",
+    color="#c0392b",
+    s=200,
+    zorder=6,
+    edgecolor="white",
+    linewidth=2.0,
+    legend=False,
+    ax=ax,
+)
+
+# Percentile labels on right margin
 for label, values in percentiles.items():
     ax.text(
         age_months[-1] + 0.8,
         values[-1],
         label,
-        fontsize=13,
+        fontsize=14,
         fontweight="bold" if label == "P50" else "normal",
-        color="#08306b",
+        color="#08306b" if label == "P50" else "#2171b5",
         va="center",
-        alpha=0.8,
+        alpha=0.9 if label == "P50" else 0.7,
     )
 
-# Patient data overlay
-patient_df = pd.DataFrame({"age": patient_ages, "weight": patient_weights})
-sns.lineplot(data=patient_df, x="age", y="weight", color="#d62728", linewidth=2.5, zorder=5, ax=ax)
-sns.scatterplot(
-    data=patient_df, x="age", y="weight", color="#d62728", s=120, zorder=6, edgecolor="white", linewidth=1.5, ax=ax
-)
-
-# Style
+# Axes and title
 ax.set_xlabel("Age (months)", fontsize=20)
 ax.set_ylabel("Weight (kg)", fontsize=20)
-ax.set_title("line-growth-percentile · seaborn · pyplots.ai", fontsize=24, fontweight="medium")
+ax.set_title("line-growth-percentile · seaborn · pyplots.ai", fontsize=24, fontweight="medium", pad=16)
 ax.tick_params(axis="both", labelsize=16)
-ax.spines["top"].set_visible(False)
-ax.spines["right"].set_visible(False)
 ax.set_xlim(0, 36)
 ax.set_xticks(np.arange(0, 37, 3))
 ax.xaxis.grid(False)
 ax.set_ylim(0, None)
+
+# Seaborn despine — idiomatic spine removal
+sns.despine(ax=ax, top=True, right=True)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

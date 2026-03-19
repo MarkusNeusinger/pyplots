@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-growth-percentile: Pediatric Growth Chart with Percentile Curves
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-19
@@ -61,7 +61,7 @@ for lower, upper, fill_color in band_pairs:
 # Percentile lines - thin reference lines for each percentile
 line_layers = []
 percentile_labels_list = ["P3", "P10", "P25", "P50", "P75", "P90", "P97"]
-line_opacities = [0.4, 0.5, 0.6, 1.0, 0.6, 0.5, 0.4]
+line_opacities = [0.55, 0.6, 0.7, 1.0, 0.7, 0.6, 0.55]
 line_widths = [1.0, 1.0, 1.0, 2.5, 1.0, 1.0, 1.0]
 
 for pct, opacity, width in zip(percentile_labels_list, line_opacities, line_widths, strict=True):
@@ -83,7 +83,7 @@ label_df = pd.DataFrame(
 
 percentile_text = (
     alt.Chart(label_df)
-    .mark_text(align="left", dx=6, fontSize=14, fontWeight="bold", color="#306998")
+    .mark_text(align="left", dx=6, fontSize=16, fontWeight="bold", color="#306998")
     .encode(x=alt.X("age_months:Q"), y=alt.Y("value:Q"), text="label:N")
 )
 
@@ -114,17 +114,30 @@ chart = (
     .properties(
         width=1600,
         height=900,
-        title=alt.Title("Boys Weight-for-Age · line-growth-percentile · altair · pyplots.ai", fontSize=28),
+        title=alt.Title(
+            "line-growth-percentile · altair · pyplots.ai",
+            fontSize=28,
+            subtitle="Boys Weight-for-Age (0–36 months)",
+            subtitleFontSize=18,
+            subtitleColor="#666666",
+        ),
     )
-    .configure_axis(labelFontSize=18, titleFontSize=22, grid=False)
-    .configure_view(strokeWidth=0)
+    .configure_axis(
+        labelFontSize=18,
+        titleFontSize=22,
+        gridColor="#e0e0e0",
+        gridOpacity=0.5,
+        gridDash=[3, 3],
+        domainColor="#888888",
+        tickColor="#888888",
+    )
+    .configure_axisX(grid=False)
+    .configure_axisY(grid=True)
+    .configure_view(strokeWidth=0, fill="#f8fafc")
     .resolve_scale(y="shared")
-)
-
-# Override axis titles via encoding on the first layer won't work with layer(),
-# so we use configure. Instead, add explicit axis config.
-chart = chart.encode(
-    x=alt.X("age_months:Q", title="Age (months)", scale=alt.Scale(domain=[0, 38])), y=alt.Y(title="Weight (kg)")
+    .encode(
+        x=alt.X("age_months:Q", title="Age (months)", scale=alt.Scale(domain=[0, 38])), y=alt.Y(title="Weight (kg)")
+    )
 )
 
 # Save

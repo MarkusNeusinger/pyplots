@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: spc-xbar-r
 created: '2026-03-19T21:47:50Z'
-updated: '2026-03-19T22:14:35Z'
+updated: '2026-03-19T22:23:59Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23318370463
 issue: 4551
@@ -10,79 +10,82 @@ library_version: 4.9.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/spc-xbar-r/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spc-xbar-r/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/spc-xbar-r/letsplot/plot.html
-quality_score: 88
+quality_score: 87
 review:
   strengths:
-  - Full spec compliance with all required SPC features including warning limits and
-    standard constants
-  - Excellent data storytelling through red OOC highlights creating immediate focal
+  - Perfect spec compliance with all required SPC features (UCL/LCL, warning limits,
+    OOC detection, A2/D3/D4 constants)
+  - Excellent data quality with realistic CNC machining context and well-placed out-of-control
     points
-  - Dual PNG + HTML export leveraging lets-plot interactive tooltip capabilities
-  - Clean professional color scheme with intentional hierarchy (muted limits vs bold
-    data)
-  - Proper label nudging to prevent overlap in the limit labels
+  - Strong design with custom color hierarchy (blue data, red alerts, graduated grays
+    for limits)
+  - Good use of lets-plot distinctive features (gggrid, layer_tooltips, HTML export)
+  - Clean, reproducible code structure
   weaknesses:
-  - Axis line spines still visible on all four sides — removing top/right spines would
-    elevate visual refinement
-  - Limit labels (UCL/UWL, LWL/LCL) are close together despite nudging
-  - R chart missing LCL label text (line drawn at y=0 but no label)
-  image_description: The plot displays two vertically stacked SPC charts for CNC shaft
-    diameter measurements. The top chart (X-bar) shows sample means in mm (y-axis
-    ~24.8–25.15) plotted against sample numbers 1–30 on the x-axis. A blue line with
-    open circle markers connects in-control points, while three out-of-control points
-    (samples ~8, ~19, ~25) are highlighted as solid red filled circles. Horizontal
-    reference lines include dashed gray UCL and LCL, dotted lighter gray UWL and LWL,
-    and a solid gray center line (CL), all labeled on the right margin. The bottom
-    chart (R) shows sample ranges (0–0.25 mm) with the same blue line-and-marker styling.
-    Dashed gray UCL and LCL lines appear with a dotted UWL line; the center line is
-    labeled R-bar. No out-of-control points appear in the R chart. The title reads
-    "spc-xbar-r · letsplot · pyplots.ai" in bold at the top. Background is clean white
-    with subtle horizontal gridlines on y-axes only.
+  - Limit line labels (UCL/UWL, LWL/LCL) overlap despite nudging attempt - the 6%
+    offset is insufficient given how close the values are
+  - R chart UCL/UWL labels similarly overlap
+  - LCL label in R chart sits at the very bottom edge of the canvas
+  image_description: 'The plot displays two vertically stacked SPC charts on a clean
+    white background. The top chart (X-bar) shows sample means connected by a dark
+    blue (#306998) line with open circle markers. Three out-of-control points are
+    highlighted as larger solid red (#DC2626) circles at approximately samples 8 (high),
+    19 (low), and 25 (high). Gray dashed UCL/LCL lines, lighter dotted UWL/LWL warning
+    lines, and a solid gray center line (CL) are visible. Labels for all limit lines
+    appear on the right side of the chart. The bottom chart (R) shows sample ranges
+    with the same blue line/marker styling, with UCL, UWL, R-bar, and LCL lines. No
+    R chart points breach the control limits. The title reads "spc-xbar-r · letsplot
+    · pyplots.ai" in bold. Y-axes include units: "X-bar (Sample Mean, mm)" and "R
+    (Sample Range, mm)". The x-axis label "Sample Number" appears only on the bottom
+    chart. Notable issue: the UCL/UWL and LWL/LCL label pairs overlap in the X-bar
+    chart due to their proximity, and similarly UCL/UWL overlap in the R chart.'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 25
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title=24, axis=20, ticks=16). Limit
-          labels at size=13 slightly small.
+        comment: 'All font sizes explicitly set: title=24, axis_title=20, axis_text=16,
+          labels=13'
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 3
         max: 6
-        passed: true
-        comment: Label nudging prevents overlap but UCL/UWL and LWL/LCL pairs remain
-          tight.
+        passed: false
+        comment: UCL/UWL and LWL/LCL label pairs overlap in X-bar chart despite nudging.
+          R chart UCL/UWL labels also overlap.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Points well-sized, OOC points stand out clearly in red with larger
-          markers.
+        comment: Points well-sized, OOC points larger and filled red, lines at appropriate
+          width
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Blue/red works for most colorblind types but not ideal for tritanopia.
+        comment: Blue vs red distinguishable for most colorblind types, graduated
+          grays for limit lines
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good vertical stacking with 55/45 ratio. Right margin accommodates
-          labels well.
+        comment: Good vertical stacking with 55/45 split. LCL label in R chart at
+          bottom edge.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with units on both axes.
+        comment: 'Descriptive labels with units: X-bar (Sample Mean, mm) and R (Sample
+          Range, mm)'
     design_excellence:
       score: 14
       max: 20
@@ -92,22 +95,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Thoughtful muted gray palette for limits, Python blue for data, strong
-          red for OOC. Clearly above defaults.
+        comment: Custom muted color palette with intentional hierarchy, open circles
+          with white fill, clearly above defaults
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: X-grid removed, subtle y-grid, white backgrounds. Spines still present
-          on all sides.
+        comment: White background, x-grid removed, subtle y-grid, light gray axis
+          lines, good whitespace
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Red OOC points create immediate focal points. Line style hierarchy
-          distinguishes limit types.
+        comment: OOC points draw eye through color and size contrast, clear process
+          instability story
     spec_compliance:
       score: 15
       max: 15
@@ -117,27 +120,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct X-bar on top, R chart on bottom, vertically stacked sharing
-          x-axis.
+        comment: Correct X-bar and R chart vertically stacked
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: dashed UCL/LCL, solid CL, OOC highlights,
-          warning limits, standard constants.'
+        comment: 'All features present: UCL/LCL dashed, CL solid, OOC highlighted,
+          warning limits, A2/D3/D4 constants'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=sample number, Y=mean/range. All 30 samples visible.
+        comment: X-axis sample number, Y-axes sample mean and range respectively
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. No legend needed - color coding is self-explanatory.
+        comment: Correct title format, no legend needed for single-series
     data_quality:
       score: 15
       max: 15
@@ -147,21 +149,21 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: OOC points in both directions, in-control variability, both X-bar
-          and R charts.
+        comment: Shows both high and low OOC shifts, in-control variation, R chart
+          range variation
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: CNC shaft diameter (25.0mm target, 0.05mm sigma) - classic manufacturing
-          SPC scenario.
+        comment: CNC shaft diameter measurements - realistic manufacturing quality
+          control scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Realistic values for precision machining with appropriate shift magnitudes.
+        comment: 25mm target with 0.05mm std - realistic for CNC machining
     code_quality:
       score: 10
       max: 10
@@ -171,32 +173,31 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, limits, plots, save. No functions/classes.'
+        comment: Clean imports-data-plot-save flow, no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) ensures reproducibility
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: Only numpy, pandas, lets_plot used - all necessary
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Well-structured, appropriate complexity. Interactive layers are for
-          legitimate HTML export.
+        comment: Clean code, tooltip layers are legitimate lets-plot features
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: ggsave with scale=3 to plot.png. Current API.
+        comment: Saves as plot.png with scale=3, current API
     library_mastery:
       score: 8
       max: 10
@@ -206,24 +207,24 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Proper ggplot grammar with layered geoms, aes mappings, gggrid for
-          subplots.
+        comment: Good ggplot grammar usage, limit lines via dataframes slightly verbose
+          vs geom_hline
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: layer_tooltips for HTML interactivity, gggrid for subplot composition,
-          dual PNG+HTML export.
-  verdict: REJECTED
+        comment: Uses gggrid, layer_tooltips, HTML export - distinctive lets-plot
+          features
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - subplots
   - layer-composition
+  - annotations
   - hover-tooltips
   - html-export
-  - annotations
   patterns:
   - data-generation
   dataprep: []

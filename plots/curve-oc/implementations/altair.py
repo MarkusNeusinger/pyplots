@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 curve-oc: Operating Characteristic (OC) Curve
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-19
@@ -11,28 +11,21 @@ import numpy as np
 import pandas as pd
 
 
-# Data
+# Data — varied c/n ratios for better curve contrast
 fraction_defective = np.linspace(0, 0.20, 200)
 
 sampling_plans = [
     {"n": 50, "c": 1, "label": "n=50, c=1"},
-    {"n": 100, "c": 2, "label": "n=100, c=2"},
-    {"n": 150, "c": 3, "label": "n=150, c=3"},
+    {"n": 100, "c": 3, "label": "n=100, c=3"},
+    {"n": 200, "c": 2, "label": "n=200, c=2"},
 ]
-
-
-def binom_cdf(c, n, p_arr):
-    """Binomial CDF: P(X <= c) for each p in p_arr."""
-    result = np.zeros_like(p_arr, dtype=float)
-    for k in range(c + 1):
-        result += comb(n, k) * p_arr**k * (1 - p_arr) ** (n - k)
-    return result
-
 
 rows = []
 for plan in sampling_plans:
     n, c = plan["n"], plan["c"]
-    prob_accept = binom_cdf(c, n, fraction_defective)
+    prob_accept = np.zeros_like(fraction_defective, dtype=float)
+    for k in range(c + 1):
+        prob_accept += comb(n, k) * fraction_defective**k * (1 - fraction_defective) ** (n - k)
     for p, pa in zip(fraction_defective, prob_accept, strict=True):
         rows.append({"fraction_defective": p, "probability_acceptance": pa, "plan": plan["label"]})
 
@@ -42,10 +35,17 @@ df = pd.DataFrame(rows)
 aql = 0.02
 ltpd = 0.10
 
-# Compute risk values for the primary plan (n=100, c=2)
-pa_at_aql = binom_cdf(2, 100, np.array([aql]))[0]
+# Compute risk values for the primary plan (n=100, c=3)
+pa_at_aql_arr = np.zeros(1, dtype=float)
+for k in range(4):
+    pa_at_aql_arr += comb(100, k) * np.array([aql]) ** k * (1 - np.array([aql])) ** (100 - k)
+pa_at_aql = pa_at_aql_arr[0]
 alpha = 1 - pa_at_aql
-pa_at_ltpd = binom_cdf(2, 100, np.array([ltpd]))[0]
+
+pa_at_ltpd_arr = np.zeros(1, dtype=float)
+for k in range(4):
+    pa_at_ltpd_arr += comb(100, k) * np.array([ltpd]) ** k * (1 - np.array([ltpd])) ** (100 - k)
+pa_at_ltpd = pa_at_ltpd_arr[0]
 beta = pa_at_ltpd
 
 ref_data = pd.DataFrame(
@@ -55,8 +55,18 @@ ref_data = pd.DataFrame(
     ]
 )
 
+# In-chart legend data (positioned in upper-right where curves have dropped)
+legend_data = pd.DataFrame(
+    [
+        {"x1": 0.125, "x2": 0.14, "y": 0.85, "label": "  n=50, c=1  (lenient)", "color": "#306998"},
+        {"x1": 0.125, "x2": 0.14, "y": 0.78, "label": "  n=100, c=3  (moderate)", "color": "#E8792B"},
+        {"x1": 0.125, "x2": 0.14, "y": 0.71, "label": "  n=200, c=2  (strict)", "color": "#8B5CF6"},
+    ]
+)
+
 # Plot
-color_scale = alt.Scale(domain=["n=50, c=1", "n=100, c=2", "n=150, c=3"], range=["#306998", "#E8792B", "#2CA02C"])
+plan_labels = ["n=50, c=1", "n=100, c=3", "n=200, c=2"]
+color_scale = alt.Scale(domain=plan_labels, range=["#306998", "#E8792B", "#8B5CF6"])
 
 nearest = alt.selection_point(nearest=True, on="pointerover", fields=["fraction_defective"], empty=False)
 
@@ -73,11 +83,18 @@ base_y = alt.Y(
     axis=alt.Axis(values=[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]),
 )
 
-# OC curves
+# OC curves (no Vega legend — using in-chart legend instead)
 oc_lines = (
     alt.Chart(df)
     .mark_line(strokeWidth=3)
-    .encode(x=base_x, y=base_y, color=alt.Color("plan:N", scale=color_scale, title="Sampling Plan"))
+    .encode(
+        x=base_x,
+        y=base_y,
+        color=alt.Color("plan:N", scale=color_scale, legend=None),
+        strokeDash=alt.StrokeDash(
+            "plan:N", scale=alt.Scale(domain=plan_labels, range=[[1, 0], [8, 4], [2, 2]]), legend=None
+        ),
+    )
 )
 
 # Transparent selection layer for hover
@@ -116,33 +133,33 @@ hover_points = (
 # AQL vertical reference line
 aql_rule = (
     alt.Chart(pd.DataFrame([{"x": aql}]))
-    .mark_rule(strokeDash=[8, 6], strokeWidth=1.5, color="#306998", opacity=0.5)
+    .mark_rule(strokeDash=[8, 6], strokeWidth=2, color="#306998", opacity=0.6)
     .encode(x=alt.X("x:Q"))
 )
 
 aql_label = (
     alt.Chart(pd.DataFrame([{"x": aql, "y": 1.02, "text": "AQL"}]))
-    .mark_text(fontSize=16, fontWeight="bold", color="#306998", dy=-4)
+    .mark_text(fontSize=18, fontWeight="bold", color="#306998", dy=-6)
     .encode(x=alt.X("x:Q"), y=alt.Y("y:Q"), text="text:N")
 )
 
 # LTPD vertical reference line
 ltpd_rule = (
     alt.Chart(pd.DataFrame([{"x": ltpd}]))
-    .mark_rule(strokeDash=[8, 6], strokeWidth=1.5, color="#D62728", opacity=0.5)
+    .mark_rule(strokeDash=[8, 6], strokeWidth=2, color="#D62728", opacity=0.6)
     .encode(x=alt.X("x:Q"))
 )
 
 ltpd_label = (
     alt.Chart(pd.DataFrame([{"x": ltpd, "y": 1.02, "text": "LTPD"}]))
-    .mark_text(fontSize=16, fontWeight="bold", color="#D62728", dy=-4)
+    .mark_text(fontSize=18, fontWeight="bold", color="#D62728", dy=-6)
     .encode(x=alt.X("x:Q"), y=alt.Y("y:Q"), text="text:N")
 )
 
-# Risk annotation points on the n=100, c=2 curve
+# Risk annotation points on the n=100, c=3 curve
 risk_points = (
     alt.Chart(ref_data)
-    .mark_point(filled=True, size=250, stroke="white", strokeWidth=2, color="#333333")
+    .mark_point(filled=True, size=300, stroke="white", strokeWidth=2.5, color="#333333")
     .encode(
         x=alt.X("x:Q"),
         y=alt.Y("y:Q"),
@@ -156,25 +173,51 @@ risk_points = (
 
 risk_labels = (
     alt.Chart(ref_data)
-    .mark_text(fontSize=14, fontWeight="bold", align="left", dx=10, dy=-8, color="#333333")
+    .mark_text(fontSize=17, fontWeight="bold", align="left", dx=12, dy=-12, color="#333333")
     .encode(x=alt.X("x:Q"), y=alt.Y("y:Q"), text="risk:N")
 )
 
-# Combine layers
-chart = (
-    (
-        aql_rule
-        + ltpd_rule
-        + oc_lines
-        + hover_points
-        + risk_points
-        + risk_labels
-        + aql_label
-        + ltpd_label
-        + select_layer
-        + hover_rule
+# In-chart legend background
+legend_bg = (
+    alt.Chart(pd.DataFrame([{"x": 0.123, "y": 0.91, "x2": 0.197, "y2": 0.66}]))
+    .mark_rect(cornerRadius=8, fill="#fafafa", stroke="#cccccc", strokeWidth=1.5, opacity=0.92)
+    .encode(x=alt.X("x:Q"), y=alt.Y("y:Q"), x2="x2:Q", y2="y2:Q")
+)
+
+legend_title = (
+    alt.Chart(pd.DataFrame([{"x": 0.16, "y": 0.895, "text": "Sampling Plan"}]))
+    .mark_text(fontSize=17, fontWeight="bold", color="#333333")
+    .encode(x=alt.X("x:Q"), y=alt.Y("y:Q"), text="text:N")
+)
+
+# Legend color swatches (small line segments)
+legend_lines = []
+legend_texts = []
+for _, row in legend_data.iterrows():
+    line_df = pd.DataFrame([{"x": row["x1"], "y": row["y"], "x2": row["x2"], "y2": row["y"]}])
+    legend_lines.append(
+        alt.Chart(line_df)
+        .mark_rule(strokeWidth=3, color=row["color"])
+        .encode(x=alt.X("x:Q"), y=alt.Y("y:Q"), x2="x2:Q")
     )
-    .properties(
+    text_df = pd.DataFrame([{"x": row["x2"], "y": row["y"], "text": row["label"]}])
+    legend_texts.append(
+        alt.Chart(text_df)
+        .mark_text(fontSize=16, align="left", color="#444444", dx=4)
+        .encode(x=alt.X("x:Q"), y=alt.Y("y:Q"), text="text:N")
+    )
+
+# Combine layers
+chart = aql_rule + ltpd_rule + oc_lines + hover_points + risk_points + risk_labels + aql_label + ltpd_label
+chart = chart + legend_bg + legend_title
+for ll in legend_lines:
+    chart = chart + ll
+for lt in legend_texts:
+    chart = chart + lt
+chart = chart + select_layer + hover_rule
+
+chart = (
+    chart.properties(
         width=1600,
         height=900,
         title=alt.Title(
@@ -187,14 +230,6 @@ chart = (
         ),
     )
     .configure_axis(labelFontSize=18, titleFontSize=22, gridOpacity=0.15, domainWidth=0)
-    .configure_legend(
-        titleFontSize=20,
-        labelFontSize=18,
-        symbolSize=200,
-        symbolStrokeWidth=3,
-        labelColor="#444444",
-        titleColor="#333333",
-    )
     .configure_view(strokeWidth=0)
 )
 

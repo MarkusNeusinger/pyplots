@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-growth-percentile: Pediatric Growth Chart with Percentile Curves
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 82/100 | Created: 2026-03-19
@@ -28,55 +28,41 @@ percentile_97 = median + 1.881 * sd
 patient_ages = np.array([0, 1, 2, 4, 6, 9, 12, 15, 18, 24, 30, 36])
 patient_weights = np.array([3.5, 4.6, 5.8, 7.2, 8.1, 9.3, 10.2, 11.0, 11.8, 13.0, 14.2, 15.5])
 
-# Colors - blue tones for boys chart, graduated intensity
-band_colors = [
-    "rgba(30, 80, 140, 0.30)",  # P3-P10 (darker edge)
-    "rgba(50, 110, 170, 0.25)",  # P10-P25
-    "rgba(80, 140, 200, 0.20)",  # P25-P50
-    "rgba(80, 140, 200, 0.20)",  # P50-P75
-    "rgba(50, 110, 170, 0.25)",  # P75-P90
-    "rgba(30, 80, 140, 0.30)",  # P90-P97 (darker edge)
+# Colors - graduated blue tones for boys chart
+band_fills = [
+    "rgba(30, 80, 140, 0.28)",  # P3-P10 (darker edge)
+    "rgba(50, 110, 170, 0.22)",  # P10-P25
+    "rgba(80, 145, 210, 0.16)",  # P25-P50
+    "rgba(80, 145, 210, 0.16)",  # P50-P75
+    "rgba(50, 110, 170, 0.22)",  # P75-P90
+    "rgba(30, 80, 140, 0.28)",  # P90-P97 (darker edge)
 ]
 
-percentiles = [
-    (percentile_3, percentile_10, "P3–P10"),
-    (percentile_10, percentile_25, "P10–P25"),
-    (percentile_25, percentile_50, "P25–P50"),
-    (percentile_50, percentile_75, "P50–P75"),
-    (percentile_75, percentile_90, "P75–P90"),
-    (percentile_90, percentile_97, "P90–P97"),
+band_lines = [
+    "rgba(30, 80, 140, 0.35)",
+    "rgba(50, 110, 170, 0.30)",
+    "rgba(80, 145, 210, 0.25)",
+    "rgba(80, 145, 210, 0.25)",
+    "rgba(50, 110, 170, 0.30)",
+    "rgba(30, 80, 140, 0.35)",
+]
+
+# Ordered percentile arrays for tonexty fill stacking (bottom to top)
+percentile_stack = [
+    (percentile_3, "P3", None),
+    (percentile_10, "P10", band_fills[0]),
+    (percentile_25, "P25", band_fills[1]),
+    (percentile_50, "P50", band_fills[2]),
+    (percentile_75, "P75", band_fills[3]),
+    (percentile_90, "P90", band_fills[4]),
+    (percentile_97, "P97", band_fills[5]),
 ]
 
 # Plot
 fig = go.Figure()
 
-# Percentile bands as filled areas
-for (lower, upper, label), color in zip(percentiles, band_colors, strict=False):
-    fig.add_trace(
-        go.Scatter(
-            x=np.concatenate([age_months, age_months[::-1]]),
-            y=np.concatenate([upper, lower[::-1]]),
-            fill="toself",
-            fillcolor=color,
-            line={"color": "rgba(0,0,0,0)"},
-            showlegend=False,
-            hoverinfo="skip",
-            name=label,
-        )
-    )
-
-# Percentile boundary lines (thin, subtle)
-percentile_values = [
-    (percentile_3, "P3"),
-    (percentile_10, "P10"),
-    (percentile_25, "P25"),
-    (percentile_50, "P50"),
-    (percentile_75, "P75"),
-    (percentile_90, "P90"),
-    (percentile_97, "P97"),
-]
-
-for pct_data, pct_label in percentile_values:
+# Percentile bands using idiomatic fill='tonexty' stacking
+for i, (pct_data, pct_label, fill_color) in enumerate(percentile_stack):
     is_median = pct_label == "P50"
     fig.add_trace(
         go.Scatter(
@@ -84,77 +70,142 @@ for pct_data, pct_label in percentile_values:
             y=pct_data,
             mode="lines",
             line={
-                "color": "rgba(30, 80, 140, 0.8)" if is_median else "rgba(60, 120, 180, 0.4)",
-                "width": 3 if is_median else 1.5,
+                "color": "rgba(25, 70, 130, 0.7)"
+                if is_median
+                else band_lines[i - 1]
+                if i > 0
+                else "rgba(30, 80, 140, 0.35)",
+                "width": 2.5 if is_median else 1,
+                "dash": "solid",
             },
+            fill="tonexty" if fill_color else None,
+            fillcolor=fill_color,
             showlegend=False,
-            hoverinfo="skip",
             name=pct_label,
+            customdata=np.column_stack([np.full_like(age_months, float(pct_label[1:])), pct_data]),
+            hovertemplate=(
+                "<b>%{customdata[0]:.0f}th Percentile</b><br>"
+                "Age: %{x} months<br>"
+                "Weight: %{customdata[1]:.1f} kg"
+                "<extra></extra>"
+            ),
         )
     )
 
-# Percentile labels on right margin
-for pct_data, pct_label in percentile_values:
+# Percentile labels on right margin with smart spacing
+label_data = [
+    (percentile_3[-1], "P3"),
+    (percentile_10[-1], "P10"),
+    (percentile_25[-1], "P25"),
+    (percentile_50[-1], "P50"),
+    (percentile_75[-1], "P75"),
+    (percentile_90[-1], "P90"),
+    (percentile_97[-1], "P97"),
+]
+
+# Apply minimum vertical spacing to avoid crowding
+min_gap = 0.55
+label_positions = [y for y, _ in label_data]
+for i in range(1, len(label_positions)):
+    if label_positions[i] - label_positions[i - 1] < min_gap:
+        label_positions[i] = label_positions[i - 1] + min_gap
+
+for (_, pct_label), y_pos in zip(label_data, label_positions, strict=False):
+    is_median = pct_label == "P50"
     fig.add_annotation(
-        x=37,
-        y=pct_data[-1],
-        text=f"<b>{pct_label}</b>" if pct_label == "P50" else pct_label,
+        x=37.2,
+        y=y_pos,
+        text=f"<b>{pct_label}</b>" if is_median else pct_label,
         showarrow=False,
-        font={"size": 14, "color": "rgba(30, 80, 140, 0.9)" if pct_label == "P50" else "rgba(60, 120, 180, 0.7)"},
+        font={
+            "size": 19 if is_median else 17,
+            "color": "rgba(25, 70, 130, 0.95)" if is_median else "rgba(50, 100, 160, 0.75)",
+            "family": "Arial",
+        },
         xanchor="left",
     )
 
-# Patient data overlay
+# Patient data overlay - use dark teal for contrast (not red per library guide)
+patient_color = "#1A7A6D"
 fig.add_trace(
     go.Scatter(
         x=patient_ages,
         y=patient_weights,
         mode="lines+markers",
-        line={"color": "#E74C3C", "width": 3},
-        marker={"size": 12, "color": "#E74C3C", "line": {"color": "white", "width": 2}},
+        line={"color": patient_color, "width": 3.5, "shape": "spline"},
+        marker={"size": 13, "color": patient_color, "line": {"color": "white", "width": 2.5}, "symbol": "circle"},
         name="Patient (Boy)",
         showlegend=True,
+        customdata=np.column_stack([patient_ages, patient_weights]),
+        hovertemplate=(
+            "<b>Patient Visit</b><br>Age: %{customdata[0]:.0f} months<br>Weight: %{customdata[1]:.1f} kg<extra></extra>"
+        ),
     )
+)
+
+# Milestone annotation at 36 months showing percentile position
+fig.add_annotation(
+    x=34,
+    y=patient_weights[-1] + 0.8,
+    text="<b>~25th percentile</b><br>at 36 months",
+    showarrow=True,
+    arrowhead=2,
+    arrowsize=1,
+    arrowwidth=1.5,
+    arrowcolor=patient_color,
+    ax=-50,
+    ay=-35,
+    font={"size": 15, "color": patient_color, "family": "Arial"},
+    align="center",
+    bordercolor=patient_color,
+    borderwidth=1,
+    borderpad=5,
+    bgcolor="rgba(255, 255, 255, 0.85)",
 )
 
 # Layout
 fig.update_layout(
     title={
         "text": "Weight-for-Age Boys (0–36 months) · line-growth-percentile · plotly · pyplots.ai",
-        "font": {"size": 28},
+        "font": {"size": 28, "family": "Arial", "color": "#2C3E50"},
         "x": 0.5,
         "xanchor": "center",
+        "y": 0.96,
     },
     xaxis={
-        "title": {"text": "Age (months)", "font": {"size": 22}},
+        "title": {"text": "Age (months)", "font": {"size": 22, "family": "Arial"}, "standoff": 10},
         "tickfont": {"size": 18},
-        "range": [0, 39],
+        "range": [-0.5, 40],
         "dtick": 3,
         "showgrid": True,
         "gridwidth": 1,
-        "gridcolor": "rgba(128, 128, 128, 0.15)",
+        "gridcolor": "rgba(180, 180, 180, 0.2)",
+        "zeroline": False,
     },
     yaxis={
-        "title": {"text": "Weight (kg)", "font": {"size": 22}},
+        "title": {"text": "Weight (kg)", "font": {"size": 22, "family": "Arial"}, "standoff": 10},
         "tickfont": {"size": 18},
         "range": [0, 24],
         "showgrid": True,
         "gridwidth": 1,
-        "gridcolor": "rgba(128, 128, 128, 0.15)",
+        "gridcolor": "rgba(180, 180, 180, 0.2)",
+        "zeroline": False,
     },
     legend={
-        "font": {"size": 18},
+        "font": {"size": 18, "family": "Arial"},
         "x": 0.02,
         "y": 0.98,
-        "bgcolor": "rgba(255, 255, 255, 0.8)",
-        "bordercolor": "rgba(128, 128, 128, 0.3)",
+        "bgcolor": "rgba(255, 255, 255, 0.85)",
+        "bordercolor": "rgba(160, 160, 160, 0.4)",
         "borderwidth": 1,
     },
     template="plotly_white",
-    hovermode="x unified",
-    margin={"l": 80, "r": 80, "t": 80, "b": 60},
+    hovermode="closest",
+    hoverlabel={"font": {"size": 15, "family": "Arial"}, "bgcolor": "white"},
+    margin={"l": 80, "r": 90, "t": 80, "b": 65},
+    plot_bgcolor="rgba(248, 250, 252, 1)",
 )
 
 # Save
 fig.write_image("plot.png", width=1600, height=900, scale=3)
-fig.write_html("plot.html")
+fig.write_html("plot.html", include_plotlyjs="cdn", config={"displayModeBar": True, "scrollZoom": True})

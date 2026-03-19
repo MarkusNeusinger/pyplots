@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 histogram-capability: Process Capability Plot with Specification Limits
 Library: highcharts unknown | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-19
@@ -49,7 +49,7 @@ chart.options = HighchartsOptions()
 chart.options.chart = {
     "width": 4800,
     "height": 2700,
-    "backgroundColor": "#fafbfc",
+    "backgroundColor": "#f8f9fb",
     "marginBottom": 320,
     "marginLeft": 280,
     "marginRight": 200,
@@ -114,17 +114,17 @@ chart.options.x_axis = {
         },
         {
             "value": target,
-            "color": "#27ae60",
+            "color": "#8e44ad",
             "width": 5,
             "dashStyle": "ShortDot",
             "zIndex": 5,
             "label": {
                 "text": f"Target = {target}",
-                "style": {"fontSize": "34px", "color": "#27ae60", "fontWeight": "700"},
+                "style": {"fontSize": "34px", "color": "#8e44ad", "fontWeight": "700"},
                 "align": "right",
                 "rotation": 0,
                 "x": -15,
-                "y": 60,
+                "y": 50,
             },
         },
         {
@@ -139,7 +139,7 @@ chart.options.x_axis = {
                 "align": "left",
                 "rotation": 0,
                 "x": 15,
-                "y": 60,
+                "y": 100,
             },
         },
     ],
@@ -154,23 +154,34 @@ chart.options.y_axis = {
     },
     "labels": {"style": {"fontSize": "36px", "color": "#444444"}},
     "min": 0,
-    "gridLineColor": "#dcdcdc",
+    "gridLineColor": "#e8e8e8",
     "gridLineWidth": 1,
-    "gridLineDashStyle": "Dot",
+    "gridLineDashStyle": "ShortDash",
 }
 
 # Plot options
 chart.options.plot_options = {
-    "column": {"pointPadding": 0, "groupPadding": 0, "borderWidth": 1.5, "borderColor": "#1a4a6e"},
+    "column": {"pointPadding": 0, "groupPadding": 0, "borderWidth": 1, "borderColor": "#1a4a6e", "opacity": 0.9},
     "spline": {"lineWidth": 5, "marker": {"enabled": False}},
 }
 
 chart.options.legend = {
     "enabled": True,
-    "itemStyle": {"fontSize": "32px", "fontWeight": "500", "color": "#333333"},
-    "symbolWidth": 40,
-    "symbolHeight": 20,
-    "y": -20,
+    "layout": "horizontal",
+    "align": "right",
+    "verticalAlign": "top",
+    "floating": True,
+    "itemStyle": {"fontSize": "34px", "fontWeight": "500", "color": "#333333"},
+    "symbolWidth": 50,
+    "symbolHeight": 24,
+    "itemDistance": 60,
+    "backgroundColor": "rgba(255,255,255,0.85)",
+    "borderColor": "#e0e0e0",
+    "borderWidth": 1,
+    "borderRadius": 6,
+    "padding": 16,
+    "x": -40,
+    "y": 10,
 }
 
 chart.options.credits = {"enabled": False}

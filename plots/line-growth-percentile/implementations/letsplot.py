@@ -1,7 +1,7 @@
 """ pyplots.ai
 line-growth-percentile: Pediatric Growth Chart with Percentile Curves
 Library: letsplot 4.9.0 | Python 3.14.3
-Quality: 82/100 | Created: 2026-03-19
+Quality: 85/100 | Created: 2026-03-19
 """
 # ruff: noqa: F405
 

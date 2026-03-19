@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 spc-xbar-r: Statistical Process Control Chart (X-bar/R)
 Library: letsplot 4.9.0 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-19
@@ -79,31 +79,13 @@ r_limits = pd.DataFrame(
     }
 )
 
-# Label positions - offset overlapping labels vertically to avoid collision
-# UCL and UWL are close, LWL and LCL are close - nudge them apart
-label_nudge = (xbar_ucl - xbar_lcl) * 0.06
+# Label positions - only label UCL, CL, LCL (well-separated)
+# Warning limits (UWL/LWL) are visually distinguished by dotted line style
 xbar_labels = pd.DataFrame(
-    {
-        "sample": [n_samples + 0.5] * 5,
-        "y": [
-            xbar_ucl + label_nudge,  # UCL nudged up
-            xbar_lcl - label_nudge,  # LCL nudged down
-            xbar_bar,  # CL stays
-            xbar_uwl - label_nudge,  # UWL nudged down (away from UCL)
-            xbar_lwl + label_nudge,  # LWL nudged up (away from LCL)
-        ],
-        "label": ["UCL", "LCL", "CL", "UWL", "LWL"],
-    }
+    {"sample": [n_samples + 0.5] * 3, "y": [xbar_ucl, xbar_bar, xbar_lcl], "label": ["UCL", "CL", "LCL"]}
 )
 
-r_label_nudge = (r_ucl - r_lcl) * 0.06
-r_labels = pd.DataFrame(
-    {
-        "sample": [n_samples + 0.5] * 3,
-        "y": [r_ucl + r_label_nudge, r_bar - r_label_nudge, r_uwl + r_label_nudge],
-        "label": ["UCL", "R̄", "UWL"],
-    }
-)
+r_labels = pd.DataFrame({"sample": [n_samples + 0.5] * 3, "y": [r_ucl, r_bar, r_lcl], "label": ["UCL", "R̄", "LCL"]})
 
 # Colors - muted tones for limit lines, bold for data/OOC
 blue = "#306998"
@@ -165,6 +147,7 @@ xbar_plot = (
         hjust=0,
     )
     + scale_x_continuous(breaks=list(range(1, n_samples + 1, 5)) + [n_samples], limits=[0.5, n_samples + 4.5])
+    + scale_y_continuous(expand=[0.12, 0])
     + labs(title="spc-xbar-r · letsplot · pyplots.ai", y="X̄ (Sample Mean, mm)", x="")
     + theme(
         plot_title=element_text(size=24, color="#222222", face="bold"),
@@ -239,6 +222,7 @@ r_plot = (
         data=r_labels, mapping=aes(x="sample", y="y", label="label"), size=13, color="#555555", fontface="bold", hjust=0
     )
     + scale_x_continuous(breaks=list(range(1, n_samples + 1, 5)) + [n_samples], limits=[0.5, n_samples + 4.5])
+    + scale_y_continuous(expand=[0.15, 0])
     + labs(x="Sample Number", y="R (Sample Range, mm)")
     + theme(
         axis_title=element_text(size=20, color="#333333"),

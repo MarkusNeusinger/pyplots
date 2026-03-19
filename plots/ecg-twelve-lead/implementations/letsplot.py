@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 ecg-twelve-lead: ECG/EKG 12-Lead Waveform Display
 Library: letsplot 4.9.0 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-19
@@ -13,11 +13,13 @@ from lets_plot import (
     element_rect,
     element_text,
     geom_line,
+    geom_rect,
     geom_segment,
     geom_text,
     ggplot,
     ggsize,
     labs,
+    layer_tooltips,
     scale_x_continuous,
     scale_y_continuous,
     theme,
@@ -114,9 +116,52 @@ label_records.append({"time": 0.03, "voltage": rhythm_baseline + 1.3, "label": "
 df = pd.concat(all_traces, ignore_index=True)
 labels_df = pd.DataFrame(label_records)
 
+# 1mV calibration pulses at left margin of each row + rhythm strip
+cal_records = []
+for row_idx in range(n_rows):
+    y_base = (n_rows - 1 - row_idx) * row_spacing + row_spacing
+    cal_x = -0.15
+    cal_records.extend(
+        [
+            {"x": cal_x, "y": y_base, "xend": cal_x, "yend": y_base + 1.0},
+            {"x": cal_x - 0.05, "y": y_base, "xend": cal_x + 0.05, "yend": y_base},
+            {"x": cal_x - 0.05, "y": y_base + 1.0, "xend": cal_x + 0.05, "yend": y_base + 1.0},
+        ]
+    )
+# Rhythm strip calibration
+cal_records.extend(
+    [
+        {"x": -0.15, "y": rhythm_baseline, "xend": -0.15, "yend": rhythm_baseline + 1.0},
+        {"x": -0.20, "y": rhythm_baseline, "xend": -0.10, "yend": rhythm_baseline},
+        {"x": -0.20, "y": rhythm_baseline + 1.0, "xend": -0.10, "yend": rhythm_baseline + 1.0},
+    ]
+)
+cal_df = pd.DataFrame(cal_records)
+
+# Scale annotation text
+scale_df = pd.DataFrame({"x": [total_time - 0.05], "y": [rhythm_baseline - 1.3], "label": ["25 mm/s | 10 mm/mV"]})
+
 # ECG paper grid lines
 y_min = rhythm_baseline - 1.8
 y_max = (n_rows - 1) * row_spacing + row_spacing + 2.0
+
+# Row background regions using geom_rect (lets-plot distinctive feature)
+row_rects = []
+for row_idx in range(n_rows):
+    y_base = (n_rows - 1 - row_idx) * row_spacing + row_spacing
+    row_rects.append(
+        {"xmin": 0, "xmax": total_time, "ymin": y_base - 1.7, "ymax": y_base + 1.8, "region": f"Row {row_idx + 1}"}
+    )
+row_rects.append(
+    {
+        "xmin": 0,
+        "xmax": total_time,
+        "ymin": rhythm_baseline - 1.7,
+        "ymax": rhythm_baseline + 1.8,
+        "region": "Rhythm Strip",
+    }
+)
+row_rects_df = pd.DataFrame(row_rects)
 
 # Minor grid (1mm equivalent: 0.04s horizontal, 0.1mV vertical)
 minor_x_vals = np.arange(0, total_time + 0.01, 0.04)
@@ -139,6 +184,16 @@ ecg_trace_color = "#1a1a2e"
 
 plot = (
     ggplot()
+    # Row background regions (lets-plot geom_rect)
+    + geom_rect(
+        aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax"),
+        data=row_rects_df,
+        fill="#fff5f0",
+        alpha=0.3,
+        color="rgba(0,0,0,0)",
+        tooltips=layer_tooltips().line("@region"),
+        inherit_aes=False,
+    )
     # Minor grid
     + geom_segment(
         aes(x="x", y="y", xend="xend", yend="yend"), data=minor_v, color="#f0ccc4", size=0.1, inherit_aes=False
@@ -157,8 +212,18 @@ plot = (
     + geom_segment(
         aes(x="x", y="y", xend="xend", yend="yend"), data=col_sep, color="#b07068", size=0.6, inherit_aes=False
     )
-    # ECG traces
-    + geom_line(aes(x="time", y="voltage", group="lead"), data=df, color=ecg_trace_color, size=0.6)
+    # 1mV calibration pulses
+    + geom_segment(
+        aes(x="x", y="y", xend="xend", yend="yend"), data=cal_df, color=ecg_trace_color, size=0.8, inherit_aes=False
+    )
+    # ECG traces with interactive tooltips (lets-plot layer_tooltips)
+    + geom_line(
+        aes(x="time", y="voltage", group="lead"),
+        data=df,
+        color=ecg_trace_color,
+        size=0.8,
+        tooltips=layer_tooltips().line("Lead: @lead").format("time", ".2f").line("Time: @time s"),
+    )
     # Lead labels
     + geom_text(
         aes(x="time", y="voltage", label="label"),
@@ -169,8 +234,10 @@ plot = (
         hjust=0,
         inherit_aes=False,
     )
+    # Scale annotation
+    + geom_text(aes(x="x", y="y", label="label"), data=scale_df, color="#666666", size=9, hjust=1, inherit_aes=False)
     # Scales
-    + scale_x_continuous(limits=[0, total_time], expand=[0, 0])
+    + scale_x_continuous(limits=[-0.3, total_time], expand=[0, 0])
     + scale_y_continuous(limits=[y_min, y_max], expand=[0, 0])
     + labs(title="ecg-twelve-lead \u00b7 letsplot \u00b7 pyplots.ai")
     # Theme - ECG paper style

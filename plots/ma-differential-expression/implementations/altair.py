@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 ma-differential-expression: MA Plot for Differential Expression
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-20
@@ -75,13 +75,35 @@ df_sig = df[df["significant"]].copy()
 x_axis = alt.X(
     "mean_expression:Q",
     title="Mean Expression (A)",
-    axis=alt.Axis(labelFontSize=18, titleFontSize=22, titleColor="#333333", labelColor="#555555", domain=False),
+    axis=alt.Axis(
+        labelFontSize=18,
+        titleFontSize=22,
+        titleColor="#333333",
+        labelColor="#555555",
+        domain=False,
+        tickSize=6,
+        tickColor="#999999",
+        tickWidth=1,
+    ),
 )
 y_axis = alt.Y(
     "log_fold_change:Q",
     title="Log₂ Fold Change (M)",
-    axis=alt.Axis(labelFontSize=18, titleFontSize=22, titleColor="#333333", labelColor="#555555", domain=False),
+    axis=alt.Axis(
+        labelFontSize=18,
+        titleFontSize=22,
+        titleColor="#333333",
+        labelColor="#555555",
+        domain=False,
+        tickSize=6,
+        tickColor="#999999",
+        tickWidth=1,
+    ),
 )
+
+# Background shading bands for fold-change regions
+fc_band_data = pd.DataFrame({"y": [-1], "y2": [1]})
+fc_band = alt.Chart(fc_band_data).mark_rect(color="#F0F4F8", opacity=0.5).encode(y="y:Q", y2="y2:Q")
 
 # Non-significant points (small, faint gray)
 points_nonsig = (
@@ -98,25 +120,42 @@ points_nonsig = (
     )
 )
 
-# Significant points (larger, vivid colors)
+# Interactive selection for highlighting genes on hover
+highlight = alt.selection_point(on="pointerover", fields=["gene_name"], empty=False)
+
+# Significant points with shape encoding for accessibility (triangles=up, squares=down)
 color_scale = alt.Scale(domain=["Upregulated", "Downregulated"], range=["#D7263D", "#306998"])
+shape_scale = alt.Scale(domain=["Upregulated", "Downregulated"], range=["triangle-up", "square"])
 points_sig = (
     alt.Chart(df_sig)
-    .mark_point(filled=True, size=60, opacity=0.7, stroke="white", strokeWidth=0.5)
+    .mark_point(filled=True, stroke="white", strokeWidth=0.5)
     .encode(
         x=alt.X("mean_expression:Q"),
         y=alt.Y("log_fold_change:Q"),
         color=alt.Color(
             "status:N",
             scale=color_scale,
-            legend=alt.Legend(title="Status", titleFontSize=18, labelFontSize=16, symbolSize=200, orient="top-right"),
+            legend=alt.Legend(
+                title=None,
+                labelFontSize=16,
+                symbolSize=200,
+                orient="none",
+                legendX=1250,
+                legendY=5,
+                direction="horizontal",
+                padding=8,
+            ),
         ),
+        shape=alt.Shape("status:N", scale=shape_scale, legend=None),
+        size=alt.condition(highlight, alt.value(160), alt.value(80)),
         tooltip=[
             alt.Tooltip("gene_name:N", title="Gene"),
             alt.Tooltip("mean_expression:Q", title="Mean Expr", format=".2f"),
             alt.Tooltip("log_fold_change:Q", title="Log₂ FC", format=".2f"),
+            alt.Tooltip("status:N", title="Status"),
         ],
     )
+    .add_params(highlight)
 )
 
 # Reference lines
@@ -136,7 +175,7 @@ loess_line = (
     .encode(x="mean_expression:Q", y="log_fold_change:Q")
 )
 
-# Gene labels for top DE genes
+# Gene labels for top DE genes with conditional bold on hover
 labels = (
     alt.Chart(df_labels)
     .mark_text(fontSize=16, fontStyle="italic", fontWeight="bold", color="#222222", dy=-14, align="center")
@@ -145,7 +184,7 @@ labels = (
 
 # Compose chart
 chart = (
-    (zero_line + fc_thresholds + points_nonsig + points_sig + loess_line + labels)
+    (fc_band + zero_line + fc_thresholds + points_nonsig + points_sig + loess_line + labels)
     .properties(
         width=1600,
         height=900,
@@ -153,6 +192,8 @@ chart = (
             "ma-differential-expression · altair · pyplots.ai",
             fontSize=28,
             color="#222222",
+            anchor="middle",
+            offset=10,
             subtitle="RNA-seq differential expression: upregulated (red) and downregulated (blue) genes",
             subtitleFontSize=17,
             subtitleColor="#777777",
@@ -160,7 +201,13 @@ chart = (
         ),
     )
     .configure_axis(
-        labelFontSize=18, titleFontSize=22, titlePadding=12, grid=True, gridOpacity=0.15, gridColor="#cccccc"
+        labelFontSize=18,
+        titleFontSize=22,
+        titlePadding=12,
+        grid=True,
+        gridOpacity=0.12,
+        gridColor="#cccccc",
+        gridDash=[3, 3],
     )
     .configure_view(strokeWidth=0)
     .interactive()

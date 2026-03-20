@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bifurcation-basic: Bifurcation Diagram for Dynamical Systems
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-20
@@ -36,7 +36,7 @@ bifurcation_points = pd.DataFrame(
     {
         "r": [3.0, 3.449, 3.544, 3.5699],
         "label": ["Period 2 (r≈3.0)", "Period 4 (r≈3.45)", "Period 8 (r≈3.54)", "Chaos (r≈3.57)"],
-        "y": [0.92, 0.92, 0.85, 0.92],
+        "y": [0.92, 0.92, 0.72, 0.92],
     }
 )
 
@@ -44,7 +44,7 @@ bifurcation_points = pd.DataFrame(
 nearest = alt.selection_point(nearest=True, on="pointerover", fields=["r"], empty=False)
 
 # Color scale by dynamical regime
-region_color = alt.Scale(domain=["Stable", "Period-doubling", "Chaotic"], range=["#306998", "#5A9BD5", "#D94F4F"])
+region_color = alt.Scale(domain=["Stable", "Period-doubling", "Chaotic"], range=["#306998", "#E8A838", "#D94F4F"])
 
 # Base scatter layer
 points = (

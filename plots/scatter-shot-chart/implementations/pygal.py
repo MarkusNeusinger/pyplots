@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-shot-chart: Basketball Shot Chart
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 88/100 | Created: 2026-03-20
+Created: 2026-03-20
 """
 
 import math
@@ -94,20 +94,20 @@ custom_style = Style(
     foreground_subtle="#f5f0e8",
     guide_stroke_color="#f5f0e8",
     colors=(
-        "#c0b8a8",  # baseline
-        "#c0b8a8",  # three-pt arc
-        "#c0b8a8",  # corner left
-        "#c0b8a8",  # corner right
-        "#c0b8a8",  # paint
-        "#c0b8a8",  # ft circle top
-        "#c0b8a8",  # ft circle bottom (dashed)
-        "#c0b8a8",  # restricted arc
-        "#a09888",  # backboard
-        "#c87830",  # rim
+        "#b8a990",  # baseline — slightly more visible court lines
+        "#b8a990",  # three-pt arc
+        "#b8a990",  # corner left
+        "#b8a990",  # corner right
+        "#b8a990",  # paint
+        "#b8a990",  # ft circle top
+        "#b8a990",  # ft circle bottom (dashed)
+        "#b8a990",  # restricted arc
+        "#8c7e6e",  # backboard — darker for emphasis
+        "#c87830",  # rim — orange
         "#2166ac",  # made inside — blue (colorblind-safe)
         "#5aa3d9",  # made perimeter — light blue
-        "#d6604d",  # missed inside — orange (colorblind-safe)
-        "#e8a088",  # missed perimeter — light orange
+        "#d6604d",  # missed inside — orange-red (colorblind-safe)
+        "#e8a088",  # missed perimeter — light salmon
     ),
     font_family=font,
     title_font_family=font,
@@ -139,24 +139,26 @@ chart = pygal.XY(
     show_y_guides=False,
     show_x_labels=False,
     show_y_labels=False,
-    xrange=(-28, 28),
-    range=(-4, 30),
+    xrange=(-27, 27),
+    range=(-3, 28),
     margin_bottom=100,
-    margin_left=30,
-    margin_right=30,
+    margin_left=20,
+    margin_right=20,
     margin_top=60,
     print_values=False,
     print_zeroes=False,
     tooltip_border_radius=8,
     tooltip_fancy_mode=True,
+    truncate_legend=-1,
+    value_formatter=lambda val: f"{val:.1f} ft",
     js=[],
 )
 
 # Court markings
-line_style = {"width": 2.5, "linecap": "round", "linejoin": "round"}
-thin_style = {"width": 2, "linecap": "round", "linejoin": "round"}
+line_style = {"width": 3, "linecap": "round", "linejoin": "round"}
+thin_style = {"width": 2.5, "linecap": "round", "linejoin": "round"}
 
-chart.add(None, baseline, stroke=True, show_dots=False, stroke_style={"width": 3, "linecap": "round"})
+chart.add(None, baseline, stroke=True, show_dots=False, stroke_style={"width": 3.5, "linecap": "round"})
 chart.add(None, three_pt_arc, stroke=True, show_dots=False, stroke_style=line_style)
 chart.add(None, three_pt_left_corner, stroke=True, show_dots=False, stroke_style=line_style)
 chart.add(None, three_pt_right_corner, stroke=True, show_dots=False, stroke_style=line_style)
@@ -167,28 +169,15 @@ chart.add(
     ft_circle_bottom,
     stroke=True,
     show_dots=False,
-    stroke_style={"width": 2, "linecap": "round", "dasharray": "8,6"},
+    stroke_style={"width": 2.5, "linecap": "round", "dasharray": "8,6"},
 )
 chart.add(None, restricted_arc, stroke=True, show_dots=False, stroke_style=thin_style)
-chart.add(None, backboard, stroke=True, show_dots=False, stroke_style={"width": 4, "linecap": "round"})
-chart.add(None, rim, stroke=True, show_dots=False, stroke_style={"width": 2.5, "linecap": "round"})
+chart.add(None, backboard, stroke=True, show_dots=False, stroke_style={"width": 5, "linecap": "round"})
+chart.add(None, rim, stroke=True, show_dots=False, stroke_style={"width": 3, "linecap": "round"})
 
 # Shot data — separate by zone for visual hierarchy
 # Paint/FT shots (high efficiency) get larger dots; perimeter shots get smaller dots
-made_mask = made
-
-# Made shots: paint/FT with bigger markers, perimeter with smaller
-made_inside = [
-    {"value": (float(x[i]), float(y[i])), "label": f"{shot_type[i]} ({zones[i]}) — Made"}
-    for i in range(n_shots)
-    if made_mask[i] and zones[i] in ("paint", "free_throw")
-]
-made_outside = [
-    {"value": (float(x[i]), float(y[i])), "label": f"{shot_type[i]} ({zones[i]}) — Made"}
-    for i in range(n_shots)
-    if made_mask[i] and zones[i] in ("midrange", "three")
-]
-# Compute zone FG% for legend labels
+# Compute zone FG% for legend labels and storytelling
 paint_ft_mask = np.array([z in ("paint", "free_throw") for z in zones])
 perim_mask = ~paint_ft_mask
 n_inside = int(np.sum(paint_ft_mask))
@@ -196,25 +185,58 @@ n_perim = int(np.sum(perim_mask))
 inside_fg = np.sum(made[paint_ft_mask]) / n_inside * 100
 perim_fg = np.sum(made[perim_mask]) / n_perim * 100
 
-chart.add(f"Made Inside — {inside_fg:.0f}% FG ({len(made_inside)}/{n_inside})", made_inside, stroke=False, dots_size=13)
+# Made shots — paint/FT with bigger markers (high-value zone)
+made_inside = [
+    {"value": (float(x[i]), float(y[i])), "label": f"{shot_type[i]} ({zones[i]}) — Made", "node": {"r": 12}}
+    for i in range(n_shots)
+    if made[i] and zones[i] in ("paint", "free_throw")
+]
+made_outside = [
+    {"value": (float(x[i]), float(y[i])), "label": f"{shot_type[i]} ({zones[i]}) — Made", "node": {"r": 7}}
+    for i in range(n_shots)
+    if made[i] and zones[i] in ("midrange", "three")
+]
+
 chart.add(
-    f"Made Perimeter — {perim_fg:.0f}% FG ({len(made_outside)}/{n_perim})", made_outside, stroke=False, dots_size=8
+    f"\u2b24 Made Inside — {inside_fg:.0f}% FG ({len(made_inside)}/{n_inside})",
+    made_inside,
+    stroke=False,
+    dots_size=13,
+    formatter=lambda val: f"({val[0]:.1f}, {val[1]:.1f}) ft" if isinstance(val, (list, tuple)) else str(val),
+)
+chart.add(
+    f"\u2022 Made Perimeter — {perim_fg:.0f}% FG ({len(made_outside)}/{n_perim})",
+    made_outside,
+    stroke=False,
+    dots_size=8,
+    formatter=lambda val: f"({val[0]:.1f}, {val[1]:.1f}) ft" if isinstance(val, (list, tuple)) else str(val),
 )
 
-# Missed shots: same size logic
-missed_mask = ~made
+# Missed shots — same size hierarchy
 missed_inside = [
-    {"value": (float(x[i]), float(y[i])), "label": f"{shot_type[i]} ({zones[i]}) — Missed"}
+    {"value": (float(x[i]), float(y[i])), "label": f"{shot_type[i]} ({zones[i]}) — Missed", "node": {"r": 12}}
     for i in range(n_shots)
-    if missed_mask[i] and zones[i] in ("paint", "free_throw")
+    if not made[i] and zones[i] in ("paint", "free_throw")
 ]
 missed_outside = [
-    {"value": (float(x[i]), float(y[i])), "label": f"{shot_type[i]} ({zones[i]}) — Missed"}
+    {"value": (float(x[i]), float(y[i])), "label": f"{shot_type[i]} ({zones[i]}) — Missed", "node": {"r": 7}}
     for i in range(n_shots)
-    if missed_mask[i] and zones[i] in ("midrange", "three")
+    if not made[i] and zones[i] in ("midrange", "three")
 ]
-chart.add(f"Missed Inside ({len(missed_inside)})", missed_inside, stroke=False, dots_size=13)
-chart.add(f"Missed Perimeter ({len(missed_outside)})", missed_outside, stroke=False, dots_size=8)
+chart.add(
+    f"\u2b24 Missed Inside ({len(missed_inside)})",
+    missed_inside,
+    stroke=False,
+    dots_size=13,
+    formatter=lambda val: f"({val[0]:.1f}, {val[1]:.1f}) ft" if isinstance(val, (list, tuple)) else str(val),
+)
+chart.add(
+    f"\u2022 Missed Perimeter ({len(missed_outside)})",
+    missed_outside,
+    stroke=False,
+    dots_size=8,
+    formatter=lambda val: f"({val[0]:.1f}, {val[1]:.1f}) ft" if isinstance(val, (list, tuple)) else str(val),
+)
 
 # Save
 chart.render_to_png("plot.png")

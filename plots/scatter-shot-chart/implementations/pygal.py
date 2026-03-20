@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-shot-chart: Basketball Shot Chart
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 86/100 | Created: 2026-03-20
+Created: 2026-03-20
 """
 
 import math
@@ -94,16 +94,16 @@ custom_style = Style(
     foreground_subtle="#f5f0e8",
     guide_stroke_color="#f5f0e8",
     colors=(
-        "#888888",  # baseline
-        "#888888",  # three-pt arc
-        "#888888",  # corner left
-        "#888888",  # corner right
-        "#888888",  # paint
-        "#888888",  # ft circle top
-        "#888888",  # ft circle bottom (dashed)
-        "#888888",  # restricted arc
-        "#555555",  # backboard
-        "#dd6600",  # rim
+        "#c0b8a8",  # baseline
+        "#c0b8a8",  # three-pt arc
+        "#c0b8a8",  # corner left
+        "#c0b8a8",  # corner right
+        "#c0b8a8",  # paint
+        "#c0b8a8",  # ft circle top
+        "#c0b8a8",  # ft circle bottom (dashed)
+        "#c0b8a8",  # restricted arc
+        "#a09888",  # backboard
+        "#c87830",  # rim
         "#2166ac",  # made inside — blue (colorblind-safe)
         "#5aa3d9",  # made perimeter — light blue
         "#d6604d",  # missed inside — orange (colorblind-safe)
@@ -111,7 +111,7 @@ custom_style = Style(
     ),
     font_family=font,
     title_font_family=font,
-    title_font_size=48,
+    title_font_size=56,
     label_font_size=28,
     major_label_font_size=24,
     legend_font_size=36,
@@ -131,7 +131,7 @@ chart = pygal.XY(
     title="scatter-shot-chart · pygal · pyplots.ai",
     show_legend=True,
     legend_at_bottom=True,
-    legend_at_bottom_columns=4,
+    legend_at_bottom_columns=2,
     legend_box_size=28,
     stroke=True,
     dots_size=0,
@@ -140,7 +140,7 @@ chart = pygal.XY(
     show_x_labels=False,
     show_y_labels=False,
     xrange=(-28, 28),
-    range=(-4, 33),
+    range=(-4, 30),
     margin_bottom=100,
     margin_left=30,
     margin_right=30,
@@ -153,10 +153,10 @@ chart = pygal.XY(
 )
 
 # Court markings
-line_style = {"width": 4, "linecap": "round", "linejoin": "round"}
-thin_style = {"width": 3, "linecap": "round", "linejoin": "round"}
+line_style = {"width": 2.5, "linecap": "round", "linejoin": "round"}
+thin_style = {"width": 2, "linecap": "round", "linejoin": "round"}
 
-chart.add(None, baseline, stroke=True, show_dots=False, stroke_style={"width": 5, "linecap": "round"})
+chart.add(None, baseline, stroke=True, show_dots=False, stroke_style={"width": 3, "linecap": "round"})
 chart.add(None, three_pt_arc, stroke=True, show_dots=False, stroke_style=line_style)
 chart.add(None, three_pt_left_corner, stroke=True, show_dots=False, stroke_style=line_style)
 chart.add(None, three_pt_right_corner, stroke=True, show_dots=False, stroke_style=line_style)
@@ -167,11 +167,11 @@ chart.add(
     ft_circle_bottom,
     stroke=True,
     show_dots=False,
-    stroke_style={"width": 3, "linecap": "round", "dasharray": "8,6"},
+    stroke_style={"width": 2, "linecap": "round", "dasharray": "8,6"},
 )
 chart.add(None, restricted_arc, stroke=True, show_dots=False, stroke_style=thin_style)
-chart.add(None, backboard, stroke=True, show_dots=False, stroke_style={"width": 6, "linecap": "round"})
-chart.add(None, rim, stroke=True, show_dots=False, stroke_style={"width": 4, "linecap": "round"})
+chart.add(None, backboard, stroke=True, show_dots=False, stroke_style={"width": 4, "linecap": "round"})
+chart.add(None, rim, stroke=True, show_dots=False, stroke_style={"width": 2.5, "linecap": "round"})
 
 # Shot data — separate by zone for visual hierarchy
 # Paint/FT shots (high efficiency) get larger dots; perimeter shots get smaller dots
@@ -188,8 +188,18 @@ made_outside = [
     for i in range(n_shots)
     if made_mask[i] and zones[i] in ("midrange", "three")
 ]
-chart.add(f"Made — Inside ({len(made_inside)})", made_inside, stroke=False, dots_size=13)
-chart.add(f"Made — Perimeter ({len(made_outside)})", made_outside, stroke=False, dots_size=8)
+# Compute zone FG% for legend labels
+paint_ft_mask = np.array([z in ("paint", "free_throw") for z in zones])
+perim_mask = ~paint_ft_mask
+n_inside = int(np.sum(paint_ft_mask))
+n_perim = int(np.sum(perim_mask))
+inside_fg = np.sum(made[paint_ft_mask]) / n_inside * 100
+perim_fg = np.sum(made[perim_mask]) / n_perim * 100
+
+chart.add(f"Made Inside — {inside_fg:.0f}% FG ({len(made_inside)}/{n_inside})", made_inside, stroke=False, dots_size=13)
+chart.add(
+    f"Made Perimeter — {perim_fg:.0f}% FG ({len(made_outside)}/{n_perim})", made_outside, stroke=False, dots_size=8
+)
 
 # Missed shots: same size logic
 missed_mask = ~made
@@ -203,8 +213,8 @@ missed_outside = [
     for i in range(n_shots)
     if missed_mask[i] and zones[i] in ("midrange", "three")
 ]
-chart.add(f"Missed — Inside ({len(missed_inside)})", missed_inside, stroke=False, dots_size=13)
-chart.add(f"Missed — Perimeter ({len(missed_outside)})", missed_outside, stroke=False, dots_size=8)
+chart.add(f"Missed Inside ({len(missed_inside)})", missed_inside, stroke=False, dots_size=13)
+chart.add(f"Missed Perimeter ({len(missed_outside)})", missed_outside, stroke=False, dots_size=8)
 
 # Save
 chart.render_to_png("plot.png")

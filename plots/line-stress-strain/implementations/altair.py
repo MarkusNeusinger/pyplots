@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-stress-strain: Engineering Stress-Strain Curve
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-20
@@ -71,21 +71,45 @@ key_points_df = pd.DataFrame(
     {
         "Strain": [yield_point_strain, uts_point_strain, fracture_point_strain],
         "Stress (MPa)": [yield_point_stress, uts_point_stress, fracture_point_stress],
-        "Label": ["Yield Point (0.2% offset)", "UTS", "Fracture"],
+        "Label": ["Yield Point", "UTS", "Fracture"],
+    }
+)
+
+# Colorblind-safe palette: blue, teal, purple — highly distinguishable
+point_colors = alt.Scale(domain=["Yield Point", "UTS", "Fracture"], range=["#D4760A", "#5B3794", "#1B9E77"])
+
+# Label positions - spread out to avoid crowding in elastic region
+# Move yield label to the right, away from the congested elastic zone
+label_df = pd.DataFrame(
+    {
+        "Strain": [0.055, uts_point_strain + 0.02, fracture_point_strain - 0.005],
+        "Stress (MPa)": [yield_point_stress + 40, uts_point_stress + 30, fracture_point_stress + 35],
+        "text": ["Yield Point\n(0.2% offset)", f"UTS ({uts} MPa)", "Fracture"],
+        "Label": ["Yield Point", "UTS", "Fracture"],
+    }
+)
+
+# Connector lines from labels to points (for yield point which is displaced)
+connector_df = pd.DataFrame(
+    {
+        "Strain": [yield_point_strain, 0.052, uts_point_strain, uts_point_strain + 0.017],
+        "Stress (MPa)": [yield_point_stress, yield_point_stress + 32, uts_point_stress, uts_point_stress + 22],
+        "group": [0, 0, 1, 1],
     }
 )
 
 # Shared scales
 x_scale = alt.Scale(domain=[-0.01, 0.40])
-y_scale = alt.Scale(domain=[-10, 450])
+y_scale = alt.Scale(domain=[-10, 460])
 
-# Main stress-strain curve
+# Main stress-strain curve with tooltip
 curve = (
     alt.Chart(df)
     .mark_line(strokeWidth=3, color="#306998")
     .encode(
         x=alt.X("Strain:Q", scale=x_scale, title="Engineering Strain"),
         y=alt.Y("Stress (MPa):Q", scale=y_scale, title="Engineering Stress (MPa)"),
+        tooltip=[alt.Tooltip("Strain:Q", format=".4f"), alt.Tooltip("Stress (MPa):Q", format=".1f")],
     )
 )
 
@@ -96,67 +120,70 @@ offset_line = (
     .encode(x=alt.X("Strain:Q", scale=x_scale), y=alt.Y("Stress (MPa):Q", scale=y_scale))
 )
 
-# Key points
-point_colors = alt.Scale(
-    domain=["Yield Point (0.2% offset)", "UTS", "Fracture"], range=["#C46210", "#8B1A1A", "#2E8B57"]
-)
+# Nearest-point selection for interactive highlighting
+nearest = alt.selection_point(nearest=True, on="pointerover", fields=["Strain"], empty=False)
 
+# Key points with selection-driven opacity
 points = (
     alt.Chart(key_points_df)
-    .mark_point(filled=True, size=400, stroke="white", strokeWidth=2)
+    .mark_point(filled=True, size=450, stroke="white", strokeWidth=2.5)
     .encode(
         x=alt.X("Strain:Q", scale=x_scale),
         y=alt.Y("Stress (MPa):Q", scale=y_scale),
         color=alt.Color("Label:N", scale=point_colors, legend=None),
+        opacity=alt.condition(nearest, alt.value(1.0), alt.value(0.85)),
         tooltip=[
             alt.Tooltip("Label:N"),
             alt.Tooltip("Strain:Q", format=".4f"),
             alt.Tooltip("Stress (MPa):Q", format=".1f"),
         ],
     )
+    .add_params(nearest)
 )
 
-# Point labels
-label_offsets = pd.DataFrame(
-    {
-        "Strain": [yield_point_strain + 0.015, uts_point_strain + 0.02, fracture_point_strain - 0.005],
-        "Stress (MPa)": [yield_point_stress - 30, uts_point_stress + 25, fracture_point_stress + 30],
-        "text": ["Yield Point\n(0.2% offset)", "UTS (400 MPa)", "Fracture"],
-        "color_val": ["#C46210", "#8B1A1A", "#2E8B57"],
-    }
+# Connector lines from labels to their points
+connectors = (
+    alt.Chart(connector_df)
+    .mark_line(strokeWidth=1, color="#999999", strokeDash=[3, 3])
+    .encode(x=alt.X("Strain:Q", scale=x_scale), y=alt.Y("Stress (MPa):Q", scale=y_scale), detail="group:N")
 )
 
-yield_label = (
-    alt.Chart(label_offsets.iloc[[0]])
-    .mark_text(fontSize=17, align="left", fontWeight="bold", color="#C46210")
-    .encode(x=alt.X("Strain:Q", scale=x_scale), y=alt.Y("Stress (MPa):Q", scale=y_scale), text="text:N")
+# Unified point labels using single chart with color encoding
+point_labels = (
+    alt.Chart(label_df)
+    .mark_text(fontSize=17, fontWeight="bold", lineBreak="\n")
+    .encode(
+        x=alt.X("Strain:Q", scale=x_scale),
+        y=alt.Y("Stress (MPa):Q", scale=y_scale),
+        text="text:N",
+        color=alt.Color("Label:N", scale=point_colors, legend=None),
+    )
 )
 
-uts_label = (
-    alt.Chart(label_offsets.iloc[[1]])
-    .mark_text(fontSize=17, align="left", fontWeight="bold", color="#8B1A1A")
-    .encode(x=alt.X("Strain:Q", scale=x_scale), y=alt.Y("Stress (MPa):Q", scale=y_scale), text="text:N")
-)
-
-fracture_label = (
-    alt.Chart(label_offsets.iloc[[2]])
-    .mark_text(fontSize=17, align="center", fontWeight="bold", color="#2E8B57")
-    .encode(x=alt.X("Strain:Q", scale=x_scale), y=alt.Y("Stress (MPa):Q", scale=y_scale), text="text:N")
-)
-
-# Region labels
+# Region labels with background rect for visibility
 region_labels_df = pd.DataFrame(
-    {"Strain": [0.001, 0.11, 0.30], "Stress (MPa)": [430, 430, 430], "text": ["Elastic", "Strain Hardening", "Necking"]}
+    {"Strain": [0.005, 0.11, 0.30], "Stress (MPa)": [440, 440, 440], "text": ["Elastic", "Strain Hardening", "Necking"]}
 )
 
 region_text = (
     alt.Chart(region_labels_df)
-    .mark_text(fontSize=16, fontStyle="italic", color="#777777")
+    .mark_text(fontSize=16, fontStyle="italic", color="#666666", fontWeight=500)
     .encode(x=alt.X("Strain:Q", scale=x_scale), y=alt.Y("Stress (MPa):Q", scale=y_scale), text="text:N")
 )
 
-# Young's modulus annotation
-modulus_label_df = pd.DataFrame({"Strain": [0.012], "Stress (MPa)": [120], "text": [f"E = {youngs_modulus:,} MPa"]})
+# Region separator lines (subtle vertical dashes)
+region_sep_df = pd.DataFrame(
+    {"Strain": [0.02, 0.02, uts_strain, uts_strain], "Stress (MPa)": [425, 455, 425, 455], "sep": [0, 0, 1, 1]}
+)
+
+region_separators = (
+    alt.Chart(region_sep_df)
+    .mark_line(strokeWidth=0.8, color="#cccccc", strokeDash=[4, 3])
+    .encode(x=alt.X("Strain:Q", scale=x_scale), y=alt.Y("Stress (MPa):Q", scale=y_scale), detail="sep:N")
+)
+
+# Young's modulus annotation - position away from elastic zone crowding
+modulus_label_df = pd.DataFrame({"Strain": [0.025], "Stress (MPa)": [100], "text": [f"E = {youngs_modulus:,} MPa"]})
 
 modulus_text = (
     alt.Chart(modulus_label_df)
@@ -164,24 +191,64 @@ modulus_text = (
     .encode(x=alt.X("Strain:Q", scale=x_scale), y=alt.Y("Stress (MPa):Q", scale=y_scale), text="text:N")
 )
 
+# Slope indicator line for Young's modulus
+slope_df = pd.DataFrame(
+    {"Strain": [0.0, yield_strain * 0.75], "Stress (MPa)": [0.0, youngs_modulus * yield_strain * 0.75]}
+)
+
+slope_line = (
+    alt.Chart(slope_df)
+    .mark_line(strokeWidth=2.5, color="#306998", strokeDash=[12, 4])
+    .encode(x=alt.X("Strain:Q", scale=x_scale), y=alt.Y("Stress (MPa):Q", scale=y_scale))
+)
+
+# Modulus arrow connector
+modulus_connector_df = pd.DataFrame(
+    {"Strain": [yield_strain * 0.5, 0.023], "Stress (MPa)": [youngs_modulus * yield_strain * 0.5, 108]}
+)
+
+modulus_connector = (
+    alt.Chart(modulus_connector_df)
+    .mark_line(strokeWidth=1, color="#306998", strokeDash=[3, 3])
+    .encode(x=alt.X("Strain:Q", scale=x_scale), y=alt.Y("Stress (MPa):Q", scale=y_scale))
+)
+
 # 0.2% offset label
-offset_label_df = pd.DataFrame({"Strain": [offset + 0.003], "Stress (MPa)": [50], "text": ["0.2% offset"]})
+offset_label_df = pd.DataFrame({"Strain": [offset + 0.005], "Stress (MPa)": [40], "text": ["0.2% offset"]})
 
 offset_text = (
     alt.Chart(offset_label_df)
-    .mark_text(fontSize=14, align="left", color="#888888")
+    .mark_text(fontSize=15, align="left", color="#888888", fontStyle="italic")
     .encode(x=alt.X("Strain:Q", scale=x_scale), y=alt.Y("Stress (MPa):Q", scale=y_scale), text="text:N")
 )
 
 # Combine all layers
 chart = (
     alt.layer(
-        curve, offset_line, points, yield_label, uts_label, fracture_label, region_text, modulus_text, offset_text
+        curve,
+        slope_line,
+        offset_line,
+        connectors,
+        points,
+        point_labels,
+        region_separators,
+        region_text,
+        modulus_connector,
+        modulus_text,
+        offset_text,
     )
     .properties(
         width=1600,
         height=900,
-        title=alt.Title("Mild Steel Tensile Test · line-stress-strain · altair · pyplots.ai", fontSize=28),
+        title=alt.Title(
+            "Mild Steel Tensile Test · line-stress-strain · altair · pyplots.ai",
+            fontSize=28,
+            subtitle="Engineering stress-strain response showing elastic, hardening, and necking behavior",
+            subtitleFontSize=16,
+            subtitleColor="#777777",
+            anchor="start",
+            offset=12,
+        ),
     )
     .configure_axis(
         labelFontSize=18,
@@ -190,12 +257,12 @@ chart = (
         labelColor="#555555",
         grid=False,
         domainColor="#aaaaaa",
-        domainWidth=0.6,
+        domainWidth=0.8,
         tickColor="#aaaaaa",
-        tickSize=5,
-        tickWidth=0.6,
+        tickSize=6,
+        tickWidth=0.8,
     )
-    .configure_title(color="#222222")
+    .configure_title(color="#1a1a1a")
     .configure_view(strokeWidth=0)
     .interactive()
 )

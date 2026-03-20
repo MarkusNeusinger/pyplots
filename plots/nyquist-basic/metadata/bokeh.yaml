@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: nyquist-basic
 created: '2026-03-20T22:45:13Z'
-updated: '2026-03-20T22:50:14Z'
+updated: '2026-03-20T23:01:43Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23365453475
 issue: 4412
@@ -10,101 +10,107 @@ library_version: 3.9.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/nyquist-basic/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/nyquist-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/nyquist-basic/bokeh/plot.html
-quality_score: 88
+quality_score: 85
 review:
   strengths:
-  - 'Perfect spec compliance: all six specification requirements implemented correctly'
-  - 'Excellent data choice: third-order system near stability boundary creates informative
-    Nyquist curve'
-  - 'Good use of Bokeh interactive features: HoverTool with detailed frequency response
-    data and HTML export'
-  - Clean well-structured code with deterministic data generation
-  - Thoughtful annotations at gain and phase crossover frequencies tell the stability
-    story
+  - Excellent spec compliance - all required features implemented correctly
+  - Strong data storytelling with gain/phase margin annotations and direction arrows
+  - Professional color palette and typography choices
+  - Good use of Bokeh interactive features (HoverTool, HTML export)
+  - Deterministic data from analytical transfer function
   weaknesses:
-  - 'Label crowding near the origin: Phase crossover and gain crossover annotations
-    are too close together'
-  - Design could be more polished to reach publication quality - color palette and
-    visual hierarchy between main curve and reference elements needs improvement
-  image_description: The plot shows a Nyquist diagram on the complex plane with a
-    blue solid curve representing positive frequencies (ω > 0) and an orange dashed
-    curve for negative frequencies (ω < 0). The title reads "nyquist-basic · bokeh
-    · pyplots.ai" in the top-left. Axes are labeled "Real" (x-axis) and "Imaginary"
-    (y-axis). A gray dashed unit circle is centered at the origin. A red X marker
-    denotes the critical point at (-1, 0). The blue curve sweeps from the right side
-    of the real axis (near ω→0 at ~5+0j) downward through the lower half-plane, crossing
-    back near the origin. Triangle-shaped direction arrows appear on both curves indicating
-    increasing frequency. Key annotations include "ω=2.54 rad/s" (gain crossover,
-    blue circle marker) and "Phase crossover ω=4.08" (red diamond marker near the
-    negative real axis). Labels "ω→0" and "ω→∞" mark the curve endpoints. The legend
-    in the top-right distinguishes ω > 0, ω < 0, and the critical point. Background
-    is light gray (#FAFAFA) with a very subtle grid.
+  - Annotation crowding near the origin - phase crossover, omega-infinity, and gain
+    crossover labels compete for space
+  - Mirror arrow calculation code is verbose and could be cleaner
+  - Axis labels could be more descriptive (Real Part / Imaginary Part)
+  - Some empty space in upper-left quadrant not well utilized
+  image_description: 'The plot displays a Nyquist diagram on a square canvas (3600x3600).
+    A solid blue curve represents positive frequencies (omega > 0), starting from
+    approximately (5, 0) at low frequency and spiraling inward toward the origin as
+    omega approaches infinity. An orange dashed curve mirrors the positive frequency
+    branch for omega < 0. A dashed gray unit circle is centered at the origin. A prominent
+    red X marks the critical point at (-1, 0). Blue triangular arrows along the positive-frequency
+    curve indicate the direction of increasing frequency, with corresponding orange
+    arrows on the mirror curve. Two annotated crossover points are shown: a blue filled
+    circle at the gain crossover (omega=2.54 rad/s, PM=32.8 degrees) and a red diamond
+    at the phase crossover (omega=4.08, GM=7.8 dB). Labels omega-to-0 and omega-to-infinity
+    mark the curve endpoints. A green dotted line segment indicates the gain margin
+    between the phase crossover point and the critical point. The legend in the top-right
+    corner lists Unit circle, omega > 0, omega < 0, and Critical point (-1, 0). Background
+    is light gray with very subtle grid lines. Axes are labeled Real and Imaginary.'
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 24
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 60pt, axis labels 44pt, tick
-          labels 32pt, annotations 26-28pt'
+        comment: 'All font sizes explicitly set (title 60pt, labels 44pt, ticks 32pt,
+          annotations 26-28pt). Minor: annotation text near origin slightly small
+          relative to canvas.'
       - id: VQ-02
         name: No Overlap
         score: 4
         max: 6
-        passed: true
-        comment: Phase crossover and gain crossover labels crowded near the origin
+        passed: false
+        comment: 'Annotations near origin are crowded: omega-infinity, phase crossover,
+          and gain crossover labels compete for space.'
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Lines and markers well-sized; unit circle could be slightly more
-          prominent
+        comment: Lines well-sized (4.5px and 3px). Markers appropriately scaled. Gain
+          margin dotted line could be slightly more prominent.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue/orange colorblind-safe palette
+        comment: Blue/orange colorblind-safe pair. Red, green, purple all distinguishable
+          with good contrast.
       - id: VQ-05
         name: Layout & Canvas
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: Square format with 1:1 aspect ratio, good canvas utilization
+        comment: Square 1:1 aspect ratio appropriate. Data fills canvas reasonably
+          but upper-left quadrant has significant empty space.
       - id: VQ-06
         name: Axis Labels & Title
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Real and Imaginary are standard Nyquist plot labels
+        passed: false
+        comment: Axes labeled Real and Imaginary - descriptive but lack units or mathematical
+          notation.
     design_excellence:
-      score: 13
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom palette, Helvetica, removed axis lines/ticks, above defaults
-          but not publication-ready
+        comment: Custom cohesive color palette, Helvetica typography, removed axis
+          lines/ticks, light background. Clearly above defaults.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Axis lines removed, grid alpha=0.12, clean background, good refinement
+        comment: Axis lines and ticks removed, subtle grid (alpha=0.10), well-styled
+          legend. Good refinement overall.
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Annotations at crossover frequencies guide viewer to stability insights
+        comment: Gain/phase margin annotations, direction arrows, endpoint labels,
+          gain margin visualization line. Strong storytelling.
     spec_compliance:
       score: 15
       max: 15
@@ -114,51 +120,53 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct Nyquist plot on complex plane
+        comment: Correct Nyquist plot on complex plane.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features: critical point, unit circle, annotations, arrows,
-          aspect ratio, axis labels'
+        comment: 'All spec features present: critical point, unit circle, frequency
+          annotations, arrows, 1:1 aspect, axis labels.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Real on x-axis, imaginary on y-axis, both frequency contours shown
+        comment: Real on x-axis, imaginary on y-axis. Both frequency branches shown.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, legend labels descriptive
+        comment: Title matches required format. Legend labels clear and descriptive.
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Shows gain/phase crossovers, both frequency contours, proximity to
-          critical point
+        comment: Shows gain/phase crossover, mirror branch, spiral behavior. Could
+          show encirclement for more complexity.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Third-order control system near stability boundary
+        comment: Third-order control system with realistic poles and gain. Plausible
+          engineering values.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Appropriate frequency range and system parameters
+        comment: Frequency range and transfer function values sensible for the given
+          system.
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -166,31 +174,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear flow, no functions or classes
+        comment: 'Linear flow: imports, data, plot, styling, save. No functions or
+          classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic computation
+        comment: Fully deterministic from analytical transfer function.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: All imports used.
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Clean and well-organized, vectorized computation
+        passed: false
+        comment: Mirror arrow calculation is verbose with nested conditionals. Main
+          curve logic is clean.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png and plot.html, current API
+        comment: Saves plot.png and plot.html. Current Bokeh API.
     library_mastery:
       score: 8
       max: 10
@@ -200,13 +210,14 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of ColumnDataSource, figure, glyphs, and model objects
+        comment: Good use of ColumnDataSource, HoverTool, Label, Span, figure configuration.
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: HoverTool with custom tooltips, HTML export, interactive tools
+        comment: HoverTool with detailed tooltips, HTML export, interactive tools
+          configured. Distinctive Bokeh features.
   verdict: REJECTED
 impl_tags:
   dependencies: []

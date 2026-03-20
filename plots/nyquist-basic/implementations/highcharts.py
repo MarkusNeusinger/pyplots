@@ -1,7 +1,7 @@
 """ pyplots.ai
 nyquist-basic: Nyquist Plot for Control Systems
 Library: highcharts unknown | Python 3.14.3
-Quality: 84/100 | Created: 2026-03-20
+Quality: 86/100 | Created: 2026-03-20
 """
 
 import subprocess

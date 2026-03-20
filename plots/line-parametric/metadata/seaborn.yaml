@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: line-parametric
 created: '2026-03-20T10:36:49Z'
-updated: '2026-03-20T10:47:28Z'
+updated: '2026-03-20T10:54:48Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23339035297
 issue: 4424
@@ -10,82 +10,78 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-parametric/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-parametric/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 77
+quality_score: 80
 review:
   strengths:
-  - 'Full spec compliance: both required curves, equal aspect, color gradients, start/end
-    markers all present'
-  - Good color choices with viridis and plasma colormaps — colorblind-safe and visually
-    distinct between panels
-  - Clean code structure with explicit font sizes and thoughtful styling (despine,
-    reduced grid alpha, white edgecolor on markers)
-  - Deterministic data generation with sufficient point density (1000 points)
+  - Full spec compliance with all required features (equal aspect, color gradients,
+    two curves, start/end markers)
+  - Excellent text legibility with all font sizes explicitly set
+  - Good use of two distinct colormaps (viridis/plasma) to differentiate curves
+  - Clean visual presentation with subtle grid and removed spines
+  - Deterministic, mathematically correct data
   weaknesses:
-  - Scatter-based curve rendering creates visible beading at intersections and curve
-    extremes — a line-based approach would produce smoother curves
-  - Spiral end marker crowds the colorbar on the right panel — needs padding or repositioning
-  - Code duplication in marker plotting (6 near-identical scatterplot calls for start/end
-    markers across two panels)
-  - Axis labels x(t)/y(t) are minimal — could be more descriptive
-  - 'Library mastery could be stronger: using scatterplot for continuous curves is
-    not idiomatic'
-  image_description: 'The plot displays two side-by-side parametric curves with the
-    suptitle "line-parametric · seaborn · pyplots.ai" centered at the top. Left panel:
-    A Lissajous figure (x = sin(3t), y = sin(2t)) rendered as a scatter-based curve
-    colored by the viridis colormap, transitioning from dark purple (t=0) through
-    teal/green to yellow (t≈2π). A blue circle marks the start point at the origin
-    and a red square marks the end point. A vertical colorbar labeled "Parameter t"
-    (range 0–~6.3) sits to the right. Axes labeled x(t) and y(t), equal aspect ratio,
-    top/right spines removed, subtle grid. Right panel: An Archimedean spiral (x =
-    t·cos(t), y = t·sin(t)) colored by the plasma colormap from dark purple through
-    pink/orange to yellow. The spiral expands outward; blue circle at the origin (start),
-    red square at the far right edge near (12.6, 0) (end). Colorbar labeled "Parameter
-    t" (range 0–~12.6). The end marker appears very close to the colorbar, creating
-    slight visual congestion. Both panels have legends identifying start/end markers.'
+  - Library mastery is low — core visualization relies on matplotlib LineCollection
+    rather than seaborn plotting functions
+  - Helper function make_segments breaks KISS principle
+  - Marker creation loop is verbose (iterrows over DataFrame for 2 points per panel)
+  image_description: The plot displays two side-by-side panels on a white background
+    with the suptitle "line-parametric · seaborn · pyplots.ai" at the top. The left
+    panel shows a Lissajous figure (x = sin(3t), y = sin(2t)) with a viridis color
+    gradient mapping parameter t from 0 to ~6.3 radians, forming a self-intersecting
+    figure-eight-like closed curve. The right panel shows an Archimedean spiral (x
+    = t·cos(t), y = t·sin(t)) with a plasma color gradient mapping t from 0 to ~12.6
+    radians, expanding outward from the center. Both panels have equal aspect ratios,
+    blue circle start markers and red square end markers, colorbars labeled "Parameter
+    t (radians)", descriptive axis labels, and legends in the lower right. Top and
+    right spines are removed, and grid lines are subtle (alpha=0.15).
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 28
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 24pt, labels 20pt, ticks 16pt,
-          legend 14pt, colorbar 18pt, suptitle 26pt). All readable.
+        comment: 'All font sizes explicitly set: suptitle 26pt, subtitles 24pt, axis
+          labels 20pt, ticks 16pt, colorbar labels 18pt, colorbar ticks 14pt, legend
+          14pt'
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: Generally clean but spiral end marker crowds the colorbar.
+        comment: Minor crowding between Lissajous subtitle and colorbar; start/end
+          markers overlap at origin on closed Lissajous curve
       - id: VQ-03
         name: Element Visibility
-        score: 4
+        score: 6
         max: 6
         passed: true
-        comment: Scatter-based rendering with s=20 creates visible beading at intersections.
-          Line-based would be smoother.
+        comment: Lines at linewidth=3 clearly visible; markers at s=300 with white
+          edgecolor stand out well
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Viridis and plasma are perceptually uniform and colorblind-safe.
+        comment: viridis and plasma are colorblind-safe; blue/red markers have good
+          luminance contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Two-panel layout fills space well. Slight crowding on spiral panel
-          near colorbar.
+        comment: Two-panel layout uses space well but wspace=0.5 creates noticeable
+          gap; uneven colorbar padding
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Labels x(t) and y(t) are descriptive for parametric context but minimal.
+        comment: Descriptive labels with x(t)/y(t) notation; units not applicable
+          for mathematical curves
     design_excellence:
       score: 12
       max: 20
@@ -95,21 +91,22 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Two distinct colormaps, whitegrid with reduced alpha, endpoint markers
-          with white edgecolor. Above default but not publication-level.
+        comment: Thoughtful dual colormaps, custom marker colors with white edgecolor;
+          above defaults but not publication-exceptional
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Spines removed, grid alpha 0.15, colorbar shrunk. Good refinement.
+        comment: Spines removed via despine, grid alpha=0.15 is subtle, whitegrid
+          theme is clean
       - id: DE-03
         name: Data Storytelling
         score: 3
         max: 6
         passed: true
-        comment: Color gradient conveys parameter progression. Start/end markers with
-          distinct shapes add narrative.
+        comment: Color gradient shows parameter traversal; start/end markers add narrative;
+          two contrasting curve types provide comparison
     spec_compliance:
       score: 15
       max: 15
@@ -119,101 +116,108 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct parametric curve plot with two curves.
+        comment: Correct parametric curve plot with x(t), y(t) as functions of parameter
+          t
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Equal aspect, color gradient, two curves, start/end markers, 1000
-          points.
+        comment: 'All features present: equal aspect ratio, color gradient, two curves,
+          start/end markers, 1000 points'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: x(t) and y(t) correctly computed and mapped.
+        comment: X/Y correctly computed from parametric equations; axes show full
+          data range
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend labels descriptive and matching.
+        comment: Title in correct format; legend labels Start/End with t values are
+          clear and correct
     data_quality:
-      score: 12
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: 'Two contrasting curves: self-intersecting Lissajous and expanding
-          spiral.'
+        comment: 'Two fundamentally different curves: self-intersecting closed Lissajous
+          and open expanding spiral'
       - id: DQ-02
         name: Realistic Context
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Classic mathematical examples, well-known but abstract/educational.
+        comment: Standard mathematical curves from spec; well-known in physics but
+          presented as pure math examples
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Mathematically correct values for both curves.
+        comment: 'Standard parameter ranges: t in [0, 2pi] for Lissajous, t in [0,
+          4pi] for spiral'
     code_quality:
-      score: 9
+      score: 8
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
-        passed: true
-        comment: 'Linear flow: imports, data, figure, plot, style, save.'
+        passed: false
+        comment: Defines make_segments helper function, violating flat code structure
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic trigonometric functions.
+        comment: Fully deterministic data from mathematical functions
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: 'All imports used: matplotlib.pyplot, numpy, pandas, seaborn, LineCollection,
+          GridSpec'
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
-        passed: true
-        comment: Duplicated marker-plotting code across panels.
+        passed: false
+        comment: Slightly verbose marker loop with iterrows; helper function adds
+          unnecessary abstraction
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png, dpi=300, bbox_inches=tight.
+        comment: Saves as plot.png with dpi=300, bbox_inches=tight; current API
     library_mastery:
-      score: 5
+      score: 3
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
-        max: 5
-        passed: true
-        comment: Uses sns.scatterplot with hue, set_theme, set_context, despine. But
-          scatterplot for continuous curves is not the most natural choice.
-      - id: LM-02
-        name: Distinctive Features
         score: 2
         max: 5
-        passed: true
-        comment: Leverages seaborn theme system and despine utility, but these are
-          basic features.
+        passed: false
+        comment: Core curves drawn via matplotlib LineCollection; seaborn used only
+          for scatterplot markers and styling
+      - id: LM-02
+        name: Distinctive Features
+        score: 1
+        max: 5
+        passed: false
+        comment: set_context and despine are seaborn-specific but basic; no distinctive
+          visualization features leveraged
   verdict: REJECTED
 impl_tags:
   dependencies: []
@@ -222,6 +226,7 @@ impl_tags:
   - subplots
   patterns:
   - data-generation
+  - iteration-over-groups
   dataprep: []
   styling:
   - custom-colormap

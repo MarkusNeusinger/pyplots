@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-pareto: Pareto Chart with Cumulative Line
 Library: bokeh 3.9.0 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-20
@@ -6,7 +6,7 @@ Quality: 84/100 | Created: 2026-03-20
 
 import numpy as np
 from bokeh.io import export_png
-from bokeh.models import ColumnDataSource, LinearAxis, PrintfTickFormatter, Range1d, Span
+from bokeh.models import ColumnDataSource, HoverTool, Label, LinearAxis, PrintfTickFormatter, Range1d, Span
 from bokeh.plotting import figure, output_file, save
 
 
@@ -28,7 +28,23 @@ counts = np.array([187, 143, 98, 72, 54, 38, 27, 19, 12, 7])
 # Cumulative percentage
 cumulative_pct = np.cumsum(counts) / counts.sum() * 100
 
-source = ColumnDataSource(data={"categories": categories, "counts": counts, "cumulative_pct": cumulative_pct})
+# Identify vital few (contribute to first 80%)
+vital_mask = cumulative_pct <= 80
+# Include the bar that crosses 80%
+if not vital_mask.all():
+    first_over = np.argmax(~vital_mask)
+    vital_mask[first_over] = True
+bar_colors = ["#306998" if v else "#7BA4C7" for v in vital_mask]
+
+source = ColumnDataSource(
+    data={
+        "categories": categories,
+        "counts": counts,
+        "cumulative_pct": cumulative_pct,
+        "colors": bar_colors,
+        "pct_label": [f"{p:.0f}%" for p in cumulative_pct],
+    }
+)
 
 # Figure with categorical x-axis
 p = figure(
@@ -37,13 +53,21 @@ p = figure(
     height=2700,
     title="bar-pareto · bokeh · pyplots.ai",
     x_axis_label="Defect Type",
-    y_axis_label="Frequency",
+    y_axis_label="Defect Count",
     toolbar_location=None,
 )
 
-# Bars
+# Bars - vital few in dark blue, trivial many in lighter blue
 p.vbar(
-    x="categories", top="counts", source=source, width=0.7, color="#306998", alpha=0.9, line_color="white", line_width=2
+    x="categories",
+    top="counts",
+    source=source,
+    width=0.7,
+    color="colors",
+    alpha=0.9,
+    line_color="white",
+    line_width=2,
+    legend_label="Defect Count",
 )
 
 # Secondary y-axis for cumulative percentage
@@ -70,6 +94,7 @@ p.line(
     line_width=4,
     line_color="#E8833A",
     line_join="round",
+    legend_label="Cumulative %",
 )
 
 # Cumulative line markers
@@ -84,11 +109,55 @@ p.scatter(
     line_width=2,
 )
 
-# 80% reference line
+# Add cumulative percentage labels at each marker
+for i, (_cat, pct) in enumerate(zip(categories, cumulative_pct, strict=False)):
+    p.add_layout(
+        Label(
+            x=i,
+            y=pct,
+            text=f"{pct:.0f}%",
+            text_font_size="18pt",
+            text_color="#C0652A",
+            text_font_style="bold",
+            text_align="left" if i == 0 else "center",
+            y_offset=18,
+            y_range_name="pct",
+        )
+    )
+
+# 80% reference line - more prominent
 span_80 = Span(
-    location=80, dimension="width", line_color="#999999", line_dash="dashed", line_width=2, y_range_name="pct"
+    location=80,
+    dimension="width",
+    line_color="#E8833A",
+    line_dash="dashed",
+    line_width=3,
+    line_alpha=0.7,
+    y_range_name="pct",
 )
 p.add_layout(span_80)
+
+# Label for 80% reference line
+p.add_layout(
+    Label(
+        x=9,
+        y=80,
+        text="80% threshold",
+        text_font_size="20pt",
+        text_color="#E8833A",
+        text_font_style="bold",
+        text_align="right",
+        y_offset=12,
+        x_offset=-10,
+        y_range_name="pct",
+    )
+)
+
+# HoverTool - Bokeh signature interactive feature
+hover = HoverTool(
+    tooltips=[("Defect", "@categories"), ("Count", "@counts"), ("Cumulative", "@pct_label")], mode="vline"
+)
+p.add_tools(hover)
 
 # Styling
 p.title.text_font_size = "36pt"
@@ -119,6 +188,14 @@ p.ygrid.grid_line_alpha = 0.2
 # Y-axis range
 p.y_range.start = 0
 p.y_range.end = max(counts) * 1.12
+
+# Legend
+p.legend.location = "top_left"
+p.legend.label_text_font_size = "20pt"
+p.legend.background_fill_alpha = 0.8
+p.legend.border_line_color = None
+p.legend.padding = 15
+p.legend.spacing = 8
 
 # Background
 p.background_fill_color = "#FFFFFF"

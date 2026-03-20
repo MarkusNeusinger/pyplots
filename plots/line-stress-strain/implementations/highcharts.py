@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-stress-strain: Engineering Stress-Strain Curve
 Library: highcharts unknown | Python 3.14.3
 Quality: 83/100 | Created: 2026-03-20
@@ -51,13 +51,12 @@ stress_necking += np.random.normal(0, 1.0, len(strain_necking))
 strain = np.concatenate([strain_elastic, strain_plateau[1:], strain_hardening[1:], strain_necking[1:]])
 stress = np.concatenate([stress_elastic, stress_plateau[1:], stress_hardening[1:], stress_necking[1:]])
 
-# 0.2% offset line
+# 0.2% offset line - extend well beyond yield to make it clearly visible
 offset = 0.002
-offset_line_strain = np.array([offset, offset + yield_strength / youngs_modulus + 0.003])
-offset_line_stress = np.array([0, (offset_line_strain[1] - offset) * youngs_modulus])
-# Clamp offset line to where it would intersect the curve (~yield strength)
-offset_line_strain_full = np.array([offset, offset + yield_strength / youngs_modulus])
-offset_line_stress_full = np.array([0, yield_strength])
+# Extend offset line from 0 stress up to ~320 MPa so it's clearly visible on the chart
+offset_max_stress = 320  # MPa - extends well past yield for visibility
+offset_line_strain_full = np.array([offset, offset + offset_max_stress / youngs_modulus])
+offset_line_stress_full = np.array([0, offset_max_stress])
 
 # Key points
 yield_point_strain = offset + yield_strength / youngs_modulus  # ~0.00319
@@ -102,13 +101,13 @@ chart.options.x_axis = {
         {
             "from": 0,
             "to": 0.015,
-            "color": "rgba(46, 204, 113, 0.08)",
+            "color": "rgba(23, 165, 137, 0.08)",
             "label": {
                 "text": "Elastic",
                 "align": "center",
                 "verticalAlign": "bottom",
                 "y": -20,
-                "style": {"fontSize": "30px", "color": "rgba(39, 174, 96, 0.8)", "fontWeight": "bold"},
+                "style": {"fontSize": "30px", "color": "rgba(23, 165, 137, 0.8)", "fontWeight": "bold"},
             },
         },
         {
@@ -126,13 +125,13 @@ chart.options.x_axis = {
         {
             "from": uts_strain,
             "to": fracture_strain,
-            "color": "rgba(231, 76, 60, 0.06)",
+            "color": "rgba(142, 68, 173, 0.06)",
             "label": {
                 "text": "Necking",
                 "align": "center",
                 "verticalAlign": "bottom",
                 "y": -20,
-                "style": {"fontSize": "30px", "color": "rgba(192, 57, 43, 0.8)", "fontWeight": "bold"},
+                "style": {"fontSize": "30px", "color": "rgba(142, 68, 173, 0.8)", "fontWeight": "bold"},
             },
         },
     ],
@@ -149,7 +148,7 @@ chart.options.y_axis = {
     "plotLines": [
         {
             "value": yield_strength,
-            "color": "rgba(39, 174, 96, 0.5)",
+            "color": "rgba(23, 165, 137, 0.5)",
             "width": 2,
             "dashStyle": "Dot",
             "label": {
@@ -157,7 +156,7 @@ chart.options.y_axis = {
                 "align": "right",
                 "x": -20,
                 "y": -12,
-                "style": {"fontSize": "28px", "color": "rgba(39, 174, 96, 0.9)"},
+                "style": {"fontSize": "28px", "color": "rgba(23, 165, 137, 0.9)"},
             },
             "zIndex": 3,
         },
@@ -196,6 +195,27 @@ chart.options.legend = {
 
 chart.options.credits = {"enabled": False}
 
+# Elastic modulus annotation on chart body
+chart.options.annotations = [
+    {
+        "draggable": "",
+        "labels": [
+            {
+                "point": {"x": 0.012, "y": 130, "xAxis": 0, "yAxis": 0},
+                "text": "E = 210 GPa",
+                "style": {"fontSize": "32px", "fontWeight": "bold", "color": "#306998"},
+                "backgroundColor": "rgba(255, 255, 255, 0.85)",
+                "borderColor": "#306998",
+                "borderWidth": 2,
+                "borderRadius": 6,
+                "padding": 10,
+                "shape": "rect",
+            }
+        ],
+        "labelOptions": {"overflow": "none", "crop": False},
+    }
+]
+
 chart.options.tooltip = {
     "style": {"fontSize": "28px"},
     "backgroundColor": "rgba(255, 255, 255, 0.95)",
@@ -221,7 +241,7 @@ offset_series.data = [
 offset_series.name = "0.2% Offset Line"
 offset_series.color = "#e67e22"
 offset_series.dash_style = "Dash"
-offset_series.line_width = 3
+offset_series.line_width = 4
 offset_series.marker = {"enabled": False}
 chart.add_series(offset_series)
 
@@ -229,12 +249,12 @@ chart.add_series(offset_series)
 yield_point_series = LineSeries()
 yield_point_series.data = [[round(yield_point_strain, 5), yield_strength]]
 yield_point_series.name = "Yield Point (0.2% offset)"
-yield_point_series.color = "#27ae60"
+yield_point_series.color = "#17a589"
 yield_point_series.marker = {
     "enabled": True,
-    "radius": 14,
+    "radius": 16,
     "symbol": "circle",
-    "fillColor": "#27ae60",
+    "fillColor": "#17a589",
     "lineWidth": 3,
     "lineColor": "#ffffff",
 }
@@ -247,7 +267,7 @@ uts_point_series.name = "Ultimate Tensile Strength"
 uts_point_series.color = "#2980b9"
 uts_point_series.marker = {
     "enabled": True,
-    "radius": 14,
+    "radius": 16,
     "symbol": "diamond",
     "fillColor": "#2980b9",
     "lineWidth": 3,
@@ -259,12 +279,12 @@ chart.add_series(uts_point_series)
 fracture_series = LineSeries()
 fracture_series.data = [[fracture_strain, round(fracture_stress, 1)]]
 fracture_series.name = "Fracture Point"
-fracture_series.color = "#c0392b"
+fracture_series.color = "#8e44ad"
 fracture_series.marker = {
     "enabled": True,
-    "radius": 14,
+    "radius": 16,
     "symbol": "triangle",
-    "fillColor": "#c0392b",
+    "fillColor": "#8e44ad",
     "lineWidth": 3,
     "lineColor": "#ffffff",
 }
@@ -280,10 +300,14 @@ subprocess.run(["npm", "pack", "highcharts", "--pack-destination", str(hc_dir)],
 hc_tgz = next(hc_dir.glob("highcharts-*.tgz"))
 subprocess.run(["tar", "xzf", str(hc_tgz), "-C", str(hc_dir)], capture_output=True, check=True)
 highcharts_js = (hc_dir / "package" / "highcharts.src.js").read_text(encoding="utf-8")
+# Annotations module for chart body labels
+annotations_js_path = hc_dir / "package" / "modules" / "annotations.src.js"
+annotations_js = annotations_js_path.read_text(encoding="utf-8") if annotations_js_path.exists() else ""
 
 html_content = (
     '<!DOCTYPE html>\n<html>\n<head>\n    <meta charset="utf-8">\n'
     "    <script>" + highcharts_js + "</script>\n"
+    "    <script>" + annotations_js + "</script>\n"
     '</head>\n<body style="margin:0;">\n'
     '    <div id="container" style="width: 4800px; height: 2700px;"></div>\n'
     "    <script>" + html_str + "</script>\n"

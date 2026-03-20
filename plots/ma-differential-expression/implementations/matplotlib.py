@@ -1,7 +1,7 @@
 """ pyplots.ai
 ma-differential-expression: MA Plot for Differential Expression
 Library: matplotlib 3.10.8 | Python 3.14.3
-Quality: 84/100 | Created: 2026-03-20
+Quality: 90/100 | Created: 2026-03-20
 """
 
 import matplotlib.pyplot as plt

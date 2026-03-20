@@ -1,7 +1,7 @@
 library: matplotlib
 specification_id: ma-differential-expression
 created: '2026-03-20T10:39:52Z'
-updated: '2026-03-20T10:43:34Z'
+updated: '2026-03-20T10:58:27Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23339077508
 issue: 4420
@@ -10,37 +10,39 @@ library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/ma-differential-expression/matplotlib/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ma-differential-expression/matplotlib/plot_thumb.png
 preview_html: null
-quality_score: 84
+quality_score: 90
 review:
   strengths:
-  - Perfect spec compliance with all required features (reference lines, LOESS trend,
-    gene labels, significance highlighting)
-  - Excellent data quality with real gene names (BRCA1, TP53, MYC, etc.) and realistic
-    RNA-seq parameters
-  - Clean well-structured code with appropriate complexity and KISS structure
-  - Good visual hierarchy between significant and non-significant genes via color
-    and size contrast
+  - 'Excellent color accessibility: orange/blue scheme for up/downregulated genes
+    is colorblind-friendly and visually harmonious'
+  - Perfect spec compliance with all required features implemented
+  - Strong data storytelling through color-coded directional expression and labeled
+    top genes
+  - Clean well-structured code with appropriate complexity
+  - Professional bioinformatics aesthetic with italic gene labels and threshold annotations
   weaknesses:
-  - 'Gene label overlap: downregulated labels (KRAS, APC, RB1, PTEN) are crowded in
-    bottom-left, and 3 upregulated labels (TP53, MYC, EGFR) are not visible'
-  - Red vs gray color scheme is not ideal for colorblind accessibility
-  - Generic matplotlib usage without leveraging distinctive library features like
-    PathEffects or arrowprops
+  - Gene labels show minor crowding in upper-left (EGFR/TP53/MYC) and lower-left (KRAS/PTEN/RB1/APC)
+    areas
+  - Library mastery could be improved with matplotlib-specific features like PathEffects
+    and arrowprops
   image_description: 'The plot displays an MA plot for differential gene expression
     analysis. The x-axis shows "Mean Expression (A)" ranging from 0 to ~27, and the
     y-axis shows "Log₂ Fold Change (M)" ranging from about -5 to +5. Non-significant
-    genes are rendered as small, faint gray dots (alpha ~0.15), while significant
-    genes (adj. p < 0.05) appear as larger salmon/red dots. A solid horizontal black
-    line marks M=0 (no change), with dashed gray lines at M=±1 (2-fold change thresholds).
-    A blue LOESS trend line runs nearly flat near y=0 across the expression range.
-    Gene labels in bold italic identify top differentially expressed genes: BRCA1
-    is clearly visible near the top, while KRAS, APC, RB1, and PTEN are clustered
-    and overlapping in the bottom-left corner. The title reads "ma-differential-expression
+    genes are rendered as small, faint gray dots (alpha ~0.15), providing a dense
+    background cloud of ~14,000+ points. Upregulated significant genes appear as orange/amber
+    dots, and downregulated significant genes appear as cornflower blue dots — both
+    larger and more opaque than the non-significant background. A solid dark horizontal
+    line marks M=0 (no change), with dashed gray lines at M=±1 labeled "2-fold change"
+    on the right margin. A blue LOESS trend line runs nearly flat near y=0 across
+    the expression range. Gene labels in bold italic identify 8 top differentially
+    expressed genes: EGFR, TP53, MYC, and BRCA1 (upregulated, top area), and KRAS,
+    PTEN, RB1, APC (downregulated, bottom-left area). Title reads "ma-differential-expression
     · matplotlib · pyplots.ai". Top and right spines are removed, with a subtle y-axis
-    grid. Legend is in the upper left.'
+    grid. Legend is in the lower right with entries for Not significant, Upregulated,
+    Downregulated, and LOESS trend.'
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -48,65 +50,67 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 24pt, axis labels 20pt, ticks
-          16pt, legend 16pt, annotations 11pt'
+        comment: 'All font sizes explicitly set: title 24pt, labels 20pt, ticks 16pt,
+          legend 16pt, annotations 11pt'
       - id: VQ-02
         name: No Overlap
-        score: 3
+        score: 5
         max: 6
-        passed: false
-        comment: Gene labels for downregulated genes overlap heavily in bottom-left;
-          3 upregulated gene labels not visible
+        passed: true
+        comment: Gene labels show minor crowding in upper-left and lower-left clusters
+          but all text is readable
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Good density adaptation for 15k points; non-significant could be
-          slightly more visible
+        comment: Good density adaptation for 15K points. Non-significant appropriately
+          faint, significant stand out well
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Red vs gray has brightness contrast but not ideal colorblind-safe
-          pairing
+        comment: Orange/blue scheme is excellent for colorblind users, gray non-significant
+          provides good contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: 16:9 figure with tight_layout, data fills canvas well
+        comment: 16:9 figure with tight_layout, data fills canvas well with balanced
+          margins
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with standard MA plot notation (A) and (M)
+        comment: Descriptive labels with standard MA plot notation
     design_excellence:
-      score: 13
+      score: 16
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom colors, white edge highlights, italic gene names, removed
-          spines — above defaults
+        comment: Orange/blue/gray palette is harmonious, white edge highlights, italic
+          gene labels, clearly above defaults
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Spines removed, subtle y-grid, rasterized scatter, generous whitespace
+        comment: Spines removed, subtle y-grid, 2-fold change annotations, generous
+          whitespace, rasterized scatter
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Clear visual hierarchy with significance contrast, fold-change thresholds,
-          LOESS trend, labeled top genes
+        comment: Color-coded up/downregulated genes convey biological direction, threshold
+          lines provide context, labeled top genes
     spec_compliance:
       score: 15
       max: 15
@@ -122,8 +126,8 @@ review:
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: highlighting, reference lines, LOESS,
-          transparency, gene labels'
+        comment: 'All spec features present: significance highlighting, reference
+          lines, LOESS curve, transparency, gene labels'
       - id: SC-03
         name: Data Mapping
         score: 3
@@ -135,7 +139,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Title follows exact format, legend has clear descriptive labels
+        comment: Title follows exact format, legend entries are clear and descriptive
     data_quality:
       score: 15
       max: 15
@@ -145,20 +149,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows both up/downregulated genes, varying expression levels, LOESS
-          trend
+        comment: Shows upregulated and downregulated genes with distinct treatment,
+          good expression range, LOESS near zero
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real gene names, realistic RNA-seq differential expression context
+        comment: Real gene names from cancer genomics, realistic RNA-seq differential
+          expression context
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 15k genes, realistic expression range and fold changes for RNA-seq
+        comment: 15K genes within spec range, realistic fold changes and expression
+          values for RNA-seq
     code_quality:
       score: 10
       max: 10
@@ -180,13 +186,13 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: 'All imports used: matplotlib, numpy, scipy.interpolate'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Appropriate complexity, reasonable LOESS approximation approach
+        comment: Appropriate complexity, binned spline approach for LOESS is practical
       - id: CQ-05
         name: Output & API
         score: 1
@@ -202,16 +208,15 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Proper ax-level API, explicit figure creation, rasterized=True for
-          large datasets
+        comment: Proper ax-level API, rasterized=True for large datasets, tight_layout
       - id: LM-02
         name: Distinctive Features
         score: 2
         max: 5
         passed: false
-        comment: rasterized=True is matplotlib-specific but smoothing relies on scipy;
-          no PathEffects, FuncFormatter, or arrowprops
-  verdict: REJECTED
+        comment: rasterized and edgecolors are matplotlib-specific but smoothing relies
+          on scipy. No PathEffects or arrowprops
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - scipy
@@ -219,10 +224,8 @@ impl_tags:
   - annotations
   patterns:
   - data-generation
-  - iteration-over-groups
   dataprep:
   - interpolation
-  - binning
   styling:
   - alpha-blending
   - edge-highlighting

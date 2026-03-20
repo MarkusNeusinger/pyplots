@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-pitch-events: Soccer Pitch Event Map
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-20
@@ -174,7 +174,7 @@ for cx_pos, cy_pos in [(0, 0), (0, 68), (105, 0), (105, 68)]:
 # Event colors
 pass_color = "#4FC3F7"
 shot_color = "#FF7043"
-tackle_color = "#FFD54F"
+tackle_color = "#F5A623"
 intercept_color = "#CE93D8"
 
 # Batch direction lines using None separators for efficiency
@@ -188,7 +188,7 @@ fig.add_trace(
         x=pass_s_xs,
         y=pass_s_ys,
         mode="lines",
-        line={"color": "rgba(79,195,247,0.45)", "width": 1.5},
+        line={"color": "rgba(79,195,247,0.25)", "width": 1.2},
         showlegend=False,
         hoverinfo="skip",
     )
@@ -204,7 +204,7 @@ fig.add_trace(
         x=pass_u_xs,
         y=pass_u_ys,
         mode="lines",
-        line={"color": "rgba(79,195,247,0.18)", "width": 1.2, "dash": "dot"},
+        line={"color": "rgba(79,195,247,0.12)", "width": 1, "dash": "dot"},
         showlegend=False,
         hoverinfo="skip",
     )
@@ -268,7 +268,7 @@ fig.add_trace(
         marker={
             "size": 11,
             "color": pass_color,
-            "opacity": 0.35,
+            "opacity": 0.55,
             "symbol": "circle-open",
             "line": {"width": 2, "color": pass_color},
         },
@@ -303,7 +303,7 @@ fig.add_trace(
         marker={
             "size": 16,
             "color": tackle_color,
-            "opacity": 0.4,
+            "opacity": 0.55,
             "symbol": "triangle-up-open",
             "line": {"width": 2.5, "color": tackle_color},
         },
@@ -338,7 +338,7 @@ fig.add_trace(
         marker={
             "size": 15,
             "color": intercept_color,
-            "opacity": 0.4,
+            "opacity": 0.55,
             "symbol": "diamond-open",
             "line": {"width": 2.5, "color": intercept_color},
         },
@@ -373,7 +373,7 @@ fig.add_trace(
         marker={
             "size": 22,
             "color": shot_color,
-            "opacity": 0.4,
+            "opacity": 0.55,
             "symbol": "star-open",
             "line": {"width": 2.5, "color": shot_color},
         },
@@ -413,7 +413,7 @@ fig.update_layout(
     paper_bgcolor="#1B5E20",
     margin={"l": 20, "r": 20, "t": 60, "b": 20},
     legend={
-        "font": {"size": 15, "color": "white"},
+        "font": {"size": 18, "color": "white"},
         "bgcolor": "rgba(0,0,0,0.5)",
         "bordercolor": "rgba(255,255,255,0.3)",
         "borderwidth": 1,

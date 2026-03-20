@@ -1,7 +1,7 @@
 library: matplotlib
 specification_id: bifurcation-basic
 created: '2026-03-20T20:28:45Z'
-updated: '2026-03-20T20:45:18Z'
+updated: '2026-03-20T20:53:08Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23361206203
 issue: 4415
@@ -10,106 +10,103 @@ library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bifurcation-basic/matplotlib/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bifurcation-basic/matplotlib/plot_thumb.png
 preview_html: null
-quality_score: 89
+quality_score: 88
 review:
   strengths:
-  - Excellent data quality with correct logistic map producing complete bifurcation
-    diagram with all features visible
-  - Bifurcation point annotations with subtle dashed lines effectively guide the viewer
-    through period-doubling cascade
-  - Smart use of rasterized=True for 200k-point scatter reducing file size
-  - Clean minimal code with pre-allocated arrays for performance
-  - Perfect spec compliance with all required features implemented
+  - 'Excellent spec compliance: all required features implemented faithfully including
+    bifurcation point labels, transient discarding, and correct parameter range'
+  - Strong data storytelling with regime background shading and progressive annotations
+    guiding the viewer through stable to periodic to chaotic transitions
+  - Clean, deterministic code with no unnecessary complexity
+  - Good use of matplotlib-specific features (custom colormap, axvspan, rasterized
+    scatter, mixed coordinate annotations)
   weaknesses:
-  - Annotation font size (12pt) slightly small for target resolution; should be at
-    least 14pt
-  - Design could be elevated with density-based coloring or color gradient to convey
-    point density in chaotic regime
-  - No visual differentiation between stability regimes (e.g. background shading or
-    color transitions)
-  image_description: The plot displays the classic logistic map bifurcation diagram
-    using Python Blue (#306998) scatter points on a white background. The x-axis is
-    labeled "Growth Rate (r)" ranging from 2.50 to 4.00, and the y-axis is "Steady-State
-    Population (x)" from 0.0 to 1.0. The title reads "bifurcation-basic · matplotlib
-    · pyplots.ai" in medium-weight font at the top. The diagram clearly shows a single
-    stable fixed point for r < 3.0, then a period-2 bifurcation at r ≈ 3.0, period-4
-    at r ≈ 3.449, and period-8 at r ≈ 3.544, each marked with a subtle gray dashed
-    vertical line and a text annotation. Beyond ~3.57, the chaotic regime fills the
-    space densely with scattered points, with visible windows of periodicity (white
-    vertical bands around r ≈ 3.83). Top and right spines are removed. The density
-    visualization is effective — the small point size (s=0.05) with alpha=0.35 creates
-    a clear structure that reveals both the bifurcation branches and the chaotic attractor.
-    Regime labels ("Stable", "Periodic", "Chaotic") appear at the bottom, and an "Onset
-    of chaos r ≈ 3.57" annotation with a curved arrow is present in the chaotic region.
+  - Chaotic region (r > 3.57) appears faint - the density of the chaotic attractor
+    could be more visually prominent with adjusted alpha or point size
+  - Minor annotation crowding near r 3.544-3.57 where Period-8 and Onset of chaos
+    labels are close together
+  - Custom colormap is not perceptually uniform; a viridis-based or cividis-based
+    scheme would be more accessible
+  image_description: 'The plot displays a bifurcation diagram of the logistic map
+    x(n+1) = r·x(n)·(1-x(n)) with Growth Rate (r) on the x-axis (2.5–4.0) and Steady-State
+    Population (x) on the y-axis (0–1). Three background-shaded regimes are visible:
+    a light blue "Stable" region (r < 3.0) with a single fixed-point line, a light
+    purple "Periodic" region (r ≈ 3.0–3.57) showing period-doubling branches splitting
+    into 2, 4, and 8 branches, and a light pink "Chaotic" region (r > 3.57) with a
+    faint cloud of scattered points. Dashed vertical lines mark key bifurcation points
+    at r ≈ 3.0 (Period-2), r ≈ 3.449 (Period-4), and r ≈ 3.544 (Period-8), with an
+    arrow annotation pointing to the onset of chaos at r ≈ 3.57. The scatter uses
+    a custom blue-to-purple-to-warm colormap. Top and right spines are removed. Title
+    reads "bifurcation-basic · matplotlib · pyplots.ai".'
   criteria_checklist:
     visual_quality:
-      score: 29
+      score: 26
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Title 24pt, labels 20pt, ticks 16pt explicitly set. Annotation text
-          at 12pt slightly small for 4800x2700.
+        comment: 'All font sizes explicitly set: title=24, labels=20, ticks=16, annotations=14.
+          All readable.'
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: All text readable with no collisions. Annotations well-positioned
-          with offset logic.
+        comment: Minor crowding between Period-8 and Onset of chaos annotations in
+          upper right.
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 4
         max: 6
         passed: true
-        comment: Point size s=0.05 with alpha=0.35 perfectly adapted to ~200k point
-          density.
+        comment: Chaotic region appears faint due to s=0.05 and alpha=0.4. Stable
+          and periodic branches are clear.
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: Single Python Blue color scheme. No colorblind issues.
+        comment: Custom colormap is distinguishable but not perceptually uniform.
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Plot fills canvas well with tight_layout at 16:9.
+        comment: Good 16:9 proportions, plot fills canvas well.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with parameter notation: Growth Rate (r), Steady-State
-          Population (x).'
+        comment: Descriptive labels with parameter notation.
     design_excellence:
-      score: 13
+      score: 16
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Thoughtful single-color palette, removed spines, subtle annotation
-          lines. Above defaults but not publication-grade.
+        comment: Custom colormap, regime shading, professional typography. Above defaults
+          but not journal-cover quality.
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Spines removed, no grid (appropriate for dense scatter), clean whitespace.
+        comment: Spines removed, subtle regime shading, no grid (appropriate), generous
+          whitespace.
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Bifurcation point annotations guide viewer through period-doubling
-          cascade narrative.
+        comment: Strong narrative with regime labels and progressive annotations guiding
+          viewer through route to chaos.
     spec_compliance:
       score: 15
       max: 15
@@ -119,52 +116,49 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct bifurcation diagram using scatter plot of iterated logistic
-          map.
+        comment: Correct bifurcation diagram.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: small points, low alpha, period-doubling
-          cascade, labeled bifurcation points, transient discard.'
+        comment: All spec features present.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: r on x-axis, x on y-axis, correct ranges.
+        comment: X=parameter r, Y=state x. Full data range shown.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title follows exact format. No legend needed for single-series.
+        comment: Correct title format. No legend needed for single-series.
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Complete route from stability through period-doubling to chaos with
-          visible periodicity windows.
+        comment: Shows full cascade and chaos. Periodic windows within chaos are faintly
+          visible.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Logistic map is canonical example for bifurcation diagrams. Neutral
-          scientific context.
+        comment: Logistic map is the canonical bifurcation example. Neutral scientific
+          context.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: r from 2.5 to 4.0 with 2000 values, 200 transient + 100 iterations.
-          Standard parameters.
+        comment: Standard ranges for the logistic map.
     code_quality:
       score: 10
       max: 10
@@ -174,32 +168,31 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports, data, plot, style, save. No functions/classes.'
+        comment: Flat structure with no functions or classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: 'Fully deterministic: logistic map with fixed x0=0.5, no random components.'
+        comment: Fully deterministic with fixed initial condition.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only matplotlib.pyplot and numpy, both used.
+        comment: All three imports are used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Appropriate complexity with pre-allocated arrays.
+        comment: Clean, appropriate complexity.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300, bbox_inches=tight. No deprecated
-          API.
+        comment: Saves as plot.png with dpi=300.
     library_mastery:
       score: 7
       max: 10
@@ -209,23 +202,24 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Axes methods throughout, annotate with mixed coordinate systems,
-          rasterized=True.
+        comment: Proper ax methods, rasterized=True for performance.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: rasterized=True for dense plots and mixed coordinate annotations
-          are distinctive matplotlib features.
+        comment: Custom colormap, axvspan, annotate with arrowprops, mixed coordinate
+          transforms.
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
+  - custom-legend
   patterns:
   - data-generation
   - iteration-over-groups
   dataprep: []
   styling:
+  - custom-colormap
   - alpha-blending

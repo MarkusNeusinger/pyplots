@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-parametric: Parametric Curve Plot
 Library: letsplot 4.9.0 | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-20
@@ -30,20 +30,20 @@ refined_theme = theme(
     axis_text=element_text(size=16, color="#555555"),
     axis_title=element_text(size=20, color="#333333"),
     plot_title=element_text(size=22, face="bold", color="#1a1a2e"),
-    legend_text=element_text(size=14),
+    legend_text=element_text(size=16),
     legend_title=element_text(size=16, face="bold"),
     panel_grid_major=element_line(color="#e8e8e8", size=0.5),
     panel_grid_minor=element_blank(),
     axis_line=element_blank(),
     axis_ticks=element_blank(),
     plot_background=element_rect(fill="white", color="white"),
-    panel_background=element_rect(fill="#fafafa", color="#e0e0e0", size=0.5),
+    panel_background=element_rect(fill="#fcfcfc", color="#e0e0e0", size=0.5),
     legend_background=element_rect(fill="white", color="#e0e0e0", size=0.5),
 )
 
 # Colorblind-safe markers: dark blue (start) and orange (end)
-start_color = "#1B4F72"
-end_color = "#E67E22"
+start_color = "#084C4C"
+end_color = "#C0392B"
 
 # Plot - Lissajous figure (closed, self-intersecting - the "complex" curve)
 plot_lissajous = (
@@ -51,7 +51,7 @@ plot_lissajous = (
     + geom_path(size=2.0, alpha=0.85, tooltips=layer_tooltips().line("t = @t").format("t", ".2f"))
     + geom_point(data=df_lissajous.iloc[[0]], mapping=aes(x="x", y="y"), color=start_color, size=8, shape=16)
     + geom_point(data=df_lissajous.iloc[[-1]], mapping=aes(x="x", y="y"), color=end_color, size=8, shape=17)
-    + scale_color_gradient(low="#306998", high="#9B59B6", name="t (rad)", format=".1f")
+    + scale_color_gradient(low="#0D6E6E", high="#D4A017", name="t (rad)", format=".1f")
     + coord_fixed()
     + labs(x="x(t) = sin(3t)", y="y(t) = sin(2t)", title="Lissajous Figure  ·  closed, self-intersecting")
     + refined_theme
@@ -63,8 +63,10 @@ plot_spiral = (
     + geom_path(size=1.8, alpha=0.85, tooltips=layer_tooltips().line("t = @t").format("t", ".2f"))
     + geom_point(data=df_spiral.iloc[[0]], mapping=aes(x="x", y="y"), color=start_color, size=8, shape=16)
     + geom_point(data=df_spiral.iloc[[-1]], mapping=aes(x="x", y="y"), color=end_color, size=8, shape=17)
-    + scale_color_gradient(low="#306998", high="#9B59B6", name="t (rad)", format=".1f")
+    + scale_color_gradient(low="#0D6E6E", high="#D4A017", name="t (rad)", format=".1f")
     + coord_fixed()
+    + scale_x_continuous(limits=[-14, 14])
+    + scale_y_continuous(limits=[-14, 14])
     + labs(x="x(t) = t·cos(t)", y="y(t) = t·sin(t)", title="Archimedean Spiral  ·  expanding outward")
     + refined_theme
 )

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bifurcation-basic: Bifurcation Diagram for Dynamical Systems
 Library: letsplot 4.9.0 | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-20
@@ -34,31 +34,39 @@ df = pd.DataFrame({"r": np.array(r_all), "x": np.array(x_all)})
 # Key bifurcation points
 bif_r = [3.0, 3.449, 3.544, 3.5699]
 segments_df = pd.DataFrame({"r": bif_r, "ymin": [0.0] * 4, "ymax": [1.0] * 4})
+
+# Stagger labels at different y positions to avoid overlap
 labels_df = pd.DataFrame(
-    {"r": bif_r, "x": [0.04, 0.04, 0.04, 0.04], "label": ["Period-2", "Period-4", "Period-8", "Chaos"]}
+    {"r": bif_r, "x": [0.92, 0.82, 0.72, 0.62], "label": ["Period-2", "Period-4", "Period-8", "Chaos"]}
 )
 
-# Plot
+# Plot with color-mapped r values for visual differentiation
 plot = (
-    ggplot(df, aes(x="r", y="x"))  # noqa: F405
+    ggplot(df, aes(x="r", y="x", color="r"))  # noqa: F405
     + geom_point(  # noqa: F405
-        color="#306998", size=0.1, alpha=0.12, tooltips="none"
+        size=0.5, alpha=0.25, tooltips="none"
+    )
+    + scale_color_gradient2(  # noqa: F405
+        low="#306998", mid="#7B68AE", high="#E8555B", midpoint=3.45, name="r"
     )
     + geom_segment(  # noqa: F405
         aes(x="r", y="ymin", xend="r", yend="ymax"),  # noqa: F405
         data=segments_df,
-        color="#CCCCCC",
-        size=0.5,
+        color="#BBBBBB",
+        size=0.4,
         linetype="dashed",
+        inherit_aes=False,
     )
     + geom_text(  # noqa: F405
         aes(x="r", y="x", label="label"),  # noqa: F405
         data=labels_df,
-        size=9,
-        color="#888888",
-        angle=90,
-        hjust=0,
+        size=10,
+        color="#666666",
+        hjust=0.5,
+        vjust=0,
+        inherit_aes=False,
     )
+    + guides(color="none")  # noqa: F405
     + labs(  # noqa: F405
         x="Growth Rate (r)",
         y="Population (x)",
@@ -71,6 +79,7 @@ plot = (
     + scale_y_continuous(  # noqa: F405
         breaks=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0], expand=[0.02, 0]
     )
+    + coord_cartesian(ylim=[0, 1])  # noqa: F405
     + ggsize(1600, 900)  # noqa: F405
     + theme_minimal()  # noqa: F405
     + theme(  # noqa: F405

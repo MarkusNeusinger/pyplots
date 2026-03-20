@@ -1,12 +1,11 @@
-""" pyplots.ai
+"""pyplots.ai
 line-win-probability: Win Probability Chart
 Library: bokeh 3.9.0 | Python 3.14.3
-Quality: 88/100 | Created: 2026-03-20
 """
 
 import numpy as np
 from bokeh.io import export_png, output_file, save
-from bokeh.models import ColumnDataSource, HoverTool, Label, Span
+from bokeh.models import ColumnDataSource, HoverTool, Label, Legend, LegendItem, Span
 from bokeh.plotting import figure
 
 
@@ -75,13 +74,13 @@ p = figure(
 )
 
 # Fill above 50% (home team - Eagles green)
-p.varea(x="play", y1="baseline", y2="upper", source=source, fill_color="#004C54", fill_alpha=0.3)
+eagles_fill = p.varea(x="play", y1="baseline", y2="upper", source=source, fill_color="#004C54", fill_alpha=0.3)
 
 # Fill below 50% (away team - Cowboys blue)
-p.varea(x="play", y1="lower", y2="baseline", source=source, fill_color="#003594", fill_alpha=0.3)
+cowboys_fill = p.varea(x="play", y1="lower", y2="baseline", source=source, fill_color="#869397", fill_alpha=0.35)
 
 # Main probability line
-p.line(x="play", y="win_prob", source=source, line_color="#1a1a1a", line_width=5)
+prob_line = p.line(x="play", y="win_prob", source=source, line_color="#1a1a1a", line_width=5)
 
 # Invisible scatter for hover targets
 p.scatter(x="play", y="win_prob", source=source, size=18, fill_alpha=0, line_alpha=0)
@@ -105,7 +104,20 @@ for qp, ql in zip(quarter_plays, quarter_labels, strict=True):
     )
     p.add_layout(label)
 
-# Annotate key scoring events
+# Legend for team colors
+legend = Legend(
+    items=[LegendItem(label="Eagles", renderers=[eagles_fill]), LegendItem(label="Cowboys", renderers=[cowboys_fill])],
+    location="top_left",
+    label_text_font_size="26pt",
+    glyph_height=30,
+    glyph_width=40,
+    spacing=15,
+    border_line_color=None,
+    background_fill_alpha=0.7,
+)
+p.add_layout(legend)
+
+# Annotate key scoring events with visual anchors
 annotations = [
     (35, "TD Eagles 10-7", 12),
     (55, "TD Eagles 17-10", 12),
@@ -113,6 +125,11 @@ annotations = [
     (105, "TD Cowboys 20-24", -45),
     (112, "TD Eagles 27-24", 12),
 ]
+
+event_x = [a[0] for a in annotations]
+event_y = [win_prob_smooth[a[0]] for a in annotations]
+event_source = ColumnDataSource(data={"x": event_x, "y": event_y})
+p.scatter(x="x", y="y", source=event_source, size=20, fill_color="#1a1a1a", line_color="white", line_width=3)
 
 for play_num, text, y_off in annotations:
     label = Label(
@@ -153,13 +170,21 @@ p.yaxis.major_label_text_font_size = "26pt"
 p.xgrid.grid_line_alpha = 0.15
 p.ygrid.grid_line_alpha = 0.15
 
-# Clean frame
+# Clean frame - remove top/right spines for modern look
 p.outline_line_color = None
 p.xaxis.axis_line_width = 2
 p.yaxis.axis_line_width = 2
 p.xaxis.major_tick_line_width = 2
 p.yaxis.major_tick_line_width = 2
+p.xaxis.minor_tick_line_color = None
+p.yaxis.minor_tick_line_color = None
 p.toolbar_location = None
+
+# Hide top and right axes (spines)
+p.xaxis.axis_line_color = "#444444"
+p.yaxis.axis_line_color = "#444444"
+p.above = []
+p.right = []
 
 # Margins
 p.min_border_left = 140

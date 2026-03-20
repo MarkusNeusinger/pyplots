@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 ma-differential-expression: MA Plot for Differential Expression
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 80/100 | Created: 2026-03-20
@@ -70,70 +70,85 @@ for _ in range(4):
     smooth_y = smoothed
 smooth_x = raw_x
 
-# Style - white background for maximum contrast
+# Refined style - publication-quality aesthetics
 custom_style = Style(
-    background="#FAFAFA",
-    plot_background="#FFFFFF",
-    foreground="#2C3E50",
-    foreground_strong="#1A252F",
-    foreground_subtle="#E8E8E8",
+    background="#FFFFFF",
+    plot_background="#FAFBFC",
+    foreground="#34495E",
+    foreground_strong="#2C3E50",
+    foreground_subtle="#E8ECF0",
     colors=(
-        "#6B8DAA",  # non-significant: steel blue (visible on white)
-        "#C0392B",  # significant: deep red
-        "#2471A3",  # M=0 line: strong blue
-        "#5D6D7E",  # +1 threshold: dark slate
-        "#5D6D7E",  # -1 threshold: dark slate (same)
+        "#B0C4DE",  # non-significant: light steel blue (muted background)
+        "#E74C3C",  # upregulated: vibrant red
+        "#2980B9",  # downregulated: ocean blue
+        "#2C3E50",  # M=0 line: charcoal
+        "#7F8C8D",  # +1 threshold: warm gray
+        "#7F8C8D",  # -1 threshold: warm gray
         "#E67E22",  # LOESS curve: bold orange
-        "#1A252F",  # gene labels: dark
+        "#1A1A2E",  # top DE genes: near-black
     ),
-    title_font_size=48,
-    label_font_size=38,
-    major_label_font_size=36,
-    legend_font_size=30,
+    title_font_size=52,
+    label_font_size=40,
+    major_label_font_size=38,
+    legend_font_size=28,
     value_font_size=22,
-    tooltip_font_size=24,
-    stroke_width=3,
-    opacity=0.85,
+    tooltip_font_size=26,
+    stroke_width=2,
+    opacity=0.6,
     opacity_hover=0.95,
 )
 
 # Subsample for performance (pygal renders each point as SVG element)
 np.random.seed(42)
-n_display = 3000
 sig_mask = significant
 nonsig_mask = ~significant
 
-# Keep all significant genes, subsample non-significant
 sig_indices = np.where(sig_mask)[0]
 nonsig_indices = np.where(nonsig_mask)[0]
-nonsig_sample = np.random.choice(nonsig_indices, min(n_display - len(sig_indices), len(nonsig_indices)), replace=False)
-display_indices = np.concatenate([sig_indices, nonsig_sample])
+n_nonsig_display = 1800
+nonsig_sample = np.random.choice(nonsig_indices, min(n_nonsig_display, len(nonsig_indices)), replace=False)
 
-# Prepare data points with rich tooltips using pygal's node dict format
+# Split significant into up/down for visual storytelling
+sig_up_points = []
+sig_down_points = []
 nonsig_points = []
-sig_points = []
 
-for i in display_indices:
+for i in nonsig_sample:
+    nonsig_points.append(
+        {
+            "value": (round(float(mean_expression[i]), 2), round(float(log_fold_change[i]), 2)),
+            "label": f"{gene_names[i]} | A={mean_expression[i]:.1f}, M={log_fold_change[i]:.2f}, p={p_values[i]:.2e}",
+        }
+    )
+
+top_idx_set = set(top_idx.tolist())
+for i in sig_indices:
+    if i in top_idx_set:
+        continue
     point = {
         "value": (round(float(mean_expression[i]), 2), round(float(log_fold_change[i]), 2)),
         "label": f"{gene_names[i]} | A={mean_expression[i]:.1f}, M={log_fold_change[i]:.2f}, p={p_values[i]:.2e}",
     }
-    if significant[i]:
-        sig_points.append(point)
+    if log_fold_change[i] > 0:
+        sig_up_points.append(point)
     else:
-        nonsig_points.append(point)
+        sig_down_points.append(point)
 
-# Prepare labeled gene points (top 10 most significant genes)
+# Top 10 most significant genes with star markers in tooltips
 labeled_points = []
 for i in top_idx:
     labeled_points.append(
         {
             "value": (round(float(mean_expression[i]), 2), round(float(log_fold_change[i]), 2)),
-            "label": f"{gene_names[i]} (p={p_values[i]:.2e})",
+            "label": f"\u2605 {gene_names[i]} | A={mean_expression[i]:.1f}, M={log_fold_change[i]:.2f}, p={p_values[i]:.2e}",
         }
     )
 
-# Create XY chart with pygal SVG features
+# Reference line endpoints
+x_min = 0
+x_max = float(np.percentile(mean_expression, 99.5))
+
+# Create XY chart
 chart = pygal.XY(
     width=4800,
     height=2700,
@@ -143,62 +158,58 @@ chart = pygal.XY(
     y_title="Log\u2082 Fold Change (M)",
     show_legend=True,
     legend_at_bottom=True,
-    legend_at_bottom_columns=7,
-    legend_box_size=24,
-    dots_size=10,
+    legend_at_bottom_columns=8,
+    legend_box_size=22,
+    dots_size=5,
     stroke=False,
     show_x_guides=False,
-    show_y_guides=True,
+    show_y_guides=False,
     truncate_legend=-1,
     print_values=False,
     dynamic_print_values=True,
     js=[],
     x_label_rotation=0,
+    margin_bottom=80,
 )
 
-# Non-significant genes (visible on white background, larger dots)
-chart.add("Not Significant", nonsig_points, dots_size=12)
+# Non-significant genes - small muted dots for background density
+chart.add("Not Significant", nonsig_points, dots_size=4)
 
-# Significant genes (deep red, on top)
-chart.add("Significant (p < 0.05)", sig_points, dots_size=9)
+# Upregulated significant - vibrant red
+chart.add("Upregulated (p<0.05)", sig_up_points, dots_size=7)
 
-# Reference lines
-x_min = 0
-x_max = float(np.max(mean_expression[display_indices])) + 1
+# Downregulated significant - ocean blue
+chart.add("Downregulated (p<0.05)", sig_down_points, dots_size=7)
 
 # M = 0 line (no change)
-chart.add("M = 0 (no change)", [(x_min, 0), (x_max, 0)], stroke=True, show_dots=False, stroke_style={"width": 5})
+chart.add("M = 0", [(x_min, 0), (x_max, 0)], stroke=True, show_dots=False, stroke_style={"width": 5})
 
 # M = +1 threshold (2-fold up)
 chart.add(
-    "+2-fold threshold",
-    [(x_min, 1), (x_max, 1)],
-    stroke=True,
-    show_dots=False,
-    stroke_style={"width": 4, "dasharray": "12, 6"},
+    "+2-fold", [(x_min, 1), (x_max, 1)], stroke=True, show_dots=False, stroke_style={"width": 3, "dasharray": "14, 8"}
 )
 
 # M = -1 threshold (2-fold down)
 chart.add(
-    "\u22122-fold threshold",
+    "\u22122-fold",
     [(x_min, -1), (x_max, -1)],
     stroke=True,
     show_dots=False,
-    stroke_style={"width": 4, "dasharray": "12, 6"},
+    stroke_style={"width": 3, "dasharray": "14, 8"},
 )
 
-# LOESS smoothing curve - bold orange with dots for high visibility
+# LOESS smoothing curve - bold orange
 chart.add(
     "LOESS trend",
     [(round(x, 2), round(y, 3)) for x, y in zip(smooth_x, smooth_y, strict=False)],
     stroke=True,
     show_dots=True,
-    dots_size=6,
-    stroke_style={"width": 8},
+    dots_size=5,
+    stroke_style={"width": 7},
 )
 
-# Top DE gene labels as a separate series with visible dots
-chart.add("Top DE genes", labeled_points, dots_size=14, stroke=False)
+# Top DE genes - large prominent dots
+chart.add("Top DE genes", labeled_points, dots_size=16, stroke=False)
 
 # Save
 chart.render_to_file("plot.html")

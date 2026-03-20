@@ -1,7 +1,7 @@
 library: matplotlib
 specification_id: nyquist-basic
 created: '2026-03-20T22:47:13Z'
-updated: '2026-03-20T23:07:27Z'
+updated: '2026-03-20T23:19:09Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23365453247
 issue: 4412
@@ -10,30 +10,34 @@ library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/nyquist-basic/matplotlib/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/nyquist-basic/matplotlib/plot_thumb.png
 preview_html: null
-quality_score: 87
+quality_score: 88
 review:
   strengths:
   - Full spec compliance with all six required features implemented correctly
-  - Clean deterministic code using scipy for realistic transfer function computation
-  - Good visual hierarchy with red critical point emphasis and alpha-differentiated
-    mirror curve
-  - Appropriate square aspect ratio choice for the complex plane
+  - Clean deterministic code using scipy.signal for realistic transfer function computation
+  - Good visual hierarchy with red critical point, alpha-differentiated mirror curve,
+    and frequency annotations
+  - GM annotation adds genuine data storytelling value
+  - Appropriate square canvas with equal aspect ratio for complex plane
   weaknesses:
-  - Frequency annotations near the origin (ω=5, ω=10) are somewhat crowded
-  - Annotation font size at 14pt is slightly below the 16pt guideline
-  - Design could be pushed further toward publication quality
-  image_description: The plot displays a Nyquist diagram on the complex plane. A solid
-    steel-blue curve (G(jω)) traces the open-loop frequency response from low frequency
-    (starting near Real≈8, Imaginary≈0) sweeping down through the lower half-plane
-    (reaching approximately Imaginary≈-5) and curving back toward the origin. A dashed,
-    lighter blue curve (G(−jω)) mirrors it in the upper half-plane. A dotted gray
-    unit circle is centered at the origin. A prominent red "X" marks the critical
-    point at (-1, 0). Five frequency annotations (ω=0.3, 1, 2, 5, 10) are placed along
-    the curve with small dot markers and connecting offsets. Directional arrows along
-    the solid curve indicate increasing frequency. The title reads "nyquist-basic
-    · matplotlib · pyplots.ai". Axes are labeled "Real" and "Imaginary". Top and right
-    spines are removed, with a subtle grid at low alpha. The aspect ratio is equal,
-    making the unit circle appear circular.
+  - Frequency annotation fontsize (14pt) is below the 16pt guideline
+  - Annotations near the origin are somewhat crowded
+  - Design polish is good but not publication-ready
+  image_description: The plot displays a Nyquist diagram on the complex plane with
+    a solid steel-blue curve (G(jω)) tracing the open-loop frequency response of a
+    third-order system from low frequency (starting near Real≈2, Imaginary≈0) sweeping
+    down through the lower half-plane and curving back toward the origin. A dashed,
+    lighter blue curve (G(−jω)) with reduced alpha (0.35) mirrors it in the upper
+    half-plane. A dotted gray unit circle is centered at the origin with an italic
+    "unit circle" label. A prominent red "X" marks the critical point at (-1, 0).
+    A red "GM ≈ 16.0 dB" annotation indicates the gain margin. Five frequency annotations
+    (ω=0.3, ω=1, ω=2, ω=5, ω=10) are placed along the curve with small dot markers
+    and offset text. Directional arrows along the solid curve indicate increasing
+    frequency. The title reads "nyquist-basic · matplotlib · pyplots.ai". Axes are
+    labeled "Real" and "Imaginary". Top and right spines are removed with a subtle
+    grid at alpha=0.15. The aspect ratio is equal (1:1), making the unit circle appear
+    circular. The legend in the lower left identifies G(jω), G(−jω), and Critical
+    point (−1, 0).
   criteria_checklist:
     visual_quality:
       score: 28
@@ -51,7 +55,7 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Minor crowding of ω=5 and ω=10 annotations near origin
+        comment: Minor crowding near origin between ω=5, ω=10, and GM annotations
       - id: VQ-03
         name: Element Visibility
         score: 6
@@ -63,43 +67,43 @@ review:
         score: 4
         max: 4
         passed: true
-        comment: Blue, red, gray well-differentiated; no colorblind issues
+        comment: Blue/red/gray palette well-differentiated, colorblind-safe
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Square figure with equal aspect ratio fills canvas well
+        comment: Square canvas with equal aspect ratio, good utilization
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Real and Imaginary are standard descriptive labels for complex plane
+        comment: Real and Imaginary are standard complex plane labels
     design_excellence:
-      score: 13
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Thoughtful design with Python Blue palette, alpha-differentiated
-          mirror curve, above defaults
+        comment: Strong design with intentional color palette, alpha differentiation,
+          and GM annotation
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Spines removed, subtle grid, light origin lines; good refinement
+        comment: Spines removed, subtle grid, light origin lines, good whitespace
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Clear hierarchy with red critical point, frequency annotations guide
-          viewer, alpha separation
+        comment: GM annotation communicates stability, red critical point creates
+          focal point, frequency annotations guide viewer
     spec_compliance:
       score: 15
       max: 15
@@ -121,13 +125,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Real on x-axis, Imaginary on y-axis, correctly computed
+        comment: Real on x-axis, imaginary on y-axis, correctly computed
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format and descriptive legend labels
+        comment: Correct title format and legend labels
     data_quality:
       score: 14
       max: 15
@@ -137,21 +141,20 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Complete Nyquist curve with encirclement, both frequency branches;
-          could show near-instability
+        comment: Complete curve with both branches; system is very stable, less dramatic
+          demonstration
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Realistic third-order transfer function with cascaded first-order
-          lags
+        comment: Realistic third-order transfer function common in process control
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Sensible frequency range and point count for chosen system
+        comment: Sensible frequency range and 800 log-spaced points
     code_quality:
       score: 10
       max: 10
@@ -179,13 +182,13 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Clean and well-organized with appropriate complexity
+        comment: Clean, well-organized with appropriate complexity
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300, current API
+        comment: Correct output format, current API
     library_mastery:
       score: 7
       max: 10
@@ -195,14 +198,14 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of ax methods, patches, annotate with arrowprops, zorder
+        comment: Good use of Axes methods, Circle patch, annotate with arrowprops,
+          zorder
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Circle patch, annotate arrowprops, zorder layering are moderately
-          distinctive
+        comment: matplotlib-specific patches, annotate arrowprops, zorder layering
   verdict: REJECTED
 impl_tags:
   dependencies:

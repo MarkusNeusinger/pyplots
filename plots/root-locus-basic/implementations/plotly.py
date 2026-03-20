@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 root-locus-basic: Root Locus Plot for Control Systems
 Library: plotly 6.6.0 | Python 3.14.3
+Quality: 92/100 | Created: 2026-03-20
 """
 
 import numpy as np

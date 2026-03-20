@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: line-stress-strain
 created: '2026-03-20T21:29:38Z'
-updated: '2026-03-20T21:46:11Z'
+updated: '2026-03-20T21:57:05Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23363004941
 issue: 4413
@@ -10,38 +10,40 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-stress-strain/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-stress-strain/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-stress-strain/highcharts/plot.html
-quality_score: 89
+quality_score: 88
 review:
   strengths:
-  - Excellent color coordination between markers and plot band regions creates a cohesive
-    visual identity
-  - All spec requirements implemented including region labels, critical points, elastic
-    modulus annotation, and 0.2% offset line
-  - Realistic mild steel data with appropriate noise in yield plateau and hardening
-    regions
-  - Strong data storytelling through region labeling, reference lines, and informative
-    subtitle
-  - Clean, well-structured code with good use of Highcharts-specific features (plotBands,
-    plotLines, annotations)
+  - Excellent data storytelling with plot bands labeling elastic/hardening/necking
+    regions and distinct marker shapes for critical points
+  - Professional color palette with good colorblind accessibility and visual hierarchy
+  - 'Complete spec coverage: all required annotations, markers, and reference lines
+    are present'
+  - Perfect data quality with realistic mild steel tensile test properties
+  - Clean, well-structured code following KISS principles
   weaknesses:
-  - The 0.2% offset line is barely visible because the elastic strain range is tiny
-    compared to the full x-axis range - needs to be more prominent
-  - LineSeries imported from highcharts_core.options.series.area instead of highcharts_core.options.series.line
-  image_description: 'The plot displays a mild steel tensile test stress-strain curve
-    rendered in Highcharts. The main curve is drawn in Python blue (#306998) showing
-    the classic stress-strain shape: a steep elastic rise to ~250 MPa, a brief yield
-    plateau, strain hardening up to ~400 MPa at ~0.22 strain, and necking down to
-    ~300 MPa at fracture (0.35 strain). Three critical points are marked with distinct
-    colored markers: a green circle for Yield Point (0.2% offset) at ~250 MPa, a blue
-    diamond for Ultimate Tensile Strength at ~400 MPa, and a purple triangle for Fracture
-    Point at ~300 MPa. An orange dashed 0.2% offset line is visible near the y-axis
-    origin but is very short due to the narrow elastic strain range. Colored plot
-    bands at the bottom label three regions: Elastic (teal), Strain Hardening (blue),
-    and Necking (purple). Horizontal dotted reference lines mark σ_y = 250 MPa and
-    UTS = 400 MPa on the right side. An annotation box "E = 210 GPa" with a blue border
-    sits near the elastic region. The title reads "Mild Steel Tensile Test · line-stress-strain
-    · highcharts · pyplots.ai" with a subtitle showing material properties. The legend
-    is positioned in the top-right corner. Background is white with very subtle gridlines.'
+  - The 0.2% offset line is functionally invisible — spans only ~0.0015 strain on
+    a 0-0.4 scale, failing to illustrate the offset yield method
+  - Minor crowding in the elastic region where annotations and markers overlap in
+    a very narrow strain range
+  - Horizontal plotLine labels for sigma_y and UTS are positioned at the far right
+    edge, detached from the actual curve positions
+  image_description: 'The plot displays an engineering stress-strain curve for mild
+    steel on a white background. The main curve is drawn in dark blue (#306998), rising
+    steeply in the elastic region (strain 0–0.015), transitioning through a yield
+    plateau around 250 MPa, curving upward through strain hardening to a peak (UTS)
+    near 400 MPa at ~0.22 strain, then declining through the necking region to fracture
+    at ~0.35 strain and ~305 MPa. Three colored plot bands label the regions at the
+    bottom: "Elastic" (teal-tinted), "Strain Hardening" (blue-tinted), and "Necking"
+    (purple-tinted). Critical points are marked with distinct shaped markers: a teal
+    circle for the yield point, a blue diamond for UTS, and a purple triangle for
+    the fracture point. An orange dashed line represents the 0.2% offset line near
+    the origin, though it is extremely short due to the high Young''s modulus scale.
+    Two horizontal dotted reference lines mark σ_y = 250 MPa and UTS = 400 MPa with
+    labels on the right. Annotations include "E = 210 GPa" in a bordered box near
+    the elastic region and "← 0.2% Offset Yield Method" in an orange-bordered box.
+    The title reads "Mild Steel Tensile Test · line-stress-strain · highcharts · pyplots.ai"
+    with a subtitle showing material properties. A vertical legend in the upper right
+    lists all five series with their markers.'
   criteria_checklist:
     visual_quality:
       score: 26
@@ -53,41 +55,39 @@ review:
         max: 8
         passed: true
         comment: 'All font sizes explicitly set: title 60px, subtitle 40px, axis titles
-          44px, tick labels 34px, legend 34px, annotations 28-32px'
+          44px, tick labels 34px, annotations 28-32px'
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: Minor cramping in elastic region area where yield point, offset line,
-          and E annotation are close together
+        comment: Minor crowding in elastic region where yield point marker, E annotation,
+          and offset line cluster together
       - id: VQ-03
         name: Element Visibility
         score: 4
         max: 6
-        passed: true
-        comment: Main curve and markers visible but 0.2% offset line barely visible
-          at chart scale
+        passed: false
+        comment: 0.2% offset line spans only ~0.0015 strain on a 0-0.4 axis, nearly
+          invisible
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: 'Colorblind-safe palette: blue, teal, orange, purple. No red-green
-          reliance'
+        comment: 'Colorblind-safe palette: dark blue, orange, teal, blue, purple'
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Plot fills reasonable area with generous margins, some empty space
-          below curve
+        comment: Good layout; plotLine labels pushed to far right edge
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: Engineering Strain (mm/mm), Engineering
+        comment: 'Descriptive with units: Engineering Strain (mm/mm), Engineering
           Stress (MPa)'
     design_excellence:
       score: 15
@@ -98,24 +98,24 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Strong design with coordinated color scheme matching markers to plot
-          band regions
+        comment: Custom palette, colored plot bands, styled annotations, informative
+          subtitle
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Subtle grid at 0.06 opacity, generous whitespace, clean layout with
-          plot bands
+        comment: Subtle grid (0.06 opacity), generous margins, plot bands add visual
+          layering
       - id: DE-03
         name: Data Storytelling
         score: 5
         max: 6
         passed: true
-        comment: Excellent narrative flow with color-coded regions, critical point
-          markers, and informative subtitle
+        comment: Regions labeled with plot bands, critical points with distinct shapes,
+          reference lines, engineering annotations
     spec_compliance:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -123,26 +123,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct line chart for stress-strain relationship
+        comment: Correct line chart for stress-strain curve
       - id: SC-02
         name: Required Features
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: 'All features present: region labels, critical points, E annotation,
-          0.2% offset line'
+        comment: All features present but offset line too short to effectively illustrate
+          yield method
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=strain, Y=stress correctly mapped with full data range
+        comment: Strain on X, stress on Y, all data visible
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format with descriptive prefix, clear legend labels
+        comment: Title includes spec-id · highcharts · pyplots.ai, legend labels descriptive
     data_quality:
       score: 15
       max: 15
@@ -152,21 +152,20 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Shows all regions: elastic, yield plateau, strain hardening, necking
-          to fracture'
+        comment: 'Shows all four regions: elastic, yield plateau, strain hardening,
+          necking'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Mild steel tensile test - real engineering scenario, neutral domain
+        comment: Mild steel tensile test with realistic properties
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: E=210 GPa, σ_y=250 MPa, UTS=400 MPa, fracture strain=0.35 - realistic
-          for mild steel
+        comment: Values perfectly match real mild steel behavior
     code_quality:
       score: 10
       max: 10
@@ -176,7 +175,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear structure: imports, data, chart config, series, export'
+        comment: 'Linear flow: imports, data, chart config, series, export'
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -200,7 +199,7 @@ review:
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via Selenium screenshot
+        comment: Saves plot.png via Selenium
     library_mastery:
       score: 8
       max: 10
@@ -210,15 +209,13 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good API usage but LineSeries imported from wrong module (area instead
-          of line)
+        comment: Good use of HighchartsOptions, LineSeries, chart configuration patterns
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: Uses plotBands, plotLines, annotations module - distinctive Highcharts
-          features
+        comment: plotBands, plotLines, annotations module, interactive tooltips
   verdict: REJECTED
 impl_tags:
   dependencies:
@@ -231,4 +228,3 @@ impl_tags:
   dataprep: []
   styling:
   - grid-styling
-  - edge-highlighting

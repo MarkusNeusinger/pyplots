@@ -1,12 +1,11 @@
-""" pyplots.ai
+"""pyplots.ai
 line-stress-strain: Engineering Stress-Strain Curve
 Library: bokeh 3.9.0 | Python 3.14.3
-Quality: 83/100 | Created: 2026-03-20
 """
 
 import numpy as np
 from bokeh.io import export_png
-from bokeh.models import ColumnDataSource, Label, Legend, LegendItem
+from bokeh.models import ColumnDataSource, Label, Legend, LegendItem, Span
 from bokeh.plotting import figure, save
 
 
@@ -38,10 +37,12 @@ stress_necking = uts - (uts - 320) * necking_progress**0.8
 strain = np.concatenate([strain_elastic, strain_plastic, strain_necking])
 stress = np.concatenate([stress_elastic, stress_plastic, stress_necking])
 
-# 0.2% offset line for yield point determination
-offset_strain_line = np.linspace(0.002, 0.007, 50)
+# 0.2% offset line — extended to be clearly visible
+offset_strain_start = 0.002
+offset_strain_end = 0.004 + yield_strength / youngs_modulus
+offset_strain_line = np.linspace(offset_strain_start, offset_strain_end, 80)
 offset_stress_line = youngs_modulus * (offset_strain_line - 0.002)
-mask = offset_stress_line <= yield_strength + 15
+mask = offset_stress_line <= yield_strength + 30
 offset_strain_line = offset_strain_line[mask]
 offset_stress_line = offset_stress_line[mask]
 
@@ -53,113 +54,137 @@ uts_point_stress = uts
 fracture_point_strain = fracture_strain
 fracture_point_stress = stress_necking[-1]
 
+# Colorblind-safe palette
+color_main = "#306998"  # Python blue
+color_yield = "#D4A84B"  # Gold
+color_uts = "#8B5CF6"  # Purple (replaces red)
+color_fracture = "#0EA5E9"  # Sky blue (replaces green)
+color_region = "#6B7280"  # Neutral gray
+
 # Plot
 p = figure(
     width=4800,
     height=2700,
-    title="Mild Steel Tensile Test · line-stress-strain · bokeh · pyplots.ai",
+    title="line-stress-strain · bokeh · pyplots.ai",
     x_axis_label="Engineering Strain (mm/mm)",
     y_axis_label="Engineering Stress (MPa)",
 )
 
+# Subtle horizontal reference lines at yield and UTS
+p.add_layout(
+    Span(
+        location=yield_strength,
+        dimension="width",
+        line_color=color_yield,
+        line_alpha=0.2,
+        line_dash="dotted",
+        line_width=2,
+    )
+)
+p.add_layout(
+    Span(location=uts, dimension="width", line_color=color_uts, line_alpha=0.2, line_dash="dotted", line_width=2)
+)
+
 # Main curve
 source = ColumnDataSource(data={"strain": strain, "stress": stress})
-main_line = p.line(x="strain", y="stress", source=source, line_width=4, color="#306998")
+main_line = p.line(x="strain", y="stress", source=source, line_width=5, color=color_main)
 
-# 0.2% offset line
+# 0.2% offset line — thicker and more visible
 offset_source = ColumnDataSource(data={"strain": offset_strain_line, "stress": offset_stress_line})
-offset_line = p.line(x="strain", y="stress", source=offset_source, line_width=3, line_dash="dashed", color="#D4A84B")
+offset_line = p.line(x="strain", y="stress", source=offset_source, line_width=4, line_dash="dashed", color=color_yield)
 
-# Key points
+# Key points — larger markers for clarity
 yield_glyph = p.scatter(
     x=[yield_point_strain],
     y=[yield_point_stress],
-    size=28,
-    color="#D4A84B",
+    size=32,
+    color=color_yield,
     marker="circle",
     line_color="white",
-    line_width=2,
+    line_width=3,
 )
 
 uts_glyph = p.scatter(
     x=[uts_point_strain],
     y=[uts_point_stress],
-    size=28,
-    color="#C44E52",
+    size=32,
+    color=color_uts,
     marker="triangle",
     line_color="white",
-    line_width=2,
+    line_width=3,
 )
 
 fracture_glyph = p.scatter(
     x=[fracture_point_strain],
     y=[fracture_point_stress],
-    size=28,
-    color="#55A868",
+    size=32,
+    color=color_fracture,
     marker="square",
     line_color="white",
-    line_width=2,
+    line_width=3,
 )
 
 # Region labels
 p.add_layout(
-    Label(x=0.01, y=130, text="Elastic", text_font_size="20pt", text_color="#888888", text_font_style="italic")
+    Label(x=0.003, y=100, text="Elastic", text_font_size="22pt", text_color=color_region, text_font_style="italic")
 )
 
-p.add_layout(
-    Label(x=0.07, y=280, text="Strain Hardening", text_font_size="20pt", text_color="#888888", text_font_style="italic")
-)
-
-p.add_layout(
-    Label(x=0.275, y=375, text="Necking", text_font_size="20pt", text_color="#888888", text_font_style="italic")
-)
-
-# Key point annotations
 p.add_layout(
     Label(
-        x=yield_point_strain + 0.008,
-        y=yield_point_stress - 15,
+        x=0.08, y=280, text="Strain Hardening", text_font_size="22pt", text_color=color_region, text_font_style="italic"
+    )
+)
+
+p.add_layout(
+    Label(x=0.27, y=380, text="Necking", text_font_size="22pt", text_color=color_region, text_font_style="italic")
+)
+
+# Key point annotations — positioned to avoid crowding
+p.add_layout(
+    Label(
+        x=yield_point_strain + 0.012,
+        y=yield_point_stress + 10,
         text=f"Yield Point ({yield_point_stress} MPa)",
         text_font_size="18pt",
-        text_color="#D4A84B",
+        text_color=color_yield,
         text_font_style="bold",
     )
 )
 
 p.add_layout(
     Label(
-        x=uts_point_strain - 0.06,
-        y=uts_point_stress + 15,
+        x=uts_point_strain - 0.075,
+        y=uts_point_stress + 18,
         text=f"UTS ({uts_point_stress} MPa)",
         text_font_size="18pt",
-        text_color="#C44E52",
+        text_color=color_uts,
         text_font_style="bold",
     )
 )
 
 p.add_layout(
     Label(
-        x=fracture_point_strain - 0.055,
-        y=fracture_point_stress - 30,
+        x=fracture_point_strain - 0.04,
+        y=fracture_point_stress - 40,
         text="Fracture",
         text_font_size="18pt",
-        text_color="#55A868",
+        text_color=color_fracture,
         text_font_style="bold",
     )
 )
 
 p.add_layout(
     Label(
-        x=0.012,
-        y=60,
+        x=0.015,
+        y=55,
         text=f"E = {youngs_modulus // 1000} GPa",
         text_font_size="18pt",
-        text_color="#306998",
+        text_color=color_main,
         text_font_style="bold",
     )
 )
 
-# Legend
+# Legend — positioned inside the plot near the data
 legend = Legend(
     items=[
         LegendItem(label="Stress-Strain Curve", renderers=[main_line]),
@@ -168,38 +193,55 @@ legend = Legend(
         LegendItem(label="Ultimate Tensile Strength", renderers=[uts_glyph]),
         LegendItem(label="Fracture Point", renderers=[fracture_glyph]),
     ],
-    location="center_right",
+    location=(2800, 250),
 )
 legend.label_text_font_size = "18pt"
 legend.glyph_height = 30
 legend.glyph_width = 30
 legend.spacing = 10
-legend.padding = 15
-legend.background_fill_alpha = 0.8
-legend.border_line_alpha = 0.3
-p.add_layout(legend)
+legend.padding = 20
+legend.margin = 20
+legend.background_fill_color = "#FAFAFA"
+legend.background_fill_alpha = 0.9
+legend.border_line_color = "#E5E7EB"
+legend.border_line_alpha = 0.6
+legend.border_line_width = 2
+p.add_layout(legend, "center")
 
 # Style
 p.title.text_font_size = "28pt"
 p.title.text_font_style = "normal"
+p.title.text_color = "#374151"
 p.xaxis.axis_label_text_font_size = "22pt"
 p.yaxis.axis_label_text_font_size = "22pt"
 p.xaxis.major_label_text_font_size = "18pt"
 p.yaxis.major_label_text_font_size = "18pt"
+p.xaxis.axis_label_text_color = "#4B5563"
+p.yaxis.axis_label_text_color = "#4B5563"
+p.xaxis.major_label_text_color = "#6B7280"
+p.yaxis.major_label_text_color = "#6B7280"
+p.xaxis.axis_line_color = "#D1D5DB"
+p.yaxis.axis_line_color = "#D1D5DB"
+p.xaxis.major_tick_line_color = "#D1D5DB"
+p.yaxis.major_tick_line_color = "#D1D5DB"
+p.xaxis.minor_tick_line_color = None
+p.yaxis.minor_tick_line_color = None
 
-p.xgrid.grid_line_alpha = 0.2
-p.ygrid.grid_line_alpha = 0.2
-p.xgrid.grid_line_width = 1
-p.ygrid.grid_line_width = 1
+p.xgrid.grid_line_alpha = 0.15
+p.ygrid.grid_line_alpha = 0.15
+p.xgrid.grid_line_color = "#9CA3AF"
+p.ygrid.grid_line_color = "#9CA3AF"
 
 p.outline_line_color = None
 p.toolbar_location = None
+p.background_fill_color = "#FAFAFA"
+p.border_fill_color = "white"
 
 p.y_range.start = -15
-p.y_range.end = 450
+p.y_range.end = 460
 p.x_range.start = -0.008
 p.x_range.end = 0.38
 
 # Save
 export_png(p, filename="plot.png")
-save(p, filename="plot.html", title="Engineering Stress-Strain Curve")
+save(p, filename="plot.html", title="line-stress-strain · bokeh · pyplots.ai")

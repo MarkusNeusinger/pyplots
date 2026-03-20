@@ -1,18 +1,20 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-pitch-events: Soccer Pitch Event Map
 Library: matplotlib 3.10.8 | Python 3.14.3
 Quality: 83/100 | Created: 2026-03-20
 """
 
 import matplotlib.patches as patches
+import matplotlib.patheffects as pe
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.colors import to_rgba
 
 
 # Data
 np.random.seed(42)
 
-n_passes = 120
+n_passes = 70
 n_shots = 25
 n_tackles = 40
 n_interceptions = 35
@@ -57,15 +59,13 @@ ax.plot(52.5, 34, "o", color=pitch_color, markersize=4)
 ax.add_patch(patches.Rectangle((0, 13.84), 16.5, 40.32, linewidth=lw, edgecolor=pitch_color, facecolor="none"))
 ax.add_patch(patches.Rectangle((0, 24.84), 5.5, 18.32, linewidth=lw, edgecolor=pitch_color, facecolor="none"))
 ax.plot(11, 34, "o", color=pitch_color, markersize=4)
-penalty_arc_left = patches.Arc((11, 34), 18.3, 18.3, angle=0, theta1=-53, theta2=53, color=pitch_color, linewidth=lw)
-ax.add_patch(penalty_arc_left)
+ax.add_patch(patches.Arc((11, 34), 18.3, 18.3, angle=0, theta1=-53, theta2=53, color=pitch_color, linewidth=lw))
 
 # Right penalty area
 ax.add_patch(patches.Rectangle((88.5, 13.84), 16.5, 40.32, linewidth=lw, edgecolor=pitch_color, facecolor="none"))
 ax.add_patch(patches.Rectangle((99.5, 24.84), 5.5, 18.32, linewidth=lw, edgecolor=pitch_color, facecolor="none"))
 ax.plot(94, 34, "o", color=pitch_color, markersize=4)
-penalty_arc_right = patches.Arc((94, 34), 18.3, 18.3, angle=0, theta1=127, theta2=233, color=pitch_color, linewidth=lw)
-ax.add_patch(penalty_arc_right)
+ax.add_patch(patches.Arc((94, 34), 18.3, 18.3, angle=0, theta1=127, theta2=233, color=pitch_color, linewidth=lw))
 
 # Corner arcs
 for cx, cy in [(0, 0), (0, 68), (105, 0), (105, 68)]:
@@ -76,93 +76,71 @@ for cx, cy in [(0, 0), (0, 68), (105, 0), (105, 68)]:
 ax.plot([0, 0], [30.34, 37.66], color="#ffffff", linewidth=4, solid_capstyle="round")
 ax.plot([105, 105], [30.34, 37.66], color="#ffffff", linewidth=4, solid_capstyle="round")
 
-# Events - passes (arrows)
+# Attacking zone highlight (right third) — focal point for tactical storytelling
+zone_highlight = patches.FancyBboxPatch(
+    (70, 5), 33, 58, boxstyle="round,pad=2", facecolor="#ffaa00", alpha=0.06, edgecolor="none", zorder=1
+)
+ax.add_patch(zone_highlight)
+ax.text(
+    86.5,
+    66,
+    "Attacking Third",
+    fontsize=14,
+    color="#ffcc44",
+    alpha=0.6,
+    ha="center",
+    va="top",
+    fontweight="bold",
+    path_effects=[pe.withStroke(linewidth=2, foreground="#1a1a2e")],
+)
+
+# Color palette (colorblind-safe: blue, magenta, gold, orange)
+c_pass = "#48bfe3"
+c_shot = "#f72585"
+c_tackle = "#ffd166"
+c_intercept = "#ff9f1c"
+
+# Events - passes (arrows with origin markers)
 for i in range(n_passes):
-    alpha = 0.7 if pass_success[i] else 0.25
+    alpha = 0.65 if pass_success[i] else 0.2
     ax.annotate(
         "",
         xy=(pass_end_x[i], pass_end_y[i]),
         xytext=(pass_x[i], pass_y[i]),
-        arrowprops={"arrowstyle": "->", "color": "#48bfe3", "lw": 1.5, "alpha": alpha},
+        arrowprops={"arrowstyle": "->", "color": c_pass, "lw": 1.2, "alpha": alpha},
     )
     ax.plot(
-        pass_x[i],
-        pass_y[i],
-        "o",
-        color="#48bfe3",
-        markersize=5,
-        alpha=alpha,
-        markeredgecolor="white",
-        markeredgewidth=0.3,
+        pass_x[i], pass_y[i], "o", color=c_pass, markersize=4, alpha=alpha, markeredgecolor="white", markeredgewidth=0.3
     )
 
-# Events - shots (arrows with stars)
+# Events - shots (arrows with star markers)
 for i in range(n_shots):
     alpha = 0.9 if shot_success[i] else 0.3
     ax.annotate(
         "",
         xy=(shot_x[i] + shot_dx[i], shot_y[i] + shot_dy[i]),
         xytext=(shot_x[i], shot_y[i]),
-        arrowprops={"arrowstyle": "->", "color": "#f72585", "lw": 2.0, "alpha": alpha},
+        arrowprops={"arrowstyle": "-|>", "color": c_shot, "lw": 2.0, "alpha": alpha, "mutation_scale": 15},
     )
     ax.plot(
         shot_x[i],
         shot_y[i],
         "*",
-        color="#f72585",
-        markersize=14,
+        color=c_shot,
+        markersize=16,
         alpha=alpha,
         markeredgecolor="white",
         markeredgewidth=0.5,
+        path_effects=[pe.withStroke(linewidth=1, foreground="#1a1a2e")],
     )
 
-# Events - tackles (triangles)
-ax.scatter(
-    tackle_x[tackle_success],
-    tackle_y[tackle_success],
-    marker="^",
-    s=180,
-    color="#ffd166",
-    alpha=0.8,
-    edgecolors="white",
-    linewidth=0.5,
-    zorder=5,
-)
-ax.scatter(
-    tackle_x[~tackle_success],
-    tackle_y[~tackle_success],
-    marker="^",
-    s=180,
-    color="#ffd166",
-    alpha=0.25,
-    edgecolors="white",
-    linewidth=0.5,
-    zorder=5,
-)
+# Events - tackles (triangles) — RGBA colors for per-point alpha in single call
+tackle_rgba = np.array([to_rgba(c_tackle, a) for a in np.where(tackle_success, 0.8, 0.25)])
+ax.scatter(tackle_x, tackle_y, marker="^", s=180, c=tackle_rgba, edgecolors="white", linewidth=0.5, zorder=5)
 
 # Events - interceptions (diamonds)
-ax.scatter(
-    intercept_x[intercept_success],
-    intercept_y[intercept_success],
-    marker="D",
-    s=140,
-    color="#80ed99",
-    alpha=0.8,
-    edgecolors="white",
-    linewidth=0.5,
-    zorder=5,
-)
-ax.scatter(
-    intercept_x[~intercept_success],
-    intercept_y[~intercept_success],
-    marker="D",
-    s=140,
-    color="#80ed99",
-    alpha=0.25,
-    edgecolors="white",
-    linewidth=0.5,
-    zorder=5,
-)
+intercept_rgba = np.array([to_rgba(c_intercept, a) for a in np.where(intercept_success, 0.8, 0.25)])
+ax.scatter(intercept_x, intercept_y, marker="D", s=140, c=intercept_rgba, edgecolors="white", linewidth=0.5, zorder=5)
 
 # Style
 ax.set_xlim(-3, 108)
@@ -171,26 +149,27 @@ ax.set_aspect("equal")
 ax.axis("off")
 
 ax.set_title(
-    "scatter-pitch-events · matplotlib · pyplots.ai", fontsize=24, fontweight="medium", color="#e0e0e0", pad=15
+    "scatter-pitch-events · matplotlib · pyplots.ai",
+    fontsize=24,
+    fontweight="medium",
+    color="#e0e0e0",
+    pad=15,
+    path_effects=[pe.withStroke(linewidth=3, foreground="#1a1a2e")],
 )
 
 # Legend
 legend_elements = [
+    plt.Line2D([0], [0], marker="o", color="w", markerfacecolor=c_pass, markersize=10, label="Pass", linestyle="None"),
+    plt.Line2D([0], [0], marker="*", color="w", markerfacecolor=c_shot, markersize=14, label="Shot", linestyle="None"),
     plt.Line2D(
-        [0], [0], marker="o", color="w", markerfacecolor="#48bfe3", markersize=10, label="Pass", linestyle="None"
-    ),
-    plt.Line2D(
-        [0], [0], marker="*", color="w", markerfacecolor="#f72585", markersize=14, label="Shot", linestyle="None"
-    ),
-    plt.Line2D(
-        [0], [0], marker="^", color="w", markerfacecolor="#ffd166", markersize=10, label="Tackle", linestyle="None"
+        [0], [0], marker="^", color="w", markerfacecolor=c_tackle, markersize=10, label="Tackle", linestyle="None"
     ),
     plt.Line2D(
         [0],
         [0],
         marker="D",
         color="w",
-        markerfacecolor="#80ed99",
+        markerfacecolor=c_intercept,
         markersize=10,
         label="Interception",
         linestyle="None",
@@ -220,7 +199,7 @@ ax.legend(
     handles=legend_elements,
     loc="lower center",
     ncol=6,
-    fontsize=14,
+    fontsize=16,
     framealpha=0.7,
     facecolor="#1a1a2e",
     edgecolor="#444444",

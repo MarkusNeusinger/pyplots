@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bifurcation-basic: Bifurcation Diagram for Dynamical Systems
 Library: matplotlib 3.10.8 | Python 3.14.3
-Quality: 88/100 | Created: 2026-03-20
+Quality: 94/100 | Created: 2026-03-20
 """
 
 import matplotlib.pyplot as plt

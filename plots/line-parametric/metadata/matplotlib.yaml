@@ -1,7 +1,7 @@
 library: matplotlib
 specification_id: line-parametric
 created: '2026-03-20T10:36:55Z'
-updated: '2026-03-20T10:40:39Z'
+updated: '2026-03-20T10:52:24Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23339035341
 issue: 4424
@@ -10,100 +10,102 @@ library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-parametric/matplotlib/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-parametric/matplotlib/plot_thumb.png
 preview_html: null
-quality_score: 86
+quality_score: 88
 review:
   strengths:
-  - Excellent use of LineCollection for color-mapped parametric curves — idiomatic
-    matplotlib
-  - 'All spec requirements met: two curve types, color gradients, start/end markers,
-    equal aspect ratio'
-  - Clean, well-structured code with thoughtful shared styling loop
-  - Two distinct colormaps (plasma, viridis) differentiate the panels effectively
+  - Excellent spec compliance with all required features implemented perfectly
+  - LineCollection usage for color gradients is idiomatic and visually effective
+  - Thoughtful annotations adding mathematical insight (self-intersection, linear
+    radius growth)
+  - Clean well-structured code with no unnecessary complexity
+  - Good visual refinement with removed spines, subtle grid, and styled colorbars
   weaknesses:
-  - 'Design Excellence could be elevated: good but not publication-exceptional aesthetic'
-  - Axis labels x(t)/y(t) could be more descriptive per-panel
-  - Panel height mismatch due to equal aspect ratio with different data scales
-  - No annotations or focal points to enhance data storytelling
-  image_description: The plot shows two side-by-side subplots on a white background
-    with the suptitle "line-parametric · matplotlib · pyplots.ai" at the top. The
-    left panel displays a Lissajous figure (x=sin(3t), y=sin(2t)) with a color gradient
-    from dark purple/blue (t≈0) through pink/magenta to yellow (t≈2π) using the plasma
-    colormap. The right panel shows an Archimedean spiral (x=t·cos(t), y=t·sin(t))
-    with a viridis colormap gradient from dark purple (t≈0) through teal to yellow
-    (t≈4π). Both panels have blue circle markers for start points and orange-red square
-    markers for end points. Colorbars labeled "Parameter t" appear to the right of
-    each panel. Top and right spines are removed, subtle gridlines are visible, and
-    axes are labeled x(t) and y(t). Both panels use equal aspect ratios with line
-    width of 3. Legends in lower-right corners identify start/end markers.
+  - Font sizes below recommended minimums for 4800x2700 output (titles 20pt vs 24pt,
+    labels 18pt vs 20pt, ticks 14pt vs 16pt)
+  - Mathematical context scores lower on realistic context since inherently abstract
+  image_description: The plot displays two side-by-side panels on a light gray (#fafafa)
+    background with the suptitle "line-parametric · matplotlib · pyplots.ai" at the
+    top. The left panel shows a "Lissajous Figure" with x(t) = sin(3t), y(t) = sin(2t),
+    rendered as a smooth closed curve colored by the plasma colormap from dark purple
+    (t≈0) through orange to yellow (t≈2π). A blue circle marks the start (t=0) and
+    an orange square marks the end (t=2π). An italic annotation with arrow points
+    to the origin noting "Self-intersection at origin". A colorbar labeled "Parameter
+    t (rad)" is on the right. The right panel shows an "Archimedean Spiral" with x(t)
+    = t·cos(t), y(t) = t·sin(t), colored with the viridis colormap from dark purple
+    (center) to yellow (outer edge, t≈4π). Start/end markers match the left panel.
+    An annotation reads "Radius grows linearly with t". Both panels use equal aspect
+    ratio, all spines are removed, and subtle grids are visible. Legends in both panels
+    identify the start and end markers.
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 27
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 6
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: suptitle 24pt, subplot titles 20pt,
-          labels 20pt, ticks 16pt, legend 14pt, colorbar 16/13pt'
+        comment: 'Font sizes explicitly set but below recommended minimums: panel
+          titles 20pt (rec. >=24), axis labels 18pt (rec. >=20), ticks 14pt (rec.
+          >=16)'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping elements; legends positioned away from data
+        comment: No overlapping text or elements anywhere
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Lines at linewidth=3 clearly visible, markers at size 12, color gradients
-          distinct
+        comment: Line width 2.8 well-suited, markers size 11 with white edges clearly
+          visible
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Plasma and viridis are perceptually uniform, colorblind-safe colormaps
+        comment: Plasma and viridis are perceptually uniform and colorblind-safe
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good two-panel layout but slight height mismatch between panels due
-          to equal aspect ratio with different data ranges
+        comment: Equal aspect ratio causes some wasted whitespace, especially in spiral
+          panel
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Labels x(t) and y(t) are descriptive but show no units (dimensionless
-          math functions)
+        comment: Axis labels show parametric equations with mathematical notation
     design_excellence:
-      score: 12
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Thoughtful colormaps and marker colors, spines removed — above defaults
-          but not publication-exceptional
+        comment: Thoughtful design with custom facecolor, perceptually uniform colormaps,
+          styled markers, italic annotations
       - id: DE-02
         name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: All spines removed, subtle grid alpha=0.12, clean colorbar styling
+          with hidden outlines
+      - id: DE-03
+        name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Spines removed, grid at alpha=0.15, colorbars with custom aspect/padding
-      - id: DE-03
-        name: Data Storytelling
-        score: 3
-        max: 6
-        passed: true
-        comment: Color gradient conveys traversal direction, start/end markers, two
-          contrasting curve types — but no focal points or emphasis
+        comment: Annotations highlight key mathematical properties, start/end markers
+          show traversal direction, color gradient conveys parameter progression
     spec_compliance:
       score: 15
       max: 15
@@ -113,50 +115,50 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct parametric curve plots
+        comment: Correct parametric curve plot with two examples
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: equal aspect, color gradient, two curves,
-          start/end markers, 1000 points'
+        comment: Equal aspect ratio, color gradient, two curves, start/end points,
+          sufficient density
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: x(t) and y(t) correctly computed and mapped
+        comment: x(t), y(t) correctly computed and plotted for both curves
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, legend labels descriptive
+        comment: Title format correct, legend labels descriptive with parameter values
     data_quality:
       score: 13
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Lissajous shows self-intersections and closed curve; spiral shows
-          outward growth — good variety
+        comment: 'Two contrasting curves: closed self-intersecting Lissajous and open
+          expanding spiral'
       - id: DQ-02
         name: Realistic Context
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: Well-known mathematical objects, realistic for science/education
-          domain
+        comment: Mathematical context with named curves, plausible but inherently
+          abstract
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values correct for trigonometric and spiral functions
+        comment: Mathematically correct values for both curves
     code_quality:
       score: 10
       max: 10
@@ -166,25 +168,25 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean linear structure with no functions or classes
+        comment: Flat structure with no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic trigonometric data
+        comment: Fully deterministic trigonometric functions
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All three imports used
+        comment: 'All three imports used: plt, np, LineCollection'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean loop for shared styling, appropriate LineCollection usage
+        comment: Clean and well-organized with panel styling loop
       - id: CQ-05
         name: Output & API
         score: 1
@@ -200,22 +202,26 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: LineCollection for color-mapped segments, axes-level methods, fig.colorbar
+        comment: Good use of axes methods, LineCollection, fig.colorbar, annotations,
+          subplots
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: LineCollection with segment-wise colormapping is distinctive to matplotlib
+        comment: LineCollection for continuous color-mapped line segments is distinctive
+          to matplotlib
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - colorbar
+  - annotations
   - subplots
   patterns:
   - data-generation
   dataprep: []
   styling:
   - custom-colormap
+  - edge-highlighting
   - grid-styling

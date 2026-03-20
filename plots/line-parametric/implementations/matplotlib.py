@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-parametric: Parametric Curve Plot
 Library: matplotlib 3.10.8 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-20
@@ -55,16 +55,16 @@ ax1.plot(
     markeredgewidth=1.5,
 )
 cb1 = fig.colorbar(lc1, ax=ax1, pad=0.03, aspect=30, shrink=0.85)
-cb1.set_label("Parameter t (rad)", fontsize=14, labelpad=8)
-cb1.ax.tick_params(labelsize=12)
+cb1.set_label("Parameter t (rad)", fontsize=16, labelpad=8)
+cb1.ax.tick_params(labelsize=14)
 cb1.outline.set_visible(False)
 
 # Annotate self-intersection at origin for storytelling
 ax1.annotate(
-    "Self-intersection\nat origin",
+    "Self-intersection\nat origin (3:2 ratio)",
     xy=(0, 0),
     xytext=(0.45, -0.7),
-    fontsize=12,
+    fontsize=14,
     color="#444444",
     fontstyle="italic",
     arrowprops={"arrowstyle": "->", "color": "#888888", "lw": 1.2},
@@ -103,16 +103,16 @@ ax2.plot(
     markeredgewidth=1.5,
 )
 cb2 = fig.colorbar(lc2, ax=ax2, pad=0.03, aspect=30, shrink=0.85)
-cb2.set_label("Parameter t (rad)", fontsize=14, labelpad=8)
-cb2.ax.tick_params(labelsize=12)
+cb2.set_label("Parameter t (rad)", fontsize=16, labelpad=8)
+cb2.ax.tick_params(labelsize=14)
 cb2.outline.set_visible(False)
 
 # Annotate outer spiral loop for storytelling
 ax2.annotate(
     "Radius grows\nlinearly with t",
-    xy=(x_spiral[900], y_spiral[900]),
-    xytext=(5, -8),
-    fontsize=12,
+    xy=(x_spiral[750], y_spiral[750]),
+    xytext=(6, 8),
+    fontsize=14,
     color="#444444",
     fontstyle="italic",
     arrowprops={"arrowstyle": "->", "color": "#888888", "lw": 1.2},
@@ -126,16 +126,16 @@ panel_info = [
 ]
 for ax, title_text, xlabel, ylabel in panel_info:
     ax.set_aspect("equal")
-    ax.set_xlabel(xlabel, fontsize=18, labelpad=8)
-    ax.set_ylabel(ylabel, fontsize=18, labelpad=8)
-    ax.set_title(title_text, fontsize=20, fontweight="semibold", pad=12, color="#222222")
-    ax.tick_params(axis="both", labelsize=14, colors="#555555")
+    ax.set_xlabel(xlabel, fontsize=20, labelpad=8)
+    ax.set_ylabel(ylabel, fontsize=20, labelpad=8)
+    ax.set_title(title_text, fontsize=24, fontweight="semibold", pad=14, color="#222222")
+    ax.tick_params(axis="both", labelsize=16, colors="#555555")
     for spine in ax.spines.values():
         spine.set_visible(False)
-    ax.legend(fontsize=13, loc="lower right", frameon=True, fancybox=True, framealpha=0.85, edgecolor="#cccccc")
+    ax.legend(fontsize=16, loc="lower right", frameon=True, fancybox=True, framealpha=0.85, edgecolor="#cccccc")
     ax.grid(True, alpha=0.12, linewidth=0.6, color="#999999")
 
-fig.suptitle("line-parametric · matplotlib · pyplots.ai", fontsize=24, fontweight="medium", y=0.98, color="#333333")
+fig.suptitle("line-parametric · matplotlib · pyplots.ai", fontsize=26, fontweight="medium", y=0.98, color="#333333")
 
 plt.tight_layout(rect=[0, 0, 1, 0.95])
 plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor=fig.get_facecolor())

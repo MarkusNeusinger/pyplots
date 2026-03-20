@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: scatter-pitch-events
 created: '2026-03-20T12:36:54Z'
-updated: '2026-03-20T12:50:42Z'
+updated: '2026-03-20T12:58:43Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23342848969
 issue: 4417
@@ -13,34 +13,36 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-pitch-
 quality_score: 86
 review:
   strengths:
-  - Excellent spec compliance with all required features including accurate pitch
-    markings, distinct markers, outcome encoding, and directional arrows
-  - Strong design with custom colorblind-safe palette, warm background, and Attacking
-    Third zone annotation for storytelling
-  - Clean well-organized code with proper reproducibility and KISS structure
-  - Realistic data generation with event-type-specific spatial distributions and success
-    rates
+  - Comprehensive pitch diagram with all FIFA standard markings including corner arcs,
+    penalty arcs, and goal posts
+  - Excellent data storytelling with zone highlights, size-based emphasis on shots,
+    and directional arrows
+  - Custom colorblind-friendly palette with thoughtful design choices (beige background,
+    subtle zone shading)
+  - Perfect spec compliance — every required feature implemented
+  - Realistic soccer domain data with appropriate success rates and spatial distributions
   weaknesses:
-  - Unsuccessful markers at alpha=0.3 are too faint against the green pitch, reducing
-    visibility of the outcome encoding
-  - Some marker/arrow congestion in the right penalty area where shots converge
-  - Legend and outcome annotation text sizes could be slightly larger for better readability
-  image_description: 'The plot displays a soccer pitch event map on a green (#2E7D32)
-    background with white pitch markings including penalty areas, goal areas, center
-    circle, halfway line, corner arcs, and goal posts. Four event types are plotted
-    with distinct marker shapes and colors: blue circles for Passes, red diamonds
-    for Shots, orange triangles for Tackles, and purple squares for Interceptions.
-    Directional arrows extend from Pass and Shot markers showing trajectory. Successful
-    events appear as filled markers with high opacity (~0.92), while unsuccessful
-    events are hollow/faint (alpha ~0.3). Shots are rendered larger than other markers
-    for emphasis. A subtle "Attacking Third" zone is highlighted on the right third
-    of the pitch with italic white text. Below the pitch, a custom legend displays
-    all four event types with their marker shapes and colors, plus outcome annotations.
-    The title "scatter-pitch-events · letsplot · pyplots.ai" appears at the top in
-    bold dark text. The canvas background is a warm off-white (#F5F5F0).'
+  - Blue pass markers on dark green pitch have reduced contrast — most frequent event
+    type is hardest to see
+  - Unsuccessful hollow markers (alpha=0.55) are somewhat difficult to distinguish
+    from successful ones at a glance
+  - Some marker congestion in the attacking third area
+  image_description: 'The plot displays a soccer pitch viewed from above on a beige
+    (#F5F5F0) background. The green pitch (#2E7D32) features white standard markings:
+    penalty areas, goal areas, center circle, halfway line, corner arcs, and goal
+    posts (light gray). 100 match events are scattered across the pitch using distinct
+    markers — blue circles for passes, red diamonds for shots, orange triangles for
+    tackles, and purple squares for interceptions. Directional arrows extend from
+    passes and shots indicating trajectory. Filled markers represent successful outcomes
+    while hollow/transparent markers represent unsuccessful ones. Shots are rendered
+    larger for focal emphasis. Subtle zone highlights mark the "Attacking Third" (right)
+    and "Defensive Third" (left) with italic white labels. A custom legend below the
+    pitch shows all four event types with their marker shapes, plus an outcome key
+    (filled = successful, hollow = unsuccessful). The title "scatter-pitch-events
+    · letsplot · pyplots.ai" is centered at the top in bold with a descriptive subtitle.'
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 24
       max: 30
       items:
       - id: VQ-01
@@ -48,41 +50,42 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title=26, legend=13, outcome=10).
-          Legend/outcome text could be slightly larger.
+        comment: All font sizes explicitly set (title=26, subtitle=16, legend=15,
+          zone=10, outcome=12). Zone annotations slightly small but readable.
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: Text elements clean. Some marker/arrow congestion in right penalty
-          area.
+        comment: No text overlap. Some marker clustering in attacking third but text
+          elements remain clean.
       - id: VQ-03
         name: Element Visibility
         score: 4
         max: 6
-        passed: true
-        comment: Successful markers visible. Unsuccessful markers at alpha=0.3 too
-          faint against green pitch.
+        passed: false
+        comment: Blue pass markers on dark green have reduced contrast. Unsuccessful
+          hollow markers with alpha=0.55 harder to distinguish.
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 3
         max: 4
-        passed: true
-        comment: Blue/red/orange/purple palette is colorblind-safe with shape as secondary
-          encoding.
+        passed: false
+        comment: Blue/red/orange/purple palette is colorblind-friendly but blue-on-green
+          reduces contrast for passes.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Pitch fills good portion of canvas. Some extra whitespace at bottom.
+        comment: Good proportions with pitch filling canvas well. Legend area effectively
+          used.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Appropriate for pitch map with theme_void. Title correctly formatted.
+        comment: Descriptive title and subtitle. No axes needed for pitch map.
     design_excellence:
       score: 15
       max: 20
@@ -92,21 +95,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom colorblind-safe palette, warm off-white background, intentional
-          visual hierarchy.
+        comment: Custom palette, beige background, zone highlights, descriptive subtitle.
+          Clearly above defaults.
       - id: DE-02
         name: Visual Refinement
         score: 5
         max: 6
         passed: true
-        comment: theme_void, custom background, generous margins, clean pitch rendering.
+        comment: theme_void, clean pitch markings, subtle zone highlights, custom
+          legend placement, generous whitespace.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Attacking Third zone highlight, shots rendered larger, directional
-          arrows show movement.
+        comment: Zone highlights with labels, shots larger for emphasis, arrows show
+          direction. Visual hierarchy through size and color.
     spec_compliance:
       score: 15
       max: 15
@@ -122,8 +126,8 @@ review:
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: pitch markings, distinct markers, outcome
-          encoding, directional arrows, correct aspect ratio.'
+        comment: 'All spec features present: pitch markings, distinct markers/colors,
+          outcome encoding, directional arrows, green pitch, correct aspect ratio.'
       - id: SC-03
         name: Data Mapping
         score: 3
@@ -136,31 +140,31 @@ review:
         max: 3
         passed: true
         comment: Title format correct. Custom legend with all event types and outcome
-          explanation.
+          key.
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: All 4 event types with both outcomes. Realistic spatial distributions
-          per event type.
+        comment: All 4 event types, both outcomes, directional arrows, realistic spatial
+          distribution.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Realistic soccer match events with appropriate success rates. Neutral
-          topic.
+        comment: Realistic soccer match data with domain-appropriate success rates
+          and positional logic.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 100 events, FIFA pitch dimensions, realistic coordinate ranges.
+        comment: 100 events appropriate for match segment. FIFA standard dimensions.
     code_quality:
       score: 10
       max: 10
@@ -170,31 +174,32 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear structure with no functions or classes.
+        comment: 'Linear flow: imports, data, pitch markings, plot, save. No functions
+          or classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set at start.
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used, no unused imports.
+        comment: All imports used, explicit named imports.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Well-organized code, no fake UI elements.
+        comment: Clean, well-structured. Good variable naming.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via ggsave with scale=3.
+        comment: Saves as plot.png with scale=3. Also exports HTML.
     library_mastery:
       score: 7
       max: 10
@@ -204,22 +209,23 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good ggplot grammar usage with identity scales, coord_fixed, theme_void,
-          arrow().
+        comment: Proper ggplot grammar, identity scales, coord_fixed, theme_void.
+          Idiomatic lets-plot patterns.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses identity scales, arrow(), coord_fixed, and HTML export showing
-          library familiarity.
+        comment: Identity scales pattern, arrow() for segments, HTML export, ggsize
+          with scale.
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
-  - annotations
   - layer-composition
+  - annotations
   - custom-legend
+  - html-export
   patterns:
   - data-generation
   - iteration-over-groups

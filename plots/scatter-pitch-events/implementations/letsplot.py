@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-pitch-events: Soccer Pitch Event Map
 Library: letsplot 4.9.0 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-20

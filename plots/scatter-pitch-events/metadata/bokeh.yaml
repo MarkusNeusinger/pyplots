@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: scatter-pitch-events
 created: '2026-03-20T12:32:46Z'
-updated: '2026-03-20T12:36:36Z'
+updated: '2026-03-20T12:44:25Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23342848863
 issue: 4417
@@ -10,104 +10,104 @@ library_version: 3.9.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-pitch-events/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-pitch-events/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-pitch-events/bokeh/plot.html
-quality_score: 82
+quality_score: 89
 review:
   strengths:
-  - Excellent spec compliance — all required features implemented including pitch
-    markings, distinct markers, outcome encoding, and directional arrows
-  - Realistic data generation with domain-appropriate distributions (shots near goal,
-    varied success rates per event type)
-  - Good visual refinement with removed grid, axis lines, and tick marks creating
-    a clean look
-  - Proper use of Bokeh-specific features (Arrow, NormalHead, HTML export)
+  - Excellent pitch diagram with all FIFA-standard markings including goal posts,
+    corner arcs, and penalty arcs
+  - Zone shading (attacking/defensive thirds) adds tactical context beyond spec requirements
+  - Clean visual refinement with all axis chrome removed — appropriate for a pitch
+    diagram
+  - Filled vs hollow markers with alpha variation effectively encode outcomes
+  - Directional arrows for passes and shots using Bokeh Arrow model
+  - Perfect spec compliance and data quality
   weaknesses:
-  - Legend with 8 entries overlaps pitch data in the top-left corner
-  - Unsuccessful event markers (alpha 0.25-0.3) are quite faint against the light
-    green pitch
-  - No strong visual hierarchy or focal point to guide the viewer eye through the
-    data
-  - Per-row iterrows() loop for arrows is verbose
+  - Gold/yellow interception diamonds have low contrast against the green pitch background
+  - Legend with 8 entries is slightly cramped — needs more spacing
+  - Hollow unsuccessful markers (especially small interception diamonds) are hard
+    to distinguish
   image_description: 'The plot displays a soccer pitch event map on a light green
-    rectangular pitch with standard FIFA markings drawn in darker green: penalty areas,
-    goal areas, center circle, halfway line, corner arcs, and goal posts (in dark
-    gray). Four event types are scattered across the pitch using distinct marker shapes
-    and colors: blue filled/hollow circles for successful/unsuccessful passes, red
-    filled/hollow stars for shots, teal filled/hollow triangles for tackles, and gold
-    filled/hollow diamonds for interceptions. Directional arrows connect start and
-    end positions for passes and shots, with successful events shown at higher opacity
-    and unsuccessful at lower opacity. The legend in the top-left lists all 8 event-outcome
-    combinations. Title reads "scatter-pitch-events · bokeh · pyplots.ai". Axes are
-    labeled "Pitch Length (m)" and "Pitch Width (m)" with numeric tick marks.'
+    pitch background with standard FIFA markings including penalty areas, goal areas,
+    center circle, halfway line, corner arcs, and goal posts drawn in dark green.
+    Four event types are plotted: blue circles for passes, red stars for shots, teal
+    triangles for tackles, and gold diamonds for interceptions. Successful events
+    are filled with their respective colors while unsuccessful ones appear as hollow
+    (white-filled) markers with colored outlines. Blue directional arrows indicate
+    pass trajectories across the pitch, and red arrows show shot directions toward
+    the right goal. Subtle zone shading highlights the attacking third (faint red)
+    and defensive third (faint blue). The title "scatter-pitch-events · bokeh · pyplots.ai"
+    appears at the top. Axes are labeled "Pitch Length (m)" and "Pitch Width (m)".
+    A horizontal legend with 8 entries (4 event types × 2 outcomes) sits below the
+    pitch in two rows of four.'
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 27
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 60pt, labels 40pt, ticks 30pt,
-          legend 28pt). Clearly readable.
+        comment: 'All font sizes explicitly set: title 60pt, axis labels 40pt, tick
+          labels 30pt, legend 24pt'
       - id: VQ-02
         name: No Overlap
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Legend with 8 entries overlaps data in the top-left corner of the
-          pitch.
+        comment: Legend below pitch avoids data overlap but 8 entries in 2 rows are
+          slightly cramped
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Markers visible at size 22. Unsuccessful markers (alpha 0.25-0.3)
-          slightly hard to see on green pitch.
+        comment: Markers visible with appropriate size variation, some smaller interception
+          diamonds hard to distinguish
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Blue, red, teal, gold palette mostly distinguishable. Red and teal
-          could challenge deuteranopia.
+        comment: Gold/yellow diamonds have low contrast against green pitch background
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Pitch fills canvas well with correct aspect ratio. Minor wasted space
-          at margins.
+        comment: Excellent canvas utilization with match_aspect preserving 105:68
+          ratio
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: Pitch Length (m), Pitch Width (m).'
+        comment: 'Descriptive labels with units: Pitch Length (m), Pitch Width (m)'
     design_excellence:
-      score: 12
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Thoughtful custom palette, well-drawn pitch, clean background. Above
-          defaults but not publication-level.
+        comment: Strong design with custom palette, zone shading, filled/hollow encoding,
+          detailed pitch markings
       - id: DE-02
         name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: All chrome removed (grid, axis lines, ticks), clean white background
+      - id: DE-03
+        name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Grid removed, axis lines removed, tick marks removed, clean white
-          border.
-      - id: DE-03
-        name: Data Storytelling
-        score: 3
-        max: 6
-        passed: true
-        comment: Spatial patterns visible but no strong focal point or visual hierarchy.
+        comment: Zone shading contextualizes pitch areas, arrows convey trajectories,
+          spatial clustering tells tactical story
     spec_compliance:
       score: 15
       max: 15
@@ -117,26 +117,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct scatter plot on pitch diagram.
+        comment: Correct scatter plot on accurately scaled soccer pitch diagram
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: pitch markings, distinct markers/colors, outcome
-          encoding, directional arrows, correct aspect ratio.'
+        comment: 'All spec features present: pitch markings, distinct markers, outcome
+          encoding, directional arrows'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X = pitch length (0-105m), Y = pitch width (0-68m), correctly mapped.
+        comment: X = pitch length (0-105m), Y = pitch width (0-68m), correct FIFA
+          dimensions
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend labels match data categories.
+        comment: Title format correct, legend shows all 8 event type/outcome combinations
     data_quality:
       score: 15
       max: 15
@@ -146,22 +147,23 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: All 4 event types with both outcomes, arrows for directional events,
-          realistic spatial distribution.
+        comment: All 4 event types with both outcomes, good spatial diversity across
+          pitch zones
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Soccer match events - realistic, neutral domain with plausible distributions.
+        comment: Realistic soccer match data with plausible success rates and zone-based
+          positioning
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: FIFA dimensions (105x68m), realistic success rates per event type.
+        comment: FIFA standard 105x68m pitch, 120 events within spec range
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -169,32 +171,31 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, pitch, events, styling, save.'
+        comment: 'Linear structure: imports, data, plot, save. No functions or classes'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) set at top
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Per-row iterrows() loop for arrows is verbose. Double nested loop
-          for markers adds length.
+        passed: true
+        comment: Appropriate complexity for pitch diagram with iteration over groups
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html with current API.
+        comment: Saves as plot.png via export_png and plot.html, current Bokeh API
     library_mastery:
       score: 7
       max: 10
@@ -204,19 +205,20 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of ColumnDataSource, figure, scatter, Arrow layout with
-          NormalHead, Range1d.
+        comment: Good use of ColumnDataSource, Range1d, Arrow/NormalHead. Could leverage
+          factor_cmap for more declarative patterns
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses Bokeh-specific Arrow/NormalHead, HTML export with CDN, match_aspect.
+        comment: Uses Bokeh-specific Arrow+NormalHead, HTML export with CDN, match_aspect
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - custom-legend
+  - layer-composition
   - html-export
   patterns:
   - data-generation

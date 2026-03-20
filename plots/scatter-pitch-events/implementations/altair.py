@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-pitch-events: Soccer Pitch Event Map
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-20
@@ -28,8 +28,11 @@ for i, etype in enumerate(event_types):
     elif etype == "Shot":
         x[i] = np.random.uniform(60, 98)
         y[i] = np.random.uniform(15, 53)
-        end_x[i] = 105
-        end_y[i] = 34 + np.random.uniform(-4, 4)
+        # Shorter shot arrows: end 60% of the way toward the goal to reduce congestion
+        target_x = 105
+        target_y = 34 + np.random.uniform(-4, 4)
+        end_x[i] = x[i] + 0.6 * (target_x - x[i])
+        end_y[i] = y[i] + 0.6 * (target_y - y[i])
     elif etype == "Tackle":
         x[i] = np.random.uniform(15, 80)
         y[i] = np.random.uniform(5, 63)
@@ -66,6 +69,7 @@ zones_data = pd.DataFrame(
         "y2": [68, 68, 68],
         "zone": ["Defensive Third", "Middle Third", "Attacking Third"],
         "fill": ["#1a472a", "#1f5432", "#2d6a3f"],
+        "zone_opacity": [0.28, 0.25, 0.35],
     }
 )
 
@@ -111,7 +115,7 @@ zone_layers = []
 for _, row in zones_data.iterrows():
     zone_layers.append(
         alt.Chart(pd.DataFrame({"x": [row["x"]], "y": [row["y"]], "x2": [row["x2"]], "y2": [row["y2"]]}))
-        .mark_rect(color=row["fill"], opacity=0.18)
+        .mark_rect(color=row["fill"], opacity=row["zone_opacity"])
         .encode(x="x:Q", y="y:Q", x2="x2:Q", y2="y2:Q")
     )
 
@@ -125,12 +129,12 @@ pitch_lines = (
 # Shared axis config — tighter domain for better canvas utilization
 x_axis = alt.X(
     "x:Q",
-    scale=alt.Scale(domain=[-2, 107]),
+    scale=alt.Scale(domain=[-1.5, 106.5]),
     axis=alt.Axis(title=None, labels=False, ticks=False, grid=False, domain=False),
 )
 y_axis = alt.Y(
     "y:Q",
-    scale=alt.Scale(domain=[-2, 70]),
+    scale=alt.Scale(domain=[-1.5, 69.5]),
     axis=alt.Axis(title=None, labels=False, ticks=False, grid=False, domain=False),
 )
 
@@ -165,7 +169,7 @@ spot_layer = alt.Chart(spots).mark_point(color="rgba(255,255,255,0.8)", size=45,
 # Direction lines for passes and shots
 arrow_lines = (
     alt.Chart(arrows_df)
-    .mark_rule(strokeWidth=1.3)
+    .mark_rule(strokeWidth=1.1)
     .encode(
         x="x:Q",
         y="y:Q",
@@ -173,7 +177,7 @@ arrow_lines = (
         y2="end_y:Q",
         color=alt.Color("event_type:N", scale=alt.Scale(domain=color_domain, range=color_range), legend=None),
         opacity=alt.Opacity(
-            "outcome:N", scale=alt.Scale(domain=["Successful", "Unsuccessful"], range=[0.55, 0.25]), legend=None
+            "outcome:N", scale=alt.Scale(domain=["Successful", "Unsuccessful"], range=[0.45, 0.20]), legend=None
         ),
     )
 )
@@ -183,8 +187,8 @@ arrowheads = (
     alt.Chart(arrows_df)
     .mark_point(shape="triangle-right", filled=True, size=90, stroke=None)
     .encode(
-        x=alt.X("arrow_x:Q", scale=alt.Scale(domain=[-2, 107]), axis=None),
-        y=alt.Y("arrow_y:Q", scale=alt.Scale(domain=[-2, 70]), axis=None),
+        x=alt.X("arrow_x:Q", scale=alt.Scale(domain=[-1.5, 106.5]), axis=None),
+        y=alt.Y("arrow_y:Q", scale=alt.Scale(domain=[-1.5, 69.5]), axis=None),
         color=alt.Color("event_type:N", scale=alt.Scale(domain=color_domain, range=color_range), legend=None),
         angle=alt.Angle("angle:Q", scale=alt.Scale(domain=[-180, 180], range=[-180, 180])),
         opacity=alt.Opacity(
@@ -262,14 +266,14 @@ chart = (
     )
     .properties(
         width=1600,
-        height=round(1600 * 68 / 105),
+        height=round(1600 * 72 / 105),
         title=alt.Title(
             "scatter-pitch-events · altair · pyplots.ai",
             fontSize=28,
             fontWeight="bold",
             color="#1a1a1a",
             subtitle="Match events: passes, shots, tackles, and interceptions — shots highlighted in the attacking third",
-            subtitleFontSize=17,
+            subtitleFontSize=19,
             subtitleColor="#555555",
             subtitlePadding=8,
         ),

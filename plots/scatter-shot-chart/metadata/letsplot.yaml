@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: scatter-shot-chart
 created: '2026-03-20T20:27:40Z'
-updated: '2026-03-20T20:51:50Z'
+updated: '2026-03-20T21:02:20Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23361193053
 issue: 4416
@@ -10,39 +10,34 @@ library_version: 4.9.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-shot-chart/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-shot-chart/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-shot-chart/letsplot/plot.html
-quality_score: 86
+quality_score: 89
 review:
   strengths:
-  - Excellent court geometry with all NBA markings accurately rendered
-  - Strong data storytelling with zone FG% annotations on semi-transparent backgrounds
-  - Colorblind-safe blue/orange palette with redundant shape encoding (circles vs
-    X)
-  - Cohesive warm beige design theme with polished professional feel
-  - Interactive tooltips leverage lets-plot distinctive capabilities
-  - Good improvement in corner 3 representation (30 shots vs 6 in previous attempt)
+  - Excellent court drawing with accurate NBA dimensions and all required elements
+  - Warm cohesive beige color scheme with colorblind-safe blue/orange shot markers
+  - Zone FG% annotations with shot counts add analytical storytelling value
+  - geom_density2d contours showcase distinctive lets-plot feature
+  - Interactive tooltips leverage lets-plot interactive capabilities
+  - Perfect data quality with realistic basketball shot distribution
   weaknesses:
-  - Mid-range zone overrepresented at 58% of shots relative to other zones
-  - Some unused canvas space below legend and above title
-  - Uses blue/orange instead of spec-requested green/red (acceptable accessibility
-    tradeoff)
+  - Zone annotations in dense areas partially obscure underlying data points
+  - Uses blue/orange instead of spec-specified green/red for made/missed
+  - Data storytelling could be stronger with visual emphasis on efficiency contrasts
   image_description: 'The plot displays a basketball half-court shot chart on a warm
-    beige (#E8DCC8) court surface with a light cream (#F5F0E8) outer frame. The bold
-    title "scatter-shot-chart · letsplot · pyplots.ai" appears centered at the top.
-    The court includes all standard NBA markings: outer boundary rectangle, paint/key
-    area (16ft wide extending to 19ft), three-point arc with corner lines (22ft corners
-    extending to 14ft, 23.75ft radius arc), free-throw circle (solid upper half, dashed
-    lower half), restricted area arc, backboard line, and rim circle. 350 shot attempts
-    are plotted using blue filled circles (#1F77B4) for made shots and orange X marks
-    (#E87D2F) for missed shots, both at alpha=0.45. Bold zone FG% annotations with
-    semi-transparent beige backgrounds read: "Paint: 44% (50)" near the basket, "Mid-Range:
-    46% (203)" in the right mid-range area, "3PT: 25% (64)" at top center, and "Corner
-    3: 13% (30)" on the left side. A prominent header "FG: 39.4% · 138/350" sits near
-    the top of the court. A manual legend at the bottom shows blue circle "Made (138)"
-    and orange X "Missed (212)". The plot uses a 1:1 aspect ratio (square 3600x3600px
-    canvas).'
+    beige/tan background (#E8DCC8 court, #F5F0E8 outer). The court features standard
+    NBA markings: three-point arc, paint/key rectangle (16 ft wide), free-throw circle
+    with dashed lower half, restricted area arc, backboard, and rim. Shot attempts
+    are plotted as blue filled circles (made, #1F77B4) and orange X marks (missed,
+    #E87D2F). Zone FG% annotations with semi-transparent backgrounds show: Paint 51%
+    (86 shots), Mid-Range 45% (147), 3PT 29% (76), Corner 3 31% (29). An overall FG
+    header reads "FG: 43.4% · 152/350" near the top of the court. Blue density contours
+    (geom_density2d) highlight made-shot clustering in the paint area. A manual legend
+    at the bottom shows "Made (152)" with a blue circle and "Missed (198)" with an
+    orange X. The title "scatter-shot-chart · letsplot · pyplots.ai" appears at the
+    top in bold. The plot uses a 1:1 aspect ratio at 900x900 scaled 4x.'
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 27
       max: 30
       items:
       - id: VQ-01
@@ -50,43 +45,44 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title=26, annotations=16, legend=15,
-          FG header=16. All clearly readable.'
+        comment: Font sizes explicitly set (title=26, annotations=16, legend=15);
+          all text clearly readable
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: Zone annotations have semi-transparent backgrounds improving readability.
-          Minor visual competition in dense mid-range area.
+        comment: Zone annotations in dense areas partially obscure data points despite
+          semi-transparent backgrounds
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Alpha=0.45 appropriate for 350 points. Shape differentiation (circles
-          vs X) effective. Some clutter in dense areas.
+        comment: 350 points with alpha=0.45 and differentiated shapes; some blending
+          in dense clusters
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue/orange colorblind-safe palette with redundant shape encoding.
+        comment: Blue/orange colorblind-safe palette with strong contrast against
+          beige
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Square format appropriate. Court fills well. Some unused space below
-          legend and above title.
+        comment: Court fills canvas well with 1:1 aspect ratio, balanced margins
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: No axis labels (appropriate per spec). Title present and well-formatted.
+        comment: No axis labels appropriate per spec; title and zone labels provide
+          context
     design_excellence:
-      score: 16
+      score: 15
       max: 20
       items:
       - id: DE-01
@@ -94,22 +90,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom warm beige palette, cohesive blue/orange scheme, differentiated
-          shapes, annotated backgrounds. Above defaults.
+        comment: Custom warm beige scheme, intentional blue/orange palette, density
+          contours add depth
       - id: DE-02
         name: Visual Refinement
         score: 5
         max: 6
         passed: true
-        comment: theme_void(), custom backgrounds, semi-transparent annotation boxes,
-          generous margins.
+        comment: theme_void eliminates chrome, court provides structure, dashed free-throw
+          detail
       - id: DE-03
         name: Data Storytelling
-        score: 5
+        score: 4
         max: 6
         passed: true
-        comment: Zone FG% annotations create immediate insight. Shape+color encoding
-          creates visual hierarchy.
+        comment: Zone FG% annotations create narrative, density contours show hot
+          zones; could strengthen efficiency contrast
     spec_compliance:
       score: 14
       max: 15
@@ -119,49 +115,47 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct basketball scatter shot chart with full half-court overlay.
+        comment: Correct basketball shot chart with shots overlaid on half-court
       - id: SC-02
         name: Required Features
         score: 3
         max: 4
         passed: true
-        comment: All court elements present. Blue/orange instead of spec green/red
-          — accessibility improvement but deviation.
+        comment: All court elements present; uses blue/orange instead of spec green/red
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X/Y correctly mapped to court positions. NBA dimensions accurate.
+        comment: X/Y correctly assigned, NBA dimensions accurate
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend shows Made/Missed with counts.
+        comment: Title format correct, legend shows Made/Missed with counts
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: All zones represented. Corner 3 improved to 30 shots. Mid-range slightly
-          overweight at 58%.
+        comment: Shows all shot types across all zones with made and missed
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Realistic basketball data with NBA dimensions. Neutral sports domain.
+        comment: Realistic basketball shooting data with plausible distribution
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 350 shots realistic. NBA standard dimensions. Plausible FG percentages.
+        comment: NBA court dimensions correct, FG% values realistic
     code_quality:
       score: 10
       max: 10
@@ -171,33 +165,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → court → plot → save. No functions or classes.
+        comment: 'Linear flow: imports, data, court geometry, plot, save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used. Specific imports.
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Appropriate complexity. Well-organized data generation.
+        comment: Appropriate complexity, well-organized
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via ggsave with scale=4.
+        comment: Saves as plot.png with ggsave
     library_mastery:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: LM-01
@@ -205,13 +199,14 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Proper ggplot grammar, scale_*_identity(), coord_fixed(), theme_void().
+        comment: Good ggplot grammar with layered geoms, identity scales, coord_fixed
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: layer_tooltips() for hover, HTML export, geom_text with label_padding/fill.
+        comment: Uses geom_density2d, layer_tooltips, HTML export — distinctive lets-plot
+          features
   verdict: REJECTED
 impl_tags:
   dependencies: []
@@ -223,7 +218,8 @@ impl_tags:
   - html-export
   patterns:
   - data-generation
-  dataprep: []
+  dataprep:
+  - kde
   styling:
   - minimal-chrome
   - alpha-blending

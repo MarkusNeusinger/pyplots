@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 root-locus-basic: Root Locus Plot for Control Systems
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-20
@@ -113,7 +113,7 @@ seg_df["y"] = 0.0
 arrows = []
 for branch in df["branch"].unique():
     branch_df = df[df["branch"] == branch].reset_index(drop=True)
-    mid_idx = len(branch_df) // 3
+    mid_idx = len(branch_df) * 2 // 5
     if mid_idx > 0:
         arrows.append(
             {
@@ -166,7 +166,7 @@ for wn in wn_values:
 wn_df = pd.DataFrame(wn_data)
 
 # Natural frequency labels (placed at top-left of each circle)
-wn_label_df = pd.DataFrame([{"real": -0.45, "imaginary": wn + 0.15, "label": f"ωn={wn}"} for wn in wn_values])
+wn_label_df = pd.DataFrame([{"real": -0.5, "imaginary": wn + 0.2, "label": f"ωn={int(wn)}"} for wn in wn_values])
 
 # Crossing annotations
 crossing_label_df = crossing_df.copy()
@@ -177,7 +177,19 @@ branch_colors = ["#306998", "#E8833A", "#5BA65B"]
 
 # Mizani custom formatters for axis labels (distinctive plotnine feature)
 sigma_fmt = custom_format("{:.0f}")
-jw_fmt = custom_format("{:.0f}j")
+
+
+# Custom label function for imaginary axis — displays ±Nj with special "0" at origin
+def jw_label_fn(values):
+    labels = []
+    for v in values:
+        v_int = int(round(v))
+        if v_int == 0:
+            labels.append("0")
+        else:
+            labels.append(f"{v_int}j")
+    return labels
+
 
 # Plot — square format (3600x3600) for coord_fixed root locus
 plot = (
@@ -193,14 +205,14 @@ plot = (
     )
     # Damping ratio labels directly on plot
     + geom_text(
-        damp_label_df, aes(x="lx", y="ly", label="label"), color="#777777", size=8, fontstyle="italic", ha="center"
+        damp_label_df, aes(x="lx", y="ly", label="label"), color="#777777", size=9, fontstyle="italic", ha="center"
     )
     # Natural frequency circles — increased visibility
     + geom_path(
         wn_df, aes(x="real", y="imaginary", group="wn"), color="#BBBBBB", linetype="dotted", size=0.5, alpha=0.55
     )
     # Natural frequency labels
-    + geom_text(wn_label_df, aes(x="real", y="imaginary", label="label"), color="#888888", size=7, fontstyle="italic")
+    + geom_text(wn_label_df, aes(x="real", y="imaginary", label="label"), color="#888888", size=9, fontstyle="italic")
     # Real axis segments of root locus
     + geom_segment(
         seg_df, aes(x="x_start", y="y", xend="x_end", yend="y"), color="#8B5E3C", size=2.5, alpha=0.55, linetype="solid"
@@ -232,11 +244,11 @@ plot = (
     # Breakaway annotation — moved further from origin to reduce clutter
     + annotate(
         "text",
-        x=breakaway_s - 0.6,
-        y=-0.55,
+        x=breakaway_s - 0.8,
+        y=-0.7,
         label=f"Breakaway\nK={breakaway_K:.2f}",
         color="#555555",
-        size=8,
+        size=9,
         ha="center",
         fontweight="bold",
     )
@@ -246,7 +258,7 @@ plot = (
     + scale_color_manual(values=branch_colors)
     # Mizani formatters for axis tick labels (distinctive plotnine/mizani feature)
     + scale_x_continuous(labels=sigma_fmt, breaks=[-5, -4, -3, -2, -1, 0, 1, 2])
-    + scale_y_continuous(labels=jw_fmt, breaks=[-4, -3, -2, -1, 0, 1, 2, 3, 4])
+    + scale_y_continuous(labels=jw_label_fn, breaks=[-4, -3, -2, -1, 0, 1, 2, 3, 4])
     + coord_fixed(ratio=1, xlim=(-5.2, 2.2), ylim=(-4.8, 4.8))
     + labs(title="root-locus-basic · plotnine · pyplots.ai", x="Real Axis (σ)", y="Imaginary Axis (jω)", color="Branch")
     # Plotnine guides() for legend customization (distinctive feature)
@@ -264,7 +276,7 @@ plot = (
         legend_position="right",
         legend_background=element_rect(fill="#FAFAFA", color="#DDDDDD", size=0.5),
         legend_key_size=20,
-        panel_grid_major=element_line(color="#F0F0F0", size=0.3),
+        panel_grid_major=element_line(color="#F5F5F5", size=0.2),
         panel_grid_minor=element_blank(),
         plot_background=element_rect(fill="white", color="white"),
     )

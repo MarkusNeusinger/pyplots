@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-pitch-events: Soccer Pitch Event Map
 Library: bokeh 3.9.0 | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-20
@@ -59,9 +59,9 @@ df = pd.DataFrame(
 )
 
 # Color and marker mapping
-event_colors = {"pass": "#306998", "shot": "#E63946", "tackle": "#2A9D8F", "interception": "#E9C46A"}
+event_colors = {"pass": "#306998", "shot": "#E63946", "tackle": "#2A9D8F", "interception": "#D4850A"}
 event_markers = {"pass": "circle", "shot": "star", "tackle": "triangle", "interception": "diamond"}
-event_sizes = {"pass": 20, "shot": 28, "tackle": 22, "interception": 20}
+event_sizes = {"pass": 20, "shot": 28, "tackle": 22, "interception": 24}
 
 # Plot
 pitch_margin = 5
@@ -181,8 +181,8 @@ p.legend.orientation = "horizontal"
 p.legend.label_text_font_size = "24pt"
 p.legend.glyph_width = 35
 p.legend.glyph_height = 35
-p.legend.spacing = 20
-p.legend.padding = 12
+p.legend.spacing = 35
+p.legend.padding = 18
 p.legend.background_fill_alpha = 0.9
 p.legend.background_fill_color = "white"
 p.legend.border_line_color = "#CCCCCC"

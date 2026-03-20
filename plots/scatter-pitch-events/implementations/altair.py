@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-pitch-events: Soccer Pitch Event Map
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-20
@@ -41,9 +41,12 @@ outcomes = np.where(np.random.random(n_events) < 0.65, "Successful", "Unsuccessf
 
 df = pd.DataFrame({"x": x, "y": y, "end_x": end_x, "end_y": end_y, "event_type": event_types, "outcome": outcomes})
 
-# Colorblind-safe palette: blue, orange, teal, purple (no red-green pair)
+# Bolder colorblind-safe palette: vivid blue, warm orange, strong teal, rich purple
 color_domain = ["Pass", "Shot", "Tackle", "Interception"]
-color_range = ["#306998", "#e67e22", "#17a589", "#8e44ad"]
+color_range = ["#2171b5", "#e6550d", "#1b9e77", "#7b3294"]
+
+# Marker sizes: shots larger to create visual hierarchy (danger zone focal point)
+df["marker_size"] = np.where(df["event_type"] == "Shot", 280, 160)
 
 # Compute arrowhead positions (small triangle at 85% along each direction line)
 arrows_df = df[df["event_type"].isin(["Pass", "Shot"])].copy()
@@ -53,6 +56,18 @@ arrows_df["arrow_y"] = arrows_df["y"] + arrow_frac * (arrows_df["end_y"] - arrow
 dx = arrows_df["end_x"] - arrows_df["x"]
 dy = arrows_df["end_y"] - arrows_df["y"]
 arrows_df["angle"] = np.degrees(np.arctan2(dy, dx))
+
+# Pitch zone shading — highlight attacking third as "danger zone" for storytelling
+zones_data = pd.DataFrame(
+    {
+        "x": [0, 35, 70],
+        "y": [0, 0, 0],
+        "x2": [35, 70, 105],
+        "y2": [68, 68, 68],
+        "zone": ["Defensive Third", "Middle Third", "Attacking Third"],
+        "fill": ["#1a472a", "#1f5432", "#2d6a3f"],
+    }
+)
 
 # Pitch markings - line segments
 lines_data = pd.DataFrame(
@@ -91,58 +106,66 @@ for cx, cy, t_start, t_end in [
 # Spots
 spots = pd.DataFrame({"x": [52.5, 11, 94], "y": [34, 34, 34]})
 
-# Pitch background
-pitch_bg = (
-    alt.Chart(pd.DataFrame({"x": [0], "y": [0], "x2": [105], "y2": [68]}))
-    .mark_rect(color="#2d6a3f", opacity=0.15)
+# Pitch zone backgrounds — gradient from dark to lighter green toward attacking third
+zone_layers = []
+for _, row in zones_data.iterrows():
+    zone_layers.append(
+        alt.Chart(pd.DataFrame({"x": [row["x"]], "y": [row["y"]], "x2": [row["x2"]], "y2": [row["y2"]]}))
+        .mark_rect(color=row["fill"], opacity=0.18)
+        .encode(x="x:Q", y="y:Q", x2="x2:Q", y2="y2:Q")
+    )
+
+# Pitch lines — white lines on dark pitch for crisp contrast
+pitch_lines = (
+    alt.Chart(lines_data)
+    .mark_rule(color="rgba(255,255,255,0.75)", strokeWidth=1.8)
     .encode(x="x:Q", y="y:Q", x2="x2:Q", y2="y2:Q")
 )
 
-# Pitch lines
-pitch_lines = (
-    alt.Chart(lines_data).mark_rule(color="#4a4a4a", strokeWidth=1.5).encode(x="x:Q", y="y:Q", x2="x2:Q", y2="y2:Q")
-)
-
-# Shared axis config
+# Shared axis config — tighter domain for better canvas utilization
 x_axis = alt.X(
     "x:Q",
-    scale=alt.Scale(domain=[-3, 108]),
+    scale=alt.Scale(domain=[-2, 107]),
     axis=alt.Axis(title=None, labels=False, ticks=False, grid=False, domain=False),
 )
 y_axis = alt.Y(
     "y:Q",
-    scale=alt.Scale(domain=[-3, 71]),
+    scale=alt.Scale(domain=[-2, 70]),
     axis=alt.Axis(title=None, labels=False, ticks=False, grid=False, domain=False),
 )
 
 # Center circle layer
 circle_layer = (
     alt.Chart(center_circle)
-    .mark_line(color="#4a4a4a", strokeWidth=1.5, filled=False)
+    .mark_line(color="rgba(255,255,255,0.75)", strokeWidth=1.8, filled=False)
     .encode(x=x_axis, y=y_axis, order="order:O")
 )
 
 # Penalty arc layers
 left_arc_layer = (
-    alt.Chart(left_arc).mark_line(color="#4a4a4a", strokeWidth=1.5).encode(x=x_axis, y=y_axis, order="order:O")
+    alt.Chart(left_arc)
+    .mark_line(color="rgba(255,255,255,0.75)", strokeWidth=1.8)
+    .encode(x=x_axis, y=y_axis, order="order:O")
 )
 right_arc_layer = (
-    alt.Chart(right_arc).mark_line(color="#4a4a4a", strokeWidth=1.5).encode(x=x_axis, y=y_axis, order="order:O")
+    alt.Chart(right_arc)
+    .mark_line(color="rgba(255,255,255,0.75)", strokeWidth=1.8)
+    .encode(x=x_axis, y=y_axis, order="order:O")
 )
 
 # Corner arc layers
 corner_layers = [
-    alt.Chart(ca).mark_line(color="#4a4a4a", strokeWidth=1.5).encode(x=x_axis, y=y_axis, order="order:O")
+    alt.Chart(ca).mark_line(color="rgba(255,255,255,0.75)", strokeWidth=1.8).encode(x=x_axis, y=y_axis, order="order:O")
     for ca in corner_arcs
 ]
 
-# Spots
-spot_layer = alt.Chart(spots).mark_point(color="#4a4a4a", size=40, filled=True).encode(x=x_axis, y=y_axis)
+# Spots — white to match pitch lines
+spot_layer = alt.Chart(spots).mark_point(color="rgba(255,255,255,0.8)", size=45, filled=True).encode(x=x_axis, y=y_axis)
 
 # Direction lines for passes and shots
 arrow_lines = (
     alt.Chart(arrows_df)
-    .mark_rule(strokeWidth=1.2)
+    .mark_rule(strokeWidth=1.3)
     .encode(
         x="x:Q",
         y="y:Q",
@@ -150,7 +173,7 @@ arrow_lines = (
         y2="end_y:Q",
         color=alt.Color("event_type:N", scale=alt.Scale(domain=color_domain, range=color_range), legend=None),
         opacity=alt.Opacity(
-            "outcome:N", scale=alt.Scale(domain=["Successful", "Unsuccessful"], range=[0.5, 0.25]), legend=None
+            "outcome:N", scale=alt.Scale(domain=["Successful", "Unsuccessful"], range=[0.55, 0.25]), legend=None
         ),
     )
 )
@@ -158,29 +181,38 @@ arrow_lines = (
 # Arrowheads as rotated triangles at the end of direction lines
 arrowheads = (
     alt.Chart(arrows_df)
-    .mark_point(shape="triangle-right", filled=True, size=80, stroke=None)
+    .mark_point(shape="triangle-right", filled=True, size=90, stroke=None)
     .encode(
-        x=alt.X("arrow_x:Q", scale=alt.Scale(domain=[-3, 108]), axis=None),
-        y=alt.Y("arrow_y:Q", scale=alt.Scale(domain=[-3, 71]), axis=None),
+        x=alt.X("arrow_x:Q", scale=alt.Scale(domain=[-2, 107]), axis=None),
+        y=alt.Y("arrow_y:Q", scale=alt.Scale(domain=[-2, 70]), axis=None),
         color=alt.Color("event_type:N", scale=alt.Scale(domain=color_domain, range=color_range), legend=None),
         angle=alt.Angle("angle:Q", scale=alt.Scale(domain=[-180, 180], range=[-180, 180])),
         opacity=alt.Opacity(
-            "outcome:N", scale=alt.Scale(domain=["Successful", "Unsuccessful"], range=[0.7, 0.35]), legend=None
+            "outcome:N", scale=alt.Scale(domain=["Successful", "Unsuccessful"], range=[0.75, 0.35]), legend=None
         ),
     )
 )
 
-# Event markers
+# Event markers — size encoding creates visual hierarchy (shots stand out in the danger zone)
 event_points = (
     alt.Chart(df)
-    .mark_point(filled=True, size=180, stroke="#ffffff", strokeWidth=0.8)
+    .mark_point(filled=True, stroke="#ffffff", strokeWidth=1.0)
     .encode(
         x=x_axis,
         y=y_axis,
         color=alt.Color(
             "event_type:N",
             scale=alt.Scale(domain=color_domain, range=color_range),
-            legend=alt.Legend(title="Event Type", titleFontSize=18, labelFontSize=16, symbolSize=200),
+            legend=alt.Legend(
+                title="Event Type",
+                titleFontSize=18,
+                titleFontWeight="bold",
+                labelFontSize=16,
+                symbolSize=220,
+                orient="right",
+                titleColor="#222222",
+                labelColor="#333333",
+            ),
         ),
         shape=alt.Shape(
             "event_type:N",
@@ -190,16 +222,26 @@ event_points = (
             ),
             legend=None,
         ),
+        size=alt.Size("marker_size:Q", scale=alt.Scale(domain=[160, 280], range=[160, 280]), legend=None),
         opacity=alt.Opacity(
             "outcome:N",
-            scale=alt.Scale(domain=["Successful", "Unsuccessful"], range=[0.9, 0.45]),
-            legend=alt.Legend(title="Outcome", titleFontSize=18, labelFontSize=16, symbolSize=200),
+            scale=alt.Scale(domain=["Successful", "Unsuccessful"], range=[0.92, 0.42]),
+            legend=alt.Legend(
+                title="Outcome",
+                titleFontSize=18,
+                titleFontWeight="bold",
+                labelFontSize=16,
+                symbolSize=220,
+                orient="right",
+                titleColor="#222222",
+                labelColor="#333333",
+            ),
         ),
         tooltip=[
             alt.Tooltip("event_type:N", title="Event"),
             alt.Tooltip("outcome:N", title="Outcome"),
-            alt.Tooltip("x:Q", title="X Position", format=".1f"),
-            alt.Tooltip("y:Q", title="Y Position", format=".1f"),
+            alt.Tooltip("x:Q", title="X (m)", format=".1f"),
+            alt.Tooltip("y:Q", title="Y (m)", format=".1f"),
         ],
     )
 )
@@ -207,7 +249,7 @@ event_points = (
 # Compose all layers
 chart = (
     alt.layer(
-        pitch_bg,
+        *zone_layers,
         pitch_lines,
         circle_layer,
         left_arc_layer,
@@ -219,21 +261,24 @@ chart = (
         event_points,
     )
     .properties(
-        width=1500,
-        height=round(1500 * 68 / 105),
+        width=1600,
+        height=round(1600 * 68 / 105),
         title=alt.Title(
             "scatter-pitch-events · altair · pyplots.ai",
             fontSize=28,
-            color="#222222",
-            subtitle="Match events: passes, shots, tackles, and interceptions across the pitch",
-            subtitleFontSize=16,
-            subtitleColor="#777777",
-            subtitlePadding=6,
+            fontWeight="bold",
+            color="#1a1a1a",
+            subtitle="Match events: passes, shots, tackles, and interceptions — shots highlighted in the attacking third",
+            subtitleFontSize=17,
+            subtitleColor="#555555",
+            subtitlePadding=8,
         ),
     )
     .configure_view(strokeWidth=0)
-    .configure_legend(fillColor="white", strokeColor="#cccccc", padding=10, cornerRadius=4)
-    .resolve_scale(color="independent", opacity="independent", shape="independent", angle="independent")
+    .configure_legend(fillColor="#f8f9fa", strokeColor="#d0d0d0", padding=12, cornerRadius=6, titlePadding=6)
+    .resolve_scale(
+        color="independent", opacity="independent", shape="independent", angle="independent", size="independent"
+    )
     .interactive()
 )
 

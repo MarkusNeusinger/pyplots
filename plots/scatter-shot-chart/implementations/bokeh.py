@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-shot-chart: Basketball Shot Chart
 Library: bokeh 3.9.0 | Python 3.14.3
-Quality: 88/100 | Created: 2026-03-20
+Quality: repair-2 | Created: 2026-03-20
 """
 
 import numpy as np
@@ -83,13 +83,13 @@ p = figure(
     height=3600,
     title="scatter-shot-chart · bokeh · pyplots.ai",
     x_range=Range1d(-27, 27),
-    y_range=Range1d(-4, 36),
+    y_range=Range1d(-2, 35),
     toolbar_location=None,
     match_aspect=True,
 )
 
 # Court floor
-p.rect(x=0, y=16, width=50, height=36, fill_color="#F5F0E8", line_color=None)
+p.rect(x=0, y=16.5, width=54, height=37, fill_color="#F5F0E8", line_color=None)
 
 # Baseline and sidelines (half-court)
 p.line([-25, 25], [0, 0], line_color="#888888", line_width=4)
@@ -159,7 +159,7 @@ r_made = p.scatter(
     source=source_made,
     size=20,
     fill_color="#2171B5",
-    fill_alpha=0.75,
+    fill_alpha=0.5,
     line_color="white",
     line_width=1.5,
     marker="circle",
@@ -226,8 +226,8 @@ zone_positions = {
     "Paint": (0, 6),
     "Mid-Range": (15, 14),
     "Three-Point": (0, 30),
-    "Corner 3": (22, 5),
-    "Free Throw": (-13, 17),
+    "Corner 3": (-21, 5),
+    "Free Throw": (0, 17),
 }
 for z, (zx, zy) in zone_positions.items():
     z_made, z_total, z_pct = zone_stats[z]
@@ -256,6 +256,34 @@ for z, (zx, zy) in zone_positions.items():
             background_fill_alpha=0.85,
         )
     )
+
+# Mirror Corner 3 label on right side
+z_made, z_total, z_pct = zone_stats["Corner 3"]
+p.add_layout(
+    Label(
+        x=21,
+        y=5,
+        text=f"{z_pct:.0f}%",
+        text_font_size="22pt",
+        text_color="#333333",
+        text_align="center",
+        text_font_style="bold",
+        background_fill_color="#F5F0E8",
+        background_fill_alpha=0.85,
+    )
+)
+p.add_layout(
+    Label(
+        x=21,
+        y=3.2,
+        text=f"{z_made}/{z_total}",
+        text_font_size="16pt",
+        text_color="#777777",
+        text_align="center",
+        background_fill_color="#F5F0E8",
+        background_fill_alpha=0.85,
+    )
+)
 
 # Style
 p.title.text_font_size = "40pt"

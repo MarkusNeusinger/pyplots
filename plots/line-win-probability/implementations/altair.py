@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-win-probability: Win Probability Chart
 Library: altair 6.0.0 | Python 3.14.3
-Quality: 85/100 | Created: 2026-03-20
+Quality: 91/100 | Created: 2026-03-20
 """
 
 import altair as alt

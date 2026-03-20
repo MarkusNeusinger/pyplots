@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-win-probability: Win Probability Chart
 Library: bokeh 3.9.0 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-20
@@ -6,7 +6,17 @@ Quality: 88/100 | Created: 2026-03-20
 
 import numpy as np
 from bokeh.io import export_png, output_file, save
-from bokeh.models import ColumnDataSource, HoverTool, Label, Legend, LegendItem, Span
+from bokeh.models import (
+    Band,
+    ColumnDataSource,
+    CustomJS,
+    HoverTool,
+    Label,
+    Legend,
+    LegendItem,
+    NumeralTickFormatter,
+    Span,
+)
 from bokeh.plotting import figure
 
 
@@ -68,40 +78,110 @@ source = ColumnDataSource(
 p = figure(
     width=4800,
     height=2700,
-    title="Eagles vs Cowboys · line-win-probability · bokeh · pyplots.ai",
+    title="line-win-probability · bokeh · pyplots.ai",
     x_axis_label="Play Number",
-    y_axis_label="Eagles Win Probability (%)",
-    y_range=(0, 1),
+    y_axis_label="Win Probability (%)",
+    y_range=(-0.02, 1.02),
+    x_range=(-3, 126),
 )
 
-# Fill above 50% (home team - Eagles green)
-eagles_fill = p.varea(x="play", y1="baseline", y2="upper", source=source, fill_color="#004C54", fill_alpha=0.3)
+# Fill above 50% (home team - Eagles teal)
+eagles_fill = p.varea(x="play", y1="baseline", y2="upper", source=source, fill_color="#004C54", fill_alpha=0.25)
 
-# Fill below 50% (away team - Cowboys blue)
-cowboys_fill = p.varea(x="play", y1="lower", y2="baseline", source=source, fill_color="#869397", fill_alpha=0.35)
+# Fill below 50% (away team - Cowboys silver)
+cowboys_fill = p.varea(x="play", y1="lower", y2="baseline", source=source, fill_color="#869397", fill_alpha=0.3)
 
-# Main probability line
-prob_line = p.line(x="play", y="win_prob", source=source, line_color="#1a1a1a", line_width=5)
+# Confidence band around probability line
+band_upper = np.clip(win_prob_smooth + 0.04, 0, 1)
+band_lower = np.clip(win_prob_smooth - 0.04, 0, 1)
+band_source = ColumnDataSource(data={"play": plays, "upper": band_upper, "lower": band_lower})
+band = Band(
+    base="play",
+    upper="upper",
+    lower="lower",
+    source=band_source,
+    fill_color="#1a1a1a",
+    fill_alpha=0.06,
+    line_color=None,
+)
+p.add_layout(band)
+
+# Main probability line with gradient effect via overlapping lines
+p.line(x="play", y="win_prob", source=source, line_color="#3a3a3a", line_width=8, line_alpha=0.3)
+prob_line = p.line(x="play", y="win_prob", source=source, line_color="#1a1a1a", line_width=4)
 
 # Invisible scatter for hover targets
-p.scatter(x="play", y="win_prob", source=source, size=18, fill_alpha=0, line_alpha=0)
+hover_scatter = p.scatter(x="play", y="win_prob", source=source, size=22, fill_alpha=0, line_alpha=0)
 
-# Hover tool
-hover = HoverTool(tooltips=[("Play", "@play"), ("Win Prob", "@pct{0.0}%")], mode="vline")
+# Hover tool with rich HTML tooltips (Bokeh-distinctive)
+hover = HoverTool(
+    renderers=[hover_scatter],
+    tooltips="""
+    <div style="background:#2a2a2a; padding:12px 16px; border-radius:8px; color:white; font-size:16px; line-height:1.6;">
+        <span style="font-weight:bold; font-size:18px;">Play @play</span><br>
+        <span style="color:#66ccbb;">Win Prob: @pct{0.1}%</span>
+    </div>
+    """,
+    mode="vline",
+)
 p.add_tools(hover)
 
+# CustomJS callback for crosshair effect on hover (Bokeh-distinctive interactivity)
+crosshair_source = ColumnDataSource(data={"x": [0], "y": [0]})
+crosshair_v = Span(
+    location=0, dimension="height", line_color="#004C54", line_width=2, line_alpha=0.4, line_dash="solid"
+)
+p.add_layout(crosshair_v)
+callback = CustomJS(
+    args={"span": crosshair_v},
+    code="""
+    const geometry = cb_data.geometry;
+    span.location = geometry.x;
+    """,
+)
+hover.callback = callback
+
 # 50% reference line
-midline = Span(location=0.5, dimension="width", line_color="#888888", line_width=3, line_dash="dashed")
+midline = Span(location=0.5, dimension="width", line_color="#999999", line_width=2, line_dash=[12, 6])
 p.add_layout(midline)
 
-# Quarter markers
-quarter_plays = [30, 60, 90]
-quarter_labels = ["Q2", "Q3", "Q4"]
-for qp, ql in zip(quarter_plays, quarter_labels, strict=True):
-    vline = Span(location=qp, dimension="height", line_color="#cccccc", line_width=2, line_dash="dotted")
-    p.add_layout(vline)
+# Team name labels at 50% line edges
+eagles_team_label = Label(
+    x=2, y=0.52, text="EAGLES", text_font_size="20pt", text_color="#004C54", text_font_style="bold", text_alpha=0.5
+)
+cowboys_team_label = Label(
+    x=2, y=0.44, text="COWBOYS", text_font_size="20pt", text_color="#869397", text_font_style="bold", text_alpha=0.5
+)
+p.add_layout(eagles_team_label)
+p.add_layout(cowboys_team_label)
+
+# Quarter markers with subtle background bands
+quarter_boundaries = [(0, 30), (30, 60), (60, 90), (90, 120)]
+quarter_names = ["Q1", "Q2", "Q3", "Q4"]
+for idx, ((q_start, q_end), q_name) in enumerate(zip(quarter_boundaries, quarter_names, strict=True)):
+    if idx % 2 == 1:
+        q_band_source = ColumnDataSource(data={"x": [q_start, q_end], "upper": [1.02, 1.02], "lower": [-0.02, -0.02]})
+        q_band = Band(
+            base="x",
+            upper="upper",
+            lower="lower",
+            source=q_band_source,
+            fill_color="#000000",
+            fill_alpha=0.02,
+            line_color=None,
+        )
+        p.add_layout(q_band)
+    if q_start > 0:
+        vline = Span(location=q_start, dimension="height", line_color="#bbbbbb", line_width=2, line_dash="dotted")
+        p.add_layout(vline)
     label = Label(
-        x=qp, y=0.96, text=ql, text_font_size="26pt", text_color="#999999", text_align="center", x_offset=0, y_offset=10
+        x=(q_start + q_end) / 2,
+        y=0.97,
+        text=q_name,
+        text_font_size="22pt",
+        text_color="#aaaaaa",
+        text_align="center",
+        text_font_style="bold",
     )
     p.add_layout(label)
 
@@ -109,87 +189,101 @@ for qp, ql in zip(quarter_plays, quarter_labels, strict=True):
 legend = Legend(
     items=[LegendItem(label="Eagles", renderers=[eagles_fill]), LegendItem(label="Cowboys", renderers=[cowboys_fill])],
     location="top_left",
-    label_text_font_size="26pt",
-    glyph_height=30,
-    glyph_width=40,
-    spacing=15,
+    label_text_font_size="24pt",
+    glyph_height=28,
+    glyph_width=38,
+    spacing=12,
     border_line_color=None,
-    background_fill_alpha=0.7,
+    background_fill_alpha=0.6,
+    background_fill_color="#f8f8f8",
+    padding=20,
 )
 p.add_layout(legend)
 
-# Annotate key scoring events with visual anchors
+# Annotate key scoring events - spread out to avoid crowding
 annotations = [
-    (35, "TD Eagles 10-7", 12),
-    (55, "TD Eagles 17-10", 12),
-    (72, "TD Cowboys 17-17", -45),
-    (105, "TD Cowboys 20-24", -45),
-    (112, "TD Eagles 27-24", 12),
+    (35, "TD Eagles 10-7", 14, -20),
+    (55, "TD Eagles 17-10", 14, 0),
+    (72, "TD Cowboys 17-17", -48, 0),
+    (105, "TD Cowboys 20-24", -48, 15),
+    (112, "TD Eagles 27-24", 14, -30),
 ]
 
 event_x = [a[0] for a in annotations]
 event_y = [win_prob_smooth[a[0]] for a in annotations]
 event_source = ColumnDataSource(data={"x": event_x, "y": event_y})
-p.scatter(x="x", y="y", source=event_source, size=20, fill_color="#1a1a1a", line_color="white", line_width=3)
+p.scatter(x="x", y="y", source=event_source, size=18, fill_color="#004C54", line_color="white", line_width=3, alpha=0.9)
 
-for play_num, text, y_off in annotations:
+for play_num, text, y_off, x_off in annotations:
     label = Label(
         x=play_num,
         y=win_prob_smooth[play_num],
         text=text,
-        text_font_size="22pt",
-        text_color="#333333",
+        text_font_size="20pt",
+        text_color="#2a2a2a",
         text_font_style="bold",
-        x_offset=8,
+        x_offset=x_off,
         y_offset=y_off,
+        background_fill_color="white",
+        background_fill_alpha=0.75,
     )
     p.add_layout(label)
 
-# Final score annotation
+# Final score annotation with styled box
 score_label = Label(
-    x=85,
-    y=0.06,
+    x=78,
+    y=0.08,
     text="Final: Eagles 27 - Cowboys 24",
-    text_font_size="34pt",
+    text_font_size="32pt",
     text_color="#004C54",
     text_font_style="bold",
+    background_fill_color="white",
+    background_fill_alpha=0.8,
 )
 p.add_layout(score_label)
 
-# Y-axis as percentage
+# Y-axis as percentage using NumeralTickFormatter
 p.yaxis.ticker = [0, 0.25, 0.50, 0.75, 1.0]
-p.yaxis.major_label_overrides = {0: "0%", 0.25: "25%", 0.50: "50%", 0.75: "75%", 1.0: "100%"}
+p.yaxis.formatter = NumeralTickFormatter(format="0%")
 
 # Text sizing for 4800x2700 canvas
-p.title.text_font_size = "42pt"
-p.xaxis.axis_label_text_font_size = "32pt"
-p.yaxis.axis_label_text_font_size = "32pt"
-p.xaxis.major_label_text_font_size = "26pt"
-p.yaxis.major_label_text_font_size = "26pt"
+p.title.text_font_size = "40pt"
+p.title.text_color = "#333333"
+p.xaxis.axis_label_text_font_size = "30pt"
+p.yaxis.axis_label_text_font_size = "30pt"
+p.xaxis.major_label_text_font_size = "24pt"
+p.yaxis.major_label_text_font_size = "24pt"
+p.xaxis.axis_label_text_color = "#555555"
+p.yaxis.axis_label_text_color = "#555555"
+p.xaxis.major_label_text_color = "#666666"
+p.yaxis.major_label_text_color = "#666666"
 
-# Grid styling
-p.xgrid.grid_line_alpha = 0.15
-p.ygrid.grid_line_alpha = 0.15
+# Grid styling - subtle horizontal emphasis
+p.xgrid.grid_line_alpha = 0.08
+p.ygrid.grid_line_alpha = 0.12
+p.ygrid.grid_line_dash = [4, 4]
 
-# Clean frame - remove top/right spines for modern look
+# Clean frame
 p.outline_line_color = None
 p.xaxis.axis_line_width = 2
 p.yaxis.axis_line_width = 2
-p.xaxis.major_tick_line_width = 2
-p.yaxis.major_tick_line_width = 2
+p.xaxis.axis_line_color = "#cccccc"
+p.yaxis.axis_line_color = "#cccccc"
+p.xaxis.major_tick_line_width = 0
+p.yaxis.major_tick_line_width = 0
 p.xaxis.minor_tick_line_color = None
 p.yaxis.minor_tick_line_color = None
 p.toolbar_location = None
 
-# Hide top and right axes (spines)
-p.xaxis.axis_line_color = "#444444"
-p.yaxis.axis_line_color = "#444444"
-p.above = []
-p.right = []
+# Background styling
+p.background_fill_color = "#fafafa"
+p.border_fill_color = "white"
 
 # Margins
 p.min_border_left = 140
 p.min_border_bottom = 120
+p.min_border_right = 80
+p.min_border_top = 60
 
 # Save
 export_png(p, filename="plot.png")

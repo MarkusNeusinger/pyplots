@@ -1,7 +1,7 @@
 """ pyplots.ai
 bar-pareto: Pareto Chart with Cumulative Line
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 77/100 | Created: 2026-03-20
+Quality: 78/100 | Created: 2026-03-20
 """
 
 import re

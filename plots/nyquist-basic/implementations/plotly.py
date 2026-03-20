@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 nyquist-basic: Nyquist Plot for Control Systems
 Library: plotly 6.6.0 | Python 3.14.3
-Quality: 84/100 | Created: 2026-03-20
 """
 
 import numpy as np
@@ -32,6 +31,13 @@ for idx in sign_changes:
 # Gain crossover: where |G| = 1
 gain_crossover_idx = np.argmin(np.abs(magnitude - 1.0))
 
+# Color palette — colorblind-safe (no red-green distinction)
+PYTHON_BLUE = "#306998"
+CRITICAL_RED = "#C44E52"
+GAIN_CROSS_COLOR = "#4C72B0"
+PHASE_CROSS_COLOR = "#DD8452"
+ANNOTATION_GRAY = "#555770"
+
 # Plot
 fig = go.Figure()
 
@@ -42,7 +48,7 @@ fig.add_trace(
         x=np.cos(theta),
         y=np.sin(theta),
         mode="lines",
-        line={"width": 1.5, "color": "rgba(160,160,160,0.35)", "dash": "dash"},
+        line={"width": 1.5, "color": "rgba(140,140,160,0.3)", "dash": "dash"},
         showlegend=False,
         hoverinfo="skip",
     )
@@ -54,7 +60,7 @@ fig.add_trace(
         x=real_part,
         y=imag_part,
         mode="lines",
-        line={"width": 3.5, "color": "#306998"},
+        line={"width": 3.5, "color": PYTHON_BLUE},
         name="G(jω), ω ≥ 0",
         customdata=np.column_stack([omega, magnitude, phase_deg]),
         hovertemplate=(
@@ -75,16 +81,16 @@ fig.add_trace(
         x=real_part,
         y=-imag_part,
         mode="lines",
-        line={"width": 2.5, "color": "#306998", "dash": "dot"},
+        line={"width": 2.5, "color": PYTHON_BLUE, "dash": "dot"},
         name="G(jω), ω < 0",
-        opacity=0.45,
+        opacity=0.4,
         hoverinfo="skip",
     )
 )
 
 # Direction arrows along the curve showing increasing frequency
 n = len(real_part)
-for frac in [0.15, 0.35, 0.55]:
+for frac in [0.12, 0.32, 0.52]:
     idx = int(n * frac)
     if idx < n - 5:
         dx = real_part[idx + 5] - real_part[idx]
@@ -94,17 +100,17 @@ for frac in [0.15, 0.35, 0.55]:
             fig.add_annotation(
                 x=real_part[idx],
                 y=imag_part[idx],
-                ax=-dx / norm * 28,
-                ay=dy / norm * 28,
+                ax=-dx / norm * 30,
+                ay=dy / norm * 30,
                 xref="x",
                 yref="y",
                 axref="pixel",
                 ayref="pixel",
                 showarrow=True,
                 arrowhead=3,
-                arrowsize=1.8,
+                arrowsize=2.0,
                 arrowwidth=2.5,
-                arrowcolor="#306998",
+                arrowcolor=PYTHON_BLUE,
                 text="",
             )
 
@@ -114,7 +120,7 @@ fig.add_trace(
         x=[-1],
         y=[0],
         mode="markers",
-        marker={"symbol": "x-thin", "size": 22, "color": "#E74C3C", "line": {"width": 4}},
+        marker={"symbol": "x-thin", "size": 24, "color": CRITICAL_RED, "line": {"width": 4}},
         name="Critical point (−1, 0)",
         hovertemplate="Critical point<br>(−1, 0)<extra></extra>",
     )
@@ -131,7 +137,7 @@ fig.add_trace(
         x=[gc_re],
         y=[gc_im],
         mode="markers",
-        marker={"symbol": "circle", "size": 14, "color": "#2E8B57", "line": {"width": 2, "color": "white"}},
+        marker={"symbol": "circle", "size": 15, "color": GAIN_CROSS_COLOR, "line": {"width": 2, "color": "white"}},
         name=f"Gain crossover (ω≈{gc_omega:.2f})",
         hovertemplate=(
             f"Gain crossover<br>ω = {gc_omega:.2f} rad/s<br>|G| = 1<br>PM = {phase_margin:.1f}°<extra></extra>"
@@ -141,14 +147,14 @@ fig.add_trace(
 fig.add_annotation(
     x=gc_re,
     y=gc_im,
-    text=f"  ω={gc_omega:.2f}  PM={phase_margin:.0f}°",
+    text=f"<b>ω={gc_omega:.2f}</b>  PM={phase_margin:.0f}°",
     showarrow=True,
     arrowhead=0,
-    arrowwidth=1,
-    arrowcolor="#2E8B57",
-    ax=65,
-    ay=30,
-    font={"size": 13, "color": "#2E8B57", "family": "Arial, sans-serif"},
+    arrowwidth=1.2,
+    arrowcolor=GAIN_CROSS_COLOR,
+    ax=80,
+    ay=35,
+    font={"size": 14, "color": GAIN_CROSS_COLOR, "family": "Arial, sans-serif"},
 )
 
 # Phase crossover frequency marker
@@ -162,7 +168,12 @@ if phase_crossover_idx is not None:
             x=[pc_re],
             y=[pc_im],
             mode="markers",
-            marker={"symbol": "diamond", "size": 16, "color": "#D4541B", "line": {"width": 2, "color": "white"}},
+            marker={
+                "symbol": "diamond",
+                "size": 17,
+                "color": PHASE_CROSS_COLOR,
+                "line": {"width": 2, "color": "white"},
+            },
             name=f"Phase crossover (ω≈{pc_omega:.2f})",
             hovertemplate=(
                 f"Phase crossover<br>ω = {pc_omega:.2f} rad/s<br>GM = {gain_margin_db:.1f} dB<extra></extra>"
@@ -172,19 +183,22 @@ if phase_crossover_idx is not None:
     fig.add_annotation(
         x=pc_re,
         y=pc_im,
-        text=f"  ω={pc_omega:.2f}  GM={gain_margin_db:.1f}dB",
+        text=f"<b>ω={pc_omega:.2f}</b>  GM={gain_margin_db:.1f} dB",
         showarrow=True,
         arrowhead=0,
-        arrowwidth=1,
-        arrowcolor="#D4541B",
-        ax=-70,
-        ay=-30,
-        font={"size": 13, "color": "#D4541B", "family": "Arial, sans-serif"},
+        arrowwidth=1.2,
+        arrowcolor=PHASE_CROSS_COLOR,
+        ax=-90,
+        ay=-35,
+        font={"size": 14, "color": PHASE_CROSS_COLOR, "family": "Arial, sans-serif"},
     )
 
-# Frequency annotations at selected points along the curve
-freq_labels = [0.1, 0.5, 2.0, 5.0]
-for f_label in freq_labels:
+# Frequency annotations at selected points — placed to avoid overlap
+# ω=0.1 is far right (near DC gain), ω=0.5 is mid-curve
+# ω=1.0 replaces ω=2.0 to avoid crowding near origin
+# ω=3.0 replaces ω=5.0 to avoid crowding near phase crossover
+freq_label_config = [(0.1, 30, -28), (0.5, -35, -30), (1.0, -40, 25), (3.0, 25, 28)]
+for f_label, ax_off, ay_off in freq_label_config:
     idx = np.argmin(np.abs(omega - f_label))
     fig.add_annotation(
         x=real_part[idx],
@@ -193,10 +207,10 @@ for f_label in freq_labels:
         showarrow=True,
         arrowhead=0,
         arrowwidth=0.8,
-        arrowcolor="rgba(100,100,100,0.5)",
-        ax=0,
-        ay=-22,
-        font={"size": 11, "color": "rgba(80,80,80,0.8)", "family": "Arial, sans-serif"},
+        arrowcolor="rgba(85,87,112,0.4)",
+        ax=ax_off,
+        ay=ay_off,
+        font={"size": 13, "color": ANNOTATION_GRAY, "family": "Arial, sans-serif"},
     )
 
 # Style — equal axis scaling via scaleanchor
@@ -209,34 +223,34 @@ fig.update_layout(
         "y": 0.96,
     },
     xaxis={
-        "title": {"text": "Real", "font": {"size": 22, "family": "Arial, sans-serif"}, "standoff": 12},
+        "title": {"text": "Real Axis", "font": {"size": 22, "family": "Arial, sans-serif"}, "standoff": 12},
         "tickfont": {"size": 18},
         "zeroline": True,
         "zerolinewidth": 1.5,
-        "zerolinecolor": "rgba(0,0,0,0.2)",
+        "zerolinecolor": "rgba(0,0,0,0.18)",
         "showgrid": True,
         "gridwidth": 1,
-        "gridcolor": "rgba(0,0,0,0.05)",
+        "gridcolor": "rgba(0,0,0,0.04)",
         "constrain": "domain",
-        "range": [-1.5, 2.5],
+        "range": [-1.6, 2.4],
     },
     yaxis={
-        "title": {"text": "Imaginary", "font": {"size": 22, "family": "Arial, sans-serif"}, "standoff": 12},
+        "title": {"text": "Imaginary Axis", "font": {"size": 22, "family": "Arial, sans-serif"}, "standoff": 12},
         "tickfont": {"size": 18},
         "zeroline": True,
         "zerolinewidth": 1.5,
-        "zerolinecolor": "rgba(0,0,0,0.2)",
+        "zerolinecolor": "rgba(0,0,0,0.18)",
         "showgrid": True,
         "gridwidth": 1,
-        "gridcolor": "rgba(0,0,0,0.05)",
+        "gridcolor": "rgba(0,0,0,0.04)",
         "scaleanchor": "x",
         "scaleratio": 1,
     },
     template="plotly_white",
     legend={
         "font": {"size": 14, "family": "Arial, sans-serif"},
-        "bgcolor": "rgba(255,255,255,0.92)",
-        "bordercolor": "rgba(0,0,0,0.08)",
+        "bgcolor": "rgba(255,255,255,0.94)",
+        "bordercolor": "rgba(0,0,0,0.06)",
         "borderwidth": 1,
         "x": 0.01,
         "y": 0.99,
@@ -244,8 +258,8 @@ fig.update_layout(
     },
     margin={"l": 80, "r": 40, "t": 100, "b": 70},
     plot_bgcolor="white",
-    paper_bgcolor="#F8F9FB",
-    hoverlabel={"bgcolor": "white", "font_size": 14, "bordercolor": "#ccc"},
+    paper_bgcolor="#F7F8FB",
+    hoverlabel={"bgcolor": "white", "font_size": 14, "bordercolor": "#bbb"},
 )
 
 # Subtitle with transfer function
@@ -256,7 +270,7 @@ fig.add_annotation(
     x=0.5,
     y=1.01,
     showarrow=False,
-    font={"size": 16, "color": "#555", "family": "Courier New, monospace"},
+    font={"size": 17, "color": "#444", "family": "Courier New, monospace"},
 )
 
 # Save

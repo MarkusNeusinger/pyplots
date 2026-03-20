@@ -1,7 +1,7 @@
 library: plotly
 specification_id: line-parametric
 created: '2026-03-20T10:37:12Z'
-updated: '2026-03-20T10:56:40Z'
+updated: '2026-03-20T11:05:07Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23339035336
 issue: 4424
@@ -10,40 +10,37 @@ library_version: 6.6.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-parametric/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-parametric/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-parametric/plotly/plot.html
-quality_score: 88
+quality_score: 87
 review:
   strengths:
-  - Full spec compliance with all required features (two curves, color gradient, start/end
-    markers, equal aspect ratio)
-  - Custom colorscale with professional blue-to-coral progression creates visual appeal
+  - Full spec compliance with all required features (two curves, color gradient, equal
+    aspect ratio, start/end markers)
+  - Custom 6-stop colorscale with professional blue-to-coral progression
   - Excellent use of Plotly-specific features (hovertemplate, updatemenus, HTML export,
     HTML-formatted text)
-  - Clean, well-structured code with effective loop to reduce duplication
-  - Thoughtful data storytelling through contrasting curve types with descriptive
-    subtitles
+  - Well-resolved start/end label overlap on Lissajous via directional arrow offsets
+  - Descriptive subtitles with equation and curve characterization create good storytelling
   weaknesses:
-  - Colorbar between subplots (x=0.42) creates slight visual crowding in the center
-  - Marker-based gradient approach produces a slightly chunky appearance rather than
-    a smooth line
-  - Axis labels x(t)/y(t) could be more descriptive
-  image_description: The plot displays two side-by-side subplots on a light blue-gray
-    background (plotly_white template). The left subplot shows a Lissajous figure
+  - Helper function interpolate_color() violates KISS structure guideline
+  - Inter-subplot colorbar (x=0.44) creates slight visual crowding in the center
+  - Segmented line approach with 200 segments per curve is verbose (400+ traces total)
+  image_description: The plot displays two side-by-side subplots on a light background
+    with the plotly_white template. The main title "line-parametric · plotly · pyplots.ai"
+    is centered at the top in dark gray. The left subplot shows a Lissajous figure
     (x = sin(3t), y = sin(2t)) — a closed, self-intersecting curve with three horizontal
-    lobes and two vertical lobes. The right subplot shows an Archimedean spiral (x
-    = t·cos(t), y = t·sin(t)) — an open, expanding spiral making about two full turns.
-    Both curves use a continuous color gradient mapped to parameter t, transitioning
-    from deep blue (t=0) through teal and olive to coral/red (t=max). Each subplot
-    has a vertical colorbar on the right showing the parameter t scale with tick labels
-    in π notation. Start points are marked with blue circles and "Start (t = 0)" annotations
-    with arrow connectors; end points are marked with coral/red squares and corresponding
-    "End" annotations. The main title reads "line-parametric · plotly · pyplots.ai"
-    centered at the top. Each subplot has a bold subtitle with the curve name and
-    an italic line showing the parametric equation and a brief description. Axes are
-    labeled x(t) and y(t). A "Reset View" button appears at the bottom center. The
-    grid is very subtle, with visible zero lines.
+    lobes. The right subplot shows an Archimedean spiral (x = t·cos(t), y = t·sin(t))
+    expanding outward from the origin over about two full turns. Both curves use a
+    continuous color gradient from deep Python Blue (t=0) through teal and olive-green
+    to coral/red (t=max), rendered as overlapping line segments. Each subplot has
+    a vertical colorbar with π-notation tick labels and the title "Parameter t (rad)".
+    Start points are marked with blue circles and annotated "Start (t = 0)" with arrow
+    connectors; end points are marked with coral squares and annotated "End (t = 2π/4π)".
+    Both subplots have bold titles with italic equation subtitles. Axes are labeled
+    "Horizontal Position x(t)" and "Vertical Position y(t)" with subtle gridlines
+    and zero lines. A "Reset View" button sits at the bottom center.
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -51,44 +48,44 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 28pt, axis titles 22pt, tick
-          fonts 18pt, subplot titles 18pt, annotations 16pt, colorbar title 18pt,
-          colorbar ticks 16pt'
+        comment: 'All font sizes explicitly set: title 28pt, axis titles 22pt, ticks
+          18pt, subplot titles 18pt, annotations 16pt, colorbar title 18pt, colorbar
+          ticks 16pt'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: Start/end annotations use arrow offsets to avoid collision. No text
-          overlaps observed
+        comment: Start/end annotations use offset arrows to avoid collision despite
+          both Lissajous points near origin
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Markers at size 6 with 2000 points create solid colored line effect
-          but appear slightly chunky in places
+        comment: Line segments at width 3.5 create smooth gradient. Minor visual artifacts
+          at segment boundaries
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Custom colorscale from blue through teal/olive to coral. Not reliant
-          on red-green distinction
+        comment: Custom 6-stop colorscale from blue through teal/olive to coral is
+          colorblind-safe
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Two subplots fill canvas well but first colorbar at x=0.42 between
-          subplots creates some visual crowding
+        comment: Good two-subplot layout but first colorbar at x=0.44 creates slight
+          visual crowding between panels
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Labels x(t) and y(t) are mathematically conventional but lack descriptive
-          context or units
+        comment: 'Descriptive labels: Horizontal Position x(t) and Vertical Position
+          y(t)'
     design_excellence:
       score: 14
       max: 20
@@ -98,22 +95,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom 6-stop colorscale, styled annotations with borders, HTML-formatted
-          subtitles, clearly above library defaults
+        comment: Custom colorscale, HTML-formatted subtitles, styled annotations with
+          borders, distinct marker shapes. Above defaults
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: plotly_white template, grid at 0.06 opacity, custom background color,
-          good whitespace
+        comment: plotly_white template, subtle grid at 0.05 opacity, custom background
+          color, zeroline at 0.15 opacity
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Side-by-side closed vs open curve creates meaningful contrast. Descriptive
-          subtitles and color gradient show progression
+        comment: Closed vs open curve contrast, descriptive subtitles, color gradient
+          shows direction, start/end markers
     spec_compliance:
       score: 15
       max: 15
@@ -130,19 +127,19 @@ review:
         max: 4
         passed: true
         comment: Equal aspect ratio, color gradient, two curves, start/end markers,
-          sufficient density — all present
+          2000 points
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: x(t) and y(t) correctly computed. Axes display full range
+        comment: x(t) and y(t) correctly computed and mapped
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title follows exact format. Curves identified by subplot titles
+        comment: Title format correct, curves identified by subplot titles
     data_quality:
       score: 14
       max: 15
@@ -152,57 +149,58 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Two contrasting parametric curves: Lissajous (closed, self-intersecting)
+        comment: 'Two contrasting curve types: Lissajous (closed, self-intersecting)
           and spiral (open, expanding)'
       - id: DQ-02
         name: Realistic Context
         score: 4
         max: 5
         passed: true
-        comment: Real mathematical curves with scientific applications but inherently
-          abstract
+        comment: Real mathematical curves with applications in signal analysis and
+          engineering. Educational but inherently abstract
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Lissajous bounded in [-1,1], spiral expanding proportionally with
-          t
+        comment: 'Mathematically correct values: Lissajous in [-1,1], spiral expanding
+          proportionally with t'
     code_quality:
-      score: 10
+      score: 8
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
-        passed: true
-        comment: Follows Imports → Data → Plot → Save structure. No functions or classes
+        passed: false
+        comment: Defines helper function interpolate_color() violating no-functions
+          guideline
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic — trigonometric functions with no random components
+        comment: Fully deterministic with trigonometric functions
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All three imports used: numpy, go, make_subplots'
+        comment: 'All imports used: numpy, go, make_subplots'
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Loop with tuple unpacking reduces duplication. Reset View is legitimate
-          Plotly feature
+        passed: false
+        comment: Manual color interpolation and 200-segment approach is verbose but
+          necessary for Plotly line gradients
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with correct dimensions. Also exports HTML
+        comment: Saves plot.png at 4800x2700, also exports HTML
     library_mastery:
       score: 8
       max: 10
@@ -212,22 +210,22 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Good use of graph_objects API: make_subplots, go.Scatter, annotations,
-          colorbars, scaleanchor'
+        comment: Good use of go.Scatter, make_subplots, annotations, colorbars with
+          pi-notation, scaleanchor, hovertemplate
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: Leverages updatemenus, hovertemplate with customdata, HTML export,
+        comment: updatemenus for Reset View, hovertemplate with customdata, write_html,
           HTML-formatted text
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
+  - subplots
   - colorbar
   - annotations
-  - subplots
   - hover-tooltips
   - html-export
   patterns:
@@ -237,4 +235,3 @@ impl_tags:
   styling:
   - custom-colormap
   - grid-styling
-  - edge-highlighting

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-shot-chart: Basketball Shot Chart
 Library: letsplot 4.9.0 | Python 3.14.3
 Quality: 79/100 | Created: 2026-03-20
@@ -21,8 +21,10 @@ from lets_plot import (
     ggsave,
     ggsize,
     labs,
+    layer_tooltips,
     scale_color_identity,
     scale_fill_identity,
+    scale_shape_identity,
     scale_size_identity,
     theme,
     theme_void,
@@ -73,8 +75,17 @@ dist = np.sqrt(shot_x**2 + shot_y**2)
 fg_pct = np.clip(base_pct - dist * 0.005, 0.15, 0.85)
 made = np.random.random(n_shots) < fg_pct
 
-made_color = "#2E8B57"
-missed_color = "#DC3545"
+# Colorblind-safe palette: blue for made, orange for missed
+made_color = "#1F77B4"
+missed_color = "#E87D2F"
+
+# Zone classification for storytelling
+zone = np.full(n_shots, "Mid-Range", dtype=object)
+zone[dist < 6] = "Paint"
+zone[(np.abs(shot_x) < 8) & (shot_y >= 6) & (shot_y <= 19)] = "Mid-Range"
+zone[is_three & ~is_corner_three] = "Above Break 3"
+zone[is_corner_three] = "Corner 3"
+zone[is_free_throw] = "Free Throw"
 
 df = pd.DataFrame(
     {
@@ -82,51 +93,68 @@ df = pd.DataFrame(
         "y": shot_y,
         "made": made,
         "shot_type": shot_type,
+        "zone": zone,
+        "result": np.where(made, "Made", "Missed"),
         "color": np.where(made, made_color, missed_color),
         "fill": np.where(made, made_color, missed_color),
-        "point_size": np.where(made, 4.5, 3.5),
-        "alpha": np.where(made, 0.85, 0.55),
+        "point_size": np.where(made, 3.0, 2.5),
+        "point_shape": np.where(made, 21, 4),  # circle vs X
     }
 )
+
+# Zone FG% for annotations
+zone_stats = {}
+for z in ["Paint", "Mid-Range", "Above Break 3", "Corner 3"]:
+    mask = zone == z
+    if mask.sum() > 0:
+        zone_stats[z] = (made[mask].sum() / mask.sum() * 100, int(mask.sum()))
 
 # Court geometry (NBA half-court: 50 ft wide x 47 ft deep)
 court_color = "#E8DCC8"
 line_color = "#555555"
 
-df_court = pd.DataFrame({"xmin": [-25], "ymin": [-2], "xmax": [25], "ymax": [47]})
-
-df_paint = pd.DataFrame({"xmin": [-8], "ymin": [0], "xmax": [8], "ymax": [19]})
-
+# Three-point arc
 theta_3pt = np.linspace(-np.pi / 2 + 0.38, np.pi / 2 - 0.38, 100)
-arc_3pt_x = 23.75 * np.cos(theta_3pt)
-arc_3pt_y = 23.75 * np.sin(theta_3pt)
-df_three_arc = pd.DataFrame({"x": arc_3pt_x, "y": arc_3pt_y})
+df_three_arc = pd.DataFrame({"x": 23.75 * np.cos(theta_3pt), "y": 23.75 * np.sin(theta_3pt)})
 
-theta_ft = np.linspace(0, np.pi, 60)
-ft_arc_x = 6 * np.cos(theta_ft)
-ft_arc_y = 15 + 6 * np.sin(theta_ft)
-df_ft_arc = pd.DataFrame({"x": ft_arc_x, "y": ft_arc_y})
+# Free-throw circle (solid upper, dashed lower)
+theta_ft_upper = np.linspace(0, np.pi, 60)
+df_ft_arc = pd.DataFrame({"x": 6 * np.cos(theta_ft_upper), "y": 15 + 6 * np.sin(theta_ft_upper)})
+theta_ft_lower = np.linspace(np.pi, 2 * np.pi, 60)
+df_ft_dash = pd.DataFrame({"x": 6 * np.cos(theta_ft_lower), "y": 15 + 6 * np.sin(theta_ft_lower)})
 
-theta_ft_dash = np.linspace(np.pi, 2 * np.pi, 60)
-ft_dash_x = 6 * np.cos(theta_ft_dash)
-ft_dash_y = 15 + 6 * np.sin(theta_ft_dash)
-df_ft_dash = pd.DataFrame({"x": ft_dash_x, "y": ft_dash_y})
-
-theta_restricted = np.linspace(0, np.pi, 40)
-restricted_x = 4 * np.cos(theta_restricted)
-restricted_y = 4 * np.sin(theta_restricted)
-df_restricted = pd.DataFrame({"x": restricted_x, "y": restricted_y})
-
-df_backboard = pd.DataFrame({"x": [-3], "y": [-0.5], "xend": [3], "yend": [-0.5]})
-df_rim = pd.DataFrame({"x": [0], "y": [1.25]})
+# Restricted area arc
+theta_ra = np.linspace(0, np.pi, 40)
+df_restricted = pd.DataFrame({"x": 4 * np.cos(theta_ra), "y": 4 * np.sin(theta_ra)})
 
 n_made = int(made.sum())
 n_missed = int((~made).sum())
 fg_percent = n_made / n_shots * 100
 
+# Zone annotation positions and labels
+zone_annotations = pd.DataFrame(
+    {
+        "x": [0, 0, 0, -19],
+        "y": [2.5, 13, 28, 5],
+        "label": [
+            f"Paint: {zone_stats['Paint'][0]:.0f}% ({zone_stats['Paint'][1]})",
+            f"Mid-Range: {zone_stats['Mid-Range'][0]:.0f}% ({zone_stats['Mid-Range'][1]})",
+            f"3PT: {zone_stats['Above Break 3'][0]:.0f}% ({zone_stats['Above Break 3'][1]})",
+            f"Corner: {zone_stats['Corner 3'][0]:.0f}% ({zone_stats['Corner 3'][1]})",
+        ],
+    }
+)
+
 legend_y = -8
-df_legend_made = pd.DataFrame({"x": [-12], "y": [legend_y]})
-df_legend_missed = pd.DataFrame({"x": [2], "y": [legend_y]})
+df_legend = pd.DataFrame(
+    {
+        "x": [-12, 2],
+        "y": [legend_y, legend_y],
+        "color": [made_color, missed_color],
+        "fill": [made_color, missed_color],
+        "shape": [21, 4],
+    }
+)
 df_legend_text = pd.DataFrame(
     {"x": [-9.5, 4.5], "y": [legend_y, legend_y], "label": [f"Made ({n_made})", f"Missed ({n_missed})"]}
 )
@@ -134,75 +162,91 @@ df_legend_text = pd.DataFrame(
 # Plot
 plot = (
     ggplot()
+    # Court background
     + geom_rect(
         aes(xmin="xmin", ymin="ymin", xmax="xmax", ymax="ymax"),
         data=pd.DataFrame({"xmin": [-28], "ymin": [-14], "xmax": [28], "ymax": [49]}),
         fill=court_color,
         color=court_color,
     )
+    # Court boundary
     + geom_rect(
         aes(xmin="xmin", ymin="ymin", xmax="xmax", ymax="ymax"),
-        data=df_court,
+        data=pd.DataFrame({"xmin": [-25], "ymin": [-2], "xmax": [25], "ymax": [47]}),
         fill=court_color,
         color=line_color,
         size=1.2,
     )
+    # Paint
     + geom_rect(
         aes(xmin="xmin", ymin="ymin", xmax="xmax", ymax="ymax"),
-        data=df_paint,
+        data=pd.DataFrame({"xmin": [-8], "ymin": [0], "xmax": [8], "ymax": [19]}),
         fill="rgba(0,0,0,0)",
         color=line_color,
         size=1.0,
     )
+    # Corner three-point lines
     + geom_segment(
         aes(x="x", y="y", xend="xend", yend="yend"),
-        data=pd.DataFrame({"x": [-22], "y": [0], "xend": [-22], "yend": [14]}),
+        data=pd.DataFrame({"x": [-22, 22], "y": [0, 0], "xend": [-22, 22], "yend": [14, 14]}),
         color=line_color,
         size=1.0,
     )
-    + geom_segment(
-        aes(x="x", y="y", xend="xend", yend="yend"),
-        data=pd.DataFrame({"x": [22], "y": [0], "xend": [22], "yend": [14]}),
-        color=line_color,
-        size=1.0,
-    )
+    # Three-point arc
     + geom_path(data=df_three_arc, mapping=aes(x="x", y="y"), color=line_color, size=1.0)
+    # Free-throw circle
     + geom_path(data=df_ft_arc, mapping=aes(x="x", y="y"), color=line_color, size=1.0)
     + geom_path(data=df_ft_dash, mapping=aes(x="x", y="y"), color=line_color, size=0.6, linetype="dashed")
+    # Restricted area
     + geom_path(data=df_restricted, mapping=aes(x="x", y="y"), color=line_color, size=1.0)
-    + geom_segment(aes(x="x", y="y", xend="xend", yend="yend"), data=df_backboard, color=line_color, size=2.0)
-    + geom_point(aes(x="x", y="y"), data=df_rim, color=line_color, size=3, shape=1)
+    # Backboard and rim
+    + geom_segment(
+        aes(x="x", y="y", xend="xend", yend="yend"),
+        data=pd.DataFrame({"x": [-3], "y": [-0.5], "xend": [3], "yend": [-0.5]}),
+        color=line_color,
+        size=2.0,
+    )
+    + geom_point(aes(x="x", y="y"), data=pd.DataFrame({"x": [0], "y": [1.25]}), color=line_color, size=3, shape=1)
+    # Shot data with lets-plot tooltips (distinctive feature)
     + geom_point(
         data=df,
-        mapping=aes(x="x", y="y", color="color", fill="fill", size="point_size"),
-        shape=21,
-        stroke=0.5,
-        alpha=0.7,
+        mapping=aes(x="x", y="y", color="color", fill="fill", size="point_size", shape="point_shape"),
+        stroke=0.3,
+        alpha=0.45,
+        tooltips=layer_tooltips().line("@result | @shot_type").line("Zone: @zone").line("Position: (@x, @y)"),
     )
-    + geom_point(
-        aes(x="x", y="y"), data=df_legend_made, color=made_color, fill=made_color, size=5, shape=21, stroke=0.5
+    # Zone FG% annotations (data storytelling)
+    + geom_text(
+        data=zone_annotations,
+        mapping=aes(x="x", y="y", label="label"),
+        size=11,
+        color="#222222",
+        fontface="bold",
+        label_padding=0.3,
     )
-    + geom_point(
-        aes(x="x", y="y"), data=df_legend_missed, color=missed_color, fill=missed_color, size=5, shape=21, stroke=0.5
-    )
-    + geom_text(data=df_legend_text, mapping=aes(x="x", y="y", label="label"), size=13, color="#333333", hjust=0)
+    # Overall FG% header
     + geom_text(
         data=pd.DataFrame({"x": [0], "y": [44], "label": [f"FG: {fg_percent:.1f}%  \u00b7  {n_made}/{n_shots}"]}),
         mapping=aes(x="x", y="y", label="label"),
-        size=14,
-        color="#444444",
+        size=16,
+        color="#333333",
+        fontface="bold",
     )
+    # Legend
+    + geom_point(aes(x="x", y="y", color="color", fill="fill", shape="shape"), data=df_legend, size=5, stroke=0.5)
+    + geom_text(data=df_legend_text, mapping=aes(x="x", y="y", label="label"), size=13, color="#333333", hjust=0)
     + scale_color_identity()
     + scale_fill_identity()
     + scale_size_identity()
+    + scale_shape_identity()
     + coord_fixed(ratio=1)
     + xlim(-29, 29)
     + ylim(-14, 49)
     + labs(title="scatter-shot-chart \u00b7 letsplot \u00b7 pyplots.ai")
     + theme_void()
     + theme(
-        plot_title=element_text(size=24, hjust=0.5, color="#222222", face="bold"),
-        plot_background=element_rect(fill="#F5F5F0", color="#F5F5F0"),
+        plot_title=element_text(size=26, hjust=0.5, color="#1A1A1A", face="bold"),
+        plot_background=element_rect(fill="#F5F0E8", color="#F5F0E8"),
         plot_margin=[40, 20, 20, 20],
     )
     + ggsize(900, 900)

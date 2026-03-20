@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-win-probability: Win Probability Chart
 Library: letsplot 4.9.0 | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-20
@@ -56,13 +56,15 @@ df = pd.DataFrame(
     }
 )
 
-# Event annotations — select key swings only
+# Event annotations — select key swings only, with alternating positions
 key_event_indices = [1, 2, 4, 5, 7]
+nudge_directions = [-0.08, 0.07, -0.08, 0.07, -0.08]  # alternate below/above
 key_events = pd.DataFrame(
     {
         "play": [events[i][0] for i in key_event_indices],
         "win_prob": [win_prob[events[i][0]] for i in key_event_indices],
         "label": [events[i][2] for i in key_event_indices],
+        "label_y": [win_prob[events[i][0]] + nudge_directions[j] for j, i in enumerate(key_event_indices)],
     }
 )
 
@@ -111,18 +113,23 @@ plot = (
         shape=21,
         stroke=2.0,
     )
-    # Key event labels
-    + geom_text(  # noqa: F405
+    # Key event labels with background fill (letsplot geom_label)
+    + geom_label(  # noqa: F405
         data=key_events,
-        mapping=aes(x="play", y="win_prob", label="label"),  # noqa: F405
-        nudge_y=0.06,
+        mapping=aes(x="play", y="label_y", label="label"),  # noqa: F405
         size=10,
-        color="#333333",
+        color="#1a1a1a",
+        fill="white",
+        alpha=0.85,
+        label_padding=0.4,
+        label_r=0.2,
+        label_size=0.5,
     )
     # Scales
     + scale_y_continuous(  # noqa: F405
-        limits=[0.0, 1.05], breaks=[0.0, 0.25, 0.5, 0.75, 1.0], labels=["0%", "25%", "50%", "75%", "100%"]
+        breaks=[0.0, 0.25, 0.5, 0.75, 1.0], labels=["0%", "25%", "50%", "75%", "100%"]
     )
+    + coord_cartesian(ylim=[0.0, 1.05])  # noqa: F405
     + scale_x_continuous(  # noqa: F405
         breaks=[0, 30, 60, 90, 120], labels=["Q1", "Q2", "Q3", "Q4", "End"]
     )
@@ -135,6 +142,7 @@ plot = (
     )
     + ggsize(1600, 900)  # noqa: F405
     + theme_minimal()  # noqa: F405
+    + flavor_high_contrast_light()  # noqa: F405
     + theme(  # noqa: F405
         axis_text=element_text(size=16),  # noqa: F405
         axis_title=element_text(size=20),  # noqa: F405

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 root-locus-basic: Root Locus Plot for Control Systems
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 78/100 | Created: 2026-03-20
@@ -16,8 +16,7 @@ den_coeffs = [1.0, 3.0, 2.0, 0.0]
 
 gains = np.concatenate(
     [
-        np.linspace(0.001, 0.3, 100),
-        np.linspace(0.3, 0.5, 100),
+        np.linspace(0.001, 0.5, 150),
         np.linspace(0.5, 2, 200),
         np.linspace(2, 6, 150),
         np.linspace(6, 20, 150),
@@ -35,20 +34,15 @@ for i, k in enumerate(gains):
 # Sort roots into continuous branches via nearest-neighbor matching
 all_roots[0] = np.sort(all_roots[0].real)
 for i in range(1, len(gains)):
-    prev = all_roots[i - 1]
-    curr = all_roots[i]
-    used = [False] * n_roots
+    prev, curr = all_roots[i - 1], all_roots[i]
+    dist = np.abs(prev[:, None] - curr[None, :])
     order = np.zeros(n_roots, dtype=int)
+    used = set()
     for j in range(n_roots):
-        best_m, best_d = -1, np.inf
-        for m in range(n_roots):
-            if not used[m]:
-                d = abs(prev[j] - curr[m])
-                if d < best_d:
-                    best_d = d
-                    best_m = m
-        used[best_m] = True
-        order[j] = best_m
+        dists = [(dist[j, m], m) for m in range(n_roots) if m not in used]
+        _, best = min(dists)
+        used.add(best)
+        order[j] = best
     all_roots[i] = curr[order]
 
 # Build branch dataframe
@@ -64,7 +58,6 @@ for b in range(n_roots):
                 "idx": i,
             }
         )
-
 locus_df = pd.DataFrame(rows)
 
 # Open-loop poles
@@ -79,20 +72,16 @@ crossing_df = pd.DataFrame(
 )
 
 # Breakaway point: d/ds[s(s+1)(s+2)] = 3s²+6s+2 = 0 → s ≈ -0.423
-breakaway_df = pd.DataFrame({"bx": [(-6 + np.sqrt(12)) / 6], "by": [0.0], "label": ["Breakaway"]})
+breakaway_df = pd.DataFrame({"bx": [(-6 + np.sqrt(12)) / 6], "by": [0.0], "label": ["Breakaway (s ≈ −0.42)"]})
 
-# Damping ratio lines (ζ = 0.2, 0.4, 0.6, 0.8)
+# Damping ratio guide lines (ζ = 0.2, 0.4, 0.6, 0.8)
 damping_rows = []
 for zeta in [0.2, 0.4, 0.6, 0.8]:
     angle = np.pi - np.arccos(zeta)
-    r_max = 7.0
     for side, sign in [("upper", 1), ("lower", -1)]:
-        seg_name = f"ζ={zeta}_{side}"
-        damping_rows.append({"dx": 0.0, "dy": 0.0, "seg": seg_name, "ord": 0})
-        damping_rows.append(
-            {"dx": r_max * np.cos(angle), "dy": sign * r_max * np.sin(angle), "seg": seg_name, "ord": 1}
-        )
-
+        seg = f"ζ={zeta}_{side}"
+        damping_rows.append({"gx": 0.0, "gy": 0.0, "seg": seg, "ord": 0})
+        damping_rows.append({"gx": 6.0 * np.cos(angle), "gy": sign * 6.0 * np.sin(angle), "seg": seg, "ord": 1})
 damping_df = pd.DataFrame(damping_rows)
 
 # Natural frequency arcs (ωn = 1, 2, 3, 4) in left half-plane
@@ -100,119 +89,131 @@ wn_rows = []
 for wn in [1.0, 2.0, 3.0, 4.0]:
     theta = np.linspace(np.pi / 2, 3 * np.pi / 2, 60)
     for j, t in enumerate(theta):
-        wn_rows.append({"wx": wn * np.cos(t), "wy": wn * np.sin(t), "wn": f"ωn={wn}", "ord": j})
-
+        wn_rows.append({"gx": wn * np.cos(t), "gy": wn * np.sin(t), "wn": f"ωn={wn}", "ord": j})
 wn_df = pd.DataFrame(wn_rows)
 
 # Real axis segments: (-1, 0) and (-∞, -2)
-real_axis_rows = []
-for rx0, rx1, seg in [(-1.0, 0.0, "seg1"), (-7.0, -2.0, "seg2")]:
-    real_axis_rows.append({"rx": rx0, "ry": 0.0, "seg": seg, "ord": 0})
-    real_axis_rows.append({"rx": rx1, "ry": 0.0, "seg": seg, "ord": 1})
-
-real_axis_df = pd.DataFrame(real_axis_rows)
+real_axis_df = pd.DataFrame(
+    {
+        "rx": [-1.0, 0.0, -6.0, -2.0],
+        "ry": [0.0, 0.0, 0.0, 0.0],
+        "seg": ["seg1", "seg1", "seg2", "seg2"],
+        "ord": [0, 1, 0, 1],
+    }
+)
 
 # Arrow direction indicators along complex branches
 arrows = []
 for b in range(n_roots):
-    for idx in [400, 600]:
+    for idx in [400, 550]:
         if idx + 5 < len(gains):
             r0 = all_roots[idx, b]
-            if abs(r0.imag) > 0.5:
-                arrows.append(
-                    {
-                        "ax": float(r0.real),
-                        "ay": float(r0.imag),
-                        "branch": f"Branch {b + 1}",
-                        "shape": "triangle-up" if r0.imag > 0 else "triangle-down",
-                    }
-                )
+            if abs(r0.imag) > 0.3:
+                arrows.append({"ax": float(r0.real), "ay": float(r0.imag), "branch": f"Branch {b + 1}"})
+arrow_df = pd.DataFrame(arrows) if arrows else pd.DataFrame({"ax": [], "ay": [], "branch": []})
 
-arrow_df = pd.DataFrame(arrows) if arrows else pd.DataFrame({"ax": [], "ay": [], "branch": [], "shape": []})
+# Equal-scaling axes centered on origin (square canvas, equal domain = equal scaling)
+axis_range = 6.0
+x_scale = alt.Scale(domain=[-axis_range, axis_range], nice=False)
+y_scale = alt.Scale(domain=[-axis_range, axis_range], nice=False)
 
-# Scales
-x_scale = alt.Scale(domain=[-7.0, 2.5], nice=False)
-y_scale = alt.Scale(domain=[-6.0, 6.0], nice=False)
-
-# Layer: Damping ratio lines
-damping_layer = (
-    alt.Chart(damping_df)
-    .mark_line(strokeWidth=1, strokeDash=[6, 4], color="#d0d0d0")
-    .encode(
-        x=alt.X("dx:Q", scale=x_scale, axis=None),
-        y=alt.Y("dy:Q", scale=y_scale, axis=None),
-        detail="seg:N",
-        order="ord:Q",
-    )
-)
-
-# Layer: Natural frequency arcs
-wn_layer = (
-    alt.Chart(wn_df)
-    .mark_line(strokeWidth=1, strokeDash=[4, 4], color="#d0d0d0")
-    .encode(x=alt.X("wx:Q", scale=x_scale), y=alt.Y("wy:Q", scale=y_scale), detail="wn:N", order="ord:Q")
-)
-
-# Layer: Real axis segments
-real_axis_layer = (
-    alt.Chart(real_axis_df)
-    .mark_line(strokeWidth=4, color="#306998", opacity=0.3)
-    .encode(x=alt.X("rx:Q", scale=x_scale), y=alt.Y("ry:Q", scale=y_scale), detail="seg:N", order="ord:Q")
-)
-
-# Layer: Locus branches
 branch_palette = ["#306998", "#e07b39", "#2ca02c"]
+branch_domain = ["Branch 1", "Branch 2", "Branch 3"]
+
+# Layer: Locus branches — FIRST so its axis config takes effect
 locus_layer = (
     alt.Chart(locus_df)
     .mark_line(strokeWidth=2.5, opacity=0.9)
     .encode(
         x=alt.X(
-            "real:Q", scale=x_scale, title="Real Axis", axis=alt.Axis(labelFontSize=18, titleFontSize=22, grid=False)
+            "real:Q",
+            scale=x_scale,
+            title="Real Axis (σ)",
+            axis=alt.Axis(
+                labelFontSize=16,
+                titleFontSize=20,
+                titleFontWeight="bold",
+                titleColor="#333333",
+                labelColor="#333333",
+                grid=False,
+                tickCount=7,
+                titlePadding=12,
+            ),
         ),
         y=alt.Y(
             "imaginary:Q",
             scale=y_scale,
-            title="Imaginary Axis",
-            axis=alt.Axis(labelFontSize=18, titleFontSize=22, grid=False),
+            title="Imaginary Axis (jω)",
+            axis=alt.Axis(
+                labelFontSize=16,
+                titleFontSize=20,
+                titleFontWeight="bold",
+                titleColor="#333333",
+                labelColor="#333333",
+                grid=False,
+                tickCount=7,
+                titlePadding=12,
+            ),
         ),
         color=alt.Color(
             "branch:N",
-            scale=alt.Scale(domain=["Branch 1", "Branch 2", "Branch 3"], range=branch_palette),
+            scale=alt.Scale(domain=branch_domain, range=branch_palette),
             legend=alt.Legend(
                 title="Branch",
-                titleFontSize=18,
-                labelFontSize=16,
-                symbolSize=200,
+                titleFontSize=16,
+                labelFontSize=14,
+                symbolSize=180,
                 symbolStrokeWidth=3,
                 orient="top-right",
-                offset=10,
+                offset=5,
             ),
         ),
         order="idx:Q",
         tooltip=[
             alt.Tooltip("branch:N", title="Branch"),
-            alt.Tooltip("real:Q", title="Real", format=".3f"),
-            alt.Tooltip("imaginary:Q", title="Imaginary", format=".3f"),
+            alt.Tooltip("real:Q", title="σ", format=".3f"),
+            alt.Tooltip("imaginary:Q", title="jω", format=".3f"),
             alt.Tooltip("gain:Q", title="Gain K", format=".2f"),
         ],
     )
 )
 
+# Layer: Damping ratio lines
+damping_layer = (
+    alt.Chart(damping_df)
+    .mark_line(strokeWidth=1, strokeDash=[6, 4], color="#c0c0c0")
+    .encode(x=alt.X("gx:Q", scale=x_scale), y=alt.Y("gy:Q", scale=y_scale), detail="seg:N", order="ord:Q")
+)
+
+# Layer: Natural frequency arcs
+wn_layer = (
+    alt.Chart(wn_df)
+    .mark_line(strokeWidth=1, strokeDash=[4, 4], color="#c0c0c0")
+    .encode(x=alt.X("gx:Q", scale=x_scale), y=alt.Y("gy:Q", scale=y_scale), detail="wn:N", order="ord:Q")
+)
+
+# Layer: Real axis segments
+real_axis_layer = (
+    alt.Chart(real_axis_df)
+    .mark_line(strokeWidth=5, color="#306998", opacity=0.25)
+    .encode(x=alt.X("rx:Q", scale=x_scale), y=alt.Y("ry:Q", scale=y_scale), detail="seg:N", order="ord:Q")
+)
+
 # Layer: Open-loop poles (× markers)
 poles_layer = (
     alt.Chart(poles_df)
-    .mark_point(shape="cross", size=400, strokeWidth=3.5, color="#d62728", filled=False)
+    .mark_point(shape="cross", size=450, strokeWidth=3.5, color="#d62728", filled=False)
     .encode(
         x=alt.X("real:Q", scale=x_scale),
         y=alt.Y("imaginary:Q", scale=y_scale),
-        tooltip=[alt.Tooltip("label:N", title=""), alt.Tooltip("real:Q", title="Real")],
+        tooltip=[alt.Tooltip("label:N", title=""), alt.Tooltip("real:Q", title="σ")],
     )
 )
 
 # Layer: Imaginary axis crossings
 crossing_layer = (
     alt.Chart(crossing_df)
-    .mark_point(shape="diamond", size=350, strokeWidth=2.5, color="#d62728", filled=True)
+    .mark_point(shape="diamond", size=400, strokeWidth=2.5, color="#d62728", filled=True)
     .encode(
         x=alt.X("real:Q", scale=x_scale),
         y=alt.Y("imaginary:Q", scale=y_scale),
@@ -223,54 +224,50 @@ crossing_layer = (
 # Layer: Crossing labels
 crossing_text = (
     alt.Chart(crossing_df)
-    .mark_text(fontSize=14, fontWeight="bold", color="#d62728", align="left", dx=16)
+    .mark_text(fontSize=15, fontWeight="bold", color="#d62728", align="left", dx=18)
     .encode(x=alt.X("real:Q", scale=x_scale), y=alt.Y("imaginary:Q", scale=y_scale), text="label:N")
 )
 
 # Layer: Breakaway point
 breakaway_layer = (
     alt.Chart(breakaway_df)
-    .mark_point(shape="square", size=200, color="#555555", filled=True, opacity=0.7)
+    .mark_point(shape="square", size=220, color="#555555", filled=True, opacity=0.8)
     .encode(
         x=alt.X("bx:Q", scale=x_scale), y=alt.Y("by:Q", scale=y_scale), tooltip=[alt.Tooltip("label:N", title="Point")]
     )
 )
 
 # Layer: Arrow direction indicators
-arrow_up = arrow_df[arrow_df["ay"] > 0] if len(arrow_df) > 0 else arrow_df
-arrow_down = arrow_df[arrow_df["ay"] <= 0] if len(arrow_df) > 0 else arrow_df
+arrow_up_df = arrow_df[arrow_df["ay"] > 0] if len(arrow_df) > 0 else arrow_df
+arrow_down_df = arrow_df[arrow_df["ay"] <= 0] if len(arrow_df) > 0 else arrow_df
 
 arrow_up_layer = (
-    alt.Chart(arrow_up)
-    .mark_point(shape="triangle-up", size=220, filled=True, opacity=0.85)
+    alt.Chart(arrow_up_df)
+    .mark_point(shape="triangle-up", size=250, filled=True, opacity=0.85)
     .encode(
         x=alt.X("ax:Q", scale=x_scale),
         y=alt.Y("ay:Q", scale=y_scale),
-        color=alt.Color(
-            "branch:N", scale=alt.Scale(domain=["Branch 1", "Branch 2", "Branch 3"], range=branch_palette), legend=None
-        ),
+        color=alt.Color("branch:N", scale=alt.Scale(domain=branch_domain, range=branch_palette), legend=None),
     )
 )
 
 arrow_down_layer = (
-    alt.Chart(arrow_down)
-    .mark_point(shape="triangle-down", size=220, filled=True, opacity=0.85)
+    alt.Chart(arrow_down_df)
+    .mark_point(shape="triangle-down", size=250, filled=True, opacity=0.85)
     .encode(
         x=alt.X("ax:Q", scale=x_scale),
         y=alt.Y("ay:Q", scale=y_scale),
-        color=alt.Color(
-            "branch:N", scale=alt.Scale(domain=["Branch 1", "Branch 2", "Branch 3"], range=branch_palette), legend=None
-        ),
+        color=alt.Color("branch:N", scale=alt.Scale(domain=branch_domain, range=branch_palette), legend=None),
     )
 )
 
-# Compose
+# Compose — locus_layer first so its axis config renders
 chart = (
     (
-        damping_layer
+        locus_layer
+        + damping_layer
         + wn_layer
         + real_axis_layer
-        + locus_layer
         + poles_layer
         + crossing_layer
         + crossing_text
@@ -279,22 +276,21 @@ chart = (
         + arrow_down_layer
     )
     .properties(
-        width=1400,
-        height=1100,
+        width=1200,
+        height=1200,
         title=alt.Title(
             "root-locus-basic · altair · pyplots.ai",
             fontSize=28,
             color="#222222",
             subtitle="G(s) = 1 / s(s+1)(s+2) — Closed-Loop Pole Trajectories vs Gain K",
             subtitleFontSize=17,
-            subtitleColor="#777777",
-            subtitlePadding=6,
+            subtitleColor="#666666",
+            subtitlePadding=8,
         ),
     )
     .configure_view(strokeWidth=0)
     .interactive()
 )
 
-# Save
 chart.save("plot.png", scale_factor=3.0)
 chart.save("plot.html")

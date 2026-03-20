@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-stress-strain: Engineering Stress-Strain Curve
 Library: altair 6.0.0 | Python 3.14.3
-Quality: 84/100 | Created: 2026-03-20
+Quality: 90/100 | Created: 2026-03-20
 """
 
 import altair as alt

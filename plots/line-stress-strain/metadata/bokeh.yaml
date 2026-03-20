@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: line-stress-strain
 created: '2026-03-20T21:23:53Z'
-updated: '2026-03-20T21:38:43Z'
+updated: '2026-03-20T21:47:23Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23363005492
 issue: 4413
@@ -10,40 +10,39 @@ library_version: 3.9.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-stress-strain/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-stress-strain/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-stress-strain/bokeh/plot.html
-quality_score: 88
+quality_score: 91
 review:
   strengths:
-  - Excellent spec compliance — all required features (regions, critical points, offset
-    line, modulus annotation) present and correct
-  - Realistic mild steel data with physically accurate material properties
-  - Professional color palette with good colorblind accessibility
-  - Strong data storytelling with clear visual progression through mechanical behavior
-    regions
-  - Clean, well-structured code with appropriate complexity
+  - Excellent spec compliance — all required features (region labels, critical points,
+    offset line, Young's modulus annotation) are present and well-positioned
+  - Realistic engineering data with physically accurate material model (Ludwik power
+    law, proper necking behavior)
+  - Professional visual polish with custom color palette, subtle grid, and styled
+    typography
+  - Effective use of Bokeh-specific features (HoverTool, Span, dual PNG+HTML export)
   weaknesses:
-  - 'Left-side visual congestion: elastic region packs too many elements into tiny
-    horizontal strip'
-  - 0.2% offset line barely visible due to compressed elastic region
-  - Lower half of plot area largely empty — wasted vertical space
+  - Left side of the plot remains slightly congested with the elastic region, yield
+    marker, offset line, and multiple labels compressed into a narrow horizontal space
+  - Legend could be more prominently positioned or styled to better match the overall
+    design quality
   image_description: 'The plot displays an engineering stress-strain curve for mild
-    steel on a light gray (#FAFAFA) background with white border. The title "line-stress-strain
-    · bokeh · pyplots.ai" is in dark gray at the top-left. The x-axis is labeled "Engineering
-    Strain (mm/mm)" and the y-axis "Engineering Stress (MPa)" in muted gray tones.
-    The main curve is a dark blue (#306998) line starting from the origin, rising
-    steeply through the elastic region, then curving through strain hardening to reach
-    UTS (~400 MPa at ~0.22 strain), followed by a gradual decline in the necking region
-    ending at a fracture point (~320 MPa at 0.35 strain). Three key points are marked:
-    a gold circle for yield point, a purple triangle for UTS, and a sky-blue square
-    for fracture — all with white edge outlines. A short gold dashed line near the
-    left edge shows the 0.2% offset line. Gray italic region labels ("Elastic", "Strain
-    Hardening", "Necking") are placed along the curve. Bold colored annotations mark
-    "Yield Point (250 MPa)", "UTS (400 MPa)", "Fracture", and "E = 210 GPa". Subtle
-    dotted horizontal reference lines span the full width at yield and UTS levels.
-    A boxed legend in the lower-right area lists all five plot elements. Subtle gray
-    grid lines at low alpha.'
+    steel on a light gray (#FAFAFA) background. A blue (#306998) line traces the material
+    response from zero through a steep elastic region, a gradual strain-hardening
+    curve peaking at ~400 MPa around strain 0.22, and a declining necking region ending
+    at a fracture point near strain 0.35. Three region labels in gray italic text
+    ("Elastic", "Strain Hardening", "Necking") are positioned within their respective
+    zones. Critical points are marked with distinct shapes: a gold circle for Yield
+    Point (250 MPa), a purple triangle for UTS (400 MPa), and a sky-blue square for
+    Fracture. A dashed gold 0.2% offset line is visible near the elastic region. "E
+    = 210 GPa" is annotated in blue. Subtle dotted horizontal reference lines appear
+    at yield and UTS stress levels. The title reads "line-stress-strain · bokeh ·
+    pyplots.ai" in the upper left. A styled legend box in the lower-center area lists
+    all five elements. Axes are labeled "Engineering Strain (mm/mm)" and "Engineering
+    Stress (MPa)" with gray-toned tick labels. Grid lines are very subtle (alpha 0.15),
+    and the plot outline is removed.'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 29
       max: 30
       items:
       - id: VQ-01
@@ -51,41 +50,40 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 28pt, axis labels 22pt, tick
-          labels 18pt, annotations 18pt, region labels 22pt, legend 18pt'
+        comment: 'All font sizes explicitly set: title 28pt, axis labels 22pt, ticks
+          18pt, region labels 22pt, annotations 18pt'
       - id: VQ-02
         name: No Overlap
-        score: 4
-        max: 6
-        passed: true
-        comment: 'Left-side congestion: elastic region, yield marker, offset line,
-          and multiple labels crammed into narrow strip'
-      - id: VQ-03
-        name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Main curve and markers clearly visible. 0.2% offset line very short
-          due to compressed elastic region
+        comment: Left side slightly congested with yield marker, offset line, elastic
+          label, and E annotation clustered together, but all text remains readable
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 6
+        passed: true
+        comment: Line width 5 and marker size 32 well-adapted for 4800x2700
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: 'Colorblind-safe palette: blue, gold, purple, sky-blue. No red-green
-          dependency'
+        comment: 'Colorblind-safe palette: blue, gold, purple, sky blue with white
+          outlines on markers'
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Good canvas utilization but lower half of plot area mostly empty
+        comment: Good canvas utilization with balanced margins
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: Engineering Strain (mm/mm), Engineering
+        comment: 'Descriptive labels with units: Engineering Strain (mm/mm) and Engineering
           Stress (MPa)'
     design_excellence:
       score: 15
@@ -96,22 +94,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom colorblind-safe palette, muted axis colors, light background,
-          professional polish above defaults
+        comment: Custom colorblind-safe palette with intentional color hierarchy,
+          styled typography, professional polish beyond defaults
       - id: DE-02
         name: Visual Refinement
-        score: 4
-        max: 6
-        passed: true
-        comment: Subtle grid at alpha 0.15, outline removed, minor ticks removed,
-          toolbar hidden, dotted reference lines
-      - id: DE-03
-        name: Data Storytelling
         score: 5
         max: 6
         passed: true
-        comment: 'Strong storytelling: labeled regions guide viewer through elastic
-          → strain hardening → necking. Critical points annotated with values'
+        comment: Subtle grid (alpha 0.15), outline removed, minor ticks hidden, styled
+          background fills, dotted reference lines
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Region labels and annotated critical points guide viewer through
+          material behavior; reference lines reinforce key stress levels
     spec_compliance:
       score: 15
       max: 15
@@ -121,26 +119,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct line plot showing engineering stress-strain curve
+        comment: Correct line chart for stress-strain curve
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All required: labeled regions, critical points, Young''s modulus
-          annotation, 0.2% offset line'
+        comment: 'All spec features present: region labels, critical points, Young''s
+          modulus annotation, 0.2% offset line'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=strain, Y=stress correctly mapped, axes show full range
+        comment: X=strain, Y=stress correctly mapped; axes cover full data range
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, legend labels descriptive and matching all
+        comment: Title format correct; legend labels descriptive and match rendered
           elements
     data_quality:
       score: 15
@@ -151,21 +149,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Shows all aspects: elastic, strain hardening, necking, fracture,
-          offset method, modulus'
+        comment: Shows all three deformation regions with smooth transitions and critical
+          points
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: 'Mild steel tensile test with realistic properties: E=210 GPa, σ_y=250
-          MPa, UTS=400 MPa'
+        comment: Mild steel tensile test with physically accurate Ludwik power law
+          modeling
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: All values physically realistic for mild steel (ASTM A36 range)
+        comment: E=210 GPa, yield=250 MPa, UTS=400 MPa, fracture strain=0.35 — realistic
+          for mild steel
     code_quality:
       score: 10
       max: 10
@@ -175,7 +174,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports → data → plot → style → save'
+        comment: Linear imports-data-plot-save structure with no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -193,14 +192,13 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Well-structured, appropriate complexity with Ludwik power law for
-          realistic curve
+        comment: Clean, well-organized code with logical sections
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png via export_png, also saves HTML. Current API
+        comment: Saves as plot.png via export_png and plot.html via save
     library_mastery:
       score: 7
       max: 10
@@ -210,20 +208,21 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of ColumnDataSource, Span, Label, Legend/LegendItem. Follows
+        comment: Good use of ColumnDataSource, Legend/LegendItem, Span, Label — follows
           Bokeh patterns
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Span layouts, explicit Legend construction, dual PNG+HTML export.
-          Could leverage HoverTool
-  verdict: REJECTED
+        comment: HoverTool with region-aware tooltips (vline mode) and dual PNG+HTML
+          export
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
+  - hover-tooltips
   - custom-legend
   - html-export
   patterns:

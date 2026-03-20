@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 root-locus-basic: Root Locus Plot for Control Systems
 Library: letsplot 4.9.0 | Python 3.14.3
 Quality: 84/100 | Created: 2026-03-20
@@ -114,8 +114,8 @@ for wn in wn_values:
     wn_rows.extend([{"real": wn * np.cos(t), "imaginary": wn * np.sin(t), "wn": f"ωn={wn}"} for t in theta])
 wn_df = pd.DataFrame(wn_rows)
 
-# Branch colors
-branch_colors = ["#306998", "#E05D44", "#44A867", "#9467BD"]
+# Branch colors - colorblind-safe palette (no red-green pair)
+branch_colors = ["#306998", "#E69F00", "#CC79A7", "#56B4E9"]
 
 # Plot
 plot = (
@@ -142,13 +142,42 @@ plot = (
     + geom_text(  # noqa: F405
         aes(x="x", y="y", label="label"),  # noqa: F405
         data=zeta_label_df,
-        size=10,
-        color="#BBBBBB",
+        size=11,
+        color="#A0A0A0",
         inherit_aes=False,
+        family="monospace",
+    )
+    # Stable region shading (left half-plane)
+    + geom_rect(  # noqa: F405
+        aes(xmin="xmin", ymin="ymin", xmax="xmax", ymax="ymax"),  # noqa: F405
+        data=pd.DataFrame({"xmin": [-5.5], "xmax": [0], "ymin": [-4], "ymax": [4]}),
+        fill="#E8F4E8",
+        alpha=0.3,
+        inherit_aes=False,
+        tooltips="none",
     )
     # Imaginary axis (stability boundary)
-    + geom_vline(xintercept=0, color="#CCCCCC", size=0.5)  # noqa: F405
-    + geom_hline(yintercept=0, color="#CCCCCC", size=0.5)  # noqa: F405
+    + geom_vline(xintercept=0, color="#B0B0B0", size=0.7, linetype="solid")  # noqa: F405
+    + geom_hline(yintercept=0, color="#CCCCCC", size=0.4)  # noqa: F405
+    # Stability boundary label
+    + geom_text(  # noqa: F405
+        aes(x="x", y="y", label="label"),  # noqa: F405
+        data=pd.DataFrame({"x": [0.15], "y": [3.7], "label": ["jω"]}),
+        size=14,
+        color="#888888",
+        inherit_aes=False,
+        hjust=0,
+        family="serif",
+    )
+    + geom_text(  # noqa: F405
+        aes(x="x", y="y", label="label"),  # noqa: F405
+        data=pd.DataFrame({"x": [1.1], "y": [-0.25], "label": ["σ"]}),
+        size=14,
+        color="#888888",
+        inherit_aes=False,
+        hjust=0,
+        family="serif",
+    )
     # Root locus branches
     + geom_path(  # noqa: F405
         aes(x="real", y="imaginary", color="branch"),  # noqa: F405
@@ -202,35 +231,35 @@ plot = (
         data=crossing_pts,
         shape=18,  # diamond
         size=7,
-        color="#E05D44",
+        color="#D55E00",
         inherit_aes=False,
         tooltips=layer_tooltips().line("Stability boundary crossing").line("Im: @imaginary"),  # noqa: F405
     )
     # Labels and styling
     + labs(  # noqa: F405
-        x="Real Axis",
-        y="Imaginary Axis",
+        x="Real Axis (σ)",
+        y="Imaginary Axis (jω)",
         title="root-locus-basic · letsplot · pyplots.ai",
-        caption="G(s) = (s + 3) / [s(s + 1)(s + 2)(s + 4)]  ·  × = poles  ·  ○ = zeros",
+        caption="G(s) = (s + 3) / [s(s + 1)(s + 2)(s + 4)]  ·  × = poles  ·  ○ = zeros  ·  Stable region shaded",
     )
     + coord_fixed(ratio=1, xlim=[-5.5, 1.5], ylim=[-4, 4])  # noqa: F405
     + ggsize(1600, 900)  # noqa: F405
     + theme_minimal()  # noqa: F405
     + theme(  # noqa: F405
-        axis_text=element_text(size=16, color="#555555"),  # noqa: F405
-        axis_title=element_text(size=20, color="#333333"),  # noqa: F405
-        plot_title=element_text(size=24, color="#222222", face="bold"),  # noqa: F405
-        plot_caption=element_text(size=13, color="#888888", face="italic"),  # noqa: F405
+        axis_text=element_text(size=16, color="#666666", family="monospace"),  # noqa: F405
+        axis_title=element_text(size=20, color="#333333", face="bold"),  # noqa: F405
+        plot_title=element_text(size=26, color="#1A1A1A", face="bold"),  # noqa: F405
+        plot_caption=element_text(size=14, color="#777777", face="italic"),  # noqa: F405
         legend_text=element_text(size=14),  # noqa: F405
-        legend_title=element_text(size=16),  # noqa: F405
+        legend_title=element_text(size=16, face="bold"),  # noqa: F405
         legend_position="right",
         panel_grid_major=element_blank(),  # noqa: F405
         panel_grid_minor=element_blank(),  # noqa: F405
-        plot_background=element_rect(fill="#FAFAFA", color="#FAFAFA"),  # noqa: F405
-        panel_background=element_rect(fill="#FAFAFA", color="#FAFAFA"),  # noqa: F405
+        plot_background=element_rect(fill="#FCFCFC", color="#FCFCFC"),  # noqa: F405
+        panel_background=element_rect(fill="#FCFCFC", color="#FCFCFC"),  # noqa: F405
         axis_ticks=element_line(color="#CCCCCC", size=0.3),  # noqa: F405
-        axis_line=element_line(color="#CCCCCC", size=0.4),  # noqa: F405
-        plot_margin=[30, 40, 20, 20],
+        axis_line=element_line(color="#BBBBBB", size=0.5),  # noqa: F405
+        plot_margin=[35, 45, 25, 25],
     )
 )
 

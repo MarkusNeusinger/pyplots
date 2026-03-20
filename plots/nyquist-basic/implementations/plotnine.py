@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 nyquist-basic: Nyquist Plot for Control Systems
 Library: plotnine 0.15.3 | Python 3.14.3
-Quality: 82/100 | Created: 2026-03-20
 """
 
 import numpy as np
@@ -17,9 +16,16 @@ from plotnine import (
     element_text,
     geom_path,
     geom_point,
+    geom_ribbon,
     geom_segment,
     ggplot,
+    guide_legend,
+    guides,
     labs,
+    scale_alpha_manual,
+    scale_color_manual,
+    scale_linetype_manual,
+    scale_size_manual,
     scale_x_continuous,
     scale_y_continuous,
     theme,
@@ -40,21 +46,30 @@ G = K / ((jw + 1) * (0.5 * jw + 1) * (0.2 * jw + 1))
 real_part = G.real
 imag_part = G.imag
 
-# Positive frequency curve
-df_pos = pd.DataFrame({"real": real_part, "imaginary": imag_part})
-
-# Negative frequency curve (conjugate mirror)
-df_neg = pd.DataFrame({"real": real_part[::-1], "imaginary": -imag_part[::-1]})
+# Build unified DataFrame with curve_type for aes mapping (plotnine idiom)
+df_pos = pd.DataFrame({"real": real_part, "imaginary": imag_part, "curve": "Positive freq (ω > 0)"})
+df_neg = pd.DataFrame({"real": real_part[::-1], "imaginary": -imag_part[::-1], "curve": "Negative freq (ω < 0)"})
+df_curves = pd.concat([df_pos, df_neg], ignore_index=True)
 
 # Unit circle reference
 theta = np.linspace(0, 2 * np.pi, 200)
 unit_circle_df = pd.DataFrame({"real": np.cos(theta), "imaginary": np.sin(theta)})
 
-# Critical point (-1, 0)
-critical_df = pd.DataFrame({"real": [-1.0], "imaginary": [0.0]})
+# Stability region shading (inside unit circle around critical point)
+theta_fill = np.linspace(0, 2 * np.pi, 100)
+stability_df = pd.DataFrame(
+    {
+        "x": np.cos(theta_fill),
+        "ymin": -np.sin(np.arccos(np.clip(np.cos(theta_fill), -1, 1))),
+        "ymax": np.sin(np.arccos(np.clip(np.cos(theta_fill), -1, 1))),
+    }
+)
 
-# Frequency annotations at well-spaced points
-annotation_config = [(0.1, 0.25, 0.35), (0.3, 0.4, -0.35), (0.7, -0.2, -0.5), (1.5, -0.5, -0.3), (3.0, -0.3, 0.3)]
+# Critical point (-1, 0)
+critical_df = pd.DataFrame({"real": [-1.0], "imaginary": [0.0], "marker": ["Critical point (−1, 0)"]})
+
+# Frequency annotations at well-spaced points (moved away from crowded areas)
+annotation_config = [(0.1, 0.35, 0.45), (0.3, 0.5, -0.45), (0.7, -0.25, -0.6), (1.5, -0.6, -0.4), (3.0, 0.55, 0.55)]
 annot_data = []
 for wf, nx, ny in annotation_config:
     idx = np.argmin(np.abs(omega - wf))
@@ -93,7 +108,7 @@ for frac in [0.35, 0.75]:
 
 arrow_df = pd.DataFrame(arrow_data)
 
-# Gain and phase margin
+# Gain and phase margin calculations
 mag = np.abs(G)
 phase = np.degrees(np.angle(G))
 
@@ -107,87 +122,130 @@ pc_idx = np.argmin(np.abs(phase + 180))
 pc_omega = omega[pc_idx]
 gain_margin_db = -20 * np.log10(mag[pc_idx])
 
-gc_df = pd.DataFrame({"real": [G[gc_idx].real], "imaginary": [G[gc_idx].imag]})
-pc_df = pd.DataFrame({"real": [G[pc_idx].real], "imaginary": [G[pc_idx].imag]})
+# Margin points as mapped data with categories for scale_color/shape
+gc_df = pd.DataFrame({"real": [G[gc_idx].real], "imaginary": [G[gc_idx].imag], "marker": ["Gain crossover"]})
+pc_df = pd.DataFrame({"real": [G[pc_idx].real], "imaginary": [G[pc_idx].imag], "marker": ["Phase crossover"]})
+margin_df = pd.concat([gc_df, pc_df], ignore_index=True)
 
 # Segment from origin to gain crossover point (shows phase margin angle)
 gc_seg_df = pd.DataFrame({"x": [0.0], "y": [0.0], "xend": [G[gc_idx].real], "yend": [G[gc_idx].imag]})
 
-# Plot
+# Plot using plotnine aesthetic mappings and scales
 plot = (
     ggplot()
+    # Stability region shading (subtle)
+    + geom_ribbon(stability_df, aes(x="x", ymin="ymin", ymax="ymax"), fill="#E8EDF2", alpha=0.3)
     # Unit circle
-    + geom_path(unit_circle_df, aes(x="real", y="imaginary"), color="#CCCCCC", size=0.8, linetype="dashed")
-    # Nyquist curve - positive frequencies
-    + geom_path(df_pos, aes(x="real", y="imaginary"), color="#306998", size=1.5, alpha=0.9)
-    # Nyquist curve - negative frequencies
-    + geom_path(df_neg, aes(x="real", y="imaginary"), color="#7BA4C7", size=1.2, alpha=0.6, linetype="dashed")
+    + geom_path(unit_circle_df, aes(x="real", y="imaginary"), color="#BBBBBB", size=0.8, linetype="dashed")
+    # Nyquist curves with aes-mapped color and linetype
+    + geom_path(df_curves, aes(x="real", y="imaginary", color="curve", linetype="curve", size="curve", alpha="curve"))
+    + scale_color_manual(
+        values={"Positive freq (ω > 0)": "#306998", "Negative freq (ω < 0)": "#7BA4C7"}, name="Frequency Response"
+    )
+    + scale_linetype_manual(
+        values={"Positive freq (ω > 0)": "solid", "Negative freq (ω < 0)": "dashed"}, name="Frequency Response"
+    )
+    + scale_size_manual(values={"Positive freq (ω > 0)": 1.5, "Negative freq (ω < 0)": 1.0}, name="Frequency Response")
+    + scale_alpha_manual(
+        values={"Positive freq (ω > 0)": 0.95, "Negative freq (ω < 0)": 0.55}, name="Frequency Response"
+    )
     # Direction arrows
     + geom_segment(
         arrow_df, aes(x="x", y="y", xend="xend", yend="yend"), color="#333333", size=1.0, arrow=arrow(length=0.15)
     )
     # Phase margin line from origin to gain crossover
     + geom_segment(
-        gc_seg_df, aes(x="x", y="y", xend="xend", yend="yend"), color="#2CA02C", size=0.7, linetype="dotted", alpha=0.7
+        gc_seg_df, aes(x="x", y="y", xend="xend", yend="yend"), color="#9467BD", size=0.7, linetype="dotted", alpha=0.7
     )
-    # Critical point (-1, 0)
-    + geom_point(critical_df, aes(x="real", y="imaginary"), color="#D62728", size=6, shape="x", stroke=2.5)
-    + annotate("text", x=-1.55, y=0.0, label="(−1, 0)", color="#D62728", size=10, fontweight="bold", ha="center")
-    # Gain crossover point
-    + geom_point(gc_df, aes(x="real", y="imaginary"), color="#2CA02C", size=5, shape="o", stroke=1.5)
+    # Critical point (-1, 0) - positioned label away from curve
+    + geom_point(critical_df, aes(x="real", y="imaginary"), color="#D62728", size=7, shape="x", stroke=2.5)
     + annotate(
         "text",
-        x=-2.2,
-        y=-1.2,
-        label=f"Gain crossover\nω={gc_omega:.1f} rad/s, PM={phase_margin:.0f}°",
-        color="#2CA02C",
-        size=8,
-        ha="left",
+        x=-1.85,
+        y=0.7,
+        label="Critical point\n(−1, 0)",
+        color="#D62728",
+        size=11,
+        fontweight="bold",
+        ha="center",
     )
-    # Leader line from gain crossover label to point
-    + annotate(
-        "segment", x=-1.5, y=-1.0, xend=G[gc_idx].real, yend=G[gc_idx].imag, color="#2CA02C", size=0.5, alpha=0.6
+    + annotate("segment", x=-1.5, y=0.5, xend=-1.05, yend=0.1, color="#D62728", size=0.5, alpha=0.5)
+    # Margin points with mapped aesthetics
+    + geom_point(
+        margin_df.query("marker == 'Gain crossover'"),
+        aes(x="real", y="imaginary"),
+        color="#9467BD",
+        size=5.5,
+        shape="o",
+        stroke=1.8,
     )
-    # Phase crossover point
-    + geom_point(pc_df, aes(x="real", y="imaginary"), color="#E8833A", size=5, shape="s", stroke=1.5, fill="#E8833A")
-    + annotate(
-        "text",
-        x=-2.2,
-        y=1.6,
-        label=f"Phase crossover\nω={pc_omega:.1f} rad/s, GM={gain_margin_db:.1f} dB",
+    + geom_point(
+        margin_df.query("marker == 'Phase crossover'"),
+        aes(x="real", y="imaginary"),
         color="#E8833A",
-        size=8,
-        ha="left",
+        size=5.5,
+        shape="s",
+        stroke=1.8,
+        fill="#E8833A",
     )
-    # Leader line from phase crossover label to point
-    + annotate("segment", x=-1.5, y=1.3, xend=G[pc_idx].real, yend=G[pc_idx].imag, color="#E8833A", size=0.5, alpha=0.6)
+    # Gain crossover annotation (moved to avoid crowding)
+    + annotate(
+        "text",
+        x=-2.6,
+        y=-2.0,
+        label=f"Gain crossover\nω = {gc_omega:.1f} rad/s\nPM = {phase_margin:.0f}°",
+        color="#9467BD",
+        size=10,
+        ha="left",
+        fontweight="bold",
+    )
+    + annotate(
+        "segment", x=-1.8, y=-1.6, xend=G[gc_idx].real, yend=G[gc_idx].imag, color="#9467BD", size=0.6, alpha=0.7
+    )
+    # Phase crossover annotation (moved to upper area, well separated)
+    + annotate(
+        "text",
+        x=-2.6,
+        y=2.4,
+        label=f"Phase crossover\nω = {pc_omega:.1f} rad/s\nGM = {gain_margin_db:.1f} dB",
+        color="#E8833A",
+        size=10,
+        ha="left",
+        fontweight="bold",
+    )
+    + annotate("segment", x=-1.8, y=2.0, xend=G[pc_idx].real, yend=G[pc_idx].imag, color="#E8833A", size=0.6, alpha=0.7)
     # Frequency annotation dots
-    + geom_point(annot_df, aes(x="real", y="imaginary"), color="#306998", size=3, shape="o", fill="#306998")
+    + geom_point(annot_df, aes(x="real", y="imaginary"), color="#306998", size=3.5, shape="o", fill="#306998")
 )
 
 # Frequency labels with per-point nudge
 for _, row in annot_df.iterrows():
     plot = plot + annotate(
-        "text", x=row["real"] + row["nx"], y=row["imaginary"] + row["ny"], label=row["label"], color="#555555", size=9
+        "text", x=row["real"] + row["nx"], y=row["imaginary"] + row["ny"], label=row["label"], color="#444444", size=10
     )
 
-# Axes and styling
+# Axes, scales, and styling
 plot = (
     plot
     + scale_x_continuous(breaks=[-3, -2, -1, 0, 1, 2, 3, 4, 5])
     + scale_y_continuous(breaks=[-3, -2, -1, 0, 1, 2, 3])
     + coord_fixed(ratio=1, xlim=(-3.5, 5.8), ylim=(-3.8, 3.8))
     + labs(title="nyquist-basic · plotnine · pyplots.ai", x="Real", y="Imaginary")
+    + guides(color=guide_legend(title="Frequency Response", override_aes={"size": 2}))
     + theme_minimal()
     + theme(
         figure_size=(12, 12),
         plot_title=element_text(size=24, weight="bold", ha="center"),
         axis_title=element_text(size=20),
-        axis_text=element_text(size=16),
-        panel_grid_major=element_line(color="#F0F0F0", size=0.3),
+        axis_text=element_text(size=16, color="#555555"),
+        panel_grid_major=element_line(color="#EFEFEF", size=0.3),
         panel_grid_minor=element_blank(),
         plot_background=element_rect(fill="white", color="white"),
-        legend_position="none",
+        panel_background=element_rect(fill="#FAFBFC", color="white"),
+        legend_position="bottom",
+        legend_title=element_text(size=14, weight="bold"),
+        legend_text=element_text(size=12),
+        legend_background=element_rect(fill="white", alpha=0.9),
     )
 )
 

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-stress-strain: Engineering Stress-Strain Curve
 Library: highcharts unknown | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-20
@@ -210,7 +210,18 @@ chart.options.annotations = [
                 "borderRadius": 6,
                 "padding": 10,
                 "shape": "rect",
-            }
+            },
+            {
+                "point": {"x": 0.04, "y": 300, "xAxis": 0, "yAxis": 0},
+                "text": "← 0.2% Offset Yield Method",
+                "style": {"fontSize": "28px", "fontWeight": "bold", "color": "#e67e22"},
+                "backgroundColor": "rgba(255, 255, 255, 0.90)",
+                "borderColor": "#e67e22",
+                "borderWidth": 2,
+                "borderRadius": 6,
+                "padding": 10,
+                "shape": "rect",
+            },
         ],
         "labelOptions": {"overflow": "none", "crop": False},
     }
@@ -241,7 +252,7 @@ offset_series.data = [
 offset_series.name = "0.2% Offset Line"
 offset_series.color = "#e67e22"
 offset_series.dash_style = "Dash"
-offset_series.line_width = 4
+offset_series.line_width = 6
 offset_series.marker = {"enabled": False}
 chart.add_series(offset_series)
 

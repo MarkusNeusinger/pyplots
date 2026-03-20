@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: ma-differential-expression
 created: '2026-03-20T10:40:25Z'
-updated: '2026-03-20T10:52:50Z'
+updated: '2026-03-20T11:01:45Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23339077743
 issue: 4420
@@ -10,110 +10,111 @@ library_version: 3.9.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/ma-differential-expression/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ma-differential-expression/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/ma-differential-expression/bokeh/plot.html
-quality_score: 86
+quality_score: 90
 review:
   strengths:
-  - Full spec compliance with all required features (reference lines, LOESS trend,
-    gene labels, transparency)
-  - 'Effective three-tier visual hierarchy: faint non-sig → color-mapped significant
-    → labeled top genes'
-  - Idiomatic Bokeh usage with HoverTool targeted to significant genes, ColumnDataSource,
-    and LinearColorMapper
-  - Clean code structure with realistic RNA-seq data context
-  - Dual PNG + HTML export leveraging Bokeh interactive capabilities
+  - Excellent use of Inferno color gradient to encode significance strength, adding
+    an extra data dimension beyond binary significant/not-significant
+  - All spec features fully implemented including LOESS trend, fold-change thresholds,
+    gene annotations, and summary statistics
+  - 'Strong Bokeh-specific features: HoverTool for interactive exploration, HTML export,
+    transform-based color mapping'
+  - Realistic RNA-seq data with appropriate gene names, expression ranges, and differential
+    expression proportions
+  - Clean visual design with removed x-grid, subtle y-grid, and refined axis styling
   weaknesses:
-  - Color palette for significant genes (salmon-to-red) could be more perceptually
-    uniform and sophisticated
-  - FC threshold labels and gene annotations slightly small relative to canvas size
-  - Missing summary annotation showing counts of upregulated/downregulated genes
-  - No ColorBar to explain the significance gradient mapping
-  - Grid could be further refined (consider y-axis only or no grid)
-  image_description: 'The plot displays an MA plot (M-versus-A) for differential gene
-    expression analysis. The x-axis shows "Mean Expression (log₂)" ranging from 0
-    to ~17, and the y-axis shows "Log₂ Fold Change (M)" ranging from approximately
-    -4.5 to 4.5. The title reads "ma-differential-expression · bokeh · pyplots.ai"
-    in dark blue-gray text. Non-significant genes appear as very faint gray dots (alpha
-    ~0.15), forming a dense cloud centered around M=0. Significant genes (n=1,746)
-    are displayed in a salmon-to-dark-red color gradient mapped by -log10(p-value),
-    with darker red indicating stronger significance. A solid blue reference line
-    sits at M=0, with blue dashed lines at M=+1 and M=-1 marking 2-fold change thresholds.
-    Labels "FC = 2" and "FC = −2" appear in italic blue at the right edge. A green
-    LOESS trend line runs through the data, staying close to zero. Eight top DE genes
-    are labeled in bold: WNT7217, SOX5510, RB8445, SHH1368, COL5058, KRAS5924, COL6988,
-    COL1168. A legend in the top-left lists "Not Significant", "Significant (n=1,746)",
-    and "LOESS Trend". The background is light gray (#FAFAFA) with subtle dashed gridlines.'
+  - Minor gene label crowding in dense regions could benefit from smarter label placement
+    or collision avoidance
+  - Legend text slightly compact relative to the overall plot scale
+  image_description: 'The plot displays an MA plot for differential gene expression
+    analysis at 4800x2700 resolution. The title "ma-differential-expression · bokeh
+    · pyplots.ai" appears in dark teal at the top left. The x-axis is labeled "Mean
+    Expression (log2)" ranging from 0 to ~16, and the y-axis "Log2 Fold Change (M)"
+    ranging from approximately -5 to +4. Approximately 15,000 data points are shown:
+    non-significant genes appear as very faint gray dots (alpha ~0.15), while ~1,746
+    significant genes are rendered with an Inferno-inspired color gradient (yellow
+    through orange, red, purple, to near-black) mapped to -log10(p-value) significance
+    strength. A solid blue-gray horizontal reference line marks M=0, with dashed lines
+    at M=+1 and M=-1 labeled "FC = 2" and "FC = -2" in italic blue text. A green LOESS
+    trend line runs near y=0 across the full expression range. Eight top differentially
+    expressed genes are labeled in bold (WNT2317, SOX5510, RB8441, SHH1368, COL5938,
+    KRAS5524, COL6088, COL1169). A summary annotation at bottom-left reports upregulated
+    and downregulated gene counts. The legend in the top-left shows "Not Significant",
+    "Significant (n=1,746)", and "LOESS Trend". A vertical color bar on the right
+    displays the -log10(p-value) scale. The background is a subtle off-white (#FAFAFA)
+    with only y-axis grid lines (dashed, low alpha). Overall layout is clean and professional.'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 28
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title 28pt, labels 22pt, ticks 18pt).
-          FC labels (16pt) and gene annotations (14pt) slightly small for canvas.
+        comment: 'All font sizes explicitly set: title 28pt, axis labels 22pt, tick
+          labels 18pt, gene labels 17pt, FC labels 20pt, summary 18pt, colorbar 16-17pt'
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: Generally clean layout. Some gene labels near bottom-left could overlap
-          with dense data points.
+        comment: Minor crowding among some gene labels in lower-left region; legend
+          items slightly compact
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Good density handling with alpha. Non-sig at 0.15 appropriately recedes,
-          sig at 0.65 with size=11 stands out.
+        comment: Good density handling with alpha=0.15/size=7 for non-sig and alpha=0.65/size=11
+          for sig genes
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Gray vs salmon/red is colorblind-friendly. Red sequential palette
-          could be improved with perceptually-uniform colormap.
+        comment: Inferno palette is perceptually uniform and colorblind-safe; gray
+          vs colored provides strong contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Excellent canvas utilization. X-range clamped at 99th percentile.
-          Balanced margins.
+        comment: Plot fills canvas well at 4800x2700 with colorbar on right; balanced
+          margins
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with proper notation: Mean Expression (log₂)
-          and Log₂ Fold Change (M).'
+        comment: 'Descriptive labels with units: Mean Expression (log2) and Log2 Fold
+          Change (M)'
     design_excellence:
-      score: 13
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom color gradient, cohesive scheme, light background. Above defaults
-          but not publication-quality.
+        comment: Custom Inferno palette, thoughtful color choices, refined typography,
+          clearly above defaults
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Subtle dashed grid (alpha=0.15), outline removed, minor ticks removed,
-          background customized.
+        comment: X-grid removed, y-grid subtle, outline removed, axis lines thinned,
+          minor ticks removed, FAFAFA background
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Clear three-tier visual hierarchy. Color intensity encodes significance.
-          Missing summary annotation.
+        comment: Color gradient by significance creates visual hierarchy; gene annotations
+          and summary add context
     spec_compliance:
       score: 15
       max: 15
@@ -123,51 +124,51 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct MA plot with M on y-axis and A on x-axis.
+        comment: Correct MA plot with M on y-axis and A on x-axis
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: highlighting, reference lines, LOESS
-          trend, transparency, gene labels.'
+        comment: 'All spec features present: significant highlighting, reference lines,
+          LOESS curve, transparency, gene labels'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: 'Correct mapping: x=mean expression, y=log fold change.'
+        comment: Correct mapping with x-axis clamped at 99th percentile
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title follows exact format. Legend labels descriptive with gene count.
+        comment: Title format correct; legend labels descriptive with count
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Shows up/downregulated genes, varying significance, dense non-sig
-          cloud, labeled outliers.
+        comment: Shows upregulated/downregulated, varying significance, dense central
+          cloud, outliers, LOESS trend
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: RNA-seq context with realistic gene name prefixes. 15,000 genes with
-          ~8% DE is typical.
+        comment: RNA-seq differential expression with realistic gene name prefixes;
+          neutral scientific context
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 'Realistic RNA-seq scales: expression 0-17, fold changes mostly ±1
-          with DE genes up to ±4.'
+        comment: 'Appropriate ranges for RNA-seq: expression 0-16, fold changes within
+          +/-5, ~8% DE genes'
     code_quality:
       score: 10
       max: 10
@@ -177,34 +178,32 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports → data → plot → styling → save. No functions
-          or classes.'
+        comment: 'Linear flow: imports, data generation, plot creation, styling, save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set at start.
+        comment: np.random.seed(42) set at top
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: save, LinearColorMapper, Range1d, Span, Label,
-          CDN, transform.'
+        comment: All imports used including save and CDN for HTML export
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, well-organized. Binned moving average for LOESS is pragmatic
-          without scipy dependency.
+        comment: Clean, appropriate complexity; binned moving average is reasonable
+          LOESS approximation
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via export_png. Also exports interactive HTML.
+        comment: Saves as plot.png via export_png, also saves plot.html
     library_mastery:
       score: 8
       max: 10
@@ -214,31 +213,30 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of ColumnDataSource, HoverTool, Span, Label, LinearColorMapper
-          with transform(). Could add ColorBar.
+        comment: 'Strong idiomatic Bokeh: ColumnDataSource, figure(), Span, Label,
+          HoverTool, transform()'
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: HoverTool targeted to significant genes only. LinearColorMapper with
-          transform(). Dual PNG+HTML export.
-  verdict: REJECTED
+        comment: HoverTool for interactive tooltips, HTML export with CDN, LinearColorMapper
+          with transform, ColorBar
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
+  - colorbar
   - hover-tooltips
   - html-export
-  - custom-legend
   patterns:
   - data-generation
   - columndatasource
   - iteration-over-groups
   dataprep:
-  - binning
   - rolling-window
   styling:
-  - alpha-blending
   - custom-colormap
+  - alpha-blending
   - grid-styling

@@ -1,7 +1,7 @@
 library: pygal
 specification_id: line-parametric
 created: '2026-03-20T10:39:29Z'
-updated: '2026-03-20T10:43:45Z'
+updated: '2026-03-20T10:51:56Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23339035335
 issue: 4424
@@ -10,75 +10,79 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-parametric/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-parametric/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-parametric/pygal/plot.html
-quality_score: 76
+quality_score: 81
 review:
   strengths:
-  - Excellent spec compliance with all required features (two curves, color gradient,
-    start/end points, equal aspect ratio)
-  - Perfect code quality with clean, deterministic, KISS structure
-  - Intentional color palette design with dual gradients showing parameter direction
-  - Proper normalization of spiral to match Lissajous scale
+  - Custom color palette with semantic meaning (cool-to-warm for time progression)
+    creates coherent design
+  - Perfect code quality — clean KISS structure, fully deterministic, all imports
+    used
+  - Excellent curve rendering with 1000 points and well-chosen stroke widths for smooth
+    visible curves
+  - Good spec compliance with both required curve types and correct mathematical formulas
   weaknesses:
-  - Legend overwhelmed with 13 entries (6+6 segments + start/end) — too granular,
-    hard to read
-  - Chart dimensions 4800x4800 non-standard (should be 3600x3600 for square)
-  - Start/end points not prominent enough — small dots that blend in
-  - Adjacent color segments within each gradient hard to distinguish
-  - Legend font size too small for the canvas size
-  image_description: The plot displays two parametric curves on a white square canvas
-    with range -1.2 to 1.2 on both axes. A Lissajous figure (x=sin(3t), y=sin(2t))
-    is rendered as 6 color-gradient segments transitioning from deep blue through
-    lighter blue to red-orange and dark red. A spiral curve (x=t·cos(t), y=t·sin(t),
-    normalized) is shown in 6 segments transitioning from dark purple through violet
-    to teal and dark green. Start and end points are marked as small dark dots. The
-    title reads "line-parametric · pygal · pyplots.ai". Axes are labeled "x(t)" and
-    "y(t)". A legend at the bottom contains 13 entries across 3 columns with very
-    small text identifying each segment's parameter range. Grid lines are subtle light
-    gray. The curves are clearly visible with thick strokes.
+  - Start/end point markers nearly invisible — both start at origin overlapping each
+    other and curve strokes obscure the dots
+  - Color gradient along curves is only 2 segments per curve — more segments would
+    better show continuous parameter progression
+  - Library mastery could leverage more pygal-distinctive features like custom tooltip
+    formatters
+  image_description: 'The plot is a 3600x3600 square chart titled "line-parametric
+    · pygal · pyplots.ai" on a white background with a light gray (#fafafa) plot area.
+    It displays four colored curve segments: a deep blue Lissajous curve (t: 0 to
+    pi), an amber/orange Lissajous curve (t: pi to 2pi), a purple spiral (t: 0 to
+    2pi), and a forest green spiral (t: 2pi to 4pi). The Lissajous figure shows the
+    characteristic self-intersecting pattern of sin(3t) vs sin(2t), while the spiral
+    expands outward from the center. Axes are labeled "Horizontal Position x(t)" and
+    "Vertical Position y(t)" with range -1.2 to 1.2. A six-entry legend sits at the
+    bottom in three columns, including entries for start and end markers. The start/end
+    point markers are present but barely visible in the rendered output — they overlap
+    near the origin and are obscured by the curve strokes. Grid lines are subtle light
+    gray.'
   criteria_checklist:
     visual_quality:
-      score: 23
+      score: 27
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set but legend text very small relative to
-          4800x4800 canvas
+        comment: All font sizes explicitly set (title=52, label=36, major_label=32,
+          legend=34). All text clearly readable.
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Legend dense with 13 entries but no actual text overlap
+        comment: No text overlap. Legend in 3-column layout at bottom fits cleanly.
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 4
         max: 6
-        passed: true
-        comment: Lines clearly visible with thick strokes; start/end points small
-          and not prominent
+        passed: false
+        comment: Curve strokes excellent but start/end point markers barely visible.
+          Both start points at (0,0) overlap each other, obscured by thick curve strokes.
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Blue-red and purple-teal gradients distinguishable but adjacent segments
-          hard to differentiate
+        comment: Blue, amber, purple, green palette is colorblind-safe with strong
+          contrast.
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Square canvas appropriate but non-standard 4800x4800 size
+        comment: Square layout with balanced margins. Plot fills ~65% of canvas.
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: x(t) and y(t) are descriptive but generic mathematical notation
+        passed: true
+        comment: Descriptive labels with mathematical notation x(t) and y(t).
     design_excellence:
       score: 11
       max: 20
@@ -88,21 +92,23 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Intentional dual color gradients, clean white background, above library
-          defaults
+        comment: Custom 4-color palette with semantic color meanings. Custom font,
+          styled stroke widths. Above defaults but not publication-level.
       - id: DE-02
         name: Visual Refinement
         score: 3
         max: 6
         passed: false
-        comment: Subtle grid and custom stroke styles but not fully polished
+        comment: Subtle grid and light plot background. Some refinement but no spine
+          removal or advanced whitespace management.
       - id: DE-03
         name: Data Storytelling
         score: 3
         max: 6
         passed: false
-        comment: Color gradient communicates direction; two contrasting curves create
-          comparison
+        comment: Color-coded halves convey parameter direction. Two contrasting curve
+          types create comparison. Start/end markers that should anchor the story
+          are nearly invisible.
     spec_compliance:
       score: 14
       max: 15
@@ -112,26 +118,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct parametric curve plot using pygal.XY
+        comment: 'Correct: parametric curves plotted as XY data using pygal.XY.'
       - id: SC-02
         name: Required Features
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: 'All spec features present: equal aspect, color gradient, two curves,
-          start/end points'
+        comment: Equal aspect ratio, two curves, sufficient density, start/end coded.
+          Color gradient only 2-segment approximation, markers barely visible.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X/Y correctly computed from parametric equations
+        comment: x(t) and y(t) correctly computed and mapped. Axes show full range.
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Title format correct but legend overwhelming with 13 entries
+        comment: Title follows exact format. Legend labels descriptive with parameter
+          ranges and colors.
     data_quality:
       score: 13
       max: 15
@@ -141,20 +148,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Lissajous shows self-intersection and closed curve; spiral shows
-          expanding open curve
+        comment: Shows self-intersecting closed curve (Lissajous) and expanding open
+          spiral. Demonstrates looping, self-intersection, closed shapes.
       - id: DQ-02
         name: Realistic Context
         score: 4
         max: 5
         passed: true
-        comment: Standard mathematical curves with correct formulas
+        comment: Classic mathematical examples matching spec. Neutral educational
+          context.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Properly normalized to [-1, 1] range
+        comment: Normalized to [-1, 1] range. Sensible for dimensionless mathematical
+          curves.
     code_quality:
       score: 10
       max: 10
@@ -164,48 +173,49 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean linear flow
+        comment: 'Clean flat structure: imports, data, style, chart, series, save.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic trigonometric functions
+        comment: Fully deterministic trigonometric functions.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: 'All three imports used: numpy, pygal, Style.'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean segment loops, appropriate complexity
+        comment: Appropriate complexity. No fake functionality.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png using current API
+        comment: Saves as plot.png via render_to_png. Current pygal 3.1 API.
     library_mastery:
-      score: 5
+      score: 6
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Correct use of pygal.XY and Style but standard patterns
+        passed: true
+        comment: Good use of pygal.XY, Style class, stroke_style per-series, dict-based
+          data points with labels.
       - id: LM-02
         name: Distinctive Features
         score: 2
         max: 5
         passed: false
-        comment: Uses stroke_style, dots_size, truncate_legend but mostly standard
-          XY usage
+        comment: Some pygal-specific features (stroke_style, dots_size, legend_at_bottom_columns,
+          js=[]). Core approach not uniquely leveraging pygal strengths.
   verdict: REJECTED
 impl_tags:
   dependencies: []
@@ -213,7 +223,6 @@ impl_tags:
   - html-export
   patterns:
   - data-generation
-  - iteration-over-groups
   dataprep:
   - normalization
   styling:

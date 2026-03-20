@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-parametric: Parametric Curve Plot
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-20
@@ -11,6 +11,7 @@ from plotly.subplots import make_subplots
 
 # Data
 n_points = 2000
+n_segments = 200
 
 t_lissajous = np.linspace(0, 2 * np.pi, n_points)
 x_lissajous = np.sin(3 * t_lissajous)
@@ -30,214 +31,163 @@ colorscale = [
     [1.0, "rgb(228,87,58)"],
 ]
 
+
+def interpolate_color(frac):
+    """Interpolate RGB color from the custom colorscale at given fraction [0, 1]."""
+    stops = [0.0, 0.15, 0.35, 0.55, 0.75, 1.0]
+    colors = [(48, 105, 152), (42, 128, 148), (68, 148, 120), (148, 138, 78), (198, 105, 62), (228, 87, 58)]
+    for i in range(len(stops) - 1):
+        if frac <= stops[i + 1]:
+            local = (frac - stops[i]) / (stops[i + 1] - stops[i])
+            r = int(colors[i][0] + local * (colors[i + 1][0] - colors[i][0]))
+            g = int(colors[i][1] + local * (colors[i + 1][1] - colors[i][1]))
+            b = int(colors[i][2] + local * (colors[i + 1][2] - colors[i][2]))
+            return f"rgb({r},{g},{b})"
+    return f"rgb({colors[-1][0]},{colors[-1][1]},{colors[-1][2]})"
+
+
 # Plot
 fig = make_subplots(
     rows=1,
     cols=2,
     subplot_titles=(
-        "<b>Lissajous Figure</b><br><i>x = sin(3t), y = sin(2t) — closed, self-intersecting</i>",
-        "<b>Archimedean Spiral</b><br><i>x = t·cos(t), y = t·sin(t) — open, expanding</i>",
+        "<b>Lissajous Figure</b><br><i>x = sin(3t), y = sin(2t) — closed, self-intersecting curve</i>",
+        "<b>Archimedean Spiral</b><br><i>x = t·cos(t), y = t·sin(t) — open, expanding outward</i>",
     ),
-    horizontal_spacing=0.14,
+    horizontal_spacing=0.16,
 )
 
-# Helper: create colored line segments for continuous curve with gradient
-for curve_data, col_idx, t_vals, cb_x, cb_ticks, cb_labels, name in [
+# Draw smooth colored line segments for each curve
+for xx, yy, t_vals, col_idx, cb_x, cb_ticks, cb_labels in [
     (
-        (x_lissajous, y_lissajous),
-        1,
+        x_lissajous,
+        y_lissajous,
         t_lissajous,
-        0.42,
+        1,
+        0.44,
         [0, np.pi / 2, np.pi, 3 * np.pi / 2, 2 * np.pi],
         ["0", "π/2", "π", "3π/2", "2π"],
-        "Lissajous",
     ),
-    (
-        (x_spiral, y_spiral),
-        2,
-        t_spiral,
-        1.0,
-        [0, np.pi, 2 * np.pi, 3 * np.pi, 4 * np.pi],
-        ["0", "π", "2π", "3π", "4π"],
-        "Spiral",
-    ),
+    (x_spiral, y_spiral, t_spiral, 2, 1.02, [0, np.pi, 2 * np.pi, 3 * np.pi, 4 * np.pi], ["0", "π", "2π", "3π", "4π"]),
 ]:
-    xx, yy = curve_data
-    # Continuous line with color gradient via markers on top of a thin line
-    # Base line for continuity (thin, neutral)
+    # Create smooth gradient by drawing overlapping line segments
+    seg_size = n_points // n_segments
+    for i in range(n_segments):
+        start = i * seg_size
+        end = min(start + seg_size + 1, n_points)
+        frac = i / (n_segments - 1)
+        color = interpolate_color(frac)
+        fig.add_trace(
+            go.Scatter(
+                x=xx[start:end],
+                y=yy[start:end],
+                mode="lines",
+                line={"width": 3.5, "color": color},
+                showlegend=False,
+                hoverinfo="skip",
+            ),
+            row=1,
+            col=col_idx,
+        )
+
+    # Invisible scatter for colorbar and hover
     fig.add_trace(
         go.Scatter(
-            x=xx,
-            y=yy,
-            mode="lines",
-            line={"width": 1.5, "color": "rgba(120,120,120,0.15)"},
-            showlegend=False,
-            hoverinfo="skip",
-        ),
-        row=1,
-        col=col_idx,
-    )
-    # Colored markers on top for gradient visualization
-    fig.add_trace(
-        go.Scatter(
-            x=xx,
-            y=yy,
+            x=xx[::10],
+            y=yy[::10],
             mode="markers",
             marker={
-                "size": 6,
-                "color": t_vals,
+                "size": 0.1,
+                "opacity": 0,
+                "color": t_vals[::10],
                 "colorscale": colorscale,
                 "showscale": True,
                 "colorbar": {
-                    "title": {"text": "Parameter <i>t</i>", "font": {"size": 18}, "side": "right"},
+                    "title": {"text": "Parameter <i>t</i> (rad)", "font": {"size": 18}, "side": "right"},
                     "tickvals": cb_ticks,
                     "ticktext": cb_labels,
                     "tickfont": {"size": 16},
                     "len": 0.75,
                     "x": cb_x,
-                    "thickness": 18,
+                    "thickness": 16,
                     "outlinewidth": 0,
                 },
             },
-            hovertemplate=(
-                "<b>%{customdata[1]}</b><br>"
-                "t = %{customdata[0]:.3f}<br>"
-                "x(t) = %{x:.3f}<br>"
-                "y(t) = %{y:.3f}"
-                "<extra></extra>"
-            ),
-            customdata=np.column_stack([t_vals, np.full(len(t_vals), name)]),
+            hovertemplate=("t = %{customdata[0]:.3f} rad<br>x(t) = %{x:.3f}<br>y(t) = %{y:.3f}<extra></extra>"),
+            customdata=np.column_stack([t_vals[::10]]),
             showlegend=False,
         ),
         row=1,
         col=col_idx,
     )
 
-# Start/end markers — Lissajous: both near origin, use annotation arrows to avoid overlap
-fig.add_trace(
-    go.Scatter(
-        x=[x_lissajous[0]],
-        y=[y_lissajous[0]],
-        mode="markers",
-        marker={"size": 16, "color": "#306998", "symbol": "circle", "line": {"color": "white", "width": 2.5}},
-        showlegend=False,
-        hovertemplate="<b>Start</b> (t = 0)<extra></extra>",
-    ),
-    row=1,
-    col=1,
-)
-fig.add_annotation(
-    x=x_lissajous[0],
-    y=y_lissajous[0],
-    text="<b>Start</b> (t = 0)",
-    showarrow=True,
-    arrowhead=0,
-    arrowwidth=1.5,
-    arrowcolor="#306998",
-    ax=55,
-    ay=-45,
-    font={"size": 16, "color": "#306998"},
-    bgcolor="rgba(255,255,255,0.85)",
-    bordercolor="#306998",
-    borderwidth=1,
-    borderpad=4,
-    xref="x",
-    yref="y",
-)
-
-fig.add_trace(
-    go.Scatter(
-        x=[x_lissajous[-1]],
-        y=[y_lissajous[-1]],
-        mode="markers",
-        marker={"size": 16, "color": "#E4573A", "symbol": "square", "line": {"color": "white", "width": 2.5}},
-        showlegend=False,
-        hovertemplate="<b>End</b> (t = 2π)<extra></extra>",
-    ),
-    row=1,
-    col=1,
-)
-fig.add_annotation(
-    x=x_lissajous[-1],
-    y=y_lissajous[-1],
-    text="<b>End</b> (t = 2π)",
-    showarrow=True,
-    arrowhead=0,
-    arrowwidth=1.5,
-    arrowcolor="#E4573A",
-    ax=-55,
-    ay=45,
-    font={"size": 16, "color": "#E4573A"},
-    bgcolor="rgba(255,255,255,0.85)",
-    bordercolor="#E4573A",
-    borderwidth=1,
-    borderpad=4,
-    xref="x",
-    yref="y",
-)
-
-# Start/end markers — Spiral
-fig.add_trace(
-    go.Scatter(
-        x=[x_spiral[0]],
-        y=[y_spiral[0]],
-        mode="markers",
-        marker={"size": 16, "color": "#306998", "symbol": "circle", "line": {"color": "white", "width": 2.5}},
-        showlegend=False,
-        hovertemplate="<b>Start</b> (t = 0)<extra></extra>",
-    ),
-    row=1,
-    col=2,
-)
-fig.add_annotation(
-    x=x_spiral[0],
-    y=y_spiral[0],
-    text="<b>Start</b> (t = 0)",
-    showarrow=True,
-    arrowhead=0,
-    arrowwidth=1.5,
-    arrowcolor="#306998",
-    ax=50,
-    ay=-40,
-    font={"size": 16, "color": "#306998"},
-    bgcolor="rgba(255,255,255,0.85)",
-    bordercolor="#306998",
-    borderwidth=1,
-    borderpad=4,
-    xref="x2",
-    yref="y2",
-)
-
-fig.add_trace(
-    go.Scatter(
-        x=[x_spiral[-1]],
-        y=[y_spiral[-1]],
-        mode="markers",
-        marker={"size": 16, "color": "#E4573A", "symbol": "square", "line": {"color": "white", "width": 2.5}},
-        showlegend=False,
-        hovertemplate="<b>End</b> (t = 4π)<extra></extra>",
-    ),
-    row=1,
-    col=2,
-)
-fig.add_annotation(
-    x=x_spiral[-1],
-    y=y_spiral[-1],
-    text="<b>End</b> (t = 4π)",
-    showarrow=True,
-    arrowhead=0,
-    arrowwidth=1.5,
-    arrowcolor="#E4573A",
-    ax=-60,
-    ay=-35,
-    font={"size": 16, "color": "#E4573A"},
-    bgcolor="rgba(255,255,255,0.85)",
-    bordercolor="#E4573A",
-    borderwidth=1,
-    borderpad=4,
-    xref="x2",
-    yref="y2",
-)
+# Start/end markers and annotations for both curves
+markers_config = [(x_lissajous, y_lissajous, 1, "x", "y", "0", "2π"), (x_spiral, y_spiral, 2, "x2", "y2", "0", "4π")]
+for xx, yy, col_idx, xref, yref, t_start, t_end in markers_config:
+    # Start marker
+    fig.add_trace(
+        go.Scatter(
+            x=[xx[0]],
+            y=[yy[0]],
+            mode="markers",
+            marker={"size": 16, "color": "#306998", "symbol": "circle", "line": {"color": "white", "width": 2.5}},
+            showlegend=False,
+            hovertemplate=f"<b>Start</b> (t = {t_start})<extra></extra>",
+        ),
+        row=1,
+        col=col_idx,
+    )
+    fig.add_annotation(
+        x=xx[0],
+        y=yy[0],
+        text=f"<b>Start</b> (t = {t_start})",
+        showarrow=True,
+        arrowhead=0,
+        arrowwidth=1.5,
+        arrowcolor="#306998",
+        ax=55,
+        ay=-45,
+        font={"size": 16, "color": "#306998"},
+        bgcolor="rgba(255,255,255,0.88)",
+        bordercolor="#306998",
+        borderwidth=1,
+        borderpad=4,
+        xref=xref,
+        yref=yref,
+    )
+    # End marker
+    fig.add_trace(
+        go.Scatter(
+            x=[xx[-1]],
+            y=[yy[-1]],
+            mode="markers",
+            marker={"size": 16, "color": "#E4573A", "symbol": "square", "line": {"color": "white", "width": 2.5}},
+            showlegend=False,
+            hovertemplate=f"<b>End</b> (t = {t_end})<extra></extra>",
+        ),
+        row=1,
+        col=col_idx,
+    )
+    ax_offset = -55 if col_idx == 1 else -60
+    ay_offset = 45 if col_idx == 1 else -35
+    fig.add_annotation(
+        x=xx[-1],
+        y=yy[-1],
+        text=f"<b>End</b> (t = {t_end})",
+        showarrow=True,
+        arrowhead=0,
+        arrowwidth=1.5,
+        arrowcolor="#E4573A",
+        ax=ax_offset,
+        ay=ay_offset,
+        font={"size": 16, "color": "#E4573A"},
+        bgcolor="rgba(255,255,255,0.88)",
+        bordercolor="#E4573A",
+        borderwidth=1,
+        borderpad=4,
+        xref=xref,
+        yref=yref,
+    )
 
 # Style
 fig.update_layout(
@@ -253,7 +203,7 @@ fig.update_layout(
     paper_bgcolor="white",
     width=1200,
     height=600,
-    margin={"l": 70, "r": 120, "t": 120, "b": 70},
+    margin={"l": 70, "r": 70, "t": 120, "b": 70},
 )
 
 # Style subplot titles
@@ -263,39 +213,39 @@ for annotation in fig.layout.annotations:
 
 for col in [1, 2]:
     fig.update_xaxes(
-        title={"text": "x(t)", "font": {"size": 22, "color": "#444"}, "standoff": 12},
+        title={"text": "Horizontal Position x(t)", "font": {"size": 22, "color": "#444"}, "standoff": 12},
         tickfont={"size": 18, "color": "#666"},
         showgrid=True,
         gridwidth=1,
-        gridcolor="rgba(0,0,0,0.06)",
+        gridcolor="rgba(0,0,0,0.05)",
         zeroline=True,
         zerolinewidth=1.5,
-        zerolinecolor="rgba(0,0,0,0.18)",
+        zerolinecolor="rgba(0,0,0,0.15)",
         showline=True,
         linewidth=1,
-        linecolor="rgba(0,0,0,0.2)",
+        linecolor="rgba(0,0,0,0.18)",
         scaleanchor="y" if col == 1 else "y2",
         scaleratio=1,
         row=1,
         col=col,
     )
     fig.update_yaxes(
-        title={"text": "y(t)", "font": {"size": 22, "color": "#444"}, "standoff": 12},
+        title={"text": "Vertical Position y(t)", "font": {"size": 22, "color": "#444"}, "standoff": 12},
         tickfont={"size": 18, "color": "#666"},
         showgrid=True,
         gridwidth=1,
-        gridcolor="rgba(0,0,0,0.06)",
+        gridcolor="rgba(0,0,0,0.05)",
         zeroline=True,
         zerolinewidth=1.5,
-        zerolinecolor="rgba(0,0,0,0.18)",
+        zerolinecolor="rgba(0,0,0,0.15)",
         showline=True,
         linewidth=1,
-        linecolor="rgba(0,0,0,0.2)",
+        linecolor="rgba(0,0,0,0.18)",
         row=1,
         col=col,
     )
 
-# Plotly-specific: add range slider and update menus for interactivity
+# Plotly-specific: interactive reset button
 fig.update_layout(
     updatemenus=[
         {

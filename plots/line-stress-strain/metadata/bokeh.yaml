@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: line-stress-strain
 created: '2026-03-20T21:23:53Z'
-updated: '2026-03-20T21:28:08Z'
+updated: '2026-03-20T21:38:43Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23363005492
 issue: 4413
@@ -10,39 +10,40 @@ library_version: 3.9.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-stress-strain/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-stress-strain/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-stress-strain/bokeh/plot.html
-quality_score: 83
+quality_score: 88
 review:
   strengths:
-  - Excellent data quality with realistic mild steel values and physically accurate
-    curve regions
-  - Complete spec compliance with all required features present (regions, critical
-    points, offset line, modulus)
-  - Clean well-structured code following KISS principles
-  - Semantic color coding for key points aids comprehension
+  - Excellent spec compliance — all required features (regions, critical points, offset
+    line, modulus annotation) present and correct
+  - Realistic mild steel data with physically accurate material properties
+  - Professional color palette with good colorblind accessibility
+  - Strong data storytelling with clear visual progression through mechanical behavior
+    regions
+  - Clean, well-structured code with appropriate complexity
   weaknesses:
-  - 0.2% offset line is barely visible due to compressed elastic region scale
-  - Yield point marker cramped against y-axis reducing visual impact
-  - Legend isolated at far right edge rather than integrated near data
-  - Title format deviates from required spec-id format
-  - Color palette functional but not harmonious - red/green combination
-  image_description: 'The plot displays a mild steel engineering stress-strain curve
-    rendered in blue (#306998) on a white background at 4800x2700 px. The x-axis is
-    labeled "Engineering Strain (mm/mm)" ranging from 0 to ~0.35, and the y-axis is
-    labeled "Engineering Stress (MPa)" ranging from ~0 to ~450. The title reads "Mild
-    Steel Tensile Test · line-stress-strain · bokeh · pyplots.ai". The curve rises
-    steeply in a near-vertical elastic region near the origin, transitions through
-    strain hardening with a concave-down shape reaching a peak at ~0.22 strain / 400
-    MPa (UTS), then decreases through a necking region to fracture at ~0.35 strain
-    / ~325 MPa. Three key points are marked: a gold circle for Yield Point near the
-    y-axis, a red triangle for UTS at the peak, and a green square for Fracture at
-    the end. Gray italic labels mark "Elastic", "Strain Hardening", and "Necking"
-    regions. A short dashed gold line near the origin represents the 0.2% offset line.
-    Annotations in bold colored text show "Yield Point (250 MPa)", "UTS (400 MPa)",
-    "Fracture", and "E = 210 GPa". A legend with all five elements sits at the right
-    edge of the plot.'
+  - 'Left-side visual congestion: elastic region packs too many elements into tiny
+    horizontal strip'
+  - 0.2% offset line barely visible due to compressed elastic region
+  - Lower half of plot area largely empty — wasted vertical space
+  image_description: 'The plot displays an engineering stress-strain curve for mild
+    steel on a light gray (#FAFAFA) background with white border. The title "line-stress-strain
+    · bokeh · pyplots.ai" is in dark gray at the top-left. The x-axis is labeled "Engineering
+    Strain (mm/mm)" and the y-axis "Engineering Stress (MPa)" in muted gray tones.
+    The main curve is a dark blue (#306998) line starting from the origin, rising
+    steeply through the elastic region, then curving through strain hardening to reach
+    UTS (~400 MPa at ~0.22 strain), followed by a gradual decline in the necking region
+    ending at a fracture point (~320 MPa at 0.35 strain). Three key points are marked:
+    a gold circle for yield point, a purple triangle for UTS, and a sky-blue square
+    for fracture — all with white edge outlines. A short gold dashed line near the
+    left edge shows the 0.2% offset line. Gray italic region labels ("Elastic", "Strain
+    Hardening", "Necking") are placed along the curve. Bold colored annotations mark
+    "Yield Point (250 MPa)", "UTS (400 MPa)", "Fracture", and "E = 210 GPa". Subtle
+    dotted horizontal reference lines span the full width at yield and UTS levels.
+    A boxed legend in the lower-right area lists all five plot elements. Subtle gray
+    grid lines at low alpha.'
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 26
       max: 30
       items:
       - id: VQ-01
@@ -50,68 +51,69 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 28pt, axis labels 22pt, ticks
-          18pt, annotations 18-20pt'
+        comment: 'All font sizes explicitly set: title 28pt, axis labels 22pt, tick
+          labels 18pt, annotations 18pt, region labels 22pt, legend 18pt'
       - id: VQ-02
         name: No Overlap
-        score: 5
-        max: 6
-        passed: true
-        comment: Generally clean but yield point area near y-axis is slightly crowded
-      - id: VQ-03
-        name: Element Visibility
         score: 4
         max: 6
         passed: true
-        comment: Main curve and markers visible but 0.2% offset line is extremely
-          short and barely distinguishable
+        comment: 'Left-side congestion: elastic region, yield marker, offset line,
+          and multiple labels crammed into narrow strip'
+      - id: VQ-03
+        name: Element Visibility
+        score: 5
+        max: 6
+        passed: true
+        comment: Main curve and markers clearly visible. 0.2% offset line very short
+          due to compressed elastic region
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Colors distinguishable with shape differences but red-green combination
-          not ideal for colorblind
+        comment: 'Colorblind-safe palette: blue, gold, purple, sky-blue. No red-green
+          dependency'
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good canvas utilization but legend is pushed to far right edge and
-          appears isolated
+        comment: Good canvas utilization but lower half of plot area mostly empty
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: Engineering Strain (mm/mm) and Engineering
+        comment: 'Descriptive labels with units: Engineering Strain (mm/mm), Engineering
           Stress (MPa)'
     design_excellence:
-      score: 12
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Thoughtful semantic color palette above defaults but not publication-quality
-          polish
+        comment: Custom colorblind-safe palette, muted axis colors, light background,
+          professional polish above defaults
       - id: DE-02
         name: Visual Refinement
-        score: 3
-        max: 6
-        passed: true
-        comment: Subtle grid, outline removed, toolbar hidden but default axis styling
-          still present
-      - id: DE-03
-        name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Good storytelling with labeled regions and annotated critical points
+        comment: Subtle grid at alpha 0.15, outline removed, minor ticks removed,
+          toolbar hidden, dotted reference lines
+      - id: DE-03
+        name: Data Storytelling
+        score: 5
+        max: 6
+        passed: true
+        comment: 'Strong storytelling: labeled regions guide viewer through elastic
+          → strain hardening → necking. Critical points annotated with values'
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -119,27 +121,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct line plot showing stress-strain curve
+        comment: Correct line plot showing engineering stress-strain curve
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All required features present: labeled regions, critical points,
-          offset line, modulus annotation'
+        comment: 'All required: labeled regions, critical points, Young''s modulus
+          annotation, 0.2% offset line'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=strain Y=stress correctly mapped with full data range
+        comment: X=strain, Y=stress correctly mapped, axes show full range
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Title has extra Mild Steel Tensile Test prefix deviating from exact
-          spec-id format
+        comment: Title format correct, legend labels descriptive and matching all
+          elements
     data_quality:
       score: 15
       max: 15
@@ -149,21 +151,21 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: All stress-strain curve regions represented with yield, UTS, and
-          fracture points
+        comment: 'Shows all aspects: elastic, strain hardening, necking, fracture,
+          offset method, modulus'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Mild steel tensile test is a classic neutral engineering scenario
+        comment: 'Mild steel tensile test with realistic properties: E=210 GPa, σ_y=250
+          MPa, UTS=400 MPa'
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 'Physically accurate values for mild steel: E=210 GPa, yield=250
-          MPa, UTS=400 MPa'
+        comment: All values physically realistic for mild steel (ASTM A36 range)
     code_quality:
       score: 10
       max: 10
@@ -173,31 +175,32 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports-data-plot-save structure with no functions or classes
+        comment: 'Clean linear flow: imports → data → plot → style → save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set and data is deterministic
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean well-organized code with appropriate complexity
+        comment: Well-structured, appropriate complexity with Ludwik power law for
+          realistic curve
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via export_png with current Bokeh API
+        comment: Saves plot.png via export_png, also saves HTML. Current API
     library_mastery:
       score: 7
       max: 10
@@ -207,14 +210,15 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of ColumnDataSource, figure, Label, Legend/LegendItem patterns
+        comment: Good use of ColumnDataSource, Span, Label, Legend/LegendItem. Follows
+          Bokeh patterns
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses ColumnDataSource, explicit Legend construction, add_layout,
-          and dual HTML+PNG export
+        comment: Span layouts, explicit Legend construction, dual PNG+HTML export.
+          Could leverage HoverTool
   verdict: REJECTED
 impl_tags:
   dependencies: []

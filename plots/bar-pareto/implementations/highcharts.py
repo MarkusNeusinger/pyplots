@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bar-pareto: Pareto Chart with Cumulative Line
 Library: highcharts unknown | Python 3.14.3
-Quality: 85/100 | Created: 2026-03-20
+Quality: 90/100 | Created: 2026-03-20
 """
 
 import re

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-stress-strain: Engineering Stress-Strain Curve
 Library: plotly 6.6.0 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-20
@@ -107,7 +107,7 @@ fig.add_trace(
         x=[uts_plot_strain],
         y=[uts_plot_stress],
         mode="markers",
-        marker={"size": 14, "color": "#2E8B57", "symbol": "star", "line": {"color": "white", "width": 1.5}},
+        marker={"size": 14, "color": "#D4A017", "symbol": "star", "line": {"color": "white", "width": 1.5}},
         name="Ultimate Tensile Strength",
         hovertemplate="UTS<br>Strain: %{x:.4f}<br>Stress: %{y:.1f} MPa<extra></extra>",
     )
@@ -135,7 +135,7 @@ fig.add_annotation(
     arrowcolor="#B85C38",
     ax=70,
     ay=40,
-    font={"size": 15, "color": "#B85C38"},
+    font={"size": 17, "color": "#B85C38"},
 )
 
 fig.add_annotation(
@@ -144,10 +144,10 @@ fig.add_annotation(
     text=f"UTS = {uts} MPa",
     showarrow=True,
     arrowhead=2,
-    arrowcolor="#2E8B57",
+    arrowcolor="#D4A017",
     ax=-50,
     ay=-35,
-    font={"size": 15, "color": "#2E8B57"},
+    font={"size": 17, "color": "#D4A017"},
 )
 
 fig.add_annotation(
@@ -159,15 +159,15 @@ fig.add_annotation(
     arrowcolor="#C62828",
     ax=-55,
     ay=30,
-    font={"size": 15, "color": "#C62828"},
+    font={"size": 17, "color": "#C62828"},
 )
 
 # Region labels
-fig.add_annotation(x=0.008, y=100, text="Elastic", showarrow=False, font={"size": 14, "color": "#888888"})
+fig.add_annotation(x=0.008, y=100, text="Elastic", showarrow=False, font={"size": 16, "color": "#888888"})
 
-fig.add_annotation(x=0.12, y=320, text="Strain Hardening", showarrow=False, font={"size": 14, "color": "#888888"})
+fig.add_annotation(x=0.12, y=320, text="Strain Hardening", showarrow=False, font={"size": 16, "color": "#888888"})
 
-fig.add_annotation(x=0.30, y=375, text="Necking", showarrow=False, font={"size": 14, "color": "#888888"})
+fig.add_annotation(x=0.295, y=430, text="Necking", showarrow=False, font={"size": 16, "color": "#888888"})
 
 # Young's modulus annotation
 fig.add_annotation(
@@ -179,7 +179,7 @@ fig.add_annotation(
     arrowcolor="#306998",
     ax=60,
     ay=-25,
-    font={"size": 14, "color": "#306998"},
+    font={"size": 16, "color": "#306998"},
 )
 
 # Style

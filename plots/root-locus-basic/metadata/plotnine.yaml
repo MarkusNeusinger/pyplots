@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: root-locus-basic
 created: '2026-03-20T21:22:29Z'
-updated: '2026-03-20T21:46:26Z'
+updated: '2026-03-20T21:56:26Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23362982110
 issue: 4414
@@ -13,80 +13,77 @@ preview_html: null
 quality_score: 89
 review:
   strengths:
-  - Excellent spec compliance with all root locus features present and correct
-  - Strong data storytelling with stable/unstable region shading and annotated stability
-    boundary crossings at K=12.0
-  - Custom mizani formatters for imaginary axis labels demonstrate library-specific
-    mastery
-  - Deterministic well-structured code with clean linear flow
-  - Professional colorblind-safe palette with good contrast
+  - Excellent spec compliance — all required root locus features implemented correctly
+  - Strong data storytelling with stable/unstable region shading and highlighted stability
+    boundary crossings
+  - Professional custom palette and typography
+  - Proper control engineering notation on axes
+  - Good use of plotnine-specific features (mizani formatters, guides customization)
   weaknesses:
-  - Minor visual density near the origin where multiple elements overlap
-  - Damping ratio and natural frequency labels use small font sizes (7-8pt) at the
-    lower edge of legibility
-  - Grid could be even more subtle for a more polished look
-  image_description: 'The plot displays a root locus diagram titled "root-locus-basic
-    · plotnine · pyplots.ai" on a square canvas with equal axis scaling. Three branches
-    (blue #306998, orange #E8833A, green #5BA65B) trace closed-loop pole trajectories
-    as gain K increases. Open-loop poles are marked with × symbols at s=0, s=-1, and
-    s=-3 on the real axis. A breakaway point is marked with a filled square near s≈-0.45,
-    annotated "Breakaway K=0.63". Red diamond markers at the imaginary axis crossings
-    (≈±1.7j) are labeled "K=12.0" in bold red text. Dashed gray damping ratio lines
-    (ζ=0.2, 0.4, 0.6, 0.8) radiate from the origin into the left half-plane with italic
-    labels. Dotted natural frequency circles (ωn=1, 2, 3, 4) are centered at the origin
-    with small labels. Real axis segments of the root locus appear as thick brownish
-    lines. The left half-plane has a subtle green "Stable" shading and the right half-plane
-    has subtle red "Unstable" shading. Direction arrows indicate increasing gain on
-    each branch. The legend (right side) shows both Markers and Branch categories.
-    Axis labels read "Real Axis (σ)" and "Imaginary Axis (jω)" with custom mizani
-    formatters showing "j" suffix on imaginary axis ticks.'
+  - Minor crowding near the origin where multiple markers and segments overlap
+  - Annotation text size (9pt) is smaller than ideal relative to other text elements
+  - Natural frequency circles and damping ratio lines could be slightly more visible
+  image_description: 'The plot shows a root locus diagram for the transfer function
+    G(s) = 1/[s(s+1)(s+3)] with three branches colored blue (Branch 1), orange (Branch
+    2), and green (Branch 3). Open-loop poles are marked with X markers at s=0, s=-1,
+    and s=-3 on the real axis. A breakaway point is marked with a square marker near
+    s≈-0.45 with annotation "Breakaway K=0.63". Red diamond markers highlight imaginary
+    axis crossings at approximately ±1.7j with "K=12.0" labels. The left half-plane
+    is shaded light green with italic "Stable" label, and the right half-plane is
+    shaded light pink with italic "Unstable" label. Dashed gray damping ratio lines
+    (ζ=0.2, 0.4, 0.6, 0.8) radiate from the origin, and dotted gray natural frequency
+    circles (ωn=1, 2, 3, 4) are centered at the origin. Real axis segments of the
+    root locus are shown as thick brown lines. Direction arrows indicate increasing
+    gain. The axes use proper control engineering notation: "Real Axis (σ)" and "Imaginary
+    Axis (jω)" with custom tick labels. The plot uses equal axis scaling and square
+    format with a legend on the right.'
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 27
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 24pt, axis titles 20pt, ticks
-          16pt, legend 14-16pt'
+        comment: Font sizes explicitly set for title (24), axes (20), ticks (16),
+          legend (14/16). Some annotation text at size=9 is on the smaller side.
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: Minor crowding near origin where branches, breakaway marker, arrows
-          converge
+        comment: Minor crowding near the origin where breakaway marker, pole markers,
+          and real axis segments converge.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Branch lines well-sized; damping/frequency labels slightly small
-          at size 7-8
+        comment: Branch lines clear at size=1.5. Markers well-sized. Natural frequency
+          circles and damping lines could be slightly more visible.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue/orange/green palette is colorblind-safe with good contrast
+        comment: Blue/orange/green palette is colorblind-safe with good contrast.
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Square format with coord_fixed ideal for root locus, balanced margins
+        comment: Square format fills canvas well. Legend positioned cleanly. Balanced
+          margins.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with control theory notation: Real Axis (σ),
-          Imaginary Axis (jω)'
+        comment: Real Axis (σ) and Imaginary Axis (jω) with proper engineering notation.
     design_excellence:
-      score: 14
+      score: 15
       max: 20
       items:
       - id: DE-01
@@ -94,21 +91,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom palette, stable/unstable shading, red diamond crossings, mizani
-          formatters
+        comment: Strong design with stability region shading, custom palette, styled
+          legend. Clearly above defaults.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: theme_minimal, subtle grid, minor grid removed, white background
+        comment: theme_minimal removes spines, subtle grid, styled legend background.
+          Good refinement.
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Stable/unstable shading communicates stability boundary, K annotations
-          at crossings
+        comment: Stability region shading, highlighted crossings, and annotations
+          create strong visual hierarchy.
     spec_compliance:
       score: 15
       max: 15
@@ -118,26 +116,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct root locus plot showing pole migration in complex plane
+        comment: Correct root locus plot showing pole migration in complex plane.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features: poles, branches with arrows, real axis segments, crossings,
-          guide lines, equal scaling'
+        comment: 'All spec features present: pole markers, branch curves with arrows,
+          real axis segments, crossings, damping/frequency guides, equal scaling.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Real/imaginary correctly mapped, all data visible
+        comment: Real/Imaginary correctly mapped. Appropriate axis range.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format, legend shows Markers and Branch categories
+        comment: Title format correct. Legend labels descriptive and accurate.
     data_quality:
       score: 15
       max: 15
@@ -147,73 +145,73 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Shows all root locus features: breakaway, crossings, real axis segments,
-          complex branches'
+        comment: 'Shows all root locus features: branches, breakaway, crossings, real
+          axis segments, damping/frequency guides.'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Standard control systems transfer function, engineering/educational
-          context
+        comment: Classic control systems transfer function — textbook example appropriate
+          for engineering domain.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Standard textbook pole locations, gain range covers all interesting
-          dynamics
+        comment: Sensible pole locations and gain range covering all interesting behavior.
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
-        passed: true
-        comment: 'Linear flow: imports, data, computation, plot, save. No functions/classes'
+        passed: false
+        comment: Helper function jw_label_fn slightly breaks pure KISS structure.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic polynomial root-finding
+        comment: Fully deterministic — polynomial roots, no randomness.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used including mizani.formatters
+        comment: All imports used, including mizani.formatters.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Well-structured, appropriate complexity
+        comment: Well-organized, appropriate complexity. No fake functionality.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300
+        comment: Saves as plot.png, uses current plotnine API.
     library_mastery:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: 'Excellent grammar of graphics: multiple geom layers, aes mappings,
-          scale_*_manual, theme customization'
+        comment: Expertly uses plotnine grammar of graphics with multiple geom layers,
+          aes mapping, scales, coord_fixed, theme customization.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: mizani.formatters.custom_format, guides() with guide_legend(), coord_fixed()
+        comment: Uses mizani custom_format, custom label function for jω notation,
+          guides() with order and override_aes.
   verdict: REJECTED
 impl_tags:
   dependencies:
@@ -222,6 +220,7 @@ impl_tags:
   - annotations
   - layer-composition
   - custom-legend
+  - manual-ticks
   patterns:
   - data-generation
   - iteration-over-groups

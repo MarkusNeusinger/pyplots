@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: line-parametric
 created: '2026-03-20T10:38:45Z'
-updated: '2026-03-20T10:43:08Z'
+updated: '2026-03-20T10:54:10Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23339035358
 issue: 4424
@@ -10,38 +10,36 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-parametric/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-parametric/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-parametric/highcharts/plot.html
-quality_score: 71
+quality_score: 76
 review:
   strengths:
-  - Well-chosen color gradient palettes that clearly show parameter direction (cool-to-warm
-    transitions)
-  - Both required curve types (Lissajous + spiral) present with good point density
-  - Clean code structure with deterministic data generation
-  - Start/end markers with shape differentiation (circle vs diamond)
+  - Color gradient along curves effectively shows direction of parameter t
+  - Two well-chosen parametric curves (Lissajous + Archimedean spiral) demonstrating
+    different behaviors
+  - Thoughtful start/end markers with data labels
+  - Custom gradient palettes with smooth color transitions
+  - Good subtitle explaining the mathematical equations
   weaknesses:
-  - Equal aspect ratio not implemented - 16:9 canvas distorts curves horizontally,
-    violating key spec requirement
-  - Legend not visible in rendered output - needs positioning or spacing fix
-  - X-axis tick labels too dense - labels at every 0.05 create visual clutter
-  - No text labels on start/end markers
-  - Uses ScatterSeries instead of LineSeries for line drawing
-  image_description: The plot displays two parametric curves on a white background
-    with a 16:9 aspect ratio canvas (4800x2700). The title "line-parametric · highcharts
-    · pyplots.ai" appears at top in bold black text, with a smaller subtitle describing
-    both curves. The Lissajous figure (x=sin(3t), y=sin(2t)) is rendered as a bow-tie/figure-eight
-    shape with a color gradient transitioning from dark navy blue through cyan and
-    light green to yellow and burnt orange. The Archimedean spiral starts from the
-    center and expands outward with a gradient from deep purple through lavender and
-    pink to salmon. Both axes are labeled "x(t)" and "y(t)" with tick labels at every
-    0.05 increment along the x-axis, creating very dense labeling. Start points are
-    marked with filled circle markers and end points with diamond markers. The grid
-    lines are very subtle with low opacity. The legend is NOT visible in the rendered
-    image. The curves appear horizontally stretched because the canvas is 16:9 but
-    both axis ranges are set equally to -1.3 to 1.3, violating the equal aspect ratio
-    requirement.
+  - Data labels overlap near the origin (Lissajous t=0,2π and Spiral start)
+  - Helper functions violate KISS structure
+  - Uses ScatterSeries instead of LineSeries (less idiomatic)
+  - 60+ series objects for gradient is heavy
+  - Line width too thin for 3600px canvas
+  image_description: 'The plot displays two parametric curves on a square canvas (~3600x3600px)
+    with a light gray (#fafafa) background. The Lissajous figure (sin(3t), sin(2t))
+    traces a three-lobed, self-intersecting closed curve with a color gradient transitioning
+    from blue through cyan, green, to yellow-olive. The Archimedean spiral (t·cos(t),
+    t·sin(t)) spirals outward from the origin with a color gradient from purple through
+    magenta, pink, to orange-red. The title reads "line-parametric · highcharts ·
+    pyplots.ai" in bold at the top with a subtitle describing both equations. Axes
+    are labeled "x(t) — horizontal position" and "y(t) — vertical position" with subtle
+    dotted grid lines. Near the origin, two markers labeled "Lissajous t=0,2π" and
+    "Spiral start" overlap each other. A "Spiral end" diamond marker appears at the
+    outer edge of the spiral. The bottom legend lists four entries: Lissajous, Spiral,
+    Lissajous t=0,2π, and Spiral end.'
   criteria_checklist:
     visual_quality:
-      score: 22
+      score: 23
       max: 30
       items:
       - id: VQ-01
@@ -49,43 +47,44 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set (64px title, 44px axis titles, 32px tick
-          labels). Subtitle slightly small but readable.
+        comment: All font sizes explicitly set (title 64px, subtitle 36px, axes 40px,
+          ticks 30px, data labels 26px, legend 34px). All readable.
       - id: VQ-02
         name: No Overlap
         score: 4
         max: 6
         passed: false
-        comment: X-axis tick labels extremely dense at every 0.05 increment, creating
-          visual clutter.
+        comment: Lissajous t=0,2π and Spiral start data labels overlap near the origin
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Lines visible at width 6, start/end markers visible at radius 18.
+        comment: Lines visible with lineWidth 5, gradient colors distinguish curves.
+          Somewhat thin for 3600px canvas.
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 4
         passed: true
-        comment: Blue-to-orange and purple-to-pink gradients are distinguishable but
-          could be more distinct.
+        comment: Blue-to-orange and purple-to-pink gradients generally distinguishable.
+          Some middle segments may be harder for colorblind users.
       - id: VQ-05
         name: Layout & Canvas
-        score: 2
+        score: 3
         max: 4
-        passed: false
-        comment: 16:9 canvas with equal axis ranges causes horizontal stretching,
-          distorting geometric curves.
+        passed: true
+        comment: Square canvas appropriate for equal aspect ratio. Some wasted space
+          from -1.3 to 1.3 range.
       - id: VQ-06
         name: Axis Labels & Title
         score: 1
         max: 2
         passed: true
-        comment: Labels x(t) and y(t) are functional but lack descriptive context.
+        comment: Descriptive labels but dimensionless parametric coordinates lack
+          units
     design_excellence:
-      score: 11
+      score: 13
       max: 20
       items:
       - id: DE-01
@@ -93,23 +92,23 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Custom color gradient palettes above defaults. Good visual separation
-          between curves.
+        comment: Custom gradient palettes, custom typography, above defaults but not
+          publication-quality
       - id: DE-02
         name: Visual Refinement
-        score: 3
-        max: 6
-        passed: false
-        comment: Subtle grid is good. X-axis tick density hurts refinement.
-      - id: DE-03
-        name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Color gradient shows parameter direction. Start/end markers differentiated
-          by shape.
+        comment: Subtle dotted grid, custom spacing, clean axis styling
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Color gradients convey parameter direction, start/end markers guide
+          viewer
     spec_compliance:
-      score: 11
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -117,25 +116,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct parametric curve plot with two curves in 2D space.
+        comment: Correct parametric curve plot with two distinct curves
       - id: SC-02
         name: Required Features
-        score: 2
+        score: 3
         max: 4
-        passed: false
-        comment: Missing equal aspect ratio and text labels on start/end markers.
+        passed: true
+        comment: Color gradient, two curves, start/end markers, equal aspect ratio
+          all present. Label overlap reduces marker effectiveness.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: x(t) and y(t) correctly computed and mapped.
+        comment: X/Y correctly computed from parametric equations
       - id: SC-04
         name: Title & Legend
-        score: 1
+        score: 3
         max: 3
-        passed: false
-        comment: Title format correct but legend not visible in rendered image.
+        passed: true
+        comment: Title format correct, legend labels match data
     data_quality:
       score: 13
       max: 15
@@ -145,78 +145,78 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows Lissajous (self-intersecting, closed) and spiral (expanding,
-          open).
+        comment: Shows self-intersecting closed curve and open expanding spiral. Good
+          parametric diversity.
       - id: DQ-02
         name: Realistic Context
         score: 4
         max: 5
         passed: true
-        comment: Mathematical curves are canonical parametric examples.
+        comment: Classic mathematical curves are natural context for parametric plots
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values mathematically correct.
+        comment: Mathematically correct values, spiral normalized to fit axis range
     code_quality:
-      score: 9
+      score: 7
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 1
         max: 3
-        passed: true
-        comment: 'Linear flow: imports, data, segments, chart, series, export.'
+        passed: false
+        comment: Two helper functions (gradient_colors, build_segments) break flat
+          structure
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic with trigonometric functions.
+        comment: Fully deterministic using mathematical functions
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: All imports are used
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
         passed: false
-        comment: Hardcoded 20-element color arrays are verbose. Segment-building loops
-          repetitive.
+        comment: 30-segment approach creating 60+ series is verbose and heavy
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png and plot.html.
+        comment: Saves as plot.png via Selenium screenshot
     library_mastery:
-      score: 5
+      score: 6
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
         score: 3
         max: 5
-        passed: true
-        comment: Uses ScatterSeries with lineWidth instead of LineSeries. Good use
-          of linked_to.
+        passed: false
+        comment: Uses ScatterSeries instead of LineSeries for line curves
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Uses linked_to and HTML export but doesn't leverage colorAxis or
-          other distinctive Highcharts features.
+        passed: true
+        comment: Uses linkedTo for grouped legend, data labels with textOutline, interactive
+          tooltips
   verdict: REJECTED
 impl_tags:
   dependencies:
   - selenium
   techniques:
+  - annotations
   - html-export
   - custom-legend
   patterns:
@@ -226,4 +226,3 @@ impl_tags:
   styling:
   - gradient-fill
   - grid-styling
-  - edge-highlighting

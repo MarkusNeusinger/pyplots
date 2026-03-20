@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-pitch-events: Soccer Pitch Event Map
 Library: highcharts unknown | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-20
@@ -11,6 +11,9 @@ import urllib.request
 from pathlib import Path
 
 import numpy as np
+from highcharts_core.chart import Chart
+from highcharts_core.options import HighchartsOptions
+from highcharts_core.options.series.scatter import ScatterSeries
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -18,10 +21,11 @@ from selenium.webdriver.chrome.options import Options
 # Data - Synthetic match event data
 np.random.seed(42)
 
+# Colorblind-safe palette (Tol's qualitative) - all pairs distinguishable
 events = {
     "Pass": {
         "n": 55,
-        "color": "#2196F3",
+        "color": "#4477AA",
         "symbol": "circle",
         "radius": 13,
         "z": 4,
@@ -32,7 +36,7 @@ events = {
     },
     "Shot": {
         "n": 18,
-        "color": "#E53935",
+        "color": "#EE6677",
         "symbol": "triangle",
         "radius": 18,
         "z": 8,
@@ -43,7 +47,7 @@ events = {
     },
     "Tackle": {
         "n": 25,
-        "color": "#FF9800",
+        "color": "#CCBB44",
         "symbol": "triangle-down",
         "radius": 14,
         "z": 5,
@@ -54,7 +58,7 @@ events = {
     },
     "Interception": {
         "n": 22,
-        "color": "#00897B",
+        "color": "#AA3377",
         "symbol": "diamond",
         "radius": 14,
         "z": 5,
@@ -66,15 +70,107 @@ events = {
 }
 
 arrows = []
-series_list = []
 
+# Build chart using highcharts-core Python API
+chart = Chart(container="container")
+chart.options = HighchartsOptions()
+
+chart.options.chart = {
+    "type": "scatter",
+    "width": 4800,
+    "height": 2700,
+    "backgroundColor": "#1a1a2e",
+    "plotBackgroundColor": {
+        "linearGradient": {"x1": 0, "y1": 0, "x2": 0, "y2": 1},
+        "stops": [[0, "#2d7a32"], [0.5, "#256b28"], [1, "#1e5c20"]],
+    },
+    "marginBottom": 180,
+    "marginTop": 160,
+    "marginLeft": 100,
+    "marginRight": 80,
+    "style": {"fontFamily": "'Segoe UI', Helvetica, Arial, sans-serif"},
+}
+
+chart.options.title = {
+    "text": "scatter-pitch-events \u00b7 highcharts \u00b7 pyplots.ai",
+    "style": {"fontSize": "46px", "fontWeight": "600", "color": "#e8e8e8", "letterSpacing": "0.5px"},
+}
+
+chart.options.subtitle = {
+    "text": (
+        '<span style="font-size:30px;color:#aaa;">'
+        "\u25cf Filled = Successful \u00a0\u00a0"
+        "\u25cb White = Unsuccessful \u00a0\u00a0"
+        "\u2192 Arrows show pass/shot trajectory \u00a0\u00a0"
+        "| Shots enlarged for tactical emphasis"
+        "</span>"
+    ),
+    "useHTML": True,
+    "style": {"fontSize": "30px"},
+}
+
+chart.options.x_axis = {
+    "min": -14.5,
+    "max": 119.5,
+    "title": {"enabled": False},
+    "labels": {"enabled": False},
+    "gridLineWidth": 0,
+    "lineWidth": 0,
+    "tickWidth": 0,
+}
+
+chart.options.y_axis = {
+    "min": -2,
+    "max": 70,
+    "title": {"enabled": False},
+    "labels": {"enabled": False},
+    "gridLineWidth": 0,
+    "lineWidth": 0,
+    "tickWidth": 0,
+}
+
+chart.options.legend = {
+    "enabled": True,
+    "floating": True,
+    "verticalAlign": "top",
+    "align": "left",
+    "x": 120,
+    "y": 80,
+    "layout": "horizontal",
+    "itemStyle": {"fontSize": "30px", "fontWeight": "normal", "color": "#ddd"},
+    "itemHoverStyle": {"color": "#fff"},
+    "symbolRadius": 0,
+    "symbolWidth": 28,
+    "symbolHeight": 28,
+    "itemDistance": 40,
+    "backgroundColor": "rgba(26,26,46,0.85)",
+    "borderRadius": 10,
+    "padding": 18,
+    "shadow": True,
+}
+
+chart.options.credits = {"enabled": False}
+
+chart.options.tooltip = {
+    "headerFormat": "",
+    "pointFormat": ('<b style="color:{series.color}">{series.name}</b><br/>Position: ({point.x:.0f}m, {point.y:.0f}m)'),
+    "style": {"fontSize": "20px"},
+    "backgroundColor": "rgba(26,26,46,0.92)",
+    "borderColor": "#555",
+    "shadow": {"color": "rgba(0,0,0,0.3)"},
+}
+
+chart.options.plot_options = {
+    "scatter": {"shadow": {"color": "rgba(0,0,0,0.3)", "offsetX": 0, "offsetY": 2, "width": 6}}
+}
+
+# Add series using ScatterSeries API
 for name, cfg in events.items():
     n = cfg["n"]
     x = np.random.uniform(*cfg["x_range"], n)
     y = np.random.uniform(*cfg["y_range"], n)
     ok = np.random.random(n) < cfg["success_rate"]
 
-    # Unsuccessful: white fill with colored border for contrast on green pitch
     data = [
         {
             "x": round(float(x[i]), 1),
@@ -88,16 +184,13 @@ for name, cfg in events.items():
         for i in range(n)
     ]
 
-    series_list.append(
-        {
-            "type": "scatter",
-            "name": name,
-            "color": cfg["color"],
-            "marker": {"symbol": cfg["symbol"], "radius": cfg["radius"], "lineColor": cfg["color"], "lineWidth": 2},
-            "data": data,
-            "zIndex": cfg["z"],
-        }
-    )
+    series = ScatterSeries()
+    series.name = name
+    series.color = cfg["color"]
+    series.marker = {"symbol": cfg["symbol"], "radius": cfg["radius"], "lineColor": cfg["color"], "lineWidth": 2}
+    series.data = data
+    series.z_index = cfg["z"]
+    chart.add_series(series)
 
     if cfg["has_arrow"]:
         if name == "Shot":
@@ -118,96 +211,6 @@ for name, cfg in events.items():
                 }
             )
 
-# Chart configuration
-chart_config = {
-    "chart": {
-        "type": "scatter",
-        "width": 4800,
-        "height": 2700,
-        "backgroundColor": "#1a1a2e",
-        "plotBackgroundColor": {
-            "linearGradient": {"x1": 0, "y1": 0, "x2": 0, "y2": 1},
-            "stops": [[0, "#2d7a32"], [0.5, "#256b28"], [1, "#1e5c20"]],
-        },
-        "marginBottom": 180,
-        "marginTop": 160,
-        "marginLeft": 100,
-        "marginRight": 80,
-        "style": {"fontFamily": "'Segoe UI', Helvetica, Arial, sans-serif"},
-    },
-    "title": {
-        "text": "scatter-pitch-events \u00b7 highcharts \u00b7 pyplots.ai",
-        "style": {"fontSize": "46px", "fontWeight": "600", "color": "#e8e8e8", "letterSpacing": "0.5px"},
-    },
-    "subtitle": {
-        "text": (
-            '<span style="font-size:30px;color:#aaa;">'
-            "\u25cf Filled = Successful \u00a0\u00a0"
-            "\u25cb White = Unsuccessful \u00a0\u00a0"
-            "\u2192 Arrows show pass/shot trajectory \u00a0\u00a0"
-            "| Shots enlarged for tactical emphasis"
-            "</span>"
-        ),
-        "useHTML": True,
-        "style": {"fontSize": "30px"},
-    },
-    "xAxis": {
-        "min": -14.5,
-        "max": 119.5,
-        "title": {"enabled": False},
-        "labels": {"enabled": False},
-        "gridLineWidth": 0,
-        "lineWidth": 0,
-        "tickWidth": 0,
-    },
-    "yAxis": {
-        "min": -2,
-        "max": 70,
-        "title": {"enabled": False},
-        "labels": {"enabled": False},
-        "gridLineWidth": 0,
-        "lineWidth": 0,
-        "tickWidth": 0,
-    },
-    "legend": {
-        "enabled": True,
-        "floating": True,
-        "verticalAlign": "top",
-        "align": "left",
-        "x": 120,
-        "y": 80,
-        "layout": "horizontal",
-        "itemStyle": {"fontSize": "30px", "fontWeight": "normal", "color": "#ddd"},
-        "itemHoverStyle": {"color": "#fff"},
-        "symbolRadius": 0,
-        "symbolWidth": 28,
-        "symbolHeight": 28,
-        "itemDistance": 40,
-        "backgroundColor": "rgba(26,26,46,0.85)",
-        "borderRadius": 10,
-        "padding": 18,
-        "shadow": True,
-    },
-    "credits": {"enabled": False},
-    "tooltip": {
-        "headerFormat": "",
-        "pointFormat": (
-            '<b style="color:{series.color}">{series.name}</b><br/>Position: ({point.x:.0f}m, {point.y:.0f}m)'
-        ),
-        "style": {"fontSize": "20px"},
-        "backgroundColor": "rgba(26,26,46,0.92)",
-        "borderColor": "#555",
-        "shadow": True,
-    },
-    "plotOptions": {
-        "scatter": {
-            "states": {"hover": {"halo": {"size": 12, "attributes": {"opacity": 0.25}}}},
-            "shadow": {"color": "rgba(0,0,0,0.3)", "offsetX": 0, "offsetY": 2, "width": 6},
-        }
-    },
-    "series": series_list,
-}
-
 # Download Highcharts JS
 cdn_urls = ["https://code.highcharts.com/highcharts.js", "https://cdn.jsdelivr.net/npm/highcharts@11/highcharts.js"]
 highcharts_js = None
@@ -220,17 +223,22 @@ for url in cdn_urls:
     except Exception:
         continue
 
-# Build HTML with inline pitch rendering
-chart_json = json.dumps(chart_config)
+# Get chart JS from Python API
+chart_js = chart.to_js_literal()
+
+# Custom pitch rendering via Highcharts renderer API (injected as load event)
 arrows_json = json.dumps(arrows)
 
-pitch_js = """
-document.addEventListener("DOMContentLoaded", function() {
-    var chartConfig = CHART_CONFIG;
+pitch_load_js = """
+(function() {
     var arrowData = ARROWS_DATA;
-
-    chartConfig.chart.events = {
-        load: function() {
+    var origChart = Highcharts.chart;
+    Highcharts.chart = function(container, opts) {
+        opts.chart = opts.chart || {};
+        opts.chart.events = opts.chart.events || {};
+        var origLoad = opts.chart.events.load;
+        opts.chart.events.load = function() {
+            if (origLoad) origLoad.call(this);
             var r = this.renderer;
             var xA = this.xAxis[0];
             var yA = this.yAxis[0];
@@ -308,7 +316,7 @@ document.addEventListener("DOMContentLoaded", function() {
             r.rect(px(-2.44), py(37.66), px(0)-px(-2.44), py(30.34)-py(37.66)).attr(goalLa).add();
             r.rect(px(105), py(37.66), px(107.44)-px(105), py(30.34)-py(37.66)).attr(goalLa).add();
 
-            // Directional arrows with glow effect for successful
+            // Directional arrows
             arrowData.forEach(function(a) {
                 var x1 = px(a.x1), y1 = py(a.y1);
                 var x2 = px(a.x2), y2 = py(a.y2);
@@ -332,24 +340,25 @@ document.addEventListener("DOMContentLoaded", function() {
                     .attr({stroke: sc, "stroke-width": sw}).add();
             });
 
-            // Zone labels - subtle pitch thirds
-            var zoneStyle = {color: "rgba(255,255,255,0.12)", fontSize: "28px", fontWeight: "bold"};
+            // Zone labels
+            var zoneStyle = {color: "rgba(255,255,255,0.4)", fontSize: "28px", fontWeight: "bold", fontStyle: "italic"};
             r.text("DEFENSIVE THIRD", px(17.5), py(-0.5)).attr({align: "center"}).css(zoneStyle).add();
             r.text("MIDDLE THIRD", px(52.5), py(-0.5)).attr({align: "center"}).css(zoneStyle).add();
             r.text("ATTACKING THIRD", px(87.5), py(-0.5)).attr({align: "center"}).css(zoneStyle).add();
-        }
+        };
+        return origChart.call(this, container, opts);
     };
-
-    Highcharts.chart("container", chartConfig);
-});
-""".replace("CHART_CONFIG", chart_json).replace("ARROWS_DATA", arrows_json)
+})();
+""".replace("ARROWS_DATA", arrows_json)
 
 html_content = (
     '<!DOCTYPE html>\n<html>\n<head>\n<meta charset="utf-8">\n'
     "<script>" + highcharts_js + "</script>\n"
-    '</head>\n<body style="margin:0;background:#1a1a2e;">\n'
+    "</head>\n"
+    '<body style="margin:0;background:#1a1a2e;">\n'
     '<div id="container" style="width:4800px;height:2700px;"></div>\n'
-    "<script>" + pitch_js + "</script>\n"
+    "<script>" + pitch_load_js + "</script>\n"
+    "<script>" + chart_js + "</script>\n"
     "</body>\n</html>"
 )
 

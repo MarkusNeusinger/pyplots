@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-stress-strain: Engineering Stress-Strain Curve
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-20
@@ -9,14 +9,21 @@ import pandas as pd
 from plotnine import (
     aes,
     annotate,
+    coord_cartesian,
     element_blank,
     element_line,
+    element_rect,
     element_text,
     geom_line,
     geom_point,
+    geom_segment,
     geom_text,
     ggplot,
     labs,
+    scale_color_identity,
+    scale_fill_identity,
+    scale_linetype_identity,
+    scale_size_identity,
     scale_x_continuous,
     scale_y_continuous,
     theme,
@@ -57,13 +64,10 @@ stress = np.concatenate([elastic_stress, plateau_stress[1:], hardening_stress[1:
 
 df = pd.DataFrame({"strain": strain, "stress": stress})
 
-# 0.2% offset line
+# 0.2% offset line data
 offset = 0.002
-offset_strain_max = (yield_stress + 30) / youngs_modulus + offset
-offset_line_strain = np.linspace(offset, offset_strain_max, 50)
-offset_line_stress = youngs_modulus * (offset_line_strain - offset)
-offset_line_stress = np.clip(offset_line_stress, 0, yield_stress + 30)
-df_offset = pd.DataFrame({"strain": offset_line_strain, "stress": offset_line_stress})
+offset_strain_start = offset
+offset_strain_end = (yield_stress + 30) / youngs_modulus + offset
 
 # Key points
 yield_point_strain = yield_stress / youngs_modulus + offset
@@ -78,47 +82,78 @@ df_points = pd.DataFrame(
         "strain": [yield_point_strain, uts_strain, fracture_strain_pt],
         "stress": [yield_point_stress, uts_stress, fracture_stress_pt],
         "label": ["Yield Point\n(0.2% offset)", "UTS", "Fracture"],
+        "color": ["#C0392B", "#C0392B", "#C0392B"],
+        "size": [5.0, 5.0, 5.0],
     }
 )
 
-# Region labels
+# Region labels - repositioned to avoid overlap
 df_regions = pd.DataFrame(
     {
-        "strain": [0.008, 0.06, 0.12, 0.29],
-        "stress": [140, 140, 310, 280],
+        "strain": [0.005, 0.06, 0.13, 0.29],
+        "stress": [420, 140, 310, 280],
         "label": ["Elastic", "Yield\nPlateau", "Strain\nHardening", "Necking"],
+        "color": ["#7F8C8D", "#7F8C8D", "#7F8C8D", "#7F8C8D"],
     }
 )
 
-# Elastic modulus annotation
+# Region boundary strains for shading
+elastic_end = yield_stress / youngs_modulus
+plateau_end = 0.02
+
+# Elastic modulus annotation position
 modulus_mid_strain = elastic_strain[20]
 modulus_mid_stress = elastic_stress[20]
 
-# Plot
+# Plot using plotnine grammar of graphics with layered composition
 plot = (
     ggplot()
+    # Region shading using annotate("rect") - plotnine-distinctive feature
+    + annotate("rect", xmin=0, xmax=elastic_end, ymin=0, ymax=430, alpha=0.06, fill="#3498DB")
+    + annotate("rect", xmin=elastic_end, xmax=plateau_end, ymin=0, ymax=430, alpha=0.06, fill="#2ECC71")
+    + annotate("rect", xmin=plateau_end, xmax=necking_strain, ymin=0, ymax=430, alpha=0.06, fill="#F39C12")
+    + annotate("rect", xmin=necking_strain, xmax=fracture_strain, ymin=0, ymax=430, alpha=0.06, fill="#E74C3C")
+    # Main stress-strain curve
     + geom_line(df, aes(x="strain", y="stress"), color="#306998", size=2.5)
-    + geom_line(df_offset, aes(x="strain", y="stress"), color="#E74C3C", size=1, linetype="dashed")
-    + geom_point(df_points, aes(x="strain", y="stress"), color="#E74C3C", size=5, fill="#E74C3C")
-    + geom_text(
-        df_points, aes(x="strain", y="stress", label="label"), nudge_y=30, size=11, color="#333333", fontstyle="italic"
+    # 0.2% offset line using geom_segment - plotnine-distinctive
+    + geom_segment(
+        aes(x=offset_strain_start, xend=offset_strain_end, y=0, yend=yield_stress + 30),
+        color="#C0392B",
+        size=1,
+        linetype="dashed",
     )
-    + geom_text(df_regions, aes(x="strain", y="stress", label="label"), size=10, color="#888888", fontstyle="italic")
+    # Key points with identity scales for direct aesthetic mapping
+    + geom_point(df_points, aes(x="strain", y="stress", color="color", size="size"), fill="#C0392B")
+    + scale_color_identity()
+    + scale_size_identity()
+    # Point labels
+    + geom_text(
+        df_points, aes(x="strain", y="stress", label="label"), nudge_y=30, size=13, color="#2C3E50", fontstyle="italic"
+    )
+    # Region labels with identity color scale
+    + geom_text(df_regions, aes(x="strain", y="stress", label="label", color="color"), size=12, fontstyle="italic")
+    + scale_fill_identity()
+    + scale_linetype_identity()
+    # Modulus annotation
     + annotate(
-        "text", x=0.008, y=320, label=f"E = {youngs_modulus // 1000} GPa", size=11, color="#306998", fontweight="bold"
+        "text", x=0.025, y=200, label=f"E = {youngs_modulus // 1000} GPa", size=13, color="#306998", fontweight="bold"
     )
     + labs(x="Engineering Strain", y="Engineering Stress (MPa)", title="line-stress-strain · plotnine · pyplots.ai")
     + scale_x_continuous(breaks=np.arange(0, 0.40, 0.05))
     + scale_y_continuous(breaks=np.arange(0, 500, 50))
+    # Coordinate control - plotnine-distinctive
+    + coord_cartesian(xlim=(0, 0.38), ylim=(0, 450))
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
-        plot_title=element_text(size=24, weight="bold"),
-        axis_title=element_text(size=20),
-        axis_text=element_text(size=16),
+        plot_title=element_text(size=24, weight="bold", color="#2C3E50"),
+        axis_title=element_text(size=20, color="#2C3E50"),
+        axis_text=element_text(size=16, color="#555555"),
         panel_grid_major_x=element_blank(),
         panel_grid_minor=element_blank(),
         panel_grid_major_y=element_line(color="#E0E0E0", size=0.5, alpha=0.4),
+        plot_background=element_rect(fill="white", color="white"),
+        panel_background=element_rect(fill="white", color="white"),
     )
 )
 

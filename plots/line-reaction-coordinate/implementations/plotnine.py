@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-reaction-coordinate: Reaction Coordinate Energy Diagram
 Library: plotnine 0.15.3 | Python 3.14.3
-Quality: 82/100 | Created: 2026-03-21
+Quality: 90/100 | Created: 2026-03-21
 """
 
 import sys

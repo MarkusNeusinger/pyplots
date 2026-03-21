@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-reaction-coordinate: Reaction Coordinate Energy Diagram
 Library: highcharts unknown | Python 3.14.3
 Quality: 83/100 | Created: 2026-03-21
@@ -28,30 +28,29 @@ delta_h = product_energy - reactant_energy  # ΔH = -30 kJ/mol
 # Generate smooth reaction coordinate curve
 reaction_coord = np.linspace(0, 1, 300)
 
-# Energy profile: linear baseline + Gaussian barrier at transition state
-baseline = reactant_energy + (product_energy - reactant_energy) * reaction_coord
-barrier_height = transition_state_energy - (reactant_energy + (product_energy - reactant_energy) * 0.45)
-barrier = barrier_height * np.exp(-((reaction_coord - 0.45) ** 2) / (2 * 0.04**2))
-energy = baseline + barrier
+# Energy profile using piecewise construction to avoid unphysical dips
+# Plateau regions + smooth Hermite interpolation through transition state
+energy = np.full_like(reaction_coord, reactant_energy)
 
-# Flatten endpoints for reactant/product plateaus
-plateau_width = 0.12
-reactant_mask = reaction_coord < plateau_width
-product_mask = reaction_coord > (1 - plateau_width)
-energy[reactant_mask] = reactant_energy
-energy[product_mask] = product_energy
+plateau_end = 0.15
+rise_end = 0.45  # transition state peak
+fall_end = 0.85
 
-# Smooth transitions at plateau edges
-transition_width = 0.05
 for i, rc in enumerate(reaction_coord):
-    if plateau_width <= rc < plateau_width + transition_width:
-        t = (rc - plateau_width) / transition_width
+    if rc <= plateau_end:
+        energy[i] = reactant_energy
+    elif rc <= rise_end:
+        # Smooth rise from reactant level to transition state (monotonic)
+        t = (rc - plateau_end) / (rise_end - plateau_end)
+        t_smooth = t * t * (3 - 2 * t)  # Hermite smoothstep
+        energy[i] = reactant_energy + (transition_state_energy - reactant_energy) * t_smooth
+    elif rc <= fall_end:
+        # Smooth fall from transition state to product level (monotonic)
+        t = (rc - rise_end) / (fall_end - rise_end)
         t_smooth = t * t * (3 - 2 * t)
-        energy[i] = reactant_energy * (1 - t_smooth) + energy[i] * t_smooth
-    elif (1 - plateau_width - transition_width) < rc <= (1 - plateau_width):
-        t = (rc - (1 - plateau_width - transition_width)) / transition_width
-        t_smooth = t * t * (3 - 2 * t)
-        energy[i] = energy[i] * (1 - t_smooth) + product_energy * t_smooth
+        energy[i] = transition_state_energy - (transition_state_energy - product_energy) * t_smooth
+    else:
+        energy[i] = product_energy
 
 # Find actual transition state position
 ts_idx = np.argmax(energy)
@@ -104,7 +103,7 @@ chart.options.y_axis = {
     },
     "labels": {"style": {"fontSize": "28px", "color": "#444444"}},
     "min": 0,
-    "max": 145,
+    "max": 135,
     "gridLineWidth": 0,
     "lineColor": "#999999",
     "lineWidth": 2,
@@ -150,9 +149,9 @@ annotations_js = f"""
         labels: [{{
             point: {{xAxis: 0, yAxis: 0, x: {ts_rc}, y: {ts_energy}}},
             text: 'Transition State (\u2021)',
-            style: {{fontSize: '32px', fontWeight: '700', color: '#c0392b'}},
+            style: {{fontSize: '32px', fontWeight: '700', color: '#d35400'}},
             backgroundColor: 'rgba(255,255,255,0.92)',
-            borderColor: '#c0392b',
+            borderColor: '#d35400',
             borderWidth: 2,
             borderRadius: 8,
             padding: 14,
@@ -174,9 +173,9 @@ annotations_js = f"""
         }}, {{
             point: {{xAxis: 0, yAxis: 0, x: {ea_arrow_x}, y: {ea_mid_y}}},
             text: 'E\u2090 = {int(activation_energy)} kJ/mol',
-            style: {{fontSize: '30px', fontWeight: '700', color: '#e74c3c'}},
+            style: {{fontSize: '30px', fontWeight: '700', color: '#d35400'}},
             backgroundColor: 'rgba(255,255,255,0.95)',
-            borderColor: '#e74c3c',
+            borderColor: '#d35400',
             borderWidth: 2,
             borderRadius: 8,
             padding: 12,
@@ -185,9 +184,9 @@ annotations_js = f"""
         }}, {{
             point: {{xAxis: 0, yAxis: 0, x: {dh_arrow_x}, y: {dh_mid_y}}},
             text: '\u0394H = {int(delta_h)} kJ/mol',
-            style: {{fontSize: '30px', fontWeight: '700', color: '#27ae60'}},
+            style: {{fontSize: '30px', fontWeight: '700', color: '#2980b9'}},
             backgroundColor: 'rgba(255,255,255,0.95)',
-            borderColor: '#27ae60',
+            borderColor: '#2980b9',
             borderWidth: 2,
             borderRadius: 8,
             padding: 12,
@@ -200,7 +199,7 @@ annotations_js = f"""
                 {{xAxis: 0, yAxis: 0, x: {ea_arrow_x}, y: {reactant_energy}}},
                 {{xAxis: 0, yAxis: 0, x: {ea_arrow_x}, y: {ts_energy}}}
             ],
-            stroke: '#e74c3c',
+            stroke: '#d35400',
             strokeWidth: 4,
             markerEnd: 'arrow',
             markerStart: 'arrow'
@@ -210,7 +209,7 @@ annotations_js = f"""
                 {{xAxis: 0, yAxis: 0, x: {dh_arrow_x}, y: {product_energy}}},
                 {{xAxis: 0, yAxis: 0, x: {dh_arrow_x}, y: {reactant_energy}}}
             ],
-            stroke: '#27ae60',
+            stroke: '#2980b9',
             strokeWidth: 4,
             markerEnd: 'arrow',
             markerStart: 'arrow'

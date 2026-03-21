@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bode-basic: Bode Plot for Frequency Response
 Library: letsplot 4.9.0 | Python 3.14.3
 Quality: 80/100 | Created: 2026-03-21
@@ -13,17 +13,17 @@ from scipy import signal
 
 LetsPlot.setup_html()  # noqa: F405
 
-# Data - Second-order system: G(s) = 25 / (s^2 + 4s + 25) (wn=5, zeta=0.4)
-wn = 5.0
-zeta = 0.4
-num = [wn**2]
-den = [1, 2 * zeta * wn, wn**2]
+# Data - 3rd-order system: G(s) = 500 / ((s+20)(s^2+3s+25))
+# Complex poles (wn=5, zeta=0.3) give a visible resonance peak
+# Real pole at s=-20 preserves resonance shape
+# Stable system with GM≈9.3 dB and PM≈35°
+num = [500.0]
+den = np.polymul([1, 20], [1, 3, 25])
 system = signal.TransferFunction(num, den)
 
 omega = np.logspace(-1, 2.5, 500)
-_, mag, phase_rad = signal.bode(system, omega)
+_, mag, phase_deg = signal.bode(system, omega)
 frequency_hz = omega / (2 * np.pi)
-phase_deg = phase_rad
 
 # Build DataFrames
 df_mag = pd.DataFrame({"frequency_hz": frequency_hz, "magnitude_db": mag})
@@ -83,6 +83,7 @@ mag_plot = (
     )
     + geom_hline(yintercept=0, color=COLOR_REF, size=0.8, linetype="dashed")  # noqa: F405
     + scale_x_log10()  # noqa: F405
+    + scale_y_continuous(limits=[-40, max(mag) + 5])  # noqa: F405
     + labs(  # noqa: F405
         x="", y="Magnitude (dB)", title="bode-basic \u00b7 letsplot \u00b7 pyplots.ai"
     )
@@ -95,14 +96,14 @@ mag_plot = (
 if freq_pc is not None:
     gm_seg = pd.DataFrame({"x": [freq_pc], "y": [0.0], "xend": [freq_pc], "yend": [mag_at_pc]})
     gm_pt = pd.DataFrame({"x": [freq_pc], "y": [mag_at_pc]})
-    gm_label = pd.DataFrame({"x": [freq_pc * 1.5], "y": [mag_at_pc / 2], "label": [f"GM = {gain_margin:.1f} dB"]})
+    gm_label = pd.DataFrame({"x": [freq_pc * 2.5], "y": [mag_at_pc / 2], "label": [f"GM = {gain_margin:.1f} dB"]})
     mag_plot = (
         mag_plot
         + geom_segment(  # noqa: F405
             aes(x="x", y="y", xend="xend", yend="yend"),  # noqa: F405
             data=gm_seg,
             color=COLOR_MARGIN,
-            size=1.2,
+            size=1.8,
             linetype="dotted",
         )
         + geom_point(  # noqa: F405
@@ -159,7 +160,7 @@ if freq_gc is not None:
     pm_seg = pd.DataFrame({"x": [freq_gc], "y": [-180.0], "xend": [freq_gc], "yend": [phase_at_gc]})
     pm_pt = pd.DataFrame({"x": [freq_gc], "y": [phase_at_gc]})
     pm_label = pd.DataFrame(
-        {"x": [freq_gc * 1.5], "y": [(phase_at_gc - 180) / 2], "label": [f"PM = {phase_margin:.1f}\u00b0"]}
+        {"x": [freq_gc * 2.0], "y": [(phase_at_gc - 180) / 2], "label": [f"PM = {phase_margin:.1f}\u00b0"]}
     )
     phase_plot = (
         phase_plot
@@ -167,7 +168,7 @@ if freq_gc is not None:
             aes(x="x", y="y", xend="xend", yend="yend"),  # noqa: F405
             data=pm_seg,
             color=COLOR_PM,
-            size=1.2,
+            size=1.8,
             linetype="dotted",
         )
         + geom_point(  # noqa: F405

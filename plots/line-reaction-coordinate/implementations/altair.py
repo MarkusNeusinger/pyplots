@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-reaction-coordinate: Reaction Coordinate Energy Diagram
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-21
@@ -25,218 +25,185 @@ baseline_at_peak = reactant_energy + (product_energy - reactant_energy) / (1 + n
 bump_height = transition_energy - baseline_at_peak
 energy = baseline + bump_height * gaussian
 
-curve_df = pd.DataFrame({"Reaction Coordinate": reaction_coord, "Energy (kJ/mol)": energy})
+curve_df = pd.DataFrame({"x": reaction_coord, "y": energy})
+peak_idx = int(np.argmax(energy))
+actual_peak_energy = float(energy[peak_idx])
+peak_x = float(reaction_coord[peak_idx])
+ea_value = actual_peak_energy - reactant_energy
+dh_value = reactant_energy - product_energy
 
-peak_idx = np.argmax(energy)
-actual_peak_energy = energy[peak_idx]
-peak_x = reaction_coord[peak_idx]
-
-# Horizontal dashed lines extending to Ea arrow position
-ea_x = 0.18
-reactant_line_df = pd.DataFrame(
-    {"Reaction Coordinate": [0.0, ea_x], "Energy (kJ/mol)": [reactant_energy, reactant_energy]}
-)
-# Extended reactant dashed line from Ea arrow to past the peak for reference
-reactant_ext_df = pd.DataFrame(
-    {"Reaction Coordinate": [ea_x, peak_x + 0.06], "Energy (kJ/mol)": [reactant_energy, reactant_energy]}
-)
-product_line_df = pd.DataFrame(
-    {"Reaction Coordinate": [0.68, 1.0], "Energy (kJ/mol)": [product_energy, product_energy]}
-)
-
-# Horizontal dashed line at transition state level
-ts_line_df = pd.DataFrame(
-    {"Reaction Coordinate": [ea_x, peak_x + 0.06], "Energy (kJ/mol)": [actual_peak_energy, actual_peak_energy]}
-)
-
-# Ea arrow (vertical double-headed arrow from reactant level to TS level)
-ea_line_df = pd.DataFrame(
-    {"Reaction Coordinate": [ea_x, ea_x], "Energy (kJ/mol)": [reactant_energy, actual_peak_energy]}
-)
-
-# Delta H arrow (vertical double-headed arrow from reactant to product level)
+# Arrow positions
+ea_x = 0.16
 dh_x = 0.82
-dh_line_df = pd.DataFrame({"Reaction Coordinate": [dh_x, dh_x], "Energy (kJ/mol)": [product_energy, reactant_energy]})
 
-# Dashed extension lines for delta H
-dh_reactant_ext_df = pd.DataFrame(
-    {"Reaction Coordinate": [dh_x - 0.04, dh_x + 0.04], "Energy (kJ/mol)": [reactant_energy, reactant_energy]}
+# Consolidated annotation data
+hlines_df = pd.DataFrame(
+    {
+        "x": [0.0, ea_x, ea_x, peak_x + 0.06, 0.68, 1.0],
+        "y": [reactant_energy, reactant_energy, actual_peak_energy, actual_peak_energy, product_energy, product_energy],
+        "group": ["reactant", "reactant", "ts", "ts", "product", "product"],
+    }
 )
-dh_product_ext_df = pd.DataFrame(
-    {"Reaction Coordinate": [dh_x - 0.04, dh_x + 0.04], "Energy (kJ/mol)": [product_energy, product_energy]}
+
+arrows_df = pd.DataFrame(
+    {
+        "x": [ea_x, ea_x, dh_x, dh_x],
+        "y": [reactant_energy, actual_peak_energy, product_energy, reactant_energy],
+        "x2": [ea_x, ea_x, dh_x, dh_x],
+        "y2": [actual_peak_energy, reactant_energy, reactant_energy, product_energy],
+        "color_key": ["ea", "ea", "dh", "dh"],
+    }
 )
 
 # Shared scales
-x_scale = alt.Scale(domain=[-0.08, 1.12], nice=False)
-y_scale = alt.Scale(domain=[-5, 135])
+x_scale = alt.Scale(domain=[-0.04, 1.06], nice=False)
+y_scale = alt.Scale(domain=[0, 140])
 
-# Energy curve
+# Color definitions
+ea_color = "#C46210"
+dh_color = "#2E8B57"
+curve_color = "#306998"
+label_color = "#2C3E50"
+
+# Energy curve with gradient-like opacity via condition
 curve = (
     alt.Chart(curve_df)
-    .mark_line(strokeWidth=4, color="#306998")
+    .mark_line(strokeWidth=4, color=curve_color)
     .encode(
-        x=alt.X("Reaction Coordinate:Q", scale=x_scale, title="Reaction Coordinate"),
-        y=alt.Y("Energy (kJ/mol):Q", scale=y_scale, title="Energy (kJ/mol)"),
-        tooltip=[alt.Tooltip("Reaction Coordinate:Q", format=".2f"), alt.Tooltip("Energy (kJ/mol):Q", format=".1f")],
+        x=alt.X("x:Q", scale=x_scale, title="Reaction Coordinate"),
+        y=alt.Y("y:Q", scale=y_scale, title="Energy (kJ/mol)"),
+        tooltip=[
+            alt.Tooltip("x:Q", title="Reaction Coordinate", format=".2f"),
+            alt.Tooltip("y:Q", title="Energy (kJ/mol)", format=".1f"),
+        ],
     )
 )
 
-# Horizontal dashed lines at reactant and product levels
-reactant_hline = (
-    alt.Chart(reactant_line_df)
-    .mark_line(strokeWidth=1.5, strokeDash=[8, 6], color="#999999")
-    .encode(x=alt.X("Reaction Coordinate:Q", scale=x_scale), y=alt.Y("Energy (kJ/mol):Q", scale=y_scale))
-)
-reactant_ext = (
-    alt.Chart(reactant_ext_df)
-    .mark_line(strokeWidth=1.5, strokeDash=[8, 6], color="#999999")
-    .encode(x=alt.X("Reaction Coordinate:Q", scale=x_scale), y=alt.Y("Energy (kJ/mol):Q", scale=y_scale))
-)
-product_hline = (
-    alt.Chart(product_line_df)
-    .mark_line(strokeWidth=1.5, strokeDash=[8, 6], color="#999999")
-    .encode(x=alt.X("Reaction Coordinate:Q", scale=x_scale), y=alt.Y("Energy (kJ/mol):Q", scale=y_scale))
-)
-ts_hline = (
-    alt.Chart(ts_line_df)
-    .mark_line(strokeWidth=1.5, strokeDash=[8, 6], color="#999999")
-    .encode(x=alt.X("Reaction Coordinate:Q", scale=x_scale), y=alt.Y("Energy (kJ/mol):Q", scale=y_scale))
+# Horizontal dashed reference lines
+hlines = (
+    alt.Chart(hlines_df)
+    .mark_line(strokeWidth=1.5, strokeDash=[8, 6], color="#aaaaaa", opacity=0.7)
+    .encode(x=alt.X("x:Q", scale=x_scale), y=alt.Y("y:Q", scale=y_scale), detail="group:N")
 )
 
-# Ea vertical arrow
-ea_color = "#C46210"
+# Ea vertical arrow line + arrowheads
 ea_line = (
-    alt.Chart(ea_line_df)
+    alt.Chart(pd.DataFrame({"x": [ea_x, ea_x], "y": [reactant_energy, actual_peak_energy]}))
     .mark_line(strokeWidth=2.5, color=ea_color)
-    .encode(x=alt.X("Reaction Coordinate:Q", scale=x_scale), y=alt.Y("Energy (kJ/mol):Q", scale=y_scale))
+    .encode(x=alt.X("x:Q", scale=x_scale), y=alt.Y("y:Q", scale=y_scale))
 )
-ea_arrow_top = (
-    alt.Chart(pd.DataFrame({"Reaction Coordinate": [ea_x], "Energy (kJ/mol)": [actual_peak_energy]}))
-    .mark_point(shape="triangle-up", filled=True, size=200, color=ea_color)
-    .encode(x=alt.X("Reaction Coordinate:Q", scale=x_scale), y=alt.Y("Energy (kJ/mol):Q", scale=y_scale))
-)
-ea_arrow_bottom = (
-    alt.Chart(pd.DataFrame({"Reaction Coordinate": [ea_x], "Energy (kJ/mol)": [reactant_energy]}))
-    .mark_point(shape="triangle-down", filled=True, size=200, color=ea_color)
-    .encode(x=alt.X("Reaction Coordinate:Q", scale=x_scale), y=alt.Y("Energy (kJ/mol):Q", scale=y_scale))
-)
-
-# Ea label
-ea_label_df = pd.DataFrame(
-    {
-        "Reaction Coordinate": [ea_x + 0.03],
-        "Energy (kJ/mol)": [(reactant_energy + actual_peak_energy) / 2],
-        "text": [f"Ea = {actual_peak_energy - reactant_energy:.0f} kJ/mol"],
-    }
-)
-ea_label = (
-    alt.Chart(ea_label_df)
-    .mark_text(fontSize=18, align="left", fontWeight="bold", color=ea_color)
-    .encode(x=alt.X("Reaction Coordinate:Q", scale=x_scale), y=alt.Y("Energy (kJ/mol):Q", scale=y_scale), text="text:N")
+ea_heads = (
+    alt.Chart(
+        pd.DataFrame(
+            {"x": [ea_x, ea_x], "y": [actual_peak_energy, reactant_energy], "shape": ["triangle-up", "triangle-down"]}
+        )
+    )
+    .mark_point(filled=True, size=220, color=ea_color)
+    .encode(
+        x=alt.X("x:Q", scale=x_scale),
+        y=alt.Y("y:Q", scale=y_scale),
+        shape=alt.Shape("shape:N", scale=alt.Scale(range=["triangle-up", "triangle-down"]), legend=None),
+    )
 )
 
-# Delta H vertical arrow
-dh_color = "#2E8B57"
+# Delta H vertical arrow line + arrowheads
 dh_line = (
-    alt.Chart(dh_line_df)
+    alt.Chart(pd.DataFrame({"x": [dh_x, dh_x], "y": [product_energy, reactant_energy]}))
     .mark_line(strokeWidth=2.5, color=dh_color)
-    .encode(x=alt.X("Reaction Coordinate:Q", scale=x_scale), y=alt.Y("Energy (kJ/mol):Q", scale=y_scale))
+    .encode(x=alt.X("x:Q", scale=x_scale), y=alt.Y("y:Q", scale=y_scale))
 )
-dh_arrow_top = (
-    alt.Chart(pd.DataFrame({"Reaction Coordinate": [dh_x], "Energy (kJ/mol)": [reactant_energy]}))
-    .mark_point(shape="triangle-up", filled=True, size=200, color=dh_color)
-    .encode(x=alt.X("Reaction Coordinate:Q", scale=x_scale), y=alt.Y("Energy (kJ/mol):Q", scale=y_scale))
-)
-dh_arrow_bottom = (
-    alt.Chart(pd.DataFrame({"Reaction Coordinate": [dh_x], "Energy (kJ/mol)": [product_energy]}))
-    .mark_point(shape="triangle-down", filled=True, size=200, color=dh_color)
-    .encode(x=alt.X("Reaction Coordinate:Q", scale=x_scale), y=alt.Y("Energy (kJ/mol):Q", scale=y_scale))
-)
-dh_reactant_ext = (
-    alt.Chart(dh_reactant_ext_df)
-    .mark_line(strokeWidth=1.5, strokeDash=[6, 4], color="#bbbbbb")
-    .encode(x=alt.X("Reaction Coordinate:Q", scale=x_scale), y=alt.Y("Energy (kJ/mol):Q", scale=y_scale))
-)
-dh_product_ext = (
-    alt.Chart(dh_product_ext_df)
-    .mark_line(strokeWidth=1.5, strokeDash=[6, 4], color="#bbbbbb")
-    .encode(x=alt.X("Reaction Coordinate:Q", scale=x_scale), y=alt.Y("Energy (kJ/mol):Q", scale=y_scale))
+dh_heads = (
+    alt.Chart(
+        pd.DataFrame(
+            {"x": [dh_x, dh_x], "y": [reactant_energy, product_energy], "shape": ["triangle-up", "triangle-down"]}
+        )
+    )
+    .mark_point(filled=True, size=220, color=dh_color)
+    .encode(
+        x=alt.X("x:Q", scale=x_scale),
+        y=alt.Y("y:Q", scale=y_scale),
+        shape=alt.Shape("shape:N", scale=alt.Scale(range=["triangle-up", "triangle-down"]), legend=None),
+    )
 )
 
-# Delta H label
-dh_label_df = pd.DataFrame(
+# Small dashed tick marks at delta H endpoints
+dh_ticks_df = pd.DataFrame(
     {
-        "Reaction Coordinate": [dh_x + 0.04],
-        "Energy (kJ/mol)": [(reactant_energy + product_energy) / 2],
-        "text": [f"\u0394H = \u2212{reactant_energy - product_energy:.0f} kJ/mol"],
+        "x": [dh_x - 0.03, dh_x + 0.03, dh_x - 0.03, dh_x + 0.03],
+        "y": [reactant_energy, reactant_energy, product_energy, product_energy],
+        "group": ["r", "r", "p", "p"],
     }
 )
-dh_label = (
-    alt.Chart(dh_label_df)
-    .mark_text(fontSize=18, align="left", fontWeight="bold", color=dh_color)
-    .encode(x=alt.X("Reaction Coordinate:Q", scale=x_scale), y=alt.Y("Energy (kJ/mol):Q", scale=y_scale), text="text:N")
+dh_ticks = (
+    alt.Chart(dh_ticks_df)
+    .mark_line(strokeWidth=1.2, strokeDash=[5, 4], color="#bbbbbb")
+    .encode(x=alt.X("x:Q", scale=x_scale), y=alt.Y("y:Q", scale=y_scale), detail="group:N")
 )
 
-# Labels for reactants, transition state, products
-labels_df = pd.DataFrame(
+# Chemical species labels (bold, dark)
+species_df = pd.DataFrame(
     {
-        "Reaction Coordinate": [0.06, peak_x, 0.90],
-        "Energy (kJ/mol)": [reactant_energy - 8, actual_peak_energy + 8, product_energy - 8],
-        "text": ["Reactants", "Transition State \u2021", "Products"],
+        "x": [0.06, peak_x, 0.92],
+        "y": [reactant_energy - 9, actual_peak_energy + 9, product_energy - 9],
+        "text": ["Reactants", "Transition State ‡", "Products"],
     }
 )
-chem_labels = (
-    alt.Chart(labels_df)
-    .mark_text(fontSize=20, fontWeight="bold", color="#2C3E50")
-    .encode(x=alt.X("Reaction Coordinate:Q", scale=x_scale), y=alt.Y("Energy (kJ/mol):Q", scale=y_scale), text="text:N")
+species_labels = (
+    alt.Chart(species_df)
+    .mark_text(fontSize=22, fontWeight="bold", color=label_color)
+    .encode(x=alt.X("x:Q", scale=x_scale), y=alt.Y("y:Q", scale=y_scale), text="text:N")
 )
 
-# Energy value labels
-energy_labels_df = pd.DataFrame(
+# Arrow value labels (bold, colored)
+arrow_labels_df = pd.DataFrame(
     {
-        "Reaction Coordinate": [0.0, 1.0, peak_x + 0.08],
-        "Energy (kJ/mol)": [reactant_energy + 5, product_energy + 5, actual_peak_energy + 1],
+        "x": [ea_x + 0.035, dh_x + 0.04],
+        "y": [(reactant_energy + actual_peak_energy) / 2, (reactant_energy + product_energy) / 2],
+        "text": [f"Ea = {ea_value:.0f} kJ/mol", f"ΔH = −{dh_value:.0f} kJ/mol"],
+        "color": [ea_color, dh_color],
+    }
+)
+arrow_labels = (
+    alt.Chart(arrow_labels_df)
+    .mark_text(fontSize=19, fontWeight="bold", align="left")
+    .encode(
+        x=alt.X("x:Q", scale=x_scale),
+        y=alt.Y("y:Q", scale=y_scale),
+        text="text:N",
+        color=alt.Color("color:N", scale=None),
+    )
+)
+
+# Energy value annotations (italic, gray)
+energy_vals_df = pd.DataFrame(
+    {
+        "x": [0.0, 1.0, peak_x + 0.09],
+        "y": [reactant_energy + 6, product_energy + 6, actual_peak_energy + 2],
         "text": [f"{reactant_energy:.0f} kJ/mol", f"{product_energy:.0f} kJ/mol", f"{actual_peak_energy:.0f} kJ/mol"],
+        "align": ["left", "right", "left"],
     }
 )
-energy_labels = (
-    alt.Chart(energy_labels_df)
-    .mark_text(fontSize=14, color="#777777", fontStyle="italic")
-    .encode(x=alt.X("Reaction Coordinate:Q", scale=x_scale), y=alt.Y("Energy (kJ/mol):Q", scale=y_scale), text="text:N")
+energy_vals = (
+    alt.Chart(energy_vals_df)
+    .mark_text(fontSize=16, fontStyle="italic", color="#666666")
+    .encode(x=alt.X("x:Q", scale=x_scale), y=alt.Y("y:Q", scale=y_scale), text="text:N")
 )
 
 # Combine all layers
 chart = (
-    alt.layer(
-        reactant_hline,
-        reactant_ext,
-        product_hline,
-        ts_hline,
-        curve,
-        ea_line,
-        ea_arrow_top,
-        ea_arrow_bottom,
-        ea_label,
-        dh_line,
-        dh_arrow_top,
-        dh_arrow_bottom,
-        dh_reactant_ext,
-        dh_product_ext,
-        dh_label,
-        chem_labels,
-        energy_labels,
-    )
+    alt.layer(hlines, curve, ea_line, ea_heads, dh_line, dh_heads, dh_ticks, species_labels, arrow_labels, energy_vals)
     .properties(
         width=1600,
         height=900,
         title=alt.Title(
-            "line-reaction-coordinate \u00b7 altair \u00b7 pyplots.ai",
+            "line-reaction-coordinate · altair · pyplots.ai",
             fontSize=28,
             anchor="middle",
-            color="#2C3E50",
-            subtitle="Exothermic Reaction \u00b7 Single-Step Energy Profile",
-            subtitleFontSize=16,
+            color=label_color,
+            subtitle="Exothermic Reaction · Single-Step Energy Profile",
+            subtitleFontSize=18,
             subtitleColor="#7f8c8d",
+            subtitlePadding=8,
         ),
     )
     .configure_axis(
@@ -248,10 +215,11 @@ chart = (
         labelColor="#555555",
         grid=False,
         domainColor="#aaaaaa",
-        domainWidth=0.6,
+        domainWidth=0.8,
         tickColor="#aaaaaa",
         tickSize=5,
         tickWidth=0.6,
+        tickCount=6,
     )
     .configure_title(font="Helvetica Neue, Arial, sans-serif", color="#222222")
     .configure_view(strokeWidth=0)

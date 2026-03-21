@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 titration-curve: Acid-Base Titration Curve
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 80/100 | Created: 2026-03-21
@@ -10,12 +10,18 @@ from plotnine import (
     aes,
     annotate,
     element_blank,
+    element_line,
+    element_rect,
     element_text,
     geom_line,
     geom_point,
+    geom_ribbon,
     geom_vline,
     ggplot,
+    guide_legend,
+    guides,
     labs,
+    scale_color_manual,
     scale_x_continuous,
     scale_y_continuous,
     theme,
@@ -47,45 +53,69 @@ for i, v in enumerate(volume_ml):
         poh = -np.log10(excess_oh)
         ph[i] = 14.0 - poh
 
-df = pd.DataFrame({"volume_ml": volume_ml, "ph": ph})
+# Compute derivative dpH/dV and scale to fit pH axis
+dph_dv = np.gradient(ph, volume_ml)
+dph_dv = np.nan_to_num(dph_dv, nan=0.0, posinf=0.0, neginf=0.0)
+dph_max = dph_dv.max()
+dph_scaled = dph_dv / dph_max * 12  # Scale peak to 12 on pH axis
 
-# Equivalence point
+# Build main dataframe with both curves
+df = pd.DataFrame(
+    {
+        "volume_ml": np.tile(volume_ml, 2),
+        "value": np.concatenate([ph, dph_scaled]),
+        "series": ["pH"] * len(volume_ml) + ["dpH/dV (scaled)"] * len(volume_ml),
+    }
+)
+
+# Shading for steep transition region (±2 mL around equivalence)
 eq_volume = 25.0
 eq_ph = 7.0
+mask = (volume_ml >= 23) & (volume_ml <= 27)
+df_ribbon = pd.DataFrame({"volume_ml": volume_ml[mask], "ymin": np.zeros(mask.sum()), "ymax": np.full(mask.sum(), 14)})
+
+# Equivalence point data
+df_eq = pd.DataFrame({"volume_ml": [eq_volume], "value": [eq_ph], "series": ["pH"]})
 
 # Plot
+palette = {"pH": "#306998", "dpH/dV (scaled)": "#E8A838"}
+
 plot = (
-    ggplot(df, aes(x="volume_ml", y="ph"))
-    + geom_line(color="#306998", size=1.5)
-    + geom_vline(xintercept=eq_volume, linetype="dashed", color="#888888", size=0.8)
-    + geom_point(
-        aes(x="volume_ml", y="ph"),
-        data=pd.DataFrame({"volume_ml": [eq_volume], "ph": [eq_ph]}),
-        color="#E74C3C",
-        size=4,
-    )
+    ggplot()
+    + geom_ribbon(aes(x="volume_ml", ymin="ymin", ymax="ymax"), data=df_ribbon, fill="#306998", alpha=0.08)
+    + geom_vline(xintercept=eq_volume, linetype="dashed", color="#AAAAAA", size=0.7)
+    + geom_line(aes(x="volume_ml", y="value", color="series"), data=df, size=1.5)
+    + geom_point(aes(x="volume_ml", y="value"), data=df_eq, color="#C0392B", size=5, shape="D")
     + annotate(
         "text",
-        x=eq_volume + 1.5,
-        y=eq_ph + 1.2,
+        x=eq_volume + 2,
+        y=eq_ph + 1.5,
         label=f"Equivalence Point\n({eq_volume:.0f} mL, pH {eq_ph:.0f})",
-        size=12,
+        size=11,
         ha="left",
         color="#333333",
+        fontstyle="italic",
     )
+    + scale_color_manual(values=palette, name="")
     + scale_x_continuous(breaks=range(0, 55, 5), limits=(0, 50))
     + scale_y_continuous(breaks=range(0, 15, 2), limits=(0, 14))
-    + labs(
-        x="Volume of NaOH added (mL)", y="pH", title="HCl + NaOH Titration · titration-curve · plotnine · pyplots.ai"
-    )
+    + labs(x="Volume of NaOH added (mL)", y="pH", title="titration-curve · plotnine · pyplots.ai")
+    + guides(color=guide_legend(override_aes={"size": 3}))
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
-        plot_title=element_text(size=22, weight="bold"),
+        plot_title=element_text(size=24, weight="bold", margin={"b": 15}),
         axis_title=element_text(size=20),
         axis_text=element_text(size=16),
+        legend_text=element_text(size=16),
+        legend_position=(0.15, 0.85),
+        legend_background=element_rect(fill="white", alpha=0.8),
         panel_grid_minor=element_blank(),
         panel_grid_major_x=element_blank(),
+        panel_grid_major_y=element_line(color="#E0E0E0", size=0.4),
+        axis_line_x=element_line(color="#888888", size=0.5),
+        axis_line_y=element_line(color="#888888", size=0.5),
+        plot_background=element_rect(fill="white", color="white"),
     )
 )
 

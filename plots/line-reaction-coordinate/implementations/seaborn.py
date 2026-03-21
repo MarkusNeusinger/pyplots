@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-reaction-coordinate: Reaction Coordinate Energy Diagram
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 81/100 | Created: 2026-03-21
@@ -6,8 +6,14 @@ Quality: 81/100 | Created: 2026-03-21
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import seaborn as sns
 from scipy.interpolate import PchipInterpolator
 
+
+# Seaborn styling
+sns.set_style("whitegrid", {"grid.alpha": 0.15, "grid.linewidth": 0.8, "axes.grid.axis": "y"})
+sns.set_context("talk", font_scale=1.1)
 
 # Data
 reactant_energy = 50.0
@@ -34,10 +40,19 @@ reaction_coord = np.linspace(0, 1, 500)
 spline = PchipInterpolator(control_x, control_y)
 energy = spline(reaction_coord)
 
+# Create DataFrame for seaborn
+df = pd.DataFrame({"Reaction Coordinate": reaction_coord, "Potential Energy (kJ/mol)": energy})
+
 # Plot
 fig, ax = plt.subplots(figsize=(16, 9))
 
-ax.plot(reaction_coord, energy, color="#306998", linewidth=3.5, zorder=3)
+# Use sns.lineplot for the main curve
+sns.lineplot(
+    data=df, x="Reaction Coordinate", y="Potential Energy (kJ/mol)", color="#306998", linewidth=3.5, ax=ax, zorder=3
+)
+
+# Subtle fill under the curve for polish
+ax.fill_between(reaction_coord, energy, alpha=0.06, color="#306998", zorder=2)
 
 # Horizontal dashed lines at reactant and product energy levels
 ax.hlines(y=reactant_energy, xmin=-0.02, xmax=0.18, color="#888888", linestyle="--", linewidth=1.5, alpha=0.5)
@@ -49,12 +64,12 @@ ax.text(
 )
 ax.text(
     0.98,
-    product_energy + 3,
+    product_energy - 4,
     "Products\n(20 kJ/mol)",
     fontsize=16,
     fontweight="bold",
     color="#333333",
-    va="bottom",
+    va="top",
     ha="right",
 )
 ax.text(
@@ -68,7 +83,7 @@ ax.text(
     ha="center",
 )
 
-# Activation energy arrow (Ea) — in clear space left of the curve rise
+# Activation energy arrow (Ea)
 ea_x = 0.13
 ax.annotate(
     "",
@@ -88,8 +103,8 @@ ax.text(
     bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": "none", "alpha": 0.9},
 )
 
-# Enthalpy change arrow (ΔH) — in clear space right of the curve
-dh_x = 0.90
+# Enthalpy change arrow (ΔH) — shifted left to avoid crowding with Products label
+dh_x = 0.82
 ax.annotate(
     "",
     xy=(dh_x, product_energy),
@@ -97,13 +112,13 @@ ax.annotate(
     arrowprops={"arrowstyle": "<->", "color": "#2E86C1", "lw": 2.5, "shrinkA": 0, "shrinkB": 0},
 )
 ax.text(
-    dh_x + 0.02,
+    dh_x - 0.02,
     (reactant_energy + product_energy) / 2,
     f"$\\Delta H$ = {product_energy - reactant_energy:.0f} kJ/mol",
     fontsize=15,
     color="#2E86C1",
     fontweight="bold",
-    ha="left",
+    ha="right",
     va="center",
     bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": "none", "alpha": 0.9},
 )
@@ -113,12 +128,11 @@ ax.set_xlabel("Reaction Coordinate", fontsize=20)
 ax.set_ylabel("Potential Energy (kJ/mol)", fontsize=20)
 ax.set_title("line-reaction-coordinate · seaborn · pyplots.ai", fontsize=24, fontweight="medium")
 ax.tick_params(axis="both", labelsize=16)
-ax.spines["top"].set_visible(False)
-ax.spines["right"].set_visible(False)
+sns.despine(ax=ax)
 ax.set_xlim(-0.02, 1.02)
 ax.set_ylim(0, 145)
 ax.set_xticks([])
-ax.yaxis.grid(True, alpha=0.2, linewidth=0.8)
+ax.xaxis.grid(False)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

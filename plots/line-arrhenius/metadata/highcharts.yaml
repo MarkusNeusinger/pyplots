@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: line-arrhenius
 created: '2026-03-21T22:12:42Z'
-updated: '2026-03-21T22:32:26Z'
+updated: '2026-03-21T22:41:44Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23389777938
 issue: 4408
@@ -10,34 +10,37 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-arrhenius/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-arrhenius/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-arrhenius/highcharts/plot.html
-quality_score: 85
+quality_score: 87
 review:
   strengths:
-  - Perfect spec compliance with all required features (regression line, R², Ea annotation,
+  - Perfect spec compliance with all required features (regression line, R², Eₐ, slope,
     temperature references)
-  - Realistic chemistry data with physically plausible parameters
+  - Realistic chemistry data with physically plausible parameters (Eₐ=75 kJ/mol, 300-600
+    K)
   - Clean, well-structured code with proper Selenium export pattern
   - Good use of Highcharts annotations module and plotLines for temperature context
   - Color-coded annotation hierarchy guides the viewer through the analysis results
+  - X-axis title visibility improved from previous attempt
   weaknesses:
-  - X-axis title 1000/T (K⁻¹) is cut off at the bottom of the rendered image despite
-    margin settings
-  - Design could be further elevated with more refined typography or background treatment
-  image_description: 'The plot displays an Arrhenius plot with title "line-arrhenius
-    · highcharts · pyplots.ai" at the top. Blue diamond markers represent 11 experimental
-    data points plotting ln(k) (y-axis) versus 1000/T in K⁻¹ (x-axis, reversed so
-    higher temperatures are on the right). A red dashed regression line (SplineSeries)
-    fits through the data. Three annotation boxes are positioned in the center-left
-    area: "R² = 0.9995" in red with red border, "Eₐ = 74.7 kJ/mol" in orange with
-    orange border, and "Slope = −Eₐ/R = -8983 K" in gray with gray border. Temperature
-    reference marks (300 K, 350 K, 400 K, 450 K, 500 K, 600 K) appear as dotted vertical
-    lines with labels at the top of the plot. A legend in the upper-right shows "Linear
-    Fit" and "Experimental Data". The y-axis label "ln(k)" is visible, but the x-axis
-    title "1000 / T (K⁻¹)" appears cut off at the bottom. The background is white
-    with subtle horizontal grid lines on the y-axis only.'
+  - Design Excellence could be elevated further to reach publication quality
+  - Temperature reference labels (22px) are slightly small relative to other text
+    elements
+  image_description: 'The plot displays an Arrhenius plot titled "line-arrhenius ·
+    highcharts · pyplots.ai" with a subtitle "First-Order Decomposition Kinetics —
+    Activation Energy Determination." The x-axis shows "1000 / T (K⁻¹)" reversed (high
+    to low, left to right), and the y-axis shows "ln(k)." Eleven blue circular markers
+    represent experimental data points spanning from ~3.3 to ~1.7 on the x-axis (300–600
+    K). A red dashed regression line (SplineSeries) fits through the data with excellent
+    linearity. Three color-coded annotation boxes are positioned in the center-left
+    area: "R² = 0.9995" with red border, "Eₐ = 74.7 kJ/mol" with orange border, and
+    "Slope = −Eₐ/R = -8983 K" with gray border. Dotted vertical reference lines mark
+    temperatures (300 K, 350 K, 400 K, 450 K, 500 K, 600 K) with labels at the top.
+    A legend in the upper-right shows "Linear Fit" and "Experimental Data." The background
+    is white with subtle horizontal grid lines on the y-axis only. The x-axis title
+    is visible at the bottom.'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -46,8 +49,8 @@ review:
         max: 8
         passed: true
         comment: All font sizes explicitly set (title 48px, axis titles 36px, ticks
-          26px, legend 28px, annotations 30-34px). Temperature reference labels slightly
-          small at 22px.
+          26px, legend 28px, annotations 30-34px). Temperature reference labels at
+          22px slightly small.
       - id: VQ-02
         name: No Overlap
         score: 6
@@ -66,21 +69,20 @@ review:
         score: 4
         max: 4
         passed: true
-        comment: Blue (#306998) and red (#c0392b) provide strong contrast, colorblind-safe.
+        comment: Blue (#306998) and red (#c0392b) provide strong contrast, colorblind-distinguishable.
       - id: VQ-05
         name: Layout & Canvas
-        score: 2
+        score: 3
         max: 4
-        passed: false
-        comment: X-axis title cut off at bottom despite marginBottom=160. Plot area
-          fills canvas well otherwise.
+        passed: true
+        comment: X-axis title now visible. Plot fills canvas well. Some unused vertical
+          space at top.
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Y-axis has ln(k). X-axis title defined with units but cut off in
-          rendering.
+        passed: true
+        comment: 1000 / T (K⁻¹) and ln(k) both descriptive with units.
     design_excellence:
       score: 13
       max: 20
@@ -91,7 +93,7 @@ review:
         max: 8
         passed: true
         comment: Custom color palette, color-coded annotation boxes with rounded corners,
-          clean white canvas. Above defaults but not publication-level.
+          subtitle adds context. Above defaults but not publication-level polish.
       - id: DE-02
         name: Visual Refinement
         score: 4
@@ -104,8 +106,8 @@ review:
         score: 4
         max: 6
         passed: true
-        comment: Color-coded annotations (R², Ea, slope) tell the chemistry story.
-          Temperature references contextualize 1/T scale.
+        comment: Color-coded annotations guide viewer through analysis. Temperature
+          references contextualize 1/T scale. Subtitle frames narrative.
     spec_compliance:
       score: 15
       max: 15
@@ -145,15 +147,15 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Full Arrhenius relationship with realistic scatter, 11 points spanning
-          300-600 K.
+        comment: 11 data points spanning 300-600 K with realistic scatter around regression
+          line.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: First-order decomposition with Ea=75 kJ/mol, A=1e13 s⁻¹, 300-600
-          K. Physically realistic.
+        comment: First-order decomposition with Ea=75 kJ/mol, A=1e13 s⁻¹. Physically
+          realistic.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
@@ -212,7 +214,7 @@ review:
         passed: true
         comment: Annotations module, plotLines for temperature marks, reversed x-axis,
           z_index layering.
-  verdict: APPROVED
+  verdict: REJECTED
 impl_tags:
   dependencies:
   - scipy

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 titration-curve: Acid-Base Titration Curve
 Library: highcharts unknown | Python 3.14.3
-Quality: 87/100 | Created: 2026-03-21
+Quality: 90/100 | Created: 2026-03-21
 """
 
 import subprocess

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-arrhenius: Arrhenius Plot for Reaction Kinetics
 Library: highcharts unknown | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-21
@@ -54,14 +54,14 @@ chart.options.chart = {
     "backgroundColor": "#ffffff",
     "spacingTop": 60,
     "spacingBottom": 60,
-    "marginBottom": 250,
+    "marginBottom": 160,
     "spacingLeft": 100,
     "spacingRight": 100,
     "style": {"fontFamily": "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"},
 }
 
 chart.options.title = {
-    "text": "Arrhenius Plot \u00b7 line-arrhenius \u00b7 highcharts \u00b7 pyplots.ai",
+    "text": "line-arrhenius \u00b7 highcharts \u00b7 pyplots.ai",
     "style": {"fontSize": "48px", "fontWeight": "600", "color": "#1a1a2e"},
     "margin": 50,
 }
@@ -105,7 +105,21 @@ chart.options.y_axis = {
     "gridLineColor": "rgba(0,0,0,0.08)",
 }
 
-chart.options.legend = {"enabled": False}
+chart.options.legend = {
+    "enabled": True,
+    "align": "right",
+    "verticalAlign": "top",
+    "layout": "vertical",
+    "x": -60,
+    "y": 80,
+    "itemStyle": {"fontSize": "28px", "fontWeight": "500", "color": "#333333"},
+    "backgroundColor": "rgba(255,255,255,0.85)",
+    "borderColor": "#cccccc",
+    "borderWidth": 1,
+    "borderRadius": 6,
+    "padding": 14,
+    "symbolRadius": 6,
+}
 chart.options.credits = {"enabled": False}
 
 chart.options.plot_options = {
@@ -132,9 +146,9 @@ data_series.color = "#306998"
 data_series.z_index = 5
 chart.add_series(data_series)
 
-# Annotations for R², Ea, and slope
-anno_x = round(float(inv_T_scaled[1]), 4)
-y_max = float(ln_k.max())
+# Annotations for R², Ea, and slope - positioned near the data midpoint
+anno_x = round(float(inv_T_scaled[3]), 4)  # Near 375K data point region
+y_mid = float(slope * inv_T[3] + intercept)  # On regression line at that x
 
 chart.options.annotations = [
     Annotation.from_dict(
@@ -143,7 +157,7 @@ chart.options.annotations = [
             "labelOptions": {"allowOverlap": True, "overflow": "none", "crop": False},
             "labels": [
                 {
-                    "point": {"xAxis": 0, "yAxis": 0, "x": anno_x, "y": round(y_max + 1.5, 2)},
+                    "point": {"xAxis": 0, "yAxis": 0, "x": anno_x, "y": round(y_mid + 2.5, 2)},
                     "text": f"R\u00b2 = {r_squared:.4f}",
                     "style": {"fontSize": "34px", "fontWeight": "700", "color": "#c0392b"},
                     "backgroundColor": "rgba(255,255,255,0.92)",
@@ -153,7 +167,7 @@ chart.options.annotations = [
                     "padding": 16,
                 },
                 {
-                    "point": {"xAxis": 0, "yAxis": 0, "x": anno_x, "y": round(y_max + 0.2, 2)},
+                    "point": {"xAxis": 0, "yAxis": 0, "x": anno_x, "y": round(y_mid + 1.2, 2)},
                     "text": f"E\u2090 = {Ea_fitted:.1f} kJ/mol",
                     "style": {"fontSize": "34px", "fontWeight": "700", "color": "#d35400"},
                     "backgroundColor": "rgba(255,255,255,0.92)",
@@ -163,7 +177,7 @@ chart.options.annotations = [
                     "padding": 16,
                 },
                 {
-                    "point": {"xAxis": 0, "yAxis": 0, "x": anno_x, "y": round(y_max - 1.1, 2)},
+                    "point": {"xAxis": 0, "yAxis": 0, "x": anno_x, "y": round(y_mid - 0.1, 2)},
                     "text": f"Slope = \u2212E\u2090/R = {slope:.0f} K",
                     "style": {"fontSize": "30px", "fontWeight": "600", "color": "#555555"},
                     "backgroundColor": "rgba(255,255,255,0.92)",

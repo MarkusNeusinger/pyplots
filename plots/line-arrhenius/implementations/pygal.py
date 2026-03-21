@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-arrhenius: Arrhenius Plot for Reaction Kinetics
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 82/100 | Created: 2026-03-21
@@ -28,20 +28,20 @@ slope, intercept, r_value, p_value, std_err = stats.linregress(inv_T, ln_k)
 r_squared = r_value**2
 Ea_extracted = -slope * R * 1000  # Convert back (factor of 1000 from 1000/T scaling)
 
-# Regression line
-inv_T_fit = np.linspace(min(inv_T) - 0.05, max(inv_T) + 0.05, 100)
+# Regression line — tightly constrained to data range
+inv_T_fit = np.linspace(float(min(inv_T)), float(max(inv_T)), 50)
 ln_k_fit = slope * inv_T_fit + intercept
 
-# Style
+# Style — orange fit line vs blue data for clear color contrast
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#2c3e50",
     foreground_strong="#2c3e50",
     foreground_subtle="#e0e0e0",
-    colors=("#306998", "#1a5276", "#c0392b"),
+    colors=("#e67e22", "#306998", "#c0392b"),
     guide_stroke_color="#e8e8e8",
-    major_guide_stroke_color="#d5d5d5",
+    major_guide_stroke_color="#d0d0d0",
     guide_stroke_dasharray="2,2",
     title_font_size=68,
     label_font_size=44,
@@ -54,7 +54,11 @@ custom_style = Style(
     opacity_hover=1.0,
 )
 
-# Chart
+# Custom Y-axis labels at clean intervals
+y_min, y_max = float(min(ln_k)), float(max(ln_k))
+y_labels_list = list(range(int(np.floor(y_min)) - 1, int(np.ceil(y_max)) + 2, 2))
+
+# Chart — pygal XY with explicit range control and custom labels
 chart = pygal.XY(
     style=custom_style,
     width=4800,
@@ -77,33 +81,38 @@ chart = pygal.XY(
     tooltip_fancy_mode=True,
     tooltip_border_radius=8,
     x_value_formatter=lambda x: f"{x:.2f}",
-    y_value_formatter=lambda y: f"{y:.1f}",
+    y_value_formatter=lambda y: f"{y:.0f}",
+    range=(y_labels_list[0], y_labels_list[-1]),
+    xrange=(float(min(inv_T) - 0.08), float(max(inv_T) + 0.08)),
+    y_labels=y_labels_list,
+    y_labels_major_every=1,
+    print_values=False,
     css=["file://style.css", "file://graph.css", "inline:.axis > .line { stroke: transparent !important; }"],
 )
 
 # X-axis labels: show 1000/T values with corresponding temperature in K
-# Use every other label to avoid overlap at the low end
 x_label_temps = np.array([300, 360, 440, 520, 600])
 x_label_positions = sorted(1000.0 / x_label_temps)
 chart.x_labels = [float(x) for x in x_label_positions]
+chart.x_labels_major = [float(x) for x in x_label_positions]
 chart.x_label_rotation = 0
 chart.x_value_formatter = lambda x: f"{x:.2f} ({int(round(1000.0 / x))} K)"
 
 # Regression fit line (plotted first so data points appear on top)
 fit_points = [
-    {"value": (float(x), float(y)), "label": f"Fit: ln(k) = {slope:.2f}·(1000/T) + {intercept:.2f} → {y:.2f}"}
+    {"value": (float(x), float(y)), "label": f"Fit: ln(k) = {slope:.2f} × (1000/T) + {intercept:.2f}"}
     for x, y in zip(inv_T_fit, ln_k_fit, strict=False)
 ]
 chart.add(f"Linear Fit (R² = {r_squared:.4f})", fit_points, show_dots=False, stroke_style={"width": 5})
 
-# Experimental data points
+# Experimental data points — rich tooltips with multi-line labels
 data_points = [
-    {"value": (float(x), float(y)), "label": f"T = {int(t)} K, k = {k:.3e}, ln(k) = {y:.2f}"}
+    {"value": (float(x), float(y)), "label": f"T = {int(t)} K | k = {k:.3e} s⁻¹ | ln(k) = {y:.2f}"}
     for x, y, t, k in zip(inv_T, ln_k, temperature_K, rate_constant_k, strict=False)
 ]
 chart.add("Experimental Data", data_points, stroke=False, dots_size=18)
 
-# Slope annotation — highlight Ea extraction from a visible segment
+# Slope annotation — dashed segment highlighting Ea extraction
 x_ann_start = float(inv_T[1])
 x_ann_end = float(inv_T[-2])
 y_ann_start = slope * x_ann_start + intercept
@@ -120,6 +129,6 @@ chart.add(
     stroke_style={"width": 5, "dasharray": "14,8"},
 )
 
-# Save
+# Save — PNG for static output, HTML with pygal's interactive SVG tooltips
 chart.render_to_png("plot.png")
 chart.render_to_file("plot.html")

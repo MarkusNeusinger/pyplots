@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 titration-curve: Acid-Base Titration Curve
 Library: highcharts unknown | Python 3.14.3
 Quality: 87/100 | Created: 2026-03-21
@@ -69,9 +69,9 @@ chart.options.chart = {
     "plotBackgroundColor": "#ffffff",
     "plotBorderWidth": 0,
     "marginTop": 160,
-    "marginBottom": 160,
+    "marginBottom": 200,
     "marginLeft": 280,
-    "marginRight": 280,
+    "marginRight": 320,
     "style": {"fontFamily": "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"},
 }
 
@@ -127,8 +127,8 @@ chart.options.x_axis = {
             "to": 20,
             "color": "rgba(46, 204, 113, 0.10)",
             "label": {
-                "text": "Buffer Region",
-                "style": {"fontSize": "22px", "color": "rgba(39, 174, 96, 0.7)", "fontWeight": "600"},
+                "text": "Acid Excess Region",
+                "style": {"fontSize": "24px", "color": "rgba(39, 174, 96, 0.7)", "fontWeight": "600"},
                 "align": "center",
                 "verticalAlign": "bottom",
                 "y": -20,
@@ -139,8 +139,8 @@ chart.options.x_axis = {
             "to": 50,
             "color": "rgba(46, 204, 113, 0.10)",
             "label": {
-                "text": "Buffer Region",
-                "style": {"fontSize": "22px", "color": "rgba(39, 174, 96, 0.7)", "fontWeight": "600"},
+                "text": "Base Excess Region",
+                "style": {"fontSize": "24px", "color": "rgba(39, 174, 96, 0.7)", "fontWeight": "600"},
                 "align": "center",
                 "verticalAlign": "bottom",
                 "y": -20,

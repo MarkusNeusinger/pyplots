@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: line-arrhenius
 created: '2026-03-21T22:12:42Z'
-updated: '2026-03-21T22:24:25Z'
+updated: '2026-03-21T22:32:26Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23389777938
 issue: 4408
@@ -13,35 +13,31 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/line-arrhenius
 quality_score: 85
 review:
   strengths:
-  - Excellent data quality with realistic physical chemistry context (Ea = 75 kJ/mol,
-    appropriate temperature range)
-  - Clean annotation boxes with R², Ea, and slope clearly displayed with distinct
-    colored borders
-  - Temperature reference lines elegantly bridge inverse temperature to physical units
-  - Reversed x-axis follows Arrhenius convention correctly
-  - Code is well-structured and clean with proper seed for reproducibility
+  - Perfect spec compliance with all required features (regression line, R², Ea annotation,
+    temperature references)
+  - Realistic chemistry data with physically plausible parameters
+  - Clean, well-structured code with proper Selenium export pattern
+  - Good use of Highcharts annotations module and plotLines for temperature context
+  - Color-coded annotation hierarchy guides the viewer through the analysis results
   weaknesses:
-  - Title format has extra Arrhenius Plot prefix; should be just line-arrhenius ·
-    highcharts · pyplots.ai
-  - Layout has excess bottom margin and annotations are disconnected from the data
-    region
-  - Could benefit from a small legend distinguishing Experimental Data markers from
-    Linear Fit line
-  image_description: 'The plot displays an Arrhenius plot with 1000/T (K⁻¹) on a reversed
-    x-axis (ranging from ~3.3 to ~1.6) and ln(k) on the y-axis (ranging from about
-    -2 to 17). Eleven blue circular markers with white borders represent experimental
-    data points for a first-order decomposition reaction. A red dashed regression
-    line passes through the data showing excellent linear fit. Three styled annotation
-    boxes appear in the upper-left region: "R² = 0.9995" with a red border, "Eₐ =
-    74.7 kJ/mol" with an orange border, and "Slope = −Eₐ/R = -8983 K" with a gray
-    border. Dotted vertical reference lines with temperature labels (300 K, 350 K,
-    400 K, 450 K, 500 K, 600 K) appear near the top of the chart. The title reads
-    "Arrhenius Plot · line-arrhenius · highcharts · pyplots.ai". The background is
-    white with subtle horizontal gridlines on the y-axis. Overall layout is clean
-    and professional.'
+  - X-axis title 1000/T (K⁻¹) is cut off at the bottom of the rendered image despite
+    margin settings
+  - Design could be further elevated with more refined typography or background treatment
+  image_description: 'The plot displays an Arrhenius plot with title "line-arrhenius
+    · highcharts · pyplots.ai" at the top. Blue diamond markers represent 11 experimental
+    data points plotting ln(k) (y-axis) versus 1000/T in K⁻¹ (x-axis, reversed so
+    higher temperatures are on the right). A red dashed regression line (SplineSeries)
+    fits through the data. Three annotation boxes are positioned in the center-left
+    area: "R² = 0.9995" in red with red border, "Eₐ = 74.7 kJ/mol" in orange with
+    orange border, and "Slope = −Eₐ/R = -8983 K" in gray with gray border. Temperature
+    reference marks (300 K, 350 K, 400 K, 450 K, 500 K, 600 K) appear as dotted vertical
+    lines with labels at the top of the plot. A legend in the upper-right shows "Linear
+    Fit" and "Experimental Data". The y-axis label "ln(k)" is visible, but the x-axis
+    title "1000 / T (K⁻¹)" appears cut off at the bottom. The background is white
+    with subtle horizontal grid lines on the y-axis only.'
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 26
       max: 30
       items:
       - id: VQ-01
@@ -49,40 +45,42 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set throughout (48px title, 36px axes, 26px
-          ticks, 34px annotations). Temperature ref labels slightly small at 22px.
+        comment: All font sizes explicitly set (title 48px, axis titles 36px, ticks
+          26px, legend 28px, annotations 30-34px). Temperature reference labels slightly
+          small at 22px.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements. Annotations well-positioned.
+        comment: No overlapping elements. Annotation boxes well-spaced vertically.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Markers radius 14 with white border clearly visible. Red dashed regression
-          line contrasts well.
+        comment: Scatter markers radius 14 with white border, perfectly sized for
+          11 data points. Regression line width 4 dashed.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue vs red easily distinguishable for colorblind users. Good contrast.
+        comment: Blue (#306998) and red (#c0392b) provide strong contrast, colorblind-safe.
       - id: VQ-05
         name: Layout & Canvas
         score: 2
         max: 4
         passed: false
-        comment: Annotations disconnected from data. Excessive bottom margin (250px)
-          wastes space.
+        comment: X-axis title cut off at bottom despite marginBottom=160. Plot area
+          fills canvas well otherwise.
       - id: VQ-06
         name: Axis Labels & Title
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: 'X: 1000/T (K⁻¹) with units. Y: ln(k) descriptive for domain.'
+        passed: false
+        comment: Y-axis has ln(k). X-axis title defined with units but cut off in
+          rendering.
     design_excellence:
       score: 13
       max: 20
@@ -92,24 +90,24 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Thoughtful colors, custom font, styled annotation boxes. Above defaults
-          but not publication-level.
+        comment: Custom color palette, color-coded annotation boxes with rounded corners,
+          clean white canvas. Above defaults but not publication-level.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Subtle gridlines, no tick marks, dotted reference lines. Good refinement
-          effort.
+        comment: Subtle y-axis grid (rgba 0.08), no x-axis grid, tick marks removed,
+          dotted temperature reference lines.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Annotations communicate key findings. Temperature references bridge
-          inverse temp to physical units.
+        comment: Color-coded annotations (R², Ea, slope) tell the chemistry story.
+          Temperature references contextualize 1/T scale.
     spec_compliance:
-      score: 13
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -117,27 +115,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct Arrhenius plot with ln(k) vs 1/T and linear regression.
+        comment: 'Correct Arrhenius plot: scatter + linear regression on ln(k) vs
+          1/T.'
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: regression line, R², Ea annotation, temperature
-          references, visible markers.'
+        comment: 'All spec features present: regression line, R², Ea annotation, temperature
+          labels, data points on top.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Correct mapping with reversed x-axis per Arrhenius convention.
+        comment: X=1/T (×1000), Y=ln(k), axis reversed for conventional orientation.
       - id: SC-04
         name: Title & Legend
-        score: 1
+        score: 3
         max: 3
-        passed: false
-        comment: Title prepends extra 'Arrhenius Plot' before spec-id format. Legend
-          disabled.
+        passed: true
+        comment: Title follows exact format. Legend labels descriptive and accurate.
     data_quality:
       score: 14
       max: 15
@@ -147,21 +145,21 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: 11 data points spanning 300-600K with scatter around fit. Good linear
-          relationship demo.
+        comment: Full Arrhenius relationship with realistic scatter, 11 points spanning
+          300-600 K.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: First-order decomposition, Ea=75 kJ/mol, realistic temperature range
-          and rate constants.
+        comment: First-order decomposition with Ea=75 kJ/mol, A=1e13 s⁻¹, 300-600
+          K. Physically realistic.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: All values within realistic physical chemistry ranges.
+        comment: All values within realistic ranges for chemical kinetics.
     code_quality:
       score: 10
       max: 10
@@ -171,13 +169,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear flow with no functions or classes.
+        comment: 'Flat script: imports, data, chart config, export. No functions/classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42) ensures deterministic output.
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -189,15 +187,15 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Clean, well-organized. PlotLines loop is elegant.
+        comment: Clean, well-organized. No fake UI elements.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via headless Chrome.
+        comment: Saves plot.png via Selenium. Current highcharts-core API.
     library_mastery:
-      score: 8
+      score: 7
       max: 10
       items:
       - id: LM-01
@@ -205,16 +203,16 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of highcharts-core wrapper with typed series, Annotation.from_dict(),
-          plotLines.
+        comment: 'Good use of highcharts-core API: typed series classes, Annotation.from_dict(),
+          plotLines, proper Selenium export.'
       - id: LM-02
         name: Distinctive Features
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: Annotations module, plotLines with labels, reversed axis, spline
-          series for fit.
-  verdict: REJECTED
+        comment: Annotations module, plotLines for temperature marks, reversed x-axis,
+          z_index layering.
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - scipy

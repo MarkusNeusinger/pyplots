@@ -1,7 +1,7 @@
 library: plotly
 specification_id: titration-curve
 created: '2026-03-21T22:11:43Z'
-updated: '2026-03-21T22:15:52Z'
+updated: '2026-03-21T22:24:12Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23389866054
 issue: 4407
@@ -10,30 +10,31 @@ library_version: 6.6.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/titration-curve/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/titration-curve/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/titration-curve/plotly/plot.html
-quality_score: 87
+quality_score: 90
 review:
   strengths:
-  - Excellent data quality with realistic HCl + NaOH titration chemistry at proper
-    concentrations
-  - Clean dual y-axis implementation showing both pH curve and derivative
-  - All font sizes explicitly set for consistent legibility at 4800x2700
-  - Good colorblind-safe blue/orange palette with solid/dotted line distinction
-  - Deterministic well-structured code with proper chemistry calculations
+  - Complete spec compliance with all required features (equivalence point annotation,
+    derivative overlay, buffer shading, correct axis labels)
+  - Scientifically accurate data generation with denser sampling near the equivalence
+    point for a smooth transition
+  - Strong visual hierarchy with the equivalence point as the clear focal point
+  - Clean well-organized code with good use of Plotly dual-axis capabilities
+  - Dual output (PNG + HTML) leverages Plotly interactive strengths
   weaknesses:
-  - Missing buffer region shading requested by spec
-  - Equivalence point area slightly cluttered with overlapping annotation, derivative
-    spike, and vertical line
-  - Design could be elevated further for publication-level quality
-  image_description: The plot shows an acid-base titration curve for HCl + NaOH. A
-    solid blue line (#306998) traces pH (left y-axis, 0-14) against volume of NaOH
-    added (x-axis, 0-50 mL), producing the characteristic S-shaped sigmoidal curve
-    rising from ~pH 1 to ~pH 13. A dotted orange line (#E8873A) on the secondary right
-    y-axis shows the derivative dpH/dV (mL⁻¹), which spikes sharply at 25 mL. A vertical
-    dashed gray line marks the equivalence point at 25.0 mL with annotation text "Equivalence
-    Point, 25.0 mL, pH 7.0". A red diamond marker sits at pH 7 on the equivalence
-    line. The legend in the upper-left shows "pH" and "dpH/dV". Title reads "HCl +
-    NaOH Titration · titration-curve · plotly · pyplots.ai". The plotly_white template
-    provides a clean white background with subtle gray gridlines on the pH axis only.
+  - Derivative curve nearly invisible except at spike - the enormous spike at the
+    equivalence point compresses the rest of the curve to a flat line near zero
+  image_description: 'The plot displays an acid-base titration curve for HCl titrated
+    with NaOH. A solid blue line (#306998) traces the characteristic S-shaped pH curve
+    from ~0.8 to ~12.5 across 0-50 mL of NaOH added. An orange dotted derivative curve
+    (dpH/dV) on a secondary right y-axis shows a sharp spike at 25 mL reaching ~45
+    mL⁻¹. A red diamond marker highlights the equivalence point at 25.0 mL, pH 7.0,
+    with an annotated callout box connected by an arrow. A light blue semi-transparent
+    shaded region spans 5-20 mL marking the buffer region, with a centered "Buffer
+    Region" label. The title reads "HCl + NaOH Titration · titration-curve · plotly
+    · pyplots.ai". X-axis: "Volume of NaOH added (mL)", left Y-axis: "pH" (0-14),
+    right Y-axis: "dpH/dV (mL⁻¹)". Legend in upper-left lists Buffer Region, pH, and
+    dpH/dV. Background is a subtle off-white (#FAFAFC) with very faint horizontal
+    gridlines on the pH axis only.'
   criteria_checklist:
     visual_quality:
       score: 29
@@ -44,68 +45,68 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 28pt, labels 22pt, ticks 18pt,
-          legend 18pt, annotation 16pt'
+        comment: 'All font sizes explicitly set: title 28pt, axis labels 22pt, ticks
+          18pt, legend 18pt, annotations 16pt'
       - id: VQ-02
         name: No Overlap
-        score: 5
-        max: 6
-        passed: true
-        comment: Minor visual clutter near equivalence point where annotation, derivative
-          spike, and vertical line converge
-      - id: VQ-03
-        name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Line widths well-chosen (3.5 for pH, 2.5 dotted for derivative),
-          diamond marker size 14 with white border
+        comment: Equivalence point annotation well-offset, legend and labels positioned
+          without collision
+      - id: VQ-03
+        name: Element Visibility
+        score: 5
+        max: 6
+        passed: true
+        comment: Lines and markers well-sized; derivative curve mostly invisible except
+          at spike due to scale compression
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue/orange palette is colorblind-safe with strong contrast
+        comment: Blue and orange palette is colorblind-safe with strong contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Good proportions, margins explicitly set, plot fills canvas well
+        comment: Good canvas utilization with balanced margins for dual y-axes
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'All axes labeled with units: Volume of NaOH added (mL), pH, dpH/dV
-          (mL⁻¹)'
+        comment: 'All axes descriptive with units: Volume of NaOH added (mL), pH,
+          dpH/dV (mL⁻¹)'
     design_excellence:
-      score: 13
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: plotly_white template, custom blue/orange palette, solid vs dotted
-          line distinction — above defaults but not publication-level
+        comment: Custom color palette, styled annotations, subtle buffer shading,
+          clearly above defaults
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: X-axis grid removed, subtle y-axis grid (opacity 0.08), light gray
-          axis lines, transparent legend background
+        comment: plotly_white template, x-grid removed, y-grid at 6% opacity, custom
+          background, styled ticks
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Equivalence point marked with triple emphasis (vertical line + annotation
-          + diamond marker), derivative peak reinforces focal point
+        comment: Clear visual hierarchy with equivalence point as focal point, buffer
+          region contextually shaded, derivative adds analytical depth
     spec_compliance:
-      score: 13
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -113,27 +114,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct sigmoidal titration curve
+        comment: Correct sigmoidal titration curve as line plot
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Equivalence point and derivative curve present; buffer region shading
-          missing
+        comment: 'All features present: equivalence point annotation, derivative overlay,
+          buffer shading, correct data, full pH scale'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=volume, Y=pH, secondary Y=dpH/dV, all correct
+        comment: X = volume (mL), Y = pH, correct ranges
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Title includes required format with descriptive prefix; legend labels
-          correct but equivalence marker hidden from legend
+        comment: Title includes required format with descriptive prefix, legend labels
+          match data series
     data_quality:
       score: 15
       max: 15
@@ -143,22 +144,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Full S-curve with acidic region, steep transition, basic plateau,
-          and derivative spike at equivalence
+        comment: 'Shows complete sigmoidal curve with all key features: slow rise,
+          steep transition, buffer region, derivative spike, plateau'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: 'Real chemistry scenario: 25 mL of 0.1 M HCl titrated with 0.1 M
-          NaOH'
+        comment: Classic HCl + NaOH titration with realistic lab concentrations and
+          volumes
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Realistic concentrations (0.1 M), volume range (0-50 mL), full pH
-          scale (0-14)
+        comment: 0.1 M concentrations, 25 mL volumes, equivalence at pH 7 — all chemically
+          correct
     code_quality:
       score: 10
       max: 10
@@ -168,32 +169,32 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data generation, chemistry calculation, plot,
-          save'
+        comment: 'Clean linear flow: imports, data, plot, style, save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic, no random data
+        comment: Fully deterministic — pH computed from stoichiometric equations
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: numpy, go, make_subplots'
+        comment: Three imports, all used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Chemistry loop is necessary and clean, no fake functionality
+        comment: Clean and well-organized with smart dense sampling near equivalence
+          point
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png at 4800x2700 and plot.html
+        comment: Saves plot.png at correct dimensions, also exports HTML
     library_mastery:
       score: 7
       max: 10
@@ -203,26 +204,26 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of make_subplots with secondary_y, add_vline with annotation,
-          update_xaxes/update_yaxes pattern
+        comment: Good use of make_subplots, go.Scatter, add_vline, hovertemplate,
+          update_layout
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Secondary y-axis via make_subplots specs, add_vline with inline annotation,
-          HTML export for interactivity
-  verdict: REJECTED
+        comment: Uses hovermode x unified, hovertemplate, add_vline, dual PNG+HTML
+          export
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - twin-axes
   - annotations
+  - hover-tooltips
   - html-export
   patterns:
   - data-generation
-  - iteration-over-groups
-  dataprep:
-  - numerical-differentiation
+  dataprep: []
   styling:
   - grid-styling
+  - alpha-blending

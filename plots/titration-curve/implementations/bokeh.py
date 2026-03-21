@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 titration-curve: Acid-Base Titration Curve
 Library: bokeh 3.9.0 | Python 3.14.3
-Quality: 86/100 | Created: 2026-03-21
+Created: 2026-03-21
 """
 
 import numpy as np
@@ -63,42 +63,24 @@ p = figure(
     toolbar_location=None,
 )
 
-# Buffer region shading - vertical spans for where pH changes slowly
-# Acidic buffer zone: 0-15 mL (pH slowly rises from ~1 to ~2)
-acid_buffer = BoxAnnotation(
-    left=0,
-    right=15,
-    fill_color=ACID_BUFFER_COLOR,
-    fill_alpha=0.05,
-    line_color=ACID_BUFFER_COLOR,
-    line_alpha=0.15,
-    line_width=1,
-    line_dash="dashed",
-)
+# Buffer region shading - regions where pH changes slowly (excess acid / excess base)
+# Acid-excess region: 0-15 mL (excess HCl dominates, pH slowly rises)
+acid_buffer = BoxAnnotation(left=0, right=15, fill_color=ACID_BUFFER_COLOR, fill_alpha=0.08, line_color=None)
 p.add_layout(acid_buffer)
 
-# Basic buffer zone: 35-50 mL (pH plateaus around ~12-13)
-basic_buffer = BoxAnnotation(
-    left=35,
-    right=50,
-    fill_color=BASE_BUFFER_COLOR,
-    fill_alpha=0.05,
-    line_color=BASE_BUFFER_COLOR,
-    line_alpha=0.15,
-    line_width=1,
-    line_dash="dashed",
-)
+# Base-excess region: 35-50 mL (excess NaOH dominates, pH plateaus)
+basic_buffer = BoxAnnotation(left=35, right=50, fill_color=BASE_BUFFER_COLOR, fill_alpha=0.08, line_color=None)
 p.add_layout(basic_buffer)
 
-# Buffer region labels
+# Region labels - chemically accurate for strong acid/strong base system
 p.add_layout(
     Label(
         x=7.5,
         y=4.5,
-        text="Acidic Buffer Region",
-        text_font_size="16pt",
-        text_color=ACID_BUFFER_COLOR,
-        text_alpha=0.65,
+        text="Excess HCl Region",
+        text_font_size="20pt",
+        text_color="#C68600",
+        text_alpha=0.85,
         text_align="center",
         text_font_style="italic",
     )
@@ -107,10 +89,10 @@ p.add_layout(
     Label(
         x=42.5,
         y=9.5,
-        text="Basic Buffer Region",
-        text_font_size="16pt",
-        text_color=BASE_BUFFER_COLOR,
-        text_alpha=0.65,
+        text="Excess NaOH Region",
+        text_font_size="20pt",
+        text_color="#3A8BC2",
+        text_alpha=0.85,
         text_align="center",
         text_font_style="italic",
     )
@@ -140,7 +122,7 @@ p.line(
     source=deriv_source,
     line_width=4,
     color=DERIV_COLOR,
-    line_alpha=0.7,
+    line_alpha=0.8,
     line_dash="dotdash",
     y_range_name="deriv",
     legend_label="dpH/dV",
@@ -164,17 +146,17 @@ p.add_layout(
 # Equivalence point marker
 p.scatter([equivalence_volume], [eq_ph], size=26, color=EQ_COLOR, marker="diamond", line_color="white", line_width=2)
 
-# Equivalence point annotation
+# Equivalence point annotation - offset to reduce congestion
 p.add_layout(
     Label(
         x=equivalence_volume,
         y=eq_ph,
         text=f"Equivalence Point\n{equivalence_volume:.0f} mL, pH {eq_ph:.1f}",
-        text_font_size="20pt",
+        text_font_size="22pt",
         text_font_style="bold",
         text_color=EQ_COLOR,
-        x_offset=25,
-        y_offset=-10,
+        x_offset=35,
+        y_offset=-30,
     )
 )
 
@@ -189,14 +171,17 @@ p.add_tools(
 )
 
 # Style
-p.title.text_font_size = "30pt"
+p.title.text_font_size = "36pt"
 p.title.text_font_style = "normal"
 p.title.text_color = "#2B2B2B"
+p.title.offset = 10
 
-p.xaxis.axis_label_text_font_size = "24pt"
-p.yaxis.axis_label_text_font_size = "24pt"
-p.xaxis.major_label_text_font_size = "18pt"
-p.yaxis.major_label_text_font_size = "18pt"
+p.xaxis.axis_label_text_font_size = "26pt"
+p.yaxis.axis_label_text_font_size = "26pt"
+p.xaxis.major_label_text_font_size = "20pt"
+p.yaxis.major_label_text_font_size = "20pt"
+p.xaxis.axis_label_standoff = 18
+p.yaxis.axis_label_standoff = 18
 
 p.xaxis.axis_line_color = AXIS_COLOR
 p.yaxis.axis_line_color = AXIS_COLOR
@@ -212,12 +197,12 @@ p.outline_line_color = None
 p.background_fill_color = BG_COLOR
 p.border_fill_color = "#FFFFFF"
 
-p.ygrid.grid_line_alpha = 0.15
+p.ygrid.grid_line_alpha = 0.18
 p.ygrid.grid_line_width = 1
-p.ygrid.grid_line_dash = [4, 4]
+p.ygrid.grid_line_dash = [6, 4]
 p.xgrid.grid_line_alpha = 0.12
 p.xgrid.grid_line_width = 1
-p.xgrid.grid_line_dash = [4, 4]
+p.xgrid.grid_line_dash = [6, 4]
 
 p.min_border_left = 120
 p.min_border_right = 180
@@ -226,15 +211,16 @@ p.min_border_top = 60
 
 # Legend
 p.legend.location = "top_left"
-p.legend.label_text_font_size = "20pt"
-p.legend.glyph_height = 30
-p.legend.glyph_width = 45
-p.legend.spacing = 12
-p.legend.padding = 18
-p.legend.background_fill_alpha = 0.85
+p.legend.label_text_font_size = "22pt"
+p.legend.glyph_height = 35
+p.legend.glyph_width = 50
+p.legend.spacing = 14
+p.legend.padding = 22
+p.legend.margin = 20
+p.legend.background_fill_alpha = 0.9
 p.legend.background_fill_color = "#FFFFFF"
-p.legend.border_line_color = "#DDDDDD"
-p.legend.border_line_width = 1
+p.legend.border_line_color = "#CCCCCC"
+p.legend.border_line_width = 1.5
 
 # Save
 export_png(p, filename="plot.png")

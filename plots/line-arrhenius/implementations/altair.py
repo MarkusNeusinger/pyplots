@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-arrhenius: Arrhenius Plot for Reaction Kinetics
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 88/100 | Created: 2026-03-21
@@ -22,38 +22,28 @@ ln_k_measured = ln_k_true + np.random.normal(0, 0.15, len(temperature_K))
 
 inv_T = 1.0 / temperature_K  # 1/T in K⁻¹
 
-# Linear regression: ln(k) = ln(A) - (Ea/R) * (1/T)
-n = len(inv_T)
-x_mean = np.mean(inv_T)
-y_mean = np.mean(ln_k_measured)
-ss_xx = np.sum((inv_T - x_mean) ** 2)
-ss_xy = np.sum((inv_T - x_mean) * (ln_k_measured - y_mean))
-slope_fit = ss_xy / ss_xx
-intercept_fit = y_mean - slope_fit * x_mean
-residuals = ln_k_measured - (slope_fit * inv_T + intercept_fit)
-ss_res = np.sum(residuals**2)
-ss_tot = np.sum((ln_k_measured - y_mean) ** 2)
+# Compute regression parameters for annotations
+coeffs = np.polyfit(inv_T, ln_k_measured, 1)
+slope_fit, intercept_fit = coeffs
+y_pred = slope_fit * inv_T + intercept_fit
+ss_res = np.sum((ln_k_measured - y_pred) ** 2)
+ss_tot = np.sum((ln_k_measured - np.mean(ln_k_measured)) ** 2)
 r_squared = 1 - ss_res / ss_tot
 Ea_fit = -slope_fit * R  # Activation energy in J/mol
 
-# Regression line data
-inv_T_fit = np.linspace(inv_T.min() - 0.00005, inv_T.max() + 0.00005, 200)
-ln_k_fit = slope_fit * inv_T_fit + intercept_fit
-
-# DataFrames
-data_df = pd.DataFrame({"1/T (K⁻¹)": inv_T, "ln(k)": ln_k_measured, "T (K)": temperature_K})
-
-fit_df = pd.DataFrame({"1/T (K⁻¹)": inv_T_fit, "ln(k)": ln_k_fit})
+# DataFrame
+data_df = pd.DataFrame({"inv_T": inv_T, "ln_k": ln_k_measured, "T_K": temperature_K})
 
 # Shared scales
 x_scale = alt.Scale(domain=[inv_T.min() - 0.0001, inv_T.max() + 0.0001], nice=False)
-y_scale = alt.Scale(domain=[ln_k_measured.min() - 1.5, ln_k_measured.max() + 1.5])
+y_scale = alt.Scale(domain=[ln_k_measured.min() - 1.2, ln_k_measured.max() + 1.2])
 
-# Regression line
+# Regression line using Altair's native transform_regression
 reg_line = (
-    alt.Chart(fit_df)
+    alt.Chart(data_df)
     .mark_line(strokeWidth=3, color="#306998")
-    .encode(x=alt.X("1/T (K⁻¹):Q", scale=x_scale), y=alt.Y("ln(k):Q", scale=y_scale))
+    .transform_regression("inv_T", "ln_k", extent=[inv_T.min() - 0.00005, inv_T.max() + 0.00005])
+    .encode(x=alt.X("inv_T:Q", scale=x_scale), y=alt.Y("ln_k:Q", scale=y_scale))
 )
 
 # Data points with interactive highlight
@@ -63,48 +53,48 @@ points = (
     alt.Chart(data_df)
     .mark_point(filled=True, color="#306998", stroke="white", strokeWidth=1.5)
     .encode(
-        x=alt.X("1/T (K⁻¹):Q", scale=x_scale, title="1/T (K⁻¹)"),
-        y=alt.Y("ln(k):Q", scale=y_scale, title="ln(k)"),
+        x=alt.X("inv_T:Q", scale=x_scale, title="1/T (K⁻¹)"),
+        y=alt.Y("ln_k:Q", scale=y_scale, title="ln(k)"),
         size=alt.condition(highlight, alt.value(500), alt.value(350)),
         tooltip=[
-            alt.Tooltip("T (K):Q", title="Temperature", format=".0f"),
-            alt.Tooltip("1/T (K⁻¹):Q", title="1/T", format=".5f"),
-            alt.Tooltip("ln(k):Q", title="ln(k)", format=".2f"),
+            alt.Tooltip("T_K:Q", title="Temperature", format=".0f"),
+            alt.Tooltip("inv_T:Q", title="1/T", format=".5f"),
+            alt.Tooltip("ln_k:Q", title="ln(k)", format=".2f"),
         ],
     )
     .add_params(highlight)
 )
 
-# Annotation: slope / Ea and R² value
+# Annotation: Ea and R² value
 ea_kj = Ea_fit / 1000
 annotation_text = f"Eₐ = {ea_kj:.1f} kJ/mol   R² = {r_squared:.4f}"
 slope_text = f"slope = −Eₐ/R = {slope_fit:.0f} K"
 
 annotation_df = pd.DataFrame(
-    {"1/T (K⁻¹)": [inv_T.min() + 0.0002], "ln(k)": [ln_k_measured.max() + 0.8], "text": [annotation_text]}
+    {"inv_T": [inv_T.min() + 0.0002], "ln_k": [ln_k_measured.max() + 0.7], "text": [annotation_text]}
 )
 
 slope_ann_df = pd.DataFrame(
-    {"1/T (K⁻¹)": [inv_T.min() + 0.0002], "ln(k)": [ln_k_measured.max() + 0.2], "text": [slope_text]}
+    {"inv_T": [inv_T.min() + 0.0002], "ln_k": [ln_k_measured.max() + 0.15], "text": [slope_text]}
 )
 
 ea_label = (
     alt.Chart(annotation_df)
     .mark_text(fontSize=20, align="left", fontWeight="bold", color="#306998")
-    .encode(x=alt.X("1/T (K⁻¹):Q", scale=x_scale), y=alt.Y("ln(k):Q", scale=y_scale), text="text:N")
+    .encode(x=alt.X("inv_T:Q", scale=x_scale), y=alt.Y("ln_k:Q", scale=y_scale), text="text:N")
 )
 
 slope_label = (
     alt.Chart(slope_ann_df)
     .mark_text(fontSize=17, align="left", fontStyle="italic", color="#666666")
-    .encode(x=alt.X("1/T (K⁻¹):Q", scale=x_scale), y=alt.Y("ln(k):Q", scale=y_scale), text="text:N")
+    .encode(x=alt.X("inv_T:Q", scale=x_scale), y=alt.Y("ln_k:Q", scale=y_scale), text="text:N")
 )
 
 # Secondary x-axis: temperature labels at data point positions
 temp_labels_df = pd.DataFrame(
     {
-        "1/T (K⁻¹)": inv_T[::2],
-        "ln(k)": [ln_k_measured.min() - 0.6] * len(inv_T[::2]),
+        "inv_T": inv_T[::2],
+        "ln_k": [ln_k_measured.min() - 0.5] * len(inv_T[::2]),
         "text": [f"{int(t)} K" for t in temperature_K[::2]],
     }
 )
@@ -112,18 +102,18 @@ temp_labels_df = pd.DataFrame(
 temp_tick_labels = (
     alt.Chart(temp_labels_df)
     .mark_text(fontSize=14, color="#888888", angle=0)
-    .encode(x=alt.X("1/T (K⁻¹):Q", scale=x_scale), y=alt.Y("ln(k):Q", scale=y_scale), text="text:N")
+    .encode(x=alt.X("inv_T:Q", scale=x_scale), y=alt.Y("ln_k:Q", scale=y_scale), text="text:N")
 )
 
 # Temperature axis label
 temp_axis_label_df = pd.DataFrame(
-    {"1/T (K⁻¹)": [(inv_T.min() + inv_T.max()) / 2], "ln(k)": [ln_k_measured.min() - 1.2], "text": ["Temperature (K)"]}
+    {"inv_T": [(inv_T.min() + inv_T.max()) / 2], "ln_k": [ln_k_measured.min() - 0.9], "text": ["Temperature (K)"]}
 )
 
 temp_axis_label = (
     alt.Chart(temp_axis_label_df)
     .mark_text(fontSize=16, color="#888888", fontStyle="italic")
-    .encode(x=alt.X("1/T (K⁻¹):Q", scale=x_scale), y=alt.Y("ln(k):Q", scale=y_scale), text="text:N")
+    .encode(x=alt.X("inv_T:Q", scale=x_scale), y=alt.Y("ln_k:Q", scale=y_scale), text="text:N")
 )
 
 # Combine all layers
@@ -151,8 +141,7 @@ chart = (
         titleColor="#333333",
         labelColor="#555555",
         grid=False,
-        domainColor="#aaaaaa",
-        domainWidth=0.8,
+        domain=False,
         tickColor="#aaaaaa",
         tickSize=5,
         tickWidth=0.6,

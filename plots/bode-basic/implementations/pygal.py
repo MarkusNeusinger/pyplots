@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bode-basic: Bode Plot for Frequency Response
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 80/100 | Created: 2026-03-21
@@ -13,14 +13,16 @@ from PIL import Image, ImageDraw, ImageFont
 from pygal.style import Style
 
 
-# Data — Second-order low-pass: G(s) = wn^2 / (s^2 + 2*zeta*wn*s + wn^2)
-# Natural frequency 5 Hz, damping ratio 0.2 (clear resonance peak)
+# Data — Third-order system with resonance: G(s) = K*wn^2 / ((s + p)*(s^2 + 2*zeta*wn*s + wn^2))
+# Natural frequency 5 Hz, damping 0.2 (clear resonance), extra pole at 50 Hz
+# This gives finite gain margin AND phase margin for a complete Bode demonstration
 frequency_hz = np.logspace(-1, 3, 500)
 omega = 2 * np.pi * frequency_hz
 wn = 2 * np.pi * 5.0
 zeta = 0.2
+p = 2 * np.pi * 50.0
 s = 1j * omega
-G = wn**2 / (s**2 + 2 * zeta * wn * s + wn**2)
+G = (wn**2 * p) / ((s + p) * (s**2 + 2 * zeta * wn * s + wn**2))
 
 magnitude_db = 20 * np.log10(np.abs(G))
 phase_deg = np.degrees(np.unwrap(np.angle(G)))
@@ -48,53 +50,34 @@ gain_margin = -magnitude_db[pc_indices[0]] if len(pc_indices) > 0 else None
 
 # Color palette
 line_blue = "#306998"
-line_blue_light = "#5B9BD5"
 ref_red = "#C0392B"
-accent_amber = "#E67E22"
+margin_purple = "#7B2D8E"
+margin_teal = "#0E6655"
 bg_plot = "#F7F9FC"
 text_dark = "#16213E"
 grid_subtle = "#DDE1E7"
-annotation_teal = "#0E6655"
 
-# Style for magnitude panel
-mag_style = Style(
-    background="white",
-    plot_background=bg_plot,
-    foreground=text_dark,
-    foreground_strong=text_dark,
-    foreground_subtle=grid_subtle,
-    colors=(line_blue, ref_red),
-    title_font_size=52,
-    label_font_size=28,
-    major_label_font_size=26,
-    legend_font_size=22,
-    value_font_size=16,
-    stroke_width=3,
-    font_family="'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
-    title_font_family="'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
-    label_font_family="'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
-    value_font_family="'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
-)
+# Shared style settings
+_style_common = {
+    "background": "white",
+    "plot_background": bg_plot,
+    "foreground": text_dark,
+    "foreground_strong": text_dark,
+    "foreground_subtle": grid_subtle,
+    "title_font_size": 52,
+    "label_font_size": 28,
+    "major_label_font_size": 26,
+    "legend_font_size": 24,
+    "value_font_size": 16,
+    "stroke_width": 3,
+    "font_family": "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+    "title_font_family": "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+    "label_font_family": "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+    "value_font_family": "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+}
 
-# Style for phase panel
-phase_style = Style(
-    background="white",
-    plot_background=bg_plot,
-    foreground=text_dark,
-    foreground_strong=text_dark,
-    foreground_subtle=grid_subtle,
-    colors=(line_blue, ref_red, accent_amber),
-    title_font_size=52,
-    label_font_size=28,
-    major_label_font_size=26,
-    legend_font_size=22,
-    value_font_size=16,
-    stroke_width=3,
-    font_family="'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
-    title_font_family="'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
-    label_font_family="'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
-    value_font_family="'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
-)
+mag_style = Style(**_style_common, colors=(line_blue, ref_red, margin_purple))
+phase_style = Style(**_style_common, colors=(line_blue, ref_red, margin_teal))
 
 # X-axis tick positions
 x_ticks = [0.1, 0.5, 1, 5, 10, 50, 100, 500, 1000]
@@ -116,19 +99,28 @@ if gc_freq is not None and phase_margin is not None:
     gc_log = np.log10(gc_freq)
     phase_margin_line = [(float(gc_log), float(gc_phase)), (float(gc_log), -180.0)]
 
+# Gain margin visual: vertical line segment at phase crossover frequency
+gain_margin_line = None
+pc_freq = None
+if len(pc_indices) > 0 and gain_margin is not None:
+    pc_freq = frequency_hz[pc_indices[0]]
+    pc_log = np.log10(pc_freq)
+    pc_mag = magnitude_db[pc_indices[0]]
+    gain_margin_line = [(float(pc_log), float(pc_mag)), (float(pc_log), 0.0)]
+
 # Magnitude chart
 mag_chart = pygal.XY(
     width=4800,
     height=1300,
     style=mag_style,
     show_legend=True,
-    legend_at_bottom=False,
+    legend_at_bottom=True,
     show_y_guides=True,
     show_x_guides=False,
     margin=25,
     margin_left=150,
     margin_right=80,
-    margin_bottom=10,
+    margin_bottom=80,
     margin_top=40,
     dots_size=0,
     stroke=True,
@@ -145,6 +137,14 @@ mag_chart.x_labels = x_tick_log
 mag_chart.x_labels_major = x_tick_log
 mag_chart.add("Magnitude", mag_pts, show_dots=False, stroke_style={"width": 5, "linecap": "round", "linejoin": "round"})
 mag_chart.add("0 dB Reference", ref_0db, show_dots=False, stroke_style={"width": 2, "dasharray": "16,8"})
+if gain_margin_line:
+    mag_chart.add(
+        f"Gain Margin: {gain_margin:.1f} dB",
+        gain_margin_line,
+        show_dots=True,
+        dots_size=6,
+        stroke_style={"width": 3, "dasharray": "6,4"},
+    )
 
 # Phase chart
 phase_chart = pygal.XY(
@@ -152,13 +152,13 @@ phase_chart = pygal.XY(
     height=1300,
     style=phase_style,
     show_legend=True,
-    legend_at_bottom=False,
+    legend_at_bottom=True,
     show_y_guides=True,
     show_x_guides=False,
     margin=25,
     margin_left=150,
     margin_right=80,
-    margin_bottom=75,
+    margin_bottom=80,
     margin_top=5,
     dots_size=0,
     stroke=True,
@@ -168,7 +168,7 @@ phase_chart = pygal.XY(
     title="",
     x_title="Frequency (Hz)",
     y_title="Phase (\u00b0)",
-    range=(-200.0, 10.0),
+    range=(-280.0, 10.0),
     tooltip_border_radius=6,
 )
 phase_chart.x_labels = x_tick_log
@@ -210,12 +210,20 @@ except OSError:
     font_sm = font_lg
 
 # Resonance peak annotation on magnitude panel
-draw.text((3800, 80), f"Resonance: {peak_db:.1f} dB @ {peak_freq:.1f} Hz", fill=line_blue, font=font_sm)
+draw.text((3400, 80), f"Resonance: {peak_db:.1f} dB @ {peak_freq:.1f} Hz", fill=line_blue, font=font_sm)
 
-# Phase margin annotation
+# Gain margin annotation on magnitude panel
+if gain_margin is not None and pc_freq is not None:
+    draw.text((3400, 130), f"Gain Margin: {gain_margin:.1f} dB @ {pc_freq:.1f} Hz", fill=margin_purple, font=font_lg)
+else:
+    draw.text(
+        (3400, 130), "Gain Margin: \u221e (phase never crosses \u2013180\u00b0)", fill=margin_purple, font=font_lg
+    )
+
+# Phase margin annotation on phase panel
 if phase_margin is not None:
     draw.text(
-        (3800, 1380), f"Phase Margin: {phase_margin:.1f}\u00b0 @ {gc_freq:.1f} Hz", fill=annotation_teal, font=font_lg
+        (3400, 1380), f"Phase Margin: {phase_margin:.1f}\u00b0 @ {gc_freq:.1f} Hz", fill=margin_teal, font=font_lg
     )
 
 combined.save("plot.png", dpi=(300, 300))

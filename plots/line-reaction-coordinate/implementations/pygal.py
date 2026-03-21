@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-reaction-coordinate: Reaction Coordinate Energy Diagram
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 82/100 | Created: 2026-03-21
@@ -78,7 +78,7 @@ chart = pygal.XY(
     y_title="Potential Energy (kJ/mol)",
     show_legend=True,
     legend_at_bottom=True,
-    legend_at_bottom_columns=6,
+    legend_at_bottom_columns=5,
     show_x_guides=False,
     show_y_guides=True,
     show_x_labels=False,
@@ -89,7 +89,7 @@ chart = pygal.XY(
     margin_right=160,
     margin_bottom=200,
     margin_top=120,
-    range=(0, 145),
+    range=(8, 140),
     xrange=(-0.2, 10.2),
     truncate_legend=-1,
     tooltip_border_radius=8,
@@ -112,8 +112,8 @@ chart.add(
     show_dots=False,
 )
 
-# Ea vertical indicator (teal — colorblind-safe)
-ea_x = 2.8
+# Ea vertical indicator at transition state peak (teal — colorblind-safe)
+ea_x = peak_pos
 chart.add(
     f"Ea = {activation_energy:.0f} kJ/mol",
     [{"value": (ea_x, reactant_energy), "node": {"r": 14}}, {"value": (ea_x, transition_energy), "node": {"r": 14}}],
@@ -154,13 +154,11 @@ chart.add(
 
 # Custom y-axis labels at chemically meaningful values
 chart.y_labels = [
-    {"label": "0", "value": 0},
     {"label": f"{product_energy:.0f}", "value": product_energy},
     {"label": f"{reactant_energy:.0f}", "value": reactant_energy},
     {"label": "80", "value": 80},
     {"label": "100", "value": 100},
     {"label": f"{transition_energy:.0f}", "value": transition_energy},
-    {"label": "140", "value": 140},
 ]
 
 # Save

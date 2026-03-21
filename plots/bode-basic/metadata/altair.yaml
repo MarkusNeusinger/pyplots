@@ -1,7 +1,7 @@
 library: altair
 specification_id: bode-basic
 created: '2026-03-21T20:47:03Z'
-updated: '2026-03-21T20:50:41Z'
+updated: '2026-03-21T21:02:54Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23388395461
 issue: 4411
@@ -10,35 +10,39 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bode-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bode-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bode-basic/altair/plot.html
-quality_score: 85
+quality_score: 88
 review:
   strengths:
-  - Perfect spec compliance with all required Bode plot features (dual panels, margins,
-    reference lines, log scale)
-  - Excellent data storytelling with gain/phase margin annotations that clearly communicate
-    stability analysis
-  - Clean, deterministic code with well-organized layer composition
-  - 'Good visual refinement: subtle grid, removed view borders, custom axis styling,
-    marker polish'
+  - Excellent spec compliance with all required features present and correct
+  - Strong colorblind-safe palette with clear visual distinction between curves and
+    annotations
+  - Sophisticated annotation system with crossover markers and monospace labels
+  - Interactive crosshair and tooltip support via HTML export leverages Altair strengths
+  - Clean deterministic data generation with realistic engineering context
   weaknesses:
-  - Red-green color combination for GM/PM margin annotations is not colorblind-safe
-  - Minor label crowding near the phase margin annotation area
-  - Could push aesthetic sophistication further toward publication quality
-  image_description: The plot shows a dual-panel Bode plot. The top panel displays
-    magnitude (dB) vs frequency (rad/s) on a logarithmic scale, with a blue (#306998)
-    line starting at ~20 dB flat, then rolling off with increasing frequency. A dashed
-    gray reference line at 0 dB is drawn. A blue circle marks the gain crossover (~5
-    rad/s) and a red diamond marks the phase crossover (~20 rad/s), with a red dashed
-    vertical line and "GM = 16.5 dB" annotation in red. The bottom panel shows phase
-    (degrees) vs frequency with an orange (#E8833A) line rolling off from ~0° to ~-270°.
-    A dashed gray -180° reference line is present. An orange circle marks gain crossover
-    on the phase curve, a red diamond marks phase crossover at -180°, and a green
-    dashed vertical line with "PM = 50.9°" annotation is shown. Title reads "bode-basic
-    · altair · pyplots.ai" with subtitle showing the transfer function. Frequency
-    axis is shared and labeled "Frequency (rad/s)".
+  - Noticeable vertical gap between magnitude and phase panels reduces cohesive dual-panel
+    feel
+  - Annotation label font size (15pt) slightly small relative to axis labels (20pt)
+  - Inter-panel spacing and layout could be tighter to better utilize canvas space
+  image_description: The plot displays a Bode diagram with two vertically stacked
+    panels on a light blue-gray background (#FAFBFC). The top panel shows magnitude
+    (dB) vs frequency (rad/s) with a blue (#306998) curve starting flat at ~20 dB,
+    rolling off through 0 dB around ω ≈ 7 rad/s, and continuing down to approximately
+    -65 dB at 1000 rad/s. A dashed gray reference line at 0 dB is visible. A purple
+    (#7B2D8E) dashed vertical line marks the gain margin (GM = 16.5 dB) between the
+    phase crossover magnitude and 0 dB, with a monospace label. A blue circle marker
+    sits at the gain crossover point, and a purple diamond at the phase crossover
+    point on the magnitude curve. The bottom panel shows phase (degrees) vs frequency
+    with an orange (#E8833A) curve descending from 0° to approximately -270°. A dashed
+    gray reference at -180° is shown. A teal (#1B7FA3) dashed vertical line marks
+    the phase margin (PM = 50.9°) with a monospace label. An orange circle marks the
+    gain crossover phase, and a teal diamond marks the phase crossover at -180°. The
+    shared x-axis uses logarithmic scale from 0.01 to 1,000. Title reads "bode-basic
+    · altair · pyplots.ai" with subtitle. There is a noticeable gap between the two
+    panels.
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -46,65 +50,65 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 28pt, subtitle 18pt, axis labels
-          20pt, ticks 16pt'
+        comment: 'All font sizes explicitly set: title 28pt, subtitle 18pt, axis titles
+          20pt, ticks 16pt, annotations 15pt'
       - id: VQ-02
         name: No Overlap
-        score: 5
-        max: 6
-        passed: true
-        comment: Minor crowding between PM label and red diamond marker on phase plot
-      - id: VQ-03
-        name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Lines at strokeWidth=3, markers at size=250, all clearly visible
+        comment: No overlapping text elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 5
+        max: 6
+        passed: true
+        comment: Lines at strokeWidth=3 and markers at size=220 are clear; annotation
+          labels slightly small at 15pt monospace
       - id: VQ-04
         name: Color Accessibility
-        score: 2
+        score: 4
         max: 4
-        passed: false
-        comment: Red-green color pair for GM/PM annotations is problematic for colorblind
-          users
+        passed: true
+        comment: 'Excellent colorblind-safe palette: blue/orange main curves, purple/teal
+          annotations'
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
-        passed: true
-        comment: Good dual-panel layout, phase plot y-axis slightly over-extended
+        passed: false
+        comment: Noticeable vertical gap between panels wastes canvas space
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Magnitude (dB), Phase (degrees), Frequency (rad/s) — all descriptive
-          with units
+        comment: All labels descriptive with units
     design_excellence:
-      score: 13
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom color palette, custom axis config with muted grays, above
-          defaults but not publication-level
+        comment: Custom palette, monospace annotations, white-stroke markers, custom
+          background, clear color hierarchy
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: View stroke removed, subtle grid (opacity 0.15), custom axis colors,
-          white stroke markers
+        comment: View strokes removed, corner radius, subtle grid; inter-panel spacing
+          too large
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: GM/PM annotations with crossover markers tell clear stability analysis
-          story
+        comment: GM/PM annotations create focal points, crossover markers guide viewer,
+          subtitle explains system
     spec_compliance:
       score: 15
       max: 15
@@ -120,20 +124,20 @@ review:
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: dual panels, margins, reference lines,
+        comment: 'All spec features present: dual panel, margins, reference lines,
           log scale, grid'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Frequency on X (log), magnitude/phase on Y, all data visible
+        comment: Correct frequency/magnitude/phase mapping
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, no legend needed for single-series panels
+        comment: Title format correct, no legend needed
     data_quality:
       score: 14
       max: 15
@@ -143,20 +147,20 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows flat passband, rolloff, margins, crossovers; no resonance peak
+        comment: Shows rolloff, margins, crossover frequencies; could show resonance
+          peak
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Realistic third-order open-loop transfer function for control systems
-          engineering
+        comment: 'Real engineering scenario: open-loop transfer function analysis'
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Frequency 0.01-1000 rad/s, DC gain 20 dB, realistic margins
+        comment: Realistic values for control system analysis
     code_quality:
       score: 10
       max: 10
@@ -166,32 +170,31 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, plot layers, combine, save'
+        comment: 'Linear flow: imports, data, plot, save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic, computed from analytical transfer function
+        comment: Fully deterministic transfer function computation
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: altair, numpy, pandas all used
+        comment: Only altair, numpy, pandas — all used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Well-organized, verbose but necessarily so for Altair declarative
-          approach
+        comment: Well-structured, appropriate complexity
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png with scale_factor=3.0 and plot.html
+        comment: Saves as plot.png and plot.html
     library_mastery:
       score: 7
       max: 10
@@ -201,14 +204,15 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Good declarative grammar: layered composition, vconcat, proper encoding
-          types, tooltips'
+        comment: Good declarative grammar usage with layered composition, vconcat,
+          encodings
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Interactive tooltips, HTML export, vconcat layout, layered mark composition
+        comment: Interactive selection, crosshair, tooltips, HTML export are distinctive
+          Altair features
   verdict: REJECTED
 impl_tags:
   dependencies: []
@@ -222,3 +226,4 @@ impl_tags:
   dataprep: []
   styling:
   - grid-styling
+  - edge-highlighting

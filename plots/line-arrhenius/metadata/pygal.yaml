@@ -1,7 +1,7 @@
 library: pygal
 specification_id: line-arrhenius
 created: '2026-03-21T22:08:23Z'
-updated: '2026-03-21T22:12:24Z'
+updated: '2026-03-21T22:22:18Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23389777964
 issue: 4408
@@ -10,37 +10,34 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-arrhenius/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-arrhenius/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-arrhenius/pygal/plot.html
-quality_score: 82
+quality_score: 86
 review:
   strengths:
-  - Perfect spec compliance - all required features implemented (regression line,
-    R², Ea extraction, temperature reference labels)
-  - Excellent data quality with chemically realistic parameters (Ea=75 kJ/mol, appropriate
-    temperature range)
-  - Clean code structure with good reproducibility
-  - Effective use of x_value_formatter to show both 1000/T and temperature in K on
-    x-axis labels
-  - Dashed slope annotation segment highlights the key scientific result
+  - Full spec compliance with all required Arrhenius plot features (regression, R²,
+    Ea, temperature labels)
+  - Strong data storytelling with three-series approach creating clear visual hierarchy
+  - Realistic chemistry data with appropriate Arrhenius equation parameters
+  - Clean code structure with perfect reproducibility
+  - Good use of pygal-specific features (tooltips, CSS injection, HTML export)
   weaknesses:
-  - Regression line extends too far beyond data range, wasting canvas space and creating
-    visual clutter
-  - Blue fit line and blue data points are too similar in color - harder to distinguish
-  - Generic pygal usage without deeply leveraging distinctive library features
-  image_description: 'The plot displays an Arrhenius plot on a white background with
-    the title "line-arrhenius · pygal · pyplots.ai" at the top. The X-axis is labeled
-    "1000/T (K⁻¹)" with tick labels showing both the 1000/T values and corresponding
-    temperatures in parentheses (e.g., "1.67 (600 K)", "1.92 (520 K)", "2.27 (440
-    K)", "2.78 (360 K)", "3.33 (300 K)"). The Y-axis is labeled "ln(k)" ranging from
-    approximately -2 to 13. Dark blue circular markers represent experimental data
-    points (9 points spanning 300-600 K). A light blue solid regression line extends
-    through and well beyond the data range. A red/brown dashed line segment connects
-    two red dots highlighting the slope region. The legend at the bottom shows three
-    entries: "Linear Fit (R² = 0.9999)", "Experimental Data", and "Slope = -9.0 ·
-    Eₐ = 75.0 kJ/mol". Subtle horizontal grid lines are present. The data shows the
-    expected strong linear relationship for an Arrhenius plot.'
+  - Slope annotation red dots create visual clutter on the fit line
+  - Y-axis range extends beyond data bounds wasting vertical space
+  - Data points follow fit too perfectly (R²=0.9999) - more scatter would look realistic
+  - Design excellence could be pushed further with cleaner annotation approach
+  image_description: 'The plot displays an Arrhenius plot on a clean white background.
+    An orange linear fit line spans from approximately (1.67, 12.5) to (3.33, -2.5).
+    Blue circular data points (9 total) are plotted on top of the fit line, showing
+    experimental rate constant data from 300 K to 600 K. Red/dark dots mark a dashed
+    slope annotation segment on the fit line. The x-axis is labeled "1000/T (K⁻¹)"
+    with tick labels showing both the 1000/T value and the corresponding temperature
+    in parentheses (e.g., "1.67 (600 K)"). The y-axis is labeled "ln(k)" with values
+    from -4 to 14. The title reads "line-arrhenius · pygal · pyplots.ai". A bottom
+    legend shows three entries: "Linear Fit (R² = 0.9999)", "Experimental Data", and
+    "Slope = -9.0 · Eₐ = 75.0 kJ/mol". Subtle horizontal grid lines are visible; no
+    vertical grid lines. Overall layout is clean with good canvas utilization.'
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 27
       max: 30
       items:
       - id: VQ-01
@@ -48,42 +45,41 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title=68, labels=44, ticks=40, legend=42).
-          All text readable.
+        comment: All font sizes explicitly set (title=68, label=44, major_label=40,
+          legend=42). Well-calibrated for 4800x2700.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements. X-axis labels well-spaced using subset
-          of temperatures.
+        comment: No overlapping text elements. X-axis labels well-spaced, legend at
+          bottom.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Data points clearly visible (dots_size=18). Regression line extends
-          too far beyond data range.
+        comment: Data points clearly visible (dots_size=18). Slope annotation red
+          dots create minor visual clutter on fit line.
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
-        passed: false
-        comment: Blue fit line and blue data points are too similar in color. Red
-          slope annotation provides contrast.
+        passed: true
+        comment: Orange/blue/red palette is colorblind-safe with good contrast.
       - id: VQ-05
         name: Layout & Canvas
-        score: 2
+        score: 3
         max: 4
-        passed: false
-        comment: Regression line extends far beyond data range, wasting vertical space
-          in lower-right area.
+        passed: true
+        comment: Good canvas utilization. Slight excess vertical space from y-axis
+          range extending beyond data.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 1000/T (K⁻¹) and ln(k) are descriptive with units.
+        comment: 'Descriptive with units: 1000/T (K⁻¹) and ln(k).'
     design_excellence:
       score: 13
       max: 20
@@ -93,22 +89,22 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Custom style with intentional color palette and font sizes. Above
-          defaults but not publication-quality.
+        comment: Custom palette with intentional orange/blue contrast. Above defaults
+          but slope annotation adds visual noise.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Axis lines hidden via CSS, y-guides only with subtle styling, generous
-          margins.
+        comment: X-guides hidden, subtle dashed y-guides, axis lines hidden via CSS,
+          generous margins.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Clear story with R² displayed and activation energy extracted from
-          slope annotation.
+        comment: Three-series approach creates hierarchy. R² and Ea annotation tell
+          the kinetics story.
     spec_compliance:
       score: 15
       max: 15
@@ -118,26 +114,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct XY scatter plot with regression line for Arrhenius analysis.
+        comment: Correct Arrhenius plot with XY scatter and regression line.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: regression line with R², Ea annotation,
-          temperature reference labels, visible markers.'
+        comment: 'All spec features present: regression, R², Ea annotation, temperature
+          labels, visible markers.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=1000/T, Y=ln(k) correctly mapped.
+        comment: X=1000/T, Y=ln(k). All data visible.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title matches format. Legend labels are descriptive and meaningful.
+        comment: Correct title format. Descriptive legend labels.
     data_quality:
       score: 14
       max: 15
@@ -147,21 +143,20 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows clear linear Arrhenius behavior with 9 data points and realistic
-          scatter.
+        comment: 9 data points spanning 300-600K. Clear linear trend but almost too
+          perfect (R²=0.9999).
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: First-order decomposition with Ea=75 kJ/mol, chemically realistic
-          parameters.
+        comment: First-order decomposition reaction with realistic Ea=75 kJ/mol.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values appropriate for chemical kinetics context.
+        comment: Realistic temperature range and kinetic parameters.
     code_quality:
       score: 10
       max: 10
@@ -171,55 +166,54 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports → data → transform → regression → style → chart
-          → save.'
+        comment: 'Linear flow: imports, data, style, chart, series, save.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set before noise generation.
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: numpy, pygal, Style, scipy.stats.'
+        comment: All imports used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, well-organized code with informative tooltip labels.
+        comment: Clean, well-commented, appropriate complexity.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png via render_to_png.
+        comment: Saves plot.png and plot.html.
     library_mastery:
-      score: 5
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of pygal XY, Style, custom formatters, per-series config.
+      - id: LM-02
+        name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: 'Standard pygal patterns: XY chart, Style class, x_value_formatter,
-          legend configuration.'
-      - id: LM-02
-        name: Distinctive Features
-        score: 2
-        max: 5
-        passed: false
-        comment: Uses tooltip labels via dict data points and CSS injection. Somewhat
-          distinctive but not deeply leveraging pygal's unique strengths.
+        comment: Uses pygal tooltips, HTML export, CSS injection, stroke_style.
   verdict: REJECTED
 impl_tags:
   dependencies:
   - scipy
   techniques:
+  - hover-tooltips
+  - manual-ticks
   - html-export
   patterns:
   - data-generation

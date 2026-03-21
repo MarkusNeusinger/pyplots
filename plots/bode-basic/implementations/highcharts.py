@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bode-basic: Bode Plot for Frequency Response
 Library: highcharts unknown | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-21
@@ -69,7 +69,10 @@ chart.options = HighchartsOptions()
 chart.options.chart = {
     "width": chart_width,
     "height": chart_height,
-    "backgroundColor": "#ffffff",
+    "backgroundColor": "#fafbfc",
+    "plotBackgroundColor": "#ffffff",
+    "plotBorderWidth": 1,
+    "plotBorderColor": "rgba(0, 0, 0, 0.12)",
     "marginTop": margin_top,
     "marginBottom": margin_bottom,
     "marginLeft": margin_left,
@@ -79,14 +82,14 @@ chart.options.chart = {
 
 chart.options.title = {
     "text": "bode-basic \u00b7 highcharts \u00b7 pyplots.ai",
-    "style": {"fontSize": "48px", "fontWeight": "600"},
+    "style": {"fontSize": "48px", "fontWeight": "700", "color": "#1a1a2e", "letterSpacing": "0.5px"},
     "y": 60,
 }
 
 chart.options.subtitle = {
     "text": "G(s) = 10 / [(s+1)(s/5+1)(s/20+1)] \u2014 Open-Loop Frequency Response",
-    "style": {"fontSize": "32px", "color": "#666666"},
-    "y": 110,
+    "style": {"fontSize": "32px", "color": "#555555", "fontStyle": "italic"},
+    "y": 115,
 }
 
 chart.options.credits = {"enabled": False}
@@ -101,55 +104,93 @@ chart.options.x_axis = [
         "id": "x-mag",
         "type": "logarithmic",
         "title": {"text": None},
-        "labels": {"style": {"fontSize": "26px"}},
+        "labels": {"style": {"fontSize": "26px", "color": "#555555"}},
         "tickInterval": 1,
         "minorTickInterval": None,
         "gridLineWidth": 1,
-        "gridLineColor": "rgba(0, 0, 0, 0.1)",
+        "gridLineColor": "rgba(0, 0, 0, 0.08)",
         "lineWidth": 2,
         "lineColor": "#333333",
         "tickWidth": 0,
+        "crosshair": {"width": 2, "color": "rgba(0, 0, 0, 0.15)", "dashStyle": "Dot", "snap": False},
         "top": f"{top_pct}%",
         "height": f"{panel_pct}%",
         "offset": 0,
+        "plotLines": [
+            {
+                "value": float(gain_crossover_hz),
+                "color": "rgba(48, 105, 152, 0.25)",
+                "width": 2,
+                "dashStyle": "LongDash",
+                "zIndex": 2,
+            },
+            {
+                "value": float(phase_crossover_hz),
+                "color": "rgba(211, 84, 0, 0.25)",
+                "width": 2,
+                "dashStyle": "LongDash",
+                "zIndex": 2,
+            },
+        ],
     },
     {
         "id": "x-phase",
         "type": "logarithmic",
-        "title": {"text": "Frequency (Hz)", "style": {"fontSize": "34px", "fontWeight": "600"}, "margin": 20},
-        "labels": {"style": {"fontSize": "26px"}},
+        "title": {
+            "text": "Frequency (Hz)",
+            "style": {"fontSize": "34px", "fontWeight": "600", "color": "#333333"},
+            "margin": 20,
+        },
+        "labels": {"style": {"fontSize": "26px", "color": "#555555"}},
         "tickInterval": 1,
         "minorTickInterval": None,
         "gridLineWidth": 1,
-        "gridLineColor": "rgba(0, 0, 0, 0.1)",
+        "gridLineColor": "rgba(0, 0, 0, 0.08)",
         "lineWidth": 2,
         "lineColor": "#333333",
         "tickWidth": 0,
+        "crosshair": {"width": 2, "color": "rgba(0, 0, 0, 0.15)", "dashStyle": "Dot", "snap": False},
         "top": f"{bottom_panel_top_pct}%",
         "height": f"{panel_pct}%",
         "offset": 0,
+        "plotLines": [
+            {
+                "value": float(gain_crossover_hz),
+                "color": "rgba(48, 105, 152, 0.25)",
+                "width": 2,
+                "dashStyle": "LongDash",
+                "zIndex": 2,
+            },
+            {
+                "value": float(phase_crossover_hz),
+                "color": "rgba(211, 84, 0, 0.25)",
+                "width": 2,
+                "dashStyle": "LongDash",
+                "zIndex": 2,
+            },
+        ],
     },
 ]
 
 chart.options.y_axis = [
     {
         "id": "y-mag",
-        "title": {"text": "Magnitude (dB)", "style": {"fontSize": "34px", "fontWeight": "600"}},
-        "labels": {"style": {"fontSize": "26px"}},
+        "title": {"text": "Magnitude (dB)", "style": {"fontSize": "34px", "fontWeight": "600", "color": "#306998"}},
+        "labels": {"style": {"fontSize": "26px", "color": "#555555"}},
         "gridLineWidth": 1,
-        "gridLineColor": "rgba(0, 0, 0, 0.1)",
+        "gridLineColor": "rgba(0, 0, 0, 0.08)",
         "lineWidth": 2,
         "lineColor": "#333333",
         "plotLines": [
             {
                 "value": 0,
-                "color": "#7f8c8d",
+                "color": "#95a5a6",
                 "width": 3,
                 "dashStyle": "Dash",
                 "zIndex": 3,
                 "label": {
                     "text": "0 dB",
-                    "style": {"fontSize": "24px", "color": "#7f8c8d", "fontWeight": "600"},
+                    "style": {"fontSize": "26px", "color": "#95a5a6", "fontWeight": "600"},
                     "align": "right",
                     "x": -10,
                 },
@@ -161,22 +202,22 @@ chart.options.y_axis = [
     },
     {
         "id": "y-phase",
-        "title": {"text": "Phase (degrees)", "style": {"fontSize": "34px", "fontWeight": "600"}},
-        "labels": {"style": {"fontSize": "26px"}},
+        "title": {"text": "Phase (degrees)", "style": {"fontSize": "34px", "fontWeight": "600", "color": "#e67e22"}},
+        "labels": {"style": {"fontSize": "26px", "color": "#555555"}},
         "gridLineWidth": 1,
-        "gridLineColor": "rgba(0, 0, 0, 0.1)",
+        "gridLineColor": "rgba(0, 0, 0, 0.08)",
         "lineWidth": 2,
         "lineColor": "#333333",
         "plotLines": [
             {
                 "value": -180,
-                "color": "#7f8c8d",
+                "color": "#95a5a6",
                 "width": 3,
                 "dashStyle": "Dash",
                 "zIndex": 3,
                 "label": {
                     "text": "-180\u00b0",
-                    "style": {"fontSize": "24px", "color": "#7f8c8d", "fontWeight": "600"},
+                    "style": {"fontSize": "26px", "color": "#95a5a6", "fontWeight": "600"},
                     "align": "right",
                     "x": -10,
                 },
@@ -196,18 +237,25 @@ chart.options.plot_options = {
 
 chart.options.legend = {
     "enabled": True,
-    "itemStyle": {"fontSize": "26px", "fontWeight": "normal"},
+    "itemStyle": {"fontSize": "28px", "fontWeight": "normal"},
     "align": "right",
     "verticalAlign": "top",
     "layout": "vertical",
     "x": -20,
-    "y": 130,
+    "y": 140,
+    "itemMarginBottom": 8,
+    "backgroundColor": "rgba(255, 255, 255, 0.85)",
+    "borderRadius": 6,
+    "padding": 16,
 }
 
 chart.options.tooltip = {
     "style": {"fontSize": "24px"},
     "backgroundColor": "rgba(255, 255, 255, 0.95)",
     "borderRadius": 8,
+    "shadow": {"color": "rgba(0, 0, 0, 0.1)", "offsetX": 2, "offsetY": 2, "width": 4},
+    "headerFormat": '<span style="font-size: 22px; color: #666;">f = {point.x:.4f} Hz</span><br/>',
+    "pointFormat": '<span style="color:{series.color};">\u25cf</span> {series.name}: <b>{point.y:.2f}</b><br/>',
 }
 
 # Magnitude series
@@ -237,26 +285,27 @@ gc_mag_marker.name = f"Gain Crossover ({gain_crossover_hz:.2f} Hz)"
 gc_mag_marker.color = "#306998"
 gc_mag_marker.marker = {
     "symbol": "diamond",
-    "radius": 16,
+    "radius": 18,
     "fillColor": "#306998",
-    "lineWidth": 3,
+    "lineWidth": 4,
     "lineColor": "#ffffff",
 }
 gc_mag_marker.x_axis = 0
 gc_mag_marker.y_axis = 0
 gc_mag_marker.z_index = 6
+gc_mag_marker.show_in_legend = False
 chart.add_series(gc_mag_marker)
 
 # Phase margin marker on phase plot
 gc_phase_marker = ScatterSeries()
 gc_phase_marker.data = [[round(float(gain_crossover_hz), 6), round(float(phase_at_gain_crossover), 3)]]
-gc_phase_marker.name = f"Phase Margin ({phase_margin:.1f}\u00b0)"
+gc_phase_marker.name = f"PM = {phase_margin:.1f}\u00b0"
 gc_phase_marker.color = "#8e44ad"
 gc_phase_marker.marker = {
     "symbol": "diamond",
-    "radius": 16,
+    "radius": 18,
     "fillColor": "#8e44ad",
-    "lineWidth": 3,
+    "lineWidth": 4,
     "lineColor": "#ffffff",
 }
 gc_phase_marker.x_axis = 1
@@ -267,13 +316,13 @@ chart.add_series(gc_phase_marker)
 # Gain margin marker on magnitude plot
 pc_mag_marker = ScatterSeries()
 pc_mag_marker.data = [[round(float(phase_crossover_hz), 6), round(float(mag_at_phase_crossover), 3)]]
-pc_mag_marker.name = f"Gain Margin ({gain_margin:.1f} dB)"
+pc_mag_marker.name = f"GM = {gain_margin:.1f} dB"
 pc_mag_marker.color = "#d35400"
 pc_mag_marker.marker = {
     "symbol": "circle",
-    "radius": 16,
+    "radius": 18,
     "fillColor": "#d35400",
-    "lineWidth": 3,
+    "lineWidth": 4,
     "lineColor": "#ffffff",
 }
 pc_mag_marker.x_axis = 0
@@ -288,27 +337,64 @@ pc_phase_marker.name = f"Phase Crossover ({phase_crossover_hz:.2f} Hz)"
 pc_phase_marker.color = "#d35400"
 pc_phase_marker.marker = {
     "symbol": "circle",
-    "radius": 16,
+    "radius": 18,
     "fillColor": "#d35400",
-    "lineWidth": 3,
+    "lineWidth": 4,
     "lineColor": "#ffffff",
 }
 pc_phase_marker.x_axis = 1
 pc_phase_marker.y_axis = 1
 pc_phase_marker.z_index = 6
+pc_phase_marker.show_in_legend = False
 chart.add_series(pc_phase_marker)
 
-# Gain margin annotation on magnitude plot (vertical line segment from mag to 0 dB)
+# Vertical connector line for gain margin (from magnitude to 0 dB reference)
+gm_connector = LineSeries()
+gm_connector.data = [
+    [round(float(phase_crossover_hz), 6), round(float(mag_at_phase_crossover), 3)],
+    [round(float(phase_crossover_hz), 6), 0.0],
+]
+gm_connector.name = "GM connector"
+gm_connector.color = "#d35400"
+gm_connector.dash_style = "ShortDash"
+gm_connector.line_width = 3
+gm_connector.marker = {"enabled": False}
+gm_connector.enable_mouse_tracking = False
+gm_connector.x_axis = 0
+gm_connector.y_axis = 0
+gm_connector.z_index = 5
+gm_connector.show_in_legend = False
+chart.add_series(gm_connector)
+
+# Vertical connector line for phase margin (from phase to -180° reference)
+pm_connector = LineSeries()
+pm_connector.data = [
+    [round(float(gain_crossover_hz), 6), -180.0],
+    [round(float(gain_crossover_hz), 6), round(float(phase_at_gain_crossover), 3)],
+]
+pm_connector.name = "PM connector"
+pm_connector.color = "#8e44ad"
+pm_connector.dash_style = "ShortDash"
+pm_connector.line_width = 3
+pm_connector.marker = {"enabled": False}
+pm_connector.enable_mouse_tracking = False
+pm_connector.x_axis = 1
+pm_connector.y_axis = 1
+pm_connector.z_index = 5
+pm_connector.show_in_legend = False
+chart.add_series(pm_connector)
+
+# Gain margin annotation label
 gm_annotation = ScatterSeries()
 gm_annotation.data = [[round(float(phase_crossover_hz), 6), round(float(mag_at_phase_crossover / 2), 3)]]
-gm_annotation.name = f"GM = {gain_margin:.1f} dB"
+gm_annotation.name = "GM label"
 gm_annotation.color = "#d35400"
 gm_annotation.marker = {"enabled": False}
 gm_annotation.data_labels = {
     "enabled": True,
     "format": f"GM = {gain_margin:.1f} dB",
-    "style": {"fontSize": "24px", "fontWeight": "bold", "color": "#d35400", "textOutline": "3px #ffffff"},
-    "x": 60,
+    "style": {"fontSize": "28px", "fontWeight": "bold", "color": "#d35400", "textOutline": "3px #ffffff"},
+    "x": 70,
     "y": 0,
 }
 gm_annotation.x_axis = 0
@@ -317,17 +403,17 @@ gm_annotation.z_index = 7
 gm_annotation.show_in_legend = False
 chart.add_series(gm_annotation)
 
-# Phase margin annotation on phase plot (at gain crossover frequency)
+# Phase margin annotation label
 pm_annotation = ScatterSeries()
 pm_annotation.data = [[round(float(gain_crossover_hz), 6), round(float((phase_at_gain_crossover - 180) / 2), 3)]]
-pm_annotation.name = f"PM = {phase_margin:.1f}\u00b0"
+pm_annotation.name = "PM label"
 pm_annotation.color = "#8e44ad"
 pm_annotation.marker = {"enabled": False}
 pm_annotation.data_labels = {
     "enabled": True,
     "format": f"PM = {phase_margin:.1f}\u00b0",
-    "style": {"fontSize": "24px", "fontWeight": "bold", "color": "#8e44ad", "textOutline": "3px #ffffff"},
-    "x": 60,
+    "style": {"fontSize": "28px", "fontWeight": "bold", "color": "#8e44ad", "textOutline": "3px #ffffff"},
+    "x": 70,
     "y": 0,
 }
 pm_annotation.x_axis = 1

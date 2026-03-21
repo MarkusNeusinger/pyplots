@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bode-basic: Bode Plot for Frequency Response
 Library: highcharts unknown | Python 3.14.3
 Quality: 89/100 | Created: 2026-03-21
@@ -66,6 +66,9 @@ panel_height = plot_area_height / 2
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
+# Panel separator Y position
+separator_y = round(margin_top + panel_height + panel_gap / 2)
+
 chart.options.chart = {
     "width": chart_width,
     "height": chart_height,
@@ -106,7 +109,10 @@ chart.options.x_axis = [
         "title": {"text": None},
         "labels": {"style": {"fontSize": "26px", "color": "#555555"}},
         "tickInterval": 1,
-        "minorTickInterval": None,
+        "minorTickInterval": 0.1,
+        "minorGridLineWidth": 1,
+        "minorGridLineColor": "rgba(0, 0, 0, 0.03)",
+        "minorTickWidth": 0,
         "gridLineWidth": 1,
         "gridLineColor": "rgba(0, 0, 0, 0.08)",
         "lineWidth": 2,
@@ -143,7 +149,10 @@ chart.options.x_axis = [
         },
         "labels": {"style": {"fontSize": "26px", "color": "#555555"}},
         "tickInterval": 1,
-        "minorTickInterval": None,
+        "minorTickInterval": 0.1,
+        "minorGridLineWidth": 1,
+        "minorGridLineColor": "rgba(0, 0, 0, 0.03)",
+        "minorTickWidth": 0,
         "gridLineWidth": 1,
         "gridLineColor": "rgba(0, 0, 0, 0.08)",
         "lineWidth": 2,
@@ -179,23 +188,27 @@ chart.options.y_axis = [
         "labels": {"style": {"fontSize": "26px", "color": "#555555"}},
         "gridLineWidth": 1,
         "gridLineColor": "rgba(0, 0, 0, 0.08)",
+        "minorGridLineWidth": 1,
+        "minorGridLineColor": "rgba(0, 0, 0, 0.03)",
+        "minorTickInterval": "auto",
         "lineWidth": 2,
         "lineColor": "#333333",
         "plotLines": [
             {
                 "value": 0,
-                "color": "#95a5a6",
-                "width": 3,
+                "color": "#7f8c8d",
+                "width": 4,
                 "dashStyle": "Dash",
                 "zIndex": 3,
                 "label": {
                     "text": "0 dB",
-                    "style": {"fontSize": "26px", "color": "#95a5a6", "fontWeight": "600"},
+                    "style": {"fontSize": "26px", "color": "#7f8c8d", "fontWeight": "700"},
                     "align": "right",
-                    "x": -10,
+                    "x": -12,
                 },
             }
         ],
+        "plotBands": [{"from": 0, "to": 200, "color": "rgba(48, 105, 152, 0.03)"}],
         "top": f"{top_pct}%",
         "height": f"{panel_pct}%",
         "offset": 0,
@@ -206,23 +219,27 @@ chart.options.y_axis = [
         "labels": {"style": {"fontSize": "26px", "color": "#555555"}},
         "gridLineWidth": 1,
         "gridLineColor": "rgba(0, 0, 0, 0.08)",
+        "minorGridLineWidth": 1,
+        "minorGridLineColor": "rgba(0, 0, 0, 0.03)",
+        "minorTickInterval": "auto",
         "lineWidth": 2,
         "lineColor": "#333333",
         "plotLines": [
             {
                 "value": -180,
-                "color": "#95a5a6",
-                "width": 3,
+                "color": "#7f8c8d",
+                "width": 4,
                 "dashStyle": "Dash",
                 "zIndex": 3,
                 "label": {
-                    "text": "-180\u00b0",
-                    "style": {"fontSize": "26px", "color": "#95a5a6", "fontWeight": "600"},
+                    "text": "-180°",
+                    "style": {"fontSize": "26px", "color": "#7f8c8d", "fontWeight": "700"},
                     "align": "right",
-                    "x": -10,
+                    "x": -12,
                 },
             }
         ],
+        "plotBands": [{"from": -360, "to": -180, "color": "rgba(230, 126, 34, 0.03)"}],
         "top": f"{bottom_panel_top_pct}%",
         "height": f"{panel_pct}%",
         "offset": 0,
@@ -300,11 +317,11 @@ chart.add_series(gc_mag_marker)
 gc_phase_marker = ScatterSeries()
 gc_phase_marker.data = [[round(float(gain_crossover_hz), 6), round(float(phase_at_gain_crossover), 3)]]
 gc_phase_marker.name = f"PM = {phase_margin:.1f}\u00b0"
-gc_phase_marker.color = "#8e44ad"
+gc_phase_marker.color = "#16a085"
 gc_phase_marker.marker = {
     "symbol": "diamond",
     "radius": 18,
-    "fillColor": "#8e44ad",
+    "fillColor": "#16a085",
     "lineWidth": 4,
     "lineColor": "#ffffff",
 }
@@ -373,7 +390,7 @@ pm_connector.data = [
     [round(float(gain_crossover_hz), 6), round(float(phase_at_gain_crossover), 3)],
 ]
 pm_connector.name = "PM connector"
-pm_connector.color = "#8e44ad"
+pm_connector.color = "#16a085"
 pm_connector.dash_style = "ShortDash"
 pm_connector.line_width = 3
 pm_connector.marker = {"enabled": False}
@@ -393,9 +410,10 @@ gm_annotation.marker = {"enabled": False}
 gm_annotation.data_labels = {
     "enabled": True,
     "format": f"GM = {gain_margin:.1f} dB",
-    "style": {"fontSize": "28px", "fontWeight": "bold", "color": "#d35400", "textOutline": "3px #ffffff"},
-    "x": 70,
-    "y": 0,
+    "style": {"fontSize": "28px", "fontWeight": "bold", "color": "#d35400", "textOutline": "4px #ffffff"},
+    "x": 100,
+    "y": -10,
+    "align": "left",
 }
 gm_annotation.x_axis = 0
 gm_annotation.y_axis = 0
@@ -407,14 +425,15 @@ chart.add_series(gm_annotation)
 pm_annotation = ScatterSeries()
 pm_annotation.data = [[round(float(gain_crossover_hz), 6), round(float((phase_at_gain_crossover - 180) / 2), 3)]]
 pm_annotation.name = "PM label"
-pm_annotation.color = "#8e44ad"
+pm_annotation.color = "#16a085"
 pm_annotation.marker = {"enabled": False}
 pm_annotation.data_labels = {
     "enabled": True,
     "format": f"PM = {phase_margin:.1f}\u00b0",
-    "style": {"fontSize": "28px", "fontWeight": "bold", "color": "#8e44ad", "textOutline": "3px #ffffff"},
-    "x": 70,
-    "y": 0,
+    "style": {"fontSize": "28px", "fontWeight": "bold", "color": "#16a085", "textOutline": "4px #ffffff"},
+    "x": 100,
+    "y": -10,
+    "align": "left",
 }
 pm_annotation.x_axis = 1
 pm_annotation.y_axis = 1
@@ -431,12 +450,31 @@ hc_tgz = next(hc_dir.glob("highcharts-*.tgz"))
 subprocess.run(["tar", "xzf", str(hc_tgz), "-C", str(hc_dir)], capture_output=True, check=True)
 highcharts_js = (hc_dir / "package" / "highcharts.src.js").read_text(encoding="utf-8")
 
+# Post-render: draw panel separator using Highcharts SVG renderer
+separator_js = f"""
+<script>
+(function() {{
+    var chart = Highcharts.charts[0];
+    if (chart && chart.renderer) {{
+        chart.renderer.path([
+            'M', {margin_left}, {separator_y},
+            'L', {chart_width - margin_right}, {separator_y}
+        ]).attr({{
+            stroke: 'rgba(0, 0, 0, 0.15)',
+            'stroke-width': 2,
+            'stroke-dasharray': '8,6',
+            zIndex: 5
+        }}).add();
+    }}
+}})();
+</script>"""
+
 html_content = (
     '<!DOCTYPE html>\n<html>\n<head>\n    <meta charset="utf-8">\n'
     "    <script>" + highcharts_js + "</script>\n"
     '</head>\n<body style="margin:0;">\n'
     f'    <div id="container" style="width: {chart_width}px; height: {chart_height}px;"></div>\n'
-    "    <script>" + html_str + "</script>\n"
+    "    <script>" + html_str + "</script>\n" + separator_js + "\n"
     "</body>\n</html>"
 )
 

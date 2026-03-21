@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bode-basic: Bode Plot for Frequency Response
 Library: letsplot 4.9.0 | Python 3.14.3
 Quality: 85/100 | Created: 2026-03-21
@@ -13,12 +13,12 @@ from scipy import signal
 
 LetsPlot.setup_html()  # noqa: F405
 
-# Data - 3rd-order system: G(s) = 500 / ((s+20)(s^2+2.6s+25))
-# Complex poles (wn=5, zeta=0.26) give a prominent resonance peak ~6 dB
+# Data - 3rd-order system: G(s) = 500 / ((s+20)(s^2+2s+25))
+# Complex poles (wn=5, zeta=0.2) give a prominent resonance peak ~8 dB
 # Real pole at s=-20 preserves resonance shape
-# Stable system with GM≈7.9 dB and PM≈27°
+# Stable system with GM≈5 dB and PM≈18°
 num = [500.0]
-den = np.polymul([1, 20], [1, 2.6, 25])
+den = np.polymul([1, 20], [1, 2.0, 25])
 system = signal.TransferFunction(num, den)
 
 omega = np.logspace(-1, 2.5, 500)
@@ -65,7 +65,8 @@ common_theme = flavor_high_contrast_light() + theme(  # noqa: F405
     axis_title=element_text(size=20, face="bold"),  # noqa: F405
     panel_grid_major=element_line(color="#E0E0E0", size=0.3),  # noqa: F405
     panel_grid_minor=element_blank(),  # noqa: F405
-    axis_line=element_line(color="#BBBBBB", size=0.5),  # noqa: F405
+    panel_border=element_blank(),  # noqa: F405
+    axis_line=element_line(color="#AAAAAA", size=0.5),  # noqa: F405
     plot_margin=[30, 30, 10, 20],
 )
 
@@ -83,7 +84,7 @@ mag_plot = (
     )
     + geom_hline(yintercept=0, color=COLOR_REF, size=0.8, linetype="dashed")  # noqa: F405
     + scale_x_log10()  # noqa: F405
-    + scale_y_continuous(limits=[-40, max(mag) + 5])  # noqa: F405
+    + scale_y_continuous(limits=[-35, max(mag) + 3])  # noqa: F405
     + labs(  # noqa: F405
         x="", y="Magnitude (dB)", title="bode-basic \u00b7 letsplot \u00b7 pyplots.ai"
     )
@@ -94,21 +95,22 @@ mag_plot = (
 
 # Add gain margin annotation if phase crossover exists
 if freq_pc is not None:
-    gm_seg = pd.DataFrame({"x": [freq_pc], "y": [0.0], "xend": [freq_pc], "yend": [mag_at_pc]})
-    gm_pt = pd.DataFrame({"x": [freq_pc], "y": [mag_at_pc]})
-    gm_label = pd.DataFrame({"x": [freq_pc * 2.5], "y": [mag_at_pc / 2], "label": [f"GM = {gain_margin:.1f} dB"]})
+    gm_seg = pd.DataFrame({"x": [freq_pc], "y": [mag_at_pc], "xend": [freq_pc], "yend": [0.0]})
+    gm_pts = pd.DataFrame({"x": [freq_pc, freq_pc], "y": [0.0, mag_at_pc]})
+    gm_label = pd.DataFrame({"x": [freq_pc * 3.0], "y": [mag_at_pc - 5], "label": [f"GM = {gain_margin:.1f} dB"]})
     mag_plot = (
         mag_plot
+        + geom_vline(xintercept=freq_pc, color=COLOR_GM, size=0.5, linetype="dotted", alpha=0.5)  # noqa: F405
         + geom_segment(  # noqa: F405
             aes(x="x", y="y", xend="xend", yend="yend"),  # noqa: F405
             data=gm_seg,
             color=COLOR_GM,
-            size=2.5,
-            linetype="dashed",
+            size=3.0,
+            arrow=arrow(type="closed", length=8, ends="both"),  # noqa: F405
         )
         + geom_point(  # noqa: F405
             aes(x="x", y="y"),  # noqa: F405
-            data=gm_pt,
+            data=gm_pts,
             color=COLOR_GM,
             size=10,
             shape=18,
@@ -116,7 +118,7 @@ if freq_pc is not None:
         + geom_label(  # noqa: F405
             aes(x="x", y="y", label="label"),  # noqa: F405
             data=gm_label,
-            size=16,
+            size=18,
             color=COLOR_GM,
             fill="#FDEBD0",
             label_padding=0.3,
@@ -157,23 +159,24 @@ phase_plot = (
 
 # Add phase margin annotation if gain crossover exists
 if freq_gc is not None:
-    pm_seg = pd.DataFrame({"x": [freq_gc], "y": [-180.0], "xend": [freq_gc], "yend": [phase_at_gc]})
-    pm_pt = pd.DataFrame({"x": [freq_gc], "y": [phase_at_gc]})
+    pm_seg = pd.DataFrame({"x": [freq_gc], "y": [phase_at_gc], "xend": [freq_gc], "yend": [-180.0]})
+    pm_pts = pd.DataFrame({"x": [freq_gc, freq_gc], "y": [-180.0, phase_at_gc]})
     pm_label = pd.DataFrame(
-        {"x": [freq_gc * 2.0], "y": [(phase_at_gc - 180) / 2], "label": [f"PM = {phase_margin:.1f}\u00b0"]}
+        {"x": [freq_gc * 2.5], "y": [phase_at_gc + 10], "label": [f"PM = {phase_margin:.1f}\u00b0"]}
     )
     phase_plot = (
         phase_plot
+        + geom_vline(xintercept=freq_gc, color=COLOR_PM, size=0.5, linetype="dotted", alpha=0.5)  # noqa: F405
         + geom_segment(  # noqa: F405
             aes(x="x", y="y", xend="xend", yend="yend"),  # noqa: F405
             data=pm_seg,
             color=COLOR_PM,
-            size=2.5,
-            linetype="dashed",
+            size=3.0,
+            arrow=arrow(type="closed", length=8, ends="both"),  # noqa: F405
         )
         + geom_point(  # noqa: F405
             aes(x="x", y="y"),  # noqa: F405
-            data=pm_pt,
+            data=pm_pts,
             color=COLOR_PM,
             size=10,
             shape=18,
@@ -181,7 +184,7 @@ if freq_gc is not None:
         + geom_label(  # noqa: F405
             aes(x="x", y="y", label="label"),  # noqa: F405
             data=pm_label,
-            size=16,
+            size=18,
             color=COLOR_PM,
             fill="#D4E6F1",
             label_padding=0.3,

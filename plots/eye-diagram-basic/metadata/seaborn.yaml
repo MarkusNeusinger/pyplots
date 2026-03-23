@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: eye-diagram-basic
 created: '2026-03-17T23:35:29Z'
-updated: '2026-03-23T20:50:48Z'
+updated: '2026-03-23T21:00:06Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23221365116
 issue: 4561
@@ -10,29 +10,31 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/eye-diagram-basic/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/eye-diagram-basic/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 84
+quality_score: 88
 review:
   strengths:
-  - Excellent visual quality with domain-appropriate dark theme and inferno colormap
-  - Accurate NRZ signal simulation with proper noise and jitter parameters matching
-    spec
-  - 'Strong design choices: PowerNorm for density contrast, subtle reference lines,
-    clean axis styling'
-  - Perfect spec compliance with all required features implemented correctly
+  - Excellent visual quality with professional dark-theme design appropriate for engineering
+    domain
+  - Strong data generation with realistic NRZ signal simulation including noise, jitter,
+    and bandwidth-limited transitions
+  - PowerNorm with gamma=0.35 creates excellent contrast in the density visualization
+  - Smooth bilinear interpolation and Gaussian filtering produce publication-quality
+    appearance
+  - Perfect data quality with all eye diagram features clearly visible
   weaknesses:
-  - Seaborn is not imported or used at all — the implementation is pure matplotlib
-    + scipy
-  - Should use sns.heatmap() or other seaborn plotting functions instead of raw ax.imshow()
+  - No seaborn usage at all — zero imports, zero function calls. Must integrate seaborn
+    plotting functions (e.g., sns.heatmap())
+  - Missing colorbar to indicate trace density scale
   image_description: The plot displays a signal integrity eye diagram on a black background
     using the inferno colormap. Two clear eye-shaped openings are visible spanning
-    0-1 UI and 1-2 UI. Horizontal bands at approximately 0V and 1V show high trace
-    density rendered in bright yellow/white, while transitions between voltage levels
-    at ~0.5 UI and ~1.5 UI form the vertical edges of the eyes. The dark interior
-    of each eye indicates clean signal separation. The title reads "eye-diagram-basic
-    · seaborn · pyplots.ai" in white text. X-axis is labeled "Time (UI)" ranging from
-    0.0 to 2.0, Y-axis is labeled "Voltage (V)" ranging from approximately -0.2 to
-    1.2. Top and right spines are removed; bottom and left spines are subtle gray.
-    Dashed reference lines at 0V and 1V mark the nominal signal levels.
+    0 to 2 UI on the x-axis. High trace density regions at the 0V and 1V voltage levels
+    appear as bright yellow/orange bands, while transition regions show pink/magenta
+    coloring. The eye openings are wide and clearly defined with black interiors,
+    indicating good signal quality. Subtle dashed reference lines at 0V and 1V are
+    visible. Title reads "eye-diagram-basic · seaborn · pyplots.ai" in white. X-axis
+    labeled "Time (UI)", Y-axis labeled "Voltage (V)". Top and right spines are removed;
+    remaining spines are dark gray. Overall layout is well-proportioned with the plot
+    filling the canvas effectively.
   criteria_checklist:
     visual_quality:
       score: 30
@@ -55,7 +57,7 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Density heatmap renders all trace data clearly with good contrast
+        comment: Density visualization excellent with bilinear interpolation and PowerNorm
       - id: VQ-04
         name: Color Accessibility
         score: 4
@@ -67,39 +69,39 @@ review:
         score: 4
         max: 4
         passed: true
-        comment: Plot fills canvas well with tight_layout
+        comment: Plot fills canvas well with balanced margins
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Time (UI) and Voltage (V) include units
+        comment: Time (UI) and Voltage (V) with proper units
     design_excellence:
-      score: 14
+      score: 17
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Dark theme with inferno colormap and PowerNorm creates professional
-          aesthetic
+        comment: Professional dark theme with inferno colormap, PowerNorm, subtle
+          reference lines
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Spines removed, subtle colors, reference lines, black background
+        comment: Spines removed, subtle dark spine colors, dashed reference lines
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Density coloring creates natural visual hierarchy with eye openings
-          as focal points
+        comment: Density naturally tells signal quality story, eye openings immediately
+          apparent
     spec_compliance:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -110,17 +112,16 @@ review:
         comment: Correct eye diagram with density heatmap
       - id: SC-02
         name: Required Features
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: 'All spec features present: density coloring, NRZ, noise, jitter,
-          smooth transitions'
+        comment: Has density coloring, UI axis, noise, jitter. Missing colorbar
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=time in UI, Y=voltage — correct
+        comment: X=Time UI, Y=Voltage correct
       - id: SC-04
         name: Title & Legend
         score: 3
@@ -136,20 +137,20 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows eye openings, density bands, transitions, noise spread, jitter
-          effects
+        comment: 'All eye diagram features visible: openings, density, transitions,
+          jitter'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: NRZ signal integrity simulation — genuine engineering scenario
+        comment: Realistic NRZ signal simulation with proper parameters
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 400 traces, noise 5%, jitter 3%, voltage 0-1V — realistic
+        comment: 0-1V NRZ, 5% noise, 3% jitter — realistic values
     code_quality:
       score: 10
       max: 10
@@ -159,7 +160,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean linear flow
+        comment: Clean imports-data-plot-save structure
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -177,7 +178,7 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Appropriate complexity
+        comment: Clean and well-structured
       - id: CQ-05
         name: Output & API
         score: 1
@@ -185,21 +186,21 @@ review:
         passed: true
         comment: Saves as plot.png with dpi=300
     library_mastery:
-      score: 0
+      score: 2
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 0
+        score: 1
         max: 5
         passed: false
-        comment: Seaborn is not imported or used at all — pure matplotlib implementation
+        comment: No seaborn used at all — zero imports, zero function calls
       - id: LM-02
         name: Distinctive Features
-        score: 0
+        score: 1
         max: 5
         passed: false
-        comment: Zero seaborn API calls in the code
+        comment: No seaborn distinctive features; sns.heatmap() could have been used
   verdict: REJECTED
 impl_tags:
   dependencies:

@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: psychrometric-basic
 created: '2026-03-15T21:50:09Z'
-updated: '2026-03-23T21:11:08Z'
+updated: '2026-03-23T21:20:09Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 23120046531
 issue: 4583
@@ -10,35 +10,37 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/psychrometric-basic/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/psychrometric-basic/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 76
+quality_score: 83
 review:
   strengths:
-  - Excellent spec compliance with all required psychrometric properties correctly
-    computed
-  - Strong data storytelling with A-B-C HVAC process path illustrating cooling and
-    dehumidification
-  - Good visual hierarchy with varying line weights, styles, and alpha values
-  - Comfort zone clearly highlighted with shading and label
-  - All property lines labeled directly on the chart as required by spec
+  - Comprehensive psychrometric chart with all required property lines computed from
+    ASHRAE-based formulas
+  - Excellent data storytelling with HVAC process path illustrating cooling-dehumidification-reheating
+    cycle
+  - Strong color palette with line style differentiation for colorblind accessibility
+  - 'Clean visual hierarchy: saturation curve prominent, RH curves mid-weight, auxiliary
+    lines subtle'
   weaknesses:
-  - No seaborn usage whatsoever - pure matplotlib implementation
-  - Inline labels for enthalpy (6pt) and specific volume (6pt) are too small
-  - Some text overlap near comfort zone and at higher humidity values
-  - Brute-force nested loop for specific volume computation is inefficient
-  - Blue and purple line colors may be hard to distinguish for colorblind users
-  image_description: The plot displays a psychrometric chart with dry-bulb temperature
-    (-10 to 50°C) on the x-axis and humidity ratio (0-30 g/kg dry air) on the y-axis.
-    Blue curves represent relative humidity lines from 10% to 100%, with the 100%
-    saturation curve drawn thicker. Purple dashed lines show constant wet-bulb temperature.
-    Red-brown dash-dot lines show constant enthalpy values. Green dotted lines show
-    constant specific volume. A light blue shaded polygon marks the "Comfort Zone"
-    around 20-26°C. Orange arrows with labeled state points A (35°C, 50%), B (13°C,
-    100%), and C (24°C, 50%) show a cooling and dehumidification HVAC process path.
-    A legend sits in the upper left corner. Top and right spines are removed with
-    subtle gridlines.
+  - Enthalpy and specific volume lines too faint (alpha 0.4-0.45) reducing practical
+    utility
+  - Comfort Zone label collides with process path arrow
+  - Heavy reliance on matplotlib for most chart elements limits seaborn library mastery
+    score
+  image_description: 'The plot displays a psychrometric chart with dry-bulb temperature
+    (-10 to 50°C) on the x-axis and humidity ratio (0 to ~30 g/kg dry air) on the
+    y-axis. Blue curves represent relative humidity lines from 10% to 100%, with the
+    100% saturation curve drawn thicker and more prominent. Gold/amber dashed lines
+    show wet-bulb temperature isotherms running diagonally. Red-brown dash-dot lines
+    indicate constant enthalpy values. Green dotted lines show constant specific volume.
+    A light blue shaded rectangle marks the comfort zone approximately between 20-26°C.
+    Orange arrows trace an HVAC process path through three labeled state points: A
+    (35°C, 50%), B (13°C, 100%), and C (24°C, 50%), with orange dots at each point.
+    The legend is positioned in the upper left corner. Title reads "psychrometric-basic
+    · seaborn · pyplots.ai". Top and right spines are removed, and the grid is subtle
+    with low alpha.'
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 25
       max: 30
       items:
       - id: VQ-01
@@ -46,65 +48,67 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Main text sizes explicitly set (title 24pt, labels 20pt, ticks 16pt).
-          Inline labels for specific volume and enthalpy at 6pt are very small.
+        comment: Title 24pt, axis labels 20pt, ticks 16pt explicitly set. Annotation
+          text at 8-9pt slightly small but readable.
       - id: VQ-02
         name: No Overlap
         score: 4
         max: 6
         passed: true
-        comment: Some overlap near comfort zone boundary, RH labels crowd at higher
-          humidity values, property line labels overlap.
+        comment: Comfort Zone label overlaps with process path arrow. Some label crowding
+          in upper-left region.
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 4
         max: 6
         passed: true
-        comment: Good visual hierarchy with thicker saturation curve and faded secondary
-          lines. Specific volume and enthalpy lines quite faint.
+        comment: Good line style differentiation but enthalpy (alpha=0.4) and specific
+          volume (alpha=0.45) lines are quite faint.
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Distinct colors with line style differentiation. Blue and purple
-          could be hard to distinguish for colorblind users.
+        comment: Five distinct hues with line style differentiation. Avoids red-green
+          as sole distinguisher.
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Good canvas utilization with tight_layout, legend well-placed.
+        comment: Chart fills canvas well with balanced margins, good 16:9 aspect ratio
+          usage.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Both axes have descriptive labels with units.
+        comment: 'Descriptive labels with units: Dry-Bulb Temperature (°C), Humidity
+          Ratio (g/kg dry air).'
     design_excellence:
-      score: 13
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Custom color palette with intentional visual hierarchy. Above defaults
-          but not publication-ready.
+        comment: Custom color palette with intentional hierarchy. Clearly above defaults
+          but not quite publication-grade.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Top/right spines removed, subtle gridlines, good whitespace.
+        comment: Top/right spines removed, subtle grid (alpha=0.15), balanced whitespace.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: HVAC process path A-B-C tells clear cooling/dehumidification story.
-          Comfort zone highlighted. Visual hierarchy guides the eye.
+        comment: HVAC process path tells a clear cooling-dehumidification-reheating
+          story. Comfort zone provides context.
     spec_compliance:
       score: 15
       max: 15
@@ -114,26 +118,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct psychrometric chart with all required property lines.
+        comment: Correct psychrometric chart with all required overlays.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: RH curves, wet-bulb, enthalpy, specific volume,
-          comfort zone, HVAC process path.'
+        comment: 'All spec features present: RH curves, wet-bulb, enthalpy, specific
+          volume, comfort zone, HVAC process path.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Correct mapping with full range -10 to 50°C.
+        comment: Correct axis mapping with standard ranges.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, legend labels descriptive.
+        comment: Title format correct. Legend with all five line types clearly labeled.
     data_quality:
       score: 15
       max: 15
@@ -143,30 +147,32 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows all psychrometric properties and multi-step HVAC process.
+        comment: All psychrometric property lines across full range. HVAC process
+          demonstrates multiple steps.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real HVAC engineering scenario at standard atmospheric pressure.
+        comment: Standard atmosphere, ASHRAE-based formulas, realistic HVAC state
+          points.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Appropriate ranges for all values.
+        comment: 'Standard psychrometric chart ranges: -10 to 50°C, 0-30 g/kg.'
     code_quality:
-      score: 7
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
         score: 2
         max: 3
-        passed: false
-        comment: Uses multiple helper functions. Justified for psychrometric calculations
-          but violates flat KISS structure.
+        passed: true
+        comment: Uses helper functions for psychrometric equations, justified by domain
+          complexity.
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -178,14 +184,13 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports are used.
+        comment: All imports used.
       - id: CQ-04
         name: Code Elegance
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Brute-force nested loop for specific volume computation is extremely
-          inefficient.
+        passed: true
+        comment: Well-structured, appropriate complexity. No fake functionality.
       - id: CQ-05
         name: Output & API
         score: 1
@@ -193,21 +198,23 @@ review:
         passed: true
         comment: Saves as plot.png with dpi=300.
     library_mastery:
-      score: 2
+      score: 5
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 1
+        score: 3
         max: 5
-        passed: false
-        comment: No seaborn import or usage at all. Pure matplotlib implementation.
+        passed: true
+        comment: Uses sns.lineplot with DataFrame/hue and sns.scatterplot, but most
+          elements drawn with raw matplotlib.
       - id: LM-02
         name: Distinctive Features
-        score: 1
+        score: 2
         max: 5
         passed: false
-        comment: Zero seaborn-distinctive features used.
+        comment: sns.lineplot hue grouping and theme integration are main seaborn
+          contributions. Most chart is matplotlib-driven.
   verdict: REJECTED
 impl_tags:
   dependencies: []
@@ -223,3 +230,4 @@ impl_tags:
   styling:
   - alpha-blending
   - grid-styling
+  - edge-highlighting

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-chromagram: Music Chromagram (Pitch Class Distribution over Time)
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 86/100 | Created: 2026-03-17
@@ -65,7 +65,7 @@ class ChromagramHeatmap(Graph):
         plot_height = self.view.height
 
         # Tighter margins for better canvas utilization
-        margin_left = 280
+        margin_left = 245
         margin_bottom = 180
         margin_top = 80
         margin_right = 300
@@ -122,6 +122,15 @@ class ChromagramHeatmap(Graph):
                     "style", "stroke:#999999;stroke-width:2;stroke-dasharray:8,6"
                 )
 
+        # --- Subtitle: harmonic progression pattern ---
+        subtitle_x = x0 + grid_w / 2
+        subtitle_y = y0 + grid_h + 165
+        st = self.svg.node(hmap, "text", x=subtitle_x, y=subtitle_y)
+        st.set("text-anchor", "middle")
+        st.set("fill", "#777777")
+        st.set("style", "font-size:34px;font-family:sans-serif;font-style:italic")
+        st.text = "Chord progression: I \u2013 V \u2013 vi \u2013 IV (C major key)"
+
         # --- Heatmap cells ---
         for i in range(n_rows):
             row_group = self.svg.node(hmap, "g", class_=f"pitch-row-{i}")
@@ -138,6 +147,13 @@ class ChromagramHeatmap(Graph):
                 title_el = self.svg.node(rect, "title")
                 title_el.text = f"{self.pitch_labels[i]} @ {self.time_labels[j]}s — Energy: {value:.3f}"
 
+        # --- Thin horizontal separators between pitch rows ---
+        for i in range(1, n_rows):
+            sep_y = y0 + i * cell_h
+            self.svg.node(
+                hmap, "line", x1=x0, y1=sep_y, x2=x0 + grid_w, y2=sep_y, stroke="#ffffff", fill="none", opacity="0.3"
+            ).set("style", "stroke-width:1.5")
+
         # --- Heatmap border ---
         self.svg.node(hmap, "rect", x=x0, y=y0, width=grid_w, height=grid_h, fill="none", stroke="#333333")
 
@@ -153,7 +169,7 @@ class ChromagramHeatmap(Graph):
 
         # --- Y-axis title (rotated) ---
         if self.y_axis_title:
-            yt_x = x0 - 240
+            yt_x = x0 - 200
             yt_y = y0 + grid_h / 2
             t = self.svg.node(hmap, "text", x=yt_x, y=yt_y)
             t.set("text-anchor", "middle")

@@ -1,10 +1,10 @@
-""" pyplots.ai
+"""pyplots.ai
 curve-dose-response: Pharmacological Dose-Response Curve
 Library: matplotlib 3.10.8 | Python 3.14.3
-Quality: 86/100 | Updated: 2026-03-23
 """
 
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 import numpy as np
 from scipy.optimize import curve_fit
 from scipy.stats import t as t_dist
@@ -15,6 +15,8 @@ np.random.seed(42)
 
 concentrations = np.logspace(-9, -4, 8)
 
+# Erlotinib (EGFR inhibitor, nM-range potency) vs Lapatinib (dual EGFR/HER2, µM-range)
+drug_names = ["Erlotinib", "Lapatinib"]
 bottom_a, top_a, ec50_a, hill_a = 5.0, 95.0, 3e-7, 1.2
 bottom_b, top_b, ec50_b, hill_b = 8.0, 80.0, 5e-6, 0.9
 
@@ -71,10 +73,10 @@ fig, ax = plt.subplots(figsize=(16, 9))
 
 colors = ["#306998", "#C75233"]
 
-ax.fill_between(conc_smooth, ci_lower_a, ci_upper_a, alpha=0.15, color=colors[0], label="95% CI (Compound A)")
+ax.fill_between(conc_smooth, ci_lower_a, ci_upper_a, alpha=0.15, color=colors[0], label=f"95% CI ({drug_names[0]})")
 
-ax.plot(conc_smooth, fit_a, linewidth=3, color=colors[0], label="Compound A (fit)")
-ax.plot(conc_smooth, fit_b, linewidth=3, color=colors[1], label="Compound B (fit)")
+ax.plot(conc_smooth, fit_a, linewidth=3, color=colors[0], label=f"{drug_names[0]} (fit)")
+ax.plot(conc_smooth, fit_b, linewidth=3, color=colors[1], label=f"{drug_names[1]} (fit)")
 
 ax.errorbar(
     concentrations,
@@ -89,7 +91,7 @@ ax.errorbar(
     capsize=5,
     capthick=2,
     zorder=5,
-    label="Compound A (data)",
+    label=f"{drug_names[0]} (data)",
 )
 ax.errorbar(
     concentrations,
@@ -104,7 +106,7 @@ ax.errorbar(
     capsize=5,
     capthick=2,
     zorder=5,
-    label="Compound B (data)",
+    label=f"{drug_names[1]} (data)",
 )
 
 # EC50 reference lines
@@ -130,12 +132,11 @@ ax.vlines(
     alpha=0.6,
 )
 
-# Asymptote lines — show only top asymptotes to reduce clutter
-ax.axhline(y=popt_a[1], linestyle=":", color=colors[0], alpha=0.25, linewidth=1.0)
-ax.axhline(y=popt_b[1], linestyle=":", color=colors[1], alpha=0.25, linewidth=1.0)
-# Subtle bottom asymptotes with very low alpha
-ax.axhline(y=popt_a[0], linestyle=":", color=colors[0], alpha=0.15, linewidth=0.8)
-ax.axhline(y=popt_b[0], linestyle=":", color=colors[1], alpha=0.15, linewidth=0.8)
+# Asymptote lines
+ax.axhline(y=popt_a[1], linestyle=":", color=colors[0], alpha=0.3, linewidth=1.2)
+ax.axhline(y=popt_b[1], linestyle=":", color=colors[1], alpha=0.3, linewidth=1.2)
+ax.axhline(y=popt_a[0], linestyle=":", color=colors[0], alpha=0.3, linewidth=1.0)
+ax.axhline(y=popt_b[0], linestyle=":", color=colors[1], alpha=0.3, linewidth=1.0)
 
 
 # EC50 annotations using annotate with arrow props
@@ -149,7 +150,7 @@ ax.annotate(
     format_ec50(ec50_fit_a),
     xy=(ec50_fit_a, half_response_a),
     xytext=(ec50_fit_a * 30, half_response_a + 12),
-    fontsize=14,
+    fontsize=16,
     fontweight="bold",
     color=colors[0],
     arrowprops={"arrowstyle": "->", "color": colors[0], "lw": 1.5, "connectionstyle": "arc3,rad=-0.2"},
@@ -161,7 +162,7 @@ ax.annotate(
     format_ec50(ec50_fit_b),
     xy=(ec50_fit_b, half_response_b),
     xytext=(ec50_fit_b * 30, half_response_b - 14),
-    fontsize=14,
+    fontsize=16,
     fontweight="bold",
     color=colors[1],
     arrowprops={"arrowstyle": "->", "color": colors[1], "lw": 1.5, "connectionstyle": "arc3,rad=0.2"},
@@ -173,9 +174,9 @@ ax.annotate(
 ax.text(
     0.98,
     0.02,
-    f"Hill slopes:  A = {popt_a[3]:.2f}  |  B = {popt_b[3]:.2f}",
+    f"Hill slopes:  {drug_names[0]} = {popt_a[3]:.2f}  |  {drug_names[1]} = {popt_b[3]:.2f}",
     transform=ax.transAxes,
-    fontsize=13,
+    fontsize=16,
     color="#555555",
     ha="right",
     va="bottom",
@@ -194,17 +195,22 @@ ax.yaxis.grid(True, alpha=0.2, linewidth=0.8)
 
 # Legend with reordered handles — data points and fits grouped logically
 handles, labels = ax.get_legend_handles_labels()
-order = [3, 1, 4, 2, 0]  # A data, A fit, B data, B fit, CI
+order = [3, 1, 4, 2, 0]  # drug A data, A fit, drug B data, B fit, CI
 ax.legend(
     [handles[i] for i in order],
     [labels[i] for i in order],
-    fontsize=14,
+    fontsize=16,
     loc="upper left",
     framealpha=0.9,
     edgecolor="#cccccc",
     ncol=1,
 )
-ax.set_ylim(-5, 110)
+ax.set_ylim(-5, 105)
+
+# Enhanced log-axis formatting with minor ticks
+ax.xaxis.set_minor_locator(ticker.LogLocator(base=10.0, subs=np.arange(2, 10) * 0.1, numticks=50))
+ax.xaxis.set_minor_formatter(ticker.NullFormatter())
+ax.tick_params(axis="x", which="minor", length=4, width=0.8)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 psychrometric-basic: Psychrometric Chart for HVAC
-Library: seaborn | Python 3.13
-Quality: pending | Created: 2026-03-15
+Library: seaborn 0.13.2 | Python 3.14.3
+Quality: 72/100 | Updated: 2026-03-23
 """
 
 import matplotlib.pyplot as plt

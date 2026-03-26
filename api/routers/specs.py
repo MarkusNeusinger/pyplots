@@ -23,7 +23,11 @@ async def _refresh_specs_list() -> list[SpecListItem]:
         specs = await repo.get_all()
         return [
             SpecListItem(
-                id=spec.id, title=spec.title, description=spec.description, tags=spec.tags, library_count=len(spec.impls)
+                id=spec.id,
+                title=spec.title,
+                description=spec.description,
+                tags=spec.tags,
+                library_count=len(spec.impls),
             )
             for spec in specs
             if spec.impls
@@ -43,17 +47,18 @@ async def get_specs(db: AsyncSession = Depends(require_db)):
         specs = await repo.get_all()
         return [
             SpecListItem(
-                id=spec.id, title=spec.title, description=spec.description, tags=spec.tags, library_count=len(spec.impls)
+                id=spec.id,
+                title=spec.title,
+                description=spec.description,
+                tags=spec.tags,
+                library_count=len(spec.impls),
             )
             for spec in specs
             if spec.impls
         ]
 
     return await get_or_set_cache(
-        cache_key("specs_list"),
-        _fetch,
-        refresh_after=settings.cache_refresh_after,
-        refresh_factory=_refresh_specs_list,
+        cache_key("specs_list"), _fetch, refresh_after=settings.cache_refresh_after, refresh_factory=_refresh_specs_list
     )
 
 

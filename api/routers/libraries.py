@@ -62,10 +62,7 @@ async def get_libraries(db: AsyncSession | None = Depends(optional_db)):
         }
 
     return await get_or_set_cache(
-        cache_key("libraries"),
-        _fetch,
-        refresh_after=settings.cache_refresh_after,
-        refresh_factory=_refresh_libraries,
+        cache_key("libraries"), _fetch, refresh_after=settings.cache_refresh_after, refresh_factory=_refresh_libraries
     )
 
 

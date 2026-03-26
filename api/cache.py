@@ -245,9 +245,7 @@ def _schedule_refresh(key: str, factory: Callable[[], Awaitable[Any]]) -> None:
     asyncio.create_task(_background_refresh(key, factory, lock))
 
 
-async def _background_refresh(
-    key: str, factory: Callable[[], Awaitable[Any]], lock: asyncio.Lock
-) -> None:
+async def _background_refresh(key: str, factory: Callable[[], Awaitable[Any]], lock: asyncio.Lock) -> None:
     """Run factory in background and update cache. Errors are logged, not raised."""
     async with lock:
         try:

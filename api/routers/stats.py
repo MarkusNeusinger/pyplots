@@ -72,8 +72,5 @@ async def get_stats(db: AsyncSession | None = Depends(optional_db)):
         return StatsResponse(specs=len(specs_with_impls), plots=total_impls, libraries=len(libraries))
 
     return await get_or_set_cache(
-        cache_key("stats"),
-        _fetch,
-        refresh_after=settings.cache_refresh_after,
-        refresh_factory=_refresh_stats,
+        cache_key("stats"), _fetch, refresh_after=settings.cache_refresh_after, refresh_factory=_refresh_stats
     )

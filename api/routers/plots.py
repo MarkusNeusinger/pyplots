@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.cache import get_cache, set_cache
+from api.cache import get_or_set_cache
 from api.dependencies import require_db
 from api.exceptions import DatabaseQueryError
 from api.schemas import FilteredPlotsResponse
@@ -405,17 +405,9 @@ async def get_filtered_plots(
     """
     # Parse query parameters
     filter_groups = _parse_filter_groups(request)
+    cache_k = _build_cache_key(filter_groups)
 
-    # Check cache (cache stores unpaginated result; pagination applied after)
-    cache_key = _build_cache_key(filter_groups)
-    cached: FilteredPlotsResponse | None = None
-    try:
-        cached = get_cache(cache_key)
-    except Exception as e:
-        logger.warning("Cache read failed for key %s: %s", cache_key, e)
-
-    if cached is None:
-        # Fetch data from database
+    async def _fetch_filtered() -> FilteredPlotsResponse:
         try:
             repo = SpecRepository(db)
             all_specs = await repo.get_all()
@@ -423,25 +415,20 @@ async def get_filtered_plots(
             logger.error("Database query failed in get_filtered_plots: %s", e)
             raise DatabaseQueryError("fetch_specs", str(e)) from e
 
-        # Build data structures
         spec_lookup = _build_spec_lookup(all_specs)
         impl_lookup = _build_impl_lookup(all_specs)
         all_images = _collect_all_images(all_specs)
         spec_id_to_tags = {spec_id: spec_data["tags"] for spec_id, spec_data in spec_lookup.items()}
 
-        # Filter images
         filtered_images = _filter_images(all_images, filter_groups, spec_lookup, impl_lookup)
 
-        # Calculate counts (always from ALL filtered images, not paginated)
         global_counts = _calculate_global_counts(all_specs)
         counts = _calculate_contextual_counts(filtered_images, spec_id_to_tags, impl_lookup)
         or_counts = _calculate_or_counts(filter_groups, all_images, spec_id_to_tags, spec_lookup, impl_lookup)
 
-        # Build spec_id -> title mapping for search/tooltips
         spec_titles = {spec_id: data["spec"].title for spec_id, data in spec_lookup.items() if data["spec"].title}
 
-        # Cache the full (unpaginated) result
-        cached = FilteredPlotsResponse(
+        return FilteredPlotsResponse(
             total=len(filtered_images),
             images=filtered_images,
             counts=counts,
@@ -450,10 +437,8 @@ async def get_filtered_plots(
             specTitles=spec_titles,
         )
 
-        try:
-            set_cache(cache_key, cached)
-        except Exception as e:
-            logger.warning("Cache write failed for key %s: %s", cache_key, e)
+    # get_or_set_cache provides stampede lock (no refresh_after — too many filter key variants)
+    cached = await get_or_set_cache(cache_k, _fetch_filtered)
 
     # Apply pagination on top of (possibly cached) result
     paginated = cached.images[offset : offset + limit] if limit else cached.images[offset:]

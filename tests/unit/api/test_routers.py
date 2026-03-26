@@ -9,6 +9,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from fastapi.testclient import TestClient
 
+from api.cache import clear_cache
 from api.main import app, fastapi_app
 from api.routers.plots import (
     _calculate_contextual_counts,
@@ -22,6 +23,17 @@ from tests.conftest import TEST_IMAGE_URL, TEST_THUMB_URL
 
 # Path to patch is_db_configured - it's now in api.dependencies
 DB_CONFIG_PATCH = "api.dependencies.is_db_configured"
+
+
+async def _passthrough_cache(key, factory, **kwargs):
+    """Helper: simulate cache miss — always call factory."""
+    return await factory()
+
+
+@pytest.fixture(autouse=True)
+def _clear_cache():
+    """Clear the global cache before each test to prevent cross-test contamination."""
+    clear_cache()
 
 
 @pytest.fixture
@@ -135,8 +147,8 @@ class TestStatsRouter:
         mock_lib_repo.get_all = AsyncMock(return_value=[mock_lib])
 
         with (
+            patch("api.routers.stats.get_or_set_cache", side_effect=_passthrough_cache),
             patch("api.routers.stats.get_cache", return_value=None),
-            patch("api.routers.stats.set_cache"),
             patch("api.routers.stats.SpecRepository", return_value=mock_spec_repo),
             patch("api.routers.stats.LibraryRepository", return_value=mock_lib_repo),
         ):
@@ -152,7 +164,10 @@ class TestStatsRouter:
         client, _ = db_client
         cached_response = {"specs": 5, "plots": 10, "libraries": 9}
 
-        with patch("api.routers.stats.get_cache", return_value=cached_response):
+        async def _return_cached(key, factory, **kwargs):
+            return cached_response
+
+        with patch("api.routers.stats.get_or_set_cache", side_effect=_return_cached):
             response = client.get("/stats")
             assert response.status_code == 200
             data = response.json()
@@ -200,8 +215,7 @@ class TestLibrariesRouter:
         mock_lib_repo.get_all = AsyncMock(return_value=[mock_lib])
 
         with (
-            patch("api.routers.libraries.get_cache", return_value=None),
-            patch("api.routers.libraries.set_cache"),
+            patch("api.routers.libraries.get_or_set_cache", side_effect=_passthrough_cache),
             patch("api.routers.libraries.LibraryRepository", return_value=mock_lib_repo),
         ):
             response = client.get("/libraries")
@@ -217,7 +231,10 @@ class TestLibrariesRouter:
 
         cached_data = {"libraries": [{"id": "cached_lib", "name": "Cached"}]}
 
-        with patch("api.routers.libraries.get_cache", return_value=cached_data):
+        async def _return_cached(key, factory, **kwargs):
+            return cached_data
+
+        with patch("api.routers.libraries.get_or_set_cache", side_effect=_return_cached):
             response = client.get("/libraries")
             assert response.status_code == 200
             data = response.json()
@@ -283,8 +300,7 @@ class TestSpecsRouter:
 
         with (
             patch(DB_CONFIG_PATCH, return_value=True),
-            patch("api.routers.specs.get_cache", return_value=None),
-            patch("api.routers.specs.set_cache"),
+            patch("api.routers.specs.get_or_set_cache", side_effect=_passthrough_cache),
             patch("api.routers.specs.SpecRepository", return_value=mock_spec_repo),
         ):
             response = client.get("/specs")
@@ -805,8 +821,7 @@ class TestPlotsRouter:
 
         with (
             patch(DB_CONFIG_PATCH, return_value=True),
-            patch("api.routers.plots.get_cache", return_value=None),
-            patch("api.routers.plots.set_cache"),
+            patch("api.routers.plots.get_or_set_cache", side_effect=_passthrough_cache),
             patch("api.routers.plots.SpecRepository", return_value=mock_spec_repo),
         ):
             response = client.get("/plots/filter")
@@ -823,8 +838,7 @@ class TestPlotsRouter:
 
         with (
             patch(DB_CONFIG_PATCH, return_value=True),
-            patch("api.routers.plots.get_cache", return_value=None),
-            patch("api.routers.plots.set_cache"),
+            patch("api.routers.plots.get_or_set_cache", side_effect=_passthrough_cache),
             patch("api.routers.plots.SpecRepository", return_value=mock_spec_repo),
         ):
             response = client.get("/plots/filter?lib=matplotlib")
@@ -844,9 +858,12 @@ class TestPlotsRouter:
         cached_response.offset = 0
         cached_response.limit = None
 
+        async def _return_cached(key, factory, **kwargs):
+            return cached_response
+
         with (
             patch(DB_CONFIG_PATCH, return_value=True),
-            patch("api.routers.plots.get_cache", return_value=cached_response),
+            patch("api.routers.plots.get_or_set_cache", side_effect=_return_cached),
         ):
             response = client.get("/plots/filter")
             assert response.status_code == 200
@@ -868,8 +885,7 @@ class TestPlotsRouter:
 
         with (
             patch(DB_CONFIG_PATCH, return_value=True),
-            patch("api.routers.plots.get_cache", return_value=None),
-            patch("api.routers.plots.set_cache"),
+            patch("api.routers.plots.get_or_set_cache", side_effect=_passthrough_cache),
             patch("api.routers.plots.SpecRepository", return_value=mock_spec_repo),
         ):
             response = client.get("/plots/filter?limit=1")
@@ -896,8 +912,7 @@ class TestPlotsRouter:
 
         with (
             patch(DB_CONFIG_PATCH, return_value=True),
-            patch("api.routers.plots.get_cache", return_value=None),
-            patch("api.routers.plots.set_cache"),
+            patch("api.routers.plots.get_or_set_cache", side_effect=_passthrough_cache),
             patch("api.routers.plots.SpecRepository", return_value=mock_spec_repo),
         ):
             response = client.get("/plots/filter?offset=1")
@@ -930,8 +945,7 @@ class TestPlotsRouter:
 
         with (
             patch(DB_CONFIG_PATCH, return_value=True),
-            patch("api.routers.plots.get_cache", return_value=None),
-            patch("api.routers.plots.set_cache"),
+            patch("api.routers.plots.get_or_set_cache", side_effect=_passthrough_cache),
             patch("api.routers.plots.SpecRepository", return_value=mock_spec_repo),
         ):
             response = client.get("/plots/filter?offset=1&limit=1")
@@ -949,8 +963,7 @@ class TestPlotsRouter:
 
         with (
             patch(DB_CONFIG_PATCH, return_value=True),
-            patch("api.routers.plots.get_cache", return_value=None),
-            patch("api.routers.plots.set_cache"),
+            patch("api.routers.plots.get_or_set_cache", side_effect=_passthrough_cache),
             patch("api.routers.plots.SpecRepository", return_value=mock_spec_repo),
         ):
             response = client.get("/plots/filter")

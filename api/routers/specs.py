@@ -3,15 +3,31 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.cache import cache_key, get_cache, set_cache
+from api.cache import cache_key, get_cache, get_or_set_cache, set_cache
 from api.dependencies import require_db
 from api.exceptions import raise_not_found
 from api.schemas import ImplementationResponse, SpecDetailResponse, SpecListItem
+from core.config import settings
 from core.database import SpecRepository
+from core.database.connection import get_db_context
 from core.utils import strip_noqa_comments
 
 
 router = APIRouter(tags=["specs"])
+
+
+async def _refresh_specs_list() -> list[SpecListItem]:
+    """Standalone factory for background refresh (creates own DB session)."""
+    async with get_db_context() as db:
+        repo = SpecRepository(db)
+        specs = await repo.get_all()
+        return [
+            SpecListItem(
+                id=spec.id, title=spec.title, description=spec.description, tags=spec.tags, library_count=len(spec.impls)
+            )
+            for spec in specs
+            if spec.impls
+        ]
 
 
 @router.get("/specs", response_model=list[SpecListItem])
@@ -22,24 +38,23 @@ async def get_specs(db: AsyncSession = Depends(require_db)):
     Returns only specs that have at least one implementation.
     """
 
-    key = cache_key("specs_list")
-    cached = get_cache(key)
-    if cached:
-        return cached
+    async def _fetch() -> list[SpecListItem]:
+        repo = SpecRepository(db)
+        specs = await repo.get_all()
+        return [
+            SpecListItem(
+                id=spec.id, title=spec.title, description=spec.description, tags=spec.tags, library_count=len(spec.impls)
+            )
+            for spec in specs
+            if spec.impls
+        ]
 
-    repo = SpecRepository(db)
-    specs = await repo.get_all()
-
-    # Only return specs with at least one implementation
-    result = [
-        SpecListItem(
-            id=spec.id, title=spec.title, description=spec.description, tags=spec.tags, library_count=len(spec.impls)
-        )
-        for spec in specs
-        if spec.impls  # Filter: only specs with implementations
-    ]
-    set_cache(key, result)
-    return result
+    return await get_or_set_cache(
+        cache_key("specs_list"),
+        _fetch,
+        refresh_after=settings.cache_refresh_after,
+        refresh_factory=_refresh_specs_list,
+    )
 
 
 @router.get("/specs/{spec_id}", response_model=SpecDetailResponse)

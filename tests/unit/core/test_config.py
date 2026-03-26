@@ -144,7 +144,7 @@ class TestSettingsDefaults:
         """Should have default cache TTL."""
         with patch.dict(os.environ, {}, clear=True):
             settings = Settings()
-            assert settings.cache_ttl == 600  # 10 minutes
+            assert settings.cache_ttl == 86400  # 24 hours
 
     def test_custom_cache_ttl(self) -> None:
         """Should accept custom cache TTL."""

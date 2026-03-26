@@ -134,8 +134,11 @@ class Settings(BaseSettings):
     # CACHE
     # =============================================================================
 
-    cache_ttl: int = 600
-    """Cache TTL in seconds (default: 10 minutes)"""
+    cache_ttl: int = 86400
+    """Cache TTL in seconds (default: 24h hard expiry, safety net — data only changes on deploy)"""
+
+    cache_refresh_after: int = 3600
+    """Trigger background cache refresh after this many seconds (default: 1h)"""
 
     cache_maxsize: int = 1000
     """Maximum number of cache entries"""

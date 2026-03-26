@@ -8,8 +8,8 @@ Backend API response time measurements for pyplots-backend (Cloud Run, europe-we
 |-----------|--------|-------|
 | Cloud Run (backend) | 1 vCPU, 1Gi RAM, min-instances=1 | gen2, startup-cpu-boost=true |
 | Cloud Run (frontend) | 1 vCPU, 256Mi RAM, min-instances=1 | nginx serving SPA |
-| Cloud SQL | `db-f1-micro`, PostgreSQL 18, PD-SSD 10GB | Shared vCPU, 614MB RAM |
-| Cache | In-memory TTLCache, 600s TTL, max 1000 entries | Per-instance, not shared |
+| Cloud SQL | `db-g1-small`, PostgreSQL 18, PD-SSD 10GB | 0.5 shared vCPU, 1.7GB RAM |
+| Cache | In-memory TTLCache, 86400s TTL (24h), max 1000 entries | Per-instance, stampede-protected, stale-while-revalidate |
 
 ## Baseline: Before `--no-cpu-throttling` (March 24, 2026)
 
@@ -133,9 +133,54 @@ Cached responses are consistently fast (2-230ms). The problem only occurs when t
 
 Upgrade: `gcloud sql instances patch pyplots-db --tier=db-g1-small`
 
-## After Cloud SQL upgrade to `db-g1-small` (pending)
+## After Cloud SQL upgrade to `db-g1-small` (March 26, 2026)
 
-TODO: Re-measure after upgrade and fill in results.
+Cloud SQL config: `db-g1-small` (0.5 shared vCPU, 1.7 GB RAM, ~$27/mo).
+
+### Uncached Requests
+
+| Endpoint | Samples | Min | Median | Max | vs db-f1-micro |
+|----------|---------|-----|--------|-----|----------------|
+| `/specs` | 12 | 0.62s | 1.10s | 11.68s | Median -40% (was 1.85s) |
+| `/stats` | 13 | 0.74s | 1.70s | 11.02s | Median -8% (was 1.84s) |
+| `/libraries` | 4 | 7.89s | 9.44s | 10.77s | No improvement (was 7.59s) |
+| `/specs/{id}` | 1 | 7.86s | — | 7.86s | Insufficient data |
+
+### Cached Requests
+
+| Endpoint | Samples | Min | Median | Max |
+|----------|---------|-----|--------|-----|
+| `/specs` | 3 | 18ms | 19ms | 20ms |
+| `/stats` | 2 | 3ms | 4ms | 4ms |
+| `/libraries` | 6 | 3ms | 25ms | 129ms |
+| `/specs/{id}` | 6 | 10ms | 37ms | 92ms |
+
+### OOM Events (1Gi RAM)
+
+**0 OOM events** since the 1Gi RAM upgrade (March 24-26).
+
+### Assessment
+
+DB upgrade from `db-f1-micro` to `db-g1-small` provided moderate improvement for `/specs` and `/stats` median latency but no improvement for `/libraries` or concurrent heavy queries. The fundamental issue remains: when the cache expires, 3-4 parallel requests overwhelm the shared 0.5 vCPU.
+
+## Cache Stampede Prevention + Stale-While-Revalidate (March 26, 2026)
+
+Software optimization to eliminate periodic slow responses entirely.
+
+### Changes
+
+1. **TTL increased from 600s to 86400s (24h)** — Data only changes on deploy (new Cloud Run revision = fresh instance). 24h is a safety net; explicit invalidation (`clear_cache`) handles out-of-band changes.
+2. **Per-key `asyncio.Lock`** — Prevents multiple concurrent requests from querying DB for the same cache key. On cold start, only 1 request queries per key; others wait for the result.
+3. **Stale-while-revalidate** — After `cache_refresh_after` seconds (default 1h), the next request triggers a background cache refresh. The user gets the stale cached response immediately.
+4. **Stats derivation** — `/stats` derives counts from cached `/specs` and `/libraries` responses when available, avoiding a separate DB query.
+
+### Expected Impact
+
+| Scenario | Before | After |
+|----------|--------|-------|
+| Cache expiry (every 10 min!) | 7-11s for 3-4 concurrent users | Eliminated — 24h TTL + background refresh |
+| Cold start (after deploy) | 3-4 parallel DB queries | 2 DB queries (lock), stats derived |
+| Normal request | 2-230ms | 2-230ms (unchanged) |
 
 ## How to Reproduce These Measurements
 

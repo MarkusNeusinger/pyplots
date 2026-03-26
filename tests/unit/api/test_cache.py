@@ -2,7 +2,12 @@
 Tests for api/cache.py caching utilities.
 """
 
+import asyncio
+
+import pytest
+
 from api.cache import (
+    cache_age,
     cache_key,
     clear_cache,
     clear_cache_by_pattern,
@@ -10,6 +15,7 @@ from api.cache import (
     clear_spec_cache,
     get_cache,
     get_cache_stats,
+    get_or_set_cache,
     set_cache,
 )
 
@@ -241,6 +247,117 @@ class TestGetCacheStats:
         assert isinstance(stats["size"], int)
         assert isinstance(stats["maxsize"], int)
         assert isinstance(stats["ttl"], (int, float))
+
+
+class TestCacheAge:
+    """Tests for cache_age function."""
+
+    def test_age_none_for_unknown_key(self) -> None:
+        """Should return None for keys never set."""
+        assert cache_age("nonexistent_age_key") is None
+
+    def test_age_zero_after_set(self) -> None:
+        """Should return near-zero age immediately after set."""
+        set_cache("test_age_key", "value")
+        age = cache_age("test_age_key")
+        assert age is not None
+        assert age < 1.0  # Less than 1 second
+
+
+@pytest.mark.asyncio
+class TestGetOrSetCache:
+    """Tests for get_or_set_cache with stampede prevention and stale-while-revalidate."""
+
+    async def test_calls_factory_on_miss(self) -> None:
+        """Should call factory when cache is empty."""
+        clear_cache()
+        called = False
+
+        async def factory():
+            nonlocal called
+            called = True
+            return {"data": "value"}
+
+        result = await get_or_set_cache("test_stampede_miss", factory)
+        assert called
+        assert result == {"data": "value"}
+        assert get_cache("test_stampede_miss") == {"data": "value"}
+
+    async def test_returns_cached_without_factory(self) -> None:
+        """Should return cached value without calling factory."""
+        set_cache("test_stampede_hit", {"cached": True})
+        called = False
+
+        async def factory():
+            nonlocal called
+            called = True
+            return {"cached": False}
+
+        result = await get_or_set_cache("test_stampede_hit", factory)
+        assert not called
+        assert result == {"cached": True}
+
+    async def test_concurrent_requests_single_factory_call(self) -> None:
+        """Only one factory call should execute for concurrent requests."""
+        clear_cache()
+        call_count = 0
+
+        async def slow_factory():
+            nonlocal call_count
+            call_count += 1
+            await asyncio.sleep(0.05)
+            return {"count": call_count}
+
+        results = await asyncio.gather(
+            get_or_set_cache("test_stampede_concurrent", slow_factory),
+            get_or_set_cache("test_stampede_concurrent", slow_factory),
+            get_or_set_cache("test_stampede_concurrent", slow_factory),
+        )
+
+        assert call_count == 1
+        assert all(r == {"count": 1} for r in results)
+
+    async def test_factory_exception_propagates(self) -> None:
+        """Factory exceptions should propagate, not cache errors."""
+        clear_cache()
+
+        async def failing_factory():
+            raise ValueError("DB error")
+
+        with pytest.raises(ValueError, match="DB error"):
+            await get_or_set_cache("test_stampede_error", failing_factory)
+
+        # Should not be cached
+        assert get_cache("test_stampede_error") is None
+
+    async def test_stale_while_revalidate_returns_stale(self) -> None:
+        """Should return stale value immediately and schedule background refresh."""
+        clear_cache()
+
+        async def factory():
+            return "fresh"
+
+        # Prime the cache
+        await get_or_set_cache("test_swr", factory, refresh_after=0.01)
+
+        # Wait for it to become stale
+        await asyncio.sleep(0.02)
+
+        refresh_called = False
+
+        async def refresh_factory():
+            nonlocal refresh_called
+            refresh_called = True
+            return "refreshed"
+
+        # Should return stale value immediately
+        result = await get_or_set_cache("test_swr", refresh_factory, refresh_after=0.01)
+        assert result == "fresh"  # stale value returned immediately
+
+        # Let background task complete
+        await asyncio.sleep(0.05)
+        assert refresh_called
+        assert get_cache("test_swr") == "refreshed"
 
 
 class TestTTLCacheMaxsizeOverflow:

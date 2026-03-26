@@ -10,7 +10,7 @@ import asyncio
 import logging
 import time
 from collections.abc import Awaitable, Callable
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 
 from cachetools import TTLCache
 
@@ -223,14 +223,14 @@ async def get_or_set_cache(
             age = cache_age(key)
             if age is not None and age > refresh_after:
                 _schedule_refresh(key, refresh_factory or factory)
-        return cached
+        return cast(T, cached)
 
     # Cold miss — must await. Lock prevents stampede.
     async with _get_lock(key):
         # Double-check after acquiring lock
         cached = get_cache(key)
         if cached is not None:
-            return cached
+            return cast(T, cached)
         result = await factory()
         set_cache(key, result)
         return result

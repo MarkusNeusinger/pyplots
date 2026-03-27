@@ -181,6 +181,11 @@ async def seo_spec_overview(spec_id: str, db: AsyncSession | None = Depends(opti
             )
         )
 
+    key = cache_key("seo", spec_id)
+    cached = get_cache(key)
+    if cached:
+        return HTMLResponse(cached)
+
     repo = SpecRepository(db)
     spec = await repo.get_by_id(spec_id)
     if not spec:
@@ -190,14 +195,14 @@ async def seo_spec_overview(spec_id: str, db: AsyncSession | None = Depends(opti
     has_previews = any(i.preview_url for i in spec.impls)
     image = f"https://api.pyplots.ai/og/{spec_id}.png" if has_previews else DEFAULT_HOME_IMAGE
 
-    return HTMLResponse(
-        BOT_HTML_TEMPLATE.format(
-            title=f"{html.escape(spec.title)} | pyplots.ai",
-            description=html.escape(spec.description or DEFAULT_DESCRIPTION),
-            image=html.escape(image, quote=True),
-            url=f"https://pyplots.ai/{html.escape(spec_id)}",
-        )
+    result = BOT_HTML_TEMPLATE.format(
+        title=f"{html.escape(spec.title)} | pyplots.ai",
+        description=html.escape(spec.description or DEFAULT_DESCRIPTION),
+        image=html.escape(image, quote=True),
+        url=f"https://pyplots.ai/{html.escape(spec_id)}",
     )
+    set_cache(key, result)
+    return HTMLResponse(result)
 
 
 @router.get("/seo-proxy/{spec_id}/{library}")
@@ -214,6 +219,11 @@ async def seo_spec_implementation(spec_id: str, library: str, db: AsyncSession |
             )
         )
 
+    key = cache_key("seo", spec_id, library)
+    cached = get_cache(key)
+    if cached:
+        return HTMLResponse(cached)
+
     repo = SpecRepository(db)
     spec = await repo.get_by_id(spec_id)
     if not spec:
@@ -224,11 +234,11 @@ async def seo_spec_implementation(spec_id: str, library: str, db: AsyncSession |
     # Use branded og:image endpoint if implementation has preview
     image = f"https://api.pyplots.ai/og/{spec_id}/{library}.png" if impl and impl.preview_url else DEFAULT_HOME_IMAGE
 
-    return HTMLResponse(
-        BOT_HTML_TEMPLATE.format(
-            title=f"{html.escape(spec.title)} - {html.escape(library)} | pyplots.ai",
-            description=html.escape(spec.description or DEFAULT_DESCRIPTION),
-            image=html.escape(image, quote=True),
-            url=f"https://pyplots.ai/{html.escape(spec_id)}/{html.escape(library)}",
-        )
+    result = BOT_HTML_TEMPLATE.format(
+        title=f"{html.escape(spec.title)} - {html.escape(library)} | pyplots.ai",
+        description=html.escape(spec.description or DEFAULT_DESCRIPTION),
+        image=html.escape(image, quote=True),
+        url=f"https://pyplots.ai/{html.escape(spec_id)}/{html.escape(library)}",
     )
+    set_cache(key, result)
+    return HTMLResponse(result)

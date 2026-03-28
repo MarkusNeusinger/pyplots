@@ -40,7 +40,7 @@ steps:
       - "managed"
       - "--allow-unauthenticated"
       - "--memory"
-      - "256Mi"
+      - "512Mi"
       - "--cpu"
       - "1"
       - "--timeout"
@@ -51,6 +51,9 @@ steps:
       - "3"
       - "--port"
       - "8080"
+      - "--execution-environment"
+      - "gen2"
+      - "--cpu-throttling"
 
 # Store images in Container Registry
 images:

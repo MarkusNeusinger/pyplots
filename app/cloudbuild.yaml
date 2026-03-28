@@ -54,6 +54,8 @@ steps:
       - "--execution-environment"
       - "gen2"
       - "--cpu-throttling"
+      - "--concurrency"
+      - "15"
 
 # Store images in Container Registry
 images:

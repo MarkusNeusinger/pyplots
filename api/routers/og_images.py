@@ -60,12 +60,25 @@ async def get_catalog_og_image(request: Request) -> Response:
     )
 
 
+_http_client: httpx.AsyncClient | None = None
+
+
+def _get_http_client() -> httpx.AsyncClient:
+    """Get or create a shared httpx client for connection reuse (avoids per-request TLS handshakes)."""
+    global _http_client
+    if _http_client is None or _http_client.is_closed:
+        _http_client = httpx.AsyncClient(
+            timeout=30.0,
+            limits=httpx.Limits(max_connections=10, max_keepalive_connections=5),
+        )
+    return _http_client
+
+
 async def _fetch_image(url: str) -> bytes:
-    """Fetch an image from a URL."""
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        response = await client.get(url)
-        response.raise_for_status()
-        return response.content
+    """Fetch an image from a URL using the shared HTTP client."""
+    response = await _get_http_client().get(url)
+    response.raise_for_status()
+    return response.content
 
 
 @router.get("/{spec_id}/{library}.png")
@@ -154,8 +167,10 @@ async def get_spec_collage_image(
     selected_impls = sorted_impls[:6]
 
     try:
-        # Fetch all images in parallel for better performance
-        images = list(await asyncio.gather(*[_fetch_image(impl.preview_url) for impl in selected_impls]))
+        # Fetch all images in parallel — prefer thumbnails (smaller, faster)
+        images = list(
+            await asyncio.gather(*[_fetch_image(impl.preview_thumb or impl.preview_url) for impl in selected_impls])
+        )
         labels = [f"{spec_id} · {impl.library_id}" for impl in selected_impls]
 
         # Create collage

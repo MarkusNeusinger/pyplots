@@ -233,9 +233,11 @@ def create_responsive_variants(
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    img = Image.open(input_path)
-    if img.mode in ("RGBA", "P"):
-        img = img.convert("RGB")
+    with Image.open(input_path) as src:
+        if src.mode in ("RGBA", "P"):
+            img = src.convert("RGB")
+        else:
+            img = src.copy()
 
     results: list[dict[str, str | int]] = []
     target_sizes = sizes or RESPONSIVE_SIZES
@@ -244,8 +246,7 @@ def create_responsive_variants(
     for width in target_sizes:
         # Skip sizes larger than the original
         if width >= img.width:
-            resized = img
-            actual_width, actual_height = img.width, img.height
+            continue
         else:
             ratio = width / img.width
             actual_width = width

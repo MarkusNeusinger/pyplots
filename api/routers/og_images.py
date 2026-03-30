@@ -74,8 +74,18 @@ def _get_http_client() -> httpx.AsyncClient:
 
 
 async def _fetch_image(url: str) -> bytes:
-    """Fetch an image from a URL using the shared HTTP client."""
-    response = await _get_http_client().get(url)
+    """Fetch an image from a URL, trying the 800px variant first for efficiency."""
+    client = _get_http_client()
+    # Prefer smaller responsive variant for OG collage (each slot is ~400px wide)
+    if url and url.endswith("/plot.png"):
+        small_url = url.replace("/plot.png", "/plot_800.png")
+        try:
+            response = await client.get(small_url)
+            response.raise_for_status()
+            return response.content
+        except Exception:
+            pass  # Fall back to original
+    response = await client.get(url)
     response.raise_for_status()
     return response.content
 

@@ -147,15 +147,7 @@ export const ImageCard = memo(function ImageCard({
           },
         }}
       >
-        <Box
-          component="picture"
-          sx={{
-            display: 'block',
-            width: '100%',
-            aspectRatio: '16 / 10',
-            bgcolor: '#fff',
-          }}
-        >
+        <Box component="picture">
           <source
             type="image/webp"
             srcSet={buildSrcSet(image.url, 'webp')}
@@ -178,6 +170,7 @@ export const ImageCard = memo(function ImageCard({
               width: '100%',
               aspectRatio: '16 / 10',
               objectFit: 'contain',
+              bgcolor: '#fff',
             }}
             onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
               const target = e.target as HTMLImageElement;

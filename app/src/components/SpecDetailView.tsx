@@ -87,9 +87,7 @@ export function SpecDetailView({
           <Box
             component="picture"
             sx={{
-              width: '100%',
-              height: '100%',
-              display: imageLoaded ? 'block' : 'none',
+              display: imageLoaded ? 'contents' : 'none',
             }}
           >
             <source

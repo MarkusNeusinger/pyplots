@@ -248,7 +248,7 @@ export function CatalogPage() {
                   {currentImage && (
                     <Box
                       component="picture"
-                      sx={{ display: 'block', width: '100%', height: '100%' }}
+                      sx={{ display: 'contents' }}
                     >
                       <source
                         type="image/webp"

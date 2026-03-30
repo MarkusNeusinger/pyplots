@@ -143,15 +143,7 @@ function ImplementationCard({
         }}
       >
         {impl.preview_url ? (
-          <Box
-            component="picture"
-            sx={{
-              display: 'block',
-              width: '100%',
-              aspectRatio: '16/10',
-              bgcolor: '#fff',
-            }}
-          >
+          <Box component="picture">
             <source
               type="image/webp"
               srcSet={buildSrcSet(impl.preview_url, 'webp')}
@@ -172,6 +164,7 @@ function ImplementationCard({
                 width: '100%',
                 aspectRatio: '16/10',
                 objectFit: 'contain',
+                bgcolor: '#fff',
               }}
               onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                 const target = e.target as HTMLImageElement;

@@ -143,7 +143,7 @@ function ImplementationCard({
         }}
       >
         {impl.preview_url ? (
-          <Box component="picture">
+          <Box component="picture" sx={{ display: 'contents' }}>
             <source
               type="image/webp"
               srcSet={buildSrcSet(impl.preview_url, 'webp')}

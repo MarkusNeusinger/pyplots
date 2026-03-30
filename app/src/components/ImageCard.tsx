@@ -147,7 +147,7 @@ export const ImageCard = memo(function ImageCard({
           },
         }}
       >
-        <Box component="picture">
+        <Box component="picture" sx={{ display: 'contents' }}>
           <source
             type="image/webp"
             srcSet={buildSrcSet(image.url, 'webp')}

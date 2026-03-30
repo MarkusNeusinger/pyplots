@@ -118,8 +118,8 @@ export function SpecDetailView({
                 const target = e.target as HTMLImageElement;
                 if (!target.dataset.fallback) {
                   target.dataset.fallback = '1';
-                  const picture = target.closest('picture');
-                  picture?.querySelectorAll('source').forEach(s => s.remove());
+                  target.closest('picture')?.querySelectorAll('source').forEach(s => s.remove());
+                  target.removeAttribute('srcset');
                   target.src = currentImpl.preview_url!;
                 }
               }}

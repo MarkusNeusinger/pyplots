@@ -181,11 +181,11 @@ export const ImageCard = memo(function ImageCard({
             }}
             onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
               const target = e.target as HTMLImageElement;
-              // Remove <source> elements so browser uses img.src fallback
+              // Remove <source> elements and clear srcset so browser falls back to plot.png
               if (!target.dataset.fallback) {
                 target.dataset.fallback = '1';
-                const picture = target.closest('picture');
-                picture?.querySelectorAll('source').forEach(s => s.remove());
+                target.closest('picture')?.querySelectorAll('source').forEach(s => s.remove());
+                target.removeAttribute('srcset');
                 target.src = image.url;
               } else {
                 target.style.display = 'none';

@@ -177,7 +177,7 @@ function ImplementationCard({
                 const target = e.target as HTMLImageElement;
                 if (!target.dataset.fallback) {
                   target.dataset.fallback = '1';
-                  target.src = impl.preview_thumb || impl.preview_url!;
+                  target.src = impl.preview_url!;
                 }
               }}
             />

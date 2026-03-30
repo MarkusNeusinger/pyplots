@@ -181,10 +181,10 @@ export const ImageCard = memo(function ImageCard({
             }}
             onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
               const target = e.target as HTMLImageElement;
-              // Fallback to original thumb/url if responsive variant not available
+              // Fallback to original plot.png if responsive variant not available
               if (!target.dataset.fallback) {
                 target.dataset.fallback = '1';
-                target.src = image.thumb || image.url;
+                target.src = image.url;
               } else {
                 target.style.display = 'none';
               }

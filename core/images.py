@@ -26,10 +26,7 @@ logger = logging.getLogger(__name__)
 
 # Responsive image sizes and formats (issue #5191)
 RESPONSIVE_SIZES = [1200, 800, 400]
-RESPONSIVE_FORMATS: list[tuple[str, str, dict]] = [
-    ("png", "PNG", {}),
-    ("webp", "WEBP", {"quality": 80}),
-]
+RESPONSIVE_FORMATS: list[tuple[str, str, dict]] = [("png", "PNG", {}), ("webp", "WEBP", {"quality": 80})]
 WEBP_FULL_QUALITY = 85
 
 # GCS bucket for static assets (fonts)
@@ -214,10 +211,7 @@ def process_plot_image(
 
 
 def create_responsive_variants(
-    input_path: str | Path,
-    output_dir: str | Path,
-    sizes: list[int] | None = None,
-    optimize: bool = True,
+    input_path: str | Path, output_dir: str | Path, sizes: list[int] | None = None, optimize: bool = True
 ) -> list[dict[str, str | int]]:
     """Generate multi-size, multi-format image variants for responsive delivery.
 
@@ -266,23 +260,13 @@ def create_responsive_variants(
             if optimize and fmt == "PNG":
                 optimize_png(out_path)
 
-            results.append({
-                "path": str(out_path),
-                "width": actual_width,
-                "height": actual_height,
-                "format": ext,
-            })
+            results.append({"path": str(out_path), "width": actual_width, "height": actual_height, "format": ext})
             logger.info("Created %s (%dx%d)", out_path.name, actual_width, actual_height)
 
     # Full-size WebP
     webp_path = output_dir / "plot.webp"
     img.save(webp_path, "WEBP", quality=WEBP_FULL_QUALITY)
-    results.append({
-        "path": str(webp_path),
-        "width": img.width,
-        "height": img.height,
-        "format": "webp",
-    })
+    results.append({"path": str(webp_path), "width": img.width, "height": img.height, "format": "webp"})
     logger.info("Created plot.webp (%dx%d)", img.width, img.height)
 
     return results

@@ -240,3 +240,4 @@ agentic/runs/
 # Docker
 docker-compose.override.yml
 secrets/
+/.playwright-mcp/

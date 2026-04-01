@@ -31,7 +31,7 @@
   src: url('https://storage.googleapis.com/pyplots-static/fonts/0-MonoLisa-normal.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
   unicode-range: U+0020-007F;
 }
 
@@ -40,7 +40,7 @@
   src: url('https://storage.googleapis.com/pyplots-static/fonts/1-MonoLisa-italic.woff2') format('woff2');
   font-weight: 100 900;
   font-style: italic;
-  font-display: swap;
+  font-display: optional;
   unicode-range: U+0020-007F;
 }
 
@@ -50,7 +50,7 @@
   src: url('https://storage.googleapis.com/pyplots-static/fonts/2-MonoLisa-normal.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
   unicode-range: U+0080-00FF;
 }
 
@@ -59,7 +59,7 @@
   src: url('https://storage.googleapis.com/pyplots-static/fonts/3-MonoLisa-italic.woff2') format('woff2');
   font-weight: 100 900;
   font-style: italic;
-  font-display: swap;
+  font-display: optional;
   unicode-range: U+0080-00FF;
 }
 
@@ -69,7 +69,7 @@
   src: url('https://storage.googleapis.com/pyplots-static/fonts/4-MonoLisa-normal.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
   unicode-range: U+2000-206F;
 }
 
@@ -78,7 +78,7 @@
   src: url('https://storage.googleapis.com/pyplots-static/fonts/5-MonoLisa-italic.woff2') format('woff2');
   font-weight: 100 900;
   font-style: italic;
-  font-display: swap;
+  font-display: optional;
   unicode-range: U+2000-206F;
 }
 
@@ -88,7 +88,7 @@
   src: url('https://storage.googleapis.com/pyplots-static/fonts/6-MonoLisa-normal.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
   unicode-range: U+2300-23FF;
 }
 
@@ -97,7 +97,7 @@
   src: url('https://storage.googleapis.com/pyplots-static/fonts/7-MonoLisa-italic.woff2') format('woff2');
   font-weight: 100 900;
   font-style: italic;
-  font-display: swap;
+  font-display: optional;
   unicode-range: U+2300-23FF;
 }
 
@@ -107,7 +107,7 @@
   src: url('https://storage.googleapis.com/pyplots-static/fonts/8-MonoLisa-normal.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
   unicode-range: U+2190-21FF;
 }
 
@@ -116,7 +116,7 @@
   src: url('https://storage.googleapis.com/pyplots-static/fonts/9-MonoLisa-italic.woff2') format('woff2');
   font-weight: 100 900;
   font-style: italic;
-  font-display: swap;
+  font-display: optional;
   unicode-range: U+2190-21FF;
 }
 
@@ -126,7 +126,7 @@
   src: url('https://storage.googleapis.com/pyplots-static/fonts/10-MonoLisa-normal.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
   unicode-range: U+20A0-20CF;
 }
 
@@ -135,7 +135,7 @@
   src: url('https://storage.googleapis.com/pyplots-static/fonts/11-MonoLisa-italic.woff2') format('woff2');
   font-weight: 100 900;
   font-style: italic;
-  font-display: swap;
+  font-display: optional;
   unicode-range: U+20A0-20CF;
 }
 
@@ -145,7 +145,7 @@
   src: url('https://storage.googleapis.com/pyplots-static/fonts/12-MonoLisa-normal.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
   unicode-range: U+2200-22FF;
 }
 
@@ -154,7 +154,7 @@
   src: url('https://storage.googleapis.com/pyplots-static/fonts/13-MonoLisa-italic.woff2') format('woff2');
   font-weight: 100 900;
   font-style: italic;
-  font-display: swap;
+  font-display: optional;
   unicode-range: U+2200-22FF;
 }
 
@@ -164,7 +164,7 @@
   src: url('https://storage.googleapis.com/pyplots-static/fonts/14-MonoLisa-normal.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
   unicode-range: U+2580-259F;
 }
 
@@ -173,7 +173,7 @@
   src: url('https://storage.googleapis.com/pyplots-static/fonts/15-MonoLisa-italic.woff2') format('woff2');
   font-weight: 100 900;
   font-style: italic;
-  font-display: swap;
+  font-display: optional;
   unicode-range: U+2580-259F;
 }
 
@@ -183,7 +183,7 @@
   src: url('https://storage.googleapis.com/pyplots-static/fonts/16-MonoLisa-normal.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
   unicode-range: U+25A0-25FF;
 }
 
@@ -192,7 +192,7 @@
   src: url('https://storage.googleapis.com/pyplots-static/fonts/17-MonoLisa-italic.woff2') format('woff2');
   font-weight: 100 900;
   font-style: italic;
-  font-display: swap;
+  font-display: optional;
   unicode-range: U+25A0-25FF;
 }
 
@@ -202,7 +202,7 @@
   src: url('https://storage.googleapis.com/pyplots-static/fonts/18-MonoLisa-normal.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
   unicode-range: U+2500-257F;
 }
 
@@ -211,7 +211,7 @@
   src: url('https://storage.googleapis.com/pyplots-static/fonts/19-MonoLisa-italic.woff2') format('woff2');
   font-weight: 100 900;
   font-style: italic;
-  font-display: swap;
+  font-display: optional;
   unicode-range: U+2500-257F;
 }
 
@@ -221,7 +221,7 @@
   src: url('https://storage.googleapis.com/pyplots-static/fonts/20-MonoLisa-normal.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
   unicode-range: U+E000-F8FF;
 }
 
@@ -230,6 +230,6 @@
   src: url('https://storage.googleapis.com/pyplots-static/fonts/21-MonoLisa-italic.woff2') format('woff2');
   font-weight: 100 900;
   font-style: italic;
-  font-display: swap;
+  font-display: optional;
   unicode-range: U+E000-F8FF;
 }

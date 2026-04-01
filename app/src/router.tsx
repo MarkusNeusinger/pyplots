@@ -5,7 +5,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { Layout, AppDataProvider } from './components/Layout';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { HomePage } from './pages/HomePage';
-import { SpecPage } from './pages/SpecPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 const LazyFallback = () => (
@@ -23,8 +22,8 @@ const router = createBrowserRouter([
       { path: 'catalog', lazy: () => import('./pages/CatalogPage').then(m => ({ Component: m.CatalogPage, HydrateFallback: LazyFallback })) },
       { path: 'legal', lazy: () => import('./pages/LegalPage').then(m => ({ Component: m.LegalPage, HydrateFallback: LazyFallback })) },
       { path: 'mcp', lazy: () => import('./pages/McpPage').then(m => ({ Component: m.McpPage, HydrateFallback: LazyFallback })) },
-      { path: ':specId', element: <SpecPage /> },
-      { path: ':specId/:library', element: <SpecPage /> },
+      { path: ':specId', lazy: () => import('./pages/SpecPage').then(m => ({ Component: m.SpecPage, HydrateFallback: LazyFallback })) },
+      { path: ':specId/:library', lazy: () => import('./pages/SpecPage').then(m => ({ Component: m.SpecPage, HydrateFallback: LazyFallback })) },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

@@ -186,7 +186,7 @@ export function InteractivePage() {
         }}
       >
         <Box sx={{ mb: 2 }}>{error || 'Interactive plot not available'}</Box>
-        <IconButton onClick={handleClose} sx={{ color: '#3776AB' }}>
+        <IconButton onClick={handleClose} aria-label="Close" sx={{ color: '#3776AB' }}>
           <CloseIcon />
         </IconButton>
       </Box>
@@ -225,7 +225,7 @@ export function InteractivePage() {
           ]}
           rightAction={
             <Tooltip title="View Raw HTML">
-              <IconButton onClick={handleOpenExternal} size="small">
+              <IconButton onClick={handleOpenExternal} aria-label="View raw HTML" size="small">
                 <OpenInNewIcon fontSize="small" />
               </IconButton>
             </Tooltip>

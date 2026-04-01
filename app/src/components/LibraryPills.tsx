@@ -94,6 +94,7 @@ export const LibraryPills = memo(function LibraryPills({
       {/* Left Arrow */}
       <IconButton
         onClick={handlePrev}
+        aria-label="Previous library"
         size="small"
         sx={{
           color: '#9ca3af',
@@ -168,6 +169,7 @@ export const LibraryPills = memo(function LibraryPills({
       {/* Right Arrow */}
       <IconButton
         onClick={handleNext}
+        aria-label="Next library"
         size="small"
         sx={{
           color: '#9ca3af',

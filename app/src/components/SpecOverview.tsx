@@ -198,6 +198,7 @@ function ImplementationCard({
             <Tooltip title={codeCopied === impl.library_id ? 'Copied!' : 'Copy Code'}>
               <IconButton
                 onClick={() => onCopyCode(impl)}
+                aria-label="Copy code"
                 sx={{
                   bgcolor: 'rgba(255,255,255,0.9)',
                   '&:hover': { bgcolor: '#fff' },
@@ -215,6 +216,7 @@ function ImplementationCard({
           <Tooltip title="Download PNG">
             <IconButton
               onClick={() => onDownload(impl)}
+              aria-label="Download PNG"
               sx={{
                 bgcolor: 'rgba(255,255,255,0.9)',
                 '&:hover': { bgcolor: '#fff' },
@@ -229,6 +231,7 @@ function ImplementationCard({
               <IconButton
                 component={Link}
                 to={`/interactive/${specId}/${impl.library_id}`}
+                aria-label="Open interactive"
                 onClick={(e: React.MouseEvent) => {
                   e.stopPropagation();
                   onTrackEvent('open_interactive', { spec: specId, library: impl.library_id });

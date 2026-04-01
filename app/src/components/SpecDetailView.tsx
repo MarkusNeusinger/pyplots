@@ -139,6 +139,7 @@ export function SpecDetailView({
             <Tooltip title={codeCopied === currentImpl.library_id ? 'Copied!' : 'Copy Code'}>
               <IconButton
                 onClick={() => onCopyCode(currentImpl)}
+                aria-label="Copy code"
                 sx={{
                   bgcolor: 'rgba(255,255,255,0.9)',
                   '&:hover': { bgcolor: '#fff' },
@@ -157,6 +158,7 @@ export function SpecDetailView({
             <Tooltip title="Download PNG">
               <IconButton
                 onClick={() => onDownload(currentImpl)}
+                aria-label="Download PNG"
                 sx={{
                   bgcolor: 'rgba(255,255,255,0.9)',
                   '&:hover': { bgcolor: '#fff' },
@@ -172,6 +174,7 @@ export function SpecDetailView({
               <IconButton
                 component={Link}
                 to={`/interactive/${specId}/${selectedLibrary}`}
+                aria-label="Open interactive"
                 onClick={(e: React.MouseEvent) => {
                   e.stopPropagation();
                   onTrackEvent('open_interactive', { spec: specId, library: selectedLibrary });

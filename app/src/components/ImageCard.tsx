@@ -189,6 +189,7 @@ export const ImageCard = memo(function ImageCard({
         <IconButton
           onClick={handleCopyCode}
           disabled={copyState === 'loading'}
+          aria-label="Copy code"
           size="small"
           sx={{
             position: 'absolute',

@@ -460,11 +460,14 @@ export function FilterBar({
               }}
             />
           </Tooltip>
+          <label htmlFor="filter-search" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)' }}>
+            {selectedCategory ? `Search ${FILTER_LABELS[selectedCategory]}` : 'Search filters'}
+          </label>
           <InputBase
             inputRef={inputRef}
             id="filter-search"
             name="filter-search"
-            aria-label={selectedCategory ? `Search ${FILTER_LABELS[selectedCategory]}` : 'Search filters'}
+            inputProps={{ 'aria-label': selectedCategory ? `Search ${FILTER_LABELS[selectedCategory]}` : 'Search filters' }}
             placeholder={selectedCategory ? FILTER_LABELS[selectedCategory] : ''}
             value={searchQuery}
             onChange={(e) => {

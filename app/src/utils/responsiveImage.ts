@@ -51,11 +51,11 @@ export function buildDetailSrcSet(url: string, format: 'webp' | 'png'): string {
  */
 export function getResponsiveSizes(imageSize: ImageSize): string {
   if (imageSize === 'compact') {
-    // xs/sm: 2 cols (50vw), md/lg: 4 cols (25vw), xl: 6 cols (17vw)
-    return '(max-width: 899px) 50vw, (max-width: 1535px) 25vw, 17vw';
+    // xs/sm: 2 cols (~45vw after gaps), md/lg: 4 cols (~23vw), xl: 6 cols (~15vw)
+    return '(max-width: 899px) 45vw, (max-width: 1535px) 23vw, 15vw';
   }
-  // xs/sm: 1 col (100vw), md/lg: 2 cols (50vw), xl: 3 cols (33vw)
-  return '(max-width: 899px) 100vw, (max-width: 1535px) 50vw, 33vw';
+  // xs/sm: 1 col (100vw), md/lg: 2 cols (~45vw after gaps), xl: 3 cols (~400px actual)
+  return '(max-width: 899px) 100vw, (max-width: 1535px) 45vw, 400px';
 }
 
 /**

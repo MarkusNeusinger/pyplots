@@ -84,7 +84,14 @@ export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
   }, [onRandom]);
 
   return (
-    <Box component="header" sx={{ textAlign: 'center', mb: 4 }}>
+    <Box component="header" sx={{
+      textAlign: 'center',
+      mb: 4,
+      minHeight: { xs: '3.5rem', sm: '4.5rem', md: '6rem' },
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+    }}>
       <Typography
         variant="h2"
         component="h1"

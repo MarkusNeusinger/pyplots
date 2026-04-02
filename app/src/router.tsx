@@ -39,7 +39,7 @@ export function AppRouter() {
     <HelmetProvider>
       <ErrorBoundary>
         <AppDataProvider>
-          <RouterProvider router={router} />
+          <RouterProvider router={router} fallbackElement={<LazyFallback />} />
         </AppDataProvider>
       </ErrorBoundary>
     </HelmetProvider>

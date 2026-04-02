@@ -59,9 +59,9 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
           setStats(data);
         }
       } catch (err) {
-        console.error('Error loading initial data:', err);
+        console.warn('Initial data load incomplete:', err instanceof Error ? err.message : err);
       }
-    });
+    }, { timeout: 2000 });
     return () => window.cancelIdleCallback(id);
   }, []);
 

@@ -11,7 +11,8 @@ import { API_URL, GITHUB_URL } from '../constants';
 import { buildSrcSet, getFallbackSrc, CATALOG_SIZES } from '../utils/responsiveImage';
 import { useAnalytics } from '../hooks';
 import { useAppData, useHomeState } from '../hooks';
-import { Breadcrumb, Footer } from '../components';
+import { Breadcrumb } from '../components/Breadcrumb';
+import { Footer } from '../components/Footer';
 import type { PlotImage } from '../types';
 
 interface CatalogSpec {

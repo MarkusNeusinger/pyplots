@@ -10,7 +10,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 import { API_URL } from '../constants';
 import { useAnalytics } from '../hooks';
-import { Breadcrumb } from '../components';
+import { Breadcrumb } from '../components/Breadcrumb';
 
 // Initial dimensions - will be updated via postMessage from iframe
 const INITIAL_WIDTH = 1600;

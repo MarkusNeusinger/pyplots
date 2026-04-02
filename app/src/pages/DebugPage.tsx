@@ -27,7 +27,7 @@ import WarningIcon from '@mui/icons-material/Warning';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 import { API_URL, LIBRARIES } from '../constants';
-import { Breadcrumb } from '../components';
+import { Breadcrumb } from '../components/Breadcrumb';
 
 // ============================================================================
 // Types

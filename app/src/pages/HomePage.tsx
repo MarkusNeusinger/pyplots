@@ -9,7 +9,10 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import type { PlotImage } from '../types';
 import type { ImageSize } from '../constants';
 import { useInfiniteScroll, useAnalytics, useFilterState, isFiltersEmpty } from '../hooks';
-import { Header, Footer, FilterBar, ImagesGrid } from '../components';
+import { Header } from '../components/Header';
+import { Footer } from '../components/Footer';
+import { FilterBar } from '../components/FilterBar';
+import { ImagesGrid } from '../components/ImagesGrid';
 import { useAppData, useHomeState } from '../hooks';
 
 export function HomePage() {

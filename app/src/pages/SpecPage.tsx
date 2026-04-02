@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Box from '@mui/material/Box';
@@ -14,8 +14,12 @@ import { API_URL, GITHUB_URL } from '../constants';
 import { useAnalytics } from '../hooks';
 import { useAppData } from '../hooks';
 import { LibraryPills } from '../components/LibraryPills';
-import { SpecTabs } from '../components/SpecTabs';
-import { Breadcrumb, Footer, SpecOverview, SpecDetailView } from '../components';
+import { Breadcrumb } from '../components/Breadcrumb';
+import { Footer } from '../components/Footer';
+
+const SpecTabs = lazy(() => import('../components/SpecTabs').then(m => ({ default: m.SpecTabs })));
+const SpecOverview = lazy(() => import('../components/SpecOverview').then(m => ({ default: m.SpecOverview })));
+const SpecDetailView = lazy(() => import('../components/SpecDetailView').then(m => ({ default: m.SpecDetailView })));
 import type { Implementation } from '../types';
 
 interface SpecDetail {
@@ -320,6 +324,7 @@ export function SpecPage() {
           {specData.description}
         </Typography>
 
+        <Suspense>
         {isOverviewMode ? (
           /* OVERVIEW MODE */
           <>
@@ -402,6 +407,7 @@ export function SpecPage() {
             />
           </>
         )}
+        </Suspense>
 
         <Footer onTrackEvent={trackEvent} selectedSpec={specId} selectedLibrary={selectedLibrary || ''} />
       </Box>

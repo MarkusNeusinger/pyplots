@@ -11,7 +11,8 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
 import { useAnalytics } from '../hooks';
-import { Breadcrumb, Footer } from '../components';
+import { Breadcrumb } from '../components/Breadcrumb';
+import { Footer } from '../components/Footer';
 import { GITHUB_URL } from '../constants';
 
 export function McpPage() {

@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 dendrogram-basic: Basic Dendrogram
 Library: plotnine 0.15.3 | Python 3.14.3
 Quality: 89/100 | Updated: 2026-04-05

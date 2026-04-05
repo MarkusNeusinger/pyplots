@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 dendrogram-basic: Basic Dendrogram
 Library: letsplot 4.8.2 | Python 3.14.3
+Quality: 87/100 | Updated: 2026-04-05
 """
 
 import numpy as np

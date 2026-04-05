@@ -1,6 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 dendrogram-basic: Basic Dendrogram
 Library: altair 6.0.0 | Python 3.14.3
+Quality: 88/100 | Updated: 2026-04-05
 """
 
 import altair as alt

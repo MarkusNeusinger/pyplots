@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: dendrogram-basic
 created: '2025-12-23T10:01:46Z'
-updated: '2026-04-05T20:51:39Z'
+updated: '2026-04-05T21:00:49Z'
 generated_by: claude-opus-4-6
 workflow_run: 20457530242
 issue: 0
@@ -9,48 +9,53 @@ python_version: 3.14.3
 library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/dendrogram-basic/seaborn/plot.png
 preview_html: null
-quality_score: 86
+quality_score: 88
 impl_tags:
-  dependencies:
-  - scipy
+  dependencies: []
   techniques:
-  - annotations
   - custom-legend
-  - patches
+  - colorbar
   patterns:
   - dataset-loading
-  - explicit-figure
+  - groupby-aggregation
   dataprep:
   - hierarchical-clustering
   styling:
-  - grid-styling
-  - alpha-blending
+  - custom-colormap
+  - edge-highlighting
 review:
   strengths:
-  - Excellent data storytelling with threshold line, cluster annotations, and species-colored
-    labels creating a clear narrative
-  - Strong aesthetic design with custom palette, refined typography, and polished
-    layout
-  - Perfect spec compliance and data quality using real iris dataset
-  - Good visual refinement with despine, subtle grid, and background cluster shading
+  - 'Excellent library mastery: sns.clustermap is THE idiomatic seaborn approach for
+    dendrograms, with row_colors annotation as a distinctive feature'
+  - 'Strong data storytelling: species-colored y-axis labels and row color strip create
+    clear visual hierarchy showing cluster membership'
+  - 'Perfect data quality: real iris dataset with 30 samples provides realistic scientific
+    context and appropriate scale'
+  - Custom viridis colormap with white cell separators and clean seaborn theming deliver
+    polished aesthetics above defaults
   weaknesses:
-  - 'Dead code: icoord, dcoord, leaf_positions, leaf_label_map are computed but never
-    used (lines 66-74)'
-  - 'Low library mastery: no seaborn plotting functions used; core visualization is
-    entirely scipy/matplotlib'
-  image_description: 'The plot displays a dendrogram of 30 iris samples (10 per species)
-    clustered using Ward linkage. The x-axis shows sample labels colored by species:
-    blue for Setosa, orange for Versicolor, green for Virginica. The y-axis shows
-    "Distance (Ward Linkage)" ranging from 0 to ~14. All dendrogram branches are rendered
-    in gray. A red dashed horizontal threshold line at d=5.9 is annotated "Major split
-    (d = 5.9)" in italic. Two subtle rounded background shadings highlight the two
-    main clusters: "Setosa (well-separated)" on the left and "Versicolor + Virginica
-    (overlapping species)" on the right. A legend in the upper right shows species
-    colors with square markers. The title reads "dendrogram-basic · seaborn · pyplots.ai".
-    Spines are removed on top and right, with a subtle y-axis grid.'
+  - Tick label font sizes at 13pt are below the recommended 16pt minimum for 4800x2700
+    output
+  - Y-axis label 'Iris Samples (by Species)' competes for space with the species legend,
+    creating slight visual crowding on the right side
+  image_description: 'The plot displays a clustered heatmap (clustermap) of 30 iris
+    samples using seaborn. A row dendrogram on the left shows hierarchical clustering
+    using Ward linkage, with gray branch lines of medium thickness. A column dendrogram
+    at the top shows feature clustering. The heatmap uses the viridis colormap (yellow-green-blue-purple)
+    with white grid lines separating cells. Four iris features (Sepal Length, Petal
+    Width, Sepal Width, Petal Length) are shown on the x-axis with rotated labels.
+    Thirty sample labels on the y-axis (e.g., Setosa-1, Versicolor-3, Virginica-7)
+    are color-coded by species: blue for Setosa, orange for Versicolor, green for
+    Virginica. A narrow "Species" color strip between the row dendrogram and heatmap
+    shows the species membership. A colorbar in the upper left indicates Feature Value
+    ranging from approximately 1 to 7. A species legend with colored square markers
+    appears in the upper right. The title "dendrogram-basic · seaborn · pyplots.ai"
+    is centered at the top. Setosa samples cluster tightly together at the top, while
+    Versicolor and Virginica samples intermingle in the lower portion, reflecting
+    the known biological similarity between those species.'
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 26
       max: 30
       items:
       - id: VQ-01
@@ -58,43 +63,45 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title 24, labels 20, ticks 16, leaf
-          labels 16). Annotation text at 13pt slightly small but readable.
+        comment: Title 24pt, axis labels 20pt, tick params 13-14pt. Ticks slightly
+          below 16pt guideline but readable due to set_context('talk', font_scale=1.2).
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: X-axis labels rotated 45° with adequate spacing. Some slight crowding
-          in dense areas.
+        comment: Y-axis sample labels readable, x-axis labels rotated. Slight crowding
+          between y-axis label and legend area.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Dendrogram branches visible in gray. Branch lines could be slightly
-          thicker.
+        comment: Heatmap cells clearly visible with viridis colormap. Dendrogram branches
+          visible but could be slightly thicker. Row colors strip is clear.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Blue/orange/green palette is colorblind-safe with good contrast.
+        comment: Viridis colormap is perceptually uniform and colorblind-safe. Blue/orange/green
+          species palette is distinguishable.
       - id: VQ-05
         name: Layout & Canvas
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: 16:9 figure fills canvas well, balanced margins.
+        comment: Clustermap fills canvas well with balanced proportions. Y-axis label
+          competes slightly with legend positioning.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with context: Iris Samples (by Species) and Distance
-          (Ward Linkage).'
+        comment: 'Descriptive labels: ''Iris Features'', ''Iris Samples (by Species)''.
+          No units needed for categorical axes.'
     design_excellence:
-      score: 16
+      score: 14
       max: 20
       items:
       - id: DE-01
@@ -102,76 +109,84 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: 'Strong design: custom palette, species-colored bold labels, italic
-          annotations, rounded cluster shading.'
+        comment: Custom palette starting with Python Blue, viridis cmap, species-colored
+          bold y-labels, white cell separators, clean legend styling. Clearly above
+          defaults.
       - id: DE-02
         name: Visual Refinement
-        score: 5
+        score: 4
         max: 6
         passed: true
-        comment: Spines removed, subtle y-axis grid, white theme, generous whitespace.
+        comment: White theme via sns.set_theme, despine applied, white linecolor separators,
+          customized colorbar. Good refinement visible.
       - id: DE-03
         name: Data Storytelling
-        score: 5
+        score: 4
         max: 6
         passed: true
-        comment: Clear narrative with threshold line, cluster annotations explaining
-          biological insight.
+        comment: Species-colored labels and row_colors strip create visual hierarchy.
+          Clustering reveals Setosa separation vs Versicolor/Virginica overlap. Viewer
+          can immediately identify species grouping patterns.
     spec_compliance:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Correct dendrogram chart type.
+        comment: Clustermap includes prominent dendrograms on both axes. This is the
+          seaborn-native dendrogram approach, though it adds a heatmap beyond a pure
+          dendrogram.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: scipy linkage, labels, vertical orientation,
-          proportional heights, 30 samples.'
+        comment: Ward linkage, sample labels, hierarchical structure, iris data as
+          suggested. 30 samples within recommended 10-50 range.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X-axis shows samples, Y-axis shows distances. Correct.
+        comment: Samples on y-axis, features on x-axis, dendrograms show merge distances
+          correctly.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend shows species with matching colors.
+        comment: Title 'dendrogram-basic · seaborn · pyplots.ai' in correct format.
+          Species legend with matching colors.
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Shows well-separated vs overlapping clusters, multiple merge levels,
-          threshold concept.
+        comment: Shows hierarchical clustering with varied merge distances, species
+          grouping, feature correlations. Both well-separated and overlapping clusters
+          visible.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Uses seaborn iris dataset — real, scientific, neutral.
+        comment: Real iris dataset - classic scientific data, neutral and comprehensible.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Ward linkage distances realistic for iris measurements. 30 samples
-          appropriate.
+        comment: Iris measurements in realistic ranges (cm). 30 samples appropriate
+          for readable dendrogram.
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -179,48 +194,51 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports → style → data → compute → plot → save.'
+        comment: 'Linear flow: imports → style → data → clustermap → customize → save.
+          No functions/classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) and random_state=42.
+        comment: np.random.seed(42) and random_state=42 for sampling.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used.
+        comment: 'All imports used: matplotlib.pyplot, numpy, pandas, seaborn.'
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: 'Dead code: icoord, dcoord, leaf_positions, leaf_label_map assigned
-          but never used.'
+        passed: true
+        comment: Clean, well-organized code with appropriate complexity. No dead variables
+          or over-engineering.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300 and bbox_inches=tight.
+        comment: Saves as plot.png with dpi=300 and bbox_inches='tight'. Current API
+          usage.
     library_mastery:
-      score: 4
+      score: 10
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 2
+        score: 5
         max: 5
-        passed: false
-        comment: Seaborn used only for theming and data loading. Core dendrogram from
-          scipy. Could explore sns.clustermap.
+        passed: true
+        comment: sns.clustermap is THE idiomatic seaborn way to visualize dendrograms.
+          Uses set_theme, set_context, load_dataset, despine - all seaborn best practices.
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 5
         max: 5
-        passed: false
-        comment: Uses set_theme, set_context, despine, load_dataset — utility features,
-          not distinctive plotting.
+        passed: true
+        comment: clustermap with row_colors annotation is a distinctive seaborn feature
+          not easily replicated in other libraries. Combines dendrogram + heatmap
+          + color annotations in one call.
   verdict: REJECTED

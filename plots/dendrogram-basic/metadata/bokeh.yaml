@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: dendrogram-basic
 created: '2025-12-23T10:01:43Z'
-updated: '2026-04-05T20:54:53Z'
+updated: '2026-04-05T21:02:41Z'
 generated_by: claude-opus-4-6
 workflow_run: 20457532402
 issue: 0
@@ -9,11 +9,13 @@ python_version: 3.14.3
 library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/dendrogram-basic/bokeh/plot.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/dendrogram-basic/bokeh/plot.html
-quality_score: 84
+quality_score: 85
 impl_tags:
   dependencies:
   - scipy
   techniques:
+  - hover-tooltips
+  - custom-legend
   - html-export
   patterns:
   - data-generation
@@ -23,36 +25,38 @@ impl_tags:
   - hierarchical-clustering
   styling:
   - grid-styling
+  - alpha-blending
 review:
   strengths:
-  - Excellent spec compliance with all required dendrogram features and correct hierarchical
-    structure
-  - Clean, well-organized code with proper seed for reproducibility
-  - Strong design with species-specific coloring and background shading that aids
-    cluster identification
-  - Good data storytelling with visual hierarchy communicating three-species clustering
-    pattern
+  - Excellent use of Bokeh HoverTool with merge distance, cluster members, and cluster
+    size metadata
+  - Clean manual dendrogram construction necessary for Bokeh which lacks built-in
+    dendrogram
+  - Colorblind-safe teal/gray palette with good contrast
+  - Sqrt scaling improves visibility of lower-distance merges
+  - Realistic iris dataset with clear species clustering
+  - All font sizes explicitly set for 4800x2700 canvas
   weaknesses:
-  - No Bokeh-specific interactive features (HoverTool for merge distances) — biggest
-    gap for Library Mastery
-  - Lower-level merge structure visually compressed due to dominant top-level merge
-    distance
-  - Color palette not fully colorblind-safe (blue vs pink/mauve distinction)
-  image_description: 'The plot displays a vertical dendrogram of 15 iris flower samples
-    clustered into three species groups (Setosa, Versicolor, Virginica) using Ward''s
-    method. Each species cluster is rendered in a distinct color: light blue for Setosa
-    (left group of 5), pink/mauve for Versicolor (center group of 5), and orange for
-    Virginica (right group of 5). Cross-group merges at higher distances are drawn
-    in dark gray/black. Subtle colored background rectangles shade each species cluster
-    region. Leaf labels are rotated ~45 degrees at the bottom, with species group
-    labels below each cluster. The y-axis shows "Distance (Ward''s Method, √ scale)"
-    ranging from 0 to ~10, and the x-axis is labeled "Iris Sample". A 4-entry legend
-    in the top-left identifies each color. The title reads "Iris Species Clustering
-    · dendrogram-basic · bokeh · pyplots.ai". The design is clean with subtle grid
-    lines and no chart outline.'
+  - Title format prepends descriptive text before the standard spec-id format
+  - Between-cluster color (#444444) is subtle against background — needs stronger
+    contrast
+  - Legend is small and positioned far from data in top-right corner
+  - Negative y-range creates unnecessary whitespace below leaf labels
+  image_description: The plot displays a hierarchical dendrogram of 15 iris flower
+    samples clustered using Ward's method. The x-axis shows sample labels (Setosa-1
+    through -5, Versicolor-1 through -5, Virginica-1 through -5) rotated at approximately
+    45 degrees. The y-axis shows "Distance (Ward's Method, √ scale)" with sqrt-transformed
+    values ranging from -0.5 to ~3.3. U-shaped connectors form the tree structure
+    with teal-colored branches for within-cluster merges and dark gray for the top-level
+    between-cluster merge. A legend in the top-right corner labels "Within-cluster"
+    and "Between-cluster". The title reads "Iris Species Clustering · dendrogram-basic
+    · bokeh · pyplots.ai". The Setosa samples cluster together on the left, Versicolor
+    in the middle, and Virginica on the right, with Versicolor and Virginica merging
+    before joining Setosa at the highest distance level. Grid lines are subtle (y-axis
+    only), the outline is removed, and the overall appearance is clean and professional.
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 27
       max: 30
       items:
       - id: VQ-01
@@ -60,67 +64,66 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set (30pt title, 24pt labels, 20pt ticks).
-          Leaf labels could be slightly larger.
+        comment: All font sizes explicitly set (title 30pt, labels 24pt, ticks 20pt,
+          leaf labels 20pt). Legend text slightly small.
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Rotated leaf labels avoid overlap. Slight crowding between adjacent
-          labels.
+        comment: Labels rotated at 45 degrees prevent all overlap
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Branches visible with line_width=4. Lower-level merges slightly compressed.
+        comment: Branch lines visible at width 4. Between-cluster color distinction
+          is subtle.
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Blue, pink, orange, gray mostly distinguishable. Blue/pink could
-          challenge tritanopia.
+        comment: Teal and dark gray are colorblind-safe with good contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good canvas utilization. High top merge compresses lower structure.
+        comment: Good canvas usage but negative y-range creates unnecessary whitespace
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with method info.
+        comment: Descriptive labels with method and scale info
     design_excellence:
-      score: 14
+      score: 12
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 6
+        score: 5
         max: 8
         passed: true
-        comment: Strong design with species-specific coloring and background shading.
-          Harmonious palette.
+        comment: Custom teal/gray palette, muted text colors, outline removed. Above
+          configured default.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Subtle grid, outline removed, refined ticks. Could go further with
-          minimal chrome.
+        comment: Outline removed, x-grid hidden, y-grid subtle, tick marks customized,
+          axis lines styled
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 3
         max: 6
         passed: true
-        comment: Species coloring and backgrounds create clear visual hierarchy. Group
-          labels reinforce narrative.
+        comment: Color coding distinguishes within/between-cluster merges. Sqrt scaling
+          improves lower-distance visibility.
     spec_compliance:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -128,26 +131,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct dendrogram with hierarchical tree structure.
+        comment: Correct dendrogram with U-shaped connectors
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Labels, linkage, vertical orientation, proportional heights all present.
+        comment: Labels, linkage, proportional heights, vertical orientation all present
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Samples on x-axis in leaf order, merge distance on y-axis.
+        comment: X shows samples in leaf order, Y shows merge distances
       - id: SC-04
         name: Title & Legend
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Title includes spec-id, library, pyplots.ai. Legend identifies color
-          groups.
+        comment: Title has extra descriptive prefix before standard format. Legend
+          labels match.
     data_quality:
       score: 14
       max: 15
@@ -157,20 +160,20 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows multiple merge levels, within/between cluster distances. Could
-          show more varied merge distances.
+        comment: Shows species clustering, varying merge distances, tight and loose
+          clusters
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Iris flower species — classic, neutral, real-world clustering scenario.
+        comment: Iris dataset is a classic neutral real-world clustering scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Plausible iris feature measurements in cm range.
+        comment: Realistic iris flower measurements in cm range
     code_quality:
       score: 10
       max: 10
@@ -180,33 +183,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports, data, linkage, plot, save.'
+        comment: 'Linear flow: imports, data, clustering, plotting, save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) for deterministic output.
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used.
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Manual dendrogram construction is clean and well-commented.
+        comment: Clean manual dendrogram construction, well-organized
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png and plot.html. Current API.
+        comment: Saves as plot.png and plot.html, current API
     library_mastery:
-      score: 6
+      score: 8
       max: 10
       items:
       - id: LM-01
@@ -214,12 +217,11 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of ColumnDataSource, multi_line, Label. Follows Bokeh patterns.
+        comment: ColumnDataSource, multi_line, Label objects, proper figure configuration
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 4
         max: 5
-        passed: false
-        comment: HTML export is Bokeh-specific but no interactive features (HoverTool,
-          TapTool). Major missed opportunity.
+        passed: true
+        comment: HoverTool with custom tooltips, hover visual feedback, HTML export
   verdict: REJECTED

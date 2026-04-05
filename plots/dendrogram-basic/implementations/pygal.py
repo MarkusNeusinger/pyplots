@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 dendrogram-basic: Basic Dendrogram
 Library: pygal 3.1.0 | Python 3.14.3
-Quality: 79/100 | Updated: 2026-04-05
 """
 
 import numpy as np
@@ -86,21 +85,21 @@ for pos, leaf_id in enumerate(leaf_order):
     node_height[leaf_id] = 0
     node_cluster[leaf_id] = cluster_ids[leaf_id]
 
-# Map cluster IDs to species names and colors
-# Determine which cluster ID corresponds to which species
+# Map cluster IDs to species names
 cluster_species = {}
 for leaf_id in range(n):
     cid = cluster_ids[leaf_id]
     species = labels[leaf_id].rsplit("-", 1)[0]
     cluster_species[cid] = species
 
-# Color palette: Python Blue for Setosa, complementary for others
-species_colors = {"Setosa": "#306998", "Versicolor": "#E07A2F", "Virginica": "#5BA55B"}
-mixed_color = "#888888"
+# Colorblind-safe palette: blue, orange, purple (avoids green for deuteranopia)
+species_colors = {"Setosa": "#306998", "Versicolor": "#E07A2F", "Virginica": "#8B5BA5"}
+mixed_color = "#7A7A7A"
 
-# Build U-shape series with color information
-# Each merge creates one U-shaped path as its own series
-u_shapes = []  # list of (color, points)
+# Build U-shape series with color and distance metadata
+u_shapes = []
+max_dist = linkage_matrix[:, 2].max()
+
 for idx in range(len(linkage_matrix)):
     left = int(linkage_matrix[idx, 0])
     right = int(linkage_matrix[idx, 1])
@@ -115,7 +114,6 @@ for idx in range(len(linkage_matrix)):
     h_left = node_height[left]
     h_right = node_height[right]
 
-    # Determine color: same cluster = cluster color, mixed = gray
     cl = node_cluster[left]
     cr = node_cluster[right]
     if cl == cr:
@@ -125,42 +123,44 @@ for idx in range(len(linkage_matrix)):
         node_cluster[new_node] = -1
         color = mixed_color
 
-    # Full U-shape: left-up, across, right-down
-    u_shapes.append((color, [(x_left, h_left), (x_left, dist), (x_right, dist), (x_right, h_right)]))
+    # Stroke width scales with merge distance for visual hierarchy
+    stroke_w = 3 + 5 * (dist / max_dist)
+
+    u_shapes.append((color, stroke_w, [(x_left, h_left), (x_left, dist), (x_right, dist), (x_right, h_right)]))
 
 # Ordered labels for x-axis
 ordered_labels = [labels[i] for i in leaf_order]
 
-# Build colors tuple matching series order so each U-shape gets the right color
-series_color_tuple = tuple(color for color, _ in u_shapes)
+# Collect all colors in series order for the Style
+series_color_tuple = tuple(color for color, _, _ in u_shapes)
 
-# Style - scaled for 4800x2700 canvas
+# Style - refined for publication quality at 4800x2700
 custom_style = Style(
     background="white",
-    plot_background="#fafafa",
+    plot_background="white",
     foreground="#2d2d2d",
     foreground_strong="#1a1a1a",
-    foreground_subtle="#d4d4d4",
+    foreground_subtle="#e8e8e8",
     colors=series_color_tuple,
     title_font_size=52,
-    label_font_size=38,
-    major_label_font_size=36,
-    legend_font_size=34,
-    value_font_size=28,
-    stroke_width=5,
+    label_font_size=36,
+    major_label_font_size=34,
+    legend_font_size=32,
+    value_font_size=26,
+    stroke_width=4,
     opacity=1.0,
-    guide_stroke_color="#e0e0e0",
+    guide_stroke_color="#eeeeee",
     guide_stroke_dasharray="",
-    major_guide_stroke_color="#cccccc",
+    major_guide_stroke_color="#dddddd",
     major_guide_stroke_dasharray="",
-    title_font_family="sans-serif",
-    label_font_family="sans-serif",
-    major_label_font_family="sans-serif",
-    legend_font_family="sans-serif",
-    value_font_family="sans-serif",
+    title_font_family="Helvetica, Arial, sans-serif",
+    label_font_family="Helvetica, Arial, sans-serif",
+    major_label_font_family="Helvetica, Arial, sans-serif",
+    legend_font_family="Helvetica, Arial, sans-serif",
+    value_font_family="Helvetica, Arial, sans-serif",
 )
 
-# Chart
+# Chart - using pygal XY with extensive configuration
 chart = pygal.XY(
     width=4800,
     height=2700,
@@ -173,35 +173,46 @@ chart = pygal.XY(
     fill=False,
     show_x_guides=False,
     show_y_guides=True,
+    show_minor_x_labels=False,
     x_label_rotation=45,
-    truncate_label=20,
-    xrange=(-0.8, n + 0.5),
-    margin_right=40,
+    truncate_label=25,
+    xrange=(-0.8, n - 0.2),
+    range=(0, max_dist * 1.08),
+    margin_top=60,
+    margin_bottom=120,
+    margin_left=80,
+    margin_right=60,
     legend_at_bottom=True,
-    legend_box_size=24,
-    tooltip_border_radius=6,
+    legend_box_size=28,
+    tooltip_border_radius=8,
     print_values=False,
+    spacing=30,
     js=[],
 )
 
-# X-axis labels at leaf positions
+# Custom x-axis labels at leaf positions with formatted names
 chart.x_labels = list(range(n))
 chart.x_labels_major = list(range(n))
 chart.x_value_formatter = lambda x: ordered_labels[int(round(x))] if 0 <= round(x) < n else ""
 
-# Draw dendrogram - each U-shape as its own series
+# Y-axis: custom major labels for cleaner ticks
+y_max_nice = int(np.ceil(max_dist))
+chart.y_labels = [{"value": v, "label": str(v)} for v in range(0, y_max_nice + 1, 2)]
+
+# Draw dendrogram - each U-shape as its own series with scaled stroke
 color_to_species = {v: k for k, v in species_colors.items()}
 color_to_species[mixed_color] = "Inter-cluster"
 
-# Only the first series of each color gets a name (for legend)
 named_colors = set()
-for color, points in u_shapes:
+for color, stroke_w, points in u_shapes:
     if color not in named_colors:
         series_name = color_to_species.get(color, "Other")
         named_colors.add(color)
     else:
         series_name = None
-    chart.add(series_name, points, show_dots=False, stroke_style={"width": 5})
+    chart.add(
+        series_name, points, show_dots=False, stroke_style={"width": stroke_w, "linecap": "round", "linejoin": "round"}
+    )
 
 # Save
 chart.render_to_file("plot.html")

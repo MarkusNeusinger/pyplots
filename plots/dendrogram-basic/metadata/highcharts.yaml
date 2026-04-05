@@ -1,15 +1,15 @@
 library: highcharts
 specification_id: dendrogram-basic
 created: 2025-12-17 07:55:57+00:00
-updated: 2025-12-17 07:55:57+00:00
-generated_by: claude-opus-4-5-20251101
+updated: '2026-04-05T20:00:00+00:00'
+generated_by: claude-opus-4-6
 workflow_run: 20295462355
 issue: 986
-python_version: 3.13.11
+python_version: '3.14.3'
 library_version: 1.10.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/dendrogram-basic/highcharts/plot.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/dendrogram-basic/highcharts/plot.html
-quality_score: 93
+quality_score: null
 impl_tags:
   dependencies:
     - scipy

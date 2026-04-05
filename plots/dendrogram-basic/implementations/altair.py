@@ -1,125 +1,110 @@
-""" pyplots.ai
+"""pyplots.ai
 dendrogram-basic: Basic Dendrogram
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-23
+Library: altair 6.0.0 | Python 3.14.3
+Quality: /100 | Updated: 2026-04-05
 """
 
 import altair as alt
-import numpy as np
 import pandas as pd
 from scipy.cluster.hierarchy import dendrogram, linkage
+from sklearn.datasets import load_iris
 
 
-# Data - Iris flower measurements (4 features for 15 samples)
-np.random.seed(42)
-
-# Simulate iris-like measurements: sepal length, sepal width, petal length, petal width
-# Three species with distinct characteristics
-samples_per_species = 5
-labels = []
-data = []
-
-# Setosa: shorter petals, wider sepals
-for i in range(samples_per_species):
-    labels.append(f"Setosa-{i + 1}")
-    data.append(
-        [
-            5.0 + np.random.randn() * 0.3,  # sepal length
-            3.4 + np.random.randn() * 0.3,  # sepal width
-            1.5 + np.random.randn() * 0.2,  # petal length
-            0.3 + np.random.randn() * 0.1,  # petal width
-        ]
-    )
-
-# Versicolor: medium measurements
-for i in range(samples_per_species):
-    labels.append(f"Versicolor-{i + 1}")
-    data.append(
-        [
-            5.9 + np.random.randn() * 0.4,
-            2.8 + np.random.randn() * 0.3,
-            4.3 + np.random.randn() * 0.4,
-            1.3 + np.random.randn() * 0.2,
-        ]
-    )
-
-# Virginica: longer petals and sepals
-for i in range(samples_per_species):
-    labels.append(f"Virginica-{i + 1}")
-    data.append(
-        [
-            6.6 + np.random.randn() * 0.5,
-            3.0 + np.random.randn() * 0.3,
-            5.5 + np.random.randn() * 0.5,
-            2.0 + np.random.randn() * 0.3,
-        ]
-    )
-
-data = np.array(data)
-n_samples = len(labels)
+# Data - Iris flower measurements (15 samples, 3 species)
+iris = load_iris()
+indices = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140]
+features = iris.data[indices]
+species_names = ["Setosa", "Versicolor", "Virginica"]
+labels = [f"{species_names[iris.target[i]]}-{i}" for i in indices]
 
 # Compute hierarchical clustering using Ward's method
-Z = linkage(data, method="ward")
-
-# Use scipy's dendrogram function to get proper leaf ordering and coordinates
+Z = linkage(features, method="ward")
 dendro = dendrogram(Z, labels=labels, no_plot=True)
 
-# Extract coordinates from scipy's dendrogram output (icoord, dcoord)
-# Each cluster merge has 4 x-coords and 4 y-coords forming a U-shape
-lines_data = []
-color_threshold = 0.7 * Z[:, 2].max()
-
+# Extract line segments from scipy's dendrogram output
+# Each merge produces a U-shape: left vertical + horizontal + right vertical
+segments = []
 for xpts, ypts in zip(dendro["icoord"], dendro["dcoord"], strict=True):
-    # Each U-shape has 3 segments: left vertical, horizontal, right vertical
-    # Points: (x0,y0) - (x1,y1) - (x2,y2) - (x3,y3)
-    max_height = max(ypts)
-    color = "#306998" if max_height > color_threshold else "#FFD43B"
+    for i in range(3):
+        segments.append({"x": xpts[i], "y": ypts[i], "x2": xpts[i + 1], "y2": ypts[i + 1]})
 
-    # Left vertical segment
-    lines_data.append({"x": xpts[0], "y": ypts[0], "x2": xpts[1], "y2": ypts[1], "color": color})
-    # Horizontal segment
-    lines_data.append({"x": xpts[1], "y": ypts[1], "x2": xpts[2], "y2": ypts[2], "color": color})
-    # Right vertical segment
-    lines_data.append({"x": xpts[2], "y": ypts[2], "x2": xpts[3], "y2": ypts[3], "color": color})
+segments_df = pd.DataFrame(segments)
 
-lines_df = pd.DataFrame(lines_data)
+# Leaf label positions from scipy (positioned at 5, 15, 25, ...)
+leaf_labels = dendro["ivl"]
+leaf_df = pd.DataFrame(
+    {
+        "x": [5 + 10 * i for i in range(len(leaf_labels))],
+        "y_base": [0.0] * len(leaf_labels),
+        "label": leaf_labels,
+        "species": [lbl.rsplit("-", 1)[0] for lbl in leaf_labels],
+    }
+)
 
-# Create label data for x-axis using scipy's leaf positions
-ivl = dendro["ivl"]  # Ordered labels from dendrogram
-# Labels are positioned at 5, 15, 25, ... (5 + 10*i)
-label_positions = [5 + 10 * i for i in range(len(ivl))]
-label_data = pd.DataFrame({"x": label_positions, "label": ivl})
+# Species color palette starting with Python Blue
+species_palette = {"Setosa": "#306998", "Versicolor": "#D4A017", "Virginica": "#7B68AE"}
 
-# Get x-axis domain from the dendrogram coordinates
-x_min = min(min(xpts) for xpts in dendro["icoord"]) - 5
-x_max = max(max(xpts) for xpts in dendro["icoord"]) + 5
+# Axis domain
+x_min = min(s["x"] for s in segments) - 5
+x_max = max(s["x2"] for s in segments) + 5
+y_max = Z[:, 2].max() * 1.08
 
-# Create the dendrogram lines chart
-dendrogram_lines = (
-    alt.Chart(lines_df)
-    .mark_rule(strokeWidth=3)
+# Dendrogram branches
+branches = (
+    alt.Chart(segments_df)
+    .mark_rule(strokeWidth=2.5, color="#4A7FA5")
     .encode(
-        x=alt.X("x:Q", axis=None, scale=alt.Scale(domain=[x_min, x_max])),
+        x=alt.X("x:Q", scale=alt.Scale(domain=[x_min, x_max]), axis=None),
         x2="x2:Q",
-        y=alt.Y("y:Q", title="Distance (Ward)", scale=alt.Scale(domain=[0, Z[:, 2].max() * 1.1])),
+        y=alt.Y("y:Q", title="Distance (Ward's method)", scale=alt.Scale(domain=[0, y_max])),
         y2="y2:Q",
-        color=alt.Color("color:N", scale=None),
     )
 )
 
-# Create x-axis labels at bottom
-x_labels = (
-    alt.Chart(label_data)
-    .mark_text(angle=315, align="right", baseline="top", fontSize=14)
-    .encode(x=alt.X("x:Q", axis=None, scale=alt.Scale(domain=[x_min, x_max])), y=alt.value(850), text="label:N")
+# Leaf markers at base of dendrogram colored by species
+leaf_dots = (
+    alt.Chart(leaf_df)
+    .mark_point(size=120, filled=True, strokeWidth=1.5, stroke="white")
+    .encode(
+        x=alt.X("x:Q", scale=alt.Scale(domain=[x_min, x_max]), axis=None),
+        y=alt.Y("y_base:Q", scale=alt.Scale(domain=[0, y_max])),
+        color=alt.Color(
+            "species:N",
+            scale=alt.Scale(domain=list(species_palette.keys()), range=list(species_palette.values())),
+            legend=alt.Legend(
+                title="Species", titleFontSize=18, labelFontSize=16, symbolSize=200, orient="right", offset=10
+            ),
+        ),
+    )
 )
 
-# Combine charts
+# Leaf labels colored by species
+leaf_text = (
+    alt.Chart(leaf_df)
+    .mark_text(angle=315, align="right", baseline="top", fontSize=14, fontWeight="bold")
+    .encode(
+        x=alt.X("x:Q", scale=alt.Scale(domain=[x_min, x_max]), axis=None),
+        y=alt.value(870),
+        text="label:N",
+        color=alt.Color(
+            "species:N",
+            scale=alt.Scale(domain=list(species_palette.keys()), range=list(species_palette.values())),
+            legend=None,
+        ),
+    )
+)
+
+# Combine layers
 chart = (
-    alt.layer(dendrogram_lines, x_labels)
-    .properties(width=1600, height=900, title=alt.Title("dendrogram-basic · altair · pyplots.ai", fontSize=28))
-    .configure_axis(labelFontSize=18, titleFontSize=22, gridOpacity=0.3, gridDash=[4, 4])
+    alt.layer(branches, leaf_dots, leaf_text)
+    .properties(
+        width=1600,
+        height=900,
+        title=alt.Title("dendrogram-basic · altair · pyplots.ai", fontSize=28, anchor="start", offset=20),
+    )
+    .configure_axis(labelFontSize=18, titleFontSize=22, gridOpacity=0.2, gridDash=[4, 4], domainColor="#888888")
     .configure_view(strokeWidth=0)
+    .configure_legend(padding=20, cornerRadius=4, strokeColor="#dddddd")
 )
 
 # Save

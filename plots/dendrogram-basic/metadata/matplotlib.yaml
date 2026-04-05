@@ -1,163 +1,171 @@
 library: matplotlib
 specification_id: dendrogram-basic
 created: '2025-12-23T10:00:50Z'
-updated: '2026-04-05T20:00:00+00:00'
+updated: '2026-04-05T20:43:55Z'
 generated_by: claude-opus-4-6
 workflow_run: 20457531070
 issue: 0
-python_version: '3.14.3'
+python_version: 3.14.3
 library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/dendrogram-basic/matplotlib/plot.png
 preview_html: null
-quality_score: null
+quality_score: 88
 impl_tags:
   dependencies:
   - scipy
-  techniques: []
+  techniques:
+  - manual-ticks
   patterns:
   - data-generation
-  - iteration-over-groups
+  - explicit-figure
   dataprep:
   - hierarchical-clustering
-  styling: []
+  styling:
+  - grid-styling
 review:
   strengths:
-  - Excellent hierarchical clustering visualization with clear species separation
-    (Setosa clearly distinct from Versicolor/Virginica)
-  - Perfect use of scipy.cluster.hierarchy with Ward's method for meaningful distance
-    metric
-  - Color-coded clusters make the hierarchical relationships immediately apparent
-  - Clean, professional styling with removed top/right spines and subtle grid
-  - Realistic iris dataset context that is widely recognized in data science
+  - Excellent scipy/matplotlib integration with set_link_color_palette and LineCollection
+    post-processing for line styling
+  - Clean, realistic iris species data with proper clustering hierarchy and appropriate
+    measurements
+  - 'Professional visual polish: removed spines, subtle grid, custom background, refined
+    typography'
+  - Perfect spec compliance with correct title format and all required features
   weaknesses:
-  - Does not leverage any distinctive matplotlib visualization features beyond basic
-    figure/axes setup
-  - Y-axis label could be more descriptive (e.g., Ward Linkage Distance or include
-    clustering interpretation hints)
-  image_description: 'The plot displays a dendrogram (hierarchical clustering tree)
-    with 15 iris flower samples on the x-axis and Ward distance on the y-axis (ranging
-    0-10). The tree structure shows three distinct color-coded clusters: orange branches
-    for Setosa samples (left side), green branches for Versicolor and Virginica samples
-    (center and right). The blue horizontal line at the top connects the Setosa cluster
-    to the Versicolor/Virginica cluster at distance ~10. Sample labels are rotated
-    45 degrees and clearly readable. The title "dendrogram-basic · matplotlib · pyplots.ai"
-    appears at the top. The plot has a clean white background with subtle dashed horizontal
-    grid lines on the y-axis. Top and right spines are removed for a cleaner appearance.'
+  - Color threshold only distinguishes 2 visual clusters (Setosa vs rest) instead
+    of 3 species, weakening the data storytelling
+  - Leaf font size (15pt) slightly below the 16pt guideline for tick labels
+  - Minor label crowding at 35° rotation with 15 samples
+  image_description: 'The plot displays a vertical dendrogram of 15 iris flower samples
+    clustered using Ward''s linkage method. The x-axis shows sample labels (Setosa-1
+    through Setosa-5, Versicolor-1 through Versicolor-5, Virginica-1 through Virginica-5)
+    rotated at ~35°. The y-axis shows "Ward Linkage Distance" ranging from 0 to ~10.
+    Two color-coded clusters are visible: Setosa samples in blue (left side, merging
+    at low distances ~0.3-1.0) and Versicolor+Virginica samples in orange (right side,
+    merging at distances ~0.4-4.0). A gray connector merges these two main groups
+    at ~10.2. The background is light gray (#FAFAFA), top and right spines are removed,
+    and a subtle y-axis grid is present. Lines are thick (3px) with round caps. The
+    title reads "Iris Species Clustering · dendrogram-basic · matplotlib · pyplots.ai".'
   criteria_checklist:
     visual_quality:
-      score: 37
-      max: 40
+      score: 28
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 7
+        max: 8
         passed: true
-        comment: Title at 24pt, axis labels at 20pt, tick labels at 14-16pt, all perfectly
-          readable
+        comment: All font sizes explicitly set (title 24, labels 20, ticks 16). Leaf
+          font at 15pt slightly below 16pt guideline.
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Sample labels are rotated 45° preventing any overlap, all text fully
-          readable
+        comment: Labels rotated 35° and generally readable. Slight crowding between
+          adjacent Setosa labels.
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Dendrogram branches are clearly visible with good line weights
+        comment: Dendrogram lines at 3.0 width with round caps/joins are clearly visible.
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Orange, green, and blue are colorblind-safe and distinguishable
+        comment: Blue and orange are colorblind-safe. Gray above-threshold connector
+          distinguishable.
       - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
+        name: Layout & Canvas
+        score: 4
+        max: 4
         passed: true
-        comment: Good use of 16:9 aspect ratio, well-proportioned margins
+        comment: Plot fills canvas well with balanced margins.
       - id: VQ-06
-        name: Axis Labels
-        score: 1
-        max: 2
-        passed: false
-        comment: '"Sample" and "Distance (Ward)" are descriptive but y-axis could
-          include units'
-      - id: VQ-07
-        name: Grid & Legend
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Subtle dashed grid on y-axis only (alpha=0.3), no legend needed for
-          this plot type
+        comment: 'Descriptive labels: Iris Sample and Ward Linkage Distance.'
+    design_excellence:
+      score: 14
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 6
+        max: 8
+        passed: true
+        comment: Custom palette, refined background, round line caps/joins. Above
+          defaults but not exceptional.
+      - id: DE-02
+        name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: Spines removed/thinned, subtle y-grid alpha=0.15, generous whitespace.
+      - id: DE-03
+        name: Data Storytelling
+        score: 3
+        max: 6
+        passed: false
+        comment: Color threshold only produces 2 color groups instead of 3 species.
+          Misses opportunity to tell the full 3-species story.
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct dendrogram/hierarchical clustering visualization
+        comment: Correct dendrogram using scipy.cluster.hierarchy.dendrogram.
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Samples on x-axis, merge distances on y-axis as expected
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Uses scipy.cluster.hierarchy, shows branch heights proportional to
-          distances, vertical orientation
-      - id: SC-04
-        name: Data Range
+        comment: 'All spec features present: features matrix, labels, linkage, vertical
+          orientation.'
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All 15 samples visible, full distance range shown
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Labels on x-axis, distances on y-axis, proportional branch heights.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: No legend needed; cluster colors are self-explanatory
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Correctly formatted as "dendrogram-basic · matplotlib · pyplots.ai"
+        comment: Title follows spec format. No legend needed for dendrogram.
     data_quality:
-      score: 19
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 8
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Shows hierarchical structure with clear cluster separations at different
-          distance levels
+        comment: Shows 3 species at varying merge distances. Only 2 color groups visible
+          instead of 3.
       - id: DQ-02
         name: Realistic Context
-        score: 6
-        max: 7
-        passed: true
-        comment: Iris flower species is a classic, well-known clustering example
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: 15 samples (within recommended 10-50), realistic iris measurements
+        comment: Iris flower measurements - classic neutral botanical dataset.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Realistic iris measurements in cm range.
     code_quality:
       score: 10
       max: 10
@@ -167,41 +175,46 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear structure: imports → data → linkage → plot → save'
+        comment: 'Clean flow: imports, data, compute, plot, style, save.'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only matplotlib, numpy, and scipy.cluster.hierarchy used
+        comment: All imports used including LineCollection and scipy.
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: All APIs are current
+        comment: Clean, appropriate complexity.
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300
-    library_features:
-      score: 0
-      max: 5
+        comment: Saves as plot.png, dpi=300, current API.
+    library_mastery:
+      score: 7
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 0
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
         max: 5
-        passed: false
-        comment: Uses scipy's dendrogram function directly; matplotlib is used only
-          for figure setup and styling, not for any distinctive matplotlib-specific
-          visualization features
-  verdict: APPROVED
+        passed: true
+        comment: Good scipy/matplotlib integration, axes-based approach, set_link_color_palette.
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: LineCollection traversal and set_link_color_palette are matplotlib-specific
+          techniques.
+  verdict: REJECTED

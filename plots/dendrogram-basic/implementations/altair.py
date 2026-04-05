@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 dendrogram-basic: Basic Dendrogram
 Library: altair 6.0.0 | Python 3.14.3
 Quality: 82/100 | Updated: 2026-04-05
@@ -6,7 +6,7 @@ Quality: 82/100 | Updated: 2026-04-05
 
 import altair as alt
 import pandas as pd
-from scipy.cluster.hierarchy import dendrogram, linkage
+from scipy.cluster.hierarchy import dendrogram, fcluster, linkage
 from sklearn.datasets import load_iris
 
 
@@ -21,12 +21,46 @@ labels = [f"{species_names[iris.target[i]]}-{i}" for i in indices]
 Z = linkage(features, method="ward")
 dendro = dendrogram(Z, labels=labels, no_plot=True)
 
-# Extract line segments from scipy's dendrogram output
-# Each merge produces a U-shape: left vertical + horizontal + right vertical
+# Assign cluster colors based on distance threshold
+distance_threshold = 5.0
+cluster_ids = fcluster(Z, t=distance_threshold, criterion="distance")
+cluster_colors = {1: "#306998", 2: "#D4A017", 3: "#7B68AE"}
+
+# Build a mapping from leaf index to cluster color, then propagate to merges
+n_leaves = len(labels)
+node_colors = {}
+for idx in dendro["leaves"]:
+    node_colors[idx] = cluster_colors.get(cluster_ids[idx], "#888888")
+
+# Track merged node colors through linkage
+for i, row in enumerate(Z):
+    left, right = int(row[0]), int(row[1])
+    left_c = node_colors.get(left, "#888888")
+    right_c = node_colors.get(right, "#888888")
+    node_colors[n_leaves + i] = left_c if left_c == right_c else "#888888"
+
+# Extract line segments with cluster-based coloring
 segments = []
-for xpts, ypts in zip(dendro["icoord"], dendro["dcoord"], strict=True):
-    for i in range(3):
-        segments.append({"x": xpts[i], "y": ypts[i], "x2": xpts[i + 1], "y2": ypts[i + 1]})
+for merge_idx, (xpts, ypts) in enumerate(zip(dendro["icoord"], dendro["dcoord"], strict=True)):
+    merge_height = max(ypts)
+    left_node = int(Z[merge_idx, 0])
+    right_node = int(Z[merge_idx, 1])
+    left_c = node_colors.get(left_node, "#888888")
+    right_c = node_colors.get(right_node, "#888888")
+    merge_c = left_c if left_c == right_c else "#888888"
+
+    # Left vertical
+    segments.append(
+        {"x": xpts[0], "y": ypts[0], "x2": xpts[1], "y2": ypts[1], "color": left_c, "distance": round(merge_height, 2)}
+    )
+    # Horizontal bar
+    segments.append(
+        {"x": xpts[1], "y": ypts[1], "x2": xpts[2], "y2": ypts[2], "color": merge_c, "distance": round(merge_height, 2)}
+    )
+    # Right vertical
+    segments.append(
+        {"x": xpts[2], "y": ypts[2], "x2": xpts[3], "y2": ypts[3], "color": right_c, "distance": round(merge_height, 2)}
+    )
 
 segments_df = pd.DataFrame(segments)
 
@@ -45,26 +79,31 @@ leaf_df = pd.DataFrame(
 species_palette = {"Setosa": "#306998", "Versicolor": "#D4A017", "Virginica": "#7B68AE"}
 
 # Axis domain
-x_min = min(s["x"] for s in segments) - 5
-x_max = max(s["x2"] for s in segments) + 5
-y_max = Z[:, 2].max() * 1.08
+x_min = min(s["x"] for s in segments) - 8
+x_max = max(s["x2"] for s in segments) + 8
+y_max = Z[:, 2].max() * 1.12
 
-# Dendrogram branches
+# Interactive selection: click legend to highlight a species
+species_selection = alt.selection_point(fields=["species"], bind="legend")
+
+# Dendrogram branches with cluster-based coloring and tooltips
 branches = (
     alt.Chart(segments_df)
-    .mark_rule(strokeWidth=2.5, color="#4A7FA5")
+    .mark_rule(strokeWidth=2.5)
     .encode(
         x=alt.X("x:Q", scale=alt.Scale(domain=[x_min, x_max]), axis=None),
         x2="x2:Q",
         y=alt.Y("y:Q", title="Distance (Ward's method)", scale=alt.Scale(domain=[0, y_max])),
         y2="y2:Q",
+        color=alt.Color("color:N", scale=None),
+        tooltip=[alt.Tooltip("distance:Q", title="Merge Distance")],
     )
 )
 
 # Leaf markers at base of dendrogram colored by species
 leaf_dots = (
     alt.Chart(leaf_df)
-    .mark_point(size=120, filled=True, strokeWidth=1.5, stroke="white")
+    .mark_point(size=160, filled=True, strokeWidth=1.5, stroke="white")
     .encode(
         x=alt.X("x:Q", scale=alt.Scale(domain=[x_min, x_max]), axis=None),
         y=alt.Y("y_base:Q", scale=alt.Scale(domain=[0, y_max])),
@@ -75,13 +114,16 @@ leaf_dots = (
                 title="Species", titleFontSize=18, labelFontSize=16, symbolSize=200, orient="right", offset=10
             ),
         ),
+        tooltip=[alt.Tooltip("label:N", title="Sample"), alt.Tooltip("species:N", title="Species")],
+        opacity=alt.condition(species_selection, alt.value(1.0), alt.value(0.2)),
     )
+    .add_params(species_selection)
 )
 
-# Leaf labels colored by species
+# Leaf labels colored by species with improved spacing
 leaf_text = (
     alt.Chart(leaf_df)
-    .mark_text(angle=315, align="right", baseline="top", fontSize=14, fontWeight="bold")
+    .mark_text(angle=315, align="right", baseline="top", fontSize=13, fontWeight="bold", dx=-4, dy=4)
     .encode(
         x=alt.X("x:Q", scale=alt.Scale(domain=[x_min, x_max]), axis=None),
         y=alt.value(870),
@@ -91,18 +133,38 @@ leaf_text = (
             scale=alt.Scale(domain=list(species_palette.keys()), range=list(species_palette.values())),
             legend=None,
         ),
+        opacity=alt.condition(species_selection, alt.value(1.0), alt.value(0.2)),
     )
+)
+
+# Distance threshold reference line
+threshold_df = pd.DataFrame({"y": [distance_threshold]})
+threshold_line = (
+    alt.Chart(threshold_df).mark_rule(strokeDash=[8, 6], strokeWidth=1.5, color="#CC4444", opacity=0.6).encode(y="y:Q")
+)
+
+threshold_label = (
+    alt.Chart(threshold_df)
+    .mark_text(align="left", baseline="bottom", fontSize=13, color="#CC4444", fontStyle="italic", dx=5, dy=-4)
+    .encode(x=alt.value(10), y="y:Q", text=alt.value("cluster threshold"))
 )
 
 # Combine layers
 chart = (
-    alt.layer(branches, leaf_dots, leaf_text)
+    alt.layer(branches, threshold_line, threshold_label, leaf_dots, leaf_text)
     .properties(
         width=1600,
         height=900,
         title=alt.Title("dendrogram-basic · altair · pyplots.ai", fontSize=28, anchor="start", offset=20),
     )
-    .configure_axis(labelFontSize=18, titleFontSize=22, gridOpacity=0.2, gridDash=[4, 4], domainColor="#888888")
+    .configure_axis(
+        labelFontSize=18,
+        titleFontSize=22,
+        gridOpacity=0.15,
+        gridDash=[4, 4],
+        domainColor="#999999",
+        tickColor="#bbbbbb",
+    )
     .configure_view(strokeWidth=0)
     .configure_legend(padding=20, cornerRadius=4, strokeColor="#dddddd")
 )

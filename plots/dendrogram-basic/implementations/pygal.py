@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 dendrogram-basic: Basic Dendrogram
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 83/100 | Updated: 2026-04-05
@@ -93,9 +93,9 @@ for leaf_id in range(n):
     species = labels[leaf_id].rsplit("-", 1)[0]
     cluster_species[cid] = species
 
-# Colorblind-safe palette: blue, orange, purple (avoids green for deuteranopia)
-species_colors = {"Setosa": "#306998", "Versicolor": "#E07A2F", "Virginica": "#8B5BA5"}
-mixed_color = "#7A7A7A"
+# Colorblind-safe palette: blue, teal, amber (high contrast, avoids red-green)
+species_colors = {"Setosa": "#306998", "Versicolor": "#D4872C", "Virginica": "#7B4EA3"}
+mixed_color = "#5C6370"
 
 # Build U-shape series with color and distance metadata
 u_shapes = []
@@ -125,35 +125,30 @@ for idx in range(len(linkage_matrix)):
         color = mixed_color
 
     # Stroke width scales with merge distance for visual hierarchy
-    stroke_w = 3 + 5 * (dist / max_dist)
+    stroke_w = 3.5 + 6 * (dist / max_dist)
 
-    u_shapes.append((color, stroke_w, [(x_left, h_left), (x_left, dist), (x_right, dist), (x_right, h_right)]))
+    u_shapes.append((color, stroke_w, dist, [(x_left, h_left), (x_left, dist), (x_right, dist), (x_right, h_right)]))
 
 # Ordered labels for x-axis
 ordered_labels = [labels[i] for i in leaf_order]
 
-# Collect all colors in series order for the Style
-series_color_tuple = tuple(color for color, _, _ in u_shapes)
-
 # Style - refined for publication quality at 4800x2700
 custom_style = Style(
-    background="white",
-    plot_background="white",
+    background="#FFFFFF",
+    plot_background="#FAFAFA",
     foreground="#2d2d2d",
     foreground_strong="#1a1a1a",
-    foreground_subtle="#e8e8e8",
-    colors=series_color_tuple,
-    title_font_size=52,
-    label_font_size=36,
-    major_label_font_size=34,
-    legend_font_size=32,
-    value_font_size=26,
+    foreground_subtle="#e0e0e0",
+    colors=tuple(color for color, _, _, _ in u_shapes),
+    title_font_size=56,
+    label_font_size=38,
+    major_label_font_size=36,
+    legend_font_size=34,
+    value_font_size=28,
     stroke_width=4,
     opacity=1.0,
-    guide_stroke_color="#eeeeee",
-    guide_stroke_dasharray="",
-    major_guide_stroke_color="#dddddd",
-    major_guide_stroke_dasharray="",
+    guide_stroke_color="#e8e8e8",
+    major_guide_stroke_color="#d8d8d8",
     title_font_family="Helvetica, Arial, sans-serif",
     label_font_family="Helvetica, Arial, sans-serif",
     major_label_font_family="Helvetica, Arial, sans-serif",
@@ -161,7 +156,7 @@ custom_style = Style(
     value_font_family="Helvetica, Arial, sans-serif",
 )
 
-# Chart - using pygal XY with extensive configuration
+# Chart - leveraging pygal XY with extensive configuration
 chart = pygal.XY(
     width=4800,
     height=2700,
@@ -175,19 +170,19 @@ chart = pygal.XY(
     show_x_guides=False,
     show_y_guides=True,
     show_minor_x_labels=False,
-    x_label_rotation=45,
-    truncate_label=25,
-    xrange=(-0.8, n - 0.2),
-    range=(0, max_dist * 1.08),
-    margin_top=60,
-    margin_bottom=120,
-    margin_left=80,
-    margin_right=60,
+    x_label_rotation=35,
+    truncate_label=30,
+    xrange=(-1.0, n + 0.2),
+    range=(0, max_dist * 1.05),
+    margin_top=50,
+    margin_bottom=140,
+    margin_left=100,
+    margin_right=80,
     legend_at_bottom=True,
-    legend_box_size=28,
-    tooltip_border_radius=8,
+    legend_box_size=30,
+    tooltip_border_radius=10,
     print_values=False,
-    spacing=30,
+    spacing=35,
     js=[],
 )
 
@@ -196,23 +191,47 @@ chart.x_labels = list(range(n))
 chart.x_labels_major = list(range(n))
 chart.x_value_formatter = lambda x: ordered_labels[int(round(x))] if 0 <= round(x) < n else ""
 
-# Y-axis: custom major labels for cleaner ticks
+# Y-axis: custom labels with formatted distances
 y_max_nice = int(np.ceil(max_dist))
-chart.y_labels = [{"value": v, "label": str(v)} for v in range(0, y_max_nice + 1, 2)]
+step = 1 if y_max_nice <= 6 else 2
+chart.y_labels = [{"value": v, "label": f"{v:.0f}"} for v in range(0, y_max_nice + 1, step)]
 
 # Draw dendrogram - each U-shape as its own series with scaled stroke
 color_to_species = {v: k for k, v in species_colors.items()}
 color_to_species[mixed_color] = "Inter-cluster"
 
 named_colors = set()
-for color, stroke_w, points in u_shapes:
+for color, stroke_w, dist, points in u_shapes:
     if color not in named_colors:
         series_name = color_to_species.get(color, "Other")
         named_colors.add(color)
     else:
         series_name = None
+
+    # Use pygal's per-series formatter for distance tooltips
     chart.add(
-        series_name, points, show_dots=False, stroke_style={"width": stroke_w, "linecap": "round", "linejoin": "round"}
+        series_name,
+        [{"value": p, "label": f"d={dist:.2f}"} for p in points],
+        show_dots=False,
+        stroke_style={"width": stroke_w, "linecap": "round", "linejoin": "round"},
+        allow_interruptions=False,
+    )
+
+# Add invisible reference series for key distance annotations via pygal secondary axis
+# Mark the two most important merge distances with horizontal reference lines
+key_merges = sorted(linkage_matrix[:, 2])
+within_cluster_max = key_merges[n - 4]  # Highest within-cluster merge
+between_cluster = key_merges[-2]  # Second-to-last merge (between two groups)
+
+for ref_dist, ref_label in [
+    (within_cluster_max, f"Within-species max (d={within_cluster_max:.1f})"),
+    (between_cluster, f"Between-group merge (d={between_cluster:.1f})"),
+]:
+    chart.add(
+        ref_label,
+        [(-0.8, ref_dist), (n - 0.2, ref_dist)],
+        show_dots=False,
+        stroke_style={"width": 2, "dasharray": "12, 8", "linecap": "butt"},
     )
 
 # Save

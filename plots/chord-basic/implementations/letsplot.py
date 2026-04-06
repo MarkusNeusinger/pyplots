@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 chord-basic: Basic Chord Diagram
-Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: letsplot 4.8.2 | Python 3.14
+Quality: /100 | Updated: 2026-04-06
 """
 
 import math
@@ -12,19 +12,22 @@ from lets_plot import (
     LetsPlot,
     aes,
     coord_fixed,
-    element_blank,
+    element_rect,
     element_text,
     geom_polygon,
     geom_text,
     ggplot,
     ggsize,
     labs,
+    layer_tooltips,
     scale_fill_manual,
     scale_x_continuous,
     scale_y_continuous,
     theme,
+    theme_void,
 )
 from lets_plot.export import ggsave
+from PIL import Image
 
 
 LetsPlot.setup_html()
@@ -53,8 +56,7 @@ flows = [
 
 # Get unique entities and assign distinct colors
 entities = list(dict.fromkeys([f[0] for f in flows] + [f[1] for f in flows]))
-colors = ["#306998", "#FFD43B", "#27AE60", "#E74C3C", "#9B59B6", "#1ABC9C"]
-entity_colors = {e: colors[i % len(colors)] for i, e in enumerate(entities)}
+colors = ["#306998", "#E69F00", "#56B4E9", "#D55E00", "#9B59B6", "#009E73"]
 
 # Calculate total flow for each entity (in + out)
 entity_totals = dict.fromkeys(entities, 0)
@@ -212,35 +214,41 @@ plot = (
     ggplot()
     # Chords (flows between entities) - use source color for chord
     + geom_polygon(
-        aes(x="x", y="y", group="chord_id", fill="source"), data=chord_df, alpha=0.55, color="white", size=0.3
+        aes(x="x", y="y", group="chord_id", fill="source"),
+        data=chord_df,
+        alpha=0.55,
+        color="white",
+        size=0.3,
+        tooltips=layer_tooltips().line("@source → @target").line("Flow|@value"),
     )
     # Outer arcs (entity segments)
     + geom_polygon(aes(x="x", y="y", group="arc_id", fill="entity"), data=arc_df, alpha=0.95, color="white", size=0.8)
     # Entity labels
-    + geom_text(aes(x="x", y="y", label="label"), data=label_df, size=16, color="#2C3E50", fontface="bold")
+    + geom_text(aes(x="x", y="y", label="label"), data=label_df, size=18, color="#2C3E50", fontface="bold")
     + scale_fill_manual(values=colors, name="Continent")
     + coord_fixed(ratio=1)
-    + scale_x_continuous(limits=(-1.55, 1.55))
-    + scale_y_continuous(limits=(-1.55, 1.55))
-    + labs(title="Migration Flows Between Continents · chord-basic · letsplot · pyplots.ai")
+    + scale_x_continuous(limits=(-1.45, 1.45))
+    + scale_y_continuous(limits=(-1.45, 1.45))
+    + labs(title="Continental Migration Flows · chord-basic · letsplot · pyplots.ai")
     + ggsize(1200, 1200)  # Square format for circular diagram
+    + theme_void()
     + theme(
         plot_title=element_text(size=26, face="bold", color="#2C3E50"),
-        axis_title=element_blank(),
-        axis_text=element_blank(),
-        axis_ticks=element_blank(),
-        axis_line=element_blank(),
-        panel_grid=element_blank(),
         legend_text=element_text(size=16),
         legend_title=element_text(size=18, face="bold"),
         legend_position="bottom",
-        panel_background=element_blank(),
-        plot_background=element_blank(),
+        panel_background=element_rect(fill="#FFFFFF", color="#FFFFFF", size=0),
+        plot_background=element_rect(fill="#FFFFFF", color="#FFFFFF", size=0),
     )
 )
 
 # Save as PNG (scale 3x for 3600x3600 px output)
 ggsave(plot, "plot.png", path=".", scale=3)
+
+# Flatten transparency onto white background
+img = Image.open("plot.png").convert("RGBA")
+white_bg = Image.new("RGBA", img.size, (255, 255, 255, 255))
+Image.alpha_composite(white_bg, img).convert("RGB").save("plot.png")
 
 # Save as HTML for interactivity
 ggsave(plot, "plot.html", path=".")

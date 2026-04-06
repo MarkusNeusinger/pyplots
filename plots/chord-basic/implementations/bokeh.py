@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 chord-basic: Basic Chord Diagram
 Library: bokeh 3.8.2 | Python 3.14
 Quality: 85/100 | Updated: 2026-04-06
@@ -52,21 +52,22 @@ for i in range(n):
 
 arc_mids = (arc_starts + arc_ends) / 2
 
-# Figure
+# Figure — centered symmetric layout, no toolbar clutter
 p = figure(
     width=3600,
     height=3600,
     title="chord-basic · bokeh · pyplots.ai",
-    x_range=(-1.45, 1.85),
-    y_range=(-1.45, 1.45),
-    tools="hover,pan,wheel_zoom,reset",
+    x_range=(-1.55, 1.55),
+    y_range=(-1.75, 1.45),
+    toolbar_location=None,
+    tools="",
 )
 
 p.axis.visible = False
 p.grid.visible = False
 p.outline_line_color = None
 p.background_fill_color = "#F5F5F0"
-p.border_fill_color = "#FFFFFF"
+p.border_fill_color = "#F5F5F0"
 p.title.text_font_size = "36pt"
 p.title.text_color = "#2D2D2D"
 p.title.align = "center"
@@ -80,7 +81,7 @@ for i in range(n):
 flow_75th = np.percentile(all_flows, 75)
 flow_max = max(all_flows)
 
-# Outer arcs — gradient-style with thicker ring for high-flow entities
+# Outer arcs
 outer_radius = 0.95
 inner_radius = 0.87
 arc_resolution = 60
@@ -132,23 +133,23 @@ for i in range(n):
         x=[x],
         y=[y],
         text=[entities[i]],
-        text_font_size="26pt",
+        text_font_size="28pt",
         text_align=anchor,
         text_baseline="middle",
         text_color=colors[i],
         text_font_style="bold",
     )
 
-    # Flow total underneath label — guides viewer to high-flow entities
+    # Flow total underneath label
     sub_y = y - 0.08
     p.text(
         x=[x],
         y=[sub_y],
         text=[f"{int(total_flows[i])}M"],
-        text_font_size="16pt",
+        text_font_size="20pt",
         text_align=anchor,
         text_baseline="middle",
-        text_color="#888888",
+        text_color="#777777",
     )
 
 # Track position within each entity's arc for chord placement
@@ -156,7 +157,7 @@ chord_pos = arc_starts.copy()
 chord_radius = inner_radius - 0.02
 n_bezier = 40
 
-# Draw bidirectional chords — visual hierarchy via alpha scaling
+# Build all chord shapes — visual hierarchy via alpha scaling
 chord_data = {
     "x": [],
     "y": [],
@@ -174,49 +175,31 @@ for i in range(n):
             continue
 
         val = flow_matrix[i, j]
+        alpha = (0.55 + 0.2 * (val / flow_max)) if val >= flow_75th else (0.2 + 0.15 * (val / flow_max))
+        lw = 2.0 if val >= flow_75th else 1.0
 
-        # Visual hierarchy: dominant flows get more emphasis
-        if val >= flow_75th:
-            alpha = 0.55 + 0.2 * (val / flow_max)
-            lw = 2.0
-        else:
-            alpha = 0.2 + 0.15 * (val / flow_max)
-            lw = 1.0
+        # Chord width proportional to flow
+        w_i = (val / total_flows[i]) * arc_angles[i]
+        w_j = (val / total_flows[j]) * arc_angles[j]
+        s_i, chord_pos[i] = chord_pos[i], chord_pos[i] + w_i
+        e_i = chord_pos[i]
+        s_j, chord_pos[j] = chord_pos[j], chord_pos[j] + w_j
+        e_j = chord_pos[j]
 
-        # Chord width at source/target proportional to flow
-        width_i = (val / total_flows[i]) * arc_angles[i]
-        width_j = (val / total_flows[j]) * arc_angles[j]
-
-        start_i = chord_pos[i]
-        end_i = start_i + width_i
-        chord_pos[i] = end_i
-
-        start_j = chord_pos[j]
-        end_j = start_j + width_j
-        chord_pos[j] = end_j
-
-        # Build chord shape: arc at i, bezier to j, arc at j, bezier back
-        theta_i = np.linspace(start_i, end_i, 15)
-        arc_i_x = chord_radius * np.cos(theta_i)
-        arc_i_y = chord_radius * np.sin(theta_i)
-
+        # Build chord: arc at i → bezier → arc at j → bezier back
+        th_i = np.linspace(s_i, e_i, 15)
+        th_j = np.linspace(s_j, e_j, 15)
         t = np.linspace(0, 1, n_bezier)
-        x1, y1 = chord_radius * np.cos(end_i), chord_radius * np.sin(end_i)
-        x2, y2 = chord_radius * np.cos(start_j), chord_radius * np.sin(start_j)
-        bez1_x = (1 - t) ** 2 * x1 + t**2 * x2
-        bez1_y = (1 - t) ** 2 * y1 + t**2 * y2
 
-        theta_j = np.linspace(start_j, end_j, 15)
-        arc_j_x = chord_radius * np.cos(theta_j)
-        arc_j_y = chord_radius * np.sin(theta_j)
+        pts_i = chord_radius * np.exp(1j * th_i)
+        pts_j = chord_radius * np.exp(1j * th_j)
+        p1, p2 = pts_i[-1], pts_j[0]
+        p3, p4 = pts_j[-1], pts_i[0]
+        bez1 = (1 - t) ** 2 * p1 + t**2 * p2
+        bez2 = (1 - t) ** 2 * p3 + t**2 * p4
 
-        x3, y3 = chord_radius * np.cos(end_j), chord_radius * np.sin(end_j)
-        x4, y4 = chord_radius * np.cos(start_i), chord_radius * np.sin(start_i)
-        bez2_x = (1 - t) ** 2 * x3 + t**2 * x4
-        bez2_y = (1 - t) ** 2 * y3 + t**2 * y4
-
-        cx = np.concatenate([arc_i_x, bez1_x, arc_j_x, bez2_x])
-        cy = np.concatenate([arc_i_y, bez1_y, arc_j_y, bez2_y])
+        cx = np.concatenate([pts_i.real, bez1.real, pts_j.real, bez2.real])
+        cy = np.concatenate([pts_i.imag, bez1.imag, pts_j.imag, bez2.imag])
 
         chord_data["x"].append(list(cx))
         chord_data["y"].append(list(cy))
@@ -241,55 +224,50 @@ chords = p.patches(
 )
 
 # Hover tool for chords — distinctive Bokeh interactive feature
-hover = p.select(type=HoverTool)
-hover.tooltips = """
+hover = HoverTool(
+    renderers=[chords],
+    tooltips="""
 <div style="font-size:16px;padding:8px;background:#FFFFFF;border:1px solid #CCC;border-radius:4px;">
 <b>@source_name → @target_name</b><br/>
 Flow: <b>@value</b> million
 </div>
-"""
-hover.renderers = [chords]
-
-# Legend with visual hierarchy indicator
-legend_x = 1.3
-legend_y = 0.65
-
-p.add_layout(
-    Label(
-        x=legend_x - 0.02,
-        y=legend_y + 0.15,
-        text="Migration Flows",
-        text_font_size="22pt",
-        text_font_style="bold",
-        text_color="#2D2D2D",
-    )
+""",
 )
+p.add_tools(hover)
 
-# Sort legend entries by total flow (descending) to reinforce hierarchy
+# Legend below the diagram — horizontal layout
 sorted_indices = np.argsort(-total_flows)
-for rank, i in enumerate(sorted_indices):
-    y_pos = legend_y - rank * 0.14
-    p.rect(x=[legend_x], y=[y_pos], width=0.1, height=0.08, fill_color=colors[i], line_color="#FFFFFF", line_width=2)
+cols = 3
+legend_y_start = -1.25
+legend_spacing = 0.14
+
+for rank, idx in enumerate(sorted_indices):
+    col = rank % cols
+    row = rank // cols
+    lx = -0.85 + col * 0.65
+    ly = legend_y_start - row * legend_spacing
+
+    p.rect(x=[lx - 0.06], y=[ly], width=0.06, height=0.055, fill_color=colors[idx], line_color=None)
     p.text(
-        x=[legend_x + 0.1],
-        y=[y_pos],
-        text=[f"{entities[i]}  ({int(total_flows[i])}M)"],
-        text_font_size="20pt",
+        x=[lx - 0.02],
+        y=[ly],
+        text=[f"{entities[idx]}  ({int(total_flows[idx])}M)"],
+        text_font_size="18pt",
         text_baseline="middle",
         text_color="#444444",
     )
 
 # Annotation for top flow — focal point for data storytelling
-top_flow_idx = np.unravel_index(flow_matrix.argmax(), flow_matrix.shape)
-top_src, top_tgt = entities[top_flow_idx[0]], entities[top_flow_idx[1]]
-top_val = flow_matrix[top_flow_idx[0], top_flow_idx[1]]
+top_idx = np.unravel_index(flow_matrix.argmax(), flow_matrix.shape)
+top_src, top_tgt = entities[top_idx[0]], entities[top_idx[1]]
+top_val = flow_matrix[top_idx[0], top_idx[1]]
 
 p.add_layout(
     Label(
         x=0,
-        y=-1.3,
+        y=-1.1,
         text=f"Largest flow: {top_src} → {top_tgt} ({top_val}M)",
-        text_font_size="18pt",
+        text_font_size="20pt",
         text_color="#666666",
         text_align="center",
         text_font_style="italic",

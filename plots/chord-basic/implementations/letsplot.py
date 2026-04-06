@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 chord-basic: Basic Chord Diagram
 Library: letsplot 4.8.2 | Python 3.14
 Quality: 82/100 | Updated: 2026-04-06
@@ -117,6 +117,11 @@ for entity in entities:
 arc_df = pd.DataFrame(arc_data)
 
 # Build chord polygons connecting entities
+# Calculate min/max flow values for opacity scaling
+flow_values = [f[2] for f in flows]
+min_flow = min(flow_values)
+max_flow = max(flow_values)
+
 chord_data = []
 chord_id = 0
 
@@ -184,20 +189,43 @@ for src, tgt, val in flows:
         polygon_x.append(x)
         polygon_y.append(y)
 
+    # Scale alpha based on flow magnitude for visual hierarchy
+    alpha_scaled = 0.3 + 0.5 * (val - min_flow) / (max_flow - min_flow)
+
     # Add to dataframe
     for x, y in zip(polygon_x, polygon_y, strict=False):
-        chord_data.append({"x": x, "y": y, "chord_id": f"chord_{chord_id}", "source": src, "target": tgt, "value": val})
+        chord_data.append(
+            {
+                "x": x,
+                "y": y,
+                "chord_id": f"chord_{chord_id}",
+                "source": src,
+                "target": tgt,
+                "value": val,
+                "alpha_val": alpha_scaled,
+            }
+        )
 
     chord_id += 1
 
 chord_df = pd.DataFrame(chord_data)
 
+# Split chords into tiers for visual hierarchy (strong flows more opaque)
+flow_threshold_high = min_flow + 0.66 * (max_flow - min_flow)
+flow_threshold_mid = min_flow + 0.33 * (max_flow - min_flow)
+chord_high = chord_df[chord_df["value"] >= flow_threshold_high]
+chord_mid = chord_df[(chord_df["value"] >= flow_threshold_mid) & (chord_df["value"] < flow_threshold_high)]
+chord_low = chord_df[chord_df["value"] < flow_threshold_mid]
+
 # Create entity labels positioned outside the ring
+# Use larger radius for entities with smaller arcs to reduce crowding
 label_data = []
-label_radius = 1.15
 for entity in entities:
     arc = entity_arcs[entity]
     mid_angle = arc["mid"]
+    arc_size = arc["end"] - arc["start"]
+    # Increase label radius for small arcs to avoid crowding
+    label_radius = 1.12 + max(0, 0.12 * (1.0 - arc_size / 0.8))
     label_data.append(
         {
             "x": label_radius * np.cos(mid_angle),
@@ -212,11 +240,27 @@ label_df = pd.DataFrame(label_data)
 # Build plot with square format for circular visualization
 plot = (
     ggplot()
-    # Chords (flows between entities) - use source color for chord
+    # Chords layered by flow magnitude for visual hierarchy (weak → strong)
     + geom_polygon(
         aes(x="x", y="y", group="chord_id", fill="source"),
-        data=chord_df,
-        alpha=0.55,
+        data=chord_low,
+        alpha=0.3,
+        color="white",
+        size=0.2,
+        tooltips=layer_tooltips().line("@source → @target").line("Flow|@value"),
+    )
+    + geom_polygon(
+        aes(x="x", y="y", group="chord_id", fill="source"),
+        data=chord_mid,
+        alpha=0.5,
+        color="white",
+        size=0.3,
+        tooltips=layer_tooltips().line("@source → @target").line("Flow|@value"),
+    )
+    + geom_polygon(
+        aes(x="x", y="y", group="chord_id", fill="source"),
+        data=chord_high,
+        alpha=0.75,
         color="white",
         size=0.3,
         tooltips=layer_tooltips().line("@source → @target").line("Flow|@value"),
@@ -227,9 +271,9 @@ plot = (
     + geom_text(aes(x="x", y="y", label="label"), data=label_df, size=18, color="#2C3E50", fontface="bold")
     + scale_fill_manual(values=colors, name="Continent")
     + coord_fixed(ratio=1)
-    + scale_x_continuous(limits=(-1.45, 1.45))
-    + scale_y_continuous(limits=(-1.45, 1.45))
-    + labs(title="Continental Migration Flows · chord-basic · letsplot · pyplots.ai")
+    + scale_x_continuous(limits=(-1.55, 1.55))
+    + scale_y_continuous(limits=(-1.55, 1.55))
+    + labs(title="chord-basic · letsplot · pyplots.ai")
     + ggsize(1200, 1200)  # Square format for circular diagram
     + theme_void()
     + theme(

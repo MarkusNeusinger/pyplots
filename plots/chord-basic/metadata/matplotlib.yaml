@@ -1,7 +1,7 @@
 library: matplotlib
 specification_id: chord-basic
 created: 2025-12-14 19:45:02+00:00
-updated: 2026-04-06T20:26:19+00:00
+updated: '2026-04-06T20:33:09Z'
 generated_by: claude-opus-4-6
 workflow_run: 20213174710
 issue: 858
@@ -9,23 +9,220 @@ python_version: '3.14'
 library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/chord-basic/matplotlib/plot.png
 preview_html: null
-quality_score: null
+quality_score: 88
 impl_tags:
   dependencies: []
   techniques:
   - bezier-curves
   - patches
-  - manual-ticks
+  - annotations
   patterns:
   - data-generation
   - matrix-construction
   - iteration-over-groups
   dataprep: []
   styling:
-  - alpha-blending
   - minimal-chrome
+  - alpha-blending
+  - edge-highlighting
 review:
-  strengths: []
-  weaknesses: []
+  strengths:
+  - Excellent use of matplotlib's low-level Path/Patch API to build a chord diagram
+    from scratch
+  - Colorblind-safe Wong palette with colored entity labels matching arcs
+  - Alpha variation by flow magnitude and draw-order sorting create effective visual
+    hierarchy
+  - Clean, well-structured code with deterministic data and proper geometry calculations
+  - Bidirectional flows correctly represented as separate chords
+  weaknesses:
+  - Entity label font size (18pt) slightly below the 20pt guideline for optimal legibility
+  - 16:9 aspect ratio wastes horizontal space for a circular chart — square would
+    be more appropriate
+  - Some smaller chords (Oceania connections) are very thin and hard to distinguish
+  - Could benefit from additional visual polish to reach publication quality
   improvements: []
-  verdict: APPROVED
+  verdict: REJECTED
+  image_description: 'The plot displays a chord diagram showing continental migration
+    flows between six continents: Africa (dark blue, top-right), Asia (amber/gold,
+    right), Europe (teal, bottom), N. America (burnt orange, left), S. America (light
+    blue, upper-left), and Oceania (pink/mauve, top). Each continent has a proportional
+    arc segment around the circle perimeter with white edge separation. Chords connect
+    arcs with widths proportional to flow magnitude. Chord colors match their source
+    continent with alpha transparency varying by flow size. Larger chords (e.g., Asia-Europe,
+    Africa-Asia) are drawn on top for visual prominence. Entity labels are bold, colored
+    to match their arcs, positioned outside the circle. Title reads "Continental Migration
+    Flows · chord-basic · matplotlib · pyplots.ai" at the top. White background, axes
+    turned off, clean layout.'
+  criteria_checklist:
+    visual_quality:
+      score: 27
+      max: 30
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Title at 24pt, labels at 18pt bold. All readable but entity labels
+          slightly under 20pt guideline.
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
+        passed: true
+        comment: All labels well-positioned with no collisions.
+      - id: VQ-03
+        name: Element Visibility
+        score: 5
+        max: 6
+        passed: true
+        comment: Most chords clearly visible; some smaller flows (Oceania connections)
+          are quite thin.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 4
+        passed: true
+        comment: Colorblind-safe Wong palette with good contrast between all six colors.
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 3
+        max: 4
+        passed: true
+        comment: 16:9 aspect ratio creates wasted horizontal space for circular chart.
+          Square format would be better.
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
+        max: 2
+        passed: true
+        comment: Descriptive title with proper format. No axes needed for chord diagrams.
+    design_excellence:
+      score: 14
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 6
+        max: 8
+        passed: true
+        comment: Custom colorblind-safe palette, colored labels, alpha variation.
+          Clearly above defaults.
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Axes hidden, clean background, white edge separation. Good but could
+          push further.
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Alpha variation and draw order create effective visual hierarchy.
+          Dominant flows immediately apparent.
+    spec_compliance:
+      score: 15
+      max: 15
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 5
+        max: 5
+        passed: true
+        comment: Correct chord diagram with entities around circle connected by chords.
+      - id: SC-02
+        name: Required Features
+        score: 4
+        max: 4
+        passed: true
+        comment: Distinct colors, proportional chord widths, bidirectional flows all
+          present.
+      - id: SC-03
+        name: Data Mapping
+        score: 3
+        max: 3
+        passed: true
+        comment: 6 continents with bidirectional flow matrix correctly mapped.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
+        passed: true
+        comment: Title follows format. Colored labels serve as legend for chord diagrams.
+    data_quality:
+      score: 14
+      max: 15
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 5
+        max: 6
+        passed: true
+        comment: Shows bidirectional flows, varying magnitudes, asymmetric relationships.
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 5
+        passed: true
+        comment: Intercontinental migration flows — real, neutral, comprehensible
+          scenario.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Values in millions, realistic magnitudes for intercontinental migration.
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports, data, geometry, plot, save. No functions/classes.'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 2
+        passed: true
+        comment: Fully deterministic with hardcoded flow matrix.
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: 'All imports used: matplotlib.patches, pyplot, numpy, Path.'
+      - id: CQ-04
+        name: Code Elegance
+        score: 2
+        max: 2
+        passed: true
+        comment: Well-structured Bezier chord construction. Appropriate complexity.
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with dpi=300 and bbox_inches='tight'.
+    library_mastery:
+      score: 8
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: Uses matplotlib patches and Path with Bezier curves — correct approach
+          for chord diagrams.
+      - id: LM-02
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Path with CURVE4 Bezier, mpatches.Wedge, custom PathPatch — distinctively
+          matplotlib.

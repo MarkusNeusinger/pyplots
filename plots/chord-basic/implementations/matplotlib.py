@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 chord-basic: Basic Chord Diagram
 Library: matplotlib 3.10.8 | Python 3.14
-Quality: 88/100 | Created: 2026-04-06
+Created: 2026-04-06
 """
 
 import matplotlib.patches as mpatches
@@ -42,14 +42,16 @@ for i in range(n):
     start_angles[i] = angle
     angle -= arc_spans[i] + gap_deg
 
-# Plot
-fig, ax = plt.subplots(figsize=(16, 9), subplot_kw={"aspect": "equal"})
-ax.set_xlim(-1.55, 1.55)
-ax.set_ylim(-1.35, 1.35)
+# Plot — square canvas for circular chart
+fig, ax = plt.subplots(figsize=(12, 12), subplot_kw={"aspect": "equal"})
+fig.set_facecolor("#FAFAFA")
+ax.set_xlim(-1.45, 1.45)
+ax.set_ylim(-1.45, 1.45)
+ax.set_facecolor("#FAFAFA")
 ax.axis("off")
 
 radius = 1.0
-arc_width = 0.08
+arc_width = 0.09
 inner_r = radius - arc_width
 
 # Draw outer arcs
@@ -70,7 +72,7 @@ for i in range(n):
         if mid_deg < 15 or mid_deg > 345 or 165 < mid_deg < 195
         else ("right" if 90 < mid_deg < 270 else "left")
     )
-    ax.text(lx, ly, entities[i], fontsize=18, fontweight="bold", ha=ha, va="center", color=colors[i])
+    ax.text(lx, ly, entities[i], fontsize=20, fontweight="bold", ha=ha, va="center", color=colors[i])
 
 # Track angular position within each arc for chord placement
 arc_cursors = start_angles.copy()
@@ -81,18 +83,19 @@ flows = [(i, j, flow_matrix[i, j]) for i in range(n) for j in range(n) if i != j
 flows.sort(key=lambda f: f[2])
 
 # Pre-compute chord positions to avoid cursor interference from draw order
+min_chord_deg = 1.5  # minimum angular span for visibility
 chord_params = []
 pos_cursors = start_angles.copy()
 for i in range(n):
     for j in range(n):
         if i != j and flow_matrix[i, j] > 0:
             flow = flow_matrix[i, j]
-            src_span = flow * unit_angles[i]
+            src_span = max(flow * unit_angles[i], min_chord_deg)
             src_end = pos_cursors[i]
             src_start = src_end - src_span
             pos_cursors[i] = src_start
 
-            tgt_span = flow * unit_angles[j]
+            tgt_span = max(flow * unit_angles[j], min_chord_deg)
             tgt_end = pos_cursors[j]
             tgt_start = tgt_end - tgt_span
             pos_cursors[j] = tgt_start
@@ -135,14 +138,18 @@ for src_start, src_end, tgt_start, tgt_end, color, flow in chord_params:
     codes.extend([Path.CURVE4, Path.CURVE4, Path.CURVE4])
 
     # Scale alpha by flow magnitude for visual depth
-    alpha = 0.45 + 0.25 * (flow / flow_matrix.max())
-    patch = mpatches.PathPatch(Path(verts, codes), facecolor=color, edgecolor=color, linewidth=0.3, alpha=alpha)
+    alpha = 0.40 + 0.30 * (flow / flow_matrix.max())
+    patch = mpatches.PathPatch(Path(verts, codes), facecolor=color, edgecolor=color, linewidth=0.5, alpha=alpha)
     ax.add_patch(patch)
 
 # Title
 ax.set_title(
-    "Continental Migration Flows · chord-basic · matplotlib · pyplots.ai", fontsize=24, fontweight="medium", pad=30
+    "Continental Migration Flows · chord-basic · matplotlib · pyplots.ai",
+    fontsize=24,
+    fontweight="medium",
+    pad=30,
+    color="#333333",
 )
 
 plt.tight_layout()
-plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="white")
+plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="#FAFAFA")

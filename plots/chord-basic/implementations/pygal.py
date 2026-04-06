@@ -1,116 +1,100 @@
 """ pyplots.ai
 chord-basic: Basic Chord Diagram
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 78/100 | Created: 2025-12-23
+Library: pygal 3.1.0 | Python 3.14
+Quality: 80/100 | Updated: 2026-04-06
 """
 
 import math
 
 import cairosvg
-import numpy as np
 import pygal
 from pygal.style import Style
 
 
-# Set seed for reproducibility
-np.random.seed(42)
-
-# Data: Migration flows between 6 continents (bidirectional)
+# Data: Migration flows between 6 continents (thousands of people)
 continents = ["Africa", "Asia", "Europe", "N. America", "S. America", "Oceania"]
-n_entities = len(continents)
+n = len(continents)
 
-# Migration flows as (source, target, value) - asymmetric/bidirectional
 flows = [
-    # From Africa
-    (0, 1, 8),  # Africa → Asia
-    (0, 2, 25),  # Africa → Europe
-    (0, 3, 12),  # Africa → North America
-    (0, 4, 5),  # Africa → South America
-    (0, 5, 3),  # Africa → Oceania
-    # From Asia
-    (1, 0, 6),  # Asia → Africa
-    (1, 2, 20),  # Asia → Europe
-    (1, 3, 35),  # Asia → North America
-    (1, 4, 8),  # Asia → South America
-    (1, 5, 18),  # Asia → Oceania
-    # From Europe
-    (2, 0, 4),  # Europe → Africa
-    (2, 1, 12),  # Europe → Asia
-    (2, 3, 22),  # Europe → North America
-    (2, 4, 15),  # Europe → South America
-    (2, 5, 10),  # Europe → Oceania
-    # From North America
-    (3, 0, 2),  # North America → Africa
-    (3, 1, 10),  # North America → Asia
-    (3, 2, 18),  # North America → Europe
-    (3, 4, 14),  # North America → South America
-    (3, 5, 6),  # North America → Oceania
-    # From South America
-    (4, 0, 3),  # South America → Africa
-    (4, 1, 7),  # South America → Asia
-    (4, 2, 28),  # South America → Europe
-    (4, 3, 20),  # South America → North America
-    (4, 5, 4),  # South America → Oceania
-    # From Oceania
-    (5, 0, 2),  # Oceania → Africa
-    (5, 1, 15),  # Oceania → Asia
-    (5, 2, 12),  # Oceania → Europe
-    (5, 3, 8),  # Oceania → North America
-    (5, 4, 3),  # Oceania → South America
+    (0, 1, 8),
+    (0, 2, 25),
+    (0, 3, 12),
+    (0, 4, 5),
+    (0, 5, 3),
+    (1, 0, 6),
+    (1, 2, 20),
+    (1, 3, 35),
+    (1, 4, 8),
+    (1, 5, 18),
+    (2, 0, 4),
+    (2, 1, 12),
+    (2, 3, 22),
+    (2, 4, 15),
+    (2, 5, 10),
+    (3, 0, 2),
+    (3, 1, 10),
+    (3, 2, 18),
+    (3, 4, 14),
+    (3, 5, 6),
+    (4, 0, 3),
+    (4, 1, 7),
+    (4, 2, 28),
+    (4, 3, 20),
+    (4, 5, 4),
+    (5, 0, 2),
+    (5, 1, 15),
+    (5, 2, 12),
+    (5, 3, 8),
+    (5, 4, 3),
 ]
 
-# Colors for each continent (colorblind-safe palette)
-entity_colors = [
+# Colorblind-safe palette — strong contrast on white
+colors = [
     "#306998",  # Africa - Python Blue
-    "#FFD43B",  # Asia - Python Yellow
-    "#4CAF50",  # Europe - Green
-    "#FF7043",  # N. America - Orange
-    "#9C27B0",  # S. America - Purple
-    "#00BCD4",  # Oceania - Cyan
+    "#C78C00",  # Asia - Rich Amber (darkened for visibility)
+    "#2E7D32",  # Europe - Forest Green
+    "#D84315",  # N. America - Deep Orange
+    "#7B1FA2",  # S. America - Deep Purple
+    "#00695C",  # Oceania - Dark Teal (darkened for visibility)
 ]
 
-# Calculate positions around a circle
-center_x, center_y = 5.0, 5.0
-radius = 3.2
-label_radius = 4.2  # Labels positioned outside the circle
-entity_positions = []
-for i in range(n_entities):
-    angle = 2 * math.pi * i / n_entities - math.pi / 2  # Start from top
-    x = center_x + radius * math.cos(angle)
-    y = center_y + radius * math.sin(angle)
-    lx = center_x + label_radius * math.cos(angle)
-    ly = center_y + label_radius * math.sin(angle)
-    entity_positions.append((x, y, lx, ly, angle))
+# Arc allocation proportional to total flow per entity
+totals = [0] * n
+for s, t, v in flows:
+    totals[s] += v
+    totals[t] += v
+grand_total = sum(totals)
 
-# Build color sequence: one color per chord (based on source) followed by legend colors
-# Each series in pygal takes the next color from the sequence
-chord_colors = [entity_colors[src] for src, _, _ in flows]
-all_colors = tuple(chord_colors + entity_colors)
+gap = 0.05  # radians between arcs
+arc_spans = [(2 * math.pi - gap * n) * totals[i] / grand_total for i in range(n)]
+arc_starts = []
+angle = -math.pi / 2  # start at top
+for i in range(n):
+    arc_starts.append(angle)
+    angle += arc_spans[i] + gap
 
-# Custom style with precise color sequence
+# Style
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
-    foreground_subtle="#666666",
-    colors=all_colors,  # First 30 colors for chords, last 6 for legend entries
+    foreground_subtle="#999999",
+    colors=tuple(colors),
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=44,
     legend_font_size=44,
     value_font_size=36,
     stroke_width=3,
-    opacity=0.7,
-    opacity_hover=0.95,
 )
 
-# Create XY chart (square format for circular diagram)
+# Pygal chart — square canvas, legend at bottom close to diagram
 chart = pygal.XY(
     width=3600,
     height=3600,
     style=custom_style,
-    title="chord-basic · pygal · pyplots.ai",
+    title="chord-basic \u00b7 pygal \u00b7 pyplots.ai",
     show_legend=True,
     x_title="",
     y_title="",
@@ -123,138 +107,128 @@ chart = pygal.XY(
     legend_at_bottom=True,
     legend_at_bottom_columns=6,
     legend_box_size=24,
+    margin=40,
+    margin_bottom=80,
     range=(0, 10),
     xrange=(0, 10),
     truncate_legend=-1,
 )
 
-# Calculate flow stats
-max_flow = max(val for _, _, val in flows)
-min_flow = min(val for _, _, val in flows)
-num_bezier_points = 50
+# Node arcs as pygal XY series — filled arcs with wide strokes
+node_r = 3.8
+for i, name in enumerate(continents):
+    steps = max(20, int(arc_spans[i] * 30))
+    pts = [
+        (
+            5.0 + node_r * math.cos(arc_starts[i] + arc_spans[i] * k / steps),
+            5.0 + node_r * math.sin(arc_starts[i] + arc_spans[i] * k / steps),
+        )
+        for k in range(steps + 1)
+    ]
+    chart.add(name, pts, stroke=True, show_dots=False, fill=False, stroke_style={"width": 42, "linecap": "butt"})
 
-# Draw each chord as a separate series (colors cycle through style.colors)
-for src, tgt, val in flows:
-    src_x, src_y, _, _, _ = entity_positions[src]
-    tgt_x, tgt_y, _, _, _ = entity_positions[tgt]
-
-    # Control point toward center for the Bezier curve
-    pull_factor = 0.25
-    ctrl_x = center_x + pull_factor * (src_x + tgt_x - 2 * center_x) / 2
-    ctrl_y = center_y + pull_factor * (src_y + tgt_y - 2 * center_y) / 2
-
-    # Generate quadratic Bezier curve points
-    curve_points = []
-    for t in np.linspace(0, 1, num_bezier_points):
-        bx = (1 - t) ** 2 * src_x + 2 * (1 - t) * t * ctrl_x + t**2 * tgt_x
-        by = (1 - t) ** 2 * src_y + 2 * (1 - t) * t * ctrl_y + t**2 * tgt_y
-        curve_points.append((bx, by))
-
-    # Stroke width proportional to flow value (range: 4 to 18)
-    normalized = (val - min_flow) / (max_flow - min_flow) if max_flow > min_flow else 0.5
-    stroke_width = 4 + normalized * 14
-
-    # Add chord (None hides from legend, color comes from style sequence)
-    chart.add(
-        None,
-        curve_points,
-        stroke=True,
-        show_dots=False,
-        fill=False,
-        stroke_style={"width": stroke_width, "linecap": "round"},
-    )
-
-# Add legend entries with node markers on the perimeter
-# These use colors 30-35 from the style (entity_colors)
-for i, continent in enumerate(continents):
-    x, y, lx, ly, angle = entity_positions[i]
-
-    # Create a small arc/node at the entity position for visibility
-    node_points = []
-    arc_span = 0.15
-    for t in np.linspace(-arc_span, arc_span, 10):
-        nx = center_x + (radius + 0.1) * math.cos(angle + t)
-        ny = center_y + (radius + 0.1) * math.sin(angle + t)
-        node_points.append((nx, ny))
-
-    # Add continent as legend entry
-    chart.add(
-        continent, node_points, stroke=True, show_dots=False, fill=False, stroke_style={"width": 12, "linecap": "round"}
-    )
-
-# Save outputs
 chart.render_to_file("plot.svg")
-chart.render_to_png("plot.png")
 
-# Read SVG and inject text labels directly near each node
-with open("plot.svg", "r") as f:
-    svg_content = f.read()
+# --- SVG injection: background, filled chord ribbons, labels ---
+# Map chart data coords (0-10) to SVG pixel coords
+# Plot area: translate(40, 122), rect 3520 x 3344
+svg_cx = 40 + 3520 / 2  # 1800
+svg_cy = 122 + 3344 / 2  # 1794
+sx = 3520 / 10  # 352 px per data unit
+sy = 3344 / 10  # 334.4 px per data unit
 
-# Find the closing </svg> tag and inject labels before it
-label_svg = ""
-for i, continent in enumerate(continents):
-    x, y, lx, ly, angle = entity_positions[i]
+svg_elems = []
 
-    # Pygal SVG has a specific coordinate system - map our 0-10 range
-    # viewBox is typically "0 0 3600 3600" for width/height 3600
-    # The plot area starts after some padding (title, etc.)
-    # Approximate: chart area is roughly 400-3200 in both dimensions
-    padding = 550
-    plot_size = 2500
-    svg_x = padding + (lx / 10) * plot_size
-    svg_y = padding + ((10 - ly) / 10) * plot_size  # Y is inverted
+# Subtle background ellipse matching the node arc shape
+bg_rx = node_r * sx + 30
+bg_ry = node_r * sy + 30
+svg_elems.append(
+    f'  <ellipse cx="{svg_cx:.0f}" cy="{svg_cy:.0f}" rx="{bg_rx:.0f}" ry="{bg_ry:.0f}" fill="#F7F7F7" stroke="none"/>'
+)
 
-    # Text anchor based on position around circle
-    angle_deg = math.degrees(angle)
-    if -60 <= angle_deg <= 60:  # Right side
+# Filled chord ribbons
+chord_r = 3.4  # inner edge of node arcs (chart units)
+arc_pos = list(arc_starts)
+max_val = max(v for _, _, v in flows)
+
+for s, t, v in flows:
+    s_ext = arc_spans[s] * v / totals[s]
+    t_ext = arc_spans[t] * v / totals[t]
+    s_a1, s_a2 = arc_pos[s], arc_pos[s] + s_ext
+    t_a1, t_a2 = arc_pos[t], arc_pos[t] + t_ext
+    arc_pos[s] = s_a2
+    arc_pos[t] = t_a2
+
+    sx1 = svg_cx + chord_r * sx * math.cos(s_a1)
+    sy1 = svg_cy - chord_r * sy * math.sin(s_a1)
+    sx2 = svg_cx + chord_r * sx * math.cos(s_a2)
+    sy2 = svg_cy - chord_r * sy * math.sin(s_a2)
+    tx1 = svg_cx + chord_r * sx * math.cos(t_a1)
+    ty1 = svg_cy - chord_r * sy * math.sin(t_a1)
+    tx2 = svg_cx + chord_r * sx * math.cos(t_a2)
+    ty2 = svg_cy - chord_r * sy * math.sin(t_a2)
+    rx = chord_r * sx
+    ry = chord_r * sy
+
+    # Higher opacity floor ensures all chords are clearly visible
+    opacity = 0.55 + 0.35 * v / max_val
+
+    path = (
+        f"M {sx1:.1f},{sy1:.1f} "
+        f"Q {svg_cx:.1f},{svg_cy:.1f} {tx1:.1f},{ty1:.1f} "
+        f"A {rx:.1f},{ry:.1f} 0 0,1 {tx2:.1f},{ty2:.1f} "
+        f"Q {svg_cx:.1f},{svg_cy:.1f} {sx2:.1f},{sy2:.1f} "
+        f"A {rx:.1f},{ry:.1f} 0 0,0 {sx1:.1f},{sy1:.1f} Z"
+    )
+    svg_elems.append(f'  <path d="{path}" fill="{colors[s]}" fill-opacity="{opacity:.2f}" stroke="none"/>')
+
+# Labels positioned outside node arcs
+label_r = 4.25
+for i, name in enumerate(continents):
+    mid = arc_starts[i] + arc_spans[i] / 2
+    lx = svg_cx + label_r * sx * math.cos(mid)
+    ly = svg_cy - label_r * sy * math.sin(mid)
+    ly = max(100, min(3450, ly))
+    deg = math.degrees(mid) % 360
+    if deg <= 75 or deg >= 285:
         anchor = "start"
-        svg_x += 30
-    elif angle_deg > 120 or angle_deg < -120:  # Left side
+    elif 105 <= deg <= 255:
         anchor = "end"
-        svg_x -= 30
-    else:  # Top or bottom
+    else:
         anchor = "middle"
+    # Keep labels within viewBox — override anchor near edges
+    if anchor == "end" and lx < 300:
+        anchor = "start"
+        lx = max(20, lx)
+    elif anchor == "start" and lx > 3300:
+        anchor = "end"
+        lx = min(3580, lx)
+    svg_elems.append(
+        f'  <text x="{lx:.0f}" y="{ly:.0f}" fill="{colors[i]}" '
+        f'font-size="54" font-weight="bold" text-anchor="{anchor}" '
+        f'dominant-baseline="central" '
+        f'font-family="DejaVu Sans, sans-serif">{name}</text>'
+    )
 
-    # Adjust Y for better centering
-    if -30 <= angle_deg <= 30:  # Right
-        svg_y += 15
-    elif angle_deg > 150 or angle_deg < -150:  # Left
-        svg_y += 15
-
-    label_svg += f'''
-  <text x="{svg_x:.0f}" y="{svg_y:.0f}" fill="{entity_colors[i]}"
-        font-size="48" font-weight="bold" text-anchor="{anchor}"
-        font-family="DejaVu Sans, sans-serif">{continent}</text>'''
-
-# Insert labels before closing </svg>
-svg_with_labels = svg_content.replace("</svg>", f"{label_svg}\n</svg>")
-
-# Save modified SVG
+# Inject elements and render
+with open("plot.svg") as f:
+    svg = f.read()
+svg = svg.replace("</svg>", "\n".join(svg_elems) + "\n</svg>")
 with open("plot.svg", "w") as f:
-    f.write(svg_with_labels)
+    f.write(svg)
 
-# Re-render PNG from modified SVG
-cairosvg.svg2png(bytestring=svg_with_labels.encode("utf-8"), write_to="plot.png")
+cairosvg.svg2png(bytestring=svg.encode("utf-8"), write_to="plot.png")
 
-# Save HTML for interactive version
+# Interactive HTML export
 with open("plot.html", "w") as f:
     f.write(
-        """<!DOCTYPE html>
-<html>
-<head>
-    <title>chord-basic · pygal · pyplots.ai</title>
-    <style>
-        body { margin: 0; padding: 20px; background: #f5f5f5; }
-        .container { max-width: 100%; margin: 0 auto; }
-        object { width: 100%; height: auto; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <object type="image/svg+xml" data="plot.svg">
-            Chord diagram not supported
-        </object>
-    </div>
-</body>
-</html>"""
+        "<!DOCTYPE html>\n<html>\n<head>\n"
+        "    <title>chord-basic \u00b7 pygal \u00b7 pyplots.ai</title>\n"
+        "    <style>body{margin:0;padding:20px;background:#f5f5f5}"
+        ".container{max-width:100%;margin:0 auto}"
+        "object{width:100%;height:auto}</style>\n</head>\n<body>\n"
+        '    <div class="container">\n'
+        '        <object type="image/svg+xml" data="plot.svg">'
+        "Chord diagram</object>\n"
+        "    </div>\n</body>\n</html>"
     )

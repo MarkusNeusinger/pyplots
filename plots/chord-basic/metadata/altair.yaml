@@ -1,7 +1,7 @@
 library: altair
 specification_id: chord-basic
 created: '2025-12-23T10:01:05Z'
-updated: '2026-04-06T20:40:49Z'
+updated: '2026-04-06T20:59:38Z'
 generated_by: claude-opus-4-6
 workflow_run: 20457533097
 issue: 0
@@ -9,12 +9,13 @@ python_version: '3.14'
 library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/chord-basic/altair/plot.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/chord-basic/altair/plot.html
-quality_score: 81
+quality_score: 86
 impl_tags:
   dependencies: []
   techniques:
   - bezier-curves
   - layer-composition
+  - custom-legend
   - hover-tooltips
   - html-export
   patterns:
@@ -22,39 +23,37 @@ impl_tags:
   - iteration-over-groups
   dataprep: []
   styling:
-  - alpha-blending
   - minimal-chrome
+  - alpha-blending
 review:
   strengths:
-  - Excellent spec compliance — all required features present including bidirectional
-    flows and proportional chord widths
-  - Good data storytelling with major/minor flow distinction and narrative subtitle
-  - Clean visual presentation with no overlap, custom color palette, and styled legend
-  - Tooltips and HTML export leverage Altair interactive capabilities
-  - Realistic neutral migration data with appropriate scale
+  - Excellent chord diagram construction from Altair primitives with proper bezier
+    curves and polygon rendering
+  - Strong data storytelling through opacity-based visual hierarchy with informative
+    subtitle
+  - Perfect spec compliance with all required features including bidirectional flows
+    and interactive tooltips
+  - Clean well-organized code with vectorized numpy operations and clear comments
+  - Colorblind-safe palette with good contrast between all 6 entities
   weaknesses:
-  - Extremely low-level implementation — Altair used as polygon renderer rather than
-    grammar-of-graphics tool
-  - Code elegance suffers from ~150 lines of manual bezier/arc coordinate computation
-  - Africa and Asia colors are somewhat close in hue
-  - Canvas utilization could be improved — noticeable empty space at bottom
-  - Minor chords at 0.3 opacity are nearly invisible making some flows hard to trace
+  - Library mastery limited by Altair lack of native chord diagram support — implementation
+    uses Altair as low-level drawing tool
+  - Visual refinement could be improved — chord overlaps in center area reduce traceability
+    of individual flows
   image_description: 'The plot displays a chord diagram showing migration flows between
-    6 continents arranged around a circle. Each continent has a colored outer arc
-    segment proportional to its total flow: Europe (dark blue, largest arc at bottom-right),
-    North America (gold/yellow, top-right), Asia (teal/green, top-left), Africa (coral/salmon,
-    left), South America (teal-green, bottom-left), and Oceania (purple, bottom-center,
-    smallest arc). Chords connect the continents with widths proportional to flow
-    magnitude. Major flows (Africa→Europe, S. America→N. America, Europe→N. America,
-    Asia→N. America) appear at higher opacity (0.7) while minor flows recede at lower
-    opacity (0.3), creating a clear visual hierarchy. Labels are positioned outside
-    each arc in matching colors. The title reads "chord-basic · altair · pyplots.ai"
-    with a subtitle "Dominant migration corridors highlighted — Africa→Europe and
-    S. America→N. America lead". A legend on the right lists all regions. The diagram
-    is well-centered on the canvas with clean white background and no axes.'
+    6 continents arranged around a circle. Each continent has a distinct color: Europe
+    (dark blue), North America (golden yellow), Asia (teal), Africa (orange-red),
+    South America (purple), and Oceania (light teal). Colored arcs along the perimeter
+    represent each entity, with arc width proportional to total flow. Chords connect
+    entities across the circle interior, with width proportional to flow magnitude.
+    Major flows (top 30%) appear at higher opacity while minor flows are more transparent,
+    creating clear visual hierarchy. The title reads "chord-basic · altair · pyplots.ai"
+    with subtitle "Dominant migration corridors highlighted — Africa→Europe and S.
+    America→N. America lead". A manual legend on the right shows all 6 regions with
+    colored squares. Labels are positioned outside the arcs with correct text alignment.'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 27
       max: 30
       items:
       - id: VQ-01
@@ -62,42 +61,39 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: 'Font sizes explicitly set: title 28pt, subtitle 16pt, labels 20pt
-          bold, legend title 20pt, legend labels 18pt. All clearly readable.'
+        comment: 'All font sizes explicitly set: title 28pt, subtitle 16pt, labels
+          20pt, legend 18-20pt'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: All labels well-positioned outside arcs, no collisions. Legend doesn't
-          overlap diagram.
+        comment: No overlapping text, labels well-positioned outside arcs
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Major chords visible at 0.7 opacity, minor chords at 0.3 are intentionally
-          faint. Some thin minor chords nearly invisible.
+        comment: Chords visible with good opacity differentiation, some overlap in
+          center inherent to chart type
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Six distinct hues but Africa (#FF6B6B) and Asia (#E76F51) are somewhat
-          close in hue.
+        comment: Six distinct colorblind-safe colors with good contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Diagram well-centered but significant empty space at bottom. Plot
-          fills ~50% of canvas.
+        comment: Well-centered diagram with legend nearby, some unused space at bottom-left
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: No axes appropriate for chord diagram. Title properly formatted.
+        comment: Descriptive title and subtitle, no axes needed for chord diagram
     design_excellence:
       score: 14
       max: 20
@@ -107,22 +103,21 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Custom palette, colored labels matching arcs, styled legend, narrative
-          subtitle. Above defaults but not publication-perfect.
+        comment: Custom palette, intentional typography hierarchy, major/minor chord
+          distinction
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: View stroke removed, legend styled with rounded corners and fill.
-          Clean minimal presentation.
+        comment: Clean background, no axes/spines, view stroke removed, generous whitespace
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Major/minor opacity differentiation creates visual hierarchy. Subtitle
-          calls out dominant corridors.
+        comment: Opacity-based hierarchy highlights dominant flows, subtitle names
+          the insight
     spec_compliance:
       score: 15
       max: 15
@@ -132,27 +127,25 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct chord diagram with entities around circle perimeter connected
-          by arcs.
+        comment: Correct chord diagram with entities on perimeter and connecting chords
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Distinct colors, proportional widths, bidirectional flows, tooltips
-          all present.
+        comment: Distinct colors, proportional chord width, bidirectional flows, tooltips
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Source/target/value correctly mapped. 6 entities, 15 connections.
+        comment: Source/target/value correctly mapped, all 15 connections visible
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend with Region title and all 6 entities.
+        comment: Correct title format, legend labels match entities
     data_quality:
       score: 14
       max: 15
@@ -162,72 +155,68 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Bidirectional flows with varying magnitudes. Good range 12-55. Some
-          entity pairs missing reverse direction.
+        comment: Bidirectional flows, varying magnitudes, 6 entities with 15 connections
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Migration flows between continents in thousands. Real-world, neutral
-          scenario.
+        comment: Migration flows between continents - real-world neutral scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values 12-55 thousand migrants are plausible figures.
+        comment: Values in thousands (12-55), sensible for intercontinental migration
     code_quality:
-      score: 7
+      score: 10
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Linear structure but ~253 lines with extensive manual coordinate
-          computation.
+        comment: Flat script structure with no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic data, no random elements.
+        comment: Fully deterministic with hardcoded data
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All three imports used.
+        comment: 'All imports used: altair, numpy, pandas'
       - id: CQ-04
         name: Code Elegance
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Manual polygon renderer using Altair as drawing canvas. ~150 lines
-          of bezier/arc computation.
+        passed: true
+        comment: Complex but appropriate, vectorized operations, well-commented
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png with scale_factor=3.0 and plot.html.
+        comment: Saves as plot.png with scale_factor=3.0 and plot.html
     library_mastery:
-      score: 5
+      score: 6
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Altair's declarative grammar barely used. Manually computes all coordinates
-          with numpy.
+        passed: true
+        comment: Uses declarative grammar correctly but chord diagrams require low-level
+          primitives
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Tooltips, HTML export, and layer composition are genuine Altair features.
+        comment: Interactive tooltips, HTML export, declarative layer composition
   verdict: REJECTED

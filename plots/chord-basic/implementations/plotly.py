@@ -1,19 +1,18 @@
-""" pyplots.ai
+"""pyplots.ai
 chord-basic: Basic Chord Diagram
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: plotly 6.5.2 | Python 3.14
+Quality: /100 | Updated: 2026-04-06
 """
 
 import numpy as np
 import plotly.graph_objects as go
 
 
-# Data: Migration flows between 6 continents (bidirectional)
+# Data: Migration flows between 6 continents (bidirectional, millions of people)
 continents = ["Africa", "Asia", "Europe", "N. America", "S. America", "Oceania"]
 n = len(continents)
 
 # Flow matrix (row = source, col = target) - realistic migration patterns
-np.random.seed(42)
 flow_matrix = np.array(
     [
         [0, 15, 25, 10, 5, 3],  # Africa to others
@@ -37,7 +36,7 @@ gap = 0.02
 arc_starts = []
 arc_ends = []
 current_pos = 0
-for _, total in enumerate(totals):
+for total in totals:
     arc_starts.append(current_pos)
     arc_ends.append(current_pos + (total / total_flow) * (1 - n * gap))
     current_pos = arc_ends[-1] + gap
@@ -47,12 +46,10 @@ fig = go.Figure()
 
 # Draw outer arcs for each continent
 for i in range(n):
-    # Generate arc points (outer)
     angles_outer = np.linspace(2 * np.pi * arc_starts[i] - np.pi / 2, 2 * np.pi * arc_ends[i] - np.pi / 2, 100)
     x_outer = 1.0 * np.cos(angles_outer)
     y_outer = 1.0 * np.sin(angles_outer)
 
-    # Generate arc points (inner, reversed)
     angles_inner = np.linspace(2 * np.pi * arc_ends[i] - np.pi / 2, 2 * np.pi * arc_starts[i] - np.pi / 2, 100)
     x_inner = 0.95 * np.cos(angles_inner)
     y_inner = 0.95 * np.sin(angles_inner)
@@ -63,57 +60,80 @@ for i in range(n):
             y=np.concatenate([y_outer, y_inner]),
             fill="toself",
             fillcolor=colors[i],
-            line=dict(color="white", width=1),
-            hoverinfo="text",
-            text=f"{continents[i]}<br>Total flow: {totals[i]}",
+            line={"color": "white", "width": 1},
+            hovertemplate=(f"<b>{continents[i]}</b><br>Total flow: {int(totals[i])}M people<extra></extra>"),
             name=continents[i],
             showlegend=True,
         )
     )
 
-# Draw chords between continents
-shapes = []
+# Draw chords as interactive traces (not shapes) for hover support
 for i in range(n):
     src_pos = arc_starts[i]
     for j in range(n):
-        if i != j and flow_matrix[i, j] > 0:
-            flow = flow_matrix[i, j]
-            chord_width = (flow / total_flow) * (1 - n * gap)
+        if i == j or flow_matrix[i, j] == 0:
+            continue
 
-            # Calculate target position offset
-            tgt_base = arc_starts[j]
-            tgt_offset = sum(
-                (flow_matrix[k, j] / total_flow) * (1 - n * gap) for k in range(i) if flow_matrix[k, j] > 0
+        flow = flow_matrix[i, j]
+        chord_width = (flow / total_flow) * (1 - n * gap)
+
+        # Target position offset based on prior incoming flows
+        tgt_base = arc_starts[j]
+        tgt_offset = sum((flow_matrix[k, j] / total_flow) * (1 - n * gap) for k in range(i) if flow_matrix[k, j] > 0)
+
+        # Source arc endpoints
+        src_angle1 = 2 * np.pi * src_pos - np.pi / 2
+        src_angle2 = 2 * np.pi * (src_pos + chord_width) - np.pi / 2
+        sx1, sy1 = 0.95 * np.cos(src_angle1), 0.95 * np.sin(src_angle1)
+        sx2, sy2 = 0.95 * np.cos(src_angle2), 0.95 * np.sin(src_angle2)
+
+        # Target arc endpoints
+        tgt_start = tgt_base + tgt_offset
+        tgt_end = tgt_start + chord_width
+        tgt_angle1 = 2 * np.pi * tgt_start - np.pi / 2
+        tgt_angle2 = 2 * np.pi * tgt_end - np.pi / 2
+        tx1, ty1 = 0.95 * np.cos(tgt_angle1), 0.95 * np.sin(tgt_angle1)
+        tx2, ty2 = 0.95 * np.cos(tgt_angle2), 0.95 * np.sin(tgt_angle2)
+
+        # Build chord path: source arc -> bezier to target -> target arc -> bezier back
+        # Source side arc points
+        src_angles = np.linspace(src_angle1, src_angle2, 20)
+        src_x = 0.95 * np.cos(src_angles)
+        src_y = 0.95 * np.sin(src_angles)
+
+        # Bezier from source end to target start (through center)
+        t = np.linspace(0, 1, 30)
+        bez1_x = (1 - t) ** 2 * sx2 + 2 * (1 - t) * t * 0 + t**2 * tx1
+        bez1_y = (1 - t) ** 2 * sy2 + 2 * (1 - t) * t * 0 + t**2 * ty1
+
+        # Target side arc points
+        tgt_angles = np.linspace(tgt_angle1, tgt_angle2, 20)
+        tgt_x = 0.95 * np.cos(tgt_angles)
+        tgt_y = 0.95 * np.sin(tgt_angles)
+
+        # Bezier from target end back to source start (through center)
+        bez2_x = (1 - t) ** 2 * tx2 + 2 * (1 - t) * t * 0 + t**2 * sx1
+        bez2_y = (1 - t) ** 2 * ty2 + 2 * (1 - t) * t * 0 + t**2 * sy1
+
+        # Combine into closed polygon
+        chord_x = np.concatenate([src_x, bez1_x, tgt_x, bez2_x])
+        chord_y = np.concatenate([src_y, bez1_y, tgt_y, bez2_y])
+
+        fig.add_trace(
+            go.Scatter(
+                x=chord_x,
+                y=chord_y,
+                fill="toself",
+                fillcolor=colors[i],
+                opacity=0.55,
+                line={"color": colors[i], "width": 0.5},
+                hovertemplate=(f"<b>{continents[i]} → {continents[j]}</b><br>Flow: {flow}M people<extra></extra>"),
+                showlegend=False,
+                hoveron="fills",
             )
+        )
 
-            # Calculate chord endpoints (source)
-            src_angle1 = 2 * np.pi * src_pos - np.pi / 2
-            src_angle2 = 2 * np.pi * (src_pos + chord_width) - np.pi / 2
-            x1 = 0.95 * np.cos(src_angle1)
-            y1 = 0.95 * np.sin(src_angle1)
-            x2 = 0.95 * np.cos(src_angle2)
-            y2 = 0.95 * np.sin(src_angle2)
-
-            # Calculate chord endpoints (target)
-            tgt_start = tgt_base + tgt_offset
-            tgt_end = tgt_start + chord_width
-            tgt_angle1 = 2 * np.pi * tgt_start - np.pi / 2
-            tgt_angle2 = 2 * np.pi * tgt_end - np.pi / 2
-            x3 = 0.95 * np.cos(tgt_angle1)
-            y3 = 0.95 * np.sin(tgt_angle1)
-            x4 = 0.95 * np.cos(tgt_angle2)
-            y4 = 0.95 * np.sin(tgt_angle2)
-
-            # SVG path with quadratic bezier curves through center
-            path = (
-                f"M {x1},{y1} Q 0,0 {x3},{y3} A 0.95,0.95 0 0,1 {x4},{y4} Q 0,0 {x2},{y2} A 0.95,0.95 0 0,1 {x1},{y1} Z"
-            )
-
-            shapes.append(
-                dict(type="path", path=path, fillcolor=colors[i], opacity=0.6, line=dict(color=colors[i], width=0.5))
-            )
-
-            src_pos += chord_width
+        src_pos += chord_width
 
 # Add continent labels around the perimeter
 for i in range(n):
@@ -121,7 +141,6 @@ for i in range(n):
     angle = 2 * np.pi * mid_pos - np.pi / 2
     label_radius = 1.12
 
-    # Rotate text for readability
     text_angle_deg = np.degrees(angle)
     if 90 < text_angle_deg < 270 or -270 < text_angle_deg < -90:
         text_angle_deg += 180
@@ -131,28 +150,29 @@ for i in range(n):
         x=label_radius * np.cos(angle),
         y=label_radius * np.sin(angle),
         text=f"<b>{continents[i]}</b>",
-        font=dict(size=18, color=colors[i]),
+        font={"size": 22, "color": colors[i]},
         showarrow=False,
         textangle=rotation,
     )
 
 # Layout
 fig.update_layout(
-    title=dict(
-        text="Migration Flows Between Continents · chord-basic · plotly · pyplots.ai",
-        font=dict(size=28),
-        x=0.5,
-        xanchor="center",
-    ),
-    shapes=shapes,
-    xaxis=dict(showgrid=False, zeroline=False, showticklabels=False, range=[-1.4, 1.4]),
-    yaxis=dict(showgrid=False, zeroline=False, showticklabels=False, range=[-1.4, 1.4], scaleanchor="x"),
+    title={
+        "text": "Migration Flows Between Continents · chord-basic · plotly · pyplots.ai",
+        "font": {"size": 30, "color": "#333333"},
+        "x": 0.5,
+        "xanchor": "center",
+        "y": 0.97,
+    },
+    xaxis={"showgrid": False, "zeroline": False, "showticklabels": False, "range": [-1.35, 1.35]},
+    yaxis={"showgrid": False, "zeroline": False, "showticklabels": False, "range": [-1.35, 1.35], "scaleanchor": "x"},
     template="plotly_white",
     showlegend=True,
-    legend=dict(font=dict(size=16), x=1.02, y=0.5, yanchor="middle"),
-    margin=dict(l=50, r=150, t=100, b=50),
+    legend={"font": {"size": 18}, "x": 1.01, "y": 0.5, "yanchor": "middle", "tracegroupgap": 5},
+    margin={"l": 30, "r": 160, "t": 80, "b": 30},
     plot_bgcolor="white",
     paper_bgcolor="white",
+    hovermode="closest",
 )
 
 # Save outputs

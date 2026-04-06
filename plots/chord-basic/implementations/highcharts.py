@@ -1,15 +1,17 @@
-""" pyplots.ai
+"""pyplots.ai
 chord-basic: Basic Chord Diagram
 Library: highcharts 1.10.3 | Python 3.14
 Quality: 87/100 | Updated: 2026-04-06
 """
 
-import json
 import tempfile
 import time
 import urllib.request
 from pathlib import Path
 
+from highcharts_core.chart import Chart
+from highcharts_core.options import HighchartsOptions
+from highcharts_core.options.series.dependencywheel import DependencyWheelSeries
 from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -17,40 +19,40 @@ from selenium.webdriver.chrome.options import Options
 
 # Data - Trade flows between continents (billions USD, approximate)
 flows = [
-    ["Europe", "N. America", 28],
-    ["Europe", "Asia", 22],
-    ["Europe", "Africa", 8],
-    ["Europe", "S. America", 6],
-    ["Europe", "Oceania", 4],
-    ["Asia", "N. America", 35],
-    ["Asia", "Europe", 25],
-    ["Asia", "Oceania", 12],
-    ["Asia", "Africa", 10],
-    ["Asia", "S. America", 7],
-    ["Africa", "Europe", 15],
-    ["Africa", "Asia", 12],
-    ["Africa", "N. America", 8],
-    ["Africa", "S. America", 3],
-    ["Africa", "Oceania", 2],
-    ["N. America", "Europe", 26],
-    ["N. America", "Asia", 30],
-    ["N. America", "S. America", 18],
-    ["N. America", "Oceania", 5],
-    ["N. America", "Africa", 4],
-    ["S. America", "N. America", 22],
-    ["S. America", "Europe", 14],
-    ["S. America", "Asia", 10],
-    ["S. America", "Africa", 3],
-    ["S. America", "Oceania", 2],
-    ["Oceania", "Asia", 18],
-    ["Oceania", "Europe", 6],
-    ["Oceania", "N. America", 5],
-    ["Oceania", "Africa", 1],
-    ["Oceania", "S. America", 1],
+    {"from": "Europe", "to": "N. America", "weight": 28},
+    {"from": "Europe", "to": "Asia", "weight": 22},
+    {"from": "Europe", "to": "Africa", "weight": 8},
+    {"from": "Europe", "to": "S. America", "weight": 6},
+    {"from": "Europe", "to": "Oceania", "weight": 4},
+    {"from": "Asia", "to": "N. America", "weight": 35},
+    {"from": "Asia", "to": "Europe", "weight": 25},
+    {"from": "Asia", "to": "Oceania", "weight": 12},
+    {"from": "Asia", "to": "Africa", "weight": 10},
+    {"from": "Asia", "to": "S. America", "weight": 7},
+    {"from": "Africa", "to": "Europe", "weight": 15},
+    {"from": "Africa", "to": "Asia", "weight": 12},
+    {"from": "Africa", "to": "N. America", "weight": 8},
+    {"from": "Africa", "to": "S. America", "weight": 3},
+    {"from": "Africa", "to": "Oceania", "weight": 2},
+    {"from": "N. America", "to": "Europe", "weight": 26},
+    {"from": "N. America", "to": "Asia", "weight": 30},
+    {"from": "N. America", "to": "S. America", "weight": 18},
+    {"from": "N. America", "to": "Oceania", "weight": 5},
+    {"from": "N. America", "to": "Africa", "weight": 4},
+    {"from": "S. America", "to": "N. America", "weight": 22},
+    {"from": "S. America", "to": "Europe", "weight": 14},
+    {"from": "S. America", "to": "Asia", "weight": 10},
+    {"from": "S. America", "to": "Africa", "weight": 3},
+    {"from": "S. America", "to": "Oceania", "weight": 2},
+    {"from": "Oceania", "to": "Asia", "weight": 18},
+    {"from": "Oceania", "to": "Europe", "weight": 6},
+    {"from": "Oceania", "to": "N. America", "weight": 5},
+    {"from": "Oceania", "to": "Africa", "weight": 1},
+    {"from": "Oceania", "to": "S. America", "weight": 1},
 ]
 
 # Refined palette — harmonious, colorblind-safe, muted-professional tones
-nodes = [
+node_defs = [
     {"id": "Europe", "color": "#306998"},
     {"id": "Asia", "color": "#E8A838"},
     {"id": "Africa", "color": "#8B6CAF"},
@@ -59,93 +61,94 @@ nodes = [
     {"id": "Oceania", "color": "#D4654A"},
 ]
 
-# Chart configuration
-chart_config = {
-    "chart": {
-        "type": "dependencywheel",
-        "width": 3600,
-        "height": 3600,
-        "backgroundColor": {
-            "linearGradient": {"x1": 0, "y1": 0, "x2": 0, "y2": 1},
-            "stops": [[0, "#FAFBFC"], [1, "#F0F2F5"]],
-        },
-        "marginTop": 160,
-        "marginBottom": 40,
-        "style": {"fontFamily": "'Segoe UI', Helvetica, Arial, sans-serif"},
+# Build chart using highcharts-core Python API
+chart = Chart(container="container")
+chart.options = HighchartsOptions()
+
+chart.options.chart = {
+    "width": 3600,
+    "height": 3600,
+    "backgroundColor": {
+        "linearGradient": {"x1": 0, "y1": 0, "x2": 0.3, "y2": 1},
+        "stops": [[0, "#FAFBFC"], [0.5, "#F4F6F9"], [1, "#EEF1F5"]],
     },
-    "title": {
-        "text": "chord-basic \u00b7 highcharts \u00b7 pyplots.ai",
-        "style": {"fontSize": "60px", "fontWeight": "700", "color": "#1A2332", "letterSpacing": "0.5px"},
-        "y": 50,
-    },
-    "subtitle": {
-        "text": "Trade Flows Between Continents (Billions USD)",
-        "style": {"fontSize": "40px", "fontWeight": "400", "color": "#5A6878", "letterSpacing": "0.3px"},
-        "y": 110,
-    },
-    "tooltip": {
-        "style": {"fontSize": "32px"},
-        "backgroundColor": "rgba(255,255,255,0.96)",
-        "borderWidth": 1,
-        "borderColor": "#DDE1E6",
-        "shadow": True,
-        "nodeFormat": "<b>{point.name}</b><br/>Total: ${point.sum}B",
-        "pointFormat": "{point.fromNode.name} \u2192 {point.toNode.name}<br/><b>${point.weight}B</b>",
-    },
-    "series": [
-        {
-            "type": "dependencywheel",
-            "name": "Trade Flow",
-            "keys": ["from", "to", "weight"],
-            "data": flows,
-            "nodes": nodes,
-            "dataLabels": {
-                "enabled": True,
-                "style": {
-                    "fontSize": "42px",
-                    "fontWeight": "600",
-                    "textOutline": "5px rgba(255,255,255,0.9)",
-                    "color": "#1A2332",
-                },
-                "distance": 45,
-                "padding": 10,
-                "crop": False,
-                "overflow": "allow",
-            },
-            "size": "78%",
-            "center": ["50%", "54%"],
-            "linkOpacity": 0.5,
-            "curveFactor": 0.6,
-            "nodePadding": 18,
-            "nodeWidth": 40,
-            "borderWidth": 2,
-            "borderColor": "rgba(255,255,255,0.7)",
-            "colorByPoint": True,
-            "minLinkWidth": 4,
-        }
-    ],
-    "legend": {"enabled": False},
-    "credits": {"enabled": False},
-    "accessibility": {"enabled": False},
+    "marginTop": 150,
+    "marginBottom": 30,
+    "marginLeft": 30,
+    "marginRight": 30,
+    "style": {"fontFamily": "'Segoe UI', Helvetica, Arial, sans-serif"},
 }
+
+chart.options.title = {
+    "text": "chord-basic \u00b7 highcharts \u00b7 pyplots.ai",
+    "style": {"fontSize": "60px", "fontWeight": "700", "color": "#1A2332", "letterSpacing": "0.5px"},
+    "y": 45,
+}
+
+chart.options.subtitle = {
+    "text": "Trade Flows Between Continents (Billions USD)",
+    "style": {"fontSize": "40px", "fontWeight": "400", "color": "#5A6878", "letterSpacing": "0.3px"},
+    "y": 105,
+}
+
+chart.options.tooltip = {
+    "style": {"fontSize": "32px"},
+    "backgroundColor": "rgba(255,255,255,0.96)",
+    "borderWidth": 1,
+    "borderColor": "#DDE1E6",
+    "shadow": {"color": "rgba(0,0,0,0.08)", "offsetX": 2, "offsetY": 2, "width": 6},
+    "nodeFormat": "<b>{point.name}</b><br/>Total: ${point.sum}B",
+    "pointFormat": "{point.fromNode.name} \u2192 {point.toNode.name}<br/><b>${point.weight}B</b>",
+}
+
+chart.options.legend = {"enabled": False}
+chart.options.credits = {"enabled": False}
+chart.options.accessibility = {"enabled": False}
+
+# Build series using Python API
+series = DependencyWheelSeries()
+series.data = flows
+series.nodes = node_defs
+series.name = "Trade Flow"
+series.data_labels = {
+    "enabled": True,
+    "style": {"fontSize": "44px", "fontWeight": "600", "textOutline": "5px rgba(255,255,255,0.92)", "color": "#1A2332"},
+    "distance": 40,
+    "padding": 10,
+    "crop": False,
+    "overflow": "allow",
+}
+series.size = "84%"
+series.center = ["50%", "53%"]
+series.link_opacity = 0.5
+series.curve_factor = 0.6
+series.node_padding = 16
+series.node_width = 44
+series.border_width = 2
+series.border_color = "rgba(255,255,255,0.75)"
+series.color_by_point = True
+series.min_link_width = 4
+
+chart.add_series(series)
+
+# Generate JS literal for embedding
+chart_js = chart.to_js_literal()
 
 # Download Highcharts JS and modules
 headers = {"User-Agent": "Mozilla/5.0"}
-highcharts_url = "https://cdn.jsdelivr.net/npm/highcharts@11/highcharts.js"
-sankey_url = "https://cdn.jsdelivr.net/npm/highcharts@11/modules/sankey.js"
-wheel_url = "https://cdn.jsdelivr.net/npm/highcharts@11/modules/dependency-wheel.js"
+urls = [
+    "https://cdn.jsdelivr.net/npm/highcharts@11/highcharts.js",
+    "https://cdn.jsdelivr.net/npm/highcharts@11/modules/sankey.js",
+    "https://cdn.jsdelivr.net/npm/highcharts@11/modules/dependency-wheel.js",
+]
+scripts = []
+for url in urls:
+    with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=30) as response:
+        scripts.append(response.read().decode("utf-8"))
 
-with urllib.request.urlopen(urllib.request.Request(highcharts_url, headers=headers), timeout=30) as response:
-    highcharts_js = response.read().decode("utf-8")
+highcharts_js, sankey_js, wheel_js = scripts
 
-with urllib.request.urlopen(urllib.request.Request(sankey_url, headers=headers), timeout=30) as response:
-    sankey_js = response.read().decode("utf-8")
-
-with urllib.request.urlopen(urllib.request.Request(wheel_url, headers=headers), timeout=30) as response:
-    wheel_js = response.read().decode("utf-8")
-
-# Generate HTML with custom CSS for extra polish
-chart_json = json.dumps(chart_config)
+# Generate HTML with inline scripts for headless Chrome
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -165,12 +168,16 @@ html_content = f"""<!DOCTYPE html>
         Highcharts.setOptions({{
             chart: {{ style: {{ fontFamily: "'Inter', 'Segoe UI', Helvetica, sans-serif" }} }}
         }});
-        Highcharts.chart('container', {chart_json});
+        {chart_js}
     </script>
 </body>
 </html>"""
 
-# Save interactive HTML version
+# Save interactive HTML version (CDN-based for portability)
+standalone_js = chart_js.replace(
+    "document.addEventListener('DOMContentLoaded', function() {",
+    "document.addEventListener('DOMContentLoaded', function() {",
+)
 standalone_html = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -189,7 +196,7 @@ standalone_html = f"""<!DOCTYPE html>
         Highcharts.setOptions({{
             chart: {{ style: {{ fontFamily: "'Inter', 'Segoe UI', Helvetica, sans-serif" }} }}
         }});
-        Highcharts.chart('container', {chart_json});
+        {standalone_js}
     </script>
 </body>
 </html>"""

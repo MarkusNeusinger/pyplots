@@ -1,15 +1,15 @@
 library: altair
 specification_id: qrcode-basic
 created: '2026-01-07T16:30:24Z'
-updated: '2026-01-07T16:39:38Z'
-generated_by: claude-opus-4-5-20251101
+updated: '2026-04-07T17:45:00+00:00'
+generated_by: claude-opus-4-6
 workflow_run: 20788384689
 issue: 3184
-python_version: 3.13.11
-library_version: 6.0.0
+python_version: '3.14.3'
+library_version: '6.0.0'
 preview_url: https://storage.googleapis.com/pyplots-images/plots/qrcode-basic/altair/plot.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/qrcode-basic/altair/plot.html
-quality_score: 91
+quality_score: null
 review:
   strengths:
   - Excellent implementation of QR code structure with proper finder patterns in three
@@ -190,7 +190,8 @@ review:
           more Altair features like tooltips or interactivity
   verdict: APPROVED
 impl_tags:
-  dependencies: []
+  dependencies:
+  - qrcode
   techniques:
   - html-export
   patterns:

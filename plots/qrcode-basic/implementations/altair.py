@@ -1,110 +1,61 @@
-""" pyplots.ai
+"""pyplots.ai
 qrcode-basic: Basic QR Code Generator
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 91/100 | Created: 2026-01-07
+Library: altair 6.0.0 | Python 3.14.3
+Quality: /100 | Updated: 2026-04-07
 """
 
 import altair as alt
 import numpy as np
 import pandas as pd
+import qrcode
 
 
-# Data - Generate QR code pattern (Version 1, 21x21 modules)
-# Creates a proper QR code structure with finder patterns
-np.random.seed(42)
-
-size = 21  # Version 1 QR code size
-quiet_zone = 4  # Standard quiet zone (white border)
-total_size = size + 2 * quiet_zone
-
-# Initialize matrix with white (0)
-matrix = np.zeros((total_size, total_size), dtype=int)
-
-# Add finder pattern at top-left
-for i in range(7):
-    matrix[quiet_zone + i, quiet_zone] = 1
-    matrix[quiet_zone + i, quiet_zone + 6] = 1
-    matrix[quiet_zone, quiet_zone + i] = 1
-    matrix[quiet_zone + 6, quiet_zone + i] = 1
-for i in range(2, 5):
-    for j in range(2, 5):
-        matrix[quiet_zone + i, quiet_zone + j] = 1
-
-# Add finder pattern at top-right
-tr_col = quiet_zone + size - 7
-for i in range(7):
-    matrix[quiet_zone + i, tr_col] = 1
-    matrix[quiet_zone + i, tr_col + 6] = 1
-    matrix[quiet_zone, tr_col + i] = 1
-    matrix[quiet_zone + 6, tr_col + i] = 1
-for i in range(2, 5):
-    for j in range(2, 5):
-        matrix[quiet_zone + i, tr_col + j] = 1
-
-# Add finder pattern at bottom-left
-bl_row = quiet_zone + size - 7
-for i in range(7):
-    matrix[bl_row + i, quiet_zone] = 1
-    matrix[bl_row + i, quiet_zone + 6] = 1
-    matrix[bl_row, quiet_zone + i] = 1
-    matrix[bl_row + 6, quiet_zone + i] = 1
-for i in range(2, 5):
-    for j in range(2, 5):
-        matrix[bl_row + i, quiet_zone + j] = 1
-
-# Add timing patterns (alternating black/white lines between finder patterns)
-for i in range(8, size - 8):
-    matrix[quiet_zone + 6, quiet_zone + i] = (i + 1) % 2
-    matrix[quiet_zone + i, quiet_zone + 6] = (i + 1) % 2
-
-# Add dark module (always black, required in QR codes)
-matrix[quiet_zone + size - 8, quiet_zone + 8] = 1
-
-# Fill data area with deterministic pattern representing encoded data
+# Data - Generate a real, scannable QR code encoding "https://pyplots.ai"
 content = "https://pyplots.ai"
-hash_val = hash(content)
-for row in range(total_size):
-    for col in range(total_size):
-        qr_row = row - quiet_zone
-        qr_col = col - quiet_zone
 
-        # Skip quiet zone
-        if row < quiet_zone or row >= total_size - quiet_zone:
-            continue
-        if col < quiet_zone or col >= total_size - quiet_zone:
-            continue
+qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_M, box_size=1, border=0)
+qr.add_data(content)
+qr.make(fit=True)
 
-        # Skip finder patterns and separators
-        if qr_row < 9 and qr_col < 9:
-            continue
-        if qr_row < 9 and qr_col >= size - 8:
-            continue
-        if qr_row >= size - 8 and qr_col < 9:
-            continue
+# Convert QR code to numpy matrix and add quiet zone
+qr_matrix = np.array(qr.get_matrix(), dtype=int)
+quiet_zone = 4
+padded = np.zeros((qr_matrix.shape[0] + 2 * quiet_zone, qr_matrix.shape[1] + 2 * quiet_zone), dtype=int)
+padded[quiet_zone : quiet_zone + qr_matrix.shape[0], quiet_zone : quiet_zone + qr_matrix.shape[1]] = qr_matrix
+total_size = padded.shape[0]
 
-        # Skip timing patterns
-        if qr_row == 6 or qr_col == 6:
-            continue
+# Build DataFrame for Altair (row, col, value)
+rows, cols = np.where(np.ones_like(padded, dtype=bool))
+module_type = []
+for r, c in zip(rows, cols, strict=True):
+    qr_r, qr_c = r - quiet_zone, c - quiet_zone
+    if qr_r < 0 or qr_r >= qr_matrix.shape[0] or qr_c < 0 or qr_c >= qr_matrix.shape[1]:
+        module_type.append("Quiet Zone")
+    elif (
+        (qr_r < 7 and qr_c < 7)
+        or (qr_r < 7 and qr_c >= qr_matrix.shape[1] - 7)
+        or (qr_r >= qr_matrix.shape[0] - 7 and qr_c < 7)
+    ):
+        module_type.append("Finder Pattern")
+    elif qr_r == 6 or qr_c == 6:
+        module_type.append("Timing Pattern")
+    else:
+        module_type.append("Data")
+data = pd.DataFrame({"x": cols, "y": total_size - 1 - rows, "value": padded[rows, cols], "region": module_type})
 
-        # Create deterministic pattern from position and content hash
-        idx = row * total_size + col
-        matrix[row, col] = ((hash_val >> (idx % 32)) ^ (idx * 7)) % 2
-
-# Convert matrix to DataFrame for Altair
-data = []
-for row in range(total_size):
-    for col in range(total_size):
-        data.append({"x": col, "y": total_size - 1 - row, "value": matrix[row, col]})
-df = pd.DataFrame(data)
-
-# Create QR code visualization using mark_rect
+# Plot - QR code visualization using mark_rect
 chart = (
-    alt.Chart(df)
-    .mark_rect(stroke=None)
+    alt.Chart(data)
+    .mark_rect(stroke=None, strokeWidth=0)
     .encode(
         x=alt.X("x:O", axis=None),
         y=alt.Y("y:O", axis=None),
         color=alt.Color("value:N", scale=alt.Scale(domain=[0, 1], range=["#FFFFFF", "#000000"]), legend=None),
+        tooltip=[
+            alt.Tooltip("region:N", title="Region"),
+            alt.Tooltip("x:O", title="Col"),
+            alt.Tooltip("y:O", title="Row"),
+        ],
     )
     .properties(
         width=800,
@@ -115,8 +66,6 @@ chart = (
     .configure_axis(grid=False)
 )
 
-# Save as PNG (square format: 3600 x 3600 px with scale_factor)
+# Save
 chart.save("plot.png", scale_factor=4.5)
-
-# Save interactive HTML version
 chart.save("plot.html")

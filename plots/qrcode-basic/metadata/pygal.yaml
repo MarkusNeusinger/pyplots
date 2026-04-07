@@ -1,7 +1,7 @@
 library: pygal
 specification_id: qrcode-basic
 created: '2026-01-07T16:30:49Z'
-updated: '2026-04-07T17:54:33Z'
+updated: '2026-04-07T18:05:34Z'
 generated_by: claude-opus-4-6
 workflow_run: 20788388854
 issue: 3184
@@ -9,34 +9,31 @@ python_version: 3.14.3
 library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/qrcode-basic/pygal/plot.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/qrcode-basic/pygal/plot.html
-quality_score: 81
+quality_score: 84
 review:
   strengths:
-  - Creative use of pygal StackedBar with per-value color dictionaries to render QR
-    code matrix
-  - Uses real qrcode library ensuring scannable output as spec requires
-  - Clean purposeful minimalist design with proper quiet zone around the code
-  - Informative subtitle displaying encoded URL, error correction level, and matrix
-    dimensions
-  - Perfect spec compliance with all required features present
+  - Creative use of pygal StackedBar as a pixel grid to render the QR code
+  - Proper use of the qrcode library ensures valid scannable output
+  - Finder pattern highlighting in indigo adds visual distinction
+  - CSS injection to eliminate bar strokes is a clever pygal-specific technique
+  - Clean removal of all chart chrome creates a focused presentation
   weaknesses:
-  - Thin gaps between stacked bar rows reduce crisp grid appearance and may affect
-    scannability
-  - Library mastery limited — StackedBar is creative workaround but not pygal strength
-    for grid rendering
-  - Some vertical whitespace could be better utilized
-  image_description: 'The plot displays a QR code rendered on a white 3600×3600 square
+  - Design excellence could be elevated with more visual sophistication
+  - The is_finder() helper function breaks KISS pattern
+  - Excess whitespace between title, QR code, and subtitle reduces canvas efficiency
+  - No additional structural element differentiation to push aesthetic quality higher
+  image_description: 'The plot shows a QR code rendered on a white 3600x3600 square
     canvas using pygal''s StackedBar chart. The title "qrcode-basic · pygal · pyplots.ai"
-    appears at the top in dark text. The QR code itself is a 25×25 module grid of
-    black and white squares with the characteristic three finder patterns (large concentric
-    squares) in the top-left, top-right, and bottom-left corners. A white quiet zone
-    surrounds the QR code. Below the code, informative text reads "https://pyplots.ai
-    · Error Correction: M (15%) · 25×25 modules". There are thin visible gaps/lines
-    between some module rows due to the StackedBar rendering approach, slightly reducing
-    the crispness of the grid.'
+    appears at the top in dark gray text. The QR code occupies the central area with
+    a white quiet zone border. Three finder patterns (7x7 squares in the top-left,
+    top-right, and bottom-left corners) are rendered in deep indigo (#1a237e), while
+    all data modules are black (#000000) on white. Below the QR code, a two-line subtitle
+    reads "https://pyplots.ai · Error Correction: M (15%) · 25x25 modules · Finder
+    patterns highlighted in indigo". The overall layout is clean with no axes, gridlines,
+    or legend visible.'
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -44,40 +41,41 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title_font_size=72, label_font_size=42),
-          all text clearly readable
+        comment: Font sizes explicitly set (title=72, labels=42); all text clearly
+          readable. Subtitle font could be slightly larger.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No text overlap anywhere
+        comment: No overlapping text or elements. Cell oversize (1.03) eliminates
+          seams cleanly.
       - id: VQ-03
         name: Element Visibility
-        score: 4
+        score: 6
         max: 6
-        passed: false
-        comment: QR modules visible with high contrast but thin gaps between stacked
-          bar rows reduce crisp grid appearance
+        passed: true
+        comment: QR modules are crisp and clearly visible with strong black/white
+          contrast.
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 4
         passed: true
-        comment: Black on white, maximum contrast, universally accessible
+        comment: Black and deep indigo on white — excellent contrast, fully colorblind-safe.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Square canvas appropriate for QR code, good margins, some wasted
-          vertical whitespace
+        comment: Good utilization (~55-60% filled). Some excess whitespace between
+          title and QR code.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Informative x_title with URL, error correction, and module size
+        comment: Axes correctly hidden. x_title provides descriptive metadata.
     design_excellence:
       score: 12
       max: 20
@@ -87,21 +85,22 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Clean purposeful black-on-white design with custom Style settings,
-          above defaults
+        comment: Indigo finder patterns add visual interest. Clean white background.
+          Above default but not publication-level.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: All axes guides and labels hidden, clean background, intentional
-          margins
+        comment: All chart chrome removed. CSS injection eliminates bar strokes. Clean
+          presentation.
       - id: DE-03
         name: Data Storytelling
         score: 3
         max: 6
-        passed: false
-        comment: Subtitle provides context but no additional visual emphasis or hierarchy
+        passed: true
+        comment: Indigo finder patterns create some visual hierarchy. Subtitle contextualizes
+          content. Could guide viewer more.
     spec_compliance:
       score: 15
       max: 15
@@ -111,26 +110,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct QR code visualization using real qrcode library
+        comment: Correct QR code visualization using qrcode library and pygal StackedBar.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
         comment: Quiet zone, high contrast, finder patterns, error correction M, qrcode
-          library all present
+          library — all present.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: QR matrix correctly mapped to StackedBar grid
+        comment: QR matrix correctly mapped row-by-row to stacked bar grid.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, no legend needed
+        comment: Title format correct. Legend appropriately hidden.
     data_quality:
       score: 14
       max: 15
@@ -140,71 +139,74 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows complete QR code with all structural elements
+        comment: Complete QR code with all structural elements. Limited variation
+          inherent to QR format.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Encodes real meaningful URL https://pyplots.ai
+        comment: Encodes https://pyplots.ai — a real, meaningful URL.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 25x25 modules with error correction M appropriate for URL length
+        comment: 25x25 modules with M error correction appropriate for URL length.
     code_quality:
-      score: 9
+      score: 8
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
         score: 2
         max: 3
-        passed: false
-        comment: Follows pattern but sys.path manipulation adds necessary complexity
+        passed: true
+        comment: Helper function is_finder() breaks flat structure. sys.path manipulation
+          adds complexity.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: 'Deterministic: same URL always produces identical QR code'
+        comment: QR code generation is deterministic for the same input.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used, noqa comments justified for E402
+        comment: All imports used. noqa comments justified by sys.path workaround.
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
         passed: true
-        comment: Creative StackedBar approach with clean loop structure
+        comment: sys.path manipulation necessary but complex. CELL=1.03 is clever.
+          is_finder could be inlined.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html
+        comment: Saves as plot.png and plot.html using current pygal API.
     library_mastery:
-      score: 5
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
         score: 3
         max: 5
-        passed: false
-        comment: Uses StackedBar and Style correctly but StackedBar is not natural
-          for grid rendering
+        passed: true
+        comment: Uses StackedBar with per-cell color dicts and custom Style. Creative
+          but not standard pygal pattern.
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 4
         max: 5
-        passed: false
-        comment: Per-value color dicts and dual export somewhat pygal-specific but
-          not core strengths
+        passed: true
+        comment: CSS injection, per-value color dicts, and dual SVG/PNG output are
+          pygal-distinctive features.
   verdict: REJECTED
 impl_tags:
   dependencies:
@@ -217,3 +219,4 @@ impl_tags:
   dataprep: []
   styling:
   - minimal-chrome
+  - edge-highlighting

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 qrcode-basic: Basic QR Code Generator
 Library: bokeh 3.8.2 | Python 3.14.3
-Quality: 86/100 | Updated: 2026-04-07
+Updated: 2026-04-07
 """
 
 import numpy as np
@@ -29,40 +29,34 @@ quiet_zone = 4
 finder_size = 7
 alignment_pos = qrcode.util.pattern_position(qr.version)
 
+# Build sets of finder pattern coordinates for fast lookup
+finder_corners = set()
+for r in range(finder_size):
+    for c in range(finder_size):
+        finder_corners.add((r, c))  # Top-Left
+        finder_corners.add((r, size - finder_size + c))  # Top-Right
+        finder_corners.add((size - finder_size + r, c))  # Bottom-Left
 
-def classify_module(row, col):
-    """Classify each module into its functional region."""
-    # Finder patterns (three corners)
-    if row < finder_size and col < finder_size:
-        return "Finder Pattern (Top-Left)"
-    if row < finder_size and col >= size - finder_size:
-        return "Finder Pattern (Top-Right)"
-    if row >= size - finder_size and col < finder_size:
-        return "Finder Pattern (Bottom-Left)"
-    # Timing patterns (row 6 and col 6 between finders)
-    if row == 6 and finder_size <= col <= size - finder_size - 1:
-        return "Timing Pattern"
-    if col == 6 and finder_size <= row <= size - finder_size - 1:
-        return "Timing Pattern"
-    # Alignment pattern
-    if alignment_pos:
-        for ar in alignment_pos:
-            for ac in alignment_pos:
-                if abs(row - ar) <= 2 and abs(col - ac) <= 2:
-                    # Skip if overlapping with finder
-                    if not (row < finder_size and col < finder_size):
-                        if not (row < finder_size and col >= size - finder_size):
-                            if not (row >= size - finder_size and col < finder_size):
-                                return "Alignment Pattern"
-    return "Data & Error Correction"
-
+# Build set of alignment pattern coordinates
+alignment_cells = set()
+if alignment_pos:
+    for ar in alignment_pos:
+        for ac in alignment_pos:
+            if (
+                (ar, ac) not in {(r, c) for r in range(finder_size) for c in range(finder_size)}
+                and (ar, ac)
+                not in {(r, size - finder_size + c) for r in range(finder_size) for c in range(finder_size)}
+                and (ar, ac)
+                not in {(size - finder_size + r, c) for r in range(finder_size) for c in range(finder_size)}
+            ):
+                for dr in range(-2, 3):
+                    for dc in range(-2, 3):
+                        alignment_cells.add((ar + dr, ac + dc))
 
 # Create coordinates with region classification
 mod_x, mod_y, mod_region, mod_color = [], [], [], []
-region_colors = {
-    "Finder Pattern (Top-Left)": "#306998",
-    "Finder Pattern (Top-Right)": "#306998",
-    "Finder Pattern (Bottom-Left)": "#306998",
+color_map = {
+    "Finder Pattern": "#306998",
     "Timing Pattern": "#4A8BBE",
     "Alignment Pattern": "#4A8BBE",
     "Data & Error Correction": "#1a1a1a",
@@ -71,11 +65,20 @@ region_colors = {
 for row in range(size):
     for col in range(size):
         if qr_matrix[row, col]:
-            region = classify_module(row, col)
+            if (row, col) in finder_corners:
+                region = "Finder Pattern"
+            elif (row == 6 and finder_size <= col <= size - finder_size - 1) or (
+                col == 6 and finder_size <= row <= size - finder_size - 1
+            ):
+                region = "Timing Pattern"
+            elif (row, col) in alignment_cells:
+                region = "Alignment Pattern"
+            else:
+                region = "Data & Error Correction"
             mod_x.append(col + quiet_zone + 0.5)
             mod_y.append(size - row - 1 + quiet_zone + 0.5)
             mod_region.append(region)
-            mod_color.append(region_colors[region])
+            mod_color.append(color_map[region])
 
 source = ColumnDataSource(data={"x": mod_x, "y": mod_y, "region": mod_region, "color": mod_color})
 
@@ -87,7 +90,7 @@ p = figure(
     height=3600,
     title="qrcode-basic · bokeh · pyplots.ai",
     x_range=(-1, total_size + 1),
-    y_range=(-4.5, total_size + 1),
+    y_range=(-3.5, total_size + 1),
     tools="",
     toolbar_location=None,
     match_aspect=True,
@@ -120,7 +123,7 @@ p.add_tools(hover)
 # Footer with encoded content and version info - balanced spacing
 encoded_label = Label(
     x=total_size / 2,
-    y=-1.8,
+    y=-1.0,
     text=f"Encoded: {content}",
     text_font_size="22pt",
     text_color="#555555",
@@ -131,7 +134,7 @@ p.add_layout(encoded_label)
 
 version_label = Label(
     x=total_size / 2,
-    y=-3.5,
+    y=-2.5,
     text=f"Version {qr.version} ({size}×{size}) · Error Correction Level M (15%)",
     text_font_size="18pt",
     text_color="#888888",

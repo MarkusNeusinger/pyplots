@@ -20,7 +20,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.cache import cache_key, get_or_set_cache
 from api.dependencies import require_db
 from core.constants import SUPPORTED_LIBRARIES
-from core.database import ImplRepository, SpecRepository
+from core.database import ImplRepository, Spec, SpecRepository
 from core.database.connection import get_db_context
 from core.utils import strip_noqa_comments
 
@@ -219,7 +219,7 @@ async def _build_dashboard(repo: SpecRepository, impl_repo: ImplRepository) -> D
     all_scores: list[float] = []
 
     library_scores: dict[str, list[float]] = {lib: [] for lib in SUPPORTED_LIBRARIES}
-    library_counts: dict[str, int] = dict.fromkeys(SUPPORTED_LIBRARIES, 0)  # type: ignore[arg-type]
+    library_counts = dict.fromkeys(SUPPORTED_LIBRARIES, 0)
 
     tag_counter: dict[str, Counter[str]] = defaultdict(Counter)
     monthly_counts: Counter[str] = Counter()
@@ -368,7 +368,7 @@ async def _build_potd(spec_repo: SpecRepository, impl_repo: ImplRepository) -> P
     today = date.today().isoformat()
 
     # Collect candidates: implementations with quality_score >= 90 (lightweight, no code loaded)
-    candidates: list[tuple[str, str, str, str | None, float, str | None]] = []
+    candidates: list[tuple[str, str, str, str, float, str]] = []
     for spec in all_specs:
         for impl in spec.impls:
             if impl.quality_score is not None and impl.quality_score >= 90 and impl.preview_url:
@@ -428,7 +428,7 @@ async def get_plot_of_the_day(db: AsyncSession = Depends(require_db)) -> PlotOfT
 # =============================================================================
 
 
-def _collect_impl_tags(spec: object, library: str | None = None) -> set[str]:
+def _collect_impl_tags(spec: Spec, library: str | None = None) -> set[str]:
     """Collect spec-level tags + impl-level tags for a spec.
 
     If library is specified, only include that library's impl_tags.
@@ -471,7 +471,7 @@ async def _build_related(
         return RelatedSpecsResponse(related=[])
 
     # Compute similarity for all other specs
-    scored: list[tuple[float, list[str], object]] = []
+    scored: list[tuple[float, list[str], Spec]] = []
     for spec in all_specs:
         if spec.id == spec_id:
             continue

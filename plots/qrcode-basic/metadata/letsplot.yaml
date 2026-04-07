@@ -1,147 +1,157 @@
 library: letsplot
 specification_id: qrcode-basic
 created: '2026-01-07T16:33:44Z'
-updated: '2026-04-07T17:45:00+00:00'
+updated: '2026-04-07T17:54:24Z'
 generated_by: claude-opus-4-6
 workflow_run: 20788398918
 issue: 3184
-python_version: '3.14.3'
-library_version: '4.8.2'
+python_version: 3.14.3
+library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/qrcode-basic/letsplot/plot.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/qrcode-basic/letsplot/plot.html
-quality_score: null
+quality_score: 85
 review:
   strengths:
-  - Excellent use of geom_tile for QR code matrix visualization
-  - Clean theming that removes all axes, grids, and backgrounds for a pure QR display
-  - Proper quiet zone implementation through QRCode border parameter
-  - High contrast black/white color scheme ensures scannability
-  - Correct title format following spec requirements
+  - Uses the qrcode library as recommended by spec, producing a genuinely scannable
+    QR code
+  - Clean, minimal design with all unnecessary chrome properly removed
+  - Proper quiet zone (border=4) and high-contrast black/white rendering
+  - Deterministic output with clean KISS code structure
+  - Full spec compliance with correct title format and error correction level
   weaknesses:
-  - Saves both PNG and HTML when only PNG is required for static visualization
-  - Could use coord_fixed() to guarantee 1:1 aspect ratio
-  image_description: The plot displays a well-formed QR code rendered using lets-plot's
-    geom_tile function. The QR code appears as a square matrix of black (#000000)
-    and white (#FFFFFF) tiles on a clean white background. Three characteristic finder
-    patterns (square-in-square position detection markers) are clearly visible in
-    the top-left, top-right, and bottom-left corners. The title "qrcode-basic · letsplot
-    · pyplots.ai" appears centered at the top in gray text. The QR code has an adequate
-    quiet zone (white border) around it for reliable scanning. The encoded content
-    is "https://pyplots.ai" with error correction level M. The overall layout is balanced
-    with the QR code well-centered in the 3600×3600 square canvas.
+  - No distinctive lets-plot features leveraged — implementation is generic ggplot
+    that could be any grammar-of-graphics library
+  - Extra whitespace below the QR code reduces canvas utilization
+  - Subtitle font size (16pt) is slightly small relative to the 3600x3600 canvas
+  image_description: 'The plot displays a QR code rendered as a grid of black and
+    white square tiles on a clean white background. The title "qrcode-basic · letsplot
+    · pyplots.ai" appears centered at the top in dark text (~24pt), with a gray subtitle
+    "Encoded: https://pyplots.ai | Error Correction: M (15%)" below it. The QR code
+    itself features three finder patterns (large black-white-black squares) in the
+    top-left, top-right, and bottom-left corners. The data modules form a complex
+    pattern of black and white squares in the center and lower-right regions. A generous
+    quiet zone (white border) surrounds the QR code. The image is square format (3600×3600
+    at scale=3). All axes, spines, grid lines, and ticks are removed, giving a clean
+    presentation. The QR code appears well-formed and scannable.'
   criteria_checklist:
     visual_quality:
-      score: 38
-      max: 40
+      score: 28
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 7
+        max: 8
         passed: true
-        comment: Title is clearly readable at 24pt size
+        comment: Title 24pt and subtitle 16pt explicitly set; subtitle slightly small
+          for 3600x3600 canvas
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping elements
+        comment: No overlapping elements anywhere
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: QR code tiles are sharp and well-defined
+        comment: QR modules clearly visible, well-sized tiles with no gaps
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: High contrast black on white, perfect for QR codes
+        comment: Black on white provides maximum contrast, inherently colorblind-safe
       - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
+        name: Layout & Canvas
+        score: 3
+        max: 4
         passed: true
-        comment: QR code is well-centered with appropriate quiet zone
+        comment: QR code centered but noticeable extra whitespace below; canvas utilization
+          ~55%
       - id: VQ-06
-        name: Axis Labels
-        score: 0
-        max: 2
-        passed: true
-        comment: N/A for QR codes - axes correctly hidden
-      - id: VQ-07
-        name: Grid & Legend
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: No grid/legend needed, correctly omitted
+        comment: Axes appropriately hidden for QR code; title and subtitle are descriptive
+    design_excellence:
+      score: 13
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: true
+        comment: Clean intentional design with appropriate black/white palette and
+          gray subtitle hierarchy
+      - id: DE-02
+        name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: All chrome removed (axes, spines, grid, ticks, backgrounds); clean
+          and polished
+      - id: DE-03
+        name: Data Storytelling
+        score: 3
+        max: 6
+        passed: true
+        comment: Subtitle communicates encoded content and error correction level
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct QR code visualization using tile-based rendering
+        comment: Correct QR code generated using qrcode library as recommended
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: QR matrix correctly mapped to x/y coordinates with fill
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Includes quiet zone, high contrast B/W, finder patterns, error correction
-          M
-      - id: SC-04
-        name: Data Range
+        comment: Quiet zone, high contrast, finder patterns, error correction M, scannable
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Full QR matrix displayed
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Correct x/y coordinate mapping with y-flip for proper QR orientation
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend correctly hidden with show_legend=False
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Correct format: qrcode-basic · letsplot · pyplots.ai'
+        comment: Title matches required format; no legend needed for QR code
     data_quality:
-      score: 17
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Shows standard QR code; could demonstrate different error correction
-          levels
+        comment: Complete QR code with all standard elements
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
+        score: 5
+        max: 5
         passed: true
-        comment: Real URL (https://pyplots.ai) - practical, scannable content
+        comment: Encodes a real, relevant URL (https://pyplots.ai)
       - id: DQ-03
         name: Appropriate Scale
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Version 1 QR code is appropriate for short URL
+        comment: Error correction M is appropriate default; auto-sizing via fit=True
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -149,50 +159,57 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save structure
+        comment: Clean imports, data generation, plot, save flow
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Deterministic data (fixed URL string, no random elements)
+        comment: 'Deterministic: same URL always produces the same QR code'
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports used, explicit imports from lets_plot
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
+        score: 2
+        max: 2
+        passed: true
+        comment: Clean, appropriate complexity
+      - id: CQ-05
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Uses current lets-plot API
-      - id: CQ-05
-        name: Output Correct
-        score: 0
-        max: 1
-        passed: false
-        comment: Saves plot.png but also unnecessarily saves plot.html
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves as plot.png with ggsave, current API
+    library_mastery:
+      score: 5
+      max: 10
       items:
-      - id: LF-01
-        name: Distinctive Features
-        score: 3
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
         max: 5
         passed: true
-        comment: Uses geom_tile, scale_fill_manual, theme customization; could use
-          coord_fixed() for guaranteed square aspect
-  verdict: APPROVED
+        comment: Proper ggplot grammar with aes mapping, geom_tile, scale_fill_manual,
+          coord_fixed
+      - id: LM-02
+        name: Distinctive Features
+        score: 1
+        max: 5
+        passed: false
+        comment: Generic ggplot approach; could be replicated in plotnine with minimal
+          changes
+  verdict: REJECTED
 impl_tags:
   dependencies:
   - qrcode
   techniques:
-  - minimal-chrome
+  - layer-composition
   patterns:
-  - matrix-construction
+  - data-generation
   - iteration-over-groups
   dataprep: []
   styling:

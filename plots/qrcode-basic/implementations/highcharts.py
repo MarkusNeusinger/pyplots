@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 qrcode-basic: Basic QR Code Generator
 Library: highcharts 1.10.3 | Python 3.14.3
 Quality: 87/100 | Updated: 2026-04-07
@@ -25,6 +25,8 @@ qr.add_data(content)
 qr.make(fit=True)
 matrix = qr.get_matrix()
 size = len(matrix)
+qr_version = qr.version
+module_count = size - 2 * qr.border  # actual QR modules without quiet zone
 
 # Convert to heatmap data [x, y, value] with y flipped for correct orientation
 heatmap_data = []
@@ -43,7 +45,7 @@ chart.options.chart = {
     "height": 3600,
     "backgroundColor": "#f8f9fa",
     "marginTop": 200,
-    "marginBottom": 120,
+    "marginBottom": 200,
     "marginLeft": 120,
     "marginRight": 120,
     "style": {"fontFamily": "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"},
@@ -68,7 +70,19 @@ chart.options.color_axis = {"min": 0, "max": 1, "stops": [[0, "#ffffff"], [1, "#
 
 chart.options.legend = {"enabled": False}
 chart.options.credits = {"enabled": False}
-chart.options.tooltip = {"enabled": False}
+
+# Build tooltip config properly instead of brittle string replacement
+chart.options.tooltip = {
+    "enabled": True,
+    "snap": 0,
+    "headerFormat": "",
+    "backgroundColor": "rgba(26,26,46,0.9)",
+    "borderColor": "#306998",
+    "borderRadius": 12,
+    "borderWidth": 2,
+    "style": {"color": "#ffffff", "fontSize": "28px"},
+    "useHTML": True,
+}
 
 chart.options.plot_options = {
     "heatmap": {
@@ -117,47 +131,53 @@ for name, path in js_paths.items():
 highcharts_js = js_code["highcharts"]
 heatmap_js = js_code["heatmap"]
 
-# Build options and inject custom formatter for hover tooltip
+# Build options JSON and inject formatter as JS function
 options_dict = chart.options.to_dict()
 options_json = json.dumps(options_dict)
 
-# Replace tooltip disabled with a custom point formatter (Highcharts-specific feature)
-options_json = options_json.replace(
-    '"tooltip": {"enabled": false}',
-    '"tooltip": {"enabled": true, "snap": 0, "headerFormat": "", '
-    '"pointFormatter": "PLACEHOLDER_FORMATTER", '
-    '"style": {"fontSize": "28px"}, "backgroundColor": "rgba(26,26,46,0.9)", '
-    '"borderColor": "#306998", "borderRadius": 12, "borderWidth": 2, '
-    '"style": {"color": "#ffffff", "fontSize": "28px"}}',
-)
-# Inject actual JS function (cannot be JSON-serialized)
+# Inject tooltip pointFormatter as a real JS function via placeholder
+tooltip_placeholder = '"__POINT_FORMATTER__"'
+options_dict["tooltip"]["pointFormatter"] = "__POINT_FORMATTER__"
+options_json = json.dumps(options_dict)
 formatter_js = (
     "function() { "
     "var pos = '(' + this.x + ', ' + (this.series.yAxis.max - this.y) + ')'; "
     "return '<b>' + (this.point.value === 1 ? '\\u25a0 Data Module' : '\\u25a1 Quiet Zone') + '</b><br/>Position: ' + pos; "
     "}"
 )
-options_json = options_json.replace('"PLACEHOLDER_FORMATTER"', formatter_js)
+options_json = options_json.replace(tooltip_placeholder, formatter_js)
 
-# Custom render callback to draw a rounded frame around the QR code
-render_callback = """
-Highcharts.addEvent(chart, 'render', function() {
+# Footer text with QR technical details
+footer_text = (
+    f"Version {qr_version} &middot; Error Correction M (15%) &middot; {module_count}&times;{module_count} modules"
+)
+
+# Custom render callback to draw rounded frame and footer
+render_callback = f"""
+Highcharts.addEvent(chart, 'render', function() {{
     var ren = this.renderer;
     if (this.customFrame) this.customFrame.destroy();
+    if (this.customFooter) this.customFooter.destroy();
     var plotX = this.plotLeft - 20;
     var plotY = this.plotTop - 20;
     var plotW = this.plotWidth + 40;
     var plotH = this.plotHeight + 40;
     this.customFrame = ren.rect(plotX, plotY, plotW, plotH, 16)
-        .attr({
+        .attr({{
             'stroke': '#306998',
             'stroke-width': 4,
             fill: 'none',
             zIndex: 5,
             filter: 'url(#drop-shadow)'
-        })
+        }})
         .add();
-});
+    this.customFooter = ren.text('{footer_text}',
+        this.chartWidth / 2, this.chartHeight - 60)
+        .attr({{ align: 'center', zIndex: 5 }})
+        .css({{ fontSize: '32px', color: '#6c757d', fontWeight: '400',
+               fontFamily: "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }})
+        .add();
+}});
 """
 
 # SVG filter for drop shadow
@@ -187,7 +207,7 @@ html_content = f"""<!DOCTYPE html>
     temp.innerHTML = '<svg>' + defsHtml + '</svg>';
     var defs = temp.firstChild.firstChild;
     svgEl.insertBefore(defs, svgEl.firstChild);
-    // Draw rounded frame with shadow
+    // Draw rounded frame with shadow and footer
     {render_callback}
     </script>
 </body>

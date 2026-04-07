@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 qrcode-basic: Basic QR Code Generator
 Library: highcharts 1.10.3 | Python 3.14.3
-Quality: 82/100 | Updated: 2026-04-07
 """
 
 import json
@@ -41,31 +40,56 @@ chart.options.chart = {
     "type": "heatmap",
     "width": 3600,
     "height": 3600,
-    "backgroundColor": "#ffffff",
-    "marginTop": 120,
-    "marginBottom": 80,
-    "marginLeft": 80,
-    "marginRight": 80,
+    "backgroundColor": "#f8f9fa",
+    "marginTop": 200,
+    "marginBottom": 120,
+    "marginLeft": 120,
+    "marginRight": 120,
+    "style": {"fontFamily": "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"},
 }
 
 chart.options.title = {
     "text": "qrcode-basic \u00b7 highcharts \u00b7 pyplots.ai",
-    "style": {"fontSize": "48px", "fontWeight": "bold"},
+    "style": {"fontSize": "72px", "fontWeight": "700", "color": "#1a1a2e"},
+    "y": 60,
 }
 
-chart.options.subtitle = {"text": f"Encoded: {content}", "style": {"fontSize": "28px", "color": "#666666"}}
+chart.options.subtitle = {
+    "text": f"\ud83d\udd17 Encoded: {content}",
+    "style": {"fontSize": "40px", "color": "#306998", "fontWeight": "500"},
+    "y": 120,
+}
 
 chart.options.x_axis = {"visible": False, "min": -0.5, "max": size - 0.5}
 chart.options.y_axis = {"visible": False, "min": -0.5, "max": size - 0.5, "reversed": False}
 
-chart.options.color_axis = {"min": 0, "max": 1, "stops": [[0, "#ffffff"], [1, "#000000"]], "visible": False}
+chart.options.color_axis = {"min": 0, "max": 1, "stops": [[0, "#ffffff"], [1, "#1a1a2e"]], "visible": False}
 
 chart.options.legend = {"enabled": False}
 chart.options.credits = {"enabled": False}
 chart.options.tooltip = {"enabled": False}
 
 chart.options.plot_options = {
-    "heatmap": {"borderWidth": 0, "colsize": 1, "rowsize": 1, "dataLabels": {"enabled": False}}
+    "heatmap": {
+        "borderWidth": 0,
+        "colsize": 1,
+        "rowsize": 1,
+        "dataLabels": {"enabled": False},
+        "states": {
+            "hover": {"brightness": 0.15, "borderColor": "#306998", "borderWidth": 2},
+            "inactive": {"opacity": 1},
+        },
+    }
+}
+
+# Responsive rules: adapt title size for smaller containers
+chart.options.responsive = {
+    "rules": [
+        {
+            "condition": {"maxWidth": 1200},
+            "chartOptions": {"title": {"style": {"fontSize": "36px"}}, "subtitle": {"style": {"fontSize": "24px"}}},
+        }
+    ]
 }
 
 # Series
@@ -92,8 +116,57 @@ for name, path in js_paths.items():
 highcharts_js = js_code["highcharts"]
 heatmap_js = js_code["heatmap"]
 
-# Render via options dict for clean output
-options_json = json.dumps(chart.options.to_dict())
+# Build options and inject custom formatter for hover tooltip
+options_dict = chart.options.to_dict()
+options_json = json.dumps(options_dict)
+
+# Replace tooltip disabled with a custom point formatter (Highcharts-specific feature)
+options_json = options_json.replace(
+    '"tooltip": {"enabled": false}',
+    '"tooltip": {"enabled": true, "snap": 0, "headerFormat": "", '
+    '"pointFormatter": "PLACEHOLDER_FORMATTER", '
+    '"style": {"fontSize": "28px"}, "backgroundColor": "rgba(26,26,46,0.9)", '
+    '"borderColor": "#306998", "borderRadius": 12, "borderWidth": 2, '
+    '"style": {"color": "#ffffff", "fontSize": "28px"}}',
+)
+# Inject actual JS function (cannot be JSON-serialized)
+formatter_js = (
+    "function() { "
+    "var pos = '(' + this.x + ', ' + (this.series.yAxis.max - this.y) + ')'; "
+    "return '<b>' + (this.point.value === 1 ? '\\u25a0 Data Module' : '\\u25a1 Quiet Zone') + '</b><br/>Position: ' + pos; "
+    "}"
+)
+options_json = options_json.replace('"PLACEHOLDER_FORMATTER"', formatter_js)
+
+# Custom render callback to draw a rounded frame around the QR code
+render_callback = """
+Highcharts.addEvent(chart, 'render', function() {
+    var ren = this.renderer;
+    if (this.customFrame) this.customFrame.destroy();
+    var plotX = this.plotLeft - 20;
+    var plotY = this.plotTop - 20;
+    var plotW = this.plotWidth + 40;
+    var plotH = this.plotHeight + 40;
+    this.customFrame = ren.rect(plotX, plotY, plotW, plotH, 16)
+        .attr({
+            'stroke': '#306998',
+            'stroke-width': 4,
+            fill: 'none',
+            zIndex: 5,
+            filter: 'url(#drop-shadow)'
+        })
+        .add();
+});
+"""
+
+# SVG filter for drop shadow
+shadow_filter = """
+<defs>
+    <filter id="drop-shadow" x="-5%" y="-5%" width="120%" height="120%">
+        <feDropShadow dx="4" dy="6" stdDeviation="8" flood-color="rgba(48,105,152,0.25)"/>
+    </filter>
+</defs>
+"""
 
 html_content = f"""<!DOCTYPE html>
 <html>
@@ -102,9 +175,20 @@ html_content = f"""<!DOCTYPE html>
     <script>{highcharts_js}</script>
     <script>{heatmap_js}</script>
 </head>
-<body style="margin:0; background-color:#ffffff;">
+<body style="margin:0; padding:0; background-color:#f8f9fa; overflow:hidden;">
     <div id="container" style="width: 3600px; height: 3600px;"></div>
-    <script>Highcharts.chart('container', {options_json});</script>
+    <script>
+    var chart = Highcharts.chart('container', {options_json});
+    // Add drop shadow filter to SVG
+    var svgEl = chart.renderer.box;
+    var defsHtml = '{shadow_filter.strip().replace(chr(10), "")}';
+    var temp = document.createElement('div');
+    temp.innerHTML = '<svg>' + defsHtml + '</svg>';
+    var defs = temp.firstChild.firstChild;
+    svgEl.insertBefore(defs, svgEl.firstChild);
+    // Draw rounded frame with shadow
+    {render_callback}
+    </script>
 </body>
 </html>"""
 

@@ -1615,10 +1615,7 @@ class TestSpecCodeEndpoint:
     def test_code_cache_hit(self, client: TestClient) -> None:
         """Code endpoint should return cached data when available."""
         cached = {"spec_id": "scatter-basic", "library": "matplotlib", "code": "cached code"}
-        with (
-            patch(DB_CONFIG_PATCH, return_value=True),
-            patch("api.routers.specs.get_cache", return_value=cached),
-        ):
+        with patch(DB_CONFIG_PATCH, return_value=True), patch("api.routers.specs.get_cache", return_value=cached):
             response = client.get("/specs/scatter-basic/matplotlib/code")
             assert response.status_code == 200
             assert response.json()["code"] == "cached code"

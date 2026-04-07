@@ -1,192 +1,207 @@
 library: highcharts
 specification_id: qrcode-basic
 created: '2026-01-07T16:31:27Z'
-updated: '2026-04-07T17:45:00+00:00'
+updated: '2026-04-07T17:54:15Z'
 generated_by: claude-opus-4-6
 workflow_run: 20788390355
 issue: 3184
-python_version: '3.14.3'
-library_version: '1.10.3'
+python_version: 3.14.3
+library_version: 1.10.3
 preview_url: https://storage.googleapis.com/pyplots-images/plots/qrcode-basic/highcharts/plot.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/qrcode-basic/highcharts/plot.html
-quality_score: null
+quality_score: 82
 review:
   strengths:
-  - Excellent use of Highcharts heatmap to render QR code modules
-  - Clean, high-contrast black and white color scheme perfect for scanning
-  - Proper quiet zone implementation with appropriate margins
-  - Title format follows specification exactly
-  - HTML export provided for interactive viewing
-  - Y-axis flipping handled correctly for proper QR code orientation
+  - Uses the real qrcode library for proper scannable QR code generation as spec requires
+  - Clean heatmap approach with color_axis binary mapping (black/white stops) is an
+    elegant solution
+  - CDN fallback pattern with multiple base URLs ensures reliable rendering
+  - Perfect spec compliance — all required features present
   weaknesses:
-  - Image height is 3461px instead of expected 3600px (minor rendering variance from
-    Selenium screenshot)
-  - Code structure is necessarily complex due to Selenium-based PNG export
-  image_description: 'The plot displays a valid QR code rendered as a heatmap visualization
-    using Highcharts. The QR code is centered on a white background with a 3600x3600
-    square canvas. The title "qrcode-basic · highcharts · pyplots.ai" appears at the
-    top in bold black text (48px), with a subtitle "Encoded: https://pyplots.ai" in
-    smaller gray text below it. The QR code itself shows the characteristic three
-    finder patterns (large squares) in the top-left, top-right, and bottom-left corners.
-    The code uses pure black (#000000) modules on white (#ffffff) background with
-    high contrast. The quiet zone (white border) is visible around the QR code. The
-    QR code pattern is properly oriented and appears scannable.'
+  - Title and subtitle are small relative to the 3600px canvas — increase to 64px+
+    title, 36px+ subtitle
+  - Thin border line artifact visible at the bottom edge of the canvas
+  - Design lacks visual sophistication — could add a rounded border frame, shadow,
+    or branded color accent
+  - Library mastery is generic — no Highcharts-specific features leveraged beyond
+    basic heatmap
+  image_description: 'The plot displays a QR code rendered as a Highcharts heatmap
+    on a 3600×3600 white canvas. The title "qrcode-basic · highcharts · pyplots.ai"
+    appears in bold at the top center, with a smaller subtitle "Encoded: https://pyplots.ai"
+    below it. The QR code itself is rendered in high-contrast black-and-white squares,
+    featuring three finder patterns (large concentric squares) in the top-left, top-right,
+    and bottom-left corners. The data modules form the characteristic QR pattern in
+    the center. A quiet zone (white border) surrounds the code. There is a thin horizontal
+    line artifact at the very bottom edge of the canvas. The QR code fills approximately
+    60% of the canvas width, centered with generous whitespace around it.'
   criteria_checklist:
     visual_quality:
-      score: 38
-      max: 40
+      score: 27
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 6
+        max: 8
         passed: true
-        comment: Title at 48px and subtitle at 28px are clearly readable
+        comment: Title (48px) and subtitle (28px) explicitly set but small on 3600px
+          canvas
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
         comment: No overlapping elements
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: QR code modules are crisp and well-defined
+        comment: QR code modules are crisp with perfect black/white contrast
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Pure black on white, maximum contrast
+        comment: Black on white, universally accessible
       - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
+        name: Layout & Canvas
+        score: 3
+        max: 4
         passed: true
-        comment: QR code well-centered with appropriate quiet zone
+        comment: Well-centered but excess whitespace below and thin border artifact
+          at bottom
       - id: VQ-06
-        name: Axis Labels
-        score: 0
-        max: 2
-        passed: true
-        comment: N/A for QR codes - axes hidden appropriately
-      - id: VQ-07
-        name: Grid & Legend
+        name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Legend and grid correctly disabled for clean appearance
+        comment: Axes appropriately hidden; title in correct format with informative
+          subtitle
+    design_excellence:
+      score: 10
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
+        passed: true
+        comment: Clean and professional but essentially a well-configured default
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: 'Good refinement: axes hidden, legend/tooltip/credits disabled'
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: Subtitle shows encoded content but no visual hierarchy or emphasis
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct QR code visualization via heatmap
+        comment: Correct QR code visualization using proper qrcode library
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Matrix correctly mapped to heatmap coordinates
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: 'All spec features: quiet zone, high contrast, finder patterns, error
-          correction M'
-      - id: SC-04
-        name: Data Range
+        comment: Quiet zone, high contrast, finder patterns, error correction M, scannable
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Full QR code matrix displayed
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Content properly encoded, y-axis flipped for correct orientation
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend appropriately disabled
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Correct format: qrcode-basic · highcharts · pyplots.ai'
+        comment: Title format correct, legend appropriately disabled
     data_quality:
-      score: 17
-      max: 20
+      score: 14
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Shows standard QR code; could demonstrate more complex content
+        comment: Shows all standard QR code elements
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
+        score: 5
+        max: 5
         passed: true
-        comment: Real URL (https://pyplots.ai) is practical and appropriate
+        comment: Encodes https://pyplots.ai — a real, relevant URL
       - id: DQ-03
         name: Appropriate Scale
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Good size, though minor height variance from Selenium
+        comment: Version 1 QR with error correction M appropriate for short URL
     code_quality:
-      score: 7
+      score: 10
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 1
-        max: 3
-        passed: false
-        comment: Generally follows KISS but has more complexity due to Selenium export
-      - id: CQ-02
-        name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Deterministic data (fixed URL input)
+        comment: Clean linear flow
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Deterministic: same URL always produces same QR code'
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports used
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
+        score: 2
+        max: 2
+        passed: true
+        comment: Clean code with CDN fallback and options_json approach
+      - id: CQ-05
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Uses current APIs
-      - id: CQ-05
-        name: Output Correct
-        score: 0
-        max: 1
-        passed: true
-        comment: Outputs both plot.png and plot.html
-    library_features:
-      score: 5
-      max: 5
+        comment: Saves plot.png and plot.html, current API
+    library_mastery:
+      score: 6
+      max: 10
       items:
-      - id: LF-01
-        name: Distinctive Features
-        score: 5
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
         max: 5
         passed: true
-        comment: Creative use of HeatmapSeries for QR code rendering, proper color
-          axis configuration
-  verdict: APPROVED
+        comment: Good use of HeatmapSeries with color_axis for binary mapping
+      - id: LM-02
+        name: Distinctive Features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses heatmap creatively but no Highcharts-specific features like
+          formatters or responsive rules
+  verdict: REJECTED
 impl_tags:
   dependencies:
   - qrcode
@@ -194,9 +209,7 @@ impl_tags:
   techniques:
   - html-export
   patterns:
-  - data-generation
   - matrix-construction
-  - iteration-over-groups
   dataprep: []
   styling:
   - minimal-chrome

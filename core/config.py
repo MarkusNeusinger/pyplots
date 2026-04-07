@@ -58,7 +58,7 @@ class Settings(BaseSettings):
     base_url: str = "https://pyplots.ai"
     """Base URL for the application (used in sitemaps, etc.)"""
 
-    api_version: str = "0.2.0"
+    api_version: str = "1.0.0"
     """API version"""
 
     # =============================================================================

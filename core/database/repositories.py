@@ -114,9 +114,8 @@ class SpecRepository(BaseRepository[Spec]):
     async def get_by_id(self, spec_id: str) -> Optional[Spec]:
         """Get a spec by ID with implementations and library info.
 
-        Note: Heavy deferred fields (code, review_criteria_checklist) are NOT loaded.
-        Use ImplRepository.get_by_spec_and_library() for full impl details.
-        review_image_description IS loaded (small, needed for detail display).
+        Loads review_image_description and review_criteria_checklist (needed for detail display).
+        Code and tested remain deferred — use /specs/{id}/{lib}/code for code.
         """
         result = await self.session.execute(
             select(Spec)
@@ -230,6 +229,13 @@ class ImplRepository(BaseRepository[Impl]):
             select(Impl).where(Impl.library_id == library_id).options(selectinload(Impl.spec)).order_by(Impl.spec_id)
         )
         return list(result.scalars().all())
+
+    async def get_code(self, spec_id: str, library_id: str) -> Optional[Impl]:
+        """Get a specific implementation with only the code field undeferred."""
+        result = await self.session.execute(
+            select(Impl).where(Impl.spec_id == spec_id, Impl.library_id == library_id).options(undefer(Impl.code))
+        )
+        return result.scalar_one_or_none()
 
     async def get_by_spec_and_library(self, spec_id: str, library_id: str) -> Optional[Impl]:
         """Get a specific implementation by spec and library (includes all deferred fields)."""

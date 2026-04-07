@@ -143,7 +143,7 @@ async def get_impl_code(spec_id: str, library: str, db: AsyncSession = Depends(r
         return cached
 
     repo = ImplRepository(db)
-    impl = await repo.get_by_spec_and_library(spec_id, library)
+    impl = await repo.get_code(spec_id, library)
 
     if not impl or not impl.code:
         raise_not_found("Implementation code", f"{spec_id}/{library}")

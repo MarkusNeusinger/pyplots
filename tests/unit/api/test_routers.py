@@ -1584,7 +1584,7 @@ class TestSpecCodeEndpoint:
         mock_impl = MagicMock()
         mock_impl.code = "import matplotlib.pyplot as plt\nplt.plot([1,2,3])"
         mock_impl_repo = MagicMock()
-        mock_impl_repo.get_by_spec_and_library = AsyncMock(return_value=mock_impl)
+        mock_impl_repo.get_code = AsyncMock(return_value=mock_impl)
 
         with (
             patch(DB_CONFIG_PATCH, return_value=True),
@@ -1602,7 +1602,7 @@ class TestSpecCodeEndpoint:
     def test_code_not_found(self, client: TestClient) -> None:
         """Code endpoint should return 404 when implementation not found."""
         mock_impl_repo = MagicMock()
-        mock_impl_repo.get_by_spec_and_library = AsyncMock(return_value=None)
+        mock_impl_repo.get_code = AsyncMock(return_value=None)
 
         with (
             patch(DB_CONFIG_PATCH, return_value=True),

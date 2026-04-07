@@ -5,8 +5,6 @@ Public analytics and discovery features that leverage aggregated database data:
 - Dashboard: Rich platform statistics and visualizations
 - Plot of the Day: Daily featured high-quality implementation
 - Related Plots: Tag-based similarity recommendations
-- Library Comparison: Head-to-head library analysis
-- Changelog: Recent additions and updates activity feed
 """
 
 from __future__ import annotations
@@ -24,6 +22,7 @@ from api.dependencies import require_db
 from core.constants import SUPPORTED_LIBRARIES
 from core.database import ImplRepository, SpecRepository
 from core.database.connection import get_db_context
+from core.utils import strip_noqa_comments
 
 
 router = APIRouter(prefix="/insights", tags=["insights"])
@@ -257,8 +256,8 @@ async def _build_dashboard(repo: SpecRepository, impl_repo: ImplRepository) -> D
                         )
                     )
 
-            # Timeline from generated_at
-            gen_dt = _parse_iso(impl.generated_at)
+            # Timeline from generated_at (datetime field, not string)
+            gen_dt = impl.generated_at
             if gen_dt:
                 monthly_counts[gen_dt.strftime("%Y-%m")] += 1
 
@@ -397,7 +396,7 @@ async def _build_potd(spec_repo: SpecRepository, impl_repo: ImplRepository) -> P
         quality_score=quality_score,
         preview_url=preview_url,
         image_description=full_impl.review_image_description if full_impl else None,
-        code=full_impl.code if full_impl else None,
+        code=strip_noqa_comments(full_impl.code) if full_impl and full_impl.code else None,
         date=today,
     )
 

@@ -116,7 +116,6 @@ export const LibraryPills = memo(function LibraryPills({
       >
         {visibleItems.map(({ impl, position }) => {
           const isCenter = position === 'center';
-          const score = impl.quality_score;
 
           return (
             <Box
@@ -150,18 +149,6 @@ export const LibraryPills = memo(function LibraryPills({
               <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>
                 {isCenter ? impl.library_id : (LIBRARY_ABBREV[impl.library_id] || impl.library_id)}
               </Box>
-              {score && isCenter && (
-                <Box
-                  component="span"
-                  sx={{
-                    ml: 0.5,
-                    fontSize: fontSize.xs,
-                    color: '#6b7280',
-                  }}
-                >
-                  {Math.round(score)}
-                </Box>
-              )}
             </Box>
           );
         })}

@@ -308,9 +308,9 @@ export function SpecTabs({
           {!overviewMode && (
             <Tab onClick={(e) => tabIndex === 0 && handleTabChange(e, 0)} icon={<CodeIcon sx={{ fontSize: '1.1rem' }} />} iconPosition="start" label="Code" />
           )}
-          <Tab onClick={(e) => tabIndex === specTabIndex && handleTabChange(e, specTabIndex)} icon={<DescriptionIcon sx={{ fontSize: '1.1rem' }} />} iconPosition="start" label="Spec" />
+          <Tab onClick={(e) => tabIndex === specTabIndex && handleTabChange(e, specTabIndex)} icon={<DescriptionIcon sx={{ fontSize: '1.1rem' }} />} iconPosition="start" label={<><Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Specification</Box><Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>Spec</Box></>} />
           {!overviewMode && (
-            <Tab onClick={(e) => tabIndex === 2 && handleTabChange(e, 2)} icon={<ImageIcon sx={{ fontSize: '1.1rem' }} />} iconPosition="start" label="Impl" />
+            <Tab onClick={(e) => tabIndex === 2 && handleTabChange(e, 2)} icon={<ImageIcon sx={{ fontSize: '1.1rem' }} />} iconPosition="start" label={<><Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Implementation</Box><Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>Impl</Box></>} />
           )}
           {!overviewMode && (
             <Tab
@@ -519,6 +519,16 @@ export function SpecTabs({
                 No implementation review data available.
               </Typography>
             )}
+
+            {/* Metadata */}
+            <Typography sx={{ fontFamily: '"MonoLisa", monospace', fontSize: fontSize.sm, color: '#9ca3af', mt: 2 }}>
+              {specId}
+              {libraryId && ` · ${libraryId}`}
+              {(() => {
+                const date = generatedAt || updated || created;
+                return date ? ` · ${formatDate(date)}` : '';
+              })()}
+            </Typography>
           </Box>
         </TabPanel>
       )}
@@ -733,15 +743,6 @@ export function SpecTabs({
         </Box>
       )}
 
-      {/* Metadata footer — always visible */}
-      <Typography sx={{ fontFamily: '"MonoLisa", monospace', fontSize: fontSize.sm, color: '#9ca3af', mt: 1 }}>
-        {specId}
-        {!overviewMode && libraryId && ` · ${libraryId}`}
-        {(() => {
-          const date = !overviewMode ? (generatedAt || updated || created) : (updated || created);
-          return date ? ` · ${formatDate(date)}` : '';
-        })()}
-      </Typography>
     </Box>
   );
 }

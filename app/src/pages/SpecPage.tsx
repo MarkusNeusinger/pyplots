@@ -23,7 +23,6 @@ import { RelatedSpecs } from '../components/RelatedSpecs';
 const SpecTabs = lazy(() => import('../components/SpecTabs').then(m => ({ default: m.SpecTabs })));
 const SpecOverview = lazy(() => import('../components/SpecOverview').then(m => ({ default: m.SpecOverview })));
 const SpecDetailView = lazy(() => import('../components/SpecDetailView').then(m => ({ default: m.SpecDetailView })));
-const ImageLightbox = lazy(() => import('../components/ImageLightbox').then(m => ({ default: m.ImageLightbox })));
 import type { Implementation } from '../types';
 
 interface SpecDetail {
@@ -53,7 +52,6 @@ export function SpecPage() {
   const [codeCopied, setCodeCopied] = useState<string | null>(null);
   const [openTooltip, setOpenTooltip] = useState<string | null>(null);
   const [highlightedTags, setHighlightedTags] = useState<string[]>([]);
-  const [lightboxOpen, setLightboxOpen] = useState(false);
   const { fetchCode, getCode } = useCodeFetch();
 
   // Get library metadata by ID
@@ -74,6 +72,7 @@ export function SpecPage() {
       setLoading(true);
       setError(null);
       setImageLoaded(false);
+      setHighlightedTags([]);
 
       try {
         const res = await fetch(`${API_URL}/specs/${specId}`);
@@ -134,20 +133,26 @@ export function SpecPage() {
   );
 
   // Handle download
+  const [downloadDone, setDownloadDone] = useState<string | null>(null);
+
   const handleDownload = useCallback(
-    (impl: Implementation) => {
-      if (!impl?.preview_url) return;
+    async (impl: Implementation) => {
+      if (!specId) return;
       const link = document.createElement('a');
-      link.href = impl.preview_url;
+      link.href = `${API_URL}/download/${specId}/${impl.library_id}`;
       link.download = `${specId}-${impl.library_id}.png`;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
+      setDownloadDone(impl.library_id);
+      setTimeout(() => setDownloadDone(null), 2000);
       trackEvent('download_image', {
         spec: specId,
         library: impl.library_id,
         page: isOverviewMode ? 'spec_overview' : 'spec_detail',
       });
     },
-    [specId, trackEvent, isOverviewMode]
+    [specId, trackEvent, isOverviewMode],
   );
 
   // Handle copy code (fetches on-demand if not prefetched yet)
@@ -199,8 +204,6 @@ export function SpecPage() {
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
       if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') return;
-      if (lightboxOpen) return;
-
       const sorted = [...specData.implementations].sort((a, b) => a.library_id.localeCompare(b.library_id));
       const idx = sorted.findIndex((impl) => impl.library_id === selectedLibrary);
       if (idx < 0) return;
@@ -218,7 +221,7 @@ export function SpecPage() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOverviewMode, specData, selectedLibrary, lightboxOpen, handleLibrarySelect]);
+  }, [isOverviewMode, specData, selectedLibrary, handleLibrarySelect]);
 
   // Loading state
   if (loading) {
@@ -400,6 +403,7 @@ export function SpecPage() {
               specTitle={specData.title}
               implementations={specData.implementations}
               codeCopied={codeCopied}
+              downloadDone={downloadDone}
               openTooltip={openTooltip}
               onImplClick={handleImplClick}
               onCopyCode={handleCopyCode}
@@ -460,26 +464,13 @@ export function SpecPage() {
               implementations={specData.implementations}
               imageLoaded={imageLoaded}
               codeCopied={codeCopied}
+              downloadDone={downloadDone}
               onImageLoad={() => setImageLoaded(true)}
-              onImageZoom={() => setLightboxOpen(true)}
               onCopyCode={handleCopyCode}
               onDownload={handleDownload}
               onTrackEvent={trackEvent}
             />
 
-            <ImageLightbox
-              open={lightboxOpen}
-              onClose={() => setLightboxOpen(false)}
-              specId={specId || ''}
-              specTitle={specData.title}
-              currentImpl={currentImpl}
-              implementations={specData.implementations}
-              codeCopied={codeCopied}
-              onSelectLibrary={handleLibrarySelect}
-              onCopyCode={handleCopyCode}
-              onDownload={handleDownload}
-              onTrackEvent={trackEvent}
-            />
 
             <SpecTabs
               code={currentCode || currentImpl?.code || null}

@@ -218,7 +218,6 @@ export function InteractivePage() {
         <Breadcrumb
           items={[
             { label: 'pyplots.ai', to: '/' },
-            { label: 'catalog', to: '/catalog' },
             { label: specId || '', to: `/${specId}` },
             { label: library || '', to: `/${specId}/${library}` },
             { label: 'interactive' },

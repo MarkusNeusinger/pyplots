@@ -3,6 +3,9 @@ import { Link as RouterLink } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
 import { API_URL } from '../constants';
 import { buildSrcSet, getFallbackSrc } from '../utils/responsiveImage';
@@ -46,10 +49,11 @@ interface RelatedSpecsProps {
 
 export function RelatedSpecs({ specId, mode = 'spec', library, onHoverTags }: RelatedSpecsProps) {
   const [related, setRelated] = useState<RelatedSpec[]>([]);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    const params = new URLSearchParams({ limit: '6', mode });
+    const params = new URLSearchParams({ limit: '24', mode });
     if (library && mode === 'full') params.set('library', library);
     fetch(`${API_URL}/insights/related/${specId}?${params}`)
       .then(r => { if (!r.ok) throw new Error(); return r.json(); })
@@ -58,20 +62,50 @@ export function RelatedSpecs({ specId, mode = 'spec', library, onHoverTags }: Re
     return () => { cancelled = true; };
   }, [specId, mode, library]);
 
+  useEffect(() => {
+    setExpanded(false);
+  }, [specId]);
+
   if (related.length === 0) return null;
 
+  // Collapsed: CSS hides extra rows via gridAutoRows:0 + overflow:hidden
+
   return (
-    <Box sx={{ mt: 4 }}>
-      <Typography sx={{ fontFamily: mono, fontSize: fontSize.base, fontWeight: 600, color: '#374151', mb: 1.5 }}>
-        {mode === 'full' ? 'similar implementations' : 'similar specifications'}
-      </Typography>
+    <Box sx={{ mt: 3, maxWidth: { xs: '100%', md: 1200, lg: 1400, xl: 1600 }, mx: 'auto' }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs
+          value={expanded ? 0 : false}
+          onChange={() => setExpanded((e) => !e)}
+          variant="fullWidth"
+          sx={{
+            '& .MuiTab-root': {
+              fontFamily: '"MonoLisa", monospace',
+              textTransform: 'none',
+              fontSize: '0.875rem',
+              minHeight: 48,
+              transition: 'background-color 0.15s ease, color 0.15s ease',
+              borderRadius: '4px 4px 0 0',
+              '&:hover': { backgroundColor: '#f3f4f6', color: '#3776AB' },
+            },
+            '& .Mui-selected': { color: '#3776AB' },
+            '& .MuiTabs-indicator': { backgroundColor: '#3776AB' },
+          }}
+        >
+          <Tab
+            onClick={() => expanded && setExpanded(false)}
+            icon={<AutoAwesomeIcon sx={{ fontSize: '1.1rem' }} />}
+            iconPosition="start"
+            label="Similar"
+          />
+        </Tabs>
+      </Box>
       <Box sx={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
-        gridTemplateRows: 'auto',
-        gridAutoRows: 0,
-        gap: 2,
-        overflow: 'hidden',
+        gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(6, 1fr)' },
+        columnGap: 2,
+        rowGap: expanded ? 2 : 0,
+        pt: 2,
+        ...(!expanded && { gridTemplateRows: 'auto', gridAutoRows: 0, overflow: 'hidden' }),
       }}>
         {related.map(spec => (
           <Link

@@ -15,7 +15,6 @@ import ClickAwayListener from '@mui/material/ClickAwayListener';
 import DownloadIcon from '@mui/icons-material/Download';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import CheckIcon from '@mui/icons-material/Check';
 
 import type { Implementation } from '../types';
 import { buildSrcSet, OVERVIEW_SIZES } from '../utils/responsiveImage';
@@ -33,6 +32,7 @@ interface SpecOverviewProps {
   specTitle: string;
   implementations: Implementation[];
   codeCopied: string | null;
+  downloadDone: string | null;
   openTooltip: string | null;
   onImplClick: (libraryId: string) => void;
   onCopyCode: (impl: Implementation) => void;
@@ -47,6 +47,7 @@ export function SpecOverview({
   specTitle,
   implementations,
   codeCopied,
+  downloadDone,
   openTooltip,
   onImplClick,
   onCopyCode,
@@ -76,6 +77,7 @@ export function SpecOverview({
           specId={specId}
           specTitle={specTitle}
           codeCopied={codeCopied}
+          downloadDone={downloadDone}
           openTooltip={openTooltip}
           onImplClick={onImplClick}
           onCopyCode={onCopyCode}
@@ -94,6 +96,7 @@ interface ImplementationCardProps {
   specId: string;
   specTitle: string;
   codeCopied: string | null;
+  downloadDone: string | null;
   openTooltip: string | null;
   onImplClick: (libraryId: string) => void;
   onCopyCode: (impl: Implementation) => void;
@@ -108,6 +111,7 @@ function ImplementationCard({
   specId,
   specTitle,
   codeCopied,
+  downloadDone,
   openTooltip,
   onImplClick,
   onCopyCode,
@@ -181,6 +185,27 @@ function ImplementationCard({
           <Skeleton variant="rectangular" sx={{ width: '100%', aspectRatio: '16/10' }} />
         )}
 
+        {/* Copied/Downloaded confirmation overlay */}
+        {(codeCopied === impl.library_id || downloadDone === impl.library_id) && (
+          <Box sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            bgcolor: 'rgba(0,0,0,0.7)',
+            color: '#fff',
+            px: 1.5,
+            py: 0.5,
+            borderRadius: 1,
+            fontFamily: '"MonoLisa", monospace',
+            fontSize: fontSize.sm,
+            pointerEvents: 'none',
+            zIndex: 2,
+          }}>
+            {codeCopied === impl.library_id ? '>>> copied' : '>>> downloaded'}
+          </Box>
+        )}
+
         {/* Action Buttons (top-right) */}
         <Box
           className="action-buttons"
@@ -195,40 +220,34 @@ function ImplementationCard({
             transition: 'opacity 0.2s',
           }}
         >
-          {impl.code && (
-            <Tooltip title={codeCopied === impl.library_id ? 'Copied!' : 'Copy Code'}>
-              <IconButton
-                onClick={() => onCopyCode(impl)}
-                aria-label="Copy code"
-                sx={{
-                  bgcolor: 'rgba(255,255,255,0.9)',
-                  '&:hover': { bgcolor: '#fff', color: '#3776AB' },
-                }}
-                size="small"
-              >
-                {codeCopied === impl.library_id ? (
-                  <CheckIcon fontSize="small" color="success" />
-                ) : (
-                  <ContentCopyIcon fontSize="small" />
-                )}
-              </IconButton>
-            </Tooltip>
-          )}
-          <Tooltip title="Download PNG">
+          <Tooltip title="Copy Code" disableFocusListener>
             <IconButton
-              onClick={() => onDownload(impl)}
+              onClick={(e: React.MouseEvent) => { (e.currentTarget as HTMLElement).blur(); onCopyCode(impl); }}
+              aria-label="Copy code"
+              sx={{
+                bgcolor: 'rgba(255,255,255,0.9)',
+                '&:hover': { bgcolor: '#fff', color: '#3776AB' },
+              }}
+              size="medium"
+            >
+              <ContentCopyIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Download PNG" disableFocusListener>
+            <IconButton
+              onClick={(e: React.MouseEvent) => { (e.currentTarget as HTMLElement).blur(); onDownload(impl); }}
               aria-label="Download PNG"
               sx={{
                 bgcolor: 'rgba(255,255,255,0.9)',
-                '&:hover': { bgcolor: '#fff' },
+                '&:hover': { bgcolor: '#fff', color: '#3776AB' },
               }}
-              size="small"
+              size="medium"
             >
               <DownloadIcon fontSize="small" />
             </IconButton>
           </Tooltip>
           {impl.preview_html && (
-            <Tooltip title="Open Interactive">
+            <Tooltip title="Open Interactive" disableFocusListener>
               <IconButton
                 component={Link}
                 to={`/interactive/${specId}/${impl.library_id}`}
@@ -241,7 +260,7 @@ function ImplementationCard({
                   bgcolor: 'rgba(255,255,255,0.9)',
                   '&:hover': { bgcolor: '#fff', color: '#3776AB' },
                 }}
-                size="small"
+                size="medium"
               >
                 <OpenInNewIcon fontSize="small" />
               </IconButton>

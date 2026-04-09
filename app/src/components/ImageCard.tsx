@@ -215,7 +215,6 @@ export const ImageCard = memo(function ImageCard({
           onClick={handleCopyCode}
           disabled={copyState === 'loading'}
           aria-label="Copy code"
-          size="small"
           sx={{
             position: 'absolute',
             top: 8,
@@ -229,11 +228,11 @@ export const ImageCard = memo(function ImageCard({
           }}
         >
           {copyState === 'loading' ? (
-            <CircularProgress size={18} />
+            <CircularProgress size={20} />
           ) : copyState === 'copied' ? (
-            <CheckIcon sx={{ fontSize: 18, color: 'success.main' }} />
+            <CheckIcon sx={{ fontSize: 20, color: 'success.main' }} />
           ) : (
-            <ContentCopyIcon sx={{ fontSize: 18 }} />
+            <ContentCopyIcon sx={{ fontSize: 20 }} />
           )}
         </IconButton>
       </Card>

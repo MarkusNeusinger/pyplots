@@ -525,7 +525,7 @@ async def _build_related(
 @router.get("/related/{spec_id}", response_model=RelatedSpecsResponse)
 async def get_related_specs(
     spec_id: str,
-    limit: int = Query(default=6, ge=1, le=12),
+    limit: int = Query(default=6, ge=1, le=24),
     mode: str = Query(default="spec", pattern="^(spec|full)$"),
     library: str | None = Query(default=None),
     db: AsyncSession = Depends(require_db),

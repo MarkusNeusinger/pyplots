@@ -1,0 +1,27 @@
+# Specification-level metadata for bar-3d-categorical
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: bar-3d-categorical
+title: 3D Bar Chart for Categorical Comparison
+
+# Specification tracking
+created: "2026-04-11T21:39:09Z"
+updated: null
+issue: 5248
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - bar
+  data_type:
+    - categorical
+    - numeric
+  domain:
+    - general
+    - business
+  features:
+    - 3d
+    - comparison
+    - color-mapped

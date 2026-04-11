@@ -1,0 +1,28 @@
+# Specification-level metadata for bar-spine
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: bar-spine
+title: Spine Plot for Two-Variable Proportions
+
+# Specification tracking
+created: "2026-04-11T20:24:05Z"
+updated: null
+issue: 5249
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - bar
+    - spine
+  data_type:
+    - categorical
+    - frequency
+  domain:
+    - general
+    - statistics
+  features:
+    - stacked
+    - proportional
+    - comparison

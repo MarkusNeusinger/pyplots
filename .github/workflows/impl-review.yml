@@ -129,7 +129,7 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          claude_args: "--model opus"
+          claude_args: "--model sonnet"
           allowed_bots: '*'
           prompt: |
             Read `prompts/workflow-prompts/ai-quality-review.md` and follow those instructions.
@@ -217,8 +217,8 @@ jobs:
           # Add verdict label early to ensure it's set even if later steps fail
           # This is idempotent - re-running won't cause issues
 
-          if [ "$SCORE" -ge 90 ]; then
-            echo "::notice::Adding ai-approved label (score >= 90)"
+          if [ "$SCORE" -ge 85 ]; then
+            echo "::notice::Adding ai-approved label (score >= 85)"
             gh pr edit "$PR_NUM" --add-label "ai-approved" 2>/dev/null || {
               echo "::warning::Failed to add ai-approved label, retrying..."
               sleep 2
@@ -232,7 +232,7 @@ jobs:
               gh pr edit "$PR_NUM" --add-label "ai-approved"
             }
           else
-            echo "::notice::Adding ai-rejected label (score < 90)"
+            echo "::notice::Adding ai-rejected label (score < 85)"
             gh pr edit "$PR_NUM" --add-label "ai-rejected" 2>/dev/null || {
               echo "::warning::Failed to add ai-rejected label, retrying..."
               sleep 2
@@ -467,8 +467,8 @@ jobs:
           ISSUE_NUMBER: ${{ steps.pr.outputs.issue_number }}
         run: |
           # Score thresholds:
-          # >= 90: Excellent (approved, merge immediately)
-          # < 90: Rejected (repair loop, up to 3 attempts)
+          # >= 85: Approved (merge immediately)
+          # < 85: Rejected (repair loop, up to 3 attempts)
           # After 3 attempts: >= 50 = merge, < 50 = close PR
 
           # Check if verdict label was already added by earlier step
@@ -492,10 +492,10 @@ jobs:
           fi
 
           # Fallback: Add verdict labels if not already set (shouldn't happen but ensures robustness)
-          if [ "$SCORE" -ge 90 ]; then
+          if [ "$SCORE" -ge 85 ]; then
             # Approved - merge immediately
             gh pr edit "$PR_NUM" --add-label "ai-approved" 2>/dev/null || true
-            echo "::notice::Added ai-approved label (score $SCORE >= 90)"
+            echo "::notice::Added ai-approved label (score $SCORE >= 85)"
             echo "Triggering impl-merge.yml for approved PR"
             gh workflow run impl-merge.yml -f pr_number="$PR_NUM"
 
@@ -569,7 +569,7 @@ jobs:
             fi
 
           else
-            # Score < 90, still have repair attempts left
+            # Score < 85, still have repair attempts left
             gh pr edit "$PR_NUM" --add-label "ai-rejected"
             if [ "$SCORE" -lt 50 ]; then
               gh pr edit "$PR_NUM" --add-label "quality-poor"

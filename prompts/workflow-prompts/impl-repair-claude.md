@@ -26,7 +26,8 @@ Read both sources to understand what needs to be fixed:
 
 1. `prompts/library/{LIBRARY}.md` - Library-specific rules
 2. `plots/{SPEC_ID}/specification.md` - The specification
-3. `prompts/quality-criteria.md` - Quality requirements
+
+**Do NOT re-read `prompts/quality-criteria.md`** — the review already distilled all criteria into `review.criteria_checklist` in the metadata YAML (Step 1). Use that checklist directly: items with `passed: false` are the ones to fix.
 
 ## Step 3: Read current implementation
 

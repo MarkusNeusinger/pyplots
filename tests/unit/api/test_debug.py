@@ -177,9 +177,7 @@ class TestDebugStatus:
             spec_id="no-tags", title="No Tags", impls=[impl], tags={"plot_type": [], "domain": []}
         )
         # Spec with proper tags
-        spec_with_tags = _make_spec(
-            spec_id="has-tags", title="Has Tags", impls=[impl], tags={"plot_type": ["scatter"]}
-        )
+        spec_with_tags = _make_spec(spec_id="has-tags", title="Has Tags", impls=[impl], tags={"plot_type": ["scatter"]})
 
         mock_repo = MagicMock()
         mock_repo.get_all = AsyncMock(return_value=[spec_empty_tags, spec_with_tags])

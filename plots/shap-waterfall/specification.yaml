@@ -1,0 +1,29 @@
+# Specification-level metadata for shap-waterfall
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: shap-waterfall
+title: SHAP Waterfall Plot for Feature Attribution
+
+# Specification tracking
+created: "2026-04-11T20:22:07Z"
+updated: null
+issue: 5237
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - waterfall
+    - bar
+  data_type:
+    - numeric
+    - categorical
+  domain:
+    - machine-learning
+    - model-evaluation
+  features:
+    - cumulative
+    - annotated
+    - color-mapped
+    - horizontal

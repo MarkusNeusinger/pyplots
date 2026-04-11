@@ -1,0 +1,29 @@
+# Specification-level metadata for dot-matrix-proportional
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: dot-matrix-proportional
+title: Dot Matrix Chart for Proportional Counts
+
+# Specification tracking
+created: "2026-04-11T20:22:52Z"
+updated: null
+issue: 5241
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - point
+    - heatmap
+  data_type:
+    - categorical
+    - discrete
+  domain:
+    - general
+    - statistics
+    - healthcare
+  features:
+    - proportional
+    - color-mapped
+    - comparison

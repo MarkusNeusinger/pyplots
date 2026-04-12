@@ -4,13 +4,7 @@ Tests for sync_to_postgres helper functions that aren't covered by existing test
 Focuses on _validate_quality_score, _parse_markdown_section, and _validate_spec_id.
 """
 
-import pytest
-
-from automation.scripts.sync_to_postgres import (
-    _parse_markdown_section,
-    _validate_quality_score,
-    _validate_spec_id,
-)
+from automation.scripts.sync_to_postgres import _parse_markdown_section, _validate_quality_score, _validate_spec_id
 
 
 class TestValidateQualityScore:

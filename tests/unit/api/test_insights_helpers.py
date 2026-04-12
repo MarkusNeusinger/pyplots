@@ -5,16 +5,9 @@ Directly tests the pure helper functions in api/routers/insights.py
 that don't require database or HTTP setup.
 """
 
-from datetime import datetime, timezone
+from datetime import timezone
 
-import pytest
-
-from api.routers.insights import (
-    _collect_impl_tags,
-    _flatten_tags,
-    _parse_iso,
-    _score_bucket,
-)
+from api.routers.insights import _collect_impl_tags, _flatten_tags, _parse_iso, _score_bucket
 
 
 class TestScoreBucket:

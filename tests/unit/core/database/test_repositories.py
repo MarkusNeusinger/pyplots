@@ -7,12 +7,11 @@ Uses in-memory SQLite to test repository operations.
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database.models import Impl, Library, Spec
+from core.database.models import Library, Spec
 from core.database.repositories import (
     IMPL_UPDATABLE_FIELDS,
     LIBRARY_UPDATABLE_FIELDS,
     SPEC_UPDATABLE_FIELDS,
-    BaseRepository,
     ImplRepository,
     LibraryRepository,
     SpecRepository,

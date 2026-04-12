@@ -17,7 +17,7 @@ vi.mock('../constants', () => ({
 beforeEach(() => {
   vi.restoreAllMocks();
   // Mock fetch globally - return tag counts
-  global.fetch = vi.fn().mockResolvedValue({
+  globalThis.fetch = vi.fn().mockResolvedValue({
     ok: true,
     json: () =>
       Promise.resolve({
@@ -362,7 +362,7 @@ describe('SpecTabs', () => {
     expect(screen.getByText('scatter')).toBeInTheDocument();
 
     // Fetch is mocked for tag counts (may be called if cache is empty)
-    expect(global.fetch).toBeDefined();
+    expect(globalThis.fetch).toBeDefined();
   });
 
   // -------------------------------------------------------
@@ -409,15 +409,18 @@ describe('SpecTabs', () => {
   it('fires onTrackEvent and navigates on tag click', async () => {
     const user = userEvent.setup();
     const onTrackEvent = vi.fn();
-    // Mock window.location.href setter
+    // Mock window.location.href setter to prevent jsdom navigation errors.
+    // Use configurable: true so the property can be redefined if needed.
     const hrefSetter = vi.fn();
     Object.defineProperty(window, 'location', {
       value: { href: '' },
       writable: true,
+      configurable: true,
     });
     Object.defineProperty(window.location, 'href', {
       set: hrefSetter,
       get: () => '',
+      configurable: true,
     });
 
     render(

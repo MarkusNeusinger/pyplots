@@ -4,8 +4,6 @@ Tests for API Pydantic schemas.
 Validates schema creation, defaults, and serialization.
 """
 
-import pytest
-
 from api.schemas import (
     FilterCountsResponse,
     FilteredPlotsResponse,

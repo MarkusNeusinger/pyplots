@@ -17,7 +17,7 @@ class TestResolveModel:
     @pytest.fixture
     def settings(self) -> Settings:
         """Create a Settings instance with default model mappings."""
-        with patch.dict("os.environ", {}, clear=False):
+        with patch.dict("os.environ", {}, clear=True):
             return Settings(
                 cli_model_claude_small="claude-haiku",
                 cli_model_claude_medium="claude-sonnet",
@@ -50,24 +50,24 @@ class TestResolveModel:
 
     def test_unknown_cli_returns_tier(self) -> None:
         """Unknown CLI should return the tier unchanged (pass-through)."""
-        with patch.dict("os.environ", {}, clear=False):
+        with patch.dict("os.environ", {}, clear=True):
             s = Settings()
             assert s.resolve_model("unknown-cli", "small") == "small"
 
     def test_unknown_tier_returns_tier(self) -> None:
         """Unknown tier should return the tier unchanged (pass-through)."""
-        with patch.dict("os.environ", {}, clear=False):
+        with patch.dict("os.environ", {}, clear=True):
             s = Settings()
             assert s.resolve_model("claude", "xlarge") == "xlarge"
 
     def test_unknown_cli_and_tier(self) -> None:
-        with patch.dict("os.environ", {}, clear=False):
+        with patch.dict("os.environ", {}, clear=True):
             s = Settings()
             assert s.resolve_model("unknown", "unknown") == "unknown"
 
     def test_exact_model_name_passthrough(self) -> None:
         """When tier is an exact model name, it's returned as-is."""
-        with patch.dict("os.environ", {}, clear=False):
+        with patch.dict("os.environ", {}, clear=True):
             s = Settings()
             result = s.resolve_model("claude", "claude-3-opus-20240229")
             assert result == "claude-3-opus-20240229"

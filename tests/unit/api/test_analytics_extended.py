@@ -4,13 +4,7 @@ Extended tests for analytics module.
 Covers edge cases and additional platform patterns.
 """
 
-import pytest
-
-from api.analytics import (
-    PLATFORM_PATTERNS,
-    _detect_whatsapp_variant,
-    detect_platform,
-)
+from api.analytics import PLATFORM_PATTERNS, _detect_whatsapp_variant, detect_platform
 
 
 class TestDetectWhatsappVariant:

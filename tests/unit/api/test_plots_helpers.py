@@ -6,8 +6,6 @@ Directly tests the pure helper functions in api/routers/plots.py.
 
 from unittest.mock import MagicMock
 
-import pytest
-
 from api.routers.plots import (
     _build_cache_key,
     _build_impl_lookup,

@@ -7,8 +7,6 @@ Directly tests the pure helper functions in api/routers/seo.py.
 from datetime import datetime
 from unittest.mock import MagicMock
 
-import pytest
-
 from api.routers.seo import BOT_HTML_TEMPLATE, _build_sitemap_xml, _lastmod
 
 
@@ -36,11 +34,11 @@ class TestBuildSitemapXml:
         result = _build_sitemap_xml([])
         assert '<?xml version="1.0"' in result
         assert "<urlset" in result
-        assert "https://pyplots.ai/" in result
-        assert "https://pyplots.ai/catalog" in result
-        assert "https://pyplots.ai/mcp" in result
-        assert "https://pyplots.ai/legal" in result
-        assert "https://pyplots.ai/stats" in result
+        assert "<loc>https://pyplots.ai/</loc>" in result
+        assert "<loc>https://pyplots.ai/catalog</loc>" in result
+        assert "<loc>https://pyplots.ai/mcp</loc>" in result
+        assert "<loc>https://pyplots.ai/legal</loc>" in result
+        assert "<loc>https://pyplots.ai/stats</loc>" in result
         assert "</urlset>" in result
 
     def test_spec_with_impls(self) -> None:
@@ -141,8 +139,9 @@ class TestBotHtmlTemplate:
         assert "Test Description" in result
 
     def test_template_has_canonical(self) -> None:
+        url = "https://pyplots.ai/"
         result = BOT_HTML_TEMPLATE.format(
-            title="t", description="d", image="i", url="https://pyplots.ai/"
+            title="t", description="d", image="i", url=url
         )
         assert 'rel="canonical"' in result
-        assert "https://pyplots.ai/" in result
+        assert url in result

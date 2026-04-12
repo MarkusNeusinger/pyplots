@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-lag: Lag Plot for Time Series Autocorrelation Diagnosis
 Library: pygal 3.1.0 | Python 3.14.3
 Quality: 82/100 | Created: 2026-04-12
@@ -23,45 +23,66 @@ lag = 1
 y_t = temperature[:-lag]
 y_t_lag = temperature[lag:]
 
-# Color points by time index for temporal structure
+# Temporal quartile masks
 time_idx = np.arange(len(y_t))
-quartile_bounds = np.percentile(time_idx, [25, 50, 75])
-early = [(float(y_t[i]), float(y_t_lag[i])) for i in range(len(y_t)) if time_idx[i] < quartile_bounds[0]]
-mid_early = [
-    (float(y_t[i]), float(y_t_lag[i]))
+q_bounds = np.percentile(time_idx, [25, 50, 75])
+
+# Build scatter series with interactive tooltips (pygal dict format)
+early = [
+    {"value": (float(y_t[i]), float(y_t_lag[i])), "label": f"Day {i + 1}"}
     for i in range(len(y_t))
-    if quartile_bounds[0] <= time_idx[i] < quartile_bounds[1]
+    if time_idx[i] < q_bounds[0]
+]
+mid_early = [
+    {"value": (float(y_t[i]), float(y_t_lag[i])), "label": f"Day {i + 1}"}
+    for i in range(len(y_t))
+    if q_bounds[0] <= time_idx[i] < q_bounds[1]
 ]
 mid_late = [
-    (float(y_t[i]), float(y_t_lag[i]))
+    {"value": (float(y_t[i]), float(y_t_lag[i])), "label": f"Day {i + 1}"}
     for i in range(len(y_t))
-    if quartile_bounds[1] <= time_idx[i] < quartile_bounds[2]
+    if q_bounds[1] <= time_idx[i] < q_bounds[2]
 ]
-late = [(float(y_t[i]), float(y_t_lag[i])) for i in range(len(y_t)) if time_idx[i] >= quartile_bounds[2]]
+late = [
+    {"value": (float(y_t[i]), float(y_t_lag[i])), "label": f"Day {i + 1}"}
+    for i in range(len(y_t))
+    if time_idx[i] >= q_bounds[2]
+]
 
 # Correlation coefficient
 r = np.corrcoef(y_t, y_t_lag)[0, 1]
 
-# Diagonal reference line (y = x)
+# Reference geometry
 data_min = float(min(y_t.min(), y_t_lag.min()))
 data_max = float(max(y_t.max(), y_t_lag.max()))
-margin = (data_max - data_min) * 0.05
-ref_start = data_min - margin
-ref_end = data_max + margin
+pad = (data_max - data_min) * 0.05
+ref_start = data_min - pad
+ref_end = data_max + pad
 ref_line = [(ref_start, ref_start), (ref_end, ref_end)]
 
-# Shared font
-font = "DejaVu Sans, Helvetica, Arial, sans-serif"
+# ±1σ envelope around y=x to visualise autocorrelation spread
+sigma = float(np.std(y_t_lag - y_t))
+upper_env = [(ref_start, ref_start + sigma), (ref_end, ref_end + sigma)]
+lower_env = [(ref_start, ref_start - sigma), (ref_end, ref_end - sigma)]
 
-# Style
+# Warm-to-cool temporal palette: terracotta → amber → teal → navy
+font = "DejaVu Sans, Helvetica, Arial, sans-serif"
 custom_style = Style(
     background="white",
-    plot_background="#fafafa",
+    plot_background="#f8f7f5",
     foreground="#2a2a2a",
-    foreground_strong="#2a2a2a",
-    foreground_subtle="#e0e0e0",
-    guide_stroke_color="#e0e0e0",
-    colors=("#1a3a5c", "#306998", "#5a9bd5", "#a3ceed", "#888888"),
+    foreground_strong="#1a1a1a",
+    foreground_subtle="#d5d5d3",
+    guide_stroke_color="#e0dfdd",
+    colors=(
+        "#c25a3c",  # Q1 — terracotta
+        "#d4a028",  # Q2 — warm amber
+        "#2a9d8f",  # Q3 — teal
+        "#264653",  # Q4 — deep navy
+        "#c0bebb",  # +1σ envelope
+        "#c0bebb",  # −1σ envelope
+        "#888886",  # y = x reference
+    ),
     font_family=font,
     title_font_family=font,
     title_font_size=56,
@@ -72,13 +93,13 @@ custom_style = Style(
     value_font_size=28,
     tooltip_font_size=28,
     tooltip_font_family=font,
-    opacity=0.55,
-    opacity_hover=0.90,
-    stroke_opacity=1,
+    opacity=0.60,
+    opacity_hover=0.95,
+    stroke_opacity=0.7,
     stroke_opacity_hover=1,
 )
 
-# Chart
+# Chart — interactivity enabled for SVG hover tooltips
 chart = pygal.XY(
     width=4800,
     height=2700,
@@ -97,27 +118,32 @@ chart = pygal.XY(
     x_value_formatter=lambda x: f"{x:.1f}",
     value_formatter=lambda y: f"{y:.1f}",
     margin_bottom=100,
-    margin_left=60,
-    margin_right=40,
-    margin_top=50,
+    margin_left=80,
+    margin_right=30,
+    margin_top=40,
     range=(ref_start, ref_end),
     xrange=(ref_start, ref_end),
     x_labels_major_count=8,
     y_labels_major_count=8,
     print_values=False,
     print_zeroes=False,
-    js=[],
+    truncate_legend=40,
 )
 
-# Add temporal quartile series
-chart.add("Days 1\u2013100", early, stroke=False)
+# Temporal quartile scatter series
+chart.add("Days 1\u2013100", early, stroke=False, dots_size=9)
 chart.add("Days 101\u2013200", mid_early, stroke=False)
 chart.add("Days 201\u2013300", mid_late, stroke=False)
-chart.add("Days 301\u2013399", late, stroke=False)
+chart.add("Days 301\u2013399", late, stroke=False, dots_size=9)
 
-# Diagonal reference line
+# ±1σ envelope (no legend entry)
+env_style = {"width": 3, "dasharray": "6, 8", "linecap": "round"}
+chart.add(None, upper_env, stroke=True, show_dots=False, stroke_style=env_style)
+chart.add(None, lower_env, stroke=True, show_dots=False, stroke_style=env_style)
+
+# Diagonal reference line y = x
 chart.add(
-    "y = x",
+    "y = x (\u00b11\u03c3)",
     ref_line,
     stroke=True,
     show_dots=False,

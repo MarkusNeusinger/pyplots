@@ -141,8 +141,8 @@ describe('StatsPage', () => {
     expect(screen.getByText('53')).toBeInTheDocument();
     // total_lines_of_code: 245600 => formatNum => "245.6K"
     expect(screen.getByText('245.6K')).toBeInTheDocument();
-    // avg_quality_score: 82.5 => formatNum(82.5) => "82.5" (toLocaleString)
-    expect(screen.getByText('82.5')).toBeInTheDocument();
+    // avg_quality_score: 82.5 => formatNum(82.5) => locale-sensitive decimal separator
+    expect(screen.getByText(/82[.,]5/)).toBeInTheDocument();
     // coverage_percent: 73 => "73%"
     expect(screen.getByText('73%')).toBeInTheDocument();
   });

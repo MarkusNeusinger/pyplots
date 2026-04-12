@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-lag: Lag Plot for Time Series Autocorrelation Diagnosis
 Library: seaborn 0.13.2 | Python 3.14.3
 Quality: 83/100 | Created: 2026-04-12
@@ -41,8 +41,19 @@ sns.set_theme(
 
 fig, ax = plt.subplots(figsize=(16, 9))
 
-scatter = ax.scatter(
-    y_t, y_t_lag, c=time_index, cmap="viridis", s=70, alpha=0.65, edgecolors="white", linewidths=0.4, zorder=3
+sns.scatterplot(
+    data=df,
+    x="y(t)",
+    y="y(t + 1)",
+    hue="Time Index",
+    palette="viridis",
+    s=35,
+    alpha=0.45,
+    edgecolor="white",
+    linewidth=0.4,
+    legend=False,
+    ax=ax,
+    zorder=3,
 )
 
 # Diagonal reference line (y = x)
@@ -60,7 +71,9 @@ ax.plot(
 )
 
 # Colorbar for temporal structure
-cbar = plt.colorbar(scatter, ax=ax, pad=0.02, aspect=30)
+norm = plt.Normalize(df["Time Index"].min(), df["Time Index"].max())
+sm = plt.cm.ScalarMappable(cmap="viridis", norm=norm)
+cbar = plt.colorbar(sm, ax=ax, pad=0.02, aspect=30)
 cbar.set_label("Time Index", fontsize=18, color="#444444")
 cbar.ax.tick_params(labelsize=14)
 
@@ -78,13 +91,7 @@ ax.annotate(
 )
 
 # Style
-ax.set_title(
-    "AR(1) Autocorrelation · scatter-lag · seaborn · pyplots.ai",
-    fontsize=24,
-    fontweight="medium",
-    color="#333333",
-    pad=16,
-)
+ax.set_title("scatter-lag · seaborn · pyplots.ai", fontsize=24, fontweight="medium", color="#333333", pad=16)
 ax.set_xlabel("y(t)", fontsize=20, color="#444444")
 ax.set_ylabel("y(t + 1)", fontsize=20, color="#444444")
 ax.tick_params(axis="both", labelsize=16, colors="#555555")

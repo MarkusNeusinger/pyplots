@@ -11,6 +11,7 @@ import { API_URL, GITHUB_URL } from '../constants';
 import { buildSrcSet, getFallbackSrc, CATALOG_SIZES } from '../utils/responsiveImage';
 import { useAnalytics } from '../hooks';
 import { useAppData, useHomeState } from '../hooks';
+import { specPath } from '../utils/paths';
 import { Breadcrumb } from '../components/Breadcrumb';
 import { Footer } from '../components/Footer';
 import type { PlotImage } from '../types';
@@ -333,7 +334,7 @@ export function CatalogPage() {
                 {/* Text - Click to navigate to overview */}
                 <Box
                   component={Link}
-                  to={`/${spec.id}`}
+                  to={specPath(spec.id)}
                   onClick={saveScrollPosition}
                   sx={{
                     flex: 1,

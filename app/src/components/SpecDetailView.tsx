@@ -17,6 +17,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import type { Implementation } from '../types';
 import { colors, fontSize, typography } from '../theme';
 import { buildDetailSrcSet, DETAIL_SIZES } from '../utils/responsiveImage';
+import { interactivePath } from '../utils/paths';
 
 interface SpecDetailViewProps {
   specId: string;
@@ -266,7 +267,7 @@ export function SpecDetailView({
             <Tooltip title="Open Interactive" disableFocusListener>
               <IconButton
                 component={Link}
-                to={`/interactive/${specId}/${selectedLibrary}`}
+                to={interactivePath(specId, selectedLibrary)}
                 aria-label="Open interactive"
                 onClick={(e: React.MouseEvent) => {
                   e.stopPropagation();

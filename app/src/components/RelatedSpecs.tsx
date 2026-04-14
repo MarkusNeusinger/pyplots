@@ -8,6 +8,7 @@ import Tab from '@mui/material/Tab';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
 import { API_URL, LIB_ABBREV } from '../constants';
+import { specPath } from '../utils/paths';
 import { buildSrcSet, getFallbackSrc } from '../utils/responsiveImage';
 import { colors, fontSize, semanticColors, typography } from '../theme';
 
@@ -118,7 +119,7 @@ export function RelatedSpecs({ specId, mode = 'spec', library, onHoverTags }: Re
           <Link
             key={spec.id}
             component={RouterLink}
-            to={mode === 'full' && spec.library_id ? `/${spec.id}/${spec.library_id}` : `/${spec.id}`}
+            to={mode === 'full' && spec.library_id ? specPath(spec.id, spec.library_id) : specPath(spec.id)}
             onMouseEnter={() => onHoverTags?.(spec.shared_tags)}
             onMouseLeave={() => onHoverTags?.([])}
             sx={{

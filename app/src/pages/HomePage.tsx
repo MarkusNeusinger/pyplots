@@ -15,6 +15,7 @@ import { FilterBar } from '../components/FilterBar';
 import { ImagesGrid } from '../components/ImagesGrid';
 import { PlotOfTheDay } from '../components/PlotOfTheDay';
 import { useAppData, useHomeState } from '../hooks';
+import { specPath } from '../utils/paths';
 import { colors } from '../theme';
 
 export function HomePage() {
@@ -116,7 +117,7 @@ export function HomePage() {
       // Navigate to spec page immediately
       const specId = img.spec_id || '';
       const library = img.library;
-      navigate(`/${specId}/${library}`);
+      navigate(specPath(specId, library));
     },
     [navigate, saveScrollPosition]
   );

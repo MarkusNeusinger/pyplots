@@ -10,6 +10,7 @@ import { useAnalytics } from '../hooks';
 import { Breadcrumb } from '../components/Breadcrumb';
 import { Footer } from '../components/Footer';
 import { API_URL } from '../constants';
+import { specPath } from '../utils/paths';
 import { buildSrcSet, getFallbackSrc } from '../utils/responsiveImage';
 import {
   typography,
@@ -245,7 +246,7 @@ export function StatsPage() {
               <Tooltip key={row.spec_id} title={`${row.title}: ${count}/9`} arrow>
                 <Link
                   component={RouterLink}
-                  to={`/${row.spec_id}`}
+                  to={specPath(row.spec_id)}
                   sx={{
                     display: 'block', width: 10, height: 10, borderRadius: '2px',
                     bgcolor: count === 0 ? colors.gray[100] : `rgba(34, 197, 94, ${0.15 + intensity * 0.7})`,
@@ -303,7 +304,7 @@ export function StatsPage() {
             <Link
               key={`${impl.spec_id}-${impl.library_id}`}
               component={RouterLink}
-              to={`/${impl.spec_id}/${impl.library_id}`}
+              to={specPath(impl.spec_id, impl.library_id)}
               sx={{ textDecoration: 'none', color: 'inherit', '&:hover': { opacity: 0.85 }, transition: 'opacity 0.15s ease' }}
               onClick={() => trackEvent('stats_top_impl_click', { spec: impl.spec_id, library: impl.library_id })}
             >

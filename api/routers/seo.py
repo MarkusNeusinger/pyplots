@@ -37,11 +37,11 @@ def _build_sitemap_xml(specs: list) -> str:
     for spec in specs:
         if spec.impls:
             spec_id = html.escape(spec.id)
-            xml_lines.append(f"  <url><loc>https://anyplot.ai/{spec_id}</loc>{_lastmod(spec.updated)}</url>")
+            xml_lines.append(f"  <url><loc>https://anyplot.ai/python/{spec_id}</loc>{_lastmod(spec.updated)}</url>")
             for impl in spec.impls:
                 library_id = html.escape(impl.library_id)
                 xml_lines.append(
-                    f"  <url><loc>https://anyplot.ai/{spec_id}/{library_id}</loc>{_lastmod(impl.updated)}</url>"
+                    f"  <url><loc>https://anyplot.ai/python/{spec_id}/{library_id}</loc>{_lastmod(impl.updated)}</url>"
                 )
 
     xml_lines.append("</urlset>")
@@ -182,17 +182,15 @@ async def seo_mcp():
     )
 
 
-@router.get("/seo-proxy/{spec_id}")
-async def seo_spec_overview(spec_id: str, db: AsyncSession | None = Depends(optional_db)):
-    """Bot-optimized spec overview page with collage og:image."""
+async def _seo_spec_overview_html(spec_id: str, db: AsyncSession | None) -> HTMLResponse:
+    """Shared logic for bot-optimized spec overview page with collage og:image."""
     if db is None:
-        # Fallback when DB unavailable
         return HTMLResponse(
             BOT_HTML_TEMPLATE.format(
                 title=f"{html.escape(spec_id)} | anyplot.ai",
                 description=DEFAULT_DESCRIPTION,
                 image=DEFAULT_HOME_IMAGE,
-                url=f"https://anyplot.ai/{html.escape(spec_id)}",
+                url=f"https://anyplot.ai/python/{html.escape(spec_id)}",
             )
         )
 
@@ -206,7 +204,6 @@ async def seo_spec_overview(spec_id: str, db: AsyncSession | None = Depends(opti
     if not spec:
         raise HTTPException(status_code=404, detail="Spec not found")
 
-    # Use collage og:image if implementations exist, otherwise default
     has_previews = any(i.preview_url for i in spec.impls)
     image = f"https://api.anyplot.ai/og/{spec_id}.png" if has_previews else DEFAULT_HOME_IMAGE
 
@@ -214,23 +211,21 @@ async def seo_spec_overview(spec_id: str, db: AsyncSession | None = Depends(opti
         title=f"{html.escape(spec.title)} | anyplot.ai",
         description=html.escape(spec.description or DEFAULT_DESCRIPTION),
         image=html.escape(image, quote=True),
-        url=f"https://anyplot.ai/{html.escape(spec_id)}",
+        url=f"https://anyplot.ai/python/{html.escape(spec_id)}",
     )
     set_cache(key, result)
     return HTMLResponse(result)
 
 
-@router.get("/seo-proxy/{spec_id}/{library}")
-async def seo_spec_implementation(spec_id: str, library: str, db: AsyncSession | None = Depends(optional_db)):
-    """Bot-optimized spec implementation page with branded og:image."""
+async def _seo_spec_impl_html(spec_id: str, library: str, db: AsyncSession | None) -> HTMLResponse:
+    """Shared logic for bot-optimized spec implementation page with branded og:image."""
     if db is None:
-        # Fallback when DB unavailable
         return HTMLResponse(
             BOT_HTML_TEMPLATE.format(
                 title=f"{html.escape(spec_id)} - {html.escape(library)} | anyplot.ai",
                 description=DEFAULT_DESCRIPTION,
                 image=DEFAULT_HOME_IMAGE,
-                url=f"https://anyplot.ai/{html.escape(spec_id)}/{html.escape(library)}",
+                url=f"https://anyplot.ai/python/{html.escape(spec_id)}/{html.escape(library)}",
             )
         )
 
@@ -244,16 +239,40 @@ async def seo_spec_implementation(spec_id: str, library: str, db: AsyncSession |
     if not spec:
         raise HTTPException(status_code=404, detail="Spec not found")
 
-    # Find the implementation for this library
     impl = next((i for i in spec.impls if i.library_id == library), None)
-    # Use branded og:image endpoint if implementation has preview
     image = f"https://api.anyplot.ai/og/{spec_id}/{library}.png" if impl and impl.preview_url else DEFAULT_HOME_IMAGE
 
     result = BOT_HTML_TEMPLATE.format(
         title=f"{html.escape(spec.title)} - {html.escape(library)} | anyplot.ai",
         description=html.escape(spec.description or DEFAULT_DESCRIPTION),
         image=html.escape(image, quote=True),
-        url=f"https://anyplot.ai/{html.escape(spec_id)}/{html.escape(library)}",
+        url=f"https://anyplot.ai/python/{html.escape(spec_id)}/{html.escape(library)}",
     )
     set_cache(key, result)
     return HTMLResponse(result)
+
+
+# New /python/ prefixed routes (canonical paths)
+@router.get("/seo-proxy/python/{spec_id}")
+async def seo_python_spec_overview(spec_id: str, db: AsyncSession | None = Depends(optional_db)):
+    """Bot-optimized spec overview page (canonical /python/ path)."""
+    return await _seo_spec_overview_html(spec_id, db)
+
+
+@router.get("/seo-proxy/python/{spec_id}/{library}")
+async def seo_python_spec_implementation(spec_id: str, library: str, db: AsyncSession | None = Depends(optional_db)):
+    """Bot-optimized spec implementation page (canonical /python/ path)."""
+    return await _seo_spec_impl_html(spec_id, library, db)
+
+
+# Legacy routes (old URLs without /python/ prefix) — serve same content with /python/ canonical
+@router.get("/seo-proxy/{spec_id}")
+async def seo_spec_overview(spec_id: str, db: AsyncSession | None = Depends(optional_db)):
+    """Bot-optimized spec overview page (legacy path, canonical points to /python/)."""
+    return await _seo_spec_overview_html(spec_id, db)
+
+
+@router.get("/seo-proxy/{spec_id}/{library}")
+async def seo_spec_implementation(spec_id: str, library: str, db: AsyncSession | None = Depends(optional_db)):
+    """Bot-optimized spec implementation page (legacy path, canonical points to /python/)."""
+    return await _seo_spec_impl_html(spec_id, library, db)

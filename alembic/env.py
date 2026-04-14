@@ -34,7 +34,7 @@ DATABASE_URL = os.getenv("DATABASE_URL", "")
 INSTANCE_CONNECTION_NAME = os.getenv("INSTANCE_CONNECTION_NAME", "")
 DB_USER = os.getenv("DB_USER", "postgres")
 DB_PASS = os.getenv("DB_PASS", "")
-DB_NAME = os.getenv("DB_NAME", "pyplots")
+DB_NAME = os.getenv("DB_NAME", "anyplot")
 
 # Override sqlalchemy.url with DATABASE_URL from environment (for direct connections)
 if DATABASE_URL:

@@ -10,6 +10,7 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { API_URL, GITHUB_URL } from '../constants';
 import { colors, typography, fontSize, semanticColors } from '../theme';
 import { buildSrcSet, getFallbackSrc } from '../utils/responsiveImage';
+import { specPath } from '../utils/paths';
 
 interface PlotOfTheDayData {
   spec_id: string;
@@ -125,7 +126,7 @@ export function PlotOfTheDay() {
           {/* Image */}
           <Link
             component={RouterLink}
-            to={`/${data.spec_id}/${data.library_id}`}
+            to={specPath(data.spec_id, data.library_id)}
             sx={{
               display: 'block',
               textDecoration: 'none',
@@ -181,7 +182,7 @@ export function PlotOfTheDay() {
             {/* Title */}
             <Link
               component={RouterLink}
-              to={`/${data.spec_id}/${data.library_id}`}
+              to={specPath(data.spec_id, data.library_id)}
               sx={{
                 textDecoration: 'none',
                 color: colors.gray[800],

@@ -18,6 +18,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 import type { Implementation } from '../types';
 import { buildSrcSet, OVERVIEW_SIZES } from '../utils/responsiveImage';
+import { interactivePath } from '../utils/paths';
 import { colors, fontSize, semanticColors, typography } from '../theme';
 
 interface LibraryMeta {
@@ -250,7 +251,7 @@ function ImplementationCard({
             <Tooltip title="Open Interactive" disableFocusListener>
               <IconButton
                 component={Link}
-                to={`/interactive/${specId}/${impl.library_id}`}
+                to={interactivePath(specId, impl.library_id)}
                 aria-label="Open interactive"
                 onClick={(e: React.MouseEvent) => {
                   e.stopPropagation();

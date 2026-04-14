@@ -172,7 +172,7 @@ You are the **frontend-auditor** on the audit team. Analyze the `app/src/` direc
 5. Use `search_for_pattern` for cross-file patterns
 6. Use `think_about_collected_information` after research sequences
 7. **Do NOT use Bash** for `find`, `ls`, `grep`, `cat` — use Serena/Glob/Grep/Read tools instead
-8. You MAY use Bash for: `cd /home/tirao/pyplots/app && yarn tsc --noEmit 2>&1 | tail -20`
+8. You MAY use Bash for: `cd /home/tirao/anyplot/app && yarn tsc --noEmit 2>&1 | tail -20`
 
 **Report format:** Same as backend-auditor — send findings to `audit-lead` via `SendMessage`.
 

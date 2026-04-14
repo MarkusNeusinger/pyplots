@@ -27,6 +27,7 @@ import WarningIcon from '@mui/icons-material/Warning';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 import { API_URL, LIBRARIES } from '../constants';
+import { specPath } from '../utils/paths';
 import { Breadcrumb } from '../components/Breadcrumb';
 import {
   typography,
@@ -115,7 +116,7 @@ const ScoreCell = ({ score, specId, library }: { score: number | null; specId: s
   return (
     <Box
       component={Link}
-      to={`/${specId}/${library}`}
+      to={specPath(specId, library)}
       sx={{ display: 'block', textDecoration: 'none', textAlign: 'center', '&:hover': { opacity: 0.7 } }}
     >
       <Typography sx={{ fontSize: fontSize.xs, fontFamily: typography.fontFamily, fontWeight: 600, color: getScoreColor(score) }}>
@@ -144,7 +145,7 @@ const ProblemList = ({ items, title, icon }: { items: ProblemSpec[]; title: stri
                 <TableCell sx={{ width: 200 }}>
                   <Box
                     component={Link}
-                    to={`/${item.id}`}
+                    to={specPath(item.id)}
                     sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.sm, color: colors.primary, textDecoration: 'none' }}
                   >
                     {item.id}
@@ -505,7 +506,7 @@ export function DebugPage() {
                   <TableCell>
                     <Box
                       component={Link}
-                      to={`/${spec.id}`}
+                      to={specPath(spec.id)}
                       sx={{
                         fontFamily: typography.fontFamily,
                         fontSize: fontSize.sm,

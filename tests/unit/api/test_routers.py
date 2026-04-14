@@ -463,9 +463,9 @@ class TestSeoRouter:
             # URL format: /, /catalog, /{spec_id}, /{spec_id}/{library_id}
             assert "https://anyplot.ai/catalog" in response.text
             # Overview page
-            assert "https://anyplot.ai/scatter-basic</loc>" in response.text
+            assert "https://anyplot.ai/python/scatter-basic</loc>" in response.text
             # Implementation page
-            assert "https://anyplot.ai/scatter-basic/matplotlib</loc>" in response.text
+            assert "https://anyplot.ai/python/scatter-basic/matplotlib</loc>" in response.text
 
 
 class TestSeoProxyRouter:
@@ -511,7 +511,7 @@ class TestSeoProxyRouter:
             assert response.status_code == 200
             assert "Basic Scatter Plot" in response.text
             assert "og:title" in response.text
-            assert "https://anyplot.ai/scatter-basic" in response.text
+            assert "https://anyplot.ai/python/scatter-basic" in response.text
 
     def test_seo_spec_overview_not_found(self, db_client) -> None:
         """SEO spec overview should return 404 when spec not found."""

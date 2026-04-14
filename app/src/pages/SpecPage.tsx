@@ -15,6 +15,7 @@ import { API_URL, GITHUB_URL, LIB_ABBREV } from '../constants';
 import { typography, colors, fontSize, semanticColors } from '../theme';
 import { useAnalytics, useCodeFetch } from '../hooks';
 import { useAppData } from '../hooks';
+import { specPath } from '../utils/paths';
 import { LibraryPills } from '../components/LibraryPills';
 import { Breadcrumb } from '../components/Breadcrumb';
 import { Footer } from '../components/Footer';
@@ -86,7 +87,7 @@ export function SpecPage() {
 
         // Validate library if provided
         if (urlLibrary && !data.implementations.some((impl) => impl.library_id === urlLibrary)) {
-          navigate(`/${specId}`, { replace: true });
+          navigate(specPath(specId!), { replace: true });
         }
       } catch (err) {
         console.error('Error fetching spec:', err);
@@ -119,7 +120,7 @@ export function SpecPage() {
   const handleLibrarySelect = useCallback(
     (libraryId: string) => {
       setImageLoaded(false);
-      navigate(`/${specId}/${libraryId}`, { replace: true });
+      navigate(specPath(specId!, libraryId), { replace: true });
     },
     [specId, navigate]
   );
@@ -127,7 +128,7 @@ export function SpecPage() {
   // Handle implementation click (in overview mode)
   const handleImplClick = useCallback(
     (libraryId: string) => {
-      navigate(`/${specId}/${libraryId}`);
+      navigate(specPath(specId!, libraryId));
     },
     [specId, navigate]
   );
@@ -190,9 +191,9 @@ export function SpecPage() {
   useEffect(() => {
     if (specData) {
       if (isOverviewMode) {
-        trackPageview(`/${specId}`);
+        trackPageview(`/python/${specId}`);
       } else if (selectedLibrary) {
-        trackPageview(`/${specId}/${selectedLibrary}`);
+        trackPageview(`/python/${specId}/${selectedLibrary}`);
       }
     }
   }, [specData, isOverviewMode, selectedLibrary, specId, trackPageview]);
@@ -274,9 +275,9 @@ export function SpecPage() {
         {currentImpl?.preview_url && <meta property="og:image" content={currentImpl.preview_url} />}
         <meta
           property="og:url"
-          content={isOverviewMode ? `https://anyplot.ai/${specId}` : `https://anyplot.ai/${specId}/${selectedLibrary}`}
+          content={isOverviewMode ? `https://anyplot.ai/python/${specId}` : `https://anyplot.ai/python/${specId}/${selectedLibrary}`}
         />
-        <link rel="canonical" href={isOverviewMode ? `https://anyplot.ai/${specId}` : `https://anyplot.ai/${specId}/${selectedLibrary}`} />
+        <link rel="canonical" href={isOverviewMode ? `https://anyplot.ai/python/${specId}` : `https://anyplot.ai/python/${specId}/${selectedLibrary}`} />
       </Helmet>
 
       <Box sx={{ pb: 4 }}>
@@ -290,7 +291,7 @@ export function SpecPage() {
                 ]
               : [
                   { label: 'anyplot.ai', shortLabel: 'ap', to: '/' },
-                  { label: specId || '', to: `/${specId}` },
+                  { label: specId || '', to: specPath(specId!) },
                   { label: selectedLibrary || '', shortLabel: LIB_ABBREV[selectedLibrary || ''] || selectedLibrary || '' },
                 ]
           }
@@ -445,7 +446,7 @@ export function SpecPage() {
             />
 
             <Box sx={{ textAlign: 'center', mt: -0.5, mb: 1 }}>
-              <Box component={Link} to={`/${specId}`} sx={{
+              <Box component={Link} to={specPath(specId!)} sx={{
                 fontFamily: typography.fontFamily,
                 fontSize: fontSize.sm,
                 color: semanticColors.mutedText,

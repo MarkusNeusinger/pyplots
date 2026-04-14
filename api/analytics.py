@@ -163,9 +163,9 @@ def track_og_image(
     elif page == "catalog":
         url = "https://anyplot.ai/catalog"
     elif spec is not None and library:
-        url = f"https://anyplot.ai/{spec}/{library}"
+        url = f"https://anyplot.ai/python/{spec}/{library}"
     elif spec is not None:
-        url = f"https://anyplot.ai/{spec}"
+        url = f"https://anyplot.ai/python/{spec}"
     else:
         # Fallback: missing spec for a spec-based page
         url = "https://anyplot.ai/"

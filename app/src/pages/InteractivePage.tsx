@@ -11,6 +11,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { API_URL } from '../constants';
 import { typography, colors, semanticColors } from '../theme';
 import { useAnalytics } from '../hooks';
+import { specPath } from '../utils/paths';
 import { Breadcrumb } from '../components/Breadcrumb';
 
 // Initial dimensions - will be updated via postMessage from iframe
@@ -37,7 +38,7 @@ export function InteractivePage() {
   // Track interactive page view
   useEffect(() => {
     if (specId && library) {
-      trackPageview(`/interactive/${specId}/${library}`);
+      trackPageview(`/python/interactive/${specId}/${library}`);
     }
   }, [specId, library, trackPageview]);
 
@@ -138,7 +139,7 @@ export function InteractivePage() {
   }, [specId, library]);
 
   const handleClose = () => {
-    navigate(`/${specId}/${library}`);
+    navigate(specPath(specId!, library!));
   };
 
   // Open original (unmodified) HTML in new tab
@@ -201,9 +202,9 @@ export function InteractivePage() {
         <meta name="description" content={`Interactive ${title} visualization using ${library} | anyplot.ai`} />
         <meta property="og:title" content={`${title} - ${library} (interactive) | anyplot.ai`} />
         <meta property="og:description" content={`Interactive ${title} visualization using ${library}`} />
-        <meta property="og:url" content={`https://anyplot.ai/interactive/${specId}/${library}`} />
+        <meta property="og:url" content={`https://anyplot.ai/python/interactive/${specId}/${library}`} />
         <meta name="robots" content="noindex, follow" />
-        <link rel="canonical" href={`https://anyplot.ai/interactive/${specId}/${library}`} />
+        <link rel="canonical" href={`https://anyplot.ai/python/interactive/${specId}/${library}`} />
       </Helmet>
 
       <Box
@@ -219,8 +220,8 @@ export function InteractivePage() {
         <Breadcrumb
           items={[
             { label: 'anyplot.ai', shortLabel: 'ap', to: '/' },
-            { label: specId || '', to: `/${specId}` },
-            { label: library || '', to: `/${specId}/${library}` },
+            { label: specId || '', to: specPath(specId!) },
+            { label: library || '', to: specPath(specId!, library!) },
             { label: 'interactive' },
           ]}
           rightAction={

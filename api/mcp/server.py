@@ -102,7 +102,7 @@ async def list_specs(limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
             item = SpecListItem(
                 id=spec.id, title=spec.title, description=spec.description, tags=spec.tags, library_count=impl_count
             )
-            result.append({**item.model_dump(), "website_url": f"{ANYPLOT_WEBSITE_URL}/{spec.id}"})
+            result.append({**item.model_dump(), "website_url": f"{ANYPLOT_WEBSITE_URL}/python/{spec.id}"})
 
         return result
     finally:
@@ -228,7 +228,7 @@ async def search_specs_by_tags(
             item = SpecListItem(
                 id=spec.id, title=spec.title, description=spec.description, tags=spec.tags, library_count=impl_count
             )
-            result.append({**item.model_dump(), "website_url": f"{ANYPLOT_WEBSITE_URL}/{spec.id}"})
+            result.append({**item.model_dump(), "website_url": f"{ANYPLOT_WEBSITE_URL}/python/{spec.id}"})
 
         return result
     finally:
@@ -289,7 +289,10 @@ async def get_spec_detail(spec_id: str) -> dict[str, Any]:
                 impl_tags=impl.impl_tags,
             )
             implementations.append(
-                {**impl_response.model_dump(), "website_url": f"{ANYPLOT_WEBSITE_URL}/{spec_id}/{impl.library.id}"}
+                {
+                    **impl_response.model_dump(),
+                    "website_url": f"{ANYPLOT_WEBSITE_URL}/python/{spec_id}/{impl.library.id}",
+                }
             )
 
         # Build full spec response
@@ -308,7 +311,7 @@ async def get_spec_detail(spec_id: str) -> dict[str, Any]:
             implementations=implementations,
         )
 
-        return {**response.model_dump(), "website_url": f"{ANYPLOT_WEBSITE_URL}/{spec_id}"}
+        return {**response.model_dump(), "website_url": f"{ANYPLOT_WEBSITE_URL}/python/{spec_id}"}
     finally:
         await session.close()
 
@@ -380,7 +383,7 @@ async def get_implementation(spec_id: str, library: str) -> dict[str, Any]:
             impl_tags=impl.impl_tags,
         )
 
-        return {**response.model_dump(), "website_url": f"{ANYPLOT_WEBSITE_URL}/{spec_id}/{library}"}
+        return {**response.model_dump(), "website_url": f"{ANYPLOT_WEBSITE_URL}/python/{spec_id}/{library}"}
     finally:
         await session.close()
 

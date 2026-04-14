@@ -52,8 +52,8 @@ class TestBuildSitemapXml:
         spec.updated = datetime(2025, 3, 14)
 
         result = _build_sitemap_xml([spec])
-        assert "https://anyplot.ai/scatter-basic" in result
-        assert "https://anyplot.ai/scatter-basic/matplotlib" in result
+        assert "https://anyplot.ai/python/scatter-basic" in result
+        assert "https://anyplot.ai/python/scatter-basic/matplotlib" in result
         assert "<lastmod>2025-03-14</lastmod>" in result
         assert "<lastmod>2025-03-15</lastmod>" in result
 

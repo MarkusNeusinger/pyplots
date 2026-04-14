@@ -16,6 +16,19 @@ This document provides a comprehensive overview of Plausible Analytics implement
 
 **Implementation**: Query parameters converted to URL path segments for better analytics segmentation.
 
+### Multi-Language URL Strategy
+
+**Cutover date**: 2026-04-14
+
+Spec and implementation URLs are prefixed with `/python/` to support future multi-language expansion (Julia, R, etc.). This ensures Plausible analytics paths remain stable when new languages are added.
+
+- Root homepage `/` and static pages (`/catalog`, `/legal`, etc.) remain un-prefixed
+- Spec pages: `/python/{spec_id}`, `/python/{spec_id}/{library}`
+- Interactive: `/python/interactive/{spec_id}/{library}`
+- Marketing subdomains (`python.anyplot.ai`) 301-redirect to `anyplot.ai/python/`
+
+Historical data before 2026-04-14 uses un-prefixed paths (`/{spec_id}`).
+
 ### Filter-Based Pageviews
 
 Filters create dynamic URLs with the following format:
@@ -23,31 +36,40 @@ Filters create dynamic URLs with the following format:
 https://anyplot.ai/{category}/{value}/{category}/{value}/...
 ```
 
+On language-prefixed pages (`/python/`), filter URLs include the prefix:
+```
+https://anyplot.ai/python/{category}/{value}/...
+```
+
 **Ordered categories**: `lib`, `spec`, `plot`, `data`, `dom`, `feat`, `dep`, `tech`, `pat`, `prep`, `style`
 
-**Examples**:
+**Examples (root homepage)**:
 - `/?lib=matplotlib` → `https://anyplot.ai/lib/matplotlib`
 - `/?lib=matplotlib&plot=scatter` → `https://anyplot.ai/lib/matplotlib/plot/scatter`
 - `/?lib=matplotlib,seaborn` → `https://anyplot.ai/lib/matplotlib,seaborn` (OR logic)
 - `/?lib=matplotlib&lib=seaborn` → `https://anyplot.ai/lib/matplotlib/lib/seaborn` (AND logic)
+
+**Examples (Python homepage)**:
+- `/python/?lib=matplotlib` → `https://anyplot.ai/python/lib/matplotlib`
 
 **Benefits**:
 - Plausible shows popular filter combinations
 - No manual event tracking needed for filter changes
 - URL structure clearly shows user's browsing context
 
-### Static Pages
+### Pages
 
 | URL | Description |
 |-----|-------------|
 | `/` | Home page (no filters) |
+| `/python/` | Python home page (no filters, language-prefixed) |
 | `/catalog` | Catalog page (alphabetical spec list) |
 | `/legal` | Legal notice, privacy policy, transparency |
 | `/mcp` | MCP server documentation (AI assistant integration) |
 | `/stats` | Platform statistics (library scores, coverage, tags, top implementations) |
-| `/{spec_id}` | Spec overview page (grid of all implementations) |
-| `/{spec_id}/{library}` | Spec detail page (single library implementation) |
-| `/interactive/{spec_id}/{library}` | Interactive fullscreen view (HTML plots) |
+| `/python/{spec_id}` | Spec overview page (grid of all implementations) |
+| `/python/{spec_id}/{library}` | Spec detail page (single library implementation) |
+| `/python/interactive/{spec_id}/{library}` | Interactive fullscreen view (HTML plots) |
 
 **Total pageview tracking**: Automated via `trackPageview()` in all pages
 

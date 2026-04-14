@@ -313,6 +313,47 @@ curl -o test.png https://api.anyplot.ai/og/scatter-basic.png
 | `api/routers/og_images.py` | Branded og:image endpoints |
 | `core/images.py` | Image processing, branding functions |
 
+## Multi-Language URL Strategy
+
+Spec and implementation URLs use a `/python/` prefix to prepare for future multi-language support (Julia, R, etc.).
+
+### URL Structure
+
+| URL | Purpose |
+|-----|---------|
+| `/` | Root homepage (all languages, currently Python only) |
+| `/python/` | Python-specific homepage |
+| `/python/{spec_id}` | Spec overview (Python implementations) |
+| `/python/{spec_id}/{library}` | Spec detail (specific Python library) |
+| `/python/interactive/{spec_id}/{library}` | Interactive fullscreen view |
+| `/catalog`, `/legal`, `/mcp`, `/stats` | Language-independent pages (no prefix) |
+
+### Legacy Redirects
+
+Old URLs without the `/python/` prefix (e.g., `/{spec_id}`) are redirected client-side via React Router `<Navigate replace />` to the corresponding `/python/` path.
+
+Social media bots hitting old SEO proxy routes (`/seo-proxy/{spec_id}`) receive HTML with `og:url` and `<link rel="canonical">` pointing to the new `/python/` canonical URL.
+
+### Marketing Subdomains
+
+`python.anyplot.ai` is configured for 301 redirect to `anyplot.ai/python/` via nginx. This requires DNS + SSL infrastructure setup (wildcard cert or per-subdomain cert).
+
+**Benefits**: Single domain authority for SEO, catchy subdomain for marketing/conferences.
+
+### Path Utility
+
+Frontend URL generation is centralized in `app/src/utils/paths.ts`:
+- `specPath(specId, library?)` — builds `/python/{specId}` or `/python/{specId}/{library}`
+- `interactivePath(specId, library)` — builds `/python/interactive/{specId}/{library}`
+
+### Future Expansion
+
+When adding Julia or R support:
+1. Add `/julia/` and `/r/` route groups (no changes to Python URLs)
+2. Root `/` becomes a multi-language entry point with language picker
+3. Add `julia.anyplot.ai` → `anyplot.ai/julia/` subdomain redirects
+4. Backend API gets a `language` query parameter
+
 ## Security
 
 - All user input (spec_id, library) is HTML-escaped before rendering

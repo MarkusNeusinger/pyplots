@@ -23,6 +23,10 @@ function buildPlausibleUrl(): string {
   const params = new URLSearchParams(window.location.search);
   const segments: string[] = [];
 
+  // Detect language prefix from current path (e.g. /python/)
+  const pathname = window.location.pathname;
+  const langPrefix = pathname.startsWith("/python") ? "/python" : "";
+
   // Definierte Reihenfolge der Filter-Kategorien (inkl. impl-level tags)
   const orderedKeys = [
     "lib",
@@ -50,8 +54,8 @@ function buildPlausibleUrl(): string {
   }
 
   return segments.length > 0
-    ? `https://anyplot.ai/${segments.join("/")}`
-    : "https://anyplot.ai/";
+    ? `https://anyplot.ai${langPrefix}/${segments.join("/")}`
+    : `https://anyplot.ai${langPrefix || "/"}`;
 }
 
 export function useAnalytics() {

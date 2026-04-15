@@ -14,10 +14,20 @@ const LazyFallback = () => (
   </Box>
 );
 
-// Redirects old /:specId and /:specId/:library URLs to /python/ equivalents
-function LegacySpecRedirect() {
-  const { specId, library } = useParams();
-  return <Navigate to={specPath(specId!, library)} replace />;
+// Catches old URLs without /python/ prefix and redirects to /python/ equivalents.
+// Uses splat (*) to avoid route ranking conflicts with the python route group.
+function LegacyCatchAll() {
+  const params = useParams();
+  const splatPath = params['*'] || '';
+  const parts = splatPath.split('/').filter(Boolean);
+
+  if (parts.length === 1) {
+    return <Navigate to={specPath(parts[0])} replace />;
+  }
+  if (parts.length === 2) {
+    return <Navigate to={specPath(parts[0], parts[1])} replace />;
+  }
+  return <NotFoundPage />;
 }
 
 function LegacyInteractiveRedirect() {
@@ -44,10 +54,9 @@ const router = createBrowserRouter([
         { path: ':specId', lazy: lazySpec },
         { path: ':specId/:library', lazy: lazySpec },
       ]},
-      // Legacy redirects: old /:specId URLs → /python/:specId
-      { path: ':specId', element: <LegacySpecRedirect /> },
-      { path: ':specId/:library', element: <LegacySpecRedirect /> },
-      { path: '*', element: <NotFoundPage /> },
+      // Legacy catch-all: redirects old /:specId and /:specId/:library to /python/ equivalents.
+      // Uses * (lowest priority) so the python route group always wins.
+      { path: '*', element: <LegacyCatchAll /> },
     ],
   },
   // Fullscreen interactive view (outside Layout)

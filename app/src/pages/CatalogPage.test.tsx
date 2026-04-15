@@ -1,139 +1,76 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '../test-utils';
-import { CatalogPage } from './CatalogPage';
-
-vi.mock('react-helmet-async', () => ({
-  Helmet: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-}));
+import { render, screen } from '../test-utils';
 
 vi.mock('../hooks', () => ({
-  useAnalytics: () => ({
-    trackPageview: vi.fn(),
-    trackEvent: vi.fn(),
+  useAnalytics: () => ({ trackPageview: vi.fn(), trackEvent: vi.fn() }),
+  useInfiniteScroll: () => ({ loadMoreRef: { current: null } }),
+  useFilterState: () => ({
+    activeFilters: [],
+    filterCounts: null,
+    globalCounts: null,
+    orCounts: [],
+    specTitles: {},
+    allImages: [],
+    displayedImages: [],
+    hasMore: false,
+    loading: false,
+    error: '',
+    setDisplayedImages: vi.fn(),
+    setHasMore: vi.fn(),
+    handleAddFilter: vi.fn(),
+    handleAddValueToGroup: vi.fn(),
+    handleRemoveFilter: vi.fn(),
+    handleRemoveGroup: vi.fn(),
+    handleRandom: vi.fn(),
+    randomAnimation: null,
   }),
-  useAppData: () => ({
-    specsData: [
-      { id: 'bar-basic', title: 'Basic Bar Chart', description: 'A simple bar chart' },
-      { id: 'scatter-basic', title: 'Basic Scatter Plot', description: 'A scatter plot' },
-    ],
-  }),
+  isFiltersEmpty: (f: unknown[]) => !f || f.length === 0,
+  useAppData: () => ({ specsData: [], librariesData: [], stats: null }),
   useHomeState: () => ({
+    homeStateRef: { current: { scrollY: 0 } },
     saveScrollPosition: vi.fn(),
+    setHomeState: vi.fn(),
+    homeState: { scrollY: 0 },
   }),
+  useTheme: () => ({ isDark: false, toggle: vi.fn() }),
 }));
 
-vi.mock('../utils/responsiveImage', () => ({
-  buildSrcSet: (url: string, _format: string) => url,
-  getFallbackSrc: (url: string) => url,
-  CATALOG_SIZES: '280px',
+vi.mock('react-helmet-async', () => ({
+  Helmet: ({ children }: { children: React.ReactNode }) => <div data-testid="helmet">{children}</div>,
 }));
 
-const mockImages = {
-  images: [
-    { library: 'matplotlib', url: 'https://example.com/bar-basic/matplotlib/plot.png', spec_id: 'bar-basic' },
-    { library: 'seaborn', url: 'https://example.com/bar-basic/seaborn/plot.png', spec_id: 'bar-basic' },
-    { library: 'matplotlib', url: 'https://example.com/scatter-basic/matplotlib/plot.png', spec_id: 'scatter-basic' },
-  ],
-};
+vi.mock('../components/FilterBar', () => ({
+  FilterBar: () => <div data-testid="filterbar">FilterBar</div>,
+}));
 
-beforeEach(() => {
-  vi.restoreAllMocks();
-});
+vi.mock('../components/ImagesGrid', () => ({
+  ImagesGrid: () => <div data-testid="images-grid">ImagesGrid</div>,
+}));
 
-function mockFetchSuccess() {
-  global.fetch = vi.fn().mockResolvedValue({
-    ok: true,
-    json: () => Promise.resolve(mockImages),
-  });
-}
+vi.mock('../components/Footer', () => ({
+  Footer: () => <div data-testid="footer">Footer</div>,
+}));
 
-function mockFetchError() {
-  global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
-}
+import { CatalogPage } from './CatalogPage';
 
 describe('CatalogPage', () => {
-  it('shows loading state initially', () => {
-    // Never-resolving fetch keeps loading=true
-    global.fetch = vi.fn().mockReturnValue(new Promise(() => {}));
-    render(<CatalogPage />);
-
-    // Loading state renders Skeleton placeholders (MUI Skeleton uses role="progressbar" internally, but we can check for the skeleton structure)
-    // The loading branch renders multiple Skeleton elements; heading text should NOT be present
-    expect(screen.queryByText('catalog')).not.toBeInTheDocument();
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
-  it('renders specs after successful fetch', async () => {
-    mockFetchSuccess();
+  it('renders FilterBar and ImagesGrid', () => {
     render(<CatalogPage />);
-
-    await waitFor(() => {
-      expect(screen.getByText('Basic Bar Chart')).toBeInTheDocument();
-    });
-    expect(screen.getByText('Basic Scatter Plot')).toBeInTheDocument();
-    expect(screen.getByText('A simple bar chart')).toBeInTheDocument();
-    expect(screen.getByText('A scatter plot')).toBeInTheDocument();
+    expect(screen.getByTestId('filterbar')).toBeInTheDocument();
+    expect(screen.getByTestId('images-grid')).toBeInTheDocument();
   });
 
-  it('handles fetch error gracefully', async () => {
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    mockFetchError();
+  it('renders footer', () => {
     render(<CatalogPage />);
-
-    // After error, loading ends and we get the catalog heading (with 0 specs matched since no images loaded)
-    await waitFor(() => {
-      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
-    });
-    expect(screen.getByText('0 specifications')).toBeInTheDocument();
-    consoleSpy.mockRestore();
+    expect(screen.getByTestId('footer')).toBeInTheDocument();
   });
 
-  it('renders breadcrumb navigation', async () => {
-    mockFetchSuccess();
+  it('renders Helmet for SEO', () => {
     render(<CatalogPage />);
-
-    await waitFor(() => {
-      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
-    });
-    expect(screen.getByRole('navigation', { name: 'breadcrumb' })).toBeInTheDocument();
-  });
-
-  it('renders footer', async () => {
-    mockFetchSuccess();
-    render(<CatalogPage />);
-
-    await waitFor(() => {
-      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
-    });
-    expect(screen.getByText('github')).toBeInTheDocument();
-  });
-
-  it('has page title text', async () => {
-    mockFetchSuccess();
-    render(<CatalogPage />);
-
-    await waitFor(() => {
-      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
-    });
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('catalog');
-  });
-
-  it('shows specification count', async () => {
-    mockFetchSuccess();
-    render(<CatalogPage />);
-
-    await waitFor(() => {
-      expect(screen.getByText('2 specifications')).toBeInTheDocument();
-    });
-  });
-
-  it('calls fetch with /plots/filter endpoint', async () => {
-    mockFetchSuccess();
-    render(<CatalogPage />);
-
-    await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalled();
-    });
-    const fetchUrl = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0][0] as string;
-    expect(fetchUrl).toContain('/plots/filter');
+    expect(screen.getByTestId('helmet')).toBeInTheDocument();
   });
 });

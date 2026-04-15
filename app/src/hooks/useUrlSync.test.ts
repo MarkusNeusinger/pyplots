@@ -60,12 +60,12 @@ describe('buildFilterUrl', () => {
 
   it('builds single filter URL', () => {
     const filters: ActiveFilters = [{ category: 'lib', values: ['matplotlib'] }];
-    expect(buildFilterUrl(filters)).toBe('?lib=matplotlib');
+    expect(buildFilterUrl(filters)).toBe('/?lib=matplotlib');
   });
 
   it('builds comma-separated OR values', () => {
     const filters: ActiveFilters = [{ category: 'lib', values: ['matplotlib', 'seaborn'] }];
-    expect(buildFilterUrl(filters)).toBe('?lib=matplotlib%2Cseaborn');
+    expect(buildFilterUrl(filters)).toBe('/?lib=matplotlib%2Cseaborn');
   });
 
   it('builds multiple AND groups', () => {
@@ -73,7 +73,7 @@ describe('buildFilterUrl', () => {
       { category: 'lib', values: ['matplotlib'] },
       { category: 'plot', values: ['scatter'] },
     ];
-    expect(buildFilterUrl(filters)).toBe('?lib=matplotlib&plot=scatter');
+    expect(buildFilterUrl(filters)).toBe('/?lib=matplotlib&plot=scatter');
   });
 
   it('skips groups with empty values', () => {
@@ -81,7 +81,7 @@ describe('buildFilterUrl', () => {
       { category: 'lib', values: [] },
       { category: 'plot', values: ['scatter'] },
     ];
-    expect(buildFilterUrl(filters)).toBe('?plot=scatter');
+    expect(buildFilterUrl(filters)).toBe('/?plot=scatter');
   });
 });
 

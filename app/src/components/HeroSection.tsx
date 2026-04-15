@@ -9,7 +9,6 @@ import { buildSrcSet, getFallbackSrc } from '../utils/responsiveImage';
 
 interface HeroSectionProps {
   stats: { specs: number; plots: number; libraries: number } | null;
-  onBrowse: () => void;
 }
 
 interface PlotOfTheDayData {
@@ -20,7 +19,7 @@ interface PlotOfTheDayData {
   preview_url: string | null;
 }
 
-export function HeroSection({ stats, onBrowse }: HeroSectionProps) {
+export function HeroSection({ stats }: HeroSectionProps) {
   const [potd, setPotd] = useState<PlotOfTheDayData | null>(null);
 
   useEffect(() => {
@@ -97,17 +96,31 @@ export function HeroSection({ stats, onBrowse }: HeroSectionProps) {
           mb: 5,
           fontWeight: 300,
         }}>
-          A curated catalogue of plotting examples across nine Python libraries —
-          each reproducible, colorblind-safe, and calibrated to the same scientific palette.
+          A curated catalogue of visualization examples — AI-generated, open source, and built for every library you already use.
+        </Box>
+
+        {/* Tagline — prominent */}
+        <Box sx={{
+          animation: 'rise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.25s backwards',
+          fontFamily: typography.serif,
+          fontSize: { xs: '1.125rem', md: '1.5rem' },
+          lineHeight: 1.3,
+          color: 'var(--ink)',
+          maxWidth: '52ch',
+          mb: 5,
+          fontWeight: 400,
+          fontStyle: 'italic',
+        }}>
+          Get inspired. Grab the code. Make it yours.
         </Box>
 
         {/* CTAs */}
         <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap', animation: 'rise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.3s backwards' }}>
           <Box
-            component="button"
-            onClick={onBrowse}
+            component={RouterLink}
+            to="/catalog"
             sx={{
-              all: 'unset',
+              textDecoration: 'none',
               boxSizing: 'border-box',
               fontFamily: typography.mono,
               fontSize: '13px',
@@ -131,13 +144,13 @@ export function HeroSection({ stats, onBrowse }: HeroSectionProps) {
               },
             }}
           >
-            Browse the catalogue <Box component="span" sx={{ transition: 'transform 0.2s', '.MuiBox-root:hover > &': { transform: 'translateX(3px)' } }}>↓</Box>
+            Browse the catalogue <Box component="span" sx={{ transition: 'transform 0.2s' }}>→</Box>
           </Box>
-          <Link
+          <Box
             component={RouterLink}
             to="/mcp"
             sx={{
-              all: 'unset',
+              textDecoration: 'none',
               boxSizing: 'border-box',
               fontFamily: typography.mono,
               fontSize: '13px',
@@ -151,7 +164,7 @@ export function HeroSection({ stats, onBrowse }: HeroSectionProps) {
             }}
           >
             use via MCP
-          </Link>
+          </Box>
         </Box>
 
         {/* Meta stats */}
@@ -170,9 +183,9 @@ export function HeroSection({ stats, onBrowse }: HeroSectionProps) {
             letterSpacing: '0.1em',
           }}>
             {[
-              { value: stats.plots.toLocaleString(), label: 'examples' },
+              { value: String(stats.specs), label: 'specs' },
+              { value: stats.plots.toLocaleString(), label: 'implementations' },
               { value: String(stats.libraries), label: 'libraries' },
-              { value: '100%', label: 'colorblind-safe' },
             ].map((item, i) => (
               <Box key={i}>
                 <Box sx={{

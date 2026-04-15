@@ -46,7 +46,8 @@ export function buildFilterUrl(filters: ActiveFilters): string {
     }
   });
   const queryString = params.toString();
-  return queryString ? `?${queryString}` : '/';
+  const basePath = window.location.pathname;
+  return queryString ? `${basePath}?${queryString}` : basePath;
 }
 
 interface UseUrlSyncOptions {

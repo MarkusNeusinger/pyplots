@@ -12,7 +12,7 @@ export function MastheadRule() {
       gridTemplateColumns: '1fr auto 1fr',
       alignItems: 'center',
       py: 1.5,
-      mb: 4,
+      mb: 0,
       borderBottom: '1px solid var(--rule)',
       fontFamily: typography.mono,
       fontSize: '11px',

@@ -1,113 +1,99 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Skeleton from '@mui/material/Skeleton';
+import Alert from '@mui/material/Alert';
 import Fab from '@mui/material/Fab';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
-import { API_URL, GITHUB_URL } from '../constants';
-import { buildSrcSet, getFallbackSrc, CATALOG_SIZES } from '../utils/responsiveImage';
-import { useAnalytics } from '../hooks';
+import type { PlotImage } from '../types';
+import type { ImageSize } from '../constants';
+import { useInfiniteScroll, useAnalytics, useFilterState, isFiltersEmpty } from '../hooks';
+import { NavBar } from '../components/NavBar';
+import { Footer } from '../components/Footer';
+import { FilterBar } from '../components/FilterBar';
+import { ImagesGrid } from '../components/ImagesGrid';
 import { useAppData, useHomeState } from '../hooks';
 import { specPath } from '../utils/paths';
-import { Breadcrumb } from '../components/Breadcrumb';
-import { Footer } from '../components/Footer';
-import type { PlotImage } from '../types';
-import { typography, colors, fontSize, semanticColors } from '../theme';
-
-interface CatalogSpec {
-  id: string;
-  title: string;
-  description?: string;
-  images: PlotImage[];
-}
+import { colors } from '../theme';
+import Container from '@mui/material/Container';
 
 export function CatalogPage() {
-  const { specsData } = useAppData();
-  const { saveScrollPosition } = useHomeState();
-  const { trackPageview, trackEvent } = useAnalytics();
+  const navigate = useNavigate();
+  const { specsData, librariesData } = useAppData();
+  const { homeStateRef, saveScrollPosition } = useHomeState();
 
-  // Track catalog page view
+  // Disable browser's automatic scroll restoration
   useEffect(() => {
-    trackPageview('/catalog');
-  }, [trackPageview]);
-
-  const [allImages, setAllImages] = useState<PlotImage[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [rotationIndex, setRotationIndex] = useState<Record<string, number>>({});
-  const [expandedDescs, setExpandedDescs] = useState<Record<string, boolean>>({});
-  const [showScrollTop, setShowScrollTop] = useState(false);
-
-  // Fetch all images
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    const fetchImages = async () => {
-      try {
-        const res = await fetch(`${API_URL}/plots/filter`, {
-          signal: abortController.signal,
-        });
-        if (abortController.signal.aborted) return;
-        if (res.ok) {
-          const data = await res.json();
-          setAllImages(data.images || []);
-        }
-      } catch (err) {
-        if (abortController.signal.aborted) return;
-        console.error('Error fetching images:', err);
-      } finally {
-        if (!abortController.signal.aborted) {
-          setLoading(false);
-        }
-      }
-    };
-    fetchImages();
-
-    return () => abortController.abort();
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
   }, []);
 
-  // Group images by spec_id and merge with spec metadata
-  const catalogSpecs = useMemo(() => {
-    // Group images by spec_id
-    const imagesBySpec: Record<string, PlotImage[]> = {};
-    for (const img of allImages) {
-      const specId = img.spec_id || '';
-      if (!imagesBySpec[specId]) {
-        imagesBySpec[specId] = [];
-      }
-      imagesBySpec[specId].push(img);
-    }
+  const { trackPageview, trackEvent } = useAnalytics();
 
-    // Merge with spec metadata and sort images by library name
-    const specs: CatalogSpec[] = specsData
-      .filter((spec) => imagesBySpec[spec.id])
-      .map((spec) => ({
-        id: spec.id,
-        title: spec.title,
-        description: spec.description,
-        images: imagesBySpec[spec.id].sort((a, b) => a.library.localeCompare(b.library)),
-      }));
+  const {
+    activeFilters,
+    filterCounts,
+    orCounts,
+    specTitles,
+    allImages,
+    displayedImages,
+    hasMore,
+    loading,
+    error,
+    setDisplayedImages,
+    setHasMore,
+    handleAddFilter,
+    handleAddValueToGroup,
+    handleRemoveFilter,
+    handleRemoveGroup,
+    handleRandom,
+    randomAnimation,
+  } = useFilterState({
+    onTrackPageview: trackPageview,
+    onTrackEvent: trackEvent,
+  });
 
-    // Sort alphabetically by title
-    specs.sort((a, b) => a.title.localeCompare(b.title));
+  const { loadMoreRef } = useInfiniteScroll({
+    allImages,
+    displayedImages,
+    hasMore,
+    setDisplayedImages,
+    setHasMore,
+  });
 
-    return specs;
-  }, [allImages, specsData]);
-
-  // Initialize random rotation indices once specs are loaded
+  // Restore scroll position from persistent state
+  const scrollRestoredRef = useRef(false);
   useEffect(() => {
-    if (catalogSpecs.length > 0 && Object.keys(rotationIndex).length === 0) {
-      const initialIndices: Record<string, number> = {};
-      catalogSpecs.forEach((spec) => {
-        initialIndices[spec.id] = Math.floor(Math.random() * spec.images.length);
+    if (scrollRestoredRef.current) return;
+    const savedScrollY = homeStateRef.current.scrollY;
+    if (savedScrollY > 0 && displayedImages.length > 0) {
+      requestAnimationFrame(() => {
+        window.scrollTo(0, savedScrollY);
+        scrollRestoredRef.current = true;
       });
-      setRotationIndex(initialIndices);
+    } else if (displayedImages.length > 0) {
+      scrollRestoredRef.current = true;
     }
-  }, [catalogSpecs, rotationIndex]);
+  }, [homeStateRef, displayedImages.length]);
 
-  // Show/hide scroll-to-top button based on scroll position
+  // UI state
+  const [openImageTooltip, setOpenImageTooltip] = useState<string | null>(null);
+  const [imageSize, setImageSize] = useState<ImageSize>(() => {
+    const stored = localStorage.getItem('imageSize');
+    return stored === 'normal' || stored === 'compact' ? stored : 'normal';
+  });
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const noFilters = isFiltersEmpty(activeFilters);
+
+  useEffect(() => {
+    localStorage.setItem('imageSize', imageSize);
+  }, [imageSize]);
+
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 300);
@@ -116,285 +102,117 @@ export function CatalogPage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Handle image click - rotate to next implementation
-  const handleImageClick = useCallback(
-    (specId: string, totalImages: number) => {
-      setRotationIndex((prev) => ({
-        ...prev,
-        [specId]: ((prev[specId] || 0) + 1) % totalImages,
-      }));
-      trackEvent('catalog_rotate', { spec: specId });
+  const handleCardClick = useCallback(
+    (img: PlotImage) => {
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+      saveScrollPosition();
+      const specId = img.spec_id || '';
+      const library = img.library;
+      navigate(specPath(specId, library));
     },
-    [trackEvent]
+    [navigate, saveScrollPosition]
   );
 
-  if (loading || specsData.length === 0) {
-    return (
-      <Box sx={{ py: 4 }}>
-        <Skeleton variant="text" width={200} height={40} sx={{ mb: 4 }} />
-        {[1, 2, 3, 4, 5].map((i) => (
-          <Box key={i} sx={{ display: 'flex', gap: 3, mb: 3 }}>
-            <Skeleton variant="rectangular" width={280} height={158} sx={{ borderRadius: 1, flexShrink: 0 }} />
-            <Box sx={{ flex: 1 }}>
-              <Skeleton variant="text" width="60%" height={28} />
-              <Skeleton variant="text" width="100%" height={20} />
-              <Skeleton variant="text" width="80%" height={20} />
-            </Box>
-          </Box>
-        ))}
-      </Box>
-    );
-  }
+  const handleContainerClick = useCallback(
+    (e: React.MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest('[data-description-btn]')) return;
+      if (openImageTooltip) setOpenImageTooltip(null);
+    },
+    [openImageTooltip]
+  );
+
+  // Global keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
+
+      if (e.key === ' ') {
+        e.preventDefault();
+        handleRandom('space');
+      } else if (e.key === 'Enter' && searchInputRef.current) {
+        e.preventDefault();
+        searchInputRef.current.focus();
+      } else if (e.key === 'Backspace' && activeFilters.length > 0) {
+        e.preventDefault();
+        handleRemoveGroup(activeFilters.length - 1);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleRandom, handleRemoveGroup, activeFilters.length]);
+
+  const specFilter = activeFilters.find((f) => f.category === 'spec');
+  const libFilter = activeFilters.find((f) => f.category === 'lib');
+  const selectedSpec = specFilter?.values[0] || '';
+  const selectedLibrary = libFilter?.values[0] || '';
 
   return (
-    <>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'var(--bg-page)' }} onClick={handleContainerClick}>
       <Helmet>
         <title>catalog | anyplot.ai</title>
-        <meta name="description" content="Browse all Python plotting specifications alphabetically" />
-        <meta property="og:title" content="catalog | anyplot.ai" />
-        <meta property="og:description" content="Browse all Python plotting specifications alphabetically" />
+        <meta name="description" content="Browse and filter 2,600+ Python visualization examples across 9 libraries. Search by plot type, domain, features, and more." />
         <link rel="canonical" href="https://anyplot.ai/catalog" />
       </Helmet>
+      <Container maxWidth={false} sx={{ px: { xs: 2, sm: 4, md: 8, lg: 12, xl: 16 }, maxWidth: 1600, mx: 'auto' }}>
+      <NavBar searchInputRef={searchInputRef} />
 
-      <Box sx={{ pb: 4 }}>
-        {/* Breadcrumb navigation */}
-        <Breadcrumb
-          items={[{ label: 'anyplot.ai', shortLabel: 'ap', to: '/' }, { label: 'catalog' }]}
-          rightAction={
-            <Box
-              component="a"
-              href={`${GITHUB_URL}/issues/new?template=request-new-plot.yml`}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackEvent('suggest_spec')}
-              sx={{
-                color: semanticColors.mutedText,
-                textDecoration: 'none',
-                '&:hover': { color: colors.primary },
-              }}
-            >
-              suggest spec
-            </Box>
-          }
-          sx={{ mb: 3, position: 'sticky', top: 0, zIndex: 100 }}
-        />
+      {error && (
+        <Alert severity="error" sx={{ mb: 4, maxWidth: 500, mx: 'auto' }}>
+          {error}
+        </Alert>
+      )}
 
-        {/* Title */}
-        <Typography
-          variant="h4"
-          component="h1"
-          sx={{
-            fontFamily: typography.serif,
-            fontWeight: 400,
-            mb: 4,
-            color: colors.gray[800],
-          }}
-        >
-          catalog
-          <Typography
-            component="span"
-            sx={{
-              ml: 2,
-              fontSize: fontSize.lg,
-              fontWeight: 400,
-              color: semanticColors.mutedText,
-            }}
-          >
-            {catalogSpecs.length} specifications
-          </Typography>
-        </Typography>
+      <FilterBar
+        activeFilters={activeFilters}
+        filterCounts={filterCounts}
+        orCounts={orCounts}
+        specTitles={specTitles}
+        currentTotal={allImages.length}
+        displayedCount={displayedImages.length}
+        randomAnimation={randomAnimation}
+        searchInputRef={searchInputRef}
+        imageSize={imageSize}
+        onImageSizeChange={setImageSize}
+        onAddFilter={handleAddFilter}
+        onAddValueToGroup={handleAddValueToGroup}
+        onRemoveFilter={handleRemoveFilter}
+        onRemoveGroup={handleRemoveGroup}
+        onTrackEvent={trackEvent}
+      />
 
-        {/* Spec List */}
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {catalogSpecs.map((spec) => {
-            const currentIndex = rotationIndex[spec.id] || 0;
-            const currentImage = spec.images[currentIndex];
+      <ImagesGrid
+        images={displayedImages}
+        viewMode={noFilters ? 'library' : 'spec'}
+        selectedSpec={selectedSpec}
+        selectedLibrary={selectedLibrary}
+        loading={loading}
+        hasMore={hasMore}
+        isLoadingMore={false}
+        isTransitioning={false}
+        librariesData={librariesData}
+        specsData={specsData}
+        openTooltip={openImageTooltip}
+        loadMoreRef={loadMoreRef}
+        imageSize={imageSize}
+        onTooltipToggle={setOpenImageTooltip}
+        onCardClick={handleCardClick}
+        onTrackEvent={trackEvent}
+      />
 
-            return (
-              <Box
-                key={spec.id}
-                sx={{
-                  display: 'flex',
-                  flexDirection: { xs: 'column', sm: 'row' },
-                  gap: { xs: 2, sm: 3 },
-                  p: 2,
-                  bgcolor: 'var(--bg-surface)',
-                  borderRadius: 2,
-                  boxShadow: '0 1px 2px rgba(0,0,0,0.02), 0 24px 48px -24px rgba(0,0,0,0.08)',
-                  transition: 'box-shadow 0.2s',
-                  '&:hover': {
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                  },
-                }}
-              >
-                {/* Image - Click to rotate */}
-                <Box
-                  onClick={() => handleImageClick(spec.id, spec.images.length)}
-                  sx={{
-                    position: 'relative',
-                    width: { xs: '100%', sm: 280 },
-                    height: { xs: 180, sm: 158 },
-                    borderRadius: 1.5,
-                    overflow: 'hidden',
-                    bgcolor: '#fff',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                    flexShrink: 0,
-                    cursor: spec.images.length > 1 ? 'pointer' : 'default',
-                    '&:hover .rotate-hint': {
-                      opacity: spec.images.length > 1 ? 1 : 0,
-                    },
-                    '&:hover .library-hint': {
-                      opacity: 1,
-                    },
-                  }}
-                >
-                  {currentImage && (
-                    <Box
-                      component="picture"
-                      sx={{ display: 'contents' }}
-                    >
-                      <source
-                        type="image/webp"
-                        srcSet={buildSrcSet(currentImage.url, 'webp')}
-                        sizes={CATALOG_SIZES}
-                      />
-                      <source
-                        type="image/png"
-                        srcSet={buildSrcSet(currentImage.url, 'png')}
-                        sizes={CATALOG_SIZES}
-                      />
-                      <Box
-                        component="img"
-                        src={getFallbackSrc(currentImage.url)}
-                        alt={spec.title}
-                        sx={{
-                          display: 'block',
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                        }}
-                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                          const target = e.target as HTMLImageElement;
-                          if (!target.dataset.fallback) {
-                            target.dataset.fallback = '1';
-                            target.closest('picture')?.querySelectorAll('source').forEach(s => s.remove());
-                            target.removeAttribute('srcset');
-                            target.src = currentImage.url;
-                          }
-                        }}
-                      />
-                    </Box>
-                  )}
+      {!loading && allImages.length === 0 && !noFilters && (
+        <Alert severity="info" sx={{ maxWidth: 400, mx: 'auto' }}>
+          No plots match these filters.
+        </Alert>
+      )}
 
-                  {/* Rotation hint badge */}
-                  {spec.images.length > 1 && (
-                    <Box
-                      className="rotate-hint"
-                      sx={{
-                        position: 'absolute',
-                        bottom: 4,
-                        right: 4,
-                        px: 1,
-                        py: 0.25,
-                        bgcolor: 'rgba(0,0,0,0.6)',
-                        borderRadius: 1,
-                        fontSize: fontSize.xs,
-                        fontFamily: typography.fontFamily,
-                        color: '#fff',
-                        opacity: 0,
-                        transition: 'opacity 0.2s',
-                      }}
-                    >
-                      {currentIndex + 1}/{spec.images.length}
-                    </Box>
-                  )}
+      <Footer onTrackEvent={trackEvent} selectedSpec={selectedSpec} selectedLibrary={selectedLibrary} />
+      </Container>
 
-                  {/* Current library badge */}
-                  <Box
-                    className="library-hint"
-                    sx={{
-                      position: 'absolute',
-                      top: 4,
-                      left: 4,
-                      px: 0.75,
-                      py: 0.25,
-                      bgcolor: 'rgba(0,0,0,0.6)',
-                      borderRadius: 0.5,
-                      fontSize: fontSize.xs,
-                      fontFamily: typography.fontFamily,
-                      color: '#fff',
-                      opacity: 0,
-                      transition: 'opacity 0.2s',
-                    }}
-                  >
-                    {currentImage?.library}
-                  </Box>
-                </Box>
-
-                {/* Text - Click to navigate to overview */}
-                <Box
-                  component={Link}
-                  to={specPath(spec.id)}
-                  onClick={saveScrollPosition}
-                  sx={{
-                    flex: 1,
-                    textDecoration: 'none',
-                    color: 'inherit',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      fontFamily: typography.serif,
-                      fontWeight: 400,
-                      fontSize: fontSize.xl,
-                      color: colors.gray[800],
-                      mb: 0.5,
-                      '&:hover': { color: colors.primary },
-                    }}
-                  >
-                    {spec.title}
-                  </Typography>
-                  {spec.description && (
-                    <Typography
-                      onClick={(e) => {
-                        if (!expandedDescs[spec.id]) {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setExpandedDescs((prev) => ({ ...prev, [spec.id]: true }));
-                        }
-                      }}
-                      sx={{
-                        fontFamily: typography.serif,
-                        fontWeight: 300,
-                        fontSize: fontSize.base,
-                        color: semanticColors.subtleText,
-                        lineHeight: 1.6,
-                        cursor: expandedDescs[spec.id] ? 'default' : 'pointer',
-                        ...(!expandedDescs[spec.id] && {
-                          display: '-webkit-box',
-                          WebkitLineClamp: 5,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                        }),
-                      }}
-                    >
-                      {spec.description}
-                    </Typography>
-                  )}
-                </Box>
-              </Box>
-            );
-          })}
-        </Box>
-
-        {/* Footer */}
-        <Footer onTrackEvent={trackEvent} />
-      </Box>
-
-      {/* Floating scroll-to-top button */}
       <Fab
         size="small"
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
@@ -403,7 +221,7 @@ export function CatalogPage() {
           bottom: 24,
           right: 24,
           bgcolor: colors.gray[100],
-          color: semanticColors.mutedText,
+          color: colors.gray[500],
           opacity: showScrollTop ? 1 : 0,
           visibility: showScrollTop ? 'visible' : 'hidden',
           transition: 'opacity 0.3s, visibility 0.3s',
@@ -412,6 +230,6 @@ export function CatalogPage() {
       >
         <KeyboardArrowUpIcon />
       </Fab>
-    </>
+    </Box>
   );
 }

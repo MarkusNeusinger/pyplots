@@ -154,10 +154,7 @@ export function HomePage() {
     [handleAddFilter]
   );
 
-  // Handle "Browse the catalogue" CTA
-  const handleBrowse = useCallback(() => {
-    catalogRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, []);
+  // catalogRef used for library card clicks to scroll to grid
 
   // Global keyboard shortcuts
   useEffect(() => {
@@ -199,7 +196,7 @@ export function HomePage() {
       {showHero && (
         <>
           <MastheadRule />
-          <HeroSection stats={stats} onBrowse={handleBrowse} />
+          <HeroSection stats={stats} />
           <NumbersStrip stats={stats} />
           <LibrariesSection libraries={librariesData} onLibraryClick={handleLibraryClick} />
           <CodeShowcase />

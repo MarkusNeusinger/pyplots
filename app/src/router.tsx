@@ -1,10 +1,9 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import { Layout, AppDataProvider } from './components/Layout';
+import { AppDataProvider } from './components/Layout';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { HomePage } from './pages/HomePage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 const LazyFallback = () => (
@@ -15,32 +14,30 @@ const LazyFallback = () => (
 
 const lazySpec = () => import('./pages/SpecPage').then(m => ({ Component: m.SpecPage, HydrateFallback: LazyFallback }));
 
+// Minimal passthrough wrapper so child routes get an Outlet
+function PassthroughLayout() {
+  return <Outlet />;
+}
+
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Layout />,
-    HydrateFallback: LazyFallback,
+    element: <PassthroughLayout />,
     children: [
-      { index: true, element: <HomePage /> },
-      { path: 'catalog', lazy: () => import('./pages/CatalogPage').then(m => ({ Component: m.CatalogPage, HydrateFallback: LazyFallback })) },
-      { path: 'legal', lazy: () => import('./pages/LegalPage').then(m => ({ Component: m.LegalPage, HydrateFallback: LazyFallback })) },
-      { path: 'mcp', lazy: () => import('./pages/McpPage').then(m => ({ Component: m.McpPage, HydrateFallback: LazyFallback })) },
-      { path: 'stats', lazy: () => import('./pages/StatsPage').then(m => ({ Component: m.StatsPage, HydrateFallback: LazyFallback })) },
-      // Python language routes
-      { path: 'python', children: [
-        { index: true, element: <HomePage /> },
-        { path: ':specId', lazy: lazySpec },
-        { path: ':specId/:library', lazy: lazySpec },
-      ]},
-      // Old URLs without /python/ prefix → redirect to homepage
+      { index: true, lazy: () => import('./pages/LandingPage').then(m => ({ Component: m.LandingPage })) },
+      { path: 'catalog', lazy: () => import('./pages/CatalogPage').then(m => ({ Component: m.CatalogPage })) },
+      { path: 'specs', lazy: () => import('./pages/SpecsListPage').then(m => ({ Component: m.SpecsListPage })) },
+      { path: 'palette', lazy: () => import('./pages/PalettePage').then(m => ({ Component: m.PalettePage })) },
+      { path: 'legal', lazy: () => import('./pages/LegalPage').then(m => ({ Component: m.LegalPage })) },
+      { path: 'mcp', lazy: () => import('./pages/McpPage').then(m => ({ Component: m.McpPage })) },
+      { path: 'stats', lazy: () => import('./pages/StatsPage').then(m => ({ Component: m.StatsPage })) },
+      { path: 'python/:specId', lazy: lazySpec },
+      { path: 'python/:specId/:library', lazy: lazySpec },
+      { path: 'python/interactive/:specId/:library', lazy: () => import('./pages/InteractivePage').then(m => ({ Component: m.InteractivePage })) },
+      { path: 'debug', lazy: () => import('./pages/DebugPage').then(m => ({ Component: m.DebugPage })) },
       { path: '*', element: <NotFoundPage /> },
     ],
   },
-  // Fullscreen interactive view (outside Layout)
-  { path: 'python/interactive/:specId/:library', lazy: () => import('./pages/InteractivePage').then(m => ({ Component: m.InteractivePage, HydrateFallback: LazyFallback })) },
-  // Hidden debug dashboard (outside Layout - no header/footer)
-  { path: 'debug', lazy: () => import('./pages/DebugPage').then(m => ({ Component: m.DebugPage, HydrateFallback: LazyFallback })) },
-  { path: '*', element: <NotFoundPage /> },
 ]);
 
 export function AppRouter() {

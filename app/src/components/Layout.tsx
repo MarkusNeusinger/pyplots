@@ -80,15 +80,15 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// Layout component for pages with standard layout (HomePage, SpecPage, CatalogPage)
+// Layout component — kept for backward compat with tests. Not used as route wrapper.
 export function Layout() {
   return (
     <>
       <Helmet>
         <meta name="robots" content="index, follow" />
       </Helmet>
-      <Box component="main" sx={{ minHeight: '100vh', bgcolor: 'var(--bg-page)', py: 5, position: 'relative' }}>
-        <Container maxWidth={false} sx={{ px: { xs: 2, sm: 4, md: 8, lg: 12, xl: 16 }, maxWidth: 2200, mx: 'auto' }}>
+      <Box component="main" sx={{ minHeight: '100vh', bgcolor: 'var(--bg-page)', position: 'relative' }}>
+        <Container maxWidth={false} sx={{ px: { xs: 2, sm: 4, md: 8, lg: 12, xl: 16 }, maxWidth: 1600, mx: 'auto' }}>
           <Outlet />
         </Container>
       </Box>

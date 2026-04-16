@@ -1,24 +1,32 @@
 # Style Guide
 
-The complete design system for **anyplot.ai** — brand identity, frontend visual language, and plot color system in one reference. Use this document for any frontend adjustment, content tone decision, or plot styling choice.
+```
+❯ anyplot.ai — design system
+─────────────────────────────
+brand · frontend · plots — one reference for every adjustment
+```
 
-The guiding principle throughout: **the website is the neutral frame; the plots are the content.** Every design choice should make room for the data visualizations to do the work.
+The complete design system for **anyplot.ai** — brand identity, frontend visual language, and plot color system in one document. Use this for any frontend adjustment, content tone decision, or plot styling choice.
+
+The guiding principle throughout: **the website is the neutral frame; the plots are the content.** Every design choice should make room for the data visualizations to do the work — and every interaction should feel native to someone who lives in a terminal or code editor.
 
 ---
 
 ## 1. TL;DR
 
-anyplot.ai is positioned as a considered reference work — more like an academic journal than a software product. The design system has three layers, each with a clear role:
+anyplot.ai is a considered reference work styled like a code editor over a paper magazine. Three layers, each with a clear role:
 
 | Layer | Role | Anchor |
 |-------|------|--------|
 | **Brand** | Identity, voice, logo, tone of communication | Lowercase default; `any.plot()` wordmark with green dot |
-| **Frontend** | Website visual language: typography, layout, components | Editorial-scientific aesthetic; warm off-white surfaces |
+| **Frontend** | Website visual language: typography, layout, components | Editorial-scientific paper × terminal/code-editor overlay |
 | **Plots** | Color palette for every visualization across all 9 libraries | Okabe-Ito 8-color categorical, brand `#009E73` first |
 
-Aesthetic direction: `arXiv paper` × `developer tool` rather than `SaaS dashboard` or `AI startup`.
+**Aesthetic direction:** `arXiv paper` × `tmux/lazygit` rather than `SaaS dashboard` or `AI startup`. The reader should feel they're browsing a curated journal that happens to live inside a terminal — section headers carry shell prompts (`❯`, `$`, `~/plots/`), hero text types itself with a blinking cursor, action buttons read as method calls (`.copy()`, `.open()`, `.download()`).
 
-The brand color `#009E73` (Okabe-Ito Bluish Green) appears only in small, deliberate moments — logo dot, italic accents in headlines, hover states, active navigation. Everything else is grayscale, so when a chart appears its colors land with full impact.
+**Color discipline:** `#009E73` (Okabe-Ito Bluish Green) appears only in small, deliberate moments — logo dot, italic accents, hover states, active navigation, terminal cursor. Everything else is warm grayscale, so when a chart appears its colors land with full impact.
+
+**Pipeline transparency:** AI is part of the story, not a hidden production detail. Specs are human-written, code is AI-generated, reviews are AI-evaluated, fixes refine specs or AI rules. Communicated openly in copy and methodology pages.
 
 ---
 
@@ -26,20 +34,24 @@ The brand color `#009E73` (Okabe-Ito Bluish Green) appears only in small, delibe
 
 ### 2.1 Visual principles (frontend)
 
-**1. Reserve color for moments that earn it.** The Okabe-Ito palette has seven saturated colors. If the website itself uses them liberally — brightly colored buttons, banners, hero backgrounds — the actual plots lose their visual punch. We treat the palette as **precious**: the brand green appears in maybe five to ten places on a given page (logo, one italic headline accent, primary CTA hover, active nav indicator, a handful of link underlines). Everything else is one of the seven gray tones.
+**1. Reserve color for moments that earn it.** The Okabe-Ito palette has seven saturated colors. If the website itself uses them liberally — brightly colored buttons, banners, hero backgrounds — the actual plots lose their visual punch. We treat the palette as **precious**: the brand green appears in maybe five to ten places on a given page (logo, one italic headline accent, terminal cursor, primary CTA hover, active nav indicator, a handful of link underlines). Everything else is one of the seven gray tones.
 
 **2. Warmth over clinical.** Pure `#FFFFFF` backgrounds make palette colors look harsh and the layout feel like a banking app. We use a warm off-white (`#F5F3EC`) as the base, with slightly lighter surfaces (`#FAF8F1`) for cards. This gives the page a paper-like quality and makes the saturated plot colors look **intentional** rather than loud. Dark mode mirrors this: `#121210` rather than pure black, with a subtle warm undertone.
 
-**3. Typography carries the editorial weight.** Three fonts with distinct roles:
-- **Serif (Fraunces)** for display type, headlines, long-form prose
-- **Sans-serif (Inter)** for UI elements, small metadata
-- **Monospace (MonoLisa)** for code, logo, technical labels
+**3. Code is the native register.** Section headers carry shell prompts (`❯ libraries`, `$ plots`, `~/anyplot/`), action buttons read as method calls (`.copy()`, `.open()`, `.download()`), the hero headline types itself with a blinking cursor. The site speaks the dialect of its visitors. This is not skinning — it's the framing device. Removing the editorial paper underneath would over-tip into "developer toy"; removing the terminal layer would feel sterile and product-marketing-y. The two layers depend on each other.
 
-The serif communicates "considered, readable, editorial." Fraunces specifically was chosen because it has a proper italic (not just a slanted roman) and a characterful drawing that looks modern without being trendy.
+**4. Typography carries the editorial weight, mono carries the code weight.** Three fonts with distinct roles:
+- **Serif (Fraunces)** — hero headlines and section titles only; the editorial moment
+- **Monospace (MonoLisa)** — everything else by default: body text, UI labels, navigation, terminal prompts, buttons, code, logo
+- **Sans-serif (Inter)** — rare; only for places where MonoLisa would feel too dense (legal text, long-form blog body, dense data tables)
 
-**4. Generous vertical rhythm.** Section padding is 80px vertical on desktop. Hero sections get 80–100px. Cards have 24–28px internal padding. The layout should feel **unhurried**, like a journal you read cover to cover rather than a dashboard you scan.
+This is a deliberate inversion of typical sites: mono is the default, serif is the accent.
 
-**5. Details reward attention.** Small touches that reward a user who looks closely: the logo dot pulses subtly in the hero-plot legend, active navigation items have a small green dot prefix, the palette strip at the bottom expands the hovered color and contracts the rest, code blocks have `● ● ●` macOS-style header dots in 10% opacity, hero headlines animate in with staggered reveals. None essential to function — they signal "this was made with care."
+**5. Generous vertical rhythm.** Section padding is 80px vertical on desktop. Hero sections get 80–100px. Cards have 24–28px internal padding. The layout should feel **unhurried**, like a journal you read cover to cover rather than a dashboard you scan.
+
+**6. Self-evident, not explained.** Buttons should not need labels saying "click here to copy" — they say `.copy()` and that is enough. Icons may exist but are secondary; the primary affordance is text in mono that reads like code. If a coder would understand `df.head()` without help, they will understand `.preview()` on a plot card. Explanation prose belongs in docs, not on the page chrome.
+
+**7. Details reward attention.** Small touches that reward a user who looks closely: the cursor blinks in the hero, the logo dot pulses subtly in the hero-plot legend, active navigation items have a small green dot prefix, the palette strip at the bottom expands the hovered color and contracts the rest, code blocks have `● ● ●` macOS-style header dots in 10% opacity, the side plot stacks scroll lazily on ultrawide. None essential to function — they signal "this was made with care."
 
 ### 2.2 Verbal principles (voice)
 
@@ -49,13 +61,15 @@ The brand voice is:
 2. **Understated** — we let the work speak; we don't overhype
 3. **Curious** — we share interesting details and reasoning, not just conclusions
 4. **Respectful of the reader** — we assume technical literacy without being condescending
-5. **Slightly playful** — the occasional small joke, mostly structural (the method-call logo, the `import anyplot as ap` alias)
+5. **Slightly playful** — the occasional small joke, mostly structural (the method-call logo, the `import anyplot as ap` alias, comments-as-prose)
+6. **Code-native** — when in doubt, write it as code. Pipelines as arrows (`spec → code → review`), state as flags, errors as stderr lines. Prose only where prose actually helps.
+7. **AI-honest** — AI generates the code and runs the reviews. We say so plainly. We don't hype it ("AI-powered"), and we don't hide it ("magically generated").
 
 Tone attributes we avoid:
 - **Sales-y** — no "unlock", "supercharge", "revolutionary", "game-changing"
 - **Corporate** — no "solutions", "leverage", "empower", "synergies"
 - **Breathless** — no excessive exclamation marks, no "literally" or "amazing"
-- **AI-hype** — no "powered by AI", "intelligent", "smart"
+- **AI-hype** — no "powered by AI", "intelligent", "smart" — but we *do* describe what the AI actually does
 - **Emoji-heavy** — avoid emojis in documentation and formal writing
 
 ---
@@ -130,28 +144,41 @@ font-weight:    700 (bold) for letters, 400 (regular) for parens
 
 ### 3.3 Taglines
 
-**Primary: "any library. one plot."**
+**Canonical hero block:**
 
-This is the canonical tagline. Three words, two sentences, mirrors the product proposition exactly. Use this in:
+```
+any.plot() — any library.
 
-- Meta description
-- README headline
-- Footer
-- Social media bios
+get inspired.
+grab the code.
+make it yours.
+```
+
+The first line (`any.plot() — any library.`) is the wordmark + product proposition in one breath. The three lines below are the user journey, in the imperative, in lowercase, each one standalone. Together they describe exactly what the site is for: discovery → copy → adaptation. Use this hero block on:
+
+- Landing page hero (full block, with terminal box framing and blinking cursor on the last line)
+- Meta description (compress to: `any library. get inspired. grab the code. make it yours.`)
+- README headline (full block, in a code fence)
+- OG card (line 1 in serif, lines 3–5 in mono)
+
+**Short forms:**
+
+- **"any library."** — when only one phrase fits (browser tab title suffix, social bio one-liner)
+- **"get inspired. grab the code. make it yours."** — when the wordmark is already shown nearby (e.g., footer subtitle below the logo)
 
 **Alternative taglines for specific contexts:**
 
-- **"a catalogue of scientific plotting"** — editorial framing, good for landing page subtitles
+- **"a catalogue of scientific plotting"** — editorial framing, when contextualizing the project in academic writing
 - **"from anyplot import *"** — code-playful, good for dev-audience posts
-- **"1000+ plots. one import away."** — benefit-focused, good for blog intros
 - **"plots that everyone can see"** — accessibility-focused, good for technical articles about colorblind safety
+- **"specs by humans, code by AI."** — methodology framing, for about/methodology pages
 
-Rotate as appropriate. Primary tagline is always the canonical one.
+Rotate alternatives as appropriate. The canonical hero block is always the first choice.
 
 **Taglines we explicitly don't use:**
 
 - "the future of data visualization" (overclaim)
-- "AI-powered plotting catalogue" (misleading — AI generates examples, but the site is a catalogue, not an AI tool)
+- "AI-powered plotting catalogue" (lazy AI-hype framing — say what the AI does, don't sloganize it)
 - "plot anything, anywhere, anytime" (cliché, generic)
 - "the GitHub of plots" (imitative framing)
 
@@ -187,33 +214,58 @@ The lowercase default matches the code-forward aesthetic and keeps the site feel
 >
 > Don't: `🎉 Big news! We're excited to announce that plotnine is now fully supported on anyplot.ai! Check out our awesome new collection of 74 examples! 🚀`
 
-**Error message in the library:**
+**Error message:**
 
-> Do: `unsupported library: "ggplot". supported libraries are: matplotlib, seaborn, plotly, bokeh, altair, plotnine, pygal, hvplot, datashader.`
+> Do:
+> ```
+> $ ap.load("ggplot")
+> ✗ unknown library: "ggplot"
+>   supported: matplotlib, seaborn, plotly, bokeh,
+>              altair, plotnine, pygal, highcharts, lets-plot
+> ```
 >
 > Don't: `Oops! Looks like we don't support "ggplot" yet. But don't worry — we're always adding new libraries! 🙂`
 
 **Changelog entry:**
 
-> Do: `v0.4.0 — added support for altair; palette exports now accept a theme argument (light/dark); fixed a bug where seaborn examples omitted legends.`
+> Do:
+> ```
+> v0.4.0
+> + altair support
+> + palette exports accept theme="light"|"dark"
+> ~ seaborn examples now include legends (was: omitted)
+> ```
 >
 > Don't: `🎉 v0.4.0 is here! We've been working hard to bring you some amazing new features...`
 
 **GitHub issue response to a feature request:**
 
-> Do: `interesting idea. I'm not sure it fits the catalogue scope — anyplot focuses on static examples, and this would require interactive features. keeping it open for discussion.`
+> Do: `interesting idea. doesn't fit the catalogue scope right now — anyplot is static examples, this needs interactive features. keeping open for discussion.`
 >
 > Don't: `Thanks so much for this amazing feature request!! ❤️ We'll definitely consider this for our roadmap!`
 
-**The pattern:** state the position, state the reasoning, don't inflate the language.
+**Describing the AI pipeline:**
+
+> Do:
+> ```
+> // pipeline
+> spec    → human-written
+> code    → ai-generated
+> review  → ai-evaluated
+> fix     → spec refined or ai rules tuned
+> ```
+>
+> Don't: `Powered by cutting-edge AI to bring you the best plotting examples!`
+
+**The pattern:** state the mechanism, name what does what, no breathless framing. When in doubt, format as code — pipelines as arrows, results as `+`/`~`/`-`/`✗`.
 
 **Long-form transformation example:**
 
 > Instead of: `🚀 Supercharge your data viz workflow with AI-powered plot generation! Unlock 1000+ beautifully crafted charts across multiple libraries. Ship faster, iterate smarter, and empower your team to create stunning visualizations!`
 >
-> Write: `A catalogue of 1,000+ plotting examples across nine Python libraries. Every example uses the same colorblind-safe palette, so switching libraries never breaks your color grammar.`
+> Write: `A catalogue of 1,000+ plotting examples across nine Python libraries. Specs are written by humans, code is generated and reviewed by AI, and every example uses the same colorblind-safe palette so switching libraries never breaks your color grammar.`
 
-The second version is 40% shorter, contains more actual information, and reads as if written by someone who cares about what they're building.
+The second version is shorter, says what's actually happening (specs human / code AI), and reads as if written by someone who cares about what they're building.
 
 ### 3.7 Positioning
 
@@ -224,11 +276,12 @@ The second version is 40% shorter, contains more actual information, and reads a
 - **Colorblind-safe by default**. Every example uses the Okabe-Ito palette. This isn't a feature, it's a baseline.
 - **Copyable**. Every example is self-contained, with the full code visible and executable.
 - **Curated**. We don't aggregate every plot on the internet — we maintain a considered collection.
+- **AI-built, human-shaped.** Specs come from humans. Code generation and quality review run on AI. When something doesn't pass review, we either refine the spec or tune the AI rules — never patch generated code by hand. The pipeline is documented and visible.
 
 **What anyplot is not:**
 
 - **A plotting library**. We don't compete with matplotlib or plotly. We help you use them better.
-- **An AI plot generator**. AI generates the examples behind the scenes; users don't prompt the AI directly.
+- **An AI plot generator the user prompts.** Users browse a curated catalogue. They don't type prompts; the AI runs offline against specs.
 - **A dashboard tool**. We show static examples. Interactive dashboards are a different product category.
 - **A tutorial platform**. We assume you know how to run Python code. We don't teach from zero.
 - **A community forum**. We accept contributions through GitHub but we're not building a social layer.
@@ -236,6 +289,8 @@ The second version is 40% shorter, contains more actual information, and reads a
 ### 3.8 Story Points
 
 Narrative hooks for talking about anyplot — adapt to context, don't recite verbatim:
+
+**The pipeline story:** Specs are written by humans, code is generated by AI, every plot is reviewed by AI for visual quality and spec compliance, and when something doesn't pass we refine the spec or the AI rules — never patch the code. That makes anyplot a catalogue that maintains itself: when matplotlib ships a new release, we re-run the pipeline; when a better example pattern emerges, we update the spec and every library regenerates. Humans curate, AI executes.
 
 **The palette story:** Every plot uses the Okabe-Ito palette, peer-reviewed for colorblind safety and designed for scientific publications in 2008. About 8% of men have some form of color vision deficiency — most plotting libraries ignore this entirely. We make it the default.
 
@@ -357,12 +412,13 @@ A warm-tinted grayscale (reddish-brown undertone instead of blue-gray) matches t
 `#009E73` (brand green) appears in the UI **only** in these contexts:
 
 1. Logo dot (always)
-2. Italic accent words in headlines
-3. Active navigation item (green dot prefix + underline on hover)
-4. Primary button hover state (CTA text button → green background on hover)
-5. Code block syntax highlighting (strings, specific tokens)
-6. Palette strip and any deliberate palette display
-7. Small status indicators (pulsing dot in plot-card header)
+2. Italic accent words in headlines (e.g., `any library.`)
+3. Hero terminal cursor (the blinking `▌` at the end of `make it yours._`)
+4. Active navigation item (green dot prefix + underline on hover)
+5. Code-style action button hover (`.copy()` → green on hover) and CTA hover (filled background swap)
+6. Code block syntax highlighting (strings, specific tokens)
+7. Palette strip and any deliberate palette display
+8. Small status indicators (pulsing dot in plot-card header)
 
 It does **not** appear in:
 
@@ -370,6 +426,7 @@ It does **not** appear in:
 - Borders of regular cards (use `--rule` = `rgba(26,26,23,0.10)`)
 - Body text emphasis (use serif italic instead)
 - Icon colors outside of logos (use gray tones)
+- Static (non-cursor, non-status) decorative dots or glyphs
 
 ### 4.5 Status Colors
 
@@ -405,46 +462,73 @@ Using them in navigation or buttons breaks the color hierarchy.
 
 ### 5.2 Type Roles
 
-The key rule: **serifs for reading, mono for metadata, sans only when the sans provides something (like multi-weight support) that the others can't.** In practice Inter shows up rarely — most body text is serif because the site leans editorial.
+The key rule: **mono is the default, serif is the editorial accent, sans is the rare fallback.** Most text on the site is MonoLisa — body, UI, navigation, buttons, labels. Fraunces appears only at hero and section-title moments. Inter is reserved for places where MonoLisa would fatigue (legal text, long-form blog body, dense data tables).
 
-| Element           | Font    | Size                       | Weight | Notes                          |
-|-------------------|---------|----------------------------|--------|--------------------------------|
-| Display headlines | serif   | `clamp(48, 7vw, 96px)`     | 400    | With italic green accent word  |
-| Section titles    | serif   | `clamp(36, 4.5vw, 56px)`   | 400    | Italic green on key word       |
-| Body lede         | serif   | 20px                       | 300    | Light weight, warm reading     |
-| Body paragraph    | sans    | 16px                       | 400    | Where long text is unavoidable |
-| Eyebrow / Kicker  | mono    | 11px                       | 500    | Uppercase, tracked `.15em`     |
-| UI labels         | mono    | 12–13px                    | 500    |                                |
-| Code / logo       | mono    | context-dependent          | 700    | Logo uses `any.plot()` syntax  |
-| Stats / numerals  | serif   | 56px                       | 300    | Italic accent on key digit     |
+| Element                | Font    | Size                       | Weight | Notes                                                       |
+|------------------------|---------|----------------------------|--------|-------------------------------------------------------------|
+| Display headlines      | serif   | `clamp(48, 7vw, 96px)`     | 400    | Hero only. With italic green accent word.                   |
+| Section titles         | serif   | `clamp(36, 4.5vw, 56px)`   | 400    | Italic green on key word. Preceded by a mono shell prompt.  |
+| Shell prompt prefix    | mono    | 0.6× section-title size    | 500    | `❯` `$` `~/path/` — colored `--ink-muted`, sits before the title |
+| Body paragraph         | mono    | 14–15px                    | 400    | Default body text                                           |
+| Body lede              | serif   | 20px                       | 300    | Long-form intro paragraph (rare, blog/about only)           |
+| Long-form prose        | sans    | 16px                       | 400    | Inter — only for legal/about/blog where mono would fatigue  |
+| Eyebrow / Kicker       | mono    | 11px                       | 500    | Uppercase, tracked `.15em`                                  |
+| UI labels & buttons    | mono    | 12–13px                    | 500    | Buttons read as method calls: `.copy()`, `.open()`          |
+| Navigation links       | mono    | 14px                       | 500    | Active state: green `•` prefix                              |
+| Code / logo            | mono    | context-dependent          | 700    | Logo uses `any.plot()` syntax                               |
+| Stats / numerals       | serif   | 56px                       | 300    | Italic accent on key digit                                  |
+| Inline code in prose   | mono    | inherits ×0.95             | 500    | Background `--bg-elevated`, padding 2–4px, radius 3px       |
 
 ### 5.3 Display Type Construction
 
-The hero headline uses a specific construction:
+The hero block sits inside a terminal-style box (see §7.1) and is built from four typographic layers:
 
 ```
-Any library,
-[italic green]one[/italic] any.plot()
+┌─ ~/anyplot ──────────────────────┐
+│                                  │
+│ ❯ any.plot() — any library.      │  ← line 1: mono prompt + wordmark + em-dash + serif italic accent
+│                                  │
+│ get inspired.                    │  ← lines 3–5: mono lowercase, large weight 500
+│ grab the code.                   │
+│ make it yours._▌                 │  ← line 5 ends with blinking cursor (see §8.2)
+│                                  │
+│ [.start()]  [.browse()]          │  ← line 7: code-style action buttons (see §7.4)
+│                                  │
+└──────────────────────────────────┘
 ```
 
-Where `any.plot()` is rendered in mono-bold at 0.75× the headline size, with the `.` styled in green and scaled up. The effect is a headline that is half-typographic, half-code — consistent with the brand identity.
+**Line 1 construction:**
+- `❯ ` — MonoLisa, weight 500, color `--ink-muted`, scaled to 0.7× line-height
+- `any.plot()` — MonoLisa Bold, color `--ink`, with `.` in `--ok-green` scaled 1.45×
+- ` — ` — em-dash with surrounding spaces, MonoLisa, color `--ink-muted`
+- `any library.` — Fraunces italic, weight 300, color `--ok-green`
 
-CSS:
+**Lines 3–5 construction (the user-journey triplet):**
+- MonoLisa, weight 500, color `--ink`
+- Each line is a complete sentence ending in `.`, lowercase
+- Last line ends with `_` (underscore) followed by a `▌` (block cursor) that blinks (see animation §8.2)
+
+CSS sketch:
 
 ```css
-h1.display {
-  font-family: var(--serif);
-  font-weight: 400;
-  font-size: clamp(48px, 7vw, 96px);
-  line-height: 0.95;
-  letter-spacing: -0.03em;
+.hero {
+  font-family: var(--mono);
+  font-size: clamp(20px, 2.2vw, 32px);
+  line-height: 1.5;
+  color: var(--ink);
 }
-h1.display em {
-  font-style: italic;
-  font-weight: 300;
-  color: var(--ok-green);
-}
+.hero .prompt    { color: var(--ink-muted); margin-right: 0.4em; }
+.hero .wordmark  { font-weight: 700; }
+.hero .wordmark .dot { color: var(--ok-green); display: inline-block; transform: scale(1.45); }
+.hero .accent    { font-family: var(--serif); font-style: italic; font-weight: 300; color: var(--ok-green); }
+.hero .triplet   { margin-top: 1.5em; font-weight: 500; }
+.hero .cursor    { display: inline-block; width: 0.6em; background: var(--ok-green); animation: blink 1s steps(2) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
 ```
+
+**Stat/numeral display construction (used for big counts on landing/about):**
+- Number in Fraunces 56px weight 300, with the most striking digit in italic + brand green
+- Label below in MonoLisa uppercase 11px tracked `.15em`
 
 ### 5.4 Plot-internal Typography
 
@@ -458,12 +542,35 @@ Inside plot containers (axis labels, legends, annotations), use monospace throug
 
 ## 6. Layout System
 
-### 6.1 Container & Grid
+### 6.1 Three-tier Width System
 
-- **Max content width**: 1240px (narrower than most modern sites — keeps line lengths comfortable for the serif body text)
-- **Gutter**: 24px on mobile, scaling to 96px on wide screens
-- **Hero grid**: 1.1fr / 1fr (left content, right plot) — slight bias to the left because headlines need room
-- **Library grid**: `auto-fill, minmax(280px, 1fr)` — responsive without breakpoint hell
+Different page types deserve different widths. The system has three tiers:
+
+| Tier            | Max width  | Used for                                                    |
+|-----------------|------------|-------------------------------------------------------------|
+| **paper**       | 1240px     | Landing hero box, About, Methodology, Blog, Legal           |
+| **catalog**     | 2200px     | Plot catalog, search results, library pages, spec pages     |
+| **hero-flank**  | full vw    | Landing hero side plot stacks (only ≥1600px viewport)       |
+
+**Why three tiers:**
+
+- **paper**: keeps reading line-length comfortable (60–80 chars) for editorial content
+- **catalog**: lets ultrawide screens show many plot cards per row (the user came to browse — give them room)
+- **hero-flank**: rewards ultrawide users with extra showcase content (vertical scrolling thumbnails) without compressing the paper-width hero
+
+CSS sketch:
+
+```css
+.tier-paper   { max-width: 1240px; margin: 0 auto; padding: 0 var(--gutter); }
+.tier-catalog { max-width: 2200px; margin: 0 auto; padding: 0 var(--gutter); }
+.tier-flank   { width: 100vw; }   /* full viewport width, used by hero side stacks only */
+```
+
+**Other layout primitives:**
+
+- **Gutter**: 24px on mobile, scaling to 96px on wide screens (set as `--gutter`)
+- **Hero box**: paper-tier, terminal-style box (see §7.1) ~700–900px wide inside the paper container
+- **Library grid (catalog tier)**: `repeat(auto-fill, minmax(280px, 1fr))` — responsive across the full 2200px
 
 ### 6.2 Spacing & Vertical Rhythm
 
@@ -471,43 +578,95 @@ Inside plot containers (axis labels, legends, annotations), use monospace throug
 - **Hero sections**: 80–100px vertical
 - **Card padding**: 24–28px internal
 
-This is significantly more breathing room than most modern sites, and it's deliberate — see principle §2.1.4.
+This is significantly more breathing room than most modern sites, and it's deliberate — see principle §2.1.5.
 
 ### 6.3 Section Header Pattern
 
-Each section follows a consistent three-part header:
+Each section starts with a shell-prompt prefix that names the section as if it were a directory or command. The prompt sits inline with the section title:
 
 ```
-┌──────────────┬──────────────────────┬──────────┐
-│ § 01         │   Section title      │  link →  │
-└──────────────┴──────────────────────┴──────────┘
+❯ libraries
+─────────────────────────────────────────────────────────
+matplotlib   seaborn   plotly   bokeh   altair   ...
+
+$ plots
+─────────────────────────────────────────────────────────
+[scatter-basic] [bar-grouped] [line-multi] ...
+
+~/anyplot/about
+─────────────────────────────────────────────────────────
 ```
 
-- Left: paragraph number in mono type (editorial convention)
-- Center: section title in Fraunces, usually with an italic green accent word
-- Right: optional link in mono, right-aligned
+- **Prefix glyph**: `❯` for navigation/categorical sections, `$` for action/list sections, `~/path/` for hierarchical/about/meta sections
+- **Prefix font**: MonoLisa weight 500, color `--ink-muted`, scaled to ~0.6× the title size
+- **Title font**: Fraunces 1.6–2rem weight 400, optionally with one italic green accent word
+- **Underline**: 1px solid `--rule`, full container width, sits 8–12px below the title baseline
 
-The separator is a 1px bottom border in `--rule` color. Consistent across all sections.
+The pattern reads as if the user just typed a command and got a section as output. It collapses the editorial "Section §01" framing into something more native to the visitor.
 
 ### 6.4 Masthead Rule
 
 The site opens with a thin horizontal rule displaying:
 
 ```
-Vol. 1 · Spring 2026 │ anyplot.ai — a catalogue of scientific plotting │ Toggle Theme
+~/anyplot · v1 · spring 2026 │ any library. one plot. │ ◐ theme
 ```
 
-This is a tiny but high-impact element. It immediately positions the site as a curated publication, not a software product page.
+Lowercase, monospace, three sections separated by `│` (U+2502). The `◐` is a half-circle theme toggle. This is a tiny but high-impact element — immediately positions the site as a tool/publication hybrid rather than a marketing page.
 
 ### 6.5 Library Grid
 
-For the catalogue grid: `grid-template-columns: repeat(auto-fill, minmax(280px, 1fr))`. Responsive without explicit breakpoints. Cards size themselves to fill the row neatly.
+In catalog tier (`max-width: 2200px`): `grid-template-columns: repeat(auto-fill, minmax(280px, 1fr))`. On a 2200px viewport this yields ~7 cards per row (with default 280px min); on a 1280px viewport, ~4 cards. Responsive without explicit breakpoints.
 
 ---
 
 ## 7. Components
 
-### 7.1 Plot Card
+### 7.1 Hero Terminal Box
+
+The landing hero sits inside a single ASCII-style box drawn with CSS borders. The box framing makes the hero feel like a terminal window and gives the typed-out content a natural container.
+
+```
+┌─ ~/anyplot ──────────────────────┐
+│                                  │
+│ ❯ any.plot() — any library.      │
+│                                  │
+│ get inspired.                    │
+│ grab the code.                   │
+│ make it yours._▌                 │
+│                                  │
+│ [.start()]  [.browse()]          │
+│                                  │
+└──────────────────────────────────┘
+```
+
+```css
+.hero-box {
+  position: relative;
+  border: 1px solid var(--ink-muted);
+  border-radius: 6px;       /* slight, terminal-window-like */
+  background: var(--bg-surface);
+  padding: 36px 40px 32px;
+  font-family: var(--mono);
+  max-width: 720px;
+  margin: 0 auto;
+}
+.hero-box::before {
+  content: "~/anyplot";
+  position: absolute;
+  top: -0.7em;
+  left: 24px;
+  padding: 0 10px;
+  background: var(--bg-page);    /* punches through the border */
+  font-size: 12px;
+  color: var(--ink-muted);
+  letter-spacing: 0.05em;
+}
+```
+
+The `::before` pseudo-element ("`~/anyplot`") sits on top of the border line, like a tab label on a tmux pane or a fieldset legend. On dark mode the same construction works because `--bg-page` swaps automatically.
+
+### 7.2 Plot Card
 
 The fundamental display unit for any visualization:
 
@@ -520,65 +679,135 @@ box-shadow: 0 1px 2px rgba(0,0,0,0.02),
             0 24px 48px -24px rgba(0,0,0,0.08);
 ```
 
-Two-layer shadow: the first (`0 1px 2px`) gives a sharp edge that keeps the card visually anchored; the second (`0 24px 48px -24px`) is a soft ambient drop that suggests elevation without being heavy. This combination reads as "considered" rather than "generic card-ified."
+Two-layer shadow: the first (`0 1px 2px`) gives a sharp edge that keeps the card visually anchored; the second (`0 24px 48px -24px`) is a soft ambient drop that suggests elevation without being heavy.
 
 The card has three vertical zones:
 
 ```
 ┌──────────────────────────────────────┐
-│ header: mono code title   meta ↗    │  12–14px bottom margin
+│ scatter-basic              ↗ open    │  ← header: mono slug + open-in-new icon
 ├──────────────────────────────────────┤
 │                                      │
 │   [ plot SVG area ]                  │
 │                                      │
 ├── dashed rule ──────────────────────┤
-│ footer: legend items   caption →    │  12–16px top padding
+│ matplotlib · 120 LOC                 │  ← footer: library + meta in mono-muted
+│                                      │
+│ .copy()  .open()  .download()        │  ← actions: code-style buttons (see §7.4)
 └──────────────────────────────────────┘
 ```
 
-The dashed rule between plot and legend is a subtle but important detail — it differentiates the legend from the plot without drawing attention. Solid rules feel too structural for this role.
+The dashed rule between plot and footer differentiates the meta from the plot without drawing attention. Solid rules feel too structural for this role.
 
-### 7.2 Library Card
+Action buttons appear on card hover (`opacity: 0 → 1`, 0.2s).
+
+### 7.3 Library Card
 
 Used in the catalogue grid. Similar to plot card but with specific additions:
 
 - Top 2px accent bar, initially `scaleX(0)`, animates to `scaleX(1)` on hover (color varies per library via `--accent` custom property)
 - Hover lifts card by 3px (`translateY`) and softens border toward brand green
 - Mini-plot thumbnail uses SVG at fixed 120px height
-- Library name in mono-bold, example count in mono-muted
+- Library name in mono-bold, example count in mono-muted (`matplotlib · 142 plots`)
 
 The color of the accent bar is a subtle way to give each library a personality without breaking the shared palette system — every library gets one of the Okabe-Ito colors as its accent.
 
-### 7.3 Buttons
+### 7.4 Buttons
 
-Two variants only.
+Three variants. All buttons read as method calls in mono — there is no ambiguity about what they do, and they don't need icons or tooltips to explain themselves.
 
-**Primary (CTA)**
-
-```css
-background: var(--ink);
-color: var(--bg-page);
-border-radius: 99px;   /* pill shape */
-padding: 13px 22px;
-
-/* on hover */
-background: var(--ok-green);
-color: #FFF;
-```
-
-The dark-to-green transition on hover is a signature moment. The button is always darker than its container at rest (maximum contrast, clear affordance), then shifts to brand green on interaction (confirming the action as "on brand").
-
-**Ghost (secondary)**
+**Action buttons (code-style — primary affordance throughout the site)**
 
 ```css
-background: transparent;
-color: var(--ink);
-border: 1px solid var(--rule);
+.btn-action {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-muted);
+  background: transparent;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+}
+.btn-action::before { content: "."; color: var(--ink-muted); }
+.btn-action:hover {
+  color: var(--ok-green);
+  background: var(--bg-elevated);
+}
+.btn-action:hover::before { color: var(--ok-green); }
 ```
 
-Used for secondary actions where the primary already occupies visual space. Border darkens on hover without filling.
+Examples: `.copy()`, `.open()`, `.download()`, `.preview()`, `.share()`, `.fork()`. The leading `.` is part of the visual language — it signals "this is a method on the thing in front of you" without saying so. No icons needed for common actions.
 
-### 7.4 Code Block
+**Hero CTA (filled, only on landing hero)**
+
+```css
+.btn-cta {
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 500;
+  background: var(--ink);
+  color: var(--bg-page);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 10px 16px;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-cta::before { content: "."; opacity: 0.6; }
+.btn-cta:hover {
+  background: var(--ok-green);
+  color: #FFF;
+}
+.btn-cta:hover::before { opacity: 1; }
+```
+
+Used for `[.start()]` and `[.browse()]` in the hero box. Pill shape replaced with a more terminal-native rectangle (4px radius). Dark-to-green hover transition stays as the signature moment.
+
+**Ghost (rare — only when a primary already occupies visual space)**
+
+```css
+.btn-ghost {
+  font-family: var(--mono);
+  font-size: 13px;
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 8px 14px;
+}
+.btn-ghost:hover { border-color: var(--ink-muted); }
+```
+
+### 7.5 Side Plot Stacks (Ultrawide Hero)
+
+The two vertical strips of plot thumbnails flanking the hero on ultrawide viewports. See §8.5 for the auto-scroll animation and viewport gating.
+
+Container:
+
+```css
+.hero-flank {
+  display: none;
+  position: absolute;
+  top: 0; bottom: 0;
+  width: clamp(180px, 18vw, 320px);
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+}
+.hero-flank--left  { left: 0; }
+.hero-flank--right { right: 0; }
+@media (min-width: 1600px) { .hero-flank { display: block; } }
+```
+
+Each thumbnail in the stack:
+- 1:1 aspect ratio, 12px border-radius
+- Static plot image (PNG/SVG), no axes, no labels — pure visual
+- Dimmed by default (`opacity: 0.5`), full opacity on hover
+- Click navigates to the plot's spec page
+
+### 7.6 Code Block
 
 Dark block, even in light mode. The reasoning: code is "different material" — like a photograph inside a magazine. Forcing it to be light-on-light would make it blend into the surrounding text and lose its "this is code" signal.
 
@@ -602,7 +831,7 @@ The fake macOS window-controls (`● ● ●` in 10% opacity) are rendered via a
 - Variables → purple
 - Numbers → yellow (rare, because the cold Yellow works fine on dark bg)
 
-### 7.5 Navigation
+### 7.7 Navigation
 
 Horizontal text links, no icons, no boxes. On hover, a 1px green underline animates in from the left. On active state, a small green bullet (`•`) appears 12px to the left of the text.
 
@@ -622,19 +851,25 @@ Horizontal text links, no icons, no boxes. On hover, a 1px green underline anima
 
 The `cubic-bezier(0.4, 0, 0.2, 1)` is the standard material-motion "ease-in-out" curve — smooth but with enough snap to feel crisp.
 
-### 7.6 Search Affordance
+### 7.8 Search Affordance
 
-Top-right of the nav, styled as a pill with `⌕ search plots` text and a `⌘ K` keyboard hint badge. Button-like but not a solid button — borderless until hover. Clicking opens a command palette.
+Top-right of the nav, styled as an inline mono input that reads `❯ .find(_)` with a `⌘K` hint badge to its right. Borderless until hover. Clicking opens a command palette which expands the cursor and accepts typing — the user feels they're continuing the same line of code.
+
+```
+❯ .find(_▌)        ⌘K
+```
+
+Active palette state replaces the placeholder cursor with the user's typed query, still in mono. Results appear below the input as a list of `slug · library · tags` lines, each prefixed with `❯` to maintain the prompt continuity.
 
 ---
 
 ## 8. Animation
 
-Restrained. Three categories only.
+Restrained. Five categories.
 
 ### 8.1 Page Load
 
-Hero elements rise from 8px below with opacity transition:
+Hero box rises from 8px below with opacity transition:
 
 ```css
 @keyframes rise {
@@ -645,22 +880,85 @@ Hero elements rise from 8px below with opacity transition:
 
 Staggered via `animation-delay`:
 
-- Eyebrow: 0s
-- Headline: 0.1s
-- Lede: 0.2s
-- CTAs: 0.3s
-- Meta: 0.4s
-- Hero plot: 0.3s (parallel to CTAs)
+- Terminal box border: 0s
+- Hero line 1 (prompt + wordmark + accent): 0.1s
+- Triplet line 1 (`get inspired.`): 0.4s
+- Triplet line 2 (`grab the code.`): 0.5s
+- Triplet line 3 (`make it yours._▌`): 0.6s
+- Action buttons: 0.8s
+- Side plot stacks (ultrawide only): 0.4s
 
-Total sequence: ~0.8s. Enough to feel intentional, short enough not to delay interaction.
+Total sequence: ~1.0s. Slightly longer than typical because the staggered triplet is part of the hero's "code typing itself out" feel.
 
-### 8.2 Hover States
+### 8.2 Hero Cursor (Blinking)
+
+The block cursor at the end of `make it yours._▌` blinks indefinitely:
+
+```css
+.hero .cursor {
+  display: inline-block;
+  width: 0.6em;
+  height: 1em;
+  background: var(--ok-green);
+  vertical-align: -0.1em;
+  animation: blink 1s steps(2) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+```
+
+Use `steps(2)` rather than a smooth ease — terminal cursors are square-wave, not sinusoidal. A fading cursor reads as decorative; a square-blinking one reads as terminal.
+
+### 8.3 Optional: Hero Typing Animation
+
+For the page-load sequence, the triplet lines may type themselves character-by-character at ~40 chars/second, with the cursor following the typed character. Disable on `prefers-reduced-motion` and on subsequent visits (cookie-flag the first visit). If implemented, the staggered delays in §8.1 are replaced by sequential typing completion.
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  .hero .typed { animation: none !important; }
+  .hero .cursor { animation: none; opacity: 1; }
+}
+```
+
+### 8.4 Hover States
 
 All transitions use 0.15–0.3s with `cubic-bezier(0.4, 0, 0.2, 1)`. Never use default `ease` — it's too linear for modern motion.
 
-### 8.3 Palette Strip Interaction
+### 8.5 Side Plot Stacks (Ultrawide Hero)
 
-The palette strip at the bottom responds to hover: normal state is even distribution, `:hover .sw` shrinks all colors to 50%, then `.sw:hover` expands the specific hovered color to 300%. It's a playful detail that invites interaction without being necessary.
+The vertical plot stacks flanking the hero box on ultrawide viewports auto-scroll continuously:
+
+```css
+.hero-flank {
+  display: none;            /* hidden by default */
+  height: 100vh;
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+}
+@media (min-width: 1600px) {
+  .hero-flank { display: block; }
+}
+.hero-flank__track {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: flank-scroll 60s linear infinite;
+}
+@keyframes flank-scroll {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-50%); }    /* track contains plots×2; loops seamlessly */
+}
+.hero-flank:hover .hero-flank__track { animation-play-state: paused; }
+```
+
+- Two stacks, one each side of the hero box
+- Each stack: 8–12 plot thumbnails sampled randomly from the catalog at page load
+- Top/bottom 10% fade to transparent (mask-image) so plots dissolve in/out rather than hard-cutting
+- Hover anywhere on a stack pauses the scroll (so the user can click through to a plot)
+- Disabled on `prefers-reduced-motion`
+
+### 8.6 Palette Strip Interaction
+
+The palette strip at the bottom responds to hover: normal state is even distribution, `:hover .sw` shrinks all colors to 50%, then `.sw:hover` expands the specific hovered color to 300%. Playful detail that invites interaction without being necessary.
 
 ```css
 .palette-strip .sw { flex: 1; transition: flex 0.3s; }

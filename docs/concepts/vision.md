@@ -2,17 +2,17 @@
 
 ## Mission
 
-**Making Python data visualization effortless: Find the right plot, see it with YOUR data, get working code instantly.**
+**Making data visualization effortless: Find the right plot, see it with YOUR data, get working code instantly.**
 
 ## The Problem
 
 Developers waste hours on visualization:
 
-- **Library Lock-in**: Pick matplotlib, then realize seaborn was better
+- **Library Lock-in**: Pick one library, then realize another was better
 - **Discovery Hell**: Finding the right plot type across libraries is frustrating
 - **Rigid Categories**: Hard to find specialized plots or discover similar alternatives
 - **Generic Examples**: Tutorials show fake data, not yours
-- **Outdated Code**: Examples break across Python versions and library updates
+- **Outdated Code**: Examples break across library versions and ecosystem updates
 
 ## The Solution
 
@@ -42,7 +42,7 @@ anyplot is different: **AI curates and maintains, humans discover and choose.**
 
 ### What Makes It Different
 
-- **Library Agnostic**: Compare all 9 libraries side-by-side (matplotlib, seaborn, plotly, bokeh, altair, plotnine, pygal, highcharts, lets-plot)
+- **Library Agnostic**: Compare libraries side-by-side. Nine ecosystems today (matplotlib, seaborn, plotly, bokeh, altair, plotnine, pygal, highcharts, lets-plot); the architecture is designed to welcome more
 - **Always Current**: AI agents keep examples updated and optimized
 - **Multi-Dimensional Discovery**: Find plots by domain (finance, research), type (scatter, bar), or specific use case (
   ROC curve, Sankey diagram)

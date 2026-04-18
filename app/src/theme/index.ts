@@ -7,11 +7,10 @@
  */
 
 export const typography = {
-  // MonoLisa with system mono fallback (size-adjusted to prevent CLS)
+  // MonoLisa-only system — serif/sans kept as aliases so existing imports still resolve
   fontFamily: '"MonoLisa", "MonoLisa Fallback", Consolas, Menlo, Monaco, "DejaVu Sans Mono", monospace',
-  // Three font families for the editorial aesthetic
-  serif: '"Fraunces", "Fraunces Fallback", Georgia, serif',
-  sans: '"Inter", system-ui, sans-serif',
+  serif: '"MonoLisa", "MonoLisa Fallback", Consolas, Menlo, Monaco, "DejaVu Sans Mono", monospace',
+  sans: '"MonoLisa", "MonoLisa Fallback", Consolas, Menlo, Monaco, "DejaVu Sans Mono", monospace',
   mono: '"MonoLisa", "MonoLisa Fallback", "JetBrains Mono", Consolas, monospace',
 } as const;
 

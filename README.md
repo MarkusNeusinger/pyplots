@@ -8,15 +8,16 @@
 [![Ruff](https://github.com/MarkusNeusinger/anyplot/actions/workflows/ci-lint.yml/badge.svg?branch=main)](https://github.com/MarkusNeusinger/anyplot/actions/workflows/ci-lint.yml)
 [![codecov](https://codecov.io/github/MarkusNeusinger/anyplot/graph/badge.svg?token=4EGPSHH0H0)](https://codecov.io/github/MarkusNeusinger/anyplot)
 
-> library-agnostic, ai-powered python plotting examples.
+> library-agnostic, ai-powered plotting examples.
 
 ---
 
 ## What is anyplot?
 
-**anyplot** is an AI-powered platform for Python data visualization that automatically discovers, generates, tests, and
-maintains plotting examples. Browse hundreds of plots across all major Python libraries - matplotlib, seaborn, plotly,
-bokeh, altair, plotnine, pygal, highcharts, and lets-plot.
+**anyplot** is an AI-powered platform for data visualization that automatically discovers, generates, tests, and
+maintains plotting examples. Browse hundreds of plots across major visualization libraries — matplotlib, seaborn,
+plotly, bokeh, altair, plotnine, pygal, highcharts, and lets-plot — with an architecture ready to welcome additional
+ecosystems over time.
 
 **Community-driven, AI-maintained** - Propose plot ideas via GitHub Issues, AI generates the code, automated quality
 checks ensure excellence. Zero manual coding required.

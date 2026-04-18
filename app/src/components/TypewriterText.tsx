@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { useTypewriter } from '../hooks/useTypewriter';
 import { colors } from '../theme';
@@ -35,6 +36,13 @@ export function TypewriterText({
   });
   const cursorLine = done ? lines.length - 1 : activeLine;
 
+  const [cursorFaded, setCursorFaded] = useState(false);
+  useEffect(() => {
+    if (!done) return;
+    const t = setTimeout(() => setCursorFaded(true), 2500);
+    return () => clearTimeout(t);
+  }, [done]);
+
   return (
     <Box sx={sx}>
       {rendered.map((text, idx) => (
@@ -52,7 +60,9 @@ export function TypewriterText({
                 bgcolor: cursorColor,
                 verticalAlign: '-0.12em',
                 ml: '2px',
-                animation: 'blink 1s steps(2) infinite',
+                opacity: cursorFaded ? 0 : 1,
+                transition: 'opacity 0.6s ease-out',
+                animation: cursorFaded ? 'none' : 'blink 1s steps(2) infinite',
               }}
             />
           )}

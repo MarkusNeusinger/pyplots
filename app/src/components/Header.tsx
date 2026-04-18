@@ -10,7 +10,7 @@ import ShuffleIcon from '@mui/icons-material/Shuffle';
 import { colors, typography, semanticColors } from '../theme';
 
 interface HeaderProps {
-  stats?: { specs: number; plots: number; libraries: number } | null;
+  stats?: { specs: number; plots: number; libraries: number; lines_of_code?: number } | null;
   onRandom?: (method: 'click' | 'space' | 'doubletap') => void;
 }
 

@@ -117,3 +117,4 @@ class StatsResponse(BaseModel):
     specs: int
     plots: int
     libraries: int
+    lines_of_code: int = 0

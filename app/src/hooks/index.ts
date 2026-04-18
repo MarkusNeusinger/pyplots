@@ -9,3 +9,4 @@ export { useFilterFetch } from './useFilterFetch';
 export { useAppData, useHomeState, useTheme } from './useLayoutContext';
 export type { HomeState, HomeStateContextValue, AppData, ThemeContextValue } from './useLayoutContext';
 export { useThemeMode } from './useThemeMode';
+export { useLatestRelease } from './useLatestRelease';

@@ -21,7 +21,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   const themeMode = useThemeMode();
   const [specsData, setSpecsData] = useState<SpecInfo[]>([]);
   const [librariesData, setLibrariesData] = useState<LibraryInfo[]>([]);
-  const [stats, setStats] = useState<{ specs: number; plots: number; libraries: number } | null>(null);
+  const [stats, setStats] = useState<{ specs: number; plots: number; libraries: number; lines_of_code?: number } | null>(null);
 
   // Persistent home state (both ref for sync access and state for reactivity)
   const [homeState, setHomeState] = useState<HomeState>(initialHomeState);

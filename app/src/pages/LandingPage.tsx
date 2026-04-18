@@ -6,6 +6,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { MastheadRule } from '../components/MastheadRule';
 import { NavBar } from '../components/NavBar';
 import { HeroSection } from '../components/HeroSection';
+import { NumbersStrip } from '../components/NumbersStrip';
 import { LibrariesSection } from '../components/LibrariesSection';
 import { SectionHeader } from '../components/SectionHeader';
 import { Footer } from '../components/Footer';
@@ -51,11 +52,12 @@ export function LandingPage() {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            minHeight: { xs: 'auto', md: 'calc(100svh - 88px)' },
+            minHeight: { xs: 'auto', md: 'calc(88svh - 88px)' },
           }}
         >
           <Container maxWidth={false} sx={catalogContainerSx}>
             <HeroSection stats={stats} potd={potd} />
+            <NumbersStrip stats={stats} />
           </Container>
         </Box>
 

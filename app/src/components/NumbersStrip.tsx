@@ -2,57 +2,56 @@ import Box from '@mui/material/Box';
 import { colors, typography } from '../theme';
 
 interface NumbersStripProps {
-  stats: { specs: number; plots: number; libraries: number } | null;
+  stats: { specs: number; plots: number; libraries: number; lines_of_code?: number } | null;
+}
+
+function formatLoc(n: number | undefined): string {
+  if (!n) return '—';
+  if (n >= 1000) return `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k`;
+  return String(n);
 }
 
 export function NumbersStrip({ stats }: NumbersStripProps) {
   const items = [
-    { value: stats ? `${Math.floor(stats.plots / 1000)}k+` : '—', label: 'plotting examples', accent: true },
-    { value: '09', label: 'libraries covered', accent: true },
-    { value: '08', label: 'colors · Okabe-Ito', accent: true },
-    { value: '03', label: 'CVD types safe', accent: true },
+    { value: '1', label: 'languages' },
+    { value: stats ? String(stats.libraries) : '—', label: 'libraries' },
+    { value: stats ? String(stats.specs) : '—', label: 'specifications' },
+    { value: stats ? stats.plots.toLocaleString() : '—', label: 'implementations' },
+    { value: formatLoc(stats?.lines_of_code), label: 'lines of code' },
   ];
 
   return (
     <Box sx={{
       borderTop: '1px solid var(--rule)',
-      borderBottom: '1px solid var(--rule)',
-      py: 5,
-      my: 5,
+      pt: { xs: 3, md: 3.5 },
+      mt: { xs: 3, md: 2 },
+      display: 'grid',
+      gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(5, 1fr)' },
+      gap: { xs: 4, md: 5 },
     }}>
-      <Box sx={{
-        maxWidth: 'var(--max)',
-        mx: 'auto',
-        display: 'grid',
-        gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
-        gap: 4,
-      }}>
-        {items.map((item, i) => (
-          <Box key={i}>
-            <Box sx={{
-              fontFamily: typography.serif,
-              fontSize: { xs: '2.5rem', md: '3.5rem' },
-              fontWeight: 300,
-              letterSpacing: '-0.03em',
-              lineHeight: 1,
-              color: item.accent ? colors.primary : 'var(--ink)',
-              fontStyle: item.accent ? 'italic' : 'normal',
-            }}>
-              {item.value}
-            </Box>
-            <Box sx={{
-              fontFamily: typography.mono,
-              fontSize: '11px',
-              color: 'var(--ink-muted)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.12em',
-              mt: 1,
-            }}>
-              {item.label}
-            </Box>
+      {items.map((item, i) => (
+        <Box key={i}>
+          <Box sx={{
+            fontFamily: typography.mono,
+            fontSize: { xs: '1.25rem', md: '1.5rem' },
+            fontWeight: 600,
+            letterSpacing: '-0.02em',
+            lineHeight: 1,
+            color: 'var(--ink-soft)',
+          }}>
+            {item.value}
           </Box>
-        ))}
-      </Box>
+          <Box sx={{
+            fontFamily: typography.mono,
+            fontSize: '12px',
+            color: 'var(--ink-muted)',
+            letterSpacing: '0.04em',
+            mt: 0.75,
+          }}>
+            {item.label}
+          </Box>
+        </Box>
+      ))}
     </Box>
   );
 }

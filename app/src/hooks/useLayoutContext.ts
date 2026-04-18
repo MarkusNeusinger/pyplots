@@ -24,7 +24,7 @@ export interface HomeStateContextValue {
 export interface AppData {
   specsData: import('../types').SpecInfo[];
   librariesData: import('../types').LibraryInfo[];
-  stats: { specs: number; plots: number; libraries: number } | null;
+  stats: { specs: number; plots: number; libraries: number; lines_of_code?: number } | null;
 }
 
 export const initialHomeState: HomeState = {

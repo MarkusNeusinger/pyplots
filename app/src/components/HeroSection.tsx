@@ -7,7 +7,7 @@ import { PlotOfTheDayTerminal } from './PlotOfTheDayTerminal';
 import type { PlotOfTheDayData } from '../hooks/usePlotOfTheDay';
 
 interface HeroSectionProps {
-  stats: { specs: number; plots: number; libraries: number } | null;
+  stats: { specs: number; plots: number; libraries: number; lines_of_code?: number } | null;
   potd?: PlotOfTheDayData | null;
 }
 
@@ -35,8 +35,7 @@ export function HeroSection({ stats, potd = null }: HeroSectionProps) {
             animation: 'rise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) backwards',
             fontFamily: typography.mono,
             fontSize: '11px',
-            textTransform: 'uppercase',
-            letterSpacing: '0.15em',
+            letterSpacing: '0.08em',
             color: colors.primary,
             mb: 3,
             display: 'flex',
@@ -51,7 +50,7 @@ export function HeroSection({ stats, potd = null }: HeroSectionProps) {
             },
           }}
         >
-          Data Visualization Catalogue
+          the open plot catalogue
         </Box>
 
         <Box
@@ -65,7 +64,7 @@ export function HeroSection({ stats, potd = null }: HeroSectionProps) {
             letterSpacing: '-0.03em',
             color: 'var(--ink)',
             m: 0,
-            mb: 4,
+            mb: 3,
           }}
         >
           <Box
@@ -93,9 +92,37 @@ export function HeroSection({ stats, potd = null }: HeroSectionProps) {
             <Box component="span" sx={{ fontWeight: 400, opacity: 0.45 }}>()</Box>
           </Box>
           <br />
-          <Box component="span" sx={{ fontFamily: typography.serif, fontWeight: 400 }}>
+          <Box
+            component="span"
+            sx={{
+              fontFamily: typography.serif,
+              fontWeight: 400,
+              fontStyle: 'italic',
+              fontFeatureSettings: '"ss02"',
+              whiteSpace: 'nowrap',
+              fontSize: '0.75em',
+            }}
+          >
             — any library.
           </Box>
+        </Box>
+
+        <Box
+          component="p"
+          sx={{
+            animation: 'rise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.15s backwards',
+            fontFamily: typography.serif,
+            fontSize: { xs: '0.9375rem', sm: '1rem', md: '1.125rem' },
+            lineHeight: 1.4,
+            color: 'var(--ink)',
+            mt: 0,
+            mb: 2.5,
+            fontWeight: 500,
+            letterSpacing: '-0.005em',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          one spec · every library · always current.
         </Box>
 
         <Box
@@ -103,18 +130,21 @@ export function HeroSection({ stats, potd = null }: HeroSectionProps) {
             animation: 'rise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s backwards',
             fontFamily: typography.serif,
             fontSize: { xs: '1rem', md: '1.1875rem' },
-            lineHeight: 1.5,
+            lineHeight: 1.55,
             color: 'var(--ink-soft)',
             mb: 4,
             fontWeight: 300,
           }}
         >
-          A curated catalogue of visualization examples — human ideas,
-          AI-drafted specs, open implementations across nine Python libraries.
+          every plot begins as a library-agnostic spec. ai drafts implementations across every
+          supported library, validates them against quality criteria, and keeps them current. you
+          discover, copy, and adapt — plug in <em>your</em>
+          {' '}data. that&apos;s it.
         </Box>
 
         <TypewriterText
-          lines={['get inspired.', 'grab the code.', 'make it yours.']}
+          lines={['steal like an artist.']}
+          charDelay={68}
           sx={{
             animation: 'rise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.25s backwards',
             fontFamily: typography.serif,
@@ -130,55 +160,19 @@ export function HeroSection({ stats, potd = null }: HeroSectionProps) {
         <Box
           sx={{
             display: 'flex',
-            gap: 1.5,
+            alignItems: 'center',
+            gap: 2.5,
             flexWrap: 'wrap',
             animation: 'rise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.3s backwards',
           }}
         >
-          <PrimaryCta to="/plots" label="Browse the catalogue" />
-          <GhostCta to="/mcp" label="use via MCP" />
+          <PrimaryCta to="/plots" label="browse plots" />
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
+            <SecondaryLink to="/mcp" label="or connect via mcp" />
+            <SecondaryLink href="https://github.com/MarkusNeusinger/anyplot" label="or clone on github" external />
+          </Box>
         </Box>
 
-        {stats && (
-          <Box
-            sx={{
-              mt: 5,
-              pt: 3,
-              borderTop: '1px solid var(--rule)',
-              display: 'flex',
-              gap: 4,
-              flexWrap: 'wrap',
-              fontFamily: typography.mono,
-              fontSize: '11px',
-              color: 'var(--ink-muted)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-            }}
-          >
-            {[
-              { value: String(stats.specs), label: 'specs' },
-              { value: stats.plots.toLocaleString(), label: 'implementations' },
-              { value: String(stats.libraries), label: 'libraries' },
-            ].map((item, i) => (
-              <Box key={i}>
-                <Box
-                  sx={{
-                    color: 'var(--ink)',
-                    fontWeight: 500,
-                    fontSize: { xs: '1.25rem', md: '1.625rem' },
-                    letterSpacing: '-0.02em',
-                    textTransform: 'none',
-                    mb: 0.5,
-                    fontFamily: typography.serif,
-                  }}
-                >
-                  {item.value}
-                </Box>
-                {item.label}
-              </Box>
-            ))}
-          </Box>
-        )}
       </Box>
 
       {/* Right: terminal plot */}
@@ -217,24 +211,40 @@ function PrimaryCta({ to, label }: { to: string; label: string }) {
   );
 }
 
-function GhostCta({ to, label }: { to: string; label: string }) {
+function SecondaryLink({
+  to,
+  href,
+  label,
+  external,
+}: {
+  to?: string;
+  href?: string;
+  label: string;
+  external?: boolean;
+}) {
+  const linkProps = external
+    ? { component: 'a' as const, href, target: '_blank', rel: 'noopener noreferrer' }
+    : { component: RouterLink, to };
+
   return (
     <Box
-      component={RouterLink}
-      to={to}
+      {...linkProps}
       sx={{
         textDecoration: 'none',
         fontFamily: typography.mono,
         fontSize: '13px',
-        padding: '13px 22px',
-        borderRadius: '99px',
-        border: '1px solid var(--rule)',
-        color: 'var(--ink)',
-        transition: 'all 0.2s',
-        '&:hover': { borderColor: 'var(--ink)' },
+        color: 'var(--ink-soft)',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 0.5,
+        transition: 'color 0.2s',
+        '& .arrow': { transition: 'transform 0.2s' },
+        '&:hover': { color: colors.primary },
+        '&:hover .arrow': { transform: 'translateX(3px)' },
+        '&:focus-visible': { outline: `2px solid ${colors.primary}`, outlineOffset: 2, borderRadius: '2px' },
       }}
     >
-      {label}
+      {label}&nbsp;<Box component="span" className="arrow">→</Box>
     </Box>
   );
 }

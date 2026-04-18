@@ -122,7 +122,7 @@ export function LegalPage() {
           <Typography sx={textStyle}>
             <strong>Disclaimer</strong>
             <br />
-            This is a personal portfolio project showcasing Python visualization examples, generated and maintained
+            This is a personal portfolio project showcasing data visualization examples, generated and maintained
             through AI-powered workflows. All code examples are meant for inspiration and learning – take them as a
             starting point, adapt them to your data and requirements, or use AI tools to customize them for your
             specific needs. Code is provided &quot;as is&quot; under the MIT License and should be reviewed before

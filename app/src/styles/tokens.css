@@ -27,9 +27,9 @@
   --ink-muted:   #8A8A82;
   --rule:        rgba(26, 26, 23, 0.10);
 
-  /* Typography stacks */
-  --serif: 'Fraunces', Georgia, serif;
-  --sans:  'Inter', system-ui, sans-serif;
+  /* Typography stacks — MonoLisa-only experiment (serif/sans aliased to mono) */
+  --serif: 'MonoLisa', 'MonoLisa Fallback', Consolas, Menlo, Monaco, 'DejaVu Sans Mono', monospace;
+  --sans:  'MonoLisa', 'MonoLisa Fallback', Consolas, Menlo, Monaco, 'DejaVu Sans Mono', monospace;
   --mono:  'MonoLisa', 'MonoLisa Fallback', 'JetBrains Mono', Consolas, monospace;
 
   /* Layout — three-tier widths (style-guide §6.1) */
@@ -42,6 +42,9 @@
   --code-bg:   #0E0E0C;
   --code-text: #E8E8E0;
 }
+
+/* MonoLisa script variant (italic ss02) — test */
+html { font-feature-settings: "ss02"; }
 
 /* Animations */
 @keyframes rise {

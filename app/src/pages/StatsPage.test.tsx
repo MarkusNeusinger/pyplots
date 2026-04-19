@@ -147,26 +147,6 @@ describe('StatsPage', () => {
     expect(screen.getByText('73%')).toBeInTheDocument();
   });
 
-  it('renders breadcrumb navigation', async () => {
-    mockFetchSuccess();
-
-    render(<StatsPage />);
-
-    await waitFor(() => {
-      expect(screen.getByRole('navigation', { name: 'breadcrumb' })).toBeInTheDocument();
-    });
-  });
-
-  it('renders footer with github link', async () => {
-    mockFetchSuccess();
-
-    render(<StatsPage />);
-
-    await waitFor(() => {
-      expect(screen.getByText('github')).toBeInTheDocument();
-    });
-  });
-
   it('renders top implementation cards', async () => {
     mockFetchSuccess();
 

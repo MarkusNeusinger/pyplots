@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { Footer } from '../components/Footer';
 import { typography, colors, semanticColors } from '../theme';
 
 export function NotFoundPage() {
@@ -31,7 +30,6 @@ export function NotFoundPage() {
           back to anyplot.ai
         </Box>
       </Box>
-      <Footer />
     </>
   );
 }

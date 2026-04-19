@@ -7,8 +7,6 @@ import Link from '@mui/material/Link';
 import Tooltip from '@mui/material/Tooltip';
 
 import { useAnalytics } from '../hooks';
-import { Breadcrumb } from '../components/Breadcrumb';
-import { Footer } from '../components/Footer';
 import { API_URL } from '../constants';
 import { specPath } from '../utils/paths';
 import { buildSrcSet, getFallbackSrc } from '../utils/responsiveImage';
@@ -125,8 +123,6 @@ export function StatsPage() {
       </Helmet>
 
       <Box sx={{ maxWidth: 960, mx: 'auto', px: 2, py: 2 }}>
-        <Breadcrumb items={[{ label: 'anyplot.ai', shortLabel: 'ap', to: '/' }, { label: 'stats' }]} />
-
         {/* Summary Counters */}
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(6, 1fr)' }, gap: 2, mt: 3, mb: 4 }}>
           {[
@@ -381,9 +377,6 @@ export function StatsPage() {
             );
           })}
         </Box>
-
-
-        <Footer onTrackEvent={trackEvent} />
       </Box>
     </>
   );

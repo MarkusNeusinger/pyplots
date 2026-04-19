@@ -1,10 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '../test-utils';
 
-vi.mock('../components/Breadcrumb', () => ({
-  Breadcrumb: () => <nav data-testid="breadcrumb">Breadcrumb</nav>,
-}));
-
 import { DebugPage } from './DebugPage';
 
 const mockDebugData = {
@@ -77,16 +73,4 @@ describe('DebugPage', () => {
     });
   });
 
-  it('renders breadcrumb after data loads', async () => {
-    vi.stubGlobal('fetch', vi.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve(mockDebugData),
-      })
-    ));
-    render(<DebugPage />);
-    await waitFor(() => {
-      expect(screen.getByTestId('breadcrumb')).toBeInTheDocument();
-    });
-  });
 });

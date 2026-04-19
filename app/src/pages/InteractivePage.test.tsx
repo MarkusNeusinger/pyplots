@@ -8,10 +8,6 @@ vi.mock('../hooks', () => ({
   useAnalytics: () => ({ trackPageview: vi.fn(), trackEvent: vi.fn() }),
 }));
 
-vi.mock('../components/Breadcrumb', () => ({
-  Breadcrumb: () => <nav data-testid="breadcrumb">Breadcrumb</nav>,
-}));
-
 import { InteractivePage } from './InteractivePage';
 
 const theme = createTheme();

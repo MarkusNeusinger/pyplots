@@ -1,9 +1,11 @@
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { AppDataProvider } from './components/Layout';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { RootLayout } from './components/RootLayout';
+import { BareLayout } from './components/BareLayout';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 const LazyFallback = () => (
@@ -14,28 +16,29 @@ const LazyFallback = () => (
 
 const lazySpec = () => import('./pages/SpecPage').then(m => ({ Component: m.SpecPage, HydrateFallback: LazyFallback }));
 
-// Minimal passthrough wrapper so child routes get an Outlet
-function PassthroughLayout() {
-  return <Outlet />;
-}
-
 const router = createBrowserRouter([
   {
-    path: '/',
-    element: <PassthroughLayout />,
+    element: <RootLayout />,
     children: [
       { index: true, lazy: () => import('./pages/LandingPage').then(m => ({ Component: m.LandingPage })) },
       { path: 'plots', lazy: () => import('./pages/PlotsPage').then(m => ({ Component: m.PlotsPage })) },
       { path: 'specs', lazy: () => import('./pages/SpecsListPage').then(m => ({ Component: m.SpecsListPage })) },
+      { path: 'libraries', lazy: () => import('./pages/LibrariesPage').then(m => ({ Component: m.LibrariesPage })) },
       { path: 'palette', lazy: () => import('./pages/PalettePage').then(m => ({ Component: m.PalettePage })) },
+      { path: 'about', lazy: () => import('./pages/AboutPage').then(m => ({ Component: m.AboutPage })) },
       { path: 'legal', lazy: () => import('./pages/LegalPage').then(m => ({ Component: m.LegalPage })) },
       { path: 'mcp', lazy: () => import('./pages/McpPage').then(m => ({ Component: m.McpPage })) },
       { path: 'stats', lazy: () => import('./pages/StatsPage').then(m => ({ Component: m.StatsPage })) },
       { path: 'python/:specId', lazy: lazySpec },
       { path: 'python/:specId/:library', lazy: lazySpec },
+      { path: '*', element: <NotFoundPage /> },
+    ],
+  },
+  {
+    element: <BareLayout />,
+    children: [
       { path: 'python/interactive/:specId/:library', lazy: () => import('./pages/InteractivePage').then(m => ({ Component: m.InteractivePage })) },
       { path: 'debug', lazy: () => import('./pages/DebugPage').then(m => ({ Component: m.DebugPage })) },
-      { path: '*', element: <NotFoundPage /> },
     ],
   },
 ]);

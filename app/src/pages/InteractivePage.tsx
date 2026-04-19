@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
@@ -12,7 +12,6 @@ import { API_URL } from '../constants';
 import { typography, colors, semanticColors } from '../theme';
 import { useAnalytics } from '../hooks';
 import { specPath } from '../utils/paths';
-import { Breadcrumb } from '../components/Breadcrumb';
 
 // Initial dimensions - will be updated via postMessage from iframe
 const INITIAL_WIDTH = 1600;
@@ -216,23 +215,43 @@ export function InteractivePage() {
           flexDirection: 'column',
         }}
       >
-        {/* Breadcrumb navigation */}
-        <Breadcrumb
-          items={[
-            { label: 'anyplot.ai', shortLabel: 'ap', to: '/' },
-            { label: specId || '', to: specPath(specId!) },
-            { label: library || '', to: specPath(specId!, library!) },
-            { label: 'interactive' },
-          ]}
-          rightAction={
-            <Tooltip title="View Raw HTML">
-              <IconButton onClick={handleOpenExternal} aria-label="View raw HTML" size="small">
-                <OpenInNewIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          }
-          sx={{ mx: 0, mt: 0, mb: 0 }}
-        />
+        {/* Bare top strip — minimal nav since this view opts out of the global chrome */}
+        <Box
+          component="nav"
+          aria-label="interactive view"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            px: 2,
+            py: 1,
+            borderBottom: `1px solid ${colors.gray[200]}`,
+            fontFamily: typography.mono,
+            fontSize: '12px',
+            color: semanticColors.mutedText,
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+            <Box component={RouterLink} to="/" sx={{ color: 'inherit', textDecoration: 'none', '&:hover': { color: colors.primary } }}>
+              ~/anyplot.ai
+            </Box>
+            <span>·</span>
+            <Box component={RouterLink} to={specPath(specId!)} sx={{ color: 'inherit', textDecoration: 'none', '&:hover': { color: colors.primary } }}>
+              {specId}
+            </Box>
+            <span>·</span>
+            <Box component={RouterLink} to={specPath(specId!, library!)} sx={{ color: 'inherit', textDecoration: 'none', '&:hover': { color: colors.primary } }}>
+              {library}
+            </Box>
+            <span>·</span>
+            <Box component="span" sx={{ color: 'var(--ink-soft)' }}>interactive</Box>
+          </Box>
+          <Tooltip title="View Raw HTML">
+            <IconButton onClick={handleOpenExternal} aria-label="View raw HTML" size="small">
+              <OpenInNewIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
 
         {/* Fullscreen iframe - scaled to fit container */}
         <Box

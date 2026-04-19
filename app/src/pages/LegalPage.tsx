@@ -10,8 +10,6 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 
 import { useAnalytics } from '../hooks';
-import { Breadcrumb } from '../components/Breadcrumb';
-import { Footer } from '../components/Footer';
 import { GITHUB_URL } from '../constants';
 import {
   colors,
@@ -47,8 +45,6 @@ export function LegalPage() {
         <meta property="og:description" content="Legal notice, privacy policy, and transparency information" />
         <link rel="canonical" href="https://anyplot.ai/legal" />
       </Helmet>
-
-      <Breadcrumb items={[{ label: 'anyplot.ai', shortLabel: 'ap', to: '/' }, { label: 'legal' }]} sx={{ mb: 2 }} />
 
       <Box sx={{ mb: 3, display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
         <Link href="#legal-notice" sx={{ color: colors.primary, fontFamily: textStyle.fontFamily, fontSize: fontSize.base }}>
@@ -384,8 +380,6 @@ export function LegalPage() {
           Last updated: March 2026
         </Typography>
       </Box>
-
-      <Footer onTrackEvent={trackEvent} />
     </>
   );
 }

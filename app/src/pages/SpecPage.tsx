@@ -4,21 +4,16 @@ import { Helmet } from 'react-helmet-async';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
 import Skeleton from '@mui/material/Skeleton';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import BugReportIcon from '@mui/icons-material/BugReport';
-import ListIcon from '@mui/icons-material/List';
 import { NotFoundPage } from './NotFoundPage';
 
-import { API_URL, GITHUB_URL, LIB_ABBREV } from '../constants';
+import { API_URL, GITHUB_URL } from '../constants';
 import { typography, colors, fontSize, semanticColors } from '../theme';
 import { useAnalytics, useCodeFetch } from '../hooks';
 import { useAppData } from '../hooks';
 import { specPath } from '../utils/paths';
 import { LibraryPills } from '../components/LibraryPills';
-import { Breadcrumb } from '../components/Breadcrumb';
-import { Footer } from '../components/Footer';
 import { RelatedSpecs } from '../components/RelatedSpecs';
 
 const SpecTabs = lazy(() => import('../components/SpecTabs').then(m => ({ default: m.SpecTabs })));
@@ -281,79 +276,25 @@ export function SpecPage() {
       </Helmet>
 
       <Box sx={{ pb: 4 }}>
-        {/* Breadcrumb navigation */}
-        <Breadcrumb
-          items={
-            isOverviewMode
-              ? [
-                  { label: 'anyplot.ai', shortLabel: 'ap', to: '/' },
-                  { label: specId || '' },
-                ]
-              : [
-                  { label: 'anyplot.ai', shortLabel: 'ap', to: '/' },
-                  { label: specId || '', to: specPath(specId!) },
-                  { label: selectedLibrary || '', shortLabel: LIB_ABBREV[selectedLibrary || ''] || selectedLibrary || '' },
-                ]
-          }
-          rightAction={
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1.5, md: 0 } }}>
-              <Tooltip title="plots">
-                <Box
-                  component={Link}
-                  to="/plots"
-                  sx={{
-                    color: semanticColors.mutedText,
-                    textDecoration: 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                    '&:hover': { color: colors.primary },
-                  }}
-                >
-                  <ListIcon sx={{ fontSize: '1.4rem', display: { xs: 'block', md: 'none' } }} />
-                  <Box
-                    component="span"
-                    sx={{
-                      display: { xs: 'none', md: 'block' },
-                      fontFamily: typography.fontFamily,
-                      fontSize: fontSize.base,
-                    }}
-                  >
-                    plots
-                  </Box>
-                </Box>
-              </Tooltip>
-              <Box component="span" sx={{ mx: 0.5, color: semanticColors.mutedText, display: { xs: 'none', md: 'inline' } }}>·</Box>
-              <Tooltip title="report issue">
-                <Box
-                  component="a"
-                  href={buildReportUrl()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => trackEvent('report_issue', { spec: specId, library: selectedLibrary || undefined })}
-                  sx={{
-                    color: semanticColors.mutedText,
-                    textDecoration: 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                    '&:hover': { color: colors.primary },
-                  }}
-                >
-                  <BugReportIcon sx={{ fontSize: '1.4rem', display: { xs: 'block', md: 'none' } }} />
-                  <Box
-                    component="span"
-                    sx={{
-                      display: { xs: 'none', md: 'block' },
-                      fontFamily: typography.fontFamily,
-                      fontSize: fontSize.base,
-                    }}
-                  >
-                    report issue
-                  </Box>
-                </Box>
-              </Tooltip>
-            </Box>
-          }
-        />
+        {/* Page-action row — report issue is contextual (prefilled with spec/lib) */}
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+          <Box
+            component="a"
+            href={buildReportUrl()}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackEvent('report_issue', { spec: specId, library: selectedLibrary || undefined })}
+            sx={{
+              fontFamily: typography.mono,
+              fontSize: fontSize.sm,
+              color: semanticColors.mutedText,
+              textDecoration: 'none',
+              '&:hover': { color: colors.primary },
+            }}
+          >
+            report issue ↗
+          </Box>
+        </Box>
 
         {/* Title */}
         <Typography
@@ -501,8 +442,6 @@ export function SpecPage() {
         </Suspense>
 
         <RelatedSpecs specId={specId!} mode={isOverviewMode ? 'spec' : 'full'} library={selectedLibrary || undefined} onHoverTags={setHighlightedTags} />
-
-        <Footer onTrackEvent={trackEvent} selectedSpec={specId} selectedLibrary={selectedLibrary || ''} />
       </Box>
     </>
   );

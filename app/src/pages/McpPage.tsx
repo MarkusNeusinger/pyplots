@@ -11,8 +11,6 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
 import { useAnalytics } from '../hooks';
-import { Breadcrumb } from '../components/Breadcrumb';
-import { Footer } from '../components/Footer';
 import { GITHUB_URL } from '../constants';
 import {
   colors,
@@ -25,7 +23,7 @@ import {
 } from '../theme';
 
 export function McpPage() {
-  const { trackPageview, trackEvent } = useAnalytics();
+  const { trackPageview } = useAnalytics();
 
   useEffect(() => {
     trackPageview('/mcp');
@@ -46,8 +44,6 @@ export function McpPage() {
         />
         <link rel="canonical" href="https://anyplot.ai/mcp" />
       </Helmet>
-
-      <Breadcrumb items={[{ label: 'anyplot.ai', shortLabel: 'ap', to: '/' }, { label: 'mcp' }]} sx={{ mb: 2 }} />
 
       <Box sx={{ mb: 3, display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
         <Link href="#what-is-mcp" sx={{ color: colors.primary, fontFamily: textStyle.fontFamily, fontSize: fontSize.base }}>
@@ -272,8 +268,6 @@ export function McpPage() {
           </Table>
         </Paper>
       </Box>
-
-      <Footer onTrackEvent={trackEvent} />
     </>
   );
 }

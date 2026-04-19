@@ -76,12 +76,6 @@ describe('McpPage', () => {
     expect(screen.getByText('Comparing Library Implementations')).toBeInTheDocument();
   });
 
-  it('renders breadcrumb navigation', () => {
-    render(<McpPage />);
-
-    expect(screen.getByRole('navigation', { name: 'breadcrumb' })).toBeInTheDocument();
-  });
-
   it('renders link to MCP protocol site', () => {
     render(<McpPage />);
 
@@ -89,9 +83,4 @@ describe('McpPage', () => {
     expect(mcpLink).toHaveAttribute('href', 'https://modelcontextprotocol.io');
   });
 
-  it('renders footer with github link', () => {
-    render(<McpPage />);
-
-    expect(screen.getByText('github')).toBeInTheDocument();
-  });
 });

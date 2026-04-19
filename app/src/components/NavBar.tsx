@@ -1,16 +1,12 @@
-import { useCallback } from 'react';
 import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import { colors, typography } from '../theme';
 
-interface NavBarProps {
-  /** Ref to FilterBar search input -- when on /plots, focuses it; otherwise navigates to /plots */
-  searchInputRef?: React.RefObject<HTMLInputElement | null>;
-}
-
 const NAV_LINKS = [
-  { label: 'plots', to: '/plots' },
   { label: 'specs', to: '/specs' },
+  { label: 'plots', to: '/plots' },
+  { label: 'libraries', to: '/libraries' },
+  { label: 'stats', to: '/stats' },
   { label: 'palette', to: '/palette' },
   { label: 'mcp', to: '/mcp' },
 ];
@@ -53,17 +49,13 @@ const activeLinkSx = {
   },
 } as const;
 
-export function NavBar({ searchInputRef }: NavBarProps) {
+export function NavBar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleSearch = useCallback(() => {
-    if (location.pathname === '/plots' && searchInputRef?.current) {
-      searchInputRef.current.focus();
-    } else {
-      navigate('/plots');
-    }
-  }, [location.pathname, searchInputRef, navigate]);
+  const handleSearch = () => {
+    navigate('/plots?focus=search');
+  };
 
   return (
     <Box component="nav" sx={{

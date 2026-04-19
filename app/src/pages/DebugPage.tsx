@@ -28,7 +28,6 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 import { API_URL, LIBRARIES } from '../constants';
 import { specPath } from '../utils/paths';
-import { Breadcrumb } from '../components/Breadcrumb';
 import {
   typography,
   colors,
@@ -284,19 +283,6 @@ export function DebugPage() {
 
   return (
     <Box sx={{ p: 3, minHeight: '100vh', bgcolor: colors.background }}>
-      {/* Breadcrumb */}
-      <Breadcrumb
-        items={[{ label: 'anyplot.ai', shortLabel: 'ap', to: '/' }, { label: 'debug' }]}
-        sx={{
-          mx: 0,
-          mt: 0,
-          px: 0,
-          bgcolor: 'transparent',
-          borderBottom: 'none',
-          fontWeight: 600,
-          fontSize: fontSize.base,
-        }}
-      />
 
       {/* Stats */}
       <Box sx={{ mb: 2 }}>

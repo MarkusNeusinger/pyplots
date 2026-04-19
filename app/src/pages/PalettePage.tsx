@@ -1,8 +1,6 @@
 import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Box from '@mui/material/Box';
-import { Breadcrumb } from '../components/Breadcrumb';
-import { Footer } from '../components/Footer';
 import { PaletteStrip } from '../components/PaletteStrip';
 import { useAnalytics } from '../hooks';
 import { colors, typography, headingStyle, textStyle } from '../theme';
@@ -31,8 +29,6 @@ export function PalettePage() {
         <title>palette | anyplot.ai</title>
         <meta name="description" content="The Okabe-Ito colorblind-safe palette used across all anyplot.ai visualizations. 8 colors, validated for deuteranopia, protanopia, and tritanopia." />
       </Helmet>
-
-      <Breadcrumb items={[{ label: 'anyplot.ai', shortLabel: 'ap', to: '/' }, { label: 'palette' }]} />
 
       <Box sx={{ maxWidth: 800, mx: 'auto' }}>
         <Box component="h1" sx={{ ...headingStyle, fontFamily: typography.serif, fontSize: '1.5rem' }}>
@@ -92,8 +88,6 @@ export function PalettePage() {
           Don't use Okabe-Ito for continuous data — a categorical palette on continuous data produces misleading banding.
         </Box>
       </Box>
-
-      <Footer />
     </>
   );
 }

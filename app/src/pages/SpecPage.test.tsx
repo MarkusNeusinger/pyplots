@@ -136,17 +136,6 @@ describe('SpecPage', () => {
     consoleSpy.mockRestore();
   });
 
-  it('renders breadcrumb with spec id', async () => {
-    mockFetchSuccess();
-    render(<SpecPage />);
-
-    await waitFor(() => {
-      expect(screen.getByRole('navigation', { name: 'breadcrumb' })).toBeInTheDocument();
-    });
-    // Breadcrumb should contain the spec id
-    expect(screen.getByText('scatter-basic')).toBeInTheDocument();
-  });
-
   it('renders overview mode when no library in URL params', async () => {
     mockParams = { specId: 'scatter-basic' };
     mockFetchSuccess();
@@ -175,15 +164,6 @@ describe('SpecPage', () => {
 
     await waitFor(() => {
       expect(screen.getByText('A scatter plot with basic configuration')).toBeInTheDocument();
-    });
-  });
-
-  it('renders footer', async () => {
-    mockFetchSuccess();
-    render(<SpecPage />);
-
-    await waitFor(() => {
-      expect(screen.getByText('github')).toBeInTheDocument();
     });
   });
 

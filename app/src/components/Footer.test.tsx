@@ -7,9 +7,9 @@ describe('Footer', () => {
     render(<Footer />);
 
     expect(screen.getByText('github')).toBeInTheDocument();
-    expect(screen.getByText('stats')).toBeInTheDocument();
+    expect(screen.getByText('report')).toBeInTheDocument();
+    expect(screen.getByText('about')).toBeInTheDocument();
     expect(screen.getByText('legal')).toBeInTheDocument();
-    expect(screen.getByText('mcp')).toBeInTheDocument();
   });
 
   it('renders markus neusinger link', () => {
@@ -28,14 +28,14 @@ describe('Footer', () => {
     expect(onTrackEvent).toHaveBeenCalledWith('external_link', expect.objectContaining({ destination: 'github' }));
   });
 
-  it('calls onTrackEvent when clicking stats link', async () => {
+  it('calls onTrackEvent when clicking report link', async () => {
     const onTrackEvent = vi.fn();
     const user = userEvent.setup();
 
     render(<Footer onTrackEvent={onTrackEvent} />);
 
-    await user.click(screen.getByText('stats'));
-    expect(onTrackEvent).toHaveBeenCalledWith('internal_link', expect.objectContaining({ destination: 'stats' }));
+    await user.click(screen.getByText('report'));
+    expect(onTrackEvent).toHaveBeenCalledWith('external_link', expect.objectContaining({ destination: 'github_issue_chooser' }));
   });
 
   it('renders without onTrackEvent', () => {
@@ -53,14 +53,14 @@ describe('Footer', () => {
     expect(onTrackEvent).toHaveBeenCalledWith('external_link', expect.objectContaining({ destination: 'linkedin' }));
   });
 
-  it('calls onTrackEvent when clicking mcp link', async () => {
+  it('calls onTrackEvent when clicking about link', async () => {
     const onTrackEvent = vi.fn();
     const user = userEvent.setup();
 
     render(<Footer onTrackEvent={onTrackEvent} />);
 
-    await user.click(screen.getByText('mcp'));
-    expect(onTrackEvent).toHaveBeenCalledWith('internal_link', expect.objectContaining({ destination: 'mcp' }));
+    await user.click(screen.getByText('about'));
+    expect(onTrackEvent).toHaveBeenCalledWith('internal_link', expect.objectContaining({ destination: 'about' }));
   });
 
   it('calls onTrackEvent when clicking legal link', async () => {
@@ -87,7 +87,7 @@ describe('Footer', () => {
     });
   });
 
-  it('renders github link with correct href', () => {
+  it('renders github link to repo home', () => {
     render(<Footer />);
 
     const githubLink = screen.getByText('github').closest('a');
@@ -96,11 +96,19 @@ describe('Footer', () => {
     expect(githubLink).toHaveAttribute('rel', 'noopener noreferrer');
   });
 
-  it('renders mcp as internal router link to /mcp', () => {
+  it('renders report link to issue chooser', () => {
     render(<Footer />);
 
-    const mcpLink = screen.getByText('mcp').closest('a');
-    expect(mcpLink).toHaveAttribute('href', '/mcp');
+    const reportLink = screen.getByText('report').closest('a');
+    expect(reportLink).toHaveAttribute('href', 'https://github.com/MarkusNeusinger/anyplot/issues/new/choose');
+    expect(reportLink).toHaveAttribute('target', '_blank');
+  });
+
+  it('renders about as internal router link to /about', () => {
+    render(<Footer />);
+
+    const aboutLink = screen.getByText('about').closest('a');
+    expect(aboutLink).toHaveAttribute('href', '/about');
   });
 
   it('renders legal as internal router link to /legal', () => {

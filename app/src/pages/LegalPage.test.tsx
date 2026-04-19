@@ -76,15 +76,4 @@ describe('LegalPage', () => {
     expect(screen.getByText('~$34/month')).toBeInTheDocument();
   });
 
-  it('renders breadcrumb navigation', () => {
-    render(<LegalPage />);
-
-    expect(screen.getByRole('navigation', { name: 'breadcrumb' })).toBeInTheDocument();
-  });
-
-  it('renders footer with github link', () => {
-    render(<LegalPage />);
-
-    expect(screen.getByText('github')).toBeInTheDocument();
-  });
 });

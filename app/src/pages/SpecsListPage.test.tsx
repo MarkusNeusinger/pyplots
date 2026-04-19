@@ -87,26 +87,6 @@ describe('SpecsListPage', () => {
     consoleSpy.mockRestore();
   });
 
-  it('renders breadcrumb navigation', async () => {
-    mockFetchSuccess();
-    render(<SpecsListPage />);
-
-    await waitFor(() => {
-      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
-    });
-    expect(screen.getByRole('navigation', { name: 'breadcrumb' })).toBeInTheDocument();
-  });
-
-  it('renders footer', async () => {
-    mockFetchSuccess();
-    render(<SpecsListPage />);
-
-    await waitFor(() => {
-      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
-    });
-    expect(screen.getByText('github')).toBeInTheDocument();
-  });
-
   it('has page title text', async () => {
     mockFetchSuccess();
     render(<SpecsListPage />);

@@ -12,8 +12,6 @@ import { buildSrcSet, getFallbackSrc, SPECS_SIZES } from '../utils/responsiveIma
 import { useAnalytics } from '../hooks';
 import { useAppData, useHomeState } from '../hooks';
 import { specPath } from '../utils/paths';
-import { Breadcrumb } from '../components/Breadcrumb';
-import { Footer } from '../components/Footer';
 import type { PlotImage } from '../types';
 import { typography, colors, fontSize, semanticColors } from '../theme';
 
@@ -157,52 +155,48 @@ export function SpecsListPage() {
       </Helmet>
 
       <Box sx={{ pb: 4 }}>
-        {/* Breadcrumb navigation */}
-        <Breadcrumb
-          items={[{ label: 'anyplot.ai', shortLabel: 'ap', to: '/' }, { label: 'specs' }]}
-          rightAction={
-            <Box
-              component="a"
-              href={`${GITHUB_URL}/issues/new?template=request-new-plot.yml`}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackEvent('suggest_spec')}
-              sx={{
-                color: semanticColors.mutedText,
-                textDecoration: 'none',
-                '&:hover': { color: colors.primary },
-              }}
-            >
-              suggest spec
-            </Box>
-          }
-          sx={{ mb: 3, position: 'sticky', top: 0, zIndex: 100 }}
-        />
-
-        {/* Title */}
-        <Typography
-          variant="h4"
-          component="h1"
-          sx={{
-            fontFamily: typography.serif,
-            fontWeight: 400,
-            mb: 4,
-            color: colors.gray[800],
-          }}
-        >
-          specs
+        {/* Title row with suggest-spec action */}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', mb: 4, flexWrap: 'wrap', gap: 2 }}>
           <Typography
-            component="span"
+            variant="h4"
+            component="h1"
             sx={{
-              ml: 2,
-              fontSize: fontSize.lg,
+              fontFamily: typography.serif,
               fontWeight: 400,
-              color: semanticColors.mutedText,
+              color: colors.gray[800],
             }}
           >
-            {specList.length} specifications
+            specs
+            <Typography
+              component="span"
+              sx={{
+                ml: 2,
+                fontSize: fontSize.lg,
+                fontWeight: 400,
+                color: semanticColors.mutedText,
+              }}
+            >
+              {specList.length} specifications
+            </Typography>
           </Typography>
-        </Typography>
+
+          <Box
+            component="a"
+            href={`${GITHUB_URL}/issues/new?template=request-new-plot.yml`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackEvent('suggest_spec')}
+            sx={{
+              fontFamily: typography.mono,
+              fontSize: fontSize.sm,
+              color: semanticColors.mutedText,
+              textDecoration: 'none',
+              '&:hover': { color: colors.primary },
+            }}
+          >
+            suggest spec ↗
+          </Box>
+        </Box>
 
         {/* Spec List */}
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -389,9 +383,6 @@ export function SpecsListPage() {
             );
           })}
         </Box>
-
-        {/* Footer */}
-        <Footer onTrackEvent={trackEvent} />
       </Box>
 
       {/* Floating scroll-to-top button */}

@@ -64,11 +64,6 @@ describe('PlotsPage', () => {
     expect(screen.getByTestId('images-grid')).toBeInTheDocument();
   });
 
-  it('renders footer', () => {
-    render(<PlotsPage />);
-    expect(screen.getByTestId('footer')).toBeInTheDocument();
-  });
-
   it('renders Helmet for SEO', () => {
     render(<PlotsPage />);
     expect(screen.getByTestId('helmet')).toBeInTheDocument();

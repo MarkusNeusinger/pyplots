@@ -1,3 +1,4 @@
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import { typography, colors } from '../theme';
 import { ThemeToggle } from './ThemeToggle';
@@ -5,7 +6,7 @@ import { useTheme, useLatestRelease } from '../hooks';
 
 const REPO_URL = 'https://github.com/MarkusNeusinger/anyplot';
 
-const mastheadLinkSx = {
+const linkSx = {
   color: 'inherit',
   textDecoration: 'none',
   borderBottom: '1px dotted transparent',
@@ -13,16 +14,61 @@ const mastheadLinkSx = {
   '&:hover': { color: colors.primary, borderBottomColor: 'currentColor' },
 } as const;
 
+const staticSx = {
+  color: 'inherit',
+} as const;
+
+interface Segment {
+  label: string;
+  to?: string;
+}
+
 /**
- * Top masthead bar (style-guide §6.4).
+ * Build path segments from the current pathname. Returned segments are rendered
+ * after the `~/anyplot.ai` root marker. Each segment may carry an internal
+ * route — the last segment never does (it's the current page).
  *
- * Lowercase, monospace, three slots separated by │. Reads as a status line
- * from a tool — positions the site as a curated publication that lives
- * inside a terminal.
+ * Routes covered:
+ *   /<page>                                 → [<page>]
+ *   /python/:specId                         → [python, specId(→/python/specId)]   wait — last is current, so no link
+ *   /python/:specId/:library                → [python, specId(→/python/specId), library]
+ */
+function pathSegments(pathname: string): Segment[] {
+  const parts = pathname.split('/').filter(Boolean);
+  if (parts.length === 0) return [];
+
+  // /python/:specId(/:library)? — language prefix is informational, not navigable
+  if (parts[0] === 'python' && parts.length >= 2) {
+    const specId = parts[1];
+    const library = parts[2];
+    const segs: Segment[] = [{ label: 'python' }];
+    if (library) {
+      segs.push({ label: specId, to: `/python/${specId}` });
+      segs.push({ label: library });
+    } else {
+      segs.push({ label: specId });
+    }
+    return segs;
+  }
+
+  // Single-segment top-level routes (specs, plots, libraries, palette, mcp, stats, about, legal)
+  return [{ label: parts[0] }];
+}
+
+/**
+ * Top masthead bar (style-guide §6.4) — also serves as the global breadcrumb.
+ *
+ * On `/`, the linkable left slot shows `~/anyplot.ai · main · v1.1.0` and the
+ * center carries the catchphrase. On every other route, the left slot becomes
+ * the breadcrumb path (`~/anyplot.ai · python · scatter-basic · matplotlib`)
+ * and the catchphrase is suppressed so the line stays uncluttered.
  */
 export function MastheadRule() {
   const { isDark, toggle } = useTheme();
   const releaseTag = useLatestRelease();
+  const location = useLocation();
+  const segments = pathSegments(location.pathname);
+  const isLanding = segments.length === 0;
   const version = releaseTag ?? 'v1.0';
 
   return (
@@ -38,39 +84,66 @@ export function MastheadRule() {
       color: 'var(--ink-muted)',
       letterSpacing: '0.04em',
     }}>
-      <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-        ~/anyplot.ai ·{' '}
-        <Box
-          component="a"
-          href={`${REPO_URL}/tree/main`}
-          target="_blank"
-          rel="noopener noreferrer"
-          sx={mastheadLinkSx}
-        >
-          main
-        </Box>{' '}
-        ·{' '}
-        <Box
-          component="a"
-          href={releaseTag ? `${REPO_URL}/releases/tag/${releaseTag}` : `${REPO_URL}/releases`}
-          target="_blank"
-          rel="noopener noreferrer"
-          sx={mastheadLinkSx}
-        >
-          {version}
+      <Box sx={{
+        display: { xs: isLanding ? 'none' : 'block', sm: 'block' },
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+      }}>
+        {/* Always-visible root marker */}
+        <Box component={RouterLink} to="/" sx={linkSx}>
+          ~/anyplot.ai
         </Box>
+
+        {isLanding ? (
+          <>
+            {' · '}
+            <Box component="a" href={`${REPO_URL}/tree/main`} target="_blank" rel="noopener noreferrer" sx={linkSx}>
+              main
+            </Box>
+            {' · '}
+            <Box
+              component="a"
+              href={releaseTag ? `${REPO_URL}/releases/tag/${releaseTag}` : `${REPO_URL}/releases`}
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={linkSx}
+            >
+              {version}
+            </Box>
+          </>
+        ) : (
+          segments.map((seg, i) => (
+            <Box key={`${seg.label}-${i}`} component="span">
+              {' · '}
+              {seg.to ? (
+                <Box component={RouterLink} to={seg.to} sx={linkSx}>
+                  {seg.label}
+                </Box>
+              ) : (
+                <Box component="span" sx={{ ...staticSx, color: 'var(--ink-soft)' }}>
+                  {seg.label}
+                </Box>
+              )}
+            </Box>
+          ))
+        )}
       </Box>
+
       <Box sx={{
         px: 2,
         fontFeatureSettings: '"tnum"',
         textAlign: 'center',
-        display: { xs: 'none', md: 'block' },
+        display: { xs: 'none', md: isLanding ? 'block' : 'none' },
       }}>
         // the open plot catalogue.
       </Box>
+
       <Box sx={{
         textAlign: 'right',
-        gridColumn: { xs: '1 / -1', sm: 'auto' },
+        // Explicit column pin so display:none on the center cell (non-landing)
+        // doesn't cause the toggle to auto-place into track 2.
+        gridColumn: { xs: '1 / -1', sm: '3' },
         display: 'flex',
         justifyContent: { xs: 'center', sm: 'flex-end' },
       }}>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
@@ -9,17 +9,15 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import type { PlotImage } from '../types';
 import type { ImageSize } from '../constants';
 import { useInfiniteScroll, useAnalytics, useFilterState, isFiltersEmpty } from '../hooks';
-import { NavBar } from '../components/NavBar';
-import { Footer } from '../components/Footer';
 import { FilterBar } from '../components/FilterBar';
 import { ImagesGrid } from '../components/ImagesGrid';
 import { useAppData, useHomeState } from '../hooks';
 import { specPath } from '../utils/paths';
 import { colors } from '../theme';
-import Container from '@mui/material/Container';
 
 export function PlotsPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { specsData, librariesData } = useAppData();
   const { homeStateRef, saveScrollPosition } = useHomeState();
 
@@ -94,6 +92,17 @@ export function PlotsPage() {
     localStorage.setItem('imageSize', imageSize);
   }, [imageSize]);
 
+  // Focus the FilterBar search input when arriving via NavBar's search pill
+  // (?focus=search). The param is consumed (removed) so reload doesn't re-trigger.
+  useEffect(() => {
+    if (searchParams.get('focus') === 'search' && searchInputRef.current) {
+      searchInputRef.current.focus();
+      const next = new URLSearchParams(searchParams);
+      next.delete('focus');
+      setSearchParams(next, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 300);
@@ -152,14 +161,12 @@ export function PlotsPage() {
   const selectedLibrary = libFilter?.values[0] || '';
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'var(--bg-page)' }} onClick={handleContainerClick}>
+    <Box onClick={handleContainerClick}>
       <Helmet>
         <title>plots | anyplot.ai</title>
         <meta name="description" content="Browse and filter 2,600+ Python visualization examples across 9 libraries. Search by plot type, domain, features, and more." />
         <link rel="canonical" href="https://anyplot.ai/plots" />
       </Helmet>
-      <Container maxWidth={false} sx={{ px: { xs: 2, sm: 4, md: 8, lg: 12, xl: 16 }, maxWidth: 1600, mx: 'auto' }}>
-      <NavBar searchInputRef={searchInputRef} />
 
       {error && (
         <Alert severity="error" sx={{ mb: 4, maxWidth: 500, mx: 'auto' }}>
@@ -209,9 +216,6 @@ export function PlotsPage() {
           No plots match these filters.
         </Alert>
       )}
-
-      <Footer onTrackEvent={trackEvent} selectedSpec={selectedSpec} selectedLibrary={selectedLibrary} />
-      </Container>
 
       <Fab
         size="small"

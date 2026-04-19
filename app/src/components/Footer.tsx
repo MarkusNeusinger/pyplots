@@ -32,7 +32,14 @@ const linkSx = {
   },
 } as const;
 
+const ISSUE_CHOOSER_URL = `${GITHUB_URL}/issues/new/choose`;
+
 export function Footer({ onTrackEvent, selectedSpec, selectedLibrary }: FooterProps) {
+  const track = (destination: string) => () =>
+    onTrackEvent?.('external_link', { destination, spec: selectedSpec, library: selectedLibrary });
+  const trackInternal = (destination: string) => () =>
+    onTrackEvent?.('internal_link', { destination, spec: selectedSpec, library: selectedLibrary });
+
   return (
     <Box component="footer" sx={{
       mt: 4,
@@ -41,6 +48,7 @@ export function Footer({ onTrackEvent, selectedSpec, selectedLibrary }: FooterPr
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
+      flexWrap: 'wrap',
       gap: 1,
       fontSize: fontSize.md,
       fontFamily: typography.mono,
@@ -51,28 +59,20 @@ export function Footer({ onTrackEvent, selectedSpec, selectedLibrary }: FooterPr
         href={GITHUB_URL}
         target="_blank"
         rel="noopener noreferrer"
-        onClick={() => onTrackEvent?.('external_link', { destination: 'github', spec: selectedSpec, library: selectedLibrary })}
+        onClick={track('github')}
         sx={linkSx}
       >
         github
       </Link>
       <span>·</span>
       <Link
-        component={RouterLink}
-        to="/plots"
-        onClick={() => onTrackEvent?.('internal_link', { destination: 'plots', spec: selectedSpec, library: selectedLibrary })}
+        href={ISSUE_CHOOSER_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={track('github_issue_chooser')}
         sx={linkSx}
       >
-        plots
-      </Link>
-      <span>·</span>
-      <Link
-        component={RouterLink}
-        to="/stats"
-        onClick={() => onTrackEvent?.('internal_link', { destination: 'stats', spec: selectedSpec, library: selectedLibrary })}
-        sx={linkSx}
-      >
-        stats
+        report
       </Link>
       <Box component="span" sx={{ display: { xs: 'none', md: 'contents' } }}>
         <span>·</span>
@@ -80,7 +80,7 @@ export function Footer({ onTrackEvent, selectedSpec, selectedLibrary }: FooterPr
           href="https://www.linkedin.com/in/markus-neusinger/"
           target="_blank"
           rel="noopener noreferrer"
-          onClick={() => onTrackEvent?.('external_link', { destination: 'linkedin', spec: selectedSpec, library: selectedLibrary })}
+          onClick={track('linkedin')}
           sx={linkSx}
         >
           markus neusinger
@@ -89,17 +89,17 @@ export function Footer({ onTrackEvent, selectedSpec, selectedLibrary }: FooterPr
       <span>·</span>
       <Link
         component={RouterLink}
-        to="/mcp"
-        onClick={() => onTrackEvent?.('internal_link', { destination: 'mcp', spec: selectedSpec, library: selectedLibrary })}
+        to="/about"
+        onClick={trackInternal('about')}
         sx={linkSx}
       >
-        mcp
+        about
       </Link>
       <span>·</span>
       <Link
         component={RouterLink}
         to="/legal"
-        onClick={() => onTrackEvent?.('internal_link', { destination: 'legal', spec: selectedSpec, library: selectedLibrary })}
+        onClick={trackInternal('legal')}
         sx={linkSx}
       >
         legal

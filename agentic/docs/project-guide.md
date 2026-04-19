@@ -94,9 +94,20 @@ uv run ruff check <files> && uv run ruff format <files>
 ```bash
 cd app
 yarn install
-yarn dev          # Development server
-yarn build        # Production build
+yarn dev               # Development server
+yarn tsc --noEmit      # Type-check only (catches TS6133 unused vars etc.)
+yarn build             # Production build (runs tsc + vite build)
 ```
+
+**IMPORTANT: Run `yarn tsc --noEmit` (or `yarn build`) before committing frontend changes.**
+Vite's HMR dev server is permissive — it does NOT fail on unused variables, unused imports,
+or other TS strict errors. Cloud Build runs `tsc && vite build` and will fail on any TS6133
+("declared but never read") errors. Catching these locally before `git push` saves a Cloud
+Build round-trip. Common traps:
+
+- Removing a prop's usage from a component body but forgetting to remove it from `XxxProps`
+- Removing a feature (e.g. color accents) but leaving the import (`import { colors }`)
+- Changing a hook's shape and leaving a now-unused destructured name
 
 ## Architecture
 

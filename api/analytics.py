@@ -139,6 +139,7 @@ def track_og_image(
     request: Request,
     page: str,
     spec: str | None = None,
+    language: str | None = None,
     library: str | None = None,
     filters: dict[str, str] | None = None,
 ) -> None:
@@ -150,6 +151,7 @@ def track_og_image(
         request: FastAPI request for headers
         page: Page type ('home', 'plots', 'spec_overview', 'spec_detail')
         spec: Spec ID (optional)
+        language: Language slug (optional) — e.g. "python"
         library: Library ID (optional)
         filters: Query params for filtered home page (e.g., {'lib': 'plotly', 'dom': 'statistics'})
     """
@@ -157,15 +159,17 @@ def track_og_image(
     client_ip = request.headers.get("x-forwarded-for", request.client.host if request.client else "")
     platform = detect_platform(user_agent)
 
-    # Build URL based on page type
+    # Build URL based on page type. Spec routes follow /{spec}/{language}/{library}.
     if page == "home":
         url = "https://anyplot.ai/"
     elif page == "plots":
         url = "https://anyplot.ai/plots"
-    elif spec is not None and library:
-        url = f"https://anyplot.ai/python/{spec}/{library}"
+    elif spec is not None and language and library:
+        url = f"https://anyplot.ai/{spec}/{language}/{library}"
+    elif spec is not None and language:
+        url = f"https://anyplot.ai/{spec}/{language}"
     elif spec is not None:
-        url = f"https://anyplot.ai/python/{spec}"
+        url = f"https://anyplot.ai/{spec}"
     else:
         # Fallback: missing spec for a spec-based page
         url = "https://anyplot.ai/"
@@ -173,6 +177,8 @@ def track_og_image(
     props: dict[str, str] = {"page": page, "platform": platform}
     if spec:
         props["spec"] = spec
+    if language:
+        props["language"] = language
     if library:
         props["library"] = library
     if filters:

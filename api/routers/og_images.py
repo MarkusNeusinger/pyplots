@@ -103,7 +103,7 @@ async def get_branded_impl_image(
     Returns a 1200x630 PNG with anyplot.ai header and the plot image.
     """
     # Track og:image request (fire-and-forget)
-    track_og_image(request, page="spec_detail", spec=spec_id, library=library)
+    track_og_image(request, page="spec_detail", spec=spec_id, language=language, library=library)
 
     # Check cache first
     key = cache_key("og", spec_id, language, library)

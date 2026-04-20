@@ -17,6 +17,7 @@ interface RelatedSpec {
   title: string;
   preview_url: string | null;
   library_id: string | null;
+  language: string | null;
   similarity: number;
   shared_tags: string[];
 }
@@ -119,7 +120,7 @@ export function RelatedSpecs({ specId, mode = 'spec', library, onHoverTags }: Re
           <Link
             key={spec.id}
             component={RouterLink}
-            to={mode === 'full' && spec.library_id ? specPath(spec.id, spec.library_id) : specPath(spec.id)}
+            to={mode === 'full' && spec.library_id && spec.language ? specPath(spec.id, spec.language, spec.library_id) : specPath(spec.id)}
             onMouseEnter={() => onHoverTags?.(spec.shared_tags)}
             onMouseLeave={() => onHoverTags?.([])}
             sx={{

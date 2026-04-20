@@ -286,6 +286,17 @@ jobs:
             exit 1
           fi
 
+          # Reserved spec slugs collide with top-level frontend routes.
+          # Keep this list in sync with `RESERVED_TOP_LEVEL` in app/src/utils/paths.ts.
+          RESERVED_SLUGS=(plots specs libraries palette about legal mcp stats debug api og sitemap.xml robots.txt)
+          for reserved in "${RESERVED_SLUGS[@]}"; do
+            if [[ "$SPEC_ID" == "$reserved" ]]; then
+              echo "::error::Spec ID '$SPEC_ID' collides with reserved top-level route. Choose a different slug."
+              gh issue comment ${{ github.event.issue.number }} --body "**Error:** Generated spec ID \`${SPEC_ID}\` collides with a reserved top-level route. Please rename the issue with a more specific title and re-trigger."
+              exit 1
+            fi
+          done
+
           echo "specification_id=$SPEC_ID" >> $GITHUB_OUTPUT
           echo "branch=specification/$SPEC_ID" >> $GITHUB_OUTPUT
         env:

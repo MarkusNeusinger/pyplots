@@ -118,8 +118,7 @@ export function PlotsPage() {
       }
       saveScrollPosition();
       const specId = img.spec_id || '';
-      const library = img.library;
-      navigate(specPath(specId, library));
+      navigate(specPath(specId, img.language, img.library));
     },
     [navigate, saveScrollPosition]
   );

@@ -1,4 +1,5 @@
 import { useCallback, useRef, useMemo } from "react";
+import { RESERVED_TOP_LEVEL } from "../utils/paths";
 
 interface EventProps {
   [key: string]: string | undefined;
@@ -23,9 +24,13 @@ function buildPlausibleUrl(): string {
   const params = new URLSearchParams(window.location.search);
   const segments: string[] = [];
 
-  // Detect language prefix from current path (e.g. /python/)
+  // Preserve the current spec/language/library path prefix if present.
+  // For routes like /:specId/:language[/:library] we keep the full pathname so
+  // filter segments are appended after it. Reserved top-level routes use no prefix.
   const pathname = window.location.pathname;
-  const langPrefix = pathname.startsWith("/python") ? "/python" : "";
+  const parts = pathname.split("/").filter(Boolean);
+  const pathPrefix =
+    parts.length > 0 && !RESERVED_TOP_LEVEL.has(parts[0]) ? `/${parts.join("/")}` : "";
 
   // Definierte Reihenfolge der Filter-Kategorien (inkl. impl-level tags)
   const orderedKeys = [
@@ -54,8 +59,8 @@ function buildPlausibleUrl(): string {
   }
 
   return segments.length > 0
-    ? `https://anyplot.ai${langPrefix}/${segments.join("/")}`
-    : `https://anyplot.ai${langPrefix || "/"}`;
+    ? `https://anyplot.ai${pathPrefix}/${segments.join("/")}`
+    : `https://anyplot.ai${pathPrefix || "/"}`;
 }
 
 export function useAnalytics() {

@@ -68,6 +68,7 @@ class TopImpl(BaseModel):
     spec_id: str
     spec_title: str
     library_id: str
+    language: str
     quality_score: float
     preview_url: str | None = None
 
@@ -105,6 +106,7 @@ class PlotOfTheDayResponse(BaseModel):
     description: str | None = None
     library_id: str
     library_name: str
+    language: str
     quality_score: float
     preview_url: str | None = None
     image_description: str | None = None
@@ -121,6 +123,7 @@ class RelatedSpecItem(BaseModel):
     title: str
     preview_url: str | None = None
     library_id: str | None = None
+    language: str | None = None
     similarity: float
     shared_tags: list[str]
 
@@ -253,6 +256,7 @@ async def _build_dashboard(repo: SpecRepository, impl_repo: ImplRepository) -> D
                             spec_id=spec.id,
                             spec_title=spec.title,
                             library_id=lib_id,
+                            language=impl.library.language if impl.library else "python",
                             quality_score=score,
                             preview_url=impl.preview_url,
                         )
@@ -370,12 +374,13 @@ async def _build_potd(spec_repo: SpecRepository, impl_repo: ImplRepository) -> P
     today = date.today().isoformat()
 
     # Collect candidates: implementations with quality_score >= 90 (lightweight, no code loaded)
-    candidates: list[tuple[str, str, str, str, float, str]] = []
+    candidates: list[tuple[str, str, str, str, str, float, str]] = []
     for spec in all_specs:
         for impl in spec.impls:
             if impl.quality_score is not None and impl.quality_score >= 90 and impl.preview_url:
+                language = impl.library.language if impl.library else "python"
                 candidates.append(
-                    (spec.id, spec.title, spec.description or "", impl.library_id, impl.quality_score, impl.preview_url)
+                    (spec.id, spec.title, spec.description or "", impl.library_id, language, impl.quality_score, impl.preview_url)
                 )
 
     if not candidates:
@@ -384,7 +389,7 @@ async def _build_potd(spec_repo: SpecRepository, impl_repo: ImplRepository) -> P
     # Deterministic selection based on date
     seed = int(hashlib.md5(today.encode()).hexdigest(), 16)  # noqa: S324
     idx = seed % len(candidates)
-    spec_id, spec_title, description, library_id, quality_score, preview_url = candidates[idx]
+    spec_id, spec_title, description, library_id, language, quality_score, preview_url = candidates[idx]
 
     # Load deferred fields (code, image_description) for just this one impl
     full_impl = await impl_repo.get_by_spec_and_library(spec_id, library_id)
@@ -395,6 +400,7 @@ async def _build_potd(spec_repo: SpecRepository, impl_repo: ImplRepository) -> P
         description=description,
         library_id=library_id,
         library_name=LIBRARY_NAMES.get(library_id, library_id),
+        language=language,
         quality_score=quality_score,
         preview_url=preview_url,
         image_description=full_impl.review_image_description if full_impl else None,
@@ -518,6 +524,7 @@ async def _build_related(
                 title=spec.title,
                 preview_url=best_impl.preview_url if best_impl else None,
                 library_id=best_impl.library_id if best_impl else None,
+                language=(best_impl.library.language if best_impl and best_impl.library else None),
                 similarity=round(similarity, 3),
                 shared_tags=shared_tags,
             )

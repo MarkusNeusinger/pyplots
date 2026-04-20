@@ -14,6 +14,7 @@ class ImplementationResponse(BaseModel):
 
     library_id: str
     library_name: str
+    language: str
     preview_url: str | None = None
     preview_html: str | None = None
     quality_score: float | None = None
@@ -106,6 +107,7 @@ class LibraryInfo(BaseModel):
 
     id: str
     name: str
+    language: str
     version: str | None = None
     documentation_url: str | None = None
     description: str | None = None

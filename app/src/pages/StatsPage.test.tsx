@@ -48,6 +48,7 @@ const mockDashboard = {
       spec_id: 'scatter-basic',
       spec_title: 'Basic Scatter Plot',
       library_id: 'matplotlib',
+      language: 'python',
       quality_score: 95,
       preview_url: 'https://example.com/img.png',
     },

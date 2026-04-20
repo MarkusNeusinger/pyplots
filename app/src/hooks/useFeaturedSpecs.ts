@@ -5,6 +5,7 @@ export interface FeaturedImpl {
   spec_id: string;
   spec_title: string;
   library_id: string;
+  language: string;
   quality_score: number;
   preview_url: string | null;
 }

@@ -6,6 +6,7 @@ export interface PlotOfTheDayData {
   spec_title: string;
   library_id: string;
   library_name: string;
+  language: string;
   preview_url: string | null;
   description?: string | null;
   image_description?: string | null;

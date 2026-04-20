@@ -69,6 +69,7 @@ class Library(Base):
 
     id: Mapped[str] = mapped_column(String, primary_key=True)  # e.g., "matplotlib"
     name: Mapped[str] = mapped_column(String, nullable=False)  # e.g., "Matplotlib"
+    language: Mapped[str] = mapped_column(String(50), nullable=False, default="python")  # e.g., "python", "julia", "r"
     version: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # Current version
     documentation_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Short description

@@ -18,6 +18,7 @@ interface PlotOfTheDayData {
   description: string | null;
   library_id: string;
   library_name: string;
+  language: string;
   quality_score: number;
   preview_url: string | null;
   image_description: string | null;
@@ -126,7 +127,7 @@ export function PlotOfTheDay() {
           {/* Image */}
           <Link
             component={RouterLink}
-            to={specPath(data.spec_id, data.library_id)}
+            to={specPath(data.spec_id, data.language, data.library_id)}
             sx={{
               display: 'block',
               textDecoration: 'none',
@@ -182,7 +183,7 @@ export function PlotOfTheDay() {
             {/* Title */}
             <Link
               component={RouterLink}
-              to={specPath(data.spec_id, data.library_id)}
+              to={specPath(data.spec_id, data.language, data.library_id)}
               sx={{
                 textDecoration: 'none',
                 color: colors.gray[800],

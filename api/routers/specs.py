@@ -93,6 +93,7 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(require_db)):
         ImplementationResponse(
             library_id=impl.library_id,
             library_name=impl.library.name if impl.library else impl.library_id,
+            language=impl.library.language if impl.library else "python",
             preview_url=impl.preview_url,
             preview_html=impl.preview_html,
             quality_score=impl.quality_score,

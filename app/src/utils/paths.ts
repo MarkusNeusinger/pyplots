@@ -1,13 +1,38 @@
-const LANG_PREFIX = '/python';
-
-export function specPath(specId: string, library?: string): string {
-  return library ? `${LANG_PREFIX}/${specId}/${library}` : `${LANG_PREFIX}/${specId}`;
+/**
+ * URL builder for spec/language/library pages.
+ *
+ *   /{specId}                       Cross-language hub
+ *   /{specId}/{language}            Language overview
+ *   /{specId}/{language}/{library}  Implementation detail
+ */
+export function specPath(specId: string, language?: string, library?: string): string {
+  if (language && library) return `/${specId}/${language}/${library}`;
+  if (language) return `/${specId}/${language}`;
+  return `/${specId}`;
 }
 
-export function interactivePath(specId: string, library: string): string {
-  return `${LANG_PREFIX}/interactive/${specId}/${library}`;
-}
+/** Reserved top-level paths that must never be assigned as spec ids. */
+export const RESERVED_TOP_LEVEL = new Set([
+  'plots',
+  'specs',
+  'libraries',
+  'palette',
+  'about',
+  'legal',
+  'mcp',
+  'stats',
+  'debug',
+  'sitemap.xml',
+  'robots.txt',
+]);
 
-export function langPrefix(): string {
-  return LANG_PREFIX;
+/**
+ * Parse the language segment from a pathname, returns undefined if not present
+ * or if the first segment is reserved.
+ */
+export function langFromPath(pathname: string): string | undefined {
+  const segments = pathname.split('/').filter(Boolean);
+  if (segments.length < 2) return undefined;
+  if (RESERVED_TOP_LEVEL.has(segments[0])) return undefined;
+  return segments[1];
 }

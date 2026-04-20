@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -34,9 +34,12 @@ interface SpecDetail {
   implementations: Implementation[];
 }
 
+type Mode = 'hub' | 'language' | 'detail';
+
 export function SpecPage() {
-  const { specId, library: urlLibrary } = useParams();
+  const { specId, language: urlLanguage, library: urlLibrary } = useParams();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { trackPageview, trackEvent } = useAnalytics();
   const { librariesData } = useAppData();
 
@@ -50,15 +53,13 @@ export function SpecPage() {
   const [highlightedTags, setHighlightedTags] = useState<string[]>([]);
   const { fetchCode, getCode } = useCodeFetch();
 
-  // Get library metadata by ID
+  const mode: Mode = urlLibrary ? 'detail' : urlLanguage ? 'language' : 'hub';
+  const selectedLibrary = urlLibrary || null;
+
   const getLibraryMeta = useCallback(
     (libraryId: string) => librariesData.find((lib) => lib.id === libraryId),
     [librariesData]
   );
-
-  // Mode: overview (no library) vs detail (with library)
-  const isOverviewMode = !urlLibrary;
-  const selectedLibrary = urlLibrary || null;
 
   // Fetch spec data
   useEffect(() => {
@@ -80,9 +81,20 @@ export function SpecPage() {
         const data: SpecDetail = await res.json();
         setSpecData(data);
 
-        // Validate library if provided
-        if (urlLibrary && !data.implementations.some((impl) => impl.library_id === urlLibrary)) {
+        // Validate language matches at least one impl
+        if (urlLanguage && !data.implementations.some((i) => i.language === urlLanguage)) {
           navigate(specPath(specId!), { replace: true });
+          return;
+        }
+
+        // Validate library matches an impl in the requested language
+        if (urlLibrary && urlLanguage) {
+          const matched = data.implementations.find(
+            (i) => i.library_id === urlLibrary && i.language === urlLanguage,
+          );
+          if (!matched) {
+            navigate(specPath(specId!, urlLanguage), { replace: true });
+          }
         }
       } catch (err) {
         console.error('Error fetching spec:', err);
@@ -93,7 +105,19 @@ export function SpecPage() {
     };
 
     fetchSpec();
-  }, [specId, urlLibrary, navigate]);
+  }, [specId, urlLanguage, urlLibrary, navigate]);
+
+  // Implementations for the selected language (used in language + detail modes)
+  const langImpls = useMemo(() => {
+    if (!specData || !urlLanguage) return specData?.implementations || [];
+    return specData.implementations.filter((i) => i.language === urlLanguage);
+  }, [specData, urlLanguage]);
+
+  // Languages present in this spec (for hub mode)
+  const availableLanguages = useMemo(() => {
+    if (!specData) return [];
+    return Array.from(new Set(specData.implementations.map((i) => i.language))).sort();
+  }, [specData]);
 
   // Get current implementation (only in detail mode)
   const currentImpl = useMemo(() => {
@@ -108,24 +132,42 @@ export function SpecPage() {
     }
   }, [specId, selectedLibrary, fetchCode]);
 
-  // Get code from cache (populated by prefetch or on-demand)
   const currentCode = specId && selectedLibrary ? getCode(specId, selectedLibrary) : null;
 
   // Handle library switch (in detail mode)
   const handleLibrarySelect = useCallback(
     (libraryId: string) => {
+      if (!specId || !urlLanguage) return;
       setImageLoaded(false);
-      navigate(specPath(specId!, libraryId), { replace: true });
+      navigate(specPath(specId, urlLanguage, libraryId), { replace: true });
     },
-    [specId, navigate]
+    [specId, urlLanguage, navigate]
   );
 
-  // Handle implementation click (in overview mode)
+  // Handle implementation click (in language overview)
   const handleImplClick = useCallback(
     (libraryId: string) => {
-      navigate(specPath(specId!, libraryId));
+      if (!specId) return;
+      const impl = specData?.implementations.find((i) => i.library_id === libraryId);
+      const lang = impl?.language || urlLanguage;
+      if (!lang) return;
+      navigate(specPath(specId, lang, libraryId));
     },
-    [specId, navigate]
+    [specId, urlLanguage, specData, navigate]
+  );
+
+  // Interactive view mode (driven by ?view=interactive)
+  const viewMode: 'preview' | 'interactive' =
+    searchParams.get('view') === 'interactive' ? 'interactive' : 'preview';
+
+  const handleViewModeChange = useCallback(
+    (next: 'preview' | 'interactive') => {
+      const params = new URLSearchParams(searchParams);
+      if (next === 'interactive') params.set('view', 'interactive');
+      else params.delete('view');
+      setSearchParams(params, { replace: true });
+    },
+    [searchParams, setSearchParams],
   );
 
   // Handle download
@@ -145,13 +187,12 @@ export function SpecPage() {
       trackEvent('download_image', {
         spec: specId,
         library: impl.library_id,
-        page: isOverviewMode ? 'spec_overview' : 'spec_detail',
+        page: mode === 'detail' ? 'spec_detail' : mode === 'language' ? 'spec_language' : 'spec_hub',
       });
     },
-    [specId, trackEvent, isOverviewMode],
+    [specId, trackEvent, mode],
   );
 
-  // Handle copy code (fetches on-demand if not prefetched yet)
   const handleCopyCode = useCallback(
     async (impl: Implementation) => {
       try {
@@ -163,17 +204,16 @@ export function SpecPage() {
           spec: specId,
           library: impl.library_id,
           method: 'image',
-          page: isOverviewMode ? 'spec_overview' : 'spec_detail',
+          page: mode === 'detail' ? 'spec_detail' : mode === 'language' ? 'spec_language' : 'spec_hub',
         });
         setTimeout(() => setCodeCopied(null), 2000);
       } catch (err) {
         console.error('Copy failed:', err);
       }
     },
-    [specId, trackEvent, isOverviewMode, fetchCode]
+    [specId, trackEvent, mode, fetchCode]
   );
 
-  // Build report issue URL
   const buildReportUrl = useCallback(() => {
     const params = new URLSearchParams({
       template: 'report-plot-issue.yml',
@@ -184,23 +224,20 @@ export function SpecPage() {
 
   // Track page view
   useEffect(() => {
-    if (specData) {
-      if (isOverviewMode) {
-        trackPageview(`/python/${specId}`);
-      } else if (selectedLibrary) {
-        trackPageview(`/python/${specId}/${selectedLibrary}`);
-      }
-    }
-  }, [specData, isOverviewMode, selectedLibrary, specId, trackPageview]);
+    if (!specData || !specId) return;
+    if (mode === 'hub') trackPageview(`/${specId}`);
+    else if (mode === 'language') trackPageview(`/${specId}/${urlLanguage}`);
+    else if (mode === 'detail' && selectedLibrary) trackPageview(`/${specId}/${urlLanguage}/${selectedLibrary}`);
+  }, [specData, mode, specId, urlLanguage, selectedLibrary, trackPageview]);
 
   // Keyboard shortcuts: left/right arrows switch libraries in detail mode
   useEffect(() => {
-    if (isOverviewMode || !specData) return;
+    if (mode !== 'detail' || !specData) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
       if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') return;
-      const sorted = [...specData.implementations].sort((a, b) => a.library_id.localeCompare(b.library_id));
+      const sorted = [...langImpls].sort((a, b) => a.library_id.localeCompare(b.library_id));
       const idx = sorted.findIndex((impl) => impl.library_id === selectedLibrary);
       if (idx < 0) return;
 
@@ -217,7 +254,7 @@ export function SpecPage() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOverviewMode, specData, selectedLibrary, handleLibrarySelect]);
+  }, [mode, specData, langImpls, selectedLibrary, handleLibrarySelect]);
 
   // Loading state
   if (loading) {
@@ -233,7 +270,6 @@ export function SpecPage() {
     );
   }
 
-  // Error state
   if (error === 'Spec not found' || (!error && !specData)) {
     return <NotFoundPage />;
   }
@@ -250,33 +286,34 @@ export function SpecPage() {
     );
   }
 
-  // After loading/error/not-found guards, specData is guaranteed to be non-null
   if (!specData) return null;
+
+  const canonical =
+    mode === 'detail'
+      ? `https://anyplot.ai/${specId}/${urlLanguage}/${selectedLibrary}`
+      : mode === 'language'
+        ? `https://anyplot.ai/${specId}/${urlLanguage}`
+        : `https://anyplot.ai/${specId}`;
+
+  const titleSuffix =
+    mode === 'detail' ? ` - ${selectedLibrary}` : mode === 'language' ? ` - ${urlLanguage}` : '';
+
+  // Implementations to render in the grid: language mode → only that lang; hub → all
+  const gridImpls = mode === 'hub' ? specData.implementations : langImpls;
 
   return (
     <>
       <Helmet>
-        <title>
-          {isOverviewMode ? `${specData.title} | anyplot.ai` : `${specData.title} - ${selectedLibrary} | anyplot.ai`}
-        </title>
+        <title>{`${specData.title}${titleSuffix} | anyplot.ai`}</title>
         <meta name="description" content={specData.description} />
-        <meta
-          property="og:title"
-          content={
-            isOverviewMode ? `${specData.title} | anyplot.ai` : `${specData.title} - ${selectedLibrary} | anyplot.ai`
-          }
-        />
+        <meta property="og:title" content={`${specData.title}${titleSuffix} | anyplot.ai`} />
         <meta property="og:description" content={specData.description} />
         {currentImpl?.preview_url && <meta property="og:image" content={currentImpl.preview_url} />}
-        <meta
-          property="og:url"
-          content={isOverviewMode ? `https://anyplot.ai/python/${specId}` : `https://anyplot.ai/python/${specId}/${selectedLibrary}`}
-        />
-        <link rel="canonical" href={isOverviewMode ? `https://anyplot.ai/python/${specId}` : `https://anyplot.ai/python/${specId}/${selectedLibrary}`} />
+        <meta property="og:url" content={canonical} />
+        <link rel="canonical" href={canonical} />
       </Helmet>
 
       <Box sx={{ pb: 4 }}>
-        {/* Page-action row — report issue is contextual (prefilled with spec/lib) */}
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
           <Box
             component="a"
@@ -296,7 +333,6 @@ export function SpecPage() {
           </Box>
         </Box>
 
-        {/* Title */}
         <Typography
           variant="h4"
           component="h1"
@@ -312,7 +348,6 @@ export function SpecPage() {
           {specData.title}
         </Typography>
 
-        {/* Description */}
         <Typography
           onClick={() => !descExpanded && setDescExpanded(true)}
           sx={{
@@ -337,14 +372,25 @@ export function SpecPage() {
           {specData.description}
         </Typography>
 
+        {mode === 'hub' && availableLanguages.length === 1 && (
+          <Box sx={{ textAlign: 'center', mb: 3 }}>
+            <Typography sx={{
+              fontFamily: typography.mono,
+              fontSize: fontSize.sm,
+              color: semanticColors.mutedText,
+            }}>
+              currently available in {availableLanguages[0]} · more languages coming
+            </Typography>
+          </Box>
+        )}
+
         <Suspense fallback={<Box sx={{ minHeight: 400 }} />}>
-        {isOverviewMode ? (
-          /* OVERVIEW MODE */
+        {mode !== 'detail' ? (
           <>
             <SpecOverview
               specId={specId || ''}
               specTitle={specData.title}
-              implementations={specData.implementations}
+              implementations={gridImpls}
               codeCopied={codeCopied}
               downloadDone={downloadDone}
               openTooltip={openTooltip}
@@ -379,16 +425,15 @@ export function SpecPage() {
             />
           </>
         ) : (
-          /* DETAIL MODE */
           <>
             <LibraryPills
-              implementations={specData.implementations}
+              implementations={langImpls}
               selectedLibrary={selectedLibrary || ''}
               onSelect={handleLibrarySelect}
             />
 
             <Box sx={{ textAlign: 'center', mt: -0.5, mb: 1 }}>
-              <Box component={Link} to={specPath(specId!)} sx={{
+              <Box component={Link} to={specPath(specId!, urlLanguage)} sx={{
                 fontFamily: typography.fontFamily,
                 fontSize: fontSize.sm,
                 color: semanticColors.mutedText,
@@ -404,10 +449,12 @@ export function SpecPage() {
               specTitle={specData.title}
               selectedLibrary={selectedLibrary || ''}
               currentImpl={currentImpl}
-              implementations={specData.implementations}
+              implementations={langImpls}
               imageLoaded={imageLoaded}
               codeCopied={codeCopied}
               downloadDone={downloadDone}
+              viewMode={viewMode}
+              onViewModeChange={handleViewModeChange}
               onImageLoad={() => setImageLoaded(true)}
               onCopyCode={handleCopyCode}
               onDownload={handleDownload}
@@ -441,7 +488,7 @@ export function SpecPage() {
         )}
         </Suspense>
 
-        <RelatedSpecs specId={specId!} mode={isOverviewMode ? 'spec' : 'full'} library={selectedLibrary || undefined} onHoverTags={setHighlightedTags} />
+        <RelatedSpecs specId={specId!} mode={mode === 'detail' ? 'full' : 'spec'} library={selectedLibrary || undefined} onHoverTags={setHighlightedTags} />
       </Box>
     </>
   );

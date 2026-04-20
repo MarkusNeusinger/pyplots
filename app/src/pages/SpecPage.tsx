@@ -171,6 +171,17 @@ export function SpecPage() {
     [searchParams, setSearchParams],
   );
 
+  // Keep URL in sync with what's actually rendered: if interactive is requested
+  // but the current impl has no preview_html, we fall back to the static preview
+  // — drop the query param so shareable URLs reflect the visible state.
+  useEffect(() => {
+    if (viewMode === 'interactive' && currentImpl && !currentImpl.preview_html) {
+      const params = new URLSearchParams(searchParams);
+      params.delete('view');
+      setSearchParams(params, { replace: true });
+    }
+  }, [viewMode, currentImpl, searchParams, setSearchParams]);
+
   // Handle download
   const [downloadDone, setDownloadDone] = useState<string | null>(null);
 

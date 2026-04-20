@@ -134,10 +134,9 @@ class SpecRepository(BaseRepository[Spec]):
 
     async def get_all_with_code(self) -> list[Spec]:
         """Get all specs with implementations (code + library eager-loaded)."""
+        impls_loader = selectinload(Spec.impls)
         result = await self.session.execute(
-            select(Spec).options(
-                selectinload(Spec.impls).selectinload(Impl.library), selectinload(Spec.impls).undefer(Impl.code)
-            )
+            select(Spec).options(impls_loader.selectinload(Impl.library), impls_loader.undefer(Impl.code))
         )
         return list(result.scalars().all())
 

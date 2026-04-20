@@ -54,8 +54,14 @@ def _build_sitemap_xml(specs: list) -> str:
         languages = sorted({impl.library.language for impl in spec.impls if impl.library})
         for language in languages:
             language_esc = html.escape(language)
+            language_updates = [
+                impl.updated
+                for impl in spec.impls
+                if impl.library and impl.library.language == language and impl.updated is not None
+            ]
+            language_lastmod = max(language_updates) if language_updates else spec.updated
             xml_lines.append(
-                f"  <url><loc>https://anyplot.ai/{spec_id}/{language_esc}</loc>{_lastmod(spec.updated)}</url>"
+                f"  <url><loc>https://anyplot.ai/{spec_id}/{language_esc}</loc>{_lastmod(language_lastmod)}</url>"
             )
         for impl in spec.impls:
             if not impl.library:

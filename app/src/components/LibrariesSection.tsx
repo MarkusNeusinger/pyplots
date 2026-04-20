@@ -33,14 +33,14 @@ export function LibrariesSection({
         <SectionHeader
           prompt="❯"
           title={<em>libraries</em>}
-          linkText="view all"
+          linkText="libraries.all()"
           linkTo="/plots"
         />
       ) : (
         <SectionHeader
           number="§ 01"
           title={<>The <em>libraries</em></>}
-          linkText="view all"
+          linkText="libraries.all()"
           linkTo="/plots"
         />
       )}

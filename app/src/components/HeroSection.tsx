@@ -35,7 +35,7 @@ export function HeroSection({ potd = null }: HeroSectionProps) {
             fontFamily: typography.mono,
             fontSize: '11px',
             letterSpacing: '0.08em',
-            color: colors.primary,
+            color: 'var(--ink-muted)',
             mb: 3,
             display: 'flex',
             alignItems: 'center',
@@ -45,7 +45,7 @@ export function HeroSection({ potd = null }: HeroSectionProps) {
               display: 'inline-block',
               width: 18,
               height: '1px',
-              background: colors.primary,
+              background: 'var(--rule)',
             },
           }}
         >
@@ -166,6 +166,17 @@ export function HeroSection({ potd = null }: HeroSectionProps) {
           }}
         >
           <PrimaryCta to="/plots" subject="plots" verb="browse" ariaLabel="Browse plots" />
+          <Box
+            aria-hidden="true"
+            sx={{
+              fontFamily: typography.mono,
+              fontSize: '13px',
+              color: 'var(--ink-muted)',
+              userSelect: 'none',
+            }}
+          >
+            ||
+          </Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
             <SecondaryLink to="/mcp" subject="mcp" verb="connect" ariaLabel="Connect via MCP" />
             <SecondaryLink href="https://github.com/MarkusNeusinger/anyplot" subject="github" verb="clone" ariaLabel="Clone on GitHub" external />
@@ -245,12 +256,12 @@ function SecondaryLink({
         fontFamily: typography.mono,
         fontSize: '13px',
         color: 'var(--ink-soft)',
-        display: 'inline-flex',
+        display: 'flex',
         alignItems: 'center',
         gap: 0.5,
         transition: 'color 0.2s',
         '& .link-subject': { opacity: 0.7, transition: 'opacity 0.2s' },
-        '& .arrow': { transition: 'transform 0.2s' },
+        '& .arrow': { ml: 'auto', pl: 1, transition: 'transform 0.2s' },
         '&:hover': { color: colors.primary },
         '&:hover .link-subject': { opacity: 1 },
         '&:hover .arrow': { transform: 'translateX(3px)' },
@@ -261,7 +272,7 @@ function SecondaryLink({
         <Box component="span" className="link-subject">{subject}</Box>
         {`.${verb}()`}
       </Box>
-      &nbsp;<Box component="span" className="arrow">→</Box>
+      <Box component="span" className="arrow">→</Box>
     </Box>
   );
 }

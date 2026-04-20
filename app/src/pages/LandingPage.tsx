@@ -64,7 +64,7 @@ export function LandingPage() {
 function SpecsSection({ specCount, featured }: { specCount?: number; featured: FeaturedImpl[] | null }) {
   return (
     <Box sx={{ py: { xs: 6, md: 10 } }}>
-      <SectionHeader prompt="$" title={<em>specifications</em>} linkText="view all" linkTo="/specs" />
+      <SectionHeader prompt="$" title={<em>specifications</em>} linkText="specs.all()" linkTo="/specs" />
 
       <Box
         sx={{

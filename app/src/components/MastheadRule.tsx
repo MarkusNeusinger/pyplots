@@ -1,9 +1,38 @@
+import { useState } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import { typography, colors } from '../theme';
 import { ThemeToggle } from './ThemeToggle';
 import { useTheme, useLatestRelease } from '../hooks';
 import { RESERVED_TOP_LEVEL } from '../utils/paths';
+
+// Symmetric block-comment delimiters used when no language context is in the URL.
+// One is picked on mount so each page load reveals a different classic.
+const COMMENT_POOL = [
+  { open: '"""', close: '"""' },       // python docstring
+  { open: '/*', close: '*/' },         // js / c / rust / css / go
+  { open: '<!--', close: '-->' },      // html
+  { open: '{-', close: '-}' },         // haskell
+  { open: '(*', close: '*)' },         // ocaml / fsharp
+  { open: '--[[', close: ']]' },       // lua
+] as const;
+
+// When the URL carries a language segment, use its native block-comment style instead.
+const LANG_DELIM: Record<string, { open: string; close: string }> = {
+  python: { open: '"""', close: '"""' },
+  javascript: { open: '/*', close: '*/' },
+  typescript: { open: '/*', close: '*/' },
+  rust: { open: '/*', close: '*/' },
+  go: { open: '/*', close: '*/' },
+  r: { open: '#', close: '#' },
+  julia: { open: '#=', close: '=#' },
+  ruby: { open: '=begin', close: '=end' },
+  haskell: { open: '{-', close: '-}' },
+  ocaml: { open: '(*', close: '*)' },
+  lua: { open: '--[[', close: ']]' },
+  html: { open: '<!--', close: '-->' },
+  css: { open: '/*', close: '*/' },
+};
 
 const REPO_URL = 'https://github.com/MarkusNeusinger/anyplot';
 
@@ -79,6 +108,27 @@ export function MastheadRule() {
   const isLanding = segments.length === 0;
   const version = releaseTag ?? 'v1.0';
 
+  // Pick one random comment style per browser session (stable across client-side nav).
+  const [randomIdx] = useState(() => Math.floor(Math.random() * COMMENT_POOL.length));
+
+  // Determine whether the center comment shows, what it says, and in which syntax.
+  // - Landing: random delim + brand claim
+  // - Spec routes (/:specId[/:language[/:library]]): random or language-matched delim,
+  //   content switches to spec-id (+ library if present) for contextual anchoring
+  // - Reserved pages (about, libraries, legal, …): hidden
+  const parts = location.pathname.split('/').filter(Boolean);
+  const isReserved = parts.length > 0 && RESERVED_TOP_LEVEL.has(parts[0]);
+  const isSpecRoute = parts.length > 0 && !isReserved;
+  const centerVisible = isLanding || isSpecRoute;
+
+  let centerContent = 'the open plot catalogue';
+  let centerDelim: { open: string; close: string } = COMMENT_POOL[randomIdx];
+  if (isSpecRoute) {
+    const [specId, language, library] = parts;
+    centerContent = library ? `${specId}.${library}` : specId;
+    if (language && LANG_DELIM[language]) centerDelim = LANG_DELIM[language];
+  }
+
   return (
     <Box sx={{
       display: 'grid',
@@ -142,9 +192,9 @@ export function MastheadRule() {
         px: 2,
         fontFeatureSettings: '"tnum"',
         textAlign: 'center',
-        display: { xs: 'none', md: isLanding ? 'block' : 'none' },
+        display: { xs: 'none', md: centerVisible ? 'block' : 'none' },
       }}>
-        // the open plot catalogue.
+        {`${centerDelim.open} ${centerContent} ${centerDelim.close}`}
       </Box>
 
       <Box sx={{

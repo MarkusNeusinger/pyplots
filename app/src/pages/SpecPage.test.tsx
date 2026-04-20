@@ -4,6 +4,8 @@ import { SpecPage } from './SpecPage';
 
 const mockNavigate = vi.fn();
 let mockParams: Record<string, string | undefined> = { specId: 'scatter-basic' };
+const mockSearchParams = new URLSearchParams();
+const mockSetSearchParams = vi.fn();
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
@@ -11,6 +13,7 @@ vi.mock('react-router-dom', async () => {
     ...actual,
     useParams: () => mockParams,
     useNavigate: () => mockNavigate,
+    useSearchParams: () => [mockSearchParams, mockSetSearchParams],
   };
 });
 
@@ -25,8 +28,8 @@ vi.mock('../hooks', () => ({
   }),
   useAppData: () => ({
     librariesData: [
-      { id: 'matplotlib', name: 'Matplotlib' },
-      { id: 'seaborn', name: 'Seaborn' },
+      { id: 'matplotlib', name: 'Matplotlib', language: 'python' },
+      { id: 'seaborn', name: 'Seaborn', language: 'python' },
     ],
   }),
   useCodeFetch: () => ({
@@ -57,6 +60,7 @@ const mockSpecData = {
     {
       library_id: 'matplotlib',
       library_name: 'Matplotlib',
+      language: 'python',
       preview_url: 'https://example.com/scatter-basic/matplotlib/plot.png',
       quality_score: 8,
       code: null,
@@ -64,6 +68,7 @@ const mockSpecData = {
     {
       library_id: 'seaborn',
       library_name: 'Seaborn',
+      language: 'python',
       preview_url: 'https://example.com/scatter-basic/seaborn/plot.png',
       quality_score: 7,
       code: null,
@@ -148,7 +153,7 @@ describe('SpecPage', () => {
   });
 
   it('renders detail mode when library in URL params', async () => {
-    mockParams = { specId: 'scatter-basic', library: 'matplotlib' };
+    mockParams = { specId: 'scatter-basic', language: 'python', library: 'matplotlib' };
     mockFetchSuccess();
     render(<SpecPage />);
 

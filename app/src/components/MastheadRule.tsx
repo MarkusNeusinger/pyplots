@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import { typography, colors } from '../theme';
 import { ThemeToggle } from './ThemeToggle';
 import { useTheme, useLatestRelease } from '../hooks';
+import { RESERVED_TOP_LEVEL } from '../utils/paths';
 
 const REPO_URL = 'https://github.com/MarkusNeusinger/anyplot';
 
@@ -30,29 +31,36 @@ interface Segment {
  *
  * Routes covered:
  *   /<page>                                 → [<page>]
- *   /python/:specId                         → [python, specId(→/python/specId)]   wait — last is current, so no link
- *   /python/:specId/:library                → [python, specId(→/python/specId), library]
+ *   /:specId                                → [specId]
+ *   /:specId/:language                      → [specId(→/specId), language]
+ *   /:specId/:language/:library             → [specId(→/specId), language(→/specId/language), library]
  */
 function pathSegments(pathname: string): Segment[] {
   const parts = pathname.split('/').filter(Boolean);
   if (parts.length === 0) return [];
 
-  // /python/:specId(/:library)? — language prefix is informational, not navigable
-  if (parts[0] === 'python' && parts.length >= 2) {
-    const specId = parts[1];
-    const library = parts[2];
-    const segs: Segment[] = [{ label: 'python' }];
-    if (library) {
-      segs.push({ label: specId, to: `/python/${specId}` });
-      segs.push({ label: library });
-    } else {
-      segs.push({ label: specId });
-    }
-    return segs;
+  // Reserved top-level routes (single segment)
+  if (RESERVED_TOP_LEVEL.has(parts[0])) {
+    return [{ label: parts[0] }];
   }
 
-  // Single-segment top-level routes (specs, plots, libraries, palette, mcp, stats, about, legal)
-  return [{ label: parts[0] }];
+  // Spec routes: /:specId[/:language[/:library]]
+  const [specId, language, library] = parts;
+  const segs: Segment[] = [];
+  if (language) {
+    segs.push({ label: specId, to: `/${specId}` });
+  } else {
+    segs.push({ label: specId });
+  }
+  if (language) {
+    if (library) {
+      segs.push({ label: language, to: `/${specId}/${language}` });
+      segs.push({ label: library });
+    } else {
+      segs.push({ label: language });
+    }
+  }
+  return segs;
 }
 
 /**

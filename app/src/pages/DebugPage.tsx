@@ -115,7 +115,7 @@ const ScoreCell = ({ score, specId, library }: { score: number | null; specId: s
   return (
     <Box
       component={Link}
-      to={specPath(specId, library)}
+      to={specPath(specId, 'python', library)}
       sx={{ display: 'block', textDecoration: 'none', textAlign: 'center', '&:hover': { opacity: 0.7 } }}
     >
       <Typography sx={{ fontSize: fontSize.xs, fontFamily: typography.fontFamily, fontWeight: 600, color: getScoreColor(score) }}>

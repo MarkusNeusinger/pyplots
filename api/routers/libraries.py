@@ -26,6 +26,7 @@ async def _refresh_libraries() -> dict:
                 {
                     "id": lib.id,
                     "name": lib.name,
+                    "language": lib.language,
                     "version": lib.version,
                     "documentation_url": lib.documentation_url,
                     "description": lib.description,
@@ -53,6 +54,7 @@ async def get_libraries(db: AsyncSession | None = Depends(optional_db)):
                 {
                     "id": lib.id,
                     "name": lib.name,
+                    "language": lib.language,
                     "version": lib.version,
                     "documentation_url": lib.documentation_url,
                     "description": lib.description,

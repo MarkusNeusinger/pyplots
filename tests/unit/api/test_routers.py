@@ -71,6 +71,7 @@ def mock_spec():
     mock_impl.library_id = "matplotlib"
     mock_impl.library = MagicMock()
     mock_impl.library.name = "Matplotlib"
+    mock_impl.library.language = "python"
     mock_impl.preview_url = TEST_IMAGE_URL
     mock_impl.preview_html = None
     mock_impl.quality_score = 92.5
@@ -146,11 +147,14 @@ class TestStatsRouter:
         mock_lib_repo = MagicMock()
         mock_lib_repo.get_all = AsyncMock(return_value=[mock_lib])
 
+        mock_impl_repo = MagicMock()
+        mock_impl_repo.get_total_code_lines = AsyncMock(return_value=0)
+
         with (
             patch("api.routers.stats.get_or_set_cache", side_effect=_passthrough_cache),
-            patch("api.routers.stats.get_cache", return_value=None),
             patch("api.routers.stats.SpecRepository", return_value=mock_spec_repo),
             patch("api.routers.stats.LibraryRepository", return_value=mock_lib_repo),
+            patch("api.routers.stats.ImplRepository", return_value=mock_impl_repo),
         ):
             response = client.get("/stats")
             assert response.status_code == 200
@@ -460,13 +464,17 @@ class TestSeoRouter:
         ):
             response = client.get("/sitemap.xml")
             assert response.status_code == 200
-            # URL format: /, /plots, /specs, /{spec_id}, /{spec_id}/{library_id}
+            # URL format: /, /plots, /specs, /{spec_id}, /{spec_id}/{language}, /{spec_id}/{language}/{library}
             assert "https://anyplot.ai/plots" in response.text
             assert "https://anyplot.ai/specs" in response.text
-            # Overview page
-            assert "https://anyplot.ai/python/scatter-basic</loc>" in response.text
-            # Implementation page
-            assert "https://anyplot.ai/python/scatter-basic/matplotlib</loc>" in response.text
+            # Cross-language hub
+            assert "<loc>https://anyplot.ai/scatter-basic</loc>" in response.text
+            # Language overview
+            assert "<loc>https://anyplot.ai/scatter-basic/python</loc>" in response.text
+            # Implementation detail
+            assert "<loc>https://anyplot.ai/scatter-basic/python/matplotlib</loc>" in response.text
+            # Legacy /python/{spec} prefix must NOT appear
+            assert "https://anyplot.ai/python/scatter-basic" not in response.text
 
 
 class TestSeoProxyRouter:
@@ -512,7 +520,9 @@ class TestSeoProxyRouter:
             assert response.status_code == 200
             assert "Basic Scatter Plot" in response.text
             assert "og:title" in response.text
-            assert "https://anyplot.ai/python/scatter-basic" in response.text
+            assert "https://anyplot.ai/scatter-basic" in response.text
+            # Legacy /python/{spec} prefix must NOT appear
+            assert "https://anyplot.ai/python/scatter-basic" not in response.text
 
     def test_seo_spec_overview_not_found(self, db_client) -> None:
         """SEO spec overview should return 404 when spec not found."""
@@ -528,7 +538,7 @@ class TestSeoProxyRouter:
     def test_seo_spec_implementation_without_db(self, client: TestClient) -> None:
         """SEO spec implementation should return fallback HTML when DB unavailable."""
         with patch(DB_CONFIG_PATCH, return_value=False):
-            response = client.get("/seo-proxy/scatter-basic/matplotlib")
+            response = client.get("/seo-proxy/scatter-basic/python/matplotlib")
             assert response.status_code == 200
             assert "og:title" in response.text
             assert "scatter-basic" in response.text
@@ -543,12 +553,14 @@ class TestSeoProxyRouter:
         mock_spec_repo.get_by_id = AsyncMock(return_value=mock_spec)
 
         with patch("api.routers.seo.SpecRepository", return_value=mock_spec_repo):
-            response = client.get("/seo-proxy/scatter-basic/matplotlib")
+            response = client.get("/seo-proxy/scatter-basic/python/matplotlib")
             assert response.status_code == 200
             assert "Basic Scatter Plot" in response.text
             assert "matplotlib" in response.text
-            # Should have actual preview URL from implementation
-            assert TEST_IMAGE_URL in response.text or "og:image" in response.text
+            # Canonical URL uses new three-tier structure
+            assert "https://anyplot.ai/scatter-basic/python/matplotlib" in response.text
+            # Branded OG image URL includes language segment
+            assert "api.anyplot.ai/og/scatter-basic/python/matplotlib.png" in response.text
 
     def test_seo_spec_implementation_not_found(self, db_client) -> None:
         """SEO spec implementation should return 404 when spec not found."""
@@ -558,7 +570,7 @@ class TestSeoProxyRouter:
         mock_spec_repo.get_by_id = AsyncMock(return_value=None)
 
         with patch("api.routers.seo.SpecRepository", return_value=mock_spec_repo):
-            response = client.get("/seo-proxy/nonexistent-spec/matplotlib")
+            response = client.get("/seo-proxy/nonexistent-spec/python/matplotlib")
             assert response.status_code == 404
 
     def test_seo_spec_implementation_fallback_image(self, db_client, mock_spec) -> None:
@@ -566,8 +578,11 @@ class TestSeoProxyRouter:
         client, _ = db_client
 
         # Create a spec with implementation that has no preview_url
+        mock_library = MagicMock()
+        mock_library.language = "python"
         mock_impl_no_preview = MagicMock()
         mock_impl_no_preview.library_id = "seaborn"
+        mock_impl_no_preview.library = mock_library
         mock_impl_no_preview.preview_url = None
 
         mock_spec_no_preview = MagicMock()
@@ -580,9 +595,33 @@ class TestSeoProxyRouter:
         mock_spec_repo.get_by_id = AsyncMock(return_value=mock_spec_no_preview)
 
         with patch("api.routers.seo.SpecRepository", return_value=mock_spec_repo):
-            response = client.get("/seo-proxy/scatter-basic/seaborn")
+            response = client.get("/seo-proxy/scatter-basic/python/seaborn")
             assert response.status_code == 200
             assert "api.anyplot.ai/og/home.png" in response.text  # Default image via API
+
+    def test_seo_about(self, client: TestClient) -> None:
+        """SEO about page should return HTML with og:tags."""
+        response = client.get("/seo-proxy/about")
+        assert response.status_code == 200
+        assert "text/html" in response.headers["content-type"]
+        assert "og:title" in response.text
+        assert "https://anyplot.ai/about" in response.text
+
+    def test_seo_palette(self, client: TestClient) -> None:
+        """SEO palette page should return HTML with og:tags."""
+        response = client.get("/seo-proxy/palette")
+        assert response.status_code == 200
+        assert "text/html" in response.headers["content-type"]
+        assert "og:title" in response.text
+        assert "https://anyplot.ai/palette" in response.text
+
+    def test_seo_stats(self, client: TestClient) -> None:
+        """SEO stats page should return HTML with og:tags."""
+        response = client.get("/seo-proxy/stats")
+        assert response.status_code == 200
+        assert "text/html" in response.headers["content-type"]
+        assert "og:title" in response.text
+        assert "https://anyplot.ai/stats" in response.text
 
 
 class TestOgImagesRouter:
@@ -637,7 +676,7 @@ class TestOgImagesRouter:
     def test_get_branded_impl_image_no_db(self, client: TestClient) -> None:
         """Should return 503 when DB not available."""
         with patch(DB_CONFIG_PATCH, return_value=False):
-            response = client.get("/og/scatter-basic/matplotlib.png")
+            response = client.get("/og/scatter-basic/python/matplotlib.png")
             assert response.status_code == 503
 
     def test_get_branded_impl_image_spec_not_found(self, db_client) -> None:
@@ -648,7 +687,7 @@ class TestOgImagesRouter:
         mock_spec_repo.get_by_id = AsyncMock(return_value=None)
 
         with patch("api.routers.og_images.SpecRepository", return_value=mock_spec_repo):
-            response = client.get("/og/nonexistent/matplotlib.png")
+            response = client.get("/og/nonexistent/python/matplotlib.png")
             assert response.status_code == 404
 
     def test_get_branded_impl_image_impl_not_found(self, db_client, mock_spec) -> None:
@@ -660,7 +699,7 @@ class TestOgImagesRouter:
 
         with patch("api.routers.og_images.SpecRepository", return_value=mock_spec_repo):
             # Request a library that doesn't exist in mock_spec
-            response = client.get("/og/scatter-basic/nonexistent.png")
+            response = client.get("/og/scatter-basic/python/nonexistent.png")
             assert response.status_code == 404
 
     def test_get_branded_impl_image_cached(self, db_client) -> None:
@@ -669,7 +708,7 @@ class TestOgImagesRouter:
 
         cached_bytes = b"fake png data"
         with patch("api.routers.og_images.get_cache", return_value=cached_bytes):
-            response = client.get("/og/scatter-basic/matplotlib.png")
+            response = client.get("/og/scatter-basic/python/matplotlib.png")
             assert response.status_code == 200
             assert response.headers["content-type"] == "image/png"
             assert response.content == cached_bytes
@@ -738,7 +777,7 @@ class TestOgImagesRouter:
             patch("api.routers.og_images._fetch_image", new_callable=AsyncMock, return_value=fake_image_bytes),
             patch("api.routers.og_images.create_branded_og_image", return_value=fake_branded_bytes),
         ):
-            response = client.get("/og/scatter-basic/matplotlib.png")
+            response = client.get("/og/scatter-basic/python/matplotlib.png")
             assert response.status_code == 200
             assert response.headers["content-type"] == "image/png"
             assert response.headers["cache-control"] == "public, max-age=3600"
@@ -785,7 +824,7 @@ class TestOgImagesRouter:
 
         cached_bytes = b"fake png data"
         with patch("api.routers.og_images.get_cache", return_value=cached_bytes):
-            response = client.get("/og/scatter-basic/matplotlib.png")
+            response = client.get("/og/scatter-basic/python/matplotlib.png")
             assert response.status_code == 200
             assert response.headers["cache-control"] == "public, max-age=3600"
 
@@ -1483,6 +1522,8 @@ class TestInsightsRouter:
         mock_impl1.quality_score = 90.0
         mock_impl1.preview_url = TEST_IMAGE_URL
         mock_impl1.impl_tags = {}
+        mock_impl1.library = MagicMock()
+        mock_impl1.library.language = "python"
 
         mock_spec1 = MagicMock()
         mock_spec1.id = "scatter-basic"
@@ -1495,6 +1536,8 @@ class TestInsightsRouter:
         mock_impl2.quality_score = 88.0
         mock_impl2.preview_url = TEST_IMAGE_URL
         mock_impl2.impl_tags = {}
+        mock_impl2.library = MagicMock()
+        mock_impl2.library.language = "python"
 
         mock_spec2 = MagicMock()
         mock_spec2.id = "scatter-regression"
@@ -1539,6 +1582,8 @@ class TestInsightsRouter:
         mock_impl1.quality_score = 90.0
         mock_impl1.preview_url = TEST_IMAGE_URL
         mock_impl1.impl_tags = {"techniques": ["annotations"], "patterns": ["data-generation"]}
+        mock_impl1.library = MagicMock()
+        mock_impl1.library.language = "python"
 
         mock_spec1 = MagicMock()
         mock_spec1.id = "scatter-basic"
@@ -1551,6 +1596,8 @@ class TestInsightsRouter:
         mock_impl2.quality_score = 85.0
         mock_impl2.preview_url = TEST_IMAGE_URL
         mock_impl2.impl_tags = {"techniques": ["annotations"], "patterns": ["other"]}
+        mock_impl2.library = MagicMock()
+        mock_impl2.library.language = "python"
 
         mock_spec2 = MagicMock()
         mock_spec2.id = "bar-annotated"

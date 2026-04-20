@@ -65,7 +65,7 @@ export function PlotOfTheDayTerminal({
       {/* Prompt header */}
       <Box
         component={RouterLink}
-        to={specPath(potd.spec_id, potd.library_id)}
+        to={specPath(potd.spec_id, potd.language, potd.library_id)}
         sx={{
           display: 'flex',
           alignItems: 'center',

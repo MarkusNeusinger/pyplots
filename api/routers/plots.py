@@ -340,6 +340,7 @@ def _collect_all_images(all_specs: list) -> list[dict]:
                     {
                         "spec_id": spec_obj.id,
                         "library": impl.library_id,
+                        "language": impl.library.language if impl.library else "python",
                         "quality": impl.quality_score,
                         "url": impl.preview_url,
                         "html": impl.preview_html,

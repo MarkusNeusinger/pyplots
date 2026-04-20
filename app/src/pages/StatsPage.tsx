@@ -45,6 +45,7 @@ interface TopImpl {
   spec_id: string;
   spec_title: string;
   library_id: string;
+  language: string;
   quality_score: number;
   preview_url: string | null;
 }
@@ -300,7 +301,7 @@ export function StatsPage() {
             <Link
               key={`${impl.spec_id}-${impl.library_id}`}
               component={RouterLink}
-              to={specPath(impl.spec_id, impl.library_id)}
+              to={specPath(impl.spec_id, impl.language, impl.library_id)}
               sx={{ textDecoration: 'none', color: 'inherit', '&:hover': { opacity: 0.85 }, transition: 'opacity 0.15s ease' }}
               onClick={() => trackEvent('stats_top_impl_click', { spec: impl.spec_id, library: impl.library_id })}
             >

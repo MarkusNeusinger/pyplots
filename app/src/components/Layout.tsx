@@ -16,7 +16,7 @@ import {
 } from '../hooks/useLayoutContext';
 import { useThemeMode } from '../hooks/useThemeMode';
 
-// Global provider that wraps the entire router (persists across all pages including InteractivePage)
+// Global provider that wraps the entire router
 export function AppDataProvider({ children }: { children: ReactNode }) {
   const themeMode = useThemeMode();
   const [specsData, setSpecsData] = useState<SpecInfo[]>([]);

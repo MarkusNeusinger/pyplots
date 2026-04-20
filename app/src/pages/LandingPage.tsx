@@ -222,7 +222,7 @@ function FeaturedThumb({ item }: { item: FeaturedImpl | null }) {
   }
 
   return (
-    <Box component={RouterLink} to={specPath(item.spec_id, item.library_id)} sx={cardSx}>
+    <Box component={RouterLink} to={specPath(item.spec_id, item.language, item.library_id)} sx={cardSx}>
       {/* Top bar — mimics POTD's `$ python …` prompt */}
       <Box sx={{ ...barSx, borderBottom: `1px solid ${colors.gray[200]}` }}>
         <Box component="span" sx={{ color: colors.primary, fontWeight: 600 }}>$</Box>

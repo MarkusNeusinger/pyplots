@@ -17,11 +17,15 @@ SUPPORTED_LIBRARIES = frozenset(
     ["altair", "bokeh", "highcharts", "letsplot", "matplotlib", "plotly", "plotnine", "pygal", "seaborn"]
 )
 
+# Supported programming languages
+SUPPORTED_LANGUAGES = frozenset(["python"])
+
 # Library metadata for database seeding and display
 LIBRARIES_METADATA = [
     {
         "id": "altair",
         "name": "Altair",
+        "language": "python",
         "version": "5.2.0",
         "documentation_url": "https://altair-viz.github.io",
         "description": "Declarative visualization library for Python. Its simple, friendly and consistent API, built on top of the powerful Vega-Lite grammar, empowers you to spend less time writing code and more time exploring your data.",
@@ -29,6 +33,7 @@ LIBRARIES_METADATA = [
     {
         "id": "bokeh",
         "name": "Bokeh",
+        "language": "python",
         "version": "3.4.0",
         "documentation_url": "https://bokeh.org",
         "description": "Interactive visualization library that makes it simple to create common plots, while also handling custom or specialized use-cases. Work in Python close to all the PyData tools you're already familiar with.",
@@ -36,6 +41,7 @@ LIBRARIES_METADATA = [
     {
         "id": "highcharts",
         "name": "Highcharts",
+        "language": "python",
         "version": "1.10.0",
         "documentation_url": "https://www.highcharts.com",
         "description": "Powerful data visualization for real-world apps. Fast to implement, endlessly flexible. Makes it easy for developers to create charts and dashboards for web and mobile platforms.",
@@ -43,6 +49,7 @@ LIBRARIES_METADATA = [
     {
         "id": "letsplot",
         "name": "lets-plot",
+        "language": "python",
         "version": "4.5.0",
         "documentation_url": "https://lets-plot.org",
         "description": "Multiplatform plotting library built on the principles of the Grammar of Graphics. A faithful adaptation of R's ggplot2 that extends Grammar of Graphics principles to both Python and Kotlin.",
@@ -50,6 +57,7 @@ LIBRARIES_METADATA = [
     {
         "id": "matplotlib",
         "name": "Matplotlib",
+        "language": "python",
         "version": "3.9.0",
         "documentation_url": "https://matplotlib.org",
         "description": "Comprehensive library for creating static, animated, and interactive visualizations in Python. Matplotlib makes easy things easy and hard things possible.",
@@ -57,6 +65,7 @@ LIBRARIES_METADATA = [
     {
         "id": "plotly",
         "name": "Plotly",
+        "language": "python",
         "version": "5.18.0",
         "documentation_url": "https://plotly.com/python",
         "description": "Python graphing library that makes interactive, publication-quality graphs. Create line plots, scatter plots, area charts, bar charts, error bars, box plots, histograms, heatmaps, subplots, and more.",
@@ -64,6 +73,7 @@ LIBRARIES_METADATA = [
     {
         "id": "plotnine",
         "name": "plotnine",
+        "language": "python",
         "version": "0.13.0",
         "documentation_url": "https://plotnine.org",
         "description": "A grammar of graphics for Python. Data visualization package based on the grammar of graphics, a coherent system for describing and building graphs. From ad-hoc plots to publication-ready figures.",
@@ -71,6 +81,7 @@ LIBRARIES_METADATA = [
     {
         "id": "pygal",
         "name": "Pygal",
+        "language": "python",
         "version": "3.0.0",
         "documentation_url": "http://www.pygal.org",
         "description": "Beautiful python charting. Simple python charting library that creates SVG charts that are both beautiful and easy to customize.",
@@ -78,6 +89,7 @@ LIBRARIES_METADATA = [
     {
         "id": "seaborn",
         "name": "Seaborn",
+        "language": "python",
         "version": "0.13.0",
         "documentation_url": "https://seaborn.pydata.org",
         "description": "Python data visualization library based on matplotlib. Provides a high-level interface for drawing attractive and informative statistical graphics.",

@@ -18,16 +18,30 @@ This document provides a comprehensive overview of Plausible Analytics implement
 
 ### Multi-Language URL Strategy
 
-**Cutover date**: 2026-04-14
+**Cutover date**: 2026-04-20
 
-Spec and implementation URLs are prefixed with `/python/` to support future multi-language expansion (Julia, R, etc.). This ensures Plausible analytics paths remain stable when new languages are added.
+Spec URLs follow the three-tier structure `/{specId}[/{language}[/{library}]]`,
+so the spec slug — the actual SEO entity — sits at the URL root and the
+language slots between spec and library:
 
-- Root homepage `/` and static pages (`/plots`, `/specs`, `/legal`, etc.) remain un-prefixed
-- Spec pages: `/python/{spec_id}`, `/python/{spec_id}/{library}`
-- Interactive: `/python/interactive/{spec_id}/{library}`
-- Marketing subdomains (`python.anyplot.ai`) 301-redirect to `anyplot.ai/python/`
+- Root `/` and reserved static pages (`/plots`, `/specs`, `/libraries`,
+  `/palette`, `/about`, `/legal`, `/mcp`, `/stats`) are un-prefixed.
+- Cross-language hub: `/{spec_id}` (lists every implementation across
+  all languages).
+- Language overview: `/{spec_id}/{language}` (e.g. `/scatter-basic/python`).
+- Implementation detail: `/{spec_id}/{language}/{library}` (e.g.
+  `/scatter-basic/python/matplotlib`).
+- Interactive view is no longer a separate route — the detail page toggles
+  between static preview and iframe via `?view=interactive`. The query
+  string is **not** included in Plausible URLs (canonical only).
+- Marketing subdomain `python.anyplot.ai` rewrites internally; canonical
+  in HTML points back to `anyplot.ai/{spec_id}/python[/{library}]` so all
+  pageviews show up under the main domain.
 
-Historical data before 2026-04-14 uses un-prefixed paths (`/{spec_id}`).
+Historical data before 2026-04-14 uses un-prefixed paths
+(`/{spec_id}`); data between 2026-04-14 and 2026-04-20 uses the legacy
+`/python/{spec_id}[/{library}]` prefix. Both ranges remain visible in
+Plausible but are no longer produced.
 
 ### Filter-Based Pageviews
 
@@ -36,9 +50,10 @@ Filters create dynamic URLs with the following format:
 https://anyplot.ai/{category}/{value}/{category}/{value}/...
 ```
 
-On language-prefixed pages (`/python/`), filter URLs include the prefix:
+On spec routes, the spec/language/library prefix is preserved before the
+filter segments:
 ```
-https://anyplot.ai/python/{category}/{value}/...
+https://anyplot.ai/{spec_id}/{language}/{library}/{category}/{value}/...
 ```
 
 **Ordered categories**: `lib`, `spec`, `plot`, `data`, `dom`, `feat`, `dep`, `tech`, `pat`, `prep`, `style`
@@ -49,8 +64,8 @@ https://anyplot.ai/python/{category}/{value}/...
 - `/?lib=matplotlib,seaborn` → `https://anyplot.ai/lib/matplotlib,seaborn` (OR logic)
 - `/?lib=matplotlib&lib=seaborn` → `https://anyplot.ai/lib/matplotlib/lib/seaborn` (AND logic)
 
-**Examples (Python homepage)**:
-- `/python/?lib=matplotlib` → `https://anyplot.ai/python/lib/matplotlib`
+**Examples (spec routes)**:
+- `/scatter-basic/python?lib=matplotlib` → `https://anyplot.ai/scatter-basic/python/lib/matplotlib`
 
 **Benefits**:
 - Plausible shows popular filter combinations
@@ -62,15 +77,17 @@ https://anyplot.ai/python/{category}/{value}/...
 | URL | Description |
 |-----|-------------|
 | `/` | Home page (no filters) |
-| `/python/` | Python home page (no filters, language-prefixed) |
 | `/plots` | Plots page (filter grid of all implementations) |
 | `/specs` | Specs page (alphabetical spec list) |
+| `/libraries` | Libraries listing |
+| `/palette` | Color palette reference |
+| `/about` | About page |
 | `/legal` | Legal notice, privacy policy, transparency |
 | `/mcp` | MCP server documentation (AI assistant integration) |
 | `/stats` | Platform statistics (library scores, coverage, tags, top implementations) |
-| `/python/{spec_id}` | Spec overview page (grid of all implementations) |
-| `/python/{spec_id}/{library}` | Spec detail page (single library implementation) |
-| `/python/interactive/{spec_id}/{library}` | Interactive fullscreen view (HTML plots) |
+| `/{spec_id}` | Cross-language spec hub (all implementations across all languages) |
+| `/{spec_id}/{language}` | Language overview (all libraries for that language) |
+| `/{spec_id}/{language}/{library}` | Implementation detail (preview ↔ interactive toggle) |
 
 **Total pageview tracking**: Automated via `trackPageview()` in all pages
 
@@ -178,7 +195,7 @@ Bot requests page → nginx detects bot → SEO proxy serves HTML with og:image 
 
 | Event Name | Properties | Description |
 |------------|------------|-------------|
-| `og_image_view` | `page`, `platform`, `spec`?, `library`?, `filter_*`? | Bot requested og:image |
+| `og_image_view` | `page`, `platform`, `spec`?, `language`?, `library`?, `filter_*`? | Bot requested og:image |
 
 ### Properties
 
@@ -187,7 +204,8 @@ Bot requests page → nginx detects bot → SEO proxy serves HTML with og:image 
 | `page` | `home`, `plots`, `spec_overview`, `spec_detail` | Page type |
 | `platform` | See list below | Detected platform from User-Agent |
 | `spec` | Specification ID | Only for spec pages |
-| `library` | Library ID | Only for detail pages |
+| `language` | Language slug (e.g. `python`) | Only for spec detail pages |
+| `library` | Library ID | Only for spec detail pages |
 | `filter_*` | Filter value | Dynamic props for filtered URLs (e.g., `filter_lib`, `filter_dom`) |
 
 ### Platform Detection (27 platforms)
@@ -218,7 +236,7 @@ Some apps (Signal, others) use a WhatsApp User-Agent to bypass rate limits ([Iss
 | `/og/home.png` | Static og:image for home page | `page=home`, `filter_*` from query params |
 | `/og/plots.png` | Static og:image for plots page | `page=plots` |
 | `/og/{spec_id}.png` | Collage og:image for spec overview | `page=spec_overview`, `spec` |
-| `/og/{spec_id}/{library}.png` | Branded og:image for implementation | `page=spec_detail`, `spec`, `library` |
+| `/og/{spec_id}/{language}/{library}.png` | Branded og:image for implementation | `page=spec_detail`, `spec`, `language`, `library` |
 
 ### Filter Tracking for Shared URLs
 
@@ -247,6 +265,7 @@ To see event properties in Plausible dashboard, you **MUST** register them as cu
 | Property | Description | Used By Events |
 |----------|-------------|----------------|
 | `spec` | Plot specification ID | `copy_code`, `download_image`, `plot_rotate`, `external_link`, `internal_link`, `open_interactive`, `report_issue`, `tag_click`, `og_image_view` |
+| `language` | Language slug (`python`, future: `julia`, `r`, `matlab`) | `og_image_view` |
 | `library` | Library name (matplotlib, seaborn, etc.) | `copy_code`, `download_image`, `external_link`, `internal_link`, `open_interactive`, `tab_toggle`, `og_image_view` |
 | `method` | Action method (card, image, tab, click, space, doubletap) | `copy_code`, `random_filter` |
 | `page` | Page context (home, plots, spec_overview, spec_detail) | `copy_code`, `download_image`, `og_image_view` |
@@ -306,7 +325,7 @@ To see event properties in Plausible dashboard, you **MUST** register them as cu
 **Example funnel**: Home → Spec → Copy
 
 1. Pageview `/` (home)
-2. Pageview `/{spec_id}/{library}` (spec detail)
+2. Pageview `/{spec_id}/{language}/{library}` (spec detail)
 3. `copy_code` event
 
 ### Dashboard Widgets
@@ -335,13 +354,17 @@ User lands on anyplot.ai
     ├─→ Home (grid view)
     │   └─→ copy_code { page: 'home' }
     │
-    ├─→ Spec Overview (/{spec_id})
+    ├─→ Cross-Language Hub (/{spec_id})
+    │   └─→ copy_code { page: 'spec_hub' }
+    │
+    ├─→ Language Overview (/{spec_id}/{language})
     │   └─→ copy_code { page: 'spec_overview' }
     │   └─→ download_image { page: 'spec_overview' }
     │
-    └─→ Spec Detail (/{spec_id}/{library})
+    └─→ Implementation Detail (/{spec_id}/{language}/{library})
         └─→ copy_code { page: 'spec_detail' }
         └─→ download_image { page: 'spec_detail' }
+        └─→ open_interactive { spec, language, library }
 ```
 
 ### Journey Examples in Plausible
@@ -382,7 +405,7 @@ User lands on anyplot.ai
 | `LCP` | `value`, `rating` | reportWebVitals.ts |
 | `CLS` | `value`, `rating` | reportWebVitals.ts |
 | `INP` | `value`, `rating` | reportWebVitals.ts |
-| `og_image_view` | `page`, `platform`, `spec`?, `library`?, `filter_*`? | api/analytics.py (server-side) |
+| `og_image_view` | `page`, `platform`, `spec`?, `language`?, `library`?, `filter_*`? | api/analytics.py (server-side) |
 
 **Total: 19 client-side + 1 server-side = 20 events**
 

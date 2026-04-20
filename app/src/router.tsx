@@ -29,15 +29,15 @@ const router = createBrowserRouter([
       { path: 'legal', lazy: () => import('./pages/LegalPage').then(m => ({ Component: m.LegalPage })) },
       { path: 'mcp', lazy: () => import('./pages/McpPage').then(m => ({ Component: m.McpPage })) },
       { path: 'stats', lazy: () => import('./pages/StatsPage').then(m => ({ Component: m.StatsPage })) },
-      { path: 'python/:specId', lazy: lazySpec },
-      { path: 'python/:specId/:library', lazy: lazySpec },
+      { path: ':specId', lazy: lazySpec },
+      { path: ':specId/:language', lazy: lazySpec },
+      { path: ':specId/:language/:library', lazy: lazySpec },
       { path: '*', element: <NotFoundPage /> },
     ],
   },
   {
     element: <BareLayout />,
     children: [
-      { path: 'python/interactive/:specId/:library', lazy: () => import('./pages/InteractivePage').then(m => ({ Component: m.InteractivePage })) },
       { path: 'debug', lazy: () => import('./pages/DebugPage').then(m => ({ Component: m.DebugPage })) },
     ],
   },

@@ -317,44 +317,80 @@ curl -o test.png https://api.anyplot.ai/og/scatter-basic.png
 
 ## Multi-Language URL Strategy
 
-Spec and implementation URLs use a `/python/` prefix to prepare for future multi-language support (Julia, R, etc.).
+Spec URLs are organised so the spec slug is the top-level identifier and the
+language sits between spec and library. This keeps the spec — the actual SEO
+entity — at the URL root and lets us add Julia, R, and MATLAB without touching
+existing Python URLs.
 
 ### URL Structure
 
-| URL | Purpose |
-|-----|---------|
-| `/` | Root homepage (all languages, currently Python only) |
-| `/python/` | Python-specific homepage |
-| `/python/{spec_id}` | Spec overview (Python implementations) |
-| `/python/{spec_id}/{library}` | Spec detail (specific Python library) |
-| `/python/interactive/{spec_id}/{library}` | Interactive fullscreen view |
-| `/plots`, `/specs`, `/legal`, `/mcp`, `/stats` | Language-independent pages (no prefix) |
+| URL | Purpose | canonical |
+|-----|---------|-----------|
+| `/` | Landing | self |
+| `/{spec_id}` | Cross-language hub — lists every implementation across all languages | self |
+| `/{spec_id}/{language}` | Language overview — all libraries for that language | self |
+| `/{spec_id}/{language}/{library}` | Implementation detail — preview ↔ interactive toggle | self |
+| `/{spec_id}/{language}/{library}?view=interactive` | Same page, interactive iframe pre-selected | base URL without query |
+| `/plots`, `/specs`, `/libraries`, `/palette`, `/about`, `/legal`, `/mcp`, `/stats` | Static pages | self |
 
-### Legacy Redirects
+The interactive view is no longer a separate route — the spec detail page
+toggles between a static preview image and the interactive HTML iframe in
+place. `?view=interactive` is a deep-link parameter only; the canonical tag
+always points at the base URL without the query string.
 
-Old URLs without the `/python/` prefix (e.g., `/{spec_id}`) are redirected client-side via React Router `<Navigate replace />` to the corresponding `/python/` path.
+### Reserved Spec Slugs
 
-Social media bots hitting old SEO proxy routes (`/seo-proxy/{spec_id}`) receive HTML with `og:url` and `<link rel="canonical">` pointing to the new `/python/` canonical URL.
+Spec IDs are top-level path segments, so they must not collide with reserved
+routes. The blocklist is enforced at runtime in `app/src/utils/paths.ts`
+(`RESERVED_TOP_LEVEL`) and at spec creation time in `.github/workflows/spec-create.yml`:
 
-### Marketing Subdomains
+```
+plots, specs, libraries, palette, about, legal, mcp, stats, debug,
+sitemap.xml, robots.txt
+```
 
-`python.anyplot.ai` is configured for 301 redirect to `anyplot.ai/python/` via nginx. This requires DNS + SSL infrastructure setup (wildcard cert or per-subdomain cert).
+### Legacy URLs
 
-**Benefits**: Single domain authority for SEO, catchy subdomain for marketing/conferences.
+There is no legacy redirect layer. Old `/python/{spec_id}[/{library}]` and
+`/python/interactive/{spec_id}/{library}` URLs return the SPA's NotFoundPage
+(catch-all `*` route) and emit a 404 on bot requests via `/seo-proxy`. The
+sitemap stops listing those URLs, and Google removes them on next crawl.
+
+### Marketing Subdomain
+
+`python.anyplot.ai` is served by a dedicated nginx server block
+(`app/nginx.conf`) that internally rewrites incoming requests so each spec
+URL gains a `/python` language segment before it reaches the SEO proxy:
+
+| Subdomain URL | Internal rewrite | Canonical (in HTML) |
+|---|---|---|
+| `python.anyplot.ai/{spec_id}` | `/seo-proxy/{spec_id}/python` | `https://anyplot.ai/{spec_id}/python` |
+| `python.anyplot.ai/{spec_id}/{library}` | `/seo-proxy/{spec_id}/python/{library}` | `https://anyplot.ai/{spec_id}/python/{library}` |
+
+The user keeps the marketing-friendly hostname; Google sees a canonical on the
+main domain so authority and ranking signals stay consolidated. Human visitors
+require the SPA to detect `window.location.hostname === 'python.anyplot.ai'`
+and inject `python` as the language when resolving routes — that hostname-aware
+SPA layer is gated as a follow-up before flipping DNS.
 
 ### Path Utility
 
 Frontend URL generation is centralized in `app/src/utils/paths.ts`:
-- `specPath(specId, library?)` — builds `/python/{specId}` or `/python/{specId}/{library}`
-- `interactivePath(specId, library)` — builds `/python/interactive/{specId}/{library}`
+- `specPath(specId, language?, library?)` — builds the three-tier URL based on
+  which arguments are provided.
+- `langFromPath(pathname)` — extracts the language segment from a path.
+- `RESERVED_TOP_LEVEL` — Set of slugs that cannot be used as spec IDs.
 
-### Future Expansion
+### Adding a New Language
 
-When adding Julia or R support:
-1. Add `/julia/` and `/r/` route groups (no changes to Python URLs)
-2. Root `/` becomes a multi-language entry point with language picker
-3. Add `julia.anyplot.ai` → `anyplot.ai/julia/` subdomain redirects
-4. Backend API gets a `language` query parameter
+When adding Julia, R, or MATLAB:
+
+1. Set `Library.language = "julia"` (etc.) on each library row.
+2. Implementations automatically appear under
+   `/{spec_id}/julia/{library_id}`; sitemap and OG image routes pick them up.
+3. The cross-language hub `/{spec_id}` lists the new language's
+   implementations alongside Python's — no per-spec migration needed.
+4. Optionally add a `julia.anyplot.ai` server block mirroring the Python one.
 
 ## Security
 

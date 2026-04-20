@@ -11,6 +11,7 @@ vi.mock('../utils/responsiveImage', () => ({
 const makeImpl = (overrides: Partial<Implementation> = {}): Implementation => ({
   library_id: 'matplotlib',
   library_name: 'Matplotlib',
+  language: 'python',
   preview_url: 'https://example.com/plot.png',
   preview_html: null,
   quality_score: 85,
@@ -23,7 +24,6 @@ const implB = makeImpl({ library_id: 'matplotlib', library_name: 'Matplotlib' })
 const implC = makeImpl({ library_id: 'plotly', library_name: 'Plotly', preview_html: '<div>interactive</div>' });
 
 const defaultProps = {
-  specId: 'scatter-basic',
   specTitle: 'Basic Scatter Plot',
   selectedLibrary: 'matplotlib',
   currentImpl: implB,
@@ -31,9 +31,11 @@ const defaultProps = {
   imageLoaded: true,
   codeCopied: null,
   downloadDone: null,
+  viewMode: 'preview' as const,
   onImageLoad: vi.fn(),
   onCopyCode: vi.fn(),
   onDownload: vi.fn(),
+  onViewModeChange: vi.fn(),
   onTrackEvent: vi.fn(),
 };
 
@@ -85,12 +87,12 @@ describe('SpecDetailView', () => {
     expect(onDownload).toHaveBeenCalledWith(implB);
   });
 
-  it('shows Open Interactive button only when preview_html exists', () => {
+  it('shows Show Interactive button only when preview_html exists', () => {
     // No preview_html on current impl
     const { rerender } = render(<SpecDetailView {...defaultProps} />);
-    expect(screen.queryByRole('button', { name: /open interactive/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /show interactive/i })).not.toBeInTheDocument();
 
-    // With preview_html
+    // With preview_html — renders an in-page toggle button (no longer a link)
     rerender(
       <SpecDetailView
         {...defaultProps}
@@ -98,8 +100,7 @@ describe('SpecDetailView', () => {
         selectedLibrary="plotly"
       />,
     );
-    // Open interactive is rendered as a link (IconButton with component={Link})
-    expect(screen.getByRole('link', { name: /open interactive/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /show interactive/i })).toBeInTheDocument();
   });
 
   it('shows implementation counter with current/total', () => {

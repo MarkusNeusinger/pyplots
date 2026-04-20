@@ -90,19 +90,19 @@ async def _fetch_image(url: str) -> bytes:
     return response.content
 
 
-@router.get("/{spec_id}/{library}.png")
+@router.get("/{spec_id}/{language}/{library}.png")
 async def get_branded_impl_image(
-    spec_id: str, library: str, request: Request, db: AsyncSession | None = Depends(optional_db)
+    spec_id: str, language: str, library: str, request: Request, db: AsyncSession | None = Depends(optional_db)
 ) -> Response:
     """Get a branded OG image for an implementation.
 
     Returns a 1200x630 PNG with anyplot.ai header and the plot image.
     """
     # Track og:image request (fire-and-forget)
-    track_og_image(request, page="spec_detail", spec=spec_id, library=library)
+    track_og_image(request, page="spec_detail", spec=spec_id, language=language, library=library)
 
     # Check cache first
-    key = cache_key("og", spec_id, library)
+    key = cache_key("og", spec_id, language, library)
     cached = get_cache(key)
     if cached:
         return Response(content=cached, media_type="image/png", headers={"Cache-Control": "public, max-age=3600"})
@@ -115,8 +115,10 @@ async def get_branded_impl_image(
     if not spec:
         raise HTTPException(status_code=404, detail="Spec not found")
 
-    # Find the implementation
-    impl = next((i for i in spec.impls if i.library_id == library), None)
+    # Find the implementation matching language + library
+    impl = next(
+        (i for i in spec.impls if i.library_id == library and i.library and i.library.language == language), None
+    )
     if not impl or not impl.preview_url:
         raise HTTPException(status_code=404, detail="Implementation not found")
 

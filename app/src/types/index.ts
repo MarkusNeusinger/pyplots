@@ -2,6 +2,7 @@
 
 export interface PlotImage {
   library: string;
+  language: string;
   url: string;
   html?: string;
   code?: string;
@@ -101,6 +102,7 @@ export interface FilteredPlotsResponse {
 export interface LibraryInfo {
   id: string;
   name: string;
+  language: string;
   version?: string;
   documentation_url?: string;
   description?: string;
@@ -116,6 +118,7 @@ export interface SpecInfo {
 export interface Implementation {
   library_id: string;
   library_name: string;
+  language: string;
   preview_url: string;
   preview_html?: string;
   quality_score: number | null;

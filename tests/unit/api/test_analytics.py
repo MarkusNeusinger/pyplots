@@ -181,9 +181,39 @@ class TestTrackOgImage:
             track_og_image(mock_request, page="spec_overview", spec="scatter-basic")
 
     def test_spec_detail_url(self, mock_request: MagicMock, mock_create_task: MagicMock) -> None:
-        """Should build correct URL for spec detail."""
+        """Should build correct URL for spec detail with language slot."""
         with patch("api.analytics.asyncio.create_task", mock_create_task):
-            track_og_image(mock_request, page="spec_detail", spec="scatter-basic", library="matplotlib")
+            track_og_image(
+                mock_request, page="spec_detail", spec="scatter-basic", language="python", library="matplotlib"
+            )
+
+    @pytest.mark.asyncio
+    async def test_spec_detail_emits_language_url_and_prop(self) -> None:
+        """Spec detail should emit /{spec}/{language}/{library} URL and language prop to Plausible."""
+        from api.analytics import _send_plausible_event
+
+        with patch("api.analytics.httpx.AsyncClient") as mock_client_class:
+            mock_client = AsyncMock()
+            mock_client_class.return_value.__aenter__.return_value = mock_client
+
+            await _send_plausible_event(
+                user_agent="Twitterbot/1.0",
+                client_ip="1.2.3.4",
+                name="og_image_view",
+                url="https://anyplot.ai/scatter-basic/python/matplotlib",
+                props={
+                    "page": "spec_detail",
+                    "platform": "twitter",
+                    "spec": "scatter-basic",
+                    "language": "python",
+                    "library": "matplotlib",
+                },
+            )
+
+            payload = mock_client.post.call_args[1]["json"]
+            assert payload["url"] == "https://anyplot.ai/scatter-basic/python/matplotlib"
+            assert payload["props"]["language"] == "python"
+            assert payload["props"]["library"] == "matplotlib"
 
     def test_fallback_url_when_spec_none(self, mock_request: MagicMock, mock_create_task: MagicMock) -> None:
         """Should fallback to home URL when spec is None for spec-based page."""

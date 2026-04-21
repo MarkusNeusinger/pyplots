@@ -110,7 +110,7 @@ export function HeroSection({ potd = null }: HeroSectionProps) {
           component="p"
           sx={{
             animation: 'rise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.15s backwards',
-            fontFamily: typography.serif,
+            fontFamily: typography.mono,
             fontSize: { xs: '0.9375rem', sm: '1rem', md: '1.125rem' },
             lineHeight: 1.4,
             color: 'var(--ink)',
@@ -118,10 +118,10 @@ export function HeroSection({ potd = null }: HeroSectionProps) {
             mb: 2.5,
             fontWeight: 500,
             letterSpacing: '-0.005em',
-            whiteSpace: 'nowrap',
+            textAlign: 'center',
           }}
         >
-          one spec · every library · always current.
+          from .md to art.
         </Box>
 
         <Box

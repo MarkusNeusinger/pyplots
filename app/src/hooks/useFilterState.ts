@@ -60,10 +60,16 @@ export function useFilterState({
 }: UseFilterStateOptions): UseFilterStateReturn {
   const { homeStateRef, setHomeState } = useHomeState();
 
-  // Initialize from persistent state (ref) or URL params
-  const [activeFilters, setActiveFilters] = useState<ActiveFilters>(() =>
-    homeStateRef.current.initialized ? homeStateRef.current.activeFilters : parseUrlFilters()
-  );
+  // URL params are authoritative. Only fall back to the cached ref when the
+  // URL carries no filters — that way arriving at /plots?lib=X from an
+  // external entry point (e.g. a LibraryCard on the landing page) actually
+  // applies that filter instead of reusing whatever the user had on their
+  // last visit.
+  const [activeFilters, setActiveFilters] = useState<ActiveFilters>(() => {
+    const urlFilters = parseUrlFilters();
+    if (urlFilters.length > 0) return urlFilters;
+    return homeStateRef.current.initialized ? homeStateRef.current.activeFilters : [];
+  });
 
   const [randomAnimation, setRandomAnimation] = useState<{
     index: number;

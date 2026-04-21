@@ -1,6 +1,7 @@
 import { Link as RouterLink } from 'react-router-dom';
 import Box from '@mui/material/Box';
 
+import { GITHUB_URL } from '../constants';
 import { colors, typography } from '../theme';
 import { buildSrcSet, getFallbackSrc } from '../utils/responsiveImage';
 import { specPath } from '../utils/paths';
@@ -35,7 +36,9 @@ export function PlotOfTheDayTerminal({
 }: PlotOfTheDayTerminalProps) {
   if (!potd?.preview_url) return null;
 
-  const filename = `plots/${potd.spec_id}/${potd.library_id}.py`;
+  const displayFilename = `plots/${potd.spec_id}/${potd.library_id}.py`;
+  const implPath = specPath(potd.spec_id, potd.language, potd.library_id);
+  const githubFileUrl = `${GITHUB_URL}/blob/main/plots/${potd.spec_id}/implementations/${potd.library_id}.py`;
 
   return (
     <Box
@@ -49,7 +52,7 @@ export function PlotOfTheDayTerminal({
         fontFamily: typography.mono,
         animation: 'rise 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.3s backwards',
         '&::before': {
-          content: '"~/anyplot"',
+          content: '"~/anyplot.ai"',
           position: 'absolute',
           top: '-0.7em',
           left: 24,
@@ -62,10 +65,8 @@ export function PlotOfTheDayTerminal({
         },
       }}
     >
-      {/* Prompt header */}
+      {/* Prompt header — the filename links to the raw source on GitHub */}
       <Box
-        component={RouterLink}
-        to={specPath(potd.spec_id, potd.language, potd.library_id)}
         sx={{
           display: 'flex',
           alignItems: 'center',
@@ -73,31 +74,61 @@ export function PlotOfTheDayTerminal({
           px: { xs: 2, md: 3 },
           pt: { xs: 2.5, md: 3 },
           pb: 1.5,
-          textDecoration: 'none',
           color: 'var(--ink-muted)',
           fontSize: '12px',
-          transition: 'color 0.2s',
-          '&:hover': { color: colors.primary },
         }}
       >
         <Box component="span" sx={{ color: colors.primary, fontWeight: 700 }}>$</Box>
+        <Box component="span">python</Box>
         <Box
-          component="span"
+          component="a"
+          href={githubFileUrl}
+          target="_blank"
+          rel="noopener noreferrer"
           sx={{
             flex: 1,
+            minWidth: 0,
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
+            color: 'inherit',
+            // Use text-decoration rather than border-bottom so the underline
+            // only covers the glyphs (ending at `.py`) and not the stretched
+            // flex child.
+            textDecoration: 'none',
+            transition: 'color 0.2s, text-decoration-color 0.2s',
+            '&:hover': { color: colors.primary, textDecoration: 'underline dotted', textUnderlineOffset: '3px' },
           }}
         >
-          python {filename}
+          {displayFilename}
         </Box>
-        <Box component="span" sx={{ fontSize: '11px' }}>↗ open</Box>
+        <Box
+          component="a"
+          href={githubFileUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Open source on GitHub"
+          sx={{
+            color: 'inherit',
+            textDecoration: 'none',
+            transition: 'color 0.2s',
+            '& .gh-subject': { opacity: 0.7, transition: 'opacity 0.2s' },
+            '&:hover': { color: colors.primary },
+            '&:hover .gh-subject': { opacity: 1 },
+          }}
+        >
+          <Box component="span" className="gh-subject">github</Box>.open()
+        </Box>
       </Box>
 
-      {/* Plot image — 16:10 frame, contain so square plots are letterboxed */}
+      {/* Plot image — 16:10 frame, contain so square plots are letterboxed.
+          Click anywhere on the image to open the implementation detail page. */}
       <Box
+        component={RouterLink}
+        to={implPath}
+        aria-label={`Open ${potd.spec_title} implementation for ${potd.library_name}`}
         sx={{
+          display: 'block',
           mx: 'auto',
           width: { xs: 'calc(100% - 32px)', md: 'calc(100% - 48px)' },
           maxWidth: `calc(${maxPlotHeight} * 1.6)`,
@@ -108,6 +139,10 @@ export function PlotOfTheDayTerminal({
           aspectRatio: '16 / 10',
           position: 'relative',
           overflow: 'hidden',
+          cursor: 'pointer',
+          transition: 'background 0.2s',
+          '&:hover': { bgcolor: 'var(--bg-page)' },
+          '&:focus-visible': { outline: `2px solid ${colors.primary}`, outlineOffset: -2 },
         }}
       >
         <Box

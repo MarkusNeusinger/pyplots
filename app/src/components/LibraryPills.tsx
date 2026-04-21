@@ -88,9 +88,10 @@ export const LibraryPills = memo(function LibraryPills({
     <Box
       sx={{
         display: 'flex',
+        flexDirection: { xs: 'column', sm: 'row' },
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 0.5,
+        gap: { xs: 1, sm: 0.5 },
         py: 2,
       }}
     >
@@ -126,10 +127,13 @@ export const LibraryPills = memo(function LibraryPills({
               .all()
             </Box>
           </Box>
-          <Box sx={{ height: 20, width: '1px', bgcolor: 'var(--rule)', mx: 1.5 }} />
+          {/* Divider only on ≥sm where the row is horizontal */}
+          <Box sx={{ height: 20, width: '1px', bgcolor: 'var(--rule)', mx: 1.5, display: { xs: 'none', sm: 'block' } }} />
         </>
       )}
 
+      {/* Carousel row — stays horizontal even when the wrapper stacks on xs */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
       {/* Left Arrow */}
       <IconButton
         onClick={handlePrev}
@@ -204,6 +208,7 @@ export const LibraryPills = memo(function LibraryPills({
       >
         <ChevronRightIcon />
       </IconButton>
+      </Box>
     </Box>
   );
 });

@@ -10,12 +10,12 @@ import { useAnalytics } from '../hooks';
 import { API_URL } from '../constants';
 import { specPath } from '../utils/paths';
 import { buildSrcSet, getFallbackSrc } from '../utils/responsiveImage';
+import { SectionHeader } from '../components/SectionHeader';
 import {
   typography,
   colors,
   semanticColors,
   fontSize,
-  subheadingStyle,
 } from '../theme';
 
 interface LibraryStats {
@@ -103,13 +103,13 @@ export function StatsPage() {
   }, []);
 
   if (loading) return (
-    <Box sx={{ maxWidth: 960, mx: 'auto', px: 2, py: 4, textAlign: 'center' }}>
+    <Box sx={{ py: 4, textAlign: 'center' }}>
       <Typography sx={{ fontFamily: typography.fontFamily, color: semanticColors.mutedText }}>loading stats...</Typography>
     </Box>
   );
 
   if (error || !data) return (
-    <Box sx={{ maxWidth: 960, mx: 'auto', px: 2, py: 4, textAlign: 'center' }}>
+    <Box sx={{ py: 4, textAlign: 'center' }}>
       <Typography sx={{ fontFamily: typography.fontFamily, color: colors.error }}>failed to load stats{error ? `: ${error}` : ''}</Typography>
     </Box>
   );
@@ -123,7 +123,7 @@ export function StatsPage() {
         <meta name="description" content="Platform statistics for anyplot.ai — plot counts, quality scores, library coverage, and more." />
       </Helmet>
 
-      <Box sx={{ maxWidth: 960, mx: 'auto', px: 2, py: 2 }}>
+      <Box sx={{ pt: { xs: 2, md: 3 }, pb: 4 }}>
         {/* Summary Counters */}
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(6, 1fr)' }, gap: 2, mt: 3, mb: 4 }}>
           {[
@@ -153,7 +153,9 @@ export function StatsPage() {
         </Typography>
 
         {/* Library Stats — dual mini histograms per library */}
-        <Typography sx={subheadingStyle}>libraries</Typography>
+        <Box sx={{ mt: 4 }}>
+          <SectionHeader prompt="❯" title={<em>libraries</em>} />
+        </Box>
         {/* Quality distribution per library */}
         <Typography sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.xs, color: semanticColors.mutedText, mb: 1 }}>
           quality distribution 50–100 · count · avg
@@ -231,7 +233,9 @@ export function StatsPage() {
         </Box>
 
         {/* Coverage dot matrix — right after libraries */}
-        <Typography sx={subheadingStyle}>coverage</Typography>
+        <Box sx={{ mt: 4 }}>
+          <SectionHeader prompt="❯" title={<em>coverage</em>} />
+        </Box>
         <Typography sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.xs, color: semanticColors.mutedText, mb: 1 }}>
           {data.coverage_percent}% · {data.total_implementations} of {data.total_specs * 9} possible
         </Typography>
@@ -266,7 +270,9 @@ export function StatsPage() {
         {/* Timeline */}
         {data.timeline.length > 0 && (
           <>
-            <Typography sx={subheadingStyle}>timeline</Typography>
+            <Box sx={{ mt: 4 }}>
+              <SectionHeader prompt="❯" title={<em>timeline</em>} />
+            </Box>
             <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 0.25, height: 70, overflow: 'hidden' }}>
               {data.timeline.slice(-24).map(point => (
                 <Tooltip key={point.month} title={`${point.month}: ${point.count} new`} arrow>
@@ -295,7 +301,9 @@ export function StatsPage() {
         )}
 
         {/* Top Implementations */}
-        <Typography sx={subheadingStyle}>top rated</Typography>
+        <Box sx={{ mt: 4 }}>
+          <SectionHeader prompt="❯" title={<em>top rated</em>} />
+        </Box>
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(4, 1fr)' }, gap: 1.5 }}>
           {data.top_implementations.slice(0, 8).map((impl) => (
             <Link
@@ -338,7 +346,9 @@ export function StatsPage() {
         </Box>
 
         {/* Tag Distribution */}
-        <Typography sx={subheadingStyle}>tags</Typography>
+        <Box sx={{ mt: 4 }}>
+          <SectionHeader prompt="❯" title={<em>tags</em>} />
+        </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
           {Object.entries(data.tag_distribution).map(([category, values]) => {
             const paramMap: Record<string, string> = {

@@ -9,7 +9,7 @@ export function ScienceNote() {
       bgcolor: 'var(--bg-surface)',
       borderTop: '1px solid var(--rule)',
       borderBottom: '1px solid var(--rule)',
-      py: { xs: 4, md: 7 },
+      py: { xs: 3, md: 5 },
       px: 3,
     }}>
       <Box sx={{ maxWidth: 760, mx: 'auto', textAlign: 'center' }}>

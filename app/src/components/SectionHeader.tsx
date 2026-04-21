@@ -19,8 +19,9 @@ export function SectionHeader({ prompt, title, linkText, linkTo }: SectionHeader
       gridTemplateColumns: 'auto 1fr auto',
       alignItems: 'baseline',
       gap: { xs: 1.5, md: 2 },
-      mb: 6,
-      pb: 2.5,
+      mb: 4,
+      pt: 2.5,
+      pb: 1.5,
       borderBottom: `1px solid var(--rule)`,
     }}>
       {prompt && (

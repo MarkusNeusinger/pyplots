@@ -13,6 +13,7 @@ import { useAnalytics } from '../hooks';
 import { useAppData, useHomeState } from '../hooks';
 import { specPath } from '../utils/paths';
 import type { PlotImage } from '../types';
+import { SectionHeader } from '../components/SectionHeader';
 import { typography, colors, fontSize, semanticColors } from '../theme';
 
 interface SpecListItem {
@@ -154,30 +155,12 @@ export function SpecsListPage() {
         <link rel="canonical" href="https://anyplot.ai/specs" />
       </Helmet>
 
-      <Box sx={{ pb: 4 }}>
-        {/* Title row with suggest-spec action */}
+      <Box sx={{ pt: { xs: 2, md: 3 }, pb: 4 }}>
+        <SectionHeader prompt="❯" title={<em>specs</em>} />
+
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', mb: 4, flexWrap: 'wrap', gap: 2 }}>
-          <Typography
-            variant="h4"
-            component="h1"
-            sx={{
-              fontFamily: typography.serif,
-              fontWeight: 400,
-              color: colors.gray[800],
-            }}
-          >
-            specs
-            <Typography
-              component="span"
-              sx={{
-                ml: 2,
-                fontSize: fontSize.lg,
-                fontWeight: 400,
-                color: semanticColors.mutedText,
-              }}
-            >
-              {specList.length} specifications
-            </Typography>
+          <Typography sx={{ fontFamily: typography.mono, fontSize: fontSize.sm, color: 'var(--ink-muted)' }}>
+            {specList.length} specifications
           </Typography>
 
           <Box
@@ -189,12 +172,12 @@ export function SpecsListPage() {
             sx={{
               fontFamily: typography.mono,
               fontSize: fontSize.sm,
-              color: semanticColors.mutedText,
+              color: 'var(--ink-muted)',
               textDecoration: 'none',
               '&:hover': { color: colors.primary },
             }}
           >
-            suggest spec ↗
+            spec.suggest() ↗
           </Box>
         </Box>
 
@@ -213,6 +196,7 @@ export function SpecsListPage() {
                   gap: { xs: 2, sm: 3 },
                   p: 2,
                   bgcolor: 'var(--bg-surface)',
+                  border: '1px solid var(--rule)',
                   borderRadius: 2,
                   boxShadow: '0 1px 2px rgba(0,0,0,0.02), 0 24px 48px -24px rgba(0,0,0,0.08)',
                   transition: 'box-shadow 0.2s',
@@ -230,7 +214,7 @@ export function SpecsListPage() {
                     height: { xs: 180, sm: 158 },
                     borderRadius: 1.5,
                     overflow: 'hidden',
-                    bgcolor: '#fff',
+                    bgcolor: 'var(--bg-surface)',
                     boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
                     flexShrink: 0,
                     cursor: spec.images.length > 1 ? 'pointer' : 'default',

@@ -25,9 +25,9 @@ export function LibrariesSection({
   const maxWidth = widthTier === 'catalog' ? 'var(--max-catalog)' : 'var(--max)';
 
   return (
-    <Box sx={{ maxWidth, mx: 'auto', py: { xs: 4, md: 7 } }}>
+    <Box sx={{ maxWidth, mx: 'auto', py: { xs: 2, md: 3 } }}>
       <SectionHeader
-        prompt="§"
+        prompt="❯"
         title={<em>libraries</em>}
         linkText="libraries.all()"
         linkTo="/plots"

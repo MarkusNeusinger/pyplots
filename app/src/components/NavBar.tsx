@@ -2,12 +2,12 @@ import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import { colors, typography } from '../theme';
 
-const NAV_LINKS = [
+const NAV_LINKS: { label: string; to: string; short?: string }[] = [
   { label: 'specs', to: '/specs' },
   { label: 'plots', to: '/plots' },
-  { label: 'libraries', to: '/libraries' },
+  { label: 'libraries', to: '/libraries', short: 'libs' },
   { label: 'stats', to: '/stats' },
-  { label: 'palette', to: '/palette' },
+  { label: 'palette', to: '/palette', short: 'pal' },
   { label: 'mcp', to: '/mcp' },
 ];
 
@@ -60,10 +60,17 @@ export function NavBar() {
   return (
     <Box component="nav" sx={{
       display: 'grid',
-      gridTemplateColumns: 'auto 1fr auto',
+      // On xs: two rows (logo+search top, nav-links spanning wide below).
+      // On sm+: single row: logo | nav-links | search.
+      gridTemplateColumns: { xs: '1fr auto', sm: 'auto 1fr auto' },
+      gridTemplateAreas: {
+        xs: `"logo search" "nav nav"`,
+        sm: `"logo nav search"`,
+      },
       alignItems: 'center',
-      py: 2,
-      gap: 4,
+      rowGap: { xs: 1.25, sm: 0 },
+      columnGap: { xs: 1.5, sm: 4 },
+      py: { xs: 1.25, sm: 2 },
       borderBottom: '1px solid var(--rule)',
     }}>
       {/* Logo */}
@@ -71,9 +78,10 @@ export function NavBar() {
         component={RouterLink}
         to="/"
         sx={{
+          gridArea: 'logo',
           fontFamily: typography.mono,
           fontWeight: 700,
-          fontSize: '22px',
+          fontSize: { xs: '18px', sm: '22px' },
           letterSpacing: '-0.02em',
           textDecoration: 'none',
           color: 'var(--ink)',
@@ -82,15 +90,18 @@ export function NavBar() {
         any<Box component="span" sx={{ color: colors.primary, display: 'inline-block', transform: 'scale(1.45)', mx: '2px' }}>.</Box>plot<Box component="span" sx={{ fontWeight: 400, opacity: 0.45 }}>()</Box>
       </Box>
 
-      {/* Nav links */}
+      {/* Nav links — full row on xs (shorthand labels), inline on sm+ */}
       <Box component="ul" sx={{
-        display: { xs: 'none', sm: 'flex' },
-        gap: 3.5,
+        gridArea: 'nav',
+        display: 'flex',
+        gap: { xs: 2, sm: 2.25, md: 3.5 },
         listStyle: 'none',
         m: 0,
         p: 0,
         fontFamily: typography.mono,
-        fontSize: '13px',
+        fontSize: { xs: '12px', sm: '12px', md: '13px' },
+        justifyContent: { xs: 'space-between', sm: 'flex-start' },
+        flexWrap: 'nowrap',
       }}>
         {NAV_LINKS.map(link => (
           <li key={link.to}>
@@ -99,50 +110,38 @@ export function NavBar() {
               to={link.to}
               sx={location.pathname === link.to ? activeLinkSx : linkSx}
             >
-              {link.label}
+              {/* Full label on ≥md, short label on smaller screens where it saves room */}
+              <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>
+                {link.label}
+              </Box>
+              <Box component="span" sx={{ display: { xs: 'inline', md: 'none' } }}>
+                {link.short || link.label}
+              </Box>
             </Box>
           </li>
         ))}
       </Box>
 
-      {/* Search pill */}
+      {/* Search — method-call link, opens the filter-bar search on /plots */}
       <Box
         component="button"
         onClick={handleSearch}
+        aria-label="Search plots"
         sx={{
+          gridArea: 'search',
           all: 'unset',
-          boxSizing: 'border-box',
           fontFamily: typography.mono,
-          fontSize: '12px',
-          padding: '8px 14px',
-          bgcolor: 'var(--bg-surface)',
-          border: '1px solid var(--rule)',
-          borderRadius: '99px',
-          color: 'var(--ink-muted)',
+          fontSize: { xs: '11px', sm: '12px', md: '13px' },
+          color: 'var(--ink-soft)',
           cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1,
-          transition: 'all 0.2s',
-          '&:hover': {
-            borderColor: 'var(--ink-soft)',
-            color: 'var(--ink)',
-          },
+          transition: 'color 0.2s',
+          textAlign: 'right',
+          '& .subj': { opacity: 0.55, transition: 'opacity 0.2s' },
+          '&:hover': { color: colors.primary },
+          '&:hover .subj': { opacity: 0.8 },
         }}
       >
-        <span>⌕ search plots</span>
-        <Box component="span" sx={{
-          fontFamily: typography.mono,
-          fontSize: '10px',
-          padding: '1px 5px',
-          bgcolor: 'var(--bg-page)',
-          border: '1px solid var(--rule)',
-          borderRadius: '3px',
-          letterSpacing: 0,
-          display: { xs: 'none', md: 'inline' },
-        }}>
-          ⌘ K
-        </Box>
+        <span className="subj">plots</span>.search()
       </Box>
     </Box>
   );

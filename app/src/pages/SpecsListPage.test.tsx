@@ -81,7 +81,7 @@ describe('SpecsListPage', () => {
 
     // After error, loading ends and we get the specs heading (with 0 specs matched since no images loaded)
     await waitFor(() => {
-      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 2 })).toBeInTheDocument();
     });
     expect(screen.getByText('0 specifications')).toBeInTheDocument();
     consoleSpy.mockRestore();
@@ -92,9 +92,9 @@ describe('SpecsListPage', () => {
     render(<SpecsListPage />);
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 2 })).toBeInTheDocument();
     });
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('specs');
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('specs');
   });
 
   it('shows specification count', async () => {

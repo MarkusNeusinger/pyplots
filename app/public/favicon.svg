@@ -1,5 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <text x="-1" y="28" font-family="monospace" font-weight="bold" font-size="26">
-    <tspan fill="#3776AB">p</tspan><tspan fill="#FFD43B">p</tspan>
-  </text>
+  <style>
+    .letter { font-family: 'MonoLisa', ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-weight: 700; font-size: 20px; fill: #1A1A17; letter-spacing: -0.02em; }
+    @media (prefers-color-scheme: dark) { .letter { fill: #F0EFE8; } }
+  </style>
+  <text x="16" y="15" text-anchor="middle" class="letter">ap</text>
+  <rect x="9" y="16" width="7" height="7" fill="#009E73"/>
 </svg>

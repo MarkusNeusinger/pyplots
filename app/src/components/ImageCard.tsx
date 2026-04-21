@@ -174,7 +174,7 @@ export const ImageCard = memo(function ImageCard({
               width: '100%',
               aspectRatio: '16 / 10',
               objectFit: 'contain',
-              bgcolor: '#fff',
+              bgcolor: 'var(--bg-surface)',
             }}
             onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
               const target = e.target as HTMLImageElement;

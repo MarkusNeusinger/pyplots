@@ -79,9 +79,10 @@ export function FilterBar({
       const percent = Math.round((scrollY / estimatedTotalHeight) * 100);
       setScrollPercent(Math.min(100, Math.max(0, percent || 0)));
 
-      // Detect if bar is in sticky mode (scrolled past threshold)
-      // The bar becomes sticky when scrollY > ~200px (header height)
-      setIsSticky(scrollY > 200);
+      // Detect if bar is in sticky mode (scrolled past threshold).
+      // On /plots the masthead+navbar flow with content (~120px), so the FilterBar
+      // starts sticking shortly after that. 60px is a conservative trigger.
+      setIsSticky(scrollY > 60);
     };
     calculatePercent();
     window.addEventListener('scroll', calculatePercent);

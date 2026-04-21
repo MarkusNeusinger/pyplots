@@ -42,8 +42,8 @@ export function LibrariesPage() {
         <link rel="canonical" href="https://anyplot.ai/libraries" />
       </Helmet>
 
-      <Box sx={{ maxWidth: 'var(--max-catalog, 2200px)', mx: 'auto', pb: 6 }}>
-        <SectionHeader prompt="§" title={<em>libraries</em>} />
+      <Box sx={{ maxWidth: 'var(--max-catalog, 2200px)', mx: 'auto', pt: { xs: 2, md: 3 }, pb: 6 }}>
+        <SectionHeader prompt="❯" title={<em>libraries</em>} />
 
         <Box sx={{ ...textStyle, maxWidth: 720, mb: 6 }}>
           Each spec is implemented in every supported library so you can compare side-by-side.
@@ -52,7 +52,7 @@ export function LibrariesPage() {
 
         <Box sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(auto-fill, minmax(320px, 1fr))' },
+          gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(auto-fill, minmax(280px, 1fr))' },
           gap: 2.5,
         }}>
           {LIBRARIES.map(name => {

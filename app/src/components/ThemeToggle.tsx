@@ -7,6 +7,8 @@ interface ThemeToggleProps {
 }
 
 export function ThemeToggle({ isDark, onToggle }: ThemeToggleProps) {
+  const icon = isDark ? '☀' : '◐';
+  const label = isDark ? 'light' : 'dark';
   return (
     <Box
       component="button"
@@ -16,7 +18,7 @@ export function ThemeToggle({ isDark, onToggle }: ThemeToggleProps) {
         background: 'none',
         border: '1px solid var(--rule)',
         cursor: 'pointer',
-        padding: '3px 9px',
+        padding: { xs: '2px 6px', sm: '3px 9px' },
         borderRadius: '4px',
         fontFamily: typography.mono,
         fontSize: '11px',
@@ -30,7 +32,10 @@ export function ThemeToggle({ isDark, onToggle }: ThemeToggleProps) {
         },
       }}
     >
-      {isDark ? '☀ light' : '◐ dark'}
+      {icon}
+      <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' }, ml: 0.5 }}>
+        {label}
+      </Box>
     </Box>
   );
 }

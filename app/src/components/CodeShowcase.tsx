@@ -4,9 +4,9 @@ import { typography } from '../theme';
 
 export function CodeShowcase() {
   return (
-    <Box sx={{ maxWidth: 'var(--max)', mx: 'auto', py: { xs: 4, md: 7 } }}>
+    <Box sx={{ maxWidth: 'var(--max)', mx: 'auto', py: { xs: 2, md: 3 } }}>
       <SectionHeader
-        prompt="§"
+        prompt="❯"
         title={<>One <em>import</em>.</>}
       />
 

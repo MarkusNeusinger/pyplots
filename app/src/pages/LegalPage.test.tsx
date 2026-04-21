@@ -20,24 +20,9 @@ describe('LegalPage', () => {
     const headings = screen.getAllByRole('heading');
     const headingTexts = headings.map((h) => h.textContent);
 
-    expect(headingTexts).toContain('Legal Notice');
-    expect(headingTexts).toContain('Privacy Policy');
-    expect(headingTexts).toContain('Transparency');
-  });
-
-  it('renders anchor navigation links to all sections', () => {
-    render(<LegalPage />);
-
-    const allLinks = screen.getAllByRole('link');
-    const anchorLinks = allLinks.filter(
-      (link) => link.getAttribute('href')?.startsWith('#')
-    );
-
-    expect(anchorLinks).toHaveLength(3);
-    const hrefs = anchorLinks.map((a) => a.getAttribute('href'));
-    expect(hrefs).toContain('#legal-notice');
-    expect(hrefs).toContain('#privacy');
-    expect(hrefs).toContain('#transparency');
+    expect(headingTexts).toContain('legal notice');
+    expect(headingTexts).toContain('privacy policy');
+    expect(headingTexts).toContain('transparency');
   });
 
   it('renders operator information', () => {

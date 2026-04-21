@@ -197,7 +197,7 @@ export function SpecDetailView({
             position: 'relative',
             borderRadius: 2,
             overflow: 'hidden',
-            bgcolor: '#fff',
+            bgcolor: 'var(--bg-surface)',
             boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
             aspectRatio: '16/9',
             display: 'flex',
@@ -208,7 +208,7 @@ export function SpecDetailView({
         >
           <Box
             sx={{
-              bgcolor: '#fff',
+              bgcolor: 'var(--bg-surface)',
               overflow: 'hidden',
               width: contentWidth * scale,
               height: contentHeight * scale,
@@ -288,7 +288,7 @@ export function SpecDetailView({
             position: 'relative',
             borderRadius: 2,
             overflow: 'hidden',
-            bgcolor: '#fff',
+            bgcolor: 'var(--bg-surface)',
             boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
             aspectRatio: '16/9',
             cursor: zoomed ? 'zoom-out' : 'zoom-in',

@@ -98,7 +98,6 @@ export function GridSizeToggle({ imageSize, onImageSizeChange, onTrackEvent }: T
 export function ToolbarActions({ imageSize, onImageSizeChange, onTrackEvent }: ToolbarActionsProps) {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-      <PlotsLink />
       <GridSizeToggle
         imageSize={imageSize}
         onImageSizeChange={onImageSizeChange}

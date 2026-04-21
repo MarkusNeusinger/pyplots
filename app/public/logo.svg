@@ -1,8 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 50">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 60">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700');
+    text { font-family: 'MonoLisa', ui-monospace, 'SF Mono', Menlo, Consolas, monospace; letter-spacing: -0.02em; }
+    .ink { fill: #1A1A17; font-weight: 700; }
+    .dot { fill: #009E73; font-weight: 700; }
+    .parens { fill: #1A1A17; fill-opacity: 0.45; font-weight: 400; }
+    @media (prefers-color-scheme: dark) {
+      .ink, .parens { fill: #F0EFE8; }
+    }
   </style>
-  <text x="0" y="38" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="40">
-    <tspan fill="#3776AB">any</tspan><tspan fill="#FFD43B">plot</tspan><tspan fill="#1f2937">.ai</tspan>
-  </text>
+  <text x="0" y="45" font-size="44"><tspan class="ink">any</tspan><tspan class="dot" font-size="64">.</tspan><tspan class="ink">plot</tspan><tspan class="parens">()</tspan></text>
 </svg>

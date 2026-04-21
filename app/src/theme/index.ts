@@ -148,6 +148,22 @@ export const codeBlockStyle = {
   wordBreak: 'break-word' as const,
 } as const;
 
+// In-prose link style — default muted with 1px rule underline, hover flips to brand green.
+// Applied to body-text anchors in About / Legal / MCP / editorial pages so brand green
+// stays reserved for deliberate accent moments.
+export const proseLinkStyle = {
+  color: 'var(--ink-soft)',
+  textDecoration: 'underline',
+  textDecorationColor: 'var(--rule)',
+  textDecorationThickness: '1px',
+  textUnderlineOffset: '2px',
+  transition: 'color 0.2s, text-decoration-color 0.2s',
+  '&:hover': {
+    color: colors.primary,
+    textDecorationColor: colors.primary,
+  },
+} as const;
+
 export const tableStyle = {
   '& .MuiTableCell-root': {
     fontFamily: typography.fontFamily,

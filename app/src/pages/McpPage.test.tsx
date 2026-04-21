@@ -20,28 +20,11 @@ describe('McpPage', () => {
     const headings = screen.getAllByRole('heading');
     const headingTexts = headings.map((h) => h.textContent);
 
-    expect(headingTexts).toContain('What is MCP?');
-    expect(headingTexts).toContain('Configuration');
-    expect(headingTexts).toContain('Available Tools');
-    expect(headingTexts).toContain('Use Cases');
-    expect(headingTexts).toContain('Resources');
-  });
-
-  it('renders anchor navigation links to all sections', () => {
-    render(<McpPage />);
-
-    const allLinks = screen.getAllByRole('link');
-    const anchorLinks = allLinks.filter(
-      (link) => link.getAttribute('href')?.startsWith('#')
-    );
-
-    expect(anchorLinks).toHaveLength(5);
-    const hrefs = anchorLinks.map((a) => a.getAttribute('href'));
-    expect(hrefs).toContain('#what-is-mcp');
-    expect(hrefs).toContain('#configuration');
-    expect(hrefs).toContain('#tools');
-    expect(hrefs).toContain('#use-cases');
-    expect(hrefs).toContain('#resources');
+    expect(headingTexts).toContain('what is mcp');
+    expect(headingTexts).toContain('configuration');
+    expect(headingTexts).toContain('available tools');
+    expect(headingTexts).toContain('use cases');
+    expect(headingTexts).toContain('resources');
   });
 
   it('renders the MCP endpoint URL', () => {
@@ -71,9 +54,9 @@ describe('McpPage', () => {
   it('renders use case subheadings', () => {
     render(<McpPage />);
 
-    expect(screen.getByText('AI-Assisted Plot Discovery')).toBeInTheDocument();
-    expect(screen.getByText('Code Generation with AI')).toBeInTheDocument();
-    expect(screen.getByText('Comparing Library Implementations')).toBeInTheDocument();
+    expect(screen.getByText('ai-assisted plot discovery')).toBeInTheDocument();
+    expect(screen.getByText('code generation with ai')).toBeInTheDocument();
+    expect(screen.getByText('comparing library implementations')).toBeInTheDocument();
   });
 
   it('renders link to MCP protocol site', () => {

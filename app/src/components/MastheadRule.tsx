@@ -136,8 +136,11 @@ export function MastheadRule() {
   return (
     <Box sx={{
       display: 'grid',
-      gridTemplateColumns: '1fr auto 1fr',
+      // xs: left takes all remaining room, toggle hugs the right edge.
+      // sm+: center slot appears (auto), sides are balanced 1fr auto 1fr.
+      gridTemplateColumns: { xs: '1fr auto auto', sm: '1fr auto 1fr' },
       alignItems: 'center',
+      columnGap: { xs: 1, sm: 2 },
       py: 1.25,
       mb: 0,
       borderBottom: '1px solid var(--rule)',
@@ -147,7 +150,7 @@ export function MastheadRule() {
       letterSpacing: '0.04em',
     }}>
       <Box sx={{
-        display: { xs: isLanding ? 'none' : 'block', sm: 'block' },
+        display: 'block',
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -203,11 +206,9 @@ export function MastheadRule() {
 
       <Box sx={{
         textAlign: 'right',
-        // Explicit column pin so display:none on the center cell (non-landing)
-        // doesn't cause the toggle to auto-place into track 2.
-        gridColumn: { xs: '1 / -1', sm: '3' },
+        gridColumn: '3',
         display: 'flex',
-        justifyContent: { xs: 'center', sm: 'flex-end' },
+        justifyContent: 'flex-end',
       }}>
         <ThemeToggle isDark={isDark} onToggle={toggle} />
       </Box>

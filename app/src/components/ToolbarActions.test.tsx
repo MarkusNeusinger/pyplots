@@ -112,7 +112,7 @@ describe('GridSizeToggle', () => {
 });
 
 describe('ToolbarActions', () => {
-  it('renders both PlotsLink and GridSizeToggle', () => {
+  it('renders the GridSizeToggle (PlotsLink was removed from the composite)', () => {
     render(
       <ToolbarActions
         imageSize="normal"
@@ -121,7 +121,7 @@ describe('ToolbarActions', () => {
       />
     );
 
-    expect(screen.getByRole('link')).toHaveAttribute('href', '/plots');
     expect(screen.getByRole('button')).toBeInTheDocument();
+    expect(screen.queryByRole('link')).toBeNull();
   });
 });

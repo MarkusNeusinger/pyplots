@@ -22,13 +22,13 @@ export function HeroSection({ potd = null }: HeroSectionProps) {
       sx={{
         py: { xs: 5, md: 4 },
         display: 'grid',
-        gridTemplateColumns: { xs: '1fr', md: 'minmax(320px, 1fr) minmax(0, 1.8fr)' },
+        gridTemplateColumns: { xs: 'minmax(0, 1fr)', md: 'minmax(320px, 1fr) minmax(0, 1.8fr)' },
         gap: { xs: 4, md: 6, lg: 8 },
         alignItems: 'center',
       }}
     >
       {/* Left: editorial text */}
-      <Box sx={{ maxWidth: 560 }}>
+      <Box sx={{ maxWidth: 560, minWidth: 0 }}>
         <Box
           sx={{
             animation: 'rise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) backwards',

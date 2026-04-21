@@ -65,13 +65,13 @@ export function LandingPage() {
  */
 function PaletteSection() {
   return (
-    <Box sx={{ py: { xs: 4, md: 7 } }}>
-      <SectionHeader prompt="§" title={<em>palette</em>} linkText="palette.explore()" linkTo="/palette" />
+    <Box sx={{ py: { xs: 2, md: 3 } }}>
+      <SectionHeader prompt="❯" title={<em>palette</em>} linkText="palette.explore()" linkTo="/palette" />
 
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 1fr) minmax(0, 1.2fr)' },
+          gridTemplateColumns: { xs: 'minmax(0, 1fr)', md: 'minmax(0, 1fr) minmax(0, 1.2fr)' },
           gap: { xs: 4, md: 8, lg: 12 },
           alignItems: 'center',
         }}
@@ -201,8 +201,8 @@ function LabelledPaletteStrip() {
  */
 function SpecsSection({ specCount, featured }: { specCount?: number; featured: FeaturedImpl[] | null }) {
   return (
-    <Box sx={{ py: { xs: 4, md: 7 } }}>
-      <SectionHeader prompt="§" title={<em>specifications</em>} linkText="specs.all()" linkTo="/specs" />
+    <Box sx={{ py: { xs: 2, md: 3 } }}>
+      <SectionHeader prompt="❯" title={<em>specifications</em>} linkText="specs.all()" linkTo="/specs" />
 
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: { xs: 4, md: 5 } }}>
         <Box

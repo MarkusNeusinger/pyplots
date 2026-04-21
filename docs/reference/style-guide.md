@@ -430,6 +430,16 @@ It does **not** appear in:
 - Body text emphasis (use serif italic instead)
 - Icon colors outside of logos (use gray tones)
 - Static (non-cursor, non-status) decorative dots or glyphs
+- **Default colour on in-prose links** (see below)
+
+**In-prose link treatment.** Links inside body text default to `--ink-soft` with a 1px `--rule` underline (via `text-decoration`). On hover the colour flips to `--ok-green` and the underline thickens to `currentColor`. Do **not** set `color: colors.primary` as the default on inline links — brand green stays a signal colour that only appears on interaction. The reusable sx object is exported from `app/src/theme/index.ts` as `proseLinkStyle`; import it everywhere a contextual link lives in prose (About, Legal, MCP, Palette, Stats).
+
+```ts
+import { proseLinkStyle } from '../theme';
+<Link href="…" sx={proseLinkStyle}>label</Link>
+```
+
+Method-call CTAs (`.copy()`, `subject.verb()`, hero buttons) keep their own hover-green treatment — the rule above is scoped to textual prose links only.
 
 ### 4.5 Status Colors
 
@@ -571,9 +581,11 @@ Different page types deserve different widths. The system has three tiers:
 
 | Tier            | Max width  | Used for                                                    |
 |-----------------|------------|-------------------------------------------------------------|
-| **paper**       | 1240px     | Landing hero box, About, Methodology, Blog, Legal           |
-| **catalog**     | 2200px     | Plot catalog, search results, library pages, spec pages     |
+| **paper**       | 1240px     | Nested reading columns inside editorial pages (About, Legal, MCP, Palette) |
+| **catalog**     | 2200px     | Outer container — applied globally by `RootLayout`           |
 | **hero-flank**  | full vw    | Landing hero side plot stacks (only ≥1600px viewport)       |
+
+**How it's applied.** `RootLayout` wraps every page in `maxWidth: var(--max-catalog)` (2200px). Paper-width reading columns are opt-in via nested `maxWidth: 760` (or `var(--max)` for wider prose) inside editorial pages — the typical pattern is a full-width `SectionHeader` followed by a `maxWidth: 760, mx: 'auto'` prose column underneath. Stats keeps catalog tier since it's data-dense.
 
 **Why three tiers:**
 
@@ -588,6 +600,8 @@ CSS sketch:
 .tier-catalog { max-width: 2200px; margin: 0 auto; padding: 0 var(--gutter); }
 .tier-flank   { width: 100vw; }   /* full viewport width, used by hero side stacks only */
 ```
+
+**Grid-column safety on mobile.** Any CSS-grid column that nests potentially wide content (plots, palette strips, raw images) must use `minmax(0, 1fr)` rather than `1fr` so the column can shrink below its min-content and the page doesn't scroll horizontally on narrow viewports. This applies to `HeroSection`, `PaletteSection`, and any similar two-column editorial layout.
 
 **Other layout primitives:**
 
@@ -620,10 +634,12 @@ $ plots
 ─────────────────────────────────────────────────────────
 ```
 
-- **Prefix glyph**: `❯` for navigation/categorical sections, `$` for action/list sections, `~/path/` for hierarchical/about/meta sections
+- **Prefix glyph**: `❯` is the default everywhere (navigation, list, editorial). `$` may be used for explicit action/list sections if it adds meaning; `~/path/` for hierarchical/about/meta sections. Earlier drafts used `§` in places (landing, about, libraries) — those have all been migrated to `❯`. No new glyph enters the system.
 - **Prefix font**: MonoLisa weight 500, color `--ink-muted`, scaled to ~0.6× the title size
-- **Title font**: MonoLisa italic + `ss02` stylistic set, 1.6–2rem weight 400, `--ok-green` — the script variant reads as the editorial accent (e.g. `libraries`, `specs`)
-- **Underline**: 1px solid `--rule`, full container width, sits 8–12px below the title baseline
+- **Title font**: MonoLisa italic + `ss02` stylistic set, 1.6–2rem weight 400; the `<em>` child is rendered in `--ok-green` (script accent), the rest of the h2 stays `--ink`
+- **Spacing**: header wrapper is `pt: 2.5` (20px), `pb: 1.5` (12px) to sit the underline close to the baseline, `mb: 4` (32px) under the rule before content resumes. Sections wrap in `<Box component="section" sx={{ py: { xs: 2, md: 3 } }}>` so the page rhythm is uniform across editorial pages.
+- **Underline**: 1px solid `--rule`, full container width
+- **Component**: reuse `app/src/components/SectionHeader.tsx` — it encodes the pt/pb/mb/border rules above. Do not re-implement.
 
 The pattern reads as if the user just typed a command and got a section as output. It collapses the editorial "Section §01" framing into something more native to the visitor.
 
@@ -636,6 +652,8 @@ The site opens with a thin horizontal rule displaying:
 ```
 
 Lowercase, monospace, three slots. The left slot shows the domain + git branch + current release tag (the tag is fetched live from the GitHub releases API with 24h localStorage cache); `main` links to the branch tree, the version links to the release page. The center slot is a code-comment-style sub-tagline. The right slot is a `◐` half-circle theme toggle. This bar immediately positions the site as a tool/publication hybrid rather than a marketing page, and puts the domain in view at all times.
+
+**Sticky behaviour.** Masthead is `position: sticky, top: 0, zIndex: 100` on every route *except* `/plots`. On `/plots` it flows with the page so the `FilterBar` can pin cleanly at the top of the viewport without z-index competition (both used to fight for top 0 and the `0%` counter would visually stack over `any.plot()`). The masthead bg is opaque `var(--bg-page)` (no `backdrop-filter`) so the NavBar scrolls behind it without a cross-fade artefact.
 
 ### 6.5 Library Grid
 
@@ -893,6 +911,25 @@ Horizontal text links, no icons, no boxes. On hover, a 1px green underline anima
 ```
 
 The `cubic-bezier(0.4, 0, 0.2, 1)` is the standard material-motion "ease-in-out" curve — smooth but with enough snap to feel crisp.
+
+**Mobile NavBar (xs < 600px).** The nav collapses into a two-row grid so nothing drops off:
+
+```
+┌───────────────────────────────────┐
+│ any.plot()          plots.search()│  row 1: logo + search link
+├───────────────────────────────────┤
+│ specs  plots  libs  stats  pal mcp│  row 2: six items · space-between
+└───────────────────────────────────┘
+```
+
+- Row 1: `any.plot()` wordmark (17px), `plots.search()` method-call link (11px) right-aligned.
+- Row 2: all six nav items evenly distributed. Short labels kick in on `xs` where the full word doesn't fit: `libraries` → `libs`, `palette` → `pal`. Keep `specs`, `plots`, `stats`, `mcp` as-is.
+- Font size ramps 12px xs → 12px sm → 13px md. Gap ramps 2 → 2.25 → 3.5.
+- The NavBar is static (flows with the page). On `/plots` the masthead *also* flows so the FilterBar is the only sticky surface; on every other page the masthead stays sticky while the NavBar scrolls away naturally.
+
+**Masthead on mobile.** `ThemeToggle` collapses to the glyph only (`◐` / `☀`) — label hidden via `display: { xs: 'none', sm: 'inline' }` — so the breadcrumb (`~/anyplot.ai · main · v1.1.0`) has room to stay visible even on narrow viewports. Grid columns on xs are `1fr auto auto` (left breadcrumb takes all remaining width, toggle hugs the right edge); on sm+ it's `1fr auto 1fr` with the block-comment tagline in the middle.
+
+**Search affordance on mobile.** `plots.search()` is a plain text link (no pill, no ⌘K keycap) — on `/plots` it focuses the filter-bar search; elsewhere it routes there with `?focus=search`. Hidden on `xs` since the nav-row carries the entry point.
 
 ### 7.8 Search Affordance
 

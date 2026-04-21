@@ -464,13 +464,15 @@ class TestSeoRouter:
         ):
             response = client.get("/sitemap.xml")
             assert response.status_code == 200
-            # URL format: /, /plots, /specs, /{spec_id}, /{spec_id}/{language}, /{spec_id}/{language}/{library}
+            # URL format: /, /plots, /specs, /{spec_id}, /{spec_id}/{language}/{library}
+            # The /{spec_id}/{language} tier is NOT listed — language filtering is
+            # served as /{spec_id}?language={language} (filtered hub, same canonical).
             assert "https://anyplot.ai/plots" in response.text
             assert "https://anyplot.ai/specs" in response.text
             # Cross-language hub
             assert "<loc>https://anyplot.ai/scatter-basic</loc>" in response.text
-            # Language overview
-            assert "<loc>https://anyplot.ai/scatter-basic/python</loc>" in response.text
+            # Language-overview tier must NOT appear (consolidated onto hub)
+            assert "<loc>https://anyplot.ai/scatter-basic/python</loc>" not in response.text
             # Implementation detail
             assert "<loc>https://anyplot.ai/scatter-basic/python/matplotlib</loc>" in response.text
             # Legacy /python/{spec} prefix must NOT appear

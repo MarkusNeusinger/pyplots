@@ -46,7 +46,7 @@ class TestBuildSitemapXml:
         assert "</urlset>" in result
 
     def test_spec_with_impls(self) -> None:
-        """Spec with impls should emit hub, language-overview, and detail URLs."""
+        """Spec with impls should emit hub and detail URLs (no per-language tier)."""
         library = MagicMock()
         library.language = "python"
 
@@ -63,10 +63,11 @@ class TestBuildSitemapXml:
         result = _build_sitemap_xml([spec])
         # Cross-language hub
         assert "<loc>https://anyplot.ai/scatter-basic</loc>" in result
-        # Language overview
-        assert "<loc>https://anyplot.ai/scatter-basic/python</loc>" in result
         # Implementation detail
         assert "<loc>https://anyplot.ai/scatter-basic/python/matplotlib</loc>" in result
+        # Language-overview URL is consolidated onto the hub via ?language=; it
+        # must NOT appear as its own sitemap entry (duplicate content for Google).
+        assert "<loc>https://anyplot.ai/scatter-basic/python</loc>" not in result
         # Legacy /python/{spec} path must NOT appear
         assert "https://anyplot.ai/python/scatter-basic" not in result
         assert "<lastmod>2025-03-14</lastmod>" in result
@@ -111,8 +112,13 @@ class TestBuildSitemapXml:
         assert "<loc>https://anyplot.ai/scatter-basic/python/matplotlib</loc>" in result
         assert "<loc>https://anyplot.ai/bar-grouped/python/seaborn</loc>" in result
 
-    def test_language_overview_deduplicated(self) -> None:
-        """Multiple impls sharing a language should yield one language-overview URL."""
+    def test_no_language_overview_emitted(self) -> None:
+        """Multiple impls sharing a language must NOT emit a /{spec}/{language} URL.
+
+        Language filtering is served as /{spec}?language={language} (filtered hub,
+        same canonical as the unfiltered hub), so sitemap entries for the
+        language tier would create duplicate-content URLs for search engines.
+        """
         library = MagicMock()
         library.language = "python"
 
@@ -132,9 +138,10 @@ class TestBuildSitemapXml:
         spec.updated = None
 
         result = _build_sitemap_xml([spec])
-        # Language overview appears exactly once despite two impls
-        assert result.count("<loc>https://anyplot.ai/scatter-basic/python</loc>") == 1
-        # Both implementations are present
+        # No language-overview URL
+        assert "<loc>https://anyplot.ai/scatter-basic/python</loc>" not in result
+        # Hub + both implementations are present
+        assert "<loc>https://anyplot.ai/scatter-basic</loc>" in result
         assert "<loc>https://anyplot.ai/scatter-basic/python/matplotlib</loc>" in result
         assert "<loc>https://anyplot.ai/scatter-basic/python/seaborn</loc>" in result
 

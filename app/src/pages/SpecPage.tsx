@@ -34,7 +34,7 @@ interface SpecDetail {
   implementations: Implementation[];
 }
 
-type Mode = 'hub' | 'language' | 'detail';
+type Mode = 'hub' | 'detail';
 
 export function SpecPage() {
   const { specId, language: urlLanguage, library: urlLibrary } = useParams();
@@ -53,8 +53,9 @@ export function SpecPage() {
   const [highlightedTags, setHighlightedTags] = useState<string[]>([]);
   const { fetchCode, getCode } = useCodeFetch();
 
-  const mode: Mode = urlLibrary ? 'detail' : urlLanguage ? 'language' : 'hub';
+  const mode: Mode = urlLibrary ? 'detail' : 'hub';
   const selectedLibrary = urlLibrary || null;
+  const languageFilter = mode === 'hub' ? searchParams.get('language') : null;
 
   const getLibraryMeta = useCallback(
     (libraryId: string) => librariesData.find((lib) => lib.id === libraryId),
@@ -81,19 +82,14 @@ export function SpecPage() {
         const data: SpecDetail = await res.json();
         setSpecData(data);
 
-        // Validate language matches at least one impl
-        if (urlLanguage && !data.implementations.some((i) => i.language === urlLanguage)) {
-          navigate(specPath(specId!), { replace: true });
-          return;
-        }
-
-        // Validate library matches an impl in the requested language
+        // Detail mode: validate library matches an impl in the requested language.
+        // If no match, fall back to the hub with a language filter to preserve intent.
         if (urlLibrary && urlLanguage) {
           const matched = data.implementations.find(
             (i) => i.library_id === urlLibrary && i.language === urlLanguage,
           );
           if (!matched) {
-            navigate(specPath(specId!, urlLanguage), { replace: true });
+            navigate({ pathname: specPath(specId!), search: `?language=${encodeURIComponent(urlLanguage)}` }, { replace: true });
             return;
           }
         }
@@ -108,7 +104,7 @@ export function SpecPage() {
     fetchSpec();
   }, [specId, urlLanguage, urlLibrary, navigate]);
 
-  // Implementations for the selected language (used in language + detail modes)
+  // Implementations for the selected language (used in detail mode for library pills)
   const langImpls = useMemo(() => {
     if (!specData || !urlLanguage) return specData?.implementations || [];
     return specData.implementations.filter((i) => i.language === urlLanguage);
@@ -119,6 +115,15 @@ export function SpecPage() {
     if (!specData) return [];
     return Array.from(new Set(specData.implementations.map((i) => i.language))).sort();
   }, [specData]);
+
+  // If ?language= points at a language that has no implementations, drop it.
+  useEffect(() => {
+    if (mode !== 'hub' || !specData || !languageFilter) return;
+    if (availableLanguages.includes(languageFilter)) return;
+    const params = new URLSearchParams(searchParams);
+    params.delete('language');
+    setSearchParams(params, { replace: true });
+  }, [mode, specData, languageFilter, availableLanguages, searchParams, setSearchParams]);
 
   // Get current implementation (only in detail mode)
   const currentImpl = useMemo(() => {
@@ -199,7 +204,7 @@ export function SpecPage() {
       trackEvent('download_image', {
         spec: specId,
         library: impl.library_id,
-        page: mode === 'detail' ? 'spec_detail' : mode === 'language' ? 'spec_language' : 'spec_hub',
+        page: mode === 'detail' ? 'spec_detail' : 'spec_hub',
       });
     },
     [specId, trackEvent, mode],
@@ -216,7 +221,7 @@ export function SpecPage() {
           spec: specId,
           library: impl.library_id,
           method: 'image',
-          page: mode === 'detail' ? 'spec_detail' : mode === 'language' ? 'spec_language' : 'spec_hub',
+          page: mode === 'detail' ? 'spec_detail' : 'spec_hub',
         });
         setTimeout(() => setCodeCopied(null), 2000);
       } catch (err) {
@@ -237,10 +242,12 @@ export function SpecPage() {
   // Track page view
   useEffect(() => {
     if (!specData || !specId) return;
-    if (mode === 'hub') trackPageview(`/${specId}`);
-    else if (mode === 'language') trackPageview(`/${specId}/${urlLanguage}`);
-    else if (mode === 'detail' && selectedLibrary) trackPageview(`/${specId}/${urlLanguage}/${selectedLibrary}`);
-  }, [specData, mode, specId, urlLanguage, selectedLibrary, trackPageview]);
+    if (mode === 'hub') {
+      trackPageview(languageFilter ? `/${specId}?language=${languageFilter}` : `/${specId}`);
+    } else if (mode === 'detail' && selectedLibrary) {
+      trackPageview(`/${specId}/${urlLanguage}/${selectedLibrary}`);
+    }
+  }, [specData, mode, specId, urlLanguage, selectedLibrary, languageFilter, trackPageview]);
 
   // Keyboard shortcuts: left/right arrows switch libraries in detail mode
   useEffect(() => {
@@ -303,15 +310,15 @@ export function SpecPage() {
   const canonical =
     mode === 'detail'
       ? `https://anyplot.ai/${specId}/${urlLanguage}/${selectedLibrary}`
-      : mode === 'language'
-        ? `https://anyplot.ai/${specId}/${urlLanguage}`
-        : `https://anyplot.ai/${specId}`;
+      : `https://anyplot.ai/${specId}`;
 
-  const titleSuffix =
-    mode === 'detail' ? ` - ${selectedLibrary}` : mode === 'language' ? ` - ${urlLanguage}` : '';
+  const titleSuffix = mode === 'detail' ? ` - ${selectedLibrary}` : '';
 
-  // Implementations to render in the grid: language mode → only that lang; hub → all
-  const gridImpls = mode === 'hub' ? specData.implementations : langImpls;
+  // Implementations to render in the grid: hub mode optionally filtered by ?language=
+  const gridImpls =
+    languageFilter
+      ? specData.implementations.filter((i) => i.language === languageFilter)
+      : specData.implementations;
 
   return (
     <>
@@ -445,7 +452,7 @@ export function SpecPage() {
             />
 
             <Box sx={{ textAlign: 'center', mt: -0.5, mb: 1 }}>
-              <Box component={Link} to={specPath(specId!, urlLanguage)} sx={{
+              <Box component={Link} to={{ pathname: specPath(specId!), search: urlLanguage ? `?language=${encodeURIComponent(urlLanguage)}` : '' }} sx={{
                 fontFamily: typography.fontFamily,
                 fontSize: fontSize.sm,
                 color: semanticColors.mutedText,

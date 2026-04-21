@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Navigate, RouterProvider, useParams } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -16,6 +16,12 @@ const LazyFallback = () => (
 
 const lazySpec = () => import('./pages/SpecPage').then(m => ({ Component: m.SpecPage, HydrateFallback: LazyFallback }));
 
+function SpecLanguageRedirect() {
+  const { specId, language } = useParams();
+  if (!specId || !language) return <NotFoundPage />;
+  return <Navigate to={{ pathname: `/${specId}`, search: `?language=${encodeURIComponent(language)}` }} replace />;
+}
+
 const router = createBrowserRouter([
   {
     element: <RootLayout />,
@@ -30,7 +36,7 @@ const router = createBrowserRouter([
       { path: 'mcp', lazy: () => import('./pages/McpPage').then(m => ({ Component: m.McpPage })) },
       { path: 'stats', lazy: () => import('./pages/StatsPage').then(m => ({ Component: m.StatsPage })) },
       { path: ':specId', lazy: lazySpec },
-      { path: ':specId/:language', lazy: lazySpec },
+      { path: ':specId/:language', element: <SpecLanguageRedirect /> },
       { path: ':specId/:language/:library', lazy: lazySpec },
       { path: '*', element: <NotFoundPage /> },
     ],

@@ -139,8 +139,9 @@ Backend endpoints that serve HTML with correct meta tags for bots.
 | `GET /seo-proxy/plots` | Plots page | Default |
 | `GET /seo-proxy/specs` | Specs page | Default |
 | `GET /seo-proxy/legal` | Legal page | Default |
-| `GET /seo-proxy/{spec_id}` | Spec overview | Collage (2x3 grid) |
-| `GET /seo-proxy/{spec_id}/{library}` | Implementation | Single branded |
+| `GET /seo-proxy/{spec_id}` | Spec overview (cross-language hub) | Collage (2x3 grid) |
+| `GET /seo-proxy/{spec_id}/{language}` | **301** → `/seo-proxy/{spec_id}` (consolidated) | — |
+| `GET /seo-proxy/{spec_id}/{language}/{library}` | Implementation | Single branded |
 
 ### HTML Template
 
@@ -259,18 +260,23 @@ Dynamic XML sitemap for search engine indexing.
   <url><loc>https://anyplot.ai/legal</loc></url>
   <!-- For each spec with implementations: -->
   <url><loc>https://anyplot.ai/{spec_id}</loc></url>
-  <url><loc>https://anyplot.ai/{spec_id}/{library}</loc></url>
+  <url><loc>https://anyplot.ai/{spec_id}/{language}/{library}</loc></url>
   <!-- ... -->
 </urlset>
 ```
+
+The `/{spec_id}/{language}` tier is intentionally **not** listed: language
+filtering is served as `/{spec_id}?language={language}` (the hub with a filter
+query param, same canonical as the unfiltered hub), so listing it would create
+duplicate-content entries for Google.
 
 ### Included URLs
 
 1. Home page (`/`)
 2. Plots page (`/plots`)
 3. Legal page (`/legal`)
-4. Spec overview pages (`/{spec_id}`) - only if spec has implementations
-5. Implementation pages (`/{spec_id}/{library}`) - all implementations
+4. Spec overview pages (`/{spec_id}`) — only if spec has implementations
+5. Implementation pages (`/{spec_id}/{language}/{library}`) — all implementations
 
 ### nginx Proxy
 
@@ -328,15 +334,22 @@ existing Python URLs.
 |-----|---------|-----------|
 | `/` | Landing | self |
 | `/{spec_id}` | Cross-language hub — lists every implementation across all languages | self |
-| `/{spec_id}/{language}` | Language overview — all libraries for that language | self |
+| `/{spec_id}?language={language}` | Hub filtered to one language (client-side filter) | `/{spec_id}` (without query) |
 | `/{spec_id}/{language}/{library}` | Implementation detail — preview ↔ interactive toggle | self |
 | `/{spec_id}/{language}/{library}?view=interactive` | Same page, interactive iframe pre-selected | base URL without query |
 | `/plots`, `/specs`, `/libraries`, `/palette`, `/about`, `/legal`, `/mcp`, `/stats` | Static pages | self |
 
-The interactive view is no longer a separate route — the spec detail page
-toggles between a static preview image and the interactive HTML iframe in
-place. `?view=interactive` is a deep-link parameter only; the canonical tag
-always points at the base URL without the query string.
+There is intentionally no canonical `/{spec_id}/{language}` URL. Language
+filtering is served via a `?language=` query param on the hub, and the hub's
+canonical tag omits the query — so the hub and its language-filtered variants
+all consolidate on the same canonical URL. Legacy links to
+`/{spec_id}/{language}` redirect to `/{spec_id}?language={language}` (SPA
+client-side redirect via `app/src/router.tsx`; bots get a 301 from
+`/seo-proxy/{spec_id}/{language}` to `/seo-proxy/{spec_id}`).
+
+The interactive view follows the same pattern: `?view=interactive` is a
+deep-link parameter only; the canonical tag always points at the base URL
+without the query string.
 
 ### Reserved Spec Slugs
 
@@ -359,19 +372,20 @@ sitemap stops listing those URLs, and Google removes them on next crawl.
 ### Marketing Subdomain
 
 `python.anyplot.ai` is served by a dedicated nginx server block
-(`app/nginx.conf`) that internally rewrites incoming requests so each spec
-URL gains a `/python` language segment before it reaches the SEO proxy:
+(`app/nginx.conf`) that proxies bot requests to the main-domain hub / detail
+proxies:
 
 | Subdomain URL | Internal rewrite | Canonical (in HTML) |
 |---|---|---|
-| `python.anyplot.ai/{spec_id}` | `/seo-proxy/{spec_id}/python` | `https://anyplot.ai/{spec_id}/python` |
+| `python.anyplot.ai/{spec_id}` | `/seo-proxy/{spec_id}` | `https://anyplot.ai/{spec_id}` |
 | `python.anyplot.ai/{spec_id}/{library}` | `/seo-proxy/{spec_id}/python/{library}` | `https://anyplot.ai/{spec_id}/python/{library}` |
 
 The user keeps the marketing-friendly hostname; Google sees a canonical on the
-main domain so authority and ranking signals stay consolidated. Human visitors
-require the SPA to detect `window.location.hostname === 'python.anyplot.ai'`
-and inject `python` as the language when resolving routes — that hostname-aware
-SPA layer is gated as a follow-up before flipping DNS.
+main-domain hub so authority and ranking signals stay consolidated on a single
+URL. Human visitors: the SPA may detect
+`window.location.hostname === 'python.anyplot.ai'` and append
+`?language=python` on spec routes so the grid renders filtered without
+changing the canonical.
 
 ### Path Utility
 
@@ -390,7 +404,9 @@ When adding Julia, R, or MATLAB:
    `/{spec_id}/julia/{library_id}`; sitemap and OG image routes pick them up.
 3. The cross-language hub `/{spec_id}` lists the new language's
    implementations alongside Python's — no per-spec migration needed.
-4. Optionally add a `julia.anyplot.ai` server block mirroring the Python one.
+4. Users can filter the hub to a single language via `/{spec_id}?language=julia`
+   (no new canonical URL is created; the filter is UX-only).
+5. Optionally add a `julia.anyplot.ai` server block mirroring the Python one.
 
 ## Security
 

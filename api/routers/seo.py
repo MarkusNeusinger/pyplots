@@ -1,10 +1,11 @@
 """SEO endpoints (sitemap, bot-optimized pages)."""
 
 import html
+import re
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import HTMLResponse, Response
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.cache import cache_key, get_cache, get_or_set_cache, set_cache
@@ -16,6 +17,11 @@ from core.database.connection import get_db_context
 
 router = APIRouter(tags=["seo"])
 
+# Canonical spec-id shape — lowercase alphanumerics with hyphen separators.
+# Same pattern enforced in automation/scripts/sync_to_postgres.py. Used here to
+# constrain user-controlled path segments before they land in Location headers.
+_SPEC_ID_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
+
 
 def _lastmod(dt: datetime | None) -> str:
     """Format datetime as <lastmod> XML element, or empty string if None."""
@@ -25,10 +31,13 @@ def _lastmod(dt: datetime | None) -> str:
 def _build_sitemap_xml(specs: list) -> str:
     """Build sitemap XML string from specs.
 
-    Emits three URL tiers per spec:
-      - /{spec_id}                       Cross-language hub
-      - /{spec_id}/{language}            Language overview
+    Emits two URL tiers per spec:
+      - /{spec_id}                       Cross-language hub (canonical overview)
       - /{spec_id}/{language}/{library}  Implementation detail
+
+    The /{spec_id}/{language} tier is intentionally omitted: language filtering
+    is served as /{spec_id}?language={language} (filtered hub, same canonical),
+    so listing it would create duplicate-content entries for Google.
     """
     xml_lines = [
         '<?xml version="1.0" encoding="UTF-8"?>',
@@ -48,21 +57,7 @@ def _build_sitemap_xml(specs: list) -> str:
         if not spec.impls:
             continue
         spec_id = html.escape(spec.id)
-        # Cross-language hub
         xml_lines.append(f"  <url><loc>https://anyplot.ai/{spec_id}</loc>{_lastmod(spec.updated)}</url>")
-        # Language overviews + implementation details, grouped per language
-        languages = sorted({impl.library.language for impl in spec.impls if impl.library})
-        for language in languages:
-            language_esc = html.escape(language)
-            language_updates = [
-                impl.updated
-                for impl in spec.impls
-                if impl.library and impl.library.language == language and impl.updated is not None
-            ]
-            language_lastmod = max(language_updates) if language_updates else spec.updated
-            xml_lines.append(
-                f"  <url><loc>https://anyplot.ai/{spec_id}/{language_esc}</loc>{_lastmod(language_lastmod)}</url>"
-            )
         for impl in spec.impls:
             if not impl.library:
                 continue
@@ -318,40 +313,19 @@ async def seo_spec_hub(spec_id: str, db: AsyncSession | None = Depends(optional_
 
 
 @router.get("/seo-proxy/{spec_id}/{language}")
-async def seo_spec_language(spec_id: str, language: str, db: AsyncSession | None = Depends(optional_db)):
-    """Bot-optimized language-specific spec overview."""
-    if db is None:
-        return HTMLResponse(
-            BOT_HTML_TEMPLATE.format(
-                title=f"{html.escape(spec_id)} - {html.escape(language)} | anyplot.ai",
-                description=DEFAULT_DESCRIPTION,
-                image=DEFAULT_HOME_IMAGE,
-                url=f"https://anyplot.ai/{html.escape(spec_id)}/{html.escape(language)}",
-            )
-        )
+async def seo_spec_language(spec_id: str, language: str):
+    """Permanent redirect: language-overview URLs now live on the hub with ?language=.
 
-    key = cache_key("seo", spec_id, language)
-    cached = get_cache(key)
-    if cached:
-        return HTMLResponse(cached)
-
-    repo = SpecRepository(db)
-    spec = await repo.get_by_id(spec_id)
-    if not spec:
+    The /{spec_id}/{language} tier was consolidated into /{spec_id} to eliminate
+    duplicate content. Bots following this endpoint get a 301 to the hub proxy;
+    humans get the SPA redirect configured in app/src/router.tsx. The `language`
+    query parameter is dropped because the hub's canonical tag does not include
+    it — Google should consolidate the page, not a filtered variant.
+    """
+    del language  # referenced for route matching only; deliberately not forwarded
+    if not _SPEC_ID_RE.fullmatch(spec_id):
         raise HTTPException(status_code=404, detail="Spec not found")
-
-    lang_impls = [i for i in spec.impls if i.library and i.library.language == language]
-    has_previews = any(i.preview_url for i in lang_impls)
-    image = f"https://api.anyplot.ai/og/{spec_id}.png" if has_previews else DEFAULT_HOME_IMAGE
-
-    result = BOT_HTML_TEMPLATE.format(
-        title=f"{html.escape(spec.title)} - {html.escape(language)} | anyplot.ai",
-        description=html.escape(spec.description or DEFAULT_DESCRIPTION),
-        image=html.escape(image, quote=True),
-        url=f"https://anyplot.ai/{html.escape(spec_id)}/{html.escape(language)}",
-    )
-    set_cache(key, result)
-    return HTMLResponse(result)
+    return RedirectResponse(url=f"/seo-proxy/{spec_id}", status_code=301)
 
 
 @router.get("/seo-proxy/{spec_id}/{language}/{library}")

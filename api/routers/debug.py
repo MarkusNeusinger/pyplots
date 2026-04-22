@@ -5,11 +5,13 @@ from __future__ import annotations
 import time
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.cache import clear_cache, get_cache_stats
 from api.dependencies import require_db
+from core.config import settings
 from core.constants import SUPPORTED_LIBRARIES
 from core.database import SpecRepository
 
@@ -282,4 +284,32 @@ async def get_debug_status(request: Request, db: AsyncSession = Depends(require_
         missing_tags_specs=missing_tags[:20],  # Limit to 20
         system=system_health,
         specs=specs_status,
+    )
+
+
+class CacheInvalidateResponse(BaseModel):
+    cleared: int
+    maxsize: int
+    ttl: int
+
+
+@router.post("/cache/invalidate", response_model=CacheInvalidateResponse)
+async def invalidate_cache(x_cache_token: str | None = Header(default=None)) -> CacheInvalidateResponse:
+    """Flush the in-memory response cache.
+
+    Called by sync-postgres at the end of a successful sync so clients see
+    fresh data without waiting for TTL expiry. Requires the shared token
+    `CACHE_INVALIDATE_TOKEN` in the `X-Cache-Token` header; returns 503 if
+    no token is configured on the server.
+    """
+    expected = settings.cache_invalidate_token
+    if not expected:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Cache invalidation not configured")
+    if x_cache_token != expected:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid cache token")
+
+    stats_before = get_cache_stats()
+    clear_cache()
+    return CacheInvalidateResponse(
+        cleared=stats_before["size"], maxsize=stats_before["maxsize"], ttl=stats_before["ttl"]
     )

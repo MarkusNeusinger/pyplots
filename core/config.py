@@ -143,6 +143,12 @@ class Settings(BaseSettings):
     cache_maxsize: int = 1000
     """Maximum number of cache entries"""
 
+    cache_invalidate_token: Optional[str] = None
+    """Shared secret required by the POST /debug/cache/invalidate endpoint.
+    When unset, the endpoint is disabled (503). Set via Secret Manager in Cloud Run
+    and as a GitHub Actions secret so sync-postgres can invalidate the cache after
+    writing new data to PostgreSQL."""
+
     # =============================================================================
     # CORS
     # =============================================================================

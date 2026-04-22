@@ -71,6 +71,24 @@ jobs:
         GCS_BUCKET: ${{ vars.GCS_BUCKET || 'anyplot-images' }}
         ENVIRONMENT: production
 
+    - name: Invalidate API cache
+      env:
+        API_URL: ${{ vars.API_BASE_URL || 'https://api.anyplot.ai' }}
+        CACHE_INVALIDATE_TOKEN: ${{ secrets.CACHE_INVALIDATE_TOKEN }}
+      run: |
+        if [ -z "${CACHE_INVALIDATE_TOKEN}" ]; then
+          echo "CACHE_INVALIDATE_TOKEN not set — skipping cache invalidation (cache will fall back to TTL expiry)"
+          exit 0
+        fi
+        status=$(curl -sS -o /tmp/invalidate.json -w '%{http_code}' \
+          -X POST "${API_URL}/debug/cache/invalidate" \
+          -H "X-Cache-Token: ${CACHE_INVALIDATE_TOKEN}")
+        echo "HTTP ${status}"
+        cat /tmp/invalidate.json || true
+        if [ "${status}" != "200" ]; then
+          echo "::warning::Cache invalidation returned HTTP ${status} (sync succeeded; cache will fall back to TTL expiry)"
+        fi
+
     - name: Summary
       run: |
         echo "### Sync Complete" >> $GITHUB_STEP_SUMMARY

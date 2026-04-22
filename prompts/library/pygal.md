@@ -45,29 +45,46 @@ chart.x_labels = ['A', 'B', 'C', 'D']
 ## Save
 
 ```python
-# SVG (native)
-chart.render_to_file('plot.svg')
+import os
+THEME = os.getenv("ANYPLOT_THEME", "light")
 
-# PNG (requires cairosvg)
-chart.render_to_png('plot.png')
+chart.render_to_file(f'plot-{THEME}.svg')                 # SVG (native)
+chart.render_to_png(f'plot-{THEME}.png')                  # PNG (requires cairosvg)
+
+# Interactive HTML (pygal renders interactive JS charts)
+with open(f'plot-{THEME}.html', 'wb') as f:
+    f.write(chart.render())
 ```
 
-## Sizing for 4800×2700 px
+## Sizing + Theme for 4800×2700 px
+
+pygal's `Style` object carries ALL theme tokens. Derive them from `ANYPLOT_THEME`.
 
 ```python
+import os
+from pygal.style import Style
+
+THEME       = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG     = "#FAF8F1" if THEME == "light" else "#1A1A17"
+INK         = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_MUTED   = "#8A8A82" if THEME == "light" else "#6E6D66"
+
+OKABE_ITO = ('#009E73', '#D55E00', '#0072B2', '#CC79A7',
+             '#E69F00', '#56B4E9', '#F0E442')
+
 custom_style = Style(
-    background='white',
-    plot_background='white',
-    foreground='#333',
-    foreground_strong='#333',
-    foreground_subtle='#666',
-    colors=('#306998',),  # AI adds more as needed for multi-series
+    background=PAGE_BG,
+    plot_background=PAGE_BG,
+    foreground=INK,                 # primary text
+    foreground_strong=INK,          # title
+    foreground_subtle=INK_MUTED,    # tick labels, grid tone
+    colors=OKABE_ITO,               # first series = brand green
     title_font_size=28,
     label_font_size=18,
     major_label_font_size=16,
     legend_font_size=16,
     value_font_size=14,
-    stroke_width=3              # line width
+    stroke_width=3,
 )
 
 chart = pygal.Bar(style=custom_style)
@@ -84,30 +101,25 @@ chart = pygal.Bar(
 
 ## Colors
 
+Use the Okabe-Ito palette (see `prompts/default-style-guide.md` "Categorical Palette"). First series is **always** `#009E73`. For pygal, the palette is always passed via the `Style` object — see the Sizing + Theme section above.
+
 ```python
-# Single-series: always Python Blue
-custom_style = Style(
-    colors=('#306998',),
-)
+OKABE_ITO = ('#009E73', '#D55E00', '#0072B2', '#CC79A7',
+             '#E69F00', '#56B4E9', '#F0E442')
 
-# Multi-series: AI picks cohesive palette starting with Python Blue
-custom_style = Style(
-    colors=('#306998', ...),  # AI selects additional colors
-)
+# Single-series: OKABE_ITO[0] is still the first color pygal cycles through
+custom_style = Style(..., colors=OKABE_ITO)
 
-# Colorblind-safe required. Avoid red-green as only distinguishing feature.
+# Continuous data: pygal doesn't have built-in cmaps. For heatmap-like scales,
+# interpolate manually from viridis via matplotlib (e.g., matplotlib.cm.viridis(t))
+# and pass the resulting hex tuple as `colors`.
 ```
 
 ## Grid Opacity
 
-Pygal does not expose a grid alpha parameter directly. Use subtle foreground colors to keep grids non-dominant:
+Pygal doesn't expose a grid alpha parameter. The theme-adaptive `foreground_subtle` (tied to `INK_MUTED`) keeps grid lines subtle without manual tuning — both light and dark themes already use the correct muted tone.
 
-```python
-custom_style = Style(
-    foreground_subtle='#cccccc',  # Light gray for grid lines
-)
-```
+## Output Files
 
-## Output File
-
-`plots/{spec-id}/implementations/pygal.py`
+- Implementation: `plots/{spec-id}/implementations/pygal.py` — executed twice with different `ANYPLOT_THEME`.
+- Generated artifacts: `plot-light.png` + `plot-dark.png` + `plot-light.html` + `plot-dark.html` (pygal is interactive).

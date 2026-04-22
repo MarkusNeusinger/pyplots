@@ -24,10 +24,18 @@ Read both sources to understand what needs to be fixed:
 
 ## Step 2: Read reference files
 
-1. `prompts/library/{LIBRARY}.md` - Library-specific rules
-2. `plots/{SPEC_ID}/specification.md` - The specification
+1. `prompts/library/{LIBRARY}.md` - Library-specific rules + theme-adaptive chrome mapping
+2. `prompts/default-style-guide.md` - Canonical Okabe-Ito palette + theme tokens (re-read if VQ-07 or VQ-04 failed)
+3. `plots/{SPEC_ID}/specification.md` - The specification
 
 **Do NOT re-read `prompts/quality-criteria.md`** — the review already distilled all criteria into `review.criteria_checklist` in the metadata YAML (Step 1). Use that checklist directly: items with `passed: false` are the ones to fix.
+
+**Common VQ-07 failures and fixes:**
+- Legacy `#306998` still in code → replace with `#009E73` (Okabe-Ito position 1).
+- First series not brand green → rewrite so the primary category renders in `#009E73`.
+- `jet`/`hsv`/`rainbow` cmap for continuous → switch to `viridis`/`cividis` or `BrBG`.
+- Pure `#FFFFFF` / `#000000` background → use `#FAF8F1` / `#1A1A17` via the `ANYPLOT_THEME` token block.
+- Chrome wrong-theme (dark text on dark bg) → wire up all title/axis/tick/grid/legend colors to the `INK`/`INK_SOFT` tokens.
 
 ## Step 3: Read current implementation
 
@@ -40,17 +48,20 @@ Based on the AI feedback, fix:
 - Code quality issues
 - Spec compliance issues
 
-## Step 5: Test the fix
+## Step 5: Test the fix (BOTH themes)
 
 ```bash
 source .venv/bin/activate
 cd plots/{SPEC_ID}/implementations
-MPLBACKEND=Agg python {LIBRARY}.py
+MPLBACKEND=Agg ANYPLOT_THEME=light python {LIBRARY}.py
+MPLBACKEND=Agg ANYPLOT_THEME=dark  python {LIBRARY}.py
 ```
+
+Both renders must succeed.
 
 ## Step 6: Visual self-check
 
-View `plot.png` and verify fixes are correct.
+View `plot-light.png` AND `plot-dark.png`. Verify the failed criteria are now fixed in both renders — and confirm the data colors are identical across themes (only chrome should flip).
 
 ## Step 7: Format the code
 

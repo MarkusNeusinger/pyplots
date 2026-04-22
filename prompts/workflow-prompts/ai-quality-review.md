@@ -25,14 +25,19 @@ Evaluate if the **${LIBRARY}** implementation matches the specification for `${S
 ### 4. Read the Impl-Tags Guide
 `prompts/impl-tags-generator.md` (for step 9)
 
-### 5. MANDATORY: View the Generated Plot
+### 5. MANDATORY: View BOTH Generated Plots (Light AND Dark)
 
-You MUST use the Read tool to open `plot_images/plot.png` and visually analyze the image.
+You MUST use the Read tool to open **both** `plot_images/plot-light.png` AND `plot_images/plot-dark.png` and visually analyze each image.
 
-- Compare with the spec requirements
-- A review without seeing the image is **invalid**
-- If the image cannot be read, STOP and report the error
-- Your review MUST include the "Image Description" section proving you looked at the image
+- Compare both renders with the spec requirements.
+- The Okabe-Ito data colors (positions 1–7) must be **identical** between light and dark — only chrome (background, text, grid, legend frames) flips.
+- A review without seeing both images is **invalid**.
+- If one or both images cannot be read, STOP and report the error (pipeline failure — flag in `weaknesses`).
+- Your review MUST include an "Image Description" section that describes **both** renders, proving you looked at them.
+
+### 5b. Consult the Style Guide for Palette + Theme Rules
+
+Read `prompts/default-style-guide.md` — the "Categorical Palette" (Okabe-Ito), "Continuous Data" (viridis/cividis/BrBG), and "Theme-adaptive Chrome" sections are the authoritative reference for VQ-07 scoring.
 
 ### 6. Check for Auto-Reject (AR-08)
 
@@ -53,12 +58,13 @@ Read `prompts/quality-criteria.md` and evaluate:
 #### Visual Quality (30 pts)
 | ID | Criterion | Max | Check |
 |----|-----------|-----|-------|
-| VQ-01 | Text Legibility | 8 | Font sizes explicitly set? Readable at full size? |
+| VQ-01 | Text Legibility | 8 | Font sizes explicitly set? Readable at full size in BOTH themes? |
 | VQ-02 | No Overlap | 6 | All text readable? No collisions? |
 | VQ-03 | Element Visibility | 6 | Markers/lines adapted to density? |
-| VQ-04 | Color Accessibility | 4 | Colorblind-safe? Good contrast? |
+| VQ-04 | Color Accessibility | 2 | Adequate contrast + CVD-safe (beyond palette)? No red-green as sole signal? |
 | VQ-05 | Layout & Canvas | 4 | Good proportions? Nothing cut off? |
 | VQ-06 | Axis Labels & Title | 2 | Descriptive with units? |
+| VQ-07 | Palette Compliance | 2 | First categorical series = `#009E73`? Multi-series follows Okabe-Ito order? Continuous data uses `viridis`/`cividis`/`BrBG`? Plot backgrounds are `#FAF8F1` (light) / `#1A1A17` (dark)? Both renders theme-correct? |
 
 #### Design Excellence (20 pts)
 | ID | Criterion | Max | Check |
@@ -91,7 +97,7 @@ Read `prompts/quality-criteria.md` and evaluate:
 | CQ-02 | Reproducibility | 2 | Seed or deterministic? |
 | CQ-03 | Clean Imports | 2 | Only used imports? |
 | CQ-04 | Code Elegance | 2 | Appropriate complexity? No fake UI? |
-| CQ-05 | Output & API | 1 | Saves as plot.png? Current API? |
+| CQ-05 | Output & API | 1 | Saves as `plot-{THEME}.png` (+ `plot-{THEME}.html` for interactive libs)? No bare `plot.png`? Current API? |
 
 #### Library Mastery (10 pts)
 | ID | Criterion | Max | Check |
@@ -139,9 +145,10 @@ Use this EXACT format:
 - [x] VQ-01: Text Legibility (X/8)
 - [x] VQ-02: No Overlap (X/6)
 - [x] VQ-03: Element Visibility (X/6)
-- [x] VQ-04: Color Accessibility (X/4)
+- [x] VQ-04: Color Accessibility (X/2)
 - [x] VQ-05: Layout & Canvas (X/4)
 - [x] VQ-06: Axis Labels & Title (X/2)
+- [x] VQ-07: Palette Compliance (X/2)
 
 ### Design Excellence (XX/20)
 - [ ] DE-01: Aesthetic Sophistication (X/8) - Generic defaults
@@ -207,10 +214,11 @@ echo '["Weakness 1"]' > review_weaknesses.json
 # Verdict (APPROVED or REJECTED)
 echo "APPROVED" > review_verdict.txt
 
-# Image description (multi-line text proving you viewed the image)
+# Image description (multi-line text proving you viewed BOTH renders)
 cat > review_image_description.txt << 'EOF'
-The plot shows a scatter plot with blue markers...
-[Your full image description here]
+Light render (plot-light.png): [describe colors, background, chrome, data representation]
+Dark render (plot-dark.png):   [describe the same elements — confirm data colors are identical; only chrome flipped]
+[Full descriptions for both renders here]
 EOF
 
 # Criteria checklist as structured JSON

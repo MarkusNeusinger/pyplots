@@ -76,6 +76,10 @@ with urllib.request.urlopen(highcharts_url, timeout=30) as response:
 #     highcharts_more_js = response.read().decode("utf-8")
 
 # Generate HTML with INLINE scripts (not CDN links!)
+# Note: PAGE_BG comes from the Theme-adaptive Chrome section below — already tied to ANYPLOT_THEME
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+
 html_str = chart.to_js_literal()
 html_content = f"""<!DOCTYPE html>
 <html>
@@ -83,14 +87,17 @@ html_content = f"""<!DOCTYPE html>
     <meta charset="utf-8">
     <script>{highcharts_js}</script>
 </head>
-<body style="margin:0;">
+<body style="margin:0; background:{PAGE_BG};">
     <div id="container" style="width: 4800px; height: 2700px;"></div>
     <script>{html_str}</script>
 </body>
 </html>"""
 
-# Write temp HTML and take screenshot
-# IMPORTANT: Use encoding="utf-8" for special characters in Highcharts JS
+# Save the HTML artifact for the site (both themes)
+with open(f"plot-{THEME}.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+# Write temp HTML and take screenshot for the PNG artifact
 with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encoding="utf-8") as f:
     f.write(html_content)
     temp_path = f.name
@@ -105,7 +112,7 @@ chrome_options.add_argument("--window-size=4800,2700")
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
 time.sleep(5)  # Wait for chart to render
-driver.save_screenshot("plot.png")
+driver.save_screenshot(f"plot-{THEME}.png")
 driver.quit()
 
 Path(temp_path).unlink()  # Clean up temp file
@@ -113,25 +120,9 @@ Path(temp_path).unlink()  # Clean up temp file
 
 ## Sizing for 4800×2700 px
 
+Size + text sizes + marker sizes (the theme/color concerns are covered in the "Theme-adaptive Chrome" section below — do not duplicate):
+
 ```python
-chart.options.chart = {
-    'type': 'column',
-    'width': 4800,
-    'height': 2700,
-    'backgroundColor': '#ffffff'
-}
-
-# Text sizes
-chart.options.title = {'text': title, 'style': {'fontSize': '28px'}}
-chart.options.x_axis = {
-    'title': {'text': x_label, 'style': {'fontSize': '22px'}},
-    'labels': {'style': {'fontSize': '18px'}}
-}
-chart.options.y_axis = {
-    'title': {'text': y_label, 'style': {'fontSize': '22px'}},
-    'labels': {'style': {'fontSize': '18px'}}
-}
-
 # Marker sizes (in plotOptions)
 chart.options.plot_options = {
     'scatter': {'marker': {'radius': 8}},  # ~3-4x default
@@ -139,9 +130,10 @@ chart.options.plot_options = {
 }
 ```
 
-## Output File
+## Output Files
 
-`plots/{spec-id}/implementations/highcharts.py`
+- Implementation: `plots/{spec-id}/implementations/highcharts.py` — executed twice with different `ANYPLOT_THEME`.
+- Generated artifacts: `plot-light.png` + `plot-dark.png` + `plot-light.html` + `plot-dark.html`.
 
 ## Common Pitfalls
 
@@ -157,13 +149,58 @@ chart.options.plot_options = {
 
 ## Colors
 
+Use the Okabe-Ito palette (see `prompts/default-style-guide.md` "Categorical Palette"). First series is **always** `#009E73`.
+
 ```python
-# Single-series: always Python Blue
-colors = ["#306998"]
+OKABE_ITO = ["#009E73", "#D55E00", "#0072B2", "#CC79A7",
+             "#E69F00", "#56B4E9", "#F0E442"]
 
-# Multi-series: AI picks cohesive palette starting with Python Blue
-# No hardcoded second color — choose what works for the data
-colors = ["#306998", ...]  # AI selects additional colors
+# Single-series via chart-level colors (first is used)
+chart.options.colors = OKABE_ITO[:1]
 
-# Colorblind-safe required. Avoid red-green as only distinguishing feature.
+# Multi-series: assign the full palette; highcharts picks per-series in order
+chart.options.colors = OKABE_ITO
+
+# Continuous — NOT Okabe-Ito. Use minColor/maxColor or stops for heatmap/treemap:
+chart.options.color_axis = {
+    'minColor': '#FFF7BC',   # light side of a viridis-like ramp
+    'maxColor': '#014636',
+    'stops': [[0, '#440154'], [0.5, '#21908C'], [1, '#FDE725']],  # viridis stops
+}
+```
+
+## Theme-adaptive Chrome (highcharts mapping)
+
+Every chart option that governs color must be tied to `ANYPLOT_THEME`:
+
+```python
+import os
+THEME       = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG     = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK         = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT    = "#4A4A44" if THEME == "light" else "#B8B7B0"
+GRID        = "rgba(26,26,23,0.10)" if THEME == "light" else "rgba(240,239,232,0.10)"
+
+chart.options.chart = {
+    'type': 'column',
+    'width': 4800, 'height': 2700,
+    'backgroundColor': PAGE_BG,
+    'style': {'color': INK},
+}
+chart.options.title = {'text': title, 'style': {'fontSize': '28px', 'color': INK}}
+chart.options.x_axis = {
+    'title': {'text': x_label, 'style': {'fontSize': '22px', 'color': INK}},
+    'labels': {'style': {'fontSize': '18px', 'color': INK_SOFT}},
+    'lineColor': INK_SOFT, 'tickColor': INK_SOFT, 'gridLineColor': GRID,
+}
+chart.options.y_axis = {
+    'title': {'text': y_label, 'style': {'fontSize': '22px', 'color': INK}},
+    'labels': {'style': {'fontSize': '18px', 'color': INK_SOFT}},
+    'lineColor': INK_SOFT, 'tickColor': INK_SOFT, 'gridLineColor': GRID,
+}
+chart.options.legend = {
+    'itemStyle': {'color': INK_SOFT},
+    'backgroundColor': ELEVATED_BG, 'borderColor': INK_SOFT, 'borderWidth': 1,
+}
 ```

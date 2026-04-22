@@ -72,19 +72,66 @@ p.line(..., line_width=3)
 
 ## Colors
 
+Use the Okabe-Ito palette (see `prompts/default-style-guide.md` "Categorical Palette"). First series is **always** `#009E73`.
+
 ```python
-# Single-series: always Python Blue
-color = '#306998'
+OKABE_ITO = ['#009E73', '#D55E00', '#0072B2', '#CC79A7',
+             '#E69F00', '#56B4E9', '#F0E442']
 
-# Multi-series: AI picks cohesive palette starting with Python Blue
-# No hardcoded second color — choose what works for the data
-colors = ['#306998', ...]  # AI selects additional colors
+# Single-series
+p.scatter(x, y, color=OKABE_ITO[0])
 
-# Colorblind-safe required. Avoid red-green as only distinguishing feature.
-# For sequential data: use perceptually-uniform colormaps (viridis, plasma, cividis)
+# Multi-series: iterate in canonical order
+for i, group in enumerate(groups):
+    p.scatter(..., color=OKABE_ITO[i], legend_label=group)
+
+# Continuous — NOT Okabe-Ito. Use bokeh's built-in palettes:
+from bokeh.palettes import Viridis256, Cividis256, BrBG11
+#   Sequential: Viridis256, Cividis256
+#   Diverging:  BrBG11 (or BrBG9 for coarser binning)
 ```
 
-## Output File
+## Theme-adaptive Chrome (bokeh mapping)
 
-`plots/{spec-id}/implementations/bokeh.py`
+```python
+import os
+THEME       = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG     = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK         = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT    = "#4A4A44" if THEME == "light" else "#B8B7B0"
+
+p.background_fill_color = PAGE_BG
+p.border_fill_color     = PAGE_BG
+p.outline_line_color    = INK_SOFT
+
+p.title.text_color      = INK
+p.xaxis.axis_label_text_color = INK
+p.yaxis.axis_label_text_color = INK
+p.xaxis.major_label_text_color = INK_SOFT
+p.yaxis.major_label_text_color = INK_SOFT
+p.xaxis.axis_line_color = INK_SOFT
+p.yaxis.axis_line_color = INK_SOFT
+p.xaxis.major_tick_line_color = INK_SOFT
+p.yaxis.major_tick_line_color = INK_SOFT
+
+p.xgrid.grid_line_color = INK
+p.ygrid.grid_line_color = INK
+p.xgrid.grid_line_alpha = 0.10
+p.ygrid.grid_line_alpha = 0.10
+
+if p.legend:
+    p.legend.background_fill_color = ELEVATED_BG
+    p.legend.border_line_color     = INK_SOFT
+    p.legend.label_text_color      = INK_SOFT
+
+from bokeh.io import export_png, output_file, save
+export_png(p, filename=f'plot-{THEME}.png')
+output_file(f'plot-{THEME}.html'); save(p)
+```
+
+## Output Files
+
+- Implementation: `plots/{spec-id}/implementations/bokeh.py` — executed twice with different `ANYPLOT_THEME`.
+- Generated artifacts: `plot-light.png` + `plot-dark.png` + `plot-light.html` + `plot-dark.html`.
 

@@ -38,8 +38,9 @@ You evaluate implementations that passed all auto-reject checks. Focus purely on
 
 1. **Specification**: From `plots/{spec-id}/specification.md`
 2. **Code**: From `plots/{spec-id}/implementations/{library}.py`
-3. **Preview**: Generated plot image (PNG)
+3. **Previews**: BOTH theme renders of the plot image — `plot-light.png` and `plot-dark.png`. You must inspect both. For interactive libraries, also `plot-light.html` and `plot-dark.html`.
 4. **Library Rules**: From `prompts/library/{library}.md`
+5. **Style Guide** (canonical palette + theme tokens): `prompts/default-style-guide.md` — consult its "Categorical Palette", "Continuous Data", "Background", and "Theme-adaptive Chrome" sections for VQ-07 scoring.
 
 ## Scoring Philosophy: STRICT
 
@@ -91,13 +92,14 @@ You evaluate implementations that passed all auto-reject checks. Focus purely on
   "pass": false,
 
   "visual_quality": {
-    "total": 24,
+    "total": 23,
     "vq01_text_legibility": {"score": 5, "max": 8, "note": "Readable but relying on defaults"},
     "vq02_no_overlap": {"score": 6, "max": 6, "note": "No overlap"},
     "vq03_element_visibility": {"score": 5, "max": 6, "note": "Markers visible but could be larger"},
-    "vq04_color_accessibility": {"score": 4, "max": 4, "note": "Good colorblind-safe palette"},
+    "vq04_color_accessibility": {"score": 2, "max": 2, "note": "Good contrast, CVD-safe"},
     "vq05_layout_canvas": {"score": 2, "max": 4, "note": "Some wasted space"},
-    "vq06_axis_labels_title": {"score": 2, "max": 2, "note": "Descriptive with units"}
+    "vq06_axis_labels_title": {"score": 2, "max": 2, "note": "Descriptive with units"},
+    "vq07_palette_compliance": {"score": 1, "max": 2, "note": "Okabe-Ito palette used but first series is #0072B2 instead of brand #009E73"}
   },
 
   "design_excellence": {
@@ -168,14 +170,17 @@ If found: `auto_reject: "AR-08"`, score = 0, stop evaluation.
 
 ### Step 1: Visual Quality (30 pts)
 
+**Inspect BOTH `plot-light.png` AND `plot-dark.png`.** The data colors (Okabe-Ito positions 1–7) must be identical across themes; only chrome (background, text, grid, legend frame) flips. If only one render is provided, that is a pipeline failure — flag in `weaknesses`, score VQ-07 accordingly.
+
 | ID | Criterion | Max | Key Question |
 |----|-----------|-----|--------------|
-| VQ-01 | Text Legibility | 8 | All text readable at full size? Font sizes **explicitly set** (not defaults)? |
+| VQ-01 | Text Legibility | 8 | All text readable at full size? Font sizes **explicitly set** (not defaults)? Readable in BOTH themes? |
 | VQ-02 | No Overlap | 6 | Any overlapping text? Tick labels? Legend on data? |
 | VQ-03 | Element Visibility | 6 | Markers/lines adapted to data density? |
-| VQ-04 | Color Accessibility | 4 | Colorblind-safe? No red-green only? |
+| VQ-04 | Color Accessibility | 2 | Adequate contrast + CVD-safe (beyond palette choice)? No red-green as sole distinguishing signal? |
 | VQ-05 | Layout & Canvas | 4 | Good proportions? Nothing cut off? |
 | VQ-06 | Axis Labels & Title | 2 | Descriptive with units? |
+| VQ-07 | Palette Compliance | 2 | First categorical series = `#009E73`? Multi-series follows Okabe-Ito order? Continuous data uses `viridis`/`cividis`/`BrBG`? Plot background is `#FAF8F1` (light) / `#1A1A17` (dark) — never pure white/black? Both renders theme-correct? |
 
 ### Step 2: Design Excellence (20 pts)
 
@@ -225,7 +230,7 @@ Only award full points (5/5) for real, neutral contexts:
 | CQ-02 | Reproducibility | 2 | Fixed seed or deterministic? |
 | CQ-03 | Clean Imports | 2 | Only used imports? (data utilities count as used) |
 | CQ-04 | Code Elegance | 2 | Appropriate complexity? No fake UI elements? No over-engineering? |
-| CQ-05 | Output & API | 1 | Saves as `plot.png`? No deprecated functions? |
+| CQ-05 | Output & API | 1 | Saves as `plot-{THEME}.png` (+ `plot-{THEME}.html` for interactive libs)? No deprecated functions? No bare `plot.png`? |
 
 **Note on cross-library usage:** Using data utilities from other libraries (e.g., `sns.load_dataset()` in a highcharts plot, `sklearn.datasets` in plotly) is allowed and should NOT be penalized. Only using other libraries' **plotting functions** is forbidden.
 

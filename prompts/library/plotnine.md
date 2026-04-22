@@ -107,17 +107,60 @@ geom_tile()      # Heatmap
 
 ## Colors
 
+Use the Okabe-Ito palette (see `prompts/default-style-guide.md` "Categorical Palette"). First series is **always** `#009E73`.
+
 ```python
-# Single-series: always Python Blue
-+ geom_point(color='#306998')
+OKABE_ITO = ['#009E73', '#D55E00', '#0072B2', '#CC79A7',
+             '#E69F00', '#56B4E9', '#F0E442']
 
-# Multi-series: AI picks cohesive palette starting with Python Blue
-+ scale_color_manual(values=['#306998', ...])  # AI selects additional colors
+# Single-series
++ geom_point(color=OKABE_ITO[0])
 
-# Colorblind-safe required. Avoid red-green as only distinguishing feature.
-# For sequential data: use perceptually-uniform colormaps
+# Multi-series
++ scale_color_manual(values=OKABE_ITO)
++ scale_fill_manual(values=OKABE_ITO)
+
+# Continuous — NOT Okabe-Ito:
+from plotnine import scale_color_cmap, scale_fill_cmap
++ scale_color_cmap(cmap_name='viridis')          # sequential
++ scale_color_cmap(cmap_name='cividis')          # sequential CVD
++ scale_fill_cmap(cmap_name='BrBG')              # diverging
 ```
 
-## Output File
+## Theme-adaptive Chrome (plotnine mapping)
 
-`plots/{spec-id}/implementations/plotnine.py`
+plotnine wraps matplotlib under the hood, so theme tokens mirror the matplotlib pattern but are passed via `theme()`:
+
+```python
+import os
+from plotnine import theme, element_rect, element_text, element_line, ggsave
+
+THEME       = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG     = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK         = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT    = "#4A4A44" if THEME == "light" else "#B8B7B0"
+
+anyplot_theme = theme(
+    plot_background=element_rect(fill=PAGE_BG, color=PAGE_BG),
+    panel_background=element_rect(fill=PAGE_BG),
+    panel_grid_major=element_line(color=INK, size=0.3, alpha=0.10),
+    panel_grid_minor=element_line(color=INK, size=0.2, alpha=0.05),
+    panel_border=element_rect(color=INK_SOFT, fill=None),
+    axis_title=element_text(color=INK),
+    axis_text=element_text(color=INK_SOFT),
+    axis_line=element_line(color=INK_SOFT),
+    plot_title=element_text(color=INK),
+    legend_background=element_rect(fill=ELEVATED_BG, color=INK_SOFT),
+    legend_text=element_text(color=INK_SOFT),
+    legend_title=element_text(color=INK),
+)
+
+plot = (ggplot(df, aes('x', 'y')) + geom_point(color=OKABE_ITO[0]) + anyplot_theme)
+ggsave(plot, filename=f'plot-{THEME}.png', dpi=300, width=16, height=9)
+```
+
+## Output Files
+
+- Implementation: `plots/{spec-id}/implementations/plotnine.py` — executed twice with different `ANYPLOT_THEME`.
+- Generated artifacts: `plot-light.png` + `plot-dark.png` (plotnine is PNG-only via matplotlib backend).

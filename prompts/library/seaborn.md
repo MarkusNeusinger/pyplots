@@ -78,34 +78,74 @@ sns.boxplot(data=df, x='group', y='value', hue='group', palette='Set2', legend=F
 
 ## Colors
 
-```python
-# Single-series: always Python Blue
-color = '#306998'
-
-# Multi-series: AI picks cohesive palette starting with Python Blue
-# No hardcoded second color — choose what works for the data
-palette = ['#306998', ...]  # AI selects additional colors
-
-# Colorblind-safe required. Avoid red-green as only distinguishing feature.
-# For sequential data: use perceptually-uniform colormaps (viridis, plasma, cividis)
-```
-
-## Recommended Palettes
+Use the Okabe-Ito palette (see `prompts/default-style-guide.md` "Categorical Palette"). First series is **always** `#009E73`.
 
 ```python
-# Categorical
-palette='Set2'
-palette='tab10'
-palette='colorblind'
+# Okabe-Ito palette — canonical order, first series always #009E73
+OKABE_ITO = ['#009E73', '#D55E00', '#0072B2', '#CC79A7',
+             '#E69F00', '#56B4E9', '#F0E442']
 
-# Sequential
-palette='viridis'
-palette='Blues'
+# Single-series
+color = OKABE_ITO[0]  # '#009E73'
+sns.scatterplot(data=df, x='x', y='y', color=color)
 
-# Diverging
-palette='RdBu'
+# Multi-series (hue)
+sns.scatterplot(data=df, x='x', y='y', hue='category', palette=OKABE_ITO[:N])
+
+# Set once globally for a whole figure
+sns.set_palette(OKABE_ITO)
 ```
 
-## Output File
+## Continuous-data Palettes (seaborn cmaps)
 
-`plots/{spec-id}/implementations/seaborn.py`
+```python
+# Sequential (perceptually uniform)
+cmap='viridis'       # default
+cmap='cividis'       # CVD-optimized alternative
+
+# Diverging (centered on midpoint)
+cmap='BrBG'          # ColorBrewer, anyplot default for diverging
+
+# Single-polarity (ties to brand)
+cmap='Blues' / 'Greens' / 'Reds'
+
+# Forbidden: 'jet', 'hsv', 'rainbow' — not perceptually uniform
+```
+
+Never use seaborn's `palette='Set2'`/`'tab10'`/`'colorblind'` for categorical data — they override the Okabe-Ito brand identity. `'viridis'`, `'Blues'`, `'Greens'` are fine for **continuous** data only.
+
+## Theme-adaptive Chrome (seaborn mapping)
+
+```python
+import os
+THEME       = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG     = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK         = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT    = "#4A4A44" if THEME == "light" else "#B8B7B0"
+
+sns.set_theme(
+    style="ticks",
+    rc={
+        "figure.facecolor": PAGE_BG,
+        "axes.facecolor":   PAGE_BG,
+        "axes.edgecolor":   INK_SOFT,
+        "axes.labelcolor":  INK,
+        "text.color":       INK,
+        "xtick.color":      INK_SOFT,
+        "ytick.color":      INK_SOFT,
+        "grid.color":       INK,
+        "grid.alpha":       0.10,
+        "legend.facecolor": ELEVATED_BG,
+        "legend.edgecolor": INK_SOFT,
+    },
+)
+
+# After plotting
+plt.savefig(f'plot-{THEME}.png', dpi=300, bbox_inches='tight', facecolor=PAGE_BG)
+```
+
+## Output Files
+
+- Implementation: `plots/{spec-id}/implementations/seaborn.py` — executed twice by the pipeline with different `ANYPLOT_THEME`.
+- Generated artifacts: `plot-light.png` + `plot-dark.png` (seaborn is PNG-only).

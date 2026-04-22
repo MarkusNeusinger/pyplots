@@ -71,19 +71,60 @@ chart = chart.interactive()
 
 ## Colors
 
+Use the Okabe-Ito palette (see `prompts/default-style-guide.md` "Categorical Palette"). First series is **always** `#009E73`.
+
 ```python
-# Single-series: always Python Blue
-alt.value('#306998')
+OKABE_ITO = ['#009E73', '#D55E00', '#0072B2', '#CC79A7',
+             '#E69F00', '#56B4E9', '#F0E442']
 
-# Multi-series: AI picks cohesive palette starting with Python Blue
-# No hardcoded second color — choose what works for the data
-alt.Scale(range=['#306998', ...])  # AI selects additional colors
+# Single-series
+alt.Chart(df).mark_circle(color=OKABE_ITO[0]).encode(x='x', y='y')
 
-# Colorblind-safe required. Avoid red-green as only distinguishing feature.
-# For sequential data: use perceptually-uniform colormaps (viridis, plasma, cividis)
+# Multi-series
+alt.Chart(df).mark_circle().encode(
+    x='x', y='y',
+    color=alt.Color('category:N', scale=alt.Scale(range=OKABE_ITO)),
+)
+
+# Continuous — NOT Okabe-Ito:
+#   Sequential: scheme='viridis' or 'cividis'
+#   Diverging:  scheme='brownbluegreen' (BrBG in altair naming)
+alt.Color('value:Q', scale=alt.Scale(scheme='viridis'))
+alt.Color('delta:Q', scale=alt.Scale(scheme='brownbluegreen'))
 ```
 
-## Output File
+## Theme-adaptive Chrome (altair mapping)
 
-`plots/{spec-id}/implementations/altair.py`
+```python
+import os
+THEME       = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG     = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK         = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT    = "#4A4A44" if THEME == "light" else "#B8B7B0"
+
+chart = (
+    base_chart
+    .properties(background=PAGE_BG, width=1600, height=900)
+    .configure_view(fill=PAGE_BG, stroke=INK_SOFT)
+    .configure_axis(
+        domainColor=INK_SOFT, tickColor=INK_SOFT,
+        gridColor=INK, gridOpacity=0.10,
+        labelColor=INK_SOFT, titleColor=INK,
+    )
+    .configure_title(color=INK)
+    .configure_legend(
+        fillColor=ELEVATED_BG, strokeColor=INK_SOFT,
+        labelColor=INK_SOFT, titleColor=INK,
+    )
+)
+
+chart.save(f'plot-{THEME}.png')
+chart.save(f'plot-{THEME}.html')
+```
+
+## Output Files
+
+- Implementation: `plots/{spec-id}/implementations/altair.py` — executed twice with different `ANYPLOT_THEME`.
+- Generated artifacts: `plot-light.png` + `plot-dark.png` + `plot-light.html` + `plot-dark.html`.
 

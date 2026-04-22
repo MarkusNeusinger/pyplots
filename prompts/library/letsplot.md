@@ -38,13 +38,19 @@ plot = plot + theme(
 + geom_line(size=1.5)   # line width
 ```
 
-## Save (PNG)
+## Save (PNG + HTML)
 
 ```python
+import os
 from lets_plot import ggsave
 
-# Scale 3x to get 4800 × 2700 px
-ggsave(plot, 'plot.png', scale=3)
+THEME = os.getenv("ANYPLOT_THEME", "light")
+
+# PNG: scale 3x to get 4800 × 2700 px
+ggsave(plot, f'plot-{THEME}.png', scale=3)
+
+# HTML (interactive)
+ggsave(plot, f'plot-{THEME}.html')
 ```
 
 ## Aesthetics
@@ -75,10 +81,13 @@ geom_density()     # Density
 ## Scales
 
 ```python
-# Color scales
-+ scale_color_brewer(palette='Set2')
-+ scale_fill_viridis()
-+ scale_color_manual(values=['#306998', ...])  # AI picks palette
+# Categorical — use Okabe-Ito (see Colors section below)
++ scale_color_manual(values=OKABE_ITO)
++ scale_fill_manual(values=OKABE_ITO)
+
+# Continuous — NOT Okabe-Ito:
++ scale_color_viridis()                        # sequential
++ scale_fill_gradient2(low='#A6611A', mid='#F5F5F5', high='#018571')  # BrBG-style diverging
 
 # Axis scales
 + scale_x_continuous()
@@ -109,20 +118,53 @@ geom_density()     # Density
 
 ## Colors
 
+Use the Okabe-Ito palette (see `prompts/default-style-guide.md` "Categorical Palette"). First series is **always** `#009E73`.
+
 ```python
-# Single-series: always Python Blue
-+ geom_point(color='#306998')
+OKABE_ITO = ['#009E73', '#D55E00', '#0072B2', '#CC79A7',
+             '#E69F00', '#56B4E9', '#F0E442']
 
-# Multi-series: AI picks cohesive palette starting with Python Blue
-+ scale_color_manual(values=['#306998', ...])  # AI selects additional colors
+# Single-series
++ geom_point(color=OKABE_ITO[0])
 
-# Colorblind-safe required. Avoid red-green as only distinguishing feature.
-# For sequential data: use perceptually-uniform colormaps (viridis, plasma, cividis)
+# Multi-series
++ scale_color_manual(values=OKABE_ITO)
++ scale_fill_manual(values=OKABE_ITO)
 ```
 
-## Output File
+## Theme-adaptive Chrome (lets-plot mapping)
 
-`plots/{spec-id}/implementations/letsplot.py`
+```python
+import os
+from lets_plot import theme, element_rect, element_text, element_line, element_blank
+
+THEME       = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG     = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK         = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT    = "#4A4A44" if THEME == "light" else "#B8B7B0"
+
+anyplot_theme = theme(
+    plot_background=element_rect(fill=PAGE_BG, color=PAGE_BG),
+    panel_background=element_rect(fill=PAGE_BG),
+    panel_grid_major=element_line(color=INK, size=0.3),
+    panel_grid_minor=element_line(color=INK, size=0.2),
+    axis_title=element_text(color=INK),
+    axis_text=element_text(color=INK_SOFT),
+    axis_line=element_line(color=INK_SOFT),
+    plot_title=element_text(color=INK),
+    legend_background=element_rect(fill=ELEVATED_BG, color=INK_SOFT),
+    legend_text=element_text(color=INK_SOFT),
+    legend_title=element_text(color=INK),
+)
+
+plot = (ggplot(df, aes('x', 'y')) + geom_point(color=OKABE_ITO[0]) + anyplot_theme)
+```
+
+## Output Files
+
+- Implementation: `plots/{spec-id}/implementations/letsplot.py` — executed twice with different `ANYPLOT_THEME`.
+- Generated artifacts: `plot-light.png` + `plot-dark.png` + `plot-light.html` + `plot-dark.html`.
 
 ## Key Differences from plotnine
 

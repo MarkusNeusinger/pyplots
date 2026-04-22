@@ -142,9 +142,10 @@ A static library (matplotlib, seaborn, plotnine) simulates interactive features 
 | VQ-01 | Text Legibility | 8 | 8=perfect (sizes explicitly set), 5=good, 3=ok, 0=poor |
 | VQ-02 | No Overlap | 6 | 6=no overlap, 3=minimal, 0=overlap |
 | VQ-03 | Element Visibility | 6 | 6=optimal sizing, 3=visible, 0=barely visible |
-| VQ-04 | Color Accessibility | 4 | 4=perfect colorblind-safe, 2=ok, 0=red-green |
+| VQ-04 | Color Accessibility | 2 | 2=colorblind-safe contrast, 1=ok, 0=red-green only |
 | VQ-05 | Layout & Canvas | 4 | 4=perfect, 2=ok, 0=cut-off |
 | VQ-06 | Axis Labels & Title | 2 | 2=with units, 1=descriptive, 0=x/y |
+| VQ-07 | Palette Compliance | 2 | 2=correct Okabe-Ito / continuous palette + theme-correct chrome, 1=partial, 0=non-compliant |
 
 ### VQ-01: Text Legibility (8 Points)
 
@@ -193,15 +194,17 @@ Data elements must be visible and adapted to data density.
 | 100-300 | 50-100 | 0.5-0.7 |
 | 300+ | 20-50 | 0.3-0.5 |
 
-### VQ-04: Color Accessibility (4 Points)
+### VQ-04: Color Accessibility (2 Points)
+
+This check covers **contrast and CVD safety beyond palette choice** — e.g., adequate luminance difference between overlapping series, sufficient alpha for overlapping markers, no red-green as the sole distinguishing signal when overriding the palette.
 
 | Points | Criterion |
 |--------|-----------|
-| 4 | Perfect colorblind-safe, good contrast |
-| 2 | Acceptable, but not optimal |
-| 0 | Red-green as only difference |
+| 2 | Good contrast, CVD-safe — elements distinguishable without relying on hue alone |
+| 1 | Acceptable but not optimal |
+| 0 | Red-green as only distinguishing feature, or critical contrast failures |
 
-**Recommended palettes:** `viridis`, `colorblind`, `tab10`
+**Note:** Palette choice itself (correct Okabe-Ito, correct continuous cmap) is scored separately in **VQ-07**. VQ-04 is about how the palette is *applied* — spacing, alpha, luminance — not which palette was picked.
 
 ### VQ-05: Layout Balance & Canvas Utilization (4 Points)
 
@@ -224,6 +227,23 @@ Data elements must be visible and adapted to data density.
 | 2 | Descriptive with units: "Temperature (°C)" |
 | 1 | Descriptive without units: "Temperature" |
 | 0 | Generic: "x", "y", or empty |
+
+### VQ-07: Palette Compliance (2 Points)
+
+The implementation must use the **Okabe-Ito categorical palette** (defined in `prompts/default-style-guide.md` "Categorical Palette") for categorical data and the correct **perceptually-uniform colormap** for continuous data. Both light and dark renders are inspected — the data colors (positions 1–7) must be identical across themes; only the theme-adaptive chrome (background, text, grid, legend box) may flip.
+
+| Points | Criterion |
+|--------|-----------|
+| 2 | Perfect palette + perfect theme chrome: first categorical series is `#009E73`; if multi-series, colors follow Okabe-Ito in canonical order (`#D55E00`, `#0072B2`, `#CC79A7`, `#E69F00`, `#56B4E9`, `#F0E442`); continuous data uses `viridis`/`cividis` (sequential), `BrBG` (diverging), or `viridis`/`Reds`/`Blues` (heatmaps); plot background is `#FAF8F1` (light) or `#1A1A17` (dark) — never pure white/black; text, grid, and legend-box colors are theme-correct in both renders |
+| 1 | Partial compliance: palette is Okabe-Ito but first series is not `#009E73`; OR continuous data uses an approved cmap but not the default recommendation; OR chrome is mostly theme-correct with one or two off elements (e.g., dark render has one black label) |
+| 0 | Non-compliant: legacy `#306998` (Python Blue) still present; categorical palette is arbitrary custom hexes, `Set2`, `tab10`, or `colorblind`; continuous data uses `jet`/`hsv`/`rainbow`; categorical palette applied to continuous data (banding); plot background is pure `#FFFFFF`/`#000000`; or chrome is wrong-theme (e.g., dark page with dark text) |
+
+**Evaluation steps for VQ-07:**
+1. Look at `plot-light.png`: does the primary data series render in `#009E73`? Does the background look like `#FAF8F1`?
+2. Look at `plot-dark.png`: is the data series still `#009E73` (identical to light)? Is the background `#1A1A17`? Is all text light-colored?
+3. If multi-series, confirm the next colors in order match Okabe-Ito positions 2–N.
+4. If continuous: check the source code for `cmap=` / `scheme=` / `color_continuous_scale=`. Reject `jet`, `hsv`, `rainbow`; prefer `viridis`/`cividis` for sequential and `BrBG` for diverging.
+5. If either render fails theme-chrome (unreadable text, wrong background), score drops accordingly.
 
 ---
 
@@ -457,13 +477,14 @@ Evaluators must use these anchors to prevent score inflation:
 A "good" plot (~76%):
 
 ```text
-VISUAL QUALITY (24/30)
+VISUAL QUALITY (23/30)
   VQ-01: 5/8   (readable, but relying on defaults not explicit sizes)
   VQ-02: 6/6   (no overlap)
   VQ-03: 5/6   (visible, markers could be better)
-  VQ-04: 4/4   (good colors)
+  VQ-04: 2/2   (good contrast, CVD-safe)
   VQ-05: 2/4   (ok layout, some wasted space)
   VQ-06: 2/2   (labels with units)
+  VQ-07: 1/2   (palette is Okabe-Ito but first series used #0072B2 instead of #009E73)
 
 DESIGN EXCELLENCE (8/20)
   DE-01: 4/8   (well-configured default, not exceptional)
@@ -492,7 +513,7 @@ LIBRARY MASTERY (9/10)
   LM-01: 5/5   (idiomatic usage)
   LM-02: 4/5   (uses some distinctive features)
 
-TOTAL: 76/100 = "Good" Tier → Repair loop
+TOTAL: 75/100 = "Good" Tier → Repair loop
 ```
 
 Note: This plot scored well on technical criteria but only 8/20 on Design Excellence. To reach 90+, it needs better aesthetic sophistication (DE-01), visual refinement (DE-02), and data storytelling through visual emphasis and hierarchy (DE-03).

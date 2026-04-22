@@ -30,37 +30,45 @@ Two formats are allowed (similar pixel count for consistent font sizing):
 
 ## Color Philosophy
 
-### Primary Color
+anyplot uses the **Okabe-Ito palette** — a peer-reviewed, colorblind-safe categorical palette designed for scientific publication. It is the single consistency rule that spans every library and every plot.
 
-**Python Blue `#306998`** is the only recommended color for single-series plots. It is the brand anchor for every anyplot visualization.
+### Categorical Palette (Okabe-Ito, canonical order)
 
-### Multi-Series Palettes
+| # | Hex | Name | Role |
+|---|-----|------|------|
+| 1 | `#009E73` | bluish green | ★ **brand — ALWAYS first series** |
+| 2 | `#D55E00` | vermillion | |
+| 3 | `#0072B2` | blue | |
+| 4 | `#CC79A7` | reddish purple | |
+| 5 | `#E69F00` | orange | |
+| 6 | `#56B4E9` | sky blue | |
+| 7 | `#F0E442` | yellow | Position ≥7 only — never thin lines or small markers (low luminance on light surfaces) |
+| 8 | *adaptive neutral* | — | `#1A1A1A` on light theme, `#E8E8E0` on dark theme. Reserved for aggregates, residuals, reference lines. |
 
-For plots with multiple series, the AI chooses a cohesive, colorblind-safe palette **starting with Python Blue**:
-- The first series is always Python Blue `#306998`
-- Additional colors are chosen by the AI to complement Python Blue while maintaining colorblind safety
-- No hardcoded second, third, or fourth color — the AI picks what works best for the specific data and context
+**Hard rules:**
+- **First series is ALWAYS `#009E73`** — across every library, every plot type. A "Gentoo penguin" is the same green in matplotlib as it is in plotly.
+- Use positions 1→N in order. Don't cherry-pick.
+- Only position 8 changes between light and dark themes; positions 1–7 stay identical so a category keeps its identity.
+- Never introduce custom hex values when the Okabe-Ito palette already covers the need.
+
+### Continuous Data — Okabe-Ito is NOT used
+
+Categorical palettes on continuous data produce misleading banding. For continuous data, use perceptually-uniform colormaps:
+
+- **Sequential:** `viridis` or `cividis` (default). `Blues` / `Greens` for single-polarity data that should visually tie to the brand.
+- **Diverging:** `BrBG` from ColorBrewer (centered on a meaningful midpoint).
+- **Heatmaps:** `viridis` for neutral, or single-polarity `Reds` / `Blues` when polarity is semantic.
+- **Forbidden:** `jet`, `hsv`, rainbow colormaps — not perceptually uniform.
 
 ### Color Restraint
 
-- **2-3 colors** is ideal for most plots
-- **4-5 colors** is the practical maximum for categorical data
-- **6+ colors** is rare and should only be used when the data demands it (e.g., many categories)
-- When many categories exist, consider grouping or using a sequential colormap instead
-
-### Sequential & Diverging Data
-
-For continuous data, use perceptually-uniform colormaps:
-- **Sequential**: `viridis`, `plasma`, `inferno`, `cividis`, `Blues`, `Greens`
-- **Diverging**: `RdBu`, `PiYG`, `coolwarm` (centered on meaningful midpoint)
-- Avoid rainbow colormaps (`jet`, `hsv`) — they are not perceptually uniform
+- **2-3 colors** is ideal for most categorical plots.
+- **4-5 colors** is the practical maximum.
+- **6+ colors** is rare — prefer grouping or a sequential colormap instead.
 
 ### Colorblind Safety
 
-All color choices must be distinguishable by people with deuteranopia and protanopia:
-- Avoid red-green as the only distinguishing feature
-- Use luminance differences (light vs dark), not just hue
-- When in doubt, test with a colorblind simulator
+The Okabe-Ito palette is already safe for deuteranopia and protanopia. Never override it with custom categorical hexes unless you have a documented reason.
 
 ---
 
@@ -82,9 +90,46 @@ Every visual element must earn its place. If removing an element doesn't reduce 
 
 ### Background
 
-- Clean white (`#FFFFFF`) is the default
-- Very faint warm gray (`#FAFAFA`) is acceptable as an alternative
-- Never use colored or dark backgrounds
+anyplot plots live inside page surfaces that are warm off-white / near-black, **never pure white or pure black** (pure values make the saturated palette look harsh).
+
+| Theme | Plot background (`bg-surface`) | Elevated (callout boxes, legend frames) |
+|-------|--------------------------------|----------------------------------------|
+| Light | `#FAF8F1` | `#FFFDF6` |
+| Dark  | `#1A1A17` | `#242420` |
+
+- The background is theme-dependent and must match the surface where the plot will be embedded on the website.
+- Implementations read `os.environ["ANYPLOT_THEME"]` (`"light"` or `"dark"`, default `"light"`) and render accordingly. The pipeline runs each implementation twice to produce `plot-light.png` and `plot-dark.png`.
+- Never use pure `#FFFFFF`, pure `#000000`, or unrelated colored backgrounds.
+
+### Theme-adaptive Chrome
+
+In addition to the background, every non-data element (title, axis labels, tick labels, spines, grid, legend text, annotations, callout-box fills, footnotes) must use theme-adaptive tokens. Only the Okabe-Ito data colors (positions 1–7) stay constant.
+
+| Role | Light theme | Dark theme |
+|------|-------------|------------|
+| Primary text (title, axis labels) | `#1A1A17` | `#F0EFE8` |
+| Secondary text (tick labels, legend, subtitles) | `#4A4A44` | `#B8B7B0` |
+| Tertiary text (footnotes, meta annotations) | `#8A8A82` | `#6E6D66` |
+| Grid lines, rule dividers, thin borders | `rgba(26,26,23,0.10)` | `rgba(240,239,232,0.10)` |
+| Callout / legend box fill | `#FFFDF6` | `#242420` |
+
+**Reference Python snippet** (generators must emit logic equivalent to this — exact syntax is library-specific):
+
+```python
+import os
+THEME = os.getenv("ANYPLOT_THEME", "light")
+
+PAGE_BG     = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK         = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT    = "#4A4A44" if THEME == "light" else "#B8B7B0"
+INK_MUTED   = "#8A8A82" if THEME == "light" else "#6E6D66"
+RULE        = "rgba(26,26,23,0.10)" if THEME == "light" else "rgba(240,239,232,0.10)"
+
+BRAND       = "#009E73"  # Okabe-Ito position 1, theme-independent
+```
+
+Output file names: `plot-light.png` / `plot-dark.png` (static libraries) plus `plot-light.html` / `plot-dark.html` (interactive libraries).
 
 ### Whitespace
 
@@ -160,8 +205,8 @@ DPI-based libraries use `figsize=(16, 9)` + `dpi=300` = 4800x2700px. Pixel-based
 The AI makes the following design decisions for each visualization:
 
 **Color & Palette:**
-- Specific colors beyond Python Blue (for multi-series)
-- Colormap choice for sequential/diverging data
+- Use Okabe-Ito positions 1→N in order for categorical data (see Color Philosophy). No custom hexes.
+- Colormap choice for continuous data: `viridis`/`cividis` sequential, `BrBG` diverging, `viridis` or single-polarity `Reds`/`Blues` for heatmaps
 - Alpha/opacity values based on data density
 
 **Layout & Structure:**
@@ -177,8 +222,8 @@ The AI makes the following design decisions for each visualization:
 
 **Grid & Background:**
 - Grid on/off, and which axes
-- Grid opacity (within 15-25% range)
-- Background shade (white or faint gray)
+- Grid opacity (within 10-15% range — subtle, never competes with data)
+- Plot background follows the theme (`#FAF8F1` light / `#1A1A17` dark) — not chosen freely
 
 **Data Presentation:**
 - Emphasis techniques (bold color, size variation, focal points)

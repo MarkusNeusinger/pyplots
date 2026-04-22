@@ -59,8 +59,16 @@ Library: matplotlib | Python 3.13
 Quality: pending | Created: 2025-12-21
 """
 
+import os
 import matplotlib.pyplot as plt
 import numpy as np
+
+# Theme tokens (see prompts/default-style-guide.md "Background" + "Theme-adaptive Chrome")
+THEME       = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG     = "#FAF8F1" if THEME == "light" else "#1A1A17"
+INK         = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT    = "#4A4A44" if THEME == "light" else "#B8B7B0"
+BRAND       = "#009E73"  # Okabe-Ito position 1 — ALWAYS first series
 
 # Data
 np.random.seed(42)
@@ -68,23 +76,28 @@ study_hours = np.random.normal(6, 2, 80)
 exam_scores = study_hours * 8 + np.random.normal(0, 5, 80) + 30
 
 # Plot
-fig, ax = plt.subplots(figsize=(16, 9))
+fig, ax = plt.subplots(figsize=(16, 9), facecolor=PAGE_BG)
+ax.set_facecolor(PAGE_BG)
 ax.scatter(study_hours, exam_scores, alpha=0.7, s=200,
-           color='#306998', edgecolors='white', linewidth=0.5)
+           color=BRAND, edgecolors=PAGE_BG, linewidth=0.5)
 
 # Style
-ax.set_xlabel('Study Hours per Day', fontsize=20)
-ax.set_ylabel('Exam Score (%)', fontsize=20)
+ax.set_xlabel('Study Hours per Day', fontsize=20, color=INK)
+ax.set_ylabel('Exam Score (%)', fontsize=20, color=INK)
 ax.set_title('scatter-basic · matplotlib · anyplot.ai',
-             fontsize=24, fontweight='medium')
-ax.tick_params(axis='both', labelsize=16)
+             fontsize=24, fontweight='medium', color=INK)
+ax.tick_params(axis='both', labelsize=16, colors=INK_SOFT)
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
-ax.yaxis.grid(True, alpha=0.2, linewidth=0.8)
+for s in ('left', 'bottom'):
+    ax.spines[s].set_color(INK_SOFT)
+ax.yaxis.grid(True, alpha=0.10, linewidth=0.8, color=INK)
 
 plt.tight_layout()
-plt.savefig('plot.png', dpi=300, bbox_inches='tight')
+plt.savefig(f'plot-{THEME}.png', dpi=300, bbox_inches='tight', facecolor=PAGE_BG)
 ```
+
+**The generated script must be run twice by the pipeline** — once with `ANYPLOT_THEME=light`, once with `ANYPLOT_THEME=dark` — producing `plot-light.png` and `plot-dark.png`. Interactive libraries additionally produce `plot-light.html` and `plot-dark.html`.
 
 ## Title Format (MANDATORY)
 
@@ -123,7 +136,7 @@ The middot (·) separator is required. No color or style requirements - the AI d
 3. **Data** - Prepare/generate data (use spec example if provided, or create realistic sample)
 4. **Plot** - Create figure and plot data
 5. **Style** - Labels, title, grid, etc.
-6. **Save** - Always save as `plot.png`
+6. **Save** - Save as `plot-{THEME}.png` (plus `plot-{THEME}.html` for interactive libs). Never a bare `plot.png`.
 
 ### Data Generation Strategy
 
@@ -338,7 +351,7 @@ Blank line between groups. Only import what you use.
 ```python
 ax.scatter(study_hours, exam_scores,
            alpha=0.7, s=200,
-           color='#306998', edgecolors='white')
+           color=BRAND, edgecolors=PAGE_BG)
 ```
 
 ---
@@ -358,10 +371,12 @@ anyplot renders at **4800 × 2700 px** (16:9) or **3600 × 3600 px** (1:1) — s
 **Aesthetic requirements from style guide:**
 - Follow minimalism: every element must earn its place
 - Remove top and right spines by default
-- Use Python Blue `#306998` for single-series; AI picks cohesive palette for multi-series
+- **Use Okabe-Ito palette** — first series **always** `#009E73` (brand green); additional series follow the canonical order (`#D55E00`, `#0072B2`, `#CC79A7`, `#E69F00`, `#56B4E9`, `#F0E442`, adaptive neutral). Never invent custom hexes for categorical data.
+- Continuous data: `viridis`/`cividis` sequential, `BrBG` diverging, `viridis` heatmaps. Never `jet`/`hsv`/rainbow.
 - Color restraint: 2-3 colors ideal, 4-5 max
-- Grid: prefer none for simple plots; when used, y-axis only for bar/line, both for scatter; opacity 15-25%
-- White edge on scatter markers for definition
+- **Theme-adaptive chrome** (background, text, grid, spines, legend, annotations) — read `ANYPLOT_THEME` from env, use the token palette from `prompts/default-style-guide.md`. Plot background: `#FAF8F1` light / `#1A1A17` dark. Never pure white or black.
+- Grid: prefer none for simple plots; when used, y-axis only for bar/line, both for scatter; opacity 10-15%
+- Scatter marker edge should match the page background (`PAGE_BG`), not hardcoded white — keeps definition against either theme.
 - Remove decorations: single-series legends, tick marks (keep labels), unnecessary grid lines
 
 **Data storytelling (for DE-03 score):**
@@ -371,36 +386,45 @@ anyplot renders at **4800 × 2700 px** (16:9) or **3600 × 3600 px** (1:1) — s
 - **When annotations ARE appropriate:** Only when spec-id contains "annotated" or the spec explicitly describes annotations as a required feature. Even then, use sparingly.
 - **Respect the spec variant:** If the spec-id contains `basic`, storytelling comes from well-chosen data and clean design — NOT from adding annotations, trendlines, or extra visual elements. A basic scatter plot should remain a basic scatter plot.
 
-## Output File
+## Output Files
 
-**ALWAYS save as `plot.png`** - Never use library-specific names.
+**Save with a theme-suffixed filename, driven by the `ANYPLOT_THEME` env var.** The pipeline runs each implementation twice (`ANYPLOT_THEME=light` → `plot-light.png`; `ANYPLOT_THEME=dark` → `plot-dark.png`). Interactive libraries additionally emit `plot-{theme}.html`.
 
 ```python
-# matplotlib/seaborn
-plt.savefig('plot.png', dpi=300, bbox_inches='tight')
+THEME = os.getenv("ANYPLOT_THEME", "light")  # already defined at top
 
-# plotly
-fig.write_image('plot.png', width=1600, height=900, scale=3)
+# matplotlib/seaborn/plotnine (static, PNG only)
+plt.savefig(f'plot-{THEME}.png', dpi=300, bbox_inches='tight', facecolor=PAGE_BG)
 
-# bokeh
-export_png(p, filename='plot.png')
+# plotly (PNG + HTML)
+fig.write_image(f'plot-{THEME}.png', width=1600, height=900, scale=3)
+fig.write_html(f'plot-{THEME}.html', include_plotlyjs='cdn')
 
-# altair
-chart.save('plot.png')
+# bokeh (PNG + HTML)
+export_png(p, filename=f'plot-{THEME}.png')
+output_file(f'plot-{THEME}.html'); save(p)
 
-# etc.
+# altair (PNG + HTML)
+chart.save(f'plot-{THEME}.png')
+chart.save(f'plot-{THEME}.html')
+
+# highcharts / pygal / letsplot: follow the same plot-{THEME}.{png,html} naming
 ```
+
+Never write a bare `plot.png` — that was the legacy single-theme output and is no longer accepted by the pipeline.
 
 ## Testing
 
 After generating the code:
 
-1. **Run the script** - Ensure it executes without errors
-2. **Check plot.png** - Visually verify the output:
-   - Does it show the expected visualization?
-   - Are labels readable and not overlapping?
-   - Does it match the spec description?
+1. **Run the script twice** — `ANYPLOT_THEME=light` and `ANYPLOT_THEME=dark`. Both must succeed without errors.
+2. **Check `plot-light.png` AND `plot-dark.png`** — visually verify both:
+   - Does each show the expected visualization?
+   - Are labels readable against their respective backgrounds (no dark text on dark, no light text on light)?
+   - Is the first series `#009E73` in both renders (data colors stay identical; only chrome flips)?
+   - Does the background match `#FAF8F1` (light) or `#1A1A17` (dark)?
    - Are top/right spines removed?
    - Is the design polished beyond defaults?
+3. **For interactive libraries**, also check `plot-light.html` and `plot-dark.html` render correctly.
 
-If there are issues, fix them and re-run until the plot looks correct.
+If there are issues, fix them and re-run both themes until both plots look correct.

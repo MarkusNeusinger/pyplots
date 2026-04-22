@@ -7,8 +7,8 @@ workflow_run: 23095681554
 issue: 4665
 python_version: 3.14.3
 library_version: 3.9.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/flamegraph-basic/bokeh/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/flamegraph-basic/bokeh/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/flamegraph-basic/bokeh/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/flamegraph-basic/bokeh/plot.html
 quality_score: 90
 review:
   strengths:

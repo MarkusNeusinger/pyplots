@@ -7,8 +7,8 @@ workflow_run: 22505482948
 issue: 4432
 python_version: 3.14.3
 library_version: unknown
-preview_url: https://storage.googleapis.com/pyplots-images/plots/mohr-circle/highcharts/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/mohr-circle/highcharts/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/mohr-circle/highcharts/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/mohr-circle/highcharts/plot.html
 quality_score: 91
 review:
   strengths:

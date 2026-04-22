@@ -7,8 +7,8 @@ workflow_run: 23388395540
 issue: 4411
 python_version: 3.14.3
 library_version: 4.9.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/bode-basic/letsplot/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/bode-basic/letsplot/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/bode-basic/letsplot/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/bode-basic/letsplot/plot.html
 quality_score: 90
 review:
   strengths:

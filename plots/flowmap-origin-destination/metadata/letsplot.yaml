@@ -7,8 +7,8 @@ workflow_run: 21059785870
 issue: 3765
 python_version: 3.13.11
 library_version: 4.8.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/flowmap-origin-destination/letsplot/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/flowmap-origin-destination/letsplot/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/flowmap-origin-destination/letsplot/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/flowmap-origin-destination/letsplot/plot.html
 quality_score: 91
 review:
   strengths:

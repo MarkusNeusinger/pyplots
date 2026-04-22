@@ -7,8 +7,8 @@ workflow_run: 23363004941
 issue: 4413
 python_version: 3.14.3
 library_version: unknown
-preview_url: https://storage.googleapis.com/pyplots-images/plots/line-stress-strain/highcharts/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/line-stress-strain/highcharts/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/line-stress-strain/highcharts/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/line-stress-strain/highcharts/plot.html
 quality_score: 87
 review:
   strengths:

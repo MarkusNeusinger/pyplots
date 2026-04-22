@@ -7,7 +7,7 @@ workflow_run: 20795206227
 issue: 3229
 python_version: 3.13.11
 library_version: 0.13.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/indicator-rsi/seaborn/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/indicator-rsi/seaborn/plot.png
 preview_html: null
 quality_score: 91
 review:

@@ -7,8 +7,8 @@ workflow_run: 23339077618
 issue: 4420
 python_version: 3.14.3
 library_version: 6.0.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/ma-differential-expression/altair/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/ma-differential-expression/altair/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/ma-differential-expression/altair/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/ma-differential-expression/altair/plot.html
 quality_score: 91
 review:
   strengths:

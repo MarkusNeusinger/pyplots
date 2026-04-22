@@ -7,7 +7,7 @@ workflow_run: 20464359654
 issue: 0
 python_version: 3.13.11
 library_version: 0.15.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/network-force-directed/plotnine/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/network-force-directed/plotnine/plot.png
 preview_html: null
 quality_score: 91
 impl_tags:

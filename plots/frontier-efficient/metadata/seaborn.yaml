@@ -7,7 +7,7 @@ workflow_run: 20832944989
 issue: 3342
 python_version: 3.13.11
 library_version: 0.13.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/frontier-efficient/seaborn/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/frontier-efficient/seaborn/plot.png
 preview_html: null
 quality_score: 92
 review:

@@ -7,8 +7,8 @@ workflow_run: 20289425061
 issue: 976
 python_version: 3.13.11
 library_version: 3.1.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/ecdf-basic/pygal/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/ecdf-basic/pygal/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/ecdf-basic/pygal/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/ecdf-basic/pygal/plot.html
 quality_score: 93
 impl_tags:
   dependencies: []

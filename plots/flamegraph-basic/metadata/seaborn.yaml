@@ -7,7 +7,7 @@ workflow_run: 23095681413
 issue: 4665
 python_version: 3.14.3
 library_version: 0.13.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/flamegraph-basic/seaborn/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/flamegraph-basic/seaborn/plot.png
 preview_html: null
 quality_score: 82
 review:

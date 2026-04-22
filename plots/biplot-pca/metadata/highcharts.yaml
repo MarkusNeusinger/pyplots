@@ -7,8 +7,8 @@ workflow_run: 20853043243
 issue: 3417
 python_version: 3.13.11
 library_version: unknown
-preview_url: https://storage.googleapis.com/pyplots-images/plots/biplot-pca/highcharts/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/biplot-pca/highcharts/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/biplot-pca/highcharts/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/biplot-pca/highcharts/plot.html
 quality_score: 91
 review:
   strengths:

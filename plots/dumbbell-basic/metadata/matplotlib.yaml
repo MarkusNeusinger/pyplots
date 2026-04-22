@@ -7,7 +7,7 @@ workflow_run: 20240004346
 issue: 945
 python_version: 3.13.11
 library_version: 3.10.8
-preview_url: https://storage.googleapis.com/pyplots-images/plots/dumbbell-basic/matplotlib/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/dumbbell-basic/matplotlib/plot.png
 preview_html: null
 quality_score: 95
 impl_tags:

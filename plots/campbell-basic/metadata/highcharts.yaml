@@ -7,8 +7,8 @@ workflow_run: 22043027022
 issue: 4241
 python_version: 3.14.3
 library_version: unknown
-preview_url: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/highcharts/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/campbell-basic/highcharts/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/campbell-basic/highcharts/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/campbell-basic/highcharts/plot.html
 quality_score: 93
 review:
   strengths:

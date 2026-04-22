@@ -7,8 +7,8 @@ workflow_run: 21184664083
 issue: 3784
 python_version: 3.13.11
 library_version: 4.8.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/dashboard-synchronized-crosshair/letsplot/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/dashboard-synchronized-crosshair/letsplot/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/dashboard-synchronized-crosshair/letsplot/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/dashboard-synchronized-crosshair/letsplot/plot.html
 quality_score: 90
 review:
   strengths:

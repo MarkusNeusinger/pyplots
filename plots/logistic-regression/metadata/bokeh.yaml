@@ -7,8 +7,8 @@ workflow_run: 20866597324
 issue: 3550
 python_version: 3.13.11
 library_version: 3.8.1
-preview_url: https://storage.googleapis.com/pyplots-images/plots/logistic-regression/bokeh/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/logistic-regression/bokeh/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/logistic-regression/bokeh/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/logistic-regression/bokeh/plot.html
 quality_score: 91
 review:
   strengths:

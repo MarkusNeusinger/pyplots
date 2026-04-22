@@ -7,8 +7,8 @@ workflow_run: 20832945730
 issue: 3340
 python_version: 3.13.11
 library_version: 3.1.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/chessboard-basic/pygal/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/chessboard-basic/pygal/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/chessboard-basic/pygal/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/chessboard-basic/pygal/plot.html
 quality_score: 91
 review:
   strengths:

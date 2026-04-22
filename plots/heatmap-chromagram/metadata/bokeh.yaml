@@ -7,8 +7,8 @@ workflow_run: 23219179043
 issue: 4564
 python_version: 3.14.3
 library_version: 3.9.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-chromagram/bokeh/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-chromagram/bokeh/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/heatmap-chromagram/bokeh/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/heatmap-chromagram/bokeh/plot.html
 quality_score: 91
 review:
   strengths:

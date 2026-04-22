@@ -7,8 +7,8 @@ workflow_run: 20457536578
 issue: 0
 python_version: 3.14.3
 library_version: 4.8.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/dendrogram-basic/letsplot/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/dendrogram-basic/letsplot/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/dendrogram-basic/letsplot/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/dendrogram-basic/letsplot/plot.html
 quality_score: 87
 impl_tags:
   dependencies:

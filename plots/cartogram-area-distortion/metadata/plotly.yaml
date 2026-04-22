@@ -7,8 +7,8 @@ workflow_run: 23070855345
 issue: 4671
 python_version: 3.14.3
 library_version: 6.6.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/cartogram-area-distortion/plotly/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/cartogram-area-distortion/plotly/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/cartogram-area-distortion/plotly/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/cartogram-area-distortion/plotly/plot.html
 quality_score: 86
 review:
   strengths:

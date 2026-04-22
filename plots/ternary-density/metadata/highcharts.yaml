@@ -7,8 +7,8 @@ workflow_run: 20893328012
 issue: 3696
 python_version: 3.13.11
 library_version: unknown
-preview_url: https://storage.googleapis.com/pyplots-images/plots/ternary-density/highcharts/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/ternary-density/highcharts/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/ternary-density/highcharts/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/ternary-density/highcharts/plot.html
 quality_score: 91
 review:
   strengths:

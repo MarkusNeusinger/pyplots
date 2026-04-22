@@ -7,7 +7,7 @@ workflow_run: 20456606720
 issue: 0
 python_version: 3.14.3
 library_version: 0.13.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/bump-basic/seaborn/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/bump-basic/seaborn/plot.png
 preview_html: null
 quality_score: 92
 impl_tags:

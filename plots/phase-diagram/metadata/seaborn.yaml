@@ -7,7 +7,7 @@ workflow_run: 20617609208
 issue: 3004
 python_version: 3.13.11
 library_version: 0.13.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/phase-diagram/seaborn/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/phase-diagram/seaborn/plot.png
 preview_html: null
 quality_score: 91
 impl_tags:

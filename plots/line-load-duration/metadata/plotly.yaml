@@ -7,8 +7,8 @@ workflow_run: 23119898938
 issue: 4586
 python_version: 3.14.3
 library_version: 6.6.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/line-load-duration/plotly/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/line-load-duration/plotly/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/line-load-duration/plotly/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/line-load-duration/plotly/plot.html
 quality_score: 91
 review:
   strengths:

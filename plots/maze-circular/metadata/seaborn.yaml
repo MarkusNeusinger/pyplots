@@ -7,7 +7,7 @@ workflow_run: 21058785218
 issue: 3804
 python_version: 3.13.11
 library_version: 0.13.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/maze-circular/seaborn/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/maze-circular/seaborn/plot.png
 preview_html: null
 quality_score: 90
 review:

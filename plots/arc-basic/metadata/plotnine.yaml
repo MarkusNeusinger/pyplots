@@ -7,7 +7,7 @@ workflow_run: 20455963275
 issue: 0
 python_version: 3.14.3
 library_version: 0.15.3
-preview_url: https://storage.googleapis.com/pyplots-images/plots/arc-basic/plotnine/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/arc-basic/plotnine/plot.png
 preview_html: null
 quality_score: 90
 impl_tags:

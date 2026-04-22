@@ -7,8 +7,8 @@ workflow_run: 20447775667
 issue: 0
 python_version: 3.14.3
 library_version: 6.5.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-basic/plotly/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/violin-basic/plotly/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/violin-basic/plotly/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/violin-basic/plotly/plot.html
 quality_score: 90
 impl_tags:
   dependencies: []

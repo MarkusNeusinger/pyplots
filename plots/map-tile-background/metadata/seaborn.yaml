@@ -7,7 +7,7 @@ workflow_run: 21189771533
 issue: 3756
 python_version: 3.13.11
 library_version: 0.13.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/map-tile-background/seaborn/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/map-tile-background/seaborn/plot.png
 preview_html: null
 quality_score: 91
 review:

@@ -7,8 +7,8 @@ workflow_run: 23270128955
 issue: 4556
 python_version: 3.14.3
 library_version: 3.1.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/curve-dose-response/pygal/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/curve-dose-response/pygal/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/curve-dose-response/pygal/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/curve-dose-response/pygal/plot.html
 quality_score: 85
 review:
   strengths:

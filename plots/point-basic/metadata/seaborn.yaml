@@ -7,7 +7,7 @@ workflow_run: 20593348794
 issue: 0
 python_version: 3.13.11
 library_version: 0.13.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/point-basic/seaborn/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/point-basic/seaborn/plot.png
 preview_html: null
 quality_score: 92
 impl_tags:

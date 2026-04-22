@@ -7,8 +7,8 @@ workflow_run: 20866597347
 issue: 3550
 python_version: 3.13.11
 library_version: 6.0.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/logistic-regression/altair/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/logistic-regression/altair/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/logistic-regression/altair/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/logistic-regression/altair/plot.html
 quality_score: 91
 review:
   strengths:

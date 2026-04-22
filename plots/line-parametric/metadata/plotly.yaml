@@ -7,8 +7,8 @@ workflow_run: 23339035336
 issue: 4424
 python_version: 3.14.3
 library_version: 6.6.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/line-parametric/plotly/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/line-parametric/plotly/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/line-parametric/plotly/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/line-parametric/plotly/plot.html
 quality_score: 87
 review:
   strengths:

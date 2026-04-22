@@ -7,7 +7,7 @@ workflow_run: 23362982110
 issue: 4414
 python_version: 3.14.3
 library_version: 0.15.3
-preview_url: https://storage.googleapis.com/pyplots-images/plots/root-locus-basic/plotnine/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/root-locus-basic/plotnine/plot.png
 preview_html: null
 quality_score: 89
 review:

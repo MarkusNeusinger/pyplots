@@ -7,8 +7,8 @@ workflow_run: 22158662411
 issue: 4301
 python_version: 3.14.3
 library_version: 6.5.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/radar-innovation-timeline/plotly/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/radar-innovation-timeline/plotly/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/radar-innovation-timeline/plotly/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/radar-innovation-timeline/plotly/plot.html
 quality_score: 90
 review:
   strengths:

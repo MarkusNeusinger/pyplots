@@ -7,8 +7,8 @@ workflow_run: 20457537154
 issue: 0
 python_version: 3.14.3
 library_version: 1.10.3
-preview_url: https://storage.googleapis.com/pyplots-images/plots/density-basic/highcharts/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/density-basic/highcharts/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/density-basic/highcharts/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/density-basic/highcharts/plot.html
 quality_score: 92
 impl_tags:
   dependencies:

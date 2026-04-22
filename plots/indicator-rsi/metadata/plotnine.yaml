@@ -7,7 +7,7 @@ workflow_run: 20795211246
 issue: 3229
 python_version: 3.13.11
 library_version: 0.15.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/indicator-rsi/plotnine/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/indicator-rsi/plotnine/plot.png
 preview_html: null
 quality_score: 92
 review:

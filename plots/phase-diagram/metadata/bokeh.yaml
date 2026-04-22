@@ -7,8 +7,8 @@ workflow_run: 20617651777
 issue: 3004
 python_version: 3.13.11
 library_version: 3.8.1
-preview_url: https://storage.googleapis.com/pyplots-images/plots/phase-diagram/bokeh/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/phase-diagram/bokeh/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/phase-diagram/bokeh/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/phase-diagram/bokeh/plot.html
 quality_score: 91
 impl_tags:
   dependencies: []

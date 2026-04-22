@@ -7,7 +7,7 @@ workflow_run: 21210864159
 issue: 3749
 python_version: 3.13.11
 library_version: 0.15.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/stock-event-flags/plotnine/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/stock-event-flags/plotnine/plot.png
 preview_html: null
 quality_score: 91
 review:

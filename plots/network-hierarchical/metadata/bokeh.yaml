@@ -7,8 +7,8 @@ workflow_run: 20832956828
 issue: 3343
 python_version: 3.13.11
 library_version: 3.8.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/network-hierarchical/bokeh/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/network-hierarchical/bokeh/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/network-hierarchical/bokeh/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/network-hierarchical/bokeh/plot.html
 quality_score: 90
 review:
   strengths:

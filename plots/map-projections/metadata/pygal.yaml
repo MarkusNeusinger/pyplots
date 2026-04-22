@@ -7,8 +7,8 @@ workflow_run: 21157678741
 issue: 3771
 python_version: 3.13.11
 library_version: 3.1.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/map-projections/pygal/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/map-projections/pygal/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/map-projections/pygal/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/map-projections/pygal/plot.html
 quality_score: 87
 review:
   strengths:

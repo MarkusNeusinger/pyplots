@@ -7,8 +7,8 @@ workflow_run: null
 issue: 991
 python_version: 3.14.3
 library_version: 1.10.3
-preview_url: https://storage.googleapis.com/pyplots-images/plots/arc-basic/highcharts/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/arc-basic/highcharts/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/arc-basic/highcharts/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/arc-basic/highcharts/plot.html
 quality_score: 87
 impl_tags:
   dependencies:

@@ -7,8 +7,8 @@ workflow_run: 22731097646
 issue: 4426
 python_version: 3.14.3
 library_version: 6.6.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-epidemic/plotly/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-epidemic/plotly/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/histogram-epidemic/plotly/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/histogram-epidemic/plotly/plot.html
 quality_score: 90
 review:
   strengths:

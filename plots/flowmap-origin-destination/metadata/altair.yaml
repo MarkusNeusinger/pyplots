@@ -7,8 +7,8 @@ workflow_run: 21059785737
 issue: 3765
 python_version: 3.13.11
 library_version: 6.0.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/flowmap-origin-destination/altair/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/flowmap-origin-destination/altair/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/flowmap-origin-destination/altair/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/flowmap-origin-destination/altair/plot.html
 quality_score: 91
 review:
   strengths:

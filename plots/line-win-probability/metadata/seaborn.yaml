@@ -7,7 +7,7 @@ workflow_run: 23342814414
 issue: 4418
 python_version: 3.14.3
 library_version: 0.13.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/line-win-probability/seaborn/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/line-win-probability/seaborn/plot.png
 preview_html: null
 quality_score: 91
 review:

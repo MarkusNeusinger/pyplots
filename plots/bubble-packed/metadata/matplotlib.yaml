@@ -7,7 +7,7 @@ workflow_run: 20456558183
 issue: 0
 python_version: 3.14.3
 library_version: 3.10.8
-preview_url: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/matplotlib/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/bubble-packed/matplotlib/plot.png
 preview_html: null
 quality_score: 87
 impl_tags:

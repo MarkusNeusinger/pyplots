@@ -7,8 +7,8 @@ workflow_run: 22782764623
 issue: 4569
 python_version: 3.14.3
 library_version: 4.8.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/tree-decision/letsplot/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/tree-decision/letsplot/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/tree-decision/letsplot/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/tree-decision/letsplot/plot.html
 quality_score: 86
 review:
   strengths:

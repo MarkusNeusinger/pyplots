@@ -7,8 +7,8 @@ workflow_run: 23342814834
 issue: 4418
 python_version: 3.14.3
 library_version: unknown
-preview_url: https://storage.googleapis.com/pyplots-images/plots/line-win-probability/highcharts/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/line-win-probability/highcharts/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/line-win-probability/highcharts/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/line-win-probability/highcharts/plot.html
 quality_score: 92
 review:
   strengths:

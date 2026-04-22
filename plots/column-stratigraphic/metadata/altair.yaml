@@ -7,8 +7,8 @@ workflow_run: 23121198787
 issue: 4573
 python_version: 3.14.3
 library_version: 6.0.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/column-stratigraphic/altair/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/column-stratigraphic/altair/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/column-stratigraphic/altair/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/column-stratigraphic/altair/plot.html
 quality_score: 87
 review:
   strengths:

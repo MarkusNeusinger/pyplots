@@ -7,8 +7,8 @@ workflow_run: 20617483520
 issue: 2992
 python_version: 3.13.11
 library_version: 3.1.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/timeseries-decomposition/pygal/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/timeseries-decomposition/pygal/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/timeseries-decomposition/pygal/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/timeseries-decomposition/pygal/plot.html
 quality_score: 90
 impl_tags:
   dependencies:

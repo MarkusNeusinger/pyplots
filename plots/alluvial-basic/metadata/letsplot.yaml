@@ -7,8 +7,8 @@ workflow_run: 20520941938
 issue: 1878
 python_version: 3.13.11
 library_version: 4.8.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/letsplot/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/letsplot/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/alluvial-basic/letsplot/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/alluvial-basic/letsplot/plot.html
 quality_score: 91
 impl_tags:
   dependencies: []

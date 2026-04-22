@@ -7,8 +7,8 @@ workflow_run: 23362981898
 issue: 4414
 python_version: 3.14.3
 library_version: 6.6.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/root-locus-basic/plotly/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/root-locus-basic/plotly/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/root-locus-basic/plotly/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/root-locus-basic/plotly/plot.html
 quality_score: 92
 review:
   strengths:

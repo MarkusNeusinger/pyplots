@@ -7,8 +7,8 @@ workflow_run: 22657236156
 issue: 4429
 python_version: 3.14.3
 library_version: 3.8.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-diverging-likert/bokeh/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-diverging-likert/bokeh/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/bar-diverging-likert/bokeh/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/bar-diverging-likert/bokeh/plot.html
 quality_score: 90
 review:
   strengths:

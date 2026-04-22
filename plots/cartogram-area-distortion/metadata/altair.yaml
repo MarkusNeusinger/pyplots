@@ -7,8 +7,8 @@ workflow_run: 23070855356
 issue: 4671
 python_version: 3.14.3
 library_version: 6.0.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/cartogram-area-distortion/altair/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/cartogram-area-distortion/altair/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/cartogram-area-distortion/altair/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/cartogram-area-distortion/altair/plot.html
 quality_score: 87
 review:
   strengths:

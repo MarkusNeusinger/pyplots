@@ -7,7 +7,7 @@ workflow_run: 22158662385
 issue: 4301
 python_version: 3.14.3
 library_version: 0.13.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/radar-innovation-timeline/seaborn/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/radar-innovation-timeline/seaborn/plot.png
 preview_html: null
 quality_score: 91
 review:

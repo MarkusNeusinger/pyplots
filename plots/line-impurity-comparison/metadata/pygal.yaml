@@ -7,8 +7,8 @@ workflow_run: 22111342471
 issue: 4133
 python_version: 3.14.3
 library_version: 3.1.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/line-impurity-comparison/pygal/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/line-impurity-comparison/pygal/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/line-impurity-comparison/pygal/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/line-impurity-comparison/pygal/plot.html
 quality_score: 83
 review:
   strengths:

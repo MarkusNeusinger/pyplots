@@ -7,7 +7,7 @@ workflow_run: 23315608678
 issue: 4553
 python_version: 3.14.3
 library_version: 0.15.3
-preview_url: https://storage.googleapis.com/pyplots-images/plots/curve-oc/plotnine/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/curve-oc/plotnine/plot.png
 preview_html: null
 quality_score: 92
 review:

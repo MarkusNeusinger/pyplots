@@ -7,8 +7,8 @@ workflow_run: 20520476849
 issue: 1947
 python_version: 3.13.11
 library_version: 6.5.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/plotly/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/plotly/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/bar-stacked/plotly/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/bar-stacked/plotly/plot.html
 quality_score: 97
 impl_tags:
   dependencies: []

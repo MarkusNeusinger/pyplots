@@ -7,8 +7,8 @@ workflow_run: 23220948511
 issue: 4562
 python_version: 3.14.3
 library_version: 6.6.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-constellation-diagram/plotly/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-constellation-diagram/plotly/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/scatter-constellation-diagram/plotly/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/scatter-constellation-diagram/plotly/plot.html
 quality_score: 93
 review:
   strengths:

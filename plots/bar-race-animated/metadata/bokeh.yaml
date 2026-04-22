@@ -7,8 +7,8 @@ workflow_run: 20886978894
 issue: 3653
 python_version: 3.13.11
 library_version: 3.8.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-race-animated/bokeh/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-race-animated/bokeh/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/bar-race-animated/bokeh/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/bar-race-animated/bokeh/plot.html
 quality_score: 91
 review:
   strengths:

@@ -7,8 +7,8 @@ workflow_run: 23363004980
 issue: 4413
 python_version: 3.14.3
 library_version: 4.9.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/line-stress-strain/letsplot/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/line-stress-strain/letsplot/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/line-stress-strain/letsplot/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/line-stress-strain/letsplot/plot.html
 quality_score: 92
 review:
   strengths:

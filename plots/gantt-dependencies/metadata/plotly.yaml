@@ -7,8 +7,8 @@ workflow_run: 21046151828
 issue: 3830
 python_version: '3.14'
 library_version: 6.5.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/gantt-dependencies/plotly/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/gantt-dependencies/plotly/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/gantt-dependencies/plotly/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/gantt-dependencies/plotly/plot.html
 quality_score: 90
 review:
   strengths:

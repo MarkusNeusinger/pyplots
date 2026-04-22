@@ -7,8 +7,8 @@ workflow_run: 22505482846
 issue: 4432
 python_version: 3.14.3
 library_version: 6.5.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/mohr-circle/plotly/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/mohr-circle/plotly/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/mohr-circle/plotly/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/mohr-circle/plotly/plot.html
 quality_score: 90
 review:
   strengths:

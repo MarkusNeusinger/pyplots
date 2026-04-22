@@ -7,7 +7,7 @@ workflow_run: 20617501040
 issue: 2998
 python_version: 3.13.11
 library_version: 0.15.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-permutation-importance/plotnine/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/bar-permutation-importance/plotnine/plot.png
 preview_html: null
 quality_score: 94
 impl_tags:

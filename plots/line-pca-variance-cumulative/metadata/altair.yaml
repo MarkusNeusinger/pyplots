@@ -7,8 +7,8 @@ workflow_run: 22116658518
 issue: 4131
 python_version: 3.14.3
 library_version: 6.0.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/line-pca-variance-cumulative/altair/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/line-pca-variance-cumulative/altair/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/line-pca-variance-cumulative/altair/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/line-pca-variance-cumulative/altair/plot.html
 quality_score: 96
 review:
   strengths:

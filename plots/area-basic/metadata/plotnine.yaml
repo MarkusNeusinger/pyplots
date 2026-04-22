@@ -7,7 +7,7 @@ workflow_run: 20447970072
 issue: 0
 python_version: 3.14.2
 library_version: 0.15.3
-preview_url: https://storage.googleapis.com/pyplots-images/plots/area-basic/plotnine/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/area-basic/plotnine/plot.png
 preview_html: null
 quality_score: 95
 impl_tags:

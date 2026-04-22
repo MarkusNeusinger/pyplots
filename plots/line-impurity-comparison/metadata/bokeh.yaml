@@ -7,8 +7,8 @@ workflow_run: 22111342431
 issue: 4133
 python_version: 3.14.3
 library_version: 3.8.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/line-impurity-comparison/bokeh/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/line-impurity-comparison/bokeh/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/line-impurity-comparison/bokeh/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/line-impurity-comparison/bokeh/plot.html
 quality_score: 91
 review:
   strengths:

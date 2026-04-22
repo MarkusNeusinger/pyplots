@@ -7,8 +7,8 @@ workflow_run: 23070855401
 issue: 4671
 python_version: 3.14.3
 library_version: 4.9.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/cartogram-area-distortion/letsplot/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/cartogram-area-distortion/letsplot/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/cartogram-area-distortion/letsplot/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/cartogram-area-distortion/letsplot/plot.html
 quality_score: 83
 review:
   strengths:

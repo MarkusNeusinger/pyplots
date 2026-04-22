@@ -7,8 +7,8 @@ workflow_run: 23267445826
 issue: 4559
 python_version: 3.14.3
 library_version: 4.9.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/lightcurve-transit/letsplot/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/lightcurve-transit/letsplot/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/lightcurve-transit/letsplot/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/lightcurve-transit/letsplot/plot.html
 quality_score: 91
 review:
   strengths:

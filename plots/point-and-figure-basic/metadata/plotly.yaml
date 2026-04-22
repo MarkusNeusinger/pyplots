@@ -7,8 +7,8 @@ workflow_run: 21047207210
 issue: 3755
 python_version: 3.13.11
 library_version: 6.5.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/point-and-figure-basic/plotly/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/point-and-figure-basic/plotly/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/point-and-figure-basic/plotly/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/point-and-figure-basic/plotly/plot.html
 quality_score: 91
 review:
   strengths:

@@ -7,8 +7,8 @@ workflow_run: 20295462355
 issue: 986
 python_version: 3.14.3
 library_version: 1.10.3
-preview_url: https://storage.googleapis.com/pyplots-images/plots/dendrogram-basic/highcharts/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/dendrogram-basic/highcharts/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/dendrogram-basic/highcharts/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/dendrogram-basic/highcharts/plot.html
 quality_score: 84
 impl_tags:
   dependencies:

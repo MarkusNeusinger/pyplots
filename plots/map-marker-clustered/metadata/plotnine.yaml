@@ -7,7 +7,7 @@ workflow_run: 21183361240
 issue: 3766
 python_version: 3.13.11
 library_version: 0.15.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/map-marker-clustered/plotnine/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/map-marker-clustered/plotnine/plot.png
 preview_html: null
 quality_score: 78
 review:

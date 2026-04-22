@@ -7,8 +7,8 @@ workflow_run: 23361206311
 issue: 4415
 python_version: 3.14.3
 library_version: unknown
-preview_url: https://storage.googleapis.com/pyplots-images/plots/bifurcation-basic/highcharts/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/bifurcation-basic/highcharts/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/bifurcation-basic/highcharts/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/bifurcation-basic/highcharts/plot.html
 quality_score: 88
 review:
   strengths:

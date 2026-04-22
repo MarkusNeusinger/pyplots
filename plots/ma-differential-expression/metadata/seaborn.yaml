@@ -7,7 +7,7 @@ workflow_run: 23339077516
 issue: 4420
 python_version: 3.14.3
 library_version: 0.13.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/ma-differential-expression/seaborn/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/ma-differential-expression/seaborn/plot.png
 preview_html: null
 quality_score: 94
 review:

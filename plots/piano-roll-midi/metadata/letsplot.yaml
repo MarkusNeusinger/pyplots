@@ -7,8 +7,8 @@ workflow_run: 22805912229
 issue: 4565
 python_version: 3.14.3
 library_version: 4.8.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/piano-roll-midi/letsplot/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/piano-roll-midi/letsplot/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/piano-roll-midi/letsplot/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/piano-roll-midi/letsplot/plot.html
 quality_score: 90
 review:
   strengths:

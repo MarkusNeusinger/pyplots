@@ -7,8 +7,8 @@ workflow_run: 22849775970
 issue: 4410
 python_version: 3.14.3
 library_version: 4.8.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/calibration-beer-lambert/letsplot/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/calibration-beer-lambert/letsplot/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/calibration-beer-lambert/letsplot/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/calibration-beer-lambert/letsplot/plot.html
 quality_score: 91
 review:
   strengths:

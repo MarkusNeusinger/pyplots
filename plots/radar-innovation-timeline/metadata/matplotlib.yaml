@@ -7,7 +7,7 @@ workflow_run: 22158662380
 issue: 4301
 python_version: 3.14.3
 library_version: 3.10.8
-preview_url: https://storage.googleapis.com/pyplots-images/plots/radar-innovation-timeline/matplotlib/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/radar-innovation-timeline/matplotlib/plot.png
 preview_html: null
 quality_score: 88
 review:

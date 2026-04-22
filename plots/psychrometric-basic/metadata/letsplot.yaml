@@ -7,8 +7,8 @@ workflow_run: 23120046652
 issue: 4583
 python_version: 3.14.3
 library_version: 4.9.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/psychrometric-basic/letsplot/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/psychrometric-basic/letsplot/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/psychrometric-basic/letsplot/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/psychrometric-basic/letsplot/plot.html
 quality_score: 81
 review:
   strengths:

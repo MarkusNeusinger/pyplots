@@ -7,8 +7,8 @@ workflow_run: 20788398918
 issue: 3184
 python_version: 3.14.3
 library_version: 4.8.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/qrcode-basic/letsplot/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/qrcode-basic/letsplot/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/qrcode-basic/letsplot/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/qrcode-basic/letsplot/plot.html
 quality_score: 90
 review:
   strengths:

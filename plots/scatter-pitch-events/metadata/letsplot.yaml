@@ -7,8 +7,8 @@ workflow_run: 23342848969
 issue: 4417
 python_version: 3.14.3
 library_version: 4.9.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-pitch-events/letsplot/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-pitch-events/letsplot/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/scatter-pitch-events/letsplot/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/scatter-pitch-events/letsplot/plot.html
 quality_score: 88
 review:
   strengths:

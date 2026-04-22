@@ -7,8 +7,8 @@ workflow_run: 20620306159
 issue: 3067
 python_version: 3.13.11
 library_version: 4.8.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-animated-controls/letsplot/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-animated-controls/letsplot/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/scatter-animated-controls/letsplot/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/scatter-animated-controls/letsplot/plot.html
 quality_score: 90
 impl_tags:
   dependencies: []

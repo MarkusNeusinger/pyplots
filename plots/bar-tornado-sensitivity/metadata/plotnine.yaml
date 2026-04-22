@@ -7,7 +7,7 @@ workflow_run: 22795810091
 issue: 4566
 python_version: 3.14.3
 library_version: 0.15.3
-preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-tornado-sensitivity/plotnine/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/bar-tornado-sensitivity/plotnine/plot.png
 preview_html: null
 quality_score: 92
 review:

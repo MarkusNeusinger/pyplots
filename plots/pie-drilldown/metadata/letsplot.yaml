@@ -7,8 +7,8 @@ workflow_run: 20627530595
 issue: 3072
 python_version: 3.13.11
 library_version: 4.8.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-drilldown/letsplot/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-drilldown/letsplot/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/pie-drilldown/letsplot/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/pie-drilldown/letsplot/plot.html
 quality_score: 82
 impl_tags:
   dependencies: []

@@ -7,7 +7,7 @@ workflow_run: 23120069506
 issue: 4578
 python_version: 3.14.3
 library_version: 0.15.3
-preview_url: https://storage.googleapis.com/pyplots-images/plots/area-elevation-profile/plotnine/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/area-elevation-profile/plotnine/plot.png
 preview_html: null
 quality_score: 91
 review:

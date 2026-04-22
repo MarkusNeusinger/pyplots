@@ -7,8 +7,8 @@ workflow_run: 20511964949
 issue: 2008
 python_version: 3.13.11
 library_version: 6.0.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/altair/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/altair/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/bar-stacked-percent/altair/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/bar-stacked-percent/altair/plot.html
 quality_score: 98
 impl_tags:
   dependencies: []

@@ -7,7 +7,7 @@ workflow_run: 20612909868
 issue: 2921
 python_version: 3.13.11
 library_version: 0.13.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-decision-boundary/seaborn/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/contour-decision-boundary/seaborn/plot.png
 preview_html: null
 quality_score: 92
 impl_tags:

@@ -7,7 +7,7 @@ workflow_run: 23006287247
 issue: 4669
 python_version: 3.14.3
 library_version: 0.13.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/indicator-ichimoku/seaborn/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/indicator-ichimoku/seaborn/plot.png
 preview_html: null
 quality_score: 90
 review:

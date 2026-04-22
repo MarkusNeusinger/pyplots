@@ -7,7 +7,7 @@ workflow_run: 20858839292
 issue: 3529
 python_version: 3.13.11
 library_version: 0.13.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-grouped-swarm/seaborn/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/violin-grouped-swarm/seaborn/plot.png
 preview_html: null
 quality_score: 93
 review:

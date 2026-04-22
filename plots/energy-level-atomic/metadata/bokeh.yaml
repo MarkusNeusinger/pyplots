@@ -7,8 +7,8 @@ workflow_run: 22502879525
 issue: 4434
 python_version: 3.14.3
 library_version: 3.8.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/energy-level-atomic/bokeh/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/energy-level-atomic/bokeh/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/energy-level-atomic/bokeh/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/energy-level-atomic/bokeh/plot.html
 quality_score: 90
 review:
   strengths:

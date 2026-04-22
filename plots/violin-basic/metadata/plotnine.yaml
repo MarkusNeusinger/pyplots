@@ -7,7 +7,7 @@ workflow_run: 20447780320
 issue: 0
 python_version: 3.14.3
 library_version: 0.15.3
-preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-basic/plotnine/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/violin-basic/plotnine/plot.png
 preview_html: null
 quality_score: 92
 impl_tags:

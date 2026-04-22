@@ -7,7 +7,7 @@ workflow_run: 20608708992
 issue: 2861
 python_version: 3.13.11
 library_version: 0.15.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/streamline-basic/plotnine/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/streamline-basic/plotnine/plot.png
 preview_html: null
 quality_score: 90
 impl_tags:

@@ -7,7 +7,7 @@ workflow_run: 22505482745
 issue: 4432
 python_version: 3.14.3
 library_version: 0.13.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/mohr-circle/seaborn/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/mohr-circle/seaborn/plot.png
 preview_html: null
 quality_score: 92
 review:

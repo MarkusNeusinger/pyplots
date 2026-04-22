@@ -7,8 +7,8 @@ workflow_run: 23121188861
 issue: 4576
 python_version: 3.14.3
 library_version: 6.6.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/stereonet-equal-area/plotly/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/stereonet-equal-area/plotly/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/stereonet-equal-area/plotly/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/stereonet-equal-area/plotly/plot.html
 quality_score: 88
 review:
   strengths:

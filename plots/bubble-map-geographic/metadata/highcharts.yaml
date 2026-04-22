@@ -7,8 +7,8 @@ workflow_run: 20873961014
 issue: 3625
 python_version: 3.13.11
 library_version: unknown
-preview_url: https://storage.googleapis.com/pyplots-images/plots/bubble-map-geographic/highcharts/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/bubble-map-geographic/highcharts/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/bubble-map-geographic/highcharts/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/bubble-map-geographic/highcharts/plot.html
 quality_score: 91
 review:
   strengths:

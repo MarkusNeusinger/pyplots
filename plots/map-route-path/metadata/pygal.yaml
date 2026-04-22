@@ -7,8 +7,8 @@ workflow_run: 21147013674
 issue: 3768
 python_version: 3.13.11
 library_version: 3.1.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/map-route-path/pygal/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/map-route-path/pygal/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/map-route-path/pygal/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/map-route-path/pygal/plot.html
 quality_score: 78
 review:
   strengths:

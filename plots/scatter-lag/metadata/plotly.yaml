@@ -7,8 +7,8 @@ workflow_run: 24313009870
 issue: 5251
 python_version: 3.14.3
 library_version: 6.7.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-lag/plotly/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-lag/plotly/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/scatter-lag/plotly/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/scatter-lag/plotly/plot.html
 quality_score: 89
 review:
   strengths:

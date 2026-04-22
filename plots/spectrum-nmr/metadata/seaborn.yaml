@@ -7,7 +7,7 @@ workflow_run: 22854183187
 issue: 4676
 python_version: 3.14.3
 library_version: 0.13.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/spectrum-nmr/seaborn/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/spectrum-nmr/seaborn/plot.png
 preview_html: null
 quality_score: 92
 review:

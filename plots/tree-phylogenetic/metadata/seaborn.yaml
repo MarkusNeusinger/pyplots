@@ -7,7 +7,7 @@ workflow_run: 20620332761
 issue: 3070
 python_version: 3.13.11
 library_version: 0.13.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/seaborn/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/tree-phylogenetic/seaborn/plot.png
 preview_html: null
 quality_score: 91
 impl_tags:

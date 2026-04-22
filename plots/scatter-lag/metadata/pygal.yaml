@@ -7,8 +7,8 @@ workflow_run: 24313009875
 issue: 5251
 python_version: 3.14.3
 library_version: 3.1.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-lag/pygal/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-lag/pygal/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/scatter-lag/pygal/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/scatter-lag/pygal/plot.html
 quality_score: 87
 review:
   strengths:

@@ -7,8 +7,8 @@ workflow_run: 21134791952
 issue: 3809
 python_version: 3.13.11
 library_version: 6.5.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/barcode-code128/plotly/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/barcode-code128/plotly/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/barcode-code128/plotly/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/barcode-code128/plotly/plot.html
 quality_score: 91
 review:
   strengths:

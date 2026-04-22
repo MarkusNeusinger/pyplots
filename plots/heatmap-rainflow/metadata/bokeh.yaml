@@ -7,8 +7,8 @@ workflow_run: 22595466428
 issue: 4465
 python_version: 3.14.3
 library_version: 3.8.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-rainflow/bokeh/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-rainflow/bokeh/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/heatmap-rainflow/bokeh/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/heatmap-rainflow/bokeh/plot.html
 quality_score: 93
 review:
   strengths:

@@ -7,8 +7,8 @@ workflow_run: 20875417624
 issue: 3638
 python_version: 3.13.11
 library_version: 6.5.1
-preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-geographic/plotly/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-geographic/plotly/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/heatmap-geographic/plotly/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/heatmap-geographic/plotly/plot.html
 quality_score: 92
 review:
   strengths:

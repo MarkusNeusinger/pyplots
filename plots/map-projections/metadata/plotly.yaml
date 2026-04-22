@@ -7,8 +7,8 @@ workflow_run: 21157678721
 issue: 3771
 python_version: 3.13.11
 library_version: 6.5.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/map-projections/plotly/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/map-projections/plotly/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/map-projections/plotly/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/map-projections/plotly/plot.html
 quality_score: 92
 review:
   strengths:

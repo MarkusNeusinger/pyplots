@@ -7,8 +7,8 @@ workflow_run: 20456557994
 issue: 0
 python_version: 3.14.3
 library_version: 6.5.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/plotly/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/plotly/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/bubble-packed/plotly/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/bubble-packed/plotly/plot.html
 quality_score: 91
 impl_tags:
   dependencies: []

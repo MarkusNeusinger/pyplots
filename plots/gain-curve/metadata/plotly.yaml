@@ -7,8 +7,8 @@ workflow_run: 20584841141
 issue: 0
 python_version: 3.13.11
 library_version: 6.5.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/gain-curve/plotly/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/gain-curve/plotly/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/gain-curve/plotly/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/gain-curve/plotly/plot.html
 quality_score: 92
 impl_tags:
   dependencies: []

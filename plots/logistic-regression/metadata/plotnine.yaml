@@ -7,7 +7,7 @@ workflow_run: 20866597588
 issue: 3550
 python_version: 3.13.11
 library_version: 0.15.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/logistic-regression/plotnine/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/logistic-regression/plotnine/plot.png
 preview_html: null
 quality_score: 93
 review:

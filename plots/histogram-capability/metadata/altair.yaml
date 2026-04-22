@@ -7,8 +7,8 @@ workflow_run: 23318228617
 issue: 4552
 python_version: 3.14.3
 library_version: 6.0.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-capability/altair/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-capability/altair/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/histogram-capability/altair/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/histogram-capability/altair/plot.html
 quality_score: 91
 review:
   strengths:

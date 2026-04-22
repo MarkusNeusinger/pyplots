@@ -7,8 +7,8 @@ workflow_run: 22795810110
 issue: 4566
 python_version: 3.14.3
 library_version: 4.8.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-tornado-sensitivity/letsplot/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-tornado-sensitivity/letsplot/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/bar-tornado-sensitivity/letsplot/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/bar-tornado-sensitivity/letsplot/plot.html
 quality_score: 87
 review:
   strengths:

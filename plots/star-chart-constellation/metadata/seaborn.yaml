@@ -7,7 +7,7 @@ workflow_run: 23267218317
 issue: 4560
 python_version: 3.14.3
 library_version: 0.13.2
-preview_url: https://storage.googleapis.com/pyplots-images/plots/star-chart-constellation/seaborn/plot.png
+preview_url: https://storage.googleapis.com/anyplot-images/plots/star-chart-constellation/seaborn/plot.png
 preview_html: null
 quality_score: 87
 review:

@@ -7,8 +7,8 @@ workflow_run: 20832961587
 issue: 3344
 python_version: 3.13.11
 library_version: 6.0.0
-preview_url: https://storage.googleapis.com/pyplots-images/plots/linked-views-selection/altair/plot.png
-preview_html: https://storage.googleapis.com/pyplots-images/plots/linked-views-selection/altair/plot.html
+preview_url: https://storage.googleapis.com/anyplot-images/plots/linked-views-selection/altair/plot.png
+preview_html: https://storage.googleapis.com/anyplot-images/plots/linked-views-selection/altair/plot.html
 quality_score: 91
 review:
   strengths:

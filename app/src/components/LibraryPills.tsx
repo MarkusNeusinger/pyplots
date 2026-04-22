@@ -102,7 +102,7 @@ export const LibraryPills = memo(function LibraryPills({
             role="button"
             tabIndex={0}
             onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onAll(); } }}
-            aria-label="Back to all implementations"
+            aria-label="Back to library comparison"
             sx={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -113,22 +113,19 @@ export const LibraryPills = memo(function LibraryPills({
               cursor: 'pointer',
               whiteSpace: 'nowrap',
               transition: 'color 0.2s',
-              '& .all-subject': { opacity: 0.7, transition: 'opacity 0.2s' },
               '& .all-arrow': { transition: 'transform 0.2s' },
               '&:hover': { color: colors.primary },
-              '&:hover .all-subject': { opacity: 1 },
               '&:hover .all-arrow': { transform: 'translateX(-3px)' },
               '&:focus-visible': { outline: `2px solid ${colors.primary}`, outlineOffset: 2, borderRadius: '2px' },
             }}
           >
             <Box component="span" className="all-arrow">←</Box>
-            <Box component="span">
-              <Box component="span" className="all-subject">impls</Box>
-              .all()
-            </Box>
+            <Box component="span">.compare()</Box>
           </Box>
-          {/* Divider only on ≥sm where the row is horizontal */}
-          <Box sx={{ height: 20, width: '1px', bgcolor: 'var(--rule)', mx: 1.5, display: { xs: 'none', sm: 'block' } }} />
+          {/* Vertical divider. Asymmetric mx compensates for the prev IconButton's
+              ~5 px internal left padding so the visible whitespace on either side
+              of the rule is equal. */}
+          <Box sx={{ height: 20, width: '1px', bgcolor: 'var(--rule)', ml: 1.5, mr: '7px', display: { xs: 'none', sm: 'block' } }} />
         </>
       )}
 

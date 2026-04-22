@@ -51,12 +51,12 @@ export function AboutPage() {
         <title>about | anyplot.ai</title>
         <meta
           name="description"
-          content="A catalogue of Python plotting examples across nine libraries. Plot ideas come from humans; AI drafts the spec, generates code for every library, and reviews each implementation."
+          content="a catalogue of python plotting examples across nine libraries. plot ideas come from humans; ai drafts the spec, generates code for every library, and reviews each implementation."
         />
         <meta property="og:title" content="about | anyplot.ai" />
         <meta
           property="og:description"
-          content="Humans submit ideas. AI drafts specs, generates code, reviews. Humans approve."
+          content="humans submit ideas. ai drafts specs, generates code, reviews. humans approve."
         />
         <link rel="canonical" href="https://anyplot.ai/about" />
       </Helmet>
@@ -67,9 +67,9 @@ export function AboutPage() {
           <SectionHeader prompt="❯" title={<em>about</em>} />
           <Box sx={proseColumnSx}>
             <Box sx={{ ...textStyle, fontSize: '18px', color: 'var(--ink)', fontWeight: 300 }}>
-              A catalogue of plotting examples across nine Python libraries. Plot ideas come from humans;
-              AI drafts the spec, generates code for every library, and reviews each implementation.
-              Humans approve specs and tune the rules when something repeatedly fails. Every example uses
+              a catalogue of plotting examples across nine python libraries. plot ideas come from humans;
+              ai drafts the spec, generates code for every library, and reviews each implementation.
+              humans approve specs and tune the rules when something repeatedly fails. every example uses
               the same colorblind-safe palette, so switching libraries never breaks your color grammar.
             </Box>
           </Box>
@@ -80,9 +80,9 @@ export function AboutPage() {
           <SectionHeader prompt="❯" title={<em>pipeline</em>} />
           <Box sx={proseColumnSx}>
             <Box sx={textStyle}>
-              Humans curate; AI executes. The catalogue maintains itself: when matplotlib ships a new release,
+              humans curate; ai executes. the catalogue maintains itself: when matplotlib ships a new release,
               we re-run the pipeline; when a better example pattern emerges, we update the spec and every
-              library regenerates. We never patch generated code by hand.
+              library regenerates. we never patch generated code by hand.
             </Box>
             <Box sx={{ ...codeBlockStyle, whiteSpace: 'pre', fontSize: '13px', mt: 3 }}>
               {PIPELINE_BLOCK}
@@ -95,12 +95,13 @@ export function AboutPage() {
           <SectionHeader prompt="❯" title={<em>palette</em>} />
           <Box sx={proseColumnSx}>
             <Box sx={textStyle}>
-              Every plot uses the Okabe-Ito palette, peer-reviewed for colorblind safety and designed for
-              scientific publications in 2008. About 8% of men have some form of color vision deficiency —
-              most plotting libraries ignore this entirely. We make it the default.
+              every plot uses the Okabe-Ito palette, designed to stay distinguishable under the main
+              forms of color vision deficiency. Masataka Okabe and Kei Ito published it on the Color
+              Universal Design page in 2002 (revised 2008). about 8% of men have some form of color
+              vision deficiency — most plotting libraries ignore this entirely. we make it the default.
             </Box>
             <Box sx={{ ...textStyle, mt: 1 }}>
-              See the{' '}
+              see the{' '}
               <Link
                 href="/palette"
                 onClick={() => trackEvent('internal_link', { destination: 'palette', source: 'about' })}
@@ -118,8 +119,8 @@ export function AboutPage() {
           <SectionHeader prompt="❯" title={<em>library-agnostic</em>} />
           <Box sx={proseColumnSx}>
             <Box sx={textStyle}>
-              A "Gentoo penguin" is always blue, whether you draw it in matplotlib, plotly, or bokeh.
-              The palette travels with you across libraries. Switching tools doesn't mean re-learning
+              a "gentoo penguin" is always blue, whether you draw it in matplotlib, plotly, or bokeh.
+              the palette travels with you across libraries. switching tools doesn't mean re-learning
               your color grammar.
             </Box>
           </Box>
@@ -130,18 +131,19 @@ export function AboutPage() {
           <SectionHeader prompt="❯" title={<em>origin</em>} />
           <Box sx={proseColumnSx}>
             <Box sx={textStyle}>
-              It started as pyplots.ai, a small Python-only catalogue built in a weekend. It grew when
-              it became clear people wanted the same examples across different libraries — and the same
-              safe palette everywhere. anyplot is the grown-up version: broader in scope (beyond Python),
-              broader in language (beyond English), and anchored in a colorblind-safe palette that travels
-              across every library.
+              it started as pyplots.ai, a small catalogue of python plotting examples built in a
+              weekend. it grew when it became clear people wanted two things from a catalogue like
+              this: inspiration for which plot fits their data, and a way to get to know libraries
+              they hadn't used before — each has its own specialties. anyplot is the grown-up version,
+              anchored in a colorblind-safe palette that travels across every library.
             </Box>
             <Box sx={{ ...textStyle, mt: 1 }}>
-              Built in Visp, a small town in the Swiss Alps, by a data analyst who spent too many hours
-              trying to figure out why the same chart looked different in seaborn than in plotly.
+              built in Visp, a small town in the Swiss Alps, by a data scientist looking for one
+              place to find the right plot for the data in front of him — and a way to explore
+              what each library does best.
             </Box>
             <Box sx={{ ...textStyle, mt: 1 }}>
-              Curious about the stack, costs, or analytics? See{' '}
+              curious about the stack, costs, or analytics? see{' '}
               <Link
                 component={RouterLink}
                 to="/legal#transparency"
@@ -160,7 +162,7 @@ export function AboutPage() {
           <SectionHeader prompt="❯" title={<em>contribute</em>} />
           <Box sx={proseColumnSx}>
             <Box sx={textStyle}>
-              Everything happens on GitHub — issues, releases, discussions. There's no separate forum,
+              everything happens on GitHub — issues, releases, discussions. there's no separate forum,
               no signup, no account.
             </Box>
             <Box sx={{

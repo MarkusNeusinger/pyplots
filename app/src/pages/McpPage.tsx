@@ -43,12 +43,12 @@ export function McpPage() {
         <title>mcp | anyplot.ai</title>
         <meta
           name="description"
-          content="Configure your AI assistant (Claude Desktop, Claude Code) to access anyplot data via the Model Context Protocol (MCP) server."
+          content="configure Claude Code to access anyplot data via the Model Context Protocol (MCP) server."
         />
         <meta property="og:title" content="mcp | anyplot.ai" />
         <meta
           property="og:description"
-          content="Configure your AI assistant to access anyplot data via MCP"
+          content="configure Claude Code to access anyplot data via MCP"
         />
         <link rel="canonical" href="https://anyplot.ai/mcp" />
       </Helmet>
@@ -60,16 +60,16 @@ export function McpPage() {
 
           <Box sx={{ maxWidth: 760, mx: 'auto' }}>
             <Typography sx={textStyle}>
-              The{' '}
+              the{' '}
               <Link href="https://modelcontextprotocol.io" target="_blank" rel="noopener" sx={proseLinkStyle}>
                 Model Context Protocol (MCP)
               </Link>{' '}
-              is an open standard by Anthropic that enables AI assistants to securely connect to external
+              is an open standard by Anthropic that enables ai assistants to securely connect to external
               data sources and tools.
             </Typography>
 
             <Typography sx={textStyle}>
-              anyplot provides an MCP server so you can use your AI assistant to:
+              anyplot provides an MCP server so you can use your ai assistant to:
             </Typography>
 
             <Box component="ul" sx={{ m: 0, pl: 3, mb: 2 }}>
@@ -97,7 +97,7 @@ export function McpPage() {
 
           <Box sx={{ maxWidth: 760, mx: 'auto' }}>
             <Typography sx={textStyle}>
-              Use these parameters to configure anyplot in your MCP client:
+              use these parameters to configure anyplot in your MCP client:
             </Typography>
 
             <Table sx={{ ...tableStyle, mb: 3 }}>
@@ -123,7 +123,7 @@ export function McpPage() {
             </Box>
 
             <Typography sx={{ ...textStyle, mt: 3 }}>
-              Verify by asking &quot;list available plot types from anyplot&quot;.
+              verify by asking &quot;list available plot types from anyplot&quot;.
             </Typography>
           </Box>
         </Box>
@@ -134,7 +134,7 @@ export function McpPage() {
 
           <Box sx={{ maxWidth: 760, mx: 'auto' }}>
             <Typography sx={textStyle}>
-              The MCP server provides these tools for AI assistants to interact with anyplot:
+              the MCP server provides these tools for ai assistants to interact with anyplot:
             </Typography>
 
             <Table sx={tableStyle}>
@@ -147,27 +147,27 @@ export function McpPage() {
               <TableBody>
                 <TableRow>
                   <TableCell><Box component="code" sx={inlineCodeSx}>list_specs</Box></TableCell>
-                  <TableCell>List all plot specifications with summary information (title, tags, library count)</TableCell>
+                  <TableCell>list all plot specifications with summary information (title, tags, library count)</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell><Box component="code" sx={inlineCodeSx}>search_specs_by_tags</Box></TableCell>
-                  <TableCell>Search specifications using tag filters (plot_type, data_type, domain, features, library)</TableCell>
+                  <TableCell>search specifications using tag filters (plot_type, data_type, domain, features, library)</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell><Box component="code" sx={inlineCodeSx}>get_spec_detail</Box></TableCell>
-                  <TableCell>Get complete specification including all implementations and metadata</TableCell>
+                  <TableCell>get complete specification including all implementations and metadata</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell><Box component="code" sx={inlineCodeSx}>get_implementation</Box></TableCell>
-                  <TableCell>Get implementation code for a specific specification and library</TableCell>
+                  <TableCell>get implementation code for a specific specification and library</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell><Box component="code" sx={inlineCodeSx}>list_libraries</Box></TableCell>
-                  <TableCell>List all supported plotting libraries (matplotlib, seaborn, plotly, etc.)</TableCell>
+                  <TableCell>list all supported plotting libraries (matplotlib, seaborn, plotly, etc.)</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell><Box component="code" sx={inlineCodeSx}>get_tag_values</Box></TableCell>
-                  <TableCell>Get all available values for a specific tag category with counts</TableCell>
+                  <TableCell>get all available values for a specific tag category with counts</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -181,21 +181,21 @@ export function McpPage() {
           <Box sx={{ maxWidth: 760, mx: 'auto' }}>
             <Typography sx={subheadingStyle}>ai-assisted plot discovery</Typography>
             <Typography sx={textStyle}>
-              Ask Claude to find the right plot type for your data. For example: &quot;I have two numeric
+              ask Claude to find the right plot type for your data. for example: &quot;I have two numeric
               variables and want to show their correlation. What plot types does anyplot have?&quot;
               Claude will search the specifications and suggest appropriate visualizations.
             </Typography>
 
             <Typography sx={subheadingStyle}>code generation with ai</Typography>
             <Typography sx={textStyle}>
-              Claude can fetch implementation code and adapt it to your specific data. Ask: &quot;Get me
+              Claude can fetch implementation code and adapt it to your specific data. ask: &quot;Get me
               the matplotlib code for a scatter plot and modify it to use my sales data.&quot; Claude
               will retrieve the code and customize it for your needs.
             </Typography>
 
             <Typography sx={subheadingStyle}>comparing library implementations</Typography>
             <Typography sx={textStyle}>
-              Compare how different libraries implement the same visualization. Ask: &quot;Show me how
+              compare how different libraries implement the same visualization. ask: &quot;Show me how
               to create a heatmap in both seaborn and plotly.&quot; Claude will fetch both implementations
               so you can compare their approaches and choose the best fit for your project.
             </Typography>

@@ -46,8 +46,8 @@ export function LibrariesPage() {
         <SectionHeader prompt="❯" title={<em>libraries</em>} />
 
         <Box sx={{ ...textStyle, maxWidth: 720, mb: 6 }}>
-          Each spec is implemented in every supported library so you can compare side-by-side.
-          Click a library to browse its plots, or open the upstream documentation in a new tab.
+          each spec is implemented in every supported library so you can compare side-by-side.
+          click a library to browse its plots, or open the upstream documentation in a new tab.
         </Box>
 
         <Box sx={{

@@ -54,12 +54,12 @@ export function ScienceNote() {
           lineHeight: 1.6,
           color: 'var(--ink-soft)',
           fontWeight: 300,
+          fontStyle: 'italic',
           px: 2.5,
           m: 0,
         }}>
-          "We proposed a set of colors optimized for colorblind and colorweak individuals,
-          with the expectation that their use will broaden the accessibility
-          of figures in scientific papers."
+          A palette proposed as unambiguous to both colorblind and non-colorblind
+          viewers, with vivid colors that stay recognizable on screen and in print.
         </Box>
 
         <Box component="cite" sx={{
@@ -72,7 +72,7 @@ export function ScienceNote() {
           textTransform: 'uppercase',
           letterSpacing: '0.15em',
         }}>
-          — Okabe & Ito, 2008
+          — Okabe & Ito, Color Universal Design (2008)
         </Box>
 
         <PaletteStrip />

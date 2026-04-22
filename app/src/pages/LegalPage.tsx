@@ -39,9 +39,9 @@ export function LegalPage() {
     <>
       <Helmet>
         <title>legal | anyplot.ai</title>
-        <meta name="description" content="Legal notice, privacy policy, and transparency information for anyplot.ai" />
+        <meta name="description" content="legal notice, privacy policy, and transparency information for anyplot.ai" />
         <meta property="og:title" content="legal | anyplot.ai" />
-        <meta property="og:description" content="Legal notice, privacy policy, and transparency information" />
+        <meta property="og:description" content="legal notice, privacy policy, and transparency information" />
         <link rel="canonical" href="https://anyplot.ai/legal" />
       </Helmet>
 
@@ -101,10 +101,10 @@ export function LegalPage() {
 
             <Typography sx={subheadingStyle}>disclaimer</Typography>
             <Typography sx={textStyle}>
-              This is a personal portfolio project showcasing data visualization examples, generated and
-              maintained through AI-powered workflows. All code examples are meant for inspiration and
+              this is a personal portfolio project showcasing data visualization examples, generated and
+              maintained through ai-powered workflows. all code examples are meant for inspiration and
               learning — take them as a starting point, adapt them to your data and requirements, or use
-              AI tools to customize them for your specific needs. Code is provided &quot;as is&quot; under
+              ai tools to customize them for your specific needs. code is provided &quot;as is&quot; under
               the MIT License and should be reviewed before production use.
             </Typography>
           </Box>
@@ -120,25 +120,25 @@ export function LegalPage() {
 
             <Typography sx={subheadingStyle}>what we collect</Typography>
             <Typography sx={textStyle}>
-              <strong>anonymized analytics.</strong> We use{' '}
+              <strong>anonymized analytics.</strong> we use{' '}
               <Link href="https://plausible.io" target="_blank" rel="noopener" sx={proseLinkStyle}>
                 Plausible Analytics
               </Link>
-              , a privacy-focused analytics tool. It collects no personal data, uses no cookies, and does
-              not track you across websites. We track: page views, navigation patterns, code copies, image
-              downloads, search queries, filter usage, and UI interactions. When you share a link, we detect
-              which platform requests the preview (e.g., LinkedIn, WhatsApp). All data is aggregated and
+              , a privacy-focused analytics tool. it collects no personal data, uses no cookies, and does
+              not track you across websites. we track: page views, navigation patterns, code copies, image
+              downloads, search queries, filter usage, and UI interactions. when you share a link, we detect
+              which platform requests the preview (e.g., LinkedIn, WhatsApp). all data is aggregated and
               anonymous.
             </Typography>
             <Typography sx={textStyle}>
-              <strong>public dashboard.</strong> Our analytics are{' '}
+              <strong>public dashboard.</strong> our analytics are{' '}
               <Link href="https://plausible.io/anyplot.ai" target="_blank" rel="noopener" sx={proseLinkStyle}>
                 fully public
               </Link>{' '}
               — see exactly what we see.
             </Typography>
             <Typography sx={textStyle}>
-              <strong>server logs.</strong> Technical server logs including IP addresses, request URLs, and
+              <strong>server logs.</strong> technical server logs including IP addresses, request URLs, and
               user agents are retained for 30 days via{' '}
               <Link href="https://cloud.google.com/logging" target="_blank" rel="noopener" sx={proseLinkStyle}>
                 Google Cloud Logging
@@ -153,17 +153,17 @@ export function LegalPage() {
               • no personal data (names, emails, etc.)
               <br />
               • no cookies at all (we use localStorage for UI preferences only)
-              <br />• <strong>no AI training</strong>: your interactions are not used to train AI models
+              <br />• <strong>no ai training</strong>: your interactions are not used to train ai models
             </Typography>
 
             <Typography sx={textStyle}>
-              <strong>contributors.</strong> If you suggest a plot type via GitHub, your GitHub username
-              may be credited in the specification metadata. This is public information from your GitHub
+              <strong>contributors.</strong> if you suggest a plot type via GitHub, your GitHub username
+              may be credited in the specification metadata. this is public information from your GitHub
               profile.
             </Typography>
 
             <Typography sx={subheadingStyle}>hosting &amp; third parties</Typography>
-            <Typography sx={textStyle}>All services are hosted in the EU (Netherlands, europe-west4):</Typography>
+            <Typography sx={textStyle}>all services are hosted in the EU (Netherlands, europe-west4):</Typography>
             <Table sx={{ ...tableStyle, ...firstColStyle }}>
               <TableBody>
                 <TableRow>
@@ -179,6 +179,10 @@ export function LegalPage() {
                   <TableCell>Google Cloud Storage (Netherlands)</TableCell>
                 </TableRow>
                 <TableRow>
+                  <TableCell>cdn / ddos</TableCell>
+                  <TableCell>Cloudflare (global, EU data centers for EU visitors)</TableCell>
+                </TableRow>
+                <TableRow>
                   <TableCell>analytics</TableCell>
                   <TableCell>Plausible Analytics (EU, proxied)</TableCell>
                 </TableRow>
@@ -187,8 +191,8 @@ export function LegalPage() {
 
             <Typography sx={subheadingStyle}>your rights</Typography>
             <Typography sx={textStyle}>
-              You have the right to access, rectify, erase, and export your data. Since we do not store
-              personal data, there is typically nothing to delete or export. For questions, contact{' '}
+              you have the right to access, rectify, erase, and export your data. since we do not store
+              personal data, there is typically nothing to delete or export. for questions, contact{' '}
               <Link href="mailto:admin@anyplot.ai" sx={proseLinkStyle}>
                 admin@anyplot.ai
               </Link>
@@ -203,7 +207,7 @@ export function LegalPage() {
 
           <Box sx={{ maxWidth: 760, mx: 'auto' }}>
             <Typography sx={textStyle}>
-              This project is open source and committed to full transparency about how it works and what
+              this project is open source and committed to full transparency about how it works and what
               it costs.
             </Typography>
 
@@ -244,7 +248,7 @@ export function LegalPage() {
                     <Link href="https://python.org" target="_blank" rel="noopener" sx={proseLinkStyle}>
                       Python
                     </Link>{' '}
-                    3.13,{' '}
+                    3.14,{' '}
                     <Link href="https://fastapi.tiangolo.com" target="_blank" rel="noopener" sx={proseLinkStyle}>
                       FastAPI
                     </Link>
@@ -270,6 +274,14 @@ export function LegalPage() {
                       Google Cloud Run
                     </Link>{' '}
                     (Netherlands)
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>cdn / ddos</TableCell>
+                  <TableCell>
+                    <Link href="https://cloudflare.com" target="_blank" rel="noopener" sx={proseLinkStyle}>
+                      Cloudflare
+                    </Link>
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -320,7 +332,7 @@ export function LegalPage() {
 
             <Typography sx={subheadingStyle}>source code</Typography>
             <Typography sx={textStyle}>
-              The entire codebase is publicly available under the MIT License:
+              the entire codebase is publicly available under the MIT License:
               <br />
               <Link href={GITHUB_URL} target="_blank" rel="noopener" sx={proseLinkStyle}>
                 github.com/MarkusNeusinger/anyplot
@@ -357,14 +369,14 @@ export function LegalPage() {
               </TableBody>
             </Table>
             <Typography sx={{ ...textStyle, fontSize: fontSize.sm, color: semanticColors.mutedText, mt: 1 }}>
-              Direct hosting costs only. Subscriptions (GitHub Pro, Plausible, Claude MAX, PyCharm, etc.)
-              are shared across projects. All costs are currently covered privately.
+              direct hosting costs only. subscriptions (GitHub Pro, Plausible, Claude MAX, PyCharm, etc.)
+              are shared across projects. all costs are currently covered privately.
             </Typography>
           </Box>
         </Box>
 
         <Typography sx={{ textAlign: 'center', fontSize: fontSize.sm, color: semanticColors.mutedText, mt: 2 }}>
-          last updated: March 2026
+          last updated: April 2026
         </Typography>
       </Box>
     </>

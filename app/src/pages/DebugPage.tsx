@@ -128,7 +128,7 @@ const ScoreCell = ({ score, specId, library }: { score: number | null; specId: s
 const ProblemList = ({ items, title, icon }: { items: ProblemSpec[]; title: string; icon?: React.ReactNode }) => {
   if (items.length === 0) return null;
   return (
-    <Accordion defaultExpanded={items.length <= 5}>
+    <Accordion defaultExpanded>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           {icon}
@@ -434,7 +434,7 @@ export function DebugPage() {
       </Box>
 
       {/* Table */}
-      <TableContainer component={Paper} sx={{ maxHeight: 'calc(100vh - 580px)' }}>
+      <TableContainer component={Paper} sx={{ minHeight: 500, maxHeight: 'calc(100vh - 160px)' }}>
         <Table stickyHeader size="small">
           <TableHead>
             <TableRow>

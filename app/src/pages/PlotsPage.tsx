@@ -212,7 +212,7 @@ export function PlotsPage() {
 
       {!loading && allImages.length === 0 && !noFilters && (
         <Alert severity="info" sx={{ maxWidth: 400, mx: 'auto' }}>
-          No plots match these filters.
+          no plots match these filters.
         </Alert>
       )}
 

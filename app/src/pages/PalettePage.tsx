@@ -31,7 +31,7 @@ export function PalettePage() {
     <>
       <Helmet>
         <title>palette | anyplot.ai</title>
-        <meta name="description" content="The Okabe-Ito colorblind-safe palette used across all anyplot.ai visualizations. 8 colors, validated for deuteranopia, protanopia, and tritanopia." />
+        <meta name="description" content="the Okabe-Ito colorblind-safe palette used across all anyplot.ai visualizations. 8 colors, validated for deuteranopia, protanopia, and tritanopia." />
       </Helmet>
 
       <Box sx={{ pb: 4 }}>
@@ -39,17 +39,17 @@ export function PalettePage() {
           <SectionHeader prompt="❯" title={<em>the Okabe-Ito palette</em>} />
           <Box sx={proseColumnSx}>
             <Box sx={textStyle}>
-              Every plot on anyplot.ai uses the Okabe-Ito palette, a set of 8 colors peer-reviewed for
-              colorblind safety. Published in 2008 by Masataka Okabe and Kei Ito, it was optimized for
-              three types of color vision deficiency — deuteranopia, protanopia, and tritanopia — which
-              together affect roughly 8% of men.
+              every plot on anyplot.ai uses the Okabe-Ito palette, a set of 8 colors designed to stay
+              distinguishable under the main forms of color vision deficiency. Masataka Okabe and Kei Ito
+              proposed it on their Color Universal Design page (2002, revised 2008), addressing
+              protanopia, deuteranopia, and tritanopia — conditions that affect roughly 8% of men.
             </Box>
 
             <Box sx={{ ...textStyle, fontStyle: 'italic', borderLeft: `3px solid ${colors.primary}`, pl: 3, my: 4 }}>
-              "We proposed a set of colors optimized for colorblind and colorweak individuals, with the
-              expectation that their use will broaden the accessibility of figures in scientific papers."
+              a palette proposed as unambiguous to both colorblind and non-colorblind viewers, with
+              vivid colors that stay recognizable on screen and in print.
               <Box component="span" sx={{ display: 'block', mt: 1, fontStyle: 'normal', fontFamily: typography.mono, fontSize: '11px', color: 'var(--ink-muted)', letterSpacing: '0.1em' }}>
-                — Okabe &amp; Ito, 2008
+                — Okabe &amp; Ito, Color Universal Design (2008)
               </Box>
             </Box>
           </Box>
@@ -89,14 +89,14 @@ export function PalettePage() {
           <SectionHeader prompt="❯" title={<em>usage rules</em>} />
           <Box sx={proseColumnSx}>
             <Box sx={textStyle}>
-              The first series in every plot is always the brand color (#009E73). The neutral (position 8)
-              is reserved for aggregates and reference lines. Yellow (#F0E442) has poor contrast on white
+              the first series in every plot is always the brand color (#009E73). the neutral (position 8)
+              is reserved for aggregates and reference lines. yellow (#F0E442) has poor contrast on white
               backgrounds — use it only for position 7 or later.
             </Box>
 
             <Box sx={textStyle}>
-              For sequential data, use viridis or cividis. For diverging data, use BrBG from ColorBrewer.
-              Don't use Okabe-Ito for continuous data — a categorical palette on continuous data produces
+              for sequential data, use viridis or cividis. for diverging data, use BrBG from ColorBrewer.
+              don't use Okabe-Ito for continuous data — a categorical palette on continuous data produces
               misleading banding.
             </Box>
           </Box>

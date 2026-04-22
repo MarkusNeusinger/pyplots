@@ -5,7 +5,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { AppDataProvider } from './components/Layout';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { RootLayout } from './components/RootLayout';
-import { BareLayout } from './components/BareLayout';
 import { RouteErrorBoundary } from './components/RouteErrorBoundary';
 import { NotFoundPage } from './pages/NotFoundPage';
 
@@ -42,21 +41,11 @@ const router = createBrowserRouter([
           { path: 'legal', lazy: () => import('./pages/LegalPage').then(m => ({ Component: m.LegalPage })) },
           { path: 'mcp', lazy: () => import('./pages/McpPage').then(m => ({ Component: m.McpPage })) },
           { path: 'stats', lazy: () => import('./pages/StatsPage').then(m => ({ Component: m.StatsPage })) },
+          { path: 'debug', lazy: () => import('./pages/DebugPage').then(m => ({ Component: m.DebugPage })) },
           { path: ':specId', lazy: lazySpec },
           { path: ':specId/:language', element: <SpecLanguageRedirect /> },
           { path: ':specId/:language/:library', lazy: lazySpec },
           { path: '*', element: <NotFoundPage /> },
-        ],
-      },
-    ],
-  },
-  {
-    element: <BareLayout />,
-    children: [
-      {
-        errorElement: <RouteErrorBoundary />,
-        children: [
-          { path: 'debug', lazy: () => import('./pages/DebugPage').then(m => ({ Component: m.DebugPage })) },
         ],
       },
     ],

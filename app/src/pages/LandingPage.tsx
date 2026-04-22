@@ -100,7 +100,7 @@ function PaletteSection() {
                 '&:hover': { color: colors.primary },
               }}
             >
-              Okabe &amp; Ito (2008)
+              Okabe &amp; Ito (2002, rev. 2008)
             </Box>
             . every plot in the catalogue picks from it — and so does this
             site, accent for accent.

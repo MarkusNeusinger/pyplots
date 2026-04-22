@@ -39,8 +39,8 @@ export function CodeShowcase() {
             color: 'var(--ink-soft)',
             mb: 2.5,
           }}>
-            Every example in the catalogue uses the same Okabe-Ito palette. Switch libraries
-            without losing your color grammar — a <em style={{ fontStyle: 'italic' }}>Gentoo penguin</em> is always blue,
+            every example in the catalogue uses the same Okabe-Ito palette. switch libraries
+            without losing your color grammar — a <em style={{ fontStyle: 'italic' }}>gentoo penguin</em> is always blue,
             whether you draw it in matplotlib or plotly.
           </Box>
           <Box sx={{
@@ -48,7 +48,7 @@ export function CodeShowcase() {
             fontSize: '13px',
             color: 'var(--ink-muted)',
           }}>
-            Validated against deuteranopia, protanopia and tritanopia using the Machado et al. (2009) simulation model.
+            validated against deuteranopia, protanopia and tritanopia using the Machado et al. (2009) simulation model.
           </Box>
         </Box>
 

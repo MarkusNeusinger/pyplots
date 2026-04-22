@@ -144,7 +144,7 @@ export function StatsPage() {
             </Box>
           ))}
         </Box>
-        <Typography sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.xxs, color: semanticColors.mutedText, textAlign: 'center', mt: -2, mb: 3 }}>
+        <Typography sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.xs, color: semanticColors.mutedText, textAlign: 'center', mt: -2, mb: 3 }}>
           visitor analytics at{' '}
           <Link href="https://plausible.io/anyplot.ai" target="_blank" rel="noopener noreferrer"
             onClick={() => trackEvent('external_link', { destination: 'plausible' })}

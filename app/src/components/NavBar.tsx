@@ -1,6 +1,10 @@
+import { useCallback, useEffect, useRef } from 'react';
 import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import { colors, typography } from '../theme';
+
+const DEBUG_CLICK_COUNT = 5;
+const DEBUG_CLICK_WINDOW_MS = 800;
 
 const NAV_LINKS: { label: string; to: string; short?: string }[] = [
   { label: 'specs', to: '/specs' },
@@ -52,10 +56,36 @@ const activeLinkSx = {
 export function NavBar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const clickCountRef = useRef(0);
+  const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+    };
+  }, []);
 
   const handleSearch = () => {
     navigate('/plots?focus=search');
   };
+
+  // 5 rapid clicks on the logo opens /debug.
+  // Non-triggering clicks fall through to RouterLink's normal `/` navigation.
+  const handleLogoClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
+      clickCountRef.current += 1;
+      if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+      clickTimerRef.current = setTimeout(() => { clickCountRef.current = 0; }, DEBUG_CLICK_WINDOW_MS);
+      if (clickCountRef.current >= DEBUG_CLICK_COUNT) {
+        e.preventDefault();
+        clickCountRef.current = 0;
+        if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+        navigate('/debug');
+      }
+    },
+    [navigate]
+  );
 
   return (
     <Box component="nav" sx={{
@@ -77,6 +107,7 @@ export function NavBar() {
       <Box
         component={RouterLink}
         to="/"
+        onClick={handleLogoClick}
         sx={{
           gridArea: 'logo',
           fontFamily: typography.mono,
@@ -85,6 +116,7 @@ export function NavBar() {
           letterSpacing: '-0.02em',
           textDecoration: 'none',
           color: 'var(--ink)',
+          userSelect: 'none',
         }}
       >
         any<Box component="span" sx={{ color: colors.primary, display: 'inline-block', transform: 'scale(1.45)', mx: '2px' }}>.</Box>plot<Box component="span" sx={{ fontWeight: 400, opacity: 0.45 }}>()</Box>

@@ -564,14 +564,14 @@ export function FilterBar({
         disableAutoFocus
         disableRestoreFocus
         disableEnforceFocus
-        PaperProps={{
-          sx: {
-            maxHeight: 350,
-            minWidth: 240,
-            mt: 0.5,
-          },
-        }}
         slotProps={{
+          paper: {
+            sx: {
+              maxHeight: 350,
+              minWidth: 240,
+              mt: 0.5,
+            },
+          },
           root: {
             slotProps: {
               backdrop: {
@@ -603,14 +603,20 @@ export function FilterBar({
                     <ListItemText
                       primary={FILTER_LABELS[category]}
                       secondary={`${availableVals.length} options`}
-                      primaryTypographyProps={{
-                        fontFamily: typography.fontFamily,
-                        fontSize: fontSize.lg,
-                      }}
-                      secondaryTypographyProps={{
-                        fontFamily: typography.fontFamily,
-                        fontSize: fontSize.sm,
-                        color: semanticColors.mutedText,
+                      slotProps={{
+                        primary: {
+                          sx: {
+                            fontFamily: typography.fontFamily,
+                            fontSize: fontSize.lg,
+                          },
+                        },
+                        secondary: {
+                          sx: {
+                            fontFamily: typography.fontFamily,
+                            fontSize: fontSize.sm,
+                            color: semanticColors.mutedText,
+                          },
+                        },
                       }}
                     />
                   </MenuItem>
@@ -665,14 +671,20 @@ export function FilterBar({
                         <ListItemText
                           primary={value}
                           secondary={!selectedCategory ? FILTER_LABELS[category] : undefined}
-                          primaryTypographyProps={{
-                            fontFamily: typography.fontFamily,
-                            fontSize: fontSize.base,
-                          }}
-                          secondaryTypographyProps={{
-                            fontFamily: typography.fontFamily,
-                            fontSize: fontSize.xs,
-                            color: semanticColors.mutedText,
+                          slotProps={{
+                            primary: {
+                              sx: {
+                                fontFamily: typography.fontFamily,
+                                fontSize: fontSize.base,
+                              },
+                            },
+                            secondary: {
+                              sx: {
+                                fontFamily: typography.fontFamily,
+                                fontSize: fontSize.xs,
+                                color: semanticColors.mutedText,
+                              },
+                            },
                           }}
                         />
                         <Typography
@@ -750,10 +762,12 @@ export function FilterBar({
           setChipMenuAnchor(null);
           setActiveGroupIndex(null);
         }}
-        PaperProps={{
-          sx: {
-            minWidth: 180,
-            maxHeight: 350,
+        slotProps={{
+          paper: {
+            sx: {
+              minWidth: 180,
+              maxHeight: 350,
+            },
           },
         }}
       >

@@ -74,6 +74,11 @@ def mock_spec():
     mock_impl.library.language = "python"
     mock_impl.preview_url = TEST_IMAGE_URL
     mock_impl.preview_html = None
+    # Phase C theme-aware preview fields (otherwise MagicMock auto-stubs fail Pydantic validation)
+    mock_impl.preview_url_light = TEST_IMAGE_URL
+    mock_impl.preview_url_dark = None
+    mock_impl.preview_html_light = None
+    mock_impl.preview_html_dark = None
     mock_impl.quality_score = 92.5
     mock_impl.code = "import matplotlib.pyplot as plt"
     mock_impl.generated_at = None

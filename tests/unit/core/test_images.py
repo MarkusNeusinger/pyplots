@@ -288,13 +288,16 @@ class TestCreateResponsiveVariants:
     """Tests for create_responsive_variants function."""
 
     def test_creates_all_variants(self, sample_image: Path, tmp_path: Path) -> None:
-        """Should create all 7 responsive variants."""
+        """Should create all 7 responsive variants.
+
+        Phase C: output basename follows the input stem, so sample_image
+        (test_image.png) produces test_image_*.{png,webp} + test_image.webp.
+        """
         output_dir = tmp_path / "variants"
         results = create_responsive_variants(sample_image, output_dir, optimize=False)
 
-        # 800px source: only 400px sized variant is smaller, so 2 formats for 400 + full webp = 3
-        # Actually 800 >= 800 so 800 is skipped, 1200 >= 800 so skipped too, only 400 < 800
-        expected_files = {"plot_400.png", "plot_400.webp", "plot.webp"}
+        # 800px source: only 400px sized variant is smaller (800/1200 are skipped).
+        expected_files = {"test_image_400.png", "test_image_400.webp", "test_image.webp"}
         actual_files = {f.name for f in output_dir.iterdir()}
         assert actual_files == expected_files
         assert len(results) == 3
@@ -308,13 +311,13 @@ class TestCreateResponsiveVariants:
         results = create_responsive_variants(img_path, output_dir, optimize=False)
 
         expected_files = {
-            "plot_1200.png",
-            "plot_1200.webp",
-            "plot_800.png",
-            "plot_800.webp",
-            "plot_400.png",
-            "plot_400.webp",
-            "plot.webp",
+            "large_1200.png",
+            "large_1200.webp",
+            "large_800.png",
+            "large_800.webp",
+            "large_400.png",
+            "large_400.webp",
+            "large.webp",
         }
         actual_files = {f.name for f in output_dir.iterdir()}
         assert actual_files == expected_files
@@ -360,12 +363,13 @@ class TestCreateResponsiveVariants:
         output_dir = tmp_path / "variants"
         create_responsive_variants(img_path, output_dir, optimize=False)
 
-        # 500px source: only 400 < 500, so 400 variants + full webp
+        # 500px source: only 400 < 500, so 400 variants + full webp.
+        # Basename derived from input stem: small.png → small_*.{png,webp} + small.webp
         filenames = {f.name for f in output_dir.iterdir()}
-        assert "plot_1200.png" not in filenames
-        assert "plot_800.png" not in filenames
-        assert "plot_400.png" in filenames
-        assert "plot.webp" in filenames
+        assert "small_1200.png" not in filenames
+        assert "small_800.png" not in filenames
+        assert "small_400.png" in filenames
+        assert "small.webp" in filenames
 
     def test_handles_rgba_input(self, tmp_path: Path) -> None:
         """Should convert RGBA images to RGB."""
@@ -376,7 +380,7 @@ class TestCreateResponsiveVariants:
         results = create_responsive_variants(img_path, output_dir, optimize=False)
 
         assert len(results) > 0
-        img = Image.open(output_dir / "plot_800.png")
+        img = Image.open(output_dir / "rgba_800.png")
         assert img.mode == "RGB"
 
     def test_creates_output_dir(self, sample_image: Path, tmp_path: Path) -> None:

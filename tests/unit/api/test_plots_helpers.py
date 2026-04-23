@@ -330,7 +330,13 @@ class TestCollectAllImages:
     def test_skips_without_preview(self) -> None:
         impl = MagicMock()
         impl.library_id = "matplotlib"
+        # Phase B schema: _collect_all_images gates on preview_url_light
+        impl.preview_url_light = None
+        impl.preview_url_dark = None
+        impl.preview_html_light = None
+        impl.preview_html_dark = None
         impl.preview_url = None
+        impl.preview_html = None
 
         spec = MagicMock()
         spec.id = "s1"

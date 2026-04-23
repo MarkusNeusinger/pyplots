@@ -1,10 +1,7 @@
 """Tests for automation.scripts.sync_to_postgres module."""
 
 from datetime import datetime
-from pathlib import Path
 from unittest.mock import MagicMock, patch
-
-import pytest
 
 from automation.scripts.sync_to_postgres import (
     _chunked,
@@ -710,10 +707,13 @@ class TestSyncToDatabase:
                 "implementations": [
                     {
                         "spec_id": "scatter-basic",
+                        "language_id": "python",
                         "library_id": "matplotlib",
                         "code": "import matplotlib",
-                        "preview_url": "https://example.com/plot.png",
-                        "preview_html": None,
+                        "preview_url_light": "https://example.com/plot.png",
+                        "preview_url_dark": None,
+                        "preview_html_light": None,
+                        "preview_html_dark": None,
                         "python_version": "3.13",
                         "library_version": "3.10.0",
                         "generated_at": datetime(2025, 1, 10),
@@ -809,10 +809,13 @@ class TestSyncToDatabase:
                 "implementations": [
                     {
                         "spec_id": "test-spec",
+                        "language_id": "python",
                         "library_id": "matplotlib",
                         "code": "code",
-                        "preview_url": None,
-                        "preview_html": None,
+                        "preview_url_light": None,
+                        "preview_url_dark": None,
+                        "preview_html_light": None,
+                        "preview_html_dark": None,
                         "python_version": None,
                         "library_version": None,
                         "generated_at": None,
@@ -862,10 +865,13 @@ class TestSyncToDatabase:
                 "implementations": [
                     {
                         "spec_id": spec_id,
+                        "language_id": "python",
                         "library_id": lib,
                         "code": "code",
-                        "preview_url": None,
-                        "preview_html": None,
+                        "preview_url_light": None,
+                        "preview_url_dark": None,
+                        "preview_html_light": None,
+                        "preview_html_dark": None,
                         "python_version": None,
                         "library_version": None,
                         "generated_at": None,
@@ -892,9 +898,9 @@ class TestSyncToDatabase:
         assert stats["specs_synced"] == 5
         assert stats["impls_synced"] == 15
         mock_session.commit.assert_called_once()
-        # Batched: 1 library seed + 1 spec chunk + 1 impl chunk + 2 removal selects = 5
-        # (much fewer than 5+15+2 = 22 calls in the old per-row approach)
-        assert mock_session.execute.call_count == 5
+        # Batched: 1 languages seed + 1 libraries seed + 1 spec chunk + 1 impl chunk
+        # + 2 removal selects = 6 (much fewer than 5+15+2 = 22 calls in the old per-row approach)
+        assert mock_session.execute.call_count == 6
 
 
 class TestMain:

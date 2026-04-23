@@ -43,6 +43,12 @@ def mock_spec():
     mock_impl.code = "import matplotlib.pyplot as plt"
     mock_impl.preview_url = "https://example.com/plot.png"
     mock_impl.preview_html = None
+    # Phase C theme-aware fields — MagicMock auto-stubs these as MagicMock objects,
+    # which fails Pydantic's str|None validation. Set them explicitly.
+    mock_impl.preview_url_light = "https://example.com/plot-light.png"
+    mock_impl.preview_url_dark = "https://example.com/plot-dark.png"
+    mock_impl.preview_html_light = None
+    mock_impl.preview_html_dark = None
     mock_impl.quality_score = 92
     mock_impl.created = None
     mock_impl.generated_by = "claude-opus-4"

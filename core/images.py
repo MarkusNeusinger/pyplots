@@ -216,12 +216,18 @@ def create_responsive_variants(
     """Generate multi-size, multi-format image variants for responsive delivery.
 
     Creates sized PNGs and WebPs (400/800/1200) plus a full-size WebP from the
-    source image.  File naming follows the convention expected by the frontend:
-        plot_1200.png, plot_1200.webp, plot_800.png, plot_800.webp,
-        plot_400.png, plot_400.webp, plot.webp
+    source image. The input file's stem is used as the basename so theme-aware
+    inputs produce theme-aware variants:
+
+        input plot-light.png → plot-light_400.png, plot-light_400.webp,
+                               plot-light_800.png, plot-light_800.webp,
+                               plot-light_1200.png, plot-light_1200.webp,
+                               plot-light.webp
+        input plot-dark.png  → plot-dark_400.png, …, plot-dark.webp
+        input plot.png       → plot_400.png, …, plot.webp (legacy single-theme)
 
     Args:
-        input_path: Path to the source plot image (plot.png).
+        input_path: Path to the source plot image (plot.png / plot-light.png / plot-dark.png).
         output_dir: Directory where variants will be written.
         sizes: Override default RESPONSIVE_SIZES if needed.
         optimize: Whether to optimize PNGs with pngquant.
@@ -233,6 +239,10 @@ def create_responsive_variants(
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    # Derive the basename from the input stem so plot-light.png → "plot-light",
+    # plot-dark.png → "plot-dark", plot.png → "plot".
+    basename = input_path.stem
+
     with Image.open(input_path) as src:
         if src.mode in ("RGBA", "P"):
             img = src.convert("RGB")
@@ -242,19 +252,18 @@ def create_responsive_variants(
     results: list[dict[str, str | int]] = []
     target_sizes = sizes or RESPONSIVE_SIZES
 
-    # Sized variants (e.g. plot_1200.png, plot_1200.webp, plot_800.png, ...)
+    # Sized variants (e.g. plot-light_1200.png, plot-light_1200.webp, ...)
     for width in target_sizes:
         # Skip sizes larger than the original
         if width >= img.width:
             continue
-        else:
-            ratio = width / img.width
-            actual_width = width
-            actual_height = int(img.height * ratio)
-            resized = img.resize((actual_width, actual_height), Image.Resampling.LANCZOS)
+        ratio = width / img.width
+        actual_width = width
+        actual_height = int(img.height * ratio)
+        resized = img.resize((actual_width, actual_height), Image.Resampling.LANCZOS)
 
         for ext, fmt, opts in RESPONSIVE_FORMATS:
-            out_path = output_dir / f"plot_{width}.{ext}"
+            out_path = output_dir / f"{basename}_{width}.{ext}"
             resized.save(out_path, fmt, optimize=True, **opts)
 
             # Optimize PNG with pngquant
@@ -264,11 +273,11 @@ def create_responsive_variants(
             results.append({"path": str(out_path), "width": actual_width, "height": actual_height, "format": ext})
             logger.info("Created %s (%dx%d)", out_path.name, actual_width, actual_height)
 
-    # Full-size WebP
-    webp_path = output_dir / "plot.webp"
+    # Full-size WebP (e.g. plot-light.webp)
+    webp_path = output_dir / f"{basename}.webp"
     img.save(webp_path, "WEBP", quality=WEBP_FULL_QUALITY)
     results.append({"path": str(webp_path), "width": img.width, "height": img.height, "format": "webp"})
-    logger.info("Created plot.webp (%dx%d)", img.width, img.height)
+    logger.info("Created %s (%dx%d)", webp_path.name, img.width, img.height)
 
     return results
 

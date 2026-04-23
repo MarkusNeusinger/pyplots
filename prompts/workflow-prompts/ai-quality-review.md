@@ -39,6 +39,32 @@ You MUST use the Read tool to open **both** `plot_images/plot-light.png` AND `pl
 
 Read `prompts/default-style-guide.md` — the "Categorical Palette" (Okabe-Ito), "Continuous Data" (viridis/cividis/BrBG), and "Theme-adaptive Chrome" sections are the authoritative reference for VQ-07 scoring.
 
+### 5c. MANDATORY: Theme-Readability Check (both renders)
+
+Before you begin scoring, run this explicit check on **each** render. This is not the palette check (VQ-07) — it asks the simpler question: "is the plot actually readable in this theme?"
+
+For `plot-light.png` (background should be `#FAF8F1`):
+- [ ] Plot background is warm off-white, NOT pure white, NOT dark.
+- [ ] Title, axis labels, and tick labels are clearly visible against the light background (dark text).
+- [ ] Grid lines are subtle but visible (not invisible, not dominant).
+- [ ] Data markers/lines are clearly distinguishable from the background.
+- [ ] No text is "light on light" — e.g., near-white text on off-white background.
+
+For `plot-dark.png` (background should be `#1A1A17`):
+- [ ] Plot background is warm near-black, NOT pure black, NOT light.
+- [ ] Title, axis labels, and tick labels are clearly visible against the dark background (light text).
+- [ ] Grid lines are subtle but visible.
+- [ ] Data markers/lines are clearly distinguishable from the background.
+- [ ] **No text is "dark on dark"** — e.g., near-black text on near-black background. This is the most common theme-adaptation failure.
+- [ ] Brand green `#009E73` is still visible (it reads well on both surfaces, so this should hold).
+
+**If any checkbox fails for either render, score aggressively:**
+- **VQ-01 (Text Legibility): drop to 0 if any title/label/tick is unreadable in either render** — the implementation failed to thread theme tokens through to that element.
+- **VQ-07 (Palette Compliance): drop to 0 if chrome is wrong-theme** (dark-on-dark, light-on-light, pure-white, or pure-black background).
+- **Flag the specific elements in `weaknesses`** so the repair loop knows exactly what to fix. Example: "Dark render has black tick labels on near-black background — ax.tick_params colors not set from INK_SOFT token."
+
+A plot that's perfect in one theme but unreadable in the other still **fails** — both renders must pass. Be strict: a plot that ships to the website broken on dark mode is worse than one that fails review and gets repaired.
+
 ### 6. Check for Auto-Reject (AR-08)
 
 **For static libraries (matplotlib, seaborn, plotnine) only:**
@@ -126,8 +152,17 @@ Use this EXACT format:
 ## AI Review - Attempt ${ATTEMPT}/3
 
 ### Image Description
-> Describe what you see in the plot: colors used, axis labels, title, data representation, overall layout.
-> This proves you actually looked at the image.
+
+> **Light render (`plot-light.png`):** Describe the plot on the `#FAF8F1` surface —
+> colors used, axis labels, title, data representation, overall layout.
+> Explicitly state whether all text is readable against the light background.
+>
+> **Dark render (`plot-dark.png`):** Describe the same elements on the `#1A1A17` surface.
+> Confirm the data colors are identical to the light render (only chrome should flip).
+> Explicitly state whether all text is readable against the dark background — call out
+> any "dark-on-dark" failures (e.g. black tick labels on near-black background).
+>
+> Both paragraphs are required. A review that only describes one render is invalid.
 
 ### Score: XX/100
 
@@ -214,11 +249,19 @@ echo '["Weakness 1"]' > review_weaknesses.json
 # Verdict (APPROVED or REJECTED)
 echo "APPROVED" > review_verdict.txt
 
-# Image description (multi-line text proving you viewed BOTH renders)
+# Image description (multi-line text proving you viewed BOTH renders and checked legibility)
 cat > review_image_description.txt << 'EOF'
-Light render (plot-light.png): [describe colors, background, chrome, data representation]
-Dark render (plot-dark.png):   [describe the same elements — confirm data colors are identical; only chrome flipped]
-[Full descriptions for both renders here]
+Light render (plot-light.png):
+  Background: [describe — must be warm off-white around #FAF8F1]
+  Chrome: [title, axis labels, ticks — confirm all readable]
+  Data: [colors, markers, lines — confirm first series is #009E73]
+  Legibility verdict: PASS | FAIL (explain if FAIL)
+
+Dark render (plot-dark.png):
+  Background: [describe — must be warm near-black around #1A1A17]
+  Chrome: [title, axis labels, ticks — confirm all readable; FLAG any dark-on-dark]
+  Data: [confirm colors are identical to light render]
+  Legibility verdict: PASS | FAIL (explain if FAIL)
 EOF
 
 # Criteria checklist as structured JSON

@@ -108,14 +108,18 @@ jobs:
           gsutil -m cp "gs://anyplot-images/staging/${SPEC_ID}/${LANGUAGE}/${LIBRARY}/*" plot_images/ 2>/dev/null || true
           ls -la plot_images/
 
-      - name: Verify plot image exists
+      - name: Verify both theme renders exist
         run: |
-          if [ ! -f "plot_images/plot.png" ]; then
-            echo "::error::No plot.png found in staging - cannot review without image"
-            echo "::error::The impl-generate workflow may have failed to produce an image"
+          missing=""
+          [ -f "plot_images/plot-light.png" ] || missing="${missing} plot-light.png"
+          [ -f "plot_images/plot-dark.png" ]  || missing="${missing} plot-dark.png"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing theme render(s) in staging:${missing}"
+            echo "::error::The impl-generate workflow must produce both plot-light.png and plot-dark.png"
+            ls -la plot_images/ || true
             exit 1
           fi
-          echo "::notice::Found plot.png for review"
+          echo "::notice::Found both theme renders — proceeding to review"
 
       - name: React with eyes emoji
         env:

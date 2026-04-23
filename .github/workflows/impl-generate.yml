@@ -306,9 +306,14 @@ jobs:
         run: |
           IMPL_DIR="plots/${SPEC_ID}/implementations/${LANGUAGE}"
 
-          # Save plot files before git operations (they are not committed and would be lost)
-          cp "${IMPL_DIR}/plot.png" "/tmp/plot.png" 2>/dev/null || true
-          cp "${IMPL_DIR}/plot.html" "/tmp/plot.html" 2>/dev/null || true
+          # Save plot files before git operations (they are not committed and would be lost).
+          # Phase C emits plot-light.png + plot-dark.png (+ plot-light.html + plot-dark.html
+          # for interactive libs); legacy plot.png/plot.html is preserved during the transition.
+          mkdir -p /tmp/anyplot-plot-cache
+          rm -rf /tmp/anyplot-plot-cache/*
+          for f in plot-light.png plot-dark.png plot-light.html plot-dark.html plot.png plot.html; do
+            cp "${IMPL_DIR}/${f}" "/tmp/anyplot-plot-cache/${f}" 2>/dev/null || true
+          done
 
           # Configure git auth (Claude's action configured it, but it's gone now)
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
@@ -327,8 +332,9 @@ jobs:
 
           # Restore plot files after git operations
           mkdir -p "${IMPL_DIR}"
-          cp "/tmp/plot.png" "${IMPL_DIR}/plot.png" 2>/dev/null || true
-          cp "/tmp/plot.html" "${IMPL_DIR}/plot.html" 2>/dev/null || true
+          for f in plot-light.png plot-dark.png plot-light.html plot-dark.html plot.png plot.html; do
+            cp "/tmp/anyplot-plot-cache/${f}" "${IMPL_DIR}/${f}" 2>/dev/null || true
+          done
 
           # Now create metadata file
           METADATA_DIR="plots/${SPEC_ID}/metadata/${LANGUAGE}"
@@ -372,12 +378,10 @@ jobs:
           fi
           echo "::notice::Library version: $LIBRARY = $LIBRARY_VERSION"
 
-          # Determine preview_html for interactive libraries
-          PREVIEW_HTML="null"
+          # Interactive libraries additionally produce HTML previews (one per theme)
+          HAS_HTML="false"
           case "$LIBRARY" in
-            plotly|bokeh|altair|highcharts|pygal|letsplot)
-              PREVIEW_HTML="https://storage.googleapis.com/anyplot-images/plots/${SPEC_ID}/${LANGUAGE}/${LIBRARY}/plot.html"
-              ;;
+            plotly|bokeh|altair|highcharts|pygal|letsplot) HAS_HTML="true" ;;
           esac
 
           # Write metadata file using Python for proper YAML formatting
@@ -392,8 +396,9 @@ jobs:
           issue = int('$ISSUE' or '0')
           py_ver = '$PYTHON_VERSION'
           lib_ver = '$LIBRARY_VERSION'
-          preview_html = '$PREVIEW_HTML'
+          has_html = '$HAS_HTML' == 'true'
           metadata_file = '$METADATA_FILE'
+          base_url = f'https://storage.googleapis.com/anyplot-images/plots/{spec}/{language}/{lib}'
           data = {
               'library': lib,
               'language': language,
@@ -405,8 +410,11 @@ jobs:
               'issue': issue,
               'python_version': py_ver,
               'library_version': lib_ver,
-              'preview_url': f'https://storage.googleapis.com/anyplot-images/plots/{spec}/{language}/{lib}/plot.png',
-              'preview_html': preview_html if preview_html != 'null' else None,
+              # Theme-aware preview URLs (Phase C). Both PNG variants are always emitted.
+              'preview_url_light': f'{base_url}/plot-light.png',
+              'preview_url_dark':  f'{base_url}/plot-dark.png',
+              'preview_html_light': f'{base_url}/plot-light.html' if has_html else None,
+              'preview_html_dark':  f'{base_url}/plot-dark.html'  if has_html else None,
               'quality_score': None,
               'review': {'strengths': [], 'weaknesses': []}
           }
@@ -449,29 +457,34 @@ jobs:
       # ========================================================================
       # Process images: optimize + thumbnail
       # ========================================================================
-      - name: Process plot images
+      - name: Process plot images (light + dark)
         env:
           SPEC_ID: ${{ steps.inputs.outputs.specification_id }}
           LANGUAGE: ${{ steps.inputs.outputs.language }}
         run: |
           IMPL_DIR="plots/${SPEC_ID}/implementations/${LANGUAGE}"
 
-          if [ ! -f "$IMPL_DIR/plot.png" ]; then
-            echo "::error::No plot.png found at ${IMPL_DIR}/plot.png - implementation failed to generate image"
+          if [ ! -f "$IMPL_DIR/plot-light.png" ] || [ ! -f "$IMPL_DIR/plot-dark.png" ]; then
+            echo "::error::Missing plot-{light,dark}.png — implementation failed to produce both theme renders"
+            echo "::error::Expected both ${IMPL_DIR}/plot-light.png and ${IMPL_DIR}/plot-dark.png"
+            ls -la "$IMPL_DIR/" || true
             exit 1
           fi
 
           source .venv/bin/activate
 
-          # Optimize PNG and generate responsive variants (400/800/1200 x png/webp + full webp)
-          python -m core.images process \
-            "$IMPL_DIR/plot.png" \
-            "$IMPL_DIR/plot.png"
-          python -m core.images responsive \
-            "$IMPL_DIR/plot.png" \
-            "$IMPL_DIR/"
+          # Optimize each theme PNG in place, then generate responsive variants
+          # (400/800/1200 x png/webp + full webp) named plot-{theme}_*.{png,webp}.
+          for theme in light dark; do
+            python -m core.images process \
+              "$IMPL_DIR/plot-${theme}.png" \
+              "$IMPL_DIR/plot-${theme}.png"
+            python -m core.images responsive \
+              "$IMPL_DIR/plot-${theme}.png" \
+              "$IMPL_DIR/"
+          done
 
-          echo "::notice::Processed images: optimized + responsive variants created"
+          echo "::notice::Processed both themes: plot-light + plot-dark (optimized + responsive variants)"
           ls -la "$IMPL_DIR/"
 
       # ========================================================================
@@ -551,24 +564,32 @@ jobs:
           STAGING_PATH="gs://anyplot-images/staging/${SPEC_ID}/${LANGUAGE}/${LIBRARY}"
           PUBLIC_URL="https://storage.googleapis.com/anyplot-images/staging/${SPEC_ID}/${LANGUAGE}/${LIBRARY}"
 
-          # Upload all plot images (original + responsive variants)
-          if [ -f "$IMPL_DIR/plot.png" ]; then
-            gsutil -m -h "Cache-Control:public, max-age=604800" cp "$IMPL_DIR"/plot*.png "$IMPL_DIR"/plot*.webp "${STAGING_PATH}/"
-            gsutil -m acl ch -u AllUsers:R "${STAGING_PATH}/plot*" 2>/dev/null || true
-            echo "png_url=${PUBLIC_URL}/plot.png" >> $GITHUB_OUTPUT
-            echo "uploaded=true" >> $GITHUB_OUTPUT
-            echo "::notice::Uploaded plot.png + responsive variants (PNG + WebP)"
-          else
-            echo "::error::No plot.png found - cannot continue without image"
+          # Require both theme renders
+          if [ ! -f "$IMPL_DIR/plot-light.png" ] || [ ! -f "$IMPL_DIR/plot-dark.png" ]; then
+            echo "::error::Missing plot-light.png and/or plot-dark.png — cannot upload"
+            ls -la "$IMPL_DIR/" || true
             exit 1
           fi
 
-          # Upload HTML (interactive libraries)
-          if [ -f "$IMPL_DIR/plot.html" ]; then
-            gsutil -h "Cache-Control:public, max-age=604800" cp "$IMPL_DIR/plot.html" "${STAGING_PATH}/plot.html"
-            gsutil acl ch -u AllUsers:R "${STAGING_PATH}/plot.html" 2>/dev/null || true
-            echo "html_url=${PUBLIC_URL}/plot.html" >> $GITHUB_OUTPUT
-          fi
+          # Upload all plot images for both themes (originals + responsive variants)
+          gsutil -m -h "Cache-Control:public, max-age=604800" cp \
+            "$IMPL_DIR"/plot-light*.png "$IMPL_DIR"/plot-light*.webp \
+            "$IMPL_DIR"/plot-dark*.png  "$IMPL_DIR"/plot-dark*.webp \
+            "${STAGING_PATH}/"
+          gsutil -m acl ch -u AllUsers:R "${STAGING_PATH}/plot-light*" "${STAGING_PATH}/plot-dark*" 2>/dev/null || true
+          echo "png_url_light=${PUBLIC_URL}/plot-light.png" >> $GITHUB_OUTPUT
+          echo "png_url_dark=${PUBLIC_URL}/plot-dark.png"   >> $GITHUB_OUTPUT
+          echo "uploaded=true" >> $GITHUB_OUTPUT
+          echo "::notice::Uploaded plot-light + plot-dark (+responsive variants)"
+
+          # Upload HTML for interactive libraries (one per theme)
+          for theme in light dark; do
+            if [ -f "$IMPL_DIR/plot-${theme}.html" ]; then
+              gsutil -h "Cache-Control:public, max-age=604800" cp "$IMPL_DIR/plot-${theme}.html" "${STAGING_PATH}/plot-${theme}.html"
+              gsutil acl ch -u AllUsers:R "${STAGING_PATH}/plot-${theme}.html" 2>/dev/null || true
+              echo "html_url_${theme}=${PUBLIC_URL}/plot-${theme}.html" >> $GITHUB_OUTPUT
+            fi
+          done
 
           rm -f /tmp/gcs-key.json
 
@@ -580,30 +601,36 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SPEC_ID: ${{ steps.inputs.outputs.specification_id }}
+          LANGUAGE: ${{ steps.inputs.outputs.language }}
           LIBRARY: ${{ steps.inputs.outputs.library }}
           ISSUE: ${{ steps.issue.outputs.number }}
           PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
         run: |
-          # Use staging URLs (available immediately after upload)
-          PNG_URL="https://storage.googleapis.com/anyplot-images/staging/${SPEC_ID}/${LIBRARY}/plot.png"
-          HTML_URL=""
+          # Use staging URLs (available immediately after upload) — show both themes side by side.
+          BASE="https://storage.googleapis.com/anyplot-images/staging/${SPEC_ID}/${LANGUAGE}/${LIBRARY}"
+          PNG_LIGHT="${BASE}/plot-light.png"
+          PNG_DARK="${BASE}/plot-dark.png"
 
-          # Set HTML_URL for interactive libraries
+          HTML_LIGHT=""
+          HTML_DARK=""
           case "$LIBRARY" in
             plotly|bokeh|altair|highcharts|pygal|letsplot)
-              HTML_URL="https://storage.googleapis.com/anyplot-images/staging/${SPEC_ID}/${LIBRARY}/plot.html"
+              HTML_LIGHT="${BASE}/plot-light.html"
+              HTML_DARK="${BASE}/plot-dark.html"
               ;;
           esac
 
-          BODY="## :art: ${LIBRARY} Preview
+          BODY="## :art: ${LANGUAGE}/${LIBRARY} Preview
 
-          ![${LIBRARY} plot](${PNG_URL})
+          | Light | Dark |
+          |-------|------|
+          | ![${LIBRARY} light](${PNG_LIGHT}) | ![${LIBRARY} dark](${PNG_DARK}) |
 
           **PR:** #${PR_NUMBER}"
 
-          if [ -n "$HTML_URL" ]; then
+          if [ -n "$HTML_LIGHT" ]; then
             BODY="${BODY}
-          **Interactive:** [Open HTML](${HTML_URL})"
+          **Interactive:** [light](${HTML_LIGHT}) · [dark](${HTML_DARK})"
           fi
 
           BODY="${BODY}

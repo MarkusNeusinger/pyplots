@@ -155,22 +155,25 @@ jobs:
         run: |
           IMPL_DIR="plots/${SPEC_ID}/implementations/${LANGUAGE}"
 
-          if [ ! -f "$IMPL_DIR/plot.png" ]; then
-            echo "::warning::No plot.png found after repair"
+          if [ ! -f "$IMPL_DIR/plot-light.png" ] || [ ! -f "$IMPL_DIR/plot-dark.png" ]; then
+            echo "::warning::Missing plot-{light,dark}.png after repair"
+            ls -la "$IMPL_DIR/" || true
             exit 0
           fi
 
           source .venv/bin/activate
 
-          # Optimize PNG and generate responsive variants
-          python -m core.images process \
-            "$IMPL_DIR/plot.png" \
-            "$IMPL_DIR/plot.png"
-          python -m core.images responsive \
-            "$IMPL_DIR/plot.png" \
-            "$IMPL_DIR/"
+          # Optimize each theme PNG and generate responsive variants named plot-{theme}_*.{png,webp}
+          for theme in light dark; do
+            python -m core.images process \
+              "$IMPL_DIR/plot-${theme}.png" \
+              "$IMPL_DIR/plot-${theme}.png"
+            python -m core.images responsive \
+              "$IMPL_DIR/plot-${theme}.png" \
+              "$IMPL_DIR/"
+          done
 
-          echo "::notice::Processed images: optimized + responsive variants created"
+          echo "::notice::Processed both themes after repair (light + dark)"
           ls -la "$IMPL_DIR/"
 
       - name: Authenticate to GCP
@@ -194,16 +197,22 @@ jobs:
           IMPL_DIR="plots/${SPEC_ID}/implementations/${LANGUAGE}"
           STAGING_PATH="gs://anyplot-images/staging/${SPEC_ID}/${LANGUAGE}/${LIBRARY}"
 
-          # Upload all plot images (original + responsive variants)
-          if [ -f "$IMPL_DIR/plot.png" ]; then
-            gsutil -m -h "Cache-Control:public, max-age=604800" cp "$IMPL_DIR"/plot*.png "$IMPL_DIR"/plot*.webp "${STAGING_PATH}/"
-            gsutil -m acl ch -u AllUsers:R "${STAGING_PATH}/plot*" 2>/dev/null || true
+          # Upload both theme PNGs + their responsive variants
+          if [ -f "$IMPL_DIR/plot-light.png" ] && [ -f "$IMPL_DIR/plot-dark.png" ]; then
+            gsutil -m -h "Cache-Control:public, max-age=604800" cp \
+              "$IMPL_DIR"/plot-light*.png "$IMPL_DIR"/plot-light*.webp \
+              "$IMPL_DIR"/plot-dark*.png  "$IMPL_DIR"/plot-dark*.webp \
+              "${STAGING_PATH}/"
+            gsutil -m acl ch -u AllUsers:R "${STAGING_PATH}/plot-light*" "${STAGING_PATH}/plot-dark*" 2>/dev/null || true
           fi
 
-          if [ -f "$IMPL_DIR/plot.html" ]; then
-            gsutil -h "Cache-Control:public, max-age=604800" cp "$IMPL_DIR/plot.html" "${STAGING_PATH}/plot.html"
-            gsutil acl ch -u AllUsers:R "${STAGING_PATH}/plot.html" 2>/dev/null || true
-          fi
+          # Interactive libraries: upload both theme HTML files
+          for theme in light dark; do
+            if [ -f "$IMPL_DIR/plot-${theme}.html" ]; then
+              gsutil -h "Cache-Control:public, max-age=604800" cp "$IMPL_DIR/plot-${theme}.html" "${STAGING_PATH}/plot-${theme}.html"
+              gsutil acl ch -u AllUsers:R "${STAGING_PATH}/plot-${theme}.html" 2>/dev/null || true
+            fi
+          done
 
           rm -f /tmp/gcs-key.json
 

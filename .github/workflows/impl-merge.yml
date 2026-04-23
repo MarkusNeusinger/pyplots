@@ -261,7 +261,7 @@ jobs:
 
           BODY="${BODY}
 
-          **Preview:** [View image](https://storage.googleapis.com/anyplot-images/plots/${SPEC_ID}/${LANGUAGE}/${LIBRARY}/plot.png)
+          **Preview:** [light](https://storage.googleapis.com/anyplot-images/plots/${SPEC_ID}/${LANGUAGE}/${LIBRARY}/plot-light.png) · [dark](https://storage.googleapis.com/anyplot-images/plots/${SPEC_ID}/${LANGUAGE}/${LIBRARY}/plot-dark.png)
 
           ---
           :robot: *[impl-merge](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"

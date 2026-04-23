@@ -2,7 +2,7 @@ library: pygal
 language: python
 specification_id: scatter-basic
 created: '2026-04-23T19:26:47Z'
-updated: '2026-04-23T19:33:02Z'
+updated: '2026-04-23T19:43:30Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 24853810841
 issue: 611
@@ -12,40 +12,40 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/scatter-b
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/scatter-basic/python/pygal/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/scatter-basic/python/pygal/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/scatter-basic/python/pygal/plot-dark.html
-quality_score: 82
+quality_score: 87
 review:
   strengths:
-  - All theme tokens correctly applied in both renders — backgrounds, text, and data
-    colors are all compliant
-  - 'Full spec compliance: correct chart type, all required features, proper title
-    format'
-  - 'Excellent code quality: clean imports, seed set, flat structure, modern Python
-    patterns'
-  - Correct decision to omit legend for single-series plot
-  - Interactive HTML output leverages pygal's native capability
+  - 'Perfect visual quality across both themes: correct Okabe-Ito palette, theme-adaptive
+    chrome, explicit font sizing, no overlap'
+  - Strong data storytelling via the 70% passing-threshold split — viewer immediately
+    grasps the study→outcome narrative
+  - Flawless spec compliance and code structure; clean KISS code with proper seed
+    and correct pygal.XY() usage
   weaknesses:
-  - Design Excellence is at default levels — no visual hierarchy, no focal point,
-    and no storytelling beyond displaying the correlation
-  - Pygal's full four-sided frame is present; the default border gives a boxed appearance
-    that reduces visual refinement
-  - Grid lines in dark render become nearly invisible — slightly more prominent subtle
-    tone needed for dark theme grid
-  - dots_size=14 could be increased to 16-18 for better presence at 4800x2700px
+  - 'DE-01 (4/8): Still reads as a well-configured library default — no standout design
+    element (trend line, custom hover template, refined marker styling) to elevate
+    to publication quality'
+  - 'DE-02 (2/6): Visual refinement limited — both x+y grids active, chart frame on
+    all sides, margin=60 is small for 4800px canvas; pygal restricts spine removal
+    but grids can be reduced'
+  - 'LM-02 (3/5): Does not exploit pygal strongest distinctive feature — rich interactive
+    SVG tooltips; js=[] suppresses all interactivity; a more distinctive implementation
+    leverages pygal interactive nature'
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (~#FAF8F1) — correct, not pure white
-      Chrome: Title "scatter-basic · pygal · anyplot.ai" readable in dark text; Y-axis label "Exam Score (%)" and X-axis label "Study Hours per Week (hrs)" clearly visible; tick labels (20%-100%, 0-14) readable in muted dark tone
-      Data: 180 green (#009E73) circles at 70% opacity showing clear positive correlation; subtle grid (both axes) visible but not dominant
-      Legibility verdict: PASS — all text elements clearly readable against warm off-white background
+      Background: Warm off-white (#FAF8F1) — correct, not pure white
+      Chrome: Title "scatter-basic · pygal · anyplot.ai" in dark ink at top — readable. Axis labels "Study Hours per Week (hrs)" and "Exam Score (%)" in dark ink — readable. Tick labels on both axes in dark ink — readable. Both x+y grid lines subtle.
+      Data: First series "Passing (≥ 70%)" in #009E73 (brand green/teal), second series "Below 70%" in #D55E00 (orange). 180 dots at opacity=0.7. Clear positive correlation visible. Legend at bottom with two columns.
+      Legibility verdict: PASS
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (~#1A1A17) — correct, not pure black
-      Chrome: Title, axis labels, and tick labels flip to light text and remain readable; no dark-on-dark failures detected; grid lines are very subtle (almost invisible) but data and text stay clear
-      Data: Green circles (#009E73) identical to light render — data colors unchanged, only chrome elements flip
-      Legibility verdict: PASS — all text visible against dark background; no near-black-on-near-black issues
+      Background: Near-black (#1A1A17) — correct, not pure black
+      Chrome: Title, axis labels, and tick labels all rendered in light text — clearly readable against dark background. No dark-on-dark failures detected. Grid lines subtle and visible.
+      Data: Colors identical to light render — teal (#009E73) and orange (#D55E00) dots both visible against dark background. Brand green #009E73 clearly readable on dark surface.
+      Legibility verdict: PASS
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 30
       max: 30
       items:
       - id: VQ-01
@@ -53,48 +53,49 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title=52, label=40, major_label=36);
-          readable in both themes
+        comment: 'All font sizes explicitly set: title 52px, labels 40px, major_labels
+          36px, legend 34px; readable in both themes'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No text collisions; point overlap controlled by opacity=0.7
+        comment: No overlapping text elements; legend at bottom cleanly separated
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Dots visible but dots_size=14 slightly small for 4800px canvas
+        comment: dots_size=17 with opacity=0.7 well-matched to 180 points
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Single Okabe-Ito series, CVD-safe
+        comment: Okabe-Ito positions 1+2 (teal/orange) are CVD-safe and high-contrast
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Good 4800x2700 landscape; minor dead space at top-left (x=0 to 1.5
-          empty)
+        comment: Scatter fills 60-70% of canvas; margins balanced; no content cut
+          off
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Both axes have descriptive labels with units
+        comment: 'Labels include units: Study Hours per Week (hrs) and Exam Score
+          (%)'
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'Brand green #009E73 as first/only series; correct warm backgrounds
-          in both themes'
+        comment: 'First series #009E73, second #D55E00; backgrounds #FAF8F1/#1A1A17;
+          theme-correct chrome in both renders'
     design_excellence:
-      score: 9
+      score: 10
       max: 20
       items:
       - id: DE-01
@@ -102,22 +103,22 @@ review:
         score: 4
         max: 8
         passed: false
-        comment: Well-configured library default with correct palette and custom font;
-          no distinctive design choices
+        comment: Well-configured style (Okabe-Ito, explicit fonts, semantic colors)
+          but overall look is a polished library default
       - id: DE-02
         name: Visual Refinement
-        score: 3
-        max: 6
-        passed: false
-        comment: Legend correctly omitted; subtle grid. Full four-sided frame present
-          with no spine removal
-      - id: DE-03
-        name: Data Storytelling
         score: 2
         max: 6
         passed: false
-        comment: Data displayed clearly but no visual hierarchy or storytelling; no
-          emphasis or focal point
+        comment: Both x+y grids visible; no spine removal (pygal limits this); minimal
+          refinement beyond default chart frame
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: 70% threshold split and semantic color encoding immediately convey
+          study-outcome narrative
     spec_compliance:
       score: 15
       max: 15
@@ -127,49 +128,51 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: pygal.XY(stroke=False) is correct scatter type
+        comment: pygal.XY() is correct scatter implementation
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Grid, transparency, axis labels, title all present
+        comment: Transparency (opacity=0.7), axis labels, descriptive title, grid
+          lines all present; 180-point dataset
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Study hours -> X, exam scores -> Y; axes cover full data range
+        comment: Study hours on x, exam scores on y; all data visible within specified
+          ranges
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title is 'scatter-basic · pygal · anyplot.ai'; no legend for single
-          series (correct)
+        comment: Title 'scatter-basic · pygal · anyplot.ai' correct format; legend
+          labels meaningful
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: 180 points showing positive trend with realistic noise; covers typical
-          scatter pattern
+        comment: Shows full positive-correlation scatter with realistic noise, visible
+          spread, and outliers
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: 'Study hours vs exam scores: real-world, comprehensible, neutral'
+        comment: Study hours vs exam scores is a neutral, real-world educational scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 1.5-13.5 hrs and 20-100% are realistic values
+        comment: Study hours 1.5-13.5 hrs/week, exam scores 20-100% — realistic values
     code_quality:
       score: 10
       max: 10
@@ -179,34 +182,34 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Flat sequential script; no functions or classes
+        comment: Flat imports->data->style->chart->save; no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42)
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used; no unused imports
+        comment: Only os, sys, numpy, pygal, pygal.style.Style used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, Pythonic; sys.path.pop(0) workaround appropriate; strict=True
-          in zip() is modern
+        comment: Clean, Pythonic; sys.path.pop(0) workaround explained; appropriate
+          complexity
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot-{THEME}.png and plot-{THEME}.html (interactive library)
+        comment: Saves plot-{THEME}.png and plot-{THEME}.html; current pygal API
     library_mastery:
-      score: 6
+      score: 7
       max: 10
       items:
       - id: LM-01
@@ -214,23 +217,24 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Correct pygal.XY(), all theming via Style(), stroke=False, formatters,
-          range/xrange, js=[]
+        comment: Uses pygal.XY() with XY coordinate tuples, Style object, value/x_value
+          formatters, legend_at_bottom_columns, range/xrange
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
         passed: false
-        comment: HTML export and tooltip formatters leverage pygal's interactive SVG
-          nature; more distinctive capabilities not demonstrated
+        comment: Interactive HTML output, custom formatters, dots_size control; js=[]
+          suppresses interactivity; could exploit pygal tooltip customization or SVG
+          features more
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - html-export
-  - hover-tooltips
   patterns:
   - data-generation
+  - iteration-over-groups
   dataprep: []
   styling:
   - alpha-blending

@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 scatter-basic: Basic Scatter Plot
 Library: pygal 3.1.0 | Python 3.14.4
-Quality: 82/100 | Created: 2026-04-23
+Quality: 87/100 | Created: 2026-04-23
 """
 
 import os

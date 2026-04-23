@@ -23,10 +23,10 @@
     "@mui/icons-material": "^7.3.9",
     "@mui/material": "^7.3.9",
     "fuse.js": "^7.3.0",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
     "react-helmet-async": "^3.0.0",
-    "react-router-dom": "^7.14.0",
+    "react-router-dom": "^7.14.1",
     "react-syntax-highlighter": "^16.1.1",
     "web-vitals": "^5.2.0"
   },

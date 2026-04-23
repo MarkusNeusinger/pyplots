@@ -2,7 +2,7 @@ library: letsplot
 language: python
 specification_id: scatter-basic
 created: '2026-04-23T19:18:59Z'
-updated: '2026-04-23T19:20:05Z'
+updated: '2026-04-23T19:25:04Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 24853816154
 issue: 611
@@ -12,40 +12,40 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/scatter-b
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/scatter-basic/python/letsplot/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/scatter-basic/python/letsplot/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/scatter-basic/python/letsplot/plot-dark.html
-quality_score: 87
+quality_score: 88
 review:
   strengths:
-  - 'Perfect spec compliance: all required scatter features present, correct title
-    format, appropriate point count (180) and alpha=0.7'
-  - 'Excellent code quality: clean KISS structure, reproducible seed, all text sizes
-    explicitly set for 4800x2700 px canvas'
-  - 'Theme-adaptive chrome correctly implemented: backgrounds flip (#FAF8F1/#1A1A17),
-    text and grid adapt — no dark-on-dark failures in either render'
-  - Realistic and meaningful data context (study hours vs exam scores) that naturally
-    demonstrates the scatter correlation pattern the spec requires
+  - 'Perfect spec compliance: all required features present, correct title format,
+    appropriate single-series handling with no legend'
+  - 'Excellent theme implementation: both renders adapt correctly with proper background/text/chrome
+    token mapping'
+  - Clean, readable code with explicit font sizing (24pt title, 20pt labels, 16pt
+    ticks) and reproducible data generation via np.random.seed(42)
+  - Generates interactive HTML output alongside PNG — leverages a key lets-plot advantage
   weaknesses:
-  - 'Grid color uses full-opacity ink tokens (#1A1A17 / #F0EFE8) instead of 10%-opacity
-    rgba values per the style guide — grid lines are perceptibly stronger than recommended'
-  - 'No data storytelling element: adding geom_smooth() trend line would let the viewer
-    immediately see the correlation quantitatively, raising DE-03 from 2 to 4'
-  - 'Design Excellence is the main bottleneck (10/20): minor grid removed and ticks
-    hidden are good, but the plot reads as a well-configured default rather than a
-    polished publication-ready visualization'
+  - 'Grid uses full-opacity INK colors (#1A1A17 light / #F0EFE8 dark) instead of the
+    recommended ~10% opacity rgba; this makes the dark render grid more visible than
+    ideal'
+  - No visual hierarchy or emphasis — the scatter cloud is presented uniformly with
+    no focal point, trend line, or emphasis on notable data points
+  - Design aesthetics stay at polished-default level; lacks distinctive styling touches
+    (e.g., theme-adaptive marker stroke color, trend line) that would elevate it above
+    a standard library output
   image_description: |-
     Light render (plot-light.png):
       Background: Warm off-white #FAF8F1 — correct, not pure white
-      Chrome: Bold title "scatter-basic · letsplot · anyplot.ai" in dark ink at top-left; X-axis "Study Hours per Day" and Y-axis "Exam Score (points)" in dark text; tick labels dark and well-spaced — all readable
-      Data: 180 points in #009E73 (brand green) with alpha=0.7; clear positive correlation pattern; grid lines thin but at full opacity (slightly stronger than 10%-opacity style guide recommendation)
-      Legibility verdict: PASS
+      Chrome: Title "scatter-basic · letsplot · anyplot.ai" bold at 24pt — dark #1A1A17, clearly readable. Axis labels "Study Hours per Day" and "Exam Score (points)" at 20pt — dark, readable. Tick labels at 16pt — muted #4A4A44, readable. Major grid lines visible but thin (size=0.3). No tick marks (removed). Left/bottom axis lines only.
+      Data: 180 scatter points in brand green #009E73, alpha=0.7, size=6. Clear positive correlation visible.
+      Legibility verdict: PASS — all text readable against light background, no light-on-light failures
 
     Dark render (plot-dark.png):
       Background: Warm near-black #1A1A17 — correct, not pure black
-      Chrome: Title, axis labels, and tick labels all in light-colored text against the dark surface — no dark-on-dark failures detected; grid lines adapt to light color
-      Data: Same #009E73 green points (identical to light render — only chrome flipped); same correlation pattern visible
-      Legibility verdict: PASS
+      Chrome: Title in near-white #F0EFE8 — clearly readable against dark background. Axis labels same near-white — readable. Tick labels in muted #B8B7B0 — readable. Grid lines appear as thin light lines on dark surface — slightly more visible than in light render but not dominant (full-opacity #F0EFE8 with size=0.3).
+      Data: 180 scatter points in identical brand green #009E73 — unchanged from light render, visible and distinguishable against dark background.
+      Legibility verdict: PASS — all text readable against dark background, no dark-on-dark failures detected
   criteria_checklist:
     visual_quality:
-      score: 29
+      score: 30
       max: 30
       items:
       - id: VQ-01
@@ -53,45 +53,45 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Title 24pt bold, axis labels 20pt, ticks 16pt — all explicitly set,
-          readable in both themes
+        comment: Title 24pt bold, axis labels 20pt, ticks 16pt — all explicitly set
+          and readable in both themes
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No text overlap; point clusters handled via alpha=0.7
+        comment: No text or label collisions
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: size=7 with alpha=0.7 well-suited for 180 points
+        comment: size=6, alpha=0.7 well-adapted for 180 points; markers clearly visible
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Single series, strong contrast in both themes, CVD-safe Okabe-Ito
+        comment: 'Okabe-Ito #009E73 provides good contrast on both surfaces; CVD-safe'
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Balanced margins, plot fills canvas well
+        comment: 4800x2700 landscape, good margins, plot fills canvas well
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Study Hours per Day and Exam Score (points) with units
+        comment: Study Hours per Day and Exam Score (points) — descriptive with units
       - id: VQ-07
         name: Palette Compliance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: 'Data color #009E73 correct, backgrounds correct; grid uses full-opacity
-          #1A1A17/#F0EFE8 instead of rgba(26,26,23,0.10)/rgba(240,239,232,0.10)'
+        passed: true
+        comment: 'First series is #009E73; backgrounds correct (#FAF8F1 / #1A1A17);
+          chrome adapts correctly in both renders'
     design_excellence:
       score: 10
       max: 20
@@ -101,22 +101,23 @@ review:
         score: 4
         max: 8
         passed: false
-        comment: 'Well-configured default: correct palette, theme-adaptive chrome
-          — no design choice goes beyond sensible defaults'
+        comment: Well-configured and clean but not exceptional; polished library default
+          rather than distinctive design
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: false
-        comment: Minor grid removed, axis ticks removed, generous margins — but major
-          grid too prominent due to full-opacity colors
+        comment: Tick marks removed, minor grid suppressed, axis lines styled. Grid
+          major lines use full-opacity INK color instead of ~10% rgba — dark render
+          grid more visible than ideal
       - id: DE-03
         name: Data Storytelling
         score: 2
         max: 6
         passed: false
-        comment: Shows clear positive correlation, realistic scenario — but no trend
-          line, no visual emphasis, no focal point
+        comment: Data displayed clearly, positive correlation apparent, but no visual
+          hierarchy, emphasis, trend line, or focal point
     spec_compliance:
       score: 15
       max: 15
@@ -126,26 +127,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct scatter plot
+        comment: Correct scatter via geom_point()
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: alpha=0.7, axis labels, grid, 180 points in spec range
+        comment: Alpha transparency, axis labels, title, grid lines, appropriate point
+          sizing — all present
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=independent (study hours), Y=dependent (exam score)
+        comment: X/Y correctly assigned; all 180 points visible
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: scatter-basic · letsplot · anyplot.ai; no legend appropriate for
-          single-series
+        comment: Title exactly 'scatter-basic · letsplot · anyplot.ai'; no legend
+          appropriate for single series
     data_quality:
       score: 15
       max: 15
@@ -155,21 +157,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows positive correlation with natural scatter, outliers, full value
-          range
+        comment: Clear positive correlation with realistic scatter/noise, outliers
+          present, full range visible
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: 'Study hours vs exam scores: neutral, relatable, real-world educational
-          scenario'
+        comment: Study hours vs exam scores — real, relatable, neutral educational
+          scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 1-10 hours/day and ~25-110 exam points are realistic
+        comment: Hours 1-10/day and scores 30-105 are realistic; moderate r~0.7 correlation
+          as specified
     code_quality:
       score: 10
       max: 10
@@ -179,19 +182,20 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Imports → data → plot → save, no functions or classes
+        comment: 'Flat linear code: imports → tokens → data → plot → save; no functions
+          or classes'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42)
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: All imports used; element_blank used in two theme overrides
       - id: CQ-04
         name: Code Elegance
         score: 2
@@ -203,8 +207,8 @@ review:
         score: 1
         max: 1
         passed: true
-        comment: plot-{THEME}.png + plot-{THEME}.html, scale=3 for 4800x2700
-    library_features:
+        comment: Saves plot-{THEME}.png and plot-{THEME}.html; current lets-plot API
+    library_mastery:
       score: 8
       max: 10
       items:
@@ -213,15 +217,16 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct ggplot grammar-of-graphics with ggsize, ggsave, theme layering
+        comment: 'Expert use of ggplot grammar: aes(), geom_point(), labs(), ggsize(),
+          theme_minimal() + theme() override, ggsave(scale=3)'
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: false
-        comment: shape=21 with stroke (filled circle with outline), HTML export alongside
-          PNG — some lets-plot distinctive features, but no geom_smooth or other grammar
-          layer
+        comment: Uses lets-plot-specific ggsize(), scale=3 export for pixel-density,
+          and HTML export — all distinctive to lets-plot, but no use of advanced lets-plot-only
+          features like geom_smooth with confidence interval or built-in interactivity
   verdict: REJECTED
 impl_tags:
   dependencies: []

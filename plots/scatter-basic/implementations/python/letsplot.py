@@ -1,7 +1,7 @@
 """ anyplot.ai
 scatter-basic: Basic Scatter Plot
 Library: letsplot 4.9.0 | Python 3.14.4
-Quality: 87/100 | Created: 2026-04-23
+Quality: 88/100 | Created: 2026-04-23
 """
 
 import os

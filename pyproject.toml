@@ -17,7 +17,7 @@ keywords = [
 dependencies = [
     # Core Framework
     "fastapi>=0.115.0",
-    "uvicorn[standard]>=0.34.0",
+    "uvicorn[standard]>=0.46.0",
     # MCP Server
     "mcp>=1.0.0",
     "fastmcp>=2.0.0",

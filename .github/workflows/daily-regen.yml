@@ -1,0 +1,147 @@
+name: "Daily: Regen oldest spec"
+run-name: "Daily regen (${{ github.event.inputs.count || '1' }} spec)"
+
+# Picks the spec whose most-recent implementation `updated` timestamp is
+# furthest in the past and re-dispatches `bulk-generate.yml` for it. Runs
+# once a day so the catalog slowly rolls forward without burning the whole
+# Claude Max budget in a single Phase-D big-bang.
+#
+# Triggers:
+#   - schedule: 02:00 UTC daily
+#   - workflow_dispatch: manual, with inputs for count + dry-run
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      count:
+        description: "How many of the oldest specs to regen (default 1)"
+        required: false
+        default: '1'
+      min_age_hours:
+        description: "Skip specs regen'd within this many hours (default 20)"
+        required: false
+        default: '20'
+      dry_run:
+        description: "Just print picks, do not trigger bulk-generate"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: daily-regen
+  cancel-in-progress: false
+
+jobs:
+  pick:
+    runs-on: ubuntu-latest
+    outputs:
+      specs: ${{ steps.pick.outputs.specs }}
+      count: ${{ steps.pick.outputs.count }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Pick oldest spec(s)
+        id: pick
+        env:
+          COUNT: ${{ inputs.count || '1' }}
+          MIN_AGE_HOURS: ${{ inputs.min_age_hours || '20' }}
+        run: |
+          python3 <<'PY'
+          import os
+          from datetime import datetime, timedelta, timezone
+          from pathlib import Path
+
+          import yaml
+
+
+          COUNT = int(os.environ["COUNT"])
+          MIN_AGE = timedelta(hours=int(os.environ["MIN_AGE_HOURS"]))
+          NOW = datetime.now(timezone.utc)
+
+          specs_dir = Path("plots")
+          candidates: list[tuple[datetime, str]] = []
+
+          for spec_dir in sorted(specs_dir.iterdir()):
+              if not spec_dir.is_dir() or spec_dir.name.startswith("."):
+                  continue
+              meta_dir = spec_dir / "metadata" / "python"
+              if not meta_dir.is_dir():
+                  continue
+
+              latest_updated: str | None = None
+              for yaml_file in meta_dir.glob("*.yaml"):
+                  try:
+                      data = yaml.safe_load(yaml_file.read_text(encoding="utf-8")) or {}
+                  except Exception:
+                      continue
+                  updated = data.get("updated") or data.get("created")
+                  if not updated:
+                      continue
+                  s = str(updated)
+                  if latest_updated is None or s > latest_updated:
+                      latest_updated = s
+
+              if not latest_updated:
+                  # No metadata yet → treat as ancient, candidate for regen
+                  candidates.append((datetime.min.replace(tzinfo=timezone.utc), spec_dir.name))
+                  continue
+
+              try:
+                  dt = datetime.fromisoformat(latest_updated.replace("Z", "+00:00"))
+                  if dt.tzinfo is None:
+                      dt = dt.replace(tzinfo=timezone.utc)
+              except Exception:
+                  continue
+
+              if NOW - dt < MIN_AGE:
+                  continue  # too fresh to re-roll
+
+              candidates.append((dt, spec_dir.name))
+
+          candidates.sort()  # oldest first
+          picks = [name for _, name in candidates[:COUNT]]
+
+          print(f"::notice::Eligible specs: {len(candidates)}  picked: {picks}")
+          for dt, name in candidates[:COUNT]:
+              print(f"  - {name:40s}  latest_updated={dt.isoformat()}")
+
+          github_output = os.environ["GITHUB_OUTPUT"]
+          with open(github_output, "a", encoding="utf-8") as f:
+              f.write(f"specs={' '.join(picks)}\n")
+              f.write(f"count={len(picks)}\n")
+          PY
+
+  dispatch:
+    needs: pick
+    if: ${{ needs.pick.outputs.count != '0' && !inputs.dry_run }}
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Trigger bulk-generate for each picked spec
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SPECS: ${{ needs.pick.outputs.specs }}
+        run: |
+          for spec in $SPECS; do
+            echo "::notice::Dispatching bulk-generate for $spec (all 9 libs)"
+            gh workflow run bulk-generate.yml \
+              --repo "${{ github.repository }}" \
+              -f specification_id="$spec" \
+              -f library=all
+            # Small pause between dispatches so GitHub's webhook processing has a moment.
+            sleep 5
+          done

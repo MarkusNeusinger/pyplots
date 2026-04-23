@@ -2,7 +2,7 @@ library: seaborn
 language: python
 specification_id: scatter-basic
 created: '2026-04-23T19:18:49Z'
-updated: '2026-04-23T19:19:58Z'
+updated: '2026-04-23T19:24:09Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 24853787271
 issue: 611
@@ -15,32 +15,33 @@ preview_html_dark: null
 quality_score: 85
 review:
   strengths:
-  - 'Perfect theme-adaptive chrome: all INK/INK_SOFT/PAGE_BG tokens correctly thread
-    through sns.set_theme() RC and explicit ax calls; both renders pass legibility
-    checks'
-  - 'Perfect spec and data quality: correct title format, realistic educational scenario,
-    appropriate data density (160 pts), all required spec features present'
-  - 'Clean, exemplary code: KISS structure, seed set, no unused imports, correct output
-    format'
+  - 'Full theme-adaptive implementation: both renders are clean, readable, and visually
+    consistent with Okabe-Ito palette and correct background tokens'
+  - 'Excellent code quality: reproducible, KISS structure, clean imports, correct
+    output naming (plot-{THEME}.png)'
+  - edgecolor=PAGE_BG on markers is a thoughtful technique that adds visual separation
+    in the dense cluster region
+  - 'Spec compliance is perfect: correct scatter type, all required features, proper
+    title format, appropriate omission of single-series legend'
   weaknesses:
-  - No regression line or statistical overlay — seaborn distinctive advantage (regplot
-    with confidence band) is unused; adding it would use the library distinctively
-    and guide the viewer to the correlation story
-  - Marker size (s=200) is slightly too large for 160 data points (recommended s=50-100);
-    causes moderate overlap in the 1-3 hour cluster
-  - No visual hierarchy or focal emphasis (DE-03=2); a regression line or size/alpha
-    variation would emphasize the positive trend and make the story explicit
+  - Marker size s=220 is 2-4x larger than the recommended 50-100 for 150 data points;
+    visible overlap in dense 3-5 hour cluster
+  - 'DE-03 default (2/6): deliberately inserted outliers are indistinguishable from
+    regular data; no regression line or visual emphasis tells a richer story'
+  - 'LM-02 low (2/5): seaborn''s distinctive scatter strength is built-in statistical
+    overlays (sns.regplot with CI band) — not used here'
+  - Exam scores reach 125, slightly ambiguous for a context implying a 0-100 scale
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white #FAF8F1 — correct, not pure white
-      Chrome: Title "scatter-basic · seaborn · anyplot.ai" in dark ink, clearly readable; X axis label "Study Hours (per week)" and Y axis label "Exam Score (points)" in dark ink, readable; tick labels in slightly muted dark tone (#4A4A44), readable; grid lines subtle and visible
-      Data: 160 teal/green (#009E73) scatter markers with alpha=0.7 showing clear positive correlation from lower-left to upper-right; markers have edge color matching background for definition
+      Background: Warm off-white (~#FAF8F1), not pure white — correct theme surface
+      Chrome: Title "scatter-basic · seaborn · anyplot.ai" in medium-weight dark text (readable); axis labels "Study Hours (per week)" and "Exam Score (points)" in dark INK color (readable); tick labels in softer INK_SOFT tone (readable); subtle grid lines on both axes at low opacity
+      Data: 150 scatter points in #009E73 (brand green, Okabe-Ito position 1); marker size s=220 with alpha=0.7 and PAGE_BG edge color creating visible separation; clear positive correlation from lower-left to upper-right; deliberate outliers visible (low-study high-scorers and high-study low-scorers)
       Legibility verdict: PASS
 
     Dark render (plot-dark.png):
-      Background: Warm near-black #1A1A17 — correct, not pure black
-      Chrome: Title and axis labels in light off-white (#F0EFE8), clearly readable against dark background; tick labels in muted light tone (#B8B7B0), readable; grid lines subtly visible against dark background; no dark-on-dark text failures
-      Data: Same teal/green (#009E73) markers identical to light render — data colors unchanged, only chrome flipped
+      Background: Warm near-black (~#1A1A17), not pure black — correct theme surface
+      Chrome: Title, axis labels, and tick labels all rendered in light cream/off-white (INK #F0EFE8 / INK_SOFT #B8B7B0) — clearly readable against the dark surface; no dark-on-dark failures detected; grid lines remain subtle
+      Data: Data point colors are identical to light render (#009E73) — only chrome flips; marker edge color maps to #1A1A17 (PAGE_BG for dark theme) which reduces visual separation vs light render but does not cause readability issues
       Legibility verdict: PASS
   criteria_checklist:
     visual_quality:
@@ -52,48 +53,47 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Title 24pt, axis labels 20pt, tick labels 16pt — all explicitly set;
-          readable in both themes
+        comment: Title 24pt, labels 20pt, ticks 16pt all explicitly set; readable
+          in both themes
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No text overlap; data-point overlap handled well with alpha=0.7
+        comment: Tick labels well-spaced, no text collisions
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Markers visible; s=200 slightly above recommended 50-100 for 160
-          points, causing moderate stacking in 1-3 hour cluster
+        comment: s=220 is 2-4x larger than 50-100 guideline for 150 points; edgecolor
+          helps but dense 3-5hr cluster shows overlap
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Single series Okabe-Ito green; CVD-safe, adequate contrast on both
-          surfaces
+        comment: 'Single series #009E73 with sufficient contrast on both surfaces;
+          CVD-safe Okabe-Ito'
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: 16:9 canvas, balanced margins, plot fills canvas well
+        comment: 16:9 canvas well-utilized, balanced margins, no cutoff
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Study Hours (per week) and Exam Score (points) — descriptive with
-          contextual units
+        comment: Descriptive labels with units on both axes
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series #009E73, backgrounds #FAF8F1/#1A1A17, full theme-adaptive
-          chrome in both renders'
+        comment: 'First series #009E73; light bg ~#FAF8F1, dark bg ~#1A1A17; all chrome
+          theme-correct'
     design_excellence:
       score: 10
       max: 20
@@ -103,22 +103,21 @@ review:
         score: 4
         max: 8
         passed: false
-        comment: Well-configured seaborn defaults; nice edgecolor=PAGE_BG detail;
-          not yet publication-exceptional
+        comment: Well-configured seaborn default; clean but not exceptionally sophisticated
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: false
-        comment: sns.despine(), grid alpha=0.10, ax.set_axisbelow(True), marker edges
-          match background — good refinement above defaults
+        comment: sns.despine, subtle grid, set_axisbelow, INK_SOFT ticks, marker edge
+          colors — good but not fully polished
       - id: DE-03
         name: Data Storytelling
         score: 2
         max: 6
         passed: false
-        comment: Positive correlation visible but no visual hierarchy or emphasis;
-          no regression line or focal element
+        comment: Outliers not visually distinguished; no regression line or trend
+          emphasis; uniform green cloud
     spec_compliance:
       score: 15
       max: 15
@@ -134,22 +133,22 @@ review:
         score: 4
         max: 4
         passed: true
-        comment: Alpha ~0.7, axis labels, descriptive title, grid lines all present
+        comment: Alpha 0.7, grid lines, axis labels, descriptive title all present
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Study hours on X, exam score on Y; all 160 points visible
+        comment: X (study hours), Y (exam scores), all 150 points visible
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title 'scatter-basic · seaborn · anyplot.ai' correct; single series,
-          no legend needed
+        comment: Title 'scatter-basic · seaborn · anyplot.ai' correct; no legend for
+          single-series (appropriate)
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
@@ -157,21 +156,20 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows correlation, variance at different hour levels, natural spread,
-          and outliers
+        comment: Positive correlation, variance, and deliberate outliers in both directions
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Study hours vs exam scores — relatable, neutral educational scenario
+        comment: Study hours vs exam scores — neutral, real-world, educationally plausible
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: 1-10 hours/week and ~33-120 point scores plausible for educational
-          context
+        comment: Study hours 1-10/week plausible; exam scores reach 125 which is slightly
+          ambiguous if 0-100 scale intended
     code_quality:
       score: 10
       max: 10
@@ -181,50 +179,51 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Imports → Tokens → Data → Plot → Style → Save; no functions or classes
+        comment: Linear Imports → Data → Plot → Save; no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) present
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: os, matplotlib, numpy, pandas, seaborn — all used
+        comment: All 5 imports (os, matplotlib.pyplot, numpy, pandas, seaborn) are
+          used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, Pythonic; no over-engineering or fake UI
+        comment: Clean, Pythonic; no over-engineering; no fake functionality
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot-{THEME}.png with dpi=300 and bbox_inches='tight'
+        comment: Saves plot-{THEME}.png with dpi=300, bbox_inches=tight, facecolor=PAGE_BG;
+          current seaborn API
     library_mastery:
-      score: 6
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: sns.scatterplot(), sns.set_theme(), sns.despine() — correct seaborn
-          patterns; RC-level theming is idiomatic
+        comment: sns.scatterplot (axes-level preferred), sns.set_theme for global
+          rc, sns.despine — all idiomatic
       - id: LM-02
         name: Distinctive Features
         score: 2
         max: 5
         passed: false
-        comment: Doesn't leverage seaborn's statistical features (regplot, confidence
-          bands, jointplot); implementation is essentially matplotlib scatter with
-          seaborn theming
+        comment: set_theme and despine are seaborn-specific but basic; sns.regplot
+          with CI band (the truly distinctive seaborn scatter feature) not used
   verdict: REJECTED
 impl_tags:
   dependencies: []

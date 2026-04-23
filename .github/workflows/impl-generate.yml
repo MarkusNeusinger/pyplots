@@ -391,7 +391,7 @@ jobs:
           # Write metadata file using Python for proper YAML formatting
           # Pass all variables inline to avoid export/env issues
           .venv/bin/python3 -c "
-          import yaml
+          import os, yaml
           lib = '$LIBRARY'
           spec = '$SPEC_ID'
           language = '$LANGUAGE'
@@ -403,13 +403,31 @@ jobs:
           has_html = '$HAS_HTML' == 'true'
           metadata_file = '$METADATA_FILE'
           base_url = f'https://storage.googleapis.com/anyplot-images/plots/{spec}/{language}/{lib}'
+
+          # Preserve the original 'created' timestamp on regenerations.
+          # 'created' is the first-generation date — it must never be overwritten.
+          # Only 'updated' moves forward on every regen.
+          created_ts = ts
+          if os.path.exists(metadata_file):
+              try:
+                  with open(metadata_file) as f:
+                      existing = yaml.safe_load(f) or {}
+                  if existing.get('created'):
+                      created_ts = existing['created']
+              except Exception:
+                  pass
+
           data = {
               'library': lib,
               'language': language,
               'specification_id': spec,
-              'created': ts,
+              'created': created_ts,
               'updated': ts,
-              'generated_by': 'claude-opus-4-5-20251101',
+              # Reflects what claude_args=`--model opus` actually runs: whatever
+              # Claude Code's current "opus" alias resolves to (today Opus 4.7).
+              # Use the family name instead of a frozen version string so the
+              # metadata doesn't go stale every model release.
+              'generated_by': 'claude-opus',
               'workflow_run': run_id,
               'issue': issue,
               'python_version': py_ver,

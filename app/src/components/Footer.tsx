@@ -27,7 +27,7 @@ const linkSx = {
     transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   },
   '&:hover': {
-    color: colors.gray[800],
+    color: 'var(--ink)',
     '&::after': { transform: 'scaleX(1)' },
   },
 } as const;
@@ -44,7 +44,7 @@ export function Footer({ onTrackEvent, selectedSpec, selectedLibrary }: FooterPr
     <Box component="footer" sx={{
       mt: 4,
       pt: 4,
-      borderTop: `1px solid ${colors.gray[200]}`,
+      borderTop: '1px solid var(--rule)',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',

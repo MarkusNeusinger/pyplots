@@ -282,7 +282,7 @@ export const ImageCard = memo(function ImageCard({
 
         {showLibrary && (
           <>
-            <Typography sx={{ color: colors.gray[300], fontSize: labelFontSize }}>·</Typography>
+            <Typography sx={{ color: 'var(--ink-muted)', fontSize: labelFontSize }}>·</Typography>
 
             {/* Clickable Library */}
             <Tooltip

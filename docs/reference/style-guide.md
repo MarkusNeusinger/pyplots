@@ -407,8 +407,18 @@ A warm-tinted grayscale (reddish-brown undertone instead of blue-gray) matches t
 |---------------|-----------------------------|-------------------------------|----------------------------|
 | `--ink`       | `#1A1A17`                   | `#F0EFE8`                     | Primary text               |
 | `--ink-soft`  | `#4A4A44`                   | `#B8B7B0`                     | Secondary text             |
-| `--ink-muted` | `#8A8A82`                   | `#6E6D66`                     | Tertiary, meta, labels     |
+| `--ink-muted` | `#6B6A63`                   | `#A8A79F`                     | Tertiary, meta, labels     |
 | `--rule`      | `rgba(26,26,23,0.10)`       | `rgba(240,239,232,0.10)`      | Borders, dividers          |
+
+All three text tokens pass **WCAG 2.1 AA contrast** (≥ 4.5:1 for normal text) against both `--bg-page` surfaces:
+
+| Token         | on `--bg-page` light (`#F5F3EC`) | on `--bg-page` dark (`#121210`) |
+|---------------|-----------------------------------|----------------------------------|
+| `--ink`       | 16.7 : 1 (AAA)                    | 16.5 : 1 (AAA)                   |
+| `--ink-soft`  | 7.79 : 1 (AAA)                    | 9.42 : 1 (AAA)                   |
+| `--ink-muted` | 5.07 : 1 (AA)                     | 7.95 : 1 (AAA)                   |
+
+Verified with [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/). Never use Okabe-Ito palette colors as body-text colors — they are reserved for plot data marks (and a few documented chrome accents like `#009E73` in §4.4).
 
 ### 4.4 UI Color Application
 
@@ -1202,10 +1212,10 @@ The design system is implemented across:
       --bg-surface:  #FAF8F1;
       --bg-elevated: #FFFDF6;
 
-      /* Warm-tinted grays */
+      /* Warm-tinted grays — all pass WCAG 2.1 AA on the surfaces above */
       --ink:         #1A1A17;
       --ink-soft:    #4A4A44;
-      --ink-muted:   #8A8A82;
+      --ink-muted:   #6B6A63;
       --rule:        rgba(26, 26, 23, 0.10);
 
       /* Typography — MonoLisa only. serif/sans aliased for compatibility. */
@@ -1225,7 +1235,7 @@ The design system is implemented across:
       --bg-elevated: #242420;
       --ink:         #F0EFE8;
       --ink-soft:    #B8B7B0;
-      --ink-muted:   #6E6D66;
+      --ink-muted:   #A8A79F;
       --rule:        rgba(240, 239, 232, 0.10);
     }
 

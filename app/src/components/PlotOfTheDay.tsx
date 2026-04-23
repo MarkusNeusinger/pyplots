@@ -73,7 +73,7 @@ export function PlotOfTheDay() {
         maxWidth: 700,
         borderRadius: 2,
         overflow: 'hidden',
-        border: `1px solid ${colors.gray[200]}`,
+        border: '1px solid var(--rule)',
         boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
         transition: 'all 0.3s ease',
         '&:hover': {
@@ -92,8 +92,8 @@ export function PlotOfTheDay() {
           alignItems: 'center',
           px: 1.5,
           py: 0.5,
-          bgcolor: colors.gray[100],
-          borderBottom: `1px solid ${colors.gray[200]}`,
+          bgcolor: 'var(--bg-surface)',
+          borderBottom: '1px solid var(--rule)',
           gap: 0.75,
         }}>
           <Typography sx={{ fontFamily: mono, fontSize: fontSize.xs, color: colors.primary, fontWeight: 600 }}>$</Typography>
@@ -117,8 +117,8 @@ export function PlotOfTheDay() {
             size="small"
             aria-label="Dismiss plot of the day"
             sx={{
-              color: colors.gray[400], p: 0.25,
-              '&:hover': { color: colors.gray[600] },
+              color: 'var(--ink-muted)', p: 0.25,
+              '&:hover': { color: 'var(--ink-soft)' },
             }}
           >
             <CloseIcon sx={{ fontSize: fontSize.sm }} />
@@ -167,9 +167,9 @@ export function PlotOfTheDay() {
             flex: 1,
             minWidth: 0,
             p: 2,
-            bgcolor: colors.gray[50],
-            borderLeft: { xs: 'none', sm: `1px solid ${colors.gray[200]}` },
-            borderTop: { xs: `1px solid ${colors.gray[200]}`, sm: 'none' },
+            bgcolor: 'var(--bg-surface)',
+            borderLeft: { xs: 'none', sm: '1px solid var(--rule)' },
+            borderTop: { xs: '1px solid var(--rule)', sm: 'none' },
           }}>
             {/* Label */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 1 }}>
@@ -177,7 +177,7 @@ export function PlotOfTheDay() {
               <Typography sx={{
                 fontFamily: mono,
                 fontSize: fontSize.sm,
-                color: colors.gray[700],
+                color: 'var(--ink-soft)',
                 textTransform: 'uppercase',
                 letterSpacing: '0.08em',
                 fontWeight: 600,
@@ -192,7 +192,7 @@ export function PlotOfTheDay() {
               to={specPath(data.spec_id, data.language, data.library_id)}
               sx={{
                 textDecoration: 'none',
-                color: colors.gray[800],
+                color: 'var(--ink)',
                 '&:hover': { color: colors.primaryDark },
               }}
             >
@@ -232,8 +232,8 @@ export function PlotOfTheDay() {
           alignItems: 'center',
           px: 1.5,
           py: 0.5,
-          bgcolor: colors.gray[100],
-          borderTop: `1px solid ${colors.gray[200]}`,
+          bgcolor: 'var(--bg-surface)',
+          borderTop: '1px solid var(--rule)',
         }}>
           <Typography sx={{ fontFamily: mono, fontSize: fontSize.xxs, color: colors.primary, mr: 0.5 }}>
             &gt;&gt;&gt;
@@ -242,7 +242,7 @@ export function PlotOfTheDay() {
             plot.png saved
           </Typography>
           <Box sx={{ flex: 1 }} />
-          <Typography sx={{ fontFamily: mono, fontSize: fontSize.xxs, color: colors.gray[300], mx: 1 }}>
+          <Typography sx={{ fontFamily: mono, fontSize: fontSize.xxs, color: 'var(--ink-muted)', mx: 1 }}>
             │
           </Typography>
           <Typography sx={{ fontFamily: mono, fontSize: fontSize.xxs, color: semanticColors.mutedText, whiteSpace: 'nowrap' }}>

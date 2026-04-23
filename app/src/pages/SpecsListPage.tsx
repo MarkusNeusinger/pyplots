@@ -328,7 +328,7 @@ export function SpecsListPage() {
                       fontFamily: typography.serif,
                       fontWeight: 400,
                       fontSize: fontSize.xl,
-                      color: colors.gray[800],
+                      color: 'var(--ink)',
                       mb: 0.5,
                       '&:hover': { color: colors.primary },
                     }}
@@ -377,12 +377,12 @@ export function SpecsListPage() {
           position: 'fixed',
           bottom: 24,
           right: 24,
-          bgcolor: colors.gray[100],
+          bgcolor: 'var(--bg-surface)',
           color: semanticColors.mutedText,
           opacity: showScrollTop ? 1 : 0,
           visibility: showScrollTop ? 'visible' : 'hidden',
           transition: 'opacity 0.3s, visibility 0.3s',
-          '&:hover': { bgcolor: colors.gray[200], color: colors.primary },
+          '&:hover': { bgcolor: 'var(--bg-elevated)', color: colors.primary },
         }}
       >
         <KeyboardArrowUpIcon />

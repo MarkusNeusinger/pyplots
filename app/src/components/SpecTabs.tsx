@@ -98,7 +98,7 @@ function MdHeading({ level, children }: { level: 1 | 2; children: React.ReactNod
         fontFamily: typography.fontFamily,
         fontSize: level === 1 ? '1rem' : '0.8rem',
         fontWeight: 600,
-        color: level === 1 ? colors.gray[800] : semanticColors.mutedText,
+        color: level === 1 ? 'var(--ink)' : semanticColors.mutedText,
         textTransform: level === 2 ? 'uppercase' : 'none',
         letterSpacing: level === 2 ? '0.05em' : 'normal',
         mt: level === 1 ? 0 : 2.5,
@@ -122,7 +122,7 @@ function parseInlineCode(text: string): React.ReactNode[] {
           sx={{
             fontFamily: typography.fontFamily,
             fontSize: '0.8rem',
-            bgcolor: colors.gray[100],
+            bgcolor: 'var(--bg-surface)',
             color: colors.primary,
             px: 0.5,
             py: 0.25,
@@ -150,7 +150,7 @@ function MdListItem({ children }: { children: string }) {
         ml: 2,
         mb: 0.25,
         '&::marker': {
-          color: colors.gray[300],
+          color: 'var(--ink-muted)',
         },
       }}
     >
@@ -295,7 +295,7 @@ export function SpecTabs({
               transition: 'background-color 0.15s ease, color 0.15s ease',
               borderRadius: '4px 4px 0 0',
               '&:hover': {
-                backgroundColor: colors.gray[100],
+                backgroundColor: 'var(--bg-surface)',
                 color: colors.primary,
               },
             },
@@ -348,7 +348,7 @@ export function SpecTabs({
             </Tooltip>
             <Box
               sx={{
-                bgcolor: colors.background,
+                bgcolor: 'var(--bg-page)',
                 p: 3,
                 borderRadius: 1,
               }}
@@ -363,7 +363,7 @@ export function SpecTabs({
       <TabPanel value={tabIndex} index={specTabIndex}>
         <Box
           sx={{
-            bgcolor: colors.background,
+            bgcolor: 'var(--bg-page)',
             p: 3,
             borderRadius: 1,
             fontFamily: typography.fontFamily,
@@ -376,7 +376,7 @@ export function SpecTabs({
               fontFamily: typography.fontFamily,
               fontSize: '1.1rem',
               fontWeight: 600,
-              color: colors.gray[800],
+              color: 'var(--ink)',
               mb: 1.5,
             }}
           >
@@ -440,7 +440,7 @@ export function SpecTabs({
         <TabPanel value={tabIndex} index={2}>
           <Box
             sx={{
-              bgcolor: colors.background,
+              bgcolor: 'var(--bg-page)',
               p: 3,
               borderRadius: 1,
               fontFamily: typography.fontFamily,
@@ -517,13 +517,13 @@ export function SpecTabs({
 
             {/* No data message */}
             {!imageDescription && (!strengths || strengths.length === 0) && (!weaknesses || weaknesses.length === 0) && (
-              <Typography sx={{ fontFamily: typography.fontFamily, fontSize: '0.85rem', color: colors.gray[400] }}>
+              <Typography sx={{ fontFamily: typography.fontFamily, fontSize: '0.85rem', color: 'var(--ink-muted)' }}>
                 No implementation review data available.
               </Typography>
             )}
 
             {/* Metadata */}
-            <Typography sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.sm, color: colors.gray[400], mt: 2 }}>
+            <Typography sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.sm, color: 'var(--ink-muted)', mt: 2 }}>
               {specId}
               {libraryId && ` · ${libraryId}`}
               {(() => {
@@ -540,7 +540,7 @@ export function SpecTabs({
         <TabPanel value={tabIndex} index={3}>
         <Box
           sx={{
-            bgcolor: colors.background,
+            bgcolor: 'var(--bg-page)',
             p: 3,
             borderRadius: 1,
             fontFamily: typography.fontFamily,
@@ -589,9 +589,9 @@ export function SpecTabs({
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                           {items.length > 0 && (
                             isExpanded ? (
-                              <ExpandLessIcon sx={{ fontSize: '1rem', color: colors.gray[400] }} />
+                              <ExpandLessIcon sx={{ fontSize: '1rem', color: 'var(--ink-muted)' }} />
                             ) : (
-                              <ExpandMoreIcon sx={{ fontSize: '1rem', color: colors.gray[400] }} />
+                              <ExpandMoreIcon sx={{ fontSize: '1rem', color: 'var(--ink-muted)' }} />
                             )
                           )}
                           <Typography sx={{ fontFamily: typography.fontFamily, fontSize: '0.85rem', color: semanticColors.labelText }}>
@@ -603,7 +603,7 @@ export function SpecTabs({
                         </Typography>
                       </Box>
                       {/* Progress bar */}
-                      <Box sx={{ height: 4, bgcolor: colors.gray[200], borderRadius: 2, overflow: 'hidden' }}>
+                      <Box sx={{ height: 4, bgcolor: 'var(--rule)', borderRadius: 2, overflow: 'hidden' }}>
                         <Box
                           sx={{
                             height: '100%',
@@ -637,7 +637,7 @@ export function SpecTabs({
                                     {item.name}
                                   </Typography>
                                 </Box>
-                                <Typography sx={{ fontFamily: typography.fontFamily, fontSize: '0.8rem', color: colors.gray[400] }}>
+                                <Typography sx={{ fontFamily: typography.fontFamily, fontSize: '0.8rem', color: 'var(--ink-muted)' }}>
                                   {item.score}/{item.max}
                                 </Typography>
                               </Box>
@@ -667,7 +667,7 @@ export function SpecTabs({
 
           {/* No data message */}
           {!qualityScore && (!criteriaChecklist || Object.keys(criteriaChecklist).length === 0) && (
-            <Typography sx={{ fontFamily: typography.fontFamily, fontSize: '0.85rem', color: colors.gray[400] }}>
+            <Typography sx={{ fontFamily: typography.fontFamily, fontSize: '0.85rem', color: 'var(--ink-muted)' }}>
               No quality data available.
             </Typography>
           )}
@@ -693,12 +693,12 @@ export function SpecTabs({
                       onClick={paramName ? () => handleTagClick(paramName, value) : undefined}
                       sx={{
                         fontFamily: typography.fontFamily, fontSize: fontSize.xs, height: 24,
-                        bgcolor: isHighlighted ? colors.highlight.bg : colors.gray[100],
+                        bgcolor: isHighlighted ? colors.highlight.bg : 'var(--bg-surface)',
                         color: isHighlighted ? colors.highlight.text : semanticColors.labelText,
                         cursor: paramName ? 'pointer' : 'default',
                         transition: 'all 0.2s ease',
                         fontWeight: isHighlighted ? 600 : 400,
-                        '&:hover': paramName ? { bgcolor: colors.gray[200] } : {},
+                        '&:hover': paramName ? { bgcolor: 'var(--bg-elevated)' } : {},
                       }}
                     />
                   );
@@ -726,12 +726,12 @@ export function SpecTabs({
                         onClick={paramName ? () => handleTagClick(paramName, value) : undefined}
                         sx={{
                           fontFamily: typography.fontFamily, fontSize: fontSize.xs, height: 24,
-                          bgcolor: isHighlighted ? colors.highlight.bg : colors.gray[100],
+                          bgcolor: isHighlighted ? colors.highlight.bg : 'var(--bg-surface)',
                           color: isHighlighted ? colors.highlight.text : semanticColors.labelText,
                           cursor: paramName ? 'pointer' : 'default',
                           transition: 'all 0.2s ease',
                           fontWeight: isHighlighted ? 600 : 400,
-                          '&:hover': paramName ? { bgcolor: colors.gray[200] } : {},
+                          '&:hover': paramName ? { bgcolor: 'var(--bg-elevated)' } : {},
                         }}
                       />
                     );

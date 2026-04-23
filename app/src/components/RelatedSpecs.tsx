@@ -100,7 +100,7 @@ export function RelatedSpecs({ specId, mode = 'spec', library, onHoverTags }: Re
               minHeight: 48,
               transition: 'background-color 0.15s ease, color 0.15s ease',
               borderRadius: '4px 4px 0 0',
-              '&:hover': { backgroundColor: colors.gray[100], color: colors.primary },
+              '&:hover': { backgroundColor: 'var(--bg-surface)', color: colors.primary },
             },
             '& .Mui-selected': { color: colors.primary },
             '& .MuiTabs-indicator': { backgroundColor: colors.primary },
@@ -134,11 +134,11 @@ export function RelatedSpecs({ specId, mode = 'spec', library, onHoverTags }: Re
             sx={{
               textDecoration: 'none',
               color: 'inherit',
-              border: `1px solid ${colors.gray[200]}`,
+              border: '1px solid var(--rule)',
               borderRadius: 1,
               overflow: 'hidden',
               transition: 'transform 0.15s ease',
-              '&:hover': { transform: 'scale(1.02)', borderColor: colors.gray[200] },
+              '&:hover': { transform: 'scale(1.02)', borderColor: 'var(--ink-muted)' },
             }}
           >
             {previewUrl ? (
@@ -151,12 +151,12 @@ export function RelatedSpecs({ specId, mode = 'spec', library, onHoverTags }: Re
                 />
               </Box>
             ) : (
-              <Box sx={{ width: '100%', aspectRatio: '16/9', bgcolor: colors.gray[50], display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Typography sx={{ fontFamily: mono, fontSize: '0.7rem', color: colors.gray[300] }}>no preview</Typography>
+              <Box sx={{ width: '100%', aspectRatio: '16/9', bgcolor: 'var(--bg-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Typography sx={{ fontFamily: mono, fontSize: '0.7rem', color: 'var(--ink-muted)' }}>no preview</Typography>
               </Box>
             )}
             <Box sx={{ p: 1.5 }}>
-              <Typography title={spec.title} sx={{ fontFamily: mono, fontSize: fontSize.sm, color: colors.gray[700], lineHeight: 1.3 }} noWrap>
+              <Typography title={spec.title} sx={{ fontFamily: mono, fontSize: fontSize.sm, color: 'var(--ink-soft)', lineHeight: 1.3 }} noWrap>
                 {spec.title}
               </Typography>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 0.25, gap: 0.5 }}>

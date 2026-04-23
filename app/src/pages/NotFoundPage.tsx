@@ -15,7 +15,7 @@ export function NotFoundPage() {
         <Typography
           variant="h4"
           component="h1"
-          sx={{ fontFamily: typography.fontFamily, fontWeight: 600, mb: 2, color: colors.gray[800] }}
+          sx={{ fontFamily: typography.fontFamily, fontWeight: 600, mb: 2, color: 'var(--ink)' }}
         >
           404
         </Typography>

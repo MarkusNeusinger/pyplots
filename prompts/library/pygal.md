@@ -67,7 +67,7 @@ from pygal.style import Style
 THEME       = os.getenv("ANYPLOT_THEME", "light")
 PAGE_BG     = "#FAF8F1" if THEME == "light" else "#1A1A17"
 INK         = "#1A1A17" if THEME == "light" else "#F0EFE8"
-INK_MUTED   = "#8A8A82" if THEME == "light" else "#6E6D66"
+INK_MUTED   = "#6B6A63" if THEME == "light" else "#A8A79F"
 
 OKABE_ITO = ('#009E73', '#D55E00', '#0072B2', '#CC79A7',
              '#E69F00', '#56B4E9', '#F0E442')

@@ -367,7 +367,7 @@ export function SpecPage() {
             fontWeight: 400,
             fontSize: { xs: '1.375rem', sm: '1.625rem', md: '2.125rem' },
             mb: 1,
-            color: colors.gray[800],
+            color: 'var(--ink)',
           }}
         >
           {specData.title}

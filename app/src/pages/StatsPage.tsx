@@ -75,7 +75,7 @@ interface DashboardData {
 }
 
 function scoreColor(score: number | null): string {
-  if (score === null) return colors.gray[200];
+  if (score === null) return 'var(--ink-muted)';
   if (score >= 90) return colors.success;
   if (score >= 75) return colors.warning;
   return colors.error;
@@ -139,8 +139,8 @@ export function StatsPage() {
             { label: 'avg quality', value: data.avg_quality_score, suffix: '' },
             { label: 'coverage', value: data.coverage_percent, suffix: '%' },
           ].map(item => (
-            <Box key={item.label} sx={{ textAlign: 'center', p: 2, border: `1px solid ${colors.gray[100]}`, borderRadius: 1 }}>
-              <Typography sx={{ fontFamily: typography.serif, fontSize: '2rem', fontWeight: 300, color: colors.gray[800], lineHeight: 1.2 }}>
+            <Box key={item.label} sx={{ textAlign: 'center', p: 2, border: '1px solid var(--rule)', borderRadius: 1 }}>
+              <Typography sx={{ fontFamily: typography.serif, fontSize: '2rem', fontWeight: 300, color: 'var(--ink)', lineHeight: 1.2 }}>
                 {typeof item.value === 'number' ? `${formatNum(item.value)}${item.suffix}` : '—'}
               </Typography>
               <Typography sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.xs, color: semanticColors.mutedText, mt: 0.5 }}>
@@ -255,7 +255,7 @@ export function StatsPage() {
                   to={specPath(row.spec_id)}
                   sx={{
                     display: 'block', width: 10, height: 10, borderRadius: '2px',
-                    bgcolor: count === 0 ? colors.gray[100] : `rgba(34, 197, 94, ${0.15 + intensity * 0.7})`,
+                    bgcolor: count === 0 ? 'var(--bg-elevated)' : `rgba(34, 197, 94, ${0.15 + intensity * 0.7})`,
                     textDecoration: 'none',
                     '&:hover': { outline: `1px solid ${colors.success}` },
                   }}
@@ -320,7 +320,7 @@ export function StatsPage() {
               sx={{ textDecoration: 'none', color: 'inherit', '&:hover': { opacity: 0.85 }, transition: 'opacity 0.15s ease' }}
               onClick={() => trackEvent('stats_top_impl_click', { spec: impl.spec_id, library: impl.library_id })}
             >
-              <Box sx={{ border: `1px solid ${colors.gray[100]}`, borderRadius: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <Box sx={{ border: '1px solid var(--rule)', borderRadius: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <Box sx={{ width: '100%', aspectRatio: '16/9', overflow: 'hidden', flexShrink: 0 }}>
                   {previewUrl ? (
                     <Box component="picture" key={previewUrl} sx={{ display: 'block', width: '100%', height: '100%' }}>
@@ -331,11 +331,11 @@ export function StatsPage() {
                       />
                     </Box>
                   ) : (
-                    <Box sx={{ width: '100%', height: '100%', bgcolor: colors.gray[50] }} />
+                    <Box sx={{ width: '100%', height: '100%', bgcolor: 'var(--bg-elevated)' }} />
                   )}
                 </Box>
                 <Box sx={{ p: 1 }}>
-                  <Typography sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.xxs, color: colors.gray[700], lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <Typography sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.xxs, color: 'var(--ink-soft)', lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {impl.spec_title}
                   </Typography>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.25 }}>
@@ -383,8 +383,9 @@ export function StatsPage() {
                       sx={{
                         fontFamily: typography.fontFamily, fontSize: size, fontWeight: weight, textDecoration: 'none',
                         px: 0.75, py: 0.25, borderRadius: 0.5,
-                        color: `rgba(55, 65, 81, ${opacity})`,
-                        '&:hover': { color: colors.primaryDark },
+                        color: 'var(--ink-soft)',
+                        opacity: opacity,
+                        '&:hover': { color: colors.primaryDark, opacity: 1 },
                       }}
                     >
                       {tag}<Box component="span" sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.micro, color: semanticColors.mutedText, ml: 0.5 }}>{count}</Box>

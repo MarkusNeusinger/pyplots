@@ -319,8 +319,8 @@ export function FilterBar({
           ? {
               mx: { xs: -2, sm: -4, md: -8, lg: -12 },
               px: { xs: 2, sm: 4, md: 8, lg: 12 },
-              bgcolor: colors.gray[100],
-              borderBottom: `1px solid ${colors.gray[200]}`,
+              bgcolor: 'var(--bg-surface)',
+              borderBottom: '1px solid var(--rule)',
             }
           : {
               px: 2,
@@ -385,13 +385,13 @@ export function FilterBar({
               fontFamily: typography.fontFamily,
               fontSize: fontSize.base,
               height: 32,
-              bgcolor: colors.gray[100],
+              bgcolor: 'var(--bg-surface)',
               border: `1px solid ${colors.primary}`,
-              color: colors.gray[700],
+              color: 'var(--ink-soft)',
               cursor: 'pointer',
-              '&:hover': { bgcolor: colors.gray[200] },
+              '&:hover': { bgcolor: 'var(--bg-elevated)' },
               '& .MuiChip-deleteIcon': {
-                color: colors.gray[500],
+                color: 'var(--ink-muted)',
                 '&:hover': { color: colors.primary },
               },
               ...(animationClass === 'chip-blur-out' && {
@@ -436,14 +436,14 @@ export function FilterBar({
             height: 32,
             width: isSearchExpanded ? { xs: 80, sm: 160, md: 'auto' } : 32,
             minWidth: isSearchExpanded ? { xs: 80, sm: 160, md: 120 } : 32,
-            border: isSearchExpanded ? `1px dashed ${colors.gray[400]}` : 'none',
+            border: isSearchExpanded ? '1px dashed var(--ink-muted)' : 'none',
             borderRadius: '16px',
-            bgcolor: isDropdownOpen ? colors.gray[50] : 'transparent',
+            bgcolor: isDropdownOpen ? 'var(--bg-elevated)' : 'transparent',
             cursor: 'pointer',
             transition: 'all 0.2s ease',
             '&:hover': {
               borderColor: isSearchExpanded ? colors.primary : undefined,
-              bgcolor: isSearchExpanded ? colors.gray[50] : undefined,
+              bgcolor: isSearchExpanded ? 'var(--bg-elevated)' : undefined,
             },
             '&:hover .search-icon': {
               color: colors.primary,
@@ -455,7 +455,7 @@ export function FilterBar({
             <SearchIcon
               className="search-icon"
               sx={{
-                color: colors.gray[500],
+                color: 'var(--ink-muted)',
                 fontSize: isSearchExpanded ? '1rem' : '1.25rem',
                 transition: 'all 0.2s ease',
                 flexShrink: 0,
@@ -512,10 +512,10 @@ export function FilterBar({
                 setSelectedCategory(null);
               }}
               sx={{
-                color: colors.gray[500],
+                color: 'var(--ink-muted)',
                 fontSize: fontSize.lg,
                 cursor: 'pointer',
-                '&:hover': { color: colors.gray[700] },
+                '&:hover': { color: 'var(--ink-soft)' },
               }}
             />
           )}

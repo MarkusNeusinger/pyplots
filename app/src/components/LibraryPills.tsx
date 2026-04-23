@@ -138,7 +138,7 @@ export const LibraryPills = memo(function LibraryPills({
         size="small"
         sx={{
           color: semanticColors.mutedText,
-          '&:hover': { color: colors.primary, bgcolor: colors.gray[100] },
+          '&:hover': { color: colors.primary, bgcolor: 'var(--bg-surface)' },
         }}
       >
         <ChevronLeftIcon />
@@ -168,16 +168,16 @@ export const LibraryPills = memo(function LibraryPills({
                 fontFamily: typography.fontFamily,
                 fontSize: fontSize.base,
                 fontWeight: isCenter ? 600 : 400,
-                bgcolor: colors.gray[100],
+                bgcolor: 'var(--bg-surface)',
                 border: isCenter ? `1px solid ${colors.primary}` : '1px solid transparent',
-                color: isCenter ? colors.gray[700] : semanticColors.mutedText,
+                color: isCenter ? 'var(--ink-soft)' : semanticColors.mutedText,
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
                 whiteSpace: 'nowrap',
                 '&:hover': {
-                  bgcolor: colors.gray[200],
+                  bgcolor: 'var(--bg-elevated)',
                   borderColor: colors.primary,
-                  color: colors.gray[700],
+                  color: 'var(--ink-soft)',
                 },
               }}
             >
@@ -200,7 +200,7 @@ export const LibraryPills = memo(function LibraryPills({
         size="small"
         sx={{
           color: semanticColors.mutedText,
-          '&:hover': { color: colors.primary, bgcolor: colors.gray[100] },
+          '&:hover': { color: colors.primary, bgcolor: 'var(--bg-surface)' },
         }}
       >
         <ChevronRightIcon />

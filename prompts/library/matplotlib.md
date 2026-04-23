@@ -119,7 +119,7 @@ PAGE_BG     = "#FAF8F1" if THEME == "light" else "#1A1A17"
 ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
 INK         = "#1A1A17" if THEME == "light" else "#F0EFE8"
 INK_SOFT    = "#4A4A44" if THEME == "light" else "#B8B7B0"
-INK_MUTED   = "#8A8A82" if THEME == "light" else "#6E6D66"
+INK_MUTED   = "#6B6A63" if THEME == "light" else "#A8A79F"
 
 fig, ax = plt.subplots(figsize=(16, 9), facecolor=PAGE_BG)
 ax.set_facecolor(PAGE_BG)

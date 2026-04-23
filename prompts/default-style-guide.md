@@ -109,7 +109,7 @@ In addition to the background, every non-data element (title, axis labels, tick 
 |------|-------------|------------|
 | Primary text (title, axis labels) | `#1A1A17` | `#F0EFE8` |
 | Secondary text (tick labels, legend, subtitles) | `#4A4A44` | `#B8B7B0` |
-| Tertiary text (footnotes, meta annotations) | `#8A8A82` | `#6E6D66` |
+| Tertiary text (footnotes, meta annotations) | `#6B6A63` | `#A8A79F` |
 | Grid lines, rule dividers, thin borders | `rgba(26,26,23,0.10)` | `rgba(240,239,232,0.10)` |
 | Callout / legend box fill | `#FFFDF6` | `#242420` |
 
@@ -123,7 +123,7 @@ PAGE_BG     = "#FAF8F1" if THEME == "light" else "#1A1A17"
 ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
 INK         = "#1A1A17" if THEME == "light" else "#F0EFE8"
 INK_SOFT    = "#4A4A44" if THEME == "light" else "#B8B7B0"
-INK_MUTED   = "#8A8A82" if THEME == "light" else "#6E6D66"
+INK_MUTED   = "#6B6A63" if THEME == "light" else "#A8A79F"
 RULE        = "rgba(26,26,23,0.10)" if THEME == "light" else "rgba(240,239,232,0.10)"
 
 BRAND       = "#009E73"  # Okabe-Ito position 1, theme-independent

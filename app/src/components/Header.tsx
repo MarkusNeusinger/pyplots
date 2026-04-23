@@ -110,15 +110,15 @@ export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
           onKeyDown={handleLogoKeyDown}
           sx={{ cursor: 'pointer', userSelect: 'none', '&:focus': { outline: 'none' } }}
         >
-          <Box component="span" sx={{ color: colors.gray[800] }}>any</Box>
+          <Box component="span" sx={{ color: 'var(--ink)' }}>any</Box>
           <Box component="span" sx={{
             color: colors.primary,
             display: 'inline-block',
             transform: 'scale(1.45)',
             mx: '2px',
           }}>.</Box>
-          <Box component="span" sx={{ color: colors.gray[800] }}>plot</Box>
-          <Box component="span" sx={{ color: colors.gray[800], fontWeight: 400, opacity: 0.45 }}>()</Box>
+          <Box component="span" sx={{ color: 'var(--ink)' }}>plot</Box>
+          <Box component="span" sx={{ color: 'var(--ink)', fontWeight: 400, opacity: 0.45 }}>()</Box>
         </Box>
         {onRandom && (
           <ShuffleIcon
@@ -144,7 +144,7 @@ export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
               }
             }}
             sx={{
-              color: colors.gray[500],
+              color: 'var(--ink-muted)',
               cursor: 'pointer',
               fontSize: '0.5em',
               ml: 0.5,
@@ -189,7 +189,7 @@ export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
           mt: { xs: 1, md: 1.5 },
           lineHeight: 1.8,
           fontFamily: typography.mono,
-          color: colors.gray[500],
+          color: 'var(--ink-muted)',
           fontSize: { xs: '0.75rem', md: '0.8125rem' },
           letterSpacing: '0.08em',
           textTransform: 'uppercase',

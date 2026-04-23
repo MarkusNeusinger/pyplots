@@ -4,7 +4,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { AppRouter } from './router';
 import { reportWebVitals } from './analytics/reportWebVitals';
-import { typography, colors, semanticColors, fontSize } from './theme';
+import { typography, colors, fontSize } from './theme';
 
 // Import design tokens (CSS custom properties for theming + dark mode)
 import './styles/tokens.css';
@@ -20,12 +20,16 @@ const theme = createTheme({
     primary: {
       main: colors.primary,
     },
+    // MUI's palette must be raw CSS colors (hex/rgb/hsl) — it calls decomposeColor
+    // internally for hover/alpha computations and rejects var(...) tokens.
+    // We pass the LIGHT hex values here; theme adaptation happens via CSS vars on
+    // explicitly-styled elements (and via the body color set in MuiCssBaseline below).
     text: {
-      primary: colors.gray[800],
-      secondary: semanticColors.subtleText,
+      primary: '#1A1A17',
+      secondary: '#4A4A44',
     },
     background: {
-      default: colors.background,
+      default: '#F5F3EC',
     },
   },
   shape: {

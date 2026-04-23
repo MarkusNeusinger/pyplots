@@ -6,7 +6,6 @@ import { ImageCard } from './ImageCard';
 import { LoaderSpinner } from './LoaderSpinner';
 import type { PlotImage, LibraryInfo, SpecInfo } from '../types';
 import type { ImageSize } from '../constants';
-import { colors } from '../theme';
 
 interface ImagesGridProps {
   images: PlotImage[];
@@ -109,9 +108,9 @@ export function ImagesGrid({
             sx={{
               maxWidth: 400,
               mx: 'auto',
-              bgcolor: colors.gray[50],
-              border: `1px solid ${colors.gray[200]}`,
-              '& .MuiAlert-icon': { color: colors.gray[500] },
+              bgcolor: 'var(--bg-surface)',
+              border: '1px solid var(--rule)',
+              '& .MuiAlert-icon': { color: 'var(--ink-muted)' },
             }}
           >
             No images found for this spec.

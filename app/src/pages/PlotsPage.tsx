@@ -223,12 +223,12 @@ export function PlotsPage() {
           position: 'fixed',
           bottom: 24,
           right: 24,
-          bgcolor: colors.gray[100],
-          color: colors.gray[500],
+          bgcolor: 'var(--bg-surface)',
+          color: 'var(--ink-muted)',
           opacity: showScrollTop ? 1 : 0,
           visibility: showScrollTop ? 'visible' : 'hidden',
           transition: 'opacity 0.3s, visibility 0.3s',
-          '&:hover': { bgcolor: colors.gray[200], color: colors.primary },
+          '&:hover': { bgcolor: 'var(--bg-elevated)', color: colors.primary },
         }}
       >
         <KeyboardArrowUpIcon />

@@ -100,7 +100,7 @@ type SortDir = 'asc' | 'desc';
 // ============================================================================
 
 const getScoreColor = (score: number | null): string => {
-  if (score === null) return colors.gray[300];
+  if (score === null) return 'var(--ink-muted)';
   if (score >= 90) return colors.success;
   if (score >= 50) return colors.warning;
   return colors.error;
@@ -109,7 +109,7 @@ const getScoreColor = (score: number | null): string => {
 const ScoreCell = ({ score, specId, library }: { score: number | null; specId: string; library: string }) => {
   if (score === null) {
     return (
-      <Typography sx={{ color: colors.gray[300], fontSize: fontSize.xs, textAlign: 'center' }}>-</Typography>
+      <Typography sx={{ color: 'var(--ink-muted)', fontSize: fontSize.xs, textAlign: 'center' }}>-</Typography>
     );
   }
   return (
@@ -282,7 +282,7 @@ export function DebugPage() {
   }
 
   return (
-    <Box sx={{ p: 3, minHeight: '100vh', bgcolor: colors.background }}>
+    <Box sx={{ p: 3, minHeight: '100vh', bgcolor: 'var(--bg-page)' }}>
 
       {/* Stats */}
       <Box sx={{ mb: 2 }}>
@@ -331,13 +331,13 @@ export function DebugPage() {
               elevation={0}
               sx={{
                 p: 1.5,
-                bgcolor: colors.gray[50],
-                border: `1px solid ${colors.gray[200]}`,
+                bgcolor: 'var(--bg-surface)',
+                border: '1px solid var(--rule)',
                 borderRadius: 1,
                 minWidth: 100,
               }}
             >
-              <Typography sx={{ fontSize: fontSize.xs, fontWeight: 600, color: colors.gray[700] }}>{lib.name}</Typography>
+              <Typography sx={{ fontSize: fontSize.xs, fontWeight: 600, color: 'var(--ink-soft)' }}>{lib.name}</Typography>
               <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: colors.primary }}>{lib.impl_count}</Typography>
               <Typography sx={{ fontSize: fontSize.xs, color: getScoreColor(lib.avg_score) }}>
                 avg: {lib.avg_score?.toFixed(1) || '-'}
@@ -428,7 +428,7 @@ export function DebugPage() {
           <span>&lt;50 (poor)</span>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <Box sx={{ width: 12, height: 12, bgcolor: colors.gray[300], borderRadius: 0.5 }} />
+          <Box sx={{ width: 12, height: 12, bgcolor: 'var(--ink-muted)', borderRadius: 0.5 }} />
           <span>- (missing)</span>
         </Box>
       </Box>
@@ -488,7 +488,7 @@ export function DebugPage() {
             {filteredSpecs.map((spec) => {
               const implCount = countImpls(spec);
               return (
-                <TableRow key={spec.id} hover sx={{ '&:hover': { bgcolor: colors.gray[100] } }}>
+                <TableRow key={spec.id} hover sx={{ '&:hover': { bgcolor: 'var(--bg-surface)' } }}>
                   <TableCell>
                     <Box
                       component={Link}
@@ -524,7 +524,7 @@ export function DebugPage() {
                         fontSize: fontSize.xs,
                         fontWeight: 600,
                         fontFamily: typography.fontFamily,
-                        color: implCount === 9 ? colors.success : implCount > 0 ? semanticColors.mutedText : colors.gray[300],
+                        color: implCount === 9 ? colors.success : implCount > 0 ? semanticColors.mutedText : 'var(--ink-muted)',
                       }}
                     >
                       {implCount}/9

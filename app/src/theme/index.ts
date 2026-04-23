@@ -71,11 +71,12 @@ export const colors = {
   },
 } as const;
 
-// Semantic text colors — WCAG AA safe on #F5F3EC backgrounds
+// Semantic text colors — adaptive via CSS vars (light/dark via [data-theme] in tokens.css)
+// All pass WCAG AA on both --bg-page surfaces.
 export const semanticColors = {
-  labelText: '#4A4A44', // --ink-soft — 7.2:1 on #F5F3EC, labels/categories
-  subtleText: '#4A4A44', // --ink-soft — secondary/metadata text
-  mutedText: '#8A8A82', // --ink-muted — 4.5:1, decorative/less critical text
+  labelText: 'var(--ink-soft)', // labels/categories
+  subtleText: 'var(--ink-soft)', // secondary/metadata text
+  mutedText: 'var(--ink-muted)', // decorative/less critical text
 } as const;
 
 export const fontSize = {
@@ -113,7 +114,7 @@ export const headingStyle = {
   fontFamily: typography.serif,
   fontWeight: 400,
   fontSize: '1.25rem',
-  color: colors.gray[800],
+  color: 'var(--ink)',
   mb: 2,
 } as const;
 
@@ -121,7 +122,7 @@ export const subheadingStyle = {
   fontFamily: typography.serif,
   fontWeight: 400,
   fontSize: fontSize.lg,
-  color: colors.gray[600],
+  color: 'var(--ink-soft)',
   mt: 3,
   mb: 1,
 } as const;
@@ -169,13 +170,13 @@ export const tableStyle = {
     fontFamily: typography.fontFamily,
     fontSize: fontSize.md,
     color: semanticColors.labelText,
-    borderBottom: `1px solid ${colors.gray[200]}`,
+    borderBottom: '1px solid var(--rule)',
     py: 1.5,
     px: 2,
   },
   '& .MuiTableCell-head': {
     fontWeight: 600,
-    color: colors.gray[600],
-    backgroundColor: colors.gray[50],
+    color: 'var(--ink-soft)',
+    backgroundColor: 'var(--bg-surface)',
   },
 } as const;

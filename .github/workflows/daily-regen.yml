@@ -1,18 +1,26 @@
-name: "Daily: Regen oldest spec"
-run-name: "Daily regen (${{ github.event.inputs.count || '1' }} spec)"
+name: "Scheduled: Regen oldest spec"
+run-name: "Scheduled regen (${{ github.event.inputs.count || '1' }} spec)"
 
 # Picks the spec whose most-recent implementation `updated` timestamp is
-# furthest in the past and re-dispatches `bulk-generate.yml` for it. Runs
-# once a day so the catalog slowly rolls forward without burning the whole
-# Claude Max budget in a single Phase-D big-bang.
+# furthest in the past and re-dispatches `bulk-generate.yml` for it. One
+# spec per Claude-Max 4-hour reset window.
+#
+# Schedule: every 4h at 00:00/04:00/08:00/12:00 UTC (02:00/06:00/10:00/14:00
+# Berlin CEST). The 16:00 and 20:00 UTC slots are intentionally skipped so
+# runs never start during the user's 18:00-24:00 Berlin window (when the
+# Claude-Max tokens are needed interactively).
+#
+# Worst-case completion of a spec run (3-repair loops × 9 libs × paced
+# dispatch) is ~2.5 h after bulk-generate starts, so the 12:00 UTC firing
+# still finishes well before 16:00 UTC.
 #
 # Triggers:
-#   - schedule: 02:00 UTC daily
+#   - schedule: 4× daily (UTC)
 #   - workflow_dispatch: manual, with inputs for count + dry-run
 
 on:
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '0 0,4,8,12 * * *'
   workflow_dispatch:
     inputs:
       count:

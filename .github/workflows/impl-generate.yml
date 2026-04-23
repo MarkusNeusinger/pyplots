@@ -266,6 +266,8 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           claude_args: "--model opus"
+          # bulk-generate dispatches us from the github-actions bot; explicitly allow it.
+          allowed_bots: '*'
           prompt: |
             Read `prompts/workflow-prompts/impl-generate-claude.md` and follow those instructions.
 
@@ -283,6 +285,8 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           claude_args: "--model opus"
+          # bulk-generate dispatches us from the github-actions bot; explicitly allow it.
+          allowed_bots: '*'
           prompt: |
             Read `prompts/workflow-prompts/impl-generate-claude.md` and follow those instructions.
 

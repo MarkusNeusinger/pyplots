@@ -15,6 +15,14 @@ class ImplementationResponse(BaseModel):
     library_id: str
     library_name: str
     language: str
+    # Theme-aware previews (Phase C). Both PNG variants are always emitted by the
+    # pipeline; HTML variants exist only for interactive libraries.
+    preview_url_light: str | None = None
+    preview_url_dark: str | None = None
+    preview_html_light: str | None = None
+    preview_html_dark: str | None = None
+    # Legacy single-theme fields retained for transition. Resolve to the light
+    # variant so older frontends and integrations keep working.
     preview_url: str | None = None
     preview_html: str | None = None
     quality_score: float | None = None
@@ -66,6 +74,12 @@ class ImageResponse(BaseModel):
 
     spec_id: str
     library: str
+    # Theme-aware URLs (Phase C). Both PNG variants always; HTML only for interactive libs.
+    url_light: str | None = None
+    url_dark: str | None = None
+    html_light: str | None = None
+    html_dark: str | None = None
+    # Legacy single-theme fields. Resolve to the light variant.
     url: str | None = None
     html: str | None = None
     code: str | None = None

@@ -7,9 +7,11 @@ import Link from '@mui/material/Link';
 import Tooltip from '@mui/material/Tooltip';
 
 import { useAnalytics } from '../hooks';
+import { useTheme } from '../hooks/useLayoutContext';
 import { API_URL } from '../constants';
 import { specPath } from '../utils/paths';
 import { buildSrcSet, getFallbackSrc } from '../utils/responsiveImage';
+import { selectPreviewUrl } from '../utils/themedPreview';
 import { SectionHeader } from '../components/SectionHeader';
 import {
   typography,
@@ -47,6 +49,8 @@ interface TopImpl {
   library_id: string;
   language: string;
   quality_score: number;
+  preview_url_light?: string | null;
+  preview_url_dark?: string | null;
   preview_url: string | null;
 }
 
@@ -86,6 +90,7 @@ function formatNum(n: number): string {
 
 export function StatsPage() {
   const { trackPageview, trackEvent } = useAnalytics();
+  const { isDark } = useTheme();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -305,7 +310,9 @@ export function StatsPage() {
           <SectionHeader prompt="❯" title={<em>top rated</em>} />
         </Box>
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(4, 1fr)' }, gap: 1.5 }}>
-          {data.top_implementations.slice(0, 8).map((impl) => (
+          {data.top_implementations.slice(0, 8).map((impl) => {
+            const previewUrl = selectPreviewUrl(impl, isDark);
+            return (
             <Link
               key={`${impl.spec_id}-${impl.library_id}`}
               component={RouterLink}
@@ -315,11 +322,11 @@ export function StatsPage() {
             >
               <Box sx={{ border: `1px solid ${colors.gray[100]}`, borderRadius: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <Box sx={{ width: '100%', aspectRatio: '16/9', overflow: 'hidden', flexShrink: 0 }}>
-                  {impl.preview_url ? (
-                    <Box component="picture" sx={{ display: 'block', width: '100%', height: '100%' }}>
-                      <source type="image/webp" srcSet={buildSrcSet(impl.preview_url, 'webp')} sizes="(max-width: 599px) 50vw, 25vw" />
-                      <source type="image/png" srcSet={buildSrcSet(impl.preview_url, 'png')} sizes="(max-width: 599px) 50vw, 25vw" />
-                      <Box component="img" src={getFallbackSrc(impl.preview_url)} alt={impl.spec_title} loading="lazy"
+                  {previewUrl ? (
+                    <Box component="picture" key={previewUrl} sx={{ display: 'block', width: '100%', height: '100%' }}>
+                      <source type="image/webp" srcSet={buildSrcSet(previewUrl, 'webp')} sizes="(max-width: 599px) 50vw, 25vw" />
+                      <source type="image/png" srcSet={buildSrcSet(previewUrl, 'png')} sizes="(max-width: 599px) 50vw, 25vw" />
+                      <Box component="img" src={getFallbackSrc(previewUrl)} alt={impl.spec_title} loading="lazy"
                         sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                       />
                     </Box>
@@ -342,7 +349,8 @@ export function StatsPage() {
                 </Box>
               </Box>
             </Link>
-          ))}
+            );
+          })}
         </Box>
 
         {/* Tag Distribution */}

@@ -19,6 +19,8 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import type { Implementation } from '../types';
 import { buildSrcSet, OVERVIEW_SIZES } from '../utils/responsiveImage';
 import { specPath } from '../utils/paths';
+import { selectPreviewUrl } from '../utils/themedPreview';
+import { useTheme } from '../hooks/useLayoutContext';
 import { colors, fontSize, semanticColors, typography } from '../theme';
 
 interface LibraryMeta {
@@ -124,6 +126,8 @@ function ImplementationCard({
   const libMeta = getLibraryMeta(impl.library_id);
   const tooltipId = `lib-${impl.library_id}`;
   const isTooltipOpen = openTooltip === tooltipId;
+  const { isDark } = useTheme();
+  const previewUrl = selectPreviewUrl(impl, isDark);
 
   return (
     <Box>
@@ -148,21 +152,21 @@ function ImplementationCard({
           },
         }}
       >
-        {impl.preview_url ? (
-          <Box component="picture" sx={{ display: 'contents' }}>
+        {previewUrl ? (
+          <Box component="picture" sx={{ display: 'contents' }} key={previewUrl}>
             <source
               type="image/webp"
-              srcSet={buildSrcSet(impl.preview_url, 'webp')}
+              srcSet={buildSrcSet(previewUrl, 'webp')}
               sizes={OVERVIEW_SIZES}
             />
             <source
               type="image/png"
-              srcSet={buildSrcSet(impl.preview_url, 'png')}
+              srcSet={buildSrcSet(previewUrl, 'png')}
               sizes={OVERVIEW_SIZES}
             />
             <Box
               component="img"
-              src={`${impl.preview_url.replace(/\.png$/, '')}_800.png`}
+              src={`${previewUrl.replace(/\.png$/, '')}_800.png`}
               alt={`${specTitle} - ${impl.library_id}`}
               sx={{
                 display: 'block',
@@ -177,7 +181,7 @@ function ImplementationCard({
                   target.dataset.fallback = '1';
                   target.closest('picture')?.querySelectorAll('source').forEach(s => s.remove());
                   target.removeAttribute('srcset');
-                  target.src = impl.preview_url!;
+                  target.src = previewUrl;
                 }
               }}
             />

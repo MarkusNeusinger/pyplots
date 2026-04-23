@@ -4,6 +4,8 @@ import Box from '@mui/material/Box';
 import { GITHUB_URL } from '../constants';
 import { colors, typography } from '../theme';
 import { buildSrcSet, getFallbackSrc } from '../utils/responsiveImage';
+import { selectPreviewUrl } from '../utils/themedPreview';
+import { useTheme } from '../hooks/useLayoutContext';
 import { specPath } from '../utils/paths';
 import type { PlotOfTheDayData } from '../hooks/usePlotOfTheDay';
 
@@ -34,7 +36,9 @@ export function PlotOfTheDayTerminal({
   maxWidth = '100%',
   maxPlotHeight = '55vh',
 }: PlotOfTheDayTerminalProps) {
-  if (!potd?.preview_url) return null;
+  const { isDark } = useTheme();
+  const previewUrl = selectPreviewUrl(potd, isDark);
+  if (!potd || !previewUrl) return null;
 
   const displayFilename = `plots/${potd.spec_id}/${potd.library_id}.py`;
   const implPath = specPath(potd.spec_id, potd.language, potd.library_id);
@@ -155,11 +159,12 @@ export function PlotOfTheDayTerminal({
             justifyContent: 'center',
           }}
         >
-          <source type="image/webp" srcSet={buildSrcSet(potd.preview_url, 'webp')} sizes={sizes} />
-          <source type="image/png" srcSet={buildSrcSet(potd.preview_url, 'png')} sizes={sizes} />
+          <source type="image/webp" srcSet={buildSrcSet(previewUrl, 'webp')} sizes={sizes} />
+          <source type="image/png" srcSet={buildSrcSet(previewUrl, 'png')} sizes={sizes} />
           <Box
             component="img"
-            src={getFallbackSrc(potd.preview_url)}
+            key={previewUrl}
+            src={getFallbackSrc(previewUrl)}
             alt={`${potd.spec_title} — ${potd.library_name}`}
             sx={{
               maxWidth: '100%',

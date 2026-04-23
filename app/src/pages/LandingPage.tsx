@@ -9,9 +9,11 @@ import { SectionHeader } from '../components/SectionHeader';
 import { useAppData } from '../hooks';
 import { usePlotOfTheDay } from '../hooks/usePlotOfTheDay';
 import { useFeaturedSpecs, type FeaturedImpl } from '../hooks/useFeaturedSpecs';
+import { useTheme } from '../hooks/useLayoutContext';
 import { GITHUB_URL } from '../constants';
 import { specPath } from '../utils/paths';
 import { buildSrcSet, getFallbackSrc } from '../utils/responsiveImage';
+import { selectPreviewUrl } from '../utils/themedPreview';
 import { colors, semanticColors, typography } from '../theme';
 
 export function LandingPage() {
@@ -345,6 +347,8 @@ function MethodLink({ to, href, subject, verb, external }: MethodLinkProps) {
  * spec title underneath. The whole card is the link to the spec hub.
  */
 function FeaturedThumb({ item }: { item: FeaturedImpl | null }) {
+  const { isDark } = useTheme();
+  const previewUrl = selectPreviewUrl(item, isDark);
   const cardSx = {
     display: 'flex',
     flexDirection: 'column' as const,
@@ -415,7 +419,7 @@ function FeaturedThumb({ item }: { item: FeaturedImpl | null }) {
     overflow: 'hidden',
   } as const;
 
-  if (!item || !item.preview_url) {
+  if (!item || !previewUrl) {
     return (
       <Box sx={cardSx}>
         <Box sx={imageSx} />
@@ -428,12 +432,12 @@ function FeaturedThumb({ item }: { item: FeaturedImpl | null }) {
   return (
     <Box component={RouterLink} to={specPath(item.spec_id)} sx={cardSx}>
       <Box sx={imageSx}>
-        <Box component="picture" sx={{ display: 'block', width: '100%', height: '100%' }}>
-          <source type="image/webp" srcSet={buildSrcSet(item.preview_url, 'webp')} sizes="(max-width: 599px) 50vw, 25vw" />
-          <source type="image/png" srcSet={buildSrcSet(item.preview_url, 'png')} sizes="(max-width: 599px) 50vw, 25vw" />
+        <Box component="picture" key={previewUrl} sx={{ display: 'block', width: '100%', height: '100%' }}>
+          <source type="image/webp" srcSet={buildSrcSet(previewUrl, 'webp')} sizes="(max-width: 599px) 50vw, 25vw" />
+          <source type="image/png" srcSet={buildSrcSet(previewUrl, 'png')} sizes="(max-width: 599px) 50vw, 25vw" />
           <Box
             component="img"
-            src={getFallbackSrc(item.preview_url)}
+            src={getFallbackSrc(previewUrl)}
             alt={item.spec_title}
             loading="lazy"
             sx={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}

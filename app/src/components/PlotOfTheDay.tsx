@@ -10,6 +10,8 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { API_URL, GITHUB_URL } from '../constants';
 import { colors, typography, fontSize, semanticColors } from '../theme';
 import { buildSrcSet, getFallbackSrc } from '../utils/responsiveImage';
+import { selectPreviewUrl } from '../utils/themedPreview';
+import { useTheme } from '../hooks/useLayoutContext';
 import { specPath } from '../utils/paths';
 
 interface PlotOfTheDayData {
@@ -20,6 +22,8 @@ interface PlotOfTheDayData {
   library_name: string;
   language: string;
   quality_score: number;
+  preview_url_light?: string | null;
+  preview_url_dark?: string | null;
   preview_url: string | null;
   image_description: string | null;
   library_version: string | null;
@@ -33,6 +37,8 @@ export function PlotOfTheDay() {
   const [data, setData] = useState<PlotOfTheDayData | null>(null);
   const [loading, setLoading] = useState(true);
   const [dismissed, setDismissed] = useState(() => window.sessionStorage.getItem('potd_dismissed') === 'true');
+  const { isDark } = useTheme();
+  const previewUrl = selectPreviewUrl(data, isDark);
 
   useEffect(() => {
     if (dismissed) return;
@@ -136,11 +142,11 @@ export function PlotOfTheDay() {
               '&:hover': { opacity: 0.95 },
             }}
           >
-            {data.preview_url && (
-              <Box component="picture" sx={{ display: 'block' }}>
-                <source type="image/webp" srcSet={buildSrcSet(data.preview_url, 'webp')} sizes="(max-width: 599px) 92vw, 350px" />
-                <source type="image/png" srcSet={buildSrcSet(data.preview_url, 'png')} sizes="(max-width: 599px) 92vw, 350px" />
-                <Box component="img" src={getFallbackSrc(data.preview_url)} alt={data.spec_title}
+            {previewUrl && (
+              <Box component="picture" key={previewUrl} sx={{ display: 'block' }}>
+                <source type="image/webp" srcSet={buildSrcSet(previewUrl, 'webp')} sizes="(max-width: 599px) 92vw, 350px" />
+                <source type="image/png" srcSet={buildSrcSet(previewUrl, 'png')} sizes="(max-width: 599px) 92vw, 350px" />
+                <Box component="img" src={getFallbackSrc(previewUrl)} alt={data.spec_title}
                   sx={{
                     width: '100%',
                     height: '100%',

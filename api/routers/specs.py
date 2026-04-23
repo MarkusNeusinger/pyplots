@@ -94,6 +94,11 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(require_db)):
             library_id=impl.library_id,
             library_name=impl.library.name if impl.library else impl.library_id,
             language=impl.library.language if impl.library else "python",
+            preview_url_light=impl.preview_url_light,
+            preview_url_dark=impl.preview_url_dark,
+            preview_html_light=impl.preview_html_light,
+            preview_html_dark=impl.preview_html_dark,
+            # Legacy single-theme fields (synonyms that resolve to the light variant)
             preview_url=impl.preview_url,
             preview_html=impl.preview_html,
             quality_score=impl.quality_score,

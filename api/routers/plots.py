@@ -335,13 +335,19 @@ def _collect_all_images(all_specs: list) -> list[dict]:
         if not spec_obj.impls:
             continue
         for impl in spec_obj.impls:
-            if impl.preview_url:
+            if impl.preview_url_light:
                 all_images.append(
                     {
                         "spec_id": spec_obj.id,
                         "library": impl.library_id,
                         "language": impl.library.language if impl.library else "python",
                         "quality": impl.quality_score,
+                        # Theme-aware URLs (Phase C)
+                        "url_light": impl.preview_url_light,
+                        "url_dark": impl.preview_url_dark,
+                        "html_light": impl.preview_html_light,
+                        "html_dark": impl.preview_html_dark,
+                        # Legacy single-theme fields (synonyms → light variant)
                         "url": impl.preview_url,
                         "html": impl.preview_html,
                         "title": spec_obj.title,

@@ -7,6 +7,9 @@ export interface PlotOfTheDayData {
   library_id: string;
   library_name: string;
   language: string;
+  // Theme-aware (Phase C). Backend may still only emit preview_url during transition.
+  preview_url_light?: string | null;
+  preview_url_dark?: string | null;
   preview_url: string | null;
   description?: string | null;
   image_description?: string | null;

@@ -3,6 +3,12 @@
 export interface PlotImage {
   library: string;
   language: string;
+  // Theme-aware preview URLs (Phase C).
+  url_light?: string;
+  url_dark?: string;
+  html_light?: string;
+  html_dark?: string;
+  // Legacy single-theme fields (resolve to the light variant on the backend).
   url: string;
   html?: string;
   code?: string;
@@ -119,6 +125,14 @@ export interface Implementation {
   library_id: string;
   library_name: string;
   language: string;
+  // Theme-aware previews (Phase C). Both PNG variants are always emitted; HTML
+  // variants exist only for interactive libraries. Older implementations that
+  // haven't been regenerated yet will only have preview_url/preview_html.
+  preview_url_light?: string;
+  preview_url_dark?: string;
+  preview_html_light?: string;
+  preview_html_dark?: string;
+  // Legacy single-theme fields (resolve to the light variant on the backend).
   preview_url: string;
   preview_html?: string;
   quality_score: number | null;

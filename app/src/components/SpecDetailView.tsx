@@ -21,6 +21,8 @@ import type { Implementation } from '../types';
 import { API_URL } from '../constants';
 import { colors, fontSize, typography } from '../theme';
 import { buildDetailSrcSet, DETAIL_SIZES } from '../utils/responsiveImage';
+import { selectPreviewUrl, selectPreviewHtml } from '../utils/themedPreview';
+import { useTheme } from '../hooks/useLayoutContext';
 
 const INITIAL_WIDTH = 1600;
 const INITIAL_HEIGHT = 900;
@@ -184,13 +186,16 @@ export function SpecDetailView({
     [zoomed, animating],
   );
 
-  const interactiveAvailable = !!currentImpl?.preview_html;
+  const { isDark } = useTheme();
+  const previewUrl = selectPreviewUrl(currentImpl, isDark);
+  const previewHtml = selectPreviewHtml(currentImpl, isDark);
+  const interactiveAvailable = !!previewHtml;
   const proxyUrl = (url: string) =>
     `${API_URL}/proxy/html?url=${encodeURIComponent(url)}&origin=${encodeURIComponent(window.location.origin)}`;
 
   return (
     <Box sx={{ maxWidth: { xs: '100%', md: 1200, lg: 1400, xl: 1600 }, mx: 'auto' }}>
-      {viewMode === 'interactive' && interactiveAvailable && currentImpl?.preview_html ? (
+      {viewMode === 'interactive' && interactiveAvailable && previewHtml ? (
         <Box
           ref={interactiveContainerRef}
           sx={{
@@ -217,7 +222,7 @@ export function SpecDetailView({
             }}
           >
             <iframe
-              src={proxyUrl(currentImpl.preview_html)}
+              src={proxyUrl(previewHtml)}
               width={contentWidth}
               height={contentHeight}
               style={{
@@ -264,7 +269,7 @@ export function SpecDetailView({
             </Tooltip>
             <Tooltip title=".raw()" disableFocusListener>
               <IconButton
-                onClick={() => window.open(currentImpl.preview_html, '_blank', 'noopener,noreferrer')}
+                onClick={() => previewHtml && window.open(previewHtml, '_blank', 'noopener,noreferrer')}
                 aria-label="Open raw HTML"
                 sx={{ bgcolor: 'rgba(255,255,255,0.9)', '&:hover': { bgcolor: '#fff', color: colors.primary } }}
                 size="medium"
@@ -304,13 +309,13 @@ export function SpecDetailView({
               sx={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
             />
           )}
-          {currentImpl?.preview_url && (
-            <Box component="picture" sx={{ display: imageLoaded ? 'contents' : 'none' }}>
-              <source type="image/webp" srcSet={buildDetailSrcSet(currentImpl.preview_url, 'webp')} sizes={DETAIL_SIZES} />
-              <source type="image/png" srcSet={buildDetailSrcSet(currentImpl.preview_url, 'png')} sizes={DETAIL_SIZES} />
+          {previewUrl && (
+            <Box component="picture" key={previewUrl} sx={{ display: imageLoaded ? 'contents' : 'none' }}>
+              <source type="image/webp" srcSet={buildDetailSrcSet(previewUrl, 'webp')} sizes={DETAIL_SIZES} />
+              <source type="image/png" srcSet={buildDetailSrcSet(previewUrl, 'png')} sizes={DETAIL_SIZES} />
               <Box
                 component="img"
-                src={`${currentImpl.preview_url.replace(/\.png$/, '')}_1200.png`}
+                src={`${previewUrl.replace(/\.png$/, '')}_1200.png`}
                 alt={`${specTitle} - ${selectedLibrary}`}
                 onLoad={onImageLoad}
                 sx={{
@@ -328,7 +333,7 @@ export function SpecDetailView({
                     target.dataset.fallback = '1';
                     target.closest('picture')?.querySelectorAll('source').forEach(s => s.remove());
                     target.removeAttribute('srcset');
-                    target.src = currentImpl.preview_url!;
+                    target.src = previewUrl;
                   }
                 }}
               />

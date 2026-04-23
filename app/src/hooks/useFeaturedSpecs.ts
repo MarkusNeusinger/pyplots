@@ -10,6 +10,9 @@ export interface FeaturedImpl {
   spec_description: string | null;
   library_id: string;
   language: string;
+  // Theme-aware (Phase C). Legacy preview_url is retained as the light-variant fallback.
+  preview_url_light: string | null;
+  preview_url_dark: string | null;
   preview_url: string | null;
 }
 
@@ -61,6 +64,8 @@ export function useFeaturedSpecs(count: number = 5): FeaturedImpl[] | null {
         spec_description: spec.description ?? null,
         library_id: pick.library,
         language: pick.language,
+        preview_url_light: pick.url_light ?? pick.url ?? null,
+        preview_url_dark: pick.url_dark ?? null,
         preview_url: pick.url ?? null,
       };
     });

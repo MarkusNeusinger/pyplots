@@ -10,11 +10,16 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { API_URL, LIB_ABBREV } from '../constants';
 import { specPath } from '../utils/paths';
 import { buildSrcSet, getFallbackSrc } from '../utils/responsiveImage';
+import { selectPreviewUrl } from '../utils/themedPreview';
+import { useTheme } from '../hooks/useLayoutContext';
 import { colors, fontSize, semanticColors, typography } from '../theme';
 
 interface RelatedSpec {
   id: string;
   title: string;
+  // Theme-aware previews (optional during backend transition).
+  preview_url_light?: string | null;
+  preview_url_dark?: string | null;
   preview_url: string | null;
   library_id: string | null;
   language: string | null;
@@ -43,6 +48,7 @@ export function RelatedSpecs({ specId, mode = 'spec', library, onHoverTags }: Re
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
   const prevSpecIdRef = useRef(specId);
+  const { isDark } = useTheme();
 
   // Reset expanded when specId changes (no effect needed)
   if (prevSpecIdRef.current !== specId) {
@@ -116,7 +122,9 @@ export function RelatedSpecs({ specId, mode = 'spec', library, onHoverTags }: Re
         pt: 2,
         ...(!expanded && { gridTemplateRows: 'auto', gridAutoRows: 0, overflow: 'hidden' }),
       }}>
-        {related.map(spec => (
+        {related.map(spec => {
+          const previewUrl = selectPreviewUrl(spec, isDark);
+          return (
           <Link
             key={spec.id}
             component={RouterLink}
@@ -133,11 +141,11 @@ export function RelatedSpecs({ specId, mode = 'spec', library, onHoverTags }: Re
               '&:hover': { transform: 'scale(1.02)', borderColor: colors.gray[200] },
             }}
           >
-            {spec.preview_url ? (
-              <Box component="picture" sx={{ display: 'block' }}>
-                <source type="image/webp" srcSet={buildSrcSet(spec.preview_url, 'webp')} sizes={SIZES} />
-                <source type="image/png" srcSet={buildSrcSet(spec.preview_url, 'png')} sizes={SIZES} />
-                <Box component="img" src={getFallbackSrc(spec.preview_url)} alt={spec.title}
+            {previewUrl ? (
+              <Box component="picture" key={previewUrl} sx={{ display: 'block' }}>
+                <source type="image/webp" srcSet={buildSrcSet(previewUrl, 'webp')} sizes={SIZES} />
+                <source type="image/png" srcSet={buildSrcSet(previewUrl, 'png')} sizes={SIZES} />
+                <Box component="img" src={getFallbackSrc(previewUrl)} alt={spec.title}
                   sizes={SIZES} loading="lazy"
                   sx={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', display: 'block' }}
                 />
@@ -163,7 +171,8 @@ export function RelatedSpecs({ specId, mode = 'spec', library, onHoverTags }: Re
               </Box>
             </Box>
           </Link>
-        ))}
+          );
+        })}
       </Box>
     </Box>
   );

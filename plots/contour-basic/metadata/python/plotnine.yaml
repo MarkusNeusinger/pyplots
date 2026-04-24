@@ -2,7 +2,7 @@ library: plotnine
 language: python
 specification_id: contour-basic
 created: 2025-12-14 19:45:33+00:00
-updated: '2026-04-24T01:37:31Z'
+updated: '2026-04-24T01:49:53Z'
 generated_by: claude-opus
 workflow_run: 24867443277
 issue: 855
@@ -12,66 +12,65 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/contour-b
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/contour-basic/python/plotnine/plot-dark.png
 preview_html_light: null
 preview_html_dark: null
-quality_score: 67
+quality_score: 79
 review:
   strengths:
-  - Viridis colormap correctly selected for continuous sequential data — palette-compliant
-  - Double-peak Gaussian with negative trough showcases interesting features of a
-    2D scalar field
-  - Font size hierarchy explicitly set (title 24pt, axis 20pt, ticks 16pt)
-  - np.random.seed(42) ensures reproducibility
-  - KISS flat script structure; all imports used
+  - 'All attempt-1 critical bugs fixed: theme adaptation (ANYPLOT_THEME), correct
+    output filename (plot-{THEME}.png), correct domain (anyplot.ai), no raw matplotlib
+    mixing'
+  - Theme-adaptive chrome fully implemented using PAGE_BG/INK/INK_SOFT/ELEVATED_BG
+    tokens; both renders pass legibility check
+  - Viridis colormap is correct palette choice for continuous sequential data
+  - contourpy + geom_path approach keeps rendering entirely within plotnine grammar
+  - Font size hierarchy explicitly set at all levels (title 24pt, axis 20pt, ticks
+    16pt, legend 16/18pt)
   weaknesses:
-  - 'No theme adaptation: code does not read ANYPLOT_THEME env var; no PAGE_BG/INK/INK_SOFT
-    tokens; dark render works only by external CI magic'
-  - 'Wrong output filename: saves as plot.png instead of plot-{THEME}.png'
-  - 'Wrong domain in title: code sets pyplots.ai in labs() title argument instead
-    of anyplot.ai'
-  - 'Contour isolines not visible: thin white matplotlib contour lines over viridis
-    tiles are indistinguishable in final render; isolines are the primary feature
-    of a contour plot'
-  - Blocky rendering from geom_tile on 100x100 grid creates discrete color blocks;
-    use geom_raster or native geom_contour for smoother appearance
-  - 'Inelegant matplotlib mixing: calling plot.draw() then ax.contour() breaks plotnine
-    grammar; plotnine has native geom_contour/stat_contour_filled'
-  - legend_text 14pt is below the 16pt minimum for DPI-based libs
+  - 'Contour isolines use color=PAGE_BG, which in dark mode = #1A1A17 (near-black);
+    on dark-purple viridis regions the lines become invisible — fix by using a fixed
+    semi-transparent white (e.g., rgba(255,255,255,0.6)) for isolines in both themes'
+  - geom_raster on a 100x100 grid produces visible pixel-level color blocks; increase
+    grid resolution to 200x200 or use a smoothed/interpolated approach
+  - 'Design excellence is limited: no visual hierarchy, no annotations highlighting
+    peaks/troughs, no storytelling elements'
+  - Contour level labels not added (spec mentions 'label key contour levels when practical')
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (visually consistent with #FAF8F1) outer canvas
-      Chrome: Title "contour-basic · plotnine · anyplot.ai" in dark text — readable. Axis labels "X Coordinate" / "Y Coordinate" in dark text — readable. Tick labels in dark secondary text — readable. Colorbar "Value" label readable.
-      Data: Viridis colormap filling a 100x100 tile grid; two Gaussian peaks visible (upper-right yellow/bright, lower-left green/teal); deep purple negative trough at (-0.5, 1.5). Contour isolines attempted via matplotlib ax.contour() but white lines at 0.8pt/alpha=0.7 are not clearly distinguishable from tile color banding.
-      Legibility verdict: PASS (all text readable) — but plot is effectively a heatmap not a contour plot with isolines
+      Background: Warm off-white (#FAF8F1) outer canvas — correct
+      Chrome: Title "contour-basic · plotnine · anyplot.ai" in dark text — readable. Axis labels "X Coordinate" / "Y Coordinate" in dark ink — readable. Tick labels -3 to 3 in dark secondary text — readable. Colorbar "Value" label readable.
+      Data: viridis-colored 100x100 raster grid; two Gaussian peaks (primary yellow at upper-right ~(1,1), secondary teal at lower-left ~(-1,-1)), dark purple depression at (-0.5, 1.5). Contour isolines in off-white (PAGE_BG=#FAF8F1) visible as lighter boundaries between viridis color bands. Pixelated raster blocks clearly visible at 100x100 resolution.
+      Legibility verdict: PASS
 
     Dark render (plot-dark.png):
-      Background: Dark near-black (visually consistent with #1A1A17) outer canvas
-      Chrome: Title in light/white text — readable. Axis labels in light text — readable. Tick labels in light secondary text — readable. Colorbar label readable. No dark-on-dark failures. NOTE: This theme adaptation is NOT implemented in the code (ANYPLOT_THEME not read); dark background appears due to CI pipeline applying matplotlib dark mode externally.
-      Data: Viridis data colors are identical to light render — correct (data colors must not change between themes). Same two peaks visible.
-      Legibility verdict: PASS visually — FAIL from code perspective (no ANYPLOT_THEME handling)
+      Background: Warm near-black (#1A1A17) outer canvas — correct
+      Chrome: Title in light/white text — readable. Axis labels and tick labels in light secondary text — readable. No dark-on-dark failures. Colorbar label readable.
+      Data: viridis data colors identical to light render — correct. Same dual-peak structure visible. Contour isolines drawn with color=PAGE_BG=#1A1A17 (near-black) — essentially invisible over darkest purple viridis regions; partially visible as darker banding on green/yellow areas.
+      Legibility verdict: PASS (all text readable) — contour lines significantly degraded in dark mode due to color=PAGE_BG choice
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 28
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title 24pt, axis 20pt, ticks 16pt), but
-          legend_text is 14pt (should be >=16pt); all text readable in both renders
+        comment: 'All font sizes explicitly set: title 24pt, axis 20pt, tick 16pt,
+          legend 16/18pt — all readable in both renders'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements in either render
+        comment: No overlapping text or elements
       - id: VQ-03
         name: Element Visibility
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: geom_tile on 100x100 grid creates blocky/stepped color transitions;
-          contour isolines from ax.contour() not clearly visible in renders
+        comment: 'Raster clearly visible; contour isolines visible in light mode but
+          near-invisible on dark viridis purple in dark mode (color=PAGE_BG resolves
+          to #1A1A17); 100x100 grid produces blocky appearance'
       - id: VQ-04
         name: Color Accessibility
         score: 2
@@ -83,24 +82,23 @@ review:
         score: 3
         max: 4
         passed: true
-        comment: Plot fills most of canvas well; minor empty border space at edges
+        comment: Plot fills most canvas; minor empty border space at edges
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: X Coordinate / Y Coordinate are descriptive; units N/A for mathematical
-          function
+        comment: Descriptive X Coordinate / Y Coordinate; correct title format
       - id: VQ-07
         name: Palette Compliance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Viridis correct for continuous sequential data; but code does NOT
-          read ANYPLOT_THEME or set any theme-adaptive tokens (PAGE_BG, INK, INK_SOFT).
-          Dark render works only via external CI matplotlib dark mode, not code implementation.
+        passed: true
+        comment: 'Viridis correct for continuous sequential data; backgrounds #FAF8F1/#1A1A17
+          correct; all chrome uses theme-adaptive tokens; data colors identical between
+          themes'
     design_excellence:
-      score: 8
+      score: 9
       max: 20
       items:
       - id: DE-01
@@ -108,57 +106,55 @@ review:
         score: 4
         max: 8
         passed: false
-        comment: Configured library default; no custom design choices beyond viridis.
-          Blocky tile rendering reduces visual polish.
+        comment: Configured-default look; viridis is appropriate but no additional
+          design choices elevate it; pixelated raster blocks reduce visual polish
       - id: DE-02
         name: Visual Refinement
-        score: 2
+        score: 3
         max: 6
         passed: false
-        comment: Relies on theme_minimal() defaults; no explicit spine removal, grid
-          adjustments, or whitespace customization
+        comment: Subtle grid (alpha=0.08/0.04), styled legend background, panel border
+          appropriate for contour type — between 'some refinement' and 'library defaults'
       - id: DE-03
         name: Data Storytelling
         score: 2
         max: 6
         passed: false
-        comment: Two peaks visible but no annotations, emphasis, or visual hierarchy
-          guiding the viewer
+        comment: Data displayed correctly; dual-peak visible through colormap but
+          no annotations, emphasis, or visual hierarchy to guide viewer
     spec_compliance:
-      score: 9
+      score: 14
       max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 3
+        score: 5
         max: 5
-        passed: false
-        comment: Spec requires contour plot with visible isolines as primary feature;
-          geom_tile creates a pixelated heatmap instead; contour lines attempted via
-          matplotlib but not visible
+        passed: true
+        comment: 'Correct: filled contour surface (geom_raster) + overlaid isolines
+          (geom_path via contourpy)'
       - id: SC-02
         name: Required Features
-        score: 2
+        score: 3
         max: 4
-        passed: false
-        comment: Filled color regions and colorbar present; but isolines (core spec
-          requirement) are not clearly visible in renders
+        passed: true
+        comment: Filled regions, contour lines, and colorbar present; spec note 'label
+          key contour levels when practical' not implemented
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X/Y correctly mapped, Z values mapped to fill color, all data visible
+        comment: X/Y correctly assigned; Z mapped to fill color; all data visible
       - id: SC-04
         name: Title & Legend
-        score: 1
+        score: 3
         max: 3
-        passed: false
-        comment: Code line 34 sets title to 'pyplots.ai' instead of 'anyplot.ai';
-          rendered image shows 'anyplot.ai' suggesting images are stale; legend 'Value'
-          is appropriate
+        passed: true
+        comment: Title 'contour-basic · plotnine · anyplot.ai' correct; legend 'Value'
+          appropriate
     data_quality:
-      score: 12
+      score: 13
       max: 15
       items:
       - id: DQ-01
@@ -166,24 +162,24 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Two-peak Gaussian with negative trough demonstrates varied features
-          of a scalar field
+        comment: Dual Gaussian peaks plus negative trough demonstrates varied scalar
+          field features
       - id: DQ-02
         name: Realistic Context
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Abstract mathematical function; generic 'X Coordinate'/'Y Coordinate'
-          labels are plausible but not specific to a real-world scenario
+        comment: Mathematical function plausible for scientific computing context;
+          labels generic but not abstract
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Domain [-3,3] and Z-range ~[-0.3, 1.0] are natural for this type
-          of function
+        comment: Domain [-3,3] and Z-range ~[-0.3, 1.0] natural for this function
+          type
     code_quality:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -203,24 +199,23 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports (matplotlib.pyplot, numpy, pandas, plotnine symbols)
-          are actually used
+        comment: All imports (os, contourpy, numpy, pandas, plotnine symbols) actively
+          used
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
         passed: true
-        comment: Mixing plotnine grammar with raw matplotlib (plot.draw() -> ax.contour()
-          -> fig.savefig()) is inelegant and fragile; breaks plotnine idiom mid-render
+        comment: Triple-nested contourpy loop appending row-by-row is verbose; could
+          be vectorized with list comprehension
       - id: CQ-05
         name: Output & API
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Saves as 'plot.png' instead of required 'plot-{THEME}.png'; must
-          use ggsave with f'plot-{THEME}.png' filename
+        passed: true
+        comment: Saves as plot-{THEME}.png via ggsave
     library_mastery:
-      score: 5
+      score: 6
       max: 10
       items:
       - id: LM-01
@@ -228,26 +223,27 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: ggplot + geom_tile + scale_fill_cmap follows plotnine grammar, but
-          abandoning plotnine for raw matplotlib contour drawing mid-execution is
-          not idiomatic
+        comment: 'Proper ggplot grammar: ggplot + geom_raster + geom_path + scale_fill_cmap
+          + theme(); contour computation relies on external contourpy rather than
+          plotnine-native mechanism'
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: scale_fill_cmap for continuous color mapping is plotnine-specific;
-          but contour lines drawn in matplotlib. Plotnine has native geom_contour/stat_contour_filled
-          that should have been used.
+        passed: true
+        comment: geom_raster + scale_fill_cmap + geom_path layer composition is characteristically
+          plotnine/ggplot grammar; declarative layering is library-distinctive
   verdict: REJECTED
 impl_tags:
-  dependencies: []
+  dependencies:
+  - contourpy
   techniques:
   - layer-composition
+  - colorbar
   patterns:
   - data-generation
   - matrix-construction
-  - explicit-figure
   dataprep: []
   styling:
   - custom-colormap
+  - alpha-blending

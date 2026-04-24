@@ -1,4 +1,4 @@
-""" anyplot.ai
+"""anyplot.ai
 contour-basic: Basic Contour Plot
 Library: pygal 3.1.0 | Python 3.14.4
 Quality: 82/100 | Created: 2026-04-24
@@ -29,7 +29,7 @@ LINE_COLOR = "#FAF8F1" if THEME == "light" else "#F0EFE8"
 LINE_OPACITY = 0.65 if THEME == "light" else 0.80
 
 # Viridis colormap stops (sequential, perceptually uniform, CVD-safe)
-VIRIDIS = [
+VIRIDIS_STOPS = [
     (0.00, "#440154"),
     (0.10, "#482475"),
     (0.20, "#414487"),
@@ -42,21 +42,10 @@ VIRIDIS = [
     (0.90, "#bddf26"),
     (1.00, "#fde725"),
 ]
-
-
-def viridis_at(t):
-    t = max(0.0, min(1.0, t))
-    for i in range(len(VIRIDIS) - 1):
-        t0, c0 = VIRIDIS[i]
-        t1, c1 = VIRIDIS[i + 1]
-        if t0 <= t <= t1:
-            f = 0 if t1 == t0 else (t - t0) / (t1 - t0)
-            r = int(int(c0[1:3], 16) + (int(c1[1:3], 16) - int(c0[1:3], 16)) * f)
-            g = int(int(c0[3:5], 16) + (int(c1[3:5], 16) - int(c0[3:5], 16)) * f)
-            b = int(int(c0[5:7], 16) + (int(c1[5:7], 16) - int(c0[5:7], 16)) * f)
-            return f"#{r:02x}{g:02x}{b:02x}"
-    return VIRIDIS[-1][1]
-
+VIR_T = np.array([s[0] for s in VIRIDIS_STOPS])
+VIR_R = np.array([int(s[1][1:3], 16) for s in VIRIDIS_STOPS])
+VIR_G = np.array([int(s[1][3:5], 16) for s in VIRIDIS_STOPS])
+VIR_B = np.array([int(s[1][5:7], 16) for s in VIRIDIS_STOPS])
 
 # Data — simulated topographic elevation map of a 10 km x 10 km mountain region
 np.random.seed(42)
@@ -101,7 +90,7 @@ secondary_elev = int(
 
 # Canvas and plot layout (pygal margins define the reserved area around the plot)
 CANVAS_W, CANVAS_H = 4800, 2700
-MARGIN_L, MARGIN_R = 360, 520
+MARGIN_L, MARGIN_R = 360, 620
 MARGIN_T, MARGIN_B = 220, 260
 
 font = "DejaVu Sans, Helvetica, Arial, sans-serif"
@@ -178,128 +167,131 @@ cell_h = plot_height / (n_points - 1)
 
 svg_parts = []
 
-# Filled contour — one quad per grid cell, colored by its mean elevation
+# Filled contour — color each grid cell by its mean elevation.
+# Vectorized viridis lookup: piecewise-linear interpolation across the 11 stops.
+cell_mean = (elevation[:-1, :-1] + elevation[:-1, 1:] + elevation[1:, :-1] + elevation[1:, 1:]) / 4
+cell_t = np.clip((cell_mean - z_min) / (z_max - z_min), 0.0, 1.0)
+cell_idx = np.clip(np.searchsorted(VIR_T, cell_t, side="right") - 1, 0, len(VIRIDIS_STOPS) - 2)
+cell_span = VIR_T[cell_idx + 1] - VIR_T[cell_idx]
+cell_f = np.where(cell_span == 0, 0.0, (cell_t - VIR_T[cell_idx]) / np.where(cell_span == 0, 1, cell_span))
+cell_r = (VIR_R[cell_idx] + (VIR_R[cell_idx + 1] - VIR_R[cell_idx]) * cell_f).astype(int)
+cell_g = (VIR_G[cell_idx] + (VIR_G[cell_idx + 1] - VIR_G[cell_idx]) * cell_f).astype(int)
+cell_b = (VIR_B[cell_idx] + (VIR_B[cell_idx + 1] - VIR_B[cell_idx]) * cell_f).astype(int)
+
 for i in range(n_points - 1):
     for j in range(n_points - 1):
-        cell_val = (elevation[i, j] + elevation[i, j + 1] + elevation[i + 1, j] + elevation[i + 1, j + 1]) / 4
-        t = (cell_val - z_min) / (z_max - z_min)
-        color = viridis_at(t)
         cx = plot_x + j * cell_w
         cy = plot_y + plot_height - (i + 1) * cell_h
+        color = f"#{cell_r[i, j]:02x}{cell_g[i, j]:02x}{cell_b[i, j]:02x}"
         svg_parts.append(
             f'<rect x="{cx:.2f}" y="{cy:.2f}" width="{cell_w + 0.6:.2f}" '
             f'height="{cell_h + 0.6:.2f}" fill="{color}" stroke="none"/>'
         )
 
-# Marching-squares contour extraction
-minor_levels = np.arange(400, 1251, 50)
-major_levels = np.arange(400, 1251, 200)
+# Marching-squares contour extraction — inlined per level.
+# Minor lines every 50 m (subtle); major lines every 200 m (emphasized, labeled).
+minor_levels = list(range(400, 1251, 50))
+major_levels = list(range(400, 1251, 200))
+major_set = set(major_levels)
+all_levels = sorted(set(minor_levels + major_levels))
 
+major_segments_by_level = {}
 
-def lerp(v1, v2, lv):
-    if abs(v2 - v1) < 1e-10:
-        return 0.5
-    return (lv - v1) / (v2 - v1)
-
-
-def march(level):
-    lines = []
+for lvl in all_levels:
+    is_major = lvl in major_set
+    segments = []
     for i in range(n_points - 1):
         for j in range(n_points - 1):
-            z00, z01 = elevation[i, j], elevation[i, j + 1]
-            z10, z11 = elevation[i + 1, j], elevation[i + 1, j + 1]
+            z00 = elevation[i, j]
+            z01 = elevation[i, j + 1]
+            z10 = elevation[i + 1, j]
+            z11 = elevation[i + 1, j + 1]
 
             case = 0
-            if z00 >= level:
+            if z00 >= lvl:
                 case |= 1
-            if z01 >= level:
+            if z01 >= lvl:
                 case |= 2
-            if z11 >= level:
+            if z11 >= lvl:
                 case |= 4
-            if z10 >= level:
+            if z10 >= lvl:
                 case |= 8
-            if case in (0, 15):
+            if case == 0 or case == 15:
                 continue
 
             x0 = plot_x + j * cell_w
             y_bot = plot_y + plot_height - i * cell_h
             y_top = plot_y + plot_height - (i + 1) * cell_h
 
-            left = (x0, y_bot - cell_h * lerp(z00, z10, level))
-            right = (x0 + cell_w, y_bot - cell_h * lerp(z01, z11, level))
-            top = (x0 + cell_w * lerp(z10, z11, level), y_top)
-            bottom = (x0 + cell_w * lerp(z00, z01, level), y_bot)
+            # Inline lerp: fraction along each cell edge where the iso-level crosses.
+            fl = 0.5 if abs(z10 - z00) < 1e-10 else (lvl - z00) / (z10 - z00)
+            fr = 0.5 if abs(z11 - z01) < 1e-10 else (lvl - z01) / (z11 - z01)
+            ft = 0.5 if abs(z11 - z10) < 1e-10 else (lvl - z10) / (z11 - z10)
+            fb = 0.5 if abs(z01 - z00) < 1e-10 else (lvl - z00) / (z01 - z00)
 
-            if case in (1, 14):
-                lines.append((left, bottom))
-            elif case in (2, 13):
-                lines.append((bottom, right))
-            elif case in (3, 12):
-                lines.append((left, right))
-            elif case in (4, 11):
-                lines.append((right, top))
+            left = (x0, y_bot - cell_h * fl)
+            right = (x0 + cell_w, y_bot - cell_h * fr)
+            top = (x0 + cell_w * ft, y_top)
+            bottom = (x0 + cell_w * fb, y_bot)
+
+            if case == 1 or case == 14:
+                segments.append((left, bottom))
+            elif case == 2 or case == 13:
+                segments.append((bottom, right))
+            elif case == 3 or case == 12:
+                segments.append((left, right))
+            elif case == 4 or case == 11:
+                segments.append((right, top))
             elif case == 5:
-                lines.append((left, top))
-                lines.append((bottom, right))
-            elif case in (6, 9):
-                lines.append((bottom, top))
-            elif case in (7, 8):
-                lines.append((left, top))
+                segments.append((left, top))
+                segments.append((bottom, right))
+            elif case == 6 or case == 9:
+                segments.append((bottom, top))
+            elif case == 7 or case == 8:
+                segments.append((left, top))
             elif case == 10:
-                lines.append((left, bottom))
-                lines.append((right, top))
-    return lines
+                segments.append((left, bottom))
+                segments.append((right, top))
 
-
-# Minor contours (50 m intervals, subtle)
-for lvl in minor_levels:
-    for (x1, y1), (x2, y2) in march(lvl):
+    stroke_w = 4 if is_major else 2
+    stroke_op = LINE_OPACITY if is_major else 0.30
+    for (x1, y1), (x2, y2) in segments:
         svg_parts.append(
             f'<line x1="{x1:.2f}" y1="{y1:.2f}" x2="{x2:.2f}" y2="{y2:.2f}" '
-            f'stroke="{LINE_COLOR}" stroke-width="2" stroke-opacity="0.30"/>'
+            f'stroke="{LINE_COLOR}" stroke-width="{stroke_w}" stroke-opacity="{stroke_op}"/>'
         )
 
-# Major contours (200 m intervals, emphasized) — collect segments for labeling
-major_segments_by_level = {}
-for lvl in major_levels:
-    segs = march(lvl)
-    major_segments_by_level[int(lvl)] = segs
-    for (x1, y1), (x2, y2) in segs:
-        svg_parts.append(
-            f'<line x1="{x1:.2f}" y1="{y1:.2f}" x2="{x2:.2f}" y2="{y2:.2f}" '
-            f'stroke="{LINE_COLOR}" stroke-width="4" stroke-opacity="{LINE_OPACITY}"/>'
-        )
+    if is_major:
+        major_segments_by_level[lvl] = segments
 
-
-# Contour level labels — place elevation text at the rightmost point of each
-# major contour's eastern flank (stable placement avoids label pile-ups near peaks).
-# A PAGE_BG halo keeps digits legible against the viridis fill.
-def label_anchors(segments, max_labels=2):
-    """Return up to `max_labels` well-separated midpoints from the segment list."""
-    if not segments:
-        return []
-    # Build midpoints of every segment, then sample evenly by segment count
-    mids = [((x1 + x2) / 2, (y1 + y2) / 2) for (x1, y1), (x2, y2) in segments]
-    n = len(mids)
-    if n <= max_labels:
-        return mids
-    step = n / (max_labels + 1)
-    return [mids[int(step * (i + 1))] for i in range(max_labels)]
-
-
+# Contour level labels — one label per major contour. Each label is placed at the
+# segment midpoint that maximizes the distance to every already-placed anchor (peak
+# markers + prior labels), so labels fan out around the primary peak instead of
+# overlapping markers or piling up. A PAGE_BG halo keeps digits legible against fill.
 label_font_px = 40
+placed_positions = [(p1x, p1y), (p2x, p2y)]
 for lvl, segs in major_segments_by_level.items():
-    for cx, cy in label_anchors(segs, max_labels=2):
-        text = f"{lvl} m"
-        svg_parts.append(
-            f'<text x="{cx:.2f}" y="{cy + 14:.2f}" text-anchor="middle" '
-            f'fill="none" stroke="{PAGE_BG}" stroke-width="9" stroke-linejoin="round" '
-            f'style="font-size:{label_font_px}px;font-family:{font};font-weight:600">{text}</text>'
-        )
-        svg_parts.append(
-            f'<text x="{cx:.2f}" y="{cy + 14:.2f}" text-anchor="middle" '
-            f'fill="{INK}" style="font-size:{label_font_px}px;font-family:{font};font-weight:600">{text}</text>'
-        )
+    if not segs:
+        continue
+    best_cx, best_cy, best_score = 0.0, 0.0, -1.0
+    for (x1, y1), (x2, y2) in segs:
+        mx, my = (x1 + x2) / 2, (y1 + y2) / 2
+        nearest_sq = min((mx - px) ** 2 + (my - py) ** 2 for px, py in placed_positions)
+        if nearest_sq > best_score:
+            best_score = nearest_sq
+            best_cx, best_cy = mx, my
+    cx, cy = best_cx, best_cy
+    placed_positions.append((cx, cy))
+    text = f"{lvl} m"
+    svg_parts.append(
+        f'<text x="{cx:.2f}" y="{cy + 14:.2f}" text-anchor="middle" '
+        f'fill="none" stroke="{PAGE_BG}" stroke-width="9" stroke-linejoin="round" '
+        f'style="font-size:{label_font_px}px;font-family:{font};font-weight:600">{text}</text>'
+    )
+    svg_parts.append(
+        f'<text x="{cx:.2f}" y="{cy + 14:.2f}" text-anchor="middle" '
+        f'fill="{INK}" style="font-size:{label_font_px}px;font-family:{font};font-weight:600">{text}</text>'
+    )
 
 # L-shaped frame (left + bottom only)
 svg_parts.append(
@@ -358,7 +350,7 @@ svg_parts.append(
     f'transform="rotate(-90, {y_title_x:.2f}, {y_title_y:.2f})">Distance North (km)</text>'
 )
 
-# Colorbar — right of plot area
+# Colorbar — right of plot area (vectorized viridis lookup for segment colors)
 cb_width = 72
 cb_height = int(plot_height * 0.80)
 cb_x = plot_x + plot_width + 120
@@ -366,9 +358,15 @@ cb_y = plot_y + (plot_height - cb_height) / 2
 
 n_cb_segments = 120
 seg_h = cb_height / n_cb_segments
+cb_t = np.clip(1.0 - np.arange(n_cb_segments) / (n_cb_segments - 1), 0.0, 1.0)
+cb_idx = np.clip(np.searchsorted(VIR_T, cb_t, side="right") - 1, 0, len(VIRIDIS_STOPS) - 2)
+cb_span = VIR_T[cb_idx + 1] - VIR_T[cb_idx]
+cb_f = np.where(cb_span == 0, 0.0, (cb_t - VIR_T[cb_idx]) / np.where(cb_span == 0, 1, cb_span))
+cb_r = (VIR_R[cb_idx] + (VIR_R[cb_idx + 1] - VIR_R[cb_idx]) * cb_f).astype(int)
+cb_g = (VIR_G[cb_idx] + (VIR_G[cb_idx + 1] - VIR_G[cb_idx]) * cb_f).astype(int)
+cb_b = (VIR_B[cb_idx] + (VIR_B[cb_idx + 1] - VIR_B[cb_idx]) * cb_f).astype(int)
 for i in range(n_cb_segments):
-    t = 1.0 - i / (n_cb_segments - 1)
-    color = viridis_at(t)
+    color = f"#{cb_r[i]:02x}{cb_g[i]:02x}{cb_b[i]:02x}"
     seg_y = cb_y + i * seg_h
     svg_parts.append(
         f'<rect x="{cb_x:.2f}" y="{seg_y:.2f}" width="{cb_width}" '
@@ -403,17 +401,14 @@ bg_rect = f'<rect x="0" y="0" width="{CANVAS_W}" height="{CANVAS_H}" fill="{PAGE
 title_svg = (
     f'<text x="{CANVAS_W / 2:.2f}" y="120" text-anchor="middle" fill="{INK}" '
     f'style="font-size:64px;font-weight:500;font-family:{font}">'
-    f"Mountain Terrain · contour-basic · pygal · anyplot.ai</text>"
+    f"contour-basic · pygal · anyplot.ai</text>"
 )
 
 # Inject custom chrome into pygal's graph group BEFORE the plot overlay so
 # pygal's peak markers (and their tooltip hit-areas) render on top.
 custom_svg = "\n".join([bg_rect, title_svg] + svg_parts)
-overlay_marker = '<g transform="translate('
-# Locate pygal's first plot group by class
 plot_group_idx = base_svg.find('class="plot"')
 if plot_group_idx != -1:
-    # Back up to the opening '<g'
     insert_idx = base_svg.rfind("<g", 0, plot_group_idx)
     output_svg = base_svg[:insert_idx] + custom_svg + "\n" + base_svg[insert_idx:]
 else:

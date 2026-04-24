@@ -2,7 +2,7 @@ library: letsplot
 language: python
 specification_id: donut-basic
 created: '2025-12-23T12:12:06Z'
-updated: '2026-04-24T06:31:16Z'
+updated: '2026-04-24T06:40:39Z'
 generated_by: claude-opus
 workflow_run: 24874519662
 issue: 733
@@ -12,45 +12,39 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/donut-bas
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/donut-basic/python/letsplot/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/donut-basic/python/letsplot/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/donut-basic/python/letsplot/plot-dark.html
-quality_score: 84
+quality_score: 88
 review:
   strengths:
-  - 'Full theme-adaptive chrome: all non-data elements (title, legend, center callout)
-    correctly flip between light and dark backgrounds using INK/INK_SOFT tokens.'
-  - Center callout box ('Total $100M') makes excellent use of the donut's hollow center
-    as specified, adding data storytelling value.
-  - 'Perfect spec compliance: all required features (hole, percentage labels, center
-    metric, proper title format) are present.'
-  - Clean code structure with idiomatic lets-plot patterns (layer_labels(), geom_pie,
-    theme_void).
-  - 'Okabe-Ito palette applied correctly with #009E73 as the first segment (Marketing).'
+  - 'Perfect spec compliance: hollow center, center key metric, percentage labels,
+    correct title format'
+  - Proper theme-adaptive chrome in both renders with correct PAGE_BG, ELEVATED_BG,
+    INK, INK_SOFT tokens
+  - Uses layer_labels() with format() — a distinctive lets-plot feature for in-chart
+    data labels
+  - Clean deterministic data with realistic company budget context
+  - Square canvas format is appropriate for a symmetric donut chart
   weaknesses:
-  - 'Canvas utilization: the donut occupies only ~50% of the vertical canvas height
-    in the 1200x1200 frame, leaving excessive blank space above and below. Increase
-    geom_pie(size=...) or reduce padding.'
-  - 'No segment separation (gap): adding a thin white or background-colored border
-    between segments would improve readability, especially between similarly-sized
-    slices.'
-  - HR segment (7%) is small enough that the 7.0% label is slightly cramped — consider
-    adjusting label placement or using expanded labels for small segments.
-  - 'Design lacks a focal/emphasis element: the largest segment (Marketing, 28%) is
-    not visually distinguished beyond its color. An annotation callout or slight visual
-    emphasis would elevate storytelling.'
+  - No visual emphasis or focal point — Marketing at 28% is dominant but receives
+    no special treatment (e.g., explode, bold label, or distinct outline)
+  - Overall design lacks distinctive personality beyond a polished default — DE-01
+    limited to 5/8
+  - Segment labels at size 18 are slightly below the recommended 20pt guideline for
+    chart labels
   image_description: |-
     Light render (plot-light.png):
       Background: Warm off-white (#FAF8F1) — correct, not pure white
-      Chrome: Title "donut-basic · letsplot · anyplot.ai" in dark ink (#1A1A17) at top — readable. Legend title "Department" and category labels in INK/INK_SOFT tokens — readable. Center callout "Total $100M" in dark ink on elevated off-white fill (#FFFDF6) — readable.
-      Data: Five segments — Marketing (#009E73, 28%), Operations (#D55E00, 22%), R&D (#0072B2, 25%), Sales (#CC79A7, 18%), HR (#E69F00, 7%). Percentage labels in white on colored segments. First series is #009E73.
-      Legibility verdict: PASS
+      Chrome: Title "donut-basic · letsplot · anyplot.ai" in dark ink at top center — readable. Legend titled "Department" with dark text on elevated (#FFFDF6) background — readable. Center box with "Total\n$100M" in dark INK on elevated background.
+      Data: Five segments — Marketing (teal #009E73, 28%), Operations (orange #D55E00, 22%), R&D (blue #0072B2, 25%), Sales (pink #CC79A7, 18%), HR (amber #E69F00, 7%). Percentage labels in white text inside each segment. First series is #009E73.
+      Legibility verdict: PASS — all text readable against light background; no light-on-light issues.
 
     Dark render (plot-dark.png):
       Background: Warm near-black (#1A1A17) — correct, not pure black
-      Chrome: Title in light ink (#F0EFE8) — readable. Legend text in INK_SOFT (#B8B7B0) — readable. Center callout "Total $100M" in light ink (#F0EFE8) on dark elevated fill (#242420) — readable. No dark-on-dark failures detected.
-      Data: Identical Okabe-Ito data colors as light render — green, orange, blue, pink, yellow-orange. Only chrome elements flip between themes.
-      Legibility verdict: PASS
+      Chrome: Title in light text (#F0EFE8) at top — readable. Legend text in light secondary ink (#B8B7B0) on dark elevated background (#242420) — readable. Center box uses elevated dark fill with light text. No dark-on-dark failures detected.
+      Data: All five segment colors are identical to light render (Okabe-Ito positions 1–5 are theme-independent). Percentage labels remain white and visible against colored segments.
+      Legibility verdict: PASS — all chrome adapts correctly; no unreadable elements in dark mode.
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 29
       max: 30
       items:
       - id: VQ-01
@@ -58,50 +52,48 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All chrome text is theme-adaptive and readable in both renders. Minor
-          deduction for cramped HR (7%) segment label.
+        comment: All sizes explicitly set; title 28pt, legend 20/18pt, segment labels
+          18pt. Slightly below 20pt guideline for chart labels.
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Segments well-separated, legend uncluttered. HR label is tight but
-          readable.
+        comment: No overlapping elements; 7% HR segment label fits cleanly.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: All five segments, center callout, and legend items clearly visible
-          in both themes.
+        comment: Donut ring and segment widths well-proportioned and fully visible.
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito palette is CVD-safe; five colors well-differentiated.
+        comment: Okabe-Ito palette is CVD-safe; ample contrast between all segments.
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Square 3600x3600px appropriate for donut. However, donut occupies
-          ~50% of canvas height, leaving excessive blank space.
+        comment: Square 3600x3600 canvas; donut fills majority of canvas with balanced
+          whitespace.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Title follows required format; no axis labels needed for donut chart.
+        comment: No axis labels needed for donut (theme_void); title fully descriptive.
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First segment #009E73; Okabe-Ito order 1-5 applied. Backgrounds
-          #FAF8F1/#1A1A17. Data colors identical in both renders.'
+        comment: 'First series (Marketing) is #009E73; Okabe-Ito order followed; backgrounds
+          correct in both themes; chrome adapts.'
     design_excellence:
-      score: 11
+      score: 12
       max: 20
       items:
       - id: DE-01
@@ -109,23 +101,23 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Theme-adaptive chrome fully wired. Center callout with rounded corners
-          and ELEVATED_BG fill is polished. Above default but lacks bolder typographic
-          hierarchy or segment emphasis.
+        comment: 'Above default: clean theme_void, rounded center box with elevated
+          fill, proper tokens. Not at FiveThirtyEight polish — lacks distinctive design
+          personality.'
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: theme_void() removes all unnecessary elements. Legend adaptively
-          styled. Clean but no gap between segments or additional refinement.
+        comment: theme_void removes all extraneous elements; center box has subtle
+          rounding and elevated fill; legend background styled to theme.
       - id: DE-03
         name: Data Storytelling
         score: 3
         max: 6
         passed: true
-        comment: Center Total $100M metric creates focal point. Percentage labels
-          enable direct reading. No segment emphasis or callout on dominant category.
+        comment: Center Total $100M provides context per spec. No visual emphasis
+          on dominant segment (Marketing 28%).
     spec_compliance:
       score: 15
       max: 15
@@ -135,52 +127,53 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct donut chart via geom_pie(hole=0.5).
+        comment: Correct donut chart using geom_pie with hole=0.5.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Center space used for key metric; percentage labels on all segments;
-          consistent ordering; ring with hollow center.
+        comment: Hollow center, center key metric label, percentage labels on segments,
+          5 categories in 3-8 range.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Five categories (within 3-8 spec range); values map to segment size;
-          all data shown.
+        comment: slice=value maps segment sizes; fill=category maps colors; all data
+          visible.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: 'Title: donut-basic · letsplot · anyplot.ai; legend labeled Department;
-          all five categories listed.'
+        comment: Title 'donut-basic · letsplot · anyplot.ai' correct; legend 'Department'
+          with correct category labels.
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: 'All donut features demonstrated: segments, hollow center, percentage
-          labels, center metric, legend.'
+        comment: Five segments with varied proportions (7%-28%) showcase all donut
+          chart features.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Department budget allocation (Marketing, Operations, R&D, Sales,
-          HR) with $100M total is realistic and neutral.
+        comment: Company annual budget allocation by department; realistic departments;
+          neutral business scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values sum to 100M, percentages are plausible for a diversified budget.
+        comment: Values sum to 100 ($100M total); proportions realistic for corporate
+          budget.
     code_quality:
       score: 10
       max: 10
@@ -190,34 +183,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: No functions or classes; linear top-to-bottom structure.
+        comment: 'Linear: imports, tokens, data, plot, save. No functions or classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic hard-coded data; no randomness.
+        comment: Deterministic hardcoded data; no random elements.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All four imports are used; no dead imports.
+        comment: 'All imports used: os, pandas, lets_plot, lets_plot.export.'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Concise and readable; appropriate use of layer_labels() for formatted
-          percentage labels.
+        comment: Clean idiomatic grammar-of-graphics; no fake UI; noqa for wildcard
+          import is pragmatic.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot-{THEME}.png and plot-{THEME}.html; uses current lets-plot
-          API.
-    library_mastery:
+        comment: Saves plot-{THEME}.png and plot-{THEME}.html; current API.
+    library_features:
       score: 7
       max: 10
       items:
@@ -226,23 +218,21 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Grammar-of-graphics composition with ggplot + geom_pie + scale_fill_manual
-          + theme_void is idiomatic. layer_labels() with .format() is the recommended
-          lets-plot label approach.
+        comment: Correct grammar-of-graphics composition; geom_pie with stat=identity;
+          scale_fill_manual; theme_void + theme overlay. Slightly below expert level.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: layer_labels() for in-segment label formatting, geom_label overlaid
-          on pie for center annotation, and geom_pie(hole=...) are lets-plot-specific
-          patterns.
-  verdict: APPROVED
+        comment: layer_labels() with .line() and .format() for formatted segment labels
+          is lets-plot-specific. Demonstrates real library knowledge.
+  verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
-  - layer-composition
+  - html-export
   patterns:
   - data-generation
   dataprep: []

@@ -1,73 +1,96 @@
-""" pyplots.ai
+"""anyplot.ai
 ecdf-basic: Basic ECDF Plot
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-17
+Library: pygal 3.1.0 | Python 3.14.4
+Quality: 93/100 | Updated: 2026-04-24
 """
 
-import numpy as np
-import pygal
-from pygal.style import Style
+import os
+import sys
 
 
-# Data
+# Script filename shadows the installed `pygal` package when run as `python pygal.py`;
+# dropping the script directory from sys.path lets the real package resolve.
+sys.path.pop(0)
+
+import numpy as np  # noqa: E402
+import pygal  # noqa: E402
+from pygal.style import Style  # noqa: E402
+
+
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+INK_MUTED = "#8A8A82" if THEME == "light" else "#6E6D66"
+BRAND = "#009E73"
+
+# Data — 120 samples from a normal distribution
 np.random.seed(42)
-values = np.random.randn(100)
+values = np.random.randn(120)
 
-# Calculate ECDF
+# ECDF: sorted values on x, cumulative proportion (k/n) on y
 sorted_values = np.sort(values)
 n = len(sorted_values)
 ecdf_y = np.arange(1, n + 1) / n
 
-# Build step function data for XY chart
-# Each point needs to create a horizontal step then a vertical step
-xy_data = []
+# Step function: each observation adds a horizontal segment then a vertical jump
+step_points = []
 for i in range(n):
-    if i == 0:
-        # First point: start from (value, 0) to show initial step
-        xy_data.append((sorted_values[i], 0))
-    else:
-        # Horizontal line from previous point to current x
-        xy_data.append((sorted_values[i], ecdf_y[i - 1]))
-    # Vertical step up to current y
-    xy_data.append((sorted_values[i], ecdf_y[i]))
+    prev_y = 0.0 if i == 0 else float(ecdf_y[i - 1])
+    step_points.append((float(sorted_values[i]), prev_y))
+    step_points.append((float(sorted_values[i]), float(ecdf_y[i])))
+# Extend final horizontal segment to the right so the last step is visible
+step_points.append((float(sorted_values[-1]) + 0.4, float(ecdf_y[-1])))
 
-# Extend to the right edge for completeness
-xy_data.append((sorted_values[-1] + 0.5, ecdf_y[-1]))
+font = "DejaVu Sans, Helvetica, Arial, sans-serif"
 
-# Custom style for 4800x2700 px canvas
 custom_style = Style(
-    background="white",
-    plot_background="white",
-    foreground="#333",
-    foreground_strong="#333",
-    foreground_subtle="#666",
-    colors=("#306998",),
-    title_font_size=72,
-    label_font_size=48,
-    major_label_font_size=42,
-    legend_font_size=42,
-    value_font_size=36,
+    background=PAGE_BG,
+    plot_background=PAGE_BG,
+    foreground=INK_SOFT,
+    foreground_strong=INK,
+    foreground_subtle=INK_MUTED,
+    colors=(BRAND,),
+    font_family=font,
+    title_font_family=font,
+    label_font_family=font,
+    major_label_font_family=font,
+    legend_font_family=font,
+    tooltip_font_family=font,
+    title_font_size=52,
+    label_font_size=40,
+    major_label_font_size=36,
+    legend_font_size=34,
+    tooltip_font_size=28,
+    value_font_size=26,
+    stroke_opacity=1,
+    stroke_opacity_hover=1,
 )
 
-# Create XY chart (scatter-like with lines for step function)
 chart = pygal.XY(
     width=4800,
     height=2700,
     style=custom_style,
-    title="ecdf-basic · pygal · pyplots.ai",
+    title="ecdf-basic · pygal · anyplot.ai",
     x_title="Value",
     y_title="Cumulative Proportion",
     show_dots=False,
-    stroke_style={"width": 4},
+    stroke_style={"width": 6},
     show_x_guides=True,
     show_y_guides=True,
     show_legend=False,
     range=(0, 1.05),
+    x_labels_major_count=9,
+    y_labels_major_count=6,
+    value_formatter=lambda v: f"{v:.2f}",
+    x_value_formatter=lambda v: f"{v:.1f}",
+    margin=60,
+    js=[],
 )
 
-# Add ECDF data
-chart.add("ECDF", xy_data)
+chart.add("ECDF", step_points)
 
-# Save outputs
-chart.render_to_file("plot.html")
-chart.render_to_png("plot.png")
+chart.render_to_png(f"plot-{THEME}.png")
+with open(f"plot-{THEME}.html", "wb") as f:
+    f.write(chart.render())

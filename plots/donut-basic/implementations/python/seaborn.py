@@ -1,66 +1,75 @@
-""" pyplots.ai
+"""anyplot.ai
 donut-basic: Basic Donut Chart
-Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: seaborn | Python 3.13
+Quality: pending | Updated: 2026-04-24
 """
 
+import os
+
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
 
 
-# Data - Budget allocation by department
-data = pd.DataFrame(
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+
+# Okabe-Ito palette — first series always #009E73
+OKABE_ITO = ["#009E73", "#D55E00", "#0072B2", "#CC79A7", "#E69F00", "#56B4E9"]
+
+# Data — departmental budget allocation (ordered largest → smallest for readability)
+budget = pd.DataFrame(
     {
-        "category": ["Marketing", "Engineering", "Operations", "Sales", "HR", "R&D"],
-        "value": [25000, 45000, 18000, 32000, 12000, 28000],
+        "department": ["Engineering", "Sales", "Operations", "Marketing", "R&D", "HR"],
+        "amount": [520_000, 310_000, 240_000, 150_000, 95_000, 45_000],
     }
 )
+total = budget["amount"].sum()
+budget["share"] = budget["amount"] / total * 100
 
-# Calculate percentages
-total = data["value"].sum()
-data["percentage"] = (data["value"] / total * 100).round(1)
-
-# Set seaborn style
-sns.set_theme(style="white")
-
-# Create figure (square for symmetric donut)
-fig, ax = plt.subplots(figsize=(12, 12))
-
-# Define colors using seaborn color palette
-colors = sns.color_palette("Set2", n_colors=len(data))
-
-# Create donut chart using matplotlib pie (seaborn is built on matplotlib)
-wedges, texts, autotexts = ax.pie(
-    data["value"],
-    labels=data["category"],
-    autopct="%1.1f%%",
-    startangle=90,
-    colors=colors,
-    wedgeprops={"width": 0.5, "edgecolor": "white", "linewidth": 2},
-    pctdistance=0.75,
-    labeldistance=1.15,
+# Theme
+sns.set_theme(
+    context="talk", style="white", rc={"figure.facecolor": PAGE_BG, "axes.facecolor": PAGE_BG, "text.color": INK}
 )
 
-# Style the text for large canvas
-for text in texts:
-    text.set_fontsize(20)
-    text.set_fontweight("medium")
+# Plot
+fig, ax = plt.subplots(figsize=(13.5, 13.5), facecolor=PAGE_BG)
+ax.set_facecolor(PAGE_BG)
 
-for autotext in autotexts:
-    autotext.set_fontsize(16)
-    autotext.set_fontweight("bold")
-    autotext.set_color("white")
+wedges, _ = ax.pie(
+    budget["amount"],
+    colors=OKABE_ITO[: len(budget)],
+    startangle=90,
+    counterclock=False,
+    wedgeprops={"width": 0.38, "edgecolor": PAGE_BG, "linewidth": 3},
+)
 
-# Add center text with total
-center_text = f"Total\n${total:,.0f}"
-ax.text(0, 0, center_text, ha="center", va="center", fontsize=28, fontweight="bold", color="#333333")
+# External two-line labels (department + share) placed along wedge bisector
+for wedge, dept, share in zip(wedges, budget["department"], budget["share"], strict=True):
+    angle = np.deg2rad((wedge.theta2 + wedge.theta1) / 2)
+    x_label = 1.18 * np.cos(angle)
+    y_label = 1.18 * np.sin(angle)
+    ha = "left" if np.cos(angle) >= 0 else "right"
+    ax.text(x_label, y_label, f"{dept}\n{share:.1f}%", ha=ha, va="center", fontsize=18, color=INK, linespacing=1.3)
+
+# Center metric: total budget
+ax.text(0, 0.08, "Total Budget", ha="center", va="center", fontsize=20, color=INK_SOFT)
+ax.text(0, -0.08, f"${total / 1_000_000:.2f}M", ha="center", va="center", fontsize=40, fontweight="bold", color=INK)
 
 # Title
-ax.set_title("donut-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20)
+ax.set_title(
+    "FY2026 Budget Allocation · donut-basic · seaborn · anyplot.ai", fontsize=24, fontweight="medium", color=INK, pad=28
+)
 
-# Equal aspect ratio for circular shape
 ax.set_aspect("equal")
+ax.set_xlim(-1.5, 1.5)
+ax.set_ylim(-1.5, 1.5)
+ax.set_axis_off()
 
 plt.tight_layout()
-plt.savefig("plot.png", dpi=300, bbox_inches="tight")
+plt.savefig(f"plot-{THEME}.png", dpi=300, bbox_inches="tight", facecolor=PAGE_BG)

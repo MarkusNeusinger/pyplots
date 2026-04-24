@@ -1,7 +1,7 @@
-""" pyplots.ai
+""" anyplot.ai
 contour-basic: Basic Contour Plot
-Library: plotnine 0.15.1 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-14
+Library: plotnine 0.15.3 | Python 3.14.4
+Quality: 67/100 | Created: 2026-04-24
 """
 
 import matplotlib.pyplot as plt

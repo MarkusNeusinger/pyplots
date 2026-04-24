@@ -1,70 +1,65 @@
-""" pyplots.ai
+""" anyplot.ai
 contour-basic: Basic Contour Plot
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-23
+Library: matplotlib 3.10.9 | Python 3.14.4
+Quality: 87/100 | Updated: 2026-04-24
 """
+
+import os
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-# Data - Simulated topographic elevation map of a mountain region
-np.random.seed(42)
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
 
-# Create a 50x50 grid representing a 10km x 10km area
-x = np.linspace(0, 10, 50)  # Distance East (km)
-y = np.linspace(0, 10, 50)  # Distance North (km)
+# Data — simulated topographic elevation map of a 10km x 10km mountain region
+x = np.linspace(0, 10, 80)
+y = np.linspace(0, 10, 80)
 X, Y = np.meshgrid(x, y)
 
-# Elevation model with multiple terrain features:
-# - Main peak in the northeast
-# - Secondary ridge in the southwest
-# - Valley running through the center
 elevation = (
-    # Main peak centered at (7, 7) km
-    800 * np.exp(-((X - 7) ** 2 + (Y - 7) ** 2) / 4)
-    # Secondary ridge in southwest
-    + 500 * np.exp(-((X - 2) ** 2 + (Y - 3) ** 2) / 3)
-    # Gentle slope from east
-    + 100 * X / 10
-    # Valley depression
-    - 200 * np.exp(-((X - 5) ** 2 + (Y - 5) ** 2) / 8)
-    # Base elevation
-    + 200
+    850 * np.exp(-((X - 7) ** 2 + (Y - 7) ** 2) / 4.0)
+    + 550 * np.exp(-((X - 2.5) ** 2 + (Y - 3) ** 2) / 3.0)
+    - 180 * np.exp(-((X - 5) ** 2 + (Y - 5) ** 2) / 8.0)
+    + 12 * X
+    + 350
 )
 
-# Create plot (4800x2700 px)
-fig, ax = plt.subplots(figsize=(16, 9))
+# Plot
+fig, ax = plt.subplots(figsize=(16, 9), facecolor=PAGE_BG)
+ax.set_facecolor(PAGE_BG)
 
-# Custom contour levels every 100m for clear reading
-levels = np.arange(200, 1100, 50)
+levels = np.arange(300, 1251, 50)
+major_levels = np.arange(400, 1251, 200)
 
-# Filled contours with terrain-appropriate colormap
-contourf = ax.contourf(X, Y, elevation, levels=levels, cmap="viridis", alpha=0.9)
+filled = ax.contourf(X, Y, elevation, levels=levels, cmap="viridis")
+ax.contour(X, Y, elevation, levels=levels, colors="white", linewidths=0.6, alpha=0.30)
+major = ax.contour(X, Y, elevation, levels=major_levels, colors="white", linewidths=1.8, alpha=0.85)
+ax.clabel(major, inline=True, fontsize=13, fmt="%d m", inline_spacing=8)
 
-# Contour lines with varied styles for key elevations
-contour = ax.contour(X, Y, elevation, levels=levels, colors="white", linewidths=0.8, alpha=0.5)
+# Colorbar
+cbar = fig.colorbar(filled, ax=ax, shrink=0.9, aspect=28, pad=0.02)
+cbar.set_label("Elevation (m)", fontsize=20, color=INK)
+cbar.ax.tick_params(labelsize=16, colors=INK_SOFT)
+cbar.outline.set_edgecolor(INK_SOFT)
+cbar.outline.set_linewidth(0.6)
 
-# Highlight major elevation lines (every 200m) with thicker lines
-major_levels = np.arange(200, 1100, 200)
-contour_major = ax.contour(X, Y, elevation, levels=major_levels, colors="white", linewidths=2.0, alpha=0.8)
-
-# Label major contour levels
-ax.clabel(contour_major, inline=True, fontsize=14, fmt="%d m")
-
-# Colorbar to show elevation scale
-cbar = fig.colorbar(contourf, ax=ax, shrink=0.9, aspect=20)
-cbar.set_label("Elevation (m)", fontsize=20)
-cbar.ax.tick_params(labelsize=16)
-
-# Labels and styling
-ax.set_xlabel("Distance East (km)", fontsize=20)
-ax.set_ylabel("Distance North (km)", fontsize=20)
-ax.set_title("Mountain Terrain · contour-basic · matplotlib · pyplots.ai", fontsize=24)
-ax.tick_params(axis="both", labelsize=16)
-
-# Set equal aspect ratio for geographic data
+# Style
+ax.set_xlabel("Distance East (km)", fontsize=20, color=INK)
+ax.set_ylabel("Distance North (km)", fontsize=20, color=INK)
+ax.set_title(
+    "Mountain Terrain · contour-basic · matplotlib · anyplot.ai", fontsize=24, fontweight="medium", color=INK, pad=16
+)
+ax.tick_params(axis="both", labelsize=16, colors=INK_SOFT)
+for spine in ("top", "right"):
+    ax.spines[spine].set_visible(False)
+for spine in ("left", "bottom"):
+    ax.spines[spine].set_color(INK_SOFT)
 ax.set_aspect("equal")
 
 plt.tight_layout()
-plt.savefig("plot.png", dpi=300, bbox_inches="tight")
+plt.savefig(f"plot-{THEME}.png", dpi=300, bbox_inches="tight", facecolor=PAGE_BG)

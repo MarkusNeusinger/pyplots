@@ -2,7 +2,7 @@ library: letsplot
 language: python
 specification_id: contour-basic
 created: '2025-12-23T10:03:27Z'
-updated: '2026-04-24T01:55:26Z'
+updated: '2026-04-24T02:04:47Z'
 generated_by: claude-opus
 workflow_run: 24867848481
 issue: 855
@@ -12,44 +12,39 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/contour-b
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/contour-basic/python/letsplot/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/contour-basic/python/letsplot/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/contour-basic/python/letsplot/plot-dark.html
-quality_score: 79
+quality_score: 85
 review:
   strengths:
-  - Viridis colormap correctly chosen for continuous scalar data (perceptually uniform,
-    CVD-safe)
-  - Effective combination of geom_contourf + geom_contour with white semi-transparent
-    contour lines (excellent visual layering)
-  - Multi-peak Gaussian surface showcases the full range of contour plot features
-    (gradients, ridges, nested isolines)
-  - Clean KISS code structure with np.random.seed(42) for reproducibility
-  - Both rendered images appear visually correct with proper theme backgrounds and
-    readable text in both themes
+  - 'Full theme adaptation: both light and dark renders pass all readability checks
+    with no dark-on-dark failures'
+  - Correct continuous colormap choice (viridis) per style guide
+  - Dual-layer contour design (geom_contourf + geom_contour with white overlay) is
+    visually effective
+  - 'Perfect code quality: flat script, correct output filenames, all imports used,
+    deterministic data'
+  - Computed aesthetic aes(fill=..level..) is idiomatic lets-plot/ggplot usage
   weaknesses:
-  - 'Critical: Code never reads ANYPLOT_THEME — no theme adaptation; saves plot.png
-    instead of plot-{THEME}.png; missing PAGE_BG, INK, INK_SOFT tokens — images came
-    from a different (correct) version of the code'
-  - 'Critical: Title in code is ''pyplots.ai'' — must be ''anyplot.ai'''
-  - 'Moderate: colorbar name=''Value'' does not match rendered output (''Elevation'')
-    — inconsistency confirms code/image mismatch'
-  - 'Design: No explicit spine removal or grid opacity tuning; DE-02 stays at library
-    defaults'
-  - 'Minor: No contour level annotations at key isolines (spec suggests considering
-    this)'
+  - Legend text set to 14pt, below the 16pt guideline for DPI-based libraries at this
+    canvas size
+  - No contour level annotations on key isolines (spec mentions this as desirable
+    when practical)
+  - Design excellence is competent but generic - no strong visual hierarchy, focal
+    emphasis, or design personality beyond applying standard viridis
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white outer canvas (~#FAF8F1) — correct theme surface
-      Chrome: Title "contour-basic · letsplot · anyplot.ai" in dark readable text; Y-axis "Y Coordinate" and X-axis "X Coordinate" labels in dark text; tick labels along both axes visible and readable
-      Data: Viridis colormap fills plot panel with three Gaussian peaks — dominant upper-right peak (yellow ~1.0), secondary teal peak (lower-left), tertiary purple trough (lower-right); white semi-transparent (alpha=0.6) contour lines overlay the fill; colorbar titled "Elevation" with values 0.2–0.8
-      Legibility verdict: PASS — all text is readable against the light background; no light-on-light issues
+      Background: Warm off-white #FAF8F1 — correct theme surface, not pure white
+      Chrome: Title "contour-basic · letsplot · anyplot.ai" in dark ink (top-left), axis labels "X Coordinate"/"Y Coordinate" in dark ink, tick labels in dark INK_SOFT color — all clearly readable
+      Data: Viridis colormap from deep purple-blue (low) through blue-green to bright yellow (high peak); white semi-transparent contour overlay lines (alpha=0.6); three-peak 2D Gaussian surface with a small negative depression ellipse near (0, 1.5). Legend "Surface Height" colorbar on right.
+      Legibility verdict: PASS
 
     Dark render (plot-dark.png):
-      Background: Warm near-black outer canvas (~#1A1A17) — correct dark theme surface
-      Chrome: Title, axis labels, and tick labels appear in lighter grayish-white/cream tones — readable against the dark background; colorbar "Elevation" label also lighter; NO dark-on-dark failures observed in the rendered image
-      Data: Viridis colors are identical to the light render (same yellow dominant peak, teal secondary, purple tertiary) — only chrome flipped; white contour lines remain visible
-      Legibility verdict: PASS — all text is readable against the dark background; images appear to have been generated from theme-adaptive code that is NOT present in the current implementation file (code uses plot.png, no ANYPLOT_THEME reading)
+      Background: Warm near-black #1A1A17 — correct dark theme surface, not pure black
+      Chrome: Title and axis labels render in light off-white ink against dark background — fully readable. Tick labels are light-colored (INK_SOFT = #B8B7B0 in dark mode). Legend box uses elevated dark background (#242420). No dark-on-dark text issues found.
+      Data: Viridis data colors are identical to light render — same purple-blue-yellow gradient, same contour positions, same white overlay lines. Only chrome (background, text, grid, legend frame) differs between themes.
+      Legibility verdict: PASS
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 29
       max: 30
       items:
       - id: VQ-01
@@ -57,51 +52,49 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Sizes explicitly set (title=24, axis=20, tick=16); both renders show
-          readable text; slight deduction because code lacks explicit dark-mode INK
-          tokens
+        comment: Font sizes set (title=24, axis=20, ticks=16); both themes readable.
+          Legend text 14pt is below 16pt guideline.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No text collisions; contour lines and labels well-spaced
+        comment: No text or element collisions in either render
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Filled contours clearly visible; white semi-transparent contour lines
-          (alpha=0.6) with 12 bins work effectively
+        comment: Filled contours, white overlay lines, and depression ellipse all
+          clearly visible
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Viridis is perceptually uniform and colorblind-safe; white contour
-          lines provide strong contrast
+        comment: Viridis is perceptually uniform and CVD-safe
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Plot fills canvas well with balanced margins; colorbar well-positioned
+        comment: 1600x900 x scale=3 = 4800x2700px correct; nothing cut off
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels: X Coordinate, Y Coordinate; informative title'
+        comment: Descriptive labels; title in correct spec-id · library · anyplot.ai
+          format
       - id: VQ-07
         name: Palette Compliance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Viridis correct for continuous data; backgrounds appear correct in
-          images; but code never reads ANYPLOT_THEME or sets PAGE_BG/INK tokens —
-          images came from different code
+        passed: true
+        comment: 'Continuous data uses viridis (correct); backgrounds #FAF8F1/#1A1A17
+          theme-correct'
     design_excellence:
-      score: 9
+      score: 11
       max: 20
       items:
       - id: DE-01
@@ -109,24 +102,24 @@ review:
         score: 4
         max: 8
         passed: false
-        comment: Well-configured default; viridis with white contour lines is tasteful
-          but no exceptional custom design
+        comment: Viridis + white contour overlay appropriate but standard; no exceptional
+          design personality
       - id: DE-02
         name: Visual Refinement
-        score: 2
+        score: 4
         max: 6
-        passed: false
-        comment: theme_minimal() base; no explicit spine removal, custom grid opacity,
-          or padding tuning
+        passed: true
+        comment: Minor grid removed, major grid subtle (RULE color, size=0.3), axis
+          lines added, built on theme_minimal()
       - id: DE-03
         name: Data Storytelling
         score: 3
         max: 6
-        passed: false
-        comment: Three-peak structure creates natural focal point; viridis gradient
-          guides the eye; no annotations
+        passed: true
+        comment: Three-peak Gaussian with depression creates visual interest; no focal
+          annotations or emphasis
     spec_compliance:
-      score: 13
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -134,27 +127,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct basic contour plot with filled regions and contour lines
+        comment: 'Correct: geom_contourf (filled) + geom_contour (lines) combination'
       - id: SC-02
         name: Required Features
         score: 3
         max: 4
-        passed: false
-        comment: Filled contours, contour lines, colorbar present; no contour level
-          labels (spec suggests when practical)
+        passed: true
+        comment: Sequential colormap, colorbar, filled+line contours, sufficient resolution
+          all present. Missing contour level labels.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X/Y grid coordinates correctly mapped; z-values via viridis color
+        comment: x/y as coordinates, z as scalar surface value, correct aes mapping
+          with aes(fill=..level..)
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
-        passed: false
-        comment: 'Rendered title shows anyplot.ai (correct) but code has pyplots.ai;
-          colorbar name mismatch (code: Value, rendered: Elevation)'
+        passed: true
+        comment: Title contour-basic · letsplot · anyplot.ai correct; legend Surface
+          Height appropriate
     data_quality:
       score: 14
       max: 15
@@ -164,22 +158,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Multi-peak 2D scalar field with gradients, ridges, nested isolines;
-          shows full contour range
+        comment: Shows filled regions + isolines + colorbar; positive and negative
+          features present. No contour level labeling.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: 'Mathematical/scientific Gaussian surface: neutral, comprehensible'
+        comment: 2D Gaussian mathematical surface is neutral and scientifically appropriate
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: +/-3 range for Gaussian parameters; z in [0,1] realistic
+        comment: Grid -3 to 3, z values ~-0.3 to 1.0; sensible for Gaussian kernels
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -187,34 +181,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Imports -> Data -> Plot -> Save; no functions/classes
+        comment: Flat top-level script, no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42)
+        comment: np.random.seed(42) set; data is deterministic
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: All imported names are used in the code
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, Pythonic, appropriate complexity
+        comment: Clean grammar-of-graphics composition; no fake UI or dead code
       - id: CQ-05
         name: Output & API
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Saves as plot.png/plot.html instead of plot-{THEME}.png/plot-{THEME}.html;
-          no ANYPLOT_THEME reading
+        passed: true
+        comment: Saves plot-{THEME}.png (scale=3) and plot-{THEME}.html correctly
     library_mastery:
-      score: 6
+      score: 7
       max: 10
       items:
       - id: LM-01
@@ -222,21 +215,21 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Grammar of graphics correctly applied; geom_contourf + geom_contour
-          combination; scale_fill_viridis; ggsize; declarative layering
+        comment: Correct use of computed aesthetic aes(fill=..level..), layer composition,
+          scale functions
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Uses ..level.. computed aesthetic (lets-plot specific); HTML export;
-          white contour overlay; could leverage more lets-plot-specific features
-  verdict: REJECTED
+        passed: true
+        comment: aes(fill=..level..) computed aesthetic; dual PNG+HTML export; scale_fill_viridis
+          built-in scale
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
-  - colorbar
   - layer-composition
+  - colorbar
   - html-export
   patterns:
   - data-generation
@@ -244,4 +237,3 @@ impl_tags:
   dataprep: []
   styling:
   - custom-colormap
-  - alpha-blending

@@ -1,4 +1,4 @@
-""" anyplot.ai
+"""anyplot.ai
 ecdf-basic: Basic ECDF Plot
 Library: pygal 3.1.0 | Python 3.14.4
 Quality: 84/100 | Created: 2026-04-24
@@ -22,7 +22,7 @@ THEME = os.getenv("ANYPLOT_THEME", "light")
 PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
 INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
 INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
-INK_MUTED = "#8A8A82" if THEME == "light" else "#6E6D66"
+INK_MUTED = "#6B6A63" if THEME == "light" else "#A8A79F"
 BRAND = "#009E73"
 ACCENT = "#D55E00"
 
@@ -65,12 +65,12 @@ custom_style = Style(
     major_label_font_family=font,
     legend_font_family=font,
     tooltip_font_family=font,
-    title_font_size=52,
-    label_font_size=40,
-    major_label_font_size=36,
-    legend_font_size=34,
-    tooltip_font_size=28,
-    value_font_size=26,
+    title_font_size=72,
+    label_font_size=52,
+    major_label_font_size=44,
+    legend_font_size=40,
+    tooltip_font_size=32,
+    value_font_size=30,
     stroke_opacity=1,
     stroke_opacity_hover=1,
     opacity=1,
@@ -108,7 +108,7 @@ chart.add(
     ],
     stroke=False,
     show_dots=True,
-    dots_size=22,
+    dots_size=40,
 )
 
 chart.render_to_png(f"plot-{THEME}.png")

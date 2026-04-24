@@ -2,7 +2,7 @@ library: seaborn
 language: python
 specification_id: donut-basic
 created: '2025-12-23T00:47:40Z'
-updated: '2026-04-24T05:28:10Z'
+updated: '2026-04-24T05:37:14Z'
 generated_by: claude-opus
 workflow_run: 24873516282
 issue: 733
@@ -15,36 +15,39 @@ preview_html_dark: null
 quality_score: 84
 review:
   strengths:
-  - 'Full spec compliance: hollow center with total budget metric, percentage labels,
-    correct Okabe-Ito ordering, well-formatted title'
-  - 'Excellent theme adaptation: all chrome tokens correctly applied in both light
-    and dark renders — no dark-on-dark failures'
-  - Clean, idiomatic code with zip(strict=True) and a flat KISS structure
-  - Realistic, neutral business data with good size variation across segments
+  - 'Perfect spec compliance: hollow center, center metric, percentage labels, ordered
+    segments'
+  - 'Excellent data quality: realistic neutral budget scenario with sensible values
+    covering full segment size range'
+  - 'Perfect code quality: clean linear structure, deterministic data, correct output
+    format'
+  - 'Robust dual-theme support: both renders pass with correct backgrounds and adaptive
+    text colors'
+  - White segment separators add visual definition without clutter
   weaknesses:
-  - Segment labels are 18pt; bump to 20pt+ to meet the axis-label guideline for readability
-    at 4800x2700
-  - 'DE-03 is underdeveloped: no visual emphasis on the dominant Engineering segment
-    (38.2%) or key story — consider a contrasting wedge color accent, a subtle callout,
-    or a ring thickness change'
-  - 'Library mastery is low: seaborn set_theme is the only seaborn code; the plot
-    itself is pure matplotlib — use sns.color_palette() and other seaborn utilities
-    to increase library involvement'
+  - 'Library Mastery minimal: seaborn used only for sns.set_theme(); all chart rendering
+    is vanilla matplotlib ax.pie()'
+  - External label font size 18pt slightly below 20pt guideline; smallest segments
+    (HR 3.3%) labels crowd near the top
+  - Canvas size 4050x4050px (figsize=13.5x13.5) deviates from 3600x3600 standard square
+    format
+  - 'Design Excellence room to grow: dominant Engineering segment not visually emphasized,
+    center metric could use typographic separator'
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) — correct theme surface
-      Chrome: Title "FY2026 Budget Allocation · donut-basic · seaborn · anyplot.ai" at 24pt in dark INK (#1A1A17) — clearly readable. No axis labels or tick labels (axis is off). Center labels "Total Budget" (20pt, INK_SOFT) and "$1.36M" (40pt bold, INK) are clearly readable.
-      Data: Six segments in Okabe-Ito order: Engineering #009E73 (38.2%), Sales #D55E00 (22.8%), Operations #0072B2 (17.6%), Marketing #CC79A7 (11.0%), R&D #E69F00 (7.0%), HR #56B4E9 (3.3%). External two-line labels at 18pt around the ring.
-      Legibility verdict: PASS — all text readable; HR and R&D labels are close but not overlapping
+      Background: Warm off-white #FAF8F1 — correct theme surface
+      Chrome: Title "FY2026 Budget Allocation · donut-basic · seaborn · anyplot.ai" in dark 24pt medium-weight text — readable. No axis labels or tick labels (appropriate for donut). External two-line labels at 18pt in dark ink — readable. Center "Total Budget" at 20pt in secondary ink, "$1.36M" at 40pt bold in primary dark ink — clearly readable.
+      Data: 6 segments in Okabe-Ito order — Engineering (38.2%) in brand green #009E73, Sales (22.8%) vermillion, Operations (17.6%) blue, Marketing (11.0%) reddish-purple, R&D (7.0%) orange, HR (3.3%) sky blue. White 3pt separator lines between segments.
+      Legibility verdict: PASS — all text readable against #FAF8F1 surface, no light-on-light failures.
 
     Dark render (plot-dark.png):
-      Background: Near-black (#1A1A17) — correct dark theme surface
-      Chrome: Title in off-white (#F0EFE8) — clearly readable. Center "Total Budget" in #B8B7B0 (INK_SOFT dark) and "$1.36M" in #F0EFE8 bold — both clearly visible. External segment labels in #F0EFE8 — readable against dark background. No dark-on-dark failures detected.
-      Data: Segment colors are identical to the light render — Okabe-Ito data colors unchanged as required (only chrome flips between themes).
-      Legibility verdict: PASS — all text readable; theme adaptation is correct throughout
+      Background: Near-black #1A1A17 — correct dark theme surface
+      Chrome: Title in light (#F0EFE8 tone) text — fully readable against dark surface. External labels in light ink — readable. Center "Total Budget" in secondary light ink, "$1.36M" in bold primary light ink — clearly readable. No dark-on-dark failures detected.
+      Data: Segment colors identical to light render — Engineering still #009E73, Sales vermillion, Operations blue, Marketing reddish-purple, R&D orange, HR sky blue. Okabe-Ito positions 1-6 unchanged between themes as required.
+      Legibility verdict: PASS — all text readable against #1A1A17 surface, no dark-on-dark failures.
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 27
       max: 30
       items:
       - id: VQ-01
@@ -52,48 +55,51 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All sizes explicitly set; segment labels at 18pt slightly below 20pt
-          guideline
+        comment: All sizes explicitly set (title 24pt, center 20/40pt, external labels
+          18pt); external labels slightly under 20pt guideline
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: HR and R&D labels closely placed at top arc but readable without
-          true overlap
+        comment: HR and R&D labels close near top (small segments) but not overlapping;
+          minor crowding
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: All six segments clearly visible including small HR slice
+        comment: All wedge segments clearly visible including tiny HR slice; white
+          separators aid definition
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito CVD-safe; segments distinguishable without hue alone
+        comment: Okabe-Ito is CVD-safe; white segment separators provide contrast
       - id: VQ-05
         name: Layout & Canvas
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: Square format appropriate; ring fills canvas well with generous whitespace
+        comment: Good balance but canvas is 4050x4050px (figsize=13.5x13.5 @ 300dpi)
+          rather than standard 3600x3600
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive title with business context; no redundant axis labels
+        comment: Descriptive title with business context; no axis labels needed for
+          donut chart
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First segment #009E73; Okabe-Ito order; correct backgrounds #FAF8F1/#1A1A17;
-          chrome adapts correctly'
+        comment: 'First series #009E73, Okabe-Ito order; light bg #FAF8F1, dark bg
+          #1A1A17; chrome adapts correctly'
     design_excellence:
-      score: 12
+      score: 13
       max: 20
       items:
       - id: DE-01
@@ -101,22 +107,22 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Center metric and external labels above plain defaults; short of
-          strong design — standard typography, no accent
+        comment: Thoughtful center-metric design with label+bold dollar amount, clean
+          separators; above default but not publication-level
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Full axis off, PAGE_BG segment borders for clean separation; clean
-          but not exceptional
+        comment: Axes off, no grid, white separators; good refinement but could go
+          further
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: Largest-to-smallest ordering and center metric add value; no explicit
-          emphasis on dominant segment
+        passed: true
+        comment: Engineering dominance immediately apparent; center total adds context;
+          largest-to-smallest ordering aids comparison
     spec_compliance:
       score: 15
       max: 15
@@ -126,27 +132,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct donut chart with hollow center
+        comment: Correct donut chart with hollow center (wedgeprops width=0.38)
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Hollow center with metric, percentage labels, 6 categories, consistent
-          ordering
+        comment: Center metric, percentage labels, consistent ordering, thick ring
+          width all present
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All values correctly mapped to wedge areas
+        comment: Category and value correctly mapped, all 6 segments visible
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title contains donut-basic · seaborn · anyplot.ai; external labels
-          replace legend accurately
+        comment: Title format correct with donut-basic · seaborn · anyplot.ai suffix;
+          labels embedded as external annotations
     data_quality:
       score: 15
       max: 15
@@ -156,21 +162,21 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Full range from dominant to small slices; all donut chart aspects
-          shown
+        comment: 'All donut features shown: hollow center with key metric, external
+          labels, range from 38% dominant to 3% tiny segment'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: FY2026 departmental budget allocation — realistic, neutral business
-          scenario
+        comment: Departmental budget allocation is a canonical neutral business use
+          case with standard department names
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values $45K-$520K, total $1.36M — realistic for mid-sized company
+        comment: Amounts $45K-$520K and total $1.36M realistic for mid-size company
     code_quality:
       score: 10
       max: 10
@@ -180,25 +186,25 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Flat script; no functions or classes
+        comment: 'Clean linear flow: imports → tokens → data → theme → plot → save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Static data; fully deterministic
+        comment: Deterministic data, no random generation needed
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All five imports used
+        comment: 'All imports used: os, matplotlib.pyplot, numpy, pandas, seaborn'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, Pythonic; zip(strict=True) is a good touch
+        comment: Clean Pythonic code; zip(..., strict=True) is idiomatic; no over-engineering
       - id: CQ-05
         name: Output & API
         score: 1
@@ -214,23 +220,26 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: sns.set_theme() used correctly; chart rendered via ax.pie() (matplotlib)
-          — only viable approach since seaborn has no native pie API
+        comment: sns.set_theme() used correctly; actual chart is ax.pie() (pure matplotlib)
+          — unavoidable since seaborn has no donut/pie function
       - id: LM-02
         name: Distinctive Features
         score: 1
         max: 5
         passed: false
-        comment: No seaborn-distinctive plotting features; effectively matplotlib
-          donut with seaborn theming scaffolding
+        comment: Seaborn used only for theme setup; no distinctive seaborn visualization
+          features; structural limitation of library for this chart type
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
+  - patches
   patterns:
+  - data-generation
   - explicit-figure
   - iteration-over-groups
   dataprep: []
   styling:
   - minimal-chrome
+  - edge-highlighting

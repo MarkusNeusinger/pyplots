@@ -2,7 +2,7 @@ library: bokeh
 language: python
 specification_id: ecdf-basic
 created: '2025-12-23T13:02:55Z'
-updated: '2026-04-24T13:18:08Z'
+updated: '2026-04-24T13:32:51Z'
 generated_by: claude-opus
 workflow_run: 24890383540
 issue: 976
@@ -12,98 +12,109 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/ecdf-basi
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/ecdf-basic/python/bokeh/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/ecdf-basic/python/bokeh/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/ecdf-basic/python/bokeh/plot-dark.html
-quality_score: 78
+quality_score: 87
 review:
   strengths:
-  - Marathon finish times context is engaging, realistic, and neutral — a strong real-world
-    scenario for an ECDF
-  - Brand green (#009E73) used correctly in rendered images; data color is consistent
-    across light and dark themes
-  - Correct ECDF step function construction — cumulative proportion from 0 to 1 with
-    proper S-curve shape
-  - Both theme renders are readable with no dark-on-dark or light-on-light text failures
+  - Correct ECDF implementation using p.step(mode='after') — the step-after mode precisely
+    matches the 1/n jump at each observation
+  - 'Full theme adaptation: PAGE_BG, INK, INK_SOFT tokens applied to all chrome elements
+    in both light and dark renders — no dark-on-dark or light-on-light failures'
+  - 'Excellent data storytelling: percentile reference lines (25th, 50th, 75th) with
+    labeled annotations enable direct quantile reading from the chart'
+  - 'Idiomatic Bokeh usage: ColumnDataSource, add_layout(Span), add_layout(Label),
+    HoverTool with mode=''vline'' — leverages library-specific APIs correctly'
+  - 'Perfect spec compliance: step function increases by 1/n, y-axis 0–1, distinct
+    line style, grid lines for percentile reading, all spec requirements satisfied'
+  - 'Realistic and neutral domain: marathon finish times (normal ~240 min) is a compelling,
+    politically neutral real-world scenario'
   weaknesses:
-  - 'Critical code mismatch: implementation file on disk (created 2025-12-23) uses
-    legacy #306998 color, saves to bare ''plot.png''/''plot.html'' instead of ''plot-{THEME}.png''/''plot-{THEME}.html'',
-    uses ''pyplots.ai'' branding in title, and has no ANYPLOT_THEME environment variable
-    support — code does not match the rendered images'
-  - All 4 spines visible as a box outline; style guide requires removing top and right
-    spines (L-shaped frame or outline removed)
-  - Both x and y grid axes active with dashed lines; y-only grid would be cleaner
-    and less dominant for an ECDF
-  - 'No data storytelling: no visual hierarchy, no annotation of key percentiles (25th,
-    50th, 75th) that would help readers extract insights from the ECDF'
-  - Bokeh's primary strength (interactivity) is not leveraged — no HoverTool on the
-    HTML output despite bokeh being an interactive library
+  - 'DE-01 LOW (4/8): Design is a well-configured library default — brand green ECDF
+    on themed chrome is correct but not exceptional. Needs more aesthetic sophistication:
+    consider adding a subtle area fill under the ECDF curve (fill_alpha=0.08), refining
+    typography weight on the title (bold is set but could add font_face), or other
+    polish that elevates it above the baseline.'
+  - 'DE-02 MODERATE (3/6): Visual refinement is present (no outline, y-only grid,
+    minor ticks removed) but could go further — consider adding min_border padding
+    for generous whitespace, or adding a subtle horizontal reference line at y=0.5
+    with distinct styling to emphasize the median visually.'
+  - 'VQ-02 MINOR (5/6): The 50th and 75th percentile labels (at ~242 and ~260 on x-axis)
+    are only 18 minutes apart; at full 4800px resolution with 20pt text, these labels
+    may crowd. Consider staggering label y-positions (e.g., 75th at y=0.08 instead
+    of 0.03) to avoid overlap risk.'
+  - 'DE-03 MODERATE (4/6): Storytelling is good but relies only on the three percentile
+    lines. Adding a light shaded region between Q1 and Q3 (the interquartile range)
+    would give the chart a stronger visual focal point and immediately communicate
+    distribution spread.'
+  - 'LM-02 (3/5): HoverTool and Span/Label are used but could leverage more Bokeh-specific
+    features — e.g., adding a CDSView or a CrosshairTool for richer interactivity
+    consistent with Bokeh''s strengths.'
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (~#FAF8F1) — correct light surface, not pure white
-      Chrome: Title "Marathon Finish Times · ecdf-basic · bokeh · anyplot.ai" in bold dark text, clearly readable. X-axis label "Finish Time (minutes)" and y-axis label "Cumulative Proportion of Runners" in dark text, both clearly readable. Tick labels (160–350 on x, 0–1.0 on y) in dark gray, readable. Grid lines visible on both axes in dashed style at low opacity.
-      Data: ECDF step function in #009E73 (brand green), progressing from ~165 minutes at y=0.0 to ~350 minutes at y=1.0 across 200+ data points. Individual step markers visible at each point creating slightly dotted appearance. S-curve shape indicates approximately normal distribution of marathon finish times.
-      Legibility verdict: PASS — all text elements are readable against the warm off-white background
+      Background: Warm off-white consistent with #FAF8F1 — correct light surface, no pure white.
+      Chrome: Title "Marathon Finish Times · ecdf-basic · bokeh · anyplot.ai" in bold dark text, clearly visible top-left. Y-axis label "Cumulative Proportion of Runners" rotated, readable. X-axis label "Finish Time (minutes)" clearly visible at bottom. Tick labels on both axes in medium-dark secondary text — all legible.
+      Data: Single ECDF step line in brand green (#009E73), line_width=4, clearly distinguishable from the warm background. Three dashed vertical reference lines in INK_SOFT gray mark 25th (~218 min), 50th/median (~242 min), and 75th (~260 min) percentiles. Annotation labels at y=0.03 in italic INK_SOFT: "25th: 218 min", "50th (median): 242 min", "75th: 260 min". Y-axis grid lines subtle at 10% opacity. No box outline.
+      Legibility verdict: PASS — all text readable, no light-on-light failures. Labels for 50th and 75th percentiles are close in x-position but appear readable in the thumbnail.
 
     Dark render (plot-dark.png):
-      Background: Near-black (~#1A1A17) — correct dark surface, not pure black
-      Chrome: Title readable in light/white text against dark background. Axis labels and tick labels appear in lighter gray/white text, all readable. Grid lines are subtle on dark background. No dark-on-dark text failures observed.
-      Data: #009E73 brand green ECDF line — identical color to light render (data colors consistent, only chrome flipped). Same S-curve shape clearly visible against the dark background.
-      Legibility verdict: PASS — all text elements are readable against the near-black background; no dark-on-dark issues detected
+      Background: Near-black consistent with #1A1A17 — correct dark surface, no pure black.
+      Chrome: Title and axis labels render in light (#F0EFE8) text — clearly visible against dark background. Tick labels in lighter secondary tone (#B8B7B0) — all readable. No dark-on-dark failures detected.
+      Data: ECDF step line in identical brand green (#009E73) — color matches light render exactly, confirming Okabe-Ito data colors are theme-independent. Dashed reference lines in light gray (INK_SOFT dark = #B8B7B0). Annotation labels also in #B8B7B0 — readable on dark surface. Y-only grid at 10% alpha — subtle, not dominant.
+      Legibility verdict: PASS — all text readable against dark background. Data green is visible and identical to light theme.
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 29
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: All font sizes explicitly set for title, axis labels, and tick labels;
-          all readable in both themes. Minor deduction for slightly tight long title.
+        comment: 'All sizes explicitly set: title 28pt, axis labels 22pt, tick labels
+          18pt, annotations 20pt — all readable in both themes'
       - id: VQ-02
         name: No Overlap
-        score: 6
-        max: 6
-        passed: true
-        comment: No overlapping text or visual elements
-      - id: VQ-03
-        name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: ECDF line clearly visible; individual step markers at each of 200
-          data points create slightly dotted appearance rather than a clean step line
+        comment: 50th and 75th percentile labels are only ~18 units apart; minor crowding
+          risk at full resolution
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 6
+        passed: true
+        comment: ECDF line at line_width=4 clearly visible; reference spans and labels
+          all readable
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: '#009E73 on both light and dark backgrounds provides strong contrast
-          and is CVD-safe'
+        comment: Single series in brand green on neutral background — excellent contrast,
+          CVD-safe
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Plot fills canvas well; minor empty whitespace on far right beyond
-          data range
+        comment: 4800x2700 canvas well utilized, balanced margins, nothing cut off
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
         comment: '''Finish Time (minutes)'' and ''Cumulative Proportion of Runners''
-          are descriptive with context/units'
+          — descriptive with units'
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'Rendered images show correct #009E73 first series and theme-appropriate
-          backgrounds and chrome. NOTE: Code on disk uses legacy #306998 and lacks
-          ANYPLOT_THEME support — significant discrepancy between code file and rendered
-          images.'
+        comment: 'First series #009E73 correct; background #FAF8F1/#1A1A17 correct;
+          all chrome theme-adaptive in both renders'
     design_excellence:
-      score: 9
+      score: 11
       max: 20
       items:
       - id: DE-01
@@ -111,23 +122,22 @@ review:
         score: 4
         max: 8
         passed: false
-        comment: Clean single-series ECDF with brand green on warm background; looks
-          like a well-configured library default. No exceptional design choices.
+        comment: Well-configured library default — brand green and themed chrome correct
+          but not exceptional; no area fill, gradient, or distinctive design flair
       - id: DE-02
         name: Visual Refinement
         score: 3
         max: 6
         passed: false
-        comment: Background color and grid alpha/dash customized. However, all 4 spines
-          remain visible as a box outline (top and right should be removed); both
-          x and y grid axes active (y-only would be cleaner).
+        comment: No box outline, y-only grid at 10% alpha, minor ticks removed — above
+          default, but generous whitespace padding and min_border not set
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 4
         max: 6
         passed: false
-        comment: ECDF displayed correctly but without visual hierarchy. No annotation
-          of key percentiles (25th, 50th, 75th) to help readers extract insights.
+        comment: Percentile reference lines + annotations create good visual storytelling;
+          missing IQR shading or other focal emphasis for stronger hierarchy
     spec_compliance:
       score: 15
       max: 15
@@ -137,55 +147,56 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct ECDF step function plot
+        comment: Correct ECDF using p.step(mode='after') — step-after matches 1/n
+          jump at each observation
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Step function increases 1/n per data point, Y-axis 0-1, grid lines
-          present, distinct green line style
+        comment: Step function 1/n increments, y-axis 0-1 (with 1.02 padding), distinct
+          line style, grid for percentile reading — all present
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X = finish time value, Y = cumulative proportion; correct ECDF axis
-          mapping
+        comment: X=finish times, Y=cumulative proportion 0-1, all 300 data points
+          shown
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: '''Marathon Finish Times · ecdf-basic · bokeh · anyplot.ai'' contains
-          all required elements; no legend correct for single-series'
+        comment: Title includes 'ecdf-basic · bokeh · anyplot.ai' with descriptive
+          prefix; no legend for single series (correct)
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Shows ECDF from 0 to 1 with proper S-curve shape; distribution characteristics
-          visible. Could additionally annotate key percentile reference points.
+        comment: Shows ECDF S-curve, step function character, percentile reading —
+          all key aspects of ECDF visualized
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Marathon finish times is a real, neutral, and relatable scenario
-          with clear meaning
+        comment: Marathon finish times for recreational runners — real, neutral, scientifically
+          plausible domain
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values 160-350 minutes are realistic for marathon finish times across
-          recreational runners
+        comment: normal(loc=240, scale=32) minutes — ~4 hours mean with 32 min std
+          dev is realistic for recreational marathoners
     code_quality:
-      score: 8
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -193,61 +204,63 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Sequential import -> data -> plot -> save; no functions or classes
+        comment: 'Linear: imports → tokens → data → ECDF calc → figure → style → save;
+          no functions or classes'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) present
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports (numpy, bokeh.io, bokeh.models, bokeh.plotting, bokeh.resources)
-          are used
+        comment: All imported symbols (export_png, output_file, save, ColumnDataSource,
+          HoverTool, Label, Span, figure) are used
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Clean sequential structure, but lacks ANYPLOT_THEME environment variable
-          support — a required pattern for all implementations; old pyplots.ai branding
-          in title
+        passed: true
+        comment: Loop for percentile reference lines is clean; no over-engineering
+          or fake functionality
       - id: CQ-05
         name: Output & API
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Code saves to bare 'plot.png' and 'plot.html' instead of required
-          'plot-{THEME}.png' and 'plot-{THEME}.html'
+        passed: true
+        comment: Saves plot-{THEME}.png and plot-{THEME}.html; current Bokeh API
     library_mastery:
-      score: 5
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: ColumnDataSource and figure() used correctly; follows standard bokeh
-          patterns
+        comment: ColumnDataSource, p.step() with correct mode='after', add_layout(Span),
+          add_layout(Label), HoverTool with renderers — idiomatic Bokeh patterns used
+          correctly
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
         passed: false
-        comment: HTML export is a bokeh-distinctive feature; ColumnDataSource is idiomatic.
-          However no HoverTool, callbacks, or other interactive elements that set
-          bokeh apart.
+        comment: HoverTool with mode='vline' and Span/Label annotations are distinctly
+          Bokeh; could further leverage CrosshairTool or custom JS callbacks
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
+  - hover-tooltips
   - html-export
+  - annotations
   patterns:
   - data-generation
   - columndatasource
   dataprep: []
-  styling: []
+  styling:
+  - alpha-blending

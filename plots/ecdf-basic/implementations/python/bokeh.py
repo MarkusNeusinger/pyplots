@@ -1,6 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 ecdf-basic: Basic ECDF Plot
 Library: bokeh 3.9.0 | Python 3.14.4
+Quality: 87/100 | Updated: 2026-04-24
 """
 
 import os

@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.cache import cache_key, get_cache, get_or_set_cache, set_cache
+from api.cache import cache_key, get_or_set_cache
 from api.dependencies import require_db
 from api.exceptions import raise_not_found
 from api.schemas import ImplementationResponse, SpecDetailResponse, SpecListItem
@@ -16,76 +16,24 @@ from core.utils import strip_noqa_comments
 router = APIRouter(tags=["specs"])
 
 
-async def _refresh_specs_list() -> list[SpecListItem]:
-    """Standalone factory for background refresh (creates own DB session)."""
-    async with get_db_context() as db:
-        repo = SpecRepository(db)
-        specs = await repo.get_all()
-        return [
-            SpecListItem(
-                id=spec.id,
-                title=spec.title,
-                description=spec.description,
-                tags=spec.tags,
-                library_count=len(spec.impls),
-            )
-            for spec in specs
-            if spec.impls
-        ]
+async def _build_specs_list(db: AsyncSession) -> list[SpecListItem]:
+    repo = SpecRepository(db)
+    specs = await repo.get_all()
+    return [
+        SpecListItem(
+            id=spec.id, title=spec.title, description=spec.description, tags=spec.tags, library_count=len(spec.impls)
+        )
+        for spec in specs
+        if spec.impls
+    ]
 
 
-@router.get("/specs", response_model=list[SpecListItem])
-async def get_specs(db: AsyncSession = Depends(require_db)):
-    """
-    Get list of all specs with metadata.
-
-    Returns only specs that have at least one implementation.
-    """
-
-    async def _fetch() -> list[SpecListItem]:
-        repo = SpecRepository(db)
-        specs = await repo.get_all()
-        return [
-            SpecListItem(
-                id=spec.id,
-                title=spec.title,
-                description=spec.description,
-                tags=spec.tags,
-                library_count=len(spec.impls),
-            )
-            for spec in specs
-            if spec.impls
-        ]
-
-    return await get_or_set_cache(
-        cache_key("specs_list"), _fetch, refresh_after=settings.cache_refresh_after, refresh_factory=_refresh_specs_list
-    )
-
-
-@router.get("/specs/{spec_id}", response_model=SpecDetailResponse)
-async def get_spec(spec_id: str, db: AsyncSession = Depends(require_db)):
-    """
-    Get detailed spec information including all implementations.
-
-    Args:
-        spec_id: The specification ID (e.g., 'scatter-basic')
-
-    Returns:
-        Full spec details with all library implementations and preview URLs
-    """
-
-    key = cache_key("spec", spec_id)
-    cached = get_cache(key)
-    if cached:
-        return cached
-
+async def _build_spec_detail(db: AsyncSession, spec_id: str) -> SpecDetailResponse:
     repo = SpecRepository(db)
     spec = await repo.get_by_id(spec_id)
 
     if not spec:
         raise_not_found("Spec", spec_id)
-
-    # Only return spec if it has implementations
     if not spec.impls:
         raise_not_found("Spec with implementations", spec_id)
 
@@ -118,7 +66,7 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(require_db)):
         for impl in spec.impls
     ]
 
-    result = SpecDetailResponse(
+    return SpecDetailResponse(
         id=spec.id,
         title=spec.title,
         description=spec.description,
@@ -132,61 +80,97 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(require_db)):
         updated=spec.updated.isoformat() if spec.updated else None,
         implementations=impls,
     )
-    set_cache(key, result)
-    return result
 
 
-@router.get("/specs/{spec_id}/{library}/code")
-async def get_impl_code(spec_id: str, library: str, db: AsyncSession = Depends(require_db)):
-    """
-    Get implementation code for a specific spec + library.
-
-    Lightweight endpoint that loads only the code field (deferred in main query).
-    """
-    key = cache_key("impl_code", spec_id, library)
-    cached = get_cache(key)
-    if cached is not None:
-        return cached
-
+async def _build_impl_code(db: AsyncSession, spec_id: str, library: str) -> dict:
     repo = ImplRepository(db)
     impl = await repo.get_code(spec_id, library)
 
     if not impl or not impl.code:
         raise_not_found("Implementation code", f"{spec_id}/{library}")
 
-    result = {"spec_id": spec_id, "library": library, "code": strip_noqa_comments(impl.code)}
-    set_cache(key, result)
-    return result
+    return {"spec_id": spec_id, "library": library, "code": strip_noqa_comments(impl.code)}
 
 
-@router.get("/specs/{spec_id}/images")
-async def get_spec_images(spec_id: str, db: AsyncSession = Depends(require_db)):
-    """
-    Get plot images for a specification across all libraries.
-
-    Returns preview_url and preview_html from database.
-    """
-
-    key = cache_key("spec_images", spec_id)
-    cached = get_cache(key)
-    if cached:
-        return cached
-
+async def _build_spec_images(db: AsyncSession, spec_id: str) -> dict:
     repo = SpecRepository(db)
     spec = await repo.get_by_id(spec_id)
 
     if not spec:
         raise_not_found("Spec", spec_id)
-
     if not spec.impls:
         raise_not_found("Spec with implementations", spec_id)
 
     images = [
         {"library": impl.library_id, "url": impl.preview_url, "html": impl.preview_html}
         for impl in spec.impls
-        if impl.preview_url  # Only include if there's a preview
+        if impl.preview_url
     ]
+    return {"spec_id": spec_id, "images": images}
 
-    result = {"spec_id": spec_id, "images": images}
-    set_cache(key, result)
-    return result
+
+@router.get("/specs", response_model=list[SpecListItem])
+async def get_specs(db: AsyncSession = Depends(require_db)):
+    """Get list of all specs with metadata (specs with at least one implementation)."""
+
+    async def _fetch() -> list[SpecListItem]:
+        return await _build_specs_list(db)
+
+    async def _refresh() -> list[SpecListItem]:
+        async with get_db_context() as fresh_db:
+            return await _build_specs_list(fresh_db)
+
+    return await get_or_set_cache(
+        cache_key("specs_list"), _fetch, refresh_after=settings.cache_refresh_after, refresh_factory=_refresh
+    )
+
+
+@router.get("/specs/{spec_id}", response_model=SpecDetailResponse)
+async def get_spec(spec_id: str, db: AsyncSession = Depends(require_db)):
+    """Get detailed spec information including all implementations."""
+
+    async def _fetch() -> SpecDetailResponse:
+        return await _build_spec_detail(db, spec_id)
+
+    async def _refresh() -> SpecDetailResponse:
+        async with get_db_context() as fresh_db:
+            return await _build_spec_detail(fresh_db, spec_id)
+
+    return await get_or_set_cache(
+        cache_key("spec", spec_id), _fetch, refresh_after=settings.cache_refresh_after, refresh_factory=_refresh
+    )
+
+
+@router.get("/specs/{spec_id}/{library}/code")
+async def get_impl_code(spec_id: str, library: str, db: AsyncSession = Depends(require_db)):
+    """Get implementation code for a specific spec + library (code field deferred in main query)."""
+
+    async def _fetch() -> dict:
+        return await _build_impl_code(db, spec_id, library)
+
+    async def _refresh() -> dict:
+        async with get_db_context() as fresh_db:
+            return await _build_impl_code(fresh_db, spec_id, library)
+
+    return await get_or_set_cache(
+        cache_key("impl_code", spec_id, library),
+        _fetch,
+        refresh_after=settings.cache_refresh_after,
+        refresh_factory=_refresh,
+    )
+
+
+@router.get("/specs/{spec_id}/images")
+async def get_spec_images(spec_id: str, db: AsyncSession = Depends(require_db)):
+    """Get plot images for a specification across all libraries."""
+
+    async def _fetch() -> dict:
+        return await _build_spec_images(db, spec_id)
+
+    async def _refresh() -> dict:
+        async with get_db_context() as fresh_db:
+            return await _build_spec_images(fresh_db, spec_id)
+
+    return await get_or_set_cache(
+        cache_key("spec_images", spec_id), _fetch, refresh_after=settings.cache_refresh_after, refresh_factory=_refresh
+    )

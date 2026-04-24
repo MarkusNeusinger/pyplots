@@ -135,7 +135,8 @@ class Settings(BaseSettings):
     # =============================================================================
 
     cache_ttl: int = 86400
-    """Cache TTL in seconds (default: 24h hard expiry, safety net — data only changes on deploy)"""
+    """Cache TTL in seconds (24h hard expiry). Combined with cache_refresh_after for stale-while-revalidate:
+    entries older than cache_refresh_after trigger a background refresh while the user still gets an instant response."""
 
     cache_refresh_after: int = 3600
     """Trigger background cache refresh after this many seconds (default: 1h)"""

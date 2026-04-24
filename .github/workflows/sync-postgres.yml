@@ -89,6 +89,10 @@ jobs:
           -H "X-Cache-Token: ${CACHE_INVALIDATE_TOKEN}")
         echo "HTTP ${status}"
         cat /tmp/invalidate.json || true
+        if [ "${status}" = "503" ] || [ "${status}" = "401" ]; then
+          echo "::error::Cache invalidation returned HTTP ${status} — token misconfigured server-side (503) or mismatched (401)"
+          exit 1
+        fi
         if [ "${status}" != "200" ]; then
           echo "::warning::Cache invalidation returned HTTP ${status} (sync succeeded; cache will fall back to TTL expiry)"
         fi

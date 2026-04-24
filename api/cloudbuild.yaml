@@ -53,7 +53,7 @@ steps:
       - "--port=8000"
       - "--allow-unauthenticated"
       - "--add-cloudsql-instances=anyplot:europe-west4:anyplot-db"
-      - "--set-secrets=DATABASE_URL=DATABASE_URL:latest"
+      - "--set-secrets=DATABASE_URL=DATABASE_URL:latest,CACHE_INVALIDATE_TOKEN=CACHE_INVALIDATE_TOKEN:latest"
       - "--set-env-vars=ENVIRONMENT=production"
       - "--execution-environment=gen2"
       - "--set-env-vars=GOOGLE_CLOUD_PROJECT=$PROJECT_ID"

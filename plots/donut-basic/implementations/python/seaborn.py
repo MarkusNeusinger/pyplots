@@ -1,6 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 donut-basic: Basic Donut Chart
 Library: seaborn 0.13.2 | Python 3.14.4
+Quality: 86/100 | Updated: 2026-04-24
 """
 
 import os

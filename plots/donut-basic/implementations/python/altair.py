@@ -1,6 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 donut-basic: Basic Donut Chart
 Library: altair 6.1.0 | Python 3.14.4
+Quality: 91/100 | Updated: 2026-04-24
 """
 
 import importlib

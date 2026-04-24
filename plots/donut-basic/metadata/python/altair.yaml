@@ -2,7 +2,7 @@ library: altair
 language: python
 specification_id: donut-basic
 created: '2025-12-23T00:48:06Z'
-updated: '2026-04-24T06:10:19Z'
+updated: '2026-04-24T06:21:15Z'
 generated_by: claude-opus
 workflow_run: 24873943198
 issue: 733
@@ -12,128 +12,136 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/donut-bas
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/donut-basic/python/altair/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/donut-basic/python/altair/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/donut-basic/python/altair/plot-dark.html
-quality_score: 74
+quality_score: 91
 review:
   strengths:
-  - Correct use of mark_arc with innerRadius/outerRadius for idiomatic Altair donut
-    construction
-  - Clean three-layer composition (arc + text + center) using alt.layer() is idiomatic
-    Altair
-  - Center total metric adds meaningful context per spec requirement
-  - Tooltip encoding with category, value, and percentage enhances HTML interactivity
-  - Font sizes are explicitly set throughout (title 28px, legend 20/16px, labels 20px,
-    center 36px)
-  - Deterministic data with good proportional variation across 5 categories (7–35M
-    range)
+  - 'Correct Okabe-Ito palette with #009E73 as first series and canonical ordering
+    for all 5 departments'
+  - 'Proper theme-adaptive chrome: PAGE_BG, INK, INK_SOFT, ELEVATED_BG tokens applied
+    throughout with correct light/dark backgrounds'
+  - Center text uses INK token (theme-adaptive) to show total budget — a spec-required
+    feature executed cleanly
+  - 'All text sizes explicitly set above spec minimums: title 28px, legend title 22px,
+    labels 18px, percentage labels 22px bold, center text 36px bold'
+  - Altair-idiomatic layer composition (arc + labels + center text via alt.layer())
+    with correct encoding types and alt.Order() for segment ordering
+  - Square canvas (3600×3600 rendered) appropriately chosen for a symmetric chart;
+    padding and cornerRadius on legend add polish
+  - No overlap — percentage label radius (390) correctly placed at ring midpoint between
+    inner (260) and outer (520) radii
   weaknesses:
-  - 'CRITICAL: No ANYPLOT_THEME environment variable handling — code must read os.getenv(''ANYPLOT_THEME'')
-    and apply theme-adaptive tokens (PAGE_BG, ELEVATED_BG, INK, INK_SOFT) to configure_view,
-    configure_title, configure_legend'
-  - 'CRITICAL: Palette is Python-themed (#306998, #FFD43B, #4B8BBE, #646464, #8FBC8F)
-    — must use Okabe-Ito starting with #009E73 (#009E73, #D55E00, #0072B2, #CC79A7,
-    #E69F00)'
-  - 'CRITICAL: Output saved as plot.png/plot.html — must be plot-{THEME}.png and plot-{THEME}.html
-    using the THEME variable'
-  - 'CRITICAL: Title contains ''pyplots.ai'' — must be exactly ''donut-basic · altair
-    · anyplot.ai'''
-  - Canvas is landscape 1600×900 — donut charts are symmetric and should use square
-    canvas (e.g., width=1200, height=1200, scale_factor=3 for 3600×3600)
-  - Center text color is hardcoded (#306998) — must use theme-adaptive INK token
+  - 'DE-01 (5/8): Design is clean and correct but not at publication-ready level —
+    no typographic flourishes, no explicit focal emphasis on the dominant Engineering
+    segment beyond its natural size'
+  - 'DE-02 (4/6): Refinement is solid but donut charts have no spines/grid to remove
+    so ''free'' cleanliness partially inflates this; legend cornerRadius and view
+    stroke removal are the genuine refinements'
+  - 'DE-03 (4/6): Segments ordered by value which creates hierarchy, but no explicit
+    visual emphasis (e.g., slight offset of dominant segment, annotation callout,
+    or bold ring-width variation) to guide the viewer''s eye intentionally'
+  - 'LM-02 (3/5): layer composition and mark_arc are Altair-native but not particularly
+    distinctive compared to other declarative libraries — no Vega-Lite-specific transforms
+    or interactive encoding used'
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white surface consistent with #FAF8F1 — correct
-      Chrome: Title "donut-basic · altair · anyplot.ai" in dark text — readable. Center text "Total budget / $1,025K" in dark text — readable. Percentage labels in white on segments — readable. Legend in upper-right with dark text on light fill — readable.
-      Data: Five segments in Okabe-Ito order: Engineering #009E73 (46.8%), Marketing #D55E00 (20.5%), Operations #0072B2 (15.1%), Sales #CC79A7 (12.2%), Support #E69F00 (5.4%). White stroke separators between segments. No text is light-on-light.
-      Legibility verdict: PASS
+      Background: Warm off-white (#FAF8F1) — correct theme surface, not pure white
+      Chrome: Title "donut-basic · altair · anyplot.ai" in dark ink, clearly readable. No axis labels (appropriate for donut). Legend titled "Department" with five rows (Engineering, Marketing, Operations, Sales, Support) in dark secondary text, all readable.
+      Data: Five arc segments in Okabe-Ito order — Engineering (#009E73 teal-green, 46.8%), Marketing (#D55E00 vermillion, 20.5%), Operations (#0072B2 blue, 15.1%), Sales (#CC79A7 pink, 12.2%), Support (#E69F00 gold, 5.4%). White segment dividers (strokeWidth=4). Percentage labels in white bold at midpoint radius, all readable. Center shows "Total budget" and "$1,025K" in dark text.
+      Legibility verdict: PASS — all text clearly readable against warm off-white background; no light-on-light issues.
 
     Dark render (plot-dark.png):
-      Background: Near-black surface consistent with ~#1A1A17 — correct
-      Chrome: Title in light/white text — readable. Center text in white on dark donut-hole background — readable. Percentage labels white — readable against colored segments. Legend dark background with light labels — readable. No dark-on-dark failures observed.
-      Data: All five segment colors appear identical to light render — Okabe-Ito data colors do not flip between themes.
-      Legibility verdict: PASS
-
-    NOTE: The images appear to be from a DIFFERENT (prior) implementation run than the committed code. The current code uses Python-themed colors (#306998, etc.), saves to plot.png, has title "pyplots.ai", and has no ANYPLOT_THEME handling. These images show categories/colors/title that do not match the current code. Visual quality scores reflect what is visible in the images; palette/compliance scores reflect the code.
+      Background: Warm near-black (#1A1A17) — correct dark surface, not pure black
+      Chrome: Title in light-colored text (#F0EFE8), clearly readable against dark background. Legend with elevated dark fill (#242420) and light secondary text for labels, all readable.
+      Data: Identical Okabe-Ito colors across all five segments — #009E73, #D55E00, #0072B2, #CC79A7, #E69F00, unchanged from light render. White percentage labels remain readable on colored segments. Center "Total budget" and "$1,025K" rendered in INK (#F0EFE8) — light text on dark center hole, readable.
+      Legibility verdict: PASS — no dark-on-dark failures detected; all chrome correctly flipped to light ink tokens; data colors identical to light render.
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 30
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Font sizes explicitly set throughout (title 28px, legend 20/16px,
-          segment labels 20px, center 36px); readable in both themes from images
+        comment: 'All sizes explicitly set: title 28px, legend title 22px, legend
+          labels 18px, percentage labels 22px bold, center text 36px bold — all above
+          spec minimums and readable in both themes'
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Minor tightness on small segments (5.4%, 12.2%) but all text readable
+        comment: Percentage labels at radius=390 (ring midpoint) are well-positioned;
+          even the small 5.4% Support segment shows its label without overlap
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Good ring width (innerRadius=120, outerRadius=280), segments clearly
-          visible
+        comment: All segments clearly visible at rendered size; white stroke separates
+          adjacent segments cleanly
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito palette (as visible in images) is colorblind-safe; white
-          stroke separators aid distinction
+        comment: Okabe-Ito palette is CVD-safe; white dividers provide luminance separation
+          between adjacent segments
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Good layout overall; landscape 1600x900 is suboptimal for symmetric
-          donut chart (should be square)
+        comment: Square 3600x3600 canvas appropriate for circular chart; donut fills
+          central portion well; legend positioned in upper right without floating
+          isolation
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: No axis labels needed for donut; center metric provides summary;
-          title format correct in image
+        comment: Title format 'donut-basic · altair · anyplot.ai' correct; no axis
+          labels needed for donut chart (N/A)
       - id: VQ-07
         name: Palette Compliance
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: 'CODE uses Python-themed colors (#306998 etc.) not Okabe-Ito; no
-          ANYPLOT_THEME handling; first series not #009E73 in actual code; output
-          files not theme-named'
+        passed: true
+        comment: 'First series #009E73 correct; all 5 colors follow Okabe-Ito canonical
+          order; light bg #FAF8F1, dark bg #1A1A17; all chrome tokens theme-adaptive'
     design_excellence:
-      score: 10
+      score: 13
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
-        passed: false
-        comment: Well-configured defaults — Okabe-Ito colors (in images), center metric,
-          white stroke separators — but not above standard library configuration
+        passed: true
+        comment: 'Above well-configured default: white segment dividers add polish,
+          center text integrates data summary cleanly, bold percentage labels on ring.
+          Not at publication-ready level — no typographic hierarchy beyond sizing.'
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: Clean donut composition, white segment separators add polish, but
-          minimal further refinement
+        passed: true
+        comment: configure_view stroke=None removes frame; legend has cornerRadius=6
+          and elevated background; padding applied. Donut charts inherently lack spines/grid
+          so baseline cleanliness is free, but explicit token-driven refinements are
+          genuine.
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: Dominant first segment (46.8%) creates a natural focal point; center
-          total adds context; no additional emphasis or hierarchy techniques
+        passed: true
+        comment: Segments ordered by value descending creates natural size hierarchy;
+          Engineering at 46.8% immediately draws the eye; center text contextualizes
+          total. No explicit focal emphasis technique (offset, annotation) but visual
+          hierarchy works.
     spec_compliance:
-      score: 13
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -141,56 +149,56 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct donut chart using mark_arc with innerRadius and outerRadius
+        comment: Correct donut chart via mark_arc(innerRadius=260, outerRadius=520)
+          creating proper ring format
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Center metric ✓, percentage labels ✓, consistent ordering ✓, thick
-          ring (160px width) ✓
+        comment: Hollow center with summary metric, percentage labels on segments,
+          legend, consistent ordering — all spec features present
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: theta=value (quantitative, stacked), color=category (nominal) — correct
-          mapping
+        comment: Theta mapped to value, color to category, order by value descending
+          — correct mappings
       - id: SC-04
         name: Title & Legend
-        score: 1
+        score: 3
         max: 3
-        passed: false
-        comment: CODE title is 'donut-basic · altair · pyplots.ai' — wrong domain
-          (must be anyplot.ai); legend title 'Category' is acceptable but domain-specific
-          'Department' would be better
+        passed: true
+        comment: Title 'donut-basic · altair · anyplot.ai' correct; legend titled
+          'Department' with correct category labels
     data_quality:
-      score: 12
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: 5 categories with good proportional variation; shows the full range
-          from dominant (35) to small (7)
+        comment: 5 categories spanning a wide size range (5.4% to 46.8%) demonstrates
+          donut chart features effectively including small-segment legibility
       - id: DQ-02
         name: Realistic Context
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Corporate budget allocation is realistic and neutral; Marketing/Development/Operations
-          labels are plausible
+        comment: Corporate budget allocation by department — neutral, realistic business
+          scenario with concrete names and values
       - id: DQ-03
         name: Appropriate Scale
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Values 7–35 (presumably $M) are plausible department budgets; total
-          $100M is realistic for a mid-size company
+        comment: Total $1,025K with Engineering $480K, Marketing $210K etc. — realistic
+          departmental budget proportions
     code_quality:
-      score: 8
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -198,62 +206,63 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear structure: imports → data → chart → save; no functions
-          or classes'
+        comment: 'Linear: sys.path patch → imports → theme tokens → data → arc → labels
+          → center → layer → save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic data (hardcoded DataFrame); no random seed needed
+        comment: Fully deterministic hardcoded data, no randomness
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only pandas and altair imported, both used
+        comment: importlib, os, sys all used; no unused imports
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Clean structure but missing required ANYPLOT_THEME handling; colors
-          hardcoded to Python-themed values instead of Okabe-Ito; center text color
-          hardcoded
+        passed: true
+        comment: Clean and readable; sys.path patch serves a specific execution-context
+          purpose; no over-engineering
       - id: CQ-05
         name: Output & API
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Saves to plot.png and plot.html — must be plot-{THEME}.png and plot-{THEME}.html;
-          no THEME variable used
+        passed: true
+        comment: Saves plot-{THEME}.png and plot-{THEME}.html correctly; current Altair
+          API
     library_mastery:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Good use of mark_arc, declarative theta/color encoding, alt.layer()
-          for layered composition — idiomatic Altair patterns
+        comment: Expertly uses alt.layer(), mark_arc(), alt.Theta, alt.Color, alt.Order,
+          alt.Text with proper encoding type annotations — idiomatic Altair
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Three-layer composition (arc + text + center) using alt.layer() is
-          distinctive to Altair; HTML interactivity with tooltip encoding; vl-convert
-          PNG export
-  verdict: REJECTED
+        comment: layer() composition for three chart types, alt.Order() for arc sequencing,
+          and configure_* chaining are Altair-distinctive, but no Vega-Lite-specific
+          transforms or interactive encodings leveraged
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
+  - layer-composition
   - hover-tooltips
   - html-export
-  - layer-composition
   patterns:
   - data-generation
   dataprep: []
-  styling: []
+  styling:
+  - edge-highlighting
+  - minimal-chrome

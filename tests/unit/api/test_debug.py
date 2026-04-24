@@ -48,13 +48,22 @@ def db_client():
     fastapi_app.dependency_overrides.clear()
 
 
-def _make_impl(library_id="matplotlib", quality_score=92.5, preview_url="https://example.com/plot.png", updated=None):
+def _make_impl(
+    library_id="matplotlib",
+    quality_score=92.5,
+    preview_url="https://example.com/plot.png",
+    updated=None,
+    generated_by=None,
+    review_weaknesses=None,
+):
     """Helper to create a mock implementation."""
     impl = MagicMock()
     impl.library_id = library_id
     impl.quality_score = quality_score
     impl.preview_url = preview_url
     impl.updated = updated
+    impl.generated_by = generated_by
+    impl.review_weaknesses = review_weaknesses or []
     return impl
 
 
@@ -216,6 +225,96 @@ class TestDebugStatus:
         # The old spec should have "days ago" in its value
         old_entry = next(s for s in data["oldest_specs"] if s["id"] == "old-spec")
         assert "days ago" in old_entry["value"]
+
+    def test_debug_status_daily_impls_shape(self, db_client) -> None:
+        """daily_impls should always contain 30 zero-filled entries, ordered oldest → newest."""
+        client, _ = db_client
+
+        recent_time = datetime.now(timezone.utc)
+        impl = _make_impl(updated=recent_time)
+        spec = _make_spec(impls=[impl])
+
+        mock_repo = MagicMock()
+        mock_repo.get_all = AsyncMock(return_value=[spec])
+
+        with patch("api.routers.debug.SpecRepository", return_value=mock_repo):
+            response = client.get("/debug/status")
+
+        data = response.json()
+        assert len(data["daily_impls"]) == 30
+        dates = [p["date"] for p in data["daily_impls"]]
+        assert dates == sorted(dates)  # ascending
+        # Today's bucket should have 1 count
+        today = recent_time.date().isoformat()
+        today_point = next(p for p in data["daily_impls"] if p["date"] == today)
+        assert today_point["impls_updated"] == 1
+
+    def test_debug_status_recent_activity(self, db_client) -> None:
+        """recent_activity should return impls sorted by updated DESC, capped at 15."""
+        client, _ = db_client
+
+        older = datetime(2026, 3, 1, tzinfo=timezone.utc)
+        newer = datetime(2026, 4, 20, tzinfo=timezone.utc)
+        impl_old = _make_impl(library_id="matplotlib", updated=older, generated_by="claude-opus-4-6")
+        impl_new = _make_impl(library_id="seaborn", updated=newer, generated_by="claude-opus-4-7")
+        spec = _make_spec(impls=[impl_old, impl_new])
+
+        mock_repo = MagicMock()
+        mock_repo.get_all = AsyncMock(return_value=[spec])
+
+        with patch("api.routers.debug.SpecRepository", return_value=mock_repo):
+            response = client.get("/debug/status")
+
+        data = response.json()
+        activity = data["recent_activity"]
+        assert len(activity) == 2
+        assert activity[0]["library_id"] == "seaborn"
+        assert activity[0]["generated_by"] == "claude-opus-4-7"
+        assert activity[1]["library_id"] == "matplotlib"
+
+    def test_debug_status_common_weaknesses(self, db_client) -> None:
+        """common_weaknesses should aggregate review_weaknesses case-insensitively, top 10."""
+        client, _ = db_client
+
+        impl1 = _make_impl(library_id="matplotlib", review_weaknesses=["Grid too bright", "Missing legend"])
+        impl2 = _make_impl(library_id="seaborn", review_weaknesses=["grid too bright", "  Missing Legend  "])
+        impl3 = _make_impl(library_id="plotly", review_weaknesses=["Grid too bright"])
+        spec = _make_spec(impls=[impl1, impl2, impl3])
+
+        mock_repo = MagicMock()
+        mock_repo.get_all = AsyncMock(return_value=[spec])
+
+        with patch("api.routers.debug.SpecRepository", return_value=mock_repo):
+            response = client.get("/debug/status")
+
+        data = response.json()
+        weaknesses = {w["text"]: w["count"] for w in data["common_weaknesses"]}
+        assert weaknesses["grid too bright"] == 3
+        assert weaknesses["missing legend"] == 2
+
+    def test_debug_ping_returns_latency(self, db_client) -> None:
+        """GET /debug/ping should report database_connected and a numeric response time."""
+        client, mock_session = db_client
+        mock_session.execute = AsyncMock(return_value=MagicMock())
+
+        response = client.get("/debug/ping")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["database_connected"] is True
+        assert isinstance(data["response_time_ms"], (int, float))
+        assert data["response_time_ms"] >= 0
+        assert data["timestamp"]
+
+    def test_debug_ping_reports_db_failure(self, db_client) -> None:
+        """If the DB query fails, ping should report database_connected=False."""
+        client, mock_session = db_client
+        mock_session.execute = AsyncMock(side_effect=RuntimeError("db unreachable"))
+
+        response = client.get("/debug/ping")
+
+        assert response.status_code == 200
+        assert response.json()["database_connected"] is False
 
     def test_debug_status_system_health(self, db_client) -> None:
         """System health should report database_connected=True and valid fields."""

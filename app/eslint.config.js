@@ -37,10 +37,12 @@ export default [
         location: 'readonly',
         requestAnimationFrame: 'readonly',
         cancelAnimationFrame: 'readonly',
+        performance: 'readonly',
         // DOM types
         HTMLElement: 'readonly',
         HTMLDivElement: 'readonly',
         HTMLInputElement: 'readonly',
+        HTMLSelectElement: 'readonly',
         HTMLButtonElement: 'readonly',
         HTMLAnchorElement: 'readonly',
         HTMLImageElement: 'readonly',

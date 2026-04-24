@@ -1,39 +1,14 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
-import Paper from '@mui/material/Paper';
-import Skeleton from '@mui/material/Skeleton';
-import Chip from '@mui/material/Chip';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import WarningIcon from '@mui/icons-material/Warning';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import Link from '@mui/material/Link';
+import Tooltip from '@mui/material/Tooltip';
 
-import { API_URL, LIBRARIES } from '../constants';
+import { API_URL, LIBRARIES, LIB_ABBREV } from '../constants';
 import { specPath } from '../utils/paths';
-import {
-  typography,
-  colors,
-  semanticColors,
-  fontSize,
-} from '../theme';
+import { SectionHeader } from '../components/SectionHeader';
+import { typography, colors, semanticColors, fontSize } from '../theme';
 
 // ============================================================================
 // Types
@@ -79,6 +54,25 @@ interface SystemHealth {
   total_impls_in_db: number;
 }
 
+interface DailyImplPoint {
+  date: string;
+  impls_updated: number;
+}
+
+interface RecentActivity {
+  spec_id: string;
+  spec_title: string;
+  library_id: string;
+  quality_score: number | null;
+  generated_by: string | null;
+  updated: string;
+}
+
+interface WeaknessCount {
+  text: string;
+  count: number;
+}
+
 interface DebugStatus {
   total_specs: number;
   total_implementations: number;
@@ -88,6 +82,9 @@ interface DebugStatus {
   oldest_specs: ProblemSpec[];
   missing_preview_specs: ProblemSpec[];
   missing_tags_specs: ProblemSpec[];
+  daily_impls: DailyImplPoint[];
+  recent_activity: RecentActivity[];
+  common_weaknesses: WeaknessCount[];
   system: SystemHealth;
   specs: SpecStatus[];
 }
@@ -96,78 +93,72 @@ type SortKey = 'updated' | 'id' | 'title' | 'avg_score';
 type SortDir = 'asc' | 'desc';
 
 // ============================================================================
-// Helper Components
+// Helpers
 // ============================================================================
 
-const getScoreColor = (score: number | null): string => {
+const LOW_SCORE_THRESHOLD = 90;
+
+function scoreColor(score: number | null): string {
   if (score === null) return 'var(--ink-muted)';
   if (score >= 90) return colors.success;
-  if (score >= 50) return colors.warning;
+  if (score >= 75) return colors.warning;
   return colors.error;
-};
+}
 
-const ScoreCell = ({ score, specId, library }: { score: number | null; specId: string; library: string }) => {
-  if (score === null) {
-    return (
-      <Typography sx={{ color: 'var(--ink-muted)', fontSize: fontSize.xs, textAlign: 'center' }}>-</Typography>
-    );
-  }
-  return (
-    <Box
-      component={Link}
-      to={specPath(specId, 'python', library)}
-      sx={{ display: 'block', textDecoration: 'none', textAlign: 'center', '&:hover': { opacity: 0.7 } }}
-    >
-      <Typography sx={{ fontSize: fontSize.xs, fontFamily: typography.fontFamily, fontWeight: 600, color: getScoreColor(score) }}>
-        {Math.round(score)}
-      </Typography>
-    </Box>
-  );
-};
+function formatNum(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  return n.toLocaleString();
+}
 
-const ProblemList = ({ items, title, icon }: { items: ProblemSpec[]; title: string; icon?: React.ReactNode }) => {
-  if (items.length === 0) return null;
-  return (
-    <Accordion defaultExpanded>
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          {icon}
-          <Typography sx={{ fontWeight: 500 }}>{title}</Typography>
-          <Chip label={items.length} size="small" color="warning" />
-        </Box>
-      </AccordionSummary>
-      <AccordionDetails>
-        <Table size="small">
-          <TableBody>
-            {items.map((item, idx) => (
-              <TableRow key={`${item.id}-${idx}`}>
-                <TableCell sx={{ width: 200 }}>
-                  <Box
-                    component={Link}
-                    to={specPath(item.id)}
-                    sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.sm, color: colors.primary, textDecoration: 'none' }}
-                  >
-                    {item.id}
-                  </Box>
-                </TableCell>
-                <TableCell sx={{ color: semanticColors.mutedText, fontSize: fontSize.sm }}>{item.issue}</TableCell>
-                {item.value && (
-                  <TableCell sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.sm, color: colors.error }}>
-                    {item.value}
-                  </TableCell>
-                )}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </AccordionDetails>
-    </Accordion>
-  );
-};
+function timeAgo(iso: string): string {
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return '—';
+  const diffSec = Math.max(0, (Date.now() - then) / 1000);
+  if (diffSec < 60) return `${Math.floor(diffSec)}s ago`;
+  const diffMin = diffSec / 60;
+  if (diffMin < 60) return `${Math.floor(diffMin)}m ago`;
+  const diffHr = diffMin / 60;
+  if (diffHr < 24) return `${Math.floor(diffHr)}h ago`;
+  const diffDay = diffHr / 24;
+  if (diffDay < 30) return `${Math.floor(diffDay)}d ago`;
+  const diffMon = diffDay / 30;
+  if (diffMon < 12) return `${Math.floor(diffMon)}mo ago`;
+  return `${Math.floor(diffMon / 12)}y ago`;
+}
+
+function formatDateShort(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+// Styled native input / select / button using CSS vars
+const nativeControlSx = {
+  fontFamily: typography.fontFamily,
+  fontSize: fontSize.xs,
+  color: 'var(--ink)',
+  bgcolor: 'var(--bg-surface)',
+  border: '1px solid var(--rule)',
+  borderRadius: '4px',
+  px: 1,
+  py: 0.75,
+  outline: 'none',
+  '&:focus': { borderColor: colors.primary },
+} as const;
 
 // ============================================================================
-// Main Component
+// Component
 // ============================================================================
+
+const PING_INTERVAL_MS = 2000;
+const PING_HISTORY = 30;
+
+function pingColor(ms: number): string {
+  if (ms < 75) return colors.success;
+  if (ms < 200) return colors.warning;
+  return colors.error;
+}
 
 export function DebugPage() {
   const [data, setData] = useState<DebugStatus | null>(null);
@@ -176,78 +167,71 @@ export function DebugPage() {
   const [sortKey, setSortKey] = useState<SortKey>('updated');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
 
-  // Filter states
   const [searchText, setSearchText] = useState('');
   const [showIncomplete, setShowIncomplete] = useState(false);
   const [showLowScores, setShowLowScores] = useState(false);
-  const [missingLibrary, setMissingLibrary] = useState<string>('');
+  const [missingLibrary, setMissingLibrary] = useState('');
+
+  const [pings, setPings] = useState<Array<{ ms: number; ok: boolean }>>([]);
 
   useEffect(() => {
-    const fetchStatus = async () => {
-      try {
-        const res = await fetch(`${API_URL}/debug/status`);
-        if (!res.ok) throw new Error('Failed to load status');
-        const json = await res.json();
-        setData(json);
-      } catch (err) {
-        setError('Failed to load debug status');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStatus();
+    fetch(`${API_URL}/debug/status`)
+      .then(r => { if (!r.ok) throw new Error(`${r.status}`); return r.json(); })
+      .then(setData)
+      .catch(e => setError(e.message || 'failed to load'))
+      .finally(() => setLoading(false));
   }, []);
 
-  const countImpls = (spec: SpecStatus): number => {
-    return LIBRARIES.filter((lib) => spec[lib as keyof SpecStatus] !== null).length;
-  };
+  useEffect(() => {
+    let cancelled = false;
+    const tick = async () => {
+      const started = performance.now();
+      try {
+        const r = await fetch(`${API_URL}/debug/ping`);
+        const totalMs = performance.now() - started;
+        if (!r.ok) throw new Error(`${r.status}`);
+        const json: { database_connected: boolean } = await r.json();
+        if (cancelled) return;
+        setPings(prev => [...prev.slice(-(PING_HISTORY - 1)), { ms: totalMs, ok: json.database_connected }]);
+      } catch {
+        if (cancelled) return;
+        const totalMs = performance.now() - started;
+        setPings(prev => [...prev.slice(-(PING_HISTORY - 1)), { ms: totalMs, ok: false }]);
+      }
+    };
+    tick();
+    const id = setInterval(tick, PING_INTERVAL_MS);
+    return () => { cancelled = true; clearInterval(id); };
+  }, []);
 
-  // Threshold for low scores - matches workflow ai-approved threshold
-  const LOW_SCORE_THRESHOLD = 90;
+  const countImpls = (spec: SpecStatus): number =>
+    LIBRARIES.filter(lib => spec[lib as keyof SpecStatus] !== null).length;
 
-  const hasLowScore = (spec: SpecStatus): boolean => {
-    return LIBRARIES.some((lib) => {
-      const score = spec[lib as keyof SpecStatus] as number | null;
-      return score !== null && score < LOW_SCORE_THRESHOLD;
+  const hasLowScore = (spec: SpecStatus): boolean =>
+    LIBRARIES.some(lib => {
+      const s = spec[lib as keyof SpecStatus] as number | null;
+      return s !== null && s < LOW_SCORE_THRESHOLD;
     });
-  };
 
   const filteredSpecs = useMemo(() => {
     if (!data) return [];
     let filtered = [...data.specs];
 
     if (searchText) {
-      const search = searchText.toLowerCase();
-      filtered = filtered.filter(
-        (spec) => spec.id.toLowerCase().includes(search) || spec.title.toLowerCase().includes(search)
-      );
+      const q = searchText.toLowerCase();
+      filtered = filtered.filter(s => s.id.toLowerCase().includes(q) || s.title.toLowerCase().includes(q));
     }
-    if (showIncomplete) {
-      filtered = filtered.filter((spec) => countImpls(spec) < 9);
-    }
-    if (showLowScores) {
-      filtered = filtered.filter((spec) => hasLowScore(spec));
-    }
-    if (missingLibrary) {
-      filtered = filtered.filter((spec) => spec[missingLibrary as keyof SpecStatus] === null);
-    }
+    if (showIncomplete) filtered = filtered.filter(s => countImpls(s) < 9);
+    if (showLowScores) filtered = filtered.filter(hasLowScore);
+    if (missingLibrary) filtered = filtered.filter(s => s[missingLibrary as keyof SpecStatus] === null);
 
     filtered.sort((a, b) => {
       let cmp = 0;
       switch (sortKey) {
-        case 'updated':
-          cmp = (a.updated || '').localeCompare(b.updated || '');
-          break;
-        case 'id':
-          cmp = a.id.localeCompare(b.id);
-          break;
-        case 'title':
-          cmp = a.title.localeCompare(b.title);
-          break;
-        case 'avg_score':
-          cmp = (a.avg_score || 0) - (b.avg_score || 0);
-          break;
+        case 'updated': cmp = (a.updated || '').localeCompare(b.updated || ''); break;
+        case 'id': cmp = a.id.localeCompare(b.id); break;
+        case 'title': cmp = a.title.localeCompare(b.title); break;
+        case 'avg_score': cmp = (a.avg_score ?? 0) - (b.avg_score ?? 0); break;
       }
       return sortDir === 'desc' ? -cmp : cmp;
     });
@@ -266,300 +250,664 @@ export function DebugPage() {
 
   if (loading) {
     return (
-      <Box sx={{ p: 4 }}>
-        <Skeleton variant="text" width={300} height={40} />
-        <Skeleton variant="rectangular" height={400} sx={{ mt: 2 }} />
+      <Box sx={{ py: 4, textAlign: 'center' }}>
+        <Typography sx={{ fontFamily: typography.fontFamily, color: semanticColors.mutedText }}>
+          loading debug data...
+        </Typography>
       </Box>
     );
   }
 
   if (error || !data) {
     return (
-      <Box sx={{ p: 4, textAlign: 'center' }}>
-        <Typography color="error">{error || 'Failed to load'}</Typography>
+      <Box sx={{ py: 4, textAlign: 'center' }}>
+        <Typography sx={{ fontFamily: typography.fontFamily, color: colors.error }}>
+          failed to load{error ? `: ${error}` : ''}
+        </Typography>
       </Box>
     );
   }
 
-  return (
-    <Box sx={{ p: 3, minHeight: '100vh', bgcolor: 'var(--bg-page)' }}>
+  // Derived KPIs
+  const totalImplsWithScore = data.library_stats.reduce(
+    (acc, l) => acc + (l.avg_score !== null ? l.impl_count : 0), 0
+  );
+  const weightedScoreSum = data.library_stats.reduce(
+    (acc, l) => acc + (l.avg_score !== null ? l.avg_score * l.impl_count : 0), 0
+  );
+  const avgQuality = totalImplsWithScore > 0 ? weightedScoreSum / totalImplsWithScore : null;
 
-      {/* Stats */}
-      <Box sx={{ mb: 2 }}>
-        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-          <Chip label={`${data.total_specs} specs`} size="small" />
-          <Chip label={`${data.total_implementations} implementations`} size="small" />
-          <Chip
-            label={`${data.coverage_percent}% coverage`}
-            size="small"
-            color={data.coverage_percent >= 90 ? 'success' : data.coverage_percent >= 70 ? 'warning' : 'error'}
-          />
-          <Chip
-            label={`${filteredSpecs.length} shown`}
-            size="small"
-            variant="outlined"
-            color={filteredSpecs.length < data.total_specs ? 'primary' : 'default'}
-          />
-        </Box>
+  const maxDaily = Math.max(...data.daily_impls.map(p => p.impls_updated), 1);
+  const maxLibCount = Math.max(...data.library_stats.map(l => l.impl_count), 1);
+  const maxWeakness = Math.max(...data.common_weaknesses.map(w => w.count), 1);
+
+  const kpis: Array<{ label: string; value: number | null; suffix?: string }> = [
+    { label: 'specs', value: data.total_specs },
+    { label: 'impls', value: data.total_implementations },
+    { label: 'coverage', value: data.coverage_percent, suffix: '%' },
+    { label: 'avg quality', value: avgQuality !== null ? Math.round(avgQuality * 10) / 10 : null },
+    { label: 'low score', value: data.low_score_specs.length },
+    { label: 'stale specs', value: data.oldest_specs.length },
+  ];
+
+  const firstDate = data.daily_impls[0]?.date ?? '';
+  const lastDate = data.daily_impls[data.daily_impls.length - 1]?.date ?? '';
+
+  return (
+    <Box sx={{ pt: { xs: 2, md: 3 }, pb: 4 }}>
+      {/* Header */}
+      <SectionHeader prompt="❯" title={<em>debug</em>} />
+
+      {/* System health row */}
+      {(() => {
+        const latest = pings[pings.length - 1];
+        const okPings = pings.filter(p => p.ok);
+        const currentOk = latest ? latest.ok : data.system.database_connected;
+        const currentMs = latest ? latest.ms : data.system.api_response_time_ms;
+        const avgMs = okPings.length > 0 ? okPings.reduce((a, p) => a + p.ms, 0) / okPings.length : null;
+        const maxMs = Math.max(...pings.map(p => p.ms), 1);
+        return (
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: { xs: 1.5, md: 3 }, mt: -2, mb: 3, fontSize: fontSize.xs, fontFamily: typography.fontFamily }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+              <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: currentOk ? colors.success : colors.error }} />
+              <Typography component="span" sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.xs, color: 'var(--ink-soft)' }}>
+                database {currentOk ? 'connected' : 'down'}
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Tooltip
+                title={avgMs !== null ? `avg ${avgMs.toFixed(0)}ms · max ${maxMs.toFixed(0)}ms · ${pings.length} samples` : 'measuring...'}
+                arrow
+              >
+                <Box sx={{
+                  display: 'flex', alignItems: 'flex-end', gap: '1px',
+                  height: 18, width: PING_HISTORY * 4,
+                  borderBottom: '1px solid var(--rule)', px: 0.25,
+                }}>
+                  {Array.from({ length: PING_HISTORY }).map((_, i) => {
+                    const idx = pings.length - PING_HISTORY + i;
+                    const p = idx >= 0 ? pings[idx] : null;
+                    if (!p) return <Box key={i} sx={{ flex: 1 }} />;
+                    return (
+                      <Box
+                        key={i}
+                        sx={{
+                          flex: 1,
+                          height: p.ok ? `${Math.max((p.ms / maxMs) * 100, 8)}%` : '100%',
+                          bgcolor: p.ok ? pingColor(p.ms) : colors.error,
+                          opacity: 0.7,
+                        }}
+                      />
+                    );
+                  })}
+                </Box>
+              </Tooltip>
+              <Typography component="span" sx={{
+                fontFamily: typography.fontFamily, fontSize: fontSize.xs,
+                color: currentOk ? pingColor(currentMs) : colors.error,
+                fontWeight: 600, minWidth: 52,
+              }}>
+                {currentMs.toFixed(0)}ms
+              </Typography>
+              {avgMs !== null && (
+                <Typography component="span" sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.xxs, color: semanticColors.mutedText }}>
+                  avg {avgMs.toFixed(0)}
+                </Typography>
+              )}
+            </Box>
+            <Typography component="span" sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.xs, color: semanticColors.mutedText }}>
+              updated {new Date(data.system.timestamp).toLocaleTimeString()}
+            </Typography>
+          </Box>
+        );
+      })()}
+
+      {/* KPI Grid */}
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(6, 1fr)' }, gap: 2, mb: 4 }}>
+        {kpis.map(item => (
+          <Box key={item.label} sx={{ textAlign: 'center', p: 2, border: '1px solid var(--rule)', borderRadius: 1 }}>
+            <Typography sx={{ fontFamily: typography.serif, fontSize: '2rem', fontWeight: 300, color: 'var(--ink)', lineHeight: 1.2 }}>
+              {typeof item.value === 'number' ? `${formatNum(item.value)}${item.suffix ?? ''}` : '—'}
+            </Typography>
+            <Typography sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.xs, color: semanticColors.mutedText, mt: 0.5 }}>
+              {item.label}
+            </Typography>
+          </Box>
+        ))}
       </Box>
 
-      {/* System Health */}
-      <Paper sx={{ p: 2, mb: 2, display: 'flex', gap: 3, flexWrap: 'wrap', alignItems: 'center' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          {data.system.database_connected ? (
-            <CheckCircleIcon sx={{ color: colors.success, fontSize: 18 }} />
-          ) : (
-            <WarningIcon sx={{ color: colors.error, fontSize: 18 }} />
-          )}
-          <Typography sx={{ fontSize: fontSize.sm }}>Database</Typography>
-        </Box>
-        <Typography sx={{ fontSize: fontSize.sm, color: semanticColors.mutedText }}>
-          Response: <strong>{data.system.api_response_time_ms.toFixed(0)}ms</strong>
+      {/* Daily Activity Bar Chart */}
+      <SectionHeader prompt="❯" title={<em>daily activity</em>} />
+      <Typography sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.xs, color: semanticColors.mutedText, mb: 1 }}>
+        implementation updates · last 30 days
+      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 0.25, height: 70, overflow: 'hidden' }}>
+        {data.daily_impls.map(point => (
+          <Tooltip key={point.date} title={`${point.date}: ${point.impls_updated} impls`} arrow>
+            <Box sx={{
+              flex: 1,
+              height: `${Math.max((point.impls_updated / maxDaily) * 100, point.impls_updated > 0 ? 3 : 0)}%`,
+              bgcolor: colors.primaryDark,
+              opacity: 0.5,
+              borderRadius: '2px 2px 0 0',
+              minHeight: point.impls_updated > 0 ? 2 : 0,
+              '&:hover': { opacity: 0.8 },
+              transition: 'opacity 0.15s ease',
+            }} />
+          </Tooltip>
+        ))}
+      </Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.25 }}>
+        <Typography sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.micro, color: semanticColors.mutedText }}>
+          {firstDate}
         </Typography>
-        <Typography sx={{ fontSize: fontSize.sm, color: semanticColors.mutedText }}>
-          Updated: {new Date(data.system.timestamp).toLocaleTimeString()}
+        <Typography sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.micro, color: semanticColors.mutedText }}>
+          {lastDate}
         </Typography>
-      </Paper>
+      </Box>
 
-      {/* Library Stats */}
-      <Paper sx={{ p: 2, mb: 2 }}>
-        <Typography sx={{ fontWeight: 600, mb: 1.5 }}>Library Coverage</Typography>
-        <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
-          {data.library_stats.map((lib) => (
-            <Paper
-              key={lib.id}
-              elevation={0}
-              sx={{
-                p: 1.5,
-                bgcolor: 'var(--bg-surface)',
-                border: '1px solid var(--rule)',
-                borderRadius: 1,
-                minWidth: 100,
-              }}
-            >
-              <Typography sx={{ fontSize: fontSize.xs, fontWeight: 600, color: 'var(--ink-soft)' }}>{lib.name}</Typography>
-              <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: colors.primary }}>{lib.impl_count}</Typography>
-              <Typography sx={{ fontSize: fontSize.xs, color: getScoreColor(lib.avg_score) }}>
-                avg: {lib.avg_score?.toFixed(1) || '-'}
-              </Typography>
-              <Typography sx={{ fontSize: fontSize.xxs, color: semanticColors.mutedText }}>
-                {lib.min_score?.toFixed(0) || '-'} - {lib.max_score?.toFixed(0) || '-'}
-              </Typography>
-            </Paper>
-          ))}
-        </Box>
-      </Paper>
+      {/* Library Coverage */}
+      <Box sx={{ mt: 4 }}>
+        <SectionHeader prompt="❯" title={<em>libraries</em>} />
+      </Box>
+      <Typography sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.xs, color: semanticColors.mutedText, mb: 1 }}>
+        impl count · avg · min–max
+      </Typography>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+        {[...data.library_stats].sort((a, b) => b.impl_count - a.impl_count).map(lib => (
+          <Box
+            key={lib.id}
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: '80px 1fr 40px 40px 70px',
+              gap: 1.5,
+              alignItems: 'center',
+              fontFamily: typography.fontFamily,
+              fontSize: fontSize.xxs,
+            }}
+          >
+            <Typography sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.xs, color: semanticColors.mutedText, textAlign: 'right' }}>
+              {lib.name}
+            </Typography>
+            <Box sx={{ height: 10, bgcolor: 'var(--bg-elevated)', borderRadius: '2px', overflow: 'hidden' }}>
+              <Box sx={{
+                width: `${(lib.impl_count / maxLibCount) * 100}%`,
+                height: '100%',
+                bgcolor: colors.primaryDark,
+                opacity: 0.5,
+              }} />
+            </Box>
+            <Typography sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.xxs, color: 'var(--ink-soft)', fontWeight: 600, textAlign: 'right' }}>
+              {lib.impl_count}
+            </Typography>
+            <Typography sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.xxs, color: scoreColor(lib.avg_score), fontWeight: 600, textAlign: 'right' }}>
+              {lib.avg_score ?? '—'}
+            </Typography>
+            <Typography sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.xxs, color: semanticColors.mutedText, textAlign: 'right' }}>
+              {lib.min_score?.toFixed(0) ?? '—'}–{lib.max_score?.toFixed(0) ?? '—'}
+            </Typography>
+          </Box>
+        ))}
+      </Box>
+      <Box sx={{
+        display: 'grid',
+        gridTemplateColumns: '80px 1fr 40px 40px 70px',
+        gap: 1.5,
+        mt: 0.5,
+        fontFamily: typography.fontFamily,
+        fontSize: fontSize.micro,
+        color: semanticColors.mutedText,
+      }}>
+        <span />
+        <span />
+        <Box component="span" sx={{ textAlign: 'right' }}>count</Box>
+        <Box component="span" sx={{ textAlign: 'right' }}>avg</Box>
+        <Box component="span" sx={{ textAlign: 'right' }}>min–max</Box>
+      </Box>
 
-      {/* Problem Areas */}
-      {(data.low_score_specs.length > 0 ||
-        data.oldest_specs.length > 0 ||
-        data.missing_preview_specs.length > 0 ||
-        data.missing_tags_specs.length > 0) && (
-        <Paper sx={{ p: 2, mb: 2 }}>
-          <Typography sx={{ fontWeight: 600, mb: 1.5 }}>Problem Areas</Typography>
-          <ProblemList
-            items={data.low_score_specs}
-            title="Low Scores (avg < 85)"
-            icon={<WarningIcon sx={{ color: colors.error, fontSize: 18 }} />}
-          />
-          <ProblemList
-            items={data.missing_preview_specs}
-            title="Missing Previews"
-            icon={<WarningIcon sx={{ color: colors.warning, fontSize: 18 }} />}
-          />
-          <ProblemList
-            items={data.missing_tags_specs}
-            title="Missing Tags"
-            icon={<WarningIcon sx={{ color: colors.warning, fontSize: 18 }} />}
-          />
-          <ProblemList
-            items={data.oldest_specs}
-            title="Oldest Specs"
-            icon={<WarningIcon sx={{ color: semanticColors.mutedText, fontSize: 18 }} />}
-          />
-        </Paper>
+      {/* Recent Activity */}
+      {data.recent_activity.length > 0 && (
+        <>
+          <Box sx={{ mt: 4 }}>
+            <SectionHeader prompt="❯" title={<em>recent activity</em>} />
+          </Box>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+            {data.recent_activity.map((act, idx) => (
+              <Link
+                key={`${act.spec_id}-${act.library_id}-${idx}`}
+                component={RouterLink}
+                to={specPath(act.spec_id, 'python', act.library_id)}
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: { xs: '55px 1fr 30px', sm: '65px 90px minmax(0, 1fr) 30px 130px' },
+                  gap: { xs: 1, sm: 1.5 },
+                  alignItems: 'center',
+                  textDecoration: 'none',
+                  color: 'inherit',
+                  py: 0.5,
+                  borderBottom: '1px solid var(--rule)',
+                  '&:hover': { bgcolor: 'var(--bg-surface)' },
+                }}
+              >
+                <Typography sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.xs, color: semanticColors.mutedText }}>
+                  {timeAgo(act.updated)}
+                </Typography>
+                <Typography sx={{
+                  fontFamily: typography.fontFamily, fontSize: fontSize.xs, color: 'var(--ink-soft)',
+                  display: { xs: 'none', sm: 'block' },
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>
+                  {act.library_id}
+                </Typography>
+                <Typography sx={{
+                  fontFamily: typography.fontFamily, fontSize: fontSize.xs, color: 'var(--ink)',
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0,
+                }}>
+                  <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' }, color: semanticColors.mutedText, mr: 0.5 }}>
+                    {act.library_id} ·
+                  </Box>
+                  {act.spec_title}
+                </Typography>
+                <Typography sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.xs, color: scoreColor(act.quality_score), fontWeight: 600, textAlign: 'right' }}>
+                  {act.quality_score !== null ? Math.round(act.quality_score) : '—'}
+                </Typography>
+                <Typography sx={{
+                  fontFamily: typography.fontFamily, fontSize: fontSize.xxs, color: semanticColors.mutedText,
+                  display: { xs: 'none', sm: 'block' },
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  textAlign: 'right',
+                }}>
+                  {act.generated_by ?? '—'}
+                </Typography>
+              </Link>
+            ))}
+          </Box>
+        </>
       )}
 
-      {/* Filters */}
-      <Paper sx={{ p: 2, mb: 2, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-        <TextField
-          size="small"
-          label="Search"
-          placeholder="Spec ID or title..."
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          sx={{ minWidth: 200 }}
-        />
-        <FormControlLabel
-          control={<Checkbox checked={showIncomplete} onChange={(e) => setShowIncomplete(e.target.checked)} />}
-          label={<Typography sx={{ fontSize: fontSize.md }}>Incomplete ({'<'}9)</Typography>}
-        />
-        <FormControlLabel
-          control={<Checkbox checked={showLowScores} onChange={(e) => setShowLowScores(e.target.checked)} />}
-          label={<Typography sx={{ fontSize: fontSize.md }}>Low scores ({'<'}90)</Typography>}
-        />
-        <FormControl size="small" sx={{ minWidth: 180 }}>
-          <InputLabel>Missing library</InputLabel>
-          <Select value={missingLibrary} label="Missing library" onChange={(e) => setMissingLibrary(e.target.value)}>
-            <MenuItem value="">
-              <em>Any</em>
-            </MenuItem>
-            {LIBRARIES.map((lib) => (
-              <MenuItem key={lib} value={lib}>
-                {lib}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Paper>
+      {/* Common Weaknesses */}
+      {data.common_weaknesses.length > 0 && (
+        <>
+          <Box sx={{ mt: 4 }}>
+            <SectionHeader prompt="❯" title={<em>common weaknesses</em>} />
+          </Box>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75, alignItems: 'baseline' }}>
+            {data.common_weaknesses.map(w => {
+              const ratio = w.count / maxWeakness;
+              const size = ratio >= 0.8 ? fontSize.md : ratio >= 0.5 ? fontSize.sm : ratio >= 0.25 ? fontSize.xs : fontSize.xxs;
+              const weight = ratio >= 0.5 ? 600 : 400;
+              const opacity = ratio >= 0.8 ? 1 : ratio >= 0.5 ? 0.85 : ratio >= 0.25 ? 0.7 : 0.55;
+              return (
+                <Box key={w.text} sx={{
+                  fontFamily: typography.fontFamily, fontSize: size, fontWeight: weight,
+                  color: 'var(--ink-soft)', opacity, px: 0.75, py: 0.25, borderRadius: 0.5,
+                  bgcolor: 'var(--bg-surface)', border: '1px solid var(--rule)',
+                }}>
+                  {w.text}
+                  <Box component="span" sx={{ fontSize: fontSize.micro, color: semanticColors.mutedText, ml: 0.5 }}>
+                    {w.count}
+                  </Box>
+                </Box>
+              );
+            })}
+          </Box>
+        </>
+      )}
 
-      {/* Legend */}
-      <Box sx={{ mb: 2, display: 'flex', gap: 3, flexWrap: 'wrap', fontSize: fontSize.xs }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <Box sx={{ width: 12, height: 12, bgcolor: colors.success, borderRadius: 0.5 }} />
-          <span>90+ (excellent)</span>
+      {/* Problem Areas */}
+      <Box sx={{ mt: 4 }}>
+        <SectionHeader prompt="❯" title={<em>problem areas</em>} />
+      </Box>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+        {[
+          { title: `low scores (avg < ${LOW_SCORE_THRESHOLD})`, items: data.low_score_specs },
+          { title: 'missing previews', items: data.missing_preview_specs },
+          { title: 'missing tags', items: data.missing_tags_specs },
+          { title: 'oldest specs', items: data.oldest_specs },
+        ].map(section => (
+          <Box
+            key={section.title}
+            component="details"
+            sx={{
+              border: '1px solid var(--rule)', borderRadius: 1, p: 0,
+              '& > summary': { cursor: 'pointer', listStyle: 'none' },
+              '& > summary::-webkit-details-marker': { display: 'none' },
+            }}
+          >
+            <Box
+              component="summary"
+              sx={{
+                display: 'flex', alignItems: 'center', gap: 1, px: 1.5, py: 1,
+                fontFamily: typography.fontFamily, fontSize: fontSize.xs, color: 'var(--ink-soft)',
+              }}
+            >
+              <Box component="span" sx={{ color: semanticColors.mutedText }}>▸</Box>
+              <Box component="span" sx={{ fontWeight: 600 }}>{section.title}</Box>
+              <Box component="span" sx={{ color: semanticColors.mutedText }}>
+                {section.items.length}
+              </Box>
+            </Box>
+            {section.items.length > 0 && (
+              <Box sx={{ display: 'flex', flexDirection: 'column', borderTop: '1px solid var(--rule)' }}>
+                {section.items.map((item, idx) => (
+                  <Link
+                    key={`${item.id}-${idx}`}
+                    component={RouterLink}
+                    to={specPath(item.id)}
+                    sx={{
+                      display: 'grid',
+                      gridTemplateColumns: { xs: '1fr auto', sm: 'minmax(140px, 200px) 1fr auto' },
+                      gap: 1, px: 1.5, py: 0.75, alignItems: 'center',
+                      textDecoration: 'none', color: 'inherit',
+                      fontFamily: typography.fontFamily, fontSize: fontSize.xs,
+                      borderTop: idx > 0 ? '1px solid var(--rule)' : 'none',
+                      '&:hover': { bgcolor: 'var(--bg-surface)' },
+                    }}
+                  >
+                    <Box component="span" sx={{ color: colors.primary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {item.id}
+                    </Box>
+                    <Box component="span" sx={{ color: semanticColors.mutedText, display: { xs: 'none', sm: 'inline' }, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {item.issue}
+                    </Box>
+                    {item.value && (
+                      <Box component="span" sx={{ color: colors.error, whiteSpace: 'nowrap', textAlign: 'right' }}>
+                        {item.value}
+                      </Box>
+                    )}
+                  </Link>
+                ))}
+              </Box>
+            )}
+          </Box>
+        ))}
+      </Box>
+
+      {/* Spec Matrix */}
+      <Box sx={{ mt: 4 }}>
+        <SectionHeader prompt="❯" title={<em>specs</em>} />
+      </Box>
+
+      {/* Filter Bar */}
+      <Box sx={{
+        display: 'flex', gap: 1, mb: 2, flexWrap: { xs: 'nowrap', sm: 'wrap' },
+        overflowX: { xs: 'auto', sm: 'visible' }, pb: { xs: 0.5, sm: 0 },
+      }}>
+        <Box
+          component="input"
+          type="search"
+          placeholder="search spec id or title..."
+          value={searchText}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchText(e.target.value)}
+          sx={{ ...nativeControlSx, flex: { xs: '0 0 180px', sm: '1 1 220px' } }}
+        />
+        <Box
+          component="button"
+          type="button"
+          onClick={() => setShowIncomplete(v => !v)}
+          sx={{
+            ...nativeControlSx,
+            cursor: 'pointer',
+            flexShrink: 0,
+            bgcolor: showIncomplete ? colors.highlight.bg : 'var(--bg-surface)',
+            color: showIncomplete ? colors.highlight.text : 'var(--ink-soft)',
+            borderColor: showIncomplete ? colors.primary : 'var(--rule)',
+          }}
+        >
+          incomplete {'<'}9
         </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <Box sx={{ width: 12, height: 12, bgcolor: colors.warning, borderRadius: 0.5 }} />
-          <span>50-89 (acceptable)</span>
+        <Box
+          component="button"
+          type="button"
+          onClick={() => setShowLowScores(v => !v)}
+          sx={{
+            ...nativeControlSx,
+            cursor: 'pointer',
+            flexShrink: 0,
+            bgcolor: showLowScores ? colors.highlight.bg : 'var(--bg-surface)',
+            color: showLowScores ? colors.highlight.text : 'var(--ink-soft)',
+            borderColor: showLowScores ? colors.primary : 'var(--rule)',
+          }}
+        >
+          low scores {'<'}90
         </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <Box sx={{ width: 12, height: 12, bgcolor: colors.error, borderRadius: 0.5 }} />
-          <span>&lt;50 (poor)</span>
+        <Box
+          component="select"
+          value={missingLibrary}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setMissingLibrary(e.target.value)}
+          sx={{ ...nativeControlSx, cursor: 'pointer', flexShrink: 0 }}
+        >
+          <option value="">missing library: any</option>
+          {LIBRARIES.map(lib => (
+            <option key={lib} value={lib}>missing: {lib}</option>
+          ))}
         </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <Box sx={{ width: 12, height: 12, bgcolor: 'var(--ink-muted)', borderRadius: 0.5 }} />
-          <span>- (missing)</span>
+        <Typography sx={{
+          fontFamily: typography.fontFamily, fontSize: fontSize.xs,
+          color: semanticColors.mutedText, alignSelf: 'center', flexShrink: 0, ml: { xs: 0, sm: 'auto' },
+        }}>
+          {filteredSpecs.length} / {data.total_specs}
+        </Typography>
+      </Box>
+
+      {/* Desktop: grid matrix */}
+      <Box sx={{ display: { xs: 'none', md: 'block' }, overflowX: 'auto' }}>
+        <Box sx={{ minWidth: 780 }}>
+          {/* Header row */}
+          <Box sx={{
+            display: 'grid',
+            gridTemplateColumns: '180px minmax(180px, 1fr) 50px 50px repeat(9, 40px) 80px',
+            gap: 0, alignItems: 'center',
+            position: 'sticky', top: 0, zIndex: 1,
+            bgcolor: 'var(--bg-page)',
+            borderBottom: '1px solid var(--rule)',
+            py: 1,
+          }}>
+            <SortableHeader label="spec id" active={sortKey === 'id'} dir={sortDir} onClick={() => handleSort('id')} />
+            <SortableHeader label="title" active={sortKey === 'title'} dir={sortDir} onClick={() => handleSort('title')} />
+            <HeaderCell>#</HeaderCell>
+            <SortableHeader label="avg" active={sortKey === 'avg_score'} dir={sortDir} onClick={() => handleSort('avg_score')} center />
+            {LIBRARIES.map(lib => (
+              <HeaderCell key={lib} center>{LIB_ABBREV[lib] ?? lib.slice(0, 3)}</HeaderCell>
+            ))}
+            <SortableHeader label="updated" active={sortKey === 'updated'} dir={sortDir} onClick={() => handleSort('updated')} />
+          </Box>
+
+          {/* Body rows */}
+          {filteredSpecs.map(spec => {
+            const implCount = countImpls(spec);
+            return (
+              <Box
+                key={spec.id}
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: '180px minmax(180px, 1fr) 50px 50px repeat(9, 40px) 80px',
+                  gap: 0, alignItems: 'center', py: 0.5,
+                  borderBottom: '1px solid var(--rule)',
+                  '&:hover': { bgcolor: 'var(--bg-surface)' },
+                }}
+              >
+                <Link
+                  component={RouterLink}
+                  to={specPath(spec.id)}
+                  sx={{
+                    fontFamily: typography.fontFamily, fontSize: fontSize.xs,
+                    color: colors.primary, textDecoration: 'none',
+                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    '&:hover': { textDecoration: 'underline' },
+                  }}
+                >
+                  {spec.id}
+                </Link>
+                <Typography sx={{
+                  fontFamily: typography.fontFamily, fontSize: fontSize.xs,
+                  color: semanticColors.labelText,
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', pr: 1,
+                }}>
+                  {spec.title}
+                </Typography>
+                <Typography sx={{
+                  fontFamily: typography.fontFamily, fontSize: fontSize.xs, fontWeight: 600,
+                  color: implCount === 9 ? colors.success : implCount > 0 ? semanticColors.mutedText : 'var(--ink-muted)',
+                  textAlign: 'center',
+                }}>
+                  {implCount}/9
+                </Typography>
+                <Typography sx={{
+                  fontFamily: typography.fontFamily, fontSize: fontSize.xs, fontWeight: 600,
+                  color: scoreColor(spec.avg_score), textAlign: 'center',
+                }}>
+                  {spec.avg_score !== null ? spec.avg_score.toFixed(1) : '—'}
+                </Typography>
+                {LIBRARIES.map(lib => {
+                  const score = spec[lib as keyof SpecStatus] as number | null;
+                  if (score === null) {
+                    return (
+                      <Box key={lib} sx={{ textAlign: 'center', fontFamily: typography.fontFamily, fontSize: fontSize.xs, color: 'var(--ink-muted)' }}>
+                        —
+                      </Box>
+                    );
+                  }
+                  return (
+                    <Link
+                      key={lib}
+                      component={RouterLink}
+                      to={specPath(spec.id, 'python', lib)}
+                      sx={{
+                        textAlign: 'center', textDecoration: 'none',
+                        fontFamily: typography.fontFamily, fontSize: fontSize.xs, fontWeight: 600,
+                        color: scoreColor(score),
+                        '&:hover': { opacity: 0.7 },
+                      }}
+                    >
+                      {Math.round(score)}
+                    </Link>
+                  );
+                })}
+                <Typography sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.xxs, color: semanticColors.mutedText }}>
+                  {spec.updated ? formatDateShort(spec.updated) : '—'}
+                </Typography>
+              </Box>
+            );
+          })}
         </Box>
       </Box>
 
-      {/* Table */}
-      <TableContainer component={Paper} sx={{ minHeight: 500, maxHeight: 'calc(100vh - 160px)' }}>
-        <Table stickyHeader size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell sx={{ fontWeight: 600, minWidth: 180 }}>
-                <TableSortLabel
-                  active={sortKey === 'id'}
-                  direction={sortKey === 'id' ? sortDir : 'asc'}
-                  onClick={() => handleSort('id')}
-                >
-                  Spec ID
-                </TableSortLabel>
-              </TableCell>
-              <TableCell sx={{ fontWeight: 600, minWidth: 180 }}>
-                <TableSortLabel
-                  active={sortKey === 'title'}
-                  direction={sortKey === 'title' ? sortDir : 'asc'}
-                  onClick={() => handleSort('title')}
-                >
-                  Title
-                </TableSortLabel>
-              </TableCell>
-              <TableCell sx={{ fontWeight: 600, width: 50 }} align="center">
-                #
-              </TableCell>
-              <TableCell sx={{ fontWeight: 600, width: 50 }} align="center">
-                <TableSortLabel
-                  active={sortKey === 'avg_score'}
-                  direction={sortKey === 'avg_score' ? sortDir : 'desc'}
-                  onClick={() => handleSort('avg_score')}
-                >
-                  Avg
-                </TableSortLabel>
-              </TableCell>
-              {LIBRARIES.map((lib) => (
-                <TableCell key={lib} align="center" sx={{ fontWeight: 600, fontSize: fontSize.xs, minWidth: 45, px: 0.5 }}>
-                  {lib.slice(0, 4)}
-                </TableCell>
-              ))}
-              <TableCell sx={{ fontWeight: 600, width: 100 }}>
-                <TableSortLabel
-                  active={sortKey === 'updated'}
-                  direction={sortKey === 'updated' ? sortDir : 'desc'}
-                  onClick={() => handleSort('updated')}
-                >
-                  Updated
-                </TableSortLabel>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredSpecs.map((spec) => {
-              const implCount = countImpls(spec);
-              return (
-                <TableRow key={spec.id} hover sx={{ '&:hover': { bgcolor: 'var(--bg-surface)' } }}>
-                  <TableCell>
-                    <Box
-                      component={Link}
-                      to={specPath(spec.id)}
-                      sx={{
-                        fontFamily: typography.fontFamily,
-                        fontSize: fontSize.sm,
-                        color: colors.primary,
-                        textDecoration: 'none',
-                        '&:hover': { textDecoration: 'underline' },
-                      }}
-                    >
-                      {spec.id}
+      {/* Mobile: card list */}
+      <Box sx={{ display: { xs: 'flex', md: 'none' }, flexDirection: 'column', gap: 1.5 }}>
+        {filteredSpecs.map(spec => (
+          <Box
+            key={spec.id}
+            sx={{
+              border: '1px solid var(--rule)', borderRadius: 1, p: 1.5,
+              display: 'flex', flexDirection: 'column', gap: 1,
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
+              <Link
+                component={RouterLink}
+                to={specPath(spec.id)}
+                sx={{
+                  flex: 1, fontFamily: typography.fontFamily, fontSize: fontSize.sm,
+                  color: 'var(--ink)', textDecoration: 'none', fontWeight: 500,
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  '&:hover': { color: colors.primary },
+                }}
+              >
+                {spec.title}
+              </Link>
+              <Typography sx={{
+                fontFamily: typography.fontFamily, fontSize: fontSize.xs,
+                color: scoreColor(spec.avg_score), fontWeight: 600, flexShrink: 0,
+              }}>
+                avg {spec.avg_score !== null ? spec.avg_score.toFixed(0) : '—'}
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+              {LIBRARIES.map(lib => {
+                const score = spec[lib as keyof SpecStatus] as number | null;
+                const missing = score === null;
+                const abbrev = LIB_ABBREV[lib] ?? lib.slice(0, 3);
+                const commonSx = {
+                  display: 'inline-flex', alignItems: 'center', gap: 0.5,
+                  px: 0.75, py: 0.25, borderRadius: 0.5,
+                  fontFamily: typography.fontFamily, fontSize: fontSize.xxs, fontWeight: 600,
+                  textDecoration: 'none',
+                  bgcolor: missing ? 'var(--bg-elevated)' : `${scoreColor(score)}22`,
+                  color: missing ? 'var(--ink-muted)' : scoreColor(score),
+                };
+                if (missing) {
+                  return (
+                    <Box key={lib} sx={commonSx}>
+                      <Box component="span">{abbrev}</Box>
+                      <Box component="span">—</Box>
                     </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      sx={{
-                        fontSize: fontSize.sm,
-                        color: semanticColors.labelText,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                        maxWidth: 200,
-                      }}
-                    >
-                      {spec.title}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="center">
-                    <Typography
-                      sx={{
-                        fontSize: fontSize.xs,
-                        fontWeight: 600,
-                        fontFamily: typography.fontFamily,
-                        color: implCount === 9 ? colors.success : implCount > 0 ? semanticColors.mutedText : 'var(--ink-muted)',
-                      }}
-                    >
-                      {implCount}/9
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="center">
-                    <Typography
-                      sx={{
-                        fontSize: fontSize.xs,
-                        fontWeight: 600,
-                        fontFamily: typography.fontFamily,
-                        color: getScoreColor(spec.avg_score),
-                      }}
-                    >
-                      {spec.avg_score?.toFixed(1) || '-'}
-                    </Typography>
-                  </TableCell>
-                  {LIBRARIES.map((lib) => (
-                    <TableCell key={lib} align="center" sx={{ px: 0.5 }}>
-                      <ScoreCell score={spec[lib as keyof SpecStatus] as number | null} specId={spec.id} library={lib} />
-                    </TableCell>
-                  ))}
-                  <TableCell>
-                    <Typography sx={{ fontSize: fontSize.xs, fontFamily: typography.fontFamily, color: semanticColors.mutedText }}>
-                      {spec.updated
-                        ? new Date(spec.updated).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-                        : '-'}
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                  );
+                }
+                return (
+                  <Link
+                    key={lib}
+                    component={RouterLink}
+                    to={specPath(spec.id, 'python', lib)}
+                    sx={{ ...commonSx, '&:hover': { opacity: 0.75 } }}
+                  >
+                    <Box component="span">{abbrev}</Box>
+                    <Box component="span">{Math.round(score)}</Box>
+                  </Link>
+                );
+              })}
+            </Box>
+            <Box sx={{ display: 'flex', gap: 1, fontFamily: typography.fontFamily, fontSize: fontSize.xxs, color: semanticColors.mutedText }}>
+              <Box component="span" sx={{ color: colors.primary }}>{spec.id}</Box>
+              <Box component="span">·</Box>
+              <Box component="span">{spec.updated ? timeAgo(spec.updated) : 'no activity'}</Box>
+            </Box>
+          </Box>
+        ))}
+      </Box>
+    </Box>
+  );
+}
+
+// ============================================================================
+// Sortable header helpers
+// ============================================================================
+
+function HeaderCell({ children, center }: { children: React.ReactNode; center?: boolean }) {
+  return (
+    <Typography sx={{
+      fontFamily: typography.fontFamily, fontSize: fontSize.xs, fontWeight: 600,
+      color: 'var(--ink-soft)', textAlign: center ? 'center' : 'left',
+    }}>
+      {children}
+    </Typography>
+  );
+}
+
+function SortableHeader({
+  label, active, dir, onClick, center,
+}: { label: string; active: boolean; dir: SortDir; onClick: () => void; center?: boolean }) {
+  return (
+    <Box
+      component="button"
+      type="button"
+      onClick={onClick}
+      sx={{
+        background: 'none', border: 'none', p: 0, cursor: 'pointer',
+        fontFamily: typography.fontFamily, fontSize: fontSize.xs, fontWeight: 600,
+        color: active ? colors.primary : 'var(--ink-soft)',
+        textAlign: center ? 'center' : 'left',
+        display: 'flex', alignItems: 'center', gap: 0.25,
+        justifyContent: center ? 'center' : 'flex-start',
+        '&:hover': { color: colors.primaryDark },
+      }}
+    >
+      {label}
+      {active && (
+        <Box component="span" sx={{ fontSize: fontSize.micro }}>
+          {dir === 'asc' ? '▲' : '▼'}
+        </Box>
+      )}
     </Box>
   );
 }

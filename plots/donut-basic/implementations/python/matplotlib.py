@@ -1,50 +1,62 @@
-""" pyplots.ai
+""" anyplot.ai
 donut-basic: Basic Donut Chart
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Library: matplotlib 3.10.9 | Python 3.14.4
+Quality: 86/100 | Updated: 2026-04-24
 """
+
+import os
 
 import matplotlib.pyplot as plt
 
 
-# Data - Budget allocation by category
-categories = ["Marketing", "Development", "Operations", "Sales", "Support"]
-values = [25, 35, 15, 18, 7]
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+
+# Okabe-Ito palette (first segment is always the brand green)
+OKABE_ITO = ["#009E73", "#D55E00", "#0072B2", "#CC79A7", "#E69F00"]
+
+# Data - Annual budget allocation by department (USD thousands)
+categories = ["Engineering", "Marketing", "Operations", "Sales", "Support"]
+values = [480, 210, 155, 125, 55]
 total = sum(values)
 
-# Colors - Python Blue as primary, then colorblind-safe palette
-colors = ["#306998", "#FFD43B", "#5BA0D0", "#8FBC8F", "#DDA0DD"]
+# Plot (square canvas for circular shapes)
+fig, ax = plt.subplots(figsize=(12, 12), facecolor=PAGE_BG)
+ax.set_facecolor(PAGE_BG)
 
-# Create plot (3600x3600 px - square for symmetric pie/donut)
-fig, ax = plt.subplots(figsize=(12, 12))
-
-# Create donut chart with wedgeprops for ring width
 wedges, texts, autotexts = ax.pie(
     values,
     labels=categories,
     autopct="%1.1f%%",
     startangle=90,
-    colors=colors,
-    wedgeprops={"width": 0.5, "edgecolor": "white", "linewidth": 2},
-    pctdistance=0.75,
-    labeldistance=1.1,
+    colors=OKABE_ITO,
+    wedgeprops={"width": 0.42, "edgecolor": PAGE_BG, "linewidth": 3},
+    pctdistance=0.78,
+    labeldistance=1.08,
+    textprops={"fontsize": 20, "color": INK},
 )
 
-# Style labels and percentages for 3600x3600 px
-for text in texts:
-    text.set_fontsize(20)
+# Percentage labels sit on the colored wedges — use a light off-white for contrast
 for autotext in autotexts:
     autotext.set_fontsize(16)
-    autotext.set_color("white")
+    autotext.set_color("#F0EFE8")
     autotext.set_fontweight("bold")
 
-# Add center text with total
-ax.text(0, 0, f"Total\n${total}K", ha="center", va="center", fontsize=32, fontweight="bold", color="#306998")
+# Category labels use theme ink
+for text in texts:
+    text.set_color(INK)
 
-# Ensure circular shape
+# Center metric
+ax.text(0, 0.08, "Total budget", ha="center", va="center", fontsize=18, color=INK_SOFT)
+ax.text(0, -0.06, f"${total:,}K", ha="center", va="center", fontsize=40, fontweight="bold", color=INK)
+
 ax.set_aspect("equal")
-
-ax.set_title("donut-basic · matplotlib · pyplots.ai", fontsize=24, pad=20)
+ax.set_title(
+    "Budget by Department · donut-basic · matplotlib · anyplot.ai", fontsize=24, fontweight="medium", color=INK, pad=20
+)
 
 plt.tight_layout()
-plt.savefig("plot.png", dpi=300, bbox_inches="tight")
+plt.savefig(f"plot-{THEME}.png", dpi=300, bbox_inches="tight", facecolor=PAGE_BG)

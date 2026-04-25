@@ -4,6 +4,8 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 
 import { useAnalytics } from '../hooks';
+import { setAnalyticsAmbientProps } from '../hooks/useAnalytics';
+import { useTheme } from '../hooks/useLayoutContext';
 import { MastheadRule } from './MastheadRule';
 import { NavBar } from './NavBar';
 import { Footer } from './Footer';
@@ -25,7 +27,13 @@ export function RootLayout() {
   const { trackEvent } = useAnalytics();
   const { pathname, hash } = useLocation();
   const navigationType = useNavigationType();
+  const { isDark } = useTheme();
   const mastheadSticks = pathname !== '/plots';
+
+  // Set synchronously during render so the first pageview from a child page's
+  // useEffect (which runs before the parent's useEffect) carries the theme prop.
+  // setAnalyticsAmbientProps merges into module state, so re-renders are safe.
+  setAnalyticsAmbientProps({ theme: isDark ? 'dark' : 'light' });
 
   // Reset scroll on forward navigation (PUSH/REPLACE). In SPA route changes,
   // the next page can otherwise keep the previous page's scroll position,

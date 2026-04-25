@@ -3,23 +3,33 @@ import { render } from '@testing-library/react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { MemoryRouter, Routes, Route, Link } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
+
+const { setAmbient } = vi.hoisted(() => ({ setAmbient: vi.fn() }));
+
+vi.mock('../hooks/useAnalytics', async () => {
+  const actual = await vi.importActual<typeof import('../hooks/useAnalytics')>('../hooks/useAnalytics');
+  return { ...actual, setAnalyticsAmbientProps: setAmbient };
+});
+
+vi.mock('../hooks', async () => {
+  const actual = await vi.importActual<typeof import('../hooks')>('../hooks');
+  return {
+    ...actual,
+    useAnalytics: () => ({ trackEvent: vi.fn(), trackPageview: vi.fn() }),
+    useLatestRelease: () => null,
+  };
+});
+
+vi.mock('../hooks/useLayoutContext', async () => {
+  const actual = await vi.importActual<typeof import('../hooks/useLayoutContext')>('../hooks/useLayoutContext');
+  return { ...actual, useTheme: () => ({ isDark: true, toggle: vi.fn() }) };
+});
+
+vi.mock('./MastheadRule', () => ({ MastheadRule: () => <div data-testid="masthead" /> }));
+vi.mock('./NavBar', () => ({ NavBar: () => <div data-testid="navbar" /> }));
+vi.mock('./Footer', () => ({ Footer: () => <div data-testid="footer" /> }));
+
 import { RootLayout } from './RootLayout';
-
-vi.mock('../hooks', () => ({
-  useAnalytics: () => ({ trackEvent: vi.fn(), trackPageview: vi.fn() }),
-}));
-
-vi.mock('./MastheadRule', () => ({
-  MastheadRule: () => <div data-testid="masthead" />,
-}));
-
-vi.mock('./NavBar', () => ({
-  NavBar: () => <div data-testid="navbar" />,
-}));
-
-vi.mock('./Footer', () => ({
-  Footer: () => <div data-testid="footer" />,
-}));
 
 const theme = createTheme();
 
@@ -51,11 +61,17 @@ describe('RootLayout', () => {
   let scrollSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
+    setAmbient.mockClear();
     scrollSpy = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
   });
 
   afterEach(() => {
     scrollSpy.mockRestore();
+  });
+
+  it('synchronously sets the theme ambient prop on render', () => {
+    renderAt('/');
+    expect(setAmbient).toHaveBeenCalledWith({ theme: 'dark' });
   });
 
   it('scrolls to top when navigating to a new path (PUSH)', async () => {

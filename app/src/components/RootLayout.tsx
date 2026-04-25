@@ -1,8 +1,11 @@
+import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 
 import { useAnalytics } from '../hooks';
+import { setAnalyticsAmbientProps } from '../hooks/useAnalytics';
+import { useTheme } from '../hooks/useLayoutContext';
 import { MastheadRule } from './MastheadRule';
 import { NavBar } from './NavBar';
 import { Footer } from './Footer';
@@ -23,7 +26,12 @@ const containerSx = {
 export function RootLayout() {
   const { trackEvent } = useAnalytics();
   const { pathname } = useLocation();
+  const { isDark } = useTheme();
   const mastheadSticks = pathname !== '/plots';
+
+  useEffect(() => {
+    setAnalyticsAmbientProps({ theme: isDark ? 'dark' : 'light' });
+  }, [isDark]);
 
   return (
     <Box sx={{

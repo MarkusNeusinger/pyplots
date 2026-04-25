@@ -5,6 +5,15 @@ interface EventProps {
   [key: string]: string | undefined;
 }
 
+// Module-level ambient props attached to every pageview and custom event.
+// Set by the layout once theme/locale-style values are known so we don't have
+// to thread them through every component that fires an event.
+let ambientProps: Record<string, string> = {};
+
+export function setAnalyticsAmbientProps(props: Record<string, string>): void {
+  ambientProps = { ...ambientProps, ...props };
+}
+
 function debounce<T extends (...args: never[]) => void>(
   fn: T,
   delay: number,
@@ -90,7 +99,8 @@ export function useAnalytics() {
       if (url === lastPageviewRef.current) return;
       lastPageviewRef.current = url;
 
-      window.plausible?.("pageview", { url });
+      const props = Object.keys(ambientProps).length > 0 ? { ...ambientProps } : undefined;
+      window.plausible?.("pageview", props ? { url, props } : { url });
     },
     [isProduction],
   );
@@ -107,12 +117,11 @@ export function useAnalytics() {
         ? Object.fromEntries(
             Object.entries(props).filter(([, v]) => v !== undefined),
           )
-        : undefined;
+        : {};
+      const merged = { ...ambientProps, ...cleanProps } as Record<string, string>;
       window.plausible?.(
         name,
-        cleanProps
-          ? { props: cleanProps as Record<string, string> }
-          : undefined,
+        Object.keys(merged).length > 0 ? { props: merged } : undefined,
       );
     },
     [isProduction],

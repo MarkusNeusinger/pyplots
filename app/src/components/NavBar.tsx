@@ -76,6 +76,7 @@ export function NavBar() {
   // Non-triggering clicks fall through to RouterLink's normal `/` navigation.
   const handleLogoClick = useCallback(
     (e: React.MouseEvent) => {
+      trackEvent('nav_click', { source: 'nav_logo', target: '/' });
       if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
       clickCountRef.current += 1;
       if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
@@ -85,9 +86,7 @@ export function NavBar() {
         clickCountRef.current = 0;
         if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
         navigate('/debug');
-        return;
       }
-      trackEvent('nav_click', { source: 'nav_logo', target: '/' });
     },
     [navigate, trackEvent]
   );

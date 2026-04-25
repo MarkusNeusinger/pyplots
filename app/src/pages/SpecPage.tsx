@@ -354,7 +354,7 @@ export function SpecPage() {
         {currentImpl?.preview_url && <meta property="og:image" content={currentImpl.preview_url} />}
         <meta property="og:url" content={canonical} />
         <link rel="canonical" href={canonical} />
-        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
+        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd).replace(/</g, '\\u003c')}</script>
       </Helmet>
 
       <Box sx={{ pt: 1.5, pb: 4 }}>

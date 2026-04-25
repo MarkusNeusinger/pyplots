@@ -159,7 +159,7 @@ You are the **frontend-auditor** on the audit team. Analyze the `app/src/` direc
 - **Hooks**: Custom hook patterns, missing dependency arrays, stale closures, unnecessary re-renders
 - **Performance**: Missing `memo`/`useMemo`/`useCallback` where needed, large bundles, unnecessary renders
 - **Accessibility**: Missing aria-labels, keyboard navigation, focus management, color contrast
-- **MUI 7 patterns**: Correct theme usage, sx prop vs styled, consistent component usage
+- **MUI 9 patterns**: Correct theme usage, sx prop vs styled, consistent component usage
 - **Dead code**: Unused components, unused imports, unreachable code, commented-out code
 - **Error handling**: Error boundaries, loading states, empty states, fallbacks
 - **Consistency**: Naming conventions, file organization, export patterns

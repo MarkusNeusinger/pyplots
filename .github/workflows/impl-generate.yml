@@ -755,10 +755,12 @@ jobs:
         run: |
           echo "::notice::Handling generation failure for $LIBRARY/$SPEC_ID"
 
-          # Count previous failures via hidden marker comments (more reliable than workflow runs)
+          # Count previous failures via hidden marker comments (more reliable than workflow runs).
+          # Paginate so the marker is found even on issues with >30 comments
+          # (which is common because all 9 library impls land on the same issue).
           MARKER="<!-- impl-fail:${SPEC_ID}:${LIBRARY} -->"
-          FAILURE_COUNT=$(gh api "repos/${{ github.repository }}/issues/${ISSUE}/comments" \
-            --jq "[.[] | select(.body | contains(\"$MARKER\"))] | length" 2>/dev/null || echo "0")
+          FAILURE_COUNT=$(gh api --paginate "repos/${{ github.repository }}/issues/${ISSUE}/comments?per_page=100" \
+            --jq "[.[] | select(.body != null and (.body | contains(\"$MARKER\")))] | length" 2>/dev/null || echo "0")
 
           echo "::notice::Previous failures for ${LIBRARY}/${SPEC_ID}: $FAILURE_COUNT"
 

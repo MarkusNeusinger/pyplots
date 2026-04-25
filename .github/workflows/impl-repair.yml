@@ -259,8 +259,9 @@ jobs:
           gh pr edit "$PR_NUM" --add-label "ai-rejected" 2>/dev/null || true
 
           MARKER="<!-- repair-retry:${SPEC_ID}:${LIBRARY}:attempt-${ATTEMPT} -->"
-          RETRY_COUNT=$(gh api "repos/${{ github.repository }}/issues/${PR_NUM}/comments" \
-            --jq "[.[] | select(.body | contains(\"$MARKER\"))] | length" 2>/dev/null || echo "0")
+          # Paginate so the marker is found even on PRs with >30 comments.
+          RETRY_COUNT=$(gh api --paginate "repos/${{ github.repository }}/issues/${PR_NUM}/comments?per_page=100" \
+            --jq "[.[] | select(.body != null and (.body | contains(\"$MARKER\")))] | length" 2>/dev/null || echo "0")
 
           if [ "$RETRY_COUNT" -ge 1 ]; then
             echo "::error::Repair attempt ${ATTEMPT} crashed twice — giving up"

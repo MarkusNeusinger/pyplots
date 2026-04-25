@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 errorbar-basic: Basic Error Bar Plot
 Library: pygal 3.1.0 | Python 3.14.4
-Quality: 84/100 | Updated: 2026-04-25
+Quality: 88/100 | Updated: 2026-04-25
 """
 
 import os

@@ -68,7 +68,7 @@ You are the **audit-lead**. Your job is to coordinate a team of specialist audit
 ### Phase 2: Parallel Analysis
 
 Each specialist receives a focused prompt (see below). They:
-- Use **Serena tools** (`mcp__serena__get_symbols_overview`, `mcp__serena__find_symbol`, `search_for_pattern`, `list_dir`, `find_file`, `mcp__serena__find_referencing_symbols`) and **Glob/Grep/Read** for code analysis
+- Use **Serena tools** (`mcp__serena__get_symbols_overview`, `mcp__serena__find_symbol`, `search_for_pattern`, `list_dir`, `find_file`, `mcp__serena__find_referencing_symbols`) and **Glob/Grep/Read** for code analysis. **Tool-naming note:** `mcp__serena__*` is the canonical MCP-registered prefix that matches `.claude/settings.json` (`mcp__serena__*` is in `permissions.allow`); some other repo docs (`CLAUDE.md`, `.serena/project.yml`, `agentic/commands/prime.md`) still reference legacy aliases like `jet_brains_*` or unprefixed names — treat those as the same tools and prefer the `mcp__serena__*` form here.
 - Use `think_about_collected_information` after non-trivial research sequences
 - Do **NOT** use Bash for file discovery or code searching — only for the per-auditor whitelisted shell commands
 - Stay within the tool budget (~30 calls); set `COVERAGE: partial` if forced to stop early
@@ -113,16 +113,23 @@ After all specialists report back and cross-validation has run:
 4. **Rate each finding:**
    - **Importance** (1-5): see Severity Calibration table above
    - **Effort**: S (<30min, 1 file, mechanical), M (1-3h, 2-5 files, local context), L (half day+, 5-15 files, design decisions), XL (multi-day, 15+ files, needs own plan)
-   - **Auto-fix**: classify each finding as `ruff` (auto-fixable via `uv run ruff check --fix`), `eslint` (`yarn lint --fix`), `format` (`uv run ruff format` or `yarn format`), `codemod` (mechanical rewrite that a small script could do), or `manual` (requires judgment)
-5. **Compute Health Score (0-100):**
+   - **Auto-fix**: classify each finding as `ruff` (auto-fixable via `uv run ruff check --fix`), `eslint` (`yarn lint --fix`), `format` (`uv run ruff format`), `codemod` (mechanical rewrite that a small script could do), or `manual` (requires judgment)
+5. **Compute Health Score (30-100):**
    - Start at 100
    - Subtract: `min(70, 10 * critical_count + 3 * high_count + 1 * medium_count)`
-   - Round to integer; clamp to `[0, 100]`
+   - Round to integer; clamp to `[30, 100]` (the cap on subtractions intentionally floors the score at 30 so that very-bad audits remain comparable to bad ones)
    - This score is reproducible and trend-comparable across runs
 6. **Build Quick Wins list:** every finding with `IMPORTANCE >= 4` AND `EFFORT == S`. This list answers "what should we tackle first?" and goes near the top of the report.
 7. **Sort** within each importance bucket: Effort ascending, then Auto-fix `ruff` / `eslint` / `format` / `codemod` / `manual` (auto-fixable first)
 8. **Persist** the final report to disk:
-   - Path: `agentic/audits/{YYYY-MM-DD}-{scope}.md` (e.g. `agentic/audits/2026-04-25-all.md`)
+   - Path: `agentic/audits/{YYYY-MM-DD}-{scope_slug}.md` (e.g. `agentic/audits/2026-04-25-all.md`, `agentic/audits/2026-04-25-backend.md`, `agentic/audits/2026-04-25-since_main.md`)
+   - **Build `scope_slug` deterministically from `$ARGUMENTS`:**
+     - Empty / `all` → `all`
+     - Single keyword (`backend`, `frontend`, `infra`, `quality`, `tests`, `llm`, `pipeline`, `db`, `database`, `security`, `sec`, `observability`, `obs`) → that keyword verbatim
+     - Directory path → replace `/` with `_`, drop leading/trailing `_`, lowercase (e.g. `core/database/` → `core_database`)
+     - `since=<ref>` → `since_<ref>` with `<ref>` sanitized: replace any character not matching `[A-Za-z0-9._-]` with `_` (e.g. `since=feature/foo` → `since_feature_foo`, `since=HEAD~10` → `since_HEAD_10`)
+     - Combinations (e.g. `backend since=main`) → join the parts with `_` (`backend_since_main`)
+     - Final slug must match `^[A-Za-z0-9._-]+$`; if anything still doesn't match after the rules above, fall back to `all`
    - Also overwrite `agentic/audits/latest.md` with the same content
    - Create `agentic/audits/` if missing
 9. **Output** the report (see Output Format below) inline AND confirm the persisted path
@@ -311,7 +318,7 @@ You are the **llm-pipeline-auditor** on the audit team. anyplot's core is a spec
 - **Prompt caching**: For long, stable system prompts and library guides, are `cache_control` blocks present (`{"type": "ephemeral"}`)? Missing caching on ≥1k-token static prefixes is a finding
 - **Prompt quality** (in `prompts/`): clarity of role + task + format; explicit refusal of unsafe outputs; consistent placeholder syntax; library-guides aligned with what `core/generators/` actually requests; no dangling references to renamed/removed files
 - **Output schema stability**: When prompts demand JSON, is parsing defensive (try/except around `json.loads`, schema validation)? Are tool-use blocks preferred over freeform JSON for structured outputs?
-- **Halluzinations-Schutz**: Grounding via examples, explicit "say I don't know" instructions for uncertain answers, retrieval/context separation
+- **Hallucination mitigation**: Grounding via examples, explicit "say I don't know" instructions for uncertain answers, retrieval/context separation
 - **Pipeline resilience**: spec→impl→review→merge in workflows handles failures (impl-repair path), no infinite retry loops, idempotent re-runs, clear failure modes
 - **Workflow ↔ code drift**: Do workflow inputs/outputs match what `core/generators/` and `agentic/workflows/modules/` expect?
 
@@ -365,7 +372,7 @@ You are the **security-auditor** on the audit team. anyplot has a public, unauth
 - **Workflow injection**: `${{ github.event.* }}` interpolated directly into `run:` blocks (script injection); use of `pull_request_target` without a pinned, sanitized checkout; missing `permissions:` block (default-write tokens); third-party actions referenced by tag instead of SHA
 - **Public API surface**: Endpoints in `api/routers/` that touch the DB or the LLM pipeline without rate limiting; CORS configuration; reflection of user input into responses (XSS via SVG/HTML); SSRF risk in any proxy / fetch endpoint
 - **SQL injection**: Any raw SQL constructed via f-strings or `%`-formatting (must be parameterized via `text(...).bindparams()` or ORM)
-- **Dependency CVEs**: `uv pip-audit` for Python deps and `yarn npm audit` for frontend deps — flag any High/Critical
+- **Dependency CVEs**: `uv run --with pip-audit pip-audit` for Python deps (ephemeral; `pip-audit` is intentionally not a project dep) and `yarn audit` (Yarn 1.22 syntax) for frontend deps — flag any High/Critical
 - **MCP server (`api/mcp/`)**: Authentication on the MCP endpoints (or deliberate lack thereof, documented); input validation
 - **CSP / security headers**: Frontend response headers (if served from FastAPI), iframe restrictions for og-image endpoints
 
@@ -376,7 +383,7 @@ You are the **security-auditor** on the audit team. anyplot has a public, unauth
 4. Read every workflow file that triggers on `pull_request_target`, `issue_comment`, or `workflow_dispatch` end-to-end
 5. `think_about_collected_information` after the workflow + API scan
 6. **Do NOT use Bash** for file discovery
-7. You MAY use Bash for: `uv run pip-audit 2>&1 | tail -30` and `cd app && yarn npm audit --severity high 2>&1 | tail -30` (high-severity Python and JS CVEs only)
+7. You MAY use Bash for: `uv run --with pip-audit pip-audit 2>&1 | tail -30` (ephemeral install — `pip-audit` is intentionally NOT a project dep) and `cd app && yarn audit --level high --groups dependencies 2>&1 | tail -30` (Yarn 1.22 syntax, matches `packageManager` in `app/package.json`)
 
 **Tool budget:** ~30 calls. If insufficient, set `COVERAGE: partial` and prioritize: workflow injection vectors, secret leakage paths, and any raw-SQL site.
 

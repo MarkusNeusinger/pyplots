@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -22,8 +23,18 @@ const containerSx = {
  */
 export function RootLayout() {
   const { trackEvent } = useAnalytics();
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
   const mastheadSticks = pathname !== '/plots';
+
+  // Reset scroll on route change. PlotsPage sets scrollRestoration='manual',
+  // so without this the browser keeps the previous scroll position when
+  // navigating to short pages (e.g. /legal from the footer). Pages that
+  // restore a saved scroll position (PlotsPage) do so in a later effect, so
+  // they still override this on back-navigation.
+  useEffect(() => {
+    if (hash) return;
+    window.scrollTo(0, 0);
+  }, [pathname, hash]);
 
   return (
     <Box sx={{

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useNavigationType } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 
@@ -24,17 +24,20 @@ const containerSx = {
 export function RootLayout() {
   const { trackEvent } = useAnalytics();
   const { pathname, hash } = useLocation();
+  const navigationType = useNavigationType();
   const mastheadSticks = pathname !== '/plots';
 
-  // Reset scroll on route change. PlotsPage sets scrollRestoration='manual',
-  // so without this the browser keeps the previous scroll position when
-  // navigating to short pages (e.g. /legal from the footer). Pages that
-  // restore a saved scroll position (PlotsPage) do so in a later effect, so
-  // they still override this on back-navigation.
+  // Reset scroll on forward navigation (PUSH/REPLACE). Without this, short
+  // pages like /legal inherit the previous page's scroll position because
+  // PlotsPage sets scrollRestoration='manual'. Skip on POP so browser
+  // back/forward keeps native scroll restoration; skip when a hash anchor
+  // is present so in-page anchors still work. PlotsPage runs its own
+  // saved-scroll restore in a later effect, so it still overrides this.
   useEffect(() => {
     if (hash) return;
+    if (navigationType === 'POP') return;
     window.scrollTo(0, 0);
-  }, [pathname, hash]);
+  }, [pathname, hash, navigationType]);
 
   return (
     <Box sx={{

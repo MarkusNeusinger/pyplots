@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '../test-utils';
 
 // Mock hooks
@@ -115,5 +115,21 @@ describe('HomePage', () => {
   it('renders Helmet for SEO', () => {
     render(<HomePage />);
     expect(screen.getByTestId('helmet')).toBeInTheDocument();
+  });
+
+  describe('scrollRestoration', () => {
+    const original = history.scrollRestoration;
+
+    afterEach(() => {
+      history.scrollRestoration = original;
+    });
+
+    it("sets scrollRestoration to 'manual' on mount and restores 'auto' on unmount", () => {
+      history.scrollRestoration = 'auto';
+      const { unmount } = render(<HomePage />);
+      expect(history.scrollRestoration).toBe('manual');
+      unmount();
+      expect(history.scrollRestoration).toBe('auto');
+    });
   });
 });

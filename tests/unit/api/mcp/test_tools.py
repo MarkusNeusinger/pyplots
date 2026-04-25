@@ -172,7 +172,7 @@ async def test_search_specs_by_tags_dataprep_styling(mock_db_context, mock_spec)
 async def test_get_spec_detail(mock_db_context, mock_spec):
     """Test get_spec_detail tool."""
     mock_repo = MagicMock()
-    mock_repo.get_by_id = AsyncMock(return_value=mock_spec)
+    mock_repo.get_by_id_with_code = AsyncMock(return_value=mock_spec)
 
     with patch("api.mcp.server.SpecRepository", return_value=mock_repo):
         result = await get_spec_detail("scatter-basic")
@@ -188,7 +188,7 @@ async def test_get_spec_detail(mock_db_context, mock_spec):
 async def test_get_spec_detail_not_found(mock_db_context):
     """Test get_spec_detail with invalid spec_id."""
     mock_repo = MagicMock()
-    mock_repo.get_by_id = AsyncMock(return_value=None)
+    mock_repo.get_by_id_with_code = AsyncMock(return_value=None)
 
     with patch("api.mcp.server.SpecRepository", return_value=mock_repo):
         with pytest.raises(ValueError, match="Specification 'invalid' not found"):

@@ -47,6 +47,25 @@ class TestSpecRepository:
 
         assert spec is None
 
+    async def test_get_by_id_with_code(self, test_db_with_data):
+        """Should eager-load Impl.code so reading it after the call doesn't lazy-load."""
+        repo = SpecRepository(test_db_with_data)
+        spec = await repo.get_by_id_with_code("scatter-basic")
+
+        assert spec is not None
+        assert len(spec.impls) == 2
+        # Touching code on every impl must not trigger a deferred SELECT.
+        for impl in spec.impls:
+            assert impl.code is not None
+            assert isinstance(impl.code, str)
+
+    async def test_get_by_id_with_code_not_found(self, test_db_with_data):
+        """Should return None for non-existent spec."""
+        repo = SpecRepository(test_db_with_data)
+        spec = await repo.get_by_id_with_code("nonexistent")
+
+        assert spec is None
+
     async def test_get_ids(self, test_db_with_data):
         """Should fetch all spec IDs in order."""
         repo = SpecRepository(test_db_with_data)

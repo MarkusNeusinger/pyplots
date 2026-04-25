@@ -259,7 +259,10 @@ async def get_spec_detail(spec_id: str) -> dict[str, Any]:
     session = await get_mcp_db_session()
     try:
         repo = SpecRepository(session)
-        spec = await repo.get_by_id(spec_id)
+        # get_by_id_with_code eager-loads Impl.code so the loop below can read
+        # it without triggering a deferred-column lazy load (MissingGreenlet
+        # on AsyncSession).
+        spec = await repo.get_by_id_with_code(spec_id)
 
         if spec is None:
             raise ValueError(f"Specification '{spec_id}' not found")

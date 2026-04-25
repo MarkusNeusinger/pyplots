@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 gauge-basic: Basic Gauge Chart
-Library: altair 6.1.0 | Python 3.13
-Quality: 92/100 | Updated: 2026-04-25
+Library: altair 6.1.0 | Python 3.14.4
+Quality: 88/100 | Updated: 2026-04-25
 """
 
 import os

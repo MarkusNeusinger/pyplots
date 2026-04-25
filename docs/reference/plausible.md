@@ -132,6 +132,9 @@ https://anyplot.ai/{spec_id}/{language}/{library}/{category}/{value}/...
 | `tag_click` | `param`, `value`, `source` | SpecTabs.tsx | User clicks a tag chip to filter |
 | `theme_toggle` | `to` | MastheadRule.tsx | User cycles tri-state theme mode (`to` ∈ `system`, `light`, `dark`). The cycle order is `system → light → dark → system`. |
 | `potd_dismiss` | `spec`, `library` | PlotOfTheDay.tsx | User dismisses the plot-of-the-day banner |
+| `view_mode_change` | `mode`, `library` | SpecDetailView.tsx | User toggles preview ↔ interactive view inside a spec detail. `mode` ∈ `preview`, `interactive`. Fires on every toggle in either direction (cf. `open_interactive`, which only fires when the interactive HTML is opened in a new tab). |
+| `library_click` | `source`, `library` | LibrariesPage.tsx | User clicks a library card on `/libraries` to navigate to its filtered plots view. `source` is `libraries_page` from this entry point. |
+| `stats_top_impl_click` | `spec`, `library` | StatsPage.tsx | User clicks a "top implementation" thumbnail on `/stats` to jump into its spec detail. |
 
 ### Landing Page Navigation (`nav_click`)
 
@@ -308,6 +311,7 @@ To see event properties in Plausible dashboard, you **MUST** register them as cu
 | `source` | Source UI element / page context | `tag_click`, `nav_click` |
 | `target` | Click destination (route or external label) | `nav_click` |
 | `to` | New mode after toggle (`system` / `light` / `dark`) | `theme_toggle` |
+| `mode` | Spec detail view mode (`preview` / `interactive`) | `view_mode_change` |
 | `theme` | Ambient *effective* theme attached to **every** pageview & event (`dark` / `light`) — resolved from the tri-state mode so OS-followers still split cleanly | all events (set in RootLayout via `setAnalyticsAmbientProps`) |
 | `rating` | CWV rating (good, needs-improvement, poor) | `LCP`, `CLS`, `INP` |
 | `filter_lib` | Library filter value (for og:image) | `og_image_view` |
@@ -348,6 +352,9 @@ To see event properties in Plausible dashboard, you **MUST** register them as cu
 | `nav_click` | Custom Event | Track which UI element on landing/chrome leads users off the root |
 | `theme_toggle` | Custom Event | Track dark/light theme switches |
 | `potd_dismiss` | Custom Event | Track plot-of-the-day banner dismissals |
+| `view_mode_change` | Custom Event | Track preview ↔ interactive toggles in spec detail |
+| `library_click` | Custom Event | Track library-card clicks on the libraries page |
+| `stats_top_impl_click` | Custom Event | Track clicks on top-quality implementation thumbnails on /stats |
 | `og_image_view` | Custom Event | Track og:image requests from social media bots |
 | `LCP` | Custom Event | Largest Contentful Paint (Core Web Vital) |
 | `CLS` | Custom Event | Cumulative Layout Shift (Core Web Vital) |
@@ -438,12 +445,15 @@ User lands on anyplot.ai
 | `nav_click` | `source`, `target`, `spec`?, `library`?, `value`? | NavBar, MastheadRule, HeroSection, SectionHeader, PlotOfTheDay, PlotOfTheDayTerminal, LandingPage |
 | `theme_toggle` | `to` | MastheadRule.tsx |
 | `potd_dismiss` | `spec`, `library` | PlotOfTheDay.tsx |
+| `view_mode_change` | `mode`, `library` | SpecDetailView.tsx |
+| `library_click` | `source`, `library` | LibrariesPage.tsx |
+| `stats_top_impl_click` | `spec`, `library` | StatsPage.tsx |
 | `LCP` | `value`, `rating` | reportWebVitals.ts |
 | `CLS` | `value`, `rating` | reportWebVitals.ts |
 | `INP` | `value`, `rating` | reportWebVitals.ts |
 | `og_image_view` | `page`, `platform`, `spec`?, `language`?, `library`?, `filter_*`? | api/analytics.py (server-side) |
 
-**Total: 22 client-side + 1 server-side = 23 events**
+**Total: 25 client-side + 1 server-side = 26 events**
 
 > Every pageview and event additionally carries a `theme` ambient prop (`dark` /
 > `light`). Set in `RootLayout` via `setAnalyticsAmbientProps` whenever the user

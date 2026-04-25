@@ -166,8 +166,14 @@ Located in `.github/workflows/`:
 | `impl-repair.yml` | Fixes rejected implementations |
 | `impl-merge.yml` | Merges approved PRs |
 | `bulk-generate.yml` | Batch implementation generation |
-| `sync-postgres.yml` | Syncs plots/ to database |
+| `daily-regen.yml` | Cron-driven regeneration of the oldest implementations |
 | `report-validate.yml` | Validates user-submitted issue reports |
+| `sync-postgres.yml` | Syncs `plots/` filesystem state to PostgreSQL on push to main |
+| `sync-labels.yml` | Auto-syncs spec/impl labels after manual PR merges |
+| `ci-lint.yml` | Ruff lint check on PRs |
+| `ci-tests.yml` | Unit + integration tests on PRs |
+| `notify-deployment.yml` | Records GitHub deployment events for `app` / `api` |
+| `util-claude.yml` | On-demand `@claude` utility (issue/PR comments) |
 
 ---
 
@@ -211,11 +217,11 @@ Override the default model for any tier via environment variables:
 
 ```bash
 # Linux/WSL
-export CLI_MODEL_CLAUDE_LARGE=claude-3-5-sonnet-20240620
+export CLI_MODEL_CLAUDE_LARGE=claude-opus-4-7
 export CLI_MODEL_COPILOT_MEDIUM=gpt-4-turbo
 
 # Windows PowerShell
-$env:CLI_MODEL_CLAUDE_LARGE = "claude-3-5-sonnet-20240620"
+$env:CLI_MODEL_CLAUDE_LARGE = "claude-opus-4-7"
 $env:CLI_MODEL_COPILOT_MEDIUM = "gpt-4-turbo"
 ```
 

@@ -1,7 +1,7 @@
 """ anyplot.ai
 gauge-basic: Basic Gauge Chart
 Library: pygal 3.1.0 | Python 3.14.4
-Quality: 80/100 | Updated: 2026-04-25
+Quality: 87/100 | Updated: 2026-04-25
 """
 
 import os

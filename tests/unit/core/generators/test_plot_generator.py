@@ -276,6 +276,42 @@ class TestRetryWithBackoff:
         # Should not retry
         assert func.call_count == 1
 
+    def test_retry_on_transient_status_error(self):
+        """APIStatusError with retryable status (529 overload) should retry."""
+        from anthropic import APIStatusError
+
+        mock_response = MagicMock()
+        mock_response.status_code = 529
+
+        func = MagicMock(
+            side_effect=[
+                APIStatusError(message="overloaded", response=mock_response, body={}),
+                APIStatusError(message="overloaded again", response=mock_response, body={}),
+                "success",
+            ]
+        )
+
+        with patch("time.sleep"):
+            result = retry_with_backoff(func, max_retries=3, initial_delay=0.01)
+
+        assert result == "success"
+        assert func.call_count == 3
+
+    def test_no_retry_on_non_transient_status_error(self):
+        """APIStatusError with a 4xx (e.g. 400 bad request) must NOT retry."""
+        from anthropic import APIStatusError
+
+        mock_response = MagicMock()
+        mock_response.status_code = 400
+
+        func = MagicMock(side_effect=APIStatusError(message="bad request", response=mock_response, body={}))
+
+        with pytest.raises(APIStatusError, match="bad request"):
+            retry_with_backoff(func, max_retries=3)
+
+        # Single attempt — 4xx is not in the retryable status set.
+        assert func.call_count == 1
+
     def test_exponential_backoff_delays(self):
         from anthropic import RateLimitError
 
@@ -366,8 +402,10 @@ Description of the test spec.
         assert "# Test Spec" in result
         assert "**Spec Version:** 1.0.0" in result
 
-    def test_load_spec_without_version(self, tmp_path: Path, monkeypatch, capsys):
-        """Should warn when spec has no version marker."""
+    def test_load_spec_without_version(self, tmp_path: Path, monkeypatch, caplog):
+        """Should warn (via logger) when spec has no version marker."""
+        import logging
+
         specs_dir = tmp_path / "specs"
         specs_dir.mkdir()
         spec_file = specs_dir / "no-version-spec.md"
@@ -375,11 +413,11 @@ Description of the test spec.
 
         monkeypatch.chdir(tmp_path)
 
-        result = load_spec("no-version-spec")
+        with caplog.at_level(logging.WARNING, logger="core.generators.plot_generator"):
+            result = load_spec("no-version-spec")
 
         assert "# Spec without version" in result
-        captured = capsys.readouterr()
-        assert "Warning: Spec has no version marker" in captured.out
+        assert any("Spec has no version marker" in record.message for record in caplog.records)
 
 
 class TestLoadGenerationRules:

@@ -16,6 +16,8 @@ Welcome to the anyplot documentation. Start here to find what you're looking for
 | Integrate anyplot into AI workflow | [MCP Server](reference/mcp.md) |
 | Understand the database | [Database Schema](reference/database.md) |
 | Explore repository structure | [Repository Structure](reference/repository.md) |
+| Style frontend or plots | [Style Guide](reference/style-guide.md) |
+| Investigate API latency | [Performance Reference](reference/performance.md) |
 
 ---
 
@@ -30,15 +32,16 @@ docs/
 │   └── vision.md         # Product vision and mission
 ├── workflows/            # Process documentation
 │   └── overview.md       # GitHub Actions automation
-├── reference/            # Technical details
-│   ├── api.md            # REST API endpoints
-│   ├── mcp.md            # MCP server integration
-│   ├── database.md       # PostgreSQL schema
-│   ├── repository.md     # Directory structure
-│   ├── tagging-system.md # Tag taxonomy reference
-│   ├── plausible.md      # Analytics integration
-│   └── seo.md            # SEO configuration
-└── (reserved for future docs)
+└── reference/            # Technical details
+    ├── api.md            # REST API endpoints
+    ├── mcp.md            # MCP server integration
+    ├── database.md       # PostgreSQL schema
+    ├── repository.md     # Directory structure
+    ├── tagging-system.md # Tag taxonomy reference
+    ├── plausible.md      # Analytics integration
+    ├── seo.md            # SEO configuration
+    ├── style-guide.md    # Brand, frontend, plot design system
+    └── performance.md    # API latency measurements
 ```
 
 ---
@@ -70,6 +73,8 @@ Technical details for development and integration.
 - **[Tagging System](reference/tagging-system.md)** - Tag taxonomy (used by spec-create workflow)
 - **[Plausible](reference/plausible.md)** - Analytics integration
 - **[SEO](reference/seo.md)** - Search engine optimization setup
+- **[Style Guide](reference/style-guide.md)** - Brand, frontend, and plot design system
+- **[Performance](reference/performance.md)** - Backend API response-time measurements
 
 ---
 

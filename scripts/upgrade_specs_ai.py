@@ -8,10 +8,19 @@ not just structural changes.
 
 import os
 import re
+import sys
 from pathlib import Path
 from typing import Dict, Tuple
 
 import anthropic
+
+
+PROJECT_ROOT = Path(__file__).parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
+# Local imports must come AFTER sys.path is patched so the script remains
+# runnable from any working directory (Copilot review: PR #5414).
+from core.config import settings  # noqa: E402
 
 
 def get_spec_version(spec_content: str) -> str:
@@ -145,11 +154,12 @@ Generate the upgraded spec now:"""
     if dry_run:
         return True, spec_content, f"Would upgrade from {current_version} to {target_version} using AI"
 
-    # Call Claude
-    client = anthropic.Anthropic(api_key=api_key)
+    # Call Claude. timeout caps a single request; SDK default max_retries (~2)
+    # is fine here since this script has no outer retry handler.
+    client = anthropic.Anthropic(api_key=api_key, timeout=300.0)
 
     response = client.messages.create(
-        model="claude-sonnet-4-20250514", max_tokens=4000, messages=[{"role": "user", "content": prompt}]
+        model=settings.claude_model, max_tokens=4000, messages=[{"role": "user", "content": prompt}]
     )
 
     upgraded_content = response.content[0].text

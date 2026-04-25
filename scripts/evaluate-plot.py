@@ -28,8 +28,13 @@ import subprocess
 import sys
 from pathlib import Path
 
+
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
+
+# Local imports must come AFTER sys.path is patched so the script remains
+# runnable from any working directory (Copilot review: PR #5414).
+from core.config import settings  # noqa: E402
 
 SUPPORTED_LIBRARIES = [
     "matplotlib", "seaborn", "plotly", "bokeh", "altair",
@@ -458,17 +463,25 @@ Be STRICT - a "good" plot should score around 70-80, not 95.
 
 
 def evaluate_with_claude(prompt: str, image_path: Path | None = None) -> dict:
-    """Send the evaluation prompt to Claude API."""
+    """Send the evaluation prompt to Claude API.
+
+    Returns one of three shapes:
+      - success: parsed quality result dict (has `score`, `tier`, etc.)
+      - API failure: `{"error": str, "error_type": "missing_dep" | "missing_key" | "api_error", ...}`
+      - parse failure (API call succeeded but response isn't valid fenced JSON):
+        `{"error": str, "error_type": "json_parse_failure" | "no_json_block", "raw_response": str}`
+    """
     try:
         import anthropic
     except ImportError:
-        return {"error": "anthropic package not installed. Run: pip install anthropic"}
+        return {"error": "anthropic package not installed. Run: pip install anthropic", "error_type": "missing_dep"}
 
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
-        return {"error": "ANTHROPIC_API_KEY not set"}
+        return {"error": "ANTHROPIC_API_KEY not set", "error_type": "missing_key"}
 
-    client = anthropic.Anthropic(api_key=api_key)
+    # timeout caps a single request; SDK default max_retries is fine here.
+    client = anthropic.Anthropic(api_key=api_key, timeout=300.0)
     content = [{"type": "text", "text": prompt}]
 
     if image_path and image_path.exists():
@@ -483,22 +496,32 @@ def evaluate_with_claude(prompt: str, image_path: Path | None = None) -> dict:
 
     try:
         response = client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model=settings.claude_model,
             max_tokens=4096,
             messages=[{"role": "user", "content": content}],
         )
-        response_text = response.content[0].text
+    except anthropic.APIError as e:
+        # RateLimitError / APIStatusError / APITimeoutError / APIConnectionError all subclass APIError.
+        return {"error": str(e), "error_type": "api_error", "exception": type(e).__name__}
 
-        import re
-        json_match = re.search(r'```json\s*(.*?)\s*```', response_text, re.DOTALL)
-        if json_match:
-            try:
-                return json.loads(json_match.group(1))
-            except json.JSONDecodeError:
-                pass
-        return {"raw_response": response_text}
-    except Exception as e:
-        return {"error": str(e)}
+    response_text = response.content[0].text
+
+    import re
+    json_match = re.search(r'```json\s*(.*?)\s*```', response_text, re.DOTALL)
+    if json_match is None:
+        return {
+            "error": "Response contained no ```json fenced block",
+            "error_type": "no_json_block",
+            "raw_response": response_text,
+        }
+    try:
+        return json.loads(json_match.group(1))
+    except json.JSONDecodeError as e:
+        return {
+            "error": f"Failed to parse JSON from fenced block: {e}",
+            "error_type": "json_parse_failure",
+            "raw_response": response_text,
+        }
 
 
 # =============================================================================
@@ -522,12 +545,12 @@ def print_auto_reject_result(result: dict):
 def print_quality_result(result: dict, verbose: bool = False):
     """Print quality evaluation results."""
     if "error" in result:
-        print(f"\n❌ Error: {result['error']}")
-        return
-
-    if "raw_response" in result:
-        print("\nRaw Response:")
-        print(result["raw_response"])
+        error_type = result.get("error_type", "error")
+        print(f"\n❌ {error_type}: {result['error']}")
+        # For parse failures the API call succeeded — show what came back so the user can debug.
+        if "raw_response" in result:
+            print("\nRaw response from model:")
+            print(result["raw_response"])
         return
 
     score = result.get("score", 0)

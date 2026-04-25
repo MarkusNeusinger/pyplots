@@ -61,10 +61,10 @@ describe('useAnalytics', () => {
       const { result } = renderHook(() => useAnalytics());
 
       act(() => {
-        result.current.trackEvent('filter_change');
+        result.current.trackEvent('suggest_spec');
       });
 
-      expect(window.plausible).toHaveBeenCalledWith('filter_change', undefined);
+      expect(window.plausible).toHaveBeenCalledWith('suggest_spec', undefined);
     });
 
     it('strips undefined values from props', () => {

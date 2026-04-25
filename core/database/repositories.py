@@ -130,6 +130,27 @@ class SpecRepository(BaseRepository[Spec]):
         )
         return result.scalar_one_or_none()
 
+    async def get_by_id_with_code(self, spec_id: str) -> Optional[Spec]:
+        """Like get_by_id, but additionally eager-loads Impl.code.
+
+        Use this when the caller needs `impl.code` on every implementation
+        (e.g. the MCP `get_specification` tool). Touching `impl.code` after
+        `get_by_id` raises MissingGreenlet on AsyncSession because the column
+        is deferred and the lazy-load would emit a sync SELECT.
+        """
+        impls_loader = selectinload(Spec.impls)
+        result = await self.session.execute(
+            select(Spec)
+            .where(Spec.id == spec_id)
+            .options(
+                impls_loader.selectinload(Impl.library),
+                impls_loader.undefer(Impl.review_image_description)
+                .undefer(Impl.review_criteria_checklist)
+                .undefer(Impl.code),
+            )
+        )
+        return result.scalar_one_or_none()
+
     async def get_all(self) -> list[Spec]:
         """Get all specs with their implementations and library (deferred heavy fields excluded)."""
         result = await self.session.execute(select(Spec).options(selectinload(Spec.impls).selectinload(Impl.library)))

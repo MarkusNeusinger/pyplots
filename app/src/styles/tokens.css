@@ -48,7 +48,7 @@
   /* Syntax tokens — tuned for cream paper background.
      Brand green is reserved for comments (italic) so it reads as
      a deliberate accent against neutral ink body text. */
-  --code-comment:     #009E73;  /* brand green, italic */
+  --code-comment:     #007A59;  /* darker brand green, italic — passes AA on cream */
   --code-keyword:     #0072B2;  /* blue */
   --code-string:      #D55E00;  /* vermillion */
   --code-function:    #1A1A17;  /* ink (bold) */

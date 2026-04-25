@@ -254,7 +254,7 @@ export function SpecTabs({
   // Lazy-loaded syntax highlighter - only loads when Code tab is opened
   const highlightedCode = code ? (
     <Suspense fallback={
-      <Box sx={{ fontFamily: typography.fontFamily, fontSize: '0.85rem', whiteSpace: 'pre-wrap', color: semanticColors.labelText }}>
+      <Box sx={{ fontFamily: typography.fontFamily, fontSize: '0.85rem', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', overflowX: 'auto', minWidth: 0, color: semanticColors.labelText }}>
         {code}
       </Box>
     }>

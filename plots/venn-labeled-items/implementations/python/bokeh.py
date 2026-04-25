@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 venn-labeled-items: Chartgeist-Style Venn Diagram with Labeled Items
-Library: bokeh | Python 3.13
-Quality: pending | Created: 2026-04-25
+Library: bokeh 3.9.0 | Python 3.14.4
+Quality: 86/100 | Created: 2026-04-25
 """
 
 import os

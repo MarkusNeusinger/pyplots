@@ -1,16 +1,18 @@
-""" anyplot.ai
+"""anyplot.ai
 gauge-basic: Basic Gauge Chart
 Library: letsplot 4.9.0 | Python 3.14.4
 Quality: 81/100 | Updated: 2026-04-25
 """
 
 import math
+import os
 
 import pandas as pd
 from lets_plot import (
     LetsPlot,
     aes,
     element_blank,
+    element_rect,
     element_text,
     geom_polygon,
     geom_segment,
@@ -27,6 +29,11 @@ from lets_plot import (
 
 
 LetsPlot.setup_html()
+
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
 
 # Data - sales performance gauge
 value = 72
@@ -102,13 +109,13 @@ df_min_max = pd.DataFrame({"x": [-1.05, 1.05], "y": [-0.08, -0.08], "label": [st
 # Create plot
 plot = (
     ggplot()
-    + geom_polygon(aes(x="x", y="y", fill="zone", group="zone"), data=df_polygons, color="#FFFFFF", size=1.5, alpha=0.9)
+    + geom_polygon(aes(x="x", y="y", fill="zone", group="zone"), data=df_polygons, color=PAGE_BG, size=1.5, alpha=0.9)
     + scale_fill_manual(values=zone_colors)
-    + geom_segment(aes(x="x", y="y", xend="xend", yend="yend"), data=df_needle, color="#1F2937", size=5)
-    + geom_polygon(aes(x="x", y="y"), data=df_circle, fill="#1F2937", color="#1F2937")
-    + geom_text(aes(x="x", y="y", label="label"), data=df_label, size=28, color="#1F2937", fontface="bold")
-    + geom_text(aes(x="x", y="y", label="label"), data=df_min_max, size=14, color="#6B7280")
-    + labs(title="gauge-basic · letsplot · pyplots.ai")
+    + geom_segment(aes(x="x", y="y", xend="xend", yend="yend"), data=df_needle, color=INK, size=5)
+    + geom_polygon(aes(x="x", y="y"), data=df_circle, fill=INK, color=INK)
+    + geom_text(aes(x="x", y="y", label="label"), data=df_label, size=28, color=INK, fontface="bold")
+    + geom_text(aes(x="x", y="y", label="label"), data=df_min_max, size=14, color=INK_SOFT)
+    + labs(title="gauge-basic · letsplot · anyplot.ai")
     + xlim(-1.4, 1.4)
     + ylim(-0.5, 1.3)
     + theme(
@@ -117,14 +124,14 @@ plot = (
         axis_ticks=element_blank(),
         axis_line=element_blank(),
         panel_grid=element_blank(),
-        panel_background=element_blank(),
-        plot_background=element_blank(),
+        panel_background=element_rect(fill=PAGE_BG, color=PAGE_BG),
+        plot_background=element_rect(fill=PAGE_BG, color=PAGE_BG),
         legend_position="none",
-        plot_title=element_text(size=24, face="bold"),
+        plot_title=element_text(size=24, face="bold", color=INK),
     )
     + ggsize(1600, 900)
 )
 
 # Save outputs
-ggsave(plot, "plot.png", scale=3, path=".")
-ggsave(plot, "plot.html", path=".")
+ggsave(plot, f"plot-{THEME}.png", scale=3, path=".")
+ggsave(plot, f"plot-{THEME}.html", path=".")

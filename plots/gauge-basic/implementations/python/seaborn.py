@@ -1,4 +1,4 @@
-""" anyplot.ai
+"""anyplot.ai
 gauge-basic: Basic Gauge Chart
 Library: seaborn 0.13.2 | Python 3.14.4
 Quality: 83/100 | Updated: 2026-04-25
@@ -6,10 +6,12 @@ Quality: 83/100 | Updated: 2026-04-25
 
 import os
 
+import matplotlib.patheffects as pe
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from matplotlib.patches import Wedge
 
 
 # Theme tokens
@@ -39,25 +41,9 @@ end_angle = 0
 angle_range = start_angle - end_angle
 value_range = max_value - min_value
 
-# Build dense scatter points across the arc, one row per (zone, value, radial offset)
-n_points_per_zone = 60
 zone_boundaries = [min_value] + thresholds + [max_value]
 zone_names = ["Low", "Medium", "High"]
 zone_colors = [ZONE_LOW, ZONE_MED, ZONE_HIGH]
-
-zone_rows = []
-for i in range(len(zone_boundaries) - 1):
-    z_start = zone_boundaries[i]
-    z_end = zone_boundaries[i + 1]
-    for v in np.linspace(z_start, z_end, n_points_per_zone, endpoint=(i == len(zone_boundaries) - 2)):
-        angle = start_angle - (v - min_value) / value_range * angle_range
-        rad = np.radians(angle)
-        for r_offset in np.linspace(-width / 2 + 0.01, width / 2 - 0.01, 8):
-            r = radius + r_offset
-            zone_rows.append(
-                {"x": center[0] + r * np.cos(rad), "y": center[1] + r * np.sin(rad), "zone": zone_names[i]}
-            )
-df_zones = pd.DataFrame(zone_rows)
 
 # Plot
 sns.set_theme(
@@ -74,23 +60,25 @@ sns.set_theme(
 fig, ax = plt.subplots(figsize=(16, 9), facecolor=PAGE_BG)
 ax.set_facecolor(PAGE_BG)
 
-# Arc — three coloured zones drawn with seaborn scatterplot
-sns.scatterplot(
-    data=df_zones,
-    x="x",
-    y="y",
-    hue="zone",
-    hue_order=zone_names,
-    palette=zone_colors,
-    s=200,
-    marker="o",
-    edgecolor="none",
-    alpha=1.0,
-    legend=False,
-    ax=ax,
-)
+# Arc — three coloured zones drawn as smooth Wedge patches
+for i in range(len(zone_boundaries) - 1):
+    z_start_angle = start_angle - (zone_boundaries[i] - min_value) / value_range * angle_range
+    z_end_angle = start_angle - (zone_boundaries[i + 1] - min_value) / value_range * angle_range
+    ax.add_patch(
+        Wedge(
+            center=center,
+            r=radius + width / 2,
+            theta1=z_end_angle,
+            theta2=z_start_angle,
+            width=width,
+            facecolor=zone_colors[i],
+            edgecolor="none",
+            linewidth=0,
+            zorder=2,
+        )
+    )
 
-# Boundary cuts between zones — short radial line in the page background
+# Boundary cuts between zones — short radial line, theme-visible color
 for threshold in thresholds:
     boundary_angle = start_angle - (threshold - min_value) / value_range * angle_range
     rad = np.radians(boundary_angle)
@@ -100,7 +88,7 @@ for threshold in thresholds:
             "y": [center[1] + r * np.sin(rad) for r in np.linspace(radius - width / 2, radius + width / 2, 12)],
         }
     )
-    sns.lineplot(data=boundary_df, x="x", y="y", color=PAGE_BG, linewidth=4, ax=ax, legend=False)
+    sns.lineplot(data=boundary_df, x="x", y="y", color=INK_SOFT, linewidth=3, ax=ax, legend=False, zorder=3)
 
 # Needle
 needle_angle = start_angle - (value - min_value) / value_range * angle_range
@@ -110,12 +98,12 @@ needle_tip_x = center[0] + needle_length * np.cos(needle_rad)
 needle_tip_y = center[1] + needle_length * np.sin(needle_rad)
 
 needle_df = pd.DataFrame({"x": [center[0], needle_tip_x], "y": [center[1], needle_tip_y]})
-sns.lineplot(data=needle_df, x="x", y="y", color=INK, linewidth=6, ax=ax, legend=False)
+sns.lineplot(data=needle_df, x="x", y="y", color=INK, linewidth=6, ax=ax, legend=False, zorder=12)
 
 # Hub — outer ring (page bg) + inner disc (ink) for clean contrast in both themes
 hub_df = pd.DataFrame({"x": [center[0]], "y": [center[1]]})
-sns.scatterplot(data=hub_df, x="x", y="y", s=1400, color=PAGE_BG, edgecolor="none", ax=ax, legend=False, zorder=10)
-sns.scatterplot(data=hub_df, x="x", y="y", s=900, color=INK, edgecolor="none", ax=ax, legend=False, zorder=11)
+sns.scatterplot(data=hub_df, x="x", y="y", s=1400, color=PAGE_BG, edgecolor="none", ax=ax, legend=False, zorder=13)
+sns.scatterplot(data=hub_df, x="x", y="y", s=900, color=INK, edgecolor="none", ax=ax, legend=False, zorder=14)
 
 # Value display
 ax.text(center[0], center[1] - 0.20, f"{value}%", ha="center", va="center", fontsize=56, fontweight="bold", color=INK)
@@ -126,7 +114,7 @@ for vlabel, x_off in [(min_value, -1), (max_value, 1)]:
         center[0] + x_off * radius, center[1] - 0.06, f"{vlabel}", ha="center", va="top", fontsize=20, color=INK_SOFT
     )
 
-# Zone labels on the arc — white text with dark outline reads on every zone in both themes
+# Zone labels on the arc — white text with dark stroke for legibility on every zone in both themes
 zone_label_centers = [
     (thresholds[0] - min_value) / 2 + min_value,
     (thresholds[0] + thresholds[1]) / 2,
@@ -137,20 +125,10 @@ for v_center, label in zip(zone_label_centers, zone_names, strict=True):
     rad = np.radians(angle)
     lx = center[0] + radius * np.cos(rad)
     ly = center[1] + radius * np.sin(rad)
-    for dx, dy in [(-1, -1), (-1, 1), (1, -1), (1, 1), (-1, 0), (1, 0), (0, -1), (0, 1)]:
-        ax.text(
-            lx + dx * 0.0035,
-            ly + dy * 0.0035,
-            label,
-            ha="center",
-            va="center",
-            fontsize=22,
-            color="#1a1a1a",
-            fontweight="bold",
-        )
-    ax.text(lx, ly, label, ha="center", va="center", fontsize=22, color="white", fontweight="bold")
+    txt = ax.text(lx, ly, label, ha="center", va="center", fontsize=22, color="white", fontweight="bold", zorder=5)
+    txt.set_path_effects([pe.withStroke(linewidth=3, foreground="#1A1A17")])
 
-# Title and subtitle
+# Title
 ax.set_title(
     "Sales Performance · gauge-basic · seaborn · anyplot.ai", fontsize=24, fontweight="medium", pad=20, color=INK
 )

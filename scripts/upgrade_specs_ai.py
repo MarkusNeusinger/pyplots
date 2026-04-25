@@ -8,12 +8,19 @@ not just structural changes.
 
 import os
 import re
+import sys
 from pathlib import Path
 from typing import Dict, Tuple
 
 import anthropic
 
-from core.config import settings
+
+PROJECT_ROOT = Path(__file__).parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
+# Local imports must come AFTER sys.path is patched so the script remains
+# runnable from any working directory (Copilot review: PR #5414).
+from core.config import settings  # noqa: E402
 
 
 def get_spec_version(spec_content: str) -> str:

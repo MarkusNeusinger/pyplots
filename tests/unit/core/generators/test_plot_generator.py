@@ -276,6 +276,42 @@ class TestRetryWithBackoff:
         # Should not retry
         assert func.call_count == 1
 
+    def test_retry_on_transient_status_error(self):
+        """APIStatusError with retryable status (529 overload) should retry."""
+        from anthropic import APIStatusError
+
+        mock_response = MagicMock()
+        mock_response.status_code = 529
+
+        func = MagicMock(
+            side_effect=[
+                APIStatusError(message="overloaded", response=mock_response, body={}),
+                APIStatusError(message="overloaded again", response=mock_response, body={}),
+                "success",
+            ]
+        )
+
+        with patch("time.sleep"):
+            result = retry_with_backoff(func, max_retries=3, initial_delay=0.01)
+
+        assert result == "success"
+        assert func.call_count == 3
+
+    def test_no_retry_on_non_transient_status_error(self):
+        """APIStatusError with a 4xx (e.g. 400 bad request) must NOT retry."""
+        from anthropic import APIStatusError
+
+        mock_response = MagicMock()
+        mock_response.status_code = 400
+
+        func = MagicMock(side_effect=APIStatusError(message="bad request", response=mock_response, body={}))
+
+        with pytest.raises(APIStatusError, match="bad request"):
+            retry_with_backoff(func, max_retries=3)
+
+        # Single attempt — 4xx is not in the retryable status set.
+        assert func.call_count == 1
+
     def test_exponential_backoff_delays(self):
         from anthropic import RateLimitError
 

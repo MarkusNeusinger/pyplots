@@ -14,12 +14,19 @@ from pathlib import Path
 from typing import Callable, Literal, TypeVar
 
 import anthropic
-from anthropic import APIConnectionError, APIError, RateLimitError
+from anthropic import APIConnectionError, APIError, APIStatusError, RateLimitError
 
 from core.config import settings
 
 
 logger = logging.getLogger(__name__)
+
+
+# HTTP status codes that indicate a transient server-side problem worth
+# retrying (overload / unavailable / timeout / gateway issues). Mirrors the
+# Anthropic SDK's own retry list so we don't silently regress when the SDK's
+# auto-retry is disabled at the client level.
+_RETRYABLE_STATUS_CODES = frozenset({408, 500, 502, 503, 504, 524, 529})
 
 
 LibraryType = Literal[
@@ -88,6 +95,7 @@ def retry_with_backoff(
         try:
             return func()
         except (RateLimitError, APIConnectionError) as e:
+            # APITimeoutError is an APIConnectionError subclass and is caught here.
             last_exception = e
             if attempt < max_retries:
                 logger.warning(
@@ -102,8 +110,27 @@ def retry_with_backoff(
             else:
                 logger.error("Max retries (%d) exceeded", max_retries)
                 raise
+        except APIStatusError as e:
+            # Retry transient server-side errors (overload / 5xx / gateway).
+            # The SDK's own auto-retry is disabled at the client level
+            # (max_retries=0) so this branch is the only retry path for them.
+            if e.status_code in _RETRYABLE_STATUS_CODES and attempt < max_retries:
+                last_exception = e
+                logger.warning(
+                    "API status %d (%s). Retrying in %ss... (attempt %d/%d)",
+                    e.status_code,
+                    type(e).__name__,
+                    delay,
+                    attempt + 1,
+                    max_retries,
+                )
+                time.sleep(delay)
+                delay *= backoff_factor
+            else:
+                logger.error("API status error: %s", e)
+                raise
         except APIError as e:
-            # For other API errors, don't retry
+            # 4xx semantic errors (bad request, auth, etc.) are not retried.
             logger.error("API error: %s", e)
             raise
 

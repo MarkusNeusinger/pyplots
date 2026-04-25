@@ -1,4 +1,4 @@
-""" anyplot.ai
+"""anyplot.ai
 area-mountain-panorama: Mountain Panorama Profile with Labeled Peaks
 Library: matplotlib 3.10.9 | Python 3.14.4
 Quality: 82/100 | Created: 2026-04-25
@@ -8,6 +8,7 @@ import os
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.colors import LinearSegmentedColormap
 
 
 # Theme tokens
@@ -18,6 +19,7 @@ INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
 INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
 INK_MUTED = "#6B6A63" if THEME == "light" else "#A8A79F"
 BRAND = "#009E73"
+SKY_TOP = "#E8C8A0" if THEME == "light" else "#252D40"
 
 # Data — Wallis (Valais) summit panorama, ordered W → E
 peaks = [
@@ -44,18 +46,12 @@ peaks = [
 np.random.seed(42)
 angle = np.linspace(0, 262, 2000)
 
-
-def gaussian_smooth(arr, sigma):
-    radius = max(1, int(3 * sigma))
-    grid = np.arange(-radius, radius + 1)
-    kernel = np.exp(-(grid**2) / (2 * sigma**2))
-    kernel = kernel / kernel.sum()
-    return np.convolve(arr, kernel, mode="same")
-
-
 # Base ridge: smoothed random walk in the 3000–3700 m belt (foothills + minor cols)
 walk = np.cumsum(np.random.randn(len(angle)) * 1.5)
-walk = gaussian_smooth(walk, sigma=22)
+sigma_walk = 22
+g = np.arange(-3 * sigma_walk, 3 * sigma_walk + 1)
+kernel_walk = np.exp(-(g**2) / (2 * sigma_walk**2))
+walk = np.convolve(walk, kernel_walk / kernel_walk.sum(), mode="same")
 walk = (walk - walk.min()) / (walk.max() - walk.min())
 ridge = 3000 + walk * 700
 
@@ -65,13 +61,30 @@ for _, pos, elev in peaks:
     bump = (elev - 2700) * np.exp(-((angle - pos) ** 2) / (2 * width**2))
     ridge = np.maximum(ridge, 2700 + bump)
 
-ridge = gaussian_smooth(ridge, sigma=0.8)
+# Light final smoothing of the combined ridge
+sigma_ridge = 0.8
+g = np.arange(-3, 4)
+kernel_ridge = np.exp(-(g**2) / (2 * sigma_ridge**2))
+ridge = np.convolve(ridge, kernel_ridge / kernel_ridge.sum(), mode="same")
 
 # Plot
 fig, ax = plt.subplots(figsize=(16, 9), facecolor=PAGE_BG)
 ax.set_facecolor(PAGE_BG)
 
-# Mountain silhouette
+# Sky gradient above ridgeline (dusk mood: warm peach for light, deep navy for dark)
+sky_cmap = LinearSegmentedColormap.from_list("sky", [PAGE_BG, SKY_TOP])
+sky_gradient = np.linspace(0, 1, 256).reshape(-1, 1)
+ax.imshow(
+    sky_gradient,
+    extent=(0, 262, 2400, 6050),
+    aspect="auto",
+    cmap=sky_cmap,
+    origin="lower",
+    zorder=1,
+    interpolation="bilinear",
+)
+
+# Mountain silhouette (covers the lower portion of the gradient — sky stays above ridge)
 ax.fill_between(angle, 2400, ridge, color=BRAND, linewidth=0, zorder=2)
 ax.plot(angle, ridge, color=BRAND, linewidth=1.0, zorder=3)
 
@@ -85,8 +98,8 @@ for i, (name, pos, elev) in enumerate(sorted_peaks):
     text_weight = "bold" if is_anchor else "regular"
     line_color = INK if is_anchor else INK_SOFT
     line_alpha = 0.85 if is_anchor else 0.45
-    line_width = 1.2 if is_anchor else 0.7
-    fsize = 13 if is_anchor else 11
+    line_width = 1.4 if is_anchor else 0.8
+    fsize = 16 if is_anchor else 14
 
     ax.plot([pos, pos], [elev + 25, level - 90], color=line_color, linewidth=line_width, alpha=line_alpha, zorder=4)
     ax.text(

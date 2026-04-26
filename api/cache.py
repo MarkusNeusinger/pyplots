@@ -12,7 +12,7 @@ import time
 from collections.abc import Awaitable, Callable
 from typing import Any, TypeVar, cast
 
-from cachetools import TTLCache
+from cachetools import LRUCache, TTLCache
 
 from core.config import settings
 
@@ -24,8 +24,14 @@ logger = logging.getLogger(__name__)
 # Global cache instance (configured via settings)
 _cache: TTLCache = TTLCache(maxsize=settings.cache_maxsize, ttl=settings.cache_ttl)
 
-# Per-key locks to prevent cache stampede (~20-30 unique keys, memory negligible)
-_locks: dict[str, asyncio.Lock] = {}
+# Per-key locks to prevent cache stampede.
+# Bounded LRUCache (not a plain dict) so the lock collection can't grow
+# unbounded over long uptime — old keys' locks are evicted when the cap is
+# hit. Sized at 2× cache_maxsize to cover both regular keys and the
+# `_refresh:<key>` stampede-lock variants. A lock that is currently held
+# by a running refresh task stays alive via that task's reference even
+# after eviction; new requests for the evicted key just get a fresh lock.
+_locks: LRUCache = LRUCache(maxsize=settings.cache_maxsize * 2)
 
 # Timestamps for stale-while-revalidate (key -> monotonic time of last set)
 _timestamps: dict[str, float] = {}

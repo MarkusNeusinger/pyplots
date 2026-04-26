@@ -8,18 +8,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 
 import type { PlotImage, ActiveFilters, FilterCounts } from '../types';
 import { API_URL, BATCH_SIZE } from '../constants';
-
-/**
- * Fisher-Yates shuffle algorithm.
- */
-function shuffleArray<T>(array: T[]): T[] {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
+import { shuffleArray } from '../utils/shuffle';
 
 interface FilterFetchState {
   filterCounts: FilterCounts | null;

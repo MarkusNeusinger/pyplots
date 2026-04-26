@@ -6,7 +6,7 @@ Provides abstraction layer between API and database models.
 
 from typing import Generic, Optional, TypeVar
 
-from sqlalchemy import func, select
+from sqlalchemy import String, cast, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload, undefer
 
@@ -171,8 +171,6 @@ class SpecRepository(BaseRepository[Spec]):
 
     async def search_by_tags(self, tags: list[str]) -> list[Spec]:
         """Search specs by tags."""
-        from sqlalchemy import String, cast, or_
-
         filters = []
         for tag in tags:
             filters.append(cast(Spec.tags, String).contains(f'"{tag}"'))

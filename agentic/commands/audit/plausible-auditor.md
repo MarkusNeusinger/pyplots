@@ -33,7 +33,7 @@ Same as backend-auditor — send findings to `audit-lead` via `SendMessage`. Beg
 ```
 COVERAGE: full | partial | blocked
 SITE: anyplot.ai
-LIMITATION: {one line}    # only if blocked or degraded
+LIMITATION: {one line}    # only if blocked or partial
 ---
 ```
 For findings about specific code drift, use the actual file paths in `FILES:`. For pure runtime findings (e.g. "event X never fires"), use `FILES: plausible:event/<event-name>` or `plausible:url/<url>`.

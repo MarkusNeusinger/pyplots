@@ -19,7 +19,7 @@ Read-only commands typically use these verbs: `list`, `describe`, `get-*`, `read
 
 - **Cloud Run** (`anyplot-backend`, `anyplot-frontend`): revision sprawl (`gcloud run revisions list`), traffic split (`gcloud run services describe`), min/max instances vs actual usage, error rate / p95 latency over the last 7d, cold-start frequency
 - **Cloud SQL**: instance config, storage trend, slow query log presence, connection counts, pending maintenance
-- **Cloud Storage** (`anyplot-images`): orphaned `staging/` blobs older than N days (sample, do not list all), total size growth, public-access posture (`gsutil iam get`)
+- **Cloud Storage** (`anyplot-images`): orphaned `staging/` blobs older than N days (sample, do not list all), total size growth, public-access posture (`gcloud storage buckets get-iam-policy`)
 - **Cloud Build**: failed builds in last 7d, average duration trend
 - **Logs**: top 10 ERROR/CRITICAL log lines in last 7d across services. ALWAYS bound queries with `--limit=` (e.g. 50) and a short freshness filter (e.g. `--freshness=7d`). Log queries are the easiest way to blow the tool budget.
 - **IAM**: overly broad bindings on service accounts; SA keys older than 90d (`gcloud iam service-accounts keys list`)
@@ -36,7 +36,7 @@ Same as backend-auditor — send findings to `audit-lead` via `SendMessage`. Beg
 ```
 COVERAGE: full | partial | blocked
 PROJECT: {gcp-project-id-actually-inspected}    # required if not blocked
-LIMITATION: {one line}                          # only if blocked or degraded
+LIMITATION: {one line}                          # only if blocked or partial
 ---
 ```
 Then the standard `FINDING / IMPORTANCE / EFFORT / AUTO-FIX / FILES / DESCRIPTION / HINT` blocks. For findings that are not file-bound, use `FILES: gcp:<resource-path>` (e.g. `gcp:run/services/anyplot-backend`).

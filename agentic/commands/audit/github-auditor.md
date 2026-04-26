@@ -27,7 +27,7 @@ Read-only `gh` commands typically use these verbs: `list`, `view`, `status`, `ch
 - **Branch protection on `main`**: `gh api repos/MarkusNeusinger/anyplot/branches/main/protection` — required checks present, required reviews, force-push allowed, admins-included
 - **Dependabot / security alerts**: `gh api repos/MarkusNeusinger/anyplot/dependabot/alerts --paginate` — open count by severity (read-only counts, do not dismiss)
 - **Secret/variable inventory**: `gh secret list` and `gh variable list` — names only; flag any not referenced by any workflow file
-- **Artifacts pile-up**: `gh api repos/MarkusNeusinger/anyplot/actions/artifacts --paginate | jq '.artifacts | length'` — old artifacts not garbage-collected
+- **Artifacts pile-up**: `gh api repos/MarkusNeusinger/anyplot/actions/artifacts --paginate --jq '.artifacts | length'` — old artifacts not garbage-collected
 
 ## Tool budget
 
@@ -39,7 +39,7 @@ Same as backend-auditor — send findings to `audit-lead` via `SendMessage`. Beg
 ```
 COVERAGE: full | partial | blocked
 GH_USER: {active gh user}
-LIMITATION: {one line}    # only if blocked or degraded
+LIMITATION: {one line}    # only if blocked or partial
 ---
 ```
 For findings not file-bound, use `FILES: gh:<resource-path>` (e.g. `gh:branches/specification-foo`, `gh:workflows/impl-generate.yml`).

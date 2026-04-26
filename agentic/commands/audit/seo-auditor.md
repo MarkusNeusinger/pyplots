@@ -53,7 +53,7 @@ Same as backend-auditor — send findings to `audit-lead` via `SendMessage`. Beg
 ```
 COVERAGE: full | structural-only | partial | blocked
 SC_FRESHNESS: {YYYY-MM-DD}                         # only if full or partial
-LIMITATION: {one line}                             # if degraded or structural-only
+LIMITATION: {one line}                             # if blocked, partial, or structural-only
 ---
 ```
 For findings about specific code (missing JSON-LD, missing meta), use the actual file paths in `FILES:`. For pure SC findings, use `FILES: sc:query/<query>` or `sc:url/<url>`.

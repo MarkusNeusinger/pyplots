@@ -45,7 +45,7 @@ Same as backend-auditor — send findings to `audit-lead` via `SendMessage`. Beg
 ```
 COVERAGE: full | partial
 PSI_TIMESTAMPS: {url[strategy]=ts, ...}
-LIMITATION: {one line}    # only if degraded (e.g. anonymous quota hit)
+LIMITATION: {one line}    # only if partial (e.g. anonymous quota hit)
 ---
 ```
 Use `FILES: psi:<url>[<strategy>]` for findings not bound to a specific repo file (most of them).

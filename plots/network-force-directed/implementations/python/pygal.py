@@ -1,4 +1,4 @@
-""" anyplot.ai
+"""anyplot.ai
 network-force-directed: Force-Directed Graph
 Library: pygal 3.1.0 | Python 3.14.4
 Quality: 84/100 | Created: 2026-04-26
@@ -73,8 +73,8 @@ edges.extend(bridge_edges)
 n = len(nodes)
 positions = np.random.rand(n, 2) * 2 - 1  # Initial random positions
 
-k = 0.65  # Optimal distance — slightly larger to reduce dense-cluster overlap
-iterations = 250
+k = 0.95  # Optimal distance — larger to reduce dense-cluster node overlap
+iterations = 320
 
 for iteration in range(iterations):
     displacement = np.zeros((n, 2))
@@ -170,17 +170,21 @@ for src, tgt in edges:
 
 chart.add("Connections", edge_points, stroke=True, show_dots=False, fill=False)
 
-# Nodes grouped by community — pygal cycles colors per series after the edges series
+# Nodes grouped by community — radius scales with node degree (visual encoding)
+# pygal supports per-point SVG attribute overrides via the "node" dict
+max_degree = max(degrees.values())
+min_radius, max_radius = 18, 52
 for comm_idx, comm_name in enumerate(community_names):
     comm_nodes = [node for node in nodes if node["community"] == comm_idx]
     node_points = []
     for node in comm_nodes:
         x, y = pos[node["id"]]
         degree = degrees[node["id"]]
+        radius = min_radius + (max_radius - min_radius) * (degree / max_degree)
         label = f"Node {node['id']} | {degree} connections"
         if degree >= 7:
             label += " (Hub)"
-        node_points.append({"value": (x, y), "label": label})
+        node_points.append({"value": (x, y), "label": label, "node": {"r": round(radius, 1)}})
     chart.add(comm_name, node_points, stroke=False)
 
 # Save outputs (theme-aware filenames)

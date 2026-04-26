@@ -1,4 +1,4 @@
-""" anyplot.ai
+"""anyplot.ai
 network-force-directed: Force-Directed Graph
 Library: highcharts unknown | Python 3.14.4
 Quality: 80/100 | Updated: 2026-04-26
@@ -75,10 +75,10 @@ for i, comm1 in enumerate(community_list):
                 edges.append({"from": person1, "to": person2})
                 added_edges.add(edge)
 
-# Create node configurations with larger markers
+# Create node configurations
 node_configs = []
 for n in nodes:
-    node_configs.append({"id": n["id"], "color": n["color"], "marker": {"radius": 45}})
+    node_configs.append({"id": n["id"], "color": n["color"], "marker": {"radius": 32}})
 
 # Download Highcharts JS and networkgraph module
 highcharts_url = "https://cdnjs.cloudflare.com/ajax/libs/highcharts/11.4.8/highcharts.js"
@@ -93,7 +93,7 @@ with urllib.request.urlopen(networkgraph_url, timeout=30) as response:
 # Build chart configuration as raw JavaScript for better control
 nodes_js = "[\n"
 for n in node_configs:
-    nodes_js += f'    {{id: "{n["id"]}", color: "{n["color"]}", marker: {{radius: 45}}}},\n'
+    nodes_js += f'    {{id: "{n["id"]}", color: "{n["color"]}", marker: {{radius: 32}}}},\n'
 nodes_js += "]"
 
 data_js = "[\n"
@@ -131,10 +131,10 @@ Highcharts.chart('container', {{
             layoutAlgorithm: {{
                 enableSimulation: true,
                 friction: -0.9,
-                linkLength: 250,
-                gravitationalConstant: 0.02,
+                linkLength: 650,
+                gravitationalConstant: 0.06,
                 integration: 'verlet',
-                maxIterations: 1000
+                maxIterations: 1500
             }},
             dataLabels: {{
                 enabled: true,

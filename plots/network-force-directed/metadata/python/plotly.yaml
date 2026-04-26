@@ -2,7 +2,7 @@ library: plotly
 language: python
 specification_id: network-force-directed
 created: '2025-12-23T15:14:01Z'
-updated: '2026-04-26T09:15:53Z'
+updated: '2026-04-26T09:26:26Z'
 generated_by: claude-opus
 workflow_run: 24952565979
 issue: 990
@@ -12,41 +12,43 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/network-f
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/network-force-directed/python/plotly/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/network-force-directed/python/plotly/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/network-force-directed/python/plotly/plot-dark.html
-quality_score: 83
+quality_score: 89
 review:
   strengths:
-  - Correct Fruchterman-Reingold physics simulation implemented from scratch with
-    proper repulsion/attraction forces and temperature cooling
-  - 'Full theme-adaptive chrome: background, text, legend, hub annotations all use
-    correct tokens in both light and dark renders — no dark-on-dark failures'
-  - None-separator edge trace pattern is the idiomatic plotly approach for network
-    graphs; grouped traces per community correctly drives the legend
-  - Degree-scaled node sizes elegantly encode network centrality as a visual variable
-  - 'Perfect spec compliance: all required features implemented including community
-    structure, degree sizing, and bridge connections'
+  - Fruchterman-Reingold force-directed algorithm implemented from scratch with numpy
+    only — no networkx dependency
+  - Degree-based node sizing creates meaningful visual hierarchy with hub nodes immediately
+    distinguishable
+  - Hub annotations (one per community) cleanly label key nodes without cluttering
+    the graph
+  - 'Full theme adaptation: all chrome tokens correctly threaded through edges, nodes,
+    annotations, and legend'
+  - None-separator edge trace is the idiomatic plotly pattern for network graphs,
+    correctly applied
+  - Interactive hover showing node ID and connection count adds genuine value in the
+    HTML output
   weaknesses:
-  - Hub annotations (threshold degree >= 7) fire on too many nodes in each community,
-    causing multiple 'Hub' labels to crowd the same cluster region and overlap each
-    other — reduces legibility and storytelling clarity
-  - 'Over-labeling dilutes visual emphasis: if every hub is labeled, nothing stands
-    out as special; consider labeling only the top 2-3 highest-degree nodes overall,
-    or removing text labels entirely and relying on node size alone to convey hub
-    importance'
+  - 'Canvas utilization: scaleanchor constraint causes empty corners; consider a square
+    canvas format (3600x3600) which better suits undirected graphs'
+  - Hub annotation font size (16px) is at the minimum for 4800x2700 resolution — increase
+    to 18-20px
+  - Design could be more visually striking at DE-01 level — functional and clean but
+    not yet at publication-quality polish
   image_description: |-
     Light render (plot-light.png):
-      Background: warm off-white #FAF8F1 — correct, not pure white
-      Chrome: title "network-force-directed · plotly · anyplot.ai" in dark #1A1A17 text, readable; legend "Teams" header with Engineering/Marketing/Sales entries in INK_SOFT (#4A4A44), readable; no axis labels or ticks (appropriate for network graph)
-      Data: three community clusters — Engineering (green #009E73, right cluster), Marketing (orange #D55E00, bottom-left cluster), Sales (blue #0072B2, top cluster); node sizes vary by degree; edges are semi-transparent gray (#4A4A44, opacity 0.35); hub annotation boxes (white #FFFDF6 background, dark #1A1A17 text) on high-degree nodes; multiple Hub labels cluster in dense areas
-      Legibility verdict: PASS — all text readable against light background; minor visual clutter from multiple Hub labels in dense clusters
+      Background: Warm off-white (~#FAF8F1) — correctly themed, not pure white
+      Chrome: Title "network-force-directed · plotly · anyplot.ai" in dark text (#1A1A17) — readable. Hub annotation labels ("Engineering hub", "Marketing hub", "Sales hub") visible in dark text on elevated-background callout boxes. Legend "Teams" with three community entries legible. No axis labels/ticks (appropriate for network graph).
+      Data: Three clusters — Engineering (#009E73 bluish-green, right), Marketing (#D55E00 vermillion, lower-left), Sales (#0072B2 blue, upper-center). Node sizes visibly scaled by degree. Edges in muted gray at 0.35 opacity.
+      Legibility verdict: PASS — all text elements readable in light theme
 
     Dark render (plot-dark.png):
-      Background: warm near-black #1A1A17 — correct, not pure black
-      Chrome: title in light #F0EFE8 text, readable against dark background; legend uses #B8B7B0 text on dark elevated #242420 background with #B8B7B0 border; hub annotation boxes use light #F0EFE8 text on dark #242420 background — NO dark-on-dark failure; edges render as lighter #B8B7B0 at 0.35 opacity
-      Data: data colors identical to light render — Engineering #009E73, Marketing #D55E00, Sales #0072B2 — only chrome flips; node sizes unchanged; same hub annotation positions
-      Legibility verdict: PASS — all text readable against dark background; no dark-on-dark failures detected; chrome tokens applied correctly throughout
+      Background: Warm near-black (~#1A1A17) — correctly themed, not pure black
+      Chrome: Title in light cream (#F0EFE8) — readable against dark background. Hub annotation boxes with dark fill (#242420) and light text — legible. Legend text in light color (#B8B7B0) against dark elevated-background box — readable. No dark-on-dark failures detected.
+      Data: Identical colors to light render — Engineering #009E73, Marketing #D55E00, Sales #0072B2. Only chrome (background, text, legend, annotation boxes) changes between themes.
+      Legibility verdict: PASS — all text elements readable in dark theme, no dark-on-dark failures
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 27
       max: 30
       items:
       - id: VQ-01
@@ -54,51 +56,50 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Title 28px, legend 16px, hub annotations 16px all explicitly set;
-          readable in both themes; hub labels slightly crowded in dense clusters
+        comment: All font sizes explicitly set (title 28px, legend 16px, hub annotations
+          16px). All text readable in both themes. Hub annotation text at 16px is
+          at minimum for the canvas size.
       - id: VQ-02
         name: No Overlap
-        score: 3
-        max: 6
-        passed: false
-        comment: Multiple Hub annotation boxes cluster together in dense Engineering
-          and Sales communities; labels reference same cluster region making them
-          hard to distinguish
-      - id: VQ-03
-        name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Nodes clearly visible and size-coded by degree; edges appropriately
-          semi-transparent at 0.35 opacity; communities distinguishable
+        comment: Some inherent node-node overlap in dense cluster cores (expected
+          for 50-node force-directed graph). Text elements do not overlap.
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 6
+        passed: true
+        comment: Nodes perfectly sized (20 + degree*5). Hub nodes visually prominent.
+          Edges visible but appropriately subtle at opacity 0.35.
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito palette CVD-safe; white node borders add definition; three-color
-          scheme has strong luminance contrast
+        comment: Okabe-Ito palette, CVD-safe, communities distinguishable by color
+          and position.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Network fills ~70% of canvas with balanced margins; some empty space
-          in lower right but overall good proportions
+        comment: Network fills roughly 60% of canvas. scaleanchor creates empty corners
+          in 16:9 format. Nothing cut off.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: No axis labels needed for network graph; title correctly formatted
-          as spec-id · library · anyplot.ai
+        comment: Title in correct format. No axis labels needed for network graph.
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'Engineering comm_idx=0 maps to #009E73; Okabe-Ito order followed;
-          backgrounds #FAF8F1/#1A1A17 correct; data colors identical across both renders'
+        comment: 'Engineering (first series) = #009E73. Okabe-Ito order followed.
+          Correct warm backgrounds in both themes. Both renders theme-correct.'
     design_excellence:
       score: 13
       max: 20
@@ -108,23 +109,23 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Degree-scaled nodes, semi-transparent edges, white node borders,
-          styled hub annotations — above defaults but hub clustering detracts from
-          polish
+        comment: 'Above well-configured default: degree-based sizing, hub annotations,
+          clean Okabe-Ito coloring. Not at publication/strong-design level.'
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Grid and spines removed; scaleanchor for aspect ratio; edge opacity
-          reduces noise; hub annotation boxes create localized clutter in dense clusters
+        comment: Axes fully hidden, edge opacity 0.35 carefully controlled, node borders
+          match background color. Hub annotation boxes consistently themed.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Three-community structure visible; degree-encoded sizes emphasize
-          hubs; bridge edges visible; over-labeling in dense clusters dilutes emphasis
+        comment: Visual hierarchy via color (communities), size (degree), and labels
+          (hub annotations). Viewer immediately identifies three-team structure and
+          central connectors.
     spec_compliance:
       score: 15
       max: 15
@@ -134,54 +135,53 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Force-directed graph using Fruchterman-Reingold physics simulation
-          implemented correctly
+        comment: Correct force-directed graph with physics simulation layout.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Nodes with IDs, edges, degree-scaled node sizes, community structure,
-          bridge edges all present
+        comment: Node size by degree, edge rendering, community coloring, FR layout
+          with 200 iterations, hub labels only for key nodes.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Node positions from FR layout; sizes scale 20+degree*5; communities
-          assigned distinct Okabe-Ito colors
+        comment: Force-directed positions correctly computed; communities correctly
+          colored and grouped.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title network-force-directed · plotly · anyplot.ai correct; legend
-          shows Teams header with community names
+        comment: Title 'network-force-directed · plotly · anyplot.ai' correct. Legend
+          shows all three teams.
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Shows community structure, degree variation, hub nodes, bridge connections;
-          edge weight as variable thickness not implemented
+        comment: Shows community structure, node degree variation, intra-community
+          edges, inter-community bridge edges.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Workplace social network (Engineering, Marketing, Sales) is realistic,
-          neutral, comprehensible
+        comment: Engineering/Marketing/Sales corporate social network — neutral, business-relevant,
+          realistic.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 50 nodes in spec range; 30% intra-community probability produces
-          moderate density; 8 bridge edges realistic
+        comment: 50 nodes (spec range 20-200). Edge probability 0.3 creates realistic
+          density. 8 bridge edges plausible.
     code_quality:
       score: 10
       max: 10
@@ -191,64 +191,62 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear: imports → data generation → FR layout → figure → save; no
-          functions or classes'
+        comment: No functions or classes. Clean linear flow.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) set at top.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only os, numpy, plotly.graph_objects; no unused imports
+        comment: Only os, numpy, plotly.graph_objects. All used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Manual FR implementation appropriate without NetworkX; None-separator
-          edge pattern correct and concise
+        comment: Hand-implemented FR algorithm is appropriate (no networkx dependency).
+          None-separator edge trace is correct plotly idiom.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: plot-{THEME}.png and plot-{THEME}.html saved correctly
+        comment: Saves plot-{THEME}.png and plot-{THEME}.html correctly.
     library_mastery:
-      score: 7
+      score: 9
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Classic plotly network pattern: None separators for edge traces,
+          per-community node traces for legend grouping, annotation dicts for hub
+          labels.'
+      - id: LM-02
+        name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: None-separator edge trace canonical plotly network pattern; separate
-          traces per community for legend; scaleanchor for aspect ratio; hoverinfo
-          text; write_html for interactivity
-      - id: LM-02
-        name: Distinctive Features
-        score: 3
-        max: 5
-        passed: true
-        comment: Hover tooltips showing node degree, HTML export for interactivity,
-          scaleanchor for equal aspect ratio; could further use hovertemplate for
-          richer hover cards
+        comment: Interactive hover tooltips, HTML export, None-separator pattern for
+          edge traces. Missing advanced plotly features (animation, more complex interactivity).
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - hover-tooltips
-  - annotations
   - html-export
+  - annotations
   patterns:
   - data-generation
   - iteration-over-groups
   dataprep: []
   styling:
-  - alpha-blending
   - minimal-chrome
+  - alpha-blending

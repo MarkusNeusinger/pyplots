@@ -1,7 +1,7 @@
-""" pyplots.ai
+""" anyplot.ai
 dumbbell-basic: Basic Dumbbell Chart
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Library: altair 6.1.0 | Python 3.14.4
+Quality: 75/100 | Updated: 2026-04-26
 """
 
 import altair as alt

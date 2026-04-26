@@ -2,7 +2,7 @@ library: highcharts
 language: python
 specification_id: network-force-directed
 created: '2025-12-23T15:16:22Z'
-updated: '2026-04-26T09:38:25Z'
+updated: '2026-04-26T09:52:37Z'
 generated_by: claude-opus
 workflow_run: 24953021958
 issue: 990
@@ -19,35 +19,35 @@ review:
     simulation'
   - 'Good data design: 32 nodes in 4 realistic corporate communities with dense intra-community
     and sparse inter-community edges'
-  - Physics parameters well-tuned (friction, linkLength, Verlet integration, 1000
+  - Physics parameters well-tuned (Verlet integration, friction, linkLength, 1000
     iterations) producing stable readable layout
   - White text outline on node labels ensures readability across all node colors
   - Deterministic data generation with random.seed(42)
   - Clean flat script structure — easy to read and maintain
   weaknesses:
-  - 'Non-Okabe-Ito colors: uses Python Blue (#306998), Python Yellow (#FFD43B), generic
-    Purple (#9467BD), Cyan (#17BECF) instead of Okabe-Ito order starting with #009E73'
-  - 'No ANYPLOT_THEME support: does not read os.getenv(ANYPLOT_THEME) — hardcodes
-    backgroundColor #ffffff for both themes with no INK/INK_SOFT tokens'
-  - 'Wrong output filenames: saves plot.png and plot.html instead of plot-{THEME}.png
-    and plot-{THEME}.html'
-  - 'Brand name error: title contains pyplots.ai instead of anyplot.ai'
-  - Images appear to be from a different/better version of the code — subtitle text
-    and node colors differ between images and current PR code
+  - 'Non-Okabe-Ito colors (UNFIXED from Attempt 1): uses #306998 (Python Blue), #FFD43B
+    (Python Yellow), #9467BD (Purple), #17BECF (Cyan) — replace with Okabe-Ito starting
+    with #009E73'
+  - 'No ANYPLOT_THEME support (UNFIXED from Attempt 1): hardcodes backgroundColor
+    #ffffff — must read os.getenv(ANYPLOT_THEME) and use PAGE_BG/INK/INK_SOFT tokens'
+  - 'Wrong output filenames (UNFIXED from Attempt 1): saves plot.png and plot.html
+    instead of plot-{THEME}.png and plot-{THEME}.html'
+  - 'JS title still says pyplots.ai (UNFIXED from Attempt 1): only the Python docstring
+    was changed, not the string literal inside chart_js on line 115'
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white, approximately #FAF8F1 — correct for light theme (though code hardcodes #ffffff)
-      Chrome: Title "network-force-directed · highcharts · anyplot.ai" in dark text, readable. Subtitle (from image version) about department communication ties, readable. Legend top-right with colored dots and labels readable.
-      Data: Four community clusters — teal/green (Tech), yellow-orange (Marketing), blue (Finance), cyan/teal (Design). Nodes are circles with white-outlined name labels. Edges are gray lines. Node colors in image appear consistent with Okabe-Ito order (Tech=green~#009E73) but PR code maps Tech to #306998 Python Blue — images from different code version.
+      Background: Warm off-white approximately #FAF8F1 — visually correct for light theme, though code hardcodes #ffffff (pure white) in JS
+      Chrome: Title "network-force-directed · highcharts · anyplot.ai" in dark text, readable. Subtitle about department communication ties visible but small. Legend top-right with colored dots readable.
+      Data: Four community clusters — teal/green (Tech), orange (Marketing), blue (Finance), pink (Design). Nodes are circles with white-outlined name labels. Gray edges connecting nodes. Note: image colors differ from code's community_colors dict (#306998, #FFD43B, etc.) — images appear cached from prior better version.
       Legibility verdict: PASS (all text readable against light background, no light-on-light issues)
 
     Dark render (plot-dark.png):
-      Background: Dark near-black, approximately #1A1A17 — correct for dark theme (though code hardcodes #ffffff with no theme switching)
-      Chrome: Title and subtitle appear in light/white text against dark surface, readable. Legend labels readable. No dark-on-dark text failures observed.
-      Data: Node colors identical to light render — same teal, yellow, blue, cyan communities. Edges visible as gray lines. White text outline on node labels maintains readability on colored circles.
-      Legibility verdict: PASS (all text readable against dark background, no dark-on-dark failures)
+      Background: Dark near-black approximately #1A1A17 — correct for dark theme, but code has no ANYPLOT_THEME handling to produce this; dark image must be from different code version
+      Chrome: Title and labels appear in light/white text against dark surface, readable. Legend labels readable. No dark-on-dark text failures observed.
+      Data: Node colors identical to light render (teal, orange, blue, pink). White text outline on node labels maintains readability on colored circles. Edges visible as lighter gray lines.
+      Legibility verdict: PASS (images look fine, but code cannot produce this dark render — it hardcodes #ffffff)
 
-    NOTE: Images appear generated from a different version of the code than what is in the PR. Code subtitle says "Social Network with 4 Communities (Tech: Blue, Marketing: Yellow, Finance: Purple, Design: Cyan)" but image shows "Communication ties across four departments — node size scales with degree". Code maps Tech to #306998 (Python Blue) but image shows Tech as teal/green. PR code scores penalized accordingly.
+    NOTE: Images appear generated from a different, better version of the code than what is in the PR. Code subtitle says "Social Network with 4 Communities (Tech: Blue, Marketing: Yellow, Finance: Purple, Design: Cyan)" but image shows "Communication ties across four departments — dense within, sparse between". PR code maps Tech to #306998 (Python Blue) but image shows Tech as teal/green. All scoring penalizes based on code-as-written.
   criteria_checklist:
     visual_quality:
       score: 21
@@ -58,49 +58,47 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: 'Title, subtitle, legend, node labels readable in both themes. Minor:
-          node labels slightly small for canvas size.'
+        comment: Title 56px, subtitle 32px, node labels 26px explicitly set; readable
+          but node labels slightly small in dense central region
       - id: VQ-02
         name: No Overlap
         score: 4
         max: 6
         passed: true
-        comment: Force layout produced some crowding in the central region with a
-          few overlapping nodes and labels.
+        comment: Force layout created some node/label crowding in central cluster
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: All nodes, edges, and labels are distinguishable. Edge width appropriate.
+        comment: Nodes (radius 45) and edges visible; all distinguishable
       - id: VQ-04
         name: Color Accessibility
         score: 1
         max: 2
         passed: false
-        comment: Colors somewhat distinct but NOT Okabe-Ito. Yellow (#FFD43B) against
-          off-white has marginal contrast.
+        comment: 'Non-Okabe-Ito palette; #FFD43B yellow on off-white has marginal
+          contrast'
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Network occupies center-left; some unused whitespace on right and
-          bottom.
+        comment: Network fills center well; some unused whitespace on right and bottom
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: No traditional axes (appropriate for network graph); title is descriptive.
+        comment: No axes appropriate for network graph; descriptive title
       - id: VQ-07
         name: Palette Compliance
         score: 0
         max: 2
         passed: false
-        comment: 'FAIL. Non-Okabe-Ito colors in code (Python Blue, Python Yellow,
-          Purple, Cyan). Hardcoded backgroundColor #ffffff instead of theme-adaptive.
-          No ANYPLOT_THEME reading.'
+        comment: 'FAIL: uses #306998 (Python Blue), #FFD43B, #9467BD, #17BECF — none
+          are Okabe-Ito. Background hardcoded #ffffff. No ANYPLOT_THEME reading. Unchanged
+          from Attempt 1.'
     design_excellence:
       score: 11
       max: 20
@@ -111,20 +109,21 @@ review:
         max: 8
         passed: true
         comment: Community coloring shows design intent; physics parameters tuned.
-          Above default but not exceptional.
+          Above defaults but not exceptional.
       - id: DE-02
         name: Visual Refinement
         score: 3
         max: 6
         passed: true
-        comment: Clean edge styling, white text outline on nodes is a nice touch.
+        comment: White text outline on node labels is a nice touch; clean edge styling.
+          No grid/spine issues appropriate for network type.
       - id: DE-03
         name: Data Storytelling
         score: 3
         max: 6
         passed: true
-        comment: Community structure clearly visible; cross-community bridges identifiable.
-          Layout tells coherent story.
+        comment: Community clustering and cross-community bridges create a readable
+          narrative; layout tells a coherent story.
     spec_compliance:
       score: 14
       max: 15
@@ -134,29 +133,29 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Correct: uses Highcharts networkgraph type with force-directed physics
-          simulation.'
+        comment: 'Correct: Highcharts networkgraph type with force-directed physics
+          simulation'
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Nodes, edges, force simulation, community structure, labels all present.
-          Degree-based sizing optional per spec.
+        comment: Nodes, edges, force simulation, community coloring, node labels all
+          present; degree-based sizing optional and absent
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: 32 nodes in 4 communities of 8, with intra/inter-community edges
-          correctly mapped.
+        comment: 32 nodes in 4 communities with intra- and inter-community edges correctly
+          mapped
       - id: SC-04
         name: Title & Legend
         score: 2
         max: 3
         passed: false
-        comment: Code uses pyplots.ai instead of required anyplot.ai. Legend correctly
-          shows 4 community colors.
+        comment: JavaScript title string on line 115 still reads pyplots.ai — only
+          the Python docstring comment was changed, not the rendered JS title
     data_quality:
       score: 14
       max: 15
@@ -166,21 +165,21 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows nodes, edges, force layout, community clustering, cross-community
-          bridges, labels. Degree-based node sizing absent (optional).
+        comment: Shows nodes, edges, force layout, communities, cross-community bridges,
+          labels; degree-based sizing optional and absent
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
         comment: Corporate social network (Tech, Marketing, Finance, Design departments)
-          is realistic, neutral, and plausible.
+          — realistic, neutral, plausible
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 32 nodes within spec's 20-200 range; connection density appropriate.
+        comment: 32 nodes within spec's 20-200 range; edge density appropriate
     code_quality:
       score: 9
       max: 10
@@ -190,32 +189,32 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: No functions or classes; flat procedural script.
+        comment: Flat procedural script; no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: random.seed(42) ensures deterministic data generation.
+        comment: random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imported modules are used.
+        comment: All imported modules are used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, readable code organization. No fake UI or simulated interactivity.
+        comment: Clean, readable organization; no fake UI or simulated interactivity
       - id: CQ-05
         name: Output & API
         score: 0
         max: 1
         passed: false
-        comment: FAIL. Saves plot.png and plot.html instead of plot-{THEME}.png and
-          plot-{THEME}.html. No ANYPLOT_THEME reading.
+        comment: 'FAIL: saves plot.png and plot.html instead of plot-{THEME}.png and
+          plot-{THEME}.html; no ANYPLOT_THEME reading. Unchanged from Attempt 1.'
     library_mastery:
       score: 6
       max: 10
@@ -225,22 +224,21 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Bypasses highcharts_core Python API using raw JavaScript string injection.
-          Pragmatic for networkgraph but not recommended pattern. Default score.
+        comment: Uses raw JavaScript string injection rather than highcharts_core
+          Python API; pragmatic for networkgraph but not recommended pattern
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses Highcharts networkgraph module with Verlet integration physics,
-          configurable friction/linkLength/gravitationalConstant/maxIterations.
+        comment: Uses Highcharts networkgraph module with Verlet integration physics;
+          configurable friction, linkLength, gravitationalConstant, maxIterations
   verdict: REJECTED
 impl_tags:
   dependencies:
   - selenium
   techniques:
   - html-export
-  - hover-tooltips
   patterns:
   - data-generation
   - iteration-over-groups

@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 lollipop-basic: Basic Lollipop Chart
-Library: highcharts | Python 3.14
-Quality: pending | Updated: 2026-04-26
+Library: highcharts unknown | Python 3.14.4
+Quality: 87/100 | Updated: 2026-04-26
 """
 
 import json

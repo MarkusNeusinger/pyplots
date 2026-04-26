@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 funnel-basic: Basic Funnel Chart
 Library: highcharts unknown | Python 3.14.4
-Quality: 91/100 | Updated: 2026-04-26
+Quality: 89/100 | Updated: 2026-04-26
 """
 
 import base64

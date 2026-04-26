@@ -1,6 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 dumbbell-basic: Basic Dumbbell Chart
 Library: plotnine 0.15.3 | Python 3.14.4
+Quality: 89/100 | Updated: 2026-04-26
 """
 
 import os

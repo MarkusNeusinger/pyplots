@@ -1,4 +1,4 @@
-""" anyplot.ai
+"""anyplot.ai
 network-force-directed: Force-Directed Graph
 Library: plotly 6.7.0 | Python 3.14.4
 Quality: 83/100 | Updated: 2026-04-26
@@ -145,26 +145,27 @@ for comm_idx, comm_name in enumerate(community_names):
         )
     )
 
-# Hub annotations on high-degree nodes
+# Hub annotations: label only the single highest-degree node per community
 hub_annotations = []
-for node in nodes:
-    if degrees[node["id"]] >= 7:
-        x, y = pos[node["id"]]
-        hub_annotations.append(
-            {
-                "x": x,
-                "y": y + 0.04,
-                "text": "Hub",
-                "showarrow": False,
-                "font": {"size": 16, "color": INK, "family": "Arial Black"},
-                "bgcolor": ELEVATED_BG,
-                "bordercolor": INK_SOFT,
-                "borderwidth": 1,
-                "borderpad": 3,
-                "xanchor": "center",
-                "yanchor": "bottom",
-            }
-        )
+for comm_idx, comm_name in enumerate(community_names):
+    comm_nodes = [node for node in nodes if node["community"] == comm_idx]
+    top_node = max(comm_nodes, key=lambda node: degrees[node["id"]])
+    x, y = pos[top_node["id"]]
+    hub_annotations.append(
+        {
+            "x": x,
+            "y": y + 0.04,
+            "text": f"{comm_name} hub",
+            "showarrow": False,
+            "font": {"size": 16, "color": INK, "family": "Arial Black"},
+            "bgcolor": ELEVATED_BG,
+            "bordercolor": INK_SOFT,
+            "borderwidth": 1,
+            "borderpad": 4,
+            "xanchor": "center",
+            "yanchor": "bottom",
+        }
+    )
 
 fig.update_layout(
     title={

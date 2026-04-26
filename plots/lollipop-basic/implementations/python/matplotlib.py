@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 lollipop-basic: Basic Lollipop Chart
 Library: matplotlib 3.10.9 | Python 3.14.4
-Quality: 84/100 | Updated: 2026-04-26
+Quality: 88/100 | Updated: 2026-04-26
 """
 
 import os

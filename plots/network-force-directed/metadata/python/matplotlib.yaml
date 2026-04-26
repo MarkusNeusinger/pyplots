@@ -1,167 +1,186 @@
 library: matplotlib
+language: python
 specification_id: network-force-directed
 created: '2025-12-23T15:14:17Z'
-updated: '2025-12-23T15:21:12Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20464356404
-issue: 0
-python_version: 3.13.11
-library_version: 3.10.8
-preview_url: https://storage.googleapis.com/anyplot-images/plots/network-force-directed/matplotlib/plot.png
-preview_html: null
-quality_score: 92
-impl_tags:
-  dependencies: []
-  techniques:
-  - custom-legend
-  patterns:
-  - data-generation
-  - iteration-over-groups
-  dataprep: []
-  styling:
-  - alpha-blending
-  - minimal-chrome
+updated: '2026-04-26T08:47:45Z'
+generated_by: claude-opus
+workflow_run: 24952381723
+issue: 990
+python_version: 3.14.4
+library_version: 3.10.9
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/network-force-directed/python/matplotlib/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/network-force-directed/python/matplotlib/plot-dark.png
+preview_html_light: null
+preview_html_dark: null
+quality_score: 85
 review:
   strengths:
-  - Excellent implementation of Fruchterman-Reingold force-directed layout algorithm
-    from scratch
-  - Clear community structure emerges naturally from the physics simulation
-  - Good visual hierarchy with node sizing by degree, highlighting important hubs
-  - Colorblind-safe palette (blue, yellow, coral avoids red-green confusion)
-  - Clean use of LineCollection for efficient edge rendering
-  - Appropriate labeling of only high-degree hub nodes to avoid clutter
-  - Well-balanced canvas utilization with good margins
+  - 'Perfect spec and data quality: realistic company social network with clear community
+    structure, degree-based hub sizing, hub labeling, and bridge edges — all spec
+    features implemented'
+  - Force-directed Fruchterman-Reingold layout implemented from scratch with correct
+    repulsive/attractive forces and temperature cooling
+  - 'Efficient matplotlib idioms: LineCollection for O(1) edge batch rendering, custom
+    legend handles, theme-adaptive chrome throughout both renders'
+  - Both renders pass theme-readability checks with no dark-on-dark or light-on-light
+    failures
   weaknesses:
-  - Minor text overlap where two hub labels partially overlap their respective nodes
-  - Python 3.10+ specific code (strict=True in zip) may cause compatibility issues
-  image_description: 'The plot displays a force-directed network graph with 50 nodes
-    organized into 3 distinct community clusters. The three communities are visually
-    separated: Engineering (blue, #306998) on the right side, Marketing (yellow, #FFD43B)
-    in the bottom-left area, and Sales (coral/salmon, #E07B53) in the upper-left/center
-    region. Nodes are sized by their degree (number of connections), with larger nodes
-    representing more connected "hub" individuals. Six hub nodes are labeled with
-    "Hub (E)", "Hub (M)", and "Hub (S)" indicating the top-connected nodes in each
-    team. Edges are rendered as semi-transparent gray lines connecting nodes. The
-    title "network-force-directed · matplotlib · pyplots.ai" appears at the top in
-    bold. A legend in the upper-left corner identifies the three team colors. Axes
-    are turned off, giving a clean network visualization appearance.'
+  - Hub label fontsize (14pt) is below the 16pt minimum for secondary text at 4800x2700
+    resolution; footer fontsize (12pt) is too small — both should be increased
+  - DE-01 design sophistication is solid but not exceptional; could differentiate
+    bridge edges (e.g., dashed or different opacity) from intra-community edges to
+    add another layer of visual storytelling
+  - LM-02 could leverage more distinctly matplotlib capabilities (e.g., FancyArrowPatch,
+    PathPatch for curved edges, or inset_axes for a degree distribution inset)
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white (~#FAF8F1) — correct theme surface, not pure white
+      Chrome: Title "network-force-directed · matplotlib · anyplot.ai" in dark ink, clearly readable; legend with "Teams" title readable; hub annotation labels readable; footer readable (but small at 12pt)
+      Data: Three communities — Engineering (#009E73 teal, right), Marketing (#D55E00 orange, lower center-left), Sales (#0072B2 blue, upper left); nodes sized by degree with hub nodes visibly larger; edges in muted gray at alpha=0.30
+      Legibility verdict: PASS (hub labels at 14pt and footer at 12pt are slightly below 16pt/14pt guidelines but still readable)
+
+    Dark render (plot-dark.png):
+      Background: Warm near-black (~#1A1A17) — correct dark theme surface, not pure black
+      Chrome: Title in light-colored text readable against dark background; legend background is elevated dark surface (#242420); legend text and annotations adapt to light chrome; no dark-on-dark failures detected
+      Data: Colors identical to light render — Engineering #009E73, Marketing #D55E00, Sales #0072B2 — confirming Okabe-Ito positions 1-3 are theme-invariant; node sizing identical
+      Legibility verdict: PASS
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 25
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
-        passed: true
-        comment: Title at 24pt is clearly readable, hub labels at 14pt bold are legible,
-          legend text at 16-18pt is excellent
-      - id: VQ-02
-        name: No Overlap
         score: 6
         max: 8
         passed: true
-        comment: Minor overlap on two hub labels (one "Hub (S)" partially overlaps
-          a node, one "Hub (E)" overlaps its node), but generally readable
+        comment: Title 24pt, legend 16pt/18pt explicitly set; hub labels 14pt below
+          16pt minimum; footer 12pt too small for 4800x2700
+      - id: VQ-02
+        name: No Overlap
+        score: 5
+        max: 6
+        passed: true
+        comment: Hub labels per community are adjacent but readable; no severe overlap
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 5
+        max: 6
         passed: true
-        comment: Node sizes are well-adapted (450-1000+ range based on degree), edges
-          at alpha=0.35 provide good visibility without cluttering
+        comment: Nodes well-sized with degree scaling; edges at alpha=0.30 intentionally
+          faint but visible
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Blue, yellow, and coral are distinguishable for all types of color
-          vision (no red-green only distinction)
-      - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Plot fills canvas well, good margins (0.08-0.92 range), balanced
-          whitespace
-      - id: VQ-07
-        name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: No grid (appropriate for network), legend well-placed in upper-left
-          with good styling
+        comment: Okabe-Ito positions 1-3 are colorblind-safe with good luminance contrast
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 3
+        max: 4
+        passed: true
+        comment: Three-cluster layout uses canvas well; minor imbalance with empty
+          space in lower-right quadrant
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
+        max: 2
+        passed: true
+        comment: Title in correct format; axis off is appropriate for network; footer
+          provides context
+      - id: VQ-07
+        name: Palette Compliance
+        score: 2
+        max: 2
+        passed: true
+        comment: 'First series #009E73; Okabe-Ito positions 1-3 in order; backgrounds
+          #FAF8F1/#1A1A17; chrome adapts correctly'
+    design_excellence:
+      score: 13
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: true
+        comment: Node edges set to page background for clean definition; degree-based
+          sizing adds hierarchy; hub labels with rounded boxes; above default but
+          not exceptional
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: ax.axis('off') gives clean frameless look; custom legend frame with
+          adaptive colors; edge alpha=0.30 reduces noise; solid refinement
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Hub nodes prominent via size; labels direct viewer to key connectors;
+          community clusters immediately visible; bridge edges reveal structure
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct force-directed graph with physics-based layout (Fruchterman-Reingold
-          algorithm)
+        comment: Force-directed graph implemented from scratch (Fruchterman-Reingold);
+          correct layout behavior
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Nodes and edges correctly represented; community structure clearly
-          visible
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: 'All spec features present: node sizing by degree, community colors,
-          labels for key nodes, appropriate edge styling'
-      - id: SC-04
-        name: Data Range
+        comment: Nodes with IDs, edges, degree-based node sizing, hub labels, 200
+          iterations for convergence — all present
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All 50 nodes visible, layout normalized to full view range
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: 50 nodes, 133 edges, 3 communities; intra/inter-community connections
+          correctly represented
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend correctly shows three teams with accurate colors and labels
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Uses correct format: "network-force-directed · matplotlib · pyplots.ai"'
+        comment: Title 'network-force-directed · matplotlib · anyplot.ai'; legend
+          shows Teams with Engineering/Marketing/Sales
     data_quality:
-      score: 18
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows communities, bridges between communities, degree-based sizing,
-          hub identification. Could show edge weights but spec lists them as optional
+        comment: Shows community clustering, degree variation, hub identification,
+          bridge edges, density contrast
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
+        score: 5
+        max: 5
         passed: true
-        comment: Company departments (Engineering, Marketing, Sales) is a plausible
-          real-world scenario for social network visualization
+        comment: Company social network (Engineering, Marketing, Sales) — real-world
+          neutral scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: 50 nodes is within spec's recommended 20-200 range; edge probabilities
-          create realistic community density (30% intra, sparse inter)
+        comment: 50 nodes (within 20-200 spec range), 133 edges, realistic department
+          sizes (18/17/15)
     code_quality:
-      score: 8
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -169,44 +188,63 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear script: imports → data generation → force layout → plotting
-          → save'
+        comment: 'Flat: imports → tokens → data → layout → plot → save; no functions
+          or classes'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42) at the start
+        comment: np.random.seed(42) set before any random operation
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only matplotlib.pyplot, numpy, and LineCollection are imported and
-          all are used
+        comment: All four imports (os, matplotlib.pyplot, numpy, LineCollection) are
+          used
       - id: CQ-04
-        name: No Deprecated API
-        score: 0
-        max: 1
-        passed: false
-        comment: Uses strict=True in zip() which requires Python 3.10+ (minor compatibility
-          note)
+        name: Code Elegance
+        score: 2
+        max: 2
+        passed: true
+        comment: Clean, Pythonic; O(n²) FR loops are the algorithm; no fake UI elements
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as 'plot.png' with dpi=300 and bbox_inches='tight'
-    library_features:
-      score: 5
-      max: 5
+        comment: Saves as plot-{THEME}.png with dpi=300; no deprecated API
+    library_mastery:
+      score: 7
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 5
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
         max: 5
         passed: true
-        comment: Good use of matplotlib's LineCollection for efficient edge rendering,
-          proper zorder layering, scatter with edgecolors styling, custom legend with
-          handles
-  verdict: APPROVED
+        comment: LineCollection for batch edge rendering; empty-scatter custom legend
+          handle; plt.setp for batch text styling; fig.text for footer
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: LineCollection and empty-scatter legend pattern are distinctly matplotlib;
+          could go further with FancyArrowPatch or PathPatch for curved edges
+  verdict: REJECTED
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - custom-legend
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  - explicit-figure
+  dataprep: []
+  styling:
+  - minimal-chrome
+  - alpha-blending
+  - edge-highlighting

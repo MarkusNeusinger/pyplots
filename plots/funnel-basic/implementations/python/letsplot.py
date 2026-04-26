@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 funnel-basic: Basic Funnel Chart
-Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 92/100 | Updated: 2026-04-26
+Library: letsplot 4.9.0 | Python 3.14.4
+Quality: 86/100 | Updated: 2026-04-26
 """
 
 import os

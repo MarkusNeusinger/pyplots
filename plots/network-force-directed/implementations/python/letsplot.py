@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 network-force-directed: Force-Directed Graph
-Library: letsplot | Python 3.13
-Quality: 91/100 | Updated: 2026-04-26
+Library: letsplot 4.9.0 | Python 3.14.4
+Quality: 85/100 | Updated: 2026-04-26
 """
 
 import os

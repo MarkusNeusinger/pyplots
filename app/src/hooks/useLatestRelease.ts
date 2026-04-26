@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 const API_URL = 'https://api.github.com/repos/MarkusNeusinger/anyplot/releases/latest';
 const CACHE_KEY = 'anyplot:latest-release';
 const TTL_MS = 60 * 60 * 1000;
+const MIN_ATTEMPT_INTERVAL_MS = 60 * 1000;
 
 type Cached = { tag: string; ts: number };
 
@@ -27,10 +28,20 @@ export function useLatestRelease(): string | null {
 
   useEffect(() => {
     let cancelled = false;
+    let inFlight = false;
+    let lastAttempt = 0;
+    const controller = new AbortController();
 
     const refresh = () => {
+      if (cancelled || inFlight) return;
       if (isFresh(readCache())) return;
-      fetch(API_URL)
+      // Guard against repeated calls when localStorage is unavailable —
+      // without this, visibilitychange could spam the API.
+      const now = Date.now();
+      if (now - lastAttempt < MIN_ATTEMPT_INTERVAL_MS) return;
+      lastAttempt = now;
+      inFlight = true;
+      fetch(API_URL, { signal: controller.signal })
         .then((r) => (r.ok ? r.json() : null))
         .then((data) => {
           if (cancelled) return;
@@ -44,7 +55,10 @@ export function useLatestRelease(): string | null {
           }
         })
         .catch(() => {
-          /* offline / rate-limited — fallback stays */
+          /* offline / rate-limited / aborted — fallback stays */
+        })
+        .finally(() => {
+          inFlight = false;
         });
     };
 
@@ -57,6 +71,7 @@ export function useLatestRelease(): string | null {
 
     return () => {
       cancelled = true;
+      controller.abort();
       window.clearInterval(interval);
       document.removeEventListener('visibilitychange', onVisible);
     };

@@ -1,8 +1,10 @@
-""" pyplots.ai
+"""anyplot.ai
 network-basic: Basic Network Graph
-Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: letsplot | Python 3.13
+Quality: pending | Updated: 2026-04-27
 """
+
+import os
 
 import numpy as np
 import pandas as pd
@@ -11,6 +13,7 @@ from lets_plot import (
     aes,
     coord_fixed,
     element_blank,
+    element_rect,
     element_text,
     geom_point,
     geom_segment,
@@ -29,10 +32,20 @@ from lets_plot.export import ggsave
 
 LetsPlot.setup_html()
 
-# Set seed for reproducibility
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+EDGE_COLOR = "#4A4A44" if THEME == "light" else "#B8B7B0"
+
+# Okabe-Ito categorical palette (first series always #009E73)
+OKABE_ITO = ["#009E73", "#D55E00", "#0072B2", "#CC79A7"]
+
+# Data: A small social network with 20 people in 4 departments
 np.random.seed(42)
 
-# Data: A small social network with 20 people in 4 communities
 nodes = [
     {"id": 0, "label": "Alice", "group": 0},
     {"id": 1, "label": "Bob", "group": 0},
@@ -56,7 +69,6 @@ nodes = [
     {"id": 19, "label": "Tom", "group": 3},
 ]
 
-# Edges: Friendship connections (within and between groups)
 edges = [
     # Group 0 internal connections
     (0, 1),
@@ -115,7 +127,6 @@ k = 0.5  # Optimal distance parameter
 for iteration in range(200):
     displacement = np.zeros((n, 2))
 
-    # Repulsive forces between all node pairs
     for i in range(n):
         for j in range(i + 1, n):
             diff = positions[i] - positions[j]
@@ -124,7 +135,6 @@ for iteration in range(200):
             displacement[i] += force
             displacement[j] -= force
 
-    # Attractive forces for edges
     for src, tgt in edges:
         diff = positions[src] - positions[tgt]
         dist = max(np.linalg.norm(diff), 0.01)
@@ -132,7 +142,6 @@ for iteration in range(200):
         displacement[src] -= force
         displacement[tgt] += force
 
-    # Apply displacement with cooling
     cooling = 1 - iteration / 200
     for i in range(n):
         disp_norm = np.linalg.norm(displacement[i])
@@ -151,20 +160,16 @@ for src, tgt in edges:
     degrees[src] += 1
     degrees[tgt] += 1
 
-# Group colors and names (Python Blue first, then Yellow, then additional accessible colors)
-group_colors = ["#306998", "#FFD43B", "#2CA02C", "#E64A19"]
 group_names = ["Research", "Marketing", "Engineering", "Design"]
 
-# Create edges dataframe
+# Build dataframes
 edge_data = []
 for src, tgt in edges:
     x0, y0 = pos[src]
     x1, y1 = pos[tgt]
     edge_data.append({"x": x0, "y": y0, "xend": x1, "yend": y1})
-
 df_edges = pd.DataFrame(edge_data)
 
-# Create nodes dataframe with label offset to reduce overlap
 node_data = []
 for node in nodes:
     x, y = pos[node["id"]]
@@ -175,44 +180,42 @@ for node in nodes:
             "y": y,
             "label": node["label"],
             "group": group_names[node["group"]],
-            "size": 8 + degree * 2,  # Scale size by degree
-            "label_y": y + 0.04,  # Offset label above node
+            "size": 8 + degree * 2,
+            "label_y": y + 0.04,
         }
     )
-
 df_nodes = pd.DataFrame(node_data)
 
-# Build the plot
+# Plot
 plot = (
     ggplot()
-    # Draw edges first (behind nodes)
-    + geom_segment(aes(x="x", y="y", xend="xend", yend="yend"), data=df_edges, color="#888888", size=1.2, alpha=0.4)
-    # Draw nodes colored by group
+    + geom_segment(aes(x="x", y="y", xend="xend", yend="yend"), data=df_edges, color=EDGE_COLOR, size=1.2, alpha=0.35)
     + geom_point(aes(x="x", y="y", color="group", size="size"), data=df_nodes, stroke=1.5, alpha=0.95)
-    # Add node labels above nodes
-    + geom_text(aes(x="x", y="label_y", label="label"), data=df_nodes, size=9, color="#333333", fontface="bold")
-    + scale_color_manual(values=group_colors, name="Departments")
+    + geom_text(aes(x="x", y="label_y", label="label"), data=df_nodes, size=9, color=INK_SOFT, fontface="bold")
+    + scale_color_manual(values=OKABE_ITO, name="Department")
     + scale_size_identity()
     + coord_fixed(ratio=1)
     + scale_x_continuous(limits=(-0.05, 1.05))
-    + scale_y_continuous(limits=(-0.05, 1.1))  # Extra space for labels
-    + labs(title="Office Social Network · network-basic · letsplot · pyplots.ai")
+    + scale_y_continuous(limits=(-0.05, 1.1))
+    + labs(title="Office Social Network · network-basic · letsplot · anyplot.ai")
     + ggsize(1600, 900)
     + theme(
-        plot_title=element_text(size=28, face="bold"),
+        plot_background=element_rect(fill=PAGE_BG, color=PAGE_BG),
+        panel_background=element_rect(fill=PAGE_BG, color=PAGE_BG),
+        plot_title=element_text(size=24, face="bold", color=INK),
         axis_title=element_blank(),
         axis_text=element_blank(),
         axis_ticks=element_blank(),
         axis_line=element_blank(),
         panel_grid=element_blank(),
-        legend_text=element_text(size=14),
-        legend_title=element_text(size=16, face="bold"),
+        panel_border=element_blank(),
+        legend_background=element_rect(fill=ELEVATED_BG, color=INK_SOFT),
+        legend_text=element_text(size=14, color=INK_SOFT),
+        legend_title=element_text(size=16, face="bold", color=INK),
         legend_position="right",
     )
 )
 
-# Save as PNG (scale 3x to get 4800 x 2700 px)
-ggsave(plot, "plot.png", path=".", scale=3)
-
-# Save as HTML
-ggsave(plot, "plot.html", path=".")
+# Save
+ggsave(plot, f"plot-{THEME}.png", path=".", scale=3)
+ggsave(plot, f"plot-{THEME}.html", path=".")

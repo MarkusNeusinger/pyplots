@@ -2,7 +2,7 @@ library: altair
 language: python
 specification_id: network-basic
 created: '2025-12-23T15:35:51Z'
-updated: '2026-04-27T01:15:35Z'
+updated: '2026-04-27T01:32:46Z'
 generated_by: claude-sonnet
 workflow_run: 24971607523
 issue: 989
@@ -15,38 +15,41 @@ preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/network-b
 quality_score: 73
 review:
   strengths:
-  - Correct network graph (node-link diagram) with force-directed spring layout implemented
-    from scratch
-  - Layer composition (edges + nodes + labels) is idiomatic Altair — `detail='edge_id:N'`
-    for per-edge line rendering is a genuinely Altair-specific technique
-  - Degree-encoded node sizing provides visual hierarchy for centrality
-  - Realistic social network scenario with 4 communities and cross-community bridges
-    tells a meaningful story
+  - Correct node-link diagram with force-directed spring layout delivering clear community
+    clustering
+  - Layer composition (edges + nodes + labels) is idiomatic Altair; detail=edge_id:N
+    for per-edge rendering is a library-specific technique
+  - Degree-encoded node sizing provides visual hierarchy for centrality; cross-community
+    bridges are visible
+  - Realistic named social network scenario (20 people, 4 groups) tells a meaningful
+    story
   - Reproducible with np.random.seed(42) and deterministic data
-  - Tooltips and HTML export leverage Altair's interactive strengths
   weaknesses:
-  - 'Palette is non-Okabe-Ito: uses #306998 (Python Blue), #FFD43B, #4CAF50, #FF7043
-    — must switch to Okabe-Ito order: #009E73, #D55E00, #0072B2, #CC79A7'
-  - 'No theme-adaptive chrome: code does not read os.getenv(''ANYPLOT_THEME'') — missing
-    PAGE_BG, INK, INK_SOFT tokens; label color is hardcoded as #222222 (dark-on-dark
-    in dark mode)'
-  - 'Wrong output filenames: saves as plot.png / plot.html instead of plot-{THEME}.png
-    / plot-{THEME}.html'
-  - Title says 'pyplots.ai' instead of 'anyplot.ai'
-  - Node label font size is 12px — too small for a 4800x2700 canvas (pixel-based library
-    should use 18px minimum for labels)
+  - 'Palette non-Okabe-Ito (VQ-07=0): group_colors uses #306998 (Python Blue, explicit
+    VQ-07=0 trigger), #FFD43B, #4CAF50, #FF7043 — must use Okabe-Ito [#009E73, #D55E00,
+    #0072B2, #CC79A7]'
+  - 'No theme-adaptive chrome: code does not read os.getenv(ANYPLOT_THEME); missing
+    PAGE_BG, INK, INK_SOFT tokens; label color hardcoded #222222 (dark-on-dark in
+    dark mode)'
+  - 'Wrong output filenames (CQ-05=0): saves as plot.png/plot.html instead of plot-{THEME}.png/plot-{THEME}.html;
+    no ANYPLOT_THEME handling'
+  - Chart title ends with pyplots.ai instead of anyplot.ai
+  - Node label font size 12px too small for pixel-based 4800x2700 canvas (minimum
+    16px); also not theme-adaptive
+  - Manual O(n^2) spring layout (~35 lines) instead of networkx.spring_layout — overly
+    verbose
   image_description: |-
     Light render (plot-light.png):
       Background: Warm off-white (approximately #FAF8F1) — correct, not pure white
-      Chrome: Title "Social Network · network-basic · altair · anyplot.ai" in dark text at top-center, clearly readable. No axis labels (axes hidden, appropriate for network). Legend "Communities" top-right with Group A-D entries and colored circles, readable dark text on light legend box.
-      Data: 20 nodes colored in four groups — Group A (teal-green, resembling #009E73), Group B (orange, resembling #D55E00), Group C (blue, resembling #0072B2), Group D (pink/mauve, resembling #CC79A7). Nodes scaled by degree (600–1800 size range). Edges are thin gray semi-transparent lines. Name labels (Alice, Bob, etc.) in small dark text near each node. Network arranged diagonally from upper-left to lower-right.
-      Legibility verdict: PASS — all titles, legend text, and node labels are readable against the light background. Some node labels are small (12px) and in close proximity near the lower-center cluster (Kate/Leo/Mia area), slightly cramped.
+      Chrome: Title "Social Network · network-basic · altair · anyplot.ai" in dark text at top-center (28px), clearly readable. No axis labels (axes hidden, appropriate for network graph). Legend "Communities" in upper-right with Group A-D entries and colored circles — readable dark text on light elevated box.
+      Data: 20 named nodes in four groups — Group A (teal-green), Group B (orange), Group C (medium blue), Group D (pink/mauve). Nodes sized by degree (600-1800 scale). Edges are semi-transparent gray lines. Name labels (Alice, Bob, etc.) in small dark text near each node. Network arranged diagonally from upper-left to lower-right. Some crowding in lower-center cluster (Kate/Leo/Jack/Mia area).
+      Legibility verdict: PASS — all title, legend text, and node labels are readable against the light background. Node labels are small (12px) and slightly cramped in the dense center cluster.
 
     Dark render (plot-dark.png):
       Background: Warm near-black (approximately #1A1A17) — correct, not pure black
-      Chrome: Title in light/white text clearly readable against dark background. Legend at top-right shows "Communities" and group labels in light text on dark elevated background, readable. Node labels (names) appear as lighter-colored text, readable against dark background.
-      Data: Node colors are visually identical to the light render (same teal-green, orange, blue, pink-mauve for the four groups) — data colors correctly unchanged between themes. Edges appear as subtle gray lines on dark background. Network layout is identical.
-      Legibility verdict: PASS — title, legend, and node labels are all readable in the dark render. Note: the code has label color="#222222" (near-black) hardcoded, which would normally be dark-on-dark; the rendered images appear to show light labels (possibly due to workflow preprocessing or rendering engine adjustment). The code itself does NOT have theme-adaptive label coloring, which must be fixed.
+      Chrome: Title in light/white text clearly readable against dark background. Legend "Communities" shows Group A-D labels in light text on dark elevated background — readable. Node labels (names) appear as lighter-colored text, readable against dark background.
+      Data: Node colors visually identical to light render (same teal-green, orange, blue, pink for the four groups) — data colors correctly unchanged between themes. Edges appear as subtle gray lines on dark background. Layout identical to light render.
+      Legibility verdict: PASS (images as rendered). NOTE: The code has label color="#222222" (near-black) hardcoded — this would normally produce dark-on-dark failure in dark mode. The rendered images show light labels, suggesting the images were generated from a different/repaired code version. The current code in the PR does NOT implement theme-adaptive label coloring and WILL fail dark mode legibility if run as-is.
   criteria_checklist:
     visual_quality:
       score: 21
@@ -57,52 +60,51 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Title explicitly set at 28px (correct), legend sizes explicit (18px/16px).
-          Node labels at 12px too small for 4800x2700 pixel-based canvas (should be
-          18px+).
+        comment: Title 28px explicit (correct); legend 18px/16px explicit. Node labels
+          hardcoded at 12px — too small for pixel-based 4800x2700 canvas (minimum
+          16px).
       - id: VQ-02
         name: No Overlap
         score: 4
         max: 6
         passed: true
-        comment: Some crowding in lower-center area (Kate/Leo/Mia cluster). Jack and
-          Leo labels are in close proximity. Mostly readable but not fully clear.
+        comment: Crowding in lower-center cluster (Kate/Leo/Jack/Mia area); labels
+          mostly readable but not fully clear.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Nodes well-sized via degree encoding (600-1800 scale), edges visible
-          at opacity 0.4. Labels visible despite small font.
+        comment: Degree-based node sizing (600-1800 scale) effective; edges visible
+          at opacity 0.4.
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: 4 distinct colors with good luminance separation, no red-green only
+        comment: 4 distinct colors with adequate luminance separation; no red-green-only
           encoding.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Network fills ~65% of canvas with diagonal arrangement. Some dead
-          space in upper-right and lower-left corners. Legend well-placed.
+        comment: Diagonal arrangement fills ~65% of canvas; dead space in upper-right
+          and lower-left corners.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Axes hidden (appropriate for network graph), title is descriptive.
+        comment: Axes hidden (appropriate for network graph); title descriptive.
       - id: VQ-07
         name: Palette Compliance
         score: 0
         max: 2
         passed: false
-        comment: 'Code uses #306998 (Python Blue), #FFD43B, #4CAF50, #FF7043 — explicitly
-          non-Okabe-Ito. #306998 is flagged in quality criteria as a VQ-07=0 case.
-          Additionally, no theme-adaptive chrome code present (no ANYPLOT_THEME env
-          var reading).'
+        comment: 'Code uses #306998 (Python Blue, explicit VQ-07=0 trigger), #FFD43B,
+          #4CAF50, #FF7043 — non-Okabe-Ito. No ANYPLOT_THEME env var reading; label
+          color hardcoded #222222. Outputs are plot.png/plot.html not plot-{THEME}.png/plot-{THEME}.html.'
     design_excellence:
       score: 10
       max: 20
@@ -112,23 +114,23 @@ review:
         score: 4
         max: 8
         passed: true
-        comment: Clean network with node sizing and group colors. Looks like a well-configured
-          library default — not exceptional but not generic.
+        comment: Clean network with community colors and degree sizing; looks like
+          a well-configured library default, not exceptional.
       - id: DE-02
         name: Visual Refinement
         score: 3
         max: 6
         passed: true
-        comment: No axes (appropriate), view border removed, semi-transparent edges.
-          Above library defaults but not exceptional.
+        comment: Axes hidden (appropriate), view strokeWidth=0, semi-transparent edges
+          at 0.4 opacity. Above library defaults but not polished.
       - id: DE-03
         name: Data Storytelling
         score: 3
         max: 6
         passed: true
-        comment: Degree-encoded node sizing and community colors tell a story about
-          connectivity and clusters. Cross-group bridges visible. Above default (2)
-          but not excellent.
+        comment: Degree-encoded sizing + community colors + cross-community bridges
+          tell a connectivity story. Above default (2) but no intentional visual hierarchy
+          or focal emphasis.
     spec_compliance:
       score: 14
       max: 15
@@ -138,27 +140,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct node-link diagram with spring/force-directed layout.
+        comment: Correct node-link diagram with force-directed spring layout.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Nodes, edges, labels, degree-based sizing, force-directed layout
-          all present.
+        comment: Nodes, edges, labels, degree-based sizing, spring layout all present.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Social network data correctly mapped, all 20 nodes visible with connections.
+        comment: Social network data correctly mapped; all 20 nodes visible with connections.
       - id: SC-04
         name: Title & Legend
         score: 2
         max: 3
         passed: true
-        comment: Images show correct 'anyplot.ai' suffix but code has 'pyplots.ai'.
-          Legend labels correct (Communities, Group A-D).
+        comment: Code has 'pyplots.ai' in chart title (should be 'anyplot.ai'). Legend
+          labels correct (Communities, Group A-D).
     data_quality:
       score: 14
       max: 15
@@ -168,8 +169,8 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows communities, intra/inter-group connections, degree variation.
-          No extreme hub nodes or isolated nodes.
+        comment: Shows community structure, intra- and inter-group connections, degree
+          variation. Lacks extreme hub nodes or isolated nodes for richer coverage.
       - id: DQ-02
         name: Realistic Context
         score: 5
@@ -182,7 +183,7 @@ review:
         score: 4
         max: 4
         passed: true
-        comment: 20 nodes in spec's 10-50 range, 31 edges for appropriate density.
+        comment: 20 nodes (in spec's 10-50 range), 31 edges, appropriate density.
     code_quality:
       score: 8
       max: 10
@@ -192,7 +193,8 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Flat structure: Imports → Data → Layout → Plot → Save. No functions/classes.'
+        comment: 'Flat flow: imports -> data -> spring layout -> plot layers -> save.
+          No functions/classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -210,15 +212,15 @@ review:
         score: 1
         max: 2
         passed: true
-        comment: Spring layout manually implemented in 30+ lines of O(n^2) code instead
-          of using networkx.spring_layout. Overly verbose but no fake functionality.
+        comment: Manual O(n^2) spring layout (~35 lines) instead of networkx.spring_layout
+          (1 line); verbose but no fake functionality.
       - id: CQ-05
         name: Output & API
         score: 0
         max: 1
         passed: false
-        comment: Saves as plot.png / plot.html instead of required plot-{THEME}.png
-          / plot-{THEME}.html. No ANYPLOT_THEME handling.
+        comment: Saves as plot.png/plot.html instead of required plot-{THEME}.png/plot-{THEME}.html.
+          No ANYPLOT_THEME handling.
     library_mastery:
       score: 6
       max: 10
@@ -229,15 +231,15 @@ review:
         max: 5
         passed: true
         comment: Correct use of alt.Chart, mark_line, mark_circle, mark_text with
-          proper encoding types. Layer composition is idiomatic.
+          proper encoding types; layer composition is correct.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: detail='edge_id:N' for per-edge line drawing and order='order:O'
-          for directional rendering are genuinely Altair-specific grammar features
-          not easily replicated elsewhere.
+        comment: detail='edge_id:N' for per-edge line rendering and order='order:O'
+          for directional rendering are genuinely Altair grammar features not easily
+          replicated in other libraries.
   verdict: REJECTED
 impl_tags:
   dependencies: []
@@ -247,6 +249,7 @@ impl_tags:
   - html-export
   patterns:
   - data-generation
+  - matrix-construction
   - iteration-over-groups
   dataprep: []
   styling:

@@ -2,7 +2,7 @@ library: plotly
 language: python
 specification_id: parallel-basic
 created: '2025-12-23T18:12:00Z'
-updated: '2026-04-27T05:53:01Z'
+updated: '2026-04-27T06:10:10Z'
 generated_by: claude-sonnet
 workflow_run: 24978151326
 issue: 820
@@ -15,38 +15,37 @@ preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/parallel-
 quality_score: 83
 review:
   strengths:
-  - Discrete step-function colorscale (OI_COLORSCALE) is an elegant Plotly-idiomatic
-    technique for rendering categorical colors via go.Parcoords
-  - 'Full theme-adaptive chrome: PAGE_BG, ELEVATED_BG, INK, INK_SOFT applied to all
-    elements including colorbar background and border'
-  - All font sizes explicitly set (title, labelfont, tickfont, rangefont) — no reliance
-    on defaults
-  - HTML export adds true interactive line filtering — a genuine Plotly distinctive
-    feature
-  - Clean KISS code structure with reproducible synthetic data
+  - Full Okabe-Ito compliance with correct species color ordering (#009E73 first)
+    and discrete colorscale breakpoints that are idiomatic for Plotly go.Parcoords
+  - 'Complete theme-adaptive chrome: PAGE_BG, ELEVATED_BG, INK, INK_SOFT tokens correctly
+    threaded through all non-data elements (labelfont, tickfont, colorbar bgcolor,
+    colorbar bordercolor, colorbar tickfont)'
+  - All font sizes explicitly set across Parcoords-specific parameters (labelfont
+    22px, tickfont 16px, rangefont 14px, colorbar title 20px, colorbar tickfont 18px)
+  - 'Perfect code quality: flat KISS structure, np.random.seed(42), clean imports,
+    correct plot-{THEME}.png + plot-{THEME}.html output'
   weaknesses:
-  - No line opacity/alpha set — spec recommends transparency for dense parallel coordinate
-    plots (150 observations); crossing lines in the middle region are fully opaque
-  - Axis ordering (Petal Length, Petal Width, Sepal Length, Sepal Width) does not
-    group sepal/petal measurements or order by correlation to reveal inter-variable
-    patterns
-  - tickfont=16 and rangefont=14 are below the 18px recommended minimum for tick labels
-    at 4800x2700 resolution
-  - No data storytelling emphasis — Setosa's clear petal separation is not visually
-    highlighted; all lines carry equal visual weight
-  - Right margin wastes space; could be tightened to give the plot more horizontal
-    breathing room for axes
+  - 'No explicit line opacity set for the 150 parallel coordinate lines — spec recommends
+    transparency when observations overlap; add ''opacity'': 0.5 to the line dict
+    in go.Parcoords'
+  - Design lacks storytelling emphasis — no annotation or callout highlighting the
+    key insight (Setosa clusters distinctly at low petal dimensions); add a layout
+    annotation to guide the viewer
+  - Title format prepends 'Iris Flower Measurements · ' before the spec-id, deviating
+    from required '{spec-id} · {library} · anyplot.ai' format
+  - tickfont set to 16px (slightly below 18px minimum recommendation); rangefont set
+    to 14px
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) — correct, not pure white
-      Chrome: Title "Iris Flower Measurements · parallel-basic · plotly · anyplot.ai" at 28px in dark ink (#1A1A17); axis dimension labels at 22px; tick and range labels in INK_SOFT (#4A4A44); all readable
-      Data: Lines in three Okabe-Ito colors — Setosa green (#009E73), Versicolor orange (#D55E00), Virginica blue (#0072B2); colorbar on right labeled "Species" with three discrete segments
+      Background: Warm off-white, consistent with #FAF8F1 — not pure white, not dark
+      Chrome: Title "Iris Flower Measurements · parallel-basic · plotly · anyplot.ai" in dark ink — clearly readable. Axis labels (Petal Length cm, Petal Width cm, Sepal Length cm, Sepal Width cm) in dark INK at 22px — readable. Tick labels in INK_SOFT at 16px — readable. Range font labels at 14px — small but readable as secondary info. Colorbar title "Species" at 20px and ticktext labels (Setosa, Versicolor, Virginica) at 18px — readable.
+      Data: 150 parallel coordinate lines color-coded by species: Setosa in #009E73 (bluish green), Versicolor in #D55E00 (vermillion), Virginica in #0072B2 (blue). All three Okabe-Ito colors consistent with canonical positions 1-3. Lines show clear separation in petal dimensions, some overlap in sepal dimensions.
       Legibility verdict: PASS
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) — correct, not pure black
-      Chrome: Title and axis labels flip to #F0EFE8 (INK token); tick/range labels use #B8B7B0 (INK_SOFT token); colorbar text is light; colorbar background uses #242420 (ELEVATED_BG); no dark-on-dark failures detected
-      Data: Colors identical to light render — same green, orange, blue at same Okabe-Ito positions
+      Background: Near-black, consistent with #1A1A17 — not pure black, not light
+      Chrome: Title renders in light #F0EFE8 text — clearly readable against dark background. Axis labels in INK (#F0EFE8 for dark) — readable. Tick labels in INK_SOFT (#B8B7B0 for dark) — readable. Colorbar background adapts to ELEVATED_BG (#242420) with INK_SOFT border — correctly themed. No dark-on-dark failures observed — all text elements use light tokens against the dark surface.
+      Data: Line colors identical to light render — #009E73 (Setosa), #D55E00 (Versicolor), #0072B2 (Virginica) — confirming data colors are theme-independent and only chrome flips.
       Legibility verdict: PASS
   criteria_checklist:
     visual_quality:
@@ -58,77 +57,76 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Title 28px, labelfont 22px set explicitly; tickfont 16px below recommended
-          18px; rangefont 14px small at high resolution
+        comment: All font sizes explicitly set; tickfont 16px slightly below 18px
+          minimum, rangefont 14px small for secondary info
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements; axis labels, tick labels, colorbar
-          labels all clean
+        comment: Axis labels, tick labels, and colorbar text well-spaced, no collision
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Lines visible and distinguishable; no explicit opacity for 150 overlapping
-          observations
+        comment: Color-coded lines clearly distinguishable; inherent line overlap
+          with 150 points; no explicit opacity set
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito is CVD-safe; green/orange/blue distinguishable without
-          hue alone
+        comment: Okabe-Ito positions 1-3 used, CVD-safe with sufficient hue and luminance
+          contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good canvas utilization; right margin r=180 slightly generous creating
-          minor wasted space
+        comment: Good canvas utilization; right margin 180px for colorbar creates
+          slight imbalance but overall readable
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: All four dimensions labeled with units (cm); title is descriptive
+        comment: All four dimension labels include units (cm); title is descriptive
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series #009E73; Okabe-Ito order preserved; backgrounds #FAF8F1/#1A1A17;
-          chrome adapts correctly in both renders'
+        comment: 'First species #009E73, order follows Okabe-Ito; backgrounds #FAF8F1/#1A1A17;
+          INK/INK_SOFT tokens applied throughout'
     design_excellence:
       score: 11
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 4
         max: 8
-        passed: true
-        comment: Discrete step-function colorscale is clever; theme-adaptive tokens
-          applied throughout including colorbar; above default but not publication-ready
+        passed: false
+        comment: Professional and well-configured with custom colorscale and styled
+          colorbar; strong library default rather than exceptional custom design
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
         passed: false
-        comment: Generous margins and styled colorbar backdrop; no line opacity, no
-          axis correlation ordering, limited refinement opportunities for this chart
-          type
+        comment: Colorbar styled with border and adaptive bg; thoughtful margins;
+          parallel coordinates format limits traditional spine/grid refinement options
       - id: DE-03
         name: Data Storytelling
         score: 3
         max: 6
         passed: false
-        comment: Iris data inherently tells a story but no visual hierarchy highlights
-          Setosa petal separation; all species receive equal visual weight
+        comment: Iris dataset naturally tells a strong story through color separation
+          in petal dimensions; no explicit annotation or emphasis element guides viewer
+          to the key insight
     spec_compliance:
-      score: 14
+      score: 13
       max: 15
       items:
       - id: SC-01
@@ -136,51 +134,52 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: go.Parcoords is the correct parallel coordinates implementation
+        comment: 'Correct: go.Parcoords is Plotly native parallel coordinates'
       - id: SC-02
         name: Required Features
         score: 3
         max: 4
-        passed: true
-        comment: Multiple dimensions, color coding, 150 observations all present;
-          missing explicit line opacity recommended by spec
+        passed: false
+        comment: Color coding, multiple dimensions, lines all present; missing explicit
+          line opacity despite spec recommending transparency for overlapping lines
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All four dimensions correctly mapped with appropriate ranges
+        comment: All four iris dimensions correctly mapped with appropriate axis ranges
       - id: SC-04
         name: Title & Legend
-        score: 3
+        score: 2
         max: 3
-        passed: true
-        comment: Title contains parallel-basic · plotly · anyplot.ai; colorbar labels
-          all three species correctly
+        passed: false
+        comment: Title includes spec-id/library/anyplot.ai but prepends 'Iris Flower
+          Measurements · ' before spec-id; colorbar correctly labels species
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Four dimensions with distinct group patterns; three species with
-          different distributions covering petal and sepal measurements
+        comment: 'Shows all parallel coordinates features: 4 dimensions, 3 categorical
+          groups, 150 observations, clear clustering'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Iris-like dataset is a well-known, neutral scientific benchmark
+        comment: Iris-like dataset is classic scientific context, neutral botanical
+          measurements
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Measurement ranges match real Iris botanics (sepal length 4-8cm,
-          petal width 0-2.8cm)
+        comment: Sepal/petal measurements in cm with biologically realistic ranges
+          matching actual Iris species
     code_quality:
       score: 10
       max: 10
@@ -190,14 +189,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Flat script: imports -> constants -> data -> plot -> save; no functions
-          or classes'
+        comment: 'Flat script: imports → theme tokens → data → plot → save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) ensures deterministic output
+        comment: np.random.seed(42) set before data generation
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -209,14 +207,15 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Clean, Pythonic; dictionary-based config appropriate for Plotly;
-          discrete colorscale is elegant
+        comment: Clean, Pythonic; OI_COLORSCALE defined as readable breakpoint list;
+          no over-engineering
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot-{THEME}.png and plot-{THEME}.html correctly
+        comment: Saves plot-{THEME}.png and plot-{THEME}.html using current Plotly
+          API
     library_mastery:
       score: 7
       max: 10
@@ -226,17 +225,16 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: go.Parcoords with dimensions list, labeled axes, ranges, and font
-          configuration is idiomatic; colorbar tickvals/ticktext for discrete mapping
-          is correct
+        comment: Uses go.Parcoords idiomatically with all Parcoords-specific font
+          params; line opacity not explicitly set
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: go.Parcoords is Plotly-specific; step-function colorscale for categorical
-          Okabe-Ito is Plotly-distinctive; HTML export enables built-in parallel coordinate
-          filtering
+        comment: Discrete colorscale encoded as continuous breakpoints for categorical
+          species (Plotly-specific idiom); interactive HTML export; colorbar with
+          custom tickvals/ticktext for categorical relabeling
   verdict: REJECTED
 impl_tags:
   dependencies: []

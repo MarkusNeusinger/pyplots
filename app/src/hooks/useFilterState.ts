@@ -21,13 +21,18 @@ export function isFiltersEmpty(filters: ActiveFilters): boolean {
 }
 
 /**
- * Build a stable key from a list of plot images using their `spec_id` and
- * `library` fields. Used by the sync-back effect to detect content changes
- * (a re-shuffle or refresh that keeps the count would otherwise look identical
- * to a length-only key). Exported for unit testing.
+ * Build a stable key from a list of plot images.
+ *
+ * `PlotImage.spec_id` is optional; falling back to `${library}` alone would
+ * collapse every image without a spec_id into the same `undefined:<library>`
+ * token, hiding genuine content changes from the sync-back effect. Use the
+ * image URL as a tail-breaker so the key still differs when content does.
+ * Exported for unit testing.
  */
 export function imagesContentKey(images: readonly PlotImage[]): string {
-  return images.map((i) => `${i.spec_id}:${i.library}`).join('|');
+  return images
+    .map((i) => `${i.spec_id ?? `url:${i.url}`}:${i.library}`)
+    .join('|');
 }
 
 interface UseFilterStateOptions {

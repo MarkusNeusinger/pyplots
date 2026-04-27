@@ -60,4 +60,25 @@ describe('imagesContentKey', () => {
     const b = imagesContentKey([img('scatter', 'mpl')]);
     expect(a).toBe(b);
   });
+
+  it('falls back to url when spec_id is undefined (no false collapsing)', () => {
+    // Two images without spec_id but with different urls must produce
+    // different keys — otherwise the sync-back skips genuine content
+    // changes whenever upstream data lacks spec_id.
+    const a = {
+      library: 'mpl',
+      library_id: 'mpl',
+      url: '/a.png',
+      title: '',
+      description: null,
+    } as unknown as PlotImage;
+    const b = {
+      library: 'mpl',
+      library_id: 'mpl',
+      url: '/b.png',
+      title: '',
+      description: null,
+    } as unknown as PlotImage;
+    expect(imagesContentKey([a])).not.toBe(imagesContentKey([b]));
+  });
 });

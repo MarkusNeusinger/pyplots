@@ -277,14 +277,27 @@ def _schedule_refresh(key: str, factory: Callable[[], Awaitable[Any]]) -> None:
     lock = _get_lock(refresh_key)
     if lock.locked():
         return  # refresh already in progress
-    asyncio.create_task(_background_refresh(key, factory, lock))
+    asyncio.create_task(_background_refresh(key, refresh_key, factory, lock))
 
 
-async def _background_refresh(key: str, factory: Callable[[], Awaitable[Any]], lock: asyncio.Lock) -> None:
-    """Run factory in background and update cache. Errors are logged, not raised."""
-    async with lock:
-        try:
-            result = await factory()
-            set_cache(key, result)
-        except Exception:
-            logger.warning("Background cache refresh failed for key: %s", key, exc_info=True)
+async def _background_refresh(
+    key: str, refresh_key: str, factory: Callable[[], Awaitable[Any]], lock: asyncio.Lock
+) -> None:
+    """Run factory in background and update cache. Errors are logged, not raised.
+
+    Refresh-locks (`_refresh:<key>`) have no corresponding cache entry, so the
+    `_LockPruningTTLCache.__delitem__` hook never reaps them — they would
+    accumulate one-per-refreshed-key indefinitely. Pop in `finally` to bound
+    `_locks` growth. A duplicate-task race (a second caller taking the same
+    released lock before pop runs) only costs duplicated factory work, not
+    correctness, since `set_cache` is last-write-wins.
+    """
+    try:
+        async with lock:
+            try:
+                result = await factory()
+                set_cache(key, result)
+            except Exception:
+                logger.warning("Background cache refresh failed for key: %s", key, exc_info=True)
+    finally:
+        _locks.pop(refresh_key, None)

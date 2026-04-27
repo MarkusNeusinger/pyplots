@@ -152,20 +152,29 @@ class SpecRepository(BaseRepository[Spec]):
         return result.scalar_one_or_none()
 
     async def get_all(self) -> list[Spec]:
-        """Get all specs with their implementations, library and code.
+        """Get all specs with their implementations and library.
 
-        impl.code is undeferred so callers iterating spec.impls on an async
-        session (MCP list_specs / search_specs_by_tags) don't trigger
-        MissingGreenlet when reading impl.code.
+        Lightweight: `Impl.code` stays deferred. Most callers (specs/plots/
+        seo/insights/stats/debug routers) only need the listing surface;
+        eager-loading every code blob would be a multi-MB regression.
+        Callers that iterate `spec.impls` and read `impl.code` on an async
+        session must use `get_all_with_code()` to avoid MissingGreenlet.
         """
         impls_loader = selectinload(Spec.impls)
         result = await self.session.execute(
-            select(Spec).options(impls_loader.selectinload(Impl.library), impls_loader.undefer(Impl.code))
+            select(Spec).options(impls_loader.selectinload(Impl.library))
         )
         return list(result.scalars().all())
 
     async def get_all_with_code(self) -> list[Spec]:
-        """Get all specs with implementations (code + library eager-loaded)."""
+        """Get all specs with implementations (code + library eager-loaded).
+
+        Use this for paths that read `impl.code` on every implementation —
+        currently only the MCP `list_specs` and `search_specs` tools.
+        Touching `impl.code` after `get_all()` raises MissingGreenlet on
+        AsyncSession because the column is deferred and the lazy-load would
+        emit a sync SELECT.
+        """
         impls_loader = selectinload(Spec.impls)
         result = await self.session.execute(
             select(Spec).options(impls_loader.selectinload(Impl.library), impls_loader.undefer(Impl.code))

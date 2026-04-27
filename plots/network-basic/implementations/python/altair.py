@@ -1,7 +1,7 @@
 """ anyplot.ai
 network-basic: Basic Network Graph
 Library: altair 6.1.0 | Python 3.14.4
-Quality: 73/100 | Updated: 2026-04-27
+Quality: 65/100 | Updated: 2026-04-27
 """
 
 import altair as alt

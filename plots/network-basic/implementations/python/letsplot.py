@@ -1,4 +1,4 @@
-""" anyplot.ai
+"""anyplot.ai
 network-basic: Basic Network Graph
 Library: letsplot 4.9.0 | Python 3.14.4
 Quality: 79/100 | Updated: 2026-04-27
@@ -11,7 +11,6 @@ import pandas as pd
 from lets_plot import (
     LetsPlot,
     aes,
-    coord_fixed,
     element_blank,
     element_rect,
     element_text,
@@ -21,6 +20,7 @@ from lets_plot import (
     ggplot,
     ggsize,
     labs,
+    layer_tooltips,
     scale_color_manual,
     scale_size_identity,
     scale_x_continuous,
@@ -108,53 +108,65 @@ edges = [
     (13, 16),
 ]
 
-# Initialize positions with group clustering for better layout
+# Layout: each group anchored to a canvas quadrant, force-directed within each group
 n = len(nodes)
-group_centers = {
-    0: np.array([-0.6, 0.6]),  # Top-left
-    1: np.array([0.6, 0.6]),  # Top-right
-    2: np.array([-0.6, -0.6]),  # Bottom-left
-    3: np.array([0.6, -0.6]),  # Bottom-right
+group_corners = {
+    0: np.array([0.22, 0.77]),  # Research: top-left
+    1: np.array([0.78, 0.77]),  # Marketing: top-right
+    2: np.array([0.22, 0.23]),  # Engineering: bottom-left
+    3: np.array([0.78, 0.23]),  # Design: bottom-right
 }
+
+# Place each group's nodes in a circle around their quadrant center
+group_node_map = {g: [i for i, nd in enumerate(nodes) if nd["group"] == g] for g in range(4)}
 positions = np.zeros((n, 2))
-for i, node in enumerate(nodes):
-    center = group_centers[node["group"]]
-    positions[i] = center + np.random.randn(2) * 0.2
+for group_id, node_indices in group_node_map.items():
+    m = len(node_indices)
+    center = group_corners[group_id]
+    for idx, ni in enumerate(node_indices):
+        angle = (idx / m) * 2 * np.pi
+        positions[ni] = center + 0.09 * np.array([np.cos(angle), np.sin(angle)])
 
-k = 0.5  # Optimal distance parameter
-
-# Force-directed layout iterations
+# Intra-group spring layout with centroid anchor (200 iterations)
+k = 0.065
 for iteration in range(200):
     displacement = np.zeros((n, 2))
 
+    # Repulsion between same-group nodes only
     for i in range(n):
         for j in range(i + 1, n):
+            if nodes[i]["group"] != nodes[j]["group"]:
+                continue
             diff = positions[i] - positions[j]
-            dist = max(np.linalg.norm(diff), 0.01)
+            dist = max(np.linalg.norm(diff), 0.001)
             force = (k * k / dist) * (diff / dist)
             displacement[i] += force
             displacement[j] -= force
 
+    # Attraction along intra-group edges only
     for src, tgt in edges:
+        if nodes[src]["group"] != nodes[tgt]["group"]:
+            continue
         diff = positions[src] - positions[tgt]
-        dist = max(np.linalg.norm(diff), 0.01)
+        dist = max(np.linalg.norm(diff), 0.001)
         force = (dist * dist / k) * (diff / dist)
         displacement[src] -= force
         displacement[tgt] += force
+
+    # Strong centroid anchor keeps each group in its quadrant
+    for i, node in enumerate(nodes):
+        center = group_corners[node["group"]]
+        displacement[i] += 0.35 * (center - positions[i])
 
     cooling = 1 - iteration / 200
     for i in range(n):
         disp_norm = np.linalg.norm(displacement[i])
         if disp_norm > 0:
-            positions[i] += (displacement[i] / disp_norm) * min(disp_norm, 0.08 * cooling)
+            positions[i] += (displacement[i] / disp_norm) * min(disp_norm, 0.025 * cooling)
 
-# Normalize positions to [0.1, 0.9] range
-pos_min = positions.min(axis=0)
-pos_max = positions.max(axis=0)
-positions = (positions - pos_min) / (pos_max - pos_min + 1e-6) * 0.8 + 0.1
 pos = {node["id"]: positions[i] for i, node in enumerate(nodes)}
 
-# Calculate node degrees for sizing
+# Calculate node degrees for sizing and tooltips
 degrees = {node["id"]: 0 for node in nodes}
 for src, tgt in edges:
     degrees[src] += 1
@@ -181,22 +193,28 @@ for node in nodes:
             "label": node["label"],
             "group": group_names[node["group"]],
             "size": 8 + degree * 2,
-            "label_y": y + 0.04,
+            "degree": degree,
+            "label_y": y + 0.065,
         }
     )
 df_nodes = pd.DataFrame(node_data)
 
-# Plot
+# Plot — no coord_fixed so the network fills the full 16:9 landscape canvas
 plot = (
     ggplot()
-    + geom_segment(aes(x="x", y="y", xend="xend", yend="yend"), data=df_edges, color=EDGE_COLOR, size=1.2, alpha=0.35)
-    + geom_point(aes(x="x", y="y", color="group", size="size"), data=df_nodes, stroke=1.5, alpha=0.95)
-    + geom_text(aes(x="x", y="label_y", label="label"), data=df_nodes, size=9, color=INK_SOFT, fontface="bold")
+    + geom_segment(aes(x="x", y="y", xend="xend", yend="yend"), data=df_edges, color=EDGE_COLOR, size=1.2, alpha=0.40)
+    + geom_point(
+        aes(x="x", y="y", color="group", size="size"),
+        data=df_nodes,
+        tooltips=layer_tooltips().line("@label").line("Department|@group").line("Connections|@degree"),
+        stroke=1.5,
+        alpha=0.95,
+    )
+    + geom_text(aes(x="x", y="label_y", label="label"), data=df_nodes, size=12, color=INK_SOFT, fontface="bold")
     + scale_color_manual(values=OKABE_ITO, name="Department")
     + scale_size_identity()
-    + coord_fixed(ratio=1)
     + scale_x_continuous(limits=(-0.05, 1.05))
-    + scale_y_continuous(limits=(-0.05, 1.1))
+    + scale_y_continuous(limits=(-0.05, 1.05))
     + labs(title="Office Social Network · network-basic · letsplot · anyplot.ai")
     + ggsize(1600, 900)
     + theme(

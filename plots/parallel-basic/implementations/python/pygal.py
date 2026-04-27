@@ -1,7 +1,7 @@
 """ anyplot.ai
 parallel-basic: Basic Parallel Coordinates Plot
 Library: pygal 3.1.0 | Python 3.14.4
-Quality: 81/100 | Updated: 2026-04-27
+Quality: 83/100 | Updated: 2026-04-27
 """
 
 import os

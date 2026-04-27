@@ -2,7 +2,7 @@ library: highcharts
 language: python
 specification_id: network-basic
 created: '2025-12-23T15:24:22Z'
-updated: '2026-04-27T01:38:48Z'
+updated: '2026-04-27T01:57:02Z'
 generated_by: claude-sonnet
 workflow_run: 24971743443
 issue: 989
@@ -12,105 +12,89 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/network-b
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/network-basic/python/highcharts/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/network-basic/python/highcharts/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/network-basic/python/highcharts/plot-dark.html
-quality_score: 78
+quality_score: 80
 review:
   strengths:
-  - 'Correct Okabe-Ito palette with all four community colours from positions 1-4
-    in canonical order; both theme backgrounds exact (#FAF8F1 / #1A1A17)'
-  - Degree-encoded node sizing gives immediately readable visual hierarchy — high-connectivity
-    nodes stand out clearly
-  - Cross-community bridge edges implemented and visible; data tells a coherent story
-    about community structure
-  - Title format exact ('network-basic · highcharts · anyplot.ai'); all chrome tokens
-    properly theme-adaptive in both renders
-  - HTML artifact produced alongside PNG; all required output files present
+  - Full theme-adaptive chrome with no dark-on-dark or light-on-light failures in
+    either render
+  - Node size encoding degree centrality adds a meaningful data dimension beyond color
+    grouping
+  - Deterministic layout via circular initial positions ensures reproducible renders
+  - 20-node 31-edge network with 4 communities and cross-community bridges fully satisfies
+    spec requirements
   weaknesses:
-  - Legend floats in isolated right margin with a wide empty corridor — integrate
-    the legend closer to the data (e.g., bottom-right corner) or increase the chart
-    plot area to close the gap
-  - 'Bottom-edge crowding: Noah, Quinn, and Ryan sit at the canvas boundary due to
-    simulation spreading further than the 100px bottom margin anticipates — increase
-    bottom margin to 200-250px'
-  - 'allowOverlap: True on dataLabels allows label collisions in dense areas — consider
-    allowOverlap: False or explicit label offsets to enforce legibility per spec notes'
-  - Community cluster separation is lost after force simulation converges — communities
-    intermix spatially; tune gravitationalConstant higher or linkLength shorter to
-    keep clusters cohesive
-  - 'Force simulation with enableSimulation: True is not deterministically seeded
-    — reproducibility between runs is not guaranteed'
-  - JS string-injection workaround for nodes config is fragile; the API limitation
-    should be worked around more robustly
+  - JS string injection via js_literal.replace() for nodes config is fragile and could
+    break silently if Highcharts-core changes its JS literal format
+  - Node data labels at 22px are on the small side for a 4800x2700 canvas; 28-32px
+    would improve readability
+  - Network graph does not fully utilize canvas real estate - lower ~25% of canvas
+    is empty due to group center positions
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) — correct, not pure white
-      Chrome: Title "network-basic · highcharts · anyplot.ai" centred at top in dark ink — readable. No traditional axis labels (appropriate for network graph). Legend on far right with dark-ink text on elevated-light background (#FFFDF6) — readable.
-      Data: 20 nodes; Community A green (#009E73), Community B vermillion (#D55E00), Community C blue (#0072B2), Community D pink (#CC79A7). Node radii vary with degree. White-outlined labels centred inside circles. INK_SOFT grey edges. Force-directed layout with communities intermixed spatially.
-      Layout: Legend isolated in far-right margin with large empty gap. Bottom nodes (Noah, Quinn, Ryan) within ~100px of canvas bottom edge — close to clipping.
-      Legibility verdict: PASS — all text readable; no light-on-light failures
+      Background: Warm off-white (#FAF8F1) — correct theme surface
+      Chrome: Title "network-basic · highcharts · anyplot.ai" at 48px in dark ink (#1A1A17) — clearly readable; legend text at 32px in INK_SOFT (#4A4A44) on ELEVATED_BG (#FFFDF6) — readable; no axis labels (correctly hidden for network graph)
+      Data: 20 nodes in 4 community colors — Community A green (#009E73), Community B orange (#D55E00), Community C blue (#0072B2), Community D pink/purple (#CC79A7); node sizes vary by degree; edges as thin INK_SOFT lines; node labels in dark ink with warm-white 3px outline
+      Legibility verdict: PASS — all text readable against light background; no light-on-light failures
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) — correct, not pure black
-      Chrome: Title appears in light ink (#F0EFE8) — readable against dark background. Legend text in INK_SOFT (#B8B7B0) on elevated dark background (#242420) — readable. No dark-on-dark failures observed.
-      Data: Colours are identical to light render — Community A green, B orange, C blue, D pink — correct. Node labels use PAGE_BG text outline adapted to dark theme. Edges in INK_SOFT adapted to dark theme.
-      Legibility verdict: PASS — all text readable on dark surface; no dark-on-dark failures detected
+      Background: Warm near-black (#1A1A17) — correct dark surface
+      Chrome: Title in light ink (#F0EFE8) — clearly readable against dark background; legend text in INK_SOFT (#B8B7B0) on ELEVATED_BG (#242420) — readable; edges in #B8B7B0 (dark-mode INK_SOFT)
+      Data: Node community colors are visually identical to light render — #009E73, #D55E00, #0072B2, #CC79A7 unchanged (only chrome flipped); node labels in light ink (#F0EFE8) with near-black 3px outline — readable on all colored node backgrounds
+      Legibility verdict: PASS — all text readable against dark background; no dark-on-dark failures detected
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 26
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: 'All sizes explicitly set (title 48px, node labels 22px, legend 32px);
-          all readable. Minor deduction: 22px labels are at the lower boundary for
-          a 4800px canvas.'
+        comment: Title 48px prominent; node labels 22px adequate but slightly small
+          for 4800x2700; legend 32px clear; both themes pass readability check
       - id: VQ-02
         name: No Overlap
-        score: 4
-        max: 6
-        passed: true
-        comment: 'allowOverlap: True lets labels coexist with edges; force simulation
-          crowds some mid-network labels where edges cross neighbouring circles. Moderate
-          overlap, main content readable.'
-      - id: VQ-03
-        name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Degree-scaled node radii work well; hubs clearly larger. Edges at
-          width 3 visible. Smallest nodes slightly harder to read.
+        comment: Force layout generally well-spaced; allowOverlap:True is a minor
+          concern but no visible collisions
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 6
+        passed: true
+        comment: All 20 nodes clearly visible with distinct colors and degree-scaled
+          sizes
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito palette; CVD-safe. Good luminance spread across four communities.
+        comment: Okabe-Ito palette CVD-safe, no red-green as sole signal
       - id: VQ-05
         name: Layout & Canvas
-        score: 2
+        score: 3
         max: 4
         passed: true
-        comment: Legend floats in far-right margin with large empty corridor to its
-          left. Bottom simulation extent brings Noah/Quinn/Ryan to within 100px of
-          canvas bottom edge — near clipping.
+        comment: Good margins; network leaves ~25% empty space at bottom of canvas
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: No traditional axes (appropriate for network graph). Title format
-          exact.
+        comment: Title correctly formatted; axes appropriately hidden for network
+          graph
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series #009E73, remaining Okabe-Ito in order. Both backgrounds
-          correct (#FAF8F1 / #1A1A17). Chrome tokens correct in both renders.'
+        comment: 'Community A uses #009E73 first; Okabe-Ito order 1-4; light #FAF8F1
+          / dark #1A1A17 backgrounds correct'
     design_excellence:
-      score: 12
+      score: 9
       max: 20
       items:
       - id: DE-01
@@ -118,26 +102,24 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: 'Above defaults: community colour encoding, degree-scaled nodes,
-          themed borders and link colours. Spatial layout imbalance (legend isolation,
-          bottom crowding) undercuts overall polish.'
+        comment: Community coloring with Okabe-Ito, degree-based node sizing, clean
+          legend; functional but not particularly polished
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 2
         max: 6
-        passed: true
-        comment: Axes correctly hidden; INK_SOFT links and borders show theme attention;
-          legend properly styled. Deduction for spatial layout imbalance.
+        passed: false
+        comment: Axes hidden expected for network graph; edge styling minimal beyond
+          requirements
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 2
         max: 6
-        passed: true
-        comment: Community colours and degree-size encoding create hierarchy. However,
-          force simulation does not maintain four-quadrant grouping — communities
-          intermix spatially, reducing cluster legibility.
+        passed: false
+        comment: Community colors convey structure; node size adds hierarchy; no explicit
+          focal point or bridge-node emphasis
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -145,56 +127,53 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: NetworkGraphSeries with force-directed simulation; correct chart
-          type.
+        comment: Correct NetworkGraphSeries with force-directed simulation
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: 'Force-directed layout, degree-size encoding, inter-community bridges
-          all present. Minor deduction: allowOverlap: True violates spec note that
-          labels should be legible without overlapping.'
+        comment: 20 nodes, 31 edges, force layout, degree-encoded sizes, labels, cross-group
+          bridges
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Nodes with unique IDs, edges as from/to pairs, all data represented.
+        comment: Nodes=people, edges=friendships, colors=communities
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format exact. Legend enumerates all four communities with matching
-          colours and names.
+        comment: network-basic · highcharts · anyplot.ai; 4 community legend entries
     data_quality:
-      score: 13
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: 'Shows clusters, bridges, and degree variation. Minor deduction:
-          all four communities have exactly 5 nodes — asymmetry would make degree
-          encoding more dramatic.'
+        comment: Shows node attributes, edge connectivity, community structure, degree
+          variation, cross-community bridges
       - id: DQ-02
         name: Realistic Context
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Real first names, friendship connection context, plausible. Community
-          names are generic (A/B/C/D) — slightly abstract.
+        comment: Plausible small social network with realistic names and friendship
+          patterns; neutral data
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 20 nodes, 31 edges; within spec's 10-50 node guideline.
+        comment: 20 nodes 31 edges within 10-50 guideline; appropriate density for
+          clear visualization
     code_quality:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -202,38 +181,35 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Flat script: imports → tokens → data → degree calc → positions →
-          series → chart → JS injection → HTML → screenshot. No functions or classes.'
+        comment: No functions or classes; linear top-to-bottom structure
       - id: CQ-02
         name: Reproducibility
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: 'Node positions deterministically initialised via trigonometry, but
-          enableSimulation: True runs Highcharts JS force simulation whose final convergence
-          is not seeded.'
+        passed: true
+        comment: Deterministic circular initial positions; no random seed needed
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Every import is used.
+        comment: All imports (json, math, os, tempfile, time, pathlib, highcharts_core,
+          selenium) are used
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
-        passed: true
-        comment: The js_literal.replace() string-injection hack is necessary given
-          highcharts-core limitation but is fragile and non-idiomatic. The centerLabels
-          JS workaround adds further complexity.
+        passed: false
+        comment: JS string injection via replace() on js_literal is fragile and could
+          break if Highcharts-core changes JS output format
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot-{THEME}.png and plot-{THEME}.html; correct filenames.
+        comment: Saves plot-{THEME}.png and plot-{THEME}.html correctly
     library_mastery:
-      score: 7
+      score: 6
       max: 10
       items:
       - id: LM-01
@@ -241,25 +217,23 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Uses NetworkGraphSeries, correct container pattern, add_series()
-          for legend-proxy series. Deduction for string-injection workaround bypassing
-          the API.
+        comment: Correct NetworkGraphSeries, Chart(container=container), layout_algorithm,
+          selenium pipeline; docked for JS string injection workaround
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 2
         max: 5
         passed: true
-        comment: NetworkGraphSeries with enableSimulation, layoutAlgorithm tuning
-          (linkLength, gravitationalConstant, friction, maxIterations, verlet integration),
-          and JS label-centering post-hook are Highcharts-specific.
-  verdict: REJECTED
+        comment: Uses Highcharts NetworkGraph module, force simulation, scatter series
+          as legend proxy; docked for string manipulation vs API usage
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - selenium
   techniques:
   - html-export
+  - annotations
   patterns:
-  - data-generation
   - iteration-over-groups
   dataprep: []
   styling:

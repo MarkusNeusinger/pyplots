@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 marimekko-basic: Basic Marimekko Chart
-Library: matplotlib | Python 3.13
-Quality: pending | Created: 2026-04-27
+Library: matplotlib 3.10.9 | Python 3.14.4
+Quality: 85/100 | Updated: 2026-04-27
 """
 
 import os

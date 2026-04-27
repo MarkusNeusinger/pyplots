@@ -2,7 +2,7 @@ library: pygal
 language: python
 specification_id: heatmap-calendar
 created: '2025-12-23T15:16:38Z'
-updated: '2026-04-27T01:38:36Z'
+updated: '2026-04-27T01:52:41Z'
 generated_by: claude-sonnet
 workflow_run: 24971332386
 issue: 1010
@@ -12,43 +12,41 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/heatmap-c
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/heatmap-calendar/python/pygal/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/heatmap-calendar/python/pygal/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/heatmap-calendar/python/pygal/plot-dark.html
-quality_score: 82
+quality_score: 83
 review:
   strengths:
-  - Correct viridis sequential colormap for continuous data — exactly right choice
-    per style guide
-  - Both themes render cleanly with correct backgrounds (#FAF8F1/#1A1A17) and fully
-    readable text
-  - 'Full spec compliance: weekday labels, month labels, sequential colormap, empty
-    cell handling, color scale legend'
-  - GitHub-style contribution pattern is realistic and immediately recognizable
-  - Summary statistics (total contributions, streak, average) add meaningful storytelling
-    context
-  - Rounded cell corners and consistent gap spacing give a polished appearance
+  - 'Full spec compliance: weekday labels, month labels, color scale legend, 365-day
+    range all correctly implemented'
+  - Correct sequential viridis-like colormap for continuous heatmap data matching
+    style guide rules
+  - Both themes correctly adapt chrome while data colors remain identical across light
+    and dark renders
+  - Summary statistics (total contributions, active days, streak, average) add genuine
+    data storytelling
+  - Reproducible data with np.random.seed(42) and realistic GitHub-style contribution
+    scenario
+  - Produces both interactive HTML and PNG output as required for pygal
   weaknesses:
-  - Custom class with 4 methods violates KISS; the class structure is necessary given
-    pygal's limitations but creates structural complexity
-  - sys.path manipulation and chart.add('', [0]) dummy data are inelegant workarounds
-  - Uses internal pygal.graph.graph.Graph API rather than pygal's public interface
-  - Vertical gap between the two calendar sections (Jan-Jul / Aug-Dec) creates some
-    wasted canvas space
-  - Secondary stats text font size is at the lower boundary of comfortable readability
-    at full resolution
+  - Large vertical whitespace gap between title and calendar grid reduces canvas utilization
+    — reduce title_h (200), margin_top (280), or vpad minimum to tighten spacing
+  - sys.path.pop(0) / sys.path.insert workaround for module shadowing is fragile and
+    should be removed
+  - Layout arithmetic in _plot() is verbose with many manual geometry constants
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white #FAF8F1 — correctly matches the light theme surface
-      Chrome: Title "heatmap-calendar · pygal · anyplot.ai" in bold dark ink at top — clearly readable. Weekday labels (Mon–Sun) in bold dark text on left of both calendar sections — readable. Month labels (Jan–Jul top, Aug–Dec bottom) in bold dark text above each section — readable. Legend "Less/More" labels in bold dark ink — readable. Summary stats in dark/muted ink — readable.
-      Data: Two-section calendar layout; cells use viridis-inspired sequential palette (neutral gray → dark violet → teal-blue → teal-green → yellow-green). Empty days show as neutral gray (#D8D7CF). Active days show color intensity matching contribution level.
+      Background: Warm off-white (#FAF8F1) — correct, not pure white
+      Chrome: Title "heatmap-calendar · pygal · anyplot.ai" in dark ink at top. Month labels (Jan-Dec) above grid and weekday labels (Mon-Sun) on left in bold dark ink — all clearly readable against light background. Legend "Less/More" text and range labels in dark/muted ink. Summary stats in dark ink. No light-on-light text issues.
+      Data: Sequential viridis-like palette — grey for 0, dark purple (#42337A) for 1-4, teal (#2A788E) for 4-7, green (#38B277) for 7-10, yellow-green (#BCDC3B) for 10+. Rounded rectangular cells clearly visible. GitHub-style contribution pattern for 2024.
       Legibility verdict: PASS
 
     Dark render (plot-dark.png):
-      Background: Warm near-black #1A1A17 — correctly matches the dark theme surface
-      Chrome: Title in warm near-white (#F0EFE8) — clearly readable against dark background. Weekday and month labels in warm near-white — readable. Legend labels in warm near-white — readable. Summary stats text in muted warm gray (#A8A79F) — readable. No dark-on-dark failures observed.
-      Data: Same viridis-palette colors (dark violet, teal-blue, teal-green, yellow-green) — identical to light render. Empty cells adapt to dark gray (#2A2A27), clearly distinct from the near-black background while remaining visually quiet.
+      Background: Warm near-black (#1A1A17) — correct, not pure black
+      Chrome: Title, month labels, weekday labels, legend text, and summary stats all render in light/off-white ink — clearly readable against dark background. No dark-on-dark failures detected. Tick/label colors adapt correctly to dark theme.
+      Data: Sequential palette colors (grey, purple, teal, green, yellow-green) are identical to light render — only chrome flips between themes. Cells remain equally visible against dark background.
       Legibility verdict: PASS
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 27
       max: 30
       items:
       - id: VQ-01
@@ -56,50 +54,49 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Font sizes explicitly set (72px title, 42px labels, 56px+ month/weekday);
-          all text readable in both themes; secondary stats text at lower boundary
+        comment: Font sizes explicitly set (title_font_size=72, dynamic cell/legend/stat
+          fonts at 56-62px min); all text readable in both themes
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: No significant text collisions; month labels well-spaced; rightmost
-          month label close to edge
+        comment: No overlapping text; month labels, weekday labels, legend and summary
+          stats cleanly separated
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Calendar cells clearly visible; color progression works in both themes;
-          empty cells contrast correctly
+        comment: Calendar cells clearly visible with rounded corners; viridis color
+          progression distinguishes all 5 levels
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Viridis is perceptually uniform and colorblind-safe; progressive
-          encoding
+        comment: Viridis-derived sequential palette is perceptually uniform and colorblind-safe
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 2
         max: 4
-        passed: true
-        comment: Two-section layout works; notable vertical gap between Jan-Jul and
-          Aug-Dec sections
+        passed: false
+        comment: Large empty gap between title and calendar grid; significant top-heavy
+          whitespace reduces canvas utilization
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Title format correct; weekday and month labels serve as descriptive
-          axes
+        comment: Title matches required format; weekday (Mon-Sun) and month (Jan-Dec)
+          labels present
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: '#FAF8F1 light / #1A1A17 dark backgrounds; viridis sequential for
-          continuous data; data colors identical across themes'
+        comment: 'Sequential viridis-like colormap for continuous data; correct backgrounds
+          #FAF8F1 light / #1A1A17 dark; chrome adapts correctly'
     design_excellence:
       score: 13
       max: 20
@@ -109,22 +106,22 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: GitHub-style aesthetic polished; viridis palette strong choice; rounded
-          corners and summary stats add sophistication; not quite publication-ready
+        comment: Clean GitHub-style contribution graph with rounded cells and polished
+          legend; above generic defaults but follows well-known template
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Rounded cell corners, consistent gaps, clean legend; no unnecessary
-          elements
+        comment: No unnecessary gridlines or spines; rounded cells add polish; legend
+          swatches mirror cell style
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Viridis progression communicates activity; summary stats tell a story;
-          GitHub-style immediately recognizable
+        comment: Summary statistics (contributions, active days, streak, avg) add
+          genuine storytelling; weekday pattern visible
     spec_compliance:
       score: 15
       max: 15
@@ -134,65 +131,65 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Calendar heatmap with days as cells, weeks as columns, months as
-          sections
+        comment: Correct calendar heatmap with days as cells, weeks as columns, months
+          as sections
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Weekday labels, month labels, sequential colormap, missing dates
-          handled, color scale legend — all present
+        comment: Weekday labels, month labels, sequential colormap, color scale legend,
+          zero-day handling, 365-day range all present
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Date maps to calendar position; value maps to color intensity; all
-          366 days present
+        comment: Days correctly positioned by weekday (Y) and week (X); full year
+          visible
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: 'Title: heatmap-calendar · pygal · anyplot.ai; color legend with
-          Less/More and value ranges'
+        comment: 'Title: ''heatmap-calendar · pygal · anyplot.ai'' exact format; color
+          scale legend with range labels present'
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Calendar structure, color encoding, weekday patterns, month organization,
-          color legend, summary statistics
+        comment: Shows variation from empty to spike activity; weekday patterns visible;
+          full 0-14 value range represented
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: GitHub-style developer contribution tracking for 2024; realistic
-          weekday bias; neutral domain
+        comment: GitHub-style contribution graph is a well-recognized real-world use
+          case; 'contributions' is meaningful and neutral
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 366 days (2024 leap year); values 0-14 (realistic commit counts);
-          ~111 active days
+        comment: 286 contributions over 111 active days (avg 2.6/day) is plausible
+          for a developer contribution history
     code_quality:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 1
+        score: 2
         max: 3
         passed: false
-        comment: Custom class CalendarHeatmap with 4 methods violates KISS; required
-          by pygal architecture
+        comment: Class (CalendarHeatmap) and two helper functions used; class extension
+          necessary for pygal custom charts but not strictly KISS
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -204,20 +201,21 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports used; sys import used for path workaround
+        comment: All imports used; os, sys, datetime, numpy, pygal Graph and Style
+          all active
       - id: CQ-04
         name: Code Elegance
         score: 1
         max: 2
-        passed: true
-        comment: sys.path manipulation and chart.add('', [0]) dummy data hack are
-          inelegant necessary workarounds
+        passed: false
+        comment: Verbose geometry arithmetic in _plot(); sys.path.pop(0)/sys.path.insert
+          workaround is fragile and unusual
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot-{THEME}.png and plot-{THEME}.html correctly
+        comment: Saves plot-{THEME}.png and plot-{THEME}.html correctly for pygal
     library_mastery:
       score: 6
       max: 10
@@ -227,23 +225,28 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Correctly uses pygal Style system; but relies on internal pygal.graph.graph.Graph
-          (not public API) and low-level svg.node() manipulation
+        comment: Extends pygal.graph.graph.Graph — correct pygal pattern for custom
+          charts; uses SVG node API but bypasses high-level chart API
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Generates interactive HTML via pygal SVG engine; uses reactive CSS
-          class; leverages Style for theme-adaptive theming
-  verdict: APPROVED
+        comment: Uses pygal's Graph extension mechanism and SVG engine for custom
+          type; produces both interactive HTML and PNG — distinctive to pygal
+  verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - html-export
   - custom-legend
+  - annotations
   patterns:
   - data-generation
+  - iteration-over-groups
+  - matrix-construction
   dataprep:
   - time-series
-  styling: []
+  styling:
+  - custom-colormap
+  - minimal-chrome

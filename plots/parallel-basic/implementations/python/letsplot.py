@@ -1,7 +1,7 @@
 """ anyplot.ai
 parallel-basic: Basic Parallel Coordinates Plot
 Library: letsplot 4.9.0 | Python 3.14.4
-Quality: 83/100 | Updated: 2026-04-27
+Quality: 86/100 | Updated: 2026-04-27
 """
 
 import os

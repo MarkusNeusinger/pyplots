@@ -17,8 +17,9 @@ run-name: "Scheduled regen (${{ github.event.inputs.count || '2' }} specs)"
 #   - workflow_dispatch: manual, with inputs for count + dry-run
 
 on:
-  schedule:
-    - cron: '0 0,2,4,6,8,10,12 * * *'
+  # Temporarily paused — re-enable in a few days.
+  # schedule:
+  #   - cron: '0 0,2,4,6,8,10,12 * * *'
   workflow_dispatch:
     inputs:
       count:

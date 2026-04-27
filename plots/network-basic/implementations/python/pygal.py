@@ -1,7 +1,7 @@
-""" pyplots.ai
+""" anyplot.ai
 network-basic: Basic Network Graph
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 90/100 | Created: 2025-12-23
+Library: pygal 3.1.0 | Python 3.14.4
+Quality: 71/100 | Updated: 2026-04-27
 """
 
 import numpy as np

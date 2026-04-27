@@ -152,8 +152,16 @@ class SpecRepository(BaseRepository[Spec]):
         return result.scalar_one_or_none()
 
     async def get_all(self) -> list[Spec]:
-        """Get all specs with their implementations and library (deferred heavy fields excluded)."""
-        result = await self.session.execute(select(Spec).options(selectinload(Spec.impls).selectinload(Impl.library)))
+        """Get all specs with their implementations, library and code.
+
+        impl.code is undeferred so callers iterating spec.impls on an async
+        session (MCP list_specs / search_specs_by_tags) don't trigger
+        MissingGreenlet when reading impl.code.
+        """
+        impls_loader = selectinload(Spec.impls)
+        result = await self.session.execute(
+            select(Spec).options(impls_loader.selectinload(Impl.library), impls_loader.undefer(Impl.code))
+        )
         return list(result.scalars().all())
 
     async def get_all_with_code(self) -> list[Spec]:
@@ -170,16 +178,21 @@ class SpecRepository(BaseRepository[Spec]):
         return [row[0] for row in result.fetchall()]
 
     async def search_by_tags(self, tags: list[str]) -> list[Spec]:
-        """Search specs by tags."""
+        """Search specs by tags. Eager-loads impls + library + code.
+
+        impl.library and impl.code are both required by MCP
+        search_specs_by_tags (server.py iterates impls and reads both); not
+        eager-loading them on an async session raises MissingGreenlet.
+        """
         filters = []
         for tag in tags:
             filters.append(cast(Spec.tags, String).contains(f'"{tag}"'))
 
-        # Eager-load Spec.impls AND each impl's library — callers (e.g. MCP
-        # search_specifications) iterate impls and read impl.library on an async
-        # session, which would otherwise raise sqlalchemy.exc.MissingGreenlet.
+        impls_loader = selectinload(Spec.impls)
         result = await self.session.execute(
-            select(Spec).where(or_(*filters)).options(selectinload(Spec.impls).selectinload(Impl.library))
+            select(Spec)
+            .where(or_(*filters))
+            .options(impls_loader.selectinload(Impl.library), impls_loader.undefer(Impl.code))
         )
         return list(result.scalars().all())
 

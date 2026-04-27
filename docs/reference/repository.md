@@ -245,7 +245,7 @@ created: 2025-01-10T08:00:00Z
 updated: 2025-01-15T10:30:00Z
 
 # Generation
-generated_by: claude-opus-4-7-20260101
+generated_by: claude-opus-4-7
 workflow_run: 12345678
 issue: 42
 

@@ -13,6 +13,8 @@
 ## Summary
 The anyplot repository exhibits high technical excellence in its frontend and core AI generation workflows but suffers from critical infrastructure and baseline safety issues. The use of experimental Python 3.14, a major command injection vulnerability in CI/CD, and broken Python syntax in automation scripts significantly compromise production readiness.
 
+**Note:** Several critical and high-severity findings listed below (Python syntax errors, invalid model name, documentation drift, and missing Web Vitals) were addressed in PR #5506.
+
 ## Quick Wins (Importance ≥4 & Effort=S)
 | # | Finding | Auto-fix | Files | Hint |
 |---|---------|----------|-------|------|

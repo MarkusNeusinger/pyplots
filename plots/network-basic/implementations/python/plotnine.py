@@ -1,7 +1,6 @@
-""" anyplot.ai
+"""anyplot.ai
 network-basic: Basic Network Graph
 Library: plotnine 0.15.3 | Python 3.14.4
-Quality: 76/100 | Created: 2026-04-27
 """
 
 import os
@@ -29,8 +28,8 @@ try:
         theme,
     )
 except ImportError:
-    _this_dir = os.path.dirname(os.path.abspath(__file__))
-    sys.path = [p for p in sys.path if os.path.abspath(p) != _this_dir]
+    # This file is named plotnine.py; remove current dir so the library is found instead
+    sys.path = [p for p in sys.path if os.path.abspath(p) != os.path.dirname(os.path.abspath(__file__))]
     from plotnine import (
         aes,
         coord_cartesian,
@@ -47,6 +46,7 @@ except ImportError:
         scale_size_continuous,
         theme,
     )
+
 
 # Theme tokens
 THEME = os.getenv("ANYPLOT_THEME", "light")
@@ -124,11 +124,20 @@ for src, tgt in edges:
     degrees[src] += 1
     degrees[tgt] += 1
 
-# Spring layout (force-directed algorithm)
-positions = np.random.rand(n, 2) * 2 - 1
-k = 0.4
+# Spring layout: quadrant-based initialization for balanced 4-cluster arrangement
+quadrant_centers = {
+    "Team A": np.array([-0.6, 0.6]),
+    "Team B": np.array([0.6, 0.6]),
+    "Team C": np.array([-0.6, -0.6]),
+    "Team D": np.array([0.6, -0.6]),
+}
+positions = np.zeros((n, 2))
+for i, node in enumerate(nodes):
+    center = quadrant_centers[node["group"]]
+    positions[i] = center + np.random.randn(2) * 0.12
 
-for iteration in range(150):
+k = 0.45
+for iteration in range(200):
     displacement = np.zeros((n, 2))
 
     for i in range(n):
@@ -146,7 +155,7 @@ for iteration in range(150):
         displacement[src] -= force
         displacement[tgt] += force
 
-    cooling = 1 - iteration / 150
+    cooling = 1 - iteration / 200
     for i in range(n):
         disp_norm = np.linalg.norm(displacement[i])
         if disp_norm > 0:
@@ -183,12 +192,12 @@ plot = (
         data=edge_df, mapping=aes(x="x", y="y", xend="xend", yend="yend"), color=INK_SOFT, size=0.7, alpha=0.45
     )
     + geom_point(data=node_df, mapping=aes(x="x", y="y", color="group", size="degree"), alpha=0.92)
-    + geom_text(data=node_df, mapping=aes(x="x", y="y", label="label"), color=INK, size=7, nudge_y=0.045, va="bottom")
+    + geom_text(data=node_df, mapping=aes(x="x", y="y", label="label"), color=INK, size=11, nudge_y=0.05, va="bottom")
     + scale_color_manual(values=group_colors, name="Community")
     + scale_size_continuous(range=(6, 18))
     + guides(size=None)
     + coord_cartesian(xlim=(-0.05, 1.05), ylim=(-0.05, 1.05))
-    + labs(title="Social Network · network-basic · plotnine · anyplot.ai")
+    + labs(title="network-basic · plotnine · anyplot.ai")
     + theme(
         figure_size=(16, 9),
         plot_background=element_rect(fill=PAGE_BG, color=PAGE_BG),

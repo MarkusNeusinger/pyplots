@@ -2,7 +2,7 @@ library: letsplot
 language: python
 specification_id: network-basic
 created: '2025-12-23T15:18:08Z'
-updated: '2026-04-27T01:35:49Z'
+updated: '2026-04-27T01:48:21Z'
 generated_by: claude-sonnet
 workflow_run: 24971792868
 issue: 989
@@ -15,93 +15,96 @@ preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/network-b
 quality_score: 83
 review:
   strengths:
-  - 'Perfect spec compliance: correct network type, spring layout, degree-encoded
-    node sizing, sparse enough to see edges'
-  - Both renders theme-adapt correctly — background, title, labels, legend all flip
-    properly; no dark-on-dark failures
-  - Custom spring layout implemented from scratch without networkx dependency — impressively
-    self-contained
-  - 'layer_tooltips() used for genuine interactivity (multi-line tooltip: name, department,
-    connections) — distinctive lets-plot feature'
-  - 'Full Okabe-Ito compliance: Research = #009E73 first, correct order through 4
-    departments'
-  - Reproducible deterministic layout with np.random.seed(42)
+  - Correct node-link diagram with 4-quadrant community layout that clearly separates
+    departments
+  - Degree-based node sizing (8 + degree*2) reveals hub nodes at a glance
+  - Layer tooltips (label, department, connections) make good use of letsplot's interactive
+    capabilities
+  - Custom intra-group spring layout with centroid anchoring keeps clusters visually
+    separate
+  - 'Full theme-adaptive chrome: background, text, legend, edges all adapt between
+    light and dark renders'
+  - Cross-group edges clearly visible and tell the interdepartmental connectivity
+    story
+  - HTML export and scale=3 PNG export both correct, fully idiomatic letsplot output
   weaknesses:
-  - Mild label crowding in the dense 5-node clusters (Research top-left, Engineering
-    bottom-left) — labels overlap in some cases
-  - Center canvas area is largely empty due to corner-anchored layout; could be partially
-    addressed by slightly increasing node spread or shifting groups inward
-  - Node labels (size=12) are on the smaller side for 4800x2700 output; increasing
-    to size=14-15 would improve legibility at full resolution
-  - No visual emphasis on hub nodes or bridge nodes — degree-based sizing is subtle;
-    a slight extra visual cue (e.g., distinct border/stroke on high-degree nodes)
-    would strengthen storytelling
+  - 'Label crowding in dense clusters: Research (top-left) and Marketing (top-right)
+    groups have 5 nodes each with labels that overlap slightly at scale'
+  - Title format does not match required pattern — should be 'network-basic · letsplot
+    · anyplot.ai' (or with a descriptive prefix separated by ·), currently has 'Office
+    Social Network · network-basic · letsplot · anyplot.ai' which adds an extra segment
+    before the spec-id
+  - 'Canvas under-utilised: the network occupies roughly the central 60% of the 16:9
+    canvas; scale_x_continuous limits=(-0.05, 1.05) and group_corners only go to 0.78,
+    leaving wide margins'
+  - geom_text label offset (label_y = y + 0.065) is a fixed value and causes some
+    labels to be positioned awkwardly relative to densely packed nodes
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) — correct light surface
-      Chrome: Title "Office Social Network · network-basic · letsplot · anyplot.ai" in dark ink (#1A1A17), readable. Node labels in #4A4A44 (INK_SOFT), positioned above nodes, readable. No axis labels or ticks (appropriate for network graph). Legend with department names and colors, legible.
-      Data: 4 department clusters — Research (#009E73 green, top-left), Marketing (#D55E00 orange, top-right), Engineering (#0072B2 blue, bottom-left), Design (#CC79A7 pink, bottom-right). Nodes sized by degree. Edges as subtle gray lines at alpha=0.40. Cross-community bridge edges visible.
-      Legibility verdict: PASS — all text readable, no light-on-light failures.
+      Background: Warm off-white (#FAF8F1) — correct, not pure white.
+      Chrome: Title "Office Social Network · network-basic · letsplot · anyplot.ai" in dark ink at top — clearly readable. No axis labels or tick labels (appropriate for network graph). Legend box (top-right area) shows "Department" title and four color swatches (Research, Marketing, Engineering, Design) in dark text — readable.
+      Data: Four community clusters in the four quadrants. Research (top-left): #009E73 teal nodes. Marketing (top-right): #D55E00 orange nodes. Engineering (bottom-left): #0072B2 blue nodes. Design (bottom-right): #CC79A7 pink nodes — exactly Okabe-Ito positions 1-4. Nodes sized by degree with Carol/Noah/Alice appearing larger. Edges as semi-transparent gray segments (alpha=0.40). Node labels in bold dark text (INK_SOFT=#4A4A44).
+      Legibility verdict: PASS — all text visible. Minor crowding in Research and Marketing clusters but readable.
 
     Dark render (plot-dark.png):
-      Background: Near-black (#1A1A17) — correct dark surface
-      Chrome: Title in light text (#F0EFE8), readable. Node labels in #B8B7B0 (light gray INK_SOFT for dark theme), clearly visible against dark background. Legend on elevated dark background (#242420) with light text. No dark-on-dark failures detected.
-      Data: Node colors identical to light render — Research green, Marketing orange, Engineering blue, Design pink unchanged. Edges appear as slightly lighter gray lines against the dark surface. Data integrity maintained across themes.
-      Legibility verdict: PASS — all labels and title readable, no dark-on-dark failures.
+      Background: Warm near-black (#1A1A17) — correct, not pure black.
+      Chrome: Title remains visible in light ink (#F0EFE8) against dark background. Legend box elevated background (#242420) with light text. Node labels render in light gray (INK_SOFT=#B8B7B0) — clearly visible against the near-black background. No dark-on-dark failures observed.
+      Data: Colors identical to light render — #009E73 (Research), #D55E00 (Marketing), #0072B2 (Engineering), #CC79A7 (Design). Data colors are theme-invariant as required. Edges visible as lighter semi-transparent segments against dark background.
+      Legibility verdict: PASS — all text readable, no dark-on-dark failures, brand green #009E73 clearly visible.
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 25
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Title (24pt) and legend (14-16pt) well-sized. Node labels (size=12)
-          slightly small for 4800x2700 but legible in both themes.
+        comment: 'Title, legend, and node labels all readable in both themes. Minor
+          concern: geom_text size=12 produces slightly small labels in clustered areas
+          at full scale.'
       - id: VQ-02
         name: No Overlap
         score: 4
         max: 6
-        passed: true
-        comment: Labels offset above nodes but mild crowding in dense 5-node department
-          clusters.
+        passed: false
+        comment: Research (Alice/Bob/Carol) and Marketing (Ivy/Henry/Grace/Frank/Jack)
+          clusters show label crowding due to dense 5-node groups.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Nodes clearly visible with degree-proportional sizing. Edges at alpha=0.40
-          somewhat faint but visible.
+        comment: Nodes clearly visible with degree-based sizing. Edges at alpha=0.40
+          are appropriately subtle. Node stroke adds definition.
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito CVD-safe palette with 4 distinct hues. No red-green-only
-          encoding.
+        comment: Okabe-Ito palette positions 1-4 used. CVD-safe by design.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: 16:9 landscape correct. Four quadrant clusters fill corners; center
-          canvas somewhat empty.
+        comment: Network visible and laid out clearly across quadrants. Group corners
+          only reach 0.78 so the network occupies ~60% of the canvas, leaving noticeable
+          empty margins.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Title follows required format. Axes correctly suppressed for network
-          graph.
+        comment: Descriptive title present. No axes appropriate for network graph.
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series (Research) = #009E73. Okabe-Ito positions 1-4. Backgrounds
-          #FAF8F1 light / #1A1A17 dark. Both renders theme-correct.'
+        comment: 'First series #009E73. Okabe-Ito order followed. Light #FAF8F1 and
+          dark #1A1A17 backgrounds correct. Both renders theme-correct.'
     design_excellence:
       score: 13
       max: 20
@@ -111,24 +114,25 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Okabe-Ito correctly applied, degree-encoded sizing, interactive tooltips,
-          custom spring layout. No hub highlighting or bridge emphasis.
+        comment: Above default (4). Intentional quadrant community layout, degree-based
+          sizing, and clean no-axes presentation show design thought.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: All axes/grid/border removed. Edge alpha blending creates visual
-          hierarchy. Legend styled with theme-adaptive tokens.
+        comment: Above default (2). Axes/grid fully hidden, edge transparency, node
+          strokes, elevated legend background all contribute.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Community structure immediately visible in quadrant layout. Cross-group
-          bridges create narrative. Node degree sizing adds dimension.
+        comment: Above default (2). Four community clusters with cross-group edges
+          clearly narrate interdepartmental connectivity. Hub nodes visible through
+          size variation.
     spec_compliance:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -136,28 +140,29 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct node-link diagram with nodes and edges.
+        comment: Correct node-link network diagram using geom_segment + geom_point.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Custom spring/force-directed layout, node size encodes degree, labels
-          present, network sparse enough.
+        comment: Spring layout, degree-based node sizing, labels, sparse enough connectivity
+          all present.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: 20 nodes across 4 groups with intra- and inter-group edges. Full
-          network extent displayed.
+        comment: 20 nodes in 4 groups, 31 edges with intra- and cross-group connections
+          as specified.
       - id: SC-04
         name: Title & Legend
-        score: 3
+        score: 2
         max: 3
-        passed: true
-        comment: 'Title: ''Office Social Network · network-basic · letsplot · anyplot.ai''.
-          Legend shows all 4 departments.'
+        passed: false
+        comment: Title 'Office Social Network · network-basic · letsplot · anyplot.ai'
+          has extra prefix segment before spec-id. Required format is '{spec-id} ·
+          {library} · anyplot.ai'. Legend labels match groups correctly.
     data_quality:
       score: 14
       max: 15
@@ -167,22 +172,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows clustering, bridge connections, degree variation. Missing prominent
-          hub node visual emphasis.
+        comment: Shows clustering, degree variation, community bridges. Could show
+          more clearly how cross-group edges form bridges.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Office social network with named employees across 4 departments —
-          realistic and neutral.
+        comment: Office social network with 4 departments (Research, Marketing, Engineering,
+          Design) and realistic names. Neutral, plausible data.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 20 nodes, 31 edges — sparse enough to see individual connections
-          as spec requires.
+        comment: 20 nodes within the 10-50 spec requirement. 31 edges gives ~1.55
+          avg degree — appropriate sparsity for clear visualization.
     code_quality:
       score: 10
       max: 10
@@ -192,32 +197,34 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: No functions or classes; clean sequential script.
+        comment: Flat procedural script, no unnecessary functions or classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set before layout computation.
+        comment: np.random.seed(42) set. Layout algorithm is deterministic given the
+          seed.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imported names used; no extraneous imports.
+        comment: All 17 lets_plot imports are used. os, numpy, pandas all used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Custom spring layout implemented directly without networkx dependency.
-          Well-organized.
+        comment: Custom spring layout is well-structured. No fake UI. Appropriate
+          complexity for the task.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot-{THEME}.png (scale=3) and plot-{THEME}.html correctly.
+        comment: Saves plot-{THEME}.png (scale=3) and plot-{THEME}.html. Correct current
+          API.
     library_mastery:
       score: 7
       max: 10
@@ -227,15 +234,16 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: ggplot grammar with multiple geom layers, scale_size_identity(),
-          scale_color_manual(). LetsPlot.setup_html() called correctly.
+        comment: Grammar of graphics approach, scale_size_identity() for pre-computed
+          sizes, proper theme() composition, ggsize() for canvas. Above default (3).
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: layer_tooltips() with multi-line content is a genuinely distinctive
-          lets-plot feature. HTML export leveraged.
+        comment: layer_tooltips() with multi-field display (label, department, connections)
+          is a letsplot-specific feature used well. HTML export also leveraged. Above
+          default (1).
   verdict: APPROVED
 impl_tags:
   dependencies: []
@@ -246,7 +254,6 @@ impl_tags:
   patterns:
   - data-generation
   - iteration-over-groups
-  - matrix-construction
   dataprep: []
   styling:
   - minimal-chrome

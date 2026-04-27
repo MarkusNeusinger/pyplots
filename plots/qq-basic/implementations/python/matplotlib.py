@@ -1,13 +1,13 @@
-""" anyplot.ai
+"""anyplot.ai
 qq-basic: Basic Q-Q Plot
 Library: matplotlib 3.10.9 | Python 3.14.4
-Quality: 84/100 | Updated: 2026-04-27
 """
 
 import os
 
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy import stats
 
 
 # Theme tokens
@@ -19,68 +19,62 @@ INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
 BRAND = "#009E73"  # Okabe-Ito position 1 — scatter points
 REF_COLOR = "#D55E00"  # Okabe-Ito position 2 — reference line
 
-# Data — sample with slight right skew to show Q-Q deviation clearly
+# Data: systolic blood pressure (mmHg) from a mixed patient cohort
+# Bimodal mixture of normotensive (n=75) and hypertensive (n=25) patients
 np.random.seed(42)
-sample = np.concatenate([np.random.normal(loc=50, scale=10, size=80), np.random.normal(loc=75, scale=5, size=20)])
+normotensive = np.random.normal(loc=120, scale=10, size=75)
+hypertensive = np.random.normal(loc=155, scale=15, size=25)
+bp_readings = np.concatenate([normotensive, hypertensive])
 
-# Theoretical normal quantiles (Abramowitz & Stegun rational approximation, max error ~1.5e-7)
-n = len(sample)
+# Standardize for comparison with N(0,1) reference distribution
+bp_std = (bp_readings - bp_readings.mean()) / bp_readings.std(ddof=1)
+
+# Compute QQ quantiles via scipy.stats.probplot (idiomatic ecosystem approach)
+(theoretical_q, sample_q), _ = stats.probplot(bp_std, dist="norm")
+theoretical_q = np.array(theoretical_q)
+sample_q = np.array(sample_q)
+
+# 95% pointwise confidence band: where sample quantiles should fall if data were normal
+n = len(bp_std)
 probs = (np.arange(1, n + 1) - 0.5) / n
-p_low, p_high = 0.02425, 1 - 0.02425
-c = [
-    -7.784894002430293e-03,
-    -3.223964580411365e-01,
-    -2.400758277161838e00,
-    -2.549732539343734e00,
-    4.374664141464968e00,
-    2.938163982698783e00,
-]
-d = [7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e00, 3.754408661907416e00]
-a = [
-    -3.969683028665376e01,
-    2.209460984245205e02,
-    -2.759285104469687e02,
-    1.383577518672690e02,
-    -3.066479806614716e01,
-    2.506628277459239e00,
-]
-b = [-5.447609879822406e01, 1.615858368580409e02, -1.556989798598866e02, 6.680131188771972e01, -1.328068155288572e01]
-
-theoretical_q = np.empty(n)
-for mask, sign, src in [(probs < p_low, 1, probs), (probs > p_high, -1, 1 - probs)]:
-    q = np.sqrt(-2 * np.log(src[mask]))
-    theoretical_q[mask] = (
-        sign
-        * (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5])
-        / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1)
-    )
-mid = (probs >= p_low) & (probs <= p_high)
-q = probs[mid] - 0.5
-r = q * q
-theoretical_q[mid] = ((((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q) / (
-    ((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1
-)
-
-# Standardize sample to z-scores for comparison with standard normal
-sample_sorted = np.sort(sample)
-sample_q = (sample_sorted - sample_sorted.mean()) / sample_sorted.std(ddof=1)
+phi_z = stats.norm.pdf(theoretical_q)
+se = np.sqrt(probs * (1 - probs)) / (np.sqrt(n) * phi_z)
+ci_low = theoretical_q - 1.96 * se
+ci_high = theoretical_q + 1.96 * se
 
 # Plot
 fig, ax = plt.subplots(figsize=(16, 9), facecolor=PAGE_BG)
 ax.set_facecolor(PAGE_BG)
 
+# 95% confidence band — points outside reveal non-normality
+ax.fill_between(theoretical_q, ci_low, ci_high, color=BRAND, alpha=0.12, label="95% CI band", zorder=1)
+
+# Sample quantile scatter
 ax.scatter(theoretical_q, sample_q, s=200, alpha=0.7, color=BRAND, edgecolors=PAGE_BG, linewidths=1.5, zorder=3)
 
-line_lo = min(theoretical_q.min(), sample_q.min())
-line_hi = max(theoretical_q.max(), sample_q.max())
+# Reference line y = x
+ref_lo = min(theoretical_q.min(), sample_q.min())
+ref_hi = max(theoretical_q.max(), sample_q.max())
 ax.plot(
-    [line_lo, line_hi],
-    [line_lo, line_hi],
+    [ref_lo, ref_hi],
+    [ref_lo, ref_hi],
     color=REF_COLOR,
     linewidth=3,
     linestyle="--",
     label="Reference line (y = x)",
     zorder=2,
+)
+
+# Annotate upper tail deviation — hypertensive subpopulation breaks normality
+ann_idx = int(0.83 * n)
+ax.annotate(
+    "Hypertensive subpopulation\nelevates upper tail",
+    xy=(theoretical_q[ann_idx], sample_q[ann_idx]),
+    xytext=(theoretical_q[ann_idx] - 1.1, sample_q[ann_idx] + 0.3),
+    fontsize=15,
+    color=INK,
+    arrowprops={"arrowstyle": "->", "color": INK_SOFT, "lw": 1.5},
+    bbox={"facecolor": ELEVATED_BG, "edgecolor": INK_SOFT, "alpha": 0.9, "boxstyle": "round,pad=0.4"},
 )
 
 # Style

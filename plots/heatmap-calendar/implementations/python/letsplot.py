@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 heatmap-calendar: Basic Calendar Heatmap
-Library: letsplot | Python 3.13
-Quality: 92/100 | Updated: 2026-04-27
+Library: letsplot 4.9.0 | Python 3.14.4
+Quality: 82/100 | Updated: 2026-04-27
 """
 # ruff: noqa: F405
 

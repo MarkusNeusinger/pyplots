@@ -1,7 +1,7 @@
 """ anyplot.ai
 qq-basic: Basic Q-Q Plot
 Library: letsplot 4.9.0 | Python 3.14.4
-Quality: 81/100 | Updated: 2026-04-27
+Quality: 85/100 | Updated: 2026-04-27
 """
 
 import os

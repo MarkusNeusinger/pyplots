@@ -2,7 +2,7 @@ library: plotly
 language: python
 specification_id: network-basic
 created: '2025-12-23T15:14:32Z'
-updated: '2026-04-27T01:10:14Z'
+updated: '2026-04-27T01:22:19Z'
 generated_by: claude-sonnet
 workflow_run: 24971519178
 issue: 989
@@ -12,117 +12,138 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/network-b
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/network-basic/python/plotly/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/network-basic/python/plotly/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/network-basic/python/plotly/plot-dark.html
-quality_score: 83
+quality_score: 86
 review:
   strengths:
-  - 'Perfect data quality (15/15): realistic 20-node social network with 4 communities
-    showing degree variation, clustering, and cross-team bridges'
-  - 'Perfect palette compliance: Okabe-Ito in canonical order, correct theme-adaptive
-    chrome, both renders pass legibility checks'
-  - 'Perfect code quality (10/10): clean linear structure, reproducible with seed,
-    no over-engineering'
-  - Rich Plotly-specific hover tooltips using hovertemplate + customdata (team, degree,
-    neighbor names)
-  - Idiomatic multi-trace approach for grouped legend (LM-01 = 5/5)
+  - 'Correct Okabe-Ito palette: #009E73 first, followed by #D55E00, #0072B2, #CC79A7
+    in canonical order'
+  - 'Full theme-adaptive chrome: PAGE_BG, INK, INK_SOFT, ELEVATED_BG tokens applied
+    throughout'
+  - Node size encodes degree (26 + degree*7) giving an immediate visual cue to connectivity
+  - Rich Plotly hover tooltips with customdata showing team name, connection count,
+    and neighbour list
+  - Realistic workplace social network scenario with 4 named departments and cross-team
+    bridges
+  - Custom Fruchterman-Reingold spring layout implemented without networkx dependency
+    — deterministic output
+  - One trace per group ensures a clean legend with team labels; HTML export included
+    alongside PNG
+  - 'Spec requirements fully met: spring layout, degree-encoded node sizes, sparse
+    enough network, 20 nodes in range'
   weaknesses:
-  - 'Title format is non-compliant: ''Social Network · network-basic · plotly · anyplot.ai''
-    — must be exactly ''network-basic · plotly · anyplot.ai'''
-  - Node text at 13px is below the 16px minimum for the 4800×2700 canvas; increase
-    to 15-16px or switch to external labels alongside nodes
-  - 'Canvas utilization ~40%: the spring layout clusters nodes in the center-left;
-    the right side of the canvas is largely empty — normalize positions more aggressively
-    or use a larger force constant'
+  - Design sophistication (DE-01) is above defaults but not publication-ready — node
+    sizes and group colors are the only intentional hierarchy; adding a subtle highlight
+    or size boost to the highest-degree bridge nodes (e.g., Frank, Jack, Leo) would
+    create a clear focal point
+  - 'Data storytelling (DE-03): the spring layout naturally reveals clusters but the
+    viewer must search for meaning — annotating or visually distinguishing the 2-3
+    key cross-team connector nodes (e.g. a pulsed ring, slightly larger size, or a
+    callout annotation) would communicate the insight instantly'
+  - 'Visual refinement (DE-02): margins are very tight (l=20, r=20, b=20) leaving
+    the network touching the canvas edge; increasing margins to at least 60px on all
+    sides would give the graph more breathing room'
+  - 'VQ-05: The bottom-left cluster (Tom, Ryan, Paul, Sara) is pushed into a corner;
+    a wider canvas margin and/or a slight rescaling of the normalised position range
+    would distribute nodes more evenly'
+  - 'VQ-01: Node labels at textfont size=16 are small for the very low-degree nodes
+    (minimum size ~26px diameter); bumping textfont size to 18 would improve legibility
+    at full 4800×2700 resolution'
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) — correct, not pure white
-      Chrome: Title "Social Network · network-basic · plotly · anyplot.ai" is dark and clearly readable at the top. Legend in top-left with "Teams" heading and four group entries — all text dark and legible. No axis labels or tick labels (correctly hidden for network graph).
-      Data: 20 nodes color-coded by team: Research (#009E73 green), Engineering (#D55E00 orange), Management (#0072B2 blue), Marketing (#CC79A7 pink). Node sizes vary by degree. White 13px labels inside each node. Semi-transparent gray edges (rgba(80,80,80,0.30)) connect nodes.
-      Legibility verdict: PASS — all text readable; node labels at 13px are small but legible inside colored circles
+      Background: Warm off-white #FAF8F1 — correct, not pure white
+      Chrome: Title "network-basic · plotly · anyplot.ai" in dark ink, centered at top, clearly readable. No axis labels or ticks (correctly hidden for a network graph). Legend in upper-left with "Teams" heading and four color-coded entries (Research, Engineering, Management, Marketing), readable dark text on elevated-background box.
+      Data: 20 circular nodes in 4 Okabe-Ito colors — #009E73 (Research, 5 nodes), #D55E00 (Engineering, 6 nodes), #0072B2 (Management, 4 nodes), #CC79A7 (Marketing, 5 nodes). Node sizes vary visibly by degree. White node-border separates overlapping nodes. Gray edges (~30% opacity) connect nodes. Node labels are white text (Arial Black) inside each circle.
+      Legibility verdict: PASS — all chrome text is dark and readable against the off-white background; node labels (white on colored circles) are readable on the larger nodes; some very small low-degree nodes (Tom, Sara) are borderline but legible.
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) — correct, not pure black
-      Chrome: Title text is light-colored (off-white) and clearly readable against dark background. Legend text uses light secondary color (#B8B7B0) — readable. No dark-on-dark failures. All chrome elements correctly adapted.
-      Data: Colors identical to light render — Research (#009E73), Engineering (#D55E00), Management (#0072B2), Marketing (#CC79A7) unchanged. Edges use lighter rgba(200,200,200,0.25) for dark theme — visible. Node border uses PAGE_BG (#1A1A17) which blends into background subtly.
-      Legibility verdict: PASS — no dark-on-dark failures; white node labels remain visible on colored node backgrounds
+      Background: Warm near-black #1A1A17 — correct, not pure black
+      Chrome: Title remains legible with light-colored text on dark background. Legend box uses elevated dark background (#242420) with light text — readable. No axis labels/ticks.
+      Data: Data colors are identical to the light render — same #009E73 green, #D55E00 orange, #0072B2 blue, #CC79A7 pink. Node layout is identical. Edge lines appear slightly more visible (rgba(200,200,200,0.25)) against the dark background.
+      Legibility verdict: PASS — no dark-on-dark failures detected. Title, legend text, and node labels are all readable. Brand green #009E73 is clearly visible on the dark surface.
   criteria_checklist:
     visual_quality:
-      score: 24
+      score: 27
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Title 28px, legend title 20px, legend 18px explicitly set; node labels
-          13px below 16px minimum for large canvas
+        comment: Font sizes explicitly set (title 28px, legend 18px, node labels 16px);
+          all text readable in both themes; minor concern on very small low-degree
+          nodes
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Mostly clear; slight crowding in Engineering cluster but labels remain
-          readable
+        comment: Spring layout distributes nodes without overlap; no collisions in
+          either render
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Node sizes well-scaled to degree; edge width 2px is thin at 4800x2700
-          effective resolution
+        comment: Nodes clearly visible; edges at 30% opacity are subtle but legible;
+          low-degree nodes are noticeably small
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Full Okabe-Ito palette, white text on colored nodes, CVD-safe
+        comment: Okabe-Ito palette is CVD-safe; white node labels provide good contrast
+          against colored circles
       - id: VQ-05
         name: Layout & Canvas
-        score: 2
+        score: 3
         max: 4
-        passed: false
-        comment: Spring layout clusters nodes in center-left; right side noticeably
-          empty (~40% canvas utilization)
+        passed: true
+        comment: Network fills ~60-65% of canvas; tight margins (20px sides/bottom)
+          push bottom cluster into corner
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive title; axes correctly hidden for network graph
+        comment: Title in correct format; no axis labels appropriate for network graph
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series #009E73, Okabe-Ito order correct, backgrounds #FAF8F1/#1A1A17,
-          chrome theme-adaptive'
+        comment: 'First series #009E73, then #D55E00, #0072B2, #CC79A7 — canonical
+          Okabe-Ito order. Backgrounds #FAF8F1/#1A1A17 correct. Chrome tokens fully
+          themed.'
     design_excellence:
       score: 12
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
         passed: true
-        comment: 'Well-configured: correct palette, degree-based sizing, clean legend,
-          node borders using PAGE_BG. Above defaults but not publication-ready.'
+        comment: 'Above defaults: degree-encoded node sizes, themed borders (PAGE_BG),
+          Arial Black labels, styled legend. Not publication-ready — no focal point
+          or emphasis on bridge/hub nodes.'
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: No axes, no grid, no spines (appropriate for network), semi-transparent
-          edges, elevated legend background. Clean and intentional.
+        comment: Axes cleanly hidden, edge opacity well-chosen, legend bordered. Very
+          tight margins (20px) reduce breathing room around the graph.
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 3
         max: 6
         passed: true
-        comment: Color coding reveals community structure; degree-based sizing identifies
-          hub nodes; Engineering density and Management bridging role visually apparent.
+        comment: Color and size provide some hierarchy; communities visible via spring
+          clustering. No explicit emphasis on cross-team connectors or highest-degree
+          nodes.
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -130,28 +151,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct node-link diagram with spring/force-directed layout
+        comment: Correct node-link network diagram with force-directed spring layout
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Spring layout, degree-encoded node size, readable labels, sparse
-          enough for visible edges
+        comment: Spring layout, degree-encoded node sizes, legible labels, sparse
+          network, 20 nodes in 10-50 range
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All 20 nodes and 30 edges visible
+        comment: Nodes and edges correctly mapped; cross-team bridges included
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
-        passed: false
-        comment: Title is 'Social Network · network-basic · plotly · anyplot.ai' but
-          required format is 'network-basic · plotly · anyplot.ai'; legend team labels
-          are correct
+        passed: true
+        comment: Title is exactly 'network-basic · plotly · anyplot.ai'; legend shows
+          four team names
     data_quality:
       score: 15
       max: 15
@@ -161,22 +181,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows clustering, bridge nodes, degree variation, cross-team connectivity,
-          different intra-group densities
+        comment: Shows community structure, degree variation, cross-team bridges,
+          and clustering — all key network features
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real-world corporate social network with named individuals, 4 departments,
-          neutral and plausible
+        comment: 'Realistic workplace social network: named individuals across 4 company
+          departments, neutral content'
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 20 nodes, 30 edges, within spec range, sparse enough to see individual
-          connections
+        comment: 20 nodes, 31 edges, degree range 1-5 — all realistic for a company
+          collaboration network
     code_quality:
       score: 10
       max: 10
@@ -186,8 +206,8 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear: imports → tokens → data → spring layout → traces → figure
-          → save. No functions or classes.'
+        comment: 'Linear structure: imports → tokens → data → layout computation →
+          traces → figure → save'
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -199,46 +219,47 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Only os, sys, numpy, plotly.graph_objects — all used
+        comment: os, sys, numpy, plotly.graph_objects — all used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Manual spring layout necessary without NetworkX; code readable and
-          well-commented
+        comment: Custom Fruchterman-Reingold spring layout is legitimate and appropriate
+          given no networkx dependency; code is clean and appropriately complex
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot-{THEME}.png and plot-{THEME}.html correctly
+        comment: Saves plot-{THEME}.png and plot-{THEME}.html; 4800x2700px via scale=3;
+          current Plotly API
     library_mastery:
-      score: 8
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: 'Correct Plotly pattern: separate go.Scatter traces per group for
-          legend, edge trace with None separators, hovertemplate+customdata, scaleanchor/scaleratio
-          for aspect ratio lock'
+        comment: go.Scatter with mode='markers+text' for nodes, mode='lines' for edges;
+          one trace per group for legend; hovertemplate with customdata; legendgroup
+          — all idiomatic Plotly patterns
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Rich hover tooltips via hovertemplate+customdata (team, degree, neighbors),
-          legendgroup, HTML export. Solid Plotly-specific usage but not exceptional.
+        comment: Interactive hover tooltips with customdata (team, degree, neighbour
+          list) and HTML export are distinctly Plotly features not easily replicated
+          in static libraries
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - hover-tooltips
   - html-export
-  - custom-legend
   patterns:
   - data-generation
   - iteration-over-groups

@@ -161,9 +161,7 @@ class SpecRepository(BaseRepository[Spec]):
         session must use `get_all_with_code()` to avoid MissingGreenlet.
         """
         impls_loader = selectinload(Spec.impls)
-        result = await self.session.execute(
-            select(Spec).options(impls_loader.selectinload(Impl.library))
-        )
+        result = await self.session.execute(select(Spec).options(impls_loader.selectinload(Impl.library)))
         return list(result.scalars().all())
 
     async def get_all_with_code(self) -> list[Spec]:

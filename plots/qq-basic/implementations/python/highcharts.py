@@ -1,4 +1,4 @@
-""" anyplot.ai
+"""anyplot.ai
 qq-basic: Basic Q-Q Plot
 Library: highcharts unknown | Python 3.14.4
 Quality: 84/100 | Updated: 2026-04-27
@@ -26,7 +26,8 @@ ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
 INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
 INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
 GRID = "rgba(26,26,23,0.10)" if THEME == "light" else "rgba(240,239,232,0.10)"
-BRAND = "#009E73"
+# Warm accent for tail-deviation bands — Okabe-Ito orange, theme-adaptive opacity
+BAND_COLOR = "rgba(213,94,0,0.12)" if THEME == "light" else "rgba(230,159,0,0.22)"
 
 # Data - mixed normal to demonstrate Q-Q characteristics (slight right skew)
 np.random.seed(42)
@@ -46,6 +47,13 @@ theoretical_scaled = theoretical_quantiles * sample_std + sample_mean
 line_min = min(theoretical_scaled.min(), sample_sorted.min())
 line_max = max(theoretical_scaled.max(), sample_sorted.max())
 
+# Axis bounds and tail thresholds — upper/lower 22% of the axis range
+axis_lo = float(line_min - 5)
+axis_hi = float(line_max + 5)
+axis_range = axis_hi - axis_lo
+upper_tail_from = axis_lo + 0.78 * axis_range
+lower_tail_to = axis_lo + 0.22 * axis_range
+
 # Create chart
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
@@ -64,6 +72,11 @@ chart.options.title = {
     "style": {"fontSize": "72px", "fontWeight": "bold", "color": INK},
 }
 
+chart.options.subtitle = {
+    "text": "Exam scores (N=100) vs. theoretical normal — right skew visible in upper tail",
+    "style": {"fontSize": "36px", "color": INK_SOFT},
+}
+
 chart.options.x_axis = {
     "title": {"text": "Theoretical Quantiles", "style": {"fontSize": "48px", "color": INK}},
     "labels": {"style": {"fontSize": "36px", "color": INK_SOFT}},
@@ -72,8 +85,32 @@ chart.options.x_axis = {
     "gridLineWidth": 1,
     "gridLineColor": GRID,
     "gridLineDashStyle": "Dash",
-    "min": float(line_min - 5),
-    "max": float(line_max + 5),
+    "min": axis_lo,
+    "max": axis_hi,
+    "plotBands": [
+        {
+            "from": upper_tail_from,
+            "to": axis_hi,
+            "color": BAND_COLOR,
+            "label": {
+                "text": "Upper-tail deviation",
+                "align": "right",
+                "x": -10,
+                "style": {"color": INK, "fontSize": "30px"},
+            },
+        },
+        {
+            "from": axis_lo,
+            "to": lower_tail_to,
+            "color": BAND_COLOR,
+            "label": {
+                "text": "Lower-tail deviation",
+                "align": "left",
+                "x": 10,
+                "style": {"color": INK, "fontSize": "30px"},
+            },
+        },
+    ],
 }
 
 chart.options.y_axis = {
@@ -84,8 +121,8 @@ chart.options.y_axis = {
     "gridLineWidth": 1,
     "gridLineColor": GRID,
     "gridLineDashStyle": "Dash",
-    "min": float(line_min - 5),
-    "max": float(line_max + 5),
+    "min": axis_lo,
+    "max": axis_hi,
 }
 
 chart.options.legend = {
@@ -104,7 +141,7 @@ chart.options.credits = {"enabled": False}
 
 # Reference line (45-degree, y = x on scaled theoretical quantiles)
 line_series = LineSeries()
-line_series.data = [[float(line_min - 5), float(line_min - 5)], [float(line_max + 5), float(line_max + 5)]]
+line_series.data = [[axis_lo, axis_lo], [axis_hi, axis_hi]]
 line_series.name = "Reference Line (y=x)"
 line_series.color = INK_SOFT
 line_series.line_width = 6

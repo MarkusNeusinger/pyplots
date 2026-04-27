@@ -1,4 +1,4 @@
-""" anyplot.ai
+"""anyplot.ai
 heatmap-calendar: Basic Calendar Heatmap
 Library: highcharts unknown | Python 3.14.4
 Quality: 82/100 | Updated: 2026-04-27
@@ -25,8 +25,8 @@ ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
 INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
 INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
 GRID = "rgba(26,26,23,0.10)" if THEME == "light" else "rgba(240,239,232,0.10)"
-CELL_EMPTY = "#E8E5DC" if THEME == "light" else "#2D2D2A"
-CELL_BORDER = "#FAF8F1" if THEME == "light" else "#1A1A17"
+CELL_EMPTY = "#E8E5DC" if THEME == "light" else "#3A3A36"
+CELL_BORDER = "#FAF8F1" if THEME == "light" else "rgba(240,239,232,0.18)"
 
 # Data — one year of daily GitHub-style activity
 np.random.seed(42)
@@ -105,7 +105,7 @@ chart.options.y_axis = {
     "categories": weekday_labels,
     "title": None,
     "labels": {"style": {"fontSize": "36px", "color": INK_SOFT}},
-    "reversed": False,
+    "reversed": True,
     "gridLineWidth": 0,
     "lineColor": INK_SOFT,
 }
@@ -116,10 +116,11 @@ chart.options.color_axis = {
     "stops": [
         [0, CELL_EMPTY],
         [0.01, CELL_EMPTY],
-        [0.02, "#9be9a8"],
-        [0.25, "#40c463"],
-        [0.5, "#30a14e"],
-        [1, "#216e39"],
+        [0.02, "#B8E6D8"],
+        [0.25, "#56C7A5"],
+        [0.5, "#009E73"],
+        [0.75, "#007055"],
+        [1, "#004A3A"],
     ],
     "labels": {"style": {"fontSize": "28px", "color": INK_SOFT}},
 }

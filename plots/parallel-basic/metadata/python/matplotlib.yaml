@@ -2,7 +2,7 @@ library: matplotlib
 language: python
 specification_id: parallel-basic
 created: '2025-12-23T18:11:57Z'
-updated: '2026-04-27T05:38:03Z'
+updated: '2026-04-27T05:49:42Z'
 generated_by: claude-sonnet
 workflow_run: 24978040577
 issue: 820
@@ -12,116 +12,117 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/parallel-
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/parallel-basic/python/matplotlib/plot-dark.png
 preview_html_light: null
 preview_html_dark: null
-quality_score: 66
+quality_score: 74
 review:
   strengths:
-  - Correct parallel coordinates implementation with proper normalization to [0,1]
-  - 'Good data choice: Iris-like dataset is a natural fit and neutral'
-  - np.random.seed(42) ensures reproducibility with realistic data clipping bounds
-  - Line2D handles for legend is idiomatic matplotlib pattern
-  - Alpha=0.5 with linewidth=2 is a reasonable balance for 150 overlapping observations
-  - Range annotations on x-axis labels add useful context
+  - 'Excellent dataset choice: iris data shows clear species separation showcasing
+    all parallel coordinates features'
+  - Multi-line x-tick labels with measurement ranges embedded are a thoughtful matplotlib-idiomatic
+    touch
+  - Custom legend with Line2D handles is clean and idiomatic
+  - 'Data quality is perfect: realistic botanical data, reproducible with seed, correct
+    scale'
   weaknesses:
-  - 'Critical: No ANYPLOT_THEME support — missing os.getenv, PAGE_BG/INK tokens, dark
-    mode text would be unreadable (black on dark background)'
-  - 'Critical: Saves as plot.png not plot-{THEME}.png — pipeline expects plot-light.png
-    and plot-dark.png'
-  - 'Wrong color palette: #306998/#FFD43B/#4CAF50 (Python-branded) instead of Okabe-Ito
-    #009E73/#D55E00/#0072B2'
-  - 'Wrong title domain: pyplots.ai should be anyplot.ai'
-  - 'No spine removal: top and right spines should be hidden'
-  - Dashed grid (linestyle=--) should be solid with alpha=0.10 not 0.30
-  - Figure and axes facecolor not explicitly set to PAGE_BG
+  - 'Wrong palette: uses #306998/#FFD43B/#4CAF50 (Python colors) instead of Okabe-Ito;
+    must use #009E73 (setosa), #D55E00 (versicolor), #0072B2 (virginica)'
+  - 'Missing ANYPLOT_THEME handling: no os.getenv, no PAGE_BG/INK/INK_SOFT tokens,
+    no fig.set_facecolor(PAGE_BG), no ax.set_facecolor(PAGE_BG), no adaptive text/spine/grid
+    colors'
+  - 'Wrong output filename: plt.savefig("plot.png") must be plt.savefig(f"plot-{THEME}.png")'
+  - 'Title branding error: line 85 says "pyplots.ai" must be "anyplot.ai"'
+  - 'Dashed grid at alpha=0.3: use solid linestyle at alpha=0.10 for y-axis only'
+  - 'Spines not removed: add ax.spines[top].set_visible(False) and ax.spines[right].set_visible(False)'
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white approximately #FAF8F1 — correct theme surface.
-      Chrome: Title "parallel-basic · matplotlib · anyplot.ai" in dark text, clearly readable. Y-axis label "Normalized Value" visible. X-axis labels with range annotations (e.g. "Sepal Length (4.3-7.9 cm)") readable. Tick labels on y-axis readable.
-      Data: Three groups of polylines — teal/green (Setosa), orange (Versicolor), blue (Virginica) — with alpha blending. Lines connect normalized values across 4 axes. Legend at top center with matching colors.
-      NOTE: Images appear to have been generated from a PRIOR code version. Current matplotlib.py uses Python-branded colors (#306998/#FFD43B/#4CAF50), no ANYPLOT_THEME, saves as plot.png, title says pyplots.ai.
-      Legibility verdict: PASS (based on images, but current code would FAIL in future runs)
+      Background: Warm off-white (~#FAF8F1) — correct for light theme
+      Chrome: Title "parallel-basic · matplotlib · anyplot.ai" in dark text — readable. Y-axis label "Normalized Value" readable. X-tick labels with variable names and cm ranges readable. Legend in upper right with species labels readable.
+      Data: 150 lines across 4 parallel axes colored by species. Non-Okabe-Ito palette: Setosa=steel blue (#306998), Versicolor=yellow (#FFD43B), Virginica=green (#4CAF50). alpha=0.5 handles density well.
+      Legibility verdict: PASS — all text readable, though yellow lines have poor contrast against off-white
 
     Dark render (plot-dark.png):
-      Background: Near-black approximately #1A1A17 — correct dark surface.
-      Chrome: Title, axis labels, tick labels, and legend text all appear in light/white color and are readable against dark background. No dark-on-dark failures visible.
-      Data: Same teal, orange, blue colors as light render — data colors identical, only chrome flips.
-      NOTE: The dark theming visible in this image contradicts the current code which has no ANYPLOT_THEME support. Image is from a prior code version.
-      Legibility verdict: PASS (based on images, but current code would produce identical output to light render — no dark mode support)
+      Background: Warm near-black (~#1A1A17) — correct for dark theme
+      Chrome: Title, axis labels, tick labels, and legend all appear as light-colored text — readable against dark background. No dark-on-dark failures visible. Theme adaptation appears to be pipeline-injected (code lacks ANYPLOT_THEME logic).
+      Data: Colors are identical to light render — same non-Okabe-Ito blue/yellow/green. Yellow lines are actually more legible on the dark background than on light.
+      Legibility verdict: PASS — all text readable in both themes
   criteria_checklist:
     visual_quality:
-      score: 18
+      score: 22
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 3
+        score: 6
         max: 8
-        passed: false
-        comment: Light mode fine; dark mode broken — no ANYPLOT_THEME → no text-color
-          tokens → dark-on-dark in future runs
+        passed: true
+        comment: All font sizes explicitly set (24/20/18/16 pt), both renders readable.
+          No fontweight medium on title.
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: No significant label or element collisions
+        comment: Multi-line x-tick labels well-spaced, legend clear. Minor line density
+          overlap expected for 150 obs.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Lines clearly visible; alpha=0.5 appropriate for 150 observations
+        comment: alpha=0.5 appropriate for 150 lines. linewidth=2 at minimum recommended
+          threshold.
       - id: VQ-04
         name: Color Accessibility
         score: 1
         max: 2
         passed: false
-        comment: 'Code uses #306998/#FFD43B/#4CAF50 — not Okabe-Ito CVD-safe palette;
-          yellow problematic'
+        comment: 'Non-Okabe-Ito palette. #FFD43B yellow has poor luminance contrast
+          on light background, not CVD-optimized.'
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: figsize=(16,9) correct; tight_layout() used; legend at top slightly
-          intrudes
+        comment: Good 16:9 proportions, tight_layout, nothing cut off.
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: 'Y-label good; title has wrong domain: pyplots.ai instead of anyplot.ai'
+        passed: true
+        comment: 'Excellent: x-tick labels include variable names and cm ranges. Y-axis:
+          Normalized Value.'
       - id: VQ-07
         name: Palette Compliance
         score: 0
         max: 2
         passed: false
-        comment: Wrong palette in code; no ANYPLOT_THEME logic; facecolor not set;
-          both renders identical in pipeline
+        comment: 'First series uses #306998 (Python blue) not #009E73. Custom hexes
+          #306998/#FFD43B/#4CAF50 violate Okabe-Ito rule. Code lacks ANYPLOT_THEME
+          logic and saves to plot.png not plot-{THEME}.png.'
     design_excellence:
-      score: 7
+      score: 9
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 3
+        score: 4
         max: 8
         passed: false
-        comment: Basic color assignment, default matplotlib styling, no intentional
-          hierarchy
+        comment: Functional but not sophisticated. Multi-line tick labels with ranges
+          show intent, but non-compliant palette and no spine removal.
       - id: DE-02
         name: Visual Refinement
         score: 2
         max: 6
         passed: false
-        comment: No spine removal; dashed grid (should be solid); alpha=0.3 too high
-          for grid
+        comment: Dashed grid (should be solid) at alpha=0.3 (too high). Top/right
+          spines not removed.
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 3
         max: 6
         passed: false
-        comment: Alpha blending and normalization are correct; no focal point or emphasis
-          for patterns
+        comment: Iris dataset is excellent for showing species separation. No visual
+          emphasis on the clear Setosa petal cluster.
     spec_compliance:
       score: 13
       max: 15
@@ -131,50 +132,52 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct parallel coordinates implementation
+        comment: Correct parallel coordinates implementation.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Multiple axes, normalized values, color-coded categories, alpha,
-          range annotations
+        comment: Normalization, color coding, alpha transparency, 4 dimensions, 150
+          observations.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: 4-dimension Iris-like dataset, 3 species, all normalized to [0,1]
+        comment: Correct axis mapping, all data visible in normalized [0,1] range.
       - id: SC-04
         name: Title & Legend
         score: 1
         max: 3
         passed: false
-        comment: 'Title has wrong domain: pyplots.ai instead of anyplot.ai; legend
-          labels correct'
+        comment: 'Title regression: code line 85 uses ''pyplots.ai'' instead of ''anyplot.ai''.
+          Legend labels correct.'
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Demonstrates normalization, multi-category, multi-dimension, alpha
-          blending
+        comment: 'Shows all parallel coordinates aspects: multi-axis normalized values,
+          category coloring, density via alpha.'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Iris dataset with realistic bounds, seed 42, neutral domain
+        comment: Classic iris botanical dataset. Scientifically grounded, comprehensible,
+          neutral topic.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values clipped to authentic Iris ranges; normalized output correct
+        comment: Realistic iris measurement ranges, clipped to known bounds. seed=42
+          reproducible.
     code_quality:
       score: 9
       max: 10
@@ -184,33 +187,34 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: No functions or classes; flat linear script
+        comment: 'Flat script: imports -> data -> plot -> save.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42)
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only matplotlib, numpy, pandas — all used
+        comment: matplotlib.pyplot, numpy, pandas — all used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean loop for line drawing; Line2D handles for legend
+        comment: Clean, Pythonic. iterrows() appropriate for line-per-row plotting.
       - id: CQ-05
         name: Output & API
         score: 0
         max: 1
         passed: false
-        comment: Saves as plot.png not plot-{THEME}.png; breaks pipeline
+        comment: Saves to plot.png not plot-{THEME}.png. No ANYPLOT_THEME env reading.
+          Not pipeline-compliant.
     library_mastery:
-      score: 5
+      score: 6
       max: 10
       items:
       - id: LM-01
@@ -218,14 +222,15 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Uses ax.* methods, plt.subplots, tight_layout; correct patterns
+        comment: 'Uses ax methods, explicit figsize, tight_layout. Missing: facecolor
+          setup, theme-adaptive tick_params.'
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Custom Line2D handles for legend is good; no more advanced matplotlib
-          features used
+        passed: true
+        comment: Custom legend with plt.Line2D handles, multi-line x-tick labels with
+          measurement ranges — good matplotlib-specific design.
   verdict: REJECTED
 impl_tags:
   dependencies: []
@@ -239,4 +244,3 @@ impl_tags:
   - normalization
   styling:
   - alpha-blending
-  - grid-styling

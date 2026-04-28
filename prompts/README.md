@@ -33,7 +33,7 @@ Variables are passed as plain text in the workflow's `prompt:` body (no
 | File | Workflow | Purpose |
 |------|----------|---------|
 | `impl-generate-claude.md` | `impl-generate.yml` | Initial code generation for one (spec, library) |
-| `impl-repair-claude.md` | `impl-repair.yml` | Repair after a rejected AI review (max 3 attempts) |
+| `impl-repair-claude.md` | `impl-repair.yml` | Repair after a rejected AI review (max 4 attempts) |
 | `ai-quality-review.md` | `impl-review.yml` | Quality evaluation of a generated implementation |
 | `report-analysis.md` | `report-validate.yml` | Triage and structure user-submitted issue reports |
 

@@ -702,15 +702,18 @@ uv run python -m automation.scripts.label_manager list
 | Label | Meaning | Set by |
 |-------|---------|--------|
 | `approved` | Human approved specification for merge | Maintainer manually |
-| `ai-approved` | AI quality check passed (score >= 90, or >= 50 after 3 attempts) | Workflow automatically |
+| `ai-approved` | AI quality check passed (based on cascading thresholds) | Workflow automatically |
 | `rejected` | Human rejected | Maintainer manually |
-| `ai-rejected` | AI quality check failed (score < 90), triggers repair loop | Workflow automatically |
+| `ai-rejected` | AI quality check failed (below current threshold), triggers repair loop | Workflow automatically |
 | `quality-poor` | Score < 50, needs fundamental fixes | Workflow automatically |
 
-**Quality Workflow:**
-- **>= 90**: ai-approved, merged immediately
-- **< 90**: ai-rejected, repair loop (up to 3 attempts)
-- **After 3 attempts**: >= 50 -> ai-approved and merge, < 50 -> close PR and regenerate
+**Quality Workflow (Cascading Thresholds):**
+- **Review 1 (Initial)**: >= 90 -> ai-approved, merged immediately
+- **Review 2 (Repair 1)**: >= 80 -> ai-approved, merged immediately
+- **Review 3 (Repair 2)**: >= 70 -> ai-approved, merged immediately
+- **Review 4 (Repair 3)**: >= 60 -> ai-approved, merged immediately
+- **Review 5 (Repair 4)**: >= 50 -> ai-approved, merged immediately
+- **Failure**: < 50 after 4 repairs -> close PR and regenerate
 
 ### Quality Score Labels
 
@@ -786,8 +789,8 @@ These are set automatically by `impl-review.yml` after AI evaluation and used by
 ```
 [open] -> impl-review
        -> ai-approved -> impl-merge -> impl:{library}:done
-       -> ai-rejected -> impl-repair (x3) -> ai-attempt-1/2/3
-                                          -> not-feasible (after 3 failures)
+       -> ai-rejected -> impl-repair (x4) -> ai-attempt-1/2/3/4
+                                          -> not-feasible (after 4 failures)
 ```
 
 **Test Issues:** When creating issues for testing workflows, add the `test` label to exclude them from production searches.
@@ -914,5 +917,5 @@ pytest --pdb       # Debug on failure
 - **Spec improvements over code fixes**: If a plot has issues, improve the spec, not the code
 - **Your data first**: Examples work with real user data, not fake data
 - **Community-driven**: Anyone can propose plots via GitHub Issues
-- **AI quality review**: Claude evaluates quality (>=90 instant merge, <90 repair loop, >=50 minimum)
+- **AI quality review**: Claude evaluates quality (cascading thresholds: 90/80/70/60/50, max 4 repairs)
 - **Full transparency**: All quality feedback stored in repository (`metadata/python/{library}.yaml`)

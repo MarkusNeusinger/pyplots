@@ -20,7 +20,7 @@ on:
         required: true
         type: string
       attempt:
-        description: "Current attempt number (1, 2, or 3)"
+        description: "Current attempt number (1, 2, 3, or 4)"
         required: true
         type: string
 
@@ -212,7 +212,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr comment ${{ inputs.pr_number }} --body "## :wrench: Repair Attempt ${{ inputs.attempt }}/3
+          gh pr comment ${{ inputs.pr_number }} --body "## :wrench: Repair Attempt ${{ inputs.attempt }}/4
 
           Applied fixes based on AI review feedback.
 
@@ -258,7 +258,7 @@ jobs:
           if [ "$RETRY_COUNT" -ge 1 ]; then
             echo "::error::Repair attempt ${ATTEMPT} crashed twice — giving up"
             gh pr comment "$PR_NUM" --body "${MARKER}
-          ## :x: Repair Workflow Crashed (Attempt ${ATTEMPT}/3, retry exhausted)
+          ## :x: Repair Workflow Crashed (Attempt ${ATTEMPT}/4, retry exhausted)
 
           The repair workflow itself failed twice for this attempt — likely a persistent Claude Code Action issue.
 
@@ -272,7 +272,7 @@ jobs:
           else
             echo "::warning::Repair attempt ${ATTEMPT} crashed — auto-retrying once"
             gh pr comment "$PR_NUM" --body "${MARKER}
-          ## :wrench: Repair Workflow Crashed (Attempt ${ATTEMPT}/3) — Auto-Retrying
+          ## :wrench: Repair Workflow Crashed (Attempt ${ATTEMPT}/4) — Auto-Retrying
 
           The repair workflow failed (probably a transient Claude Code Action issue). Automatically re-triggering this attempt...
 

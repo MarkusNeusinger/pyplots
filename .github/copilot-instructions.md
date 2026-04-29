@@ -155,7 +155,7 @@ Examples: `scatter-basic`, `scatter-color-mapped`, `bar-grouped-horizontal`, `he
 | 4 | 3 | ≥ 60 |
 | 5 | 4 | ≥ 50 |
 
-If the score is still below 50 after 4 repair attempts, the PR is closed and regenerated.
+If the score is still below 50 after 4 repair attempts, the PR is closed (`gh pr close`) and the workflow posts a comment with next-step options. Regeneration is **manual**, not automatic — re-apply the `generate:{library}` label on the spec issue to start a fresh attempt.
 
 **Specification Lifecycle:**
 ```
@@ -166,7 +166,7 @@ If the score is still below 50 after 4 repair attempts, the PR is closed and reg
 ```
 [open] → impl-review → ai-approved (≥ current threshold) → impl-merge → impl:{library}:done
                      → ai-rejected (< threshold)        → impl-repair (×4) → cascade re-review
-                     → after 4 failed repairs           → close PR and regenerate
+                     → after 4 failed repairs           → close PR; manual regen via generate:{library} label
 ```
 
 ## Code Standards

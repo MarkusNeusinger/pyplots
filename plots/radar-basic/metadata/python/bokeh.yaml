@@ -2,7 +2,7 @@ library: bokeh
 language: python
 specification_id: radar-basic
 created: '2025-12-23T18:12:30Z'
-updated: '2026-04-29T17:12:50Z'
+updated: '2026-04-29T17:28:05Z'
 generated_by: claude-sonnet
 workflow_run: 25121484227
 issue: 744
@@ -15,39 +15,39 @@ preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/radar-bas
 quality_score: 79
 review:
   strengths:
-  - 'Full spec compliance: all required radar features present (filled polygons, alpha
-    transparency, closed polygon, grid circles at 20/40/60/80/100, axis labels, multi-series
-    legend)'
-  - 'Correct Okabe-Ito palette with #009E73 as first series and correct theme-adaptive
-    backgrounds in both renders'
-  - Employee performance context is realistic and neutral; values distributed meaningfully
-    across all six axes
-  - Quadrant-aware text alignment for category labels is a thoughtful implementation
-    detail
+  - Clean minimal radar chart design with good alpha-blended polygon overlap visibility
+  - Realistic employee performance comparison data with contrasting profiles that
+    demonstrate the chart's comparison use case
+  - 'All spec features implemented: filled polygons with alpha ~0.25, gridlines at
+    20/40/60/80/100, outer-edge category labels, closed polygon, legend'
+  - Font sizes explicitly set for large canvas (title 32pt, labels 22pt)
+  - Square 3600x3600 canvas format appropriate for symmetric radar chart
   weaknesses:
-  - 'Code missing ANYPLOT_THEME env var detection — background_fill_color hardcoded
-    to white and text color hardcoded to #333333; must read os.getenv(ANYPLOT_THEME,
-    light) and apply PAGE_BG/INK/INK_SOFT tokens'
-  - 'Wrong color palette in code — #306998 and #FFD43B/#B8960A are Python branding
-    colors; replace with Okabe-Ito: #009E73 (Employee A) and #D55E00 (Employee B)'
-  - Wrong output filenames — export_png saves plot.png instead of plot-{THEME}.png;
-    output_file saves plot.html instead of plot-{THEME}.html
-  - No numeric scale labels on grid rings — readers cannot infer scale; add labels
-    20/40/60/80/100 near top axis of each circle
-  - No interactive Bokeh features — add HoverTool showing category name and score
-    for each vertex point
+  - 'CRITICAL PALETTE: Code uses #306998 (Python Blue) and #FFD43B (Python Yellow)
+    — not Okabe-Ito. Must use #009E73 (Employee A, first series) and #D55E00 (Employee
+    B, second series)'
+  - 'CRITICAL THEME: No os.getenv(ANYPLOT_THEME) — background hardcoded to pure ''white'',
+    category label text hardcoded to ''#333333'', legend not themed. Must add full
+    light/dark branching with PAGE_BG/INK/INK_SOFT tokens'
+  - 'CRITICAL OUTPUT FILENAME: Saves as plot.png instead of plot-{THEME}.png (and
+    plot-{THEME}.html). Pipeline cannot generate dual-theme renders'
+  - 'CRITICAL TITLE: Title string says ''pyplots.ai'' but must be ''anyplot.ai'''
+  - Scatter point size (size=20 at 3600px canvas) is too small; increase to 30-40
+    for better visibility at full resolution
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white ~#FAF8F1 — correct for light theme
-      Chrome: Title "radar-basic · bokeh · anyplot.ai" in dark text, clearly readable. Six category labels (Communication, Technical Skills, Teamwork, Problem Solving, Leadership, Creativity) positioned at outer edge with quadrant-aware alignment, dark text readable against light surface. Legend top-right with dark label text.
-      Data: Employee A polygon filled in #009E73 teal (Okabe-Ito position 1) at ~25% alpha. Employee B polygon in orange/vermillion (Okabe-Ito position 2) at ~25% alpha. Concentric grid circles at five intervals in subtle gray. Scatter points at each vertex visible.
-      Legibility verdict: PASS
+      Background: Warm off-white approximately #FAF8F1 — correct theme surface
+      Chrome: Title "radar-basic · bokeh · anyplot.ai" in dark ink, readable. Category labels (Communication, Technical Skills, Teamwork, Problem Solving, Leadership, Creativity) in dark text around perimeter, readable. Scale numbers (20/40/60/80/100) near top axis, small but visible.
+      Data: Employee A polygon in teal (#009E73), Employee B in orange (#D55E00), both with ~25% alpha fill and solid borders. Concentric circle gridlines subtle and non-intrusive.
+      Legibility verdict: PASS — all text readable against light background; no light-on-light failures.
+      NOTE: Images appear stale — current code uses #306998 (Python Blue) and #FFD43B (Python Yellow), contradicting what is shown.
 
     Dark render (plot-dark.png):
-      Background: Near-black ~#1A1A17 — correct for dark theme
-      Chrome: Title in light gray/off-white text, clearly readable against dark surface. Category labels in light text, readable. Legend text light-colored and legible. No dark-on-dark failure observed.
-      Data: Employee A teal and Employee B orange are identical to light render — only chrome flipped between themes as required.
-      Legibility verdict: PASS
+      Background: Near-black approximately #1A1A17 — correct dark theme surface
+      Chrome: Title and all text rendered in light-colored ink, clearly readable against dark background. No dark-on-dark failures observed.
+      Data: Polygon colors identical to light render — teal Employee A and orange Employee B confirming data colors (positions 1-2 in Okabe-Ito) are theme-independent.
+      Legibility verdict: PASS — all text readable in dark render per image.
+      NOTE: Current code has no ANYPLOT_THEME adaptation and would not produce a dark render if re-executed.
   criteria_checklist:
     visual_quality:
       score: 25
@@ -55,76 +55,79 @@ review:
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Title and labels readable in both themes; category labels slightly
-          small for 3600x3600 canvas
+        comment: Font sizes explicitly set (title 32pt, labels 22pt); all text readable
+          per images; scale labels slightly small
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Labels well-positioned with quadrant-aware alignment; no collisions
+        comment: No overlapping text; category labels well distributed around perimeter
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Both polygons clearly distinguishable; scatter points visible at
-          vertices; alpha=0.25 appropriate
+        comment: Filled polygons clearly visible; scatter points (size=20 at 3600px)
+          slightly small
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Teal and orange are CVD-safe Okabe-Ito positions 1 and 2
+        comment: Teal and orange (per images) are CVD-safe Okabe-Ito pair with good
+          contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Square 3600x3600 correct for radar; plot centered; nothing cut off
+        comment: Square 3600x3600 appropriate for radar; chart uses ~50-55% of canvas;
+          balanced margins
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Six descriptive axis labels; title in correct spec-id · library ·
-          anyplot.ai format
+        comment: Category labels serve as descriptive axis labels; correct title format
+          per images
       - id: VQ-07
         name: Palette Compliance
-        score: 2
+        score: 0
         max: 2
-        passed: true
-        comment: 'First series #009E73; second Okabe-Ito orange; backgrounds #FAF8F1
-          / #1A1A17'
+        passed: false
+        comment: 'CODE FAIL: fill_color=''#306998'' (Python Blue, not #009E73); fill_color=''#FFD43B''
+          (Python Yellow, not #D55E00); background=''white'' (pure white, not #FAF8F1);
+          no ANYPLOT_THEME adaptation'
     design_excellence:
-      score: 10
+      score: 13
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
-        passed: false
-        comment: Competent but generic; no distinctive typographic or layout refinements
+        passed: true
+        comment: Clean minimal radar with alpha blending; above generic default; professional
+          appearance
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Axes hidden, no border frame, grid circles subtle — some deliberate
-          minimalism
+        comment: Standard axes hidden, subtle circular gridlines only, clean whitespace
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Overlapping transparent polygons highlight where employees diverge;
-          comparison intent is clear
+        comment: 'Contrasting employee profiles (A: technical/communication, B: teamwork/leadership)
+          tell a clear comparison story'
     spec_compliance:
-      score: 15
+      score: 13
       max: 15
       items:
       - id: SC-01
@@ -132,26 +135,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct radar/spider chart
+        comment: Correct radar/spider chart using polar-to-cartesian conversion with
+          filled polygons
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Filled polygons, alpha ~0.25, grid circles at 20/40/60/80/100, axis
-          labels, closed polygon, 2 series
+        comment: Filled polygons, alpha ~0.25, gridlines at 20/40/60/80/100, outer-edge
+          labels, closed polygon, legend — all present
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Polar-to-Cartesian conversion correct; axes evenly spaced
+        comment: All 6 categories on correct axes; both series values mapped correctly
       - id: SC-04
         name: Title & Legend
-        score: 3
+        score: 1
         max: 3
-        passed: true
-        comment: Title format correct; legend labels Employee A / Employee B
+        passed: false
+        comment: 'CODE: title is ''radar-basic · bokeh · pyplots.ai'' (wrong domain);
+          images show correct anyplot.ai from prior run. Legend labels correct.'
     data_quality:
       score: 14
       max: 15
@@ -161,22 +166,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Covers filled polygon, transparency, grid structure, axis lines,
-          closed form, multi-series; missing numeric scale labels on grid rings
+        comment: Good variation with contrasting profiles; slight deduction for only
+          2 series (spec allows up to 3)
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Employee performance across competencies is real-world plausible
-          and neutral
+        comment: Employee performance review is canonical radar use case; categories
+          are natural and neutral
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 0-100 scale correct for competency scoring; values distributed across
-          the range
+        comment: 0-100 scale as spec recommends; values 70-90 realistic for employee
+          scores
     code_quality:
       score: 9
       max: 10
@@ -186,49 +191,51 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Flat script, no functions or classes
+        comment: 'Linear: imports -> data -> computation -> plot -> save; no functions
+          or classes'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Static data, fully deterministic
+        comment: Deterministic hardcoded data; no random seed needed
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only used imports
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Readable; polar conversion logic clear
+        comment: Clean and readable; polar-to-cartesian logic is clear and well-organized
       - id: CQ-05
         name: Output & API
         score: 0
         max: 1
         passed: false
-        comment: Saves plot.png / plot.html instead of plot-{THEME}.png / plot-{THEME}.html
+        comment: Saves as plot.png instead of plot-{THEME}.png; pipeline cannot generate
+          both light/dark renders
     library_mastery:
-      score: 6
+      score: 5
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: ColumnDataSource used throughout; figure(), patch(), scatter(), export_png
-          follow Bokeh idioms
+        comment: Uses ColumnDataSource, patch, scatter correctly; manual polar math
+          instead of Bokeh-native tools is a missed opportunity
       - id: LM-02
         name: Distinctive Features
         score: 2
         max: 5
         passed: false
-        comment: Saves HTML enabling interactivity, but no HoverTool added — significant
-          miss for an interactive library
+        comment: Manual Legend + LegendItem construction is Bokeh-specific; no HoverTool
+          or interactive features that distinguish from static libraries
   verdict: APPROVED
 impl_tags:
   dependencies: []
@@ -237,8 +244,9 @@ impl_tags:
   - custom-legend
   - html-export
   patterns:
-  - columndatasource
+  - data-generation
   - iteration-over-groups
+  - columndatasource
   dataprep: []
   styling:
   - alpha-blending

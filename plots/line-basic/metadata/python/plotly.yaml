@@ -2,7 +2,7 @@ library: plotly
 language: python
 specification_id: line-basic
 created: '2025-12-23T00:23:36Z'
-updated: '2026-04-29T15:16:43Z'
+updated: '2026-04-29T15:30:38Z'
 generated_by: claude-sonnet
 workflow_run: 25116892285
 issue: 653
@@ -12,36 +12,47 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/line-basi
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/line-basic/python/plotly/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/line-basic/python/plotly/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/line-basic/python/plotly/plot-dark.html
-quality_score: 85
+quality_score: 92
 review:
   strengths:
-  - 'Perfect visual quality: all font sizes explicitly set, brand green correctly
-    applied as first series, full theme-adaptive chrome, correct backgrounds in both
-    renders'
-  - 'Complete spec and data quality: seasonal temperature data is realistic, correctly
-    mapped, and all spec features are present'
-  - Clean, readable code with reproducibility seed and correct dual-format output
+  - 'Strong theme-adaptive chrome throughout: all font, grid, background, and annotation
+    colors correctly flip between light and dark using the canonical token set'
+  - 'Plotly-specific interactivity leveraged well: custom hovertemplate with month-name
+    customdata, spike lines, hovermode=''x'', and HTML export'
+  - Area fill (fill='tozeroy' with rgba BRAND_FILL) adds meaningful visual weight
+    and seasonal storytelling without chartjunk
+  - Peak annotation with themed bgcolor/bordercolor/font creates a clear focal point
+    and story
+  - All font sizes explicitly set well above minimum guidelines (title 36, axes 28,
+    ticks 22)
+  - 'Perfect spec compliance: single line, markers, grid, descriptive axis labels
+    with units, correct title format'
+  - Realistic and neutral dataset (monthly temperature with sinusoidal seasonal pattern,
+    seed-fixed)
   weaknesses:
-  - Top and right spines (box border) are not removed — in Plotly, set showline=False
-    on both axes or configure mirror=False explicitly to achieve the L-shaped spine
-    look required by the style guide
-  - 'No visual storytelling or emphasis: the peak (July) and trough (January) go unmarked;
-    consider an area fill (fill=tozeroy) or a subtle annotation at the peak to create
-    a focal point'
-  - 'Low LM-02: hovertemplate is good, but a range selector, spike lines, or connectgaps
-    feature would better demonstrate Plotly unique strengths'
+  - Both X and Y grid lines are enabled; the style guide recommends Y-axis grid only
+    for line charts — removing the X-axis grid would reduce visual noise and better
+    follow the minimalism principle
+  - 'DE-01 ceiling: strong design but not quite at publication-ready level — typography
+    could use weight variation (e.g. heavier title) and the annotation styling could
+    be more polished (soft drop shadow or bolder arrow)'
+  - 'LM-02: spike lines and hover tooltips are distinctively plotly, but the static
+    PNG does not showcase them — consider adding a visible interactive element hint
+    or making the area fill gradient more striking in the static render'
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) — correct, not pure white
-      Chrome: Title "line-basic · plotly · anyplot.ai" in dark ink (#1A1A17), clearly readable. Y-axis label "Temperature (°C)" with units in dark ink, X-axis label "Month" in dark ink — both readable. Tick labels (Jan-Dec, numeric y-ticks) in secondary dark (#4A4A44), all legible. Thin box border around plot area (top/right spines present).
-      Data: Single line in brand green #009E73 with round markers tracing a sinusoidal seasonal curve from ~4°C (Jan) to ~30°C (Jul) and back. Grid is very subtle (rgba 0.10 opacity).
-      Legibility verdict: PASS
+      Background: Warm off-white #FAF8F1 — correct, not pure white.
+      Chrome: Title "line-basic · plotly · anyplot.ai" is dark, centered, clearly readable. Y-axis label "Temperature (°C)" and X-axis label "Month" are dark and legible. Tick labels (Jan–Dec and 0–30) are rendered in INK_SOFT dark gray, clearly readable against the warm background. Axis border lines are subtle gray (INK_SOFT).
+      Data: Single line in brand green #009E73, width=5, with circular markers of size=18 on each of the 12 monthly data points. Area fill below the line uses rgba(0,158,115,0.12) — a very light mint green that emphasizes the seasonal magnitude. Peak annotation box ("Peak: 29.4°C") appears with warm-white elevated background (#FFFDF6), dark text (#1A1A17), and gray border — correctly themed.
+      Grid: Subtle gridlines on both X and Y axes at 10% opacity — readable but unobtrusive.
+      Legibility verdict: PASS — all text clearly readable against the warm off-white background.
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) — correct, not pure black
-      Chrome: Title in light near-white (#F0EFE8), clearly readable. Axis labels in light near-white, tick labels in secondary light (#B8B7B0) — all readable. No dark-on-dark failures. Box border slightly more visible against dark background (all 4 spines present, should ideally be L-shaped).
-      Data: Brand green #009E73 line and markers — identical to light render. Grid remains subtle.
-      Legibility verdict: PASS
+      Background: Warm near-black #1A1A17 — correct, not pure black.
+      Chrome: Title, axis labels, and tick labels all render in light colors (INK = #F0EFE8 for primary, INK_SOFT = #B8B7B0 for ticks) — all clearly readable against the dark background. No dark-on-dark failures detected. Peak annotation box has dark elevated background (#242420) with near-white text (#F0EFE8) and gray border (#B8B7B0) — correctly inverted for dark mode.
+      Data: Line color is identical to light render — brand green #009E73. Markers are the same green. Area fill (rgba 12% alpha) shows as a dark teal tint against the near-black background, still distinguishable. Data colors are identical between both renders as required.
+      Grid: Same subtle gridlines at 10% opacity, visible but non-dominant.
+      Legibility verdict: PASS — all text clearly readable against the near-black background; no dark-on-dark failures observed.
   criteria_checklist:
     visual_quality:
       score: 30
@@ -52,73 +63,79 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 36px, axis labels 28px, tick
-          labels 22px; fully readable in both themes'
+        comment: 'All font sizes explicitly set: title 36px, axis labels 28px, ticks
+          22px, annotation 20px. All readable in both themes.'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: 12 month tick labels and y-axis ticks well-spaced, no collisions
+        comment: No overlapping elements. Month tick labels well-spaced, peak annotation
+          positioned clear of data.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Line width 5 and marker size 18 prominent and well-adapted for 12
-          data points
+        comment: Line width=5, marker size=18 for 12 data points. Highly visible in
+          both themes.
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: 'Single series in #009E73, high contrast against both themed backgrounds,
-          CVD-safe'
+        comment: 'Single series in brand green #009E73. CVD-safe, good contrast on
+          both backgrounds.'
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Plot area ~67% canvas utilization, balanced margins, nothing cut
-          off
+        comment: Plot fills ~70-80% of canvas. Balanced margins (t=120, b=100, l=120,
+          r=60). No elements cut off.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Y-axis Temperature (°C) with units, X-axis Month descriptive
+        comment: 'Y-axis: ''Temperature (°C)'' with units. X-axis: ''Month''. Both
+          descriptive.'
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series #009E73, light bg #FAF8F1, dark bg #1A1A17, full theme-adaptive
-          chrome tokens'
+        comment: 'First (only) series is #009E73. Light background #FAF8F1, dark background
+          #1A1A17. All chrome theme-adaptive. Data colors identical across renders.'
     design_excellence:
-      score: 8
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 6
         max: 8
-        passed: false
-        comment: Well-configured with correct brand color and theme tokens but no
-          exceptional design elements beyond a properly styled default
+        passed: true
+        comment: 'Strong design: brand color, area fill with transparency, themed
+          annotation box, consistent token usage. Clearly above configured defaults
+          but not FiveThirtyEight-level (no weight variation in typography, no gradient
+          depth).'
       - id: DE-02
         name: Visual Refinement
-        score: 2
+        score: 4
         max: 6
-        passed: false
-        comment: Grid opacity correctly subtle (0.10), but top and right spines not
-          removed (box border visible in both renders); no L-shaped frame
+        passed: true
+        comment: 'Subtle grid at 10% opacity. No top/right spines (mirror=False).
+          Generous whitespace. Minor deduction: both X and Y grids active when style
+          guide recommends Y-only for line charts.'
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 4
         max: 6
-        passed: false
-        comment: Seasonal curve naturally suggests a story but no visual hierarchy
-          or emphasis (no peak annotation, no area fill, no focal point)
+        passed: true
+        comment: Peak annotation creates a clear focal point guiding the viewer to
+          the July high. Area fill reinforces the seasonal magnitude narrative. Above
+          default storytelling level.
     spec_compliance:
       score: 15
       max: 15
@@ -128,26 +145,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: go.Scatter with mode=lines+markers is correct chart type
+        comment: Correct line chart with markers (mode='lines+markers').
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Single line, axis labels, grid lines, optional markers all present
+        comment: Single line, axis labels, grid lines, optional markers — all present.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Month on x-axis, Temperature on y-axis, all 12 points displayed
+        comment: X=months, Y=temperature. All 12 data points visible.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title line-basic · plotly · anyplot.ai correct; no legend appropriate
-          for single series
+        comment: Title 'line-basic · plotly · anyplot.ai' correct. Single series —
+          no legend needed.
     data_quality:
       score: 15
       max: 15
@@ -157,20 +174,21 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Full annual cycle: rising phase, peak, falling phase, all 12 months'
+        comment: 'Shows full seasonal trend: rising, peak, and falling. All 12 months.
+          Both increasing and decreasing segments.'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Monthly temperature readings are a neutral, real-world scenario
+        comment: Monthly temperature readings — real-world, neutral, science domain.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Range ~3-30°C with July peak is factually correct for temperate northern
-          hemisphere location
+        comment: 3–29°C seasonal range is physically realistic for a northern-hemisphere
+          mid-latitude city.
     code_quality:
       score: 10
       max: 10
@@ -180,58 +198,60 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear structure: tokens -> data -> plot -> save; no functions or
-          classes'
+        comment: 'Linear: imports → data → plot → save. No functions or classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only os, numpy, and plotly.graph_objects used; all used
+        comment: Only os, numpy, plotly.graph_objects — all used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, Pythonic, appropriate complexity for basic line plot
+        comment: Clean, Pythonic. Appropriate complexity for the visualization. No
+          over-engineering.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot-{THEME}.png and plot-{THEME}.html; current plotly API
+        comment: Saves plot-{THEME}.png and plot-{THEME}.html. Current API.
     library_mastery:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Correct go.Scatter with hovertemplate, update_layout, dual PNG/HTML
-          output; uses graph_objects where px.line would be simpler high-level option
+        comment: go.Figure/go.Scatter with fill='tozeroy', hovertemplate+customdata,
+          write_image+write_html — all idiomatic plotly patterns.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
-        passed: false
-        comment: hovertemplate and write_html are distinctively Plotly; no advanced
-          features like range sliders, spike lines, or animations
-  verdict: REJECTED
+        passed: true
+        comment: Spike lines (showspikes, spikemode, spikethickness, spikedash, spikecolor),
+          unified hovermode='x', and HTML interactive export are distinctively plotly.
+          Not scored higher because these features don't manifest in the static PNG.
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
+  - annotations
   - hover-tooltips
   - html-export
-  - manual-ticks
   patterns:
   - data-generation
   dataprep: []
-  styling: []
+  styling:
+  - alpha-blending

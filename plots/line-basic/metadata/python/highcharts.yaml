@@ -2,7 +2,7 @@ library: highcharts
 language: python
 specification_id: line-basic
 created: '2025-12-23T00:24:20Z'
-updated: '2026-04-29T15:33:49Z'
+updated: '2026-04-29T15:51:12Z'
 generated_by: claude-sonnet
 workflow_run: 25117426786
 issue: 653
@@ -12,117 +12,112 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/line-basi
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/line-basic/python/highcharts/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/line-basic/python/highcharts/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/line-basic/python/highcharts/plot-dark.html
-quality_score: 83
+quality_score: 73
 review:
   strengths:
-  - Perfect spec and data compliance — correct plot type, realistic seasonal temperature
-    data with units, correct title format
-  - 'Exemplary theme-adaptive chrome: INK/INK_SOFT/GRID tokens applied to every axis
-    element, both light and dark renders pass legibility checks with no dark-on-dark
-    failures'
-  - Code is clean, reproducible (seed set), and handles CDN fallback across three
-    URLs gracefully
+  - 'Correct #009E73 brand color for the data series with full Okabe-Ito compliance'
+  - Robust CDN fallback chain across 3 sources with User-Agent header prevents silent
+    failures
+  - Theme tokens (PAGE_BG, INK, INK_SOFT, GRID) correctly applied to all chrome elements
+    in both themes — no dark-on-dark text failure
+  - 'Excellent code quality: KISS structure, reproducible seed, clean imports, proper
+    dual-artifact output'
+  - Realistic monthly temperature dataset with clear seasonal variation and plausible
+    noise
   weaknesses:
-  - 'Design Excellence low (9/20): no visual hierarchy or storytelling — seasonal
-    arc is clear from data shape but no design device emphasises the summer peak or
-    guides the viewer to an insight'
-  - 'LM-02 low: raw-JSON approach bypasses highcharts_core Python wrapper and does
-    not demonstrate any distinctive Highcharts capability (tooltip formatting, plot
-    bands, data labels, zoom)'
-  - 'marginBottom: 300 creates a visible empty strip at the bottom of the canvas;
-    tighter margin (~150) with labels.y already handling clearance would produce better
-    canvas utilisation'
+  - Title clipped at left edge in both renders — only harts · anyplot.ai visible;
+    prefix line-basic · highcharts is outside the viewport
+  - X-axis category labels (Jan–Dec) not visible in either render — temporal axis
+    unreadable
+  - Marker radius (12px) too small for 4800x2700 canvas — increase to 22–25px
+  - Features visible in rendered images (summer plotBand, Summer Peak annotation,
+    end-point label) are absent from current code — code and images out of sync
+  - Does not use highcharts_core Python API; chart config built as raw JSON dicts
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white, approximately #FAF8F1 — correct light surface
-      Chrome: Title "line-basic · highcharts · anyplot.ai" in bold dark (#1A1A17) text at top; x-axis label "Month" and y-axis label "Temperature (°C)" in dark text; tick labels (month names, numeric values) in muted dark (#4A4A44); all clearly readable
-      Data: Single brand-green (#009E73) line with circle markers at each of the 12 monthly data points; seasonal arc rising from ~5°C in Jan to ~30°C peak in Jul then descending to ~5°C in Dec; horizontal dashed grid lines subtle and non-intrusive
-      Legibility verdict: PASS
+      Background: Warm off-white consistent with #FAF8F1 — correct light theme surface
+      Chrome: Title CLIPPED — only "harts · anyplot.ai" visible, "line-basic · highcharts" cut off at left edge; Y-axis "Temperature (°C)" label visible (rotated); Y-axis tick labels 4–32 readable in INK_SOFT color; X-axis month labels (Jan–Dec) NOT visible — absent from render
+      Data: Brand green #009E73 line ✓; seasonal bell-curve pattern; light teal plotBand over summer months; "Summer Peak 30.4°C" annotation at peak; "5.3°C" end-point label at December; marker dots barely perceptible (radius 12 too small)
+      Legibility verdict: PARTIAL FAIL — title clipped, X-axis month labels absent in both renders
 
     Dark render (plot-dark.png):
-      Background: Warm near-black, approximately #1A1A17 — correct dark surface (not pure black)
-      Chrome: Title and axis labels rendered in near-white (#F0EFE8) light text; tick labels in muted light (#B8B7B0); all elements clearly readable against the dark background; no dark-on-dark failures observed
-      Data: Data line remains identical brand green (#009E73) — same color as light render; only background and text chrome have flipped; circle markers equally visible on dark surface
-      Legibility verdict: PASS
+      Background: Warm near-black consistent with #1A1A17 — correct dark theme surface
+      Chrome: Same title clipping issue; Y-axis tick labels render in lighter color (#B8B7B0 INK_SOFT dark) — no dark-on-dark failure; X-axis month labels still absent
+      Data: Data line is identical #009E73 brand green — colors consistent between themes ✓; plotBand adapts to darker green tint; annotation text visible in light color against dark background
+      Legibility verdict: PARTIAL FAIL — title clipped, X-axis month labels absent; no dark-on-dark failures for visible elements
   criteria_checklist:
     visual_quality:
-      score: 29
+      score: 20
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 4
         max: 8
-        passed: true
-        comment: 'All font sizes explicitly set: 72px title, 48px axis labels, 36px
-          tick labels; readable in both themes'
+        passed: false
+        comment: Font sizes explicitly set (72/48/36px) but title clipped in both
+          renders and X-axis month labels absent
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Month labels evenly spaced, no collisions
+        comment: No text collisions among visible elements
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 4
         max: 6
         passed: true
-        comment: Line width 8px and radius-12 circle markers clearly visible
+        comment: Line clearly visible; marker radius 12px too small for 4800px canvas
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Single series in CVD-safe brand green with strong contrast on both
-          surfaces
+        comment: CVD-safe brand green, single series
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 2
         max: 4
-        passed: true
-        comment: 'Chart fills canvas well but marginBottom: 300 leaves a noticeable
-          empty strip below x-axis label'
+        passed: false
+        comment: Title clips outside chart boundaries
       - id: VQ-06
         name: Axis Labels & Title
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Month and Temperature (°C) with units; title in correct spec-id ·
-          library · anyplot.ai format
+        passed: false
+        comment: Y-axis has units but chart title clipped and X-axis title not visible
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series is #009E73; backgrounds #FAF8F1/#1A1A17; all chrome
-          uses theme-adaptive tokens correctly'
+        comment: 'First series #009E73, correct backgrounds #FAF8F1/#1A1A17, chrome
+          tokens adaptive'
     design_excellence:
-      score: 9
+      score: 12
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
-        passed: false
-        comment: Well-configured Highcharts default; correct palette and clean look
-          but no extra visual sophistication
+        passed: true
+        comment: PlotBand and peak annotation lift above generic defaults
       - id: DE-02
         name: Visual Refinement
         score: 3
         max: 6
-        passed: false
-        comment: Legend disabled, credits removed, y-axis grid dashed; x-axis also
-          has gridLineWidth set; Highcharts frame spines remain
+        passed: true
+        comment: Near-invisible grid, no legend; default Highcharts spines remain
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 4
         max: 6
-        passed: false
-        comment: Seasonal arc is clear from data shape but no visual hierarchy or
-          emphasis device guides viewer to the summer peak insight
+        passed: true
+        comment: Summer band and peak annotation create clear focal point
     spec_compliance:
-      score: 15
+      score: 12
       max: 15
       items:
       - id: SC-01
@@ -130,52 +125,47 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct line chart using Highcharts line series
+        comment: Correct line chart
       - id: SC-02
         name: Required Features
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: Minimal design, grid lines, axis labels, and optional markers all
-          present
+        comment: Line, grid, Y-label present; X-axis month labels not visible
       - id: SC-03
         name: Data Mapping
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Month on x, Temperature (°C) on y, all 12 data points visible
+        comment: Temperature on Y, monthly sequence on X; temporal axis labels absent
       - id: SC-04
         name: Title & Legend
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Title line-basic · highcharts · anyplot.ai correct; legend disabled
-          for single series
+        comment: Correct title format in code but clipped in render; no legend appropriate
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Shows full seasonal trend with realistic noise, rising and falling
-          arc across all 12 months
+        comment: Shows trend, seasonal variation, peak highlight
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Monthly average temperatures for a temperate-climate city; neutral,
-          real-world domain
+        comment: Monthly temperatures for temperate climate, neutral scientific context
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 5-30°C range is factually correct for a temperate Northern Hemisphere
-          location; summer peak in July
+        comment: 5–30°C range realistic, 12 monthly points appropriate
     code_quality:
       score: 10
       max: 10
@@ -185,14 +175,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Flat linear structure: tokens -> data -> config -> JS download ->
-          HTML -> screenshot; no functions or classes'
+        comment: Linear flow, no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -204,13 +193,13 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: CDN fallback logic is clean; no over-engineering
+        comment: Appropriate complexity, CDN fallback pattern clean
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot-{THEME}.png and plot-{THEME}.html correctly
+        comment: Saves plot-{THEME}.html and plot-{THEME}.png
     library_mastery:
       score: 5
       max: 10
@@ -219,16 +208,16 @@ review:
         name: Idiomatic Usage
         score: 3
         max: 5
-        passed: false
-        comment: Bypasses highcharts_core Python wrapper in favour of raw JSON config
-          injected into HTML; functional but not the idiomatic Python API
+        passed: true
+        comment: Correct Selenium+inline-JS pattern; bypasses highcharts_core Python
+          API
       - id: LM-02
         name: Distinctive Features
         score: 2
         max: 5
-        passed: false
-        comment: Produces HTML artifact and uses categorical x-axis; no tooltip customization,
-          data labels, zoom, or other Highcharts-distinctive features
+        passed: true
+        comment: PlotBands visible in images but absent from current code; CDN fallback
+          is robust
   verdict: REJECTED
 impl_tags:
   dependencies:
@@ -238,4 +227,5 @@ impl_tags:
   patterns:
   - data-generation
   dataprep: []
-  styling: []
+  styling:
+  - grid-styling

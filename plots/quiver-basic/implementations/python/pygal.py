@@ -1,4 +1,4 @@
-""" anyplot.ai
+"""anyplot.ai
 quiver-basic: Basic Quiver Plot
 Library: pygal 3.1.0 | Python 3.13.13
 Quality: 72/100 | Updated: 2026-04-29
@@ -27,56 +27,61 @@ INK_MUTED = "#6B6A63" if THEME == "light" else "#A8A79F"
 
 OKABE_ITO = ("#009E73", "#D55E00", "#0072B2", "#CC79A7", "#E69F00", "#56B4E9", "#F0E442")
 
-# Data - Counterclockwise wind rotation around a low-pressure centre
+# Data — counterclockwise wind rotation around a low-pressure centre (u=-y, v=x)
 np.random.seed(42)
-grid_size = 12
+grid_size = 8  # 8×8 = 64 arrows, well-spaced for discrete legibility
 x_range = np.linspace(-3, 3, grid_size)
 y_range = np.linspace(-3, 3, grid_size)
 X, Y = np.meshgrid(x_range, y_range)
 x_flat = X.flatten()
 y_flat = Y.flatten()
 
-# u = -y, v = x produces a circular rotation field
 U = -y_flat
 V = x_flat
 magnitude = np.sqrt(U**2 + V**2)
 max_mag = magnitude.max()
 norm_mag = magnitude / max_mag
 
-arrow_scale = 0.12
+arrow_scale = 0.22
 U_scaled = U * arrow_scale
 V_scaled = V * arrow_scale
 
-head_ratio = 0.4
+head_ratio = 0.40
 head_angle = 0.55
 
-num_bins = 5
-wind_labels = ["Calm", "Light", "Moderate", "Fresh", "Strong"]
+num_bins = 3
+wind_labels = ["Calm / Light", "Moderate", "Fresh / Strong"]
 bin_colors = OKABE_ITO[:num_bins]
 
-arrow_groups = {i: [] for i in range(num_bins)}
-
+# Build each arrow as an isolated 9-item segment group, collected per bin
+arrow_bins = [[] for _ in range(num_bins)]
 for i in range(len(x_flat)):
-    if magnitude[i] < 0.05:
+    if magnitude[i] < 0.01:
         continue
-
     x1, y1 = x_flat[i], y_flat[i]
     x2, y2 = x1 + U_scaled[i], y1 + V_scaled[i]
-
     arrow_len = np.sqrt(U_scaled[i] ** 2 + V_scaled[i] ** 2)
     head_size = arrow_len * head_ratio
-
     angle = np.arctan2(V_scaled[i], U_scaled[i])
-    x_left = x2 - head_size * np.cos(angle - head_angle)
-    y_left = y2 - head_size * np.sin(angle - head_angle)
-    x_right = x2 - head_size * np.cos(angle + head_angle)
-    y_right = y2 - head_size * np.sin(angle + head_angle)
-
+    xl = x2 - head_size * np.cos(angle - head_angle)
+    yl = y2 - head_size * np.sin(angle - head_angle)
+    xr = x2 - head_size * np.cos(angle + head_angle)
+    yr = y2 - head_size * np.sin(angle + head_angle)
     bin_idx = min(int(norm_mag[i] * num_bins), num_bins - 1)
+    # Each arrow = shaft + two barb segments, each terminated with None
+    arrow_bins[bin_idx].append([(x1, y1), (x2, y2), None, (x2, y2), (xl, yl), None, (x2, y2), (xr, yr), None])
 
-    arrow_groups[bin_idx].extend([(x1, y1), (x2, y2), None])
-    arrow_groups[bin_idx].extend([(x2, y2), (x_left, y_left), None])
-    arrow_groups[bin_idx].extend([(x2, y2), (x_right, y_right), None])
+# Shuffle arrow order within each bin to break the spatial row-order band patterns
+# that make consecutive arrows appear visually connected even with None breaks
+rng = np.random.RandomState(42)
+arrow_series = []
+for i in range(num_bins):
+    arrows = arrow_bins[i][:]
+    rng.shuffle(arrows)
+    flat = []
+    for arrow in arrows:
+        flat.extend(arrow)
+    arrow_series.append(flat)
 
 # Style
 custom_style = Style(
@@ -94,17 +99,19 @@ custom_style = Style(
     stroke_width=3,
 )
 
-# Plot
+# Plot — thinner strokes (10 vs 20) + dot markers at each segment endpoint
+# clearly distinguish 64 discrete arrow positions rather than sweeping bands
 chart = pygal.XY(
     style=custom_style,
     width=4800,
     height=2700,
     stroke=True,
-    stroke_style={"width": 20},
-    show_dots=False,
+    stroke_style={"width": 10},
+    show_dots=True,
+    dot_size=4,
     show_legend=True,
     legend_at_bottom=True,
-    legend_at_bottom_columns=5,
+    legend_at_bottom_columns=3,
     title="quiver-basic · pygal · anyplot.ai",
     x_title="Longitude (degrees)",
     y_title="Latitude (degrees)",
@@ -115,8 +122,8 @@ chart = pygal.XY(
 )
 
 for i in range(num_bins):
-    if arrow_groups[i]:
-        chart.add(wind_labels[i], arrow_groups[i])
+    if arrow_series[i]:
+        chart.add(wind_labels[i], arrow_series[i], allow_interruptions=True)
 
 # Save
 chart.render_to_png(f"plot-{THEME}.png")

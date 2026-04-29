@@ -1,7 +1,7 @@
 """ anyplot.ai
 quiver-basic: Basic Quiver Plot
 Library: seaborn 0.13.2 | Python 3.13.13
-Quality: 79/100 | Updated: 2026-04-29
+Quality: 83/100 | Updated: 2026-04-29
 """
 
 import os

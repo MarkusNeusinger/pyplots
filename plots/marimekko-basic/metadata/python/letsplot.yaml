@@ -2,7 +2,7 @@ library: letsplot
 language: python
 specification_id: marimekko-basic
 created: '2025-12-23T15:15:14Z'
-updated: '2026-04-27T03:36:47Z'
+updated: '2026-04-29T10:26:49Z'
 generated_by: claude-sonnet
 workflow_run: 24975043669
 issue: 1002
@@ -12,7 +12,235 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/marimekko
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/marimekko-basic/python/letsplot/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/marimekko-basic/python/letsplot/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/marimekko-basic/python/letsplot/plot-dark.html
-quality_score: 76
+quality_score: 73
 review:
-  strengths: []
-  weaknesses: []
+  strengths:
+  - Correct Marimekko structure using geom_rect with xmin/xmax/ymin/ymax for variable-width
+    bars
+  - Realistic neutral market share data with plausible regional variation
+  - 'All required spec features present: proportional widths, heights, colour coding,
+    value labels'
+  - Grid fully removed with element_blank; white segment borders provide clean visual
+    separation
+  weaknesses:
+  - 'Custom Python logo colours (#306998, #FFD43B, #2E8B57, #DC2626) instead of Okabe-Ito
+    — replace with [#009E73, #D55E00, #0072B2, #CC79A7]'
+  - No os.getenv(ANYPLOT_THEME) reading — missing PAGE_BG, INK, INK_SOFT tokens and
+    theme-adaptive chrome on plot/panel background and all text elements
+  - Output saved as plot.png/plot.html instead of plot-{THEME}.png/plot-{THEME}.html
+  - Title hardcoded as pyplots.ai — must be anyplot.ai
+  - Value label overflows narrow Latin America Food & Beverage segment — suppress
+    labels for segments with height < 8%
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white, approximately #FAF8F1 — correct theme surface
+      Chrome: Title "marimekko-basic · letsplot · anyplot.ai" in dark text, readable. Axis labels "Market Size Distribution" and "Share within Region (%)" in dark text, readable. Tick labels dark and clearly legible at 15° angle on x-axis.
+      Data: Four variable-width bars (North America, Europe, Asia Pacific, Latin America). Segments: Electronics (teal-green, bottom), Apparel (orange), Home Goods (blue), Food & Beverage (pink-purple, top). White bold dollar labels inside each segment. Minor: $30.0M label on narrow Latin America/Food&Beverage segment extends slightly beyond segment boundary.
+      Legibility verdict: PASS
+
+    Dark render (plot-dark.png):
+      Background: Near-black, approximately #1A1A17 — correct dark theme surface, not pure black
+      Chrome: Title in white/light text, readable. Axis labels in white/light text, readable. Tick labels in light colour, clearly legible. No dark-on-dark failure detected.
+      Data: Colors are identical to light render (Electronics teal-green, Apparel orange, Home Goods blue, Food & Beverage pink-purple). Same $30.0M overflow issue on narrow Latin America segment.
+      Legibility verdict: PASS
+  criteria_checklist:
+    visual_quality:
+      score: 22
+      max: 30
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Font sizes explicitly set (title 24pt, axis 20pt, ticks 16pt); all
+          text readable; minor label crowding on narrow Latin America segments
+      - id: VQ-02
+        name: No Overlap
+        score: 4
+        max: 6
+        passed: false
+        comment: $30.0M Food & Beverage label overflows narrow Latin America segment
+          boundary in both renders
+      - id: VQ-03
+        name: Element Visibility
+        score: 5
+        max: 6
+        passed: true
+        comment: Segments clearly defined with white borders; all data visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 1
+        max: 2
+        passed: false
+        comment: Custom palette not CVD-optimised; Python Blue and green may conflict
+          for some users
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 3
+        max: 4
+        passed: true
+        comment: Good canvas utilisation; x-axis labels at 15 degrees are readable
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
+        max: 2
+        passed: true
+        comment: Market Size Distribution and Share within Region (%) are descriptive
+      - id: VQ-07
+        name: Palette Compliance
+        score: 0
+        max: 2
+        passed: false
+        comment: 'Custom #306998 (Python Blue) explicitly prohibited; uses Python
+          logo colours instead of Okabe-Ito; no ANYPLOT_THEME reading or theme-adaptive
+          chrome in code'
+    design_excellence:
+      score: 10
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
+        passed: false
+        comment: Clean marimekko layout; wrong palette undermines design; configured
+          default appearance
+      - id: DE-02
+        name: Visual Refinement
+        score: 3
+        max: 6
+        passed: false
+        comment: Grid fully removed, white segment borders; axis frame retained, no
+          spine removal
+      - id: DE-03
+        name: Data Storytelling
+        score: 3
+        max: 6
+        passed: false
+        comment: Area encoding communicates both dimensions; dollar labels guide eye;
+          no visual hierarchy or emphasis
+    spec_compliance:
+      score: 13
+      max: 15
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 5
+        max: 5
+        passed: true
+        comment: Correct Marimekko/mosaic chart using geom_rect
+      - id: SC-02
+        name: Required Features
+        score: 4
+        max: 4
+        passed: true
+        comment: Proportional widths, proportional heights, colour-coded categories,
+          value labels all present
+      - id: SC-03
+        name: Data Mapping
+        score: 3
+        max: 3
+        passed: true
+        comment: Region widths proportional to totals; segment heights as shares within
+          region; 0-100% y-axis
+      - id: SC-04
+        name: Title & Legend
+        score: 1
+        max: 3
+        passed: false
+        comment: Code hardcodes pyplots.ai (line 107); image shows anyplot.ai (likely
+          pipeline patch); legend labels correct
+    data_quality:
+      score: 14
+      max: 15
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 5
+        max: 6
+        passed: true
+        comment: Shows variable-width bars, proportional stacking, multi-category
+          comparison across regions of different sizes
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 5
+        passed: true
+        comment: Real-world market share analysis across major regions and product
+          categories; neutral business context
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Values in millions are plausible; Asia Pacific as largest market
+          is realistic
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear flow: imports, data, compute, plot, save; no functions
+          or classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 2
+        passed: true
+        comment: Fully deterministic data
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All listed imports are used
+      - id: CQ-04
+        name: Code Elegance
+        score: 1
+        max: 2
+        passed: false
+        comment: Comment acknowledges wrong palette; shutil.rmtree cleanup is brittle
+          workaround
+      - id: CQ-05
+        name: Output & API
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves as plot.png/plot.html instead of plot-{THEME}.png/plot-{THEME}.html;
+          no ANYPLOT_THEME reading
+    library_mastery:
+      score: 6
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: Correct ggplot grammar; geom_rect with aes(xmin/xmax/ymin/ymax),
+          scale_x_continuous with custom breaks/labels, element_blank for grid removal
+      - id: LM-02
+        name: Distinctive Features
+        score: 2
+        max: 5
+        passed: false
+        comment: label_format in geom_text is lets_plot specific; HTML export via
+          ggsave; nothing uniquely showcases lets_plot over plotnine
+  verdict: REJECTED
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep:
+  - normalization
+  styling:
+  - edge-highlighting

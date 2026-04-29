@@ -2,7 +2,7 @@ library: pygal
 language: python
 specification_id: radar-basic
 created: '2025-12-23T18:11:43Z'
-updated: '2026-04-29T16:56:45Z'
+updated: '2026-04-29T17:09:38Z'
 generated_by: claude-sonnet
 workflow_run: 25121778506
 issue: 744
@@ -12,93 +12,97 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/radar-bas
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/radar-basic/python/pygal/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/radar-basic/python/pygal/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/radar-basic/python/pygal/plot-dark.html
-quality_score: 83
+quality_score: 79
 review:
   strengths:
-  - 'Perfect spec compliance: all required radar features present (filled polygons,
-    transparency, gridlines, axis labels, multi-series legend, polygon closure)'
-  - Correct Okabe-Ito palette in canonical order; theme-adaptive chrome works in both
-    renders
-  - Saves interactive HTML output — leverages pygal distinctive interactive capability
-  - Clean flat code structure with necessary pygal.py filename workaround correctly
-    handled
-  - Realistic employee performance dataset with meaningful variation between series
+  - 'Correct Okabe-Ito palette with brand green #009E73 as first series in both themes'
+  - 'Perfect spec compliance: filled polygons, transparency (opacity=0.25), gridlines,
+    multi-series legend'
+  - Theme-adaptive chrome works flawlessly — no dark-on-dark failures in dark render
+  - Correct 3600×3600 square canvas for radar chart, good canvas utilization
+  - Deterministic data with realistic employee competency scenario
+  - Clean KISS code structure with justified importlib workaround for file naming
+    conflict
+  - HTML export correctly included alongside PNG (pygal is interactive)
+  - 'Title format correct: radar-basic · pygal · anyplot.ai'
   weaknesses:
-  - 'Dark render overlap region: two 0.25-opacity polygons stacked on near-black background
-    create near-opaque dark zone — increase opacity slightly or add brighter stroke
-    width in dark theme to maintain series boundary visibility'
-  - 'Design Excellence gap: no standout aesthetic choices (DE-01=4) and minimal visual
-    refinement beyond correct theming (DE-02=3) — refine typography, spacing, and
-    polish'
-  - 'No data storytelling emphasis (DE-03=2): series displayed without visual focal
-    point drawing attention to meaningful comparison'
-  - Y-axis tick values inside the radar web are very small; could be made more prominent
+  - 'Font sizes below style guide minimums for pixel-based libraries: label_font_size=18
+    (needs ≥22), major_label_font_size=16 (needs ≥18), value_font_size=14 (needs ≥16)
+    — visible as small axis and spoke labels in both renders'
+  - Default dashed hexagonal grid style — pygal radar grid appears as default dashed
+    concentric rings with no visual refinement beyond what the library provides
+  - No visual hierarchy or storytelling emphasis — two employee profiles are shown
+    but nothing guides the viewer to the insight (e.g., where Employee A outperforms
+    Employee B)
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (~#FAF8F1) - correct, not pure white
-      Chrome: Title "radar-basic · pygal · anyplot.ai" visible at top; 6 category labels (Communication, Technical Skills, Teamwork, Problem Solving, Leadership, Creativity) at perimeter — all readable; legend "Employee A" / "Employee B" at bottom readable; y-axis tick values (20, 40, 60, 80, 100) inside radar web present but small
-      Data: Employee A in teal/green (#009E73, first Okabe-Ito) ✓; Employee B in orange (#D55E00, second Okabe-Ito) ✓; overlap area creates olive-brown blended region with 0.25 opacity stacking
-      Legibility verdict: PASS
+      Background: Warm off-white #FAF8F1 — correct, not pure white. PASS.
+      Chrome: Title "radar-basic · pygal · anyplot.ai" clearly visible in dark ink at top. Category axis labels (Communication, Technical Skills, Teamwork, Problem Solving, Leadership, Creativity) visible at outer edges but notably small, especially the diagonal ones (Technical Skills, Teamwork, Leadership, Creativity). Value tick labels on spokes (20, 40, 60, 80, 100) are very small (value_font_size=14 below 16 minimum). Legend at bottom "Employee A" / "Employee B" readable.
+      Data: Employee A in #009E73 (brand green), Employee B in #D55E00 (vermillion). Filled polygons with 0.25 opacity — overlap zone renders as olive/brownish, making overlap area distinguishable. Dashed hexagonal grid rings visible.
+      Legibility verdict: PASS with reservation — title and legend readable, axis category labels small but legible, spoke value labels quite small.
 
     Dark render (plot-dark.png):
-      Background: Near-black (~#1A1A17) - correct, not pure black
-      Chrome: Title, axis category labels, and legend all render in light-colored text — correctly adapted to dark theme; no dark-on-dark text failures
-      Data: Colors identical to light render — Employee A remains #009E73 green, Employee B remains #D55E00 orange ✓
-      Notable issue: Where both 0.25-opacity polygons overlap on the near-black background, the combined fill becomes very dark and nearly indistinguishable from the background, reducing series boundary visibility in the overlap region
-      Legibility verdict: PASS (text readable; overlap region visual quality issue noted but not a text legibility failure)
+      Background: Near-black #1A1A17 — correct warm near-black. PASS.
+      Chrome: Title and all labels appear in light/off-white text on dark background. No dark-on-dark failures observed. All text elements are visible against the dark surface. Category labels appear in light-gray tone.
+      Data: #009E73 and #D55E00 are identical to light render — only chrome flips. Overlap zone appears darker olive on dark background but both series are distinguishable.
+      Legibility verdict: PASS — no dark-on-dark failures, all text readable against dark background.
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 25
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title=28, labels=18, legend=16); internal
-          y-axis tick values inside radar web are quite small
+        comment: 'Font sizes explicitly set but below pixel-based minimums: label=18
+          (needs 22), major_label=16 (needs 18), value=14 (needs 16). Visual confirms
+          small axis and spoke labels.'
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: No text or element collisions
+        comment: No actual overlap between text elements. Small diagonal labels (Technical
+          Skills, Teamwork, Leadership, Creativity) are positioned cleanly.
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Polygons clear in light render; dark render overlap region becomes
-          near-opaque dark, reducing series boundary visibility
+        comment: Filled polygons clearly visible, data point dots visible but small
+          at size=6 on 3600px canvas.
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito is CVD-safe; transparency allows overlap visibility
+        comment: 'Okabe-Ito positions 1+2 (#009E73, #D55E00) are CVD-safe and provide
+          good contrast.'
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Radar fills reasonable portion of 3600x3600 canvas; some empty space
-          on sides
+        comment: 3600x3600 square canvas appropriate for radar. Chart fills ~65-70%
+          vertically, normal for hexagonal radar shape.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive category labels; title matches required format
+        comment: Descriptive category labels, correct title format radar-basic · pygal
+          · anyplot.ai.
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series #009E73, Okabe-Ito order, backgrounds #FAF8F1/#1A1A17,
-          chrome flips correctly'
+        comment: 'First series #009E73, second #D55E00, backgrounds correct (#FAF8F1
+          light / #1A1A17 dark), theme chrome adaptive.'
     design_excellence:
-      score: 9
+      score: 8
       max: 20
       items:
       - id: DE-01
@@ -106,22 +110,24 @@ review:
         score: 4
         max: 8
         passed: false
-        comment: Well-configured library default with proper theming; no standout
-          typographic or compositional choices
+        comment: Well-configured library default. Correct palette and transparency,
+          but no distinctive design choices beyond following the style guide.
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 2
         max: 6
         passed: false
-        comment: Fill with transparency and legend placement show some care; minimal
-          customization beyond required theming
+        comment: Default dashed hexagonal grid rings (standard pygal radar aesthetic).
+          Font customization and legend positioning are present but the overall visual
+          style is library default.
       - id: DE-03
         name: Data Storytelling
         score: 2
         max: 6
         passed: false
-        comment: Comparison between two employees is clear but no visual hierarchy
-          or emphasis guides viewer to specific insight
+        comment: Two employee profiles displayed but no emphasis to highlight where
+          one outperforms the other. No visual hierarchy beyond the basic polygon
+          shapes.
     spec_compliance:
       score: 15
       max: 15
@@ -131,51 +137,53 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct radar/spider chart
+        comment: Correct radar/spider chart with fill.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Filled polygons (opacity=0.25), regular gridlines, axis labels at
-          perimeter, two series with legend, closed polygon
+        comment: Filled polygons with opacity 0.25, gridlines, axis labels, distinct
+          colors, legend, polygon closure.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All 6 competency axes correctly populated
+        comment: 6 axes, 0-100 scale, both series correctly mapped.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title 'radar-basic · pygal · anyplot.ai', legend 'Employee A'/'Employee
-          B'
+        comment: Title format correct, legend labels Employee A / Employee B match
+          data.
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Two series with clearly different profiles across 6 dimensions; variation
-          and overlap both visible
+        comment: Shows filled multi-series radar comparison, transparency for overlap.
+          Two series covers core feature but a third series would more fully demonstrate
+          the comparison capability.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Employee performance comparison is a standard, neutral business use
-          case
+        comment: Employee performance across competencies — real, neutral, comprehensible
+          business scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values 68-92 on 0-100 scale are realistic for performance scores
+        comment: Values 68-92 on 0-100 scale, realistic competency scores with meaningful
+          differences between employees.
     code_quality:
       score: 10
       max: 10
@@ -185,32 +193,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Flat Imports -> Data -> Style -> Plot -> Save structure
+        comment: 'Linear structure: imports → data → style → plot → save. Importlib
+          workaround is justified and minimal.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: All data is hardcoded; fully deterministic
+        comment: Fully deterministic hardcoded data.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only used modules imported
+        comment: Only importlib, os, sys (necessary), pygal, pygal.style.Style. All
+          used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: sys.path workaround + importlib is correct approach for pygal.py
-          filename; code otherwise clean
+        comment: Clean, Pythonic. No fake UI elements.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot-{THEME}.png and plot-{THEME}.html
+        comment: Saves plot-{THEME}.png and plot-{THEME}.html correctly.
     library_mastery:
       score: 7
       max: 10
@@ -220,16 +229,16 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Uses pygal.Radar with fill, dots_size, stroke_style, show_y_guides,
-          y_labels_major_every — proper radar-specific options
+        comment: pygal.Radar() with Style object, chart.add(), render_to_png/render.
+          Idiomatic usage of the library's API.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
-        passed: false
-        comment: Saves interactive HTML (pygal's distinctive capability); fill and
-          custom dots are radar-specific; could further leverage pygal tooltip config
-          or value labels
+        passed: true
+        comment: fill=True, dots_size, stroke_style dict syntax, legend_at_bottom,
+          y_labels_major_every, HTML interactive export — pygal-specific features
+          leveraged well.
   verdict: REJECTED
 impl_tags:
   dependencies: []

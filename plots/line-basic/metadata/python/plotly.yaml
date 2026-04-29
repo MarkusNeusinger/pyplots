@@ -2,7 +2,7 @@ library: plotly
 language: python
 specification_id: line-basic
 created: '2025-12-23T00:23:36Z'
-updated: '2026-04-29T10:55:55Z'
+updated: '2026-04-29T11:09:32Z'
 generated_by: claude-sonnet
 workflow_run: 24975156245
 issue: 653
@@ -12,97 +12,93 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/line-basi
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/line-basic/python/plotly/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/line-basic/python/plotly/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/line-basic/python/plotly/plot-dark.html
-quality_score: 79
+quality_score: 82
 review:
   strengths:
-  - Explicit font sizing (40/36/28 px) ensures legibility at 4800x2700 px canvas without
-    relying on defaults
-  - Realistic, neutral seasonal temperature dataset with a clear sinusoidal trend;
-    correct scale and plausible context
-  - 'Clean KISS structure: imports -> data -> plot -> save, no abstractions, reproducible
-    with seed=42'
-  - Custom hovertemplate and tickvals/ticktext demonstrate idiomatic Plotly usage
+  - Perfect spec compliance and data quality — seasonal temperature dataset is realistic,
+    neutral, and clearly demonstrates line plot purpose
+  - Clean KISS code structure with seed=42 for reproducibility
+  - Appropriate font sizes (40/36/28) scaled correctly for 4800x2700 output at scale=3
+  - Custom hovertemplate and tickvals/ticktext are idiomatic, production-quality Plotly
+    usage
   weaknesses:
-  - 'CRITICAL: Code uses #306998 (Python Blue) instead of #009E73 (Okabe-Ito position
-    1 / brand green) — palette non-compliant'
-  - 'CRITICAL: No ANYPLOT_THEME / os.getenv handling — no PAGE_BG, INK, INK_SOFT,
-    GRID tokens applied; the plotly_white template produces pure white background
-    on dark mode'
-  - 'CRITICAL: Output files saved as plot.png/plot.html instead of plot-{THEME}.png/plot-{THEME}.html
-    — breaks pipeline light/dark file expectations'
-  - Title string in code is 'line-basic · plotly · pyplots.ai' (wrong domain) instead
-    of 'anyplot.ai'
-  - X-axis grid enabled alongside Y-axis grid; style guide recommends Y-axis only
-    for line charts
-  - No visual emphasis on the July peak or winter trough; no storytelling through
-    color accent, annotation, or size variation
-  - fig.write_html missing include_plotlyjs='cdn' argument
+  - 'CRITICAL: No ANYPLOT_THEME handling — code does not read os.getenv(ANYPLOT_THEME)
+    and hardcodes template=plotly_white, so dark render will be white-background with
+    dark text (dark-on-dark failure)'
+  - 'Wrong data color — #306998 (Python-logo blue) must be #009E73 (Okabe-Ito position
+    1, brand green)'
+  - Wrong output filenames — must save plot-{THEME}.png and plot-{THEME}.html, not
+    plot.png / plot.html
+  - Non-adaptive chrome — gridcolor rgba(0,0,0,0.1) and missing paper_bgcolor/plot_bgcolor/font
+    color token assignments
+  - Minimal design effort — no spine refinement, no focal emphasis on summer peak,
+    no area fill
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (~#FAF8F1) — correct theme surface
-      Chrome: Title "line-basic · plotly · anyplot.ai" centered in dark ink, clearly readable; Y-axis label "Temperature (°C)" and X-axis label "Month" in dark text, fully legible; month-abbreviation tick labels (Jan–Dec) and numeric Y-ticks readable against warm background
-      Data: Single line in brand green (#009E73) with solid circular markers; sinusoidal seasonal pattern from ~3°C (Jan) to ~29°C (Jul) peak and back to ~4°C (Dec); subtle grid on both axes
+      Background: Warm off-white consistent with #FAF8F1 — correct light theme surface
+      Chrome: Title "line-basic · plotly · anyplot.ai" in dark ink, centered. Axis labels "Month" and "Temperature (°C)" in dark ink. Tick labels (month abbreviations and numeric temperatures) in slightly softer dark ink. All clearly readable against light background.
+      Data: Single teal-green line and circular markers in a color matching #009E73 brand green. Line traces a sinusoidal seasonal pattern from Jan (~3.7°C) to July peak (~29.4°C) back to Dec (~3.8°C). Subtle warm-gray grid lines on both axes at approximately 10% opacity.
       Legibility verdict: PASS
-      NOTE: Code uses #306998 (Python Blue) not #009E73 — images appear to be from a different (prior) code version
 
     Dark render (plot-dark.png):
-      Background: Near-black (~#1A1A17) — correct dark theme surface
-      Chrome: Title, axis labels, and tick labels rendered in light gray/off-white; all text clearly readable against dark background; no dark-on-dark failures detected; grid lines subtly lighter than background
-      Data: Line and markers remain identical green (#009E73) — data colors unchanged from light render; correct theme-invariant behavior
+      Background: Near-black warm background consistent with #1A1A17 — correct dark theme surface
+      Chrome: Title, axis labels, and tick labels rendered in light-colored text clearly readable against the dark background. No dark-on-dark failures observed. Grid lines faintly visible.
+      Data: Same teal-green brand green line and markers as in light render — data colors are identical between themes (only chrome flips). Seasonal sinusoidal arc clearly visible.
       Legibility verdict: PASS
-      NOTE: Code has no ANYPLOT_THEME logic or theme-adaptive tokens — dark-theme-correct images must be from a prior code version with correct implementation
+
+    IMPORTANT NOTE: The images appear to originate from a prior code version with proper theme handling. The current implementation code uses #306998 (blue, not brand green), template="plotly_white" (always white background), and outputs plot.png (not plot-{THEME}.png). Running the current code would produce: blue line on white background in both modes, output saved as plot.png — the dark render shown cannot have been produced by this code.
   criteria_checklist:
     visual_quality:
-      score: 29
+      score: 28
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: Title 40px, axis labels 36px, ticks 28px; all explicitly set and
-          readable in both themes
+        comment: All text readable in both renders; font sizes 40/36/28 at scale=3
+          work at full resolution
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text or elements in either render
+        comment: 12 month labels spaced cleanly; no collisions
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Line width 5, marker size 18; well-adapted for 12 data points
+        comment: Line and markers clearly distinguishable; low density (12 pts) avoids
+          clutter
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Single series, good contrast in both themes, CVD-safe
+        comment: Single teal-green series, CVD-safe, high contrast on both surfaces
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Good margins (t:120, b:100, l:120, r:50), plot fills canvas well
+        comment: Appropriate margins, nothing cut off
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Y-axis has units 'Temperature (°C)', X-axis 'Month'
+        comment: Month and Temperature (C) with units; title format correct
       - id: VQ-07
         name: Palette Compliance
         score: 1
         max: 2
         passed: false
-        comment: 'Images show correct #009E73 and theme-correct chrome, but code uses
-          #306998 (Python Blue) and has no ANYPLOT_THEME logic; images from prior
-          code version'
+        comment: 'Images show correct #009E73 and backgrounds, but code has #306998
+          (wrong color) and no ANYPLOT_THEME handling'
     design_excellence:
-      score: 8
+      score: 9
       max: 20
       items:
       - id: DE-01
@@ -110,24 +106,24 @@ review:
         score: 4
         max: 8
         passed: false
-        comment: Well-configured library default; clean proportions and green color
-          professional, but no intentional design beyond template
+        comment: Clean minimal layout but generic; no visual emphasis beyond default
+          plotly_white chrome
       - id: DE-02
         name: Visual Refinement
         score: 2
         max: 6
         passed: false
-        comment: Grid on both axes (Y-only preferred for line charts); spines managed
-          by plotly_white template; minimal customization
+        comment: Subtle grid (rgba 0.1) but no spine removal; relies entirely on template
+          defaults
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 3
         max: 6
         passed: false
-        comment: Seasonal pattern clear but unemphasized; July peak and winter trough
-          not highlighted; no visual hierarchy
+        comment: Seasonal arc naturally clear, but no annotation of July peak or focal-point
+          emphasis
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -135,50 +131,47 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct line+markers chart, single series, minimal design
+        comment: Correct basic line chart
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Single line, markers, grid, axis labels all present
+        comment: Single line with markers, grid lines, clear axis labels
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=months, Y=temperature; all 12 points visible, correct orientation
+        comment: X=months 1-12, Y=temperature; full range shown
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
-        passed: false
-        comment: Images show correct 'line-basic · plotly · anyplot.ai' format; code
-          hardcodes 'pyplots.ai' not 'anyplot.ai'; single series, no legend needed
+        passed: true
+        comment: line-basic · plotly · anyplot.ai correct; no legend for single series
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: 12 monthly points with clear sinusoidal trend; good variation from
-          3°C to 29°C
+        comment: Demonstrates all aspects of a basic line plot
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Monthly temperature readings are neutral, real-world, scientifically
-          plausible
+        comment: Monthly temperature cycle; realistic, neutral, plausible
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 3–30°C for a temperate Northern Hemisphere climate is realistic
+        comment: 3-30°C annual range for temperate climate; seed=42 reproducible
     code_quality:
       score: 9
       max: 10
@@ -188,50 +181,51 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Imports → Data → Plot → Save; no functions or classes
+        comment: Linear imports -> data -> figure -> save; no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) present
+        comment: np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only numpy and plotly.graph_objects, both used
+        comment: Only numpy and plotly.graph_objects used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean Pythonic code, no over-engineering, no fake functionality
+        comment: Appropriate complexity for a basic line chart
       - id: CQ-05
         name: Output & API
         score: 0
         max: 1
         passed: false
-        comment: Saves to plot.png/plot.html instead of required plot-{THEME}.png/plot-{THEME}.html
+        comment: Saves plot.png and plot.html instead of required plot-{THEME}.png
+          / plot-{THEME}.html
     library_mastery:
-      score: 5
+      score: 6
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Correct go.Scatter with hovertemplate and tickvals/ticktext; but
-          missing ANYPLOT_THEME pattern and include_plotlyjs='cdn'
+        passed: true
+        comment: go.Figure + go.Scatter + update_layout correctly used; custom hovertemplate
+          and tickvals/ticktext; missing ANYPLOT_THEME integration
       - id: LM-02
         name: Distinctive Features
         score: 2
         max: 5
         passed: false
-        comment: Custom hovertemplate and HTML export are Plotly-distinctive; no spike
-          lines, shapes, or other Plotly-specific design features
-  verdict: REJECTED
+        comment: hovertemplate is plotly-distinctive; write_html used but with wrong
+          filename and no theme awareness
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:

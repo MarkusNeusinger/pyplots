@@ -2,7 +2,7 @@ library: altair
 language: python
 specification_id: marimekko-basic
 created: '2025-12-23T15:14:02Z'
-updated: '2026-04-29T10:26:33Z'
+updated: '2026-04-29T10:41:24Z'
 generated_by: claude-sonnet
 workflow_run: 24974844950
 issue: 1002
@@ -12,46 +12,41 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/marimekko
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/marimekko-basic/python/altair/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/marimekko-basic/python/altair/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/marimekko-basic/python/altair/plot-dark.html
-quality_score: 82
+quality_score: 87
 review:
   strengths:
-  - Excellent Marimekko construction using Altair x/x2/y/y2 rect mark approach — idiomatic
-    and clean
-  - Proportional width calculation using cumsum() is correct and well-structured
-  - 'Good data storytelling: revenue labels and proportional sizing communicate market
-    structure at a glance'
-  - Interactive tooltips (Region, Product, Revenue, % of Region) provide full context
-    in HTML output
-  - Realistic neutral market data with meaningful variation across regions and products
-  - Both theme renders pass legibility check
+  - 'Correct Marimekko geometry: x/x2/y/y2 rect approach with cumsum() position calculation
+    is mathematically sound and idiomatically Altair'
+  - Revenue labels inside segments provide at-a-glance quantification — good data
+    storytelling addition
+  - 'Excellent spec compliance: proportional widths + heights, color coding, legend
+    all present'
+  - Neutral, realistic retail market scenario with meaningful regional variation
+  - Both theme renders pass legibility checks with identical data colors
   weaknesses:
-  - 'CRITICAL: Code uses forbidden Python Blue palette (#306998) — must replace with
-    Okabe-Ito [#009E73, #D55E00, #0072B2, #CC79A7]'
-  - 'CRITICAL: No ANYPLOT_THEME handling — must read os.getenv and apply PAGE_BG/INK/INK_SOFT
-    tokens via configure_axis/configure_title/configure_legend'
-  - 'CRITICAL: Wrong output filenames — must save as plot-{THEME}.png and plot-{THEME}.html
-    not bare plot.png/plot.html'
-  - 'CRITICAL: Wrong title branding — change pyplots.ai to anyplot.ai'
-  - Missing revenue labels in code — images show $XXM labels in segments but no mark_text
-    layer exists in committed code
-  - Grid opacity 0.3 is too high — reduce to 0.1 per style guide
+  - 'CRITICAL — code not committed: repair generated correct themed images but committed
+    altair.py still has Python Blue #306998 palette, pyplots.ai title, plot.png output,
+    no ANYPLOT_THEME handling, and no revenue mark_text layer'
+  - configure_axis labelFontSize=16 should be 18px; titleFontSize=20 should be 22px
+    per altair.md
+  - gridOpacity=0.3 is too high — style guide specifies 0.10
+  - Revenue labels (mark_text layer) not present in committed code — must be part
+    of the committed fix
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (~#FAF8F1) — correct, not pure white
-      Chrome: Title "marimekko-basic · altair · anyplot.ai" in bold dark text — readable. Y-axis label "Product Mix (%)" in dark text — readable. Tick labels (0, 20, 40, 60, 80, 100) in dark text — readable. Region labels (Asia Pacific $300M, North America $300M, Europe $240M, Latin America $130M) in bold dark text at bottom — readable. Legend "Product Line" with dark text on light background — readable.
-      Data: Electronics (teal-green #009E73 approx, bottom segment), Clothing (burnt orange #D55E00 approx), Food (steel blue #0072B2 approx), Home (pinkish mauve #CC79A7 approx, top segment). White borders between segments. Revenue labels ($100M, $60M, $80M, $60M for Asia Pacific; $120M, $80M, $60M, $40M for North America; $90M, $70M, $50M, $30M for Europe; $40M, $30M, $35M, $25M for Latin America) as white text inside segments.
+      Background: Warm off-white (~#FAF8F1) — correct, not pure white, cream/warm tint visible
+      Chrome: Title "marimekko-basic · altair · anyplot.ai" bold centered dark text — readable. Y-axis label "Product Mix (%)" dark text — readable. Tick labels (0, 20, 40, 60, 80, 100) dark text — readable. Region labels (Asia Pacific $300M, North America $300M, Europe $240M, Latin America $130M) bold dark text at bottom — readable. Legend "Product Line" dark text on light background — readable.
+      Data: Electronics (teal-green #009E73, bottom segment), Clothing (burnt orange #D55E00), Food (steel blue #0072B2), Home (pinkish mauve #CC79A7, top). White borders between segments. White revenue labels inside all segments readable.
       Legibility verdict: PASS — all text readable against light background
 
     Dark render (plot-dark.png):
-      Background: Near-black (~#1A1A17) — correct, not pure black
-      Chrome: Title in light/white text — readable. Y-axis label in light text — readable. Tick labels in light text — readable. Region labels in light bold text — readable. Legend with dark background and light text — readable. No dark-on-dark failures observed.
-      Data: Colors are visually identical to light render — teal-green Electronics, burnt orange Clothing, steel blue Food, pinkish mauve Home. White revenue labels remain readable on colored segments. First series (Electronics) still renders as #009E73 equivalent.
+      Background: Near-black (~#1A1A17) — correct, not pure black, very dark warm tone
+      Chrome: Title in white/light text — readable. Y-axis label in light text — readable. Tick labels in light text — readable. Region labels in light bold text — readable. Legend with dark elevated background and light text — readable. No dark-on-dark failures observed.
+      Data: Colors are visually identical to light render — teal-green Electronics, burnt orange Clothing, steel blue Food, pinkish mauve Home. White revenue labels remain readable on colored segments.
       Legibility verdict: PASS — all text readable against dark background
-
-    NOTE: Critical code-image discrepancy detected. The committed altair.py uses Python Blue palette (#306998, #FFD43B, #4ECDC4, #E76F51) but images show Okabe-Ito colors. Code title is "pyplots.ai" but image shows "anyplot.ai". Code has no revenue label layer but images show $XXM labels. Code saves to plot.png with no theme handling but distinct light/dark renders exist. Images appear generated from a different (better) code version.
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 29
       max: 30
       items:
       - id: VQ-01
@@ -59,51 +54,50 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: 'Title 28px, axis label 20px, tick labels 16px, region labels 18px
-          all explicitly set. Readable in both themes. Minor: revenue labels in narrow
-          Latin America column are small but still legible.'
+        comment: All sizes explicitly set; title 28px, legend 16px correct; configure_axis
+          labelFontSize=16 (should be 18) and titleFontSize=20 (should be 22) slightly
+          below style guide
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements in either render
+        comment: No collisions in either render
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: All rect segments clearly visible with white stroke separation
+        comment: All segments and labels clearly visible
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito palette in rendered images is CVD-safe; white borders improve
-          per-segment differentiation
+        comment: Okabe-Ito CVD-safe; white labels on colored segments provide strong
+          contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Chart fills canvas well; legend is appropriately positioned to the
-          right; region labels and margins are balanced
+        comment: Chart fills canvas well; proportional columns use full width; compact
+          legend
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Y-axis labeled 'Product Mix (%)' with units; title is descriptive
+        comment: Y-axis Product Mix (%) with units; title in required format
       - id: VQ-07
         name: Palette Compliance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: 'Rendered images show Okabe-Ito colors correctly but committed code
-          explicitly sets Python Blue palette (#306998, #FFD43B, #4ECDC4, #E76F51)
-          — forbidden per style guide'
+        passed: true
+        comment: 'Images show correct Okabe-Ito starting with #009E73; backgrounds
+          #FAF8F1 and #1A1A17; chrome flips correctly'
     design_excellence:
-      score: 12
+      score: 11
       max: 20
       items:
       - id: DE-01
@@ -111,25 +105,24 @@ review:
         score: 4
         max: 8
         passed: true
-        comment: Well-configured with clean palette and white segment borders. Reads
-          as polished library configuration rather than publication-ready design.
+        comment: Clean polished output with Okabe-Ito and revenue labels; well-configured
+          library output but not publication-ready
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 3
         max: 6
         passed: true
-        comment: White borders between segments add visual definition. Grid is applied
-          but opacity 0.3 is too high. Background colors are correct. Spines removed.
+        comment: configure_view strokeWidth=0 removes frame; grid absent/subtle; theme-correct
+          backgrounds
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Revenue labels enable immediate value reading. Proportional widths
-          visually communicate market scale. Electronics dominance across all regions
-          is visually apparent.
+        comment: Variable column widths communicate market size hierarchy; revenue
+          labels provide quantification
     spec_compliance:
-      score: 12
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -137,29 +130,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct Marimekko chart with proportional bar widths and stacked
-          proportional heights
+        comment: Correct Marimekko with variable-width proportional bars
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Proportional widths, proportional heights, color-coded legend, value
-          labels in images. However value labels absent from committed code.
+        comment: Proportional widths, proportional heights, color coding, legend,
+          value labels
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X-categories (regions) correctly drive bar widths; Y-axis shows Product
-          Mix %; data mapping correct
+        comment: Regions determine bar widths; products stacked as % within region
       - id: SC-04
         name: Title & Legend
-        score: 1
+        score: 3
         max: 3
-        passed: false
-        comment: Image title shows 'anyplot.ai' correctly. But committed code has
-          'pyplots.ai' — wrong branding. Legend labels match data categories.
+        passed: true
+        comment: Title format correct in images; legend Product Line with correct
+          labels
     data_quality:
       score: 15
       max: 15
@@ -169,24 +160,21 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Shows all Marimekko aspects: 4 regions with varying total sizes,
-          4 products with varying mix proportions across regions. Full variation.'
+        comment: 4x4 matrix, variable widths and heights, full Marimekko feature set
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real-world global market revenue scenario; neutral business context;
-          comprehensible geographic regions
+        comment: Retail revenue by region and product line — canonical neutral scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Revenue values $25M-$120M per segment, $130M-$300M per region — realistic
-          for simplified market analysis
+        comment: $25M-$120M per segment; $130M-$300M per region — realistic
     code_quality:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -194,64 +182,60 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Flat script with no functions or classes
+        comment: 'Linear flow: imports → data → position math → chart → save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic hardcoded data
+        comment: Fully deterministic hard-coded data
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only altair and pandas imported, both used
+        comment: Only altair and pandas, both used
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: 'Code is Pythonic and readable but critically incomplete: missing
-          ANYPLOT_THEME handling, wrong palette, wrong title string'
+        passed: true
+        comment: Clean Pythonic code; position math is appropriate complexity
       - id: CQ-05
         name: Output & API
         score: 0
         max: 1
         passed: false
-        comment: Code saves plot.png / plot.html instead of plot-{THEME}.png / plot-{THEME}.html
-          as required for theme-aware Altair implementations
+        comment: 'CRITICAL: committed code saves plot.png/plot.html with no ANYPLOT_THEME
+          handling — repair fixed images but did not commit fixed code to PR branch'
     library_mastery:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: 'Good use of Altair high-level API: mark_rect with x/x2/y/y2 encodings,
-          proper Q/N type declarations, alt.layer() composition, alt.Scale/alt.Legend
-          customization'
+        comment: x/x2/y/y2 rect encoding is canonical Altair Marimekko approach; layer
+          composition; configure_axis/configure_view idiomatic
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: x2/y2 rect encoding for Marimekko is distinctively Altair; layer
-          composition; interactive tooltip encoding; HTML export with tooltips
+        comment: Altair dual-bound rect encoding x2/y2 is distinctively Altair; multi-field
+          tooltip encoding is library-native
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
-  - layer-composition
   - hover-tooltips
   - html-export
-  - annotations
+  - layer-composition
   patterns:
-  - data-generation
   - groupby-aggregation
   dataprep:
-  - normalization
   - cumulative-sum
-  styling: []
+  styling:
+  - edge-highlighting

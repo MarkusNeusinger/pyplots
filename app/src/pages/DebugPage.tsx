@@ -169,6 +169,8 @@ function pingColor(ms: number): string {
 //     in sessionStorage so it survives reloads of the same tab without
 //     persisting across browser sessions.
 const ADMIN_TOKEN_KEY = 'anyplot.adminToken';
+// One-shot guard for the SPA-routed → CF Access page-gate bootstrap.
+const RELOAD_GUARD_KEY = 'anyplot.debugAuthReloaded';
 const readAdminToken = (): string => {
   try { return sessionStorage.getItem(ADMIN_TOKEN_KEY) ?? ''; } catch { return ''; }
 };
@@ -208,10 +210,11 @@ export function DebugPage() {
     setError(null);
     adminFetch(`${DEBUG_API_URL}/debug/status`, adminToken)
       .then(async r => {
-        // Reaching the .then path means the fetch resolved cleanly — clear
-        // the one-shot reload guard so a future cross-origin redirect can
+        // Reaching here means the fetch promise resolved (the response may
+        // still be 401/403/503 — those are handled below). Clear the one-shot
+        // reload guard so a future cross-origin CF Access redirect can
         // re-trigger the bootstrap.
-        try { sessionStorage.removeItem('anyplot.debugAuthReloaded'); } catch {}
+        try { sessionStorage.removeItem(RELOAD_GUARD_KEY); } catch {}
         // 403 is the Cloudflare Access JWT path's denial: a signed-in Google
         // account that isn't on the admin_allowed_emails allow-list. Surface
         // it on the auth-required screen with the server's message so the
@@ -239,10 +242,13 @@ export function DebugPage() {
         // the second load ALSO fails (e.g. wrong allow-list).
         if (e instanceof TypeError) {
           let alreadyTried = false;
-          try { alreadyTried = !!sessionStorage.getItem('anyplot.debugAuthReloaded'); } catch {}
+          try { alreadyTried = !!sessionStorage.getItem(RELOAD_GUARD_KEY); } catch {}
           if (!alreadyTried) {
-            try { sessionStorage.setItem('anyplot.debugAuthReloaded', '1'); } catch {}
-            window.location.assign(window.location.href);
+            try { sessionStorage.setItem(RELOAD_GUARD_KEY, '1'); } catch {}
+            // replace() not assign() — assign would push the broken pre-auth
+            // /debug onto the back-stack, so the user could navigate back
+            // into the same loop after logging in.
+            window.location.replace(window.location.href);
             return;
           }
         }

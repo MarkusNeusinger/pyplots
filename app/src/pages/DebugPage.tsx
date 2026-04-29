@@ -207,9 +207,17 @@ export function DebugPage() {
     setLoading(true);
     setError(null);
     adminFetch(`${API_URL}/debug/status`, adminToken)
-      .then(r => {
-        if (r.status === 401 || r.status === 503) {
+      .then(async r => {
+        // 403 is the Cloudflare Access JWT path's denial: a signed-in Google
+        // account that isn't on the admin_allowed_emails allow-list. Surface
+        // it on the auth-required screen with the server's message so the
+        // user knows to sign in with a different account or ask for access.
+        if (r.status === 401 || r.status === 403 || r.status === 503) {
           setAuthRequired(true);
+          if (r.status === 403) {
+            const body = await r.json().catch(() => ({}));
+            throw new Error(body?.message || 'this account is not authorized for /debug');
+          }
           throw new Error(r.status === 503 ? 'admin auth not configured on server' : 'admin token required');
         }
         if (!r.ok) throw new Error(`${r.status}`);

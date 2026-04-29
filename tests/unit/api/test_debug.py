@@ -483,3 +483,150 @@ class TestRequireAdminCfAccess:
                 "/debug/status", headers={"Cf-Access-Jwt-Assertion": "garbage", "X-Admin-Token": "supersecret"}
             )
         assert response.status_code == 200
+
+
+class TestJwksHelpers:
+    """Direct tests for the JWKS helpers — `_jwks_client` and `_verify_cf_access_jwt`.
+
+    The integration tests above mock `_verify_cf_access_jwt` wholesale, which
+    is the right shape there but leaves the helpers themselves uncovered. These
+    tests stub `pyjwt` so we can exercise every branch without needing a real
+    Cloudflare Access deployment or RS256 key material.
+    """
+
+    @staticmethod
+    def _reset_jwks_cache():
+        from api.routers.debug import _jwks_client
+
+        _jwks_client.cache_clear()
+
+    def test_jwks_client_returns_none_when_team_domain_unset(self) -> None:
+        """No team domain → no client (token-only mode)."""
+        from api.routers.debug import _jwks_client
+
+        self._reset_jwks_cache()
+        with patch.object(settings, "cf_access_team_domain", None):
+            assert _jwks_client() is None
+
+    def test_jwks_client_constructs_with_team_domain(self) -> None:
+        """Team domain set → returns a PyJWKClient pointed at /cdn-cgi/access/certs."""
+        from api.routers.debug import _jwks_client
+
+        self._reset_jwks_cache()
+        sentinel = MagicMock()
+        with (
+            patch.object(settings, "cf_access_team_domain", "anyplot.cloudflareaccess.com"),
+            patch("api.routers.debug.pyjwt.PyJWKClient", return_value=sentinel) as mock_ctor,
+        ):
+            result = _jwks_client()
+        assert result is sentinel
+        mock_ctor.assert_called_once_with("https://anyplot.cloudflareaccess.com/cdn-cgi/access/certs")
+        self._reset_jwks_cache()
+
+    def test_verify_cf_access_jwt_returns_none_when_unconfigured(self) -> None:
+        """No JWKS client (team domain unset) → None, no exception."""
+        from api.routers.debug import _verify_cf_access_jwt
+
+        self._reset_jwks_cache()
+        with patch.object(settings, "cf_access_team_domain", None):
+            assert _verify_cf_access_jwt("some.jwt.token") is None
+
+    def test_verify_cf_access_jwt_returns_none_when_aud_unset(self) -> None:
+        """Team domain set but AUD unset → None (don't verify against missing aud)."""
+        from api.routers.debug import _verify_cf_access_jwt
+
+        self._reset_jwks_cache()
+        with (
+            patch.object(settings, "cf_access_team_domain", "anyplot.cloudflareaccess.com"),
+            patch.object(settings, "cf_access_aud", None),
+            patch("api.routers.debug.pyjwt.PyJWKClient", return_value=MagicMock()),
+        ):
+            assert _verify_cf_access_jwt("some.jwt.token") is None
+        self._reset_jwks_cache()
+
+    def test_verify_cf_access_jwt_returns_email_on_valid_token(self) -> None:
+        """Valid signature + claims → email from `email` claim."""
+        from api.routers.debug import _verify_cf_access_jwt
+
+        self._reset_jwks_cache()
+        mock_client = MagicMock()
+        mock_client.get_signing_key_from_jwt.return_value = MagicMock(key="fake-key")
+        with (
+            patch.object(settings, "cf_access_team_domain", "anyplot.cloudflareaccess.com"),
+            patch.object(settings, "cf_access_aud", "the-aud-uuid"),
+            patch("api.routers.debug.pyjwt.PyJWKClient", return_value=mock_client),
+            patch("api.routers.debug.pyjwt.decode", return_value={"email": "alice@example.com"}) as mock_decode,
+        ):
+            email = _verify_cf_access_jwt("good.jwt.token")
+        assert email == "alice@example.com"
+        # Confirm we passed the right audience and issuer to pyjwt.decode.
+        kwargs = mock_decode.call_args.kwargs
+        assert kwargs["audience"] == "the-aud-uuid"
+        assert kwargs["issuer"] == "https://anyplot.cloudflareaccess.com"
+        assert kwargs["algorithms"] == ["RS256"]
+        self._reset_jwks_cache()
+
+    def test_verify_cf_access_jwt_returns_none_on_pyjwt_error(self) -> None:
+        """pyjwt raises (bad signature, expired, wrong aud, …) → None."""
+        import jwt as pyjwt
+
+        from api.routers.debug import _verify_cf_access_jwt
+
+        self._reset_jwks_cache()
+        mock_client = MagicMock()
+        mock_client.get_signing_key_from_jwt.side_effect = pyjwt.PyJWTError("bad sig")
+        with (
+            patch.object(settings, "cf_access_team_domain", "anyplot.cloudflareaccess.com"),
+            patch.object(settings, "cf_access_aud", "the-aud-uuid"),
+            patch("api.routers.debug.pyjwt.PyJWKClient", return_value=mock_client),
+        ):
+            assert _verify_cf_access_jwt("bad.jwt.token") is None
+        self._reset_jwks_cache()
+
+    def test_verify_cf_access_jwt_returns_none_on_non_string_email_claim(self) -> None:
+        """Defensive: claims with no email or non-str email → None."""
+        from api.routers.debug import _verify_cf_access_jwt
+
+        self._reset_jwks_cache()
+        mock_client = MagicMock()
+        mock_client.get_signing_key_from_jwt.return_value = MagicMock(key="fake-key")
+        with (
+            patch.object(settings, "cf_access_team_domain", "anyplot.cloudflareaccess.com"),
+            patch.object(settings, "cf_access_aud", "the-aud-uuid"),
+            patch("api.routers.debug.pyjwt.PyJWKClient", return_value=mock_client),
+            patch("api.routers.debug.pyjwt.decode", return_value={"email": None}),
+        ):
+            assert _verify_cf_access_jwt("token") is None
+        self._reset_jwks_cache()
+
+
+class TestAdminAllowedEmailsParsing:
+    """The admin_allowed_emails field accepts both comma-separated strings
+    (operator-friendly for `.env` files) and JSON arrays (pydantic-settings
+    default for list fields)."""
+
+    def test_parses_comma_separated_string(self) -> None:
+        from core.config import Settings
+
+        s = Settings(admin_allowed_emails="a@x.com,b@y.com,  c@z.com  ")
+        assert s.admin_allowed_emails == ["a@x.com", "b@y.com", "c@z.com"]
+
+    def test_parses_json_array(self) -> None:
+        from core.config import Settings
+
+        s = Settings(admin_allowed_emails='["a@x.com","b@y.com"]')
+        assert s.admin_allowed_emails == ["a@x.com", "b@y.com"]
+
+    def test_empty_string_yields_empty_list(self) -> None:
+        from core.config import Settings
+
+        s = Settings(admin_allowed_emails="")
+        assert s.admin_allowed_emails == []
+
+    def test_default_is_empty_list(self) -> None:
+        """Defaulting to an empty list prevents accidental authorization if the
+        operator forgets to configure ADMIN_ALLOWED_EMAILS in production."""
+        from core.config import Settings
+
+        s = Settings()
+        assert s.admin_allowed_emails == []

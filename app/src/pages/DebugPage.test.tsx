@@ -112,6 +112,31 @@ describe('DebugPage', () => {
     });
   });
 
+  it('surfaces the server message on 403 (Cloudflare Access denial)', async () => {
+    // Cloudflare Access path: signed-in Google account not on the
+    // admin_allowed_emails allow-list. Backend returns 403 with the email
+    // in the detail; the page should switch to the auth-required screen and
+    // show that message instead of falling through to "failed to load: 403".
+    sessionStorage.clear();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve({
+          ok: false,
+          status: 403,
+          json: () => Promise.resolve({ status: 403, message: 'User stranger@example.com not authorized', path: '/debug/status' }),
+        }),
+      ),
+    );
+
+    render(<DebugPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/stranger@example\.com not authorized/i)).toBeInTheDocument();
+    });
+    expect(screen.getByPlaceholderText('Admin token (fallback)')).toBeInTheDocument();
+  });
+
   it('submits the token, sends X-Admin-Token, and persists to sessionStorage', async () => {
     sessionStorage.clear();
     let callIndex = 0;

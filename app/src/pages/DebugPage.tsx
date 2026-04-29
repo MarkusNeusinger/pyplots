@@ -160,10 +160,14 @@ function pingColor(ms: number): string {
   return colors.error;
 }
 
-// Admin-token storage. /debug endpoints require X-Admin-Token in prod
-// (require_admin gate, api/routers/debug.py); we keep the token in
-// sessionStorage so it survives reloads of the same tab without persisting
-// across browser sessions.
+// Admin auth for /debug endpoints (require_admin in api/routers/debug.py).
+// Two paths:
+//   - Cloudflare Access cookie set on .anyplot.ai → forwarded as Cf-Access-Jwt-Assertion
+//     to api.anyplot.ai. credentials: 'include' is required for the cookie to
+//     travel cross-origin to the API.
+//   - X-Admin-Token header as a fallback (CI, break-glass, local dev). Stored
+//     in sessionStorage so it survives reloads of the same tab without
+//     persisting across browser sessions.
 const ADMIN_TOKEN_KEY = 'anyplot.adminToken';
 const readAdminToken = (): string => {
   try { return sessionStorage.getItem(ADMIN_TOKEN_KEY) ?? ''; } catch { return ''; }
@@ -176,7 +180,10 @@ const clearAdminToken = (): void => {
 };
 
 const adminFetch = (url: string, token: string): Promise<Response> =>
-  fetch(url, token ? { headers: { 'X-Admin-Token': token } } : undefined);
+  fetch(url, {
+    credentials: 'include',
+    headers: token ? { 'X-Admin-Token': token } : undefined,
+  });
 
 export function DebugPage() {
   const [data, setData] = useState<DebugStatus | null>(null);
@@ -200,9 +207,17 @@ export function DebugPage() {
     setLoading(true);
     setError(null);
     adminFetch(`${API_URL}/debug/status`, adminToken)
-      .then(r => {
-        if (r.status === 401 || r.status === 503) {
+      .then(async r => {
+        // 403 is the Cloudflare Access JWT path's denial: a signed-in Google
+        // account that isn't on the admin_allowed_emails allow-list. Surface
+        // it on the auth-required screen with the server's message so the
+        // user knows to sign in with a different account or ask for access.
+        if (r.status === 401 || r.status === 403 || r.status === 503) {
           setAuthRequired(true);
+          if (r.status === 403) {
+            const body = await r.json().catch(() => ({}));
+            throw new Error(body?.message || 'this account is not authorized for /debug');
+          }
           throw new Error(r.status === 503 ? 'admin auth not configured on server' : 'admin token required');
         }
         if (!r.ok) throw new Error(`${r.status}`);
@@ -301,14 +316,14 @@ export function DebugPage() {
       <Box sx={{ py: 4, maxWidth: 420, mx: 'auto' }}>
         <SectionHeader prompt="❯" title={<em>debug · admin auth</em>} />
         <Typography sx={{ fontFamily: typography.fontFamily, fontSize: fontSize.xs, color: semanticColors.mutedText, mb: 2 }}>
-          {error || 'admin token required'}
+          {error || 'sign in via your browser session, or paste an admin token as a fallback.'}
         </Typography>
         <Box component="form" onSubmit={handleTokenSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
           <Box
             component="input"
             type="password"
             autoFocus
-            placeholder="X-Admin-Token"
+            placeholder="Admin token (fallback)"
             value={tokenInput}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTokenInput(e.target.value)}
             sx={nativeControlSx}

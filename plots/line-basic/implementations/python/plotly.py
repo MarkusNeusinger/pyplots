@@ -1,7 +1,7 @@
 """ anyplot.ai
 line-basic: Basic Line Plot
 Library: plotly 6.7.0 | Python 3.14.4
-Quality: 82/100 | Updated: 2026-04-29
+Quality: 79/100 | Updated: 2026-04-29
 """
 
 import numpy as np

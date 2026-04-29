@@ -447,10 +447,7 @@ class TestRequireAdminCfAccess:
             patch("api.routers.debug._verify_cf_access_jwt", return_value=self._ALLOWED),
             patch("api.routers.debug.SpecRepository", return_value=mock_repo),
         ):
-            response = auth_client.get(
-                "/debug/status",
-                headers={"Cf-Access-Jwt-Assertion": "any.jwt.here"},
-            )
+            response = auth_client.get("/debug/status", headers={"Cf-Access-Jwt-Assertion": "any.jwt.here"})
         assert response.status_code == 200
 
     def test_status_403_when_jwt_email_not_allowed(self, auth_client) -> None:
@@ -460,10 +457,7 @@ class TestRequireAdminCfAccess:
             patch.object(settings, "admin_allowed_emails", [self._ALLOWED]),
             patch("api.routers.debug._verify_cf_access_jwt", return_value=self._DENIED),
         ):
-            response = auth_client.get(
-                "/debug/status",
-                headers={"Cf-Access-Jwt-Assertion": "any.jwt.here"},
-            )
+            response = auth_client.get("/debug/status", headers={"Cf-Access-Jwt-Assertion": "any.jwt.here"})
         assert response.status_code == 403
         assert self._DENIED in response.json()["message"]
 
@@ -473,10 +467,7 @@ class TestRequireAdminCfAccess:
             patch.object(settings, "admin_token", None),
             patch("api.routers.debug._verify_cf_access_jwt", return_value=None),
         ):
-            response = auth_client.get(
-                "/debug/status",
-                headers={"Cf-Access-Jwt-Assertion": "garbage"},
-            )
+            response = auth_client.get("/debug/status", headers={"Cf-Access-Jwt-Assertion": "garbage"})
         assert response.status_code == 503
 
     def test_status_200_when_jwt_invalid_but_token_correct(self, auth_client) -> None:
@@ -489,10 +480,6 @@ class TestRequireAdminCfAccess:
             patch("api.routers.debug.SpecRepository", return_value=mock_repo),
         ):
             response = auth_client.get(
-                "/debug/status",
-                headers={
-                    "Cf-Access-Jwt-Assertion": "garbage",
-                    "X-Admin-Token": "supersecret",
-                },
+                "/debug/status", headers={"Cf-Access-Jwt-Assertion": "garbage", "X-Admin-Token": "supersecret"}
             )
         assert response.status_code == 200

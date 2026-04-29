@@ -83,10 +83,7 @@ def require_admin(
         if email and email in settings.admin_allowed_emails:
             return
         if email:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"User {email} not authorized",
-            )
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"User {email} not authorized")
         # Invalid JWT (signature/aud/iss/expiry) — fall through to token path so
         # a misconfigured edge never strands the operator without break-glass access.
 

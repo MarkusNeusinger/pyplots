@@ -2,7 +2,7 @@ library: bokeh
 language: python
 specification_id: pyramid-basic
 created: '2025-12-23T18:31:32Z'
-updated: '2026-04-29T20:32:42Z'
+updated: '2026-04-29T20:43:30Z'
 generated_by: claude-sonnet
 workflow_run: 25116077840
 issue: 1000
@@ -12,52 +12,39 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/pyramid-b
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/pyramid-basic/python/bokeh/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/pyramid-basic/python/bokeh/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/pyramid-basic/python/bokeh/plot-dark.html
-quality_score: 87
+quality_score: 90
 review:
   strengths:
-  - 'Perfect spec compliance: correct pyramid shape with opposing hbar charts, symmetric
-    axis (Range1d -100 to 100), center Span line, absolute-value CustomJSTickFormatter
-    on x-axis'
-  - 'Correct Okabe-Ito palette: Male = #009E73 (position 1), Female = #D55E00 (position
-    2), identical across both renders'
-  - 'Fully theme-adaptive chrome: backgrounds, text, grid, legend all flip correctly
-    between #FAF8F1 and #1A1A17'
-  - All font sizes explicitly set above minimums (title 32pt, labels 24pt, ticks 18pt,
-    legend 18pt)
-  - 'Excellent Bokeh idioms: ColumnDataSource per series, separate HoverTool per renderer
-    with computed ''@value'' field, CustomJSTickFormatter for absolute tick display,
-    Span for center line'
-  - Realistic, neutral demographic data with plausible population distribution (peak
-    30-39, female longevity advantage in 80+)
-  - Both HTML and PNG outputs saved correctly per bokeh requirements
+  - 'Perfect spec compliance: all required features implemented correctly (center
+    line, symmetric axis, absolute-value formatter, per-series hover)'
+  - Full Okabe-Ito compliance with brand green as first series (#009E73) and correct
+    position 2 (#D55E00) for female
+  - Complete theme adaptation in both renders — no dark-on-dark or chrome failures
+    detected
+  - 'Idiomatic Bokeh usage: CustomJSTickFormatter for JS-side tick manipulation is
+    a genuinely distinctive feature'
+  - Clean deterministic code structure with proper KISS pattern
   weaknesses:
-  - Full box outline retained (p.outline_line_color = INK_SOFT creates a visible border
-    on all 4 sides); removing it (p.outline_line_alpha = 0) with only axis lines would
-    look more refined
-  - Grid lines use dashes ([6,4]) against the style guide recommendation for solid
-    lines; also at 10% opacity vs recommended 15-25%
-  - Both xgrid and ygrid are active; for a horizontal bar chart, xgrid (vertical value
-    lines) is the primary grid — ygrid (horizontal row separators) adds clutter
-  - 'No visual hierarchy or data storytelling: the peak age cohorts (30-39) and the
-    female longevity advantage (80+ gap) could be visually emphasized through opacity
-    contrast, value annotations, or focal coloring'
-  - Legend is a small box in the bottom-right corner; increasing legend glyph size
-    (legend.glyph_width, legend.glyph_height) would improve readability at full resolution
+  - Both x and y grids active; y-axis-only grid would be cleaner for a horizontal
+    bar chart
+  - No visual storytelling emphasis — no color contrast variation or annotation to
+    highlight the peak age group (30-39)
+  - Legend in bottom_right is somewhat isolated from the top-of-pyramid bars
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white, consistent with #FAF8F1 — correct theme surface, not pure white.
-      Chrome: Title "pyramid-basic · bokeh · anyplot.ai" in dark ink at top-left, clearly readable. Y-axis label "Age Group" (rotated) and x-axis label "Population (thousands)" both dark, appropriately sized. Tick labels (age groups: 0-9 through 80+, and population values: 100, 50, 0, 50, 100) readable in INK_SOFT. Small legend box in bottom-right corner with "Male" and "Female" labels — readable but quite small relative to canvas.
-      Data: Male bars (left side) in #009E73 (Okabe-Ito position 1, green). Female bars (right side) in #D55E00 (Okabe-Ito position 2, orange). Alpha 0.85. Center vertical line (Span) visible as a thin vertical rule at x=0. Pyramid shape clearly formed — widest at 30-39, narrowing toward 80+. Subtle dashed grid lines visible at low opacity.
-      Legibility verdict: PASS — all text is readable against the warm off-white background; no light-on-light issues.
+      Background: Warm off-white #FAF8F1 — correct surface, clearly not pure white
+      Chrome: Title "pyramid-basic · bokeh · anyplot.ai" in dark INK at top-left — readable. X-axis label "Population (thousands)" and Y-axis label "Age Group" in dark INK — readable. Tick labels (age groups and population values) in INK_SOFT #4A4A44 — readable. Dashed grid lines at 10% alpha — subtle. Center line (Span at x=0) in INK_SOFT — visible. Legend in bottom-right with elevated background #FFFDF6 — readable.
+      Data: Male bars in #009E73 (teal-green, Okabe-Ito position 1) extending left; Female bars in #D55E00 (orange-vermillion, Okabe-Ito position 2) extending right. 9 age groups shown (0-9 through 80+). Peak at 30-39 age group. Alpha=0.85 on all bars.
+      Legibility verdict: PASS — all text clearly readable against warm off-white background
 
     Dark render (plot-dark.png):
-      Background: Warm near-black, consistent with #1A1A17 — correct dark surface, not pure black.
-      Chrome: Title, axis labels, and tick labels all rendered in light-colored text (INK = #F0EFE8, INK_SOFT = #B8B7B0), clearly readable against the dark background. Legend in bottom-right with light labels. No dark-on-dark failure detected.
-      Data: Male bars remain #009E73, Female bars remain #D55E00 — identical to light render as required. Pyramid shape and proportions unchanged. Grid lines use INK at 10% alpha, appearing as faint light-colored lines on dark background — barely visible but present.
-      Legibility verdict: PASS — all text is readable; no black-on-black or dark-on-dark failure. Both themes render correctly.
+      Background: Warm near-black #1A1A17 — correct surface, clearly not pure black
+      Chrome: Title, axis labels, tick labels all rendered in light INK/INK_SOFT (#F0EFE8 / #B8B7B0) — all clearly readable against dark background. No dark-on-dark failures detected. Legend frame uses elevated-dark background #242420. Center line in INK_SOFT at 50% alpha — visible.
+      Data: Male bars remain #009E73 (identical to light render) and Female bars remain #D55E00 (identical to light render). Data colors are unchanged — only chrome has flipped.
+      Legibility verdict: PASS — all text clearly readable against near-black background; no dark-on-dark issues
   criteria_checklist:
     visual_quality:
-      score: 30
+      score: 29
       max: 30
       items:
       - id: VQ-01
@@ -65,76 +52,71 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 32pt, axis labels 24pt, tick
-          labels 18pt, legend 18pt — all above minimums, readable in both themes'
+        comment: Title 32pt, axis labels 24pt, tick labels 18pt, legend 18pt — all
+          explicitly set and readable in both themes
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No text overlap; age group labels well-spaced, x-axis ticks clear
+        comment: No overlapping text or bars; bar height=0.7 gives good spacing
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Bars clearly visible at alpha=0.85 with good color contrast against
-          both backgrounds
+        comment: Bars clearly visible with alpha=0.85
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito positions 1 and 2 — CVD-safe, high luminance contrast between
-          green and orange
+        comment: 'Okabe-Ito #009E73 and #D55E00 are CVD-safe with sufficient contrast'
       - id: VQ-05
         name: Layout & Canvas
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: Pyramid fills canvas well (~65%), balanced margins, legend positioned
-          in corner without obstructing data
+        comment: Chart fills canvas well; minor deduction for legend isolation in
+          bottom-right corner
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: '''Population (thousands)'' with units, ''Age Group'' descriptive
-          — both present and correct'
+        comment: Population (thousands) and Age Group are descriptive with units
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series #009E73, second #D55E00 — correct Okabe-Ito order.
-          Background #FAF8F1 light / #1A1A17 dark. All chrome theme-adaptive'
+        comment: 'First series #009E73 ✓; second #D55E00 ✓; backgrounds #FAF8F1/#1A1A17
+          ✓; all chrome adaptive'
     design_excellence:
-      score: 9
+      score: 12
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
-        passed: false
-        comment: 'Well-configured default: correct colors, explicit sizing, alpha
-          blending, center line — but no exceptional polish (full box outline, no
-          typography hierarchy variation)'
+        passed: true
+        comment: 'Above defaults: correct palette, alpha blending, styled legend with
+          elevated background, themed borders. Professional but not publication-grade.'
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: 'Some refinement (10% alpha grid, theme-adaptive chrome) but: dashed
-          grid against style guide solid recommendation, both x/y grids active, full
-          box outline retained'
+        passed: true
+        comment: Dashed grid at 10% alpha is subtle; themed outline and legend frame
+          add polish. Both x/y grids active and full border retained.
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 3
         max: 6
-        passed: false
-        comment: Data displayed without visual hierarchy — no emphasis on peak cohorts
-          (30-39) or female longevity advantage (80+), no focal points
+        passed: true
+        comment: Pyramid shape communicates age distribution naturally but no explicit
+          emphasis on peak age group (30-39)
     spec_compliance:
       score: 15
       max: 15
@@ -144,29 +126,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct pyramid chart — opposing hbar charts sharing central axis
-          with butterfly/diamond shape
+        comment: Correct butterfly/pyramid chart with horizontal bars
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Left bars extend left, right bars extend right, symmetric axis (±100),
-          distinct colors, central category labels, legend, center line
+        comment: Left bars (negated values), right bars, symmetric axis ±100, center
+          Span, absolute value formatter, distinct colors, legend
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Categories on y-axis, population on x-axis, male negative / female
-          positive correctly mapped
+        comment: Age groups on Y-axis, population (thousands) on X-axis, all 9 age
+          groups shown
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title 'pyramid-basic · bokeh · anyplot.ai' exactly correct; legend
-          labels 'Male' and 'Female' match data
+        comment: Title matches required format exactly; legend labels Male and Female
+          match data
     data_quality:
       score: 15
       max: 15
@@ -176,22 +157,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Shows all pyramid features: bidirectional bars, shared axis, varying
-          bar lengths showing distribution pattern'
+        comment: Full age distribution with variation; asymmetry between sexes demonstrates
+          comparative purpose
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Population demographics by age group — standard scientific/demographic
-          scenario, explicitly referenced in spec, neutral
+        comment: Population pyramid is canonical use case; factual neutral demographic
+          data explicitly suggested in spec
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values 15–85 thousand plausible; realistic demographic pattern (working-age
-          bulge, female longevity in 80+)
+        comment: Values 15K-85K in thousands are realistic; female survival advantage
+          in older cohorts is factually accurate
     code_quality:
       score: 10
       max: 10
@@ -201,60 +182,61 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean Imports → Data → Plot → Save structure, no functions or classes
+        comment: 'Linear: Imports → Tokens → Data → Plot → Style → Save; no functions
+          or classes'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic hardcoded data, no random values
+        comment: Fully deterministic hardcoded data
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: os, export_png, output_file, save, ColumnDataSource,
-          CustomJSTickFormatter, HoverTool, Range1d, Span, figure'
+        comment: All six bokeh imports used; os used for ANYPLOT_THEME
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean Pythonic code, appropriate complexity, HoverTool is legitimate
-          for Bokeh (interactive library)
+        comment: Clean Pythonic code; HoverTool is legitimate for Bokeh
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot-{THEME}.png and plot-{THEME}.html correctly
+        comment: export_png for PNG, output_file+save for HTML; both THEME variants
+          handled
     library_mastery:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: 'Good idiomatic patterns: ColumnDataSource with computed fields,
-          categorical y_range, separate HoverTool per renderer, Span layout annotation'
+        comment: ColumnDataSource, p.hbar with source references, Span model, Range1d,
+          output_file+save — all idiomatic Bokeh
       - id: LM-02
         name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: CustomJSTickFormatter for absolute value display (Bokeh-specific
-          JS), Span for center line (Bokeh layout element), separate HoverTool renderers
-          with @value field — distinctly Bokeh
-  verdict: REJECTED
+        comment: CustomJSTickFormatter (JS interop), Span model, HoverTool with per-renderer
+          targets — genuinely Bokeh-distinctive features
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - hover-tooltips
   - html-export
+  - manual-ticks
   patterns:
   - columndatasource
   dataprep: []
   styling:
   - alpha-blending
+  - grid-styling

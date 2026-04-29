@@ -20,7 +20,7 @@ on:
         required: true
         type: string
       attempt:
-        description: "Current attempt number (1, 2, or 3)"
+        description: "Current attempt number (1, 2, 3, or 4)"
         required: true
         type: string
 
@@ -59,10 +59,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6
         with:
-          python-version: '3.14'
+          python-version: '3.13'
 
       - name: Install uv
-        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78  # v7
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b  # v8.1.0
 
       - name: Install dependencies
         env:
@@ -104,7 +104,7 @@ jobs:
         id: claude
         continue-on-error: true
         timeout-minutes: 45
-        uses: anthropics/claude-code-action@567fe954a4527e81f132d87d1bdbcc94f7737434  # v1
+        uses: anthropics/claude-code-action@ef50f123a3a9be95b60040d042717517407c7256  # v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           claude_args: "--model sonnet"
@@ -123,7 +123,7 @@ jobs:
         if: steps.claude.outcome == 'failure'
         id: claude_retry
         timeout-minutes: 45
-        uses: anthropics/claude-code-action@567fe954a4527e81f132d87d1bdbcc94f7737434  # v1
+        uses: anthropics/claude-code-action@ef50f123a3a9be95b60040d042717517407c7256  # v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           claude_args: "--model sonnet"
@@ -212,7 +212,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr comment ${{ inputs.pr_number }} --body "## :wrench: Repair Attempt ${{ inputs.attempt }}/3
+          gh pr comment ${{ inputs.pr_number }} --body "## :wrench: Repair Attempt ${{ inputs.attempt }}/4
 
           Applied fixes based on AI review feedback.
 
@@ -258,7 +258,7 @@ jobs:
           if [ "$RETRY_COUNT" -ge 1 ]; then
             echo "::error::Repair attempt ${ATTEMPT} crashed twice — giving up"
             gh pr comment "$PR_NUM" --body "${MARKER}
-          ## :x: Repair Workflow Crashed (Attempt ${ATTEMPT}/3, retry exhausted)
+          ## :x: Repair Workflow Crashed (Attempt ${ATTEMPT}/4, retry exhausted)
 
           The repair workflow itself failed twice for this attempt — likely a persistent Claude Code Action issue.
 
@@ -272,7 +272,7 @@ jobs:
           else
             echo "::warning::Repair attempt ${ATTEMPT} crashed — auto-retrying once"
             gh pr comment "$PR_NUM" --body "${MARKER}
-          ## :wrench: Repair Workflow Crashed (Attempt ${ATTEMPT}/3) — Auto-Retrying
+          ## :wrench: Repair Workflow Crashed (Attempt ${ATTEMPT}/4) — Auto-Retrying
 
           The repair workflow failed (probably a transient Claude Code Action issue). Automatically re-triggering this attempt...
 

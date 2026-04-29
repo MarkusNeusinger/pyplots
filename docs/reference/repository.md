@@ -482,7 +482,7 @@ plt.savefig('plot.png', dpi=300)
 **Implementation Workflows**:
 - `impl-generate.yml` - Generates single library (`generate:{lib}` label OR dispatch)
 - `impl-review.yml` - AI quality evaluation
-- `impl-repair.yml` - Repairs rejected implementation (max 3 attempts)
+- `impl-repair.yml` - Repairs rejected implementation (max 4 attempts)
 - `impl-merge.yml` - Merges approved PR, creates per-library metadata
 - `bulk-generate.yml` - Batch operations (max 3 parallel)
 

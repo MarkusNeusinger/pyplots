@@ -2,7 +2,7 @@ library: plotnine
 language: python
 specification_id: pyramid-basic
 created: '2025-12-23T18:11:48Z'
-updated: '2026-04-29T15:09:18Z'
+updated: '2026-04-29T15:23:31Z'
 generated_by: claude-sonnet
 workflow_run: 25116299293
 issue: 1000
@@ -12,115 +12,121 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/pyramid-b
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/pyramid-basic/python/plotnine/plot-dark.png
 preview_html_light: null
 preview_html_dark: null
-quality_score: 83
+quality_score: 91
 review:
   strengths:
-  - 'Perfect spec compliance: correct chart type, all required features, proper title
-    format, correct legend'
-  - 'Both renders fully theme-adaptive with proper Okabe-Ito colors — first series
-    is #009E73, second #D55E00'
-  - Clean, idiomatic plotnine code using canonical negative-values pyramid technique
-  - All font sizes explicitly set; both renders are legible
-  - Deterministic, realistic demographic data directly from the spec canonical example
-    use case
+  - 'Perfect spec compliance: correct pyramid chart with opposing horizontal bars,
+    symmetric axes, distinct Okabe-Ito colors, and full legend'
+  - All font sizes explicitly set (title=24, axis_title=20, tick=16, legend=16) —
+    fully readable in both light and dark themes
+  - Peak 40-49 annotations (6,200 / 6,000) add intentional storytelling emphasis on
+    the working-age bulge
+  - 'Theme-adaptive chrome is correct in both renders: warm #FAF8F1 / near-black #1A1A17
+    backgrounds with appropriate text colors'
+  - 'Idiomatic plotnine usage: negative-value + coord_flip pyramid pattern, lambda
+    label formatter, ordered pd.Categorical, inherit_aes=False'
   weaknesses:
-  - 'plot_title font size is 22pt, below the >=24pt minimum guideline — fix: change
-    to size=24'
-  - panel_border keeps all four spines as a full box frame; should use L-shaped or
-    no-spine layout per style guide
-  - No visual emphasis on the key insight (the working-age 40-49 bulge) — DE-03 remains
-    at default level
-  - X-axis tick labels show negative values on the Male side (-6000, -3000) rather
-    than absolute values; add scale_x_continuous with abs-value label formatter
-  - Legend placement to the far right creates wasted whitespace — move inside or to
-    bottom
+  - 'DE-01 (5/8): Design is above defaults but not yet polished — no spine removal
+    (top/right), legend frame visible but somewhat plain'
+  - 'DE-02 (4/6): Panel border removed and grid subtle, but top/right axis lines still
+    present; further typography refinement possible'
+  - 'DE-03 (4/6): Peak bar labels create a focal point but visual hierarchy relies
+    only on annotation text — bar color differentiation could be stronger with more
+    contrast between working-age and elderly groups'
+  - 'LM-02 (3/5): Negative-value pyramid is a good ggplot2 idiom but more distinctive
+    plotnine features (e.g., facet_wrap, stat layers, position_dodge2) could be leveraged'
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white #FAF8F1 — correct, matches style guide
-      Chrome: Title "Population by Age & Gender · pyramid-basic · plotnine · anyplot.ai" in dark ink, clearly readable. Axis label "Age Group" (y) and "Population (thousands)" (x) in dark ink, readable. Tick labels for age groups (0-9 to 80+) and x-axis values (-6000 to 6000) in INK_SOFT, readable.
-      Data: Horizontal butterfly bars — Male in Okabe-Ito #009E73 (teal-green) extending left, Female in Okabe-Ito #D55E00 (orange) extending right. Classic pyramid shape, widest at 40-49.
-      Legend: "Gender" box with warm elevated background (#FFFDF6), dark text, on right side of plot.
-      Legibility verdict: PASS
+      Background: Warm off-white #FAF8F1 — correct, not pure white
+      Chrome: Title "Population by Age & Gender · pyramid-basic · plotnine · anyplot.ai" in dark INK (#1A1A17), clearly readable. Y-axis label "Age Group" and X-axis "Population (thousands)" in dark ink. Tick labels in INK_SOFT (#4A4A44), all readable. Grid lines very subtle (alpha=0.10).
+      Data: Male bars in #009E73 (Okabe-Ito 1, brand green) extending left; Female bars in #D55E00 (Okabe-Ito 2, vermillion) extending right. Peak 40-49 row annotated with "6,200" (left) and "6,000" (right). Classic pyramid shape with working-age bulge visible.
+      Legend: "Gender" at bottom with Male (green) and Female (orange) color swatches, readable.
+      Legibility verdict: PASS — all text clearly readable against warm off-white background
 
     Dark render (plot-dark.png):
-      Background: Near-black #1A1A17 — correct, matches style guide
-      Chrome: Title and all axis labels rendered in light text (#F0EFE8 / #B8B7B0), fully readable against dark surface. No dark-on-dark issues detected. Legend box uses elevated dark background (#242420).
-      Data: Colors are identical to light render — Male is same #009E73 teal-green, Female is same #D55E00 orange. Pyramid shape unchanged.
-      Legibility verdict: PASS
+      Background: Near-black #1A1A17 — correct, not pure black
+      Chrome: Title and axis labels in light #F0EFE8, clearly readable against dark background. Tick labels in #B8B7B0, visible. No dark-on-dark failures observed. Grid lines subtle.
+      Data: Male bars still #009E73 (identical to light render), Female bars still #D55E00 (identical to light render). Peak annotations "6,200" / "6,000" visible. Data colors are identical between light and dark — only chrome flipped.
+      Legend: Dark legend box (#242420) with light-colored "Gender", "Male", "Female" text — readable.
+      Legibility verdict: PASS — all text clearly readable against near-black background; no dark-on-dark issues
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 30
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 6
+        score: 8
         max: 8
         passed: true
-        comment: All font sizes explicitly set and readable; plot_title=22pt falls
-          below >=24pt minimum
+        comment: 'All font sizes explicitly set: title=24, axis_title=20, tick=16,
+          legend=16; readable in both themes'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements in either render
+        comment: No overlapping elements; peak labels at label_y=population*1.08 clear
+          of adjacent bars
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Bars well-sized and clearly visible in both themes
+        comment: Bars clearly visible at width=0.85 in both themes; good bar-to-gap
+          ratio
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: 'Okabe-Ito #009E73 and #D55E00 are CVD-safe with good contrast'
+        comment: Okabe-Ito green/vermillion, CVD-safe, adequate luminance contrast
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Good canvas use; legend to the far right creates slight imbalance
+        comment: Pyramid fills 65-75% of canvas, balanced margins, legend at bottom
+          does not crowd plot
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Age Group and Population (thousands) — descriptive with units
+        comment: Y=Age Group (categorical, no units needed), X=Population (thousands);
+          both descriptive
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series #009E73, second #D55E00, backgrounds #FAF8F1/#1A1A17
-          correct, all chrome tokens theme-adaptive'
+        comment: Male=#009E73 (Okabe-Ito 1), Female=#D55E00 (Okabe-Ito 2); light bg=#FAF8F1,
+          dark bg=#1A1A17; data colors identical across themes
     design_excellence:
-      score: 10
+      score: 13
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
         passed: true
-        comment: Well-configured defaults with correct colors and theme-adaptive chrome;
-          professional but not exceptional
+        comment: 'Above well-configured default: warm theme backgrounds, Okabe-Ito
+          palette, peak annotations for emphasis. Not yet FiveThirtyEight-level polish.'
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Minor grid removed, subtle major grid; but panel_border keeps all
-          four spines instead of L-shaped layout
+        comment: Panel border removed, minor grid removed, major grid subtle (alpha=0.10),
+          L-shaped axis lines. Good but top/right axis lines still slightly visible.
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Pyramid shape guides eye to 40-49 bulge but no explicit emphasis
-          technique highlights the insight
+        comment: Peak 40-49 labels create intentional focal point on working-age bulge.
+          Guides viewer to demographic insight.
     spec_compliance:
       score: 15
       max: 15
@@ -130,52 +136,54 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct butterfly/pyramid with opposing horizontal bars sharing a
-          central axis
+        comment: 'Correct pyramid chart: opposing horizontal bars sharing central
+          0-axis, classic butterfly/pyramid shape'
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Both sides present, symmetric axis, distinct colors, legend present
+        comment: Left bars extend left, right bars extend right, symmetric axes, distinct
+          colors per side, category labels on central axis, legend
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Age categories on central axis, values extend correctly in both directions
+        comment: Age groups on Y (via coord_flip), population on X with negative for
+          male/positive for female; all 9 age groups visible
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title contains spec-id · library · anyplot.ai; legend labels Male/Female
-          match data
+        comment: 'Title: ''Population by Age & Gender · pyramid-basic · plotnine ·
+          anyplot.ai'' ✓; Legend: Gender with Male/Female ✓'
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: 9 age groups spanning full life range with working-age bulge; could
-          show more demographic asymmetry
+        comment: 9 age groups (0-9 to 80+), clear asymmetry between genders in older
+          cohorts, working-age peak visible
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Standard population pyramid scenario, directly matches spec canonical
-          example; neutral scientific data
+        comment: Standard demographic population pyramid; neutral and scientifically
+          appropriate use case explicitly listed in spec
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values 1200-6200 thousands plausible for mid-size country or large
-          city
+        comment: Values 1,200-6,200 (thousands) realistic for a city or region; higher
+          female population in older groups matches real demographics
     code_quality:
       score: 10
       max: 10
@@ -185,56 +193,60 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports -> data -> theme -> plot -> save; no
-          functions or classes'
+        comment: 'Clean linear flow: imports → constants → data → peak subset → plot
+          layers → save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: All data hardcoded (deterministic); no random elements
+        comment: Fully deterministic hardcoded data; no random generation
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imported symbols are used
+        comment: All imports used; sys.path workaround is idiomatic for plotnine package
+          shadowing
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean and Pythonic; negative-values trick is canonical ggplot2/plotnine
-          approach
+        comment: Clean, Pythonic; peak label derivation is concise; no over-engineering
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot-{THEME}.png using current API
+        comment: Saves as plot-{THEME}.png using current plotnine .save() API
     library_mastery:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Correct ggplot grammar with geom_col + coord_flip, pd.Categorical
-          for ordered axis, scale_fill_manual with dict
+        comment: 'Excellent plotnine grammar: geom_col + geom_text layers, scale_fill_manual,
+          scale_y_continuous with lambda formatter, coord_flip, theme() element functions,
+          inherit_aes=False'
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses coord_flip and categorical ordering which are ggplot2-distinctive;
-          negative-values technique is canonical in this library family
-  verdict: REJECTED
+        comment: Negative-value + coord_flip pyramid is the canonical ggplot2/plotnine
+          idiom; lambda label formatter in scale_y_continuous; pd.Categorical ordering
+          for ggplot2 factor levels
+  verdict: APPROVED
 impl_tags:
   dependencies: []
-  techniques: []
-  patterns: []
+  techniques:
+  - annotations
+  patterns:
+  - data-generation
   dataprep: []
   styling:
   - grid-styling

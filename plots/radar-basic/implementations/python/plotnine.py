@@ -1,7 +1,7 @@
 """ anyplot.ai
 radar-basic: Basic Radar Chart
 Library: plotnine 0.15.3 | Python 3.13.13
-Quality: 83/100 | Updated: 2026-04-29
+Quality: 86/100 | Updated: 2026-04-29
 """
 
 import math

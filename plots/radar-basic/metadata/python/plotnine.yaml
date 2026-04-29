@@ -2,7 +2,7 @@ library: plotnine
 language: python
 specification_id: radar-basic
 created: '2025-12-23T18:12:48Z'
-updated: '2026-04-29T16:52:13Z'
+updated: '2026-04-29T17:04:42Z'
 generated_by: claude-sonnet
 workflow_run: 25121679886
 issue: 744
@@ -12,37 +12,43 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/radar-bas
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/radar-basic/python/plotnine/plot-dark.png
 preview_html_light: null
 preview_html_dark: null
-quality_score: 83
+quality_score: 86
 review:
   strengths:
-  - 'Perfect spec compliance: all radar features present (filled polygons with alpha,
-    concentric gridlines, closed polygon, spokes, outer labels, legend)'
-  - Correct Okabe-Ito palette with fully theme-adaptive chrome in both renders
-  - Clean KISS code with deterministic data and proper sys.path guard
-  - Realistic, neutral employee performance context with meaningfully differentiated
-    series
+  - 'Full spec compliance: all required radar features implemented (filled polygons
+    with transparency, gridlines at 20/40/60/80/100, axis labels at outer edge, legend,
+    closed polygons)'
+  - 'Perfect data and code quality: realistic employee performance review scenario
+    across 6 competencies, clean deterministic code with no functions/classes'
+  - 'Correct theme-adaptive chrome in both renders: backgrounds (#FAF8F1/#1A1A17),
+    ink colors, legend styling all flip correctly between light and dark'
+  - 'Correct Okabe-Ito palette: #009E73 first series (Alice), #D55E00 second series
+    (Bob), identical data colors across both themes'
+  - 'Subtitle adds immediate data storytelling: ''Alice leads in Technical & Creativity;
+    Bob excels in Communication & Teamwork'' tells the viewer the conclusion'
   weaknesses:
-  - Dashed linetype on circular geom_line creates optical stripe/hatch artifact at
-    render resolution; replace with solid lines at low opacity
-  - 'No visual storytelling: complementary skill profiles not highlighted — consider
-    subtitle or fill emphasis to create a focal point'
-  - Category label size at 16pt (geom_text) is below the >=20pt axis-label guideline
-    — increase to 18-20
+  - 'Dark-mode circular gridlines (#3A3A35 on #1A1A17) are barely visible — contrast
+    is too low; use rgba(240,239,232,0.12) equivalent or a lighter hex (e.g., #555550)
+    for dark GRID_COLOR'
+  - 'DE-01 could reach 6+ with typography improvements: explicit bold title weight
+    via element_text(weight=''bold'') and font family differentiation'
+  - LM-02 could score higher with a more distinctively plotnine-specific technique
+    (e.g., stat functions, explicit theme class reuse, or facet-based comparison pattern)
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white #FAF8F1 — correct theme surface
-      Chrome: Title "radar-basic · plotnine · anyplot.ai" at 24pt dark ink, clearly readable; category labels (Technical, Communication, Leadership, Creativity, Teamwork, Problem Solving) at 16pt in dark ink at outer edge; legend "Employee" with Alice/Bob entries in dark/soft ink
-      Data: Alice polygon in #009E73 (bluish green), Bob polygon in #D55E00 (orange), both with alpha=0.25 fill and 1.5-width borders; vertex points size=5; dashed circular gridlines at radii 20/40/60/80/100 in light gray; spokes from center
-      Legibility verdict: PASS — all text clearly readable against warm off-white background
+      Background: Warm off-white #FAF8F1 — correct, not pure white.
+      Chrome: Title "radar-basic · plotnine · anyplot.ai" in dark ink (#1A1A17) at 24pt, clearly visible. Subtitle in slightly smaller dark text, readable. Category labels (Creativity, Leadership, Communication, Technical, Problem Solving, Teamwork) positioned radially at outer edge in dark ink — all readable. Legend "Employee" title and Alice/Bob labels in dark ink on elevated box (#FFFDF6). All chrome dark-on-light: PASS.
+      Data: Alice polygon filled green (#009E73, alpha=0.25) with solid green outline and green dots. Bob polygon filled orange (#D55E00, alpha=0.25) with solid orange outline and orange dots. Two colors clearly distinguishable. Dashed circular gridlines at regular radii in subtle light gray. Hexagonal spokes extend from center to edge.
+      Legibility verdict: PASS
 
     Dark render (plot-dark.png):
-      Background: Near-black #1A1A17 — correct theme surface
-      Chrome: Title and category labels in light #F0EFE8 ink, clearly readable; legend box uses elevated dark fill (#242420); grid circles in darker gray; no dark-on-dark text failures detected
-      Data: Colors identical to light render — Alice #009E73, Bob #D55E00 (Okabe-Ito positions 1-2 unchanged between themes)
-      Legibility verdict: PASS — all text clearly readable against near-black background; no dark-on-dark failures
+      Background: Warm near-black #1A1A17 — correct, not pure black.
+      Chrome: Title in cream/off-white (#F0EFE8) clearly readable against dark background. Subtitle in light text, readable. Category labels in light cream tone — all readable, no dark-on-dark issues. Legend text in #B8B7B0 on #242420 elevated box, clearly readable. No dark-on-dark failures detected.
+      Data: Alice polygon same green (#009E73, alpha=0.25), Bob polygon same orange (#D55E00, alpha=0.25) — data colors identical to light render confirming theme-invariance. Gridlines are very faint (#3A3A35 on #1A1A17) — visible but low contrast, minor issue.
+      Legibility verdict: PASS
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 26
       max: 30
       items:
       - id: VQ-01
@@ -50,71 +56,76 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Title 24pt, legend 16pt, category labels 16pt all explicitly set;
-          labels slightly below >=20pt guideline
+        comment: Title 24pt, legend 16pt, category labels size=16 all explicitly set;
+          all readable in both themes. Subtitle size not explicitly set.
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Category labels well-positioned at radius 122, no collisions
+        comment: Category labels positioned radially with good spacing; no collisions
+          observed. Minor imprecision possible at edges.
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Polygon fills, line borders, and vertex points clearly visible
+        comment: 'Polygons, outlines, data points clearly visible. Dark-mode gridlines
+          (#3A3A35 on #1A1A17) are very faint but functional.'
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito green/orange CVD-safe with adequate contrast
+        comment: Okabe-Ito positions 1 and 2; CVD-safe green/orange combination distinguishable
+          without hue alone.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Square 3600x3600 canvas used well; minor empty space at bottom-left
+        comment: Square 12x12 at 300 DPI = 3600x3600px correct format; circular chart
+          fills canvas well with balanced margins.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Title in correct format; axis/tick text correctly blanked for radar
-          type
+        comment: Title format 'radar-basic · plotnine · anyplot.ai' correct; category
+          labels serve as axis labels for radar chart type.
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'Alice=#009E73, Bob=#D55E00; backgrounds #FAF8F1/#1A1A17; both renders
-          theme-correct'
+        comment: 'First series #009E73, second #D55E00; backgrounds #FAF8F1/#1A1A17;
+          theme chrome adapts correctly in both renders.'
     design_excellence:
-      score: 10
+      score: 13
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
-        passed: false
-        comment: Correct colors and clean layout but dashed gridlines create visual
-          texture; typography functional but not refined
+        passed: true
+        comment: Custom Okabe-Ito palette, theme-adaptive chrome, transparent polygon
+          fills. Clearly above defaults, professionally executed but not FiveThirtyEight-level.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
-        passed: false
-        comment: Spines/ticks/axis grid removed; dashed circular gridlines create
-          optical stripe artifact — solid low-opacity lines needed
+        passed: true
+        comment: All default ggplot axes/grid removed (element_blank). Custom circular
+          gridlines and spoke lines drawn. Generous whitespace. Clean radar-specific
+          design.
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 4
         max: 6
-        passed: false
-        comment: Data displayed but no visual hierarchy; complementary skill profiles
-          not highlighted
+        passed: true
+        comment: Subtitle states the comparative insight explicitly. Contrasting polygon
+          shapes visually reinforce the story. Clear focal points via color contrast.
     spec_compliance:
       score: 15
       max: 15
@@ -124,27 +135,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct radar/spider chart with all required structural elements
+        comment: Correct radar/spider/web chart implemented.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Filled polygons alpha=0.25, gridlines 20/40/60/80/100, outer labels,
-          polygon closure, legend all present
+        comment: Filled polygons with alpha, gridlines at 20/40/60/80/100, axis labels
+          at outer edge, distinct colors with legend, polygon closed.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Values correctly mapped to axes, both series fully visible
+        comment: Values mapped to radial distances correctly; all 6 axes shown; both
+          series visible.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: radar-basic · plotnine · anyplot.ai correct; legend titled Employee
-          with Alice/Bob
+        comment: Title 'radar-basic · plotnine · anyplot.ai'; legend labeled 'Employee'
+          with Alice/Bob.
     data_quality:
       score: 15
       max: 15
@@ -154,21 +166,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 6 axes, 2 series, filled polygons, gridlines, labels all per spec
+        comment: Two contrasting employee profiles across 6 competency dimensions;
+          different strengths per series demonstrates full comparison capability.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Employee performance evaluation is real-world, neutral, business
-          scenario
+        comment: Employee performance review (Technical, Communication, Leadership,
+          Creativity, Teamwork, Problem Solving) is real-world, neutral, recognizable.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values 60-90 on 0-100 scale; realistic competency scores; differentiated
-          profiles
+        comment: 0-100 scale as recommended in spec; values (60-90 range) are plausible
+          competency scores with meaningful variation between series.
     code_quality:
       score: 10
       max: 10
@@ -178,54 +191,59 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear imports->tokens->data->plot->save; no functions or classes
+        comment: 'Linear: imports → data → plot → save. No functions or classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: All data hardcoded, fully deterministic
+        comment: Fully deterministic data; no random elements.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imported symbols used
+        comment: All imported symbols used; sys.path manipulation prevents module
+          shadowing.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean coordinate computation; sys.path guard necessary and documented
+        comment: Appropriate complexity for manual radar coordinate construction;
+          clean loop-based data assembly.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot-{THEME}.png correctly
+        comment: Saves as plot-{THEME}.png correctly.
     library_mastery:
-      score: 5
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Correct ggplot grammar with layered geoms and scale_*_manual; radar
-          via manual Cartesian math means grammar used more as canvas
+        passed: true
+        comment: Correct ggplot grammar with scale_color_manual, scale_fill_manual,
+          geom_polygon. Idiomatic layer composition. Manual Cartesian conversion necessary
+          due to lack of native polar projection.
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Layer composition (polygon+line+point+text) is distinctively plotnine
-          grammar but does not showcase a standout plotnine-specific capability
-  verdict: REJECTED
+        passed: true
+        comment: Creative use of layered grammar (geom_polygon + geom_line + geom_point
+          + geom_text) to construct a chart type not natively supported. Somewhat
+          distinctive vs non-grammar libraries.
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - layer-composition
+  - annotations
   patterns:
   - iteration-over-groups
   dataprep: []

@@ -2,7 +2,7 @@ library: seaborn
 language: python
 specification_id: marimekko-basic
 created: '2025-12-23T15:14:11Z'
-updated: '2026-04-27T03:27:12Z'
+updated: '2026-04-29T10:45:25Z'
 generated_by: claude-sonnet
 workflow_run: 24974687348
 issue: 1002
@@ -12,125 +12,125 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/marimekko
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/marimekko-basic/python/seaborn/plot-dark.png
 preview_html_light: null
 preview_html_dark: null
-quality_score: 78
+quality_score: 86
 review:
   strengths:
-  - 'Correct Marimekko implementation: variable-width bars and proportional stacking
-    are both accurate'
-  - White segment borders between colored rectangles provide crisp visual separation
-  - Descriptive axis labels with context (proportional symbol, percentage unit)
-  - Clean code structure with honest comment about seaborn limitation
-  - Realistic, neutral market-share scenario with varied data across regions
+  - 'All Attempt 1 regressions fixed: theme-adaptive chrome, plot-{THEME}.png output,
+    correct Okabe-Ito palette starting at #009E73, correct branding, solid grid lines'
+  - Subtitle storytelling (Asia Pacific leads with $203B) adds a clear narrative entry
+    point
+  - White segment borders between colored rectangles provide excellent visual separation
+  - 'Perfect spec compliance and data quality: realistic market-share scenario with
+    natural variation'
+  - Clean code with honest comment about seaborn Marimekko limitation
   weaknesses:
-  - 'CRITICAL: No ANYPLOT_THEME env-var handling — both plot-light.png and plot-dark.png
-    cannot be produced; add sns.set_theme with PAGE_BG/INK/INK_SOFT tokens and save
-    as plot-{THEME}.png'
-  - 'CRITICAL: Saves to plot.png instead of plot-{THEME}.png'
-  - 'CRITICAL: Title uses outdated pyplots.ai branding; must be anyplot.ai'
-  - Palette uses sns.color_palette(colorblind) whose first color is blue (#0173b2),
-    not brand green (#009E73); must use explicit OKABE_ITO list
-  - Value labels and legend fontsize=14 are below the recommended 16pt minimum
-  - Grid uses dashed linestyle; style guide prefers solid thin lines
-  - No visual hierarchy or storytelling emphasis to guide the viewer
+  - 'Design Excellence gap (13/20): DE-01 at 5/8 lacks visual hierarchy beyond subtitle
+    to guide viewer to Asia Pacific focal point; consider adding regional total revenue
+    to x-axis tick labels (e.g., Asia Pacific\n$203B) so bar widths are self-describing;
+    DE-03 at 4/6 has no visual emphasis differentiating the dominant bar'
+  - 'Library Mastery low (4/10): inherent to Marimekko requiring matplotlib patches;
+    improve by maximizing seaborn-idiomatic pattern usage such as sns.set_palette(OKABE_ITO)
+    before patching and using seaborn color utilities to derive patch colors'
+  - Latin America and Middle East x-tick labels sit close on narrow bars — minor crowding
+    risk
   image_description: |-
     Light render (plot-light.png):
       Background: Warm off-white approximately #FAF8F1 — clearly creamy/warm, not pure white
-      Chrome: Title "marimekko-basic · seaborn · anyplot.ai" bold, large, dark text — readable. Axis labels "Region (width ∝ total revenue)" and "Product Mix (%)" dark text — readable. Tick labels (0%, 25%, 50%, 75%, 100% and region names) dark text — readable. Legend "Product Line" below chart with dark text on light legend box — readable.
-      Data: Electronics (bottom) = teal-green (#009E73), Apparel = orange (#D55E00), Food & Beverage = blue (#0072B2), Home Goods = pink-purple (#CC79A7). First series is #009E73 (brand green). White borders separate segments. Dollar value labels in white bold text on larger segments.
+      Chrome: Title "marimekko-basic · seaborn · anyplot.ai" bold, large, dark text — readable. Italic subtitle "Asia Pacific leads with $203B total revenue — Electronics is the top product line globally" in soft gray — readable. Axis labels "Region (width ∝ total revenue)" and "Product Mix (%)" dark text — readable. Tick labels (0%, 25%, 50%, 75%, 100% and region names) dark text — readable. Legend "Product Line" below chart with dark text on light legend box — readable.
+      Data: Electronics (bottom) = teal-green (#009E73), Apparel = orange (#D55E00), Food & Beverage = blue (#0072B2), Home Goods = pink-purple (#CC79A7). First series is #009E73 (brand green). White borders separate segments. Dollar value labels in bold white text on segments above 12% height.
       Legibility verdict: PASS
 
     Dark render (plot-dark.png):
       Background: Warm near-black approximately #1A1A17 — dark but not pure black
-      Chrome: Title, axis labels, and tick labels all rendered in light-colored text clearly visible against the dark background. Legend box has dark elevated fill with light text. No dark-on-dark failures observed — all text elements switch correctly to light color.
-      Data: All four Okabe-Ito colors (Electronics=#009E73, Apparel=#D55E00, Food&Bev=#0072B2, HomeGoods=#CC79A7) are identical to the light render. Brand green #009E73 clearly visible on dark surface. White segment borders remain effective.
+      Chrome: Title, subtitle, axis labels, and tick labels all rendered in light-colored text clearly visible against the dark background. Legend box has dark elevated fill (#242420) with light text. No dark-on-dark failures observed — all text elements switch correctly to light color tokens (INK=#F0EFE8, INK_SOFT=#B8B7B0).
+      Data: All four Okabe-Ito colors (Electronics=#009E73, Apparel=#D55E00, Food&Bev=#0072B2, HomeGoods=#CC79A7) are identical to the light render. Brand green #009E73 clearly visible on dark surface. White segment borders remain effective on dark background.
       Legibility verdict: PASS
-
-    NOTE: Images show "anyplot.ai" branding and proper dual-theme output, but the code at plots/marimekko-basic/implementations/python/seaborn.py uses "pyplots.ai" branding, saves to "plot.png" (not "plot-{THEME}.png"), and has no ANYPLOT_THEME env-var handling. Images appear generated from a newer version of the code not yet committed to the repository.
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 29
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Title 24pt, axis labels 20pt, tick labels 16pt explicitly set and
-          readable in both themes; value labels 14pt and legend 14pt are slightly
-          below recommended 16pt minimum
+        comment: 'All sizes explicitly set: title=24pt, axis labels=20pt, tick+value+legend
+          labels=16pt; readable in both themes'
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: No overlapping text; region labels well-centered under bars, value
-          labels correctly placed within segments
+        comment: Mostly clean; Latin America and Middle East x-tick labels are close
+          on their narrow bars (~11.5% and ~7.7% of total width) — minor crowding
+          but still legible
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: All Marimekko segments clearly visible with white edge borders for
-          definition
+        comment: All segments clearly visible; white edges provide crisp separation
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito palette (CVD-safe); white edges provide additional segment
-          definition and contrast
+        comment: Okabe-Ito palette is CVD-safe; white edges add additional contrast
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Chart fills canvas well; horizontal bottom legend adds minor whitespace
-          below chart
+        comment: Marimekko fills canvas well within the 50-80% target; balanced margins;
+          compact legend at bottom
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
         comment: Region (width proportional to total revenue) and Product Mix (%)
-          are descriptive with context
+          are descriptive with units/context
       - id: VQ-07
         name: Palette Compliance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: 'Images show Okabe-Ito first series (#009E73) and correct theme backgrounds;
-          however code uses sns.color_palette(colorblind) whose first color is blue
-          not #009E73, and code has no ANYPLOT_THEME logic — images appear from different
-          code version'
+        passed: true
+        comment: 'First series is #009E73; full Okabe-Ito order (#009E73, #D55E00,
+          #0072B2, #CC79A7); light bg #FAF8F1 and dark bg #1A1A17 both correct; theme-adaptive
+          chrome properly applied via sns.set_theme rc dict'
     design_excellence:
-      score: 10
+      score: 13
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
         passed: true
-        comment: Clean professional Marimekko with appropriate color palette and white
-          segment borders; well-configured implementation without exceptional sophistication
+        comment: 'Above default configured output: Okabe-Ito palette, italic subtitle,
+          white segment edges, proper text hierarchy. Does not reach strong design
+          (6) — lacks regional total annotations on x-axis labels or visual emphasis
+          on dominant bar'
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Top/right spines removed; y-axis-only grid; white segment edges add
-          polish; grid is dashed rather than preferred solid thin style
+        comment: Top/right spines removed; solid y-axis-only grid at alpha=0.10; white
+          edges polish segment boundaries; italic subtitle styling. Not all details
+          polished — no region totals on axis labels, no visual distinction for key
+          bar
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 4
         max: 6
-        passed: false
-        comment: Data displayed clearly with value labels but no visual emphasis or
-          hierarchy to guide viewer to any particular insight; all regions/products
-          treated equally
+        passed: true
+        comment: Subtitle explicitly calls out main insight. Visual hierarchy present
+          (Asia Pacific bar visibly widest). However no further visual emphasis guides
+          viewer to focal point — all bars treated identically
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -138,56 +138,56 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Correct Marimekko/mosaic chart: bar widths proportional to region
-          totals, segments proportional to product share within each region'
+        comment: 'Correct Marimekko: bar widths proportional to region totals, segment
+          heights proportional to product share within each region'
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
         comment: Variable-width bars, stacked proportional segments, value labels
-          on larger segments, legend with product categories all present
+          on larger segments, color-coded legend all present
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Regions on x-axis with variable widths; product mix 0-100% on y-axis;
-          all data visible
+        comment: Regions on x-axis with correct variable widths; product mix 0-100%
+          on y-axis; all data visible
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
-        passed: false
-        comment: Images show correct marimekko-basic · seaborn · anyplot.ai format;
-          code has outdated pyplots.ai branding; legend labels correct
+        passed: true
+        comment: Title format marimekko-basic · seaborn · anyplot.ai correct; Product
+          Line legend with correct four labels
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Shows 5 regions with meaningfully different widths and 4 product
-          categories with varying proportions; variation present but not extreme
+        comment: Five regions with meaningfully different widths (AP ~35% vs ME ~8%)
+          and four product lines with varying proportional mixes across regions
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: 'Market share by region and product line: real-world, business-neutral,
-          comprehensible scenario'
+        comment: 'Global market-share by region and product line: real-world, business-neutral,
+          readily comprehensible scenario'
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Revenue in billions with realistic values; region-size differences
-          are plausible
+        comment: Revenue in billions; Asia Pacific at $203B vs Middle East at $45B
+          is geographically plausible
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -195,36 +195,34 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports -> data -> compute widths -> draw patches ->
-          configure axes -> save'
+        comment: 'Linear flow: imports -> tokens -> data -> compute widths -> draw
+          patches -> configure axes -> save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set; data is deterministic, seed is defensive
-          good practice
+        comment: np.random.seed(42) set; data is deterministic
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All five imports (mpatches, plt, np, pd, sns) are used
+        comment: All six imports (os, mpatches, plt, np, pd, sns) are actively used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, readable, no over-engineering; acknowledges seaborn Marimekko
-          limitation honestly
+        comment: Clean, readable; nested loops are appropriate for Marimekko geometry;
+          comment about seaborn limitation is honest
       - id: CQ-05
         name: Output & API
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Saves to plot.png instead of plot-{THEME}.png; no ANYPLOT_THEME env-var
-          handling; uses old sns.set_style/set_context instead of sns.set_theme with
-          theme-adaptive rc dict
+        passed: true
+        comment: Saves as plot-{THEME}.png; current sns.set_theme API with theme-adaptive
+          rc dict
     library_mastery:
       score: 4
       max: 10
@@ -234,17 +232,17 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Uses seaborn appropriately for styling (set_style, set_context, color_palette,
-          despine) given Marimekko requires matplotlib patches; however does not use
-          recommended sns.set_theme with theme-adaptive rc dict pattern
+        comment: Uses seaborn recommended sns.set_theme(rc={...}) pattern with full
+          theme-adaptive tokens, and sns.despine(). Correct but majority of visualization
+          work is matplotlib patches since seaborn has no native Marimekko
       - id: LM-02
         name: Distinctive Features
         score: 1
         max: 5
         passed: false
-        comment: Seaborn used only for styling utilities; chart is entirely matplotlib
-          patches since no native seaborn Marimekko function exists; minimal distinctive
-          seaborn contribution
+        comment: Seaborn used only for theme/styling utilities (set_theme, despine).
+          No seaborn plot functions possible for Marimekko. Minimal seaborn contribution
+          beyond matplotlib.
   verdict: REJECTED
 impl_tags:
   dependencies: []

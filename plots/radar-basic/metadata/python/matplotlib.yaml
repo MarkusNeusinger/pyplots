@@ -2,7 +2,7 @@ library: matplotlib
 language: python
 specification_id: radar-basic
 created: '2025-12-23T18:12:15Z'
-updated: '2026-04-29T16:41:28Z'
+updated: '2026-04-29T16:59:13Z'
 generated_by: claude-sonnet
 workflow_run: 25121189020
 issue: 744
@@ -12,41 +12,31 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/radar-bas
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/radar-basic/python/matplotlib/plot-dark.png
 preview_html_light: null
 preview_html_dark: null
-quality_score: 86
+quality_score: 87
 review:
   strengths:
-  - 'Perfect Okabe-Ito palette compliance with correct ordering (#009E73 first, #D55E00
-    second) in both light and dark renders'
-  - 'Full theme-adaptive chrome: background, text, grid, legend frame all respond
-    correctly to ANYPLOT_THEME token system'
-  - 'All spec requirements met: filled polygons with alpha=0.25, gridlines at 20/40/60/80/100,
-    axis labels at outer edge, closed polygon, legend'
-  - Effective data storytelling — contrasting role profiles (technical strength vs
-    people skills) communicate a clear insight through polygon shape difference
-  - 'Idiomatic matplotlib polar API usage: clockwise orientation via set_theta_direction(-1),
-    12 o''clock start via set_theta_offset(pi/2), rlabel_position=22.5 for radial
-    label offset, polar spine styling'
+  - Perfect spec compliance — all required radar features present (filled polygons,
+    gridlines, labeled axes, closed polygon, legend)
+  - Complete theme adaptation in both renders — no dark-on-dark or legibility failures
+  - Data tells a natural, immediately readable story (complementary employee profiles)
+  - Correct Okabe-Ito palette (green first, orange second) with proper alpha blending
+  - Clean linear code with deterministic data and no unnecessary abstractions
   weaknesses:
-  - Radial (y-axis) tick labels set to fontsize=13, below the 16pt minimum guideline
-    — raise to fontsize=16
-  - Title includes extra prefix 'Employee Performance · ' before the required radar-basic
-    · matplotlib · anyplot.ai format — correct to exact format or add descriptive
-    text as a subtitle
-  - 'Design Excellence gap (12/20): plot reads as a well-configured default (DE-01=4)
-    rather than publication-quality — consider frameless legend, descriptive subtitle,
-    or refined typography to push aesthetic sophistication above 4/8'
+  - Radial tick labels (ytick) set to 13pt — below the 16pt guideline; raise to 16pt
+  - Design excellence could be elevated with a more distinctive visual touch beyond
+    correct defaults
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) — correct, not pure white
-      Chrome: Title "Employee Performance · radar-basic · matplotlib · anyplot.ai" in dark ink at top, readable. Six category axis labels (Communication, Technical Skills, Teamwork, Problem Solving, Leadership, Creativity) in dark ink at fontsize=18, all readable. Radial tick labels (20/40/60/80/100) in INK_MUTED at fontsize=13, legible but small. Legend frame uses ELEVATED_BG (#FFFDF6) with INK_SOFT edge, text in INK_SOFT.
-      Data: Senior Developer in #009E73 (green, first series), Team Lead in #D55E00 (orange/vermillion, second series). Each series has filled polygon (alpha=0.25) and outline with markers (linewidth=3, markersize=10). Data colors are correct Okabe-Ito positions 1 and 2.
-      Legibility verdict: PASS — all text readable, minor crowding between title right edge and legend box in upper-right corner.
+      Background: Warm off-white (~#FAF8F1), not pure white — PASS
+      Chrome: Title in large dark bold text, category axis labels in dark INK color clearly readable at outer ring, radial tick labels (20-100) in muted INK_MUTED color at smaller size but still readable, legend has ELEVATED_BG frame with INK_SOFT text
+      Data: First series #009E73 (Senior Developer) green polygon with filled area; second series #D55E00 (Team Lead) orange polygon with filled area; both at alpha=0.25 creating visible overlap region; vertex markers (markersize=10) clearly visible on each data point
+      Legibility verdict: PASS
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) — correct, not pure black
-      Chrome: Title and axis labels rendered in light ink (#F0EFE8), tick labels in #A8A79F (INK_MUTED dark token), legend text in #B8B7B0 (INK_SOFT dark token). All text is clearly readable against the dark surface. No dark-on-dark failures observed.
-      Data: Colors are identical to light render — #009E73 for Senior Developer and #D55E00 for Team Lead. Only chrome elements (background, text, grid, legend frame) have flipped; data colors are unchanged.
-      Legibility verdict: PASS — all text readable against dark background, no dark-on-dark issues.
+      Background: Near-black (~#1A1A17), not pure black — PASS
+      Chrome: Title flips to light/off-white text, clearly readable; category labels switch to light INK (#F0EFE8 equivalent); radial ticks switch to light muted color; legend frame switches to ELEVATED_BG dark elevated (#242420); grid lines remain subtle; no dark-on-dark failures detected
+      Data: Colors identical to light render — #009E73 green and #D55E00 orange unchanged; polygon fills same alpha=0.25; brand green clearly visible on dark surface
+      Legibility verdict: PASS
   criteria_checklist:
     visual_quality:
       score: 27
@@ -54,79 +44,78 @@ review:
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: Title 24pt, category labels 18pt, legend 16pt all explicitly set.
-          Radial tick labels at 13pt fall below 16pt minimum guideline.
+        comment: Title 24pt, category xtick 18pt, legend 16pt explicit. Radial ytick
+          at 13pt below 16pt guideline.
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Minor visual crowding between title right edge and legend box in
-          the upper-right corner.
+        comment: No overlapping text; category labels well-spaced around outer ring.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: linewidth=3 and markersize=10 well-sized; fill alpha=0.25 gives good
-          overlap visibility.
+        comment: Filled polygons clearly visible; markersize=10 prominent; linewidth=3
+          strong.
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: '#009E73 and #D55E00 are high-contrast and CVD-safe.'
+        comment: Okabe-Ito green/orange is colorblind-safe; not a red-green pair.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Square 3600x3600 format correct for radar. Outside legend creates
-          slight right-side asymmetry.
+        comment: Radar fills good proportion of square canvas; minor unused space
+          at bottom near legend.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: All six category axes and title are descriptive.
+        comment: Category labels are descriptive domain names; radial gridlines provide
+          scale context.
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series #009E73, second #D55E00 (Okabe-Ito positions 1-2).
-          Backgrounds #FAF8F1/#1A1A17. Chrome adapts correctly in both renders.'
+        comment: 'First series #009E73, second #D55E00; backgrounds #FAF8F1/#1A1A17;
+          both renders fully theme-correct.'
     design_excellence:
-      score: 12
+      score: 13
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
-        passed: false
-        comment: Well-configured plot with correct palette and theme adaptation. Above
-          defaults but not publication-ready — reads as a well-configured library
-          default.
+        passed: true
+        comment: 'Above well-configured defaults: two-tier title, proper palette,
+          theme-adaptive chrome, styled legend. Not FiveThirtyEight-level.'
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
-        passed: false
-        comment: Intentional use of alpha=0.18 grid, rlabel_position=22.5, polar spine
-          styled. Good refinement for polar chart type.
+        passed: true
+        comment: Grid alpha=0.18 subtle; polar spine colored; legend frame uses ELEVATED_BG;
+          rlabel_position avoids collision.
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
-        passed: false
-        comment: Contrasting role profiles (technical bulge vs people-skills bulge)
-          create a clear visual narrative. Data contrast is intentional.
+        passed: true
+        comment: Contrasting polygon shapes convey complementary profiles naturally;
+          viewer immediately sees the story.
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -134,27 +123,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct radar/spider chart with polar projection.
+        comment: Correct polar/radar chart with polygon fill.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Filled polygons (alpha=0.25), gridlines at 20/40/60/80/100, axis
-          labels, two series with legend, closed polygon.
+        comment: 'All spec features: filled polygons alpha=0.25, gridlines 20-100,
+          labeled axes, distinct colors, legend, closed polygon.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Six categories, two series, 0-100 scale, all data visible.
+        comment: Six competency categories correctly mapped; values on 0-100 scale;
+          both series fully rendered.
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
-        passed: false
-        comment: Legend labels correct. Title uses extra prefix 'Employee Performance
-          · ' before the required {spec-id} · {library} · anyplot.ai format.
+        passed: true
+        comment: Title includes radar-basic · matplotlib · anyplot.ai; legend labels
+          match data series.
     data_quality:
       score: 15
       max: 15
@@ -164,22 +154,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Two series with strongly contrasting profiles showcase radar chart
-          comparison capability fully.
+        comment: Multi-series comparison, overlapping polygons, full range utilized,
+          spread across all axes.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Employee performance review across six competencies is a real, neutral,
-          comprehensible scenario.
+        comment: Employee performance review is a canonical, neutral business use
+          case.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 0-100 scale as spec recommends, realistic role-appropriate value
-          distributions.
+        comment: Performance scores 48-96 realistic on 0-100 scale; asymmetry between
+          profiles is plausible.
     code_quality:
       score: 10
       max: 10
@@ -189,13 +179,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear structure: Imports → Theme tokens → Data → Plot → Save.'
+        comment: 'Linear: theme tokens -> data -> plot -> save. No functions or classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic hardcoded data, no random seed needed.
+        comment: Fully deterministic hardcoded data.
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -207,38 +197,39 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Clean, Pythonic, appropriate complexity. No fake interactivity.
+        comment: Clean Pythonic code; explicit polygon closing is clear; no over-engineering.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot-{THEME}.png, no deprecated API usage.
+        comment: Saves as plot-{THEME}.png with dpi=300, bbox_inches=tight, facecolor=PAGE_BG.
     library_mastery:
-      score: 8
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: 'Expert use of matplotlib polar API: ax.fill(), set_theta_offset(),
-          set_theta_direction(), set_rlabel_position(), polar spine styling.'
+        comment: Correct polar subplot, set_theta_offset/direction, set_rlabel_position,
+          proper ax.fill()/ax.plot() on polar axes.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
-        passed: false
-        comment: Uses matplotlib-specific polar features (clockwise orientation, 12
-          o'clock start, rlabel_position, polar spine). Solid but not exceptional.
-  verdict: REJECTED
+        passed: true
+        comment: Uses set_theta_offset(pi/2) + set_theta_direction(-1) for clockwise-from-top
+          orientation (matplotlib-specific polar control), set_rlabel_position.
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - polar-projection
   - manual-ticks
-  patterns: []
+  patterns:
+  - explicit-figure
   dataprep: []
   styling:
   - alpha-blending

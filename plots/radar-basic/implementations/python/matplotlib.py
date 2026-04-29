@@ -1,7 +1,7 @@
 """ anyplot.ai
 radar-basic: Basic Radar Chart
 Library: matplotlib 3.10.9 | Python 3.13.13
-Quality: 86/100 | Updated: 2026-04-29
+Quality: 87/100 | Updated: 2026-04-29
 """
 
 import os

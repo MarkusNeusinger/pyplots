@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 pyramid-basic: Basic Pyramid Chart
-Library: plotnine | Python 3.13
-Quality: pending | Updated: 2026-04-29
+Library: plotnine 0.15.3 | Python 3.13.13
+Quality: 83/100 | Updated: 2026-04-29
 """
 
 import os

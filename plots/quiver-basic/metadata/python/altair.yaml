@@ -2,7 +2,7 @@ library: altair
 language: python
 specification_id: quiver-basic
 created: '2025-12-23T18:12:08Z'
-updated: '2026-04-29T22:42:12Z'
+updated: '2026-04-29T23:07:45Z'
 generated_by: claude-sonnet
 workflow_run: 25137092714
 issue: 1014
@@ -15,36 +15,36 @@ preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/quiver-ba
 quality_score: 73
 review:
   strengths:
-  - Viridis colormap correctly chosen for continuous magnitude data, visually effective
-  - Good explicit font size settings matching the style guide recommendations (28/22/18/16px)
-  - Creative use of mark_rule with x/x2/y/y2 encoding plus explicit arrowhead geometry
-    — the right Altair approach for quiver plots
-  - Circular rotation field (u=-y, v=x) is a clean, visually appealing example that
-    clearly demonstrates the quiver plot concept
+  - Viridis colormap correctly chosen for continuous magnitude data
+  - Explicit font sizes match the style guide (28/22/18/16 px)
+  - Creative use of mark_rule + x/x2/y/y2 + explicit arrowhead geometry — the right
+    Altair approach for quiver plots
+  - Circular rotation field (u=-y, v=x) is a visually clean, comprehensible example
   weaknesses:
-  - 'No ANYPLOT_THEME support: Missing os.getenv(ANYPLOT_THEME) and all theme-adaptive
-    tokens (PAGE_BG, INK, INK_SOFT) — must implement full light/dark theme switching'
-  - 'Wrong output filenames: plot.png/plot.html must be plot-{THEME}.png/plot-{THEME}.html'
-  - 'Title uses old domain: pyplots.ai must be anyplot.ai'
-  - 'Arrow length not proportional to magnitude: Arrows are normalized to constant
-    length; spec requires length proportional to magnitude'
-  - 'Grid opacity 0.3 too high: Should be 0.10 per style guide'
-  - 'Design excellence low: Moderate aesthetic polish; DE-02 needs more refinement
-    (spines, tighter grid), DE-03 could use better visual hierarchy'
+  - 'No ANYPLOT_THEME support: Code must add import os, THEME = os.getenv(ANYPLOT_THEME,
+    light), and full token block (PAGE_BG, INK, INK_SOFT, ELEVATED_BG); apply via
+    .properties(background=PAGE_BG), .configure_axis(labelColor=INK_SOFT, titleColor=INK,
+    gridColor=INK, gridOpacity=0.10), .configure_title(color=INK), .configure_legend(fillColor=ELEVATED_BG)'
+  - 'Wrong output filenames: Change chart.save(plot.png) to chart.save(f"plot-{THEME}.png")
+    and chart.save(plot.html) to chart.save(f"plot-{THEME}.html")'
+  - 'Wrong domain in title: Change pyplots.ai to anyplot.ai'
+  - 'Arrow length still constant: Remove normalization step, use U_scaled = U * scale
+    so arrow length encodes magnitude (spec requirement)'
+  - 'Grid opacity too high: Change gridOpacity=0.3 to gridOpacity=0.10 in configure_axis'
   image_description: |-
     Light render (plot-light.png):
       Background: Warm off-white consistent with #FAF8F1 — not pure white, correct theme surface
-      Chrome: Title "quiver-basic · altair · pyplots.ai" visible in dark text (note: code has wrong domain "pyplots.ai"). Axis labels "X Position" and "Y Position" clearly visible. Tick labels readable. Legend "Magnitude" colorbar on right side readable.
+      Chrome: Title "quiver-basic · altair · anyplot.ai" visible in dark text (note: source code still has "pyplots.ai" — images appear from previous run). Axis labels "X Position" and "Y Position" clearly visible. Tick labels readable; X-axis tick spacing is dense. Legend "Magnitude" colorbar on right side readable.
       Data: 15x15 grid of arrows in circular rotation field. Viridis colormap: dark purple/blue at low-magnitude center, transitioning through teal/green to bright yellow-green at high-magnitude edges. Arrowheads drawn as V-shaped line pairs at arrow tips. All arrows same length (normalized, not magnitude-proportional).
       Legibility verdict: PASS
 
     Dark render (plot-dark.png):
       Background: Dark near-black consistent with #1A1A17 — not pure black, correct dark theme surface
-      Chrome: Title and axis labels rendered in light-colored text. All text readable against dark background. No dark-on-dark failures observed. Colorbar and magnitude scale legible.
-      Data: Viridis colors identical to light render — same purple-to-yellow gradient. Circular rotation pattern preserved. Arrow colors and positions match light render exactly.
-      Legibility verdict: PASS
+      Chrome: Title and axis labels rendered in light-colored text, readable against dark background. No dark-on-dark failures observed. Colorbar and magnitude scale legible.
+      Data: Viridis colors identical to light render — same purple-to-yellow gradient. Circular rotation pattern preserved. Arrow colors and positions match light render exactly. Low-magnitude center arrows (dark purple in viridis) slightly harder to see against near-black, but still visible.
+      Legibility verdict: PASS (marginal at center arrows due to dark viridis purple on near-black)
 
-    Critical note: Code does not implement ANYPLOT_THEME switching. No os.getenv("ANYPLOT_THEME") call present. No PAGE_BG, INK, INK_SOFT tokens applied. Theme-correct appearance in renders may be due to pipeline transformation, not code compliance.
+    Critical note: Code does not implement ANYPLOT_THEME switching. No os.getenv("ANYPLOT_THEME") call present. No PAGE_BG, INK, INK_SOFT tokens applied. Theme-correct appearance in renders may be due to pipeline transformation or prior-attempt images, not code compliance. Code also still saves to plot.png/plot.html (not plot-{THEME}.png/html) and has "pyplots.ai" title.
   criteria_checklist:
     visual_quality:
       score: 25
@@ -70,8 +70,8 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: 'Arrows clearly visible. Arrowheads added via line segments. Minor:
-          arrows at low-magnitude center are very short.'
+        comment: 'Arrows clearly visible. Arrowheads present. Minor: center arrows
+          very short at low-magnitude origin region.'
       - id: VQ-04
         name: Color Accessibility
         score: 2
@@ -83,8 +83,8 @@ review:
         score: 3
         max: 4
         passed: true
-        comment: Good canvas utilization. Colorbar legend tightly placed at edge;
-          minor right-margin crowding.
+        comment: Good canvas utilization. Colorbar legend slightly crowded at right
+          edge.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
@@ -98,7 +98,7 @@ review:
         passed: false
         comment: 'Viridis used correctly for continuous magnitude data. Deduction:
           no background=PAGE_BG or configure_axis(labelColor=INK_SOFT) in code — theme-adaptive
-          chrome is absent from the implementation.'
+          chrome absent from implementation.'
     design_excellence:
       score: 10
       max: 20
@@ -108,24 +108,22 @@ review:
         score: 4
         max: 8
         passed: false
-        comment: Viridis colormap is a good choice and the vortex pattern is visually
-          appealing. Looks like a well-configured Altair default. Not publication-ready.
+        comment: Viridis colormap and vortex pattern are visually appealing. Looks
+          like a well-configured Altair default. Not publication-ready.
       - id: DE-02
         name: Visual Refinement
         score: 3
         max: 6
         passed: false
         comment: configure_view(strokeWidth=0) removes plot border (positive). Grid
-          opacity 0.3 exceeds recommended 0.10-0.15 (negative). No explicit spine
-          configuration. Some refinement, not full polish.
+          opacity 0.3 far exceeds recommended 0.10 (negative). No explicit spine configuration.
       - id: DE-03
         name: Data Storytelling
         score: 3
         max: 6
         passed: false
-        comment: 'Circular rotation field with viridis magnitude encoding tells a
-          coherent story: vortex immediately visible, color reinforces magnitude gradient.
-          Slightly above default data dump.'
+        comment: Circular rotation field with viridis magnitude encoding tells a coherent
+          story. Slightly above default data dump but no deliberate focal-point emphasis.
     spec_compliance:
       score: 13
       max: 15
@@ -135,31 +133,30 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correctly implements a quiver/vector-field plot. Altair lacks native
-          quiver support; using mark_rule with x/x2/y/y2 encoding plus explicit arrowhead
-          geometry is the correct approach.
+        comment: Correct quiver/vector-field plot using mark_rule + x/x2/y/y2 encoding
+          plus explicit arrowhead geometry.
       - id: SC-02
         name: Required Features
         score: 3
         max: 4
         passed: false
-        comment: 'Grid of arrows present, direction encoding present, color encodes
-          magnitude. Missing: arrow length proportional to magnitude — vectors are
-          normalized to constant length, violating spec requirement.'
+        comment: 'Grid of arrows, direction encoding, color-magnitude encoding present.
+          Missing: arrow length proportional to magnitude — vectors are normalized
+          to constant length, violating spec.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X/Y coordinates correctly mapped to position, u/v components correctly
-          derived from rotation field.
+        comment: X/Y coordinates and u/v components correctly mapped to position and
+          direction.
       - id: SC-04
         name: Title & Legend
         score: 2
         max: 3
         passed: false
-        comment: Title code has 'quiver-basic · altair · pyplots.ai' — wrong domain,
-          should be anyplot.ai. Legend 'Magnitude' label is correct.
+        comment: Code still has 'pyplots.ai' instead of 'anyplot.ai'. Legend 'Magnitude'
+          label is correct.
     data_quality:
       score: 13
       max: 15
@@ -169,23 +166,22 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: 'Demonstrates grid layout, directional arrows, arrowheads, and color-encoded
-          magnitude. Missing: variable arrow length for magnitude variation.'
+        comment: 'Grid layout, directional arrows, arrowheads, magnitude color encoding
+          shown. Missing: variable arrow length to demonstrate magnitude variation.'
       - id: DQ-02
         name: Realistic Context
         score: 4
         max: 5
         passed: true
         comment: Circular rotation field (u=-y, v=x) is physically plausible (vortex,
-          eddy current, magnetic field). Generic mathematical context rather than
-          specific scenario.
+          eddy current). Generic mathematical context rather than specific named scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: '[-2, 2] domain, 15x15 grid, scale factor 0.12 — all sensible for
-          the field.'
+        comment: '[-2, 2] domain, 15x15 grid (225 arrows) — within spec''s 100-400,
+          scale factor 0.12 sensible.'
     code_quality:
       score: 7
       max: 10
@@ -195,8 +191,8 @@ review:
         score: 2
         max: 3
         passed: false
-        comment: No functions/classes (good). However the imperative Python loop building
-          arrow_data row-by-row (675 rows) is verbose; could be vectorized.
+        comment: No functions/classes (good). Imperative loop building 675 rows (3
+          records x 225 arrows) is verbose; could be vectorized.
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -214,15 +210,15 @@ review:
         score: 1
         max: 2
         passed: false
-        comment: Acceptable but verbose. The triple-record-per-arrow loop pattern
-          is a reasonable workaround but could be vectorized.
+        comment: Acceptable but verbose triple-record-per-arrow loop pattern.
       - id: CQ-05
         name: Output & API
         score: 0
         max: 1
         passed: false
-        comment: Saves plot.png and plot.html instead of plot-{THEME}.png and plot-{THEME}.html.
-          Critical output naming violation.
+        comment: Still saves plot.png and plot.html instead of plot-{THEME}.png and
+          plot-{THEME}.html. Critical output naming violation unchanged from attempt
+          1.
     library_mastery:
       score: 5
       max: 10
@@ -232,17 +228,15 @@ review:
         score: 3
         max: 5
         passed: false
-        comment: 'Correct use of Altair''s declarative Chart.mark_rule().encode()
-          chain with x/x2/y/y2 segment encoding. Deduction: no ANYPLOT_THEME pattern,
-          no alt.layer() composition.'
+        comment: 'Correct declarative mark_rule().encode() chain with x/x2/y/y2 segment
+          encoding. Deduction: no ANYPLOT_THEME pattern, no alt.layer() composition.'
       - id: LM-02
         name: Distinctive Features
         score: 2
         max: 5
         passed: false
-        comment: The x/x2/y/y2 dual-coordinate encoding in mark_rule is distinctive
-          to Altair's grammar. Continuous color encoding via alt.Color with viridis
-          scheme leveraged well.
+        comment: Dual-coordinate segment encoding (x2/y2) is Altair-distinctive. alt.Color
+          with scheme='viridis' leveraged. Limited beyond that.
   verdict: REJECTED
 impl_tags:
   dependencies: []

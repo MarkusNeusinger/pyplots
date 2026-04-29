@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 radar-basic: Basic Radar Chart
 Library: pygal 3.1.0 | Python 3.13.13
-Quality: 79/100 | Updated: 2026-04-29
+Quality: 90/100 | Updated: 2026-04-29
 """
 
 import importlib

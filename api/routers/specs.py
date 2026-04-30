@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.cache import cache_key, get_or_set_cache
 from api.dependencies import require_db
 from api.exceptions import raise_not_found
-from api.schemas import ImplementationResponse, SpecDetailResponse, SpecListItem
+from api.schemas import ImplementationResponse, SpecDetailResponse, SpecListItem, SpecMapItem
 from core.config import settings
 from core.database import ImplRepository, SpecRepository
 from core.database.connection import get_db_context
@@ -26,6 +26,33 @@ async def _build_specs_list(db: AsyncSession) -> list[SpecListItem]:
         for spec in specs
         if spec.impls
     ]
+
+
+async def _build_specs_map(db: AsyncSession) -> list[SpecMapItem]:
+    """One row per spec with its best-rated impl image + spec/impl tag bag for the /map page.
+
+    Best-impl tiebreak: highest quality_score, then lexicographic library_id for determinism.
+    Specs without any implementations are skipped (mirrors _build_specs_list).
+    """
+    repo = SpecRepository(db)
+    specs = await repo.get_all()
+    items: list[SpecMapItem] = []
+    for spec in specs:
+        if not spec.impls:
+            continue
+        best = max(spec.impls, key=lambda i: ((i.quality_score or 0.0), i.library_id))
+        items.append(
+            SpecMapItem(
+                id=spec.id,
+                title=spec.title,
+                preview_url_light=best.preview_url_light,
+                preview_url_dark=best.preview_url_dark,
+                quality_score=best.quality_score,
+                tags=spec.tags,
+                impl_tags=best.impl_tags,
+            )
+        )
+    return items
 
 
 async def _build_spec_detail(db: AsyncSession, spec_id: str) -> SpecDetailResponse:
@@ -122,6 +149,25 @@ async def get_specs(db: AsyncSession = Depends(require_db)):
 
     return await get_or_set_cache(
         cache_key("specs_list"), _fetch, refresh_after=settings.cache_refresh_after, refresh_factory=_refresh
+    )
+
+
+@router.get("/specs/map", response_model=list[SpecMapItem])
+async def get_specs_map(db: AsyncSession = Depends(require_db)):
+    """Get one row per spec (best-impl image + tag bag) for the /map clustering page.
+
+    NOTE: must stay declared before /specs/{spec_id} so the path-parameter route doesn't capture "map".
+    """
+
+    async def _fetch() -> list[SpecMapItem]:
+        return await _build_specs_map(db)
+
+    async def _refresh() -> list[SpecMapItem]:
+        async with get_db_context() as fresh_db:
+            return await _build_specs_map(fresh_db)
+
+    return await get_or_set_cache(
+        cache_key("specs_map"), _fetch, refresh_after=settings.cache_refresh_after, refresh_factory=_refresh
     )
 
 

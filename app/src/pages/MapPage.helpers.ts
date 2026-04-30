@@ -144,10 +144,10 @@ export function buildKNNLinks(
 
 /**
  * Pick the best thumbnail URL for the current theme and downsize it to the
- * `_400.webp` variant produced by the responsive-image pipeline. Map nodes
- * render at ~22 px, so even 400 px is overkill — but 400 is the smallest
- * pipeline-baked variant. Going from full-size (~40–100 KB) to _400.webp
- * (~6 KB) cuts the 312-thumbnail payload from ~15 MB to ~2 MB.
+ * `_800.webp` variant produced by the responsive-image pipeline. _800 stays
+ * crisp under typical zoom-in (the smaller _400 variant pixelates quickly),
+ * while keeping the 312-thumbnail payload at ~5 MB total instead of the
+ * ~15 MB the full-size originals would cost.
  *
  * Falls back to the original full-size URL if the convention can't be
  * applied (e.g. URL doesn't end in `.png`).
@@ -156,7 +156,7 @@ export function selectMapThumbUrl(spec: SpecMapItem, isDark: boolean): string | 
   const full = selectPreviewUrl(spec, isDark);
   if (!full) return null;
   if (!full.endsWith('.png')) return full;
-  return full.replace(/\.png$/, '_400.webp');
+  return full.replace(/\.png$/, '_800.webp');
 }
 
 /**

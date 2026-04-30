@@ -160,15 +160,15 @@ describe('buildKNNLinks', () => {
 
 
 describe('selectMapThumbUrl', () => {
-  it('returns the _400.webp variant for the current theme', () => {
+  it('returns the _800.webp variant for the current theme', () => {
     const s = spec('a', null);
-    expect(selectMapThumbUrl(s, true)).toBe('https://example.com/a-dark_400.webp');
-    expect(selectMapThumbUrl(s, false)).toBe('https://example.com/a-light_400.webp');
+    expect(selectMapThumbUrl(s, true)).toBe('https://example.com/a-dark_800.webp');
+    expect(selectMapThumbUrl(s, false)).toBe('https://example.com/a-light_800.webp');
   });
 
   it('falls back to the other theme variant when the preferred URL is missing', () => {
     const s: SpecMapItem = { ...spec('a', null), preview_url_dark: null };
-    expect(selectMapThumbUrl(s, true)).toBe('https://example.com/a-light_400.webp');
+    expect(selectMapThumbUrl(s, true)).toBe('https://example.com/a-light_800.webp');
   });
 
   it('returns null when no preview URLs at all', () => {

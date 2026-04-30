@@ -1,160 +1,176 @@
 library: letsplot
+language: python
 specification_id: rug-basic
 created: '2025-12-23T19:49:08Z'
-updated: '2025-12-23T19:57:35Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20469998311
-issue: 0
-python_version: 3.13.11
-library_version: 4.8.2
-preview_url: https://storage.googleapis.com/anyplot-images/plots/rug-basic/letsplot/plot.png
-preview_html: https://storage.googleapis.com/anyplot-images/plots/rug-basic/letsplot/plot.html
-quality_score: 91
-impl_tags:
-  dependencies: []
-  techniques:
-    - html-export
-  patterns:
-    - data-generation
-  dataprep: []
-  styling:
-    - alpha-blending
-    - grid-styling
+updated: '2026-04-30T05:42:56Z'
+generated_by: claude-sonnet
+workflow_run: 25148880653
+issue: 978
+python_version: 3.13.13
+library_version: 4.9.0
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/rug-basic/python/letsplot/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/rug-basic/python/letsplot/plot-dark.png
+preview_html_light: https://storage.googleapis.com/anyplot-images/plots/rug-basic/python/letsplot/plot-light.html
+preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/rug-basic/python/letsplot/plot-dark.html
+quality_score: 87
 review:
   strengths:
-  - Excellent data design showing clusters, gaps, and outliers as specified
-  - Clean code structure following KISS principles with proper reproducibility
-  - Correct title format and descriptive axis labels with units
-  - Smart workaround using geom_segment to implement rug marks since lets-plot lacks
-    native geom_rug
-  - Good alpha transparency on density fill to avoid obscuring rug marks
+  - Full theme-adaptive chrome — PAGE_BG/INK/INK_SOFT applied to all elements; both
+    renders pass legibility check
+  - 'All three rug plot features demonstrated: clustering, gaps, and outliers immediately
+    visible'
+  - Realistic neutral response-time scenario with plausible trimodal distribution
+  - All font sizes explicitly set to spec values (24/20/16pt)
+  - Correct output filenames with scale=3 for 4800×2700px
   weaknesses:
-  - Rug marks are quite thin/small and could be slightly more prominent while still
-    maintaining the small relative to plot requirement
-  - Grid lines could be more subtle (current alpha appears around 0.5, spec prefers
-    0.2-0.4)
-  image_description: The plot displays a basic rug plot with a density curve overlay.
-    The visualization uses a blue color (#306998) for both elements. The density curve
-    shows a bimodal distribution with a primary peak around 120ms and a secondary
-    peak around 250ms, followed by a long right tail extending to ~800ms. Below the
-    density curve, small vertical tick marks (the rug) are positioned along the x-axis
-    at y=0 to ~0.0004, showing the exact location of each data point. The clustering
-    is clearly visible in the rug marks - dense in the 80-180ms region, moderately
-    dense around 200-300ms, sparse around 350-500ms, and a few isolated outliers extending
-    to ~780ms. Title reads "rug-basic · letsplot · pyplots.ai" at top. X-axis labeled
-    "Response Time (ms)", Y-axis labeled "Density". Light gray gridlines on minimal
-    theme background.
+  - 'Repeated # noqa: F405 on every lets_plot function call — use named imports instead
+    of wildcard to eliminate lint noise'
+  - Both x and y axis gridlines visible — remove vertical gridlines for cleaner density+rug
+    composition
+  - geom_segment used for rug marks instead of native geom_rug() if available in the
+    lets-plot version
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white (~#FAF8F1) — correct
+      Chrome: Title "rug-basic · letsplot · anyplot.ai" in dark ink (readable); X-axis "Response Time (ms)" and Y-axis "Density" in dark ink (readable); tick labels in soft dark (#4A4A44) — all readable
+      Data: Brand green #009E73 density curve with 25% opacity fill; rug marks (geom_segment) as short green vertical ticks at bottom; trimodal distribution visible (peaks ~120ms, ~250ms, ~400ms); outlier rug marks at 550–780ms
+      Legibility verdict: PASS
+
+    Dark render (plot-dark.png):
+      Background: Near-black (~#1A1A17) — correct
+      Chrome: Title and axis labels in light text (#F0EFE8 equivalent) — clearly readable; tick labels in soft light color — readable; no dark-on-dark failures detected
+      Data: Identical brand green #009E73 for density curve and rug marks — colors unchanged from light render; data remains clearly distinguishable against dark background
+      Legibility verdict: PASS
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 29
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
-        passed: true
-        comment: Title, axis labels, and tick marks are all clearly readable at proper
-          sizes
-      - id: VQ-02
-        name: No Overlap
         score: 8
         max: 8
+        passed: true
+        comment: Title=24, axis_title=20, axis_text=16 explicitly set; readable in
+          both renders
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
         passed: true
         comment: No overlapping text elements
       - id: VQ-03
         name: Element Visibility
         score: 6
-        max: 8
+        max: 6
         passed: true
-        comment: Rug marks visible but quite small/thin; density curve clearly visible
+        comment: Density curve prominent; rug marks visible with appropriate height
+          and alpha=0.7
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Single blue color, good contrast, no colorblind issues
-      - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Good canvas utilization, balanced margins
-      - id: VQ-06
-        name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive with units: "Response Time (ms)" and "Density"'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
+        comment: 'Single series Okabe-Ito #009E73, CVD-safe'
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 3
+        max: 4
+        passed: true
+        comment: Good proportions; some empty space in upper-right due to right-skewed
+          distribution
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
         max: 2
-        passed: false
-        comment: Grid is present but somewhat dominant; could be more subtle
+        passed: true
+        comment: Response Time (ms) with units, Density; correct title format
+      - id: VQ-07
+        name: Palette Compliance
+        score: 2
+        max: 2
+        passed: true
+        comment: '#009E73 for single series; #FAF8F1 light / #1A1A17 dark backgrounds;
+          chrome adapts correctly'
+    design_excellence:
+      score: 13
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: true
+        comment: Clean professional density+rug with semi-transparent fill; above
+          defaults but not publication-ready
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Minor grid removed, major grid subtly styled (size=0.2); both x/y
+          gridlines still visible
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Trimodal distribution and gap between fast/medium/slow clusters immediately
+          legible from KDE and rug
     spec_compliance:
-      score: 23
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct rug plot with tick marks along x-axis
+        comment: Rug marks along x-axis complemented by density curve per spec
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Values correctly mapped to x-axis position
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Shows rug marks with density complement as spec suggests
-      - id: SC-04
-        name: Data Range
+        comment: Semi-transparency, consistent tick height, x-axis position, paired
+          with density
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible including outliers
-      - id: SC-05
-        name: Legend Accuracy
-        score: 0
-        max: 2
-        passed: false
-        comment: No legend needed/present for single-series plot (N/A but docking
-          2)
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
+        comment: Continuous variable on x-axis, density on y-axis, all 99 observations
+          represented
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Correctly uses "rug-basic · letsplot · pyplots.ai"
+        comment: rug-basic · letsplot · anyplot.ai exact format; no legend (single-series,
+          correct)
     data_quality:
-      score: 20
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows clusters, gaps, and outliers as spec mentions
+        comment: Shows clustering, gaps, exact observation positions, and outliers
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Response times in milliseconds is a plausible real scenario
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Values 80-780ms are realistic for API response times
+        comment: API/server response time — real, neutral, comprehensible scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: 100–800ms realistic for web service latency; cluster proportions
+          plausible
     code_quality:
       score: 9
       max: 10
@@ -164,41 +180,58 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Simple linear flow: imports → data → plot → save'
+        comment: Linear imports→data→plot→save; no functions or classes
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports
+        comment: All imports used; wildcard import is idiomatic for lets-plot
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
+        score: 1
+        max: 2
+        passed: true
+        comment: 'Repeated # noqa: F405 on every geom/theme call clutters code; named
+          imports would eliminate noise'
+      - id: CQ-05
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Uses current lets-plot API
-      - id: CQ-05
-        name: Output Correct
-        score: 0
-        max: 1
-        passed: false
-        comment: Saves to "plot.png" but uses path="." instead of direct filename
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves plot-{THEME}.png (scale=3) and plot-{THEME}.html correctly
+    library_mastery:
+      score: 6
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 3
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
         max: 5
         passed: true
-        comment: Uses geom_segment for rug marks (creative workaround since letsplot
-          lacks geom_rug), ggsize, theme customization, but no letsplot-specific interactive
-          features leveraged
+        comment: Correct ggplot grammar, layered geoms, proper theme() override, ggsize()
+          for canvas
+      - id: LM-02
+        name: Distinctive Features
+        score: 2
+        max: 5
+        passed: true
+        comment: Uses ggsize+scale=3 for high-res export (lets-plot distinctive);
+          does not use native geom_rug() if available
   verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending

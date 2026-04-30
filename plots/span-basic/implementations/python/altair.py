@@ -1,4 +1,4 @@
-""" anyplot.ai
+"""anyplot.ai
 span-basic: Basic Span Plot (Highlighted Region)
 Library: altair 6.1.0 | Python 3.13.13
 Quality: 83/100 | Updated: 2026-04-30
@@ -49,7 +49,13 @@ line = (
     alt.Chart(df)
     .mark_line(strokeWidth=4, color=BRAND)
     .encode(
-        x=alt.X("Date:T", title="Date", axis=alt.Axis(labelFontSize=18, titleFontSize=22)),
+        x=alt.X(
+            "Date:T",
+            title="Date",
+            axis=alt.Axis(
+                labelFontSize=18, titleFontSize=22, tickCount={"interval": "month", "step": 3}, format="%b %Y"
+            ),
+        ),
         y=alt.Y(
             "Price:Q",
             title="Stock Price ($)",
@@ -65,7 +71,7 @@ points = (
     .mark_point(size=150, color=BRAND, filled=True)
     .encode(
         x="Date:T",
-        y="Price:Q",
+        y=alt.Y("Price:Q", scale=alt.Scale(domain=[60, 130])),
         tooltip=[alt.Tooltip("Date:T", format="%b %Y"), alt.Tooltip("Price:Q", format=".2f", title="Price ($)")],
     )
 )
@@ -93,32 +99,34 @@ right_edge = (
 # Horizontal span — warning threshold zone
 threshold_span_data = pd.DataFrame({"y": [threshold_low], "y2": [threshold_high]})
 horizontal_span = (
-    alt.Chart(threshold_span_data).mark_rect(opacity=0.2, color=SPAN2_COLOR).encode(y=alt.Y("y:Q"), y2=alt.Y2("y2:Q"))
+    alt.Chart(threshold_span_data)
+    .mark_rect(opacity=0.2, color=SPAN2_COLOR)
+    .encode(y=alt.Y("y:Q", scale=alt.Scale(domain=[60, 130])), y2=alt.Y2("y2:Q"))
 )
 
 bottom_edge = (
     alt.Chart(pd.DataFrame({"y": [threshold_low]}))
     .mark_rule(strokeWidth=2, strokeDash=[6, 4], color=SPAN2_COLOR)
-    .encode(y="y:Q")
+    .encode(y=alt.Y("y:Q", scale=alt.Scale(domain=[60, 130])))
 )
 
 top_edge = (
     alt.Chart(pd.DataFrame({"y": [threshold_high]}))
     .mark_rule(strokeWidth=2, strokeDash=[6, 4], color=SPAN2_COLOR)
-    .encode(y="y:Q")
+    .encode(y=alt.Y("y:Q", scale=alt.Scale(domain=[60, 130])))
 )
 
 # Text labels for span regions
 recession_label = (
     alt.Chart(pd.DataFrame({"x": [pd.Timestamp("2008-07-01")], "y": [125], "text": ["Recession Period"]}))
     .mark_text(fontSize=18, fontWeight="bold", color=SPAN1_COLOR)
-    .encode(x="x:T", y="y:Q", text="text:N")
+    .encode(x="x:T", y=alt.Y("y:Q", scale=alt.Scale(domain=[60, 130])), text="text:N")
 )
 
 threshold_label = (
     alt.Chart(pd.DataFrame({"x": [pd.Timestamp("2007-06-01")], "y": [90], "text": ["Warning Zone"]}))
     .mark_text(fontSize=16, fontWeight="bold", color=SPAN2_COLOR)
-    .encode(x="x:T", y="y:Q", text="text:N")
+    .encode(x="x:T", y=alt.Y("y:Q", scale=alt.Scale(domain=[60, 130])), text="text:N")
 )
 
 # Combine all layers with theme-adaptive chrome

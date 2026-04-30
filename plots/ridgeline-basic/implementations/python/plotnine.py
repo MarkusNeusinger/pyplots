@@ -1,6 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 ridgeline-basic: Basic Ridgeline Plot
 Library: plotnine 0.15.3 | Python 3.13.13
+Quality: 92/100 | Updated: 2026-04-30
 """
 
 import os

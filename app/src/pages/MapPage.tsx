@@ -32,23 +32,24 @@ import {
 } from './MapPage.helpers';
 
 
-const NODE_SIZE = 22;            // px in graph space — ImageCard thumbnails feel right around this size
-const HOVER_PREVIEW_SIZE = NODE_SIZE * 9;     // graph-space size of the hover preview overlay
+const NODE_SIZE = 44;            // graph-space size of a node — large enough to read the thumbnail without hovering
+const HOVER_PREVIEW_SIZE = NODE_SIZE * 6;     // graph-space size of the hover preview overlay
 const COOLDOWN_TICKS = 400;       // longer settling for cleaner final positions
 const KNN_K = 5;                  // edges per node in the sparse KNN graph
 const KNN_MIN_SIM = 0.05;         // drop near-zero noise links
 // Forces: tuned for clean spread + visible clusters at typical viewport sizes.
-const REPULSION = -160;           // forceManyBody strength — more negative = more global repulsion
+// DEBUG MODE: weakened repulsion + link forces so cluster gravity dominates.
+const REPULSION = -40;            // forceManyBody strength — more negative = more global repulsion
 const LINK_DISTANCE_MIN = NODE_SIZE * 1.5;   // shortest link (highest sim)
 const LINK_DISTANCE_MAX = NODE_SIZE * 6;     // longest link (lowest sim above threshold)
+const LINK_STRENGTH_CAP = 0.15;   // max pull from a single link
 const COLLIDE_PADDING = 4;        // px padding on top of the bounding-box radius
 // Cluster gravity: places each major plot_type on a ring of this radius and
-// pulls nodes toward their type's anchor. Strength is gentle so KNN edges
-// still shape the within-cluster topology — but neighborhoods stay visibly
-// separate. Singleton plot_types bucket into a shared "other" anchor so the
-// ring doesn't degenerate into 100+ closely-spaced points.
-const CLUSTER_RADIUS = NODE_SIZE * 30;
-const CLUSTER_STRENGTH = 0.18;
+// pulls nodes toward their type's anchor. The radius is in absolute graph
+// units (not relative to NODE_SIZE) so changing the node size doesn't blow
+// up the layout — zoomToFit still has to bring the whole thing into view.
+const CLUSTER_RADIUS = 600;
+const CLUSTER_STRENGTH = 0.6;
 
 // visually-hidden style — keeps the spec list readable for screen readers
 // even though the canvas is the primary interface.
@@ -64,9 +65,30 @@ const visuallyHiddenSx = {
   border: 0,
 };
 
+// Deterministic per-bucket color for debugging cluster layout. Colors come
+// from the Okabe-Ito brand palette; assignment is by stable index of the
+// (sorted) bucket list so the same plot_type always paints the same color.
+const CLUSTER_COLORS = [
+  '#009E73', // brand green
+  '#D55E00', // vermillion
+  '#0072B2', // blue
+  '#CC79A7', // reddish purple
+  '#E69F00', // orange
+  '#56B4E9', // sky blue
+  '#F0E442', // yellow
+] as const;
+
+function clusterColor(bucket: string, allBuckets: string[]): string {
+  const idx = allBuckets.indexOf(bucket);
+  return CLUSTER_COLORS[Math.max(0, idx) % CLUSTER_COLORS.length];
+}
+
 // Hairline border around a thumbnail node, theme-aware.
-function strokeFor(isDark: boolean, isHover: boolean): string {
+// In DEBUG mode: replace the neutral border with the cluster color so each
+// neighborhood is visually obvious even when the spatial separation is subtle.
+function strokeFor(isDark: boolean, isHover: boolean, cluster?: string): string {
   if (isHover) return colors.primary;
+  if (cluster) return cluster;
   return isDark ? 'rgba(240,239,232,0.18)' : 'rgba(26,26,23,0.18)';
 }
 
@@ -175,6 +197,13 @@ export function MapPage() {
     }
     return map;
   }, [graphData.links]);
+
+  // Stable list of bucket names so clusterColor() returns a consistent index
+  // even as the simulation mutates node positions.
+  const allBuckets = useMemo(
+    () => Array.from(new Set(graphData.nodes.map(n => n.primaryType))).sort(),
+    [graphData.nodes],
+  );
 
   // 5. ForceGraph2D callbacks. Types for ctx come from the wrapper's prop signature
   // when these are passed inline below — extracting them out would force us to spell
@@ -295,8 +324,8 @@ export function MapPage() {
                 ctx.fillStyle = isDark ? '#242420' : '#FFFDF6';
                 ctx.fillRect(x, y, w, h);
               }
-              ctx.lineWidth = isHover ? 2 : 1;
-              ctx.strokeStyle = strokeFor(isDark, !!isHover);
+              ctx.lineWidth = isHover ? 2 : 1.5;
+              ctx.strokeStyle = strokeFor(isDark, !!isHover, clusterColor(n.primaryType, allBuckets));
               ctx.strokeRect(x, y, w, h);
               ctx.restore();
             }}
@@ -307,17 +336,27 @@ export function MapPage() {
               ctx.fillStyle = color;
               ctx.fillRect(n.x - w / 2, n.y - h / 2, w, h);
             }}
+            // Links are intentionally very subtle by default so the thumbnails
+            // dominate. Hovered-node connections light up bright green; the
+            // rest of the graph fades further so the relationship is obvious.
             linkColor={(l: MapLink) => {
               const involved = hoverId && (l.source === hoverId || l.target === hoverId);
               if (involved) return colors.primary;
-              if (hoverId) return isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)';
-              return isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.12)';
+              if (hoverId) return isDark ? 'rgba(255,255,255,0.015)' : 'rgba(0,0,0,0.02)';
+              return isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.05)';
             }}
-            linkWidth={(l: MapLink) => Math.max(0.5, (l.weight ?? 0.3) * 2.5)}
+            linkWidth={(l: MapLink) => {
+              const involved = hoverId && (l.source === hoverId || l.target === hoverId);
+              if (involved) return Math.max(1, (l.weight ?? 0.3) * 2);
+              return Math.max(0.15, (l.weight ?? 0.3) * 0.8);
+            }}
             onNodeClick={onNodeClick}
             onNodeHover={(n: MapNode | null) => setHoverId(n?.id ?? null)}
             cooldownTicks={COOLDOWN_TICKS}
-            onEngineStop={() => fgRef.current?.zoomToFit?.(400, 40)}
+            // Fit the whole cluster ring into the viewport once the engine
+            // settles. A small padding leaves room for the hover preview to
+            // bleed past a node without clipping at the canvas edge.
+            onEngineStop={() => fgRef.current?.zoomToFit?.(600, 80)}
             // Wire up the custom forces once the imperative ref is available.
             // onRenderFramePre fires every frame; the __forcesWired guard makes
             // it idempotent and the cost on subsequent frames is one property read.
@@ -337,7 +376,7 @@ export function MapPage() {
                   return LINK_DISTANCE_MIN + (1 - Math.min(1, w)) * (LINK_DISTANCE_MAX - LINK_DISTANCE_MIN);
                 });
                 linkForce.strength((l: MapLink) =>
-                  Math.max(0.05, Math.min(1, (l.weight ?? 0.3) * 1.5))
+                  Math.max(0.02, Math.min(LINK_STRENGTH_CAP, (l.weight ?? 0.3) * 0.4))
                 );
               }
               // Per-node collision: prevents thumbnail overlap. Radius = half

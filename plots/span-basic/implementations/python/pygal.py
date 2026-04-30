@@ -1,7 +1,6 @@
-""" anyplot.ai
+"""anyplot.ai
 span-basic: Basic Span Plot (Highlighted Region)
 Library: pygal 3.1.0 | Python 3.13.13
-Quality: 79/100 | Created: 2026-04-30
 """
 
 import os
@@ -23,6 +22,9 @@ THEME = os.getenv("ANYPLOT_THEME", "light")
 PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
 INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
 INK_MUTED = "#6B6A63" if THEME == "light" else "#A8A79F"
+
+# Boost span opacity on dark backgrounds so fills stay visible as "highlight regions"
+SPAN_OPACITY = ".45" if THEME == "dark" else ".25"
 
 OKABE_ITO = ("#009E73", "#D55E00", "#0072B2", "#CC79A7", "#E69F00", "#56B4E9", "#F0E442")
 
@@ -46,17 +48,17 @@ custom_style = Style(
     foreground_strong=INK,
     foreground_subtle=INK_MUTED,
     colors=OKABE_ITO,
-    opacity=".25",
-    opacity_hover=".4",
-    title_font_size=28,
+    opacity=SPAN_OPACITY,
+    opacity_hover=".5",
+    title_font_size=32,
     label_font_size=22,
     major_label_font_size=18,
-    legend_font_size=16,
-    value_font_size=14,
+    legend_font_size=18,
+    value_font_size=16,
     stroke_width=3,
 )
 
-# Plot
+# Plot — x-guides disabled for a cleaner grid; human_readable for polished tooltips
 chart = pygal.XY(
     style=custom_style,
     width=4800,
@@ -65,13 +67,14 @@ chart = pygal.XY(
     x_title="Year",
     y_title="Price ($)",
     show_dots=False,
-    show_x_guides=True,
+    show_x_guides=False,
     show_y_guides=True,
     range=(y_min, y_max),
     xrange=(2005.5, 2016.5),
     fill=True,
     stroke=True,
     dots_size=0,
+    human_readable=True,
 )
 
 # Vertical span: Recession Period (2008-2009) — closed polygon
@@ -82,8 +85,8 @@ chart.add("Recession Period", recession_span)
 risk_span = [(2005.5, 60), (2005.5, 80), (2016.5, 80), (2016.5, 60), (2005.5, 60)]
 chart.add("Risk Zone", risk_span)
 
-# Main line (no fill, stroke only)
-main_data = [(float(x), float(y)) for x, y in zip(dates, price, strict=True)]
+# Main line — dict format enables per-point custom tooltip labels (pygal interactive feature)
+main_data = [{"value": (float(x), float(y)), "label": f"${y:.0f}"} for x, y in zip(dates, price, strict=True)]
 chart.add("Stock Price", main_data, fill=False, stroke=True)
 
 # Save

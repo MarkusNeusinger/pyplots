@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
+import Slider from '@mui/material/Slider';
 import Typography from '@mui/material/Typography';
 import ForceGraph2D from 'react-force-graph-2d';
 import { forceCollide } from 'd3-force-3d';
@@ -15,6 +16,7 @@ import { colors, fontSize, typography } from '../theme';
 import {
   buildKNNLinks,
   computeIDF,
+  DEFAULT_CATEGORY_WEIGHT,
   ensureNodeTier,
   fitToBox,
   flattenTags,
@@ -25,11 +27,13 @@ import {
   preloadImages,
   primaryPlotType,
   selectMapThumbUrl,
+  TAG_CATEGORIES,
   topPlotTypes,
   type MapLink,
   type MapNode,
   type ResolutionTier,
   type SpecMapItem,
+  type TagCategory,
 } from './MapPage.helpers';
 
 
@@ -115,6 +119,10 @@ export function MapPage() {
   // hoverType = a plot_type the user is hovering in the legend; everything
   // not in that cluster dims so the cluster shape is obvious.
   const [hoverType, setHoverType] = useState<string | null>(null);
+  // Per-category weight overrides for the similarity calculation. Bound to
+  // the weights panel sliders. Live-updates KNN edges + simulation on change.
+  const [weights, setWeights] = useState<Record<TagCategory, number>>(DEFAULT_CATEGORY_WEIGHT);
+  const [weightsOpen, setWeightsOpen] = useState(false);
 
   // 1. fetch + page view
   useEffect(() => {
@@ -170,9 +178,9 @@ export function MapPage() {
         pendingTiers: new Set(),
       };
     });
-    const links = buildKNNLinks(specs, idf, KNN_K, KNN_MIN_SIM);
+    const links = buildKNNLinks(specs, idf, KNN_K, KNN_MIN_SIM, weights);
     return { nodes, links, topTypes, typeCounts };
-  }, [specs, isDark]);
+  }, [specs, isDark, weights]);
 
   // Eager-load the 400-tier thumbnails so something paints fast. Higher tiers
   // are fetched lazily from nodeCanvasObject when the user zooms in.
@@ -309,6 +317,94 @@ export function MapPage() {
             })}
           </Box>
         )}
+
+        {/* Weights panel: collapsible bottom-left control for per-category
+            similarity weights. Live-updates KNN + simulation on every drag. */}
+        <Box sx={{
+          position: 'absolute',
+          bottom: { xs: 8, sm: 16 },
+          left: { xs: 16, sm: 32, md: 64, lg: 96 },
+          zIndex: 2,
+          fontFamily: typography.mono,
+          fontSize: fontSize.xs,
+          color: 'var(--ink-soft)',
+        }}>
+          <Box
+            component="button"
+            onClick={() => setWeightsOpen(o => !o)}
+            sx={{
+              all: 'unset',
+              cursor: 'pointer',
+              fontFamily: typography.mono,
+              fontSize: fontSize.xs,
+              color: weightsOpen ? 'var(--ink)' : 'var(--ink-soft)',
+              '&:hover': { color: colors.primary },
+              userSelect: 'none',
+            }}
+          >
+            {weightsOpen ? 'weights ▾' : 'weights ▸'}
+          </Box>
+          {weightsOpen && (
+            <Box sx={{
+              mt: 1,
+              p: 2,
+              minWidth: 280,
+              border: '1px solid var(--rule)',
+              borderRadius: '4px',
+              bgcolor: 'var(--bg-surface)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 1.25,
+            }}>
+              {TAG_CATEGORIES.map(cat => (
+                <Box key={cat} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <Box component="span" sx={{ minWidth: 100, fontFamily: typography.mono, fontSize: fontSize.xs }}>
+                    {cat}
+                  </Box>
+                  <Slider
+                    value={weights[cat]}
+                    onChange={(_, v) => setWeights(w => ({ ...w, [cat]: v as number }))}
+                    min={0}
+                    max={3}
+                    step={0.1}
+                    size="small"
+                    sx={{
+                      flex: 1,
+                      color: colors.primary,
+                      '& .MuiSlider-rail': { opacity: 0.25 },
+                    }}
+                  />
+                  <Box component="span" sx={{
+                    minWidth: 28,
+                    textAlign: 'right',
+                    fontFamily: typography.mono,
+                    fontSize: fontSize.xs,
+                    fontVariantNumeric: 'tabular-nums',
+                    color: 'var(--ink)',
+                  }}>
+                    {weights[cat].toFixed(1)}
+                  </Box>
+                </Box>
+              ))}
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 0.5 }}>
+                <Box
+                  component="button"
+                  onClick={() => setWeights(DEFAULT_CATEGORY_WEIGHT)}
+                  sx={{
+                    all: 'unset',
+                    cursor: 'pointer',
+                    fontFamily: typography.mono,
+                    fontSize: fontSize.xs,
+                    color: 'var(--ink-soft)',
+                    '&:hover': { color: colors.primary },
+                  }}
+                >
+                  reset
+                </Box>
+              </Box>
+            </Box>
+          )}
+        </Box>
 
         {/* Loading / error states */}
         {!specs && !error && (

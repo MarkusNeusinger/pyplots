@@ -93,21 +93,43 @@ export function computeIDF(specs: SpecMapItem[]): Map<string, number> {
 }
 
 /**
- * Per-category multiplier on top of IDF weighting. Lets us privilege some
- * tag categories over others when measuring similarity — e.g. sharing the
- * same `plot_type` should pull two specs together harder than sharing a
- * common `styling` token. Categories not listed here default to 1.0.
+ * The 9 known tag categories the catalog uses. The first four come from
+ * specification.yaml (spec-level), the last five from impl metadata yaml.
  */
-export const CATEGORY_WEIGHT: Record<string, number> = {
-  plot_type: 3,
+export const TAG_CATEGORIES = [
+  'plot_type',
+  'features',
+  'data_type',
+  'domain',
+  'dependencies',
+  'techniques',
+  'patterns',
+  'dataprep',
+  'styling',
+] as const;
+
+export type TagCategory = (typeof TAG_CATEGORIES)[number];
+
+/**
+ * Default per-category multipliers applied on top of IDF weighting in the
+ * Jaccard similarity calculation. Users can override these live via the
+ * weights panel; passing a custom `weights` map to {@link weightedJaccard}
+ * or {@link buildKNNLinks} replaces the defaults entirely.
+ *
+ * Rationale: plot_type is the strongest discovery signal — sharing it pulls
+ * two specs together hard. Styling is the weakest — two specs that both
+ * use alpha-blending shouldn't cluster on that alone.
+ */
+export const DEFAULT_CATEGORY_WEIGHT: Record<TagCategory, number> = {
+  plot_type: 3.0,
   features: 1.5,
-  data_type: 1,
-  domain: 1,
+  techniques: 1.0,
+  patterns: 1.0,
+  dataprep: 1.0,
   dependencies: 0.8,
-  patterns: 1,
-  dataprep: 1,
-  techniques: 0.7,
-  styling: 0.5,
+  domain: 0.7,
+  data_type: 0.6,
+  styling: 0.4,
 };
 
 function categoryOf(prefixedTag: string): string {
@@ -115,19 +137,28 @@ function categoryOf(prefixedTag: string): string {
   return idx >= 0 ? prefixedTag.slice(0, idx) : '';
 }
 
-function tagWeight(tag: string, idf: Map<string, number>): number {
-  return (idf.get(tag) ?? 0) * (CATEGORY_WEIGHT[categoryOf(tag)] ?? 1);
+function tagWeight(
+  tag: string,
+  idf: Map<string, number>,
+  weights: Record<string, number>
+): number {
+  return (idf.get(tag) ?? 0) * (weights[categoryOf(tag)] ?? 1);
 }
 
 /**
  * Weighted Jaccard similarity over two tag sets.
  *   sim = Σ w_t for t∈a∩b / Σ w_t for t∈a∪b
- * Per-tag weight = IDF × CATEGORY_WEIGHT[category prefix], so the contribution
- * of a shared tag depends both on its rarity in the corpus and on which
- * category it belongs to. Returns 0 when either set is empty or denominator
- * collapses to zero.
+ * Per-tag weight = IDF × weights[category prefix], so the contribution of a
+ * shared tag depends both on its rarity in the corpus and on which category
+ * it belongs to. Returns 0 when either set is empty or the denominator
+ * collapses to zero. `weights` defaults to {@link DEFAULT_CATEGORY_WEIGHT}.
  */
-export function weightedJaccard(a: string[], b: string[], idf: Map<string, number>): number {
+export function weightedJaccard(
+  a: string[],
+  b: string[],
+  idf: Map<string, number>,
+  weights: Record<string, number> = DEFAULT_CATEGORY_WEIGHT
+): number {
   if (a.length === 0 || b.length === 0) return 0;
   const setA = new Set(a);
   const setB = new Set(b);
@@ -136,13 +167,13 @@ export function weightedJaccard(a: string[], b: string[], idf: Map<string, numbe
   const seen = new Set<string>();
   for (const t of setA) {
     seen.add(t);
-    const w = tagWeight(t, idf);
+    const w = tagWeight(t, idf, weights);
     denom += w;
     if (setB.has(t)) num += w;
   }
   for (const t of setB) {
     if (seen.has(t)) continue;
-    denom += tagWeight(t, idf);
+    denom += tagWeight(t, idf, weights);
   }
   return denom > 0 ? num / denom : 0;
 }
@@ -159,7 +190,8 @@ export function buildKNNLinks(
   specs: SpecMapItem[],
   idf: Map<string, number>,
   k = 5,
-  minSim = 0.05
+  minSim = 0.05,
+  weights: Record<string, number> = DEFAULT_CATEGORY_WEIGHT
 ): MapLink[] {
   const tagsByIdx = specs.map(s => flattenTags(s));
   const linkSet = new Map<string, MapLink>();
@@ -167,7 +199,7 @@ export function buildKNNLinks(
     const sims: { j: number; sim: number }[] = [];
     for (let j = 0; j < specs.length; j++) {
       if (i === j) continue;
-      const sim = weightedJaccard(tagsByIdx[i], tagsByIdx[j], idf);
+      const sim = weightedJaccard(tagsByIdx[i], tagsByIdx[j], idf, weights);
       // sim > 0 drops zero-weight links (no shared tags or all-zero IDF) — pure visual noise.
       if (sim > 0 && sim >= minSim) sims.push({ j, sim });
     }

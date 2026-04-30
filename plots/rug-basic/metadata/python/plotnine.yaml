@@ -2,7 +2,7 @@ library: plotnine
 language: python
 specification_id: rug-basic
 created: '2025-12-23T19:43:07Z'
-updated: '2026-04-30T05:26:09Z'
+updated: '2026-04-30T05:34:04Z'
 generated_by: claude-sonnet
 workflow_run: 25148709306
 issue: 978
@@ -12,111 +12,114 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/rug-basic
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/rug-basic/python/plotnine/plot-dark.png
 preview_html_light: null
 preview_html_dark: null
-quality_score: 82
+quality_score: 85
 review:
   strengths:
-  - 'Perfect spec compliance: geom_rug() with alpha, correct x-axis placement, all
-    required features'
-  - 'Excellent data quality: clusters + outliers make for a textbook rug plot dataset
-    with realistic response-time context'
-  - 'Flawless code quality: KISS structure, seed set, clean imports, correct output'
-  - Correct theme-adaptive chrome in both renders — no dark-on-dark failures
+  - Clean density + rug combination using brand green throughout
+  - Near-perfect spec compliance — rug marks, alpha transparency, and x-axis positioning
+    all correct
+  - Correct theme-adaptive tokens for both light and dark renders — no dark-on-dark
+    failures
+  - 'Perfect code quality: seed set, KISS structure, clean imports, idiomatic plotnine
+    grammar'
+  - 'Excellent data storytelling: three-cluster response time dataset clearly shows
+    gaps, clustering, and outliers in both density and rug layers'
   weaknesses:
-  - 'Canvas waste (critical): rug strip uses <10% of canvas height on a 16:9 figure
-    (~85% empty space). Fix: shrink figure_size to (16, 3) or (16, 4), or add geom_density()
-    above the rug to fill canvas meaningfully.'
-  - 'DE-03/Data Storytelling: clustering pattern visible but not emphasized; no visual
-    hierarchy guides the viewer.'
-  - 'DE-01/Aesthetic Sophistication: empty canvas undermines design; once canvas proportions
-    fixed, consider taller rug marks for visual impact at high resolution.'
+  - Density curve slightly truncated at the left y-axis edge — left tail clips at
+    plot boundary
+  - 'Design excellence is adequate but not elevated: no typography hierarchy variation,
+    no subtle annotations or callouts to guide the viewer'
+  - DE-03 storytelling is functional but passive — no visual emphasis distinguishing
+    the clusters or outlier region from the main mass
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white, consistent with #FAF8F1 — not pure white
-      Chrome: Title "rug-basic · plotnine · anyplot.ai" in dark text at top — readable. X-axis label "Response Time (ms)" and tick labels (200, 400, 600, 800) in muted dark tone — all readable against light background.
-      Data: Rug tick marks in brand green #009E73 with alpha=0.6, positioned along the bottom x-axis. Three visible clusters (100-200ms, 280-360ms, 400-500ms) and sparse outliers (600-830ms) are clearly visible.
-      Legibility verdict: PASS — all text is readable. FAIL — canvas utilization: rug strip occupies ~10% of canvas height, ~85% is empty off-white space.
+      Background: Warm off-white #FAF8F1 — correct, not pure white
+      Chrome: Title "rug-basic · plotnine · anyplot.ai" in dark ink at ~24pt, clearly readable. X-axis label "Response Time (ms)" at ~20pt, readable. Tick labels (200, 400, 600, 800) at ~16pt in INK_SOFT, readable. Y-axis fully hidden by design — appropriate for density plot.
+      Data: Brand green #009E73 density fill (alpha=0.3) with matching outline (size=1.5). Rug marks below x-axis in #009E73 (alpha=0.6). Three clusters visible (150ms, 280ms, 450ms peaks). Outliers sparse at 620–820ms. First (only) series is correctly #009E73.
+      Layout note: Density curve starts at the very left edge of the plot, producing a minor clip of the left tail. Not a major issue.
+      Legibility verdict: PASS
 
     Dark render (plot-dark.png):
-      Background: Warm near-black, consistent with #1A1A17 — not pure black
-      Chrome: Title and axis labels in light text — clearly readable against dark background. No dark-on-dark failures. Tick labels are light-colored and visible.
-      Data: Rug marks are identical green #009E73 to light render — only background and chrome flip. Data colors unchanged.
-      Legibility verdict: PASS — all text readable in dark theme. FAIL — same canvas waste issue: rug strip at bottom of largely empty near-black canvas.
+      Background: Warm near-black #1A1A17 — correct, not pure black
+      Chrome: Title in light/off-white color, clearly readable against dark background. X-axis label and tick labels rendered in light-colored INK/INK_SOFT tokens — no dark-on-dark failures detected. All text passes readability check.
+      Data: Identical #009E73 brand green for both density fill and rug marks — data colors are unchanged between themes as required. Rug marks at bottom remain visible. Three clusters and outlier region identifiable.
+      Legibility verdict: PASS
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 26
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: Title 24pt, axis label 20pt, ticks 16pt — all explicitly set and
-          readable in both themes
+        comment: Title 24pt, axis labels 20pt, tick labels 16pt — all readable in
+          both themes with correct INK/INK_SOFT tokens
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: No overlapping text; rug marks overlap naturally and intentionally
+        comment: Minor rug mark overlap in dense first cluster; alpha=0.6 mitigates;
+          no text overlap
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Rug marks visible at alpha=0.6, size=1.5; could be slightly taller
-          for 4800x2700 canvas
+        comment: Density fill and rug marks both clearly visible; size=1.5 is appropriate
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: 'Single series in #009E73, CVD-safe'
+        comment: Single CVD-safe brand green throughout
       - id: VQ-05
         name: Layout & Canvas
-        score: 0
+        score: 3
         max: 4
-        passed: false
-        comment: 'SEVERE: Rug strip fills <10% of canvas height; ~85% of 16:9 canvas
-          is empty space. Automatic 0 per <30% utilization rule.'
+        passed: true
+        comment: Good 16:9 proportions; minor left-edge clip of density curve tail
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Response Time (ms) includes units
+        comment: Correct title format; x-axis labeled with units; y-axis intentionally
+          blank
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series #009E73, light bg #FAF8F1, dark bg #1A1A17, chrome
-          adapts correctly in both renders'
+        comment: 'First series #009E73; backgrounds #FAF8F1 (light) / #1A1A17 (dark);
+          both themes correct'
     design_excellence:
-      score: 10
+      score: 12
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
         passed: true
-        comment: 'Well-configured defaults: brand green, warm background, clean axis.
-          Massive empty canvas makes design feel incomplete.'
+        comment: Clean density+rug with alpha transparency; intentional brand color
+          use; minimal chrome — above default but not exceptional
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: No grid, panel border removed, y-axis suppressed, explicit x-axis
-          line — solid refinement choices.
+        comment: Grid fully removed, y-axis hidden, panel border removed, only x-axis
+          line retained — well-refined for a rug plot
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 3
         max: 6
-        passed: false
-        comment: Data is shown (clusters and outliers visible) but no visual emphasis
-          or hierarchy guides the viewer.
+        passed: true
+        comment: Density+rug dual layer creates narrative but no active emphasis on
+          clusters or outlier region
     spec_compliance:
       score: 15
       max: 15
@@ -126,27 +129,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Uses geom_rug() correctly, placed on bottom axis
+        comment: Correct rug plot with density companion
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: alpha=0.6 semi-transparency, consistent tick height, x-axis positioning
-          all present
+        comment: Semi-transparency, consistent tick height, x-axis positioning — all
+          present
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Response time on x-axis, all data visible
+        comment: X-axis shows response_time; full range visible
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: rug-basic · plotnine · anyplot.ai matches required format; no legend
-          needed for single series
+        comment: Title format correct; no legend appropriate for single series
     data_quality:
       score: 15
       max: 15
@@ -156,21 +158,20 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Three distinct clusters + four outliers demonstrate clustering, gaps,
-          and edge-of-distribution observations
+        comment: Shows clustering, gaps, exact locations, outliers — full coverage
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Response time (ms) is a real-world web/app metric with realistic
-          clustering patterns
+        comment: Response times with realistic multi-modal distribution; neutral and
+          plausible
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values 100-820ms are factually plausible for API/web response times
+        comment: 94 observations, 100–850ms range — sensible
     code_quality:
       score: 10
       max: 10
@@ -180,7 +181,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Imports -> Data -> Plot -> Save, no functions or classes
+        comment: No functions/classes, clean imperative code
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -192,19 +193,19 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, Pythonic, no fake functionality
+        comment: Appropriate complexity, no fake UI
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot-{THEME}.png
+        comment: Saves as plot-{THEME}.png; current API
     library_mastery:
       score: 7
       max: 10
@@ -214,19 +215,20 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Correct ggplot grammar: ggplot() + geom_rug() + theme_minimal()
-          + theme() override. Proper plotnine patterns.'
+        comment: Correct ggplot grammar, geom_rug with sides parameter, theme_minimal
+          + custom theme
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: geom_rug() with sides='b' is a ggplot2/plotnine-specific geom not
-          available in other libraries in the same grammar-based way.
-  verdict: REJECTED
+        comment: geom_rug is distinctly plotnine/ggplot2; layer composition with geom_density
+          is idiomatic
+  verdict: APPROVED
 impl_tags:
   dependencies: []
-  techniques: []
+  techniques:
+  - layer-composition
   patterns:
   - data-generation
   dataprep: []

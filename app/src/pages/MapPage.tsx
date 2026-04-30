@@ -15,7 +15,9 @@ import {
   buildKNNLinks,
   computeIDF,
   ensureNodeTier,
+  fitToBox,
   flattenTags,
+  nodeAspectRatio,
   pickBestLoadedTier,
   pickTier,
   preloadImages,
@@ -233,8 +235,6 @@ export function MapPage() {
               const isNeighbor = !isHover && hoverId != null && neighbors.get(hoverId)?.has(n.id);
               const dim = hoverId != null && !isHover && !isNeighbor;
               const baseSize = NODE_SIZE * (isHover ? HOVER_SCALE : isNeighbor ? 1.15 : 1);
-              const x = n.x - baseSize / 2;
-              const y = n.y - baseSize / 2;
 
               // Pick the smallest variant whose source resolution comfortably
               // covers the on-screen size, then lazy-load it if not yet present.
@@ -248,24 +248,32 @@ export function MapPage() {
               }
               const img = n.imgs ? pickBestLoadedTier(n.imgs, desired) : null;
 
+              // Match draw size to the source aspect ratio (most plots are 16:9
+              // from figsize=(16,9)) — keep the longer side at baseSize so nodes
+              // share a consistent bounding-box scale.
+              const { w, h } = fitToBox(baseSize, nodeAspectRatio(n));
+              const x = n.x - w / 2;
+              const y = n.y - h / 2;
+
               ctx.save();
               if (dim) ctx.globalAlpha = 0.18;
               if (img) {
-                ctx.drawImage(img, x, y, baseSize, baseSize);
+                ctx.drawImage(img, x, y, w, h);
               } else {
                 ctx.fillStyle = isDark ? '#242420' : '#FFFDF6';
-                ctx.fillRect(x, y, baseSize, baseSize);
+                ctx.fillRect(x, y, w, h);
               }
               ctx.lineWidth = isHover ? 2 : 1;
               ctx.strokeStyle = strokeFor(isDark, !!isHover);
-              ctx.strokeRect(x, y, baseSize, baseSize);
+              ctx.strokeRect(x, y, w, h);
               ctx.restore();
             }}
             nodePointerAreaPaint={(node, color, ctx) => {
               const n = node as WithCoords;
               if (n.x == null || n.y == null) return;
+              const { w, h } = fitToBox(NODE_SIZE, nodeAspectRatio(n));
               ctx.fillStyle = color;
-              ctx.fillRect(n.x - NODE_SIZE / 2, n.y - NODE_SIZE / 2, NODE_SIZE, NODE_SIZE);
+              ctx.fillRect(n.x - w / 2, n.y - h / 2, w, h);
             }}
             linkColor={(l: MapLink) => {
               const involved = hoverId && (l.source === hoverId || l.target === hoverId);

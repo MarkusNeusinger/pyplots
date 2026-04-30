@@ -9,6 +9,7 @@ import {
   buildVariantUrl,
   pickTier,
   pickBestLoadedTier,
+  fitToBox,
   type SpecMapItem,
 } from './MapPage.helpers';
 
@@ -208,6 +209,31 @@ describe('pickTier', () => {
   it('returns 1200 for very large device sizes', () => {
     expect(pickTier(1000)).toBe(1200);
     expect(pickTier(2000)).toBe(1200);
+  });
+});
+
+
+describe('fitToBox', () => {
+  it('returns a square for 1:1 aspect ratio', () => {
+    expect(fitToBox(22, 1)).toEqual({ w: 22, h: 22 });
+  });
+
+  it('keeps width = box and shrinks height for 16:9', () => {
+    const r = fitToBox(22, 16 / 9);
+    expect(r.w).toBe(22);
+    expect(r.h).toBeCloseTo(22 * 9 / 16);
+  });
+
+  it('keeps height = box and shrinks width for portrait (9:16)', () => {
+    const r = fitToBox(22, 9 / 16);
+    expect(r.h).toBe(22);
+    expect(r.w).toBeCloseTo(22 * 9 / 16);
+  });
+
+  it('falls back to a square for invalid aspect ratios', () => {
+    expect(fitToBox(22, 0)).toEqual({ w: 22, h: 22 });
+    expect(fitToBox(22, NaN)).toEqual({ w: 22, h: 22 });
+    expect(fitToBox(22, Infinity)).toEqual({ w: 22, h: 22 });
   });
 });
 

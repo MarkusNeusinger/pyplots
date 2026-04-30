@@ -205,6 +205,33 @@ export function pickBestLoadedTier(
 }
 
 /**
+ * Read a node's intrinsic aspect ratio (width/height) from any already-loaded
+ * thumbnail variant. Defaults to 1 when nothing is loaded yet (and the page
+ * draws a square fallback rect anyway). Most plots are 16:9 (figsize=(16,9)),
+ * so the typical return value is ~1.78.
+ */
+export function nodeAspectRatio(node: MapNode): number {
+  for (const t of RESOLUTION_TIERS) {
+    const img = node.imgs.get(t);
+    if (img && img.naturalWidth > 0 && img.naturalHeight > 0) {
+      return img.naturalWidth / img.naturalHeight;
+    }
+  }
+  return 1;
+}
+
+/**
+ * Given a target box size and an aspect ratio, return the (width, height) that
+ * fits inside the box without distortion (longer side = boxSize). Used for both
+ * canvas drawing and hit-area painting so they always agree.
+ */
+export function fitToBox(boxSize: number, aspectRatio: number): { w: number; h: number } {
+  if (!isFinite(aspectRatio) || aspectRatio <= 0) return { w: boxSize, h: boxSize };
+  if (aspectRatio >= 1) return { w: boxSize, h: boxSize / aspectRatio };
+  return { w: boxSize * aspectRatio, h: boxSize };
+}
+
+/**
  * Lazily fetch the requested tier for a node and call `onLoad` when it lands.
  * Idempotent — safe to call repeatedly from `nodeCanvasObject` on every paint.
  * force-graph only invokes that callback for visible nodes, so off-screen

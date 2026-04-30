@@ -221,7 +221,7 @@ describe('MapPage', () => {
 
     const paintHitbox = lastFgProps.current!.nodePointerAreaPaint as (n: unknown, c: string, ctx: unknown) => void;
     const ctx = makeCtxStub();
-    paintHitbox({ id: 'scatter-basic', x: 80, y: 60 }, '#ff00ff', ctx);
+    paintHitbox({ id: 'scatter-basic', x: 80, y: 60, imgs: new Map(), pendingTiers: new Set() }, '#ff00ff', ctx);
 
     expect(ctx.fillStyle).toBe('#ff00ff');
     expect(ctx.fillRect).toHaveBeenCalled();

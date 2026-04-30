@@ -2,7 +2,7 @@ library: altair
 language: python
 specification_id: rose-basic
 created: '2025-12-23T19:45:47Z'
-updated: '2026-04-30T07:12:28Z'
+updated: '2026-04-30T07:33:39Z'
 generated_by: claude-sonnet
 workflow_run: 25151891021
 issue: 1003
@@ -12,61 +12,40 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/rose-basi
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/rose-basic/python/altair/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/rose-basic/python/altair/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/rose-basic/python/altair/plot-dark.html
-quality_score: 86
+quality_score: 87
 review:
   strengths:
-  - Correct rose/Nightingale chart with 12 equal-angle wedge segments and radius proportional
-    to value
-  - Viridis continuous colormap applied to value:Q is appropriate and perceptually
-    uniform, creating effective dual encoding (radius + color) for the rainfall data
-  - Radial gridlines at 25/50/75/100 mm with unit labels ('75 mm', '100 mm') aid value
-    estimation as required by spec
-  - All font sizes explicitly set and appropriate for the 3600x3600 canvas (title
-    32px, month labels 22px, value labels 20px, grid labels 18px)
-  - 'Full theme-adaptive chrome: PAGE_BG, INK, INK_SOFT tokens used correctly; both
-    light (#FAF8F1) and dark (#1A1A17) backgrounds render correctly'
-  - Layer composition with alt.layer() combining gridlines + arcs + value labels +
-    month labels demonstrates idiomatic Altair usage
-  - Both PNG and HTML saved per Altair interactive library requirements
-  - 'Title format correct: ''rose-basic · altair · anyplot.ai'''
-  - Data is deterministic (hardcoded monthly rainfall array), no seed needed
-  - KISS code structure with no functions or classes
+  - Viridis colormap is semantically correct for continuous value-based color encoding,
+    providing intuitive low-to-high visual hierarchy
+  - Segment stroke using PAGE_BG creates clean visual separation that adapts correctly
+    to both light and dark themes
+  - Five-layer Altair composition is clean and idiomatic — gridlines, labels, data
+    each isolated
+  - 'Full theme-adaptive chrome: all INK/INK_SOFT/PAGE_BG tokens properly threaded
+    throughout'
+  - 'Output format correct: both PNG and HTML exported for both themes'
   weaknesses:
-  - 'Design Excellence gap (13/20): viridis colormap is effective but the overall
-    layout lacks visual polish — consider adding a subtle center dot, refining gridline
-    labels with an elevated background box, or adding a concise subtitle with the
-    scenario (''Monthly Rainfall, mm'')'
-  - 'DE-03 Data Storytelling: the dual encoding (radius + viridis) is good but could
-    be stronger — consider annotating the peak month (Nov: 92mm) and trough (Jul:
-    22mm) with callout labels or brief annotation text to direct the viewer''s attention
-    to the story'
-  - 'DE-02 Visual Refinement: the circular gridlines use strokeOpacity=0.35 and strokeDash=[6,4]
-    which is appropriate, but the overall chrome could be more refined — the plain
-    title with no subtitle and the sparse grid label positioning at 3 o''clock feels
-    unfinished'
-  - 'LM-02 Distinctive Features: while layer-composition and mark_arc with theta2
-    are Altair-specific, the implementation could leverage Altair''s selection or
-    a more distinctive Vega-Lite feature (e.g., a center circle mark, a custom radial
-    label layout technique) to differentiate it further from a generic polar chart'
-  - 'VQ-02 minor label crowding: value labels for June (28), July (22), August (30)
-    cluster near center due to small segment radii; the label placement formula `max(v
-    * 1.35, 45)` places them all at similar radii which creates a tight cluster at
-    bottom'
+  - Rose chart is positioned in the upper half of the 1200x1200 canvas, leaving excessive
+    empty space below; center of chart area should be better utilized
+  - No data storytelling element (e.g. highlighting peak month, focal annotation)
+    — the chart shows data but does not guide the viewer to the key insight
+  - Value labels for low-rainfall months (Jun=28, Jul=22, Aug=30) are crowded near
+    the center; minimum offset or different placement needed for very small segments
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) — correct, not pure white.
-      Chrome: Title "rose-basic · altair · anyplot.ai" at top center in dark ink, clearly readable. Month labels (Jan–Dec) in bold dark text around the outer ring, readable. Value labels (22–92) near segment tips in bold dark text, readable. Grid labels "75 mm" and "100 mm" at 3 o'clock position in muted INK_SOFT, small but legible. Dashed circular gridlines at 25/50/75/100 mm in subtle gray.
-      Data: 12 arc segments colored with viridis palette (purple/dark-blue for low values Jun=28, Jul=22; transitioning to teal, green, yellow-green, yellow for high values Nov=92, Dec=88, Oct=85). Segment radii visibly proportional to rainfall values. Winter months (Oct–Jan) dominate with taller, brighter segments.
-      Legibility verdict: PASS — all text readable against light background; no light-on-light issues.
+      Background: Warm off-white #FAF8F1 — correct theme surface
+      Chrome: Title "rose-basic · altair · anyplot.ai" in dark #1A1A17 ink, bold and readable. Month labels (Jan–Dec) in dark INK around the outer edge. Value labels (22–92) in dark INK near segment tips. Grid labels "75 mm" and "100 mm" in INK_SOFT at 3 o'clock position — visible. "25 mm" and "50 mm" labels at very small radii are harder to distinguish but present.
+      Data: 12 rose segments using viridis colormap — deep purple/indigo for low summer months (Jul=22mm minimum), transitioning through teal and green to bright yellow-green for peak autumn months (Nov=92mm maximum). Segment strokes in PAGE_BG create clean separation. Dashed radial gridlines at four intervals.
+      Legibility verdict: PASS — all major text elements readable against light background
 
     Dark render (plot-dark.png):
-      Background: Near-black (#1A1A17) — correct, not pure black.
-      Chrome: Title in light text at top, readable. Month labels in light bold text around outer ring, readable. Value labels in light bold text near segment tips, readable. Grid labels "75 mm" and "100 mm" in muted light-gray (INK_SOFT dark token), readable. Dashed circular gridlines visible against dark background.
-      Data: Viridis segment colors appear identical to the light render — same purple-to-yellow gradient encoding rainfall values. No color shift between themes, data identity preserved.
-      Legibility verdict: PASS — no dark-on-dark issues; all text uses light INK/INK_SOFT tokens appropriate for dark surface.
+      Background: Near-black #1A1A17 — correct theme surface
+      Chrome: Title text in light cream #F0EFE8, clearly readable. Month labels in light text. Value labels in light INK. Grid labels in INK_SOFT (#B8B7B0) — readable. No dark-on-dark failures detected.
+      Data: Viridis colors are identical to light render — purple for low months, yellow-green for high months. Segment strokes use #1A1A17 (dark PAGE_BG) providing appropriate separation on dark surface.
+      Legibility verdict: PASS — all text readable against dark background, no theme-adaptation failures
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 27
       max: 30
       items:
       - id: VQ-01
@@ -74,54 +53,51 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 32px, month labels 22px, value
-          labels 20px, grid labels 18px. All readable at 3600x3600. Grid labels slightly
-          small at 18px but within spec.'
+        comment: 'Font sizes explicitly set (title=32, month=22, values=20, grid=18).
+          All text readable in both themes. Minor: 25mm grid label at very small radius
+          barely distinguishable.'
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: Mostly no overlap; slight crowding of value labels for small segments
-          (Jun=28, Jul=22, Aug=30) which cluster at similar radii near center.
+        comment: Value labels for small summer segments (Jun=28, Jul=22, Aug=30) are
+          clustered near center; slight crowding but no hard collision.
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Segments clearly visible with viridis coloring. Small segments (Jun/Jul/Aug)
-          are genuinely small due to low values, which is correct for a rose chart.
+        comment: All 12 segments clearly visible with distinct stroke separation.
+          Dashed radial gridlines readable at all rings.
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Viridis is perceptually uniform and CVD-safe. Good luminance progression.
+        comment: Viridis is perceptually uniform and CVD-safe. No red-green sole signal.
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: 'Chart fills ~60-70% of 3600x3600 canvas. Circular layout with gridlines
-          is well-proportioned. Minor: data-heavy upper quadrant leaves lower portion
-          visually sparse.'
+        comment: 3600x3600px correct square format. Rose positioned correctly but
+          sits in upper half leaving disproportionate empty space below.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Grid labels include units ('75 mm', '100 mm'). Month labels descriptive.
-          Title correct.
+        comment: Title format correct. Grid labels provide scale context in mm units.
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'Viridis applied to continuous value:Q is correct per style guide.
-          Backgrounds are #FAF8F1 (light) and #1A1A17 (dark). All chrome uses theme-adaptive
-          tokens. Both renders correct.'
+        comment: 'Viridis correctly applied to continuous value-based color encoding.
+          Backgrounds #FAF8F1 (light) and #1A1A17 (dark) correct.'
     design_excellence:
-      score: 13
+      score: 11
       max: 20
       items:
       - id: DE-01
@@ -129,25 +105,23 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: 'Above default: viridis dual-encoding (radius + color) is a thoughtful
-          design choice. White segment strokes add definition. Overall feels professional
-          but not exceptional.'
+        comment: Viridis creates meaningful visual hierarchy from low to peak months.
+          Segment stroke with PAGE_BG creates clean separation. Professional but conventional
+          composition.
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 3
         max: 6
         passed: true
-        comment: 'Good refinement: dashed radial gridlines with low opacity, no axis
-          chrome, configure_view strokeWidth=0. Could refine grid label positioning
-          and add a subtitle.'
+        comment: Dashed radial gridlines deliberate and appropriate. Axes/ticks suppressed
+          correctly for circular chart. Moderate refinement beyond defaults.
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 3
         max: 6
         passed: true
-        comment: Dual encoding (radius + viridis color) makes winter peak immediately
-          visible. Value labels enable precise reading. Missing explicit annotation
-          of peak/trough to direct viewer attention.
+        comment: Cyclical seasonal pattern visible through radius + viridis. No explicit
+          focal-point emphasis or annotations to guide viewer beyond raw data.
     spec_compliance:
       score: 15
       max: 15
@@ -157,29 +131,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct rose/Nightingale chart with equal-angle wedge segments and
-          radius proportional to value.
+        comment: Correct Nightingale/rose chart with radius proportional to value.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: circular arrangement, radius proportional
-          to value, radial gridlines, 12-month cyclical data, starts at top (12 o''clock).'
+        comment: Radial gridlines at 25/50/75/100mm, radius proportional to value,
+          12-month circular ordering, Jan at 12 o'clock.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Categories at angular positions, values determine radius. All 12
-          months represented.
+        comment: Monthly rainfall correctly encoded as segment radius. All 12 data
+          points shown.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title 'rose-basic · altair · anyplot.ai' correct. No legend (appropriate
-          — value labels shown directly on segments, continuous color has no legend).
+        comment: Title matches required format. No categorical legend needed for continuous
+          viridis encoding.
     data_quality:
       score: 15
       max: 15
@@ -189,23 +162,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Full range from 22 to 92 mm shows meaningful variation. Both high-value
-          (winter) and low-value (summer) months clearly represented. Cyclical pattern
-          visible.
+        comment: 'All rose chart aspects demonstrated: radius encoding, angular categories,
+          radial gridlines, month labels, value labels.'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Monthly rainfall is a classic rose chart use case (Florence Nightingale's
-          original application). Neutral, real-world scenario.
+        comment: Monthly rainfall in mm is plausible, neutral, domain-appropriate.
+          Values show realistic seasonal pattern.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Monthly rainfall values 22-92mm are factually plausible for a Mediterranean/temperate
-          climate with winter-dominant rainfall.
+        comment: 22-92mm monthly rainfall realistic for temperate climate. 12 months
+          is optimal category count per spec.
     code_quality:
       score: 10
       max: 10
@@ -215,61 +187,59 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear structure: theme setup -> data -> chart layers -> combine
-          -> save. No functions or classes.'
+        comment: Flat top-level code, no functions or classes.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic hardcoded data. No random seed needed.
+        comment: Fully deterministic; hardcoded data with no randomness.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only os, altair, numpy, pandas — all used.
+        comment: os, altair, numpy, pandas — all actively used.
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Appropriately complex for a layered polar chart. Separate DataFrames
-          for each layer type is necessary for Altair's architecture.
+        comment: Clean Altair layer composition. Radius domain/range explicitly controlled.
+          No fake UI.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot-{THEME}.png and plot-{THEME}.html. Correct for Altair
-          (interactive library).
+        comment: Saves plot-{THEME}.png and plot-{THEME}.html with scale_factor=3.0.
     library_mastery:
-      score: 7
+      score: 9
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: Correct use of alt.Theta/Theta2/Radius encoding for arc marks. alt.layer()
+          composition. Explicit alt.Scale for polar radius control.
+      - id: LM-02
+        name: Distinctive Features
         score: 4
         max: 5
         passed: true
-        comment: 'Good idiomatic use: mark_arc with theta/theta2/radius, alt.layer()
-          composition, configure_view/configure_axis, scale with domain/range. Solid
-          Altair patterns.'
-      - id: LM-02
-        name: Distinctive Features
-        score: 3
-        max: 5
-        passed: true
-        comment: Layer composition with multiple mark types is Altair-distinctive.
-          Theta2 for arc spans, radius scale with explicit domain/range for polar
-          layout. Could go further with more uniquely Altair features.
-  verdict: REJECTED
+        comment: mark_arc with theta/theta2/radius (Altair polar encoding), 5-layer
+          composition, interactive hover tooltips, HTML export. Could push further
+          with dynamic elements.
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
-  - layer-composition
   - hover-tooltips
   - html-export
+  - layer-composition
+  - polar-projection
   patterns: []
   dataprep: []
   styling:

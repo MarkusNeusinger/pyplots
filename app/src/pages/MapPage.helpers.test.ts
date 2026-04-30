@@ -160,19 +160,28 @@ describe('buildKNNLinks', () => {
 
 
 describe('selectMapThumbUrl', () => {
-  it('returns dark URL in dark mode, light in light mode', () => {
+  it('returns the _400.webp variant for the current theme', () => {
     const s = spec('a', null);
-    expect(selectMapThumbUrl(s, true)).toBe('https://example.com/a-dark.png');
-    expect(selectMapThumbUrl(s, false)).toBe('https://example.com/a-light.png');
+    expect(selectMapThumbUrl(s, true)).toBe('https://example.com/a-dark_400.webp');
+    expect(selectMapThumbUrl(s, false)).toBe('https://example.com/a-light_400.webp');
   });
 
-  it('falls back to the other theme when the preferred URL is missing', () => {
+  it('falls back to the other theme variant when the preferred URL is missing', () => {
     const s: SpecMapItem = { ...spec('a', null), preview_url_dark: null };
-    expect(selectMapThumbUrl(s, true)).toBe('https://example.com/a-light.png');
+    expect(selectMapThumbUrl(s, true)).toBe('https://example.com/a-light_400.webp');
   });
 
   it('returns null when no preview URLs at all', () => {
     const s: SpecMapItem = { ...spec('a', null), preview_url_light: null, preview_url_dark: null };
     expect(selectMapThumbUrl(s, false)).toBeNull();
+  });
+
+  it('returns the original URL unchanged if it does not end in .png', () => {
+    const s: SpecMapItem = {
+      ...spec('a', null),
+      preview_url_light: 'https://example.com/a-light.svg',
+      preview_url_dark: null,
+    };
+    expect(selectMapThumbUrl(s, false)).toBe('https://example.com/a-light.svg');
   });
 });

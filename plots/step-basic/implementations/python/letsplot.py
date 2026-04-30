@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 step-basic: Basic Step Plot
-Library: letsplot | Python 3.13
-Quality: pending | Created: 2026-04-30
+Library: letsplot 4.9.0 | Python 3.13.13
+Quality: 85/100 | Updated: 2026-04-30
 """
 
 import os

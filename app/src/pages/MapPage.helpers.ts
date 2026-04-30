@@ -21,13 +21,22 @@ export interface SpecMapItem {
   impl_tags: Record<string, string[]> | null;
 }
 
-/** Node shape passed to ForceGraph2D. `img` populated lazily as thumbnails resolve. */
+/** Resolution tiers baked by the responsive-image pipeline (responsiveImage.ts). */
+export const RESOLUTION_TIERS = [400, 800, 1200] as const;
+export type ResolutionTier = (typeof RESOLUTION_TIERS)[number];
+
+/**
+ * Node shape passed to ForceGraph2D. Holds a lazy collection of image variants
+ * keyed by resolution tier (400/800/1200). The page populates the 400 tier
+ * eagerly on load and progressively upgrades on zoom-in.
+ */
 export interface MapNode {
   id: string;
   title: string;
   tags: string[];
-  thumbUrl: string | null;
-  img?: HTMLImageElement;
+  thumbUrl: string | null;                       // base theme-aware .png URL
+  imgs: Map<ResolutionTier, HTMLImageElement>;   // loaded variants
+  pendingTiers: Set<ResolutionTier>;             // tiers with an in-flight fetch
 }
 
 /** Link shape passed to ForceGraph2D. `weight` = weighted-Jaccard sim ∈ (0, 1]. */
@@ -143,36 +152,101 @@ export function buildKNNLinks(
 }
 
 /**
- * Pick the best thumbnail URL for the current theme and downsize it to the
- * `_800.webp` variant produced by the responsive-image pipeline. _800 stays
- * crisp under typical zoom-in (the smaller _400 variant pixelates quickly),
- * while keeping the 312-thumbnail payload at ~5 MB total instead of the
- * ~15 MB the full-size originals would cost.
- *
- * Falls back to the original full-size URL if the convention can't be
- * applied (e.g. URL doesn't end in `.png`).
+ * Pick the theme-aware base preview URL (the original `.png`). Variant
+ * selection happens at draw time via {@link buildVariantUrl} + {@link pickTier}
+ * so we only fetch higher-resolution thumbnails for nodes the user actually
+ * zooms into.
  */
 export function selectMapThumbUrl(spec: SpecMapItem, isDark: boolean): string | null {
-  const full = selectPreviewUrl(spec, isDark);
-  if (!full) return null;
-  if (!full.endsWith('.png')) return full;
-  return full.replace(/\.png$/, '_800.webp');
+  return selectPreviewUrl(spec, isDark);
 }
 
 /**
- * Eager-preload every node's thumbnail. Resolves once all images either
- * loaded or errored — failures are swallowed (image stays undefined and
- * the node renders as a plain dot in nodeCanvasObject's fallback path).
+ * Derive the URL of a specific resolution variant from the base `.png` URL.
+ * `.../plot-light.png` + 800 → `.../plot-light_800.webp`. Returns the original
+ * URL unchanged if it doesn't end in `.png` (no variants available).
+ */
+export function buildVariantUrl(baseUrl: string, tier: ResolutionTier): string {
+  if (!baseUrl.endsWith('.png')) return baseUrl;
+  return baseUrl.replace(/\.png$/, `_${tier}.webp`);
+}
+
+/**
+ * Pick the smallest pipeline tier whose source resolution comfortably covers
+ * the requested device-pixel size. Source needs to be ≥ device pixels for
+ * crisp rendering — we add a small headroom factor so a tiny zoom-in nudge
+ * doesn't immediately re-fetch the next tier.
+ */
+export function pickTier(devicePxSize: number): ResolutionTier {
+  const HEADROOM = 1.25;
+  const target = devicePxSize * HEADROOM;
+  if (target <= 400) return 400;
+  if (target <= 800) return 800;
+  return 1200;
+}
+
+/**
+ * Return the highest-resolution tier that's already loaded and at least as
+ * big as `desired`. Falls back to a smaller tier if nothing larger is loaded
+ * yet (better than blank during the lazy upgrade).
+ */
+export function pickBestLoadedTier(
+  imgs: Map<ResolutionTier, HTMLImageElement>,
+  desired: ResolutionTier
+): HTMLImageElement | null {
+  for (const t of RESOLUTION_TIERS) {
+    if (t >= desired && imgs.has(t)) return imgs.get(t)!;
+  }
+  for (let i = RESOLUTION_TIERS.length - 1; i >= 0; i--) {
+    const t = RESOLUTION_TIERS[i];
+    if (imgs.has(t)) return imgs.get(t)!;
+  }
+  return null;
+}
+
+/**
+ * Lazily fetch the requested tier for a node and call `onLoad` when it lands.
+ * Idempotent — safe to call repeatedly from `nodeCanvasObject` on every paint.
+ * force-graph only invokes that callback for visible nodes, so off-screen
+ * specs never trigger a higher-tier fetch.
+ */
+export function ensureNodeTier(
+  node: MapNode,
+  tier: ResolutionTier,
+  onLoad: () => void
+): void {
+  if (!node.thumbUrl) return;
+  if (node.imgs.has(tier) || node.pendingTiers.has(tier)) return;
+  node.pendingTiers.add(tier);
+  const img = document.createElement('img');
+  img.onload = () => {
+    node.imgs.set(tier, img);
+    node.pendingTiers.delete(tier);
+    onLoad();
+  };
+  img.onerror = () => {
+    node.pendingTiers.delete(tier);
+  };
+  img.src = buildVariantUrl(node.thumbUrl, tier);
+}
+
+/**
+ * Eager-preload every node's thumbnail at the smallest tier (400 px wide ≈ 6 KB
+ * webp). Resolves once all images either loaded or errored — failures are
+ * swallowed (the node renders as a plain dot in the fallback path).
  *
  * `onLoad` fires per-image so the page can call fgRef.refresh() to re-paint
- * without re-running the simulation. This is what produces the "thumbnails
- * pop in organically" UX rather than a blocking wait.
+ * without re-running the simulation, producing the "thumbnails pop in
+ * organically" UX rather than a blocking wait. Higher-resolution tiers are
+ * lazy-loaded on demand by {@link ensureNodeTier} from `nodeCanvasObject`
+ * when the user zooms in.
  */
 export async function preloadImages(
   items: { id: string; thumbUrl: string | null }[],
-  onLoad?: (id: string, img: HTMLImageElement) => void
+  onLoad?: (id: string, tier: ResolutionTier, img: HTMLImageElement) => void
 ): Promise<Map<string, HTMLImageElement>> {
   const out = new Map<string, HTMLImageElement>();
+  const tier: ResolutionTier = 400;
   await Promise.all(
     items.map(({ id, thumbUrl }) => {
       if (!thumbUrl) return Promise.resolve();
@@ -186,11 +260,11 @@ export async function preloadImages(
         // becomes "tainted", which is fine — we never read it back).
         img.onload = () => {
           out.set(id, img);
-          onLoad?.(id, img);
+          onLoad?.(id, tier, img);
           resolve();
         };
         img.onerror = () => resolve();
-        img.src = thumbUrl;
+        img.src = buildVariantUrl(thumbUrl, tier);
       });
     })
   );

@@ -6,6 +6,9 @@ import {
   weightedJaccard,
   buildKNNLinks,
   selectMapThumbUrl,
+  buildVariantUrl,
+  pickTier,
+  pickBestLoadedTier,
   type SpecMapItem,
 } from './MapPage.helpers';
 
@@ -160,28 +163,79 @@ describe('buildKNNLinks', () => {
 
 
 describe('selectMapThumbUrl', () => {
-  it('returns the _800.webp variant for the current theme', () => {
+  it('returns the dark URL in dark mode and light URL in light mode', () => {
     const s = spec('a', null);
-    expect(selectMapThumbUrl(s, true)).toBe('https://example.com/a-dark_800.webp');
-    expect(selectMapThumbUrl(s, false)).toBe('https://example.com/a-light_800.webp');
+    expect(selectMapThumbUrl(s, true)).toBe('https://example.com/a-dark.png');
+    expect(selectMapThumbUrl(s, false)).toBe('https://example.com/a-light.png');
   });
 
-  it('falls back to the other theme variant when the preferred URL is missing', () => {
+  it('falls back to the other theme when the preferred URL is missing', () => {
     const s: SpecMapItem = { ...spec('a', null), preview_url_dark: null };
-    expect(selectMapThumbUrl(s, true)).toBe('https://example.com/a-light_800.webp');
+    expect(selectMapThumbUrl(s, true)).toBe('https://example.com/a-light.png');
   });
 
   it('returns null when no preview URLs at all', () => {
     const s: SpecMapItem = { ...spec('a', null), preview_url_light: null, preview_url_dark: null };
     expect(selectMapThumbUrl(s, false)).toBeNull();
   });
+});
 
-  it('returns the original URL unchanged if it does not end in .png', () => {
-    const s: SpecMapItem = {
-      ...spec('a', null),
-      preview_url_light: 'https://example.com/a-light.svg',
-      preview_url_dark: null,
-    };
-    expect(selectMapThumbUrl(s, false)).toBe('https://example.com/a-light.svg');
+
+describe('buildVariantUrl', () => {
+  it('rewrites .png to _{tier}.webp', () => {
+    expect(buildVariantUrl('https://example.com/plot.png', 400)).toBe('https://example.com/plot_400.webp');
+    expect(buildVariantUrl('https://example.com/plot-light.png', 800)).toBe('https://example.com/plot-light_800.webp');
+    expect(buildVariantUrl('https://example.com/plot-dark.png', 1200)).toBe('https://example.com/plot-dark_1200.webp');
+  });
+
+  it('passes through URLs that do not end in .png', () => {
+    expect(buildVariantUrl('https://example.com/plot.svg', 400)).toBe('https://example.com/plot.svg');
+  });
+});
+
+
+describe('pickTier', () => {
+  it('returns 400 when device pixel size fits in 400 with headroom', () => {
+    expect(pickTier(100)).toBe(400);
+    expect(pickTier(300)).toBe(400);
+  });
+
+  it('returns 800 when 400 would require upscaling', () => {
+    expect(pickTier(500)).toBe(800);
+    expect(pickTier(600)).toBe(800);
+  });
+
+  it('returns 1200 for very large device sizes', () => {
+    expect(pickTier(1000)).toBe(1200);
+    expect(pickTier(2000)).toBe(1200);
+  });
+});
+
+
+describe('pickBestLoadedTier', () => {
+  function img(): HTMLImageElement {
+    return document.createElement('img');
+  }
+
+  it('returns the desired tier when loaded', () => {
+    const a = img();
+    const imgs = new Map([[400 as const, a]]);
+    expect(pickBestLoadedTier(imgs, 400)).toBe(a);
+  });
+
+  it('returns a higher-resolution variant when desired is not loaded', () => {
+    const a = img();
+    const imgs = new Map([[800 as const, a]]);
+    expect(pickBestLoadedTier(imgs, 400)).toBe(a);
+  });
+
+  it('falls back to a smaller tier when nothing larger is loaded', () => {
+    const a = img();
+    const imgs = new Map([[400 as const, a]]);
+    expect(pickBestLoadedTier(imgs, 800)).toBe(a);
+  });
+
+  it('returns null when nothing is loaded', () => {
+    expect(pickBestLoadedTier(new Map(), 400)).toBeNull();
   });
 });

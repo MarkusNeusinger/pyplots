@@ -109,17 +109,15 @@ function mockFetchSuccess() {
 // jsdom doesn't ship ResizeObserver; stub it so the page's useEffect doesn't crash
 // AND fire the callback once with non-zero dimensions so the `size.w > 0` gate that
 // guards <ForceGraph2D> mounting is satisfied.
+type ResizeCb = (entries: { contentRect: { width: number; height: number } }[]) => void;
 class MockResizeObserver {
-  cb: ResizeObserverCallback;
-  constructor(cb: ResizeObserverCallback) {
+  cb: ResizeCb;
+  constructor(cb: ResizeCb) {
     this.cb = cb;
   }
-  observe(target: Element) {
+  observe(_target: Element) {
     setTimeout(() => {
-      this.cb(
-        [{ contentRect: { width: 800, height: 600 } } as unknown as ResizeObserverEntry],
-        this as unknown as ResizeObserver,
-      );
+      this.cb([{ contentRect: { width: 800, height: 600 } }]);
     }, 0);
   }
   unobserve() {}
@@ -188,9 +186,9 @@ describe('MapPage', () => {
     render(<MapPage />);
     await waitFor(() => expect(lastFgProps.current).not.toBeNull());
 
-    const drawNode = lastFgProps.current!.nodeCanvasObject as (n: unknown, c: unknown) => void;
+    const drawNode = lastFgProps.current!.nodeCanvasObject as (n: unknown, c: unknown, gs?: number) => void;
     const ctx = makeCtxStub();
-    drawNode({ id: 'scatter-basic', x: 100, y: 100 }, ctx);
+    drawNode({ id: 'scatter-basic', x: 100, y: 100, imgs: new Map(), pendingTiers: new Set() }, ctx, 1);
 
     // Without an attached image, the fallback rect path runs.
     expect(ctx.fillRect).toHaveBeenCalled();
@@ -203,10 +201,14 @@ describe('MapPage', () => {
     render(<MapPage />);
     await waitFor(() => expect(lastFgProps.current).not.toBeNull());
 
-    const drawNode = lastFgProps.current!.nodeCanvasObject as (n: unknown, c: unknown) => void;
+    const drawNode = lastFgProps.current!.nodeCanvasObject as (n: unknown, c: unknown, gs?: number) => void;
     const ctx = makeCtxStub();
     const fakeImg = { src: 'x' } as unknown as HTMLImageElement;
-    drawNode({ id: 'scatter-basic', x: 50, y: 50, img: fakeImg }, ctx);
+    drawNode(
+      { id: 'scatter-basic', x: 50, y: 50, imgs: new Map([[400, fakeImg]]), pendingTiers: new Set() },
+      ctx,
+      1,
+    );
 
     expect(ctx.drawImage).toHaveBeenCalledWith(fakeImg, expect.any(Number), expect.any(Number), expect.any(Number), expect.any(Number));
     expect(ctx.strokeRect).toHaveBeenCalled();

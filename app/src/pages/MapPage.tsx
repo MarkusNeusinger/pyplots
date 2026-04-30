@@ -14,11 +14,15 @@ import { colors, fontSize, typography } from '../theme';
 import {
   buildKNNLinks,
   computeIDF,
+  ensureNodeTier,
   flattenTags,
+  pickBestLoadedTier,
+  pickTier,
   preloadImages,
   selectMapThumbUrl,
   type MapLink,
   type MapNode,
+  type ResolutionTier,
   type SpecMapItem,
 } from './MapPage.helpers';
 
@@ -108,23 +112,25 @@ export function MapPage() {
       title: s.title,
       tags: flattenTags(s),
       thumbUrl: selectMapThumbUrl(s, isDark),
+      imgs: new Map(),
+      pendingTiers: new Set(),
     }));
     const links = buildKNNLinks(specs, idf, KNN_K, KNN_MIN_SIM);
     return { nodes, links };
   }, [specs, isDark]);
 
-  // Preload thumbnails as a side effect; attach to nodes by reference and
-  // ask force-graph to repaint without restarting the physics simulation.
+  // Eager-load the 400-tier thumbnails so something paints fast. Higher tiers
+  // are fetched lazily from nodeCanvasObject when the user zooms in.
   useEffect(() => {
     if (graphData.nodes.length === 0) return;
     const nodeById = new Map(graphData.nodes.map(n => [n.id, n]));
     let cancelled = false;
     preloadImages(
       graphData.nodes.map(n => ({ id: n.id, thumbUrl: n.thumbUrl })),
-      (id, img) => {
+      (id, tier, img) => {
         if (cancelled) return;
         const n = nodeById.get(id);
-        if (n) n.img = img;
+        if (n) n.imgs.set(tier, img);
         fgRef.current?.refresh?.();
       }
     );
@@ -220,7 +226,7 @@ export function MapPage() {
             width={size.w}
             height={size.h}
             backgroundColor={'transparent'}
-            nodeCanvasObject={(node, ctx) => {
+            nodeCanvasObject={(node, ctx, globalScale) => {
               const n = node as WithCoords;
               if (n.x == null || n.y == null) return;
               const isHover = hoverId === n.id;
@@ -230,10 +236,22 @@ export function MapPage() {
               const x = n.x - baseSize / 2;
               const y = n.y - baseSize / 2;
 
+              // Pick the smallest variant whose source resolution comfortably
+              // covers the on-screen size, then lazy-load it if not yet present.
+              // force-graph only invokes nodeCanvasObject for visible nodes, so
+              // off-screen specs never trigger a higher-tier fetch.
+              const screenPx = baseSize * (globalScale ?? 1);
+              const dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
+              const desired: ResolutionTier = pickTier(screenPx * dpr);
+              if (n.imgs && !n.imgs.has(desired) && !n.pendingTiers?.has(desired)) {
+                ensureNodeTier(n, desired, () => fgRef.current?.refresh?.());
+              }
+              const img = n.imgs ? pickBestLoadedTier(n.imgs, desired) : null;
+
               ctx.save();
               if (dim) ctx.globalAlpha = 0.18;
-              if (n.img) {
-                ctx.drawImage(n.img, x, y, baseSize, baseSize);
+              if (img) {
+                ctx.drawImage(img, x, y, baseSize, baseSize);
               } else {
                 ctx.fillStyle = isDark ? '#242420' : '#FFFDF6';
                 ctx.fillRect(x, y, baseSize, baseSize);

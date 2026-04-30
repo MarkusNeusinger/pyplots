@@ -2,7 +2,7 @@ library: altair
 language: python
 specification_id: slope-basic
 created: 2025-12-17 02:32:26+00:00
-updated: '2026-04-30T16:54:11Z'
+updated: '2026-04-30T17:06:43Z'
 generated_by: claude-sonnet
 workflow_run: 25177483606
 issue: 981
@@ -12,39 +12,38 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/slope-bas
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/slope-basic/python/altair/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/slope-basic/python/altair/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/slope-basic/python/altair/plot-dark.html
-quality_score: 87
+quality_score: 86
 review:
   strengths:
-  - Semantically meaningful color mapping (green=increase, orange=decrease) using
-    Okabe-Ito positions 1-2 immediately communicates direction at a glance
-  - Idiomatic use of detail=Product:N to draw per-entity lines while keeping color
-    as a separate direction channel — a distinctly Altair idiom
-  - 'Complete theme adaptation: all chrome elements flip correctly in both light and
-    dark renders with no legibility failures'
-  - 'Strong spec compliance: all required features (endpoint labels, direction color
-    coding, time-point axis labels) present and correct'
+  - Semantic directional color encoding (green=increase, orange=decrease) creates
+    immediate visual clarity and meaningful hierarchy
+  - Full spec compliance — all required features present and correctly implemented
+  - Excellent data quality with realistic business context and visible rank changes
+  - Clean, idiomatic Altair code using layer composition and detail encoding correctly
+  - Correct Okabe-Ito palette with proper theme adaptation in both light and dark
+    renders
   weaknesses:
-  - 'Full box border visible on all 4 sides (configure_view stroke=INK_SOFT); fix:
-    configure_view(stroke=None) to achieve L-frame or frameless style per style guide'
-  - 'Label crowding at 350-440 unit range: Charger/Tablet/Headphones on left, Monitor/Charger/Webcam
-    on right too closely stacked; fix: increase canvas to 1600x900 or add dy offsets'
-  - Product labels at fontSize=16 below the 18px minimum for pixel-based libraries;
-    increase to 18px
+  - Label crowding on left side around the 390-440 sales range (Charger/Tablet/Headphones
+    too close together); consider adjusting dx offsets or filtering to reduce cluster
+    density
+  - Canvas dimensions 1400x850 are below the recommended 1600x900 target
+  - Full rectangular view border instead of recommended L-shaped frame (remove top/right
+    spines via configure_view stroke removal or configure_axis settings)
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) — correct, not pure white
-      Chrome: Title "slope-basic · altair · anyplot.ai" in dark text at top center — readable. Y-axis label "Sales (units)" in dark text — readable. X-axis labels "Q1 Sales" / "Q4 Sales" in slightly softer dark text — readable. Tick labels 100-1200 in soft dark color — readable.
-      Data: 10 product lines — 6 in green (#009E73, Increase) and 4 in orange/vermillion (#D55E00, Decrease). Product name labels at both endpoints colored to match their line. Circle markers at endpoints. Legend in top-right corner. Dashed subtle grid. Box border visible on all 4 sides. Crowding in middle ranges (Charger/Tablet/Headphones on left, Monitor/Charger/Webcam on right).
-      Legibility verdict: PASS — all text readable against light background
+      Background: Warm off-white (#FAF8F1) — correct theme surface, not pure white
+      Chrome: Title "slope-basic · altair · anyplot.ai" in dark ink, clearly readable. Y-axis label "Sales (units)" in dark ink, readable. Tick labels in soft dark (#4A4A44), readable. X-axis period labels "Q1 Sales" / "Q4 Sales" in soft dark, readable. Legend box with elevated background (#FFFDF6) and soft border.
+      Data: Ten slope lines — green (#009E73) for increases, orange (#D55E00) for decreases. Circle markers at endpoints. Entity labels on both sides in matching directional colors. Left-side cluster around 390-440 (Charger/Tablet/Headphones) shows some crowding.
+      Legibility verdict: PASS (minor label crowding but no unreadable text)
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) — correct, not pure black
-      Chrome: Title, axis labels, and tick labels all flip to light text — readable. No dark-on-dark failures detected. Legend box uses ELEVATED_BG (#242420). Box border is now a light-toned stroke against dark background.
-      Data: Identical colors to light render — same green (#009E73) increases, same orange (#D55E00) decreases. All data colors confirmed theme-invariant.
-      Legibility verdict: PASS — all text readable against dark background, no dark-on-dark issues
+      Background: Warm near-black (#1A1A17) — correct dark theme surface, not pure black
+      Chrome: Title in light cream (#F0EFE8), clearly readable against dark background. Axis labels and tick labels in light grey (#B8B7B0), all readable. No dark-on-dark failures detected. Legend box uses elevated dark (#242420).
+      Data: Colors are identical to light render — same green (#009E73) for increases, same orange (#D55E00) for decreases. Data identity maintained across themes.
+      Legibility verdict: PASS
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 25
       max: 30
       items:
       - id: VQ-01
@@ -52,52 +51,47 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set and readable in both themes; product
-          labels at 16px slightly below 18px minimum for pixel-based libraries
+        comment: Font sizes explicitly set throughout; data labels at fontSize=16
+          slightly small
       - id: VQ-02
         name: No Overlap
-        score: 4
+        score: 3
         max: 6
-        passed: true
-        comment: Charger/Tablet/Headphones cluster (390-440) and Monitor/Charger/Webcam
-          cluster (350-410) are noticeably crowded but distinguishable
+        passed: false
+        comment: Label crowding on left side at 390-440 range (Charger/Tablet/Headphones)
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Lines at strokeWidth=3, circles at size=200, well-adapted to data
-          density
+        comment: Lines strokeWidth=3 and markers size=200 well-sized
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: '#009E73 and #D55E00 are CVD-safe and distinguishable by hue and
-          luminance'
+        comment: Green vs orange CVD-safe contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Canvas 4200x2550 slightly below 4800x2700 target; labels on right
-          are slightly tight near edge
+        comment: Canvas 1400x850 slightly undersized vs recommended 1600x900
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Y-axis labeled 'Sales (units)' with units; X-axis has descriptive
-          period names; title format correct
+        comment: Y-axis Sales (units) with units; period names descriptive
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series Increase uses #009E73; Decrease uses #D55E00; backgrounds
-          #FAF8F1/#1A1A17; both renders theme-correct'
+        comment: 'Correct Okabe-Ito #009E73 first, #D55E00 second; correct backgrounds
+          both themes'
     design_excellence:
-      score: 12
+      score: 13
       max: 20
       items:
       - id: DE-01
@@ -105,22 +99,21 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Semantically meaningful color mapping and colored endpoint labels
-          are strong choices; full box border detracts from polish
+        comment: Semantic directional coloring above defaults; thoughtful design not
+          publication-ready
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Dashed grid and low opacity are well-configured; but full box border
-          (configure_view stroke on all 4 sides) instead of L-frame misses style guide
+        comment: Subtle dashed grid at 10% opacity; full view border instead of L-frame
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Color + slope direction create strong visual hierarchy; Phone dominates
-          as largest decrease; clear focal point established
+        comment: Directional colors create immediate visual hierarchy; viewer instantly
+          sees decliners vs growers
     spec_compliance:
       score: 15
       max: 15
@@ -130,28 +123,25 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct slopegraph connecting values across two time points
+        comment: Correct slopegraph
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Labels at both endpoints, direction color coding, time point axis
-          labels, 10 entities all present
+        comment: All spec features present
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=time period, Y=sales values; detail='Product:N' draws correct per-entity
-          lines
+        comment: Correct X/Y/color/detail mapping
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title 'slope-basic · altair · anyplot.ai' matches format; legend
-          shows Direction with Increase/Decrease
+        comment: Title format correct; legend labels match
     data_quality:
       score: 15
       max: 15
@@ -161,22 +151,19 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows both increases and decreases; steep and gradual slopes; crossing
-          lines demonstrate rank changes
+        comment: Both increases and decreases with rank changes visible
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Tech product quarterly sales (Q1 vs Q4) is a clear, neutral, real-world
-          business scenario
+        comment: Tech product sales Q1 vs Q4 — neutral business scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values 180-1200 units plausible for tech products; Y-axis zero=False
-          appropriate for slope chart
+        comment: Values 180-1200 units with factually plausible variation
     code_quality:
       score: 10
       max: 10
@@ -186,35 +173,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Flat script, no functions/classes; clear linear flow: imports ->
-          data -> reshape -> plot -> save'
+        comment: Clean Imports->Data->Plot->Save, no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Hardcoded deterministic data, no randomness
+        comment: Hardcoded deterministic data
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: os, sys, pandas, altair all used; no unused imports
+        comment: Only os, sys, pandas, altair — all used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean Pythonic Altair code; layer composition is idiomatic
+        comment: Clean Altair layer composition with pd.melt for reshaping
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot-{THEME}.png (scale_factor=3.0) and plot-{THEME}.html;
-          correct API
+        comment: Saves plot-{THEME}.png and .html with current API
     library_mastery:
-      score: 9
+      score: 8
       max: 10
       items:
       - id: LM-01
@@ -222,16 +207,16 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Expertly uses layered mark composition; proper encoding types; all
-          configure_* methods correct; alt.Scale domain/range
+        comment: Expert use of layer composition, detail encoding, alt.Scale, configure_*
+          system
       - id: LM-02
         name: Distinctive Features
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: detail='Product:N' encoding is a distinctly Altair grammar-of-graphics
-          idiom; 4-layer composition is Altair-native; HTML export
-  verdict: REJECTED
+        comment: detail encoding for per-product lines grouped by color is distinctly
+          Altair; layer composition strength used well
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
@@ -240,4 +225,6 @@ impl_tags:
   patterns:
   - wide-to-long
   dataprep: []
-  styling: []
+  styling:
+  - alpha-blending
+  - grid-styling

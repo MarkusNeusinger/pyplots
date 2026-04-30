@@ -42,7 +42,12 @@ const HOVER_PREVIEW_SIZE = NODE_SIZE * 5;     // graph-space size of the hover p
 const MIN_ZOOM = 0.5;             // floor for zoomToFit so outliers can't shrink the dense cluster into pixels
 const COOLDOWN_TICKS = 400;       // longer settling for cleaner final positions
 const KNN_K = 5;                  // edges per node in the sparse KNN graph
-const KNN_MIN_SIM = 0.05;         // drop near-zero noise links
+// Threshold tuned for the plot_type-dominant default. Bumped up from 0.05
+// because once secondary categories (features, techniques, …) have non-zero
+// weight, common tags like `features:basic` create weak cross-cluster
+// bridges in the 0.05–0.12 range that collapse the graph into one blob. At
+// 0.15, those bridges drop out and clusters stay distinct.
+const KNN_MIN_SIM = 0.15;
 // Forces: tuned so KNN edges + collision shape the layout while many-body
 // repulsion stays GENTLE — collision already enforces minimum spacing, and
 // strong repulsion would just blow the graph wide enough that zoomToFit

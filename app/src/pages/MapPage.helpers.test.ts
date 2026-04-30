@@ -74,11 +74,37 @@ describe('computeIDF', () => {
       spec('a', { data_type: ['numeric'] }),
       spec('b', { data_type: ['numeric'] }),
     ];
-    expect(computeIDF(specs).get('data_type:numeric')).toBeCloseTo(0);
+    expect(computeIDF(specs).get('data_type:numeric')).toBe(0);
   });
 
   it('survives empty input without dividing by zero', () => {
     expect(computeIDF([]).size).toBe(0);
+  });
+
+  it('zeroes out tags above the maxDfRatio cutoff (default 0.67)', () => {
+    // 4 specs, "dependencies:selenium" appears in 3 (75%) → above default 0.67 cutoff
+    const specs = [
+      spec('a', { plot_type: ['scatter'] }, { dependencies: ['selenium'] }),
+      spec('b', { plot_type: ['scatter'] }, { dependencies: ['selenium'] }),
+      spec('c', { plot_type: ['line'] }, { dependencies: ['selenium'] }),
+      spec('d', { plot_type: ['bar'] }, { dependencies: ['matplotlib'] }),
+    ];
+    const idf = computeIDF(specs);
+    expect(idf.get('dependencies:selenium')).toBe(0);
+    // The rare one stays meaningful
+    expect(idf.get('dependencies:matplotlib')).toBeGreaterThan(0);
+  });
+
+  it('honors a custom maxDfRatio', () => {
+    const specs = [
+      spec('a', { features: ['basic'] }),
+      spec('b', { features: ['basic'] }),
+      spec('c', { features: ['rare'] }),
+    ];
+    // basic in 2/3 = 67 % — below default 0.67 cutoff, kept
+    expect(computeIDF(specs).get('features:basic')).toBeGreaterThan(0);
+    // tighten cutoff to 0.5 → basic now noise
+    expect(computeIDF(specs, 0.5).get('features:basic')).toBe(0);
   });
 });
 

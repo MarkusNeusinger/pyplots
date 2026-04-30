@@ -76,8 +76,15 @@ export function flattenTags(spec: SpecMapItem, includeImpl = true): string[] {
  * Down-weights ubiquitous tags (`data_type:numeric` is in nearly every spec)
  * and amplifies rare ones. Returns weight ≥ 0; tags absent from the corpus
  * default to 0 when looked up.
+ *
+ * `maxDfRatio` zeroes out tags that appear in more than that fraction of the
+ * corpus. Plain log-IDF still gives those tags a small positive weight, which
+ * compounds across many shared common tags into spurious cross-cluster
+ * bridges — `dependencies:selenium` in ~98 % of specs, `features:basic` in
+ * ~50 %, etc. Setting them to exactly zero kills the noise without affecting
+ * tags that are merely common-but-informative.
  */
-export function computeIDF(specs: SpecMapItem[]): Map<string, number> {
+export function computeIDF(specs: SpecMapItem[], maxDfRatio = 0.67): Map<string, number> {
   const N = specs.length || 1;
   const df = new Map<string, number>();
   for (const spec of specs) {
@@ -87,6 +94,10 @@ export function computeIDF(specs: SpecMapItem[]): Map<string, number> {
   }
   const idf = new Map<string, number>();
   for (const [tag, count] of df) {
+    if (count / N > maxDfRatio) {
+      idf.set(tag, 0);
+      continue;
+    }
     idf.set(tag, Math.log(N / count));
   }
   return idf;

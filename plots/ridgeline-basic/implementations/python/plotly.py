@@ -1,4 +1,4 @@
-""" anyplot.ai
+"""anyplot.ai
 ridgeline-basic: Basic Ridgeline Plot
 Library: plotly 6.7.0 | Python 3.13.13
 Quality: 84/100 | Updated: 2026-04-30
@@ -7,13 +7,14 @@ Quality: 84/100 | Updated: 2026-04-30
 import os
 
 import numpy as np
+import plotly.colors
 import plotly.graph_objects as go
+from scipy.stats import gaussian_kde
 
 
 # Theme tokens
 THEME = os.getenv("ANYPLOT_THEME", "light")
 PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
-ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
 INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
 INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
 GRID = "rgba(26,26,23,0.10)" if THEME == "light" else "rgba(240,239,232,0.10)"
@@ -46,21 +47,8 @@ for i, month in enumerate(months):
 # X range for density evaluation
 x_range = np.linspace(-15, 40, 300)
 
-# Seasonal color gradient: cold blue → warm yellow/orange → cold blue
-colors = [
-    "#306998",  # January - deep blue (cold)
-    "#3d78a8",  # February
-    "#5298b8",  # March
-    "#72b8c8",  # April
-    "#94c8a0",  # May - transitioning
-    "#FFD43B",  # June - warm yellow
-    "#ff9f43",  # July - warm orange
-    "#ff7f50",  # August - coral
-    "#94c8a0",  # September - transitioning back
-    "#72b8c8",  # October
-    "#4a88b8",  # November
-    "#306998",  # December - deep blue (cold)
-]
+# Viridis sequential colormap - 12 evenly spaced samples (CVD-safe, perceptually uniform)
+colors = plotly.colors.sample_colorscale("viridis", [i / 11 for i in range(12)])
 
 # Plot
 fig = go.Figure()
@@ -74,17 +62,8 @@ for i, month in enumerate(reversed(months)):
     idx = len(months) - 1 - i
     temps = data[month]
 
-    # KDE using Silverman's rule for bandwidth selection
-    n = len(temps)
-    std_dev = np.std(temps, ddof=1)
-    iqr = np.percentile(temps, 75) - np.percentile(temps, 25)
-    bandwidth = 0.9 * min(std_dev, iqr / 1.34) * n ** (-0.2)
-
-    density = np.zeros_like(x_range)
-    for xi in temps:
-        density += np.exp(-0.5 * ((x_range - xi) / bandwidth) ** 2)
-    density /= n * bandwidth * np.sqrt(2 * np.pi)
-
+    kde = gaussian_kde(temps)
+    density = kde(x_range)
     density = density / density.max() * ridge_scale
     y_offset = i * (1 - overlap) * ridge_scale
     y_fill = density + y_offset
@@ -108,7 +87,12 @@ y_ticks = [(len(months) - 1 - i) * (1 - overlap) * ridge_scale + ridge_scale * 0
 
 # Style
 fig.update_layout(
-    title={"text": "ridgeline-basic · plotly · anyplot.ai", "font": {"size": 48, "color": INK}, "x": 0.5, "xanchor": "center"},
+    title={
+        "text": "ridgeline-basic · plotly · anyplot.ai",
+        "font": {"size": 48, "color": INK},
+        "x": 0.5,
+        "xanchor": "center",
+    },
     xaxis={
         "title": {"text": "Temperature (°C)", "font": {"size": 36, "color": INK}},
         "tickfont": {"size": 28, "color": INK_SOFT},
@@ -130,14 +114,14 @@ fig.update_layout(
     paper_bgcolor=PAGE_BG,
     plot_bgcolor=PAGE_BG,
     font={"color": INK},
-    margin={"l": 180, "r": 60, "t": 120, "b": 130},
+    margin={"l": 180, "r": 60, "t": 120, "b": 160},
     annotations=[
         {
             "x": 0.5,
-            "y": -0.10,
+            "y": -0.08,
             "xref": "paper",
             "yref": "paper",
-            "text": "Color encodes seasonal temperature: ❄ Cold (blue) → ☀ Warm (orange/yellow) → ❄ Cold (blue)",
+            "text": "Sequential viridis colormap differentiates all 12 monthly ridges (perceptually uniform, CVD-safe)",
             "showarrow": False,
             "font": {"size": 20, "color": INK_SOFT},
             "align": "center",

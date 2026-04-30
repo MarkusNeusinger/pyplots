@@ -1,4 +1,4 @@
-""" anyplot.ai
+"""anyplot.ai
 stem-basic: Basic Stem Plot
 Library: altair 6.1.0 | Python 3.13.13
 Quality: 89/100 | Updated: 2026-04-30
@@ -27,6 +27,33 @@ amplitude = np.exp(-sample_index / 8) * np.cos(sample_index * 0.9) + np.random.r
 
 df = pd.DataFrame({"n": sample_index, "amplitude": amplitude, "baseline": 0.0})
 
+# Decay envelope — highlights the exponential decay story
+n_env = np.linspace(0, n_samples - 1, 200)
+env_df = pd.DataFrame({"n": n_env, "upper": np.exp(-n_env / 8), "lower": -np.exp(-n_env / 8)})
+
+# Shaded decay region (subtle background emphasis)
+envelope_area = (
+    alt.Chart(env_df)
+    .mark_area(color=BRAND, opacity=0.07)
+    .encode(x=alt.X("n:Q"), y=alt.Y("upper:Q"), y2=alt.Y2("lower:Q"))
+)
+
+# Dashed bounds of the decay envelope
+envelope_upper = (
+    alt.Chart(env_df)
+    .mark_line(color=INK_SOFT, strokeWidth=1.5, strokeDash=[5, 4], opacity=0.45)
+    .encode(x=alt.X("n:Q"), y=alt.Y("upper:Q"))
+)
+
+envelope_lower = (
+    alt.Chart(env_df)
+    .mark_line(color=INK_SOFT, strokeWidth=1.5, strokeDash=[5, 4], opacity=0.45)
+    .encode(x=alt.X("n:Q"), y=alt.Y("lower:Q"))
+)
+
+# Baseline rule at y=0
+baseline_rule = alt.Chart(pd.DataFrame({"y": [0]})).mark_rule(color=INK_SOFT, strokeWidth=1.5).encode(y=alt.Y("y:Q"))
+
 # Stems: vertical rules from baseline to each data point
 stems = (
     alt.Chart(df)
@@ -52,19 +79,16 @@ markers = (
     )
 )
 
-# Baseline rule at y=0
-baseline_rule = alt.Chart(pd.DataFrame({"y": [0]})).mark_rule(color=INK_SOFT, strokeWidth=1.5).encode(y=alt.Y("y:Q"))
-
 # Compose and apply theme-adaptive chrome
 chart = (
-    (baseline_rule + stems + markers)
+    (envelope_area + envelope_upper + envelope_lower + baseline_rule + stems + markers)
     .properties(
         width=1600,
         height=900,
         background=PAGE_BG,
         title=alt.Title("stem-basic · altair · anyplot.ai", fontSize=28, anchor="middle", color=INK),
     )
-    .configure_view(fill=PAGE_BG, stroke=INK_SOFT)
+    .configure_view(fill=PAGE_BG, stroke=None)
     .configure_axis(
         domainColor=INK_SOFT,
         tickColor=INK_SOFT,
@@ -75,6 +99,7 @@ chart = (
         labelFontSize=18,
         titleFontSize=22,
     )
+    .configure_axisX(grid=False)
     .configure_title(color=INK, fontSize=28)
 )
 

@@ -1,91 +1,93 @@
-""" pyplots.ai
+"""anyplot.ai
 slope-basic: Basic Slope Chart (Slopegraph)
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 86/100 | Created: 2025-12-23
+Library: pygal | Python 3.13
+Quality: pending | Created: 2026-04-30
 """
 
-import pygal
-from pygal.style import Style
+import os
+import sys
 
 
-# Data - Sales figures comparing Q1 vs Q4 for 10 products
+# Pop script dir so this file (pygal.py) doesn't shadow the installed pygal package
+_script_dir = sys.path.pop(0)
+import pygal  # noqa: E402
+from pygal.style import Style  # noqa: E402
+
+
+sys.path.insert(0, _script_dir)
+
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_MUTED = "#6B6A63" if THEME == "light" else "#A8A79F"
+
+COLOR_INCREASE = "#009E73"  # Okabe-Ito position 1 — upward change
+COLOR_DECREASE = "#D55E00"  # Okabe-Ito position 2 — downward change
+
+# Data — product sales comparing Q1 vs Q4
 products = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
 q1_sales = [85, 72, 95, 45, 68, 52, 78, 62, 88, 40]
 q4_sales = [92, 58, 102, 75, 65, 71, 82, 48, 95, 55]
 
-# Colorblind-friendly colors for increase vs decrease (spec requirement)
-COLOR_INCREASE = "#2166AC"  # Blue - value went up
-COLOR_DECREASE = "#D6604D"  # Orange-red - value went down
+increasing = [(p, q1_sales[i], q4_sales[i]) for i, p in enumerate(products) if q4_sales[i] >= q1_sales[i]]
+decreasing = [(p, q1_sales[i], q4_sales[i]) for i, p in enumerate(products) if q4_sales[i] < q1_sales[i]]
 
-# Separate products by direction for proper color grouping
-increasing = []
-decreasing = []
-for i, p in enumerate(products):
-    if q4_sales[i] >= q1_sales[i]:
-        increasing.append((p, q1_sales[i], q4_sales[i]))
-    else:
-        decreasing.append((p, q1_sales[i], q4_sales[i]))
-
-# Build color tuple: increasing (blue) then decreasing (orange)
 series_colors = tuple([COLOR_INCREASE] * len(increasing) + [COLOR_DECREASE] * len(decreasing))
 
-# Custom style for 4800x2700 px with clean legend (2 grouped entries)
 custom_style = Style(
-    background="white",
-    plot_background="white",
-    foreground="#333333",
-    foreground_strong="#333333",
-    foreground_subtle="#666666",
+    background=PAGE_BG,
+    plot_background=PAGE_BG,
+    foreground=INK,
+    foreground_strong=INK,
+    foreground_subtle=INK_MUTED,
     colors=series_colors,
-    title_font_size=72,
+    title_font_size=64,
     label_font_size=44,
-    major_label_font_size=48,
-    legend_font_size=48,
-    value_font_size=36,
-    stroke_width=5,
+    major_label_font_size=44,
+    legend_font_size=44,
+    value_font_size=32,
+    stroke_width=6,
     value_label_font_size=32,
 )
 
-# Create slope chart using Line chart with only 2 x-axis points
+# Slope chart: Line chart with only 2 x-axis time points
 chart = pygal.Line(
     width=4800,
     height=2700,
-    title="slope-basic · pygal · pyplots.ai",
+    title="slope-basic · pygal · anyplot.ai",
     x_title="Time Period",
     y_title="Sales (units)",
     style=custom_style,
     show_dots=True,
-    dots_size=16,
-    stroke_style={"width": 5},
+    dots_size=18,
+    stroke_style={"width": 6},
     show_y_guides=True,
     show_x_guides=False,
-    show_legend=True,
-    legend_at_bottom=True,
-    legend_box_size=32,
-    truncate_legend=-1,
+    show_legend=False,
     interpolate=None,
-    margin=120,
+    margin=140,
     print_values=False,
     print_labels=False,
-    range=(30, 110),
+    range=(30, 115),
 )
 
-# X-axis labels (two time points)
 chart.x_labels = ["Q1 2024", "Q4 2024"]
 
-# Add series - first entry in each group shows in legend, rest use None to hide
-for i, (p, start, end) in enumerate(increasing):
+# Increasing products — Okabe-Ito green
+for p, start, end in increasing:
     chart.add(
-        "Increasing" if i == 0 else None,
-        [{"value": start, "label": f"Product {p}: {start}"}, {"value": end, "label": f"Product {p}: {end}"}],
+        f"Product {p}",
+        [{"value": start, "label": f"Product {p} Q1: {start}"}, {"value": end, "label": f"Product {p} Q4: {end}"}],
     )
 
-for i, (p, start, end) in enumerate(decreasing):
+# Decreasing products — Okabe-Ito vermillion
+for p, start, end in decreasing:
     chart.add(
-        "Decreasing" if i == 0 else None,
-        [{"value": start, "label": f"Product {p}: {start}"}, {"value": end, "label": f"Product {p}: {end}"}],
+        f"Product {p}",
+        [{"value": start, "label": f"Product {p} Q1: {start}"}, {"value": end, "label": f"Product {p} Q4: {end}"}],
     )
 
-# Save as PNG and HTML (HTML provides interactive hover labels)
-chart.render_to_png("plot.png")
-chart.render_to_file("plot.html")
+# Save PNG and interactive HTML
+chart.render_to_png(f"plot-{THEME}.png")
+with open(f"plot-{THEME}.html", "wb") as f:
+    f.write(chart.render())

@@ -37,9 +37,10 @@ export interface MapNode {
   thumbUrl: string | null;                       // base theme-aware .png URL
   imgs: Map<ResolutionTier, HTMLImageElement>;   // loaded variants
   pendingTiers: Set<ResolutionTier>;             // tiers with an in-flight fetch
-  primaryType: string;                           // primary plot_type, drives cluster gravity
-  clusterX: number;                              // cluster anchor X in graph space
-  clusterY: number;                              // cluster anchor Y in graph space
+  // colorBucket = primary plot_type for nodes that fall into the top-N most
+  // frequent plot types; null otherwise. Drives the per-cluster border color
+  // without imposing any spatial bias on the layout.
+  colorBucket: string | null;
 }
 
 /** Link shape passed to ForceGraph2D. `weight` = weighted-Jaccard sim ∈ (0, 1]. */
@@ -92,9 +93,39 @@ export function computeIDF(specs: SpecMapItem[]): Map<string, number> {
 }
 
 /**
+ * Per-category multiplier on top of IDF weighting. Lets us privilege some
+ * tag categories over others when measuring similarity — e.g. sharing the
+ * same `plot_type` should pull two specs together harder than sharing a
+ * common `styling` token. Categories not listed here default to 1.0.
+ */
+export const CATEGORY_WEIGHT: Record<string, number> = {
+  plot_type: 3,
+  features: 1.5,
+  data_type: 1,
+  domain: 1,
+  dependencies: 0.8,
+  patterns: 1,
+  dataprep: 1,
+  techniques: 0.7,
+  styling: 0.5,
+};
+
+function categoryOf(prefixedTag: string): string {
+  const idx = prefixedTag.indexOf(':');
+  return idx >= 0 ? prefixedTag.slice(0, idx) : '';
+}
+
+function tagWeight(tag: string, idf: Map<string, number>): number {
+  return (idf.get(tag) ?? 0) * (CATEGORY_WEIGHT[categoryOf(tag)] ?? 1);
+}
+
+/**
  * Weighted Jaccard similarity over two tag sets.
  *   sim = Σ w_t for t∈a∩b / Σ w_t for t∈a∪b
- * Returns 0 when both sets are empty (no signal) or denominator collapses.
+ * Per-tag weight = IDF × CATEGORY_WEIGHT[category prefix], so the contribution
+ * of a shared tag depends both on its rarity in the corpus and on which
+ * category it belongs to. Returns 0 when either set is empty or denominator
+ * collapses to zero.
  */
 export function weightedJaccard(a: string[], b: string[], idf: Map<string, number>): number {
   if (a.length === 0 || b.length === 0) return 0;
@@ -105,13 +136,13 @@ export function weightedJaccard(a: string[], b: string[], idf: Map<string, numbe
   const seen = new Set<string>();
   for (const t of setA) {
     seen.add(t);
-    const w = idf.get(t) ?? 0;
+    const w = tagWeight(t, idf);
     denom += w;
     if (setB.has(t)) num += w;
   }
   for (const t of setB) {
     if (seen.has(t)) continue;
-    denom += idf.get(t) ?? 0;
+    denom += tagWeight(t, idf);
   }
   return denom > 0 ? num / denom : 0;
 }
@@ -217,53 +248,24 @@ export function primaryPlotType(spec: SpecMapItem): string {
 }
 
 /**
- * Place the major plot_types on a circle around the origin so nodes of the
- * same type get pulled toward a shared anchor in graph space — producing
- * visible "scatter neighborhood", "bar neighborhood", etc. clusters.
+ * Return the top-N most frequent primary plot types in the corpus, sorted by
+ * count descending (alphabetic name as tiebreaker for determinism). Used to
+ * decide which buckets earn a distinct color border in the map.
  *
- * The catalog has ~100 unique primary plot_types, most of them singletons;
- * giving every singleton its own anchor crowds the ring and defeats the
- * purpose. Types with fewer than `minCount` specs get bucketed into a
- * synthetic `other` cluster instead.
- *
- * Type ordering is alphabetic for determinism (otherwise reload reshuffles
- * everyone's spatial neighbors).
+ * Excludes the synthetic `other` bucket (which only appears when a spec has
+ * no plot_type tag at all) so it never wastes a color slot.
  */
-export function computeClusterAnchors(
-  specs: SpecMapItem[],
-  radius: number,
-  minCount = 3
-): Map<string, { x: number; y: number }> {
+export function topPlotTypes(specs: SpecMapItem[], n: number): string[] {
   const counts = new Map<string, number>();
   for (const s of specs) {
     const pt = primaryPlotType(s);
+    if (pt === 'other') continue;
     counts.set(pt, (counts.get(pt) ?? 0) + 1);
   }
-  const majors = Array.from(counts.entries())
-    .filter(([, c]) => c >= minCount)
-    .map(([t]) => t)
-    .sort();
-  const types = majors.length > 0 ? [...majors, 'other'] : ['other'];
-  const map = new Map<string, { x: number; y: number }>();
-  if (types.length === 1) {
-    map.set(types[0], { x: 0, y: 0 });
-    return map;
-  }
-  types.forEach((t, i) => {
-    const angle = (i / types.length) * 2 * Math.PI;
-    map.set(t, { x: radius * Math.cos(angle), y: radius * Math.sin(angle) });
-  });
-  return map;
-}
-
-/**
- * Resolve a spec's cluster bucket against the anchor map: returns the spec's
- * primary plot_type if it's a major cluster, otherwise `other`. Used to pick
- * the (clusterX, clusterY) anchor each node should be pulled toward.
- */
-export function clusterBucket(spec: SpecMapItem, anchors: Map<string, unknown>): string {
-  const pt = primaryPlotType(spec);
-  return anchors.has(pt) ? pt : 'other';
+  return Array.from(counts.entries())
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, n)
+    .map(([t]) => t);
 }
 
 /**

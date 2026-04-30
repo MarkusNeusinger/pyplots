@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import ForceGraph2D from 'react-force-graph-2d';
-import { forceCollide, forceX, forceY } from 'd3-force-3d';
+import { forceCollide } from 'd3-force-3d';
 
 import { API_URL } from '../constants';
 import { useAnalytics } from '../hooks';
@@ -14,8 +14,6 @@ import { specPath } from '../utils/paths';
 import { colors, fontSize, typography } from '../theme';
 import {
   buildKNNLinks,
-  clusterBucket,
-  computeClusterAnchors,
   computeIDF,
   ensureNodeTier,
   fitToBox,
@@ -24,7 +22,9 @@ import {
   pickBestLoadedTier,
   pickTier,
   preloadImages,
+  primaryPlotType,
   selectMapThumbUrl,
+  topPlotTypes,
   type MapLink,
   type MapNode,
   type ResolutionTier,
@@ -32,24 +32,22 @@ import {
 } from './MapPage.helpers';
 
 
-const NODE_SIZE = 44;            // graph-space size of a node — large enough to read the thumbnail without hovering
-const HOVER_PREVIEW_SIZE = NODE_SIZE * 6;     // graph-space size of the hover preview overlay
+const NODE_SIZE = 60;            // graph-space size of a node — large enough to read the thumbnail without hovering
+const HOVER_PREVIEW_SIZE = NODE_SIZE * 5;     // graph-space size of the hover preview overlay
+const MIN_ZOOM = 0.5;             // floor for zoomToFit so outliers can't shrink the dense cluster into pixels
 const COOLDOWN_TICKS = 400;       // longer settling for cleaner final positions
 const KNN_K = 5;                  // edges per node in the sparse KNN graph
 const KNN_MIN_SIM = 0.05;         // drop near-zero noise links
-// Forces: tuned for clean spread + visible clusters at typical viewport sizes.
-// DEBUG MODE: weakened repulsion + link forces so cluster gravity dominates.
-const REPULSION = -40;            // forceManyBody strength — more negative = more global repulsion
-const LINK_DISTANCE_MIN = NODE_SIZE * 1.5;   // shortest link (highest sim)
-const LINK_DISTANCE_MAX = NODE_SIZE * 6;     // longest link (lowest sim above threshold)
-const LINK_STRENGTH_CAP = 0.15;   // max pull from a single link
-const COLLIDE_PADDING = 4;        // px padding on top of the bounding-box radius
-// Cluster gravity: places each major plot_type on a ring of this radius and
-// pulls nodes toward their type's anchor. The radius is in absolute graph
-// units (not relative to NODE_SIZE) so changing the node size doesn't blow
-// up the layout — zoomToFit still has to bring the whole thing into view.
-const CLUSTER_RADIUS = 600;
-const CLUSTER_STRENGTH = 0.6;
+// Forces: tuned so KNN edges + collision shape the layout while many-body
+// repulsion stays GENTLE — collision already enforces minimum spacing, and
+// strong repulsion would just blow the graph wide enough that zoomToFit
+// zooms out too far for thumbnails to be readable. Goal: graph extent stays
+// small enough that zoomToFit displays nodes at a generous CSS-pixel size.
+const REPULSION = -50;            // forceManyBody strength
+const LINK_DISTANCE_MIN = NODE_SIZE * 1.1;   // shortest link (highest sim)
+const LINK_DISTANCE_MAX = NODE_SIZE * 3.5;   // longest link (lowest sim above threshold)
+const LINK_STRENGTH_CAP = 0.4;    // max pull from a single link
+const COLLIDE_PADDING = 3;        // px padding on top of the bounding-box radius
 
 // visually-hidden style — keeps the spec list readable for screen readers
 // even though the canvas is the primary interface.
@@ -65,9 +63,11 @@ const visuallyHiddenSx = {
   border: 0,
 };
 
-// Deterministic per-bucket color for debugging cluster layout. Colors come
-// from the Okabe-Ito brand palette; assignment is by stable index of the
-// (sorted) bucket list so the same plot_type always paints the same color.
+// Top-N most frequent plot_types each get a distinct Okabe-Ito border color
+// so the catalog's biggest categories (line, scatter, bar, …) stand out at
+// a glance. Specs that don't fall into the top-N keep a neutral border.
+// The palette has 7 categorical colors + an adaptive neutral as the 8th —
+// here we use the 7 categorical ones; everything else stays uncolored.
 const CLUSTER_COLORS = [
   '#009E73', // brand green
   '#D55E00', // vermillion
@@ -78,17 +78,18 @@ const CLUSTER_COLORS = [
   '#F0E442', // yellow
 ] as const;
 
-function clusterColor(bucket: string, allBuckets: string[]): string {
-  const idx = allBuckets.indexOf(bucket);
-  return CLUSTER_COLORS[Math.max(0, idx) % CLUSTER_COLORS.length];
+function colorFor(bucket: string | null, topTypes: string[]): string | null {
+  if (!bucket) return null;
+  const idx = topTypes.indexOf(bucket);
+  if (idx < 0) return null;
+  return CLUSTER_COLORS[idx % CLUSTER_COLORS.length];
 }
 
-// Hairline border around a thumbnail node, theme-aware.
-// In DEBUG mode: replace the neutral border with the cluster color so each
-// neighborhood is visually obvious even when the spatial separation is subtle.
-function strokeFor(isDark: boolean, isHover: boolean, cluster?: string): string {
+// Hairline border around a thumbnail node, theme-aware. Top-N plot types
+// paint with a brand color; the rest fall back to a neutral hairline.
+function strokeFor(isDark: boolean, isHover: boolean, color: string | null): string {
   if (isHover) return colors.primary;
-  if (cluster) return cluster;
+  if (color) return color;
   return isDark ? 'rgba(240,239,232,0.18)' : 'rgba(26,26,23,0.18)';
 }
 
@@ -143,27 +144,24 @@ export function MapPage() {
   }, []);
 
   // 3. derive graph data from specs/theme (pure — no setState in effect)
-  const graphData = useMemo<{ nodes: MapNode[]; links: MapLink[] }>(() => {
-    if (!specs) return { nodes: [], links: [] };
+  const graphData = useMemo<{ nodes: MapNode[]; links: MapLink[]; topTypes: string[] }>(() => {
+    if (!specs) return { nodes: [], links: [], topTypes: [] };
     const idf = computeIDF(specs);
-    const anchors = computeClusterAnchors(specs, CLUSTER_RADIUS);
+    const topTypes = topPlotTypes(specs, CLUSTER_COLORS.length);
     const nodes: MapNode[] = specs.map(s => {
-      const bucket = clusterBucket(s, anchors);
-      const a = anchors.get(bucket) ?? { x: 0, y: 0 };
+      const pt = primaryPlotType(s);
       return {
         id: s.id,
         title: s.title,
         tags: flattenTags(s),
-        primaryType: bucket,
-        clusterX: a.x,
-        clusterY: a.y,
+        colorBucket: topTypes.includes(pt) ? pt : null,
         thumbUrl: selectMapThumbUrl(s, isDark),
         imgs: new Map(),
         pendingTiers: new Set(),
       };
     });
     const links = buildKNNLinks(specs, idf, KNN_K, KNN_MIN_SIM);
-    return { nodes, links };
+    return { nodes, links, topTypes };
   }, [specs, isDark]);
 
   // Eager-load the 400-tier thumbnails so something paints fast. Higher tiers
@@ -198,12 +196,6 @@ export function MapPage() {
     return map;
   }, [graphData.links]);
 
-  // Stable list of bucket names so clusterColor() returns a consistent index
-  // even as the simulation mutates node positions.
-  const allBuckets = useMemo(
-    () => Array.from(new Set(graphData.nodes.map(n => n.primaryType))).sort(),
-    [graphData.nodes],
-  );
 
   // 5. ForceGraph2D callbacks. Types for ctx come from the wrapper's prop signature
   // when these are passed inline below — extracting them out would force us to spell
@@ -324,8 +316,8 @@ export function MapPage() {
                 ctx.fillStyle = isDark ? '#242420' : '#FFFDF6';
                 ctx.fillRect(x, y, w, h);
               }
-              ctx.lineWidth = isHover ? 2 : 1.5;
-              ctx.strokeStyle = strokeFor(isDark, !!isHover, clusterColor(n.primaryType, allBuckets));
+              ctx.lineWidth = isHover ? 2 : n.colorBucket ? 1.5 : 1;
+              ctx.strokeStyle = strokeFor(isDark, !!isHover, colorFor(n.colorBucket, graphData.topTypes));
               ctx.strokeRect(x, y, w, h);
               ctx.restore();
             }}
@@ -353,10 +345,20 @@ export function MapPage() {
             onNodeClick={onNodeClick}
             onNodeHover={(n: MapNode | null) => setHoverId(n?.id ?? null)}
             cooldownTicks={COOLDOWN_TICKS}
-            // Fit the whole cluster ring into the viewport once the engine
-            // settles. A small padding leaves room for the hover preview to
-            // bleed past a node without clipping at the canvas edge.
-            onEngineStop={() => fgRef.current?.zoomToFit?.(600, 80)}
+            // Fit the whole graph into the viewport once the engine settles,
+            // but enforce a minimum zoom afterwards — without the floor, a
+            // few far-flung outliers force zoomToFit to shrink the dense
+            // central cluster down to illegible pixels.
+            onEngineStop={() => {
+              const fg = fgRef.current;
+              if (!fg) return;
+              fg.zoomToFit?.(600, 80);
+              setTimeout(() => {
+                if (typeof fg.zoom === 'function' && fg.zoom() < MIN_ZOOM) {
+                  fg.zoom(MIN_ZOOM, 400);
+                }
+              }, 700);
+            }}
             // Wire up the custom forces once the imperative ref is available.
             // onRenderFramePre fires every frame; the __forcesWired guard makes
             // it idempotent and the cost on subsequent frames is one property read.
@@ -385,11 +387,6 @@ export function MapPage() {
                 'collide',
                 forceCollide<MapNode>(() => NODE_SIZE / 2 + COLLIDE_PADDING).iterations(2)
               );
-              // Cluster gravity: each plot_type has its own anchor on a ring,
-              // and nodes get pulled toward their type's anchor with a gentle
-              // strength so KNN edges still drive the within-cluster topology.
-              fg.d3Force('clusterX', forceX<MapNode>((d: MapNode) => d.clusterX).strength(CLUSTER_STRENGTH));
-              fg.d3Force('clusterY', forceY<MapNode>((d: MapNode) => d.clusterY).strength(CLUSTER_STRENGTH));
               fg.__forcesWired = true;
               fg.d3ReheatSimulation?.();
             }}

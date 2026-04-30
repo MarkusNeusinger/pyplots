@@ -188,7 +188,7 @@ describe('MapPage', () => {
 
     const drawNode = lastFgProps.current!.nodeCanvasObject as (n: unknown, c: unknown, gs?: number) => void;
     const ctx = makeCtxStub();
-    drawNode({ id: 'scatter-basic', x: 100, y: 100, imgs: new Map(), pendingTiers: new Set() }, ctx, 1);
+    drawNode({ id: 'scatter-basic', x: 100, y: 100, imgs: new Map(), pendingTiers: new Set(), colorBucket: null }, ctx, 1);
 
     // Without an attached image, the fallback rect path runs.
     expect(ctx.fillRect).toHaveBeenCalled();
@@ -205,7 +205,7 @@ describe('MapPage', () => {
     const ctx = makeCtxStub();
     const fakeImg = { src: 'x' } as unknown as HTMLImageElement;
     drawNode(
-      { id: 'scatter-basic', x: 50, y: 50, imgs: new Map([[400, fakeImg]]), pendingTiers: new Set() },
+      { id: 'scatter-basic', x: 50, y: 50, imgs: new Map([[400, fakeImg]]), pendingTiers: new Set(), colorBucket: null },
       ctx,
       1,
     );
@@ -221,7 +221,7 @@ describe('MapPage', () => {
 
     const paintHitbox = lastFgProps.current!.nodePointerAreaPaint as (n: unknown, c: string, ctx: unknown) => void;
     const ctx = makeCtxStub();
-    paintHitbox({ id: 'scatter-basic', x: 80, y: 60, imgs: new Map(), pendingTiers: new Set() }, '#ff00ff', ctx);
+    paintHitbox({ id: 'scatter-basic', x: 80, y: 60, imgs: new Map(), pendingTiers: new Set(), colorBucket: null }, '#ff00ff', ctx);
 
     expect(ctx.fillStyle).toBe('#ff00ff');
     expect(ctx.fillRect).toHaveBeenCalled();

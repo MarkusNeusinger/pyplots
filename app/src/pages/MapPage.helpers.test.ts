@@ -11,8 +11,7 @@ import {
   pickBestLoadedTier,
   fitToBox,
   primaryPlotType,
-  computeClusterAnchors,
-  clusterBucket,
+  topPlotTypes,
   type SpecMapItem,
 } from './MapPage.helpers';
 
@@ -228,67 +227,44 @@ describe('primaryPlotType', () => {
 });
 
 
-describe('computeClusterAnchors', () => {
-  it('emits one anchor per major plot_type plus "other"', () => {
+describe('topPlotTypes', () => {
+  it('returns the N most frequent primary types in descending order', () => {
     const specs = [
-      spec('s1', { plot_type: ['scatter'] }),
-      spec('s2', { plot_type: ['scatter'] }),
-      spec('s3', { plot_type: ['scatter'] }),
-      spec('s4', { plot_type: ['line'] }),  // singleton — bucketed into "other"
+      spec('s1', { plot_type: ['line'] }),
+      spec('s2', { plot_type: ['line'] }),
+      spec('s3', { plot_type: ['line'] }),
+      spec('s4', { plot_type: ['scatter'] }),
+      spec('s5', { plot_type: ['scatter'] }),
+      spec('s6', { plot_type: ['bar'] }),
     ];
-    const anchors = computeClusterAnchors(specs, 100, 3);
-    expect(Array.from(anchors.keys()).sort()).toEqual(['other', 'scatter']);
+    expect(topPlotTypes(specs, 3)).toEqual(['line', 'scatter', 'bar']);
   });
 
-  it('places anchors on a circle of the given radius', () => {
-    const specs = [
-      spec('s1', { plot_type: ['a'] }),
-      spec('s2', { plot_type: ['a'] }),
-      spec('s3', { plot_type: ['b'] }),
-      spec('s4', { plot_type: ['b'] }),
-    ];
-    const anchors = computeClusterAnchors(specs, 100, 2);
-    for (const { x, y } of anchors.values()) {
-      const r = Math.hypot(x, y);
-      // either on the circle or at the origin (single-anchor degenerate case)
-      expect(Math.abs(r - 100) < 1e-6 || r < 1e-6).toBe(true);
-    }
-  });
-
-  it('places the single anchor at the origin when only one cluster exists', () => {
-    const specs = [
-      spec('s1', { plot_type: ['only-type'] }),
-      spec('s2', { plot_type: ['only-type'] }),
-      spec('s3', { plot_type: ['only-type'] }),
-    ];
-    const anchors = computeClusterAnchors(specs, 100, 3);
-    // 'only-type' (3 specs ≥ minCount 3) + 'other' (0 specs but always emitted)
-    // The function emits 2 anchors when there are majors; both on the circle.
-    expect(anchors.size).toBe(2);
-  });
-
-  it('falls back to a single "other" anchor when nothing meets minCount', () => {
+  it('truncates to the requested length', () => {
     const specs = [
       spec('s1', { plot_type: ['a'] }),
       spec('s2', { plot_type: ['b'] }),
+      spec('s3', { plot_type: ['c'] }),
     ];
-    const anchors = computeClusterAnchors(specs, 100, 3);
-    expect(Array.from(anchors.keys())).toEqual(['other']);
-    expect(anchors.get('other')).toEqual({ x: 0, y: 0 });
-  });
-});
-
-
-describe('clusterBucket', () => {
-  it('returns the spec primary type when it is in the anchor map', () => {
-    const anchors = new Map([['scatter', null], ['other', null]]);
-    expect(clusterBucket(spec('s', { plot_type: ['scatter'] }), anchors)).toBe('scatter');
+    expect(topPlotTypes(specs, 2)).toHaveLength(2);
   });
 
-  it('returns "other" when the spec primary type is not a major cluster', () => {
-    const anchors = new Map([['scatter', null], ['other', null]]);
-    expect(clusterBucket(spec('s', { plot_type: ['rare'] }), anchors)).toBe('other');
-    expect(clusterBucket(spec('s', null), anchors)).toBe('other');
+  it('breaks ties alphabetically for determinism', () => {
+    const specs = [
+      spec('s1', { plot_type: ['zebra'] }),
+      spec('s2', { plot_type: ['apple'] }),
+      spec('s3', { plot_type: ['mango'] }),
+    ];
+    // All have count=1, alphabetic order: apple, mango, zebra
+    expect(topPlotTypes(specs, 3)).toEqual(['apple', 'mango', 'zebra']);
+  });
+
+  it('excludes the synthetic "other" bucket so it does not waste a color slot', () => {
+    const specs = [
+      spec('s1', null),  // no plot_type → primaryPlotType returns 'other'
+      spec('s2', { plot_type: ['line'] }),
+    ];
+    expect(topPlotTypes(specs, 5)).toEqual(['line']);
   });
 });
 

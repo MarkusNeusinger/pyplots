@@ -2,7 +2,7 @@ library: seaborn
 language: python
 specification_id: rose-basic
 created: '2025-12-23T19:43:56Z'
-updated: '2026-04-30T07:03:15Z'
+updated: '2026-04-30T07:13:45Z'
 generated_by: claude-sonnet
 workflow_run: 25151670488
 issue: 1003
@@ -12,45 +12,39 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/rose-basi
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/rose-basic/python/seaborn/plot-dark.png
 preview_html_light: null
 preview_html_dark: null
-quality_score: 80
+quality_score: 82
 review:
   strengths:
-  - 'Perfect spec compliance: correct rose chart with polar projection, radius proportional
-    to value, clockwise from 12 o''clock, radial gridlines'
-  - 'Perfect code quality: clean KISS structure, deterministic hardcoded data, all
-    imports used'
-  - 'Excellent data quality: realistic seasonal rainfall scenario with climatologically
-    plausible values (72-168mm)'
-  - 'Correct theme adaptation: chrome flips between light/dark while Blues data colors
-    stay consistent'
-  - Correct 3600x3600 square format for radially symmetric plot
-  - Value annotations on each bar provide useful reference information
+  - Dual encoding of rainfall through both radius and Blues color depth is an intentional
+    and effective design choice
+  - 'Complete spec compliance: radial gridlines, value labels, clockwise-from-top
+    orientation all present'
+  - Theme adaptation fully correct in both renders — backgrounds match required hex
+    values, no dark-on-dark failures
+  - 'Code quality exemplary: flat script, deterministic data, all imports used, correct
+    output filename'
   weaknesses:
-  - Radial gridline labels (fontsize=14) and value annotations (fontsize=14) are below
-    the 16pt minimum — increase to 16pt
-  - 'Blues sequential palette does not start first categorical series with #009E73
-    — use viridis/cividis mapped to actual rainfall values or use Okabe-Ito starting
-    with #009E73'
-  - Design at well-configured default level with no deliberate storytelling — annotate
-    peak month (Jun 168mm) or use single accent color to highlight peak bar
-  - No seaborn-distinctive plotting function used; implementation is essentially matplotlib
-    with seaborn theming
-  - Dashed grid lines contradict style guide (recommend solid thin lines)
+  - Radial tick labels at 14pt are slightly undersized for the 3600x3600 canvas; 16pt
+    recommended
+  - Bar edgecolor set to PAGE_BG makes edges invisible in dark mode, reducing inter-bar
+    definition
+  - Jan tick label crowds the title because the 12 o clock polar tick label lands
+    in the title pad area
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) - correct
-      Chrome: Title "Monthly Rainfall (mm) · rose-basic · seaborn · anyplot.ai" at 24pt bold is clearly readable. Month labels (Jan-Dec) at 20pt bold are readable around the perimeter. Radial gridline labels ("100 mm", "150 mm") at 14pt appear muted but legible. Value annotations (89, 72, 95, 112, 135, 168, 142, 125, 98, 76, 82, 91) at 14pt near bar tips are readable. "Jan" tick label at 12 o'clock position sits directly below the title, creating minor visual crowding.
-      Data: Sequential Blues palette; bars clearly distinguishable with white PAGE_BG edges; 12 bars fill circular space; June (168mm) is largest, Feb (72mm) smallest. Color gradient is positional (lighter for Jan/Feb, darker for Oct/Nov), not value-mapped.
-      Legibility verdict: PASS (all text readable, but 14pt labels below 16pt guideline)
+      Background: Warm off-white (#FAF8F1) — correct, not pure white
+      Chrome: Title "Monthly Rainfall (mm) · rose-basic · seaborn · anyplot.ai" at 24pt bold in dark ink — fully legible. Month labels at 20pt bold, dark ink around perimeter — readable. Radial tick labels "100 mm" and "150 mm" at 14pt in INK_SOFT — legible but slightly small for canvas. Value labels (89, 72, 95, etc.) at 14pt — readable. Jan label crowds title area slightly but no collision.
+      Data: Blues sequential palette, 12 wedge bars from light steel blue (low rainfall ~72mm) to deep navy (high rainfall ~168mm). All bars clearly visible.
+      Legibility verdict: PASS
 
     Dark render (plot-dark.png):
-      Background: Near-black (#1A1A17) - correct
-      Chrome: Title and all month labels appear in light cream/off-white text - clearly readable. Radial gridline labels in muted light gray. Value annotations in light gray. No dark-on-dark text failures detected. Grid lines visible and subtle.
-      Data: Blues palette colors identical to light render - correct theme separation. Darker blue bars (Oct, Nov) still distinguishable from dark background via white edges. All 12 bars visible.
-      Legibility verdict: PASS (all text readable against dark background; no dark-on-dark issues)
+      Background: Warm near-black (#1A1A17) — correct, not pure black
+      Chrome: Title and all text (month labels, radial labels, value labels) flipped to light cream/gray tones — all readable against dark surface. No dark-on-dark failures detected. Bar edges (PAGE_BG=#1A1A17 in dark mode) are invisible against background, slightly reducing bar definition.
+      Data: Blues bar colors identical to light render — only chrome flipped. Deeper navy wedges (Jun-Jul-Aug) pop well against dark background. Lighter steel-blue wedges (Feb, Oct) remain distinguishable.
+      Legibility verdict: PASS
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 24
       max: 30
       items:
       - id: VQ-01
@@ -58,78 +52,73 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Title=24pt, month labels=20pt correctly set; radial gridline labels
-          and value annotations at 14pt are below the 16pt minimum guideline
+        comment: Title 24pt, month labels 20pt pass; radial tick labels 14pt slightly
+          undersized for 3600x3600 canvas
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: Month labels clear; Jan tick label at 12 o'clock sits directly below
-          title causing minor crowding; no severe overlaps
+        comment: Jan tick label crowds title area but no collision; all other labels
+          cleanly placed
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: All 12 bars clearly visible; Blues gradient provides differentiation;
-          value labels aid identification
+        comment: All 12 bars visible; lightest Blues bars slightly less prominent
+          on light background
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Blues sequential palette is CVD-safe; no red-green dependencies
+        comment: Sequential Blues palette is CVD-safe; no red-green signal
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Correct 3600x3600 square format; good circular canvas utilization;
-          minor title/Jan crowding at top
+        comment: 12x12 in at 300dpi = 3600x3600 correct square format; slight crowding
+          at top
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Title includes data description with mm units; radial labels show
-          mm units
+        comment: Descriptive title; radial labels include mm unit
       - id: VQ-07
         name: Palette Compliance
         score: 1
         max: 2
-        passed: false
-        comment: 'Blues sequential palette defensible for single-polarity data but
-          first categorical series is not #009E73; backgrounds (#FAF8F1/#1A1A17) are
-          correct'
+        passed: true
+        comment: Correct backgrounds (#FAF8F1/#1A1A17); Blues justified by spec but
+          brand-green first-series rule not met
     design_excellence:
-      score: 11
+      score: 13
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
         passed: true
-        comment: Blues palette creates thematic water/rainfall association; white
-          bar edges provide clean separation; within well-configured library default
-          territory
+        comment: Blues dual-encoding (radius + color) thoughtful; value labels add
+          info; professional look
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Polar spine removed; dashed grid with alpha=0.18 subtle; bar gaps
-          add breathing room; value annotations add polish; dashed lines contradict
-          style guide solid recommendation
+        comment: 0.85 width factor gives clean gaps; polar spine removed; dashed grid
+          at low alpha
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: Circular arrangement inherently emphasizes June peak; sequential
-          color adds second dimension; but no deliberate callout, annotation, or visual
-          emphasis on insight
+        passed: true
+        comment: Summer peak Jun-Jul immediately legible through radius and color
+          depth; cyclical story clear
     spec_compliance:
       score: 15
       max: 15
@@ -139,29 +128,29 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct rose/nightingale chart using polar projection; bars with
-          radius proportional to value
+        comment: 'Correct rose chart: equal-angle wedges with radius proportional
+          to value'
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Circular format, radius proportional to value (not area), monthly
-          categories, 12 o'clock start, radial gridlines, consistent Blues color scheme
+        comment: Radial gridlines, value annotations, clockwise from 12 o clock, consistent
+          Blues scheme
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Months correctly mapped to angular positions; rainfall values mapped
-          to radius; clockwise order from 12 o'clock
+        comment: 12 equal-angle wedges for 12 months; radius proportional to rainfall;
+          ylim at max x 1.15
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title 'Monthly Rainfall (mm) · rose-basic · seaborn · anyplot.ai'
-          correct format; no legend needed for single series
+        comment: Title follows required format; no legend needed for single-metric
+          chart
     data_quality:
       score: 15
       max: 15
@@ -171,22 +160,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Full 12-month seasonal cycle; value range 72-168mm shows meaningful
-          variation; seasonal pattern clearly visible
+        comment: 'Full rose chart feature set: circular arrangement, proportional
+          radii, gridlines, value labels, sequential color'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Monthly rainfall is real, neutral, scientifically relevant; values
-          are climatologically plausible
+        comment: Monthly rainfall canonical use case; values 72-168 mm/month plausible
+          for rainy temperate region
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 72-168mm range realistic for temperate climate; seasonal pattern
-          direction meteorologically correct
+        comment: 12 months (optimal per spec); rainfall range covers meaningful spread
+          without extreme outliers
     code_quality:
       score: 10
       max: 10
@@ -196,36 +185,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean Imports -> Data -> Plot -> Save structure; no functions or
-          classes
+        comment: No functions or classes; flat linear script
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic hardcoded data; no randomness
+        comment: Hardcoded data; fully deterministic
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All four imports (os, matplotlib, numpy, seaborn) are used
+        comment: os, matplotlib.pyplot, numpy, seaborn — all actively used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean Pythonic code; zip(..., strict=True) is a nice touch; appropriate
-          complexity
+        comment: Clean angle/width calculations; no fake UI
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot-{THEME}.png with correct dpi=300, bbox_inches=tight,
-          facecolor=PAGE_BG
+        comment: Saves as plot-{THEME}.png with correct facecolor argument
     library_mastery:
-      score: 4
+      score: 5
       max: 10
       items:
       - id: LM-01
@@ -233,24 +219,22 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Correctly uses sns.set_theme() for adaptive theming and sns.color_palette()
-          for palette; polar chart unavoidably uses matplotlib ax.bar() - correct
-          seaborn approach for unsupported chart types
+        comment: sns.set_theme() with full rc dict is recommended seaborn pattern;
+          actual polar rendering is matplotlib
       - id: LM-02
         name: Distinctive Features
-        score: 1
+        score: 2
         max: 5
         passed: false
-        comment: Seaborn contribution limited to theming and palette generation; polar
-          chart rendering is entirely matplotlib; no seaborn-distinctive plotting
-          function called
-  verdict: REJECTED
+        comment: sns.color_palette('Blues') is seaborn-native; limited seaborn usage
+          beyond theme setup
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - polar-projection
-  - annotations
   - manual-ticks
+  - annotations
   patterns:
   - explicit-figure
   dataprep: []

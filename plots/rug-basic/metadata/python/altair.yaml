@@ -1,158 +1,182 @@
 library: altair
+language: python
 specification_id: rug-basic
 created: '2025-12-23T19:43:41Z'
-updated: '2025-12-23T19:52:35Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20469996214
-issue: 0
-python_version: 3.13.11
-library_version: 6.0.0
-preview_url: https://storage.googleapis.com/anyplot-images/plots/rug-basic/altair/plot.png
-preview_html: https://storage.googleapis.com/anyplot-images/plots/rug-basic/altair/plot.html
-quality_score: 94
-impl_tags:
-  dependencies: []
-  techniques:
-    - html-export
-  patterns:
-    - data-generation
-  dataprep: []
-  styling:
-    - alpha-blending
+updated: '2026-04-30T05:41:06Z'
+generated_by: claude-sonnet
+workflow_run: 25148650956
+issue: 978
+python_version: 3.13.13
+library_version: 6.1.0
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/rug-basic/python/altair/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/rug-basic/python/altair/plot-dark.png
+preview_html_light: https://storage.googleapis.com/anyplot-images/plots/rug-basic/python/altair/plot-light.html
+preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/rug-basic/python/altair/plot-dark.html
+quality_score: 89
 review:
   strengths:
-  - Excellent bimodal data choice that clearly demonstrates clustering patterns and
-    gaps, fulfilling the spec core purpose
-  - Proper use of Altair declarative grammar with mark_rule and y/y2 encoding to create
-    tick marks
-  - Good semi-transparency (opacity=0.6) to handle overlapping points in dense regions
-  - Clean, simple code structure following KISS principles
-  - Correct 16:9 aspect ratio with proper scale_factor for high-resolution output
+  - Combined KDE density curve + rug marks elegantly shows both distribution shape
+    and individual observations in a single view
+  - Bimodal response-time data effectively demonstrates clustering, gaps, and precise
+    observation placement — all core rug-plot features
+  - 'Theme-adaptive chrome is textbook-correct: warm off-white #FAF8F1 / near-black
+    #1A1A17 backgrounds, INK/INK_SOFT tokens wired through title, axis, ticks, grid'
+  - Explicit font sizing (28/22/18 px) ensures full readability at 4800×2700 px in
+    both themes
+  - 'Brand green #009E73 holds its identity across light and dark renders; Y-axis
+    correctly hidden for a clean minimal canvas'
   weaknesses:
-  - Axis label Measurement Value lacks units (could be more specific like Response
-    Time (ms) for a realistic scenario)
-  - Large empty space above rug marks reduces canvas utilization, though inherent
-    to standalone rug plots
-  image_description: 'The plot displays a basic rug plot with vertical blue tick marks
-    (#306998 color with 0.6 opacity) positioned at the bottom of the chart along the
-    x-axis. The x-axis is labeled "Measurement Value" and ranges from 6 to 80. The
-    tick marks clearly demonstrate a bimodal distribution: a dense cluster of marks
-    around values 14-32 and a sparser cluster around 45-68, with a visible gap between
-    the two clusters (around 36-42). The title "rug-basic · altair · pyplots.ai" is
-    displayed at the top in appropriately sized font. The plot uses semi-transparency
-    which helps distinguish overlapping tick marks in dense regions.'
+  - 4-sided view border (configure_view stroke=INK_SOFT) creates a box frame instead
+    of the recommended L-shaped or borderless chrome
+  - 'DE-02 refinement ceiling: removing the top/right/left strokes (or stroke=None)
+    would lift the visual polish noticeably'
+  - Noticeable headroom above the KDE peak (~30% of plot height is empty space) slightly
+    reduces canvas utilisation
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white surface, consistent with #FAF8F1 — not pure white
+      Chrome: Title "rug-basic · altair · anyplot.ai" in dark ink, clearly readable; x-axis label "Response Time (ms)" in dark ink, readable; tick labels 6–80 at regular intervals, clearly readable against the light background; y-axis is intentionally hidden
+      Data: Bimodal KDE density curve with semi-transparent brand-green (#009E73) fill showing peaks near 25 ms and 55 ms with a visible valley around 40 ms; rug marks (strokeWidth=3, opacity=0.6) are brand green vertical lines in the lower 30% of the plot area, clearly distributed across the x range with clustering mirroring the KDE peaks
+      Legibility verdict: PASS — all text elements readable; no light-on-light issues
+
+    Dark render (plot-dark.png):
+      Background: Warm near-black surface, consistent with #1A1A17 — not pure black
+      Chrome: Title text is light/off-white, clearly readable against the dark background; x-axis label and tick labels are rendered in light text via INK_SOFT token flip — no dark-on-dark failures detected
+      Data: Same brand-green #009E73 used for KDE fill and rug marks — colors are visually identical to the light render; on the dark surface the filled KDE area appears as a darker green bounded by a brighter green contour, remaining clearly distinguishable from the background; rug marks are crisp green lines
+      Legibility verdict: PASS — all text is light on dark; data elements are visible; no dark-on-dark failure
   criteria_checklist:
     visual_quality:
-      score: 37
-      max: 40
+      score: 29
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title 28pt, axis labels 22pt, tick labels 18pt - all perfectly readable
+        comment: All font sizes explicitly set (title 28px, axis 22px, ticks 18px);
+          readable in both themes
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No text overlap anywhere
+        comment: No text collisions; rug-mark overlap handled with opacity=0.6
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Tick marks clearly visible with strokeWidth=3 and opacity=0.6
+        comment: KDE curve and rug marks clearly visible in both themes
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Single blue color, colorblind-safe
-      - id: VQ-05
-        name: Layout Balance
-        score: 3
-        max: 5
-        passed: true
-        comment: Large empty space above rug marks, though inherent to standalone
-          rug plots
-      - id: VQ-06
-        name: Axis Labels
-        score: 1
-        max: 2
-        passed: true
-        comment: '"Measurement Value" is descriptive but lacks units'
-      - id: VQ-07
-        name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: Subtle grid (alpha 0.3), no legend needed
+        comment: Single CVD-safe brand green; good contrast on both surfaces
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 3
+        max: 4
+        passed: true
+        comment: Good utilisation overall; noticeable empty headroom (~30%) above
+          KDE peak
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
+        max: 2
+        passed: true
+        comment: Title format correct; x-axis labelled with units (ms); y-axis intentionally
+          hidden
+      - id: VQ-07
+        name: Palette Compliance
+        score: 2
+        max: 2
+        passed: true
+        comment: 'First series #009E73; backgrounds #FAF8F1 / #1A1A17; chrome tokens
+          correctly flipped in both renders'
+    design_excellence:
+      score: 13
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: true
+        comment: KDE+rug combination shows clear design intent; semi-transparent fill
+          and hidden Y-axis add polish; above default but not publication-ready
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Subtle 10% grid, Y-axis hidden; but 4-sided view stroke (configure_view
+          stroke=INK_SOFT) instead of L-shape or no border
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Bimodal story is immediately clear; KDE+rug hierarchy guides viewer
+          from distribution shape to individual points
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct rug plot using Altair's mark_rule
+        comment: Rug marks correctly implemented as tick marks along x-axis; KDE overlay
+          is complementary per spec
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Values correctly mapped to x-axis positions
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Shows tick marks with alpha for overlap, positioned at bottom
-      - id: SC-04
-        name: Data Range
+        comment: Semi-transparency (opacity=0.6), consistent tick height (y=0 to y2=3),
+          x-axis placement, all present
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Domain [5, 80] shows all data with appropriate padding
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Correct x-axis mapping; domain [5, 80] shows all data; y-axis intentionally
+          hidden
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: N/A, no legend needed for single-variable rug
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Correct format "rug-basic · altair · pyplots.ai"
+        comment: Title 'rug-basic · altair · anyplot.ai' correct; no legend needed
+          for single series
     data_quality:
-      score: 18
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Bimodal distribution excellently demonstrates clustering patterns
-          AND gaps
+        comment: Bimodal data shows clustering (~25ms, ~55ms), gap between clusters,
+          and precise individual observations
       - id: DQ-02
         name: Realistic Context
         score: 5
-        max: 7
-        passed: true
-        comment: Generic "Measurement Value" is plausible but not a specific real-world
-          scenario
-      - id: DQ-03
-        name: Appropriate Scale
-        score: 5
         max: 5
         passed: true
-        comment: Sensible numeric values (25 and 55 centers with realistic spread)
+        comment: Response time (ms) is a real, neutral, professional domain; bimodal
+          pattern is plausible (two processing modes)
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: 25ms and 55ms are realistic response times; 100 observations; [5,
+          80] domain is sensible
     code_quality:
       score: 10
       max: 10
@@ -162,11 +186,12 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Simple imports → data → plot → save structure
+        comment: 'Linear: imports → tokens → data → chart → save; no functions or
+          classes'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
         comment: np.random.seed(42) set
       - id: CQ-03
@@ -174,28 +199,47 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports (altair, numpy, pandas) are used
+        comment: os, altair, numpy, pandas — all used
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Current Altair API used
+        comment: Clean Pythonic code; appropriate complexity; no fake UI
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html
-    library_features:
-      score: 4
-      max: 5
+        comment: Saves plot-{THEME}.png and plot-{THEME}.html; current Altair API
+    library_mastery:
+      score: 7
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
         score: 4
         max: 5
         passed: true
-        comment: Good declarative approach with mark_rule and y/y2 encoding for tick
-          height
+        comment: mark_rule + y2 encoding for rug height is idiomatic Altair; theme-adaptive
+          chrome follows the Altair guide exactly
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: y2 encoding to control rule height is specifically a Vega-Lite/Altair
+          pattern; KDE via transform_density() is a distinctly Altair declarative
+          transform
   verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep:
+  - kde
+  styling:
+  - alpha-blending

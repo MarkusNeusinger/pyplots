@@ -1,7 +1,7 @@
 """ anyplot.ai
 sankey-basic: Basic Sankey Diagram
 Library: matplotlib 3.10.9 | Python 3.13.13
-Quality: 79/100 | Updated: 2026-04-30
+Quality: 81/100 | Updated: 2026-04-30
 """
 
 import matplotlib.pyplot as plt

@@ -2,7 +2,7 @@ library: matplotlib
 language: python
 specification_id: sankey-basic
 created: '2025-12-23T19:45:16Z'
-updated: '2026-04-30T08:55:45Z'
+updated: '2026-04-30T09:09:12Z'
 generated_by: claude-sonnet
 workflow_run: 25156094188
 issue: 810
@@ -12,98 +12,92 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/sankey-ba
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/sankey-basic/python/matplotlib/plot-dark.png
 preview_html_light: null
 preview_html_dark: null
-quality_score: 79
+quality_score: 81
 review:
   strengths:
-  - Excellent realistic data scenario (national energy flow — the canonical Sankey
-    use case)
-  - Good two-stage connected Sankey using matplotlib native prior/connect API
-  - Energy balance verified with assert — good correctness practice
-  - Both renders show visually appealing clean layout with proper axis removal
-  - Clear visual hierarchy between source and distribution stages via two-color scheme
-  - TWh values on node labels add quantitative context without clutter
+  - Excellent use of matplotlib.sankey.Sankey multi-diagram connection (prior/connect)
+    — idiomatic and expressive
+  - Energy-balance assertion makes data self-validating and shows good engineering
+    discipline
+  - Clean canvas via ax.axis(off) with large bold labels — clear and readable
+  - Two-color staging creates natural source-to-end-use visual narrative with good
+    proportions
+  - Neutral, realistic energy domain with plausible TWh values
   weaknesses:
-  - 'Critical: Code uses #306998 (Python Blue) and #FFD43B (Python Yellow) instead
-    of Okabe-Ito palette (#009E73 and #D55E00) — VQ-07 hard fail'
-  - 'Critical: No ANYPLOT_THEME environment variable handling — no theme-adaptive
-    backgrounds, text colors, or chrome; saves as plot.png not plot-{THEME}.png'
-  - 'Critical: Code has pyplots.ai in the title instead of anyplot.ai'
-  - Title has extra National Energy Flow prefix — format must be {spec-id} · {library}
-    · anyplot.ai
-  - 'Subtitle uses hardcoded color #555555 which will not adapt to dark theme (should
-    use INK_MUTED token)'
-  - No legend creation code despite legend appearing in rendered images (images appear
-    to be from a different code version)
+  - 'CRITICAL: facecolor=#306998 (Python Blue) and facecolor=#FFD43B (yellow) — must
+    use Okabe-Ito #009E73 for first hub and #D55E00 for second hub'
+  - 'CRITICAL: No theme adaptation — must add os.getenv(ANYPLOT_THEME) block with
+    PAGE_BG/INK/INK_MUTED tokens; set figure/axes facecolor, text colors via tokens'
+  - 'CRITICAL: Output saved as plot.png — must be f"plot-{THEME}.png" for pipeline
+    to find it'
+  - 'IMPORTANT: Title is National Energy Flow · sankey-basic · matplotlib · pyplots.ai
+    — must be exactly sankey-basic · matplotlib · anyplot.ai'
+  - 'Annotation color #555555 hardcoded — use INK_MUTED token for dark-mode readability'
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (~#FAF8F1) — correct theme surface, NOT pure white
-      Chrome: Title "National Energy Flow · sankey-basic · matplotlib · anyplot.ai" in dark text, clearly readable; node labels bold dark text; subtitle italic in medium gray; legend with dark text labels — all readable against light background
-      Data: Left Sankey in teal-green (~#009E73 range), right Sankey in orange-brown (~#D55E00 range); flow widths proportional to TWh values; Coal (120 TWh) largest, Transport (20 TWh) smallest but still distinct
-      Legibility verdict: PASS — all text clearly readable against warm off-white background
+      Background: Warm off-white (~#FAF8F1) — correct theme surface, not pure white
+      Chrome: Title "sankey-basic · matplotlib · anyplot.ai" large/bold/readable; embedded flow labels (18pt bold) fully legible; subtle italic annotation at bottom visible
+      Data: Left hub teal-green (~#009E73) covering Coal/Gas/Nuclear/Renewables/Losses; right hub orange-brown (~#D55E00) covering Residential/Commercial/Industrial/Transport; two-color approach clearly distinguishes source vs end-use
+      Legibility verdict: PASS
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (~#1A1A17) — correct theme surface, NOT pure black
-      Chrome: Title in light-colored text, clearly readable; node labels in light text against dark background; subtitle in lighter gray; legend with light text and dark-elevated box fill — all readable against dark background; NO dark-on-dark failures observed
-      Data: Colors identical to light render — same teal-green and orange-brown (only chrome flips, data colors stable); brand green remains visible on dark surface
-      Legibility verdict: PASS — all text clearly readable against near-black background
+      Background: Dark near-black (~#1A1A17) — correct dark surface, not pure black
+      Chrome: Title and flow labels all clearly readable as light text; annotation visible; no dark-on-dark failures observed; text and background contrast is good
+      Data: Colors identical to light render — same teal-green and orange-brown Sankey flows; only chrome (background) flips
+      Legibility verdict: PASS
 
-    CRITICAL DISCREPANCY NOTE: The rendered images do NOT match the current code. The code uses #306998 (Python Blue) and #FFD43B (Python Yellow) with no ANYPLOT_THEME handling and saves as plot.png. The images appear to have been generated from a different (earlier, fixed) version of the code. The current code file would produce incorrect output (wrong colors, no theme adaptation, wrong filename) if run now.
+    NOTE: Code-image discrepancy detected. Current code uses facecolor="#306998" (Python Blue) and "#FFD43B" (yellow), which do NOT match the teal/orange seen in the images. Code also lacks theme adaptation and saves to plot.png not plot-{THEME}.png. Images appear stale from a previous run. VQ-07 and CQ-05 scored against the code.
   criteria_checklist:
     visual_quality:
-      score: 23
+      score: 26
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: 'Font sizes explicitly set (18pt bold node labels, 26pt title, 16pt
-          subtitle); readable in both renders; subtitle uses hardcoded #555555 which
-          won''t adapt to dark theme'
+        comment: Font sizes explicitly set (18pt labels, 26pt title); both renders
+          readable; minor deduction for missing theme tokens
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Very minimal crowding between Renewables/Nuclear labels; all content
-          readable
+        comment: All labels clear, no collisions with Sankey flows
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: All flow arrows clearly visible and proportional to TWh values; smallest
-          flow (Transport 20 TWh) still distinct
+        comment: Flow widths proportional and clearly visible at canvas size
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Two distinct colors (green + orange), both colorblind-safe; good
-          luminance contrast
+        comment: Teal/orange combination is CVD-safe and high-contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Diagram fills ~70% of canvas, balanced margins; legend placement
-          slightly floating
+        comment: Diagram fills ~60-70% of 16:9 canvas; slight excess whitespace on
+          sides
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive title; node labels include TWh values as units; no traditional
-          axes needed for Sankey
+        comment: Axes hidden (correct for Sankey); value labels embedded in flows
       - id: VQ-07
         name: Palette Compliance
         score: 0
         max: 2
         passed: false
-        comment: 'FAIL: Code uses #306998 (Python Blue) and #FFD43B (Python Yellow),
-          not Okabe-Ito; no ANYPLOT_THEME handling; backgrounds and text not theme-adaptive
-          in code'
+        comment: 'Code explicitly uses #306998 (Python Blue) — automatic 0 per spec;
+          #FFD43B also non-Okabe-Ito; no theme adaptation; annotation color #555555
+          hardcoded'
     design_excellence:
       score: 12
       max: 20
@@ -113,25 +107,24 @@ review:
         score: 4
         max: 8
         passed: true
-        comment: Two-color phase scheme creates clear visual distinction; clean professional
-          look; alpha=0.75 adds depth; above defaults but not publication-exceptional
+        comment: Well-executed Sankey with clean background; two-tone scheme; sits
+          at well-configured default tier
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: ax.axis('off') appropriate for Sankey; alpha blending with edge highlighting;
-          subtitle caption adds polish; clean composition
+        comment: ax.axis(off) clean canvas; generous whitespace; deduction for missing
+          theme-adaptive polish
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Two-stage flow narrates energy transformation story; TWh values quantify
-          the story; subtitle explains flow direction; visual hierarchy from large
-          (Coal 120) to small (Renewables 30)
+        comment: Teal-to-orange color split visually encodes source/transformation/end-use
+          story; proportional flows show Industrial as dominant destination
     spec_compliance:
-      score: 14
+      score: 12
       max: 15
       items:
       - id: SC-01
@@ -139,29 +132,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct Sankey diagram with proportional flow widths and multi-stage
-          connections
+        comment: Correct two-stage Sankey diagram
       - id: SC-02
         name: Required Features
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: Distinct colors per stage, link widths proportional to values, node
-          labels visible, no circular flows, multi-stage flow
+        comment: No circular flows, proportional widths, opacity, distinct colors;
+          colors per-stage not per-source-category
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Energy balance verified with assert; all 9 flows correctly mapped;
-          correct source-to-target directionality
+        comment: Flow direction and magnitudes correctly mapped
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 1
         max: 3
         passed: false
-        comment: Images show 'National Energy Flow · sankey-basic · matplotlib · anyplot.ai'
-          — extra prefix before spec-id; code has pyplots.ai (wrong brand)
+        comment: 'Code title is ''National Energy Flow · sankey-basic · matplotlib
+          · pyplots.ai'' — extra prefix and wrong domain name; required: ''sankey-basic
+          · matplotlib · anyplot.ai'''
     data_quality:
       score: 14
       max: 15
@@ -171,23 +163,20 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows multiple sources with varying magnitudes, generation losses,
-          and 4 distinct end-use sectors; demonstrates multi-stage flow
+        comment: Two-stage flow with losses demonstrated; slightly narrow — only one
+          domain example
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: National energy flow is the canonical Sankey use case; coal/gas/nuclear/renewables
-          to generation losses to residential/commercial/industrial/transport is excellent
-          real-world scenario
+        comment: National energy flow is a canonical, neutral Sankey use case
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 300 TWh total with ~33% losses, realistic energy mix proportions,
-          balanced end-use sectors; energy conservation verified with assert
+        comment: Assert enforces energy conservation; TWh values plausible
     code_quality:
       score: 9
       max: 10
@@ -197,55 +186,51 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear structure: imports -> data constants -> plot -> save;
-          no functions or classes'
+        comment: Clean linear structure, no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: All values are hardcoded constants; fully deterministic
+        comment: Fully deterministic data
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only matplotlib.pyplot and matplotlib.sankey.Sankey, both used
+        comment: Only matplotlib.pyplot and matplotlib.sankey.Sankey
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean Pythonic code; assert for energy balance is a nice correctness
-          guard; appropriate complexity
+        comment: Readable, idiomatic; energy-balance assert is a nice touch
       - id: CQ-05
         name: Output & API
         score: 0
         max: 1
         passed: false
-        comment: 'FAIL: Saves as plt.savefig(''plot.png'') — must be plt.savefig(f''plot-{THEME}.png'')
-          with ANYPLOT_THEME variable'
+        comment: Saves 'plot.png' instead of f'plot-{THEME}.png'; pipeline expects
+          plot-light.png / plot-dark.png
     library_mastery:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Good use of matplotlib.sankey.Sankey class; correct ax= parameter;
-          proper use of flows, labels, orientations, pathlengths; sankey.finish()
-          pattern
+        comment: Uses matplotlib.sankey.Sankey correctly; add/finish/texts iteration
+          is expert-level
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Connected two-stage Sankey using prior=0, connect=(5, 0) is distinctive
-          to matplotlib Sankey API; post-processing diagram texts via diagrams[i].texts
-          shows library-specific knowledge
-  verdict: REJECTED
+        comment: Multi-diagram connection (prior=0, connect=(5,0)) is a distinctive
+          matplotlib Sankey feature
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
@@ -254,5 +239,5 @@ impl_tags:
   - explicit-figure
   dataprep: []
   styling:
-  - alpha-blending
   - minimal-chrome
+  - alpha-blending

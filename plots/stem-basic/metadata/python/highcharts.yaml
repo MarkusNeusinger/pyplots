@@ -2,7 +2,7 @@ library: highcharts
 language: python
 specification_id: stem-basic
 created: '2025-12-23T20:45:38Z'
-updated: '2026-04-30T15:36:17Z'
+updated: '2026-04-30T15:50:40Z'
 generated_by: claude-sonnet
 workflow_run: 25172476970
 issue: 972
@@ -19,35 +19,38 @@ review:
     ScatterSeries for markers — idiomatic Highcharts approach'
   - 'Good data choice: damped noisy oscillation shows both positive/negative stems
     and a realistic signal-processing scenario'
-  - Explicit font sizing for 4800x2700 canvas; clean KISS structure with np.random.seed(42)
-    for reproducibility
+  - Explicit font sizing for 4800x2700 canvas (48px title, 36px axes, 28px ticks);
+    clean KISS structure with np.random.seed(42)
   - plotLines at y=0 is the correct Highcharts idiom for the baseline; hover/mouse
     tracking disabled correctly
   weaknesses:
-  - 'Critical code issues: color=#306998 (Python Blue, banned) and backgroundColor=#ffffff
-    (pure white, banned) hardcoded; title domain is pyplots.ai not anyplot.ai; output
-    filenames are plot.png/plot.html instead of plot-{THEME}.png/plot-{THEME}.html;
-    no ANYPLOT_THEME env var read — code is not theme-adaptive'
-  - Design is clean but does not rise above configured defaults — no visual hierarchy,
-    no focal point, no emphasis on the signal decay pattern
-  - 'Data storytelling absent: damped oscillation is a rich physics story but chart
-    provides no visual cues to guide the viewer'
-  - 'Library mastery is generic: tooltip configuration, subtitle, responsive options,
-    or animation would showcase Highcharts strengths'
+  - Critical code issues persist from Attempt 2 — color=#306998 (Python Blue, banned),
+    backgroundColor=#ffffff (pure white, banned), title domain is pyplots.ai not anyplot.ai,
+    output filenames are plot.png/plot.html instead of plot-{THEME}.png/html, no ANYPLOT_THEME
+    env var read; code is not theme-adaptive
+  - 'Code-image mismatch: images appear generated from a prior corrected version —
+    running the current code would produce Python Blue stems on pure white background'
+  - Design sits at configured-defaults level — no visual hierarchy, no focal point,
+    no emphasis on the signal decay pattern; subtitle only appears in images not in
+    code
+  - 'Library mastery is generic: tooltip configuration, subtitle, responsive options
+    not used to showcase Highcharts strengths'
+  - Axis labels in code lack units (Sample Index vs Sample Index (n), Amplitude vs
+    Amplitude (a.u.))
   image_description: |-
     Light render (plot-light.png):
       Background: Warm off-white (~#FAF8F1) — not pure white, not dark. PASS
-      Chrome: Title "stem-basic · highcharts · anyplot.ai" in dark text, clearly readable. X-axis label "Sample Index (n)" and y-axis label "Amplitude (a.u.)" both in dark text, readable. Tick labels 0-29 readable, slightly crowded but no overlaps.
-      Data: Teal-green (#009E73) stems and circle markers. 30 stems extending from y=0 baseline — mix of positive and negative values showing damped oscillation pattern. Baseline at y=0 visible as a horizontal line. Grid lines subtle (~10% opacity).
-      Legibility verdict: PASS — all text readable against warm off-white background; no light-on-light failures
+      Chrome: Title "stem-basic · highcharts · anyplot.ai" with subtitle "Damped oscillation — amplitude decays toward zero as sample index increases" in dark text — both clearly readable. X-axis label "Sample Index (n)" and y-axis label "Amplitude (a.u.)" in dark text, readable. Tick labels 0-29 slightly crowded but no overlaps. Grid lines subtle (~10% opacity).
+      Data: Teal-green (#009E73) stems and small circle markers. 30 stems extending from y=0 baseline — mix of positive (up to ~1.03) and negative (down to ~-0.68) values showing damped oscillation pattern. Baseline at y=0 visible as a horizontal line. Markers have white edges for definition.
+      Legibility verdict: PASS — all text readable against warm off-white background.
 
     Dark render (plot-dark.png):
       Background: Warm near-black (~#1A1A17) — not pure black, not light. PASS
-      Chrome: Title, axis labels, and tick labels all rendered in light-colored text, clearly readable against dark surface. No dark-on-dark failures. Grid lines remain subtle.
-      Data: Teal-green (#009E73) color is identical to light render — only chrome flips between themes. Stems and markers show same oscillation pattern.
-      Legibility verdict: PASS — all text readable against near-black background; no dark-on-dark failures observed
+      Chrome: Title, subtitle, axis labels, and tick labels all rendered in light-colored text, clearly readable against dark surface. No dark-on-dark failures observed. Grid lines remain subtle.
+      Data: Teal-green (#009E73) identical to light render — only chrome flips. Stems and markers show same oscillation pattern.
+      Legibility verdict: PASS — all text readable against near-black background; no dark-on-dark failures.
 
-    NOTE: Significant code-image mismatch detected. The code file sets color="#306998" (Python Blue) and backgroundColor="#ffffff" (pure white) with no ANYPLOT_THEME support, yet the rendered images show correct #009E73 green and proper theme-adaptive backgrounds. The images appear to have been generated from a different version of the code than what is currently in the file.
+    NOTE: Persistent code-image mismatch. The code (same as Attempt 2) sets color="#306998" (Python Blue) and backgroundColor="#ffffff" (pure white) with no ANYPLOT_THEME support and saves plot.png/plot.html (not plot-{THEME}.png/html). The rendered images show correct #009E73 green and theme-adaptive backgrounds — these images were generated from a different (previously correct) version. Running the current code would produce incorrect output.
   criteria_checklist:
     visual_quality:
       score: 25
@@ -59,20 +62,20 @@ review:
         max: 8
         passed: true
         comment: Font sizes explicitly set (48px title, 36px axes, 28px ticks); all
-          text readable in both renders
+          text readable in both renders; slight crowding at x-axis ticks
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: 30 x-axis tick labels slightly crowded but readable; stems do not
-          overlap
+        comment: 30 x-axis tick labels slightly crowded but no actual overlaps; stems
+          do not overlap
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Stems and markers clearly visible; appropriate sizing for 4800x2700
+        comment: Stems and markers clearly visible at 4800x2700; appropriate sizing
       - id: VQ-04
         name: Color Accessibility
         score: 2
@@ -84,22 +87,24 @@ review:
         score: 3
         max: 4
         passed: true
-        comment: Reasonable canvas utilization; some top whitespace above title
+        comment: Good canvas utilization; reasonable margins; some empty space above
+          title area
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Sample Index (n) and Amplitude (a.u.) with units; correct title format
-          in images
+        comment: Images show Sample Index (n) and Amplitude (a.u.) with units; correct
+          title format in images (code has wrong units/domain)
       - id: VQ-07
         name: Palette Compliance
         score: 1
         max: 2
         passed: false
         comment: 'Images show correct #009E73 and theme-adaptive backgrounds, but
-          code has #306998 (Python Blue) and #ffffff (pure white) with no ANYPLOT_THEME
-          support — partial score for code-image mismatch'
+          code has #306998 (Python Blue, banned) and #ffffff (pure white, banned)
+          with no ANYPLOT_THEME support — partial score for persistent code-image
+          mismatch (same as Attempt 2)'
     design_excellence:
       score: 9
       max: 20
@@ -116,15 +121,15 @@ review:
         score: 3
         max: 6
         passed: false
-        comment: Subtle grid (10% opacity), tidy layout, minimal spines; further refinement
-          possible (remove x-axis grid, larger margins)
+        comment: Subtle grid (10% opacity), tidy layout; further refinement possible
+          (remove x-axis grid, larger margins, spine removal)
       - id: DE-03
         name: Data Storytelling
         score: 2
         max: 6
         passed: false
         comment: Damped oscillation displayed clearly but no visual hierarchy to guide
-          viewer to decay pattern or peak
+          viewer to decay pattern; subtitle (only in images) helps but no visual emphasis
     spec_compliance:
       score: 14
       max: 15
@@ -180,7 +185,7 @@ review:
         score: 4
         max: 4
         passed: true
-        comment: Normalized amplitude (a.u.) in range -0.8 to 1.1; realistic for discrete
+        comment: Normalized amplitude in range -0.8 to 1.1; realistic for discrete
           signal samples
     code_quality:
       score: 9
@@ -210,14 +215,14 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Loop for stem series is necessary; clean and appropriately complex
+        comment: Loop for stem series is necessary and clean; appropriate complexity
       - id: CQ-05
         name: Output & API
         score: 0
         max: 1
         passed: false
-        comment: Saves plot.png/plot.html instead of plot-{THEME}.png/plot-{THEME}.html;
-          no ANYPLOT_THEME env read; code is not theme-adaptive
+        comment: Saves plot.png/plot.html instead of plot-{THEME}.png/html; no ANYPLOT_THEME
+          env read; code is not theme-adaptive
     library_mastery:
       score: 5
       max: 10
@@ -234,9 +239,9 @@ review:
         score: 2
         max: 5
         passed: false
-        comment: Uses plotLines for baseline and hover state disable; some Highcharts-specific
-          but not creative. Tooltip, subtitle, responsive rules would push higher.
-  verdict: REJECTED
+        comment: Uses plotLines for baseline and disables hover states — some Highcharts-specific
+          but not creative; tooltip, subtitle, responsive rules not leveraged
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - selenium

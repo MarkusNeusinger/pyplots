@@ -248,6 +248,20 @@ export function primaryPlotType(spec: SpecMapItem): string {
 }
 
 /**
+ * Count specs by their primary plot_type (excluding the synthetic `other`
+ * bucket). Used by the legend to display per-cluster member counts.
+ */
+export function plotTypeCounts(specs: SpecMapItem[]): Map<string, number> {
+  const counts = new Map<string, number>();
+  for (const s of specs) {
+    const pt = primaryPlotType(s);
+    if (pt === 'other') continue;
+    counts.set(pt, (counts.get(pt) ?? 0) + 1);
+  }
+  return counts;
+}
+
+/**
  * Return the top-N most frequent primary plot types in the corpus, sorted by
  * count descending (alphabetic name as tiebreaker for determinism). Used to
  * decide which buckets earn a distinct color border in the map.
@@ -256,13 +270,7 @@ export function primaryPlotType(spec: SpecMapItem): string {
  * no plot_type tag at all) so it never wastes a color slot.
  */
 export function topPlotTypes(specs: SpecMapItem[], n: number): string[] {
-  const counts = new Map<string, number>();
-  for (const s of specs) {
-    const pt = primaryPlotType(s);
-    if (pt === 'other') continue;
-    counts.set(pt, (counts.get(pt) ?? 0) + 1);
-  }
-  return Array.from(counts.entries())
+  return Array.from(plotTypeCounts(specs).entries())
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
     .slice(0, n)
     .map(([t]) => t);

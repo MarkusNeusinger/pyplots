@@ -21,6 +21,7 @@ import {
   nodeAspectRatio,
   pickBestLoadedTier,
   pickTier,
+  plotTypeCounts,
   preloadImages,
   primaryPlotType,
   selectMapThumbUrl,
@@ -111,6 +112,9 @@ export function MapPage() {
   const [error, setError] = useState<string | null>(null);
   const [size, setSize] = useState<{ w: number; h: number }>({ w: 0, h: 0 });
   const [hoverId, setHoverId] = useState<string | null>(null);
+  // hoverType = a plot_type the user is hovering in the legend; everything
+  // not in that cluster dims so the cluster shape is obvious.
+  const [hoverType, setHoverType] = useState<string | null>(null);
 
   // 1. fetch + page view
   useEffect(() => {
@@ -144,10 +148,16 @@ export function MapPage() {
   }, []);
 
   // 3. derive graph data from specs/theme (pure — no setState in effect)
-  const graphData = useMemo<{ nodes: MapNode[]; links: MapLink[]; topTypes: string[] }>(() => {
-    if (!specs) return { nodes: [], links: [], topTypes: [] };
+  const graphData = useMemo<{
+    nodes: MapNode[];
+    links: MapLink[];
+    topTypes: string[];
+    typeCounts: Map<string, number>;
+  }>(() => {
+    if (!specs) return { nodes: [], links: [], topTypes: [], typeCounts: new Map() };
     const idf = computeIDF(specs);
     const topTypes = topPlotTypes(specs, CLUSTER_COLORS.length);
+    const typeCounts = plotTypeCounts(specs);
     const nodes: MapNode[] = specs.map(s => {
       const pt = primaryPlotType(s);
       return {
@@ -161,7 +171,7 @@ export function MapPage() {
       };
     });
     const links = buildKNNLinks(specs, idf, KNN_K, KNN_MIN_SIM);
-    return { nodes, links, topTypes };
+    return { nodes, links, topTypes, typeCounts };
   }, [specs, isDark]);
 
   // Eager-load the 400-tier thumbnails so something paints fast. Higher tiers
@@ -252,6 +262,54 @@ export function MapPage() {
           )}
         </Box>
 
+        {/* Legend: one row per top-N plot type with its cluster color and
+            spec count. Hovering a row highlights that cluster on the canvas
+            (matching nodes stay opaque, others dim) so the spatial shape of
+            the cluster pops out even when nodes are scattered. */}
+        {graphData.topTypes.length > 0 && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: { xs: 8, sm: 16 },
+              right: { xs: 16, sm: 32, md: 64, lg: 96 },
+              zIndex: 2,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 0.5,
+              fontFamily: typography.mono,
+              fontSize: fontSize.xs,
+              color: 'var(--ink-soft)',
+            }}
+          >
+            {graphData.topTypes.map((t, i) => {
+              const color = CLUSTER_COLORS[i % CLUSTER_COLORS.length];
+              const count = graphData.typeCounts.get(t) ?? 0;
+              const dimmed = hoverType != null && hoverType !== t;
+              return (
+                <Box
+                  key={t}
+                  onMouseEnter={() => setHoverType(t)}
+                  onMouseLeave={() => setHoverType(null)}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    cursor: 'pointer',
+                    opacity: dimmed ? 0.35 : 1,
+                    transition: 'opacity 0.15s',
+                    color: hoverType === t ? 'var(--ink)' : 'inherit',
+                    userSelect: 'none',
+                  }}
+                >
+                  <Box sx={{ width: 10, height: 10, bgcolor: color, borderRadius: '2px', flex: 'none' }} />
+                  <Box component="span" sx={{ minWidth: 60 }}>{t}</Box>
+                  <Box component="span" sx={{ opacity: 0.55, fontVariantNumeric: 'tabular-nums' }}>{count}</Box>
+                </Box>
+              );
+            })}
+          </Box>
+        )}
+
         {/* Loading / error states */}
         {!specs && !error && (
           <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -283,7 +341,12 @@ export function MapPage() {
               if (n.x == null || n.y == null) return;
               const isHover = hoverId === n.id;
               const isNeighbor = !isHover && hoverId != null && neighbors.get(hoverId)?.has(n.id);
-              const dim = hoverId != null && !isHover && !isNeighbor;
+              // hoverType is set when the user hovers a legend entry — match
+              // any node in that cluster, dim the rest.
+              const matchesType = hoverType == null || n.colorBucket === hoverType;
+              const dim =
+                (hoverId != null && !isHover && !isNeighbor) ||
+                (hoverType != null && !matchesType);
               // The hovered node itself doesn't grow here — the much larger
               // preview is drawn on top by onRenderFramePost. We DO bump
               // direct neighbors slightly so the relationship is legible.
@@ -329,18 +392,28 @@ export function MapPage() {
               ctx.fillRect(n.x - w / 2, n.y - h / 2, w, h);
             }}
             // Links are intentionally very subtle by default so the thumbnails
-            // dominate. Hovered-node connections light up bright green; the
-            // rest of the graph fades further so the relationship is obvious.
+            // dominate. Hovered-node connections light up bright green; when
+            // a legend entry is hovered, links between same-cluster nodes
+            // stay visible while everything else fades.
             linkColor={(l: MapLink) => {
               const involved = hoverId && (l.source === hoverId || l.target === hoverId);
               if (involved) return colors.primary;
-              if (hoverId) return isDark ? 'rgba(255,255,255,0.015)' : 'rgba(0,0,0,0.02)';
-              return isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.05)';
+              if (hoverType) {
+                const sId = typeof l.source === 'string' ? l.source : (l.source as { id?: string })?.id;
+                const tId = typeof l.target === 'string' ? l.target : (l.target as { id?: string })?.id;
+                const sBucket = graphData.nodes.find(n => n.id === sId)?.colorBucket;
+                const tBucket = graphData.nodes.find(n => n.id === tId)?.colorBucket;
+                const intra = sBucket === hoverType && tBucket === hoverType;
+                if (intra) return isDark ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.22)';
+                return isDark ? 'rgba(255,255,255,0.012)' : 'rgba(0,0,0,0.015)';
+              }
+              if (hoverId) return isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.025)';
+              return isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.13)';
             }}
             linkWidth={(l: MapLink) => {
               const involved = hoverId && (l.source === hoverId || l.target === hoverId);
-              if (involved) return Math.max(1, (l.weight ?? 0.3) * 2);
-              return Math.max(0.15, (l.weight ?? 0.3) * 0.8);
+              if (involved) return Math.max(1, (l.weight ?? 0.3) * 2.5);
+              return Math.max(0.4, (l.weight ?? 0.3) * 1.5);
             }}
             onNodeClick={onNodeClick}
             onNodeHover={(n: MapNode | null) => setHoverId(n?.id ?? null)}

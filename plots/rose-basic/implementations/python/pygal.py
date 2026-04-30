@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 rose-basic: Basic Rose Chart
-Library: pygal | Python 3.13
-Quality: pending | Updated: 2026-04-30
+Library: pygal 3.1.0 | Python 3.13.13
+Quality: 74/100 | Updated: 2026-04-30
 """
 
 import os

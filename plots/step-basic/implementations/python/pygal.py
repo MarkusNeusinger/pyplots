@@ -1,53 +1,66 @@
-""" pyplots.ai
+"""anyplot.ai
 step-basic: Basic Step Plot
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 90/100 | Created: 2025-12-23
+Library: pygal | Python 3.13
+Quality: pending | Created: 2026-04-30
 """
 
-import pygal
-from pygal.style import Style
+import os
+import sys
 
+
+# Pop script dir so this file (pygal.py) doesn't shadow the installed pygal package
+_script_dir = sys.path.pop(0)
+import pygal  # noqa: E402
+from pygal.style import Style  # noqa: E402
+
+
+sys.path.insert(0, _script_dir)
+
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+INK_MUTED = "#6B6A63" if THEME == "light" else "#A8A79F"
+
+OKABE_ITO = ("#009E73", "#D55E00", "#0072B2", "#CC79A7", "#E69F00", "#56B4E9", "#F0E442")
 
 # Data - Monthly cumulative sales (in thousands)
 months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 cumulative_sales = [45, 92, 128, 165, 198, 256, 312, 378, 425, 489, 562, 635]
 
-# Create step data by duplicating points for stair-step effect (post-style)
-# Each value extends horizontally until the next month
-# Use only the actual month labels to avoid x-axis spacing issues
+# Build step data by duplicating points for stair-step effect (post-style)
 step_x_labels = []
 step_values = []
 
 for i, (month, value) in enumerate(zip(months, cumulative_sales, strict=True)):
-    # Add the current data point with visible marker
     step_x_labels.append(month)
     step_values.append({"value": value, "node": {"r": 14}})
-    # Add intermediate point at same Y before next X (except for last point)
     if i < len(months) - 1:
-        # Use a non-breaking space for intermediate labels to maintain spacing
-        step_x_labels.append("\u200b")  # Zero-width space - invisible but preserves grid
+        step_x_labels.append("​")
         step_values.append({"value": value, "node": {"r": 0}})
 
-# Custom style for 4800x2700 canvas with enhanced sizing
+# Custom style
 custom_style = Style(
-    background="white",
-    plot_background="white",
-    foreground="#333",
-    foreground_strong="#000",
-    foreground_subtle="#555",
-    colors=("#306998",),
+    background=PAGE_BG,
+    plot_background=PAGE_BG,
+    foreground=INK,
+    foreground_strong=INK,
+    foreground_subtle=INK_MUTED,
+    colors=OKABE_ITO,
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=44,
     legend_font_size=56,
     value_font_size=40,
+    stroke_width=3,
 )
 
-# Create line chart configured for step visualization
+# Chart
 chart = pygal.Line(
     width=4800,
     height=2700,
-    title="step-basic · pygal · pyplots.ai",
+    title="step-basic · pygal · anyplot.ai",
     x_title="Month",
     y_title="Cumulative Sales ($K)",
     style=custom_style,
@@ -57,17 +70,14 @@ chart = pygal.Line(
     show_y_guides=True,
     show_x_guides=False,
     x_label_rotation=0,
-    legend_at_bottom=True,
-    legend_at_bottom_columns=1,
-    truncate_legend=-1,
-    show_legend=True,
-    margin_bottom=120,
+    show_legend=False,
+    margin=120,
 )
 
-# Add data
 chart.x_labels = step_x_labels
 chart.add("Cumulative Sales", step_values)
 
-# Save outputs
-chart.render_to_file("plot.html")
-chart.render_to_png("plot.png")
+# Save
+chart.render_to_png(f"plot-{THEME}.png")
+with open(f"plot-{THEME}.html", "wb") as f:
+    f.write(chart.render())

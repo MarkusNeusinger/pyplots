@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 polar-basic: Basic Polar Chart
 Library: seaborn 0.13.2 | Python 3.13.13
-Quality: 82/100 | Updated: 2026-04-30
+Quality: 85/100 | Updated: 2026-04-30
 """
 
 import os

@@ -2,7 +2,7 @@ library: seaborn
 language: python
 specification_id: step-basic
 created: '2025-12-23T21:04:58Z'
-updated: '2026-04-30T12:45:39Z'
+updated: '2026-04-30T13:00:40Z'
 generated_by: claude-sonnet
 workflow_run: 25165564875
 issue: 956
@@ -12,41 +12,35 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/step-basi
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/step-basic/python/seaborn/plot-dark.png
 preview_html_light: null
 preview_html_dark: null
-quality_score: 87
+quality_score: 88
 review:
   strengths:
-  - Perfect theme adaptation — both renders use correct warm off-white (#FAF8F1) and
-    near-black (#1A1A17) backgrounds with all chrome elements fully adapting via theme
-    tokens
-  - Correct step plot implementation using sns.lineplot with drawstyle='steps-post'
-    and scatter markers at each data point per spec guidance
-  - All font sizes explicitly set at the correct scale for 4800x2700px output (title=24,
-    labels=20, ticks=16)
-  - 'Realistic, neutral cumulative monthly sales scenario with sensible values; single
-    series correctly uses brand green #009E73'
-  - Clean flat script with no unnecessary abstractions; deterministic data; all imports
-    used
-  weaknesses:
-  - Design is functional but lacks sophistication — no filled area under the step
-    curve, no annotations marking key milestones or acceleration points, no visual
+  - 'Perfect visual quality across both themes: correct backgrounds, readable text,
+    no overlaps, and data colours that survive the light→dark flip unchanged'
+  - Two-series design with alpha fill and annotation meaningfully elevates the spec
+    beyond a single-line step chart, adding business context and a clear narrative
     focal point
-  - Limited seaborn-distinctive features — the step capability comes entirely from
-    matplotlib's drawstyle parameter; seaborn-specific features like confidence bands,
-    hue-based multi-series, or FacetGrid are unused
-  - No data storytelling — the monotonically increasing curve reads as generic; a
-    reference line, area fill, or milestone annotation would elevate the narrative
+  - Theme-adaptive chrome is implemented exactly per the style guide — all tokens
+    correctly applied to title, labels, ticks, grid, spines, legend, and facecolor
+  weaknesses:
+  - 'DE-01 still below publication threshold: the fill could use a lower alpha, and
+    a subtitle or caption below the title would add a second level of typographic
+    hierarchy'
+  - 'Library mastery is constrained: seaborn''s high-level hue-mapping (hue= parameter
+    on lineplot) could replace the two separate lineplot calls and unify the legend
+    creation idiomatically'
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) — correct, NOT pure white. Spans the full canvas.
-      Chrome: Title "step-basic · seaborn · anyplot.ai" in dark ink, clearly readable. X-axis label "Month" and Y-axis label "Cumulative Sales ($K)" in dark ink at appropriate size. Month name tick labels (Jan–Dec) and numeric y-tick labels (0–1200) in soft ink, all readable.
-      Data: Step line in brand green #009E73 with linewidth=3. Circular markers at each of the 12 data points in the same green with white (PAGE_BG) edges — providing nice visual definition. Stair-step pattern rises monotonically from Jan (~45) to Dec (~1100+). Subtle horizontal grid lines at y-intervals. Top and right spines removed.
-      Legibility verdict: PASS — all text elements clearly visible against warm off-white background.
+      Background: Warm off-white #FAF8F1 — correct theme surface, not pure white
+      Chrome: Title "step-basic · seaborn · anyplot.ai" in dark ink, clearly readable; axis labels "Month" and "Cumulative Sales ($K)" dark and legible; tick labels (Jan–Dec, 0–2000) in INK_SOFT — all readable
+      Data: Two step series — Electronics in #009E73 (brand green, first series) and Apparel in #D55E00 (Okabe-Ito position 2); circular markers at each data point with page-colour edges; light teal alpha fill between the two lines; "Holiday Q4 surge" annotation with arrow to Q4 jump
+      Legibility verdict: PASS
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) — correct, NOT pure black. Spans the full canvas.
-      Chrome: Title in light off-white text, clearly readable against dark background. Axis labels in light ink, readable. Tick labels in soft light (#B8B7B0) tone, distinctly visible — NO dark-on-dark issues observed. Grid lines visible as subtle lighter lines.
-      Data: Brand green #009E73 step line and markers are identical in color to the light render — only chrome has flipped. The green pops strongly against the near-black background, arguably more visually striking than the light render.
-      Legibility verdict: PASS — all text elements clearly visible; no dark-on-dark failure; green data elements highly legible.
+      Background: Warm near-black #1A1A17 — correct dark theme surface, not pure black
+      Chrome: Title, axis labels, tick labels rendered in light-coloured text — clearly visible against dark surface; no dark-on-dark text failures detected; legend box uses elevated dark background
+      Data: Electronics (#009E73) and Apparel (#D55E00) colours are IDENTICAL to light render — only chrome flips; fill area still visible against dark surface
+      Legibility verdict: PASS
   criteria_checklist:
     visual_quality:
       score: 30
@@ -57,50 +51,49 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: All font sizes explicitly set (title=24, labels=20, ticks=16). Both
-          themes fully readable.
+        comment: All font sizes explicitly set; title, labels, ticks readable in both
+          themes
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text or elements in either render.
+        comment: 12 month labels space cleanly; annotation, legend, and data do not
+          collide
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Step line (linewidth=3) and markers (s=150) clearly visible in both
-          themes.
+        comment: Step lines and markers clearly sized and distinguishable
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Single series in CVD-safe brand green; high contrast against both
-          backgrounds.
+        comment: Okabe-Ito positions 1+2 are CVD-safe; teal/orange provides strong
+          luminance contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: 16:9 proportions, tight_layout, nothing cut off.
+        comment: 16:9 canvas well-utilised; balanced margins; nothing cut off
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Y-axis includes units ($K); title matches spec-id · library · anyplot.ai
-          format.
+        comment: Y-axis includes units ($K); X-axis labelled Month
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First and only series = #009E73. Backgrounds #FAF8F1 (light) / #1A1A17
-          (dark). Both renders theme-correct.'
+        comment: 'First series #009E73, second #D55E00; backgrounds #FAF8F1/#1A1A17;
+          theme-correct chrome in both renders'
     design_excellence:
-      score: 11
+      score: 13
       max: 20
       items:
       - id: DE-01
@@ -108,22 +101,22 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Clean and professional; marker edge highlighting (edgecolors=PAGE_BG)
-          adds polish. No fill-under-step, no milestone annotations.
+        comment: 'Above defaults: alpha fill and annotation add depth and narrative.
+          Not yet publication-quality — no subtitle, fill could be more nuanced'
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Top/right spines removed; subtle grid (alpha=0.10); marker edges
-          refined. Minimal further refinement beyond standard.
+        comment: Top/right spines removed, Y-only grid at low alpha, marker edge colours
+          match page background
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Step staircase naturally communicates cumulative growth; no focal
-          point, reference line, or annotation to guide the viewer.
+        comment: Holiday Q4 surge annotation with arrow creates focal point; fill
+          between series emphasises the gap
     spec_compliance:
       score: 15
       max: 15
@@ -133,26 +126,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct step plot using sns.lineplot with drawstyle='steps-post'.
+        comment: Correct stair-step pattern using steps-post drawstyle
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Post step style, markers at data points, grid lines — all per spec
-          guidance.
+        comment: Markers at data points, grid lines, step style applied
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=month, Y=cumulative sales; all 12 months visible.
+        comment: X = sequential months Jan-Dec, Y = cumulative values; all 12 data
+          points visible per series
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title matches format; single-series so no legend (correct omission).
+        comment: Title format step-basic · seaborn · anyplot.ai correct; legend labels
+          Electronics and Apparel match data
     data_quality:
       score: 15
       max: 15
@@ -162,21 +156,21 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Demonstrates stair-step pattern, markers at change points, grid for
-          tracing — covers all spec-mentioned features.
+        comment: Two-series comparison demonstrates all key step plot characteristics
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Monthly cumulative sales scenario is realistic and neutral.
+        comment: Monthly cumulative sales for two retail product lines is a real,
+          neutral, comprehensible business scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Monthly sales 45–155K, cumulative up to ~1102K — sensible for a mid-sized
-          business.
+        comment: Electronics ~$1550K and Apparel ~$1100K by year-end with Q4 holiday
+          surge is factually plausible
     code_quality:
       score: 10
       max: 10
@@ -186,58 +180,61 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Flat script, no functions or classes.
+        comment: Imports → tokens → data → plot → save; no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic hardcoded data arrays — no randomness.
+        comment: Deterministic hardcoded data; no random state needed
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: os, matplotlib, numpy, pandas, seaborn — all used.
+        comment: os, matplotlib, numpy, pandas, seaborn all used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Appropriate complexity; no fake UI.
+        comment: Appropriate complexity for the visualisation; no fake functionality
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot-{THEME}.png; uses current seaborn API.
+        comment: Saves as plot-{THEME}.png with correct facecolor passthrough
     library_mastery:
-      score: 6
+      score: 5
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: sns.set_theme for theming, ax-level API (sns.lineplot on ax), correct
-          drawstyle usage.
+        comment: sns.lineplot with drawstyle=steps-post is the seaborn way; sns.set_theme
+          with full rc dict used correctly
       - id: LM-02
         name: Distinctive Features
         score: 2
         max: 5
         passed: false
-        comment: Step capability is matplotlib's drawstyle — no seaborn-distinctive
-          features (CI bands, hue multi-series, FacetGrid) used.
+        comment: Seaborn theming system distinctively used, but fill-between and annotation
+          are pure matplotlib; seaborn hue-mapping not leveraged
   verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - manual-ticks
+  - annotations
+  - layer-composition
   patterns:
   - explicit-figure
+  - data-generation
   dataprep:
   - cumulative-sum
   styling:
+  - alpha-blending
   - edge-highlighting
-  - grid-styling

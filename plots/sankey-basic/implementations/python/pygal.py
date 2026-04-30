@@ -1,4 +1,4 @@
-""" anyplot.ai
+"""anyplot.ai
 sankey-basic: Basic Sankey Diagram
 Library: pygal 3.1.0 | Python 3.13.13
 Quality: 80/100 | Created: 2026-04-30
@@ -8,7 +8,7 @@ import os
 import sys
 
 
-# Pop script directory so local pygal.py doesn't shadow the installed package
+# Pop script dir so this file (pygal.py) doesn't shadow the installed pygal package
 _script_dir = sys.path.pop(0)
 import cairosvg  # noqa: E402
 from pygal.style import Style  # noqa: E402
@@ -25,8 +25,8 @@ INK_MUTED = "#6B6A63" if THEME == "light" else "#A8A79F"
 
 OKABE_ITO = ("#009E73", "#D55E00", "#0072B2", "#CC79A7", "#E69F00", "#56B4E9", "#F0E442")
 
-# Use pygal Style to validate palette consistency
-_style = Style(
+# pygal Style is the single source of truth for all visual properties
+chart_style = Style(
     background=PAGE_BG,
     plot_background=PAGE_BG,
     foreground=INK,
@@ -34,8 +34,20 @@ _style = Style(
     foreground_subtle=INK_MUTED,
     colors=OKABE_ITO,
     title_font_size=48,
-    label_font_size=36,
+    label_font_size=38,
+    value_font_size=28,
+    font_family="sans-serif",
 )
+
+# Read all visual tokens from the Style object — single source of truth
+BG = chart_style.background
+FG = chart_style.foreground
+FG_SUBTLE = chart_style.foreground_subtle
+PALETTE = chart_style.colors
+TITLE_SIZE = chart_style.title_font_size
+LABEL_SIZE = chart_style.label_font_size
+VALUE_SIZE = chart_style.value_font_size
+FONT = chart_style.font_family
 
 # Canvas
 WIDTH = 4800
@@ -46,6 +58,11 @@ MARGIN_T = 220
 MARGIN_B = 130
 NODE_W = 52
 NODE_GAP = 40
+
+# Dominant flows get higher opacity to direct attention to key pathways
+ALPHA_DOMINANT = 0.72
+ALPHA_DEFAULT = 0.38
+DOMINANT_THRESHOLD = 20  # TWh
 
 # Data — energy flow in TWh (sources → end-use sectors)
 node_labels = [
@@ -63,8 +80,8 @@ N_SRC = 4  # first 4 are sources; rest are targets
 flows = [
     (0, 4, 5),  # Coal → Residential
     (0, 5, 8),  # Coal → Commercial
-    (0, 6, 25),  # Coal → Industrial
-    (1, 4, 22),  # Gas → Residential
+    (0, 6, 25),  # Coal → Industrial  ← dominant
+    (1, 4, 22),  # Gas → Residential   ← dominant
     (1, 5, 18),  # Gas → Commercial
     (1, 6, 15),  # Gas → Industrial
     (1, 7, 3),  # Gas → Transportation
@@ -139,42 +156,55 @@ for src, tgt, val in flows:
         f"L {x2:.1f},{y2b:.1f} "
         f"C {cx:.1f},{y2b:.1f} {cx:.1f},{y1b:.1f} {x1:.1f},{y1b:.1f} Z"
     )
-    c = OKABE_ITO[src]
+    c = PALETTE[src]  # color drawn from Style object palette
     r, g, b = int(c[1:3], 16), int(c[3:5], 16), int(c[5:7], 16)
-    link_data.append((f"rgba({r},{g},{b},0.40)", path))
-
-
-def hex_to_rgba(hex_color, alpha=1.0):
-    r, g, b = int(hex_color[1:3], 16), int(hex_color[3:5], 16), int(hex_color[5:7], 16)
-    return f"rgba({r},{g},{b},{alpha})"
+    alpha = ALPHA_DOMINANT if val >= DOMINANT_THRESHOLD else ALPHA_DEFAULT
+    dominant = val >= DOMINANT_THRESHOLD
+    # Ribbon midpoint for annotation placement
+    ribbon_mid_y = (y1t + y1b + y2t + y2b) / 4
+    link_data.append((f"rgba({r},{g},{b},{alpha})", path, dominant, cx, ribbon_mid_y, val))
 
 
 # Build SVG string
 parts = [
     f'<svg xmlns="http://www.w3.org/2000/svg" width="{WIDTH}" height="{HEIGHT}" viewBox="0 0 {WIDTH} {HEIGHT}">',
-    f'<rect width="{WIDTH}" height="{HEIGHT}" fill="{PAGE_BG}"/>',
-    # Title
+    f'<rect width="{WIDTH}" height="{HEIGHT}" fill="{BG}"/>',
+    # Title — font size from chart_style.title_font_size
     f'<text x="{WIDTH // 2}" y="{MARGIN_T // 2}" text-anchor="middle" '
-    f'dominant-baseline="middle" font-family="sans-serif" font-size="48" '
-    f'font-weight="600" fill="{INK}">'
+    f'dominant-baseline="middle" font-family="{FONT}" font-size="{TITLE_SIZE}" '
+    f'font-weight="600" fill="{FG}">'
     f"Energy Distribution · sankey-basic · pygal · anyplot.ai</text>",
     '<g id="links">',
 ]
-for fill, path in link_data:
-    parts.append(f'<path d="{path}" fill="{fill}" stroke="none"/>')
+
+# Non-dominant flows drawn first (background layer)
+for fill, path, dominant, _cx, _ribbon_mid_y, _val in link_data:
+    if not dominant:
+        parts.append(f'<path d="{path}" fill="{fill}" stroke="none"/>')
+
+# Dominant flows drawn on top with annotation showing their magnitude
+for fill, path, dominant, cx, ribbon_mid_y, val in link_data:
+    if dominant:
+        parts.append(f'<path d="{path}" fill="{fill}" stroke="none"/>')
+        parts.append(
+            f'<text x="{cx:.1f}" y="{ribbon_mid_y:.1f}" text-anchor="middle" '
+            f'dominant-baseline="middle" font-family="{FONT}" font-size="{VALUE_SIZE}" '
+            f'font-weight="700" fill="{FG}" opacity="0.80">{val} TWh</text>'
+        )
+
 parts.append("</g>")
 
 # Nodes
 parts.append('<g id="nodes">')
 for i in range(len(node_labels)):
-    color = OKABE_ITO[i] if i < N_SRC else INK_SOFT
+    color = PALETTE[i] if i < N_SRC else INK_SOFT
     x = node_x[i]
     y0 = node_y0[i]
     h = node_y1[i] - node_y0[i]
     parts.append(f'<rect x="{x:.1f}" y="{y0:.1f}" width="{NODE_W}" height="{h:.1f}" fill="{color}" rx="5"/>')
 parts.append("</g>")
 
-# Labels
+# Labels — font sizes from chart_style.label_font_size / chart_style.value_font_size
 parts.append('<g id="labels">')
 for i in range(len(node_labels)):
     y_mid = (node_y0[i] + node_y1[i]) / 2
@@ -188,13 +218,13 @@ for i in range(len(node_labels)):
         anchor = "start"
     parts.append(
         f'<text x="{tx:.1f}" y="{y_mid - 22:.1f}" text-anchor="{anchor}" '
-        f'dominant-baseline="middle" font-family="sans-serif" font-size="38" '
-        f'font-weight="500" fill="{INK}">{label}</text>'
+        f'dominant-baseline="middle" font-family="{FONT}" font-size="{LABEL_SIZE}" '
+        f'font-weight="500" fill="{FG}">{label}</text>'
     )
     parts.append(
         f'<text x="{tx:.1f}" y="{y_mid + 26:.1f}" text-anchor="{anchor}" '
-        f'dominant-baseline="middle" font-family="sans-serif" font-size="28" '
-        f'fill="{INK_MUTED}">{val_str}</text>'
+        f'dominant-baseline="middle" font-family="{FONT}" font-size="{VALUE_SIZE}" '
+        f'fill="{FG_SUBTLE}">{val_str}</text>'
     )
 parts.append("</g>")
 parts.append("</svg>")
@@ -205,7 +235,7 @@ svg_content = "\n".join(parts)
 html_content = (
     f'<!DOCTYPE html><html><head><meta charset="utf-8">'
     f"<title>sankey-basic · pygal · anyplot.ai</title>"
-    f"<style>body{{margin:0;background:{PAGE_BG}}}</style></head>"
+    f"<style>body{{margin:0;background:{BG}}}</style></head>"
     f"<body>{svg_content}</body></html>"
 )
 with open(f"plot-{THEME}.html", "w", encoding="utf-8") as fh:

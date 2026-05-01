@@ -127,20 +127,21 @@ export type TagCategory = (typeof TAG_CATEGORIES)[number];
  * weights panel; passing a custom `weights` map to {@link weightedJaccard}
  * or {@link buildKNNLinks} replaces the defaults entirely.
  *
- * The defaults strongly privilege plot_type (3.0) over everything else (0).
- * That produces the cleanest "scatter-galaxy / bar-galaxy / line-galaxy"
- * map. Users can slide secondary categories up via the weights panel to mix
- * in features/techniques/etc. for richer cross-type clustering.
+ * The defaults privilege plot_type (2.0) with light contributions from
+ * features and data_type (0.5 each). That gives a plot_type-dominant map
+ * with subtle cross-type cohesion. Users can slide secondary categories up
+ * via the weights panel to mix in techniques/patterns/etc. for richer
+ * clustering.
  */
 export const DEFAULT_CATEGORY_WEIGHT: Record<TagCategory, number> = {
-  plot_type: 3.0,
-  features: 0,
+  plot_type: 2.0,
+  features: 0.5,
   techniques: 0,
   patterns: 0,
   dataprep: 0,
   dependencies: 0,
   domain: 0,
-  data_type: 0,
+  data_type: 0.5,
   styling: 0,
 };
 

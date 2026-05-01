@@ -27,6 +27,12 @@ vi.mock('../hooks/useLayoutContext', () => ({
   useTheme: () => ({ isDark: false }),
 }));
 
+// Default to "(hover: hover)" matching → desktop behaviour. Touch-specific
+// branches (e.g. tap-to-pin) need a per-test override.
+vi.mock('@mui/material/useMediaQuery', () => ({
+  default: () => true,
+}));
+
 // Capture the props passed to ForceGraph2D so individual callbacks can be exercised
 // from outside React. A live canvas can't run in jsdom, but the callbacks (drawNode,
 // onNodeClick, linkColor, …) are pure-ish JS and worth testing in isolation.
@@ -178,7 +184,7 @@ describe('MapPage', () => {
     onNodeClick({ id: 'scatter-basic' });
 
     expect(mockNavigate).toHaveBeenCalledWith('/scatter-basic');
-    expect(mockTrackEvent).toHaveBeenCalledWith('map_node_click', { spec_id: 'scatter-basic' });
+    expect(mockTrackEvent).toHaveBeenCalledWith('map_node_click', { spec: 'scatter-basic' });
   });
 
   it('drawNode paints a fallback rect when a node has no preloaded image', async () => {

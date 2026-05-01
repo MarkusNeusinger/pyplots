@@ -23,7 +23,7 @@ You don't need to query the database or run helper scripts. The repository under
 
 ## Things worth a glance (pick whichever feel productive)
 
-- **Implementation coverage** — specs with very few `implementations/*.py` files relative to the 9 supported libraries.
+- **Implementation coverage** — specs with very few `implementations/python/*.py` files relative to the 9 supported libraries.
 - **Quality score health** — `metadata/python/{library}.yaml` files with `quality_score: null` (review never ran) or low scores that have been sitting around.
 - **Missing metadata files** — implementation `.py` exists but no matching `metadata/python/{library}.yaml` (suggests a manual merge bypassed `impl-merge.yml`).
 - **Spec-side rot** — specs missing `updated`, missing `tags`, missing one of the required `specification.md` sections (Description / Applications / Data / Notes), or older than the current `prompts/templates/spec.md`.

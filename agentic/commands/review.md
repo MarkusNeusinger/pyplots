@@ -52,7 +52,7 @@ to map the diff back onto specific subsystems.
 
 ## Report
 
-- IMPORTANT: Return results exclusively as a JSON array based on the `Output Structure` section below.
+- IMPORTANT: Return results exclusively as a JSON object matching the `Output Structure` section below.
 - `success` should be `true` if there are NO BLOCKING issues (implementation matches spec for critical functionality)
 - `success` should be `false` ONLY if there are BLOCKING issues that prevent the work from being released
 - `review_issues` can contain issues of any severity (skippable, tech_debt, or blocker)
@@ -63,22 +63,20 @@ to map the diff back onto specific subsystems.
 
 ```json
 {
-    success: "boolean - true if there are NO BLOCKING issues (can have skippable/tech_debt issues), false if there are BLOCKING issues",
-    review_summary: "string - 2-4 sentences describing what was built and whether it matches the spec. Written as if reporting during a standup meeting. Example: 'The natural language query feature has been implemented with drag-and-drop file upload and interactive table display. The implementation matches the spec requirements for SQL injection protection and supports both CSV and JSON formats. Minor UI improvements could be made but all core functionality is working as specified.'",
-    review_issues: [
+    "success": "boolean - true if there are NO BLOCKING issues (can have skippable/tech_debt issues), false if there are BLOCKING issues",
+    "review_summary": "string - 2-4 sentences describing what was built and whether it matches the spec. Written as if reporting during a standup meeting. Example: 'The natural language query feature has been implemented with drag-and-drop file upload and interactive table display. The implementation matches the spec requirements for SQL injection protection and supports both CSV and JSON formats. Minor UI improvements could be made but all core functionality is working as specified.'",
+    "review_issues": [
         {
             "review_issue_number": "number - the issue number based on the index of this issue",
             "screenshot_path": "string - /absolute/path/to/screenshot_that_shows_review_issue.png",
             "issue_description": "string - description of the issue",
             "issue_resolution": "string - description of the resolution",
             "issue_severity": "string - severity of the issue between 'skippable', 'tech_debt', 'blocker'"
-        },
-        ...
+        }
     ],
-    screenshots: [
+    "screenshots": [
         "string - /absolute/path/to/screenshot_showcasing_functionality.png",
-        "string - /absolute/path/to/screenshot_showcasing_functionality.png",
-        "...",
+        "string - /absolute/path/to/screenshot_showcasing_functionality.png"
     ]
 }
 ```

@@ -262,34 +262,37 @@ Quality: /100 | Updated: {YYYY-MM-DD}
 """
 ```
 
-#### 6d. Copy Final Images
+#### 6d. Process Final Images
 
-For each library, copy the preview images to the implementations directory for GCS upload:
+For each library, optimize the preview image **in place** within the per-library `.update-preview/`
+directory. Do NOT copy artifacts up to `plots/{spec_id}/implementations/python/` — that directory is
+reserved for source files (`{library}.py`) and a clean transient PNG/HTML alongside source files
+risks an accidental commit or overwrite by a parallel agent.
 
 ```bash
-cp plots/{spec_id}/implementations/python/.update-preview/{library}/plot.png plots/{spec_id}/implementations/python/plot.png
-# Process images (optimization)
+# Process image (optimization) — read and write to the same staging path
 uv run python -m core.images process \
-  plots/{spec_id}/implementations/python/plot.png \
-  plots/{spec_id}/implementations/python/plot.png
+  plots/{spec_id}/implementations/python/.update-preview/{library}/plot.png \
+  plots/{spec_id}/implementations/python/.update-preview/{library}/plot.png
 ```
 
 Note: Since we process one library at a time for GCS upload, handle sequentially.
 
 #### 6e. GCS Staging Upload
 
-For each library:
+For each library, upload directly from the per-library `.update-preview/` directory:
 
 ```bash
 STAGING_PATH="gs://anyplot-images/staging/{spec_id}/{library}"
+PREVIEW_DIR="plots/{spec_id}/implementations/python/.update-preview/{library}"
 
 # Upload PNG
-gsutil cp plots/{spec_id}/implementations/python/plot.png "${STAGING_PATH}/plot.png"
+gsutil cp "${PREVIEW_DIR}/plot.png" "${STAGING_PATH}/plot.png"
 gsutil acl ch -u AllUsers:R "${STAGING_PATH}/plot.png" 2>/dev/null || true
 
 # Upload HTML if it exists (interactive libraries: plotly, bokeh, altair, highcharts, pygal, letsplot)
-if [ -f "plots/{spec_id}/implementations/python/.update-preview/{library}/plot.html" ]; then
-  gsutil cp "plots/{spec_id}/implementations/python/.update-preview/{library}/plot.html" "${STAGING_PATH}/plot.html"
+if [ -f "${PREVIEW_DIR}/plot.html" ]; then
+  gsutil cp "${PREVIEW_DIR}/plot.html" "${STAGING_PATH}/plot.html"
   gsutil acl ch -u AllUsers:R "${STAGING_PATH}/plot.html" 2>/dev/null || true
 fi
 ```

@@ -77,8 +77,12 @@ class SpecMapItem(BaseModel):
     preview_url_light: str | None = None
     preview_url_dark: str | None = None
     quality_score: float | None = None
-    tags: dict[str, Any] | None = None
-    impl_tags: dict[str, Any] | None = None
+    # Tag bags: each category maps to a list of strings. Tightened from
+    # dict[str, Any] so the OpenAPI contract matches what the /map frontend
+    # expects (Record<string, string[]>) and so unexpected shapes get
+    # caught at validation time instead of breaking client-side similarity.
+    tags: dict[str, list[str]] | None = None
+    impl_tags: dict[str, list[str]] | None = None
 
 
 class ImageResponse(BaseModel):

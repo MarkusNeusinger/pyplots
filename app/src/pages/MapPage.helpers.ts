@@ -1,10 +1,13 @@
 /**
- * Pure helpers for the /map page: tag flattening, IDF weighting,
- * weighted Jaccard similarity, and sparse KNN edge construction.
+ * Helpers for the /map page: tag flattening, IDF weighting, weighted
+ * Jaccard similarity, KNN edge construction, plus thumbnail-tier
+ * selection and image preloading.
  *
- * Kept side-effect-free so the math is exhaustively unit-testable
- * in MapPage.helpers.test.ts. The page component imports these and
- * feeds the result into react-force-graph-2d.
+ * Most helpers are pure (math + selection logic) so they can be unit
+ * tested in MapPage.helpers.test.ts. The two exceptions — preloadImages
+ * and ensureNodeTier — create DOM HTMLImageElements and trigger network
+ * fetches; their callbacks let the caller hook in cache state and a
+ * canvas refresh.
  */
 
 import { selectPreviewUrl } from '../utils/themedPreview';
@@ -265,9 +268,11 @@ export function pickTier(devicePxSize: number): ResolutionTier {
 }
 
 /**
- * Return the highest-resolution tier that's already loaded and at least as
- * big as `desired`. Falls back to a smaller tier if nothing larger is loaded
- * yet (better than blank during the lazy upgrade).
+ * Return the smallest already-loaded tier that's at least as big as
+ * `desired` (we don't waste pixels rendering a 1200 px image at the
+ * 400 px tier). Falls back to the largest loaded tier smaller than
+ * `desired` if no sufficient tier has loaded yet — better than a blank
+ * thumbnail during the lazy upgrade.
  */
 export function pickBestLoadedTier(
   imgs: Map<ResolutionTier, HTMLImageElement>,

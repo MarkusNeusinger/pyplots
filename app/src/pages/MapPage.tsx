@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -294,6 +294,15 @@ export function MapPage() {
   }, [graphData]);
 
   // 4. neighbor lookup for hover highlight (built once per links change)
+  // Precomputed id → node lookup. linkColor/linkWidth fire once per link
+  // per frame (~1k links), and a graphData.nodes.find() inside each call
+  // would be O(N²) total per frame; the Map keeps it O(1).
+  const nodeById = useMemo(() => {
+    const map = new Map<string, MapNode>();
+    for (const n of graphData.nodes) map.set(n.id, n);
+    return map;
+  }, [graphData.nodes]);
+
   const neighbors = useMemo(() => {
     const map = new Map<string, Set<string>>();
     for (const l of graphData.links) {
@@ -317,7 +326,7 @@ export function MapPage() {
     let raf = 0;
     const tick = () => {
       const fg = fgRef.current;
-      const node = graphData.nodes.find(n => n.id === pinnedId) as
+      const node = nodeById.get(pinnedId) as
         | (MapNode & { x?: number; y?: number })
         | undefined;
       if (fg && node && node.x != null && node.y != null) {
@@ -352,7 +361,7 @@ export function MapPage() {
   //    panelNodeId, so the panel can fade out without losing its content.
   const panelData = useMemo(() => {
     if (!panelNodeId) return null;
-    const node = graphData.nodes.find(n => n.id === panelNodeId);
+    const node = nodeById.get(panelNodeId);
     if (!node) return null;
     const ptTag = node.tags.find(t => t.startsWith('plot_type:'));
     const plotType = ptTag ? ptTag.slice('plot_type:'.length) : null;
@@ -384,10 +393,10 @@ export function MapPage() {
   // for legibility against the neutral hairline border.
   const pinColor = useMemo(() => {
     if (!pinnedId) return colors.primary;
-    const node = graphData.nodes.find(n => n.id === pinnedId);
+    const node = nodeById.get(pinnedId);
     if (!node) return colors.primary;
     return colorFor(node.colorBucket, graphData.topTypes) ?? colors.primary;
-  }, [pinnedId, graphData]);
+  }, [pinnedId, nodeById, graphData.topTypes]);
 
   // 6. Precompute lowercased searchable fields per spec so each keystroke
   //    only does .includes() checks, not a fresh tag-flatten + lowercase.
@@ -482,7 +491,7 @@ export function MapPage() {
   const flyTo = (id: string) => {
     const fg = fgRef.current;
     if (!fg) return;
-    const node = graphData.nodes.find(n => n.id === id) as
+    const node = nodeById.get(id) as
       | (MapNode & { x?: number; y?: number })
       | undefined;
     if (!node || node.x == null || node.y == null) return;
@@ -1142,12 +1151,12 @@ export function MapPage() {
               if (involved) {
                 // Match the cluster color of the hovered node so the burst
                 // of highlighted edges feels coherent with the frame.
-                const hoverNode = graphData.nodes.find(n => n.id === hoverId);
+                const hoverNode = nodeById.get(hoverId);
                 return colorFor(hoverNode?.colorBucket ?? null, graphData.topTypes) ?? colors.primary;
               }
               if (hoverType) {
-                const sBucket = graphData.nodes.find(n => n.id === sId)?.colorBucket;
-                const tBucket = graphData.nodes.find(n => n.id === tId)?.colorBucket;
+                const sBucket = sId ? nodeById.get(sId)?.colorBucket : undefined;
+                const tBucket = tId ? nodeById.get(tId)?.colorBucket : undefined;
                 const intra = sBucket === hoverType && tBucket === hoverType;
                 if (intra) return isDark ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.22)';
                 return isDark ? 'rgba(255,255,255,0.012)' : 'rgba(0,0,0,0.015)';
@@ -1240,7 +1249,7 @@ export function MapPage() {
         <Box component="ul" sx={visuallyHiddenSx}>
           {(specs ?? []).map(s => (
             <li key={s.id}>
-              <a href={specPath(s.id)}>{s.title}</a>
+              <Link to={specPath(s.id)}>{s.title}</Link>
             </li>
           ))}
         </Box>

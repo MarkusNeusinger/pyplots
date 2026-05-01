@@ -31,7 +31,8 @@ async def _build_specs_list(db: AsyncSession) -> list[SpecListItem]:
 async def _build_specs_map(db: AsyncSession) -> list[SpecMapItem]:
     """One row per spec with its best-rated impl image + spec/impl tag bag for the /map page.
 
-    Best-impl tiebreak: highest quality_score, then lexicographic library_id for determinism.
+    Best-impl tiebreak: highest quality_score, then lexicographically *greatest* library_id
+    (since `max()` picks the largest tuple — e.g. seaborn over matplotlib on a tie).
     Specs without any implementations are skipped (mirrors _build_specs_list).
     """
     repo = SpecRepository(db)

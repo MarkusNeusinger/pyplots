@@ -10,6 +10,17 @@ git log --oneline -5
 gh pr list --limit 5 2>/dev/null || true
 ```
 
+## Serena (activate + use)
+
+- Activate the project with `mcp__serena__activate_project` (param: `anyplot`) if not already active.
+- Run `mcp__serena__check_onboarding_performed` once per session.
+- Prefer Serena's JetBrains-backed tools over grep/glob for code navigation and edits:
+  - `mcp__serena__jet_brains_get_symbols_overview` / `mcp__serena__jet_brains_find_symbol` — semantic lookup
+  - `mcp__serena__jet_brains_find_referencing_symbols` — impact analysis before edits
+  - `mcp__serena__jet_brains_rename` / `mcp__serena__jet_brains_move` / `mcp__serena__jet_brains_inline_symbol` / `mcp__serena__jet_brains_safe_delete` — safe refactors
+  - `mcp__serena__replace_symbol_body` / `mcp__serena__insert_after_symbol` — structural edits
+- See `/prime-deep` for the full tool catalog.
+
 ## What this project is
 
 **anyplot**: AI-powered platform that generates Python data-viz examples for 9 libraries (matplotlib, seaborn, plotly, bokeh, altair, plotnine, pygal, highcharts, lets-plot). Spec-driven: every plot starts as a library-agnostic Markdown spec, then AI generates implementations per library.

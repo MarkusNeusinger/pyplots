@@ -91,32 +91,26 @@ function MapSection({ specCount }: { specCount?: number }) {
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: 'minmax(0, 1fr)', md: 'minmax(0, 1fr) minmax(0, 1.2fr)' },
+          gridTemplateColumns: { xs: 'minmax(0, 1fr)', md: 'minmax(0, 1.1fr) minmax(0, 1fr)' },
           gap: { xs: 4, md: 8, lg: 12 },
           alignItems: 'center',
         }}
       >
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <Box
-            sx={{
-              fontFamily: typography.serif,
-              fontSize: { xs: '1rem', md: '1.25rem' },
-              lineHeight: 1.55,
-              color: 'var(--ink-soft)',
-              fontWeight: 300,
-              maxWidth: '52ch',
-            }}
-          >
-            {specCount != null ? `all ${specCount} specs` : 'every spec'} on a single canvas —{' '}
-            <Box component="span" sx={{ color: 'var(--ink)' }}>
-              clustered by tag similarity, coloured by plot type, searchable.
-            </Box>{' '}
-            zoom in for thumbnails, hover for details, click to open the spec.
-          </Box>
-
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-            <MethodLink to="/map" subject="map" verb="open" source="map_teaser_link" />
-          </Box>
+        <Box
+          sx={{
+            fontFamily: typography.serif,
+            fontSize: { xs: '1rem', md: '1.25rem' },
+            lineHeight: 1.55,
+            color: 'var(--ink-soft)',
+            fontWeight: 300,
+            maxWidth: '52ch',
+          }}
+        >
+          {specCount != null ? `all ${specCount} specs` : 'every spec'} on a single canvas —{' '}
+          <Box component="span" sx={{ color: 'var(--ink)' }}>
+            clustered by tag similarity, coloured by plot type, searchable.
+          </Box>{' '}
+          zoom in for thumbnails, hover for details, click to open the spec.
         </Box>
 
         <Box

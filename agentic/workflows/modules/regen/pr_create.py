@@ -106,11 +106,15 @@ def create_regen_pr(
     branch = f"implementation/{spec_id}/{library}"
     worktree = worktrees_root / f"{spec_id}-{library}"
 
-    # Fetch and (re-)create the worktree from current origin/main
+    # Fetch and (re-)create the worktree from current origin/main.
+    # Also wipe any local branch from a previous attempt — `git worktree add -b`
+    # would otherwise fail with "branch already exists" on a retry, so the
+    # whole flow would not be idempotent.
     subprocess.run(["git", "fetch", "origin", "main"], check=True)
     if worktree.exists():
         subprocess.run(["git", "worktree", "remove", str(worktree), "--force"], check=False)
         subprocess.run(["git", "worktree", "prune"], check=False)
+    subprocess.run(["git", "branch", "-D", branch], check=False, capture_output=True)
     subprocess.run(["git", "worktree", "add", "-b", branch, str(worktree), "origin/main"], check=True)
 
     try:
@@ -154,10 +158,13 @@ def create_regen_pr(
         # Label via REST (gh pr edit --add-label is flaky on this repo)
         _add_labels(pr_number, [_quality_label(quality.score), _approval_label(quality.score)])
     finally:
-        # Always clean up the worktree
+        # Always clean up the worktree AND the local branch — leaving the
+        # branch behind would block the next regen attempt for this library.
+        # The branch lives on the remote anyway after `git push`.
         if worktree.exists():
             subprocess.run(["git", "worktree", "remove", str(worktree), "--force"], check=False)
         subprocess.run(["git", "worktree", "prune"], check=False)
+        subprocess.run(["git", "branch", "-D", branch], check=False, capture_output=True)
 
     return PRResult(pr_url=pr_url, pr_number=pr_number, branch=branch)
 

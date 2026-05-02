@@ -2,15 +2,21 @@
 
 Replaces regen.md step 2d. Two responsibilities:
 
-1.  Sidestep the **self-import collision**: `plots/.../altair.py` shadows the
-    installed `altair` package when run as a script (sys.path[0] contains the
-    impl file). We copy the impl to `.regen-preview/{library}/run_impl.py`
-    and run that copy instead, so the script's directory no longer holds a
-    file named after the library.
+1.  Sidestep the **self-import collision**. Implementations are named after
+    their library (e.g. `altair.py`), so running them as a script normally
+    puts their directory on `sys.path[0]` and `import altair` resolves to
+    the local file instead of the package. We avoid this by invoking
+    `python -P <impl>` (Python ≥3.11): `-P` skips prepending the script's
+    directory to `sys.path`, so `import altair` finds the installed
+    package. The impl is run **in place** — we do not copy it — because
+    several library implementations (highcharts, pygal, ...) resolve
+    relative assets via `Path(__file__).parents[...]`. Copying changes
+    `__file__` and breaks those.
 
-2.  Run twice with `ANYPLOT_THEME=light` then `ANYPLOT_THEME=dark`, and assert
-    both `plot-light.png` and `plot-dark.png` were produced. `impl-merge.yml`
-    refuses to merge if either render is missing.
+2.  Run twice with `ANYPLOT_THEME=light` then `ANYPLOT_THEME=dark`, with
+    cwd set to the preview directory so the artifacts (`plot-{theme}.png`,
+    `plot-{theme}.html`) land in `.regen-preview/{library}/`. `impl-merge.yml`
+    refuses to merge if either PNG is missing.
 """
 
 from __future__ import annotations
@@ -39,11 +45,13 @@ def _impl_path(spec_id: str, library: str) -> Path:
     return Path("plots") / spec_id / "implementations" / "python" / f"{library}.py"
 
 
-def _run_one_theme(preview_dir: Path, theme: str) -> None:
+def _run_one_theme(impl_abs: Path, preview_dir: Path, theme: str) -> None:
     env = os.environ.copy()
     env["MPLBACKEND"] = "Agg"
     env["ANYPLOT_THEME"] = theme
-    subprocess.run(["uv", "run", "python", "run_impl.py"], cwd=preview_dir, env=env, check=True)
+    # `-P` (Python ≥3.11): don't prepend the script's directory to sys.path.
+    # Avoids the local `altair.py` shadowing the installed `altair` package.
+    subprocess.run(["uv", "run", "python", "-P", str(impl_abs)], cwd=preview_dir, env=env, check=True)
 
 
 def run_theme_renders(spec_id: str, library: str, max_retries: int = 3) -> RenderResult:
@@ -56,18 +64,17 @@ def run_theme_renders(spec_id: str, library: str, max_retries: int = 3) -> Rende
     impl = _impl_path(spec_id, library)
     if not impl.is_file():
         raise FileNotFoundError(f"Implementation file not found: {impl}")
+    impl_abs = impl.resolve()
 
     preview = _preview_dir(spec_id, library)
     if preview.exists():
         shutil.rmtree(preview)
     preview.mkdir(parents=True)
 
-    shutil.copyfile(impl, preview / "run_impl.py")
-
     for theme in ("light", "dark"):
         for attempt in range(1, max_retries + 1):
             try:
-                _run_one_theme(preview, theme)
+                _run_one_theme(impl_abs, preview, theme)
                 break
             except subprocess.CalledProcessError as exc:
                 if attempt == max_retries:

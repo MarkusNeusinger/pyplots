@@ -161,10 +161,12 @@ in step 2g.
 uv run python -m agentic.workflows.modules.regen render "$SPEC_ID" "$LIBRARY"
 ```
 
-This sidesteps the self-import collision (impl named `altair.py` shadows `import altair`) by copying the impl into
-`.regen-preview/{LIBRARY}/run_impl.py` first, then runs it twice with `ANYPLOT_THEME=light` and `=dark`. Up to 3
-retries per theme; missing `plot-light.png` or `plot-dark.png` raises and the step exits non-zero. On failure see
-"Per-library failure" below.
+This sidesteps the self-import collision (impl named `altair.py` shadows `import altair`) by invoking
+`uv run python -P <impl>` — the `-P` flag (Python ≥3.11) keeps the script's directory off `sys.path`, so
+`import altair` resolves to the installed package. The impl runs **in place** (we do not copy it), so
+`Path(__file__).parents[...]` in highcharts/pygal asset-resolution code keeps working. Cwd is set to
+`.regen-preview/{LIBRARY}/` so the artifacts land there. Up to 3 retries per theme; missing `plot-light.png`
+or `plot-dark.png` raises and the step exits non-zero. On failure see "Per-library failure" below.
 
 ### 2e. Lint
 

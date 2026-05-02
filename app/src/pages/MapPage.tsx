@@ -168,7 +168,9 @@ export function MapPage() {
   // settled = true once the force simulation has finished cooling. Until
   // then, the canvas is overlaid by a subtle gate that swallows pointer
   // input — a click on a still-moving node would otherwise pin the wrong
-  // spec by the time the simulation settles around it.
+  // spec by the time the simulation settles around it. Resets to false
+  // whenever graphData re-derives (filter / weight / category change), so
+  // the gate also covers subsequent re-layouts.
   const [settled, setSettled] = useState(false);
 
   // Search-pill state. searchOpen controls dropdown visibility (separate
@@ -331,6 +333,16 @@ export function MapPage() {
     const links = buildKNNLinks(specs, idf, KNN_K, minSim, weights);
     return { nodes, links, topTypes, typeCounts, idf };
   }, [specs, isDark, weights, minSim, activeCategory]);
+
+  // Re-arm the settling gate whenever graphData re-derives — FG2D reheats
+  // the simulation in response, and we want the gate to cover the new
+  // cooling phase the same way it covers the initial one. No-op on the
+  // very first render (settled is already false) and while specs are
+  // still loading.
+  useEffect(() => {
+    if (graphData.nodes.length === 0) return;
+    setSettled(false);
+  }, [graphData]);
 
   // Eager-load the 400-tier thumbnails so something paints fast. Higher tiers
   // are fetched lazily from nodeCanvasObject when the user zooms in.
@@ -1352,7 +1364,12 @@ export function MapPage() {
               inset: 0,
               pointerEvents: 'auto',
               cursor: 'wait',
-              zIndex: 5,
+              // Above the canvas (implicit 0), below all interactive
+              // controls (search pill / legend / weights at z 2, corner
+              // panel at 3, pin-marker at 4) so the gate only swallows
+              // canvas pointer events — search, filters, etc. stay
+              // usable while the simulation is still cooling.
+              zIndex: 1,
             }}
           >
             <Box

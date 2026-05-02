@@ -1018,11 +1018,11 @@ export function MapPage() {
             bottom: { xs: 8, sm: 16 },
             right: { xs: 16, sm: 32, md: 64, lg: 96 },
             zIndex: 3,
-            // Phones: ~half the width, no tags. Otherwise the panel covers
-            // the searched node + its connection lines after fly-to. Tablet+:
-            // full 280 px panel as before.
-            width: { xs: 160, sm: 280 },
-            maxWidth: { xs: 'calc(60vw - 32px)', sm: 'calc(100vw - 64px)' },
+            // Phones + tablets: ~half the width, no tags. Otherwise the
+            // panel covers the searched node + its connection lines after
+            // fly-to. Desktop only: full 280 px panel with tag chips.
+            width: { xs: 160, md: 280 },
+            maxWidth: { xs: 'calc(60vw - 32px)', md: 'calc(100vw - 64px)' },
             border: '1px solid var(--rule)',
             borderRadius: '4px',
             bgcolor: 'var(--bg-surface)',
@@ -1045,16 +1045,16 @@ export function MapPage() {
                     display: 'block',
                     width: '100%',
                     height: 'auto',
-                    maxHeight: { xs: 110, sm: 200 },
+                    maxHeight: { xs: 110, md: 200 },
                     objectFit: 'contain',
                     bgcolor: isDark ? '#0a0a08' : '#FFFDF6',
                   }}
                 />
               ) : (
-                <Box sx={{ height: { xs: 90, sm: 158 }, bgcolor: isDark ? '#0a0a08' : '#FFFDF6' }} />
+                <Box sx={{ height: { xs: 90, md: 158 }, bgcolor: isDark ? '#0a0a08' : '#FFFDF6' }} />
               )}
               <Box sx={{
-                p: { xs: 0.75, sm: 1.25 },
+                p: { xs: 0.75, md: 1.25 },
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 0.5,
@@ -1089,10 +1089,10 @@ export function MapPage() {
                 {panelData.tags.length > 0 && (
                   <Box
                     sx={{
-                      // Phones: hide tags, the smaller panel only shows
-                      // image + title + plot_type chip so it doesn't cover
-                      // the focused node and its KNN edges.
-                      display: { xs: 'none', sm: 'flex' },
+                      // Phones + tablets: hide tags, the smaller panel
+                      // only shows image + title + plot_type chip so it
+                      // doesn't cover the focused node and its KNN edges.
+                      display: { xs: 'none', md: 'flex' },
                       flexWrap: 'wrap',
                       gap: 0.75,
                       fontSize: fontSize.xs,

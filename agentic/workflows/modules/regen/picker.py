@@ -55,20 +55,6 @@ def _list_metadata_files(spec_id: str, ref: str = "origin/main") -> list[str]:
     return [line for line in out.splitlines() if line.endswith(".yaml")]
 
 
-def _latest_timestamp(meta_paths: Iterable[str], ref: str = "origin/main") -> str | None:
-    """Most recent `updated`/`created` ISO timestamp across the given metadata files."""
-    latest: str | None = None
-    for path in meta_paths:
-        try:
-            data = yaml.safe_load(_git_show(path, ref)) or {}
-        except (subprocess.CalledProcessError, yaml.YAMLError):
-            continue
-        ts = data.get("updated") or data.get("created")
-        if ts and (latest is None or str(ts) > str(latest)):
-            latest = str(ts)
-    return latest
-
-
 def _parse_iso(ts: str | None) -> datetime:
     if not ts:
         return datetime.min.replace(tzinfo=timezone.utc)
@@ -79,6 +65,31 @@ def _parse_iso(ts: str | None) -> datetime:
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
     return dt
+
+
+def _latest_timestamp(meta_paths: Iterable[str], ref: str = "origin/main") -> str | None:
+    """Most recent `updated`/`created` ISO timestamp across the given metadata files.
+
+    Compares parsed datetimes, not raw strings — the repo mixes `...Z` and
+    `...+00:00` suffixes, which sort differently lexicographically even when
+    they represent the same instant.
+    """
+    latest_dt: datetime | None = None
+    latest_ts: str | None = None
+    for path in meta_paths:
+        try:
+            data = yaml.safe_load(_git_show(path, ref)) or {}
+        except (subprocess.CalledProcessError, yaml.YAMLError):
+            continue
+        ts = data.get("updated") or data.get("created")
+        if not ts:
+            continue
+        ts_str = str(ts)
+        dt = _parse_iso(ts_str)
+        if latest_dt is None or dt > latest_dt:
+            latest_dt = dt
+            latest_ts = ts_str
+    return latest_ts
 
 
 def pick_oldest(ref: str = "origin/main") -> tuple[str, str]:

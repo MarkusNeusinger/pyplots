@@ -1,48 +1,46 @@
 # Prime
 
-> Execute the following sections to understand the codebase then summarize your understanding.
+> Lightweight orientation for everyday work. For deep architecture context, use `/prime-deep`. CLAUDE.md is auto-loaded — critical rules are already in context.
 
 ## Run
 
 ```bash
-# Current state: branch, uncommitted changes, stashes
 git status --short --branch
-
-# Recent activity: what's been worked on
-git log --oneline --graph -15
-
-# Open PRs: what's in flight
-gh pr list --limit 10 2>/dev/null || echo "(gh CLI not available)"
+git log --oneline -5
+gh pr list --limit 5 2>/dev/null || true
 ```
 
-## Read
+## What this project is
 
-@agentic/docs/project-guide.md
-@agentic/commands/context.md
-@docs/concepts/vision.md
-@pyproject.toml
+**anyplot**: AI-powered platform that generates Python data-viz examples for 9 libraries (matplotlib, seaborn, plotly, bokeh, altair, plotnine, pygal, highcharts, lets-plot). Spec-driven: every plot starts as a library-agnostic Markdown spec, then AI generates implementations per library.
 
-## Serena
+## Where things live
 
-- Run `check_onboarding_performed`
-- Run `list_memories` and read relevant ones
+- `plots/{spec-id}/` — spec + per-library metadata + implementations (one dir per plot)
+- `core/` — shared business logic (DB, repositories, config)
+- `api/` — FastAPI backend
+- `app/` — React frontend (Vite + TS + MUI)
+- `agentic/` — AI workflow layer (commands in `agentic/commands/`, docs in `agentic/docs/`)
+- `prompts/` — AI prompts for generation/review/tagging
+- `automation/` — CI/CD helper scripts
+- `.github/workflows/` — GitHub Actions pipelines
 
-### JetBrains Tools (prefer over brute-force scanning)
+Stack: Python 3.13+ (uv), PostgreSQL, GCP (Cloud Run + Cloud SQL + GCS).
 
-Use Serena's JetBrains-backed tools for code navigation — they provide semantic understanding
-that grep/glob cannot:
+## GitHub pipeline (don't bypass it)
 
-- `jet_brains_get_symbols_overview` — get top-level symbols in a file (classes, functions, variables). Use with `depth: 1` to also see methods of classes. Start here to understand a file before diving deeper.
-- `jet_brains_find_symbol` — search for a symbol by name across the codebase. Supports name path patterns like `MyClass/my_method`. Use `include_body: true` to read source code, `include_info: true` for docstrings/signatures.
-- `jet_brains_find_referencing_symbols` — find all usages of a symbol (who calls this function? who imports this class?). Essential for understanding impact of changes.
-- `jet_brains_find_declaration` — jump to where a symbol is defined.
-- `jet_brains_find_implementations` — find implementations of an interface/abstract class.
-- `jet_brains_type_hierarchy` — understand class inheritance chains.
+**New spec:**
+1. Create issue (descriptive title, no spec-id) + add `spec-request` label
+2. `spec-create.yml` runs → opens PR
+3. Add `approved` label to the **issue** (not PR) → auto-merges → `spec-ready`
 
-### Editing via Serena
+**Generate implementations:**
+1. `gh workflow run bulk-generate.yml -f specification_id=<id> -f library=all`
+2. Pipeline: `impl-generate` → `impl-review` → (`impl-repair` if needed) → `impl-merge`
+3. **Never manually merge impl PRs** — `impl-merge.yml` handles metadata + GCS promotion
 
-For structural edits, prefer Serena's symbol-aware tools over raw text replacement:
+## Need more?
 
-- `replace_symbol_body` — replace an entire function/class body
-- `insert_after_symbol` / `insert_before_symbol` — add code relative to a symbol
-- `search_for_pattern` — regex search across the codebase (fast, flexible)
+- `/prime-deep` — full architecture, metadata schemas, all workflows, deployment
+- `agentic/docs/project-guide.md` — comprehensive reference
+- `docs/` — contributing, workflows, API, DB schema

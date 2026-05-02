@@ -38,36 +38,21 @@ review_image_dir: `<absolute path to codebase>/agentic/runs/<run_id>/<agent_name
     - `skippable` - the issue is non-blocker for the work to be released but is still a problem
     - `tech_debt` - the issue is non-blocker for the work to be released but will create technical debt that should be addressed in the future
     - `blocker` - the issue is a blocker for the work to be released and should be addressed immediately. It will harm the user experience or will not function as expected.
-- IMPORTANT: Return ONLY the JSON array with test results
-  - IMPORTANT: Output your result in JSON format based on the `Report` section below.
-  - IMPORTANT: Do not include any additional text, explanations, or markdown formatting
-  - We'll immediately run JSON.parse() on the output, so make sure it's valid JSON
-- Ultra think as you work through the review process. Focus on the critical functionality paths and the user experience. Don't report issues if they are not critical to the feature.
+- IMPORTANT: Return ONLY the JSON object specified in the `Report` section below.
+  - IMPORTANT: Do not include any preamble, explanation, or markdown formatting around the JSON.
+  - We'll immediately run JSON.parse() on the output, so make sure it's valid JSON.
+  - Match the schema exactly — extra keys or missing required keys will fail downstream parsing.
+- Reason carefully through the review. Focus on critical functionality paths and the user experience. Do not
+  report issues that are not material to the feature — inflated issue lists are noise, not signal.
 
 ## Codebase Structure
 
-- `README.md` - Project overview (start here)
-- `api/` - FastAPI backend
-  - `main.py` - App entry point
-  - `routers/` - API route handlers
-  - `services/` - Business logic
-- `app/` - React frontend (Vite + TypeScript)
-  - `src/` - Source code
-- `core/` - Shared Python modules
-  - `models/` - Pydantic models
-  - `database/` - Database utilities
-- `plots/` - Plot specifications and implementations
-- `tests/` - Test suites
-- `agentic/` - Agentic Layer
-  - `commands/` - Prompt templates
-  - `workflows/` - Workflow scripts (`uv run`)
-  - `specs/` - Plans (what to do)
-  - `context/` - Feature docs (what was done)
-  - `docs/` - Static project documentation
+For the full project layout, conventions, and tech stack, see `agentic/docs/project-guide.md`. Read it only if you need
+to map the diff back onto specific subsystems.
 
 ## Report
 
-- IMPORTANT: Return results exclusively as a JSON array based on the `Output Structure` section below.
+- IMPORTANT: Return results exclusively as a JSON object matching the `Output Structure` section below.
 - `success` should be `true` if there are NO BLOCKING issues (implementation matches spec for critical functionality)
 - `success` should be `false` ONLY if there are BLOCKING issues that prevent the work from being released
 - `review_issues` can contain issues of any severity (skippable, tech_debt, or blocker)
@@ -78,22 +63,20 @@ review_image_dir: `<absolute path to codebase>/agentic/runs/<run_id>/<agent_name
 
 ```json
 {
-    success: "boolean - true if there are NO BLOCKING issues (can have skippable/tech_debt issues), false if there are BLOCKING issues",
-    review_summary: "string - 2-4 sentences describing what was built and whether it matches the spec. Written as if reporting during a standup meeting. Example: 'The natural language query feature has been implemented with drag-and-drop file upload and interactive table display. The implementation matches the spec requirements for SQL injection protection and supports both CSV and JSON formats. Minor UI improvements could be made but all core functionality is working as specified.'",
-    review_issues: [
+    "success": "boolean - true if there are NO BLOCKING issues (can have skippable/tech_debt issues), false if there are BLOCKING issues",
+    "review_summary": "string - 2-4 sentences describing what was built and whether it matches the spec. Written as if reporting during a standup meeting. Example: 'The natural language query feature has been implemented with drag-and-drop file upload and interactive table display. The implementation matches the spec requirements for SQL injection protection and supports both CSV and JSON formats. Minor UI improvements could be made but all core functionality is working as specified.'",
+    "review_issues": [
         {
             "review_issue_number": "number - the issue number based on the index of this issue",
             "screenshot_path": "string - /absolute/path/to/screenshot_that_shows_review_issue.png",
             "issue_description": "string - description of the issue",
             "issue_resolution": "string - description of the resolution",
             "issue_severity": "string - severity of the issue between 'skippable', 'tech_debt', 'blocker'"
-        },
-        ...
+        }
     ],
-    screenshots: [
+    "screenshots": [
         "string - /absolute/path/to/screenshot_showcasing_functionality.png",
-        "string - /absolute/path/to/screenshot_showcasing_functionality.png",
-        "...",
+        "string - /absolute/path/to/screenshot_showcasing_functionality.png"
     ]
 }
 ```

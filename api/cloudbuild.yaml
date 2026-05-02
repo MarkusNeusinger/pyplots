@@ -6,6 +6,17 @@ substitutions:
   _CPU: "1"
   _MIN_INSTANCES: "1"
   _MAX_INSTANCES: "3"
+  # Cloudflare Access (Zero Trust) for /debug/* — the team domain is stable;
+  # the AUD must be filled in once the Self-hosted Application is created in
+  # the Cloudflare Zero Trust dashboard. With AUD unset (or with no email
+  # in _ADMIN_ALLOWED_EMAILS), the JWT path in require_admin denies all and
+  # only the X-Admin-Token fallback is active.
+  _CF_ACCESS_TEAM_DOMAIN: "anyplot.cloudflareaccess.com"
+  _CF_ACCESS_AUD: ""
+  # Comma-separated. Browser users with a valid Cloudflare Access JWT but an
+  # email not in this list get 403. Required for the JWT path to authorize
+  # anyone.
+  _ADMIN_ALLOWED_EMAILS: ""
 
 steps:
   # Build the container image
@@ -53,11 +64,10 @@ steps:
       - "--port=8000"
       - "--allow-unauthenticated"
       - "--add-cloudsql-instances=anyplot:europe-west4:anyplot-db"
-      - "--set-secrets=DATABASE_URL=DATABASE_URL:latest,CACHE_INVALIDATE_TOKEN=CACHE_INVALIDATE_TOKEN:latest"
-      - "--set-env-vars=ENVIRONMENT=production"
+      - "--set-secrets=DATABASE_URL=DATABASE_URL:latest,CACHE_INVALIDATE_TOKEN=CACHE_INVALIDATE_TOKEN:latest,ADMIN_TOKEN=ADMIN_TOKEN:latest"
       - "--execution-environment=gen2"
-      - "--set-env-vars=GOOGLE_CLOUD_PROJECT=$PROJECT_ID"
-      - "--set-env-vars=GCS_BUCKET=anyplot-images"
+      # ^|^ alt delimiter: values contain @ (emails) and may contain , (multi-email lists)
+      - "--set-env-vars=^|^ENVIRONMENT=production|GOOGLE_CLOUD_PROJECT=$PROJECT_ID|GCS_BUCKET=anyplot-images|CF_ACCESS_TEAM_DOMAIN=${_CF_ACCESS_TEAM_DOMAIN}|CF_ACCESS_AUD=${_CF_ACCESS_AUD}|ADMIN_ALLOWED_EMAILS=${_ADMIN_ALLOWED_EMAILS}"
       - "--cpu-throttling"
       - "--concurrency=15"
       - "--timeout=600"

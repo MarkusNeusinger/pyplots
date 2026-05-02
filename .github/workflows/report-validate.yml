@@ -56,7 +56,7 @@ jobs:
         id: validate
         continue-on-error: true
         timeout-minutes: 10
-        uses: anthropics/claude-code-action@567fe954a4527e81f132d87d1bdbcc94f7737434  # v1
+        uses: anthropics/claude-code-action@ef50f123a3a9be95b60040d042717517407c7256  # v1
         env:
           ISSUE_TITLE: ${{ github.event.issue.title }}
           ISSUE_BODY: ${{ github.event.issue.body }}
@@ -71,12 +71,12 @@ jobs:
             You are validating a user-submitted issue report for anyplot.
 
             ### Issue Details
-            - **Title:** $ISSUE_TITLE
-            - **Number:** #$ISSUE_NUMBER
-            - **Author:** $ISSUE_USER
+            - **Title:** ${{ github.event.issue.title }}
+            - **Number:** #${{ github.event.issue.number }}
+            - **Author:** ${{ github.event.issue.user.login }}
             - **Body:**
             ```
-            $ISSUE_BODY
+            ${{ github.event.issue.body }}
             ```
 
             ---

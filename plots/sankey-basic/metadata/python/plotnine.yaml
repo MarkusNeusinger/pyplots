@@ -1,214 +1,242 @@
 library: plotnine
+language: python
 specification_id: sankey-basic
 created: '2025-12-23T19:44:19Z'
-updated: '2025-12-23T20:01:04Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20469996323
-issue: 0
-python_version: 3.13.11
-library_version: 0.15.2
-preview_url: https://storage.googleapis.com/anyplot-images/plots/sankey-basic/plotnine/plot.png
-preview_html: null
-quality_score: 91
-impl_tags:
-  dependencies: []
-  techniques:
-    - bezier-curves
-    - annotations
-  patterns:
-    - iteration-over-groups
-  dataprep: []
-  styling:
-    - alpha-blending
+updated: '2026-04-30T09:26:57Z'
+generated_by: claude-sonnet
+workflow_run: 25156526692
+issue: 810
+python_version: 3.13.13
+library_version: 0.15.3
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/sankey-basic/python/plotnine/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/sankey-basic/python/plotnine/plot-dark.png
+preview_html_light: null
+preview_html_dark: null
+quality_score: 84
 review:
   strengths:
-  - Excellent creative implementation of Sankey diagram using plotnine grammar of
-    graphics primitives (geom_polygon, geom_rect, geom_text)
-  - Smooth curved flows using cubic interpolation for visually appealing transitions
-  - Clear visual hierarchy with distinct colors for sources vs targets
-  - Well-positioned flow value labels that avoid overlap
-  - Good canvas utilization with balanced layout
-  - Real-world energy flow scenario that demonstrates the visualization effectively
+  - Correct theming in both light and dark renders — source colors identical, only
+    chrome flips (backgrounds, text, neutral node colors)
+  - 'Smart source/target color distinction: Okabe-Ito for sources, neutral INK_SOFT
+    for targets — clean visual hierarchy'
+  - All spec requirements met with realistic energy flow data (15/15 on both SC and
+    DQ)
+  - 'Perfect code quality: flat, deterministic, clean imports, correct output path'
   weaknesses:
-  - No axis labels (though Sources and Sectors annotations partially compensate)
-  - Some flow value labels could be positioned more consistently
-  image_description: 'The plot displays a Sankey diagram showing energy flow from
-    sources to sectors. On the left side are four source nodes: Coal (dark blue),
-    Gas (yellow), Nuclear (teal), and Renewables (green). On the right side are three
-    target/sector nodes: Industrial (red), Commercial (purple), and Residential (orange).
-    Curved flow bands connect sources to targets, with widths proportional to flow
-    values. Flow values (35, 25, 20, 18, 15, 15, 12, 12) are displayed on the larger
-    flows. The title "Energy Flow · sankey-basic · plotnine · pyplots.ai" is prominently
-    displayed at the top. "Sources" and "Sectors" labels appear at the bottom. The
-    color scheme uses distinct colors for each source and target, with flows colored
-    by their source. The layout is well-balanced with good use of the 16:9 canvas.'
+  - Flow value labels at size=11 are slightly small for the 4800x2700 canvas — should
+    be at least 14pt
+  - Value label x-positions are offset by source index (0.35 + src_idx * 0.1) making
+    some labels appear disconnected from their flows
+  - Crossing area in the dark render appears muddy due to alpha=0.5 over dark background
+    — consider increasing opacity slightly
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white #FAF8F1 — correct
+      Chrome: Title "Energy Flow · sankey-basic · plotnine · anyplot.ai" bold dark ink; source node labels (Coal, Gas, Nuclear, Renewables) bold dark ink size=16; target labels (Industrial, Commercial, Residential) bold dark ink size=16; "Sources"/"Sectors" footer in INK_SOFT; flow value labels in dark INK
+      Data: Coal=#009E73 (green), Gas=#D55E00 (orange), Nuclear=#0072B2 (blue), Renewables=#CC79A7 (pink); target nodes in neutral dark gray (INK_SOFT=#4A4A44); semi-transparent (alpha=0.5) curved flow polygons; proportional widths
+      Legibility verdict: PASS — all text clearly readable against warm off-white background
+
+    Dark render (plot-dark.png):
+      Background: Warm near-black #1A1A17 — correct
+      Chrome: Title and all node labels switch to light near-white (#F0EFE8); section labels in #B8B7B0; no dark-on-dark failures detected
+      Data: Source colors identical to light render — Coal green, Gas orange, Nuclear blue, Renewables pink; target nodes become light gray (#B8B7B0) providing good contrast against dark background; flows slightly more subdued but clearly visible
+      Legibility verdict: PASS — all text readable against dark background; no dark-on-dark failures
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 26
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
-        passed: true
-        comment: Title is large and bold, node labels are clearly readable with good
-          font size (16pt), flow values are visible
-      - id: VQ-02
-        name: No Overlap
-        score: 8
-        max: 8
-        passed: true
-        comment: No overlapping text; labels are well-positioned outside nodes; flow
-          values are staggered to avoid overlap
-      - id: VQ-03
-        name: Element Visibility
         score: 7
         max: 8
         passed: true
-        comment: Flow bands are well-sized with appropriate alpha (0.5) for overlapping
-          areas; nodes have white borders for clarity
+        comment: Title 24pt, node labels 16pt correct; flow value labels at size=11
+          slightly below 16pt guideline
+      - id: VQ-02
+        name: No Overlap
+        score: 5
+        max: 6
+        passed: true
+        comment: Minor crowding of two '15' labels in crossing zone, no severe collision
+      - id: VQ-03
+        name: Element Visibility
+        score: 5
+        max: 6
+        passed: true
+        comment: All flows visible; crossing area slightly muddy in dark render with
+          alpha=0.5
       - id: VQ-04
         name: Color Accessibility
-        score: 4
-        max: 5
-        passed: true
-        comment: Good color variety; sources and targets have distinct colors; however
-          some flows crossing may be hard to distinguish for colorblind users
-      - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Excellent canvas utilization; plot fills appropriate portion of space
-          with balanced margins
-      - id: VQ-06
-        name: Axis Labels
-        score: 0
-        max: 2
-        passed: true
-        comment: No axis labels present (appropriate for Sankey diagrams which don't
-          use traditional axes, but "Sources" and "Sectors" annotations help)
-      - id: VQ-07
-        name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: No grid (appropriate for Sankey); legend hidden as colors are self-explanatory
-          with labels
+        comment: Okabe-Ito is CVD-safe; no red-green sole-signal issues
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 3
+        max: 4
+        passed: true
+        comment: Good margins; right-side target labels slightly tight against xlim
+          boundary
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
+        max: 2
+        passed: true
+        comment: Descriptive title; Sources/Sectors footer labels serve as orientation
+      - id: VQ-07
+        name: Palette Compliance
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Coal=#009E73 first, Okabe-Ito order, backgrounds #FAF8F1/#1A1A17
+          correct'
+    design_excellence:
+      score: 11
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: true
+        comment: Thoughtful source/target color distinction, flow transparency, white
+          node borders; above defaults
+      - id: DE-02
+        name: Visual Refinement
+        score: 3
+        max: 6
+        passed: true
+        comment: Clean minimal theme, no grid/spines/axes; crossing area could be
+          tighter
+      - id: DE-03
+        name: Data Storytelling
+        score: 3
+        max: 6
+        passed: true
+        comment: Proportional widths, value labels, section labels guide viewer; tracing
+          through crossings is challenging
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct Sankey diagram with nodes and flows
+        comment: Correct Sankey diagram with proportional flow links
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Source/target/value correctly mapped; flow widths proportional to
-          values
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: 'All spec features present: flows from sources to targets, width
-          proportional to value, distinct colors, node labels'
-      - id: SC-04
-        name: Data Range
+        comment: Proportional link widths, distinct source colors, no circular flows,
+          node labels clear
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All flows and nodes visible; appropriate scaling
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Source-target structure correct; node heights proportional to total
+          flow
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: No legend needed; inline labels are accurate
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Uses correct format: "Energy Flow · sankey-basic · plotnine · pyplots.ai"'
+        comment: Energy Flow · sankey-basic · plotnine · anyplot.ai includes all required
+          components
     data_quality:
-      score: 18
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows varied flow magnitudes (8-35), multiple sources connecting
-          to multiple targets, demonstrates both major and minor flows
+        comment: 9 flows, 4 sources, 3 targets, crossing topology, value labels, proportional
+          sizing
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
+        score: 5
+        max: 5
         passed: true
-        comment: Energy flow from sources (Coal, Gas, Nuclear, Renewables) to sectors
-          (Industrial, Commercial, Residential) is a classic, real-world Sankey application
+        comment: Energy flow scenario (Coal/Gas/Nuclear/Renewables -> Industrial/Commercial/Residential)
+          is plausible and neutral
       - id: DQ-03
         name: Appropriate Scale
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Values are reasonable energy flow units; total of 160 distributed
-          across 9 flows is appropriate
+        comment: Values 8-35, total 160, realistic distribution for energy mix
     code_quality:
-      score: 8
+      score: 10
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 2
-        max: 3
-        passed: true
-        comment: Code follows imports → data → plot → save pattern, but has some complexity
-          due to manual polygon construction (acceptable for Sankey)
-      - id: CQ-02
-        name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Data is deterministic (no random generation needed)
+        comment: No functions or classes; flat procedural script
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 2
+        passed: true
+        comment: Fully deterministic hardcoded data; no random numbers
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imported symbols used; no unused imports
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
+        score: 2
+        max: 2
+        passed: true
+        comment: Appropriate complexity for hand-rolled Sankey; no fake UI elements
+      - id: CQ-05
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Uses current plotnine API
-      - id: CQ-05
-        name: Output Correct
-        score: 0
-        max: 1
-        passed: true
-        comment: Saves as 'plot.png' correctly
-    library_features:
-      score: 4
-      max: 5
+        comment: Saves as plot-{THEME}.png; uses current plotnine API
+    library_mastery:
+      score: 7
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
         score: 4
         max: 5
         passed: true
-        comment: Creative use of plotnine's grammar of graphics (geom_polygon for
-          flows, geom_rect for nodes, geom_text for labels, scale_fill_manual, theme
-          customization); impressive implementation of Sankey in a library without
-          native support
+        comment: 'Grammar of graphics composition: geom_polygon+geom_rect+geom_text+annotate;
+          scale_fill_manual; coord_cartesian'
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Multiple geom layer composition for unsupported chart type; Hermite
+          curve interpolation for flow polygons; theme() chrome control
   verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - annotations
+  - bezier-curves
+  patterns:
+  - groupby-aggregation
+  - iteration-over-groups
+  dataprep:
+  - normalization
+  styling:
+  - alpha-blending
+  - edge-highlighting
+  - minimal-chrome

@@ -5,9 +5,10 @@ All environment variables are defined here with type validation,
 defaults, and documentation.
 """
 
-from typing import Optional
+from typing import Annotated, Any, Optional
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import field_validator
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -155,6 +156,41 @@ class Settings(BaseSettings):
     When unset, those endpoints return 503 instead of leaking quality scores,
     weakness aggregates, and DB latency to the public internet. Set via Secret
     Manager in Cloud Run; pass via the `X-Admin-Token` request header."""
+
+    cf_access_team_domain: Optional[str] = None
+    """Cloudflare Access team domain, e.g. `anyplot.cloudflareaccess.com`.
+    Used as the JWT issuer and for fetching JWKS keys at
+    `https://{team_domain}/cdn-cgi/access/certs`. When unset, the JWT path in
+    require_admin is skipped (token-only mode)."""
+
+    cf_access_aud: Optional[str] = None
+    """Cloudflare Access Application AUD tag (UUID from the Zero Trust
+    dashboard). Validated as the JWT `aud` claim."""
+
+    admin_allowed_emails: Annotated[list[str], NoDecode] = []
+    """Email addresses allowed to authenticate via Cloudflare Access for
+    /debug/* endpoints. Defaults to an empty list — must be set explicitly
+    in production. Accepts either a JSON array (`["a@b.com","c@d.com"]`)
+    or a comma-separated string (`a@b.com,c@d.com`) when set via env var.
+    `NoDecode` keeps pydantic-settings from JSON-parsing the env value
+    before our field_validator runs (so a comma-separated string is OK)."""
+
+    @field_validator("admin_allowed_emails", mode="before")
+    @classmethod
+    def _parse_admin_allowed_emails(cls, value: Any) -> Any:
+        """Allow `ADMIN_ALLOWED_EMAILS=foo@bar.com,baz@qux.com` in addition to
+        the JSON-array form pydantic-settings expects by default. A bare
+        string with no commas is treated as a single-element list."""
+        import json
+
+        if isinstance(value, str):
+            stripped = value.strip()
+            if not stripped:
+                return []
+            if stripped.startswith("["):
+                return json.loads(stripped)
+            return [item.strip() for item in stripped.split(",") if item.strip()]
+        return value
 
     # =============================================================================
     # CORS

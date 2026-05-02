@@ -181,18 +181,49 @@ Edit `plots/{SPEC_ID}/implementations/python/{LIBRARY}.py`:
 - **Respect the spec variant:** if `SPEC_ID` contains `basic`, no annotations / trendlines / callouts.
 - **No changes for the sake of changes:** if nothing meaningful to improve, leave the code unchanged and proceed.
 
+**Theme-adaptive rendering is mandatory.** `impl-generate.yml` (and `impl-merge.yml` after it) require both
+`plot-light.png` AND `plot-dark.png` to exist — the workflow errors out and refuses to merge if either is missing.
+The implementation **must** read `ANYPLOT_THEME` (`light` or `dark`) and emit `plot-{THEME}.png` (and
+`plot-{THEME}.html` for interactive libs). Mirror the theme-adaptive chrome pattern from `prompts/library/{LIBRARY}.md`:
+
+```python
+import os
+THEME       = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG     = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK         = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT    = "#4A4A44" if THEME == "light" else "#B8B7B0"
+# ... apply to background, text, grid, legend chrome
+chart.save(f"plot-{THEME}.png")          # not "plot.png"
+chart.save(f"plot-{THEME}.html")         # if interactive lib
+```
+
+Data colors (Okabe-Ito positions 1–7) **must be identical across both themes**; only chrome flips.
+
 If the spec itself genuinely needs improvement, edit `plots/{SPEC_ID}/specification.md` and note it in the log entry
 in step 2k.
 
-### 2d. Generate locally
+### 2d. Generate both theme renders locally
+
+The implementation file is named after its library (e.g. `altair.py`), which **collides with `import altair as alt`**
+when run as a script — `sys.path[0]` is the script's directory, so the local file shadows the installed package and
+the script crashes (`AttributeError: module 'altair' has no attribute 'X'`). Sidestep by copying the impl into the
+preview dir under a non-colliding name and running that copy:
 
 ```bash
-mkdir -p plots/{SPEC_ID}/implementations/python/.regen-preview/{LIBRARY}
-cd plots/{SPEC_ID}/implementations/python/.regen-preview/{LIBRARY} && \
-  MPLBACKEND=Agg uv run python ../../{LIBRARY}.py
+PREVIEW_DIR="plots/{SPEC_ID}/implementations/python/.regen-preview/{LIBRARY}"
+mkdir -p "$PREVIEW_DIR"
+cp "plots/{SPEC_ID}/implementations/python/{LIBRARY}.py" "$PREVIEW_DIR/run_impl.py"
+
+# Render both themes — required by impl-generate.yml / impl-merge.yml
+for THEME in light dark; do
+  (cd "$PREVIEW_DIR" && MPLBACKEND=Agg ANYPLOT_THEME="$THEME" uv run python run_impl.py)
+done
 ```
 
-Up to 3 retries on script failure. After 3 failures → see "Per-library failure" below.
+After both runs the preview dir must contain at least `plot-light.png` and `plot-dark.png` (interactive libraries
+also produce `plot-light.html` + `plot-dark.html`). Up to 3 retries on script failure. After 3 → see "Per-library
+failure" below.
 
 ### 2e. Lint
 
@@ -205,8 +236,9 @@ Fix any unfixable errors manually and re-run.
 
 ### 2f. Self-score
 
-View `plots/{SPEC_ID}/implementations/python/.regen-preview/{LIBRARY}/plot.png` and score against the 6 categories
-from `prompts/quality-criteria.md`:
+View `plots/{SPEC_ID}/implementations/python/.regen-preview/{LIBRARY}/plot-light.png` (the canonical render — also
+inspect `plot-dark.png` to verify chrome flips correctly and data colors are identical) and score against the 6
+categories from `prompts/quality-criteria.md`:
 
 ```
 VQ: __/30 | DE: __/20 | SC: __/15 | DQ: __/15 | CQ: __/10 | LM: __/10 → TOTAL: __/100
@@ -219,17 +251,24 @@ iterations.** After 2, accept the current score and proceed.
 
 ### 2g. Update metadata
 
-Edit `plots/{SPEC_ID}/metadata/python/{LIBRARY}.yaml`:
+Edit `plots/{SPEC_ID}/metadata/python/{LIBRARY}.yaml` to match what `impl-generate.yml` writes (theme-aware preview
+URLs under the `python/` segment — legacy single-render `preview_url`/`preview_html` fields must be removed if
+present):
 
 | Field | Value |
 |-------|-------|
+| `language` | `python` (add if missing) |
 | `updated` | Current UTC timestamp ISO 8601 |
 | `generated_by` | From `CLAUDE_MODEL` env var, or `claude --version`, or detected model name |
 | `python_version` | From `uv run python --version` |
 | `library_version` | From `uv run python -c "from importlib.metadata import version; print(version('{pip_package}'))"` |
 | `quality_score` | `null` |
-| `preview_url` | `https://storage.googleapis.com/anyplot-images/plots/{SPEC_ID}/{LIBRARY}/plot.png` |
-| All other fields | **Keep unchanged** (especially `review`, `impl_tags`) |
+| `preview_url_light` | `https://storage.googleapis.com/anyplot-images/plots/{SPEC_ID}/python/{LIBRARY}/plot-light.png` |
+| `preview_url_dark` | `https://storage.googleapis.com/anyplot-images/plots/{SPEC_ID}/python/{LIBRARY}/plot-dark.png` |
+| `preview_html_light` | `…/plot-light.html` (interactive libs only — `plotly`, `bokeh`, `altair`, `highcharts`, `pygal`, `letsplot`) — else `null` |
+| `preview_html_dark` | `…/plot-dark.html` (same condition) — else `null` |
+| Legacy `preview_url`, `preview_html` | **Remove** — replaced by the four `_light`/`_dark` fields |
+| All other fields | **Keep unchanged** (especially `review`, `impl_tags`, `created`) |
 
 **Pip-package mapping:** matplotlib→matplotlib, seaborn→seaborn, plotly→plotly, bokeh→bokeh, altair→altair,
 plotnine→plotnine, pygal→pygal, highcharts→highcharts-core, letsplot→lets-plot.
@@ -246,22 +285,46 @@ Quality: /100 | Updated: {YYYY-MM-DD}
 """
 ```
 
-### 2i. Process and stage image
+### 2i. Process and stage images (both themes + responsive variants)
+
+Mirror the `impl-generate.yml` pipeline: optimize each theme PNG in place, then generate the responsive
+`plot-{theme}_{400,800,1200}.{png,webp}` + full `plot-{theme}.webp` variants, then upload the entire bundle
+to `gs://anyplot-images/staging/{SPEC_ID}/python/{LIBRARY}/` (note the `python/` segment — `impl-merge.yml`
+promotes from this exact path to `gs://anyplot-images/plots/{SPEC_ID}/python/{LIBRARY}/`).
 
 ```bash
 PREVIEW_DIR="plots/{SPEC_ID}/implementations/python/.regen-preview/{LIBRARY}"
-STAGING_PATH="gs://anyplot-images/staging/{SPEC_ID}/{LIBRARY}"
+STAGING_PATH="gs://anyplot-images/staging/{SPEC_ID}/python/{LIBRARY}"
 
-uv run python -m core.images process "${PREVIEW_DIR}/plot.png" "${PREVIEW_DIR}/plot.png"
+# Both renders are required — abort if either is missing
+[ -f "${PREVIEW_DIR}/plot-light.png" ] || { echo "::error::missing plot-light.png"; exit 1; }
+[ -f "${PREVIEW_DIR}/plot-dark.png"  ] || { echo "::error::missing plot-dark.png";  exit 1; }
 
-gsutil cp "${PREVIEW_DIR}/plot.png" "${STAGING_PATH}/plot.png"
-gsutil acl ch -u AllUsers:R "${STAGING_PATH}/plot.png" 2>/dev/null || true
+# Optimize + responsive variants for each theme
+for THEME in light dark; do
+  uv run python -m core.images process    "${PREVIEW_DIR}/plot-${THEME}.png" "${PREVIEW_DIR}/plot-${THEME}.png"
+  uv run python -m core.images responsive "${PREVIEW_DIR}/plot-${THEME}.png" "${PREVIEW_DIR}/"
+done
 
-if [ -f "${PREVIEW_DIR}/plot.html" ]; then
-  gsutil cp "${PREVIEW_DIR}/plot.html" "${STAGING_PATH}/plot.html"
-  gsutil acl ch -u AllUsers:R "${STAGING_PATH}/plot.html" 2>/dev/null || true
-fi
+# Upload PNGs + WebPs (originals + responsive) for both themes in one batch
+gsutil -m -h "Cache-Control:public, max-age=604800" cp \
+  "${PREVIEW_DIR}"/plot-light*.png "${PREVIEW_DIR}"/plot-light*.webp \
+  "${PREVIEW_DIR}"/plot-dark*.png  "${PREVIEW_DIR}"/plot-dark*.webp \
+  "${STAGING_PATH}/"
+gsutil -m acl ch -u AllUsers:R "${STAGING_PATH}/plot-light*" "${STAGING_PATH}/plot-dark*" 2>/dev/null || true
+
+# Interactive libraries also produce HTML for each theme
+for THEME in light dark; do
+  if [ -f "${PREVIEW_DIR}/plot-${THEME}.html" ]; then
+    gsutil -h "Cache-Control:public, max-age=604800" cp \
+      "${PREVIEW_DIR}/plot-${THEME}.html" "${STAGING_PATH}/plot-${THEME}.html"
+    gsutil acl ch -u AllUsers:R "${STAGING_PATH}/plot-${THEME}.html" 2>/dev/null || true
+  fi
+done
 ```
+
+The `acl ch` lines may fail with `Failed to set acl ... ensure you have OWNER-role access` on uniform-IAM
+buckets — that's expected, the `|| true` swallows it.
 
 ### 2j. Worktree → commit → push → PR
 

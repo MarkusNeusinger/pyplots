@@ -1,37 +1,48 @@
-# Regen Oldest Spec
+# Regen Oldest Spec (Local-Friendly)
 
-> Picks the oldest non-recently-updated spec and regenerates all its library implementations locally — same flow as
-> `/update`, but unattended and without dispatching the Cloud AI review. PRs are auto-approved (or marked
-> `quality-poor`) based on the local quality score, so `impl-merge.yml` handles the rest. Works identically with the
-> default Claude Code config (Sonnet) and with a locally-configured model — the skill makes no model assumptions.
+> Single-spec, single-library-per-invocation regen flow. Designed to stay well under local-model context budgets
+> (e.g. Gemma 3 26B at 256k) by doing exactly **one** thing per invocation and persisting state in `.regen-plan.md`
+> at repo root. Restart Claude Code anytime — the next `/regen` resumes from where you left off.
+>
+> Functionally a local-model alternative to the GitHub `daily-regen.yml` workflow: produces the same per-library
+> PRs with `quality:{N}` + `ai-approved`/`quality-poor` labels, so `impl-merge.yml` still handles squash-merge,
+> GCS staging→production, and `impl:{lib}:done` issue labels. No Cloud AI review/repair is dispatched.
 
 ## Context
 
 @CLAUDE.md
-@pyproject.toml
-
-## Instructions
-
-You are the **regen-lead**. Your job is to:
-
-1. Pick the single oldest spec by latest implementation `updated` timestamp.
-2. Coordinate per-library updater agents (same mechanics as `/update`).
-3. Ship per-library PRs **without** triggering the Cloud AI review — instead label PRs directly so
-   `impl-merge.yml` auto-merges (score ≥ 50) or leaves them open for manual review (score < 50).
-
-**Prerequisite:** This command uses agent teams (experimental). Ensure `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` is set
-in your environment or Claude Code settings.
-
-**Model-agnostic by design:** The skill never inspects or sets the LLM endpoint. Whatever Claude Code is currently
-configured for (Anthropic Sonnet by default, or any local OpenAI/Anthropic-compatible endpoint via `ANTHROPIC_BASE_URL`
-+ `ANTHROPIC_AUTH_TOKEN`) is what spawned sub-agents will use.
 
 ---
 
-### Phase 1: Pick the oldest spec
+## How it works
 
-Run this Python snippet to find the spec whose newest per-library `updated` timestamp is the oldest. Specs without any
-metadata are treated as "ancient" and picked first.
+`/regen` is **idempotent and resumable**. Each invocation does exactly one of three things — auto-detected from
+`.regen-plan.md`:
+
+| State file | Action |
+|------------|--------|
+| Missing | **Plan mode** — pick the oldest spec, write the checklist, exit |
+| Has unchecked `- [ ]` items | **Execute mode** — do the next library, tick it off, exit |
+| All items `- [x]` or `- [!]` | **Done mode** — archive the plan, exit |
+
+Re-run `/regen` after each invocation. Per spec, expect ~10 invocations (1 plan + 1 per library + 1 finalize).
+Each invocation runs entirely in the lead session — **no agent teams, no parallel agents** — keeping the working
+context small.
+
+---
+
+## Step 1: Detect mode
+
+Check whether `.regen-plan.md` exists at repo root.
+
+- **Missing** → go to **Plan mode**.
+- **Present** → read it. If any line matches `- [ ] ` (unchecked), go to **Execute mode**. Otherwise **Done mode**.
+
+---
+
+## Plan mode
+
+### 1a. Pick the oldest spec
 
 ```bash
 SPEC_INFO=$(uv run python -c "
@@ -75,157 +86,310 @@ SPEC_ID=$(echo "$SPEC_INFO" | cut -f1)
 SPEC_LATEST=$(echo "$SPEC_INFO" | cut -f2)
 ```
 
-If `SPEC_ID` is empty, abort with a clear message — the repo has no eligible specs.
+If `SPEC_ID` is empty, abort — no eligible specs.
 
-**Discover existing libraries:** Scan `plots/$SPEC_ID/implementations/python/` for `*.py` files (excluding
-`__init__.py`) — these are the libraries to regenerate. If the directory is empty, abort.
+### 1b. List libraries
 
-**Confirm with user:**
+Scan `plots/$SPEC_ID/implementations/python/` for `*.py` files (excluding `__init__.py`). If empty, abort.
+
+### 1c. Extract spec title
+
+Read the first `# ` heading from `plots/$SPEC_ID/specification.md` → `SPEC_TITLE`.
+
+### 1d. Write `.regen-plan.md`
+
+Use the `Write` tool. Order libraries alphabetically. Only include libraries that actually have a `.py` file.
+
+```markdown
+# Regen plan: {SPEC_ID}
+
+- Spec: `{SPEC_ID}`
+- Title: `{SPEC_TITLE}`
+- Latest implementation update: `{SPEC_LATEST}`
+- Plan created: `{ISO 8601 UTC timestamp now}`
+
+## Libraries
+
+- [ ] altair
+- [ ] bokeh
+- [ ] matplotlib
+- ...
+
+## Log
+```
+
+### 1e. Report and exit
 
 ```
-Oldest spec: {SPEC_ID}
-Latest implementation update: {SPEC_LATEST}
-Libraries to regenerate: {comma-separated list}
+Plan written to .regen-plan.md
+- Spec: {SPEC_ID} ({SPEC_TITLE})
+- Libraries: {comma-separated list}
 
-Proceed? (y/n)
+Run /regen again to start the first library.
 ```
 
-Wait for explicit `y` / `yes` / `ja` / `passt`. Anything else aborts.
+Do **not** start working on a library in this invocation. Exit.
 
 ---
 
-### Phase 2: Spawn per-library agents
+## Execute mode
 
-Mirror Phase 3 of `/update` (`agentic/commands/update.md`). Read that file once and follow the same agent-spawning
-mechanics:
+### 2a. Read the plan
 
-1. **Read the spec:** `plots/{SPEC_ID}/specification.md` and `plots/{SPEC_ID}/specification.yaml` to extract
-   `{SPEC_TITLE}` and the primary `{PLOT_TYPE}` tag.
-2. **Create team:** `TeamCreate` with name `regen-{SPEC_ID}`.
-3. **For each library**, create a task via `TaskCreate`:
-   - Subject: `Regen {library} implementation for {SPEC_ID}`
-   - Description: `Unattended regeneration — no specific user request. Perform a comprehensive review and improve.`
-4. **Spawn one `general-purpose` agent per library** via the `Agent` tool with:
-   - `team_name`: `regen-{SPEC_ID}`
-   - `name`: `{library}`
-   - `subagent_type`: `general-purpose`
-   - `model`: `opus`
-   - **Prompt:** Use the exact `Library Agent Prompt` from `agentic/commands/update.md` (the section starting at
-     `## Library Agent Prompt`). Fill `{SPEC_ID}`, `{LIBRARY}`, `{CONTEXT7_LIBRARY}`, `{PLOT_TYPE}`, `{SPEC_TITLE}` as
-     in `/update`. For `{DESCRIPTION}`, pass:
-     `No specific user request — perform a comprehensive review across all dimensions (code quality, data choice,
-     visual design, spec compliance, library feature usage, transferability) and improve where genuinely needed. If you
-     find nothing meaningful to improve, report "no improvements needed" and leave the code unchanged.`
+Read `.regen-plan.md`. Extract:
+- `SPEC_ID` from the `- Spec:` line
+- `SPEC_TITLE` from the `- Title:` line
+- The first unchecked library (`- [ ] {library}`) → `LIBRARY`
 
-   The library agent's Phase 7 (local quality scoring + up-to-2-iteration repair) runs unchanged — that's the local
-   substitute for the Cloud `impl-review.yml`/`impl-repair.yml` chain.
-5. **Assign each task** to its agent immediately via `TaskUpdate` with `owner: "{library}"`.
+### 2b. Read working context (only what's needed)
 
-All agents run in parallel.
+1. `plots/{SPEC_ID}/specification.md`
+2. `plots/{SPEC_ID}/specification.yaml` — for the primary `plot_type` tag
+3. `plots/{SPEC_ID}/implementations/python/{LIBRARY}.py`
+4. `plots/{SPEC_ID}/metadata/python/{LIBRARY}.yaml` — `review.strengths`, `review.weaknesses`, `review.criteria_checklist`
+5. `prompts/library/{LIBRARY}.md` (CRITICAL — follow exactly)
+6. `prompts/plot-generator.md`
+7. `prompts/quality-criteria.md`
 
-**Skip these phases from `/update`:**
-- Phase 2 (Spec Optimization) — `/regen` is unattended.
-- Phase 4 / 5 (Collect-Present-Iterate with user feedback) — go directly to shipping once all agents report
-  `STATUS: done` or `STATUS: conflict`. Conflicts are logged but do not block: if an agent reports a conflict, **skip
-  that library** (don't ship it) and continue with the others.
+Skip Context7 by default — only consult it if step 2d reveals a clear library-API issue.
 
----
+### 2c. Modify the implementation
 
-### Phase 3: Ship (modified `/update` Phase 6)
+Edit `plots/{SPEC_ID}/implementations/python/{LIBRARY}.py`:
 
-For shipping, follow `/update`'s Phase 6 in `agentic/commands/update.md` — sub-phases **6a, 6b, 6c, 6d, 6e, 6f, 6g
-Step 1**.
+- Comprehensive review across: code quality, data choice, visual design, spec compliance, library feature usage,
+  transferability.
+- KISS structure: imports → data → plot → save.
+- Preserve `review.strengths`, fix `review.weaknesses`.
+- **Respect the spec variant:** if `SPEC_ID` contains `basic`, no annotations / trendlines / callouts.
+- **No changes for the sake of changes:** if nothing meaningful to improve, leave the code unchanged and proceed.
 
-**6g Step 1 override:** in the per-library worktree block, when creating the PR replace `/update`'s review-trigger:
+If the spec itself genuinely needs improvement, edit `plots/{SPEC_ID}/specification.md` and note it in the log entry
+in step 2k.
+
+### 2d. Generate locally
 
 ```bash
-# /update.md does this (Cloud AI review):
-gh api repos/{owner}/{repo}/dispatches \
-  -f event_type=review-pr \
-  -f 'client_payload[pr_number]='"$PR_NUMBER"
+mkdir -p plots/{SPEC_ID}/implementations/python/.regen-preview/{LIBRARY}
+cd plots/{SPEC_ID}/implementations/python/.regen-preview/{LIBRARY} && \
+  MPLBACKEND=Agg uv run python ../../{LIBRARY}.py
 ```
 
-**…with this label-based dispatch (no Cloud AI call):**
+Up to 3 retries on script failure. After 3 failures → see "Per-library failure" below.
+
+### 2e. Lint
 
 ```bash
-PR_NUMBER=$(gh pr view --json number -q '.number')
-SCORE={score reported by the library agent in its STATUS: done message}
+uv run ruff format plots/{SPEC_ID}/implementations/python/{LIBRARY}.py
+uv run ruff check --fix plots/{SPEC_ID}/implementations/python/{LIBRARY}.py
+```
 
-# Always tag the PR with its locally-computed quality score.
-gh pr edit "$PR_NUMBER" --add-label "quality:${SCORE}"
+Fix any unfixable errors manually and re-run.
 
-if [ "$SCORE" -ge 50 ]; then
-  # Auto-approve → impl-merge.yml triggers → squash-merge + GCS staging→prod + impl:{lib}:done.
-  gh pr edit "$PR_NUMBER" --add-label "ai-approved"
-  echo "::notice::PR #$PR_NUMBER ai-approved (score=$SCORE)"
-else
-  # Score too low for auto-merge — flag for manual review.
-  gh pr edit "$PR_NUMBER" --add-label "quality-poor"
-  echo "::warning::PR #$PR_NUMBER flagged quality-poor (score=$SCORE) — left open for manual review"
+### 2f. Self-score
+
+View `plots/{SPEC_ID}/implementations/python/.regen-preview/{LIBRARY}/plot.png` and score against the 6 categories
+from `prompts/quality-criteria.md`:
+
+```
+VQ: __/30 | DE: __/20 | SC: __/15 | DQ: __/15 | CQ: __/10 | LM: __/10 → TOTAL: __/100
+```
+
+Apply the calibration defaults and score caps from `quality-criteria.md`. Median is 72-78 — don't inflate.
+
+If `TOTAL < 90`: identify the 2-3 weakest criteria, fix them in code, re-run 2d-2e, re-score. **Up to 2 repair
+iterations.** After 2, accept the current score and proceed.
+
+### 2g. Update metadata
+
+Edit `plots/{SPEC_ID}/metadata/python/{LIBRARY}.yaml`:
+
+| Field | Value |
+|-------|-------|
+| `updated` | Current UTC timestamp ISO 8601 |
+| `generated_by` | From `CLAUDE_MODEL` env var, or `claude --version`, or detected model name |
+| `python_version` | From `uv run python --version` |
+| `library_version` | From `uv run python -c "from importlib.metadata import version; print(version('{pip_package}'))"` |
+| `quality_score` | `null` |
+| `preview_url` | `https://storage.googleapis.com/anyplot-images/plots/{SPEC_ID}/{LIBRARY}/plot.png` |
+| All other fields | **Keep unchanged** (especially `review`, `impl_tags`) |
+
+**Pip-package mapping:** matplotlib→matplotlib, seaborn→seaborn, plotly→plotly, bokeh→bokeh, altair→altair,
+plotnine→plotnine, pygal→pygal, highcharts→highcharts-core, letsplot→lets-plot.
+
+### 2h. Update implementation header
+
+Ensure the impl file's docstring is:
+
+```python
+""" anyplot.ai
+{SPEC_ID}: {SPEC_TITLE}
+Library: {LIBRARY} {lib_version} | Python {py_version}
+Quality: /100 | Updated: {YYYY-MM-DD}
+"""
+```
+
+### 2i. Process and stage image
+
+```bash
+PREVIEW_DIR="plots/{SPEC_ID}/implementations/python/.regen-preview/{LIBRARY}"
+STAGING_PATH="gs://anyplot-images/staging/{SPEC_ID}/{LIBRARY}"
+
+uv run python -m core.images process "${PREVIEW_DIR}/plot.png" "${PREVIEW_DIR}/plot.png"
+
+gsutil cp "${PREVIEW_DIR}/plot.png" "${STAGING_PATH}/plot.png"
+gsutil acl ch -u AllUsers:R "${STAGING_PATH}/plot.png" 2>/dev/null || true
+
+if [ -f "${PREVIEW_DIR}/plot.html" ]; then
+  gsutil cp "${PREVIEW_DIR}/plot.html" "${STAGING_PATH}/plot.html"
+  gsutil acl ch -u AllUsers:R "${STAGING_PATH}/plot.html" 2>/dev/null || true
 fi
 ```
 
-The PR body itself already includes the score and category breakdown (set by `/update` Phase 6g Step 1's `gh pr create`
-template).
+### 2j. Worktree → commit → push → PR
 
-**6g Step 2** (cleanup worktrees) and **Phase 7a** (shut down team, `TeamDelete`, remove `.update-preview/`) run
-unchanged.
+```bash
+WORKTREE=".worktrees/{SPEC_ID}-{LIBRARY}"
+git worktree add -b implementation/{SPEC_ID}/{LIBRARY} "$WORKTREE" main
+
+cp plots/{SPEC_ID}/implementations/python/{LIBRARY}.py \
+   "$WORKTREE/plots/{SPEC_ID}/implementations/python/{LIBRARY}.py"
+cp plots/{SPEC_ID}/metadata/python/{LIBRARY}.yaml \
+   "$WORKTREE/plots/{SPEC_ID}/metadata/python/{LIBRARY}.yaml"
+# If you edited the spec in step 2c, also copy:
+# cp plots/{SPEC_ID}/specification.md   "$WORKTREE/plots/{SPEC_ID}/specification.md"
+# cp plots/{SPEC_ID}/specification.yaml "$WORKTREE/plots/{SPEC_ID}/specification.yaml"
+
+cd "$WORKTREE"
+git add plots/{SPEC_ID}/implementations/python/{LIBRARY}.py
+git add plots/{SPEC_ID}/metadata/python/{LIBRARY}.yaml
+# git add plots/{SPEC_ID}/specification.* if changed
+
+git commit -m "regen({SPEC_ID}): {LIBRARY}"
+git push -u origin implementation/{SPEC_ID}/{LIBRARY}
+
+PR_URL=$(gh pr create \
+  --title "regen({SPEC_ID}): {LIBRARY}" \
+  --body "$(cat <<EOF
+Locally regenerated **{LIBRARY}** for **{SPEC_ID}**.
+
+Quality: {SCORE}/100
+- VQ: {vq}/30 | DE: {de}/20 | SC: {sc}/15 | DQ: {dq}/15 | CQ: {cq}/10 | LM: {lm}/10
+
+Generated by \`/regen\` (local model, no Cloud AI review dispatched).
+EOF
+)")
+
+PR_NUMBER=$(gh pr view --json number -q '.number')
+gh pr edit "$PR_NUMBER" --add-label "quality:{SCORE}"
+if [ {SCORE} -ge 50 ]; then
+  gh pr edit "$PR_NUMBER" --add-label "ai-approved"
+else
+  gh pr edit "$PR_NUMBER" --add-label "quality-poor"
+fi
+
+cd -
+git worktree remove "$WORKTREE" --force
+git worktree prune
+```
+
+### 2k. Tick off and log
+
+Edit `.regen-plan.md`:
+
+- Change `- [ ] {LIBRARY}` to `- [x] {LIBRARY}`
+- Append under `## Log`:
+
+```
+- {LIBRARY}: PR {PR_URL}, score {SCORE}, label {ai-approved|quality-poor} ({timestamp}){, spec edited if applicable}
+```
+
+### 2l. Report and exit
+
+```
+{LIBRARY} done — score {SCORE}, PR: {PR_URL}
+Remaining: {N} libraries
+
+Run /regen again for the next library.
+```
+
+Exit.
+
+### Per-library failure
+
+If any step fails irrecoverably (script won't run after 3 retries, `gh push` rejected, `gsutil` unauthenticated):
+
+1. Append to `## Log`: `- {LIBRARY}: FAILED — {reason} ({timestamp})`
+2. Change `- [ ] {LIBRARY}` to `- [!] {LIBRARY}`
+3. Clean up: remove the worktree (`git worktree remove ... --force && git worktree prune`) and `.regen-preview/{LIBRARY}/` if they exist
+4. Print the failure reason to the user and exit
+
+`- [!]` items are skipped by future invocations. The user can edit them back to `- [ ]` to retry.
 
 ---
 
-### Phase 4: Brief monitor
+## Done mode
 
-Print a one-shot status table — no polling loop. The CI does the rest.
+If no `- [ ]` lines remain:
 
-Wait 60 seconds (so `impl-merge.yml` has time to start), then for each PR:
+1. Print final summary: counts of done / failed, list of PR URLs from the log.
+2. Move `.regen-plan.md` to `.regen-history/{SPEC_ID}-{YYYYMMDD-HHMMSS}.md` (create directory if needed).
+3. Tell the user: `Spec {SPEC_ID} complete. Run /regen to start the next oldest spec.`
 
-```bash
-gh pr view "$PR_NUMBER" --json number,state,mergedAt,labels \
-  --jq '[.number, .state, (.mergedAt // "—"), ([.labels[].name] | join(","))] | @tsv'
+Exit.
+
+---
+
+## State file format reference
+
+`.regen-plan.md` (repo root, gitignored):
+
+```markdown
+# Regen plan: scatter-basic
+
+- Spec: `scatter-basic`
+- Title: `Basic Scatter Plot`
+- Latest implementation update: `2025-11-12T08:14:00+00:00`
+- Plan created: `2026-05-02T13:50:00Z`
+
+## Libraries
+
+- [x] altair
+- [x] bokeh
+- [ ] matplotlib       ← next pickup
+- [ ] plotly
+- [!] highcharts       ← failed, skipped (user can reset to `- [ ]`)
+
+## Log
+
+- altair: PR https://github.com/.../pull/1234, score 88, ai-approved (2026-05-02T14:02:00Z)
+- bokeh: PR https://github.com/.../pull/1235, score 91, ai-approved (2026-05-02T14:18:00Z)
+- highcharts: FAILED — gsutil not authenticated (2026-05-02T14:31:00Z)
 ```
 
-Render a table:
-
-```
-| Library      | PR    | State | Merged | Labels                              |
-|--------------|-------|-------|--------|-------------------------------------|
-| matplotlib   | #1234 | MERGED| 14:02Z | quality:88, ai-approved             |
-| seaborn      | #1235 | OPEN  | —      | quality:42, quality-poor            |
-| ...                                                                          |
-```
-
-Tell the user:
-- Which PRs auto-merged (success).
-- Which are `quality-poor` (need manual review).
-- That **no Cloud AI review/repair was triggered** — verifiable via:
-  ```bash
-  gh run list --workflow=impl-review.yml --limit 5
-  gh run list --workflow=impl-repair.yml --limit 5
-  ```
-  (no new runs for this `SPEC_ID` should appear).
-
-Then exit. The user can re-run `/regen` later to pick the next-oldest spec.
+The user can:
+- `cat .regen-plan.md` — see progress at any time
+- `rm .regen-plan.md` — abandon the current plan
+- Edit checkboxes manually — re-order, retry failures, skip libraries
 
 ---
 
 ## Notes
 
-- **Token cost:** All Claude Code calls (lead + agents) hit whatever endpoint Claude Code is configured for. With the
-  default config that's Anthropic Sonnet (useful for end-to-end testing). With a local model configured via
-  `ANTHROPIC_BASE_URL` + `ANTHROPIC_AUTH_TOKEN`, cost is effectively zero. **No code path differs between modes.**
-- **Cloud workflows skipped:** `impl-review.yml` and `impl-repair.yml` only trigger on explicit dispatch (see
-  `.github/workflows/impl-review.yml` triggers — `workflow_dispatch` + `repository_dispatch types: [review-pr]`).
-  Skipping the dispatch in Phase 3 is sufficient to bypass them entirely.
-- **Cloud workflows still active:** `impl-merge.yml` triggers on the `ai-approved` label, so it still squash-merges,
-  promotes GCS staging → production, sets `impl:{library}:done` on the parent issue, and triggers `sync-postgres.yml`.
-  This is intentional — we want those side effects.
-- **Failure modes:**
-  - Agent reports `STATUS: conflict` → skip that library, continue with the others.
-  - Library agent crashes (script error, lint failure after 3 retries) → the `/update` agent prompt already handles
-    this; library is reported as a failure and skipped.
-  - `gh` not authenticated or GCS creds missing → Phase 3 fails fast in the first worktree's push step.
-- **Re-run safe:** Running `/regen` twice in a row picks a different spec the second time (the freshly merged one is
-  no longer oldest).
+- **No agent teams.** Runs entirely in the lead session. No `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` flag needed.
+- **One library per invocation.** Restart-safe: kill Claude Code anytime, the next `/regen` picks up where the plan
+  left off.
+- **No Cloud AI review.** Each PR carries `quality:{N}` plus `ai-approved` (≥50) or `quality-poor` (<50).
+  `impl-merge.yml` still triggers on `ai-approved` (squash-merge, GCS staging→production, `impl:{lib}:done` label,
+  `sync-postgres.yml`). Verify nothing fired in the review/repair pipeline:
+  ```bash
+  gh run list --workflow=impl-review.yml --limit 5
+  gh run list --workflow=impl-repair.yml --limit 5
+  ```
+- **Model-agnostic.** Whatever Claude Code is configured for (default Sonnet, or any local OpenAI/Anthropic-compatible
+  endpoint via `ANTHROPIC_BASE_URL` + `ANTHROPIC_AUTH_TOKEN`) is what runs. No code path branches on model.
+- **`.gitignore`** must contain `.regen-plan.md`, `.regen-history/`, and `.regen-preview/` (added alongside the
+  existing `.update-preview/` and `.worktrees/` entries).
 
 ## Usage
 
@@ -233,4 +397,5 @@ Then exit. The user can re-run `/regen` later to pick the next-oldest spec.
 /regen
 ```
 
-No arguments. Always picks the single oldest spec.
+No arguments. Run repeatedly — once to plan, once per library, once to finalize. Each invocation does exactly one
+step.

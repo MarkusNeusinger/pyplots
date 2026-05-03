@@ -461,11 +461,7 @@ def _get_font(
 
 
 def _draw_anyplot_wordmark(
-    draw: ImageDraw.ImageDraw,
-    x: int,
-    y: int,
-    font_size: int = 36,
-    theme: dict[str, str] | None = None,
+    draw: ImageDraw.ImageDraw, x: int, y: int, font_size: int = 36, theme: dict[str, str] | None = None
 ) -> int:
     """Draw the `any.plot()` wordmark in the new visual style.
 
@@ -506,12 +502,7 @@ def _draw_anyplot_wordmark(
     # For most monospace fonts the cap-height sits roughly at y + font_size * 0.7.
     dot_center_y = y + int(font_size * 0.78)
     draw.ellipse(
-        [
-            cursor_x,
-            dot_center_y - dot_diameter // 2,
-            cursor_x + dot_diameter,
-            dot_center_y + dot_diameter // 2,
-        ],
+        [cursor_x, dot_center_y - dot_diameter // 2, cursor_x + dot_diameter, dot_center_y + dot_diameter // 2],
         fill=OK_GREEN,
     )
     cursor_x += dot_diameter + dot_pad_x
@@ -583,11 +574,7 @@ def _draw_masthead(
         draw.text((domain_x, domain_y), domain_text, fill=theme["ink_muted"], font=domain_font)
 
     rule_y = wordmark_y + font_size + int(font_size * 0.55)
-    draw.line(
-        [(OG_OUTER_PADDING, rule_y), (canvas_width - OG_OUTER_PADDING, rule_y)],
-        fill=theme["rule"],
-        width=1,
-    )
+    draw.line([(OG_OUTER_PADDING, rule_y), (canvas_width - OG_OUTER_PADDING, rule_y)], fill=theme["rule"], width=1)
     return rule_y
 
 
@@ -717,11 +704,7 @@ def _draw_rounded_card(
     card = Image.new("RGBA", (card_width, card_height), (0, 0, 0, 0))
     card_draw = ImageDraw.Draw(card)
     card_draw.rounded_rectangle(
-        [0, 0, card_width - 1, card_height - 1],
-        radius=radius,
-        fill=surface_color,
-        outline=rule_color,
-        width=1,
+        [0, 0, card_width - 1, card_height - 1], radius=radius, fill=surface_color, outline=rule_color, width=1
     )
     base.paste(card, (x, y), card)
 
@@ -844,8 +827,10 @@ def create_comparison_image(
         placeholder_text = "no previous version"
         text_w, text_h = _text_size(placeholder_draw, placeholder_text, placeholder_font)
         placeholder_draw.text(
-            (card_x + (placeholder_w + 2 * OG_CARD_PADDING - text_w) // 2,
-             card_y + (placeholder_h + 2 * OG_CARD_PADDING - text_h) // 2),
+            (
+                card_x + (placeholder_w + 2 * OG_CARD_PADDING - text_w) // 2,
+                card_y + (placeholder_h + 2 * OG_CARD_PADDING - text_h) // 2,
+            ),
             placeholder_text,
             fill=theme_dict["ink_muted"],
             font=placeholder_font,
@@ -922,10 +907,7 @@ def create_branded_header(width: int = OG_WIDTH, height: int = HEADER_HEIGHT) ->
 
 
 def create_home_og_image(
-    output_path: str | Path | None = None,
-    *,
-    theme: str = "light",
-    tagline: str = TAGLINE_FULL,
+    output_path: str | Path | None = None, *, theme: str = "light", tagline: str = TAGLINE_FULL
 ) -> Image.Image | bytes:
     """Render the home/plots fallback OG card in the any.plot() style.
 
@@ -982,12 +964,7 @@ def create_home_og_image(
     line_widths = [_text_size(draw, line, tagline_font)[0] for line in tagline_lines]
     block_left = (OG_WIDTH - max(line_widths)) // 2
     for i, line in enumerate(tagline_lines):
-        draw.text(
-            (block_left, tagline_y + i * line_height),
-            line,
-            fill=theme_dict["ink_soft"],
-            font=tagline_font,
-        )
+        draw.text((block_left, tagline_y + i * line_height), line, fill=theme_dict["ink_soft"], font=tagline_font)
     # Blinking cursor on the last line — just a static green block for the OG.
     last_w = line_widths[-1]
     cursor_x = block_left + last_w + 6

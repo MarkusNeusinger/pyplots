@@ -111,23 +111,30 @@ Concrete signals of copying (when the spec is silent on them):
 
 Data colors (Okabe-Ito positions 1–7) are mandated and **don't** count as copying — that's the style guide.
 
+**For each cluster of identical impls, flag only ONE library, not all of them.** When several libraries share
+the same data formula or scenario, switching just one breaks the identity cleanly — the others keep their
+current implementation as the "original". Pick the alphabetically later library (or the one with the shorter
+review history) to flag. If you flag multiple libraries with similarly-shaped requests, they can all converge
+on the same new direction and re-collide; one switch is sufficient and avoids that.
+
 For each flagged library, formulate a `change_request` that:
 
-1. States what's wrong concretely ("data formula matches bokeh exactly — same seed=42, same N=60")
-2. Suggests a direction that plays to that library's strengths — read `prompts/library/{LIBRARY}.md` for the
-   distinctive features (e.g. Altair's layered encodings, Bokeh's interactive glyphs, Highcharts' SVG export)
-3. Stays under ~3 sentences
+1. States concretely what's identical — name the sibling and the specific signal (random seed, sample size,
+   formula structure, domain, aspect ratio, etc.)
+2. Adds a brief direction hint with a couple of example alternatives along the same dimension that's currently
+   shared (different domains if domain is the issue; different aspect ratios if aspect is the issue; etc.)
+3. **Stays at ~1 sentence.** Do NOT pitch library-specific features, APIs, or visual variants. The regenerator
+   already reads `prompts/library/{LIBRARY}.md` and chooses idiomatically; the change_request just nudges the
+   direction. Pushing interactive / hover / tooltip features is especially off-target for static catalog plots.
 
 Build a JSON object keyed by library:
 
 ```json
-{
-  "altair": "Spec is vague on data; current web-traffic series matches bokeh exactly (same formula, seed=42, N=60). Pick a different domain (energy use, app DAU, fitness/sleep) and lean into Altair's layered encoding for a distinctive visual variant.",
-  "bokeh": "Spec is vague on data; current series matches altair exactly. Pick a different domain (temperature, page views, queue length) and use Bokeh's interactive glyph/tooltip story to differentiate."
-}
+{}                                                // no copying detected
+{"<library-name>": "<one-sentence change_request>"}  // one or more libraries flagged
 ```
 
-If no library is flagged, the JSON is `{}` (empty object). Save it to `/tmp/regen-change-requests.json`.
+Save it to `/tmp/regen-change-requests.json`.
 
 ### 1d. Write the plan
 

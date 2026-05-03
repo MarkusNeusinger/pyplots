@@ -9,7 +9,12 @@ uv run python scripts/generate_og_samples.py --out docs/reference/og-samples
 ```
 
 The script does not depend on the API or live database — it renders against
-inline matplotlib placeholders so the cards are reproducible across machines.
+inline matplotlib placeholders. Output is **structurally** stable across
+machines, but exact pixels depend on the MonoLisa fonts being available
+(downloaded from the `anyplot-static` GCS bucket, then cached under
+`/tmp/anyplot-fonts/`). Without GCS access the script falls back to
+DejaVu Sans Mono, which shifts glyph metrics slightly. For a 1:1
+match with production, run the script in an environment with GCS auth.
 
 ## What's in here
 

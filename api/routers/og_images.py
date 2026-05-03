@@ -1,12 +1,14 @@
 """OG Image endpoints for branded social media preview images."""
 
 import asyncio
+import logging
 from io import BytesIO
 from pathlib import Path
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import Response
+from PIL import Image
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.analytics import track_og_image
@@ -14,6 +16,9 @@ from api.cache import cache_key, get_cache, set_cache
 from api.dependencies import optional_db
 from core.database import SpecRepository
 from core.images import create_branded_og_image, create_home_og_image, create_og_collage
+
+
+logger = logging.getLogger(__name__)
 
 
 # Bump this when the OG visual template changes — it's folded into every
@@ -49,6 +54,9 @@ def _get_static_og_image() -> bytes:
         # Last-resort: serve the bundled static asset so the endpoint never
         # 500s if PIL/font loading is broken in a fresh container — but do
         # NOT memoize it, so the next request retries the dynamic path.
+        # Log loudly so the regression is visible in production rather than
+        # silently degrading to the legacy image.
+        logger.warning("Dynamic OG generation failed, serving disk fallback: %s", exc, exc_info=True)
         path = Path(__file__).parent.parent / "static" / "og-image.png"
         try:
             return path.read_bytes()
@@ -56,7 +64,7 @@ def _get_static_og_image() -> bytes:
             raise HTTPException(status_code=500, detail="Static OG image not available") from exc
 
 
-def _image_to_bytes(img) -> bytes:
+def _image_to_bytes(img: Image.Image) -> bytes:
     """Convert a PIL Image to PNG bytes (only used by the static-fallback branch)."""
     buf = BytesIO()
     img.save(buf, "PNG", optimize=True)

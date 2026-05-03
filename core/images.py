@@ -115,8 +115,8 @@ ANYPLOT_YELLOW = OK_YELLOW
 COLOR_LABEL_GRAY = LIGHT_THEME["ink_muted"]
 COLOR_PLACEHOLDER_GRAY = LIGHT_THEME["ink_muted"]
 
-# Domain string is required by the issue ("Die Domain muss auch irgendwie mit aufs Bild
-# anyplot.ai") — surfaced in the masthead-style top rule on every variant.
+# Domain string surfaced in the masthead-style top rule on every variant
+# (the issue explicitly requires `anyplot.ai` to be visible on every OG card).
 DOMAIN = "anyplot.ai"
 
 # Tagline rotation — keep aligned with style-guide §3.3.

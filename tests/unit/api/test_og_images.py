@@ -122,7 +122,7 @@ class TestStaticOgImage:
         assert response.status_code == 200
         assert response.headers["content-type"] == "image/png"
 
-    def test_static_og_image_falls_back_to_disk_when_dynamic_fails(self, client, tmp_path) -> None:
+    def test_static_og_image_falls_back_to_disk_when_dynamic_fails(self, client) -> None:
         """Dynamic any.plot() generation is the primary path; the bundled
         `api/static/og-image.png` is the last-resort fallback if PIL/font
         loading is broken in the container.

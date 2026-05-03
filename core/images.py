@@ -167,13 +167,14 @@ def _text_size(draw: ImageDraw.ImageDraw, text: str, font) -> tuple[int, int]:
 
 
 def _text_advance(draw: ImageDraw.ImageDraw, text: str, font) -> int:
-    """Return the horizontal advance (right edge - left origin) for a string.
+    """Return the horizontal advance for a string (where the next glyph anchors).
 
-    Different from `_text_size` because we anchor the next glyph at the bbox
-    right edge rather than at width-from-zero — avoids gaps after wide glyphs.
+    Uses Pillow's `textlength()` which returns the true font advance — what we
+    want for laying out adjacent text runs (the wordmark, method chips, etc).
+    `textbbox(...)[2]` would return the rightmost painted pixel instead, which
+    drifts on fonts with non-zero side bearings or negative left bearings.
     """
-    bbox = draw.textbbox((0, 0), text, font=font)
-    return bbox[2]
+    return int(draw.textlength(text, font=font))
 
 
 # Optional: pngquant for better compression

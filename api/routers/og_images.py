@@ -27,27 +27,33 @@ _STATIC_OG_IMAGE: bytes | None = None
 
 
 def _get_static_og_image() -> bytes:
-    """Render the home/plots fallback OG image (cached in memory).
+    """Render the home/plots fallback OG image (memoized after a successful render).
 
     Previously read a hardcoded `api/static/og-image.png`; now it generates the
     new any.plot() hero-style card on the fly so a single source of truth in
     `core/images.py` controls the entire OG surface. Process-local memoisation
-    means we still only pay the render cost once per worker.
+    means we only pay the render cost once per worker — but only on success,
+    so a transient failure (font GCS hiccup, etc.) doesn't lock the worker
+    into serving the legacy disk PNG until restart.
     """
     global _STATIC_OG_IMAGE
-    if _STATIC_OG_IMAGE is None:
+    if _STATIC_OG_IMAGE is not None:
+        return _STATIC_OG_IMAGE
+
+    try:
+        result = create_home_og_image(theme="light")
+        rendered = result if isinstance(result, bytes) else _image_to_bytes(result)
+        _STATIC_OG_IMAGE = rendered  # only memoize successful dynamic output
+        return rendered
+    except Exception as exc:
+        # Last-resort: serve the bundled static asset so the endpoint never
+        # 500s if PIL/font loading is broken in a fresh container — but do
+        # NOT memoize it, so the next request retries the dynamic path.
+        path = Path(__file__).parent.parent / "static" / "og-image.png"
         try:
-            result = create_home_og_image(theme="light")
-            _STATIC_OG_IMAGE = result if isinstance(result, bytes) else _image_to_bytes(result)
-        except Exception as exc:
-            # Last-resort: try the bundled static asset so the endpoint never
-            # 500s if font loading or PIL is broken in a fresh container.
-            path = Path(__file__).parent.parent / "static" / "og-image.png"
-            try:
-                _STATIC_OG_IMAGE = path.read_bytes()
-            except FileNotFoundError:
-                raise HTTPException(status_code=500, detail="Static OG image not available") from exc
-    return _STATIC_OG_IMAGE
+            return path.read_bytes()
+        except FileNotFoundError:
+            raise HTTPException(status_code=500, detail="Static OG image not available") from exc
 
 
 def _image_to_bytes(img) -> bytes:

@@ -29,6 +29,7 @@ class PlanSpec:
     title: str
     latest_update: str  # ISO-8601 of the latest impl-metadata `updated`/`created`
     libraries: list[str]
+    change_requests: dict[str, str] = field(default_factory=dict)
     plan_path: str = ".regen-plan.md"
 
 

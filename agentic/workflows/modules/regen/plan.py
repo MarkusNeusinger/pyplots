@@ -20,9 +20,17 @@ and Done mode (archive).
     - [x] matplotlib
     - [!] pygal
 
+    ## Change Requests
+
+    - altair: Spec is vague on data; current matches bokeh exactly. Pick a different domain ...
+
     ## Log
 
     - altair: PR ..., score 90, ai-approved (timestamp)
+
+The `## Change Requests` section is optional — written only when at least one
+entry exists. Plan-mode similarity analysis (in `regen.md`) populates it; if
+nothing's flagged, the section is omitted entirely.
 """
 
 from __future__ import annotations
@@ -105,6 +113,17 @@ def write_plan(spec: PlanSpec, plan_path: Path = PLAN_PATH) -> Path:
     for lib in spec.libraries:
         lines.append(f"- [ ] {lib}")
     lines.append("")
+    if spec.change_requests:
+        # Emit only entries whose key matches a library in this plan. This keeps
+        # the section ordered consistently with `## Libraries` and silently drops
+        # stray keys (typos in the JSON the dispatcher receives).
+        ordered_entries = [(lib, spec.change_requests[lib]) for lib in spec.libraries if spec.change_requests.get(lib)]
+        if ordered_entries:
+            lines.append("## Change Requests")
+            lines.append("")
+            for lib, text in ordered_entries:
+                lines.append(f"- {lib}: {text}")
+            lines.append("")
     lines.append("## Log")
     lines.append("")
     plan_path.write_text("\n".join(lines), encoding="utf-8")
@@ -117,10 +136,16 @@ def write_plan(spec: PlanSpec, plan_path: Path = PLAN_PATH) -> Path:
 
 
 _RE_LIB_LINE = re.compile(r"^- \[(?P<state>[ x!])\]\s+(?P<lib>\S+)\s*$")
+_RE_CHANGE_REQUEST_LINE = re.compile(r"^- (?P<lib>\S+):\s+(?P<text>.+)$")
 
 
-def parse_plan(plan_path: Path = PLAN_PATH) -> tuple[str, str, list[PlanLine]]:
-    """Return `(spec_id, title, [PlanLine,...])` from `.regen-plan.md`."""
+def parse_plan(plan_path: Path = PLAN_PATH) -> tuple[str, str, list[PlanLine], dict[str, str]]:
+    """Return `(spec_id, title, [PlanLine,...], change_requests)` from `.regen-plan.md`.
+
+    `change_requests` is keyed by library name. Empty dict if the plan has no
+    `## Change Requests` section (the common case — the section is only written
+    when Plan-mode similarity analysis flags at least one library).
+    """
     text = plan_path.read_text(encoding="utf-8")
     spec_id = _extract_field(text, "Spec")
     title = _extract_field(text, "Title")
@@ -129,7 +154,12 @@ def parse_plan(plan_path: Path = PLAN_PATH) -> tuple[str, str, list[PlanLine]]:
         m = _RE_LIB_LINE.match(raw)
         if m:
             lines.append(PlanLine(library=m.group("lib"), state=m.group("state")))
-    return spec_id, title, lines
+    change_requests: dict[str, str] = {}
+    for raw in _extract_section_lines(text, "Change Requests"):
+        m = _RE_CHANGE_REQUEST_LINE.match(raw)
+        if m:
+            change_requests[m.group("lib")] = m.group("text").strip()
+    return spec_id, title, lines, change_requests
 
 
 def _extract_field(text: str, label: str) -> str:
@@ -140,13 +170,42 @@ def _extract_field(text: str, label: str) -> str:
     return m.group(1)
 
 
-def next_unchecked(plan_path: Path = PLAN_PATH) -> tuple[str, str, str] | None:
-    """Return `(spec_id, title, library)` for the first unchecked library, or None."""
-    spec_id, title, lines = parse_plan(plan_path)
+def _extract_section_lines(text: str, heading: str) -> list[str]:
+    """Return raw lines under `## {heading}` until the next `## ` heading or EOF.
+
+    Section-scoping is required for change_requests because their bullet shape
+    `- {lib}: {text}` would otherwise collide with `## Log` entries (which also
+    start with `- {lib}: PR ...` / `- {lib}: FAILED — ...`).
+    """
+    in_section = False
+    out: list[str] = []
+    for line in text.splitlines():
+        if line.strip() == f"## {heading}":
+            in_section = True
+            continue
+        if in_section and line.startswith("## "):
+            break
+        if in_section:
+            out.append(line)
+    return out
+
+
+def next_unchecked(plan_path: Path = PLAN_PATH) -> tuple[str, str, str, str] | None:
+    """Return `(spec_id, title, library, change_request)` for the first unchecked library, or None.
+
+    `change_request` is the empty string when no entry exists for the library.
+    """
+    spec_id, title, lines, change_requests = parse_plan(plan_path)
     for line in lines:
         if line.state == " ":
-            return spec_id, title, line.library
+            return spec_id, title, line.library, change_requests.get(line.library, "")
     return None
+
+
+def change_request_for(library: str, plan_path: Path = PLAN_PATH) -> str:
+    """Return the change_request for `library`, or empty string if none."""
+    _spec_id, _title, _lines, change_requests = parse_plan(plan_path)
+    return change_requests.get(library, "")
 
 
 # ---------------------------------------------------------------------------
@@ -192,7 +251,7 @@ def mark_failed(library: str, reason: str, plan_path: Path = PLAN_PATH) -> None:
 
 def archive(plan_path: Path = PLAN_PATH, history_dir: Path = HISTORY_DIR) -> Path:
     """Move the plan to `.regen-history/{spec_id}-{ts}.md`. Returns the archived path."""
-    spec_id, _title, _lines = parse_plan(plan_path)
+    spec_id, _title, _lines, _change_requests = parse_plan(plan_path)
     history_dir.mkdir(parents=True, exist_ok=True)
     ts = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
     dest = history_dir / f"{spec_id}-{ts}.md"

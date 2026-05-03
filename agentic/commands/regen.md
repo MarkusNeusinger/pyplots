@@ -33,8 +33,8 @@ subsequent invocations resume that plan; the argument is ignored. To switch spec
 
 | State file | Action |
 |------------|--------|
-| Missing | **Plan mode** — pick (or validate) the spec, write the checklist, exit |
-| Has unchecked `- [ ]` items | **Execute mode** — do the next library, tick it off, exit |
+| Missing | **Plan mode** — pick (or validate) the spec, audit existing impls for cross-library copying, write the checklist (with optional `## Change Requests`), exit |
+| Has unchecked `- [ ]` items | **Execute mode** — do the next library (applying its change_request if any), tick it off, exit |
 | All items `- [x]` or `- [!]` | **Done mode** — archive the plan, exit |
 
 Re-run `/regen` after each invocation. Per spec, expect ~10 invocations (1 plan + 1 per library + 1 finalize).
@@ -84,19 +84,66 @@ SPEC_LATEST=$(echo "$SPEC_INFO" | cut -f2)
 
 If `validate-spec` fails (unknown spec), abort and tell the user.
 
-### 1c. Write the plan
+### 1c. Analyze cross-library similarity
 
-```bash
-uv run python -m agentic.workflows.modules.regen write-plan "$SPEC_ID"
+Before writing the plan, audit the existing implementations for inter-library copying. The "no sibling reads"
+rule (step 2b) prevents *future* drift but is silent about *existing* convergence — this audit catches it.
+
+Read the spec and every existing python implementation + its metadata review:
+
+- `plots/{SPEC_ID}/specification.md`
+- `plots/{SPEC_ID}/specification.yaml`
+- For each library under `plots/{SPEC_ID}/implementations/python/*.py`:
+  - `implementations/python/{LIBRARY}.py`
+  - `metadata/python/{LIBRARY}.yaml` — focus on `review.image_description`, `review.strengths`, `review.weaknesses`
+
+For each library, judge whether it copied from a sibling. **The spec-dictation caveat is critical:** if
+`specification.md` or `specification.yaml` explicitly names a scenario, domain, sample data, or data shape, all
+impls sharing it is fine. Only flag convergence the spec **didn't** dictate.
+
+Concrete signals of copying (when the spec is silent on them):
+
+- Identical or near-identical data generation (same formula, same seed, same N)
+- Same example domain (web traffic vs. stock prices vs. weather is a real, distinguishing choice)
+- Same aspect ratio outside the spec's allowed range hint
+- Same visual variant when the spec lists multiple (e.g. plain line vs. filled-area vs. min/max-highlighted)
+- Same chrome / annotation choices beyond the mandated Okabe-Ito + theme palette
+
+Data colors (Okabe-Ito positions 1–7) are mandated and **don't** count as copying — that's the style guide.
+
+For each flagged library, formulate a `change_request` that:
+
+1. States what's wrong concretely ("data formula matches bokeh exactly — same seed=42, same N=60")
+2. Suggests a direction that plays to that library's strengths — read `prompts/library/{LIBRARY}.md` for the
+   distinctive features (e.g. Altair's layered encodings, Bokeh's interactive glyphs, Highcharts' SVG export)
+3. Stays under ~3 sentences
+
+Build a JSON object keyed by library:
+
+```json
+{
+  "altair": "Spec is vague on data; current web-traffic series matches bokeh exactly (same formula, seed=42, N=60). Pick a different domain (energy use, app DAU, fitness/sleep) and lean into Altair's layered encoding for a distinctive visual variant.",
+  "bokeh": "Spec is vague on data; current series matches altair exactly. Pick a different domain (temperature, page views, queue length) and use Bokeh's interactive glyph/tooltip story to differentiate."
+}
 ```
 
-This single call lists the python implementations, extracts the spec title, and writes `.regen-plan.md` with
-all libraries unchecked.
+If no library is flagged, the JSON is `{}` (empty object). Save it to `/tmp/regen-change-requests.json`.
 
-### 1d. Report and exit
+### 1d. Write the plan
 
-Tell the user the plan was written, list the libraries, and ask them to run `/regen` again to start the first
-library. Do **not** start working in this invocation.
+```bash
+uv run python -m agentic.workflows.modules.regen write-plan "$SPEC_ID" < /tmp/regen-change-requests.json
+```
+
+The helper validates the spec, lists python implementations, extracts the spec title, reads the optional
+change_requests JSON from stdin, and writes `.regen-plan.md`. The `## Change Requests` section is written
+**only when** at least one entry matches a library in the plan; otherwise it's omitted (today's behavior).
+
+### 1e. Report and exit
+
+Tell the user the plan was written. The helper's stdout already reports the spec, libraries, and which
+libraries (if any) got change_requests. Surface this verbatim, then ask the user to run `/regen` again to start
+the first library. Do **not** start working in this invocation.
 
 ---
 
@@ -109,6 +156,7 @@ NEXT=$(uv run python -m agentic.workflows.modules.regen next-library)  # exits 2
 SPEC_ID=$(echo "$NEXT" | cut -f1)
 SPEC_TITLE=$(echo "$NEXT" | cut -f2)
 LIBRARY=$(echo "$NEXT" | cut -f3)
+CHANGE_REQUEST=$(echo "$NEXT" | cut -f4)   # may be empty
 ```
 
 ### 2b. Read working context (only what's needed)
@@ -134,6 +182,18 @@ See `prompts/plot-generator.md` → "Library Independence" for the full rule.
 
 ### 2c. Modify the implementation
 
+**If `CHANGE_REQUEST` is non-empty, treat it as a hard requirement of this regen.** Plan-mode similarity
+analysis flagged this library as too close to a sibling. The change_request is the **only** cross-library
+context permitted — apply it, and do **not** open sibling-library files even to "verify" the request (it
+contains everything you need). The "No changes for the sake of changes" exception below does **not** apply
+when a change_request is set: you must implement the requested change. Preserve `review.strengths` while
+applying the new direction. Override "Respect the spec variant" only insofar as the change_request explicitly
+permits — the spec-variant rule still binds the rest of the implementation.
+
+```
+CHANGE_REQUEST: {CHANGE_REQUEST}
+```
+
 Edit `plots/{SPEC_ID}/implementations/python/{LIBRARY}.py`:
 
 - Comprehensive review across: code quality, data choice, visual design, spec compliance, library feature usage,
@@ -142,6 +202,7 @@ Edit `plots/{SPEC_ID}/implementations/python/{LIBRARY}.py`:
 - Preserve `review.strengths`, fix `review.weaknesses`.
 - **Respect the spec variant:** if `SPEC_ID` contains `basic`, no annotations / trendlines / callouts.
 - **No changes for the sake of changes:** if nothing meaningful to improve, leave the code unchanged and proceed.
+  (Does not apply when `CHANGE_REQUEST` is set.)
 
 **Theme-adaptive rendering is mandatory.** `impl-generate.yml` (and `impl-merge.yml` after it) require both
 `plot-light.png` AND `plot-dark.png` to exist — the workflow errors out and refuses to merge if either is missing.
@@ -356,6 +417,10 @@ Exit.
 - [ ] plotly
 - [!] highcharts       ← failed, skipped (user can reset to `- [ ]`)
 
+## Change Requests
+
+- matplotlib: Spec is vague on data; current series matches plotly exactly. Pick a different domain and use a step-line variant.
+
 ## Log
 
 - altair: PR https://github.com/.../pull/1234, score 88, label ai-approved, verdict APPROVED (...)
@@ -363,10 +428,16 @@ Exit.
 - highcharts: FAILED — gsutil not authenticated (...)
 ```
 
+The `## Change Requests` section is **optional** — written only when Plan-mode similarity analysis (step 1c)
+flagged at least one library as too close to a sibling. Each entry is one line: `- {library}: {text}`. The
+section is bypassed by the parser when absent. Change_requests stay in the plan after `mark_done` as an audit
+trail.
+
 The user can:
 - `cat .regen-plan.md` — see progress at any time
-- `rm .regen-plan.md` — abandon the current plan
+- `rm .regen-plan.md` — abandon the current plan (re-running `/regen` re-runs similarity analysis)
 - Edit checkboxes manually — re-order, retry failures, skip libraries
+- Edit, add, or delete `## Change Requests` lines — picked up on the next `next-library` call
 
 ---
 

@@ -6,8 +6,8 @@ Usage (from `regen.md`):
     uv run python -m agentic.workflows.modules.regen validate-spec <spec_id>
     uv run python -m agentic.workflows.modules.regen list-libraries <spec_id>
     uv run python -m agentic.workflows.modules.regen spec-title <spec_id>
-    uv run python -m agentic.workflows.modules.regen write-plan <spec_id>
-    uv run python -m agentic.workflows.modules.regen next-library
+    uv run python -m agentic.workflows.modules.regen write-plan <spec_id>     # optional {lib: change_request} JSON on stdin
+    uv run python -m agentic.workflows.modules.regen next-library              # outputs spec\ttitle\tlibrary\tchange_request
     uv run python -m agentic.workflows.modules.regen render <spec_id> <library>
     uv run python -m agentic.workflows.modules.regen write-metadata <spec_id> <library>  # JSON eval on stdin
     uv run python -m agentic.workflows.modules.regen update-impl-header <spec_id> <library> <score>
@@ -41,6 +41,30 @@ def _read_eval_from_stdin() -> QualityEval:
         print(f"::error::stdin is not valid JSON: {exc}", file=sys.stderr)
         sys.exit(2)
     return QualityEval.from_json(data)
+
+
+def _read_change_requests_from_stdin() -> dict[str, str]:
+    """Optionally read `{lib: change_request_text}` JSON from stdin.
+
+    Returns empty dict when stdin is a TTY (interactive run) or empty/whitespace.
+    Exits non-zero on malformed JSON. Whitespace inside each value is collapsed
+    to single spaces so a multi-line change_request can't corrupt the
+    one-line-per-entry plan format.
+    """
+    if sys.stdin.isatty():
+        return {}
+    raw = sys.stdin.read()
+    if not raw.strip():
+        return {}
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        print(f"::error::stdin is not valid JSON: {exc}", file=sys.stderr)
+        sys.exit(1)
+    if not isinstance(data, dict):
+        print(f"::error::stdin must be a JSON object, got {type(data).__name__}", file=sys.stderr)
+        sys.exit(1)
+    return {str(k): " ".join(str(v).split()) for k, v in data.items() if v and str(v).strip()}
 
 
 def main(argv: list[str]) -> int:
@@ -99,10 +123,20 @@ def main(argv: list[str]) -> int:
         if not libs:
             print(f"::error::No python implementations found for {spec_id}", file=sys.stderr)
             return 1
-        path = write_plan(PlanSpec(spec_id=spec_id, title=title, latest_update=latest, libraries=libs))
+        change_requests = _read_change_requests_from_stdin()
+        path = write_plan(
+            PlanSpec(
+                spec_id=spec_id, title=title, latest_update=latest, libraries=libs, change_requests=change_requests
+            )
+        )
         print(f"Plan written: {path}")
         print(f"- Spec: {spec_id} ({title})")
         print(f"- Libraries: {', '.join(libs)}")
+        flagged = [lib for lib in libs if change_requests.get(lib)]
+        if flagged:
+            print(f"- Change requests: {', '.join(flagged)}")
+        else:
+            print("- Change requests: none")
         return 0
 
     if command == "next-library":
@@ -111,8 +145,8 @@ def main(argv: list[str]) -> int:
         nxt = next_unchecked()
         if nxt is None:
             return 2  # exit code 2 = no more unchecked items
-        spec_id, title, library = nxt
-        print(f"{spec_id}\t{title}\t{library}")
+        spec_id, title, library, change_request = nxt
+        print(f"{spec_id}\t{title}\t{library}\t{change_request}")
         return 0
 
     if command == "render":
@@ -177,7 +211,7 @@ def main(argv: list[str]) -> int:
             _print_usage()
         from .plan import cleanup_preview, cleanup_worktree, mark_failed, parse_plan
 
-        spec_id, _title, _lines = parse_plan()
+        spec_id, _title, _lines, _change_requests = parse_plan()
         mark_failed(library=args[0], reason=args[1])
         cleanup_worktree(spec_id, args[0])
         cleanup_preview(spec_id, args[0])

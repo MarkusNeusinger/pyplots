@@ -86,7 +86,10 @@ def test_create_regen_pr_orchestration(tmp_path, monkeypatch):
 
     pr_url = "https://github.com/owner/repo/pull/123"
 
-    with patch("agentic.workflows.modules.regen.pr_create.subprocess") as sp:
+    with (
+        patch("agentic.workflows.modules.regen.pr_create.subprocess") as sp,
+        patch("agentic.workflows.modules.regen.pr_create.time.sleep"),
+    ):
         sp.run.return_value = None
         sp.check_output.side_effect = [
             # 1) `gh pr create ...` → PR URL on the last line
@@ -151,15 +154,29 @@ def test_create_regen_pr_cleans_up_branch_even_on_failure(tmp_path, monkeypatch)
 
 def test_add_labels_uses_rest_api(tmp_path, monkeypatch):
     """`_add_labels` must use the REST API (gh api …/labels) rather than
-    `gh pr edit --add-label`, which is unreliable on this repo."""
+    `gh pr edit --add-label`, which is unreliable on this repo. Each label
+    is posted in its own call so webhook events don't pile up in the
+    `impl-merge.yml` concurrency group — the last label (`ai-approved`)
+    must be the one that triggers the actual merge run."""
     from agentic.workflows.modules.regen.pr_create import _add_labels
 
-    with patch("agentic.workflows.modules.regen.pr_create.subprocess") as sp:
+    with (
+        patch("agentic.workflows.modules.regen.pr_create.subprocess") as sp,
+        patch("agentic.workflows.modules.regen.pr_create.time.sleep") as sleep,
+    ):
         sp.check_output.return_value = '{"owner":{"login":"o"},"name":"r"}'
         sp.run.return_value = None
         _add_labels(123, ["quality:87", "ai-approved"])
-        cmd = sp.run.call_args.args[0]
-        assert cmd[:4] == ["gh", "api", "-X", "POST"]
-        assert cmd[4] == "repos/o/r/issues/123/labels"
-        assert "labels[]=quality:87" in cmd
-        assert "labels[]=ai-approved" in cmd
+
+        # One POST per label, in the order given
+        cmds = [c.args[0] for c in sp.run.call_args_list]
+        assert len(cmds) == 2
+        for cmd in cmds:
+            assert cmd[:4] == ["gh", "api", "-X", "POST"]
+            assert cmd[4] == "repos/o/r/issues/123/labels"
+        assert "labels[]=quality:87" in cmds[0]
+        assert "labels[]=ai-approved" in cmds[1]
+        # Sleep between posts so the first webhook's run finishes
+        # (early-skip ~4-5s) before the second webhook fires.
+        assert sleep.call_count == 1
+        assert sleep.call_args.args[0] >= 5

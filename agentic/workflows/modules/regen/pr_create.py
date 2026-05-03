@@ -20,6 +20,7 @@ from __future__ import annotations
 import json
 import shutil
 import subprocess
+import time
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -83,12 +84,24 @@ def _repo_owner_name() -> tuple[str, str]:
 
 
 def _add_labels(pr_number: int, labels: list[str]) -> None:
-    """REST-based label add (avoids the gh GraphQL deprecation warning)."""
+    """REST-based label add, one POST per label with a delay between them.
+
+    GitHub fires a separate `labeled` webhook per added label, and
+    `impl-merge.yml` runs in a per-PR concurrency group with
+    `cancel-in-progress: false` — meaning only one queued run is allowed.
+    If we post all labels in a single call (or back-to-back), the second
+    webhook lands while the first run is still queued and cancels it.
+    The `ai-approved` label MUST be the last one added so its webhook
+    triggers the actual merge run after the `quality:N` skip-run finishes.
+    """
     owner, repo = _repo_owner_name()
-    args = ["gh", "api", "-X", "POST", f"repos/{owner}/{repo}/issues/{pr_number}/labels"]
-    for label in labels:
-        args.extend(["-f", f"labels[]={label}"])
-    subprocess.run(args, check=True)
+    for i, label in enumerate(labels):
+        if i > 0:
+            time.sleep(8)  # > workflow early-exit (~4-5s)
+        subprocess.run(
+            ["gh", "api", "-X", "POST", f"repos/{owner}/{repo}/issues/{pr_number}/labels", "-f", f"labels[]={label}"],
+            check=True,
+        )
 
 
 # ---------------------------------------------------------------------------

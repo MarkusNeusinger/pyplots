@@ -2,7 +2,7 @@ library: pygal
 language: python
 specification_id: sunburst-basic
 created: '2026-05-04T22:56:10Z'
-updated: '2026-05-04T23:03:28Z'
+updated: '2026-05-04T23:17:48Z'
 generated_by: claude-sonnet
 workflow_run: 25347406390
 issue: 821
@@ -15,84 +15,84 @@ preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/sunburst-
 quality_score: 40
 review:
   strengths:
-  - 'Correct Okabe-Ito palette with #009E73 as first series (Technology)'
-  - 'Theme-adaptive chrome: backgrounds, text, and legend flip correctly between light
-    and dark'
-  - Correct title format (sunburst-basic · pygal · anyplot.ai) and HTML+PNG output
-  - Clean code structure with explicit font sizes set on all elements
-  - Realistic, neutral organizational budget dataset with varied proportional values
+  - 'Correct Okabe-Ito palette with #009E73 as the first series color'
+  - Both light and dark themes correctly implemented with proper background and chrome
+    tokens
+  - Clean, deterministic, KISS-structure code with no functions or classes
+  - Realistic organizational budget data with plausible values
+  - Correct title format (sunburst-basic · pygal · anyplot.ai) and output file naming
   weaknesses:
-  - 'CRITICAL: Uses pygal.Treemap() instead of pygal.Pie() for sunburst — renders
-    nested rectangles not concentric rings, causing SC-01=0 and a score cap at 40'
-  - Sub-segment labels (Backend Engineering, Sales, etc.) are not visible inside blocks
-    in the static PNG render
-  - Only 2 hierarchy levels shown; spec supports 2-4 and a 3rd level would better
-    demonstrate the sunburst feature
+  - 'Wrong chart type: pygal.Treemap() used instead of a sunburst chart — the entire
+    chart type must change to pygal.Sunburst() or equivalent concentric-ring approach'
+  - Missing concentric ring hierarchy structure (the core requirement of sunburst-basic
+    — each ring should represent one hierarchy level)
+  - No internal segment labels inside the chart area — all hierarchy visible only
+    via legend
+  - Font sizes deviate slightly from pygal guide recommendation (title_font_size=72
+    vs recommended 28px)
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white #FAF8F1 — correct theme surface, not pure white
-      Chrome: Title "sunburst-basic · pygal · anyplot.ai" is dark ink, clearly readable. Legend at bottom lists Technology, Business, Operations, Marketing with color indicators — all readable.
-      Data: Four colored rectangular blocks visible — Technology (teal #009E73, large bottom area), Business (orange #D55E00, large top-left), Marketing (pink #CC79A7, top-right split into 2 sub-blocks), Operations (blue #0072B2, lower-right). Internal subdivision lines within each block are very faint; no text labels inside rectangles. CHART TYPE IS A TREEMAP, NOT A SUNBURST.
-      Legibility verdict: PASS (all visible chrome text is readable, but sub-segment labels missing from chart body)
+      Background: Warm off-white #FAF8F1 — correct, not pure white
+      Chrome: Title "sunburst-basic · pygal · anyplot.ai" in dark text at top — clearly readable. Legend at bottom with four colored dots and department labels — readable.
+      Data: Four colored treemap rectangles — green (#009E73, Technology, large bottom area), vermillion-orange (#D55E00, Business, large top-left), pink/reddish-purple (#CC79A7, Operations/Marketing, upper-right), and blue-steel (#0072B2, remaining department, right). No internal cell labels.
+      Legibility verdict: PASS
 
     Dark render (plot-dark.png):
-      Background: Warm near-black #1A1A17 — correct dark theme surface
-      Chrome: Title and legend text render in light cream tone, clearly readable against dark background. No dark-on-dark failures detected.
-      Data: Same four-block treemap layout. Colors appear perceptually slightly darker against the near-black surface but hex codes in source are unchanged (same Okabe-Ito values). No theme-incorrect chrome.
-      Legibility verdict: PASS (all visible chrome is readable; sub-segment labels absent in both renders)
+      Background: Near-black #1A1A17 — correct warm near-black, not pure black
+      Chrome: Title text is light-colored and readable against dark background. Legend text at bottom is light and legible. No dark-on-dark failures detected.
+      Data: Data colors are identical to the light render — same green, orange, pink, blue segments. Only the background surface flips, Okabe-Ito data colors remain constant.
+      Legibility verdict: PASS
+
+    CRITICAL ISSUE (both renders): The chart type is a Treemap (rectangular partition), NOT a sunburst (concentric rings). The spec requires concentric ring visualization where each ring = one hierarchy level. This is a SC-01 failure that caps the score at 40.
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 25
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title_font_size=72, label=48, legend=42).
-          All visible text readable in both themes. Minor deduction for absent sub-segment
-          labels inside rectangles.
+        comment: Font sizes explicitly set (title=72, label=48) and readable in both
+          themes; slight deviation from guide's 28px recommendation
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements in either render.
+        comment: No overlapping text elements
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Main rectangles clearly visible. Internal subdivision lines are very
-          faint; no sub-segment text labels rendered in PNG.
+        comment: Segments clearly visible; no internal cell labels
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito palette is CVD-safe. Good contrast between segments.
+        comment: Okabe-Ito palette is CVD-safe
       - id: VQ-05
         name: Layout & Canvas
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: 3600x3600 square canvas. Chart fills canvas well; legend properly
-          positioned at bottom.
+        comment: Good canvas utilization; minimal legend at very bottom
       - id: VQ-06
         name: Axis Labels & Title
         score: 1
         max: 2
         passed: true
-        comment: Title format is correct. No axis labels needed for this chart type;
-          scored on title alone.
+        comment: Title format correct; no axis labels (not applicable for treemap)
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series Technology uses #009E73. Subsequent series follow Okabe-Ito
-          order. Backgrounds are #FAF8F1/#1A1A17. Chrome flips correctly.'
+        comment: 'First series #009E73 correct; Okabe-Ito order followed; backgrounds
+          #FAF8F1 and #1A1A17 correct in both themes'
     design_excellence:
       score: 8
       max: 20
@@ -102,22 +102,22 @@ review:
         score: 4
         max: 8
         passed: false
-        comment: Well-configured library default. Theme tokens and palette wired correctly;
-          no further design thought applied.
+        comment: Well-configured default treemap appearance with correct palette but
+          no distinctive design choices
       - id: DE-02
         name: Visual Refinement
         score: 2
         max: 6
         passed: false
-        comment: Minimal customization beyond the Style object. No layout refinement
-          specific to sunburst/treemap.
+        comment: Minimal customization beyond palette; no cell borders styled, no
+          internal labels
       - id: DE-03
         name: Data Storytelling
         score: 2
         max: 6
         passed: false
-        comment: Data displayed proportionally but no visual hierarchy, emphasis,
-          or focal point.
+        comment: Data displayed but no visual hierarchy, no narrative emphasis, no
+          focal point
     spec_compliance:
       score: 6
       max: 15
@@ -127,29 +127,28 @@ review:
         score: 0
         max: 5
         passed: false
-        comment: WRONG CHART TYPE. Uses pygal.Treemap() (nested rectangles) instead
-          of a sunburst chart (concentric rings).
+        comment: 'WRONG CHART TYPE: pygal.Treemap used instead of sunburst. Spec requires
+          concentric rings per hierarchy level.'
       - id: SC-02
         name: Required Features
-        score: 1
+        score: 2
         max: 4
         passed: false
-        comment: '2-level hierarchy and proportional sizing present. Missing: concentric
-          ring structure, visible segment labels on chart, 3rd-level hierarchy.'
+        comment: Hierarchical data present; concentric ring structure, ring-level
+          separation, and radial layout absent
       - id: SC-03
         name: Data Mapping
         score: 2
         max: 3
         passed: true
-        comment: Hierarchical data proportionally mapped to rectangle area. Deduction
-          for wrong visualization paradigm.
+        comment: Values proportionally mapped to areas; hierarchy structurally present
+          but not visualized as rings
       - id: SC-04
         name: Title & Legend
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: 'Title format correct: sunburst-basic · pygal · anyplot.ai. Legend
-          lists all 4 departments.'
+        comment: Title format correct; legend shows department names correctly
     data_quality:
       score: 13
       max: 15
@@ -158,22 +157,22 @@ review:
         name: Feature Coverage
         score: 4
         max: 6
-        passed: true
-        comment: 2-level hierarchy with varied values (40-180 $K). Missing optional
-          3rd level hierarchy.
+        passed: false
+        comment: Shows org budget with 2 hierarchy levels; treemap does not visualize
+          the hierarchy visually; third level absent
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Organizational budget breakdown by department/team is realistic and
-          editorially neutral.
+        comment: Organizational budget by department and team is a realistic, neutral
+          scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Team budget values 40-180 $K are sensible for this domain.
+        comment: Values $60K-$180K per team are plausible for department budgets
     code_quality:
       score: 10
       max: 10
@@ -183,33 +182,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear structure, no functions or classes.
+        comment: Clean imports → data → plot → save; no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic hardcoded data.
+        comment: All data is hardcoded and deterministic
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only os, pygal, pygal.style.Style imported; all used.
+        comment: Only os, pygal, and pygal.style.Style imported and used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean idiomatic pygal code, appropriate complexity.
+        comment: Clean, concise pygal code with no over-engineering
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot-{THEME}.png and plot-{THEME}.html correctly.
+        comment: Saves plot-{THEME}.png and plot-{THEME}.html correctly
     library_mastery:
-      score: 5
+      score: 4
       max: 10
       items:
       - id: LM-01
@@ -217,15 +216,15 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Style object, theme tokens, and series-based data addition are idiomatic
-          pygal. Deduction for using wrong chart class.
+        comment: Correct Style object usage and theme token wiring; idiomatic chart.add()
+          calls — but wrong chart type
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 1
         max: 5
         passed: false
-        comment: HTML export for hover tooltips is a genuine pygal distinctive feature.
-          Score capped by wrong chart type.
+        comment: Treemap is pygal-specific but does not demonstrate any sunburst-distinctive
+          feature
   verdict: REJECTED
 impl_tags:
   dependencies: []

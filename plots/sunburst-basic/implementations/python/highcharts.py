@@ -1,4 +1,4 @@
-""" anyplot.ai
+"""anyplot.ai
 sunburst-basic: Basic Sunburst Chart
 Library: highcharts unknown | Python 3.13.13
 Quality: 87/100 | Updated: 2026-05-04
@@ -26,12 +26,17 @@ INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
 # Okabe-Ito categorical palette — first series always #009E73
 OKABE_ITO = ["#009E73", "#D55E00", "#0072B2", "#CC79A7", "#E69F00", "#56B4E9", "#F0E442"]
 
+# Total budget for center focal point annotation
+TOTAL_BUDGET = 1240  # Engineering 720 + Marketing 310 + Operations 210 ($K)
+
 # Data — Budget breakdown by department, team, and project (values in $K)
 data = [
+    # Root (center circle) — background-colored so it appears as text-only focal point
+    {"id": "root", "name": f"${TOTAL_BUDGET:,}K", "color": PAGE_BG},
     # Level 1: Departments (innermost ring) — Okabe-Ito in canonical order
-    {"id": "engineering", "name": "Engineering", "color": OKABE_ITO[0]},
-    {"id": "marketing", "name": "Marketing", "color": OKABE_ITO[1]},
-    {"id": "operations", "name": "Operations", "color": OKABE_ITO[2]},
+    {"id": "engineering", "name": "Engineering", "parent": "root", "color": OKABE_ITO[0]},
+    {"id": "marketing", "name": "Marketing", "parent": "root", "color": OKABE_ITO[1]},
+    {"id": "operations", "name": "Operations", "parent": "root", "color": OKABE_ITO[2]},
     # Level 2: Teams within each department
     {"id": "frontend", "name": "Frontend", "parent": "engineering", "value": 280},
     {"id": "backend", "name": "Backend", "parent": "engineering", "value": 350},
@@ -103,7 +108,14 @@ chart.options.series = [
         },
         "levels": [
             {
-                "level": 1,
+                "level": 1,  # Root center — total budget focal point annotation
+                "dataLabels": {
+                    "style": {"fontSize": "60px", "fontWeight": "bold", "color": INK, "textOutline": "none"},
+                    "rotationMode": "horizontal",
+                },
+            },
+            {
+                "level": 2,  # Departments
                 "colorByPoint": True,
                 "dataLabels": {
                     "style": {"fontSize": "44px", "fontWeight": "bold", "color": INK, "textOutline": f"3px {PAGE_BG}"},
@@ -111,7 +123,7 @@ chart.options.series = [
                 },
             },
             {
-                "level": 2,
+                "level": 3,  # Teams
                 "colorVariation": {"key": "brightness", "to": 0.15},
                 "dataLabels": {
                     "style": {"fontSize": "34px", "fontWeight": "600", "color": INK, "textOutline": f"3px {PAGE_BG}"},
@@ -119,13 +131,13 @@ chart.options.series = [
                 },
             },
             {
-                "level": 3,
+                "level": 4,  # Projects
                 "colorVariation": {"key": "brightness", "to": 0.35},
                 "dataLabels": {
                     "style": {"fontSize": "28px", "color": INK, "textOutline": f"3px {PAGE_BG}"},
                     "rotationMode": "circular",
                     "allowOverlap": False,
-                    "filter": {"property": "innerArcLength", "operator": ">", "value": 60},
+                    "filter": {"property": "innerArcLength", "operator": ">", "value": 90},
                 },
             },
         ],

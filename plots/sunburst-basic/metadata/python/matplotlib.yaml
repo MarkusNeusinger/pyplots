@@ -2,7 +2,7 @@ library: matplotlib
 language: python
 specification_id: sunburst-basic
 created: '2025-12-23T21:54:20Z'
-updated: '2026-05-04T22:40:02Z'
+updated: '2026-05-04T22:49:16Z'
 generated_by: claude-sonnet
 workflow_run: 25346927728
 issue: 821
@@ -12,94 +12,90 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/sunburst-
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/sunburst-basic/python/matplotlib/plot-dark.png
 preview_html_light: null
 preview_html_dark: null
-quality_score: 85
+quality_score: 83
 review:
   strengths:
-  - Tint-blending hierarchy system (r + (1-r) * f) creates professional visual depth
-    while preserving Okabe-Ito hue identity across all three rings
-  - Edge color set to PAGE_BG provides clean, theme-adaptive segment separation without
-    hardcoding white
-  - 'Correct Okabe-Ito ordering (positions 1-3): Engineering=green, Sales=vermillion,
-    Marketing=blue'
-  - Square canvas (3600x3600 px) is appropriate for radial charts
-  - Angle-threshold label filtering prevents collision without any manual tuning
-  - All data is realistic, neutral, and domain-appropriate
+  - 'Perfect spec compliance: all three hierarchy levels correctly implemented with
+    consistent branch colors and angle-proportional segments'
+  - Sophisticated hierarchic color tinting system (RGB blend toward white per level)
+    using only the Okabe-Ito base colors
+  - 'Solid code quality: KISS structure, deterministic data, clean imports, correct
+    output naming'
+  - 'Canvas and layout: 3600x3600 square format is ideal for radial charts; ring widths
+    and center hole are well-proportioned'
   weaknesses:
-  - 'Level-2 and level-3 text labels use hardcoded dark colors (#1A1A17, #4A4A44)
-    instead of INK_SOFT/INK_MUTED theme tokens — works visually because labels sit
-    on tinted rings, but violates theme-adaptive chrome rule and could break if ring
-    colors change'
-  - Design excellence is competent but not exceptional — the chart tells the story
-    clearly but lacks a strong focal point or emphasis technique beyond the built-in
-    hierarchy
+  - Level-2 labels hardcoded color='#1A1A17' instead of theme-adaptive INK_SOFT token;
+    level-3 labels hardcoded '#4A4A44' instead of INK_MUTED — both should flip to
+    light colors in dark theme
+  - 'DE-03 storytelling: informational but lacks a focal point or visual emphasis
+    guiding the viewer to a key insight about budget allocation'
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white #FAF8F1 — correct
-      Chrome: Title "Company Budget · sunburst-basic · matplotlib · anyplot.ai" in dark INK (#1A1A17), clearly readable. No axis labels (radial chart). No tick labels.
-      Data: Three concentric rings. Innermost ring: Engineering (#009E73 green), Sales (#D55E00 orange/vermillion), Marketing (#0072B2 blue) — Okabe-Ito positions 1-3 in order. Level-2 and Level-3 rings use progressively lighter tints of parent hue. White page-bg edges separate segments cleanly.
-      Labels: Level-1 labels bold white inside wedges (readable on saturated colors). Level-2/3 labels in hardcoded dark (#1A1A17, #4A4A44) on lighter-tinted rings — visible.
+      Background: Warm off-white #FAF8F1 — correct, not pure white
+      Chrome: Title "Company Budget · sunburst-basic · matplotlib · anyplot.ai" at 24pt bold in dark #1A1A17 — clearly readable. Level-1 department labels (Engineering, Sales, Marketing) in bold white 18pt on colored ring segments — readable. Level-2 team labels (Frontend, Backend, DevOps, North, South, Digital, Brand) in hardcoded #1A1A17 14pt — readable against lighter-tinted ring backgrounds. Level-3 project labels (Web App, Mobile, API, etc.) in hardcoded #4A4A44 12pt — readable against lightest tinted ring backgrounds. All text legible.
+      Data: First series Engineering uses #009E73 (Okabe-Ito position 1) ✓. Sales uses #D55E00 (position 2) ✓. Marketing uses #0072B2 (position 3) ✓. Middle and outer rings use progressively lighter RGB tints of the parent color. Three concentric rings clearly show the hierarchy.
       Legibility verdict: PASS
 
     Dark render (plot-dark.png):
-      Background: Warm near-black #1A1A17 — correct
-      Chrome: Title in light INK (#F0EFE8) — clearly readable. Level-1 labels in hardcoded "white" on saturated rings — readable. Level-2/3 labels in hardcoded #1A1A17/#4A4A44 on lighter-tinted rings — technically not theme-adaptive tokens but no dark-on-dark failure since labels sit on colored rings not on the dark page background.
-      Data: Okabe-Ito colors identical to light render (Engineering green, Sales orange, Marketing blue) — only background flips.
-      Legibility verdict: PASS (with caveat: ring label colors not using theme tokens)
+      Background: Near-black #1A1A17 — correct, warm near-black not pure black
+      Chrome: Title correctly uses INK token (#F0EFE8 in dark mode) — clearly readable in light text. Level-1 labels remain bold white — readable. Level-2 and level-3 labels use hardcoded light-theme colors (#1A1A17 and #4A4A44) — these appear as dark text on the colored ring segments. Since ring colors are the same lighter-tinted Okabe-Ito colors in both themes, dark text on those colored backgrounds is still legible. No dark-on-dark failure detected. Center hole shows #1A1A17 page background — correct.
+      Data: Colors are identical to light render — Engineering #009E73, Sales #D55E00, Marketing #0072B2 with same tinted hierarchy. Okabe-Ito data colors unchanged between themes as required.
+      Legibility verdict: MARGINAL PASS — label text is readable on ring backgrounds but chrome adaptation is incomplete (hardcoded colors do not flip to theme-appropriate values in dark mode).
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 25
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: Font sizes appropriate (24/18/14/12pt). White L1 labels work on both
-          themes. L2/L3 hardcoded dark colors functional but not theme-adaptive tokens.
+        comment: 'All sizes explicitly set; title 24pt INK token; level-1 18pt white;
+          level-2 14pt hardcoded #1A1A17; level-3 12pt hardcoded #4A4A44 — not theme-adaptive
+          but readable on ring backgrounds'
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: Angle-threshold filtering prevents collisions. No overlapping text
-          observed.
+        comment: Minimum-angle threshold prevents labels on tiny segments; well-positioned
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: All three rings clearly visible with crisp page-bg edge separation.
+        comment: All three rings clearly visible; good color differentiation between
+          hierarchy levels
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito positions 1-3 are CVD-safe; tint variations preserve hue
-          identity.
+        comment: Okabe-Ito is CVD-safe; adequate luminance contrast between segments
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Square 12x12 figsize at 300 DPI = 3600x3600px matches style guide
-          square format.
+        comment: Square 12x12 @ 300dpi = 3600x3600px; ideal for radial chart; good
+          canvas utilization
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Title format correct. No axis labels needed for radial chart.
+        comment: Descriptive title with spec-id format; no axis labels required for
+          sunburst
       - id: VQ-07
         name: Palette Compliance
         score: 1
         max: 2
         passed: false
-        comment: 'Backgrounds correct (#FAF8F1/#1A1A17). Okabe-Ito order correct.
-          Deducted 1pt: L2/L3 text uses hardcoded dark colors not INK_SOFT/INK_MUTED
-          tokens.'
+        comment: 'First series #009E73 ✓; Okabe-Ito order ✓; backgrounds correct ✓;
+          but level-2 and level-3 label colors are hardcoded, not theme-adaptive'
     design_excellence:
-      score: 11
+      score: 12
       max: 20
       items:
       - id: DE-01
@@ -107,22 +103,22 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Tint-blending system (r + (1-r) * f) creates professional visual
-          depth. Above default.
+        comment: Sophisticated RGB tinting scheme for hierarchy levels using Okabe-Ito
+          base colors; above default (4) but not publication-quality (6+)
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Page-bg edge colors adapt to theme. Clean center hole. No superfluous
-          elements. Above default.
+        comment: PAGE_BG edgecolor creates clean ring separation; center hole; angle
+          threshold prevents label clutter; no unnecessary chrome
       - id: DE-03
         name: Data Storytelling
         score: 3
         max: 6
-        passed: true
-        comment: Hierarchy clearly communicates budget distribution. Color continuity
-          reinforces branch structure. Above default.
+        passed: false
+        comment: Color progression communicates hierarchy; budget context is meaningful;
+          but no focal point or emphasis to guide viewer to an insight
     spec_compliance:
       score: 15
       max: 15
@@ -132,51 +128,53 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct sunburst with concentric rings per hierarchy level.
+        comment: Correct sunburst with concentric rings
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 3 levels, proportional angles, consistent branch colors, major segment
-          labels, clear ring separation.
+        comment: Consistent branch colors, labels on major segments, visual separation
+          via PAGE_BG edges, inner segments encompass children
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Level 1=departments (inner), Level 2=teams (middle), Level 3=projects
-          (outer). Correct angular spans.
+        comment: level_1 innermost, level_2 middle, level_3 outermost, values determine
+          angles
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. No standalone legend needed — labels embedded
-          in segments.
+        comment: Title format 'Company Budget · sunburst-basic · matplotlib · anyplot.ai'
+          correct; hierarchy communicated by labels, no legend needed
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Full 3-level hierarchy, 3 departments x 2-3 teams x 2 projects =
-          ~14 leaf nodes.
+        comment: Three hierarchy levels, 12 leaf nodes, proportional angles; all three
+          top-level departments similar size limits contrast
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Company budget breakdown is canonical, neutral sunburst use case.
+        comment: Company budget breakdown by department/team/project is neutral and
+          real-world plausible
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values in $thousands (50-200K per team), sensible for mid-size company.
+        comment: Budget values $50k-$200k range realistic; hierarchy depth of 3 matches
+          spec
     code_quality:
       score: 10
       max: 10
@@ -186,32 +184,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Flat top-level code, no functions or classes.
+        comment: Imports → Data dict → Ring construction loops → Plot → Save; no classes
+          or functions
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: All data hardcoded, fully deterministic.
+        comment: Fully deterministic data (no random numbers)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: os, matplotlib.pyplot, numpy all used.
+        comment: os, matplotlib.pyplot, numpy — all actively used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Tint computation concise; angle-threshold filtering appropriate.
-          No fake UI.
+        comment: Clean readable loops; no fake UI; appropriate complexity for 3-level
+          sunburst
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot-{THEME}.png with dpi=300 and bbox_inches=tight.
+        comment: Saves as plot-{THEME}.png with facecolor=PAGE_BG
     library_mastery:
       score: 7
       max: 10
@@ -221,23 +220,23 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Multiple ax.pie() at different radii with width parameter is canonical
-          matplotlib sunburst approach.
+        comment: ax.pie() with radius parameter for concentric rings; ax.text() with
+          trigonometric positioning for labels — correct matplotlib patterns
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Nested pie rings with tint-blended wedgeprops colors and angle-conditional
-          ax.text() labels demonstrate matplotlib-specific technique.
+        comment: Multiple concentric ax.pie() rings via radius parameter; custom RGB
+          tinting algorithm; trigonometric label centroid placement
   verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
-  - patches
   patterns:
   - iteration-over-groups
+  - explicit-figure
   dataprep: []
   styling:
   - edge-highlighting

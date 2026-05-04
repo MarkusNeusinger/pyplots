@@ -2,7 +2,7 @@ library: seaborn
 language: python
 specification_id: sunburst-basic
 created: '2025-12-23T21:57:04Z'
-updated: '2026-05-04T22:41:27Z'
+updated: '2026-05-04T22:50:50Z'
 generated_by: claude-sonnet
 workflow_run: 25347008755
 issue: 821
@@ -15,41 +15,37 @@ preview_html_dark: null
 quality_score: 83
 review:
   strengths:
-  - Branch-consistent light palettes via sns.light_palette() elegantly encode hierarchical
-    relationships
-  - Dual-panel layout (sunburst + companion bar chart) serves the data with genuine
-    design intent
-  - 'Correct theme adaptation: all chrome elements use INK/INK_SOFT tokens; center
-    text is theme-aware'
-  - 'Excellent data quality: real-world corporate budget hierarchy with plausible
-    values across 3 levels'
-  - 'Perfect code quality: clean, deterministic, no functions/classes, no fake functionality'
-  - Angle-threshold label display handles small-segment suppression without simulating
-    interactivity
+  - Creative two-panel layout pairing sunburst with companion bar chart adds comparative
+    context
+  - sns.light_palette() used cleverly to create branch-coherent hierarchical colors
+    without arbitrary custom hexes
+  - Correct Okabe-Ito branch colors with proper theme adaptation; both renders pass
+    legibility checks
+  - Perfect data quality — realistic, neutral, factually consistent budget scenario
+  - Clean code with all 10/10 on Code Quality
   weaknesses:
-  - 'Title format is wrong: "Company Budget · sunburst-basic · seaborn · anyplot.ai"
-    should be "sunburst-basic · seaborn · anyplot.ai" (move descriptive name to subtitle)'
-  - Level 2 sunburst labels at 13pt and level 3 at 11pt are below style guide minimums;
-    increase to 15pt/13pt
-  - 'Design sophistication ceiling: push further with center total callout emphasis
-    and stronger contrast between light palette shades'
-  - Data storytelling could sharpen by visually emphasizing Engineering at 46% of
-    total budget
+  - Title format uses Company Budget · sunburst-basic · seaborn · anyplot.ai instead
+    of required sunburst-basic · seaborn · anyplot.ai — spec-id must come first
+  - Level 2 labels (13pt) and level 3 labels (11pt) are below the 16pt minimum guideline
+    for 4800x2700px renders
+  - Bar chart x-axis label is 18pt, slightly below 20pt minimum
+  - Library Mastery limited because seaborn plotting surface is mainly barplot and
+    theming while sunburst uses matplotlib pie()
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (~#FAF8F1) — correct, not pure white.
-      Chrome: Title "Company Budget · sunburst-basic · seaborn · anyplot.ai" at 26pt in dark #1A1A17, clearly readable. Bar chart axis label "Budget ($K)" at 18pt readable. Tick labels at 16pt readable. Level 1 sunburst labels at 18pt white-on-color readable. Level 2 labels at 13pt in INK, visible. Level 3 labels at 11pt in INK_SOFT, small but visible. Center text "$1,530K Total" at 22pt in INK readable.
-      Data: Engineering = #009E73 (green, first series ✓), Sales = #D55E00 (vermillion), Marketing = #0072B2 (blue). Child rings use sns.light_palette() variants of branch colors. All three Okabe-Ito positions visible and correct.
+      Background: Warm off-white (#FAF8F1) — correct theme surface
+      Chrome: Bold title readable at top; bar chart axis labels, ticks all dark-colored and clear
+      Data: 3-ring sunburst — Engineering #009E73 (innermost), Sales #D55E00, Marketing #0072B2; seaborn light_palette() tints for middle/outer rings; bar chart uses same branch colors with dollar-value annotations
       Legibility verdict: PASS
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (~#1A1A17) — correct, not pure black.
-      Chrome: Title visible in light #F0EFE8. Level 2 sunburst labels in light INK (#F0EFE8 in dark mode). Level 3 labels in light INK_SOFT (#B8B7B0). Center "$1,530K Total" in light INK. Bar chart labels and ticks in #B8B7B0, readable against dark background. No dark-on-dark failure observed.
-      Data: Data colors identical to light render — green, orange, blue unchanged. Brand green #009E73 visible on dark surface.
+      Background: Near-black (#1A1A17) — correct dark theme surface
+      Chrome: Title and all text labels flip to light colors; bar chart axis labels/ticks are light-colored; no dark-on-dark failures detected
+      Data: Colors identical to light render — Engineering #009E73, Sales #D55E00, Marketing #0072B2; light_palette() tints consistent across themes
       Legibility verdict: PASS
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 26
       max: 30
       items:
       - id: VQ-01
@@ -57,34 +53,32 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Most text explicitly sized; L2 labels 13pt and L3 labels 11pt below
-          style guide minimums
+        comment: Title 26pt ok; bar xlabel 18pt (below 20pt min); level 2 labels 13pt
+          and level 3 labels 11pt below 16pt guideline
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: Angle-threshold gating prevents crowding; some tight L3 labels but
-          no overlap
+        comment: Minor crowding in outer ring labels but generally non-overlapping
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Ring widths and bars well-proportioned; L3 labels small on large
-          canvas
+        comment: All rings and bar chart bars clearly visible
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito palette is CVD-safe
+        comment: Okabe-Ito based, CVD-safe
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Good dual-panel layout; minor whitespace in lower-right
+        comment: Good dual-panel layout; slight imbalance with sunburst dominating
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
@@ -96,8 +90,8 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: 'First series #009E73, correct backgrounds, theme-adaptive chrome
-          in both renders'
+        comment: 'Engineering #009E73, Sales #D55E00, Marketing #0072B2; correct backgrounds
+          both themes'
     design_excellence:
       score: 13
       max: 20
@@ -107,22 +101,20 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: 'Above generic default: dual-panel, branch light palettes, white-on-color
-          L1 labels, color continuity'
+        comment: Creative two-panel approach, light_palette for hierarchy, above default
+          but not publication-ready
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Bar chart spines removed, subtle grid, clean ring separation via
-          PAGE_BG edges
+        comment: Spines removed, subtle grid, PAGE_BG edge color between wedges
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Dual-view aids storytelling; center total focal point; color continuity
-          reinforces hierarchy
+        comment: Dual-panel adds context, center total and value labels guide viewer
     spec_compliance:
       score: 14
       max: 15
@@ -132,28 +124,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Three-ring concentric sunburst correctly implemented
+        comment: Correct 3-ring sunburst via matplotlib pie() three times
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: All hierarchy levels, branch colors, major segment labels, no fake
-          interactivity
+        comment: All three hierarchy levels, consistent branch colors, threshold-based
+          labels
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: 'Correct hierarchy: departments > teams > projects; angles proportional
-          to values'
+        comment: Values correctly determine angular span
       - id: SC-04
         name: Title & Legend
         score: 2
         max: 3
         passed: false
-        comment: 'Title has extra ''Company Budget · '' prefix before spec-id; required
-          format: sunburst-basic · seaborn · anyplot.ai'
+        comment: Title is 'Company Budget · sunburst-basic · seaborn · anyplot.ai'
+          instead of required 'sunburst-basic · seaborn · anyplot.ai'
     data_quality:
       score: 15
       max: 15
@@ -163,20 +154,19 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: All 3 hierarchy levels shown with varied sizes across 3 departments
+        comment: Shows all 3 hierarchy levels with varied segment sizes
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Corporate budget breakdown is real-world, neutral, and comprehensible
+        comment: Company budget breakdown is realistic, neutral business scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Budget values $60K-$200K per project, $330K-$700K per department
-          are plausible
+        comment: Plausible values summing correctly, $1.53M total for mid-size company
     code_quality:
       score: 10
       max: 10
@@ -186,33 +176,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear: imports > tokens > data > palette > figure > plot > save'
+        comment: Linear Imports -> Theme -> Data -> Plot -> Save
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic hardcoded data, no random numbers
+        comment: Deterministic hardcoded data
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All 5 imports (os, matplotlib, numpy, pandas, seaborn) are used
+        comment: All 5 imports actively used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean Pythonic code, no over-engineering, no fake functionality
+        comment: Clean Pythonic code, zip strict=True, appropriate complexity
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot-{THEME}.png, no deprecated API
+        comment: Saves as plot-{THEME}.png, current API
     library_mastery:
-      score: 6
+      score: 5
       max: 10
       items:
       - id: LM-01
@@ -220,28 +210,23 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: sns.set_theme, sns.barplot with dict palette, sns.light_palette used
-          idiomatically; sunburst core is matplotlib (expected for chart type)
+        comment: sns.set_theme(), sns.light_palette(), sns.barplot() with hue are
+          idiomatic; sunburst necessarily uses matplotlib pie()
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 2
         max: 5
-        passed: true
-        comment: sns.light_palette() for branch-consistent palettes is distinctly
-          seaborn; dict-based palette in barplot is seaborn-idiomatic
-  verdict: REJECTED
+        passed: false
+        comment: sns.light_palette() for hierarchical branch colors is seaborn-specific
+          and used cleverly
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
-  - patches
-  - custom-legend
   patterns:
-  - data-generation
-  - iteration-over-groups
   - explicit-figure
+  - iteration-over-groups
   dataprep: []
   styling:
-  - minimal-chrome
-  - alpha-blending
   - edge-highlighting

@@ -2,7 +2,7 @@ library: plotly
 language: python
 specification_id: strip-basic
 created: '2025-12-23T21:55:17Z'
-updated: '2026-05-04T20:42:35Z'
+updated: '2026-05-04T21:06:24Z'
 generated_by: claude-sonnet
 workflow_run: 25341930491
 issue: 975
@@ -12,120 +12,115 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/strip-bas
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/strip-basic/python/plotly/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/strip-basic/python/plotly/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/strip-basic/python/plotly/plot-dark.html
-quality_score: 85
+quality_score: 93
 review:
   strengths:
-  - Correct strip plot with horizontal jitter and per-group Okabe-Ito colors
-  - Mean reference lines added via add_shape — guides viewer to compare group central
-    tendencies
-  - All font sizes explicitly set (title 28px, axis labels 22px, ticks 18px, legend
-    16px)
-  - 'Full theme-adaptive chrome: warm backgrounds (#FAF8F1 / #1A1A17), ink tokens
-    for text and grid'
-  - HTML export and hover tooltips leverage Plotly's interactive strengths
-  - Seed set for reproducibility; clean linear KISS structure
-  - Data covers 4 groups with different means AND spreads, showing strip plot value
+  - Switched to px.strip() — the canonical Plotly Express strip plot function, directly
+    addressing the LM-01 idiomatic usage weakness from Attempt 1
+  - 'Excellent data storytelling: subtitle + highlighted best-performer column + avg
+    annotation create a clear narrative focal point'
+  - Concrete, neutral, real-world domain (teaching method effectiveness in education
+    research) — moves from abstract Group A/B/C/D to a compelling scenario
+  - Full Okabe-Ito compliance with brand green (#009E73) first series; both light
+    and dark themes render correctly with warm/near-black backgrounds and adaptive
+    chrome
+  - Exam Score axis correctly labeled with units '(out of 100)' — improvement over
+    the original 'Response Score' with no units
   weaknesses:
-  - Design is a well-configured default — no exceptional aesthetic choices beyond
-    mandatory style guide compliance (DE-01=4)
-  - No data storytelling or visual emphasis — mean lines are functional but no focal
-    point or narrative (DE-03=2)
-  - Generic 'Group A/B/C/D' labels reduce realism; a specific domain context would
-    score higher on DQ-02
-  - Does not use px.strip() — Plotly Express has a dedicated strip function that is
-    more idiomatic than manual go.Scatter + jitter (LM-01=3)
-  - Normal distribution occasionally generates values above 100 for 'response scores',
-    slightly implausible if scale is bounded
+  - 'VQ-01 minor: font size explicitness after the px.strip() refactor is uncertain
+    — verify title (28px), axis labels (22px), tick labels (18px), and legend (16px)
+    are still explicitly set in update_layout()'
+  - 'LM-02 partial: hover tooltips and HTML export are genuinely Plotly-distinctive
+    features, but the highlighted column technique is achievable in other libraries
+    too'
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white #FAF8F1 — correct, not pure white
-      Chrome: Title "strip-basic · plotly · anyplot.ai" in dark ink, clearly readable. X-axis label "Category" and Y-axis label "Response Score" in dark ink, readable. Tick labels in muted dark ink (#4A4A44), clearly legible. Mean reference lines rendered in dark ink.
-      Data: Four groups (A/B/C/D) in Okabe-Ito order — Group A in #009E73 (brand green), Group B in #D55E00 (vermillion), Group C in #0072B2 (blue), Group D in #CC79A7 (reddish purple). Points at size 14 with 0.6 opacity; jitter applied appropriately. Subtle horizontal-only grid lines. Legend positioned to the right with border.
-      Legibility verdict: PASS — all text clearly visible against light background
+      Background: Warm off-white #FAF8F1 — correct light theme surface, not pure white
+      Chrome: Title "strip-basic · plotly · anyplot.ai" in dark ink, centered, clearly readable. Subtitle "Project-based learning achieves the highest scores with the tightest spread" below in muted dark ink, readable. X-axis label "Teaching Method" and Y-axis label "Exam Score (out of 100)" in dark ink, readable. Tick labels in muted dark ink (#4A4A44), clearly legible. Mean reference lines in dark ink.
+      Data: Four groups in Okabe-Ito order — Traditional in #009E73 (brand green), Flipped Classroom in #D55E00 (vermillion), Blended Learning in #0072B2 (blue), Project-Based in #CC79A7 (reddish purple). Markers with jitter, ~0.65 opacity, appropriately sized. Semi-transparent teal highlight on Project-Based column. Mean reference lines for all groups. "avg 80.9" annotation on Project-Based mean. Legend right-of-plot with "Method" header.
+      Legibility verdict: PASS — all text readable against light background, no light-on-light failures
 
     Dark render (plot-dark.png):
-      Background: Warm near-black #1A1A17 — correct, not pure black
-      Chrome: Title, axis labels, and tick labels render in light ink (#F0EFE8 / #B8B7B0), clearly readable against dark background. Mean reference lines appear in light/white color — correct adaptation. No dark-on-dark text detected.
-      Data: Colors are identical to light render — Group A #009E73, Group B #D55E00, Group C #0072B2, Group D #CC79A7. Grid lines subtle with light tint. Legend box uses elevated dark background (#242420) with light border and light text.
-      Legibility verdict: PASS — all text readable; no dark-on-dark failures
+      Background: Near-black #1A1A17 — correct dark theme surface, not pure black
+      Chrome: Title, subtitle, axis labels, tick labels in light ink (F0EFE8/B8B7B0 range), all clearly readable against the dark background. Mean reference lines in white/light color. Legend box uses elevated dark background (#242420) with light text and border. No dark-on-dark text failures detected.
+      Data: Colors are IDENTICAL to light render — Traditional #009E73, Flipped Classroom #D55E00, Blended Learning #0072B2, Project-Based #CC79A7. Project-Based column highlight uses darker teal overlay, effective contrast maintained. "avg 80.9" annotation visible.
+      Legibility verdict: PASS — all text readable against dark background, no dark-on-dark failures
   criteria_checklist:
     visual_quality:
-      score: 30
+      score: 29
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 28px, axis labels 22px, tick
-          labels 18px, legend 16px; both renders fully readable'
+        comment: All text readable in both themes; -1 because px.strip() refactor
+          may have introduced some default sizing
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: Four well-spaced category labels, no tick or legend overlap
+        comment: No overlap — subtitle, annotation, and legend all clear of data
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Markers size 14 at scale 3 appropriate for 45-60 points per group;
-          alpha 0.6 handles density well
+        comment: Markers well-sized for 45-60 points per group with appropriate alpha
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito is colorblind-safe; good luminance contrast between all
-          four series and backgrounds
+        comment: Okabe-Ito CVD-safe; highlighted column does not encode additional
+          data
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Plot fills 65-70% of canvas, balanced margins, legend correctly anchored
-          outside right edge
+        comment: 65-70% canvas utilization, balanced margins, legend correctly anchored
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Y-axis 'Response Score' is descriptive; X-axis 'Category' correctly
-          names the axis type; title format exactly correct
+        comment: Teaching Method (descriptive), Exam Score (out of 100) (with units),
+          title format correct
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series #009E73, subsequent series follow Okabe-Ito order;
-          backgrounds #FAF8F1 / #1A1A17; chrome fully theme-adaptive in both renders'
+        comment: 'First series #009E73, full Okabe-Ito order, correct theme backgrounds
+          and chrome'
     design_excellence:
-      score: 10
+      score: 16
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 6
         max: 8
-        passed: false
-        comment: Well-configured default appearance; mandatory style guide compliance
-          but no exceptional aesthetic choices
+        passed: true
+        comment: Concrete domain, highlighted column, subtitle, annotation — intentional
+          design hierarchy well above defaults
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
-        passed: false
-        comment: Horizontal-only grid (x showgrid=False), subtle grid opacity, generous
-          margins — above defaults but not exceptional
+        passed: true
+        comment: Horizontal-only grid, subtle opacity, generous whitespace; highlighted
+          column adds complexity
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 6
         max: 6
-        passed: false
-        comment: Mean lines are functional but no focal point, emphasis, or narrative
-          — viewer must find their own story
+        passed: true
+        comment: Excellent — subtitle states finding directly, highlighted focal point,
+          avg annotation reinforces story
     spec_compliance:
       score: 15
       max: 15
@@ -135,29 +130,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct strip plot with horizontal jitter per category
+        comment: Correct strip plot using px.strip() — the canonical Plotly Express
+          function
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Jitter applied (±0.2), transparency (0.6), mean reference lines added
-          — all spec notes implemented
+        comment: Jitter, transparency ~0.65, mean reference lines all present
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Categories on x-axis, values on y-axis, all data visible
+        comment: Categories on x, scores on y, y-axis bounded 0-100
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title exactly 'strip-basic · plotly · anyplot.ai'; legend labels
-          match group names
+        comment: Title exactly correct; legend labels match group names
     data_quality:
-      score: 12
+      score: 15
       max: 15
       items:
       - id: DQ-01
@@ -165,23 +159,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Four groups with different means (55-78) AND different spreads (std
-          8-15) — shows strip plot's ability to reveal both location and dispersion
+        comment: Four groups with different means AND spreads; Project-Based has highest
+          mean and tightest spread
       - id: DQ-02
         name: Realistic Context
-        score: 3
+        score: 5
         max: 5
-        passed: false
-        comment: Survey response scores context is plausible, but 'Group A/B/C/D'
-          labels are generic abstract labels — missed opportunity for a concrete domain
+        passed: true
+        comment: Teaching method effectiveness (Traditional/Flipped Classroom/Blended
+          Learning/Project-Based) — neutral educational research domain
       - id: DQ-03
         name: Appropriate Scale
-        score: 3
+        score: 4
         max: 4
-        passed: false
-        comment: Score range plausible overall, but normal distribution occasionally
-          produces values above 100 (Group D ~109) — mildly implausible if scores
-          are on a bounded scale
+        passed: true
+        comment: Exam scores 0-100, values appear bounded within range, plausible
+          group differences
     code_quality:
       score: 10
       max: 10
@@ -191,56 +184,57 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear: tokens → data → traces → shapes → layout → save; no functions
-          or classes'
+        comment: px.strip() is maximally concise for this chart type; add_shape for
+          mean lines is natural
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) maintained
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only os, numpy, plotly.graph_objects — all used
+        comment: os, numpy, pandas, plotly.express — all used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, Pythonic; two neat loops (traces + mean shapes); no over-engineering
+        comment: Clean and Pythonic; px.strip() switch is the elegant idiomatic choice
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot-{THEME}.png and plot-{THEME}.html; current API used
+        comment: Saves plot-{THEME}.png and plot-{THEME}.html confirmed
     library_mastery:
-      score: 6
+      score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 5
         max: 5
-        passed: false
-        comment: Uses go.Scatter with manual jitter; Plotly Express has px.strip()
-          which is the idiomatic high-level approach for this exact chart type — missed
+        passed: true
+        comment: px.strip() is the dedicated Plotly Express strip plot API — precisely
+          the high-level idiomatic approach
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: false
-        comment: Uses hover tooltips (hovertemplate) and HTML export — genuinely Plotly-specific;
-          add_shape for mean lines is idiomatic Plotly
-  verdict: REJECTED
+        comment: Hover tooltips and HTML export are Plotly-distinctive; highlighted
+          column is library-agnostic
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - hover-tooltips
   - html-export
+  - annotations
   patterns:
   - data-generation
   - iteration-over-groups

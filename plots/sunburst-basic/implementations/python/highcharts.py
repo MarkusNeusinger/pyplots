@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 sunburst-basic: Basic Sunburst Chart
 Library: highcharts unknown | Python 3.13.13
-Quality: 87/100 | Updated: 2026-05-04
+Quality: 88/100 | Updated: 2026-05-04
 """
 
 import os

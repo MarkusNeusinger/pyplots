@@ -2,7 +2,7 @@ library: plotnine
 language: python
 specification_id: sunburst-basic
 created: '2026-05-04T22:50:30Z'
-updated: '2026-05-04T22:56:24Z'
+updated: '2026-05-04T23:09:52Z'
 generated_by: claude-sonnet
 workflow_run: 25347329138
 issue: 821
@@ -12,88 +12,85 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/sunburst-
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/sunburst-basic/python/plotnine/plot-dark.png
 preview_html_light: null
 preview_html_dark: null
-quality_score: 85
+quality_score: 87
 review:
   strengths:
-  - Successfully implements sunburst from polygon primitives in plotnine — a difficult
-    feat without native radial support
-  - Two-weight typography (bold L1/regular L2 labels) creates clear visual hierarchy
-    between ring levels
-  - Alpha blending (0.65) on outer ring subtly distinguishes hierarchy levels while
-    keeping the color family intact
-  - 'Perfect spec compliance: correct structure, Okabe-Ito starting at #009E73, adaptive
-    theming, correct title format'
-  - Deterministic business-context data that naturally fits the hierarchical chart
-    type
+  - 'Perfectly adapted theme-adaptive chrome: both renders pass readability checks
+    with zero dark-on-dark issues'
+  - Threshold-based outer ring labeling (>=8%) elegantly prevents overcrowding
+  - Ring separator adapts to theme (#2E2D2B in dark vs PAGE_BG in light) — subtle
+    and thoughtful
+  - Alpha=0.65 on outer ring creates natural visual hierarchy between hierarchy levels
+  - 'Correct Okabe-Ito order starting with #009E73 for the first/dominant series (Engineering)'
   weaknesses:
-  - Outer-ring (L2) labels are size=10, below 16pt guideline — increase to ≥14pt for
-    large-canvas readability at 3600×3600px
-  - 'No data storytelling: largest segment (Engineering, 40%) has no visual emphasis;
-    no percentage annotations to guide viewer attention'
-  - Dark-mode ring separator uses color=PAGE_BG (#1A1A17) which merges with near-black
-    background — use slightly lighter separator for dark mode ring definition
+  - Percentage labels at size=13 are below the 16pt minimum for tick-level text at
+    3600x3600 canvas — consider size=15 minimum
+  - Library mastery is capped by plotnines lack of native sunburst support — polygon
+    construction is inherently low-level
   image_description: |-
     Light render (plot-light.png):
       Background: Warm off-white #FAF8F1 — correct, not pure white
-      Chrome: Title "sunburst-basic · plotnine · anyplot.ai" at size-24 in dark ink — readable. No axis labels or ticks (appropriate for radial chart). Inner ring labels (Engineering, Marketing, Operations, R&D) bold size-15 dark ink — readable. Outer ring labels (DevOps, Backend, Frontend, Digital, Brand, HR, Product) size-10 smaller dark ink — readable but small.
-      Data: Engineering=#009E73 (brand green, first series ✓), Marketing=#D55E00, Operations=#0072B2, R&D=#CC79A7. Outer ring uses same colors at alpha=0.65. Ring separator is warm off-white (PAGE_BG), clearly visible.
-      Legibility verdict: PASS — all text readable, no light-on-light issues
+      Chrome: Title "sunburst-basic · plotnine · anyplot.ai" in dark ink (#1A1A17) at top — clearly readable. Department labels in bold dark ink within inner ring segments. Percentage labels in softer ink (#4A4A44). Team labels in dark ink on outer ring. No axis labels or ticks (correctly removed for sunburst).
+      Data: Engineering=#009E73 (largest, ~40%), Marketing=#D55E00 (~25%), Operations=#0072B2 (~20%), R&D=#CC79A7 (~15%). Okabe-Ito order correct, starting with #009E73 first. Outer ring at alpha=0.65 shows same color family per branch. Labeled outer segments: Frontend, Backend, DevOps (Engineering), Digital, Brand (Marketing), HR (Operations), Product (R&D).
+      Legibility verdict: PASS — all text dark on light background, no light-on-light issues
 
     Dark render (plot-dark.png):
-      Background: Near-black #1A1A17 — correct, not pure black
-      Chrome: Title and all labels rendered in light cream #F0EFE8 — clearly visible against dark background. No dark-on-dark failures. Ring separator uses #1A1A17 border (matches dark background), creating a thin dark gap — slightly less defined than light version but ring boundary still distinguishable.
-      Data: Colors identical to light render — Engineering teal, Marketing vermillion, Operations blue, R&D reddish-purple. Inner hole matches dark background.
-      Legibility verdict: PASS — all text light-colored and readable on dark surface, no dark-on-dark failures
+      Background: Warm near-black #1A1A17 — correct, not pure black
+      Chrome: Title in light cream (#F0EFE8) — readable. Department names in light cream (#F0EFE8) — readable. Percentage labels in light gray (#B8B7B0) — readable. Team labels in light cream — readable. Ring separator uses #2E2D2B (slightly lighter than background) creating subtle segment boundaries. Center hole matches dark background.
+      Data: Colors identical to light render — Engineering=#009E73, Marketing=#D55E00, Operations=#0072B2, R&D=#CC79A7. Outer ring alpha=0.65 preserves color vibrancy. No data color changes between themes.
+      Legibility verdict: PASS — all text light on dark background, no dark-on-dark failures detected
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 29
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Sizes explicitly set but L2 labels at 10pt fall below 16pt guideline
+        comment: All sizes explicitly set (title=24, labels=16, pct=13); 13pt percentages
+          slightly small for 3600x3600 canvas
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: Labels well-positioned, no collisions
+        comment: Threshold-based labeling prevents crowding; all visible labels well-spaced
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Both rings clearly visible with good contrast
+        comment: All ring segments clearly visible; outer ring alpha=0.65 remains
+          vibrant in both themes
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito CVD-safe, good contrast both themes
+        comment: Okabe-Ito is CVD-safe; good luminance contrast between segment colors
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Chart fills ~70% of square canvas, well-centered
+        comment: Square 12x12 at 300dpi = 3600x3600; chart fills canvas well
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Correct title format; no axis labels needed for radial chart
+        comment: Title format correct; segment labels serve as data annotations
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'Engineering at #009E73, Okabe-Ito order followed, correct theme
-          backgrounds'
+        comment: Engineering=#009E73 first; Okabe-Ito order preserved; correct backgrounds;
+          chrome adapts cleanly
     design_excellence:
-      score: 11
+      score: 14
       max: 20
       items:
       - id: DE-01
@@ -101,22 +98,22 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: 'Above defaults: two-weight typography, alpha differentiation, Okabe-Ito
-          palette. Not FiveThirtyEight level.'
+        comment: Thoughtful alpha on outer ring, adaptive ring separators, bold/soft
+          text hierarchy — above defaults but not publication-ready
       - id: DE-02
         name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: All grid/axes/spines/ticks removed; theme-adaptive ring separator;
+          generous whitespace; clean minimal composition
+      - id: DE-03
+        name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: No grid/axes, ring separators add definition. Dark separator slightly
-          merges with background.
-      - id: DE-03
-        name: Data Storytelling
-        score: 2
-        max: 6
-        passed: false
-        comment: Hierarchy visible but no emphasis on largest segment (Engineering
-          40%), no percentage labels
+        comment: Engineering dominance immediately clear; alpha differentiates ring
+          levels; bold/lighter text creates readable hierarchy
     spec_compliance:
       score: 15
       max: 15
@@ -126,54 +123,53 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Correct sunburst: hierarchical concentric rings, angles proportional
-          to values'
+        comment: Correct sunburst with concentric rings at correct hierarchy levels
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Two rings, branch color consistency, major-segment labels, level
-          separation
+        comment: Consistent branch colors; threshold-based labeling; clear ring-level
+          separation; inner segments span children
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: level_1 departments inner ring, level_2 teams outer ring, budget
-          values determine angles
+        comment: level_1=departments (inner ring), level_2=teams (outer ring), value=budget
+          angles
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: 'Title: sunburst-basic · plotnine · anyplot.ai; no legend needed
-          (labels on segments)'
+        comment: '''sunburst-basic · plotnine · anyplot.ai'' correct; no legend needed
+          (labels embedded)'
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Both hierarchy levels with varied segment sizes, multiple categories,
-          proportional representation
+        comment: Shows two hierarchy levels with variable segment sizes; optional
+          3rd level not implemented
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: 'Company annual budget breakdown: neutral business scenario with
-          realistic department/team structure'
+        comment: Company annual budget breakdown by department and team — neutral,
+          plausible business scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: $100M total, Engineering > Marketing > Operations > R&D — plausible
-          tech company allocation
+        comment: Budget values in $M with realistic proportions; total ~100M plausible
+          for mid-sized company
     code_quality:
       score: 10
       max: 10
@@ -183,59 +179,62 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear: imports → data → polygon computation → plot → save, no functions/classes'
+        comment: 'Linear: imports → theme tokens → data → polygon construction → plot
+          → save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic data, no random elements
+        comment: Fully deterministic (hardcoded dict, no randomness)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used; sys.path.pop(0) correctly prevents package shadowing
+        comment: All imports used; sys for path fix, os for getenv, numpy for trig
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Polygon loop necessarily complex for sunburst; clean, Pythonic
+        comment: Polygon loops necessary for manual sunburst in plotnine; no fake
+          UI
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot-{THEME}.png correctly
+        comment: Saves as plot-{THEME}.png; current API throughout
     library_mastery:
-      score: 6
+      score: 5
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: geom_polygon + coord_equal + scale_fill_identity is correct grammar-of-graphics
-          approach for polar shapes
+        comment: Correct ggplot grammar (geom_polygon + geom_text, coord_equal, scale_fill_identity,
+          theme()); sunburst not native so manual polygon construction is somewhat
+          low-level
       - id: LM-02
         name: Distinctive Features
         score: 2
         max: 5
         passed: false
-        comment: coord_equal + polygon arc is somewhat library-specific but more of
-          a workaround than distinctive feature showcase
-  verdict: REJECTED
+        comment: coord_equal and scale_fill_identity are plotnine-specific, but core
+          work is manual coordinate math replicable in any polygon library
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
-  - patches
-  - polar-projection
+  - layer-composition
+  - annotations
   patterns:
-  - data-generation
   - iteration-over-groups
-  dataprep: []
+  dataprep:
+  - cumulative-sum
   styling:
-  - minimal-chrome
   - alpha-blending
+  - minimal-chrome

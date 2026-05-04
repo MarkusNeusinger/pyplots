@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { forwardRef, useImperativeHandle } from 'react';
+import { fireEvent } from '@testing-library/react';
 
 import { act, render, screen, waitFor } from '../test-utils';
 import { MapPage, outlierSquashForce, type SimNode } from './MapPage';
@@ -536,5 +537,50 @@ describe('MapPage', () => {
     const after = Number(bar.getAttribute('aria-valuenow'));
     expect(after).toBeGreaterThan(0);
     expect(after).toBeLessThanOrEqual(100);
+  });
+
+  it('re-arms the settling overlay when graphData re-derives (weight change)', async () => {
+    // Regression guard for the gate re-arm path. When the user moves a
+    // weights slider, `weights` state changes → graphData useMemo
+    // re-derives with a new identity → the prevGraphData ≠ graphData
+    // branch in render must reset settled/tickProgress so the user sees
+    // the loading indicator return for the new cooling phase. Without
+    // this test, that path is exercised only via manual UI interaction.
+    mockFetchSuccess();
+    render(<MapPage />);
+    await waitFor(() => expect(screen.getByTestId('force-graph-2d')).toBeInTheDocument());
+
+    // 1. Initial state: gate is visible, progressbar reachable.
+    expect(
+      screen.getByRole('progressbar', { name: 'Layout computation progress' }),
+    ).toHaveAttribute('aria-valuenow', '0');
+
+    // 2. Cool the simulation. settled flips true → gate gets
+    //    aria-hidden=true → queryByRole filters it out.
+    const onEngineStop = lastFgProps.current!.onEngineStop as () => void;
+    act(() => onEngineStop());
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('progressbar', { name: 'Layout computation progress' }),
+      ).not.toBeInTheDocument(),
+    );
+
+    // 3. Open the weights panel and bump a slider. The first slider in
+    //    the panel is for the `plot_type` category — changing it
+    //    triggers setWeights, weights changes, graphData re-derives.
+    fireEvent.click(screen.getByText(/^weights/));
+    const sliders = await screen.findAllByRole('slider');
+    expect(sliders.length).toBeGreaterThan(0);
+    // MUI Slider's hidden <input type="range"> responds to change events.
+    act(() => {
+      fireEvent.change(sliders[0], { target: { value: '4' } });
+    });
+
+    // 4. Gate re-armed: progressbar reachable again, aria-valuenow back
+    //    to 0 (tickCountRef was reset alongside settled).
+    await waitFor(() => {
+      const bar = screen.getByRole('progressbar', { name: 'Layout computation progress' });
+      expect(bar).toHaveAttribute('aria-valuenow', '0');
+    });
   });
 });

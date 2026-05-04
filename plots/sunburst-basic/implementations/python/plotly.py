@@ -1,7 +1,6 @@
-""" anyplot.ai
+"""anyplot.ai
 sunburst-basic: Basic Sunburst Chart
 Library: plotly 6.7.0 | Python 3.13.13
-Quality: 85/100 | Updated: 2026-05-04
 """
 
 import os
@@ -9,23 +8,18 @@ import os
 import plotly.graph_objects as go
 
 
-# Theme tokens
 THEME = os.getenv("ANYPLOT_THEME", "light")
 PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
 ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
 INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
-INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+INK_MUTED = "#6B6A63" if THEME == "light" else "#A8A79F"
 
-# Data - Company budget breakdown by department and team (in $ millions)
 labels = [
-    # Level 1 - Root (innermost)
     "Company",
-    # Level 2 - Departments
     "Engineering",
     "Sales",
     "Marketing",
     "Operations",
-    # Level 3 - Teams (outer ring)
     "Backend",
     "Frontend",
     "DevOps",
@@ -57,7 +51,7 @@ parents = [
 # Values in $M — branchvalues="total" so each parent value equals sum of its children
 values = [
     48,  # Company
-    18,  # Engineering
+    18,  # Engineering — dominant at 37.5% of total
     15,  # Sales
     7,  # Marketing
     8,  # Operations
@@ -75,27 +69,22 @@ values = [
 # Okabe-Ito palette — departments get canonical positions 1-4,
 # teams get lighter/darker variants to preserve family grouping
 colors = [
-    INK_SOFT,  # Company (root) — neutral
-    "#009E73",  # Engineering — Okabe-Ito #1
+    ELEVATED_BG,  # Company root — adapts cleanly to both light and dark themes
+    "#009E73",  # Engineering — Okabe-Ito #1 (dominant: 37.5%)
     "#D55E00",  # Sales — Okabe-Ito #2
     "#0072B2",  # Marketing — Okabe-Ito #3
     "#CC79A7",  # Operations — Okabe-Ito #4
-    # Engineering teams (green family)
     "#00B589",  # Backend — lighter green
     "#009E73",  # Frontend — base green
     "#007A58",  # DevOps — darker green
-    # Sales teams (vermillion family)
     "#F07030",  # Enterprise — lighter vermillion
     "#D55E00",  # SMB — base vermillion
-    # Marketing teams (blue family)
     "#2090CC",  # Digital — lighter blue
     "#0072B2",  # Brand — base blue
-    # Operations teams (pink/purple family)
     "#DD99C0",  # HR — lighter pink
     "#CC79A7",  # Finance — base pink
 ]
 
-# Plot
 fig = go.Figure(
     go.Sunburst(
         labels=labels,
@@ -105,7 +94,8 @@ fig = go.Figure(
         marker={"colors": colors, "line": {"color": PAGE_BG, "width": 2}},
         textfont={"size": 22},
         insidetextorientation="radial",
-        hovertemplate="<b>%{label}</b><br>Budget: $%{value}M<extra></extra>",
+        hovertemplate="<b>%{label}</b><br>Budget: $%{value}M<br>%{percentParent:.1%} of %{parent}<extra></extra>",
+        leaf={"opacity": 0.88},
     )
 )
 
@@ -119,9 +109,22 @@ fig.update_layout(
     paper_bgcolor=PAGE_BG,
     plot_bgcolor=PAGE_BG,
     font={"color": INK},
-    margin={"t": 120, "l": 40, "r": 40, "b": 40},
+    margin={"t": 120, "l": 60, "r": 60, "b": 110},
 )
 
-# Save
-fig.write_image(f"plot-{THEME}.png", width=1600, height=900, scale=3)
+# Insight annotation — surface Engineering's outsized 37.5% share
+fig.add_annotation(
+    text="Engineering leads with 37.5% of total budget — nearly double Sales, the next-largest department",
+    xref="paper",
+    yref="paper",
+    x=0.5,
+    y=0.02,
+    xanchor="center",
+    yanchor="bottom",
+    font={"size": 20, "color": INK_MUTED},
+    showarrow=False,
+)
+
+# Square format — optimal for symmetric radial charts
+fig.write_image(f"plot-{THEME}.png", width=1200, height=1200, scale=3)
 fig.write_html(f"plot-{THEME}.html", include_plotlyjs="cdn")

@@ -1,7 +1,7 @@
 """ anyplot.ai
 swarm-basic: Basic Swarm Plot
 Library: pygal 3.1.0 | Python 3.13.13
-Quality: 76/100 | Updated: 2026-05-05
+Quality: 80/100 | Updated: 2026-05-05
 """
 
 import os

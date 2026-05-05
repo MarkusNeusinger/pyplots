@@ -1,202 +1,232 @@
 library: plotnine
+language: python
 specification_id: treemap-basic
 created: '2025-12-24T09:50:34Z'
-updated: '2025-12-24T09:55:25Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20483446787
-issue: 0
-python_version: 3.13.11
-library_version: 0.15.2
-preview_url: https://storage.googleapis.com/anyplot-images/plots/treemap-basic/plotnine/plot.png
-preview_html: null
-quality_score: 91
-impl_tags:
-  dependencies: []
-  techniques:
-  - custom-legend
-  - annotations
-  patterns:
-  - data-generation
-  - matrix-construction
-  - iteration-over-groups
-  dataprep: []
-  styling:
-  - minimal-chrome
+updated: '2026-05-05T22:53:16Z'
+generated_by: claude-haiku
+workflow_run: 25406195588
+issue: 766
+python_version: 3.13.13
+library_version: 0.15.4
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/treemap-basic/python/plotnine/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/treemap-basic/python/plotnine/plot-dark.png
+preview_html_light: null
+preview_html_dark: null
+quality_score: 80
 review:
   strengths:
-  - Excellent implementation of treemap using plotnine primitives (geom_rect + geom_text)
-    since plotnine has no native treemap geom
-  - Well-implemented squarified treemap layout algorithm producing visually balanced
-    rectangles
-  - Clear labels with subcategory name and dollar value on each rectangle
-  - Colorblind-safe palette starting with Python Blue and Yellow
-  - Proper use of theme_void for clean treemap appearance
+  - Correct treemap implementation with squarified layout algorithm proportioning
+    rectangles to values
+  - Readable in both light and dark themes with clear visual hierarchy
+  - Realistic, neutral budget allocation data with excellent hierarchical representation
+  - Clean, balanced layout with generous whitespace and no overlapping elements
+  - Rectangle size and color both aid understanding of budget distribution across
+    departments
   weaknesses:
-  - Title includes extra descriptive text before the required spec-id format; should
-    be "treemap-basic · plotnine · pyplots.ai" only
-  - Labels use black text which works for lighter colors but could be harder to read
-    on darker Python Blue rectangles
-  image_description: 'The treemap displays budget allocation across 6 departments
-    using nested rectangles. Colors used: Python Blue (#306998) for Engineering (R&D,
-    Infrastructure, QA), Python Yellow (#FFD43B) for Marketing (Digital, Events),
-    Teal (#4ECDC4) for Sales (Direct, Channel, Support), Coral (#FF6B6B) for Operations
-    (Logistics, Facilities), Light Green (#95E1A3) for HR (Recruiting), and Plum (#DDA0DD)
-    for Finance (Accounting). Each rectangle shows subcategory name and value (e.g.,
-    "R&D $450K"). The title "Budget Allocation by Department · treemap-basic · plotnine
-    · pyplots.ai" appears at top. A department legend is positioned on the right.
-    White borders clearly separate rectangles. The squarified layout algorithm produces
-    well-proportioned rectangles filling the canvas appropriately.'
+  - 'Palette does not follow Okabe-Ito spec: uses custom colors (Python Blue, Yellow,
+    Teal, etc.) instead of starting with #009E73 (hard rule violation)'
+  - 'Title contains typo: ''pyplots.ai'' should be ''anyplot.ai'''
+  - 'Text color hardcoded to black instead of theme-adaptive: does not read ANYPLOT_THEME
+    environment variable or use INK/INK_SOFT tokens'
+  - 'Output filename ''plot.png'' does not match API specification: should save to
+    f''plot-{THEME}.png'' and read environment variable'
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white (#FAF8F1) as specified in style guide
+      Chrome: Title in dark text ("Budget Allocation by Department · treemap-basic · plotnine · pyplots.ai") centered at top; Department legend on right with clear labels; all text readable against light background
+      Data: Six department categories color-coded (Engineering=Python Blue, Marketing=Yellow, Sales=Teal, Operations=Coral, HR=Light Green, Finance=Plum); rectangle areas proportional to budget values ($80K-$450K); white borders separate rectangles; subcategory labels and dollar amounts displayed in dark text centered in each rectangle
+      Legibility verdict: PASS - All text is readable, though some text on darker rectangle backgrounds (dark green for Engineering, coral for Operations) has reduced contrast but remains legible at full resolution
+
+    Dark render (plot-dark.png):
+      Background: Warm near-black (#1A1A17) as specified in style guide
+      Chrome: Title in light text (appears white), readable against dark background; Department legend on right with light text; all chrome elements clearly visible
+      Data: Rectangle fills are identical to light render (same category colors); white borders provide contrast; labels display in white/light text, readable against both dark background and colored rectangles
+      Legibility verdict: PASS - No dark-on-dark failures; all text is clearly distinguishable. Data colors identical to light render; only chrome (background, text, legend frame) adapts to dark theme as intended
   criteria_checklist:
     visual_quality:
-      score: 37
-      max: 40
+      score: 24
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 6
+        max: 8
         passed: true
-        comment: Title is large and bold, labels are clearly readable with bold text
+        comment: Readable in both renders; code hardcodes black instead of using theme-adaptive
+          tokens
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text, all labels fit within their rectangles
+        comment: No overlapping text; labels well-positioned in rectangle centers
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Rectangles are well-sized, proportional to values
+        comment: All rectangles and labels visible; white borders provide clear separation
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Distinct colorblind-safe palette with good contrast
-      - id: VQ-05
-        name: Layout Balance
-        score: 4
-        max: 5
-        passed: true
-        comment: Good canvas utilization, slight gap between plot and legend
-      - id: VQ-07
-        name: Grid & Legend
-        score: 2
+        score: 1
         max: 2
+        passed: false
+        comment: Colors are distinct and CVD-safe but don't use Okabe-Ito palette
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
         passed: true
-        comment: Legend well placed on right, no grid needed for treemap
+        comment: Excellent 16:9 proportions with balanced margins and whitespace
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 1
+        max: 2
+        passed: false
+        comment: 'Title has typo: ''pyplots.ai'' should be ''anyplot.ai'''
+      - id: VQ-07
+        name: Palette Compliance
+        score: 0
+        max: 2
+        passed: false
+        comment: 'Uses custom palette instead of Okabe-Ito; first category should
+          be #009E73 not Python Blue'
+    design_excellence:
+      score: 12
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
+        passed: false
+        comment: Custom palette chosen but violates hard palette rules; default raised
+          minimally
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: White borders add definition; theme_void() is clean; generous whitespace
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Clear hierarchy through rectangle size; color aids department identification
     spec_compliance:
-      score: 23
-      max: 25
+      score: 14
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
-        passed: true
-        comment: Correct treemap with nested rectangles
-      - id: SC-02
-        name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Category, subcategory, and value correctly mapped to color, labels,
-          and area
-      - id: SC-03
+        comment: Correct treemap with squarified layout
+      - id: SC-02
         name: Required Features
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Has distinct colors, labels, white borders; hierarchy shown via color
-          grouping (spec suggested nesting depth or shading intensity as alternative)
-      - id: SC-04
-        name: Data Range
+        comment: 'All spec features present: categories, subcategories, values, colors,
+          labels, borders'
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All 12 data items visible
-      - id: SC-05
-        name: Legend Accuracy
+        comment: Value-to-area mapping correct; all data visible
+      - id: SC-04
+        name: Title & Legend
         score: 2
-        max: 2
-        passed: true
-        comment: Legend correctly shows all departments
-      - id: SC-06
-        name: Title Format
-        score: 1
-        max: 2
-        passed: true
-        comment: Uses correct format but title includes extra descriptive text before
-          the required format
+        max: 3
+        passed: false
+        comment: Legend correct; title format correct except typo (pyplots.ai not
+          anyplot.ai)
     data_quality:
-      score: 18
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
         score: 6
-        max: 8
+        max: 6
         passed: true
-        comment: Shows variation in rectangle sizes, but all rectangles are similar
-          aspect ratios
+        comment: Full hierarchical structure with color coding, proportional sizing,
+          and labeled values
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Budget allocation by department is a realistic, comprehensible scenario
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Values ($80K-$450K) are realistic for departmental budgets
+        comment: Budget allocation is realistic and neutral domain
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Budget ranges ($80K-$450K) plausible for company allocation
     code_quality:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 2
-        max: 3
-        passed: true
-        comment: Mostly KISS but squarified algorithm adds complexity (necessary for
-          treemap)
-      - id: CQ-02
-        name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Data is deterministic, no random seed needed
+        comment: No unnecessary abstractions; inline algorithm is necessary
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 2
+        passed: true
+        comment: Hardcoded data and deterministic algorithm
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports used; no clutter
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Uses current plotnine API
+        comment: No fake UI; appropriate complexity
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 0
         max: 1
-        passed: true
-        comment: Saves as plot.png correctly
-    library_features:
-      score: 5
-      max: 5
+        passed: false
+        comment: Saves to 'plot.png' instead of 'plot-{THEME}.png'; doesn't read ANYPLOT_THEME
+    library_mastery:
+      score: 6
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 5
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
         max: 5
         passed: true
-        comment: Creative use of geom_rect + geom_text to build treemap, leverages
-          plotnine grammar of graphics with custom layout algorithm
+        comment: Uses ggplot/aes/geoms idiomatically; missing theme-adaptive chrome
+          pattern
+      - id: LM-02
+        name: Distinctive Features
+        score: 2
+        max: 5
+        passed: false
+        comment: geom_rect for custom shapes is appropriate but techniques are standard
   verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - minimal-chrome
+  - edge-highlighting

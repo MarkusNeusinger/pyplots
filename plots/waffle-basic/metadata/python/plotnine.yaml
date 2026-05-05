@@ -2,7 +2,7 @@ library: plotnine
 language: python
 specification_id: waffle-basic
 created: 2025-12-16 07:44:55+00:00
-updated: '2026-05-05T18:11:30Z'
+updated: '2026-05-05T18:17:55Z'
 generated_by: claude-haiku
 workflow_run: 25393441505
 issue: 998
@@ -12,116 +12,114 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/waffle-ba
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/waffle-basic/python/plotnine/plot-dark.png
 preview_html_light: null
 preview_html_dark: null
-quality_score: 42
+quality_score: 74
 review:
   strengths:
-  - Correct waffle chart implementation with proper 10x10 grid structure
-  - Okabe-Ito palette correctly applied to data colors with proper category mapping
-  - Light theme renders perfectly with excellent text readability and contrast
-  - Clean, minimal code with no unnecessary complexity or dependencies
-  - Proper data normalization and category ordering with realistic budget allocation
-    example
+  - 'Perfect visual quality: all text readable in both themes, excellent color compliance,
+    proper theme adaptation'
+  - 'Clean code: simple structure, deterministic, all imports used, proper Pythonic
+    style'
+  - 'Correct theme implementation: backgrounds, text colors, and legend styling all
+    adapt appropriately between light and dark'
+  - Strong contrast and CVD-safe Okabe-Ito palette throughout
   weaknesses:
-  - 'CRITICAL: Dark theme text colors not properly applied - near-black text on near-black
-    background renders unreadable'
-  - Theme-adaptive tokens (INK, INK_SOFT) defined correctly but not properly threaded
-    through text rendering elements in dark theme
-  - Legend completely unreadable in dark mode with 0% light pixels detected in rendered
-    output
-  - No design polish or visual refinement beyond default theme - generic appearance
-  - Data domain dominated by single category (Housing 35%) limits chart variety demonstration
+  - 'Data accuracy bug: legend shows percentages that don''t sum to 100 or match code
+    values [35, 25, 18, 12] which only sum to 90. On a 10x10 grid (100 squares), data
+    should total 100 units.'
+  - 'Missing design refinement: no custom visual touches, library default appearance'
+  - 'No visual storytelling: all categories have equal visual weight, no hierarchy
+    or emphasis'
+  - 'Generic implementation: uses standard techniques without library-specific creative
+    choices'
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) - correct and matches spec
-      Chrome: Title "waffle-basic · plotnine · anyplot.ai" in dark text (#1A1A17) - clearly readable. Legend on right with category labels and percentages in dark INK_SOFT color - all readable.
-      Data: 10×10 waffle grid with four color-coded categories: Housing 35% (#009E73), Food 25% (#D55E00), Transport 18% (#0072B2), Entertainment 12% (#CC79A7). All waffle squares visible and distinct.
-      Legibility verdict: PASS - excellent contrast between dark text and light background
+      Background: Warm off-white (#FAF8F1), correct for light theme
+      Chrome: Title in large dark text (24pt), legend on right with category names and percentages, all clearly readable with strong contrast against light background
+      Data: 10x10 grid of colored squares using Okabe-Ito palette - green (#009E73) for Housing, orange (#D55E00) for Food, blue (#0072B2) for Transport, pink (#CC79A7) for Entertainment
+      Grid lines: Subtle white lines separating squares, visible but not dominant
+      Legibility verdict: PASS - all text is clearly readable
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) - correct color value
-      Chrome: Title text appears in near-black/very dark gray instead of light text (#F0EFE8). Legend area completely black with 0% light pixels - unreadable. Text colors are (#26,26,23) to (#45,45,41) range - far too dark for dark background.
-      Data: Waffle colors identical to light render (#009E73, #D55E00, #0072B2, #CC79A7 confirmed) - correct theme-independence
-      Legibility verdict: FAIL - dark-on-dark text rendering makes both title and legend unreadable. Critical violation of theme-readability requirements.
-
-    Root cause: `element_text(color=INK)` parameters not being properly applied by plotnine during dark theme rendering. Environment variable ANYPLOT_THEME=dark is set, INK variable correctly resolves to "#F0EFE8", but rendered text shows near-black colors instead of light colors.
+      Background: Warm near-black (#1A1A17), correct for dark theme
+      Chrome: Title in light text, legend text light-colored, all clearly readable against dark background with no dark-on-dark failures
+      Data: Same colored squares as light render - data colors are identical (#009E73, #D55E00, #0072B2, #CC79A7), confirming proper theme separation
+      Grid lines: Dark separator lines visible on dark surface
+      Legibility verdict: PASS - all text is clearly readable, proper theme adaptation with data colors unchanged
   criteria_checklist:
     visual_quality:
-      score: 8
+      score: 30
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 0
+        score: 8
         max: 8
-        passed: false
-        comment: 'Light theme: all text readable and clear. Dark theme: title and
-          legend unreadable due to dark-on-dark rendering.'
+        passed: true
+        comment: Title 24pt, legend 16pt, all explicitly set and readable in both
+          themes
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: All waffle squares and text elements well-spaced with no collisions
-          or overlaps
+        comment: Clean spacing, no overlapping elements
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Waffle squares and category colors clearly visible and distinguishable
-          in light theme
+        comment: Waffle squares clearly visible and well-sized
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito palette is CVD-safe and colorblind-friendly
+        comment: Okabe-Ito palette is colorblind-safe with good contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Good proportions, nothing cut off, 4800x2700 resolution appropriate
-          for content
+        comment: Plot fills 50-70% of canvas, balanced margins, well-positioned legend
       - id: VQ-06
         name: Axis Labels & Title
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Title format correct but unreadable in dark theme. Axes hidden (appropriate
-          for waffle chart).
+        passed: true
+        comment: Correct title format, no axis labels needed (categories in legend)
       - id: VQ-07
         name: Palette Compliance
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: 'Data colors correct (Okabe-Ito #009E73, #D55E00, #0072B2, #CC79A7),
-          backgrounds correct, but chrome fails - dark theme text is wrong color'
+        passed: true
+        comment: 'First series #009E73, Okabe-Ito colors correct, backgrounds #FAF8F1/#1A1A17,
+          both renders theme-correct'
     design_excellence:
-      score: 4
+      score: 8
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 2
+        score: 4
         max: 8
         passed: false
-        comment: Generic defaults with no custom design thought or polish
+        comment: Well-configured library defaults, Okabe-Ito colors correct, but no
+          custom design choices
       - id: DE-02
         name: Visual Refinement
         score: 2
         max: 6
         passed: false
-        comment: Minimal customization - grid removed but no other subtle styling
+        comment: Minimal customization beyond theme setup, library defaults
       - id: DE-03
         name: Data Storytelling
-        score: 0
+        score: 2
         max: 6
         passed: false
-        comment: No visual hierarchy, emphasis, or focal point beyond basic color
-          distinction
+        comment: Simple proportional display without visual hierarchy, all categories
+          equal weight
     spec_compliance:
-      score: 15
+      score: 11
       max: 15
       items:
       - id: SC-01
@@ -129,54 +127,51 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct waffle chart - 10x10 grid structure properly implemented
+        comment: Correct waffle chart type, 10x10 grid
       - id: SC-02
         name: Required Features
-        score: 4
+        score: 2
         max: 4
-        passed: true
-        comment: 'All required features present: grid, color coding, category labels,
-          percentages'
+        passed: false
+        comment: 'CRITICAL: Legend percentages incorrect - values [35,25,18,12] sum
+          to 90, not 100'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Categories and values correctly mapped - values sum to 100 and fill
-          grid properly
+        comment: Categories properly mapped to colors
       - id: SC-04
         name: Title & Legend
-        score: 3
+        score: 1
         max: 3
-        passed: true
-        comment: Title format correct, legend includes percentages. Unreadable in
-          dark theme but structurally correct.
+        passed: false
+        comment: Title correct, but legend percentages are factually inaccurate
     data_quality:
-      score: 12
+      score: 10
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 4
         max: 6
-        passed: true
-        comment: Demonstrates all aspects of waffle chart type - grid, colors, categories,
-          proportions
+        passed: false
+        comment: Shows 4 categories with variation, adequate coverage
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Budget allocation example is realistic, neutral, and plausible
+        comment: Budget allocation scenario is realistic and neutral
       - id: DQ-03
-        name: Appropriate Scale
+        name: Appropriate Scale & Factual Correctness
         score: 1
         max: 4
         passed: false
-        comment: Values sensible but dominated by Housing (35%) - limited variety
-          in proportions
+        comment: 'CRITICAL: Values [35,25,18,12]=90, but 10x10 grid=100. Data doesn''t
+          align with visualization.'
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -184,51 +179,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: No unnecessary functions, classes, or over-engineering
+        comment: 'Simple: imports → data → plot → save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic - no randomness, produces identical output on
-          repeated runs
+        comment: Fully deterministic, no randomness
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only imports pandas and plotnine - no unnecessary dependencies
+        comment: Only used imports
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Generally readable but theme token application fails - indicates
-          misunderstanding of plotnine's theme system
+        passed: true
+        comment: Clean, Pythonic, appropriate complexity
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Correctly saves as plot-{THEME}.png with proper DPI
+        comment: Correct PNG output format
     library_mastery:
-      score: 2
+      score: 5
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 1
+        score: 4
         max: 5
         passed: false
-        comment: Uses basic ggplot patterns correctly but fails to properly apply
-          theme customization
+        comment: Proper plotnine patterns but straightforward without advanced techniques
       - id: LM-02
         name: Distinctive Features
         score: 1
         max: 5
         passed: false
-        comment: coord_equal() and geom_tile() are correct for waffle implementation
-          but limited sophistication
+        comment: Generic usage, could be replicated in any library
   verdict: REJECTED
 impl_tags:
   dependencies: []

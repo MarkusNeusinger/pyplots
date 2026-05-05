@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 waffle-basic: Basic Waffle Chart
-Library: altair | Python 3.13
-Quality: pending | Created: 2025-05-05
+Library: altair 6.1.0 | Python 3.13.13
+Quality: 89/100 | Updated: 2026-05-05
 """
 
 import os

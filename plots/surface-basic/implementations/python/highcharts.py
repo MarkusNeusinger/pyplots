@@ -1,21 +1,31 @@
-""" pyplots.ai
+"""anyplot.ai
 surface-basic: Basic 3D Surface Plot
-Library: highcharts unknown | Python 3.13.11
-Quality: 87/100 | Created: 2025-12-23
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import json
+import os
 import tempfile
 import time
 import urllib.request
 from pathlib import Path
+from urllib.error import HTTPError, URLError
 
 import numpy as np
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Viridis-like colormap RGB values (inline to follow KISS - no functions)
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+INK_MUTED = "#6B6A63" if THEME == "light" else "#A8A79F"
+GRID = "rgba(26,26,23,0.10)" if THEME == "light" else "rgba(240,239,232,0.10)"
+
+# Viridis colormap for continuous data - sequential
 VIRIDIS_COLORS = [
     (68, 1, 84),  # Dark purple
     (59, 82, 139),  # Blue-purple
@@ -26,75 +36,54 @@ VIRIDIS_COLORS = [
 
 # Data - Gaussian surface with peaks and valleys
 np.random.seed(42)
-n_points = 40  # Grid size for smooth surface
+n_points = 40
 x = np.linspace(-3, 3, n_points)
 y = np.linspace(-3, 3, n_points)
 X, Y = np.meshgrid(x, y)
 
-# Create an interesting surface: combination of Gaussian peaks
+# Interesting surface: combination of Gaussian peaks
 Z = (
-    np.exp(-((X - 1) ** 2 + (Y - 1) ** 2))  # Peak at (1, 1)
-    + 0.8 * np.exp(-((X + 1) ** 2 + (Y + 1) ** 2))  # Peak at (-1, -1)
-    - 0.5 * np.exp(-((X) ** 2 + (Y) ** 2) / 0.5)  # Valley at center
+    np.exp(-((X - 1) ** 2 + (Y - 1) ** 2))
+    + 0.8 * np.exp(-((X + 1) ** 2 + (Y + 1) ** 2))
+    - 0.5 * np.exp(-((X) ** 2 + (Y) ** 2) / 0.5)
 )
 
 # Normalize Z values for color mapping
 z_min, z_max = Z.min(), Z.max()
 z_normalized = (Z - z_min) / (z_max - z_min)
 
-# Download required Highcharts modules
-highcharts_url = "https://code.highcharts.com/highcharts.js"
-highcharts_3d_url = "https://code.highcharts.com/highcharts-3d.js"
 
-with urllib.request.urlopen(highcharts_url, timeout=30) as response:
-    highcharts_js = response.read().decode("utf-8")
+def get_viridis_color(val):
+    """Map normalized value (0-1) to viridis RGB color."""
+    n_colors = len(VIRIDIS_COLORS) - 1
+    idx = min(int(val * n_colors), n_colors - 1)
+    t = (val * n_colors) - idx
+    r = int(VIRIDIS_COLORS[idx][0] + t * (VIRIDIS_COLORS[idx + 1][0] - VIRIDIS_COLORS[idx][0]))
+    g = int(VIRIDIS_COLORS[idx][1] + t * (VIRIDIS_COLORS[idx + 1][1] - VIRIDIS_COLORS[idx][1]))
+    b = int(VIRIDIS_COLORS[idx][2] + t * (VIRIDIS_COLORS[idx + 1][2] - VIRIDIS_COLORS[idx][2]))
+    return f"rgb({r},{g},{b})"
 
-with urllib.request.urlopen(highcharts_3d_url, timeout=30) as response:
-    highcharts_3d_js = response.read().decode("utf-8")
 
-# Create surface data as scatter3d points with colors (inline color calc for KISS)
+# Create surface data
 surface_data = []
-n_colors = len(VIRIDIS_COLORS) - 1
 for i in range(n_points):
     for j in range(n_points):
         val = z_normalized[i, j]
-        idx = min(int(val * n_colors), n_colors - 1)
-        t = (val * n_colors) - idx
-        r = int(VIRIDIS_COLORS[idx][0] + t * (VIRIDIS_COLORS[idx + 1][0] - VIRIDIS_COLORS[idx][0]))
-        g = int(VIRIDIS_COLORS[idx][1] + t * (VIRIDIS_COLORS[idx + 1][1] - VIRIDIS_COLORS[idx][1]))
-        b = int(VIRIDIS_COLORS[idx][2] + t * (VIRIDIS_COLORS[idx + 1][2] - VIRIDIS_COLORS[idx][2]))
-        color = f"rgb({r},{g},{b})"
         surface_data.append(
-            {
-                "x": float(X[i, j]),
-                "y": float(Z[i, j]),  # Height is Z value
-                "z": float(Y[i, j]),  # Depth is Y grid position
-                "color": color,
-            }
+            {"x": float(X[i, j]), "y": float(Z[i, j]), "z": float(Y[i, j]), "color": get_viridis_color(val)}
         )
 
-# Create connecting lines for X direction (reduced density for cleaner surface)
+# Create connecting lines for X direction (reduced density)
 x_line_series = []
-for i in range(0, n_points, 2):  # Skip every other line for cleaner appearance
+for i in range(0, n_points, 2):
     line_data = []
     for j in range(n_points):
         val = z_normalized[i, j]
-        idx = min(int(val * n_colors), n_colors - 1)
-        t = (val * n_colors) - idx
-        r = int(VIRIDIS_COLORS[idx][0] + t * (VIRIDIS_COLORS[idx + 1][0] - VIRIDIS_COLORS[idx][0]))
-        g = int(VIRIDIS_COLORS[idx][1] + t * (VIRIDIS_COLORS[idx + 1][1] - VIRIDIS_COLORS[idx][1]))
-        b = int(VIRIDIS_COLORS[idx][2] + t * (VIRIDIS_COLORS[idx + 1][2] - VIRIDIS_COLORS[idx][2]))
-        color = f"rgb({r},{g},{b})"
-        line_data.append({"x": float(X[i, j]), "y": float(Z[i, j]), "z": float(Y[i, j]), "color": color})
+        line_data.append(
+            {"x": float(X[i, j]), "y": float(Z[i, j]), "z": float(Y[i, j]), "color": get_viridis_color(val)}
+        )
 
-    # Color for the line based on middle value
     mid_val = z_normalized[i, n_points // 2]
-    mid_idx = min(int(mid_val * n_colors), n_colors - 1)
-    mid_t = (mid_val * n_colors) - mid_idx
-    mid_r = int(VIRIDIS_COLORS[mid_idx][0] + mid_t * (VIRIDIS_COLORS[mid_idx + 1][0] - VIRIDIS_COLORS[mid_idx][0]))
-    mid_g = int(VIRIDIS_COLORS[mid_idx][1] + mid_t * (VIRIDIS_COLORS[mid_idx + 1][1] - VIRIDIS_COLORS[mid_idx][1]))
-    mid_b = int(VIRIDIS_COLORS[mid_idx][2] + mid_t * (VIRIDIS_COLORS[mid_idx + 1][2] - VIRIDIS_COLORS[mid_idx][2]))
-    line_color = f"rgb({mid_r},{mid_g},{mid_b})"
     x_line_series.append(
         {
             "type": "scatter3d",
@@ -102,32 +91,21 @@ for i in range(0, n_points, 2):  # Skip every other line for cleaner appearance
             "lineWidth": 3,
             "showInLegend": False,
             "marker": {"enabled": False},
-            "color": line_color,
+            "color": get_viridis_color(mid_val),
         }
     )
 
-# Create connecting lines for Y direction (reduced density for cleaner surface)
+# Create connecting lines for Y direction (reduced density)
 y_line_series = []
-for j in range(0, n_points, 2):  # Skip every other line for cleaner appearance
+for j in range(0, n_points, 2):
     line_data = []
     for i in range(n_points):
         val = z_normalized[i, j]
-        idx = min(int(val * n_colors), n_colors - 1)
-        t = (val * n_colors) - idx
-        r = int(VIRIDIS_COLORS[idx][0] + t * (VIRIDIS_COLORS[idx + 1][0] - VIRIDIS_COLORS[idx][0]))
-        g = int(VIRIDIS_COLORS[idx][1] + t * (VIRIDIS_COLORS[idx + 1][1] - VIRIDIS_COLORS[idx][1]))
-        b = int(VIRIDIS_COLORS[idx][2] + t * (VIRIDIS_COLORS[idx + 1][2] - VIRIDIS_COLORS[idx][2]))
-        color = f"rgb({r},{g},{b})"
-        line_data.append({"x": float(X[i, j]), "y": float(Z[i, j]), "z": float(Y[i, j]), "color": color})
+        line_data.append(
+            {"x": float(X[i, j]), "y": float(Z[i, j]), "z": float(Y[i, j]), "color": get_viridis_color(val)}
+        )
 
-    # Color for the line based on middle value
     mid_val = z_normalized[n_points // 2, j]
-    mid_idx = min(int(mid_val * n_colors), n_colors - 1)
-    mid_t = (mid_val * n_colors) - mid_idx
-    mid_r = int(VIRIDIS_COLORS[mid_idx][0] + mid_t * (VIRIDIS_COLORS[mid_idx + 1][0] - VIRIDIS_COLORS[mid_idx][0]))
-    mid_g = int(VIRIDIS_COLORS[mid_idx][1] + mid_t * (VIRIDIS_COLORS[mid_idx + 1][1] - VIRIDIS_COLORS[mid_idx][1]))
-    mid_b = int(VIRIDIS_COLORS[mid_idx][2] + mid_t * (VIRIDIS_COLORS[mid_idx + 1][2] - VIRIDIS_COLORS[mid_idx][2]))
-    line_color = f"rgb({mid_r},{mid_g},{mid_b})"
     y_line_series.append(
         {
             "type": "scatter3d",
@@ -135,11 +113,11 @@ for j in range(0, n_points, 2):  # Skip every other line for cleaner appearance
             "lineWidth": 3,
             "showInLegend": False,
             "marker": {"enabled": False},
-            "color": line_color,
+            "color": get_viridis_color(mid_val),
         }
     )
 
-# Surface points with large markers to create filled appearance
+# Surface points
 surface_series = {
     "type": "scatter3d",
     "data": surface_data,
@@ -151,7 +129,36 @@ surface_series = {
 all_series = [surface_series] + x_line_series + y_line_series
 series_json = json.dumps(all_series)
 
-# Highcharts chart configuration with improved layout and colorbar
+
+# Download Highcharts modules with fallback CDNs
+def download_js(urls):
+    """Download JS with fallback to multiple CDNs."""
+    for url in urls:
+        try:
+            req = urllib.request.Request(
+                url, headers={"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"}
+            )
+            with urllib.request.urlopen(req, timeout=60) as response:
+                return response.read().decode("utf-8")
+        except (HTTPError, URLError):
+            continue
+    raise RuntimeError("Failed to download Highcharts from all CDN sources")
+
+
+highcharts_urls = [
+    "https://code.highcharts.com/highcharts.js",
+    "https://cdn.jsdelivr.net/npm/highcharts/dist/highcharts.js",
+]
+
+highcharts_3d_urls = [
+    "https://code.highcharts.com/highcharts-3d.js",
+    "https://cdn.jsdelivr.net/npm/highcharts/dist/highcharts-3d.js",
+]
+
+highcharts_js = download_js(highcharts_urls)
+highcharts_3d_js = download_js(highcharts_3d_urls)
+
+# Highcharts chart configuration with theme-adaptive colors
 chart_config = f"""
 Highcharts.chart('container', {{
     chart: {{
@@ -159,7 +166,7 @@ Highcharts.chart('container', {{
         type: 'scatter3d',
         width: 4800,
         height: 2700,
-        backgroundColor: '#ffffff',
+        backgroundColor: '{PAGE_BG}',
         options3d: {{
             enabled: true,
             alpha: 15,
@@ -168,9 +175,9 @@ Highcharts.chart('container', {{
             viewDistance: 3,
             fitToPlot: false,
             frame: {{
-                bottom: {{ size: 1, color: 'rgba(0,0,0,0.08)' }},
-                back: {{ size: 1, color: 'rgba(0,0,0,0.05)' }},
-                side: {{ size: 1, color: 'rgba(0,0,0,0.05)' }}
+                bottom: {{ size: 1, color: 'rgba(26,26,23,0.08)' }},
+                back: {{ size: 1, color: 'rgba(26,26,23,0.05)' }},
+                side: {{ size: 1, color: 'rgba(26,26,23,0.05)' }}
             }}
         }},
         marginTop: 220,
@@ -179,12 +186,12 @@ Highcharts.chart('container', {{
         marginRight: 550
     }},
     title: {{
-        text: 'surface-basic · highcharts · pyplots.ai',
-        style: {{ fontSize: '80px', fontWeight: 'bold' }}
+        text: 'surface-basic · highcharts · anyplot.ai',
+        style: {{ fontSize: '28px', fontWeight: '500', color: '{INK}' }}
     }},
     subtitle: {{
         text: 'Gaussian Surface with Peaks and Valley',
-        style: {{ fontSize: '52px', color: '#666666' }}
+        style: {{ fontSize: '20px', color: '{INK_SOFT}' }}
     }},
     xAxis: {{
         min: -3.5,
@@ -192,16 +199,18 @@ Highcharts.chart('container', {{
         tickInterval: 1,
         title: {{
             text: 'X Position (units)',
-            style: {{ fontSize: '56px', color: '#306998', fontWeight: 'bold' }},
+            style: {{ fontSize: '22px', color: '{INK}', fontWeight: '500' }},
             margin: 80
         }},
         labels: {{
-            style: {{ fontSize: '44px' }},
+            style: {{ fontSize: '18px', color: '{INK_SOFT}' }},
             format: '{{value}}',
             y: 30
         }},
         gridLineWidth: 1,
-        gridLineColor: 'rgba(0, 0, 0, 0.1)'
+        gridLineColor: '{GRID}',
+        lineColor: '{INK_SOFT}',
+        tickColor: '{INK_SOFT}'
     }},
     yAxis: {{
         min: -0.6,
@@ -209,16 +218,18 @@ Highcharts.chart('container', {{
         tickInterval: 0.3,
         title: {{
             text: 'Z Height (amplitude)',
-            style: {{ fontSize: '56px', color: '#306998', fontWeight: 'bold' }},
+            style: {{ fontSize: '22px', color: '{INK}', fontWeight: '500' }},
             margin: 60
         }},
         labels: {{
-            style: {{ fontSize: '44px' }},
+            style: {{ fontSize: '18px', color: '{INK_SOFT}' }},
             format: '{{value:.1f}}',
             x: -20
         }},
         gridLineWidth: 1,
-        gridLineColor: 'rgba(0, 0, 0, 0.1)'
+        gridLineColor: '{GRID}',
+        lineColor: '{INK_SOFT}',
+        tickColor: '{INK_SOFT}'
     }},
     zAxis: {{
         min: -3.5,
@@ -226,14 +237,16 @@ Highcharts.chart('container', {{
         tickInterval: 1,
         title: {{
             text: 'Y Position (units)',
-            style: {{ fontSize: '56px', color: '#306998', fontWeight: 'bold' }},
+            style: {{ fontSize: '22px', color: '{INK}', fontWeight: '500' }},
             margin: 80
         }},
         labels: {{
-            style: {{ fontSize: '44px' }}
+            style: {{ fontSize: '18px', color: '{INK_SOFT}' }}
         }},
         gridLineWidth: 1,
-        gridLineColor: 'rgba(0, 0, 0, 0.1)'
+        gridLineColor: '{GRID}',
+        lineColor: '{INK_SOFT}',
+        tickColor: '{INK_SOFT}'
     }},
     legend: {{
         enabled: false
@@ -248,12 +261,8 @@ Highcharts.chart('container', {{
         scatter3d: {{
             lineWidth: 3,
             states: {{
-                hover: {{
-                    enabled: false
-                }},
-                inactive: {{
-                    opacity: 1
-                }}
+                hover: {{ enabled: false }},
+                inactive: {{ opacity: 1 }}
             }}
         }}
     }},
@@ -264,13 +273,11 @@ Highcharts.chart('container', {{
 var chart = Highcharts.charts[0];
 var renderer = chart.renderer;
 
-// Colorbar position and dimensions - moved left for better visibility
 var colorbarX = 4300;
 var colorbarY = 550;
 var colorbarWidth = 70;
 var colorbarHeight = 1300;
 
-// Draw gradient rectangles for colorbar
 var numSteps = 50;
 var stepHeight = colorbarHeight / numSteps;
 var colors = [
@@ -301,13 +308,13 @@ for (var i = 0; i < numSteps; i++) {{
 // Colorbar border
 renderer.rect(colorbarX, colorbarY, colorbarWidth, colorbarHeight)
     .attr({{
-        'stroke': '#333333',
+        'stroke': '{INK_SOFT}',
         'stroke-width': 3,
         fill: 'none'
     }})
     .add();
 
-// Colorbar labels with more values for clarity
+// Colorbar labels
 var zMin = {z_min:.2f};
 var zMax = {z_max:.2f};
 var labelValues = [zMin, zMin + (zMax - zMin) * 0.25, (zMin + zMax) / 2, zMin + (zMax - zMin) * 0.75, zMax];
@@ -322,9 +329,9 @@ var labelPositions = [
 for (var j = 0; j < 5; j++) {{
     renderer.text(labelValues[j].toFixed(2), colorbarX + colorbarWidth + 25, labelPositions[j] + 15)
         .css({{
-            fontSize: '44px',
-            fontWeight: 'bold',
-            color: '#333333'
+            fontSize: '18px',
+            fontWeight: '500',
+            color: '{INK_SOFT}'
         }})
         .add();
 }}
@@ -335,9 +342,9 @@ renderer.text('Z Height (amplitude)', colorbarX + colorbarWidth / 2, colorbarY -
         align: 'center'
     }})
     .css({{
-        fontSize: '52px',
-        fontWeight: 'bold',
-        color: '#306998'
+        fontSize: '20px',
+        fontWeight: '500',
+        color: '{INK}'
     }})
     .add();
 """
@@ -350,11 +357,15 @@ html_content = f"""<!DOCTYPE html>
     <script>{highcharts_js}</script>
     <script>{highcharts_3d_js}</script>
 </head>
-<body style="margin:0;">
+<body style="margin:0; background:{PAGE_BG};">
     <div id="container" style="width: 4800px; height: 2700px;"></div>
     <script>{chart_config}</script>
 </body>
 </html>"""
+
+# Save HTML artifact
+with open(f"plot-{THEME}.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
 
 # Write temp HTML and take screenshot
 with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encoding="utf-8") as f:
@@ -366,31 +377,12 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=4800,2800")
+chrome_options.add_argument("--window-size=4800,2700")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
-time.sleep(10)  # Extra time for 3D rendering with many series and colorbar
-
-# Take screenshot of just the chart container element
-container = driver.find_element("id", "container")
-container.screenshot("plot.png")
+time.sleep(10)
+driver.save_screenshot(f"plot-{THEME}.png")
 driver.quit()
 
 Path(temp_path).unlink()
-
-# Also save HTML for interactive version
-with open("plot.html", "w", encoding="utf-8") as f:
-    interactive_html = f"""<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/highcharts-3d.js"></script>
-</head>
-<body style="margin:0;">
-    <div id="container" style="width: 100%; height: 100vh;"></div>
-    <script>{chart_config}</script>
-</body>
-</html>"""
-    f.write(interactive_html)

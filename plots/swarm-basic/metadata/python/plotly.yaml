@@ -2,7 +2,7 @@ library: plotly
 language: python
 specification_id: swarm-basic
 created: '2025-12-23T21:55:15Z'
-updated: '2026-05-05T01:11:11Z'
+updated: '2026-05-05T01:22:25Z'
 generated_by: claude-sonnet
 workflow_run: 25351945965
 issue: 974
@@ -12,35 +12,36 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/swarm-bas
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/swarm-basic/python/plotly/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/swarm-basic/python/plotly/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/swarm-basic/python/plotly/plot-dark.html
-quality_score: 81
+quality_score: 86
 review:
   strengths:
-  - 'Perfect theme-adaptive chrome implementation: all six tokens (PAGE_BG, ELEVATED_BG,
-    INK, INK_SOFT, GRID, FILL_COLORS) applied correctly in both renders'
-  - 'Excellent data design: four classrooms with intentionally varied distributions
-    (wide, tight, bimodal, normal) maximize educational value'
-  - Clean KISS code structure with idiomatic plotly patterns and proper sys.path fix
-  - Translucent box fills (18% opacity) are aesthetically refined
+  - Perfect theme adaptation in both renders — chrome flips correctly, no dark-on-dark
+    failures
+  - 'Correct Okabe-Ito palette with Room A as #009E73 first across all four categories'
+  - Varied distribution shapes (bimodal, high-variance, narrow) showcase swarm-plot
+    strengths effectively
+  - Hover tooltips, boxmean markers, and HTML export demonstrate Plotly-distinctive
+    features
+  - Clean reproducible code with proper seed and linear KISS structure
   weaknesses:
-  - 'Primary issue: The dominant visualization is a box-and-whisker plot, not a swarm/beeswarm
-    plot. A swarm plot should show only individual points spread to reveal density
-    — box/whisker/IQR overlays are not part of the chart type. Replace go.Box with
-    go.Scatter, computing non-overlapping beeswarm jitter positions, and add a small
-    median marker per group'
-  - Box borders on all four traces add visual clutter; no top/right spine removal
-  - Jitter is purely random; a swarm plot's value is algorithmic point spreading that
-    reveals distribution density through point position, not through box statistics
+  - Box/whisker elements are visually prominent and compete with the individual-point
+    focus that defines a swarm plot — hiding the box while keeping the mean line would
+    read more clearly as a swarm
+  - Room C bimodal distribution is not visually emphasized despite being the most
+    analytically interesting feature — add annotation or focal emphasis
+  - Random jitter (jitter=0.5) causes visible point overlap in dense groups vs. a
+    true beeswarm pack algorithm
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white #FAF8F1 — correct
-      Chrome: Title "swarm-basic · plotly · anyplot.ai" at 28px in dark ink — readable. Axis labels "Classroom" and "Test Score (points)" at 22px — readable. Tick labels at 18px in INK_SOFT — readable. Legend with bordered box in upper right.
-      Data: Four box-and-whisker plots with individual jittered points overlaid. Room A: green #009E73 (first series, correct). Room B: orange #D55E00. Room C: blue #0072B2. Room D: pink #CC79A7. Translucent fills at 18% opacity. Dashed mean lines visible inside boxes. Boxes with whiskers dominate the visual.
+      Background: warm off-white (#FAF8F1) - correct surface color, not pure white
+      Chrome: title "swarm-basic · plotly · anyplot.ai" centered, dark text (#1A1A17), clearly readable; Y-axis label "Test Score (points)" and X-axis "Classroom" in dark text at 22px; tick labels in INK_SOFT (#4A4A44) at 18px, all readable
+      Data: 4 groups (Room A-D) in Okabe-Ito order — Room A #009E73, Room B #D55E00, Room C #0072B2, Room D #CC79A7; individual points with opacity=0.8 and white edges overlaid on box/whisker elements with semi-transparent fills; mean markers visible
       Legibility verdict: PASS
 
     Dark render (plot-dark.png):
-      Background: Warm near-black #1A1A17 — correct
-      Chrome: Title, axis labels, tick labels, legend text all rendered in light cream tones (INK = #F0EFE8, INK_SOFT = #B8B7B0) — fully readable. No dark-on-dark issues. Legend box uses ELEVATED_BG = #242420 with INK_SOFT border.
-      Data: Identical data colors to light render — green, orange, blue, pink in same Okabe-Ito order. Translucent fills appear darker against dark background (especially Room B's box). All data markers clearly distinguishable.
+      Background: near-black (#1A1A17) - correct dark surface, not pure black
+      Chrome: all text switches to light tokens (#F0EFE8 / #B8B7B0); title, axis labels, tick labels all clearly readable against dark background; no dark-on-dark failures detected
+      Data: colors identical to light render — Room A #009E73, Room B #D55E00, Room C #0072B2, Room D #CC79A7; only chrome elements flipped
       Legibility verdict: PASS
   criteria_checklist:
     visual_quality:
@@ -52,34 +53,35 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All sizes explicitly set: title 28px, axis labels 22px, ticks 18px,
-          legend 16px; readable in both themes'
+        comment: Title 28px, axis labels 22px, ticks 18px all explicitly set; both
+          themes fully readable
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 6
         passed: true
-        comment: Jittered points mostly non-overlapping; minor density crowding in
-          Room B and Room D clusters
+        comment: Some point overlap in dense groups due to random jitter; all text
+          elements non-overlapping
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Markers at size 10 with 0.8 opacity are clear; box + point hybrid
-          slightly reduces swarm-point prominence
+        comment: Markers size=10 with opacity=0.8 and white edges are well-visible;
+          slight crowding in Room D
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito palette is CVD-safe with adequate luminance contrast
+        comment: Okabe-Ito palette is CVD-safe; alpha=0.8 reduces occlusion
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Balanced margins, legend fits well, nothing cut off
+        comment: 4800x2700px canvas well-utilized; balanced margins; legend not obstructing
+          data
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
@@ -91,10 +93,10 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: 'First series #009E73, correct Okabe-Ito order, backgrounds #FAF8F1/#1A1A17,
-          chrome theme-correct in both renders'
+        comment: 'First series #009E73 confirmed; Okabe-Ito order followed; correct
+          backgrounds; chrome fully theme-adaptive'
     design_excellence:
-      score: 11
+      score: 12
       max: 20
       items:
       - id: DE-01
@@ -102,80 +104,77 @@ review:
         score: 5
         max: 8
         passed: true
-        comment: Transparent fills, mean line overlay, Okabe-Ito palette show design
-          intent above defaults; box borders and no spine removal hold it back
+        comment: Semi-transparent fills, white-edge markers, theme-adaptive tokens
+          — above generic defaults; not publication-ready
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
-        passed: false
-        comment: Subtle translucent fills are nice; no spine removal, box borders
-          create frame-heavy look, grid appropriately subtle
+        passed: true
+        comment: Y-only grid, generous margins, edge highlighting on markers, clean
+          legend frame
       - id: DE-03
         name: Data Storytelling
         score: 3
         max: 6
         passed: false
-        comment: Varied distribution shapes tell a story; no visual emphasis guides
-          viewer to most interesting pattern
+        comment: Varied distribution shapes tell a story but bimodal Room C receives
+          no visual emphasis
     spec_compliance:
-      score: 11
+      score: 14
       max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Individual points present (correct base type) but dominant visualization
-          is box-and-whisker plot; swarm/beeswarm shows only spread points without
-          IQR box overlays
+        passed: true
+        comment: go.Box with boxpoints=all is Plotly's best swarm approach but prominent
+          box/whisker elements compete with individual-point focus
       - id: SC-02
         name: Required Features
-        score: 2
+        score: 4
         max: 4
-        passed: false
-        comment: 'Consistent sizes, category colors, median marker present; missing:
-          algorithmic beeswarm anti-overlap spreading; prominent box overlays not
-          in spec'
+        passed: true
+        comment: Individual points, horizontal spread, mean markers, color by category,
+          consistent sizes, group spacing — all present
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Categories on X, test scores on Y, all data visible
+        comment: Categories on X, values on Y, full range displayed
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format swarm-basic · plotly · anyplot.ai correct; legend labels
-          match classroom names
+        comment: swarm-basic · plotly · anyplot.ai centered; legend labels match data
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Room A mild bimodality, Room B wide spread with outlier, Room C clear
-          bimodal, Room D tight normal — good variety
+        comment: 'Four distinct distribution shapes: right-skewed bimodal, high-variance,
+          bimodal two-cluster, tight normal'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Student test scores across classrooms is neutral, realistic, matching
-          spec's suggested application
+        comment: Student test scores by classroom — neutral, realistic, educationally
+          relevant
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Y-axis 30-110 appropriate; sample sizes 40-50 per group within spec
-          guideline; seed(42) deterministic
+        comment: Scores 37-95 realistic; 35-50 students per classroom plausible; means
+          68-80 credible
     code_quality:
       score: 10
       max: 10
@@ -185,7 +184,8 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean flat structure: imports to tokens to data to plot to save'
+        comment: 'Linear flow: theme tokens -> data -> figure loop -> layout -> save;
+          no functions or classes'
       - id: CQ-02
         name: Reproducibility
         score: 2
@@ -197,13 +197,14 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: sys, os, numpy, plotly.graph_objects — all used
+        comment: sys, os, numpy, plotly.graph_objects all used; no dead imports
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Idiomatic for-loop over groups, no over-engineering
+        comment: zip() iteration clean; dict-style config idiomatic; sys.path.pop(0)
+          guard legitimate
       - id: CQ-05
         name: Output & API
         score: 1
@@ -219,16 +220,16 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: go.Box with boxpoints/jitter/pointpos/boxmean is correct plotly usage;
-          proper layout token application
+        comment: Correct go.Box usage, update_layout dict-style, write_image/write_html
+          — idiomatic; doesn't exploit advanced layout features
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: hovertemplate with custom hover text, HTML export, boxmean=True,
-          interactive jitter configuration — all plotly-distinctive
-  verdict: REJECTED
+        comment: hovertemplate for per-point tooltips, boxmean=True for mean overlay,
+          HTML export — Plotly-distinctive capabilities
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:

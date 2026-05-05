@@ -1,7 +1,7 @@
 """ anyplot.ai
 swarm-basic: Basic Swarm Plot
 Library: plotly 6.7.0 | Python 3.13.13
-Quality: 81/100 | Updated: 2026-05-05
+Quality: 86/100 | Updated: 2026-05-05
 """
 
 import sys

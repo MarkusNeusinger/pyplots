@@ -1,25 +1,49 @@
-""" pyplots.ai
+"""anyplot.ai
 streamgraph-basic: Basic Stream Graph
-Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Library: seaborn | Python 3.13
+Quality: 92/100 | Updated: 2026-05-05
 """
+
+import os
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from scipy.interpolate import make_interp_spline
 
 
-# Set seaborn theme for consistent styling
-sns.set_theme(style="whitegrid", context="talk", font_scale=1.2)
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
 
-# Data - Monthly streaming hours by music genre over 2 years
+OKABE_ITO = ["#009E73", "#D55E00", "#0072B2", "#CC79A7", "#E69F00", "#56B4E9"]
+
+sns.set_theme(
+    style="ticks",
+    rc={
+        "figure.facecolor": PAGE_BG,
+        "axes.facecolor": PAGE_BG,
+        "axes.edgecolor": INK_SOFT,
+        "axes.labelcolor": INK,
+        "text.color": INK,
+        "xtick.color": INK_SOFT,
+        "ytick.color": INK_SOFT,
+        "grid.color": INK,
+        "grid.alpha": 0.10,
+        "legend.facecolor": ELEVATED_BG,
+        "legend.edgecolor": INK_SOFT,
+    },
+)
+
+# Data — monthly streaming hours by music genre over 2 years
 np.random.seed(42)
 
 months = pd.date_range("2023-01", periods=24, freq="ME")
 genres = ["Pop", "Rock", "Hip-Hop", "Electronic", "Classical", "Jazz"]
 
-# Generate realistic streaming data with seasonal patterns
 data = {}
 for i, genre in enumerate(genres):
     base = [40, 35, 50, 30, 15, 12][i]
@@ -30,65 +54,61 @@ for i, genre in enumerate(genres):
 
 df = pd.DataFrame(data, index=months)
 
-# Create long-form data for seaborn
-df_long = df.reset_index().melt(id_vars="index", var_name="Genre", value_name="Hours")
-df_long.rename(columns={"index": "Month"}, inplace=True)
-
-# Pivot to wide format for stackplot calculation
-df_pivot = df_long.pivot(index="Month", columns="Genre", values="Hours")
-df_pivot = df_pivot[genres]  # Ensure consistent order
-
-# Create stacked values for streamgraph (centered baseline)
-values = df_pivot.values
+# Streamgraph: centered baseline
+values = df.values
 cumsum = np.cumsum(values, axis=1)
 total = cumsum[:, -1]
-baseline = -total / 2  # Center around x-axis
+baseline = -total / 2
 
-# Create upper and lower bounds for each genre
 lowers = np.column_stack([baseline + cumsum[:, i] - values[:, i] for i in range(len(genres))])
 uppers = np.column_stack([baseline + cumsum[:, i] for i in range(len(genres))])
 
-# Create figure using seaborn-styled matplotlib
-fig, ax = plt.subplots(figsize=(16, 9))
+# Smooth spline interpolation for flowing curves
+x_numeric = np.arange(len(months), dtype=float)
+x_smooth = np.linspace(0, len(months) - 1, 400)
 
-# Use seaborn color palette - Python colors first, then colorblind-safe
-palette = ["#306998", "#FFD43B"] + sns.color_palette("colorblind", n_colors=4).as_hex()
+# Plot
+fig, ax = plt.subplots(figsize=(16, 9), facecolor=PAGE_BG)
+ax.set_facecolor(PAGE_BG)
 
-# Fill between for each genre layer
 for i in range(len(genres)):
+    spl_lower = make_interp_spline(x_numeric, lowers[:, i], k=3)
+    spl_upper = make_interp_spline(x_numeric, uppers[:, i], k=3)
     ax.fill_between(
-        df_pivot.index,
-        lowers[:, i],
-        uppers[:, i],
+        x_smooth,
+        spl_lower(x_smooth),
+        spl_upper(x_smooth),
         label=genres[i],
-        color=palette[i],
+        color=OKABE_ITO[i],
         alpha=0.85,
-        edgecolor="white",
+        edgecolor=PAGE_BG,
         linewidth=0.5,
     )
 
-# Styling with seaborn aesthetics
-ax.set_xlabel("Month", fontsize=20)
-ax.set_title("streamgraph-basic · seaborn · pyplots.ai", fontsize=24)
-ax.tick_params(axis="both", labelsize=16)
+# Style
+tick_positions = [0, 4, 8, 12, 16, 20, 23]
+tick_labels = [months[i].strftime("%b '%y") for i in tick_positions]
+ax.set_xticks(tick_positions)
+ax.set_xticklabels(tick_labels, fontsize=16, color=INK_SOFT)
 
-# Remove y-axis ticks (streamgraph focuses on relative proportions)
+ax.set_xlim(0, len(months) - 1)
 ax.set_yticks([])
 ax.set_ylabel("")
+ax.set_xlabel("Month", fontsize=20, color=INK)
+ax.set_title("streamgraph-basic · seaborn · anyplot.ai", fontsize=24, fontweight="medium", color=INK)
 
-# Format x-axis dates
-ax.set_xlim(df_pivot.index[0], df_pivot.index[-1])
-fig.autofmt_xdate(rotation=45)
+ax.legend(
+    loc="upper left",
+    fontsize=14,
+    title="Genre",
+    title_fontsize=16,
+    facecolor=ELEVATED_BG,
+    edgecolor=INK_SOFT,
+    framealpha=0.9,
+)
 
-# Legend using seaborn styling
-ax.legend(loc="upper left", fontsize=14, framealpha=0.9, title="Genre", title_fontsize=16)
-
-# Use seaborn's despine for cleaner look
 sns.despine(ax=ax, left=True, bottom=False)
-
-# Subtle grid on x-axis only
-ax.grid(True, axis="x", alpha=0.3, linestyle="--")
-ax.set_axisbelow(True)
+ax.spines["bottom"].set_color(INK_SOFT)
 
 plt.tight_layout()
-plt.savefig("plot.png", dpi=300, bbox_inches="tight")
+plt.savefig(f"plot-{THEME}.png", dpi=300, bbox_inches="tight", facecolor=PAGE_BG)

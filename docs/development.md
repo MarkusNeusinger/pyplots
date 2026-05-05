@@ -6,7 +6,7 @@ Guide for setting up a local development environment.
 
 ## Prerequisites
 
-- **Python 3.14+**
+- **Python 3.13+**
 - **Node.js 20+** and yarn
 - **PostgreSQL** (or access to Cloud SQL)
 - **uv** - Fast Python package manager

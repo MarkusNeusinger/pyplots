@@ -1,13 +1,22 @@
-""" anyplot.ai
+"""anyplot.ai
 waffle-basic: Basic Waffle Chart
 Library: altair 6.1.0 | Python 3.13.13
 Quality: 89/100 | Updated: 2026-05-05
 """
 
 import os
+import sys
 
-import altair as alt
 import pandas as pd
+
+
+# Fix import conflict: import from parent directory to avoid local module shadowing
+original_path = sys.path[:]
+sys.path = [p for p in sys.path if not p.endswith("python")]
+try:
+    import altair as alt
+finally:
+    sys.path = original_path
 
 
 # Theme tokens

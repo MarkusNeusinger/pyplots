@@ -2,7 +2,7 @@ library: matplotlib
 language: python
 specification_id: swarm-basic
 created: '2025-12-23T21:54:23Z'
-updated: '2026-05-05T00:57:41Z'
+updated: '2026-05-05T01:11:55Z'
 generated_by: claude-sonnet
 workflow_run: 25351820138
 issue: 974
@@ -12,47 +12,37 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/swarm-bas
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/swarm-basic/python/matplotlib/plot-dark.png
 preview_html_light: null
 preview_html_dark: null
-quality_score: 83
+quality_score: 90
 review:
   strengths:
-  - 'Perfect spec compliance: correct beeswarm type, all required features, proper
-    title format, mean markers implemented as suggested by spec'
-  - 'Excellent data quality: realistic business context (employee performance by department),
-    varied distributions with outliers, correct scale, full feature coverage across
-    4 groups'
-  - 'Solid theme-adaptive chrome: both light and dark renders fully readable with
-    correct backgrounds (#FAF8F1 / #1A1A17), text colors flip correctly, Okabe-Ito
-    data palette unchanged between themes'
-  - 'Text sizing precisely set at all levels: title=24pt, axis labels=20pt, ticks=16pt,
-    legend=16pt — all readable in both themes'
+  - Violin + beeswarm hybrid combination shows distribution shape and individual data
+    points, exactly matching the spec intent
+  - Custom collision-detection algorithm correctly prevents point overlap without
+    external libraries
+  - 'Exemplary theme adaptation: backgrounds, text, grid, legend, and annotation chrome
+    all correctly flip; Okabe-Ito data colors remain constant across themes'
+  - Overall mean reference line and Top performer annotation create genuine narrative
+    hierarchy and data storytelling
   weaknesses:
-  - 'Swarm spreading is incomplete for high-density value clusters: Marketing (tight
-    ±10 std, 40 pts) and Support (55 pts) show column-stacking instead of true beeswarm
-    spread — the collision detection uses a fixed offset range (0–0.35) that fails
-    when many points cluster at similar y-values; fix by scaling offset range proportional
-    to point count or reducing marker size for denser groups'
-  - 'Design storytelling is absent: no visual emphasis or highlight distinguishes
-    the key insight (which department leads/lags); mean diamonds help but no color
-    contrast, annotation, or reference line guides the viewer to a focal point'
-  - 'LM-02 is weak: only generic scatter() usage; no matplotlib-unique techniques
-    (PathPatch, violinplot background layer, custom spine positioning, BrokenBarHCollection)
-    are leveraged; adding a faint violinplot layer (alpha≈0.15) behind the swarm is
-    a hallmark publication-quality beeswarm technique distinctive to matplotlib'
+  - Slight vertical stacking in Support group at lower values — swarm max_offset (0.35)
+    is too narrow for peak density; increase to 0.45 or adjust point_radius scaling
+  - Mean diamond markers use INK for edgecolors making them visually heavy; INK_SOFT
+    would be more refined
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white #FAF8F1 — correct, not pure white
-      Chrome: Title "swarm-basic · matplotlib · anyplot.ai" in dark ink, clearly readable. Axis labels "Department" (x) and "Performance Score" (y) in dark ink, readable. Tick labels readable in INK_SOFT dark color. Legend frame styled with elevated background.
-      Data: Four beeswarm columns. Engineering = #009E73 (teal-green, first series correct), Sales = #D55E00 (vermillion), Marketing = #0072B2 (blue), Support = #CC79A7 (pink-purple). Diamond mean markers visible. Points have PAGE_BG edge color providing definition. Marketing and Support columns show some vertical stacking in dense regions.
+      Background: Warm off-white (~#FAF8F1) — correct theme surface, not pure white
+      Chrome: Title "swarm-basic · matplotlib · anyplot.ai" in dark ink, clearly readable; axis labels "Performance Score" (y) and "Department" (x) in dark ink; tick labels in INK_SOFT (#4A4A44) — all readable against light background
+      Data: Four departments with Okabe-Ito colors — Engineering=#009E73 (green, first series ✓), Sales=#D55E00 (orange), Marketing=#0072B2 (blue), Support=#CC79A7 (pink); violin KDE shapes behind scatter points; diamond mean markers; dashed reference line at Overall mean=74; "Top performer" annotation callout pointing to Marketing's highest scorer
       Legibility verdict: PASS
 
     Dark render (plot-dark.png):
-      Background: Warm near-black #1A1A17 — correct, not pure black
-      Chrome: Title, axis labels, tick labels all switch to light-colored text and are clearly readable against the dark background. Legend uses dark elevated background (#242420) with light text. No dark-on-dark failures detected.
-      Data: Colors are identical to light render — #009E73, #D55E00, #0072B2, #CC79A7 — confirming Okabe-Ito data colors are theme-invariant. Diamond mean markers visible with light edge colors.
+      Background: Near-black (~#1A1A17) — correct dark theme surface, not pure black
+      Chrome: Title and axis labels render in light text (#F0EFE8 equivalent) — fully readable against dark background; tick labels in lighter gray (INK_SOFT #B8B7B0) — readable; no dark-on-dark failures observed; legend box uses elevated dark background (#242420)
+      Data: Colors identical to light render — Engineering green, Sales orange, Marketing blue, Support pink all preserved ✓; violin fills appear deeper/more saturated due to dark background alpha interaction (expected); scatter point hues unchanged
       Legibility verdict: PASS
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 28
       max: 30
       items:
       - id: VQ-01
@@ -60,76 +50,72 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title=24pt, labels=20pt, ticks=16pt,
-          legend=16pt. Readable in both themes.'
+        comment: 'All sizes explicitly set: title=24, labels=20, ticks=16; readable
+          in both renders'
       - id: VQ-02
         name: No Overlap
-        score: 3
+        score: 5
         max: 6
-        passed: false
-        comment: Partial spread — Marketing and Support columns show column-stacking
-          in dense y-ranges; custom offset range (0–0.35) too narrow for tight distributions.
+        passed: true
+        comment: Swarm algorithm prevents most overlap; slight vertical stacking in
+          Support at lower values
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: s=150 with alpha=0.75 appropriate for 40–55 points. Mean diamonds
-          (s=350) prominent. Minor density masking in tighter groups.
+        comment: s=150, alpha=0.75 appropriate for 40-55 points; slightly cramped
+          in dense Support cluster
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito is CVD-safe; alpha and edgecolors provide adequate contrast.
+        comment: Okabe-Ito palette; CVD-safe, good contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: 16:9 canvas, balanced margins, good canvas utilisation, tight_layout
-          applied.
+        comment: 16:9 landscape, well-utilized canvas, balanced margins
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Department and Performance Score are descriptive; no units required
-          for these axes.
+        comment: Performance Score and Department are descriptive; scores are dimensionless
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series #009E73 correct; multi-series follows Okabe-Ito 1–4;
-          backgrounds #FAF8F1/#1A1A17; chrome flips correctly in both themes.'
+        comment: 'First series #009E73, Okabe-Ito order, correct theme backgrounds
+          and chrome'
     design_excellence:
-      score: 12
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Warm background, Okabe-Ito palette, diamond mean markers, styled
-          legend frame lift above defaults. Not FiveThirtyEight-level — no typographic
-          hierarchy beyond sizing or distinguishing design touch.
+        comment: Violin+swarm combination, annotations, reference line — clearly above
+          library defaults
       - id: DE-02
         name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: Top/right spines removed, subtle y-only grid, alpha blending, edge
+          highlighting, generous whitespace
+      - id: DE-03
+        name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Top/right spines removed; grid alpha=0.10 very subtle; legend frame
-          styled; marker edge colors applied. Good refinement but not fully polished.
-      - id: DE-03
-        name: Data Storytelling
-        score: 3
-        max: 6
-        passed: false
-        comment: Different distributions tell a natural story and mean diamonds aid
-          comparison, but no emphasis, annotation, or reference line guides viewer
-          to a focal insight.
+        comment: Top performer annotation + Overall mean reference line create narrative
+          hierarchy
     spec_compliance:
       score: 15
       max: 15
@@ -139,29 +125,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct beeswarm/swarm plot with individual points spread horizontally
-          per category.
+        comment: Correct beeswarm with custom collision-avoidance; violin overlay
+          is valid enhancement
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Individual points, horizontal spread, per-category color, consistent
-          sizes, mean markers, clear category spacing — all present.
+        comment: Horizontal spread, mean markers, color per category, clear group
+          spacing
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Categories on x-axis, continuous values on y-axis, all data within
-          ylim(25, 105).
+        comment: Categories on x-axis, performance scores on y-axis
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title 'swarm-basic · matplotlib · anyplot.ai' correct format; legend
-          shows all 4 departments plus Mean marker.
+        comment: swarm-basic · matplotlib · anyplot.ai; legend correctly labels all
+          series
     data_quality:
       score: 15
       max: 15
@@ -171,24 +156,23 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Four groups with distinct means (68–82) and spreads (±10–15), including
-          low-end outliers in Sales. Full distribution behavior range demonstrated.
+        comment: Four groups with different means (68-82) and spreads showcase distribution
+          shape and individual values
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Employee performance scores by department — neutral, real-world business
-          scenario.
+        comment: Employee performance scores by department — real-world neutral business
+          scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Scores 0–100 with realistic departmental variation; clipped to valid
-          range.
+        comment: Scores 30-100, n=40-55 per group, plausible HR metrics
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -196,35 +180,34 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear: tokens → data → plot loop → save. No functions or classes.'
+        comment: Imports -> Data -> Plot -> Save; nested loops justified for beeswarm
+          implementation
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set.
+        comment: np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only os, matplotlib.pyplot, numpy imported and all used.
+        comment: os, matplotlib.pyplot, numpy only; all used
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Custom swarm collision detection is verbose (nested loops, manual
-          offset search). Necessary given no native beeswarm in matplotlib, but could
-          be simplified with numpy vectorisation.
+        passed: true
+        comment: Appropriate complexity, no fake functionality, Pythonic
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot-{THEME}.png; current matplotlib API throughout.
+        comment: Saves as plot-{THEME}.png
     library_mastery:
-      score: 6
+      score: 7
       max: 10
       items:
       - id: LM-01
@@ -232,25 +215,27 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Consistently uses axes methods, correct figsize for 4800×2700, proper
-          setp for legend text. Minor deduction: swarm bypasses higher-level idioms.'
+        comment: ax.* methods throughout, plt.setp for legend text, idiomatic but
+          no advanced API leverage
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Uses marker='D', zorder layering, per-artist edgecolor — moderately
-          distinctive. Core technique is generic scatter(); no matplotlib-unique features
-          (PathPatch, violinplot layer, custom transforms) leveraged.
-  verdict: REJECTED
+        passed: true
+        comment: Custom beeswarm collision-detection (no native ax.swarm()), combined
+          with ax.violinplot() and ax.annotate() callout
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
-  - manual-ticks
+  - annotations
   - custom-legend
+  - layer-composition
+  - manual-ticks
   patterns:
   - data-generation
   - iteration-over-groups
+  - explicit-figure
   dataprep: []
   styling:
   - alpha-blending

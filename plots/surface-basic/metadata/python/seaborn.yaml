@@ -2,7 +2,7 @@ library: seaborn
 language: python
 specification_id: surface-basic
 created: '2026-05-05T16:46:44Z'
-updated: '2026-05-05T16:49:50Z'
+updated: '2026-05-05T16:56:14Z'
 generated_by: claude-haiku
 workflow_run: 25389553593
 issue: 1013
@@ -12,40 +12,43 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/surface-b
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/surface-basic/python/seaborn/plot-dark.png
 preview_html_light: null
 preview_html_dark: null
-quality_score: 76
+quality_score: 85
 review:
   strengths:
-  - Correct 3D surface plot implementation
-  - Proper theme adaptation in text colors
-  - Clean, readable layout across both themes
-  - Correct viridis colormap for continuous data
-  - Reproducible code with seed control
+  - 'Perfect theme adaptation: both light and dark renders theme-correct with proper
+    text colors and backgrounds'
+  - 'Text legibility excellent: all font sizes explicitly set (title 24pt, labels
+    20pt, ticks 14pt) and readable in both themes'
+  - 'Clean code structure: KISS principle, deterministic with seed, proper imports,
+    no fake functionality'
+  - 'Complete spec compliance: correct 3D surface plot type, all required features
+    (axes, colorbar, labels), proper title format'
+  - Colorbar properly styled with descriptive 'Height' label and appropriate colormap
+    (viridis for continuous data)
   weaknesses:
-  - Generic styling with no design customization
-  - Minimal use of seaborn-specific features (mostly matplotlib 3D)
-  - 3D axes panes lack explicit theme-adaptive coloring
-  - No visual hierarchy or emphasis techniques
-  - Z-axis label missing units/context
+  - 'Design Excellence low: styling is standard library defaults (DE-01=4/8); lacks
+    sophisticated color harmony or intentional visual hierarchy'
+  - 'Data storytelling minimal: surface is displayed clearly but no visual hierarchy
+    or emphasis that guides viewer interpretation (DE-03=2/6)'
+  - 'Visual refinement conservative: while functional, could benefit from more intentional
+    grid styling, margin refinement, or custom palette choices'
+  - 'Library mastery limited: implementation is primarily matplotlib-based; seaborn
+    API not significantly leveraged beyond theme configuration (LM-02=1/5)'
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1), correct surface color
-      Chrome: Title "surface-basic · seaborn · anyplot.ai" in dark text (INK=#1A1A17), axis labels X/Y/Z in dark text with INK_SOFT tick labels - all readable
-      Data: 3D surface using viridis colormap (sequential, perceptually uniform) from purple/blue (low values) to yellow/green (high values); smooth transitions visible
-      Colorbar: "Height" label in dark text with viridis scale clearly visible
-      Legibility verdict: PASS - All text elements clearly readable, surface colors distinct
+      Background: Warm off-white (#FAF8F1) — correct light theme surface
+      Chrome: Title "surface-basic · seaborn · anyplot.ai" in dark text (INK color), axis labels "X Coordinate", "Y Coordinate", "Z" all clearly readable. Tick labels in INK_SOFT color visible. Colorbar label "Height" readable with proper padding.
+      Data: 3D surface rendered in viridis colormap (purple to yellow gradient showing height from 0.0 to 0.8). Grid lines subtle and grey. Surface shows Gaussian-modulated sinusoidal function clearly.
+      Legibility verdict: PASS — all text readable, excellent contrast, no overlap
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17), correct surface color
-      Chrome: Title in light text (#F0EFE8), axis labels in light text, tick labels in light gray (#B8B7B0) - all readable against dark background
-      Data: Viridis colormap colors identical to light render (data independence confirmed) - purple/blue and yellow/green ranges unchanged
-      3D axes box: Panes appear gray (default matplotlib rendering, not explicitly theme-adapted to INK_SOFT, but not affecting readability)
-      Colorbar: "Height" label and scale readable
-      Legibility verdict: PASS - All text readable, no dark-on-dark failures, data colors consistent with light render
-
-    Both renders meet readability standards. Text is clearly visible in both themes. Viridis colormap is theme-independent and renders identically in both renders (as required).
+      Background: Warm near-black (#1A1A17) — correct dark theme surface
+      Chrome: Title and all axis labels rendered in light text (F0EFE8) and readable against dark background. Tick labels in light INK_SOFT color (#B8B7B0) visible. No dark-on-dark failures. Colorbar "Height" label readable.
+      Data: 3D surface viridis colors identical to light render (purple to yellow unchanged) — only chrome flipped as expected. Grid lines subtle light grey.
+      Legibility verdict: PASS — all text readable, proper theme adaptation, no dark-on-dark issues
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 30
       max: 30
       items:
       - id: VQ-01
@@ -53,73 +56,70 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: All text readable in both light and dark themes; font sizes appropriate
-          at 300 DPI
+        comment: All font sizes explicitly set (24/20/14pt), readable in both themes
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: Clean layout; colorbar well-positioned; no text collisions
+        comment: No overlapping elements, proper padding on all text
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Surface clearly visible with smooth color transitions; colorbar scale
-          readable
+        comment: 40x40 mesh surface visible and well-adapted, edges removed for clarity
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Viridis is perceptually uniform and CVD-safe; no red-green encoding
+        comment: Viridis colormap perceptually uniform and CVD-safe
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Good proportions for 4800×2700 canvas; nothing cut off; adequate
-          whitespace
+        comment: Plot fills 60-70% of canvas, balanced margins, colorbar well-positioned
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Title correct format 'surface-basic · seaborn · anyplot.ai'; axis
-          labels present
+        comment: 'Descriptive labels: X/Y for coordinates, Z for height, ''Height''
+          on colorbar'
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'Viridis (sequential) correct for continuous data; backgrounds match
-          theme tokens (#FAF8F1 light, #1A1A17 dark); both renders theme-correct'
+        comment: 'Viridis colormap correct for continuous; backgrounds #FAF8F1/#1A1A17
+          theme-correct; text colors proper'
     design_excellence:
-      score: 6
+      score: 10
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 2
+        score: 4
         max: 8
         passed: false
-        comment: Generic styling with standard viridis colormap; no custom palette
-          or intentional design choices
+        comment: Well-configured library default; lacks custom palette or intentional
+          design sophistication
       - id: DE-02
         name: Visual Refinement
-        score: 2
+        score: 4
         max: 6
         passed: false
-        comment: Minimal customization; no explicit spine removal or grid styling
-          (grid disabled); basic setup
+        comment: 'Some refinement: grid disabled, proper spine colors, alpha=0.95;
+          mostly standard'
       - id: DE-03
         name: Data Storytelling
         score: 2
         max: 6
         passed: false
-        comment: No visual hierarchy or emphasis techniques; straightforward mathematical
-          surface visualization
+        comment: Data displayed clearly but no visual hierarchy or emphasis guiding
+          viewer interpretation
     spec_compliance:
       score: 15
       max: 15
@@ -129,26 +129,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct 3D surface plot with proper projection
+        comment: Correct 3D surface plot using plot_surface
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features present: 3D surface, colorbar, axis labels, title'
+        comment: 'All features present: 3D axes, color encoding, colorbar, labels'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X/Y grid mapped to position, Z mapped to height and color via viridis;
-          all data shown
+        comment: X/Y/Z correctly mapped; axes show full -5 to 5 range; colorbar 0-0.8
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format; colorbar labeled as 'Height'
+        comment: Title format correct 'surface-basic · seaborn · anyplot.ai'; colorbar
+          label 'Height'
     data_quality:
       score: 15
       max: 15
@@ -158,22 +158,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows full range of 3D surface plot type features; smooth surface
-          rendering
+        comment: 'Shows full surface feature: smooth gradient, both positive and negative
+          regions'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Mathematical function z=sin(√(x²+y²))·exp(-0.1(x²+y²)); realistic
-          and neutral domain
+        comment: Mathematical function (Gaussian-modulated sine wave) is realistic
+          and neutral scientific context
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Grid 40×40 points; x,y range [-5,5]; z range approximately [-0.5,
-          1.0]; sensible for visualization
+        comment: Domain [-5,5] sensible; range [0,0.8] correct; proportions factually
+          accurate
     code_quality:
       score: 10
       max: 10
@@ -183,50 +183,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Simple procedural code; no unnecessary functions or classes
+        comment: 'Clean linear: imports → constants → data → plot → save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Uses np.random.seed(42) for deterministic data generation
+        comment: np.random.seed(42) set; fully deterministic
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'Only necessary imports: matplotlib, numpy, os, sys'
+        comment: 'All imports used: os, sys, matplotlib.pyplot, numpy'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Straightforward matplotlib 3D API usage; no fake UI or unnecessary
-          complexity
+        comment: Clean, appropriate complexity, no fake functionality
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot-{THEME}.png with correct 300 DPI and theme parameter
+        comment: 'Correct output: plot-{THEME}.png with DPI=300'
     library_mastery:
-      score: 4
+      score: 5
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Uses matplotlib 3D projection correctly; theme tokens properly mapped;
-          standard matplotlib patterns
+        comment: 'Good idiomatic: projection=''3d'', plot_surface, proper theme tokens'
       - id: LM-02
         name: Distinctive Features
         score: 1
         max: 5
         passed: false
-        comment: Limited seaborn-specific features; implementation is primarily matplotlib
-          3D plotting
+        comment: Generic matplotlib usage; seaborn-specific features not leveraged
   verdict: APPROVED
 impl_tags:
   dependencies: []
@@ -235,6 +232,6 @@ impl_tags:
   - colorbar
   patterns:
   - data-generation
+  - matrix-construction
   dataprep: []
-  styling:
-  - custom-colormap
+  styling: []

@@ -141,7 +141,9 @@ async def get_branded_impl_image(
     track_og_image(request, page="spec_detail", spec=spec_id, language=language, library=library)
 
     # Check cache first
-    key = cache_key("og", OG_VERSION, spec_id, language, library)
+    # Spec_id sits before the version so `clear_spec_cache(spec_id)` (which
+    # patterns on `og:{spec_id}`) still invalidates this entry — see api/cache.py.
+    key = cache_key("og", spec_id, OG_VERSION, language, library)
     cached = get_cache(key)
     if cached:
         return Response(content=cached, media_type="image/png", headers={"Cache-Control": "public, max-age=3600"})
@@ -192,7 +194,7 @@ async def get_spec_collage_image(
     track_og_image(request, page="spec_overview", spec=spec_id)
 
     # Check cache first
-    key = cache_key("og", OG_VERSION, spec_id, "collage")
+    key = cache_key("og", spec_id, OG_VERSION, "collage")
     cached = get_cache(key)
     if cached:
         return Response(content=cached, media_type="image/png", headers={"Cache-Control": "public, max-age=3600"})

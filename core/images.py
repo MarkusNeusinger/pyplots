@@ -467,7 +467,8 @@ def _draw_anyplot_wordmark(
     """Draw the `any.plot()` wordmark in the new visual style.
 
     - `any` and `plot` in `--ink`, MonoLisa Bold
-    - `.` rendered as a filled green circle (the brand anchor) in place of the literal dot
+    - `.` is the actual MonoLisa period glyph recolored to brand green (matches
+      the website where the dot is a `.` character with `color: var(--ok-green)`)
     - `()` in `--ink` at 45% opacity, normal weight (not bold)
 
     Args:
@@ -669,28 +670,6 @@ def _draw_method_chip(
     text_x = x + square + int(chip_size * 0.55)
     draw.text((text_x, y), label, fill=theme["ink"], font=label_font)
     return _text_advance(draw, label, label_font) + (text_x - x)
-
-
-def _draw_dotted_text(
-    draw: ImageDraw.ImageDraw,
-    text: str,
-    x: int,
-    y: int,
-    font: ImageFont.FreeTypeFont | ImageFont.ImageFont,
-    text_color: str | tuple[int, int, int],
-    underline_color: str | tuple[int, int, int],
-) -> int:
-    """Draw text with a dotted underline (matches in-prose link treatment, §4.4)."""
-    draw.text((x, y), text, fill=text_color, font=font)
-    text_w, text_h = _text_size(draw, text, font)
-    underline_y = y + text_h + 2
-    dot = 2
-    gap = 2
-    cx = x
-    while cx < x + text_w:
-        draw.rectangle([cx, underline_y, cx + dot, underline_y + 1], fill=underline_color)
-        cx += dot + gap
-    return text_w
 
 
 # =============================================================================
@@ -1047,7 +1026,6 @@ def create_branded_og_image(
     library: str | None = None,
     *,
     theme: str = "light",
-    method: str | None = None,
     language: str | None = None,
 ) -> Image.Image | bytes:
     """Render a branded OG card for a single implementation in the any.plot() style.
@@ -1055,25 +1033,25 @@ def create_branded_og_image(
     Layout (1200×630):
 
         ┌──────────────────────────────────────────────────────────────┐
-        │  any.plot()                                  ~/anyplot.ai    │
-        │  ──────────────────────────────────────────────────────────  │
-        │  ❯ scatter-basic                                             │
-        │  ┌────────────────────────────────────────────────────────┐  │
-        │  │                                                        │  │
-        │  │                  [ plot rendered here ]                │  │
-        │  │                                                        │  │
-        │  └────────────────────────────────────────────────────────┘  │
-        │  ■ matplotlib.pyplot.plot()      get inspired. grab the code.│
+        │  any.plot()                                    ~/anyplot.ai  │
+        │   ── scatter-basic                                           │
+        │                                                              │
+        │             ┌────────────────────────────────────┐           │
+        │             │      [ plot rendered here ]        │           │
+        │             └────────────────────────────────────┘           │
+        │                                                              │
+        │  python matplotlib                          from .md to art. │
         └──────────────────────────────────────────────────────────────┘
 
     Args:
         plot_image: Path to plot image, PIL Image, or bytes
         output_path: If provided, save to this path
-        spec_id: Spec slug rendered as the section title (`❯ {spec_id}`)
-        library: Library name rendered in the colored chip
-        theme: "light" (cream `#FFFDF6`) or "dark" (`#0a0a08`) surface
-        method: Optional explicit method-call hint (e.g. `pyplot.scatter()`)
-            shown after `library.` in the chip. Defaults to a per-library hint.
+        spec_id: Spec slug rendered in the eyebrow row above the plot card
+        library: Library name shown in the bottom-left footer label
+        theme: "light" (cream `#F5F3EC`) or "dark" (`#121210`) surface — values
+            kept in sync with the website tokens in `app/src/styles/tokens.css`
+        language: Implementation language (e.g. "python") for the footer label;
+            defaults to "python" when unset
     """
     theme_dict = DARK_THEME if theme == "dark" else LIGHT_THEME
     img = _load_plot_image(plot_image)
@@ -1116,7 +1094,6 @@ def create_branded_og_image(
     # Bottom-left: `language library` (e.g. "python matplotlib"); bottom-right:
     # `from .md to art.` Same eyebrow font size as the home OG so the editorial
     # surface reads as one consistent typographic system.
-    del method  # superseded by the simpler language+library footer
     footer_draw = ImageDraw.Draw(final)
     footer_pad = 56
     footer_font = _get_font(20, weight=500)

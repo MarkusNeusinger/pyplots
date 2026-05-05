@@ -1,16 +1,27 @@
-""" pyplots.ai
+"""anyplot.ai
 surface-basic: Basic 3D Surface Plot
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-23
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-05-05
 """
 
+import os
+import time
+from pathlib import Path
+
 import numpy as np
-from bokeh.io import export_png, save
+from bokeh.io import output_file, save
 from bokeh.models import ColorBar, LinearColorMapper, Range1d
 from bokeh.palettes import Viridis256
 from bokeh.plotting import figure
-from bokeh.resources import CDN
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
+
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
 
 # Data - create a smooth surface z = sin(x) * cos(y)
 np.random.seed(42)
@@ -74,10 +85,10 @@ for z_val in quad_colors:
     colors.append(Viridis256[idx])
 
 # Create Bokeh figure
-p = figure(width=4800, height=2700, title="surface-basic · bokeh · pyplots.ai", toolbar_location=None, tools="")
+p = figure(width=4800, height=2700, title="surface-basic · bokeh · anyplot.ai", toolbar_location=None, tools="")
 
 # Draw surface patches with subtle edges
-p.patches(xs=quad_xs, ys=quad_ys, fill_color=colors, line_color="#306998", line_alpha=0.3, line_width=0.5, alpha=0.9)
+p.patches(xs=quad_xs, ys=quad_ys, fill_color=colors, line_color=INK_SOFT, line_alpha=0.3, line_width=0.5, alpha=0.9)
 
 # Set appropriate ranges with padding
 x_min = min(min(xs) for xs in quad_xs)
@@ -95,13 +106,13 @@ p.y_range = Range1d(y_min - y_pad, y_max + y_pad)
 p.xaxis.visible = False
 p.yaxis.visible = False
 
-# Add text annotations for 3D axes labels
+# Add text annotations for 3D axes labels with context
 p.text(
     x=[x_max + x_pad * 0.4],
     y=[(y_min + y_max) / 2],
     text=["X"],
     text_font_size="28pt",
-    text_color="#666666",
+    text_color=INK_SOFT,
     text_align="center",
 )
 p.text(
@@ -109,7 +120,7 @@ p.text(
     y=[y_min - y_pad * 0.3],
     text=["Y"],
     text_font_size="28pt",
-    text_color="#666666",
+    text_color=INK_SOFT,
     text_align="center",
 )
 p.text(
@@ -117,7 +128,7 @@ p.text(
     y=[y_max + y_pad * 0.3],
     text=["Z"],
     text_font_size="28pt",
-    text_color="#666666",
+    text_color=INK_SOFT,
     text_align="center",
 )
 
@@ -135,24 +146,45 @@ color_bar = ColorBar(
 p.add_layout(color_bar, "right")
 
 # Title styling for large canvas
-p.title.text_font_size = "32pt"
+p.title.text_font_size = "28pt"
+p.title.text_color = INK
 
 # Grid styling - subtle
-p.xgrid.grid_line_color = "#cccccc"
-p.ygrid.grid_line_color = "#cccccc"
-p.xgrid.grid_line_alpha = 0.2
-p.ygrid.grid_line_alpha = 0.2
-p.xgrid.grid_line_dash = [6, 4]
-p.ygrid.grid_line_dash = [6, 4]
+p.xgrid.grid_line_color = INK
+p.ygrid.grid_line_color = INK
+p.xgrid.grid_line_alpha = 0.10
+p.ygrid.grid_line_alpha = 0.10
 
-# Background styling
-p.background_fill_color = "#fafafa"
-p.border_fill_color = "white"
-p.outline_line_color = None
+# Background styling with theme adaptation
+p.background_fill_color = PAGE_BG
+p.border_fill_color = PAGE_BG
+p.outline_line_color = INK_SOFT
 p.min_border_right = 200
 
-# Save PNG
-export_png(p, filename="plot.png")
+if p.legend:
+    p.legend.background_fill_color = ELEVATED_BG
+    p.legend.border_line_color = INK_SOFT
+    p.legend.label_text_color = INK_SOFT
 
 # Save HTML for interactive version
-save(p, filename="plot.html", resources=CDN, title="surface-basic · bokeh · pyplots.ai")
+output_file(f"plot-{THEME}.html")
+save(p)
+
+# Screenshot with headless Chrome using Selenium
+W, H = 4800, 2700
+opts = Options()
+for arg in (
+    "--headless=new",
+    "--no-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-gpu",
+    f"--window-size={W},{H}",
+    "--hide-scrollbars",
+):
+    opts.add_argument(arg)
+driver = webdriver.Chrome(options=opts)
+driver.set_window_size(W, H)
+driver.get(f"file://{Path(f'plot-{THEME}.html').resolve()}")
+time.sleep(3)
+driver.save_screenshot(f"plot-{THEME}.png")
+driver.quit()

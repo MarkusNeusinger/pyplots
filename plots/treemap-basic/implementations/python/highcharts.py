@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 treemap-basic: Basic Treemap
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2025-05-05
+Library: highcharts unknown | Python 3.13.13
+Quality: 88/100 | Updated: 2026-05-05
 """
 
 import os

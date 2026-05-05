@@ -26,8 +26,9 @@ match with production, run the script in an environment with GCS auth.
 | `compare__{spec}__{library}__{theme}.png`   | impl-review comparison images           | Before/after for spec updates        |
 | `compare__{spec}__{library}__new.png`       | impl-review for first-time impls        | "no previous version" placeholder    |
 
-Each variant is rendered in both `light` (cream `#FFFDF6`) and `dark`
-(`#0A0A08`) themes so we can pick the right surface per share context.
+Each variant is rendered in both `light` (cream `#F5F3EC`) and `dark`
+(`#121210`) themes so we can pick the right surface per share context — same
+`--bg-page` tokens as defined in `app/src/styles/tokens.css`.
 
 ## Visual reference for review
 

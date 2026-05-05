@@ -774,7 +774,7 @@ class TestOgImagesRouter:
                 call_kwargs = mock_track.call_args[1]
                 assert call_kwargs["page"] == "plots"
 
-    def test_get_static_og_image_file_not_found(self, client: TestClient) -> None:
+    def test_home_og_returns_500_when_dynamic_and_disk_fallback_both_fail(self, client: TestClient) -> None:
         """Should return 500 when both dynamic generation AND the disk fallback fail."""
         import api.routers.og_images as og_module
 

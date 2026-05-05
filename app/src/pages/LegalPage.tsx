@@ -28,12 +28,79 @@ const firstColStyle = {
   },
 };
 
+const AVATAR_URL = 'https://storage.googleapis.com/anyplot-static/images/markusneusinger.webp';
+
 export function LegalPage() {
   const { trackPageview, trackEvent } = useAnalytics();
 
   useEffect(() => {
     trackPageview('/legal');
   }, [trackPageview]);
+
+  const operatorContactBlock = (
+    <>
+      <Typography sx={subheadingStyle}>operator</Typography>
+      <Typography sx={textStyle}>
+        Markus Neusinger
+        <br />
+        Visp, Switzerland
+      </Typography>
+
+      <Typography sx={subheadingStyle}>contact</Typography>
+      <Typography sx={textStyle}>
+        email:{' '}
+        <Link href="mailto:admin@anyplot.ai" sx={proseLinkStyle}>
+          admin@anyplot.ai
+        </Link>
+        <br />
+        linkedin:{' '}
+        <Link
+          href="https://www.linkedin.com/in/markus-neusinger/"
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => trackEvent('external_link', { destination: 'linkedin' })}
+          sx={proseLinkStyle}
+        >
+          markus-neusinger
+        </Link>
+        <br />
+        x:{' '}
+        <Link
+          href="https://x.com/MarkusNeusinger"
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => trackEvent('external_link', { destination: 'x' })}
+          sx={proseLinkStyle}
+        >
+          @MarkusNeusinger
+        </Link>
+        <br />
+        github:{' '}
+        <Link
+          href="https://github.com/MarkusNeusinger"
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => trackEvent('external_link', { destination: 'github_personal' })}
+          sx={proseLinkStyle}
+        >
+          MarkusNeusinger
+        </Link>
+      </Typography>
+    </>
+  );
+
+  const disclaimerBlock = (
+    <>
+      <Typography sx={subheadingStyle}>disclaimer</Typography>
+      <Typography sx={textStyle}>
+        this is a personal portfolio project showcasing data visualization examples, generated and
+        maintained through ai-powered workflows. all code examples are meant for inspiration and
+        learning — take them as a starting point, adapt them to your data and requirements, or use
+        ai tools to customize them for your specific needs. code is provided &quot;as is&quot; under
+        the MIT License and should be reviewed before production use.
+      </Typography>
+    </>
+  );
 
   return (
     <>
@@ -51,62 +118,28 @@ export function LegalPage() {
           <SectionHeader prompt="❯" title={<em>legal notice</em>} />
 
           <Box sx={{ maxWidth: 760, mx: 'auto' }}>
-            <Typography sx={subheadingStyle}>operator</Typography>
-            <Typography sx={textStyle}>
-              Markus Neusinger
-              <br />
-              Visp, Switzerland
-            </Typography>
-
-            <Typography sx={subheadingStyle}>contact</Typography>
-            <Typography sx={textStyle}>
-              email:{' '}
-              <Link href="mailto:admin@anyplot.ai" sx={proseLinkStyle}>
-                admin@anyplot.ai
-              </Link>
-              <br />
-              linkedin:{' '}
-              <Link
-                href="https://www.linkedin.com/in/markus-neusinger/"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => trackEvent('external_link', { destination: 'linkedin' })}
-                sx={proseLinkStyle}
-              >
-                markus-neusinger
-              </Link>
-              <br />
-              x:{' '}
-              <Link
-                href="https://x.com/MarkusNeusinger"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => trackEvent('external_link', { destination: 'x' })}
-                sx={proseLinkStyle}
-              >
-                @MarkusNeusinger
-              </Link>
-              <br />
-              github:{' '}
-              <Link
-                href="https://github.com/MarkusNeusinger"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => trackEvent('external_link', { destination: 'github_personal' })}
-                sx={proseLinkStyle}
-              >
-                MarkusNeusinger
-              </Link>
-            </Typography>
-
-            <Typography sx={subheadingStyle}>disclaimer</Typography>
-            <Typography sx={textStyle}>
-              this is a personal portfolio project showcasing data visualization examples, generated and
-              maintained through ai-powered workflows. all code examples are meant for inspiration and
-              learning — take them as a starting point, adapt them to your data and requirements, or use
-              ai tools to customize them for your specific needs. code is provided &quot;as is&quot; under
-              the MIT License and should be reviewed before production use.
-            </Typography>
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 6,
+                alignItems: 'center',
+                flexDirection: { xs: 'column', sm: 'row' },
+                mb: 2,
+              }}
+            >
+              <Box
+                component="img"
+                src={AVATAR_URL}
+                alt=""
+                aria-hidden="true"
+                width={240}
+                height={518}
+                loading="lazy"
+                sx={{ width: 120, height: 'auto', flexShrink: 0, display: 'block' }}
+              />
+              <Box sx={{ flex: 1, minWidth: 0 }}>{operatorContactBlock}</Box>
+            </Box>
+            {disclaimerBlock}
           </Box>
         </Box>
 

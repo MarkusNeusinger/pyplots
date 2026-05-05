@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 treemap-basic: Basic Treemap
-Library: plotly | Python 3.13
-Quality: pending | Created: 2025-12-21
+Library: plotly 6.7.0 | Python 3.13.13
+Quality: 82/100 | Updated: 2026-05-05
 """
 
 import os

@@ -1,7 +1,7 @@
-""" pyplots.ai
+""" anyplot.ai
 waffle-basic: Basic Waffle Chart
-Library: highcharts unknown | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-24
+Library: highcharts unknown | Python 3.13.13
+Quality: 81/100 | Updated: 2026-05-05
 """
 
 import tempfile

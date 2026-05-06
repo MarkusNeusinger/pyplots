@@ -2,7 +2,7 @@ library: highcharts
 language: python
 specification_id: heatmap-annotated
 created: '2025-12-24T21:31:21Z'
-updated: '2026-05-06T21:48:16Z'
+updated: '2026-05-06T22:01:16Z'
 generated_by: claude-haiku
 workflow_run: 25436953205
 issue: 1824
@@ -12,164 +12,173 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/heatmap-a
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/heatmap-annotated/python/highcharts/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/heatmap-annotated/python/highcharts/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/heatmap-annotated/python/highcharts/plot-dark.html
-quality_score: 23
+quality_score: 75
 review:
   strengths:
-  - 'Correct KISS code structure: flat script with clear sections'
-  - 'Good data choice: financial correlation matrix is realistic and neutral'
-  - Correct theme-adaptive tokens (PAGE_BG, INK, INK_SOFT, ELEVATED_BG) defined and
-    used
-  - Correctly identifies need for the heatmap.js Highcharts module
-  - Correct output file naming (plot-{THEME}.png, plot-{THEME}.html)
-  - np.random.seed(42) ensures reproducibility
+  - 'Perfect data quality: realistic financial correlation matrix, correct symmetric
+    structure, seed set for reproducibility'
+  - Full spec compliance on plot type, data mapping, and title format
+  - All font sizes explicitly set with correct theme-adaptive chrome colors
+  - Uses Highcharts colorAxis and dataLabels features effectively
+  - Clean linear code structure with zero extraneous complexity
   weaknesses:
-  - 'CRITICAL: Uses requests.get() to download Highcharts JS which gets blocked by
-    Cloudflare — use urllib.request.urlopen() as shown in the library guide'
-  - 'CRITICAL: colorAxis stops use PAGE_BG as the diverging midpoint — in dark mode
-    zero-correlation cells become near-black and indistinguishable from background;
-    use a fixed neutral midpoint like #F7F7F7'
-  - Data label text color fixed to INK for all cells regardless of cell background
-    luminance causing unreadable text on extreme-value cells — remove explicit color
-    from dataLabels.style and let Highcharts handle contrast automatically
-  - Does not use the highcharts_core Python package (Chart/Series objects); uses raw
-    JSON dict instead
+  - 'X-axis bottom labels cut off in both renders: marginBottom 200 is insufficient;
+    increase to at least 350 or add spacingBottom 150 to prevent clipping'
+  - 'Colorscale midpoint = PAGE_BG: In dark mode, near-zero cells render as near-black
+    (#1A1A17) and merge with the dark background, making cell grid structure invisible;
+    use a fixed neutral midpoint color instead'
+  - 'Fixed INK data labels ignore cell brightness: spec requires auto-contrasting
+    text; implement brightness-based switching (dark text on light cells, light text
+    on dark cells)'
+  - 'Not using recommended BrBG diverging colormap: use stops mapped to BrBG rather
+    than custom blue-orange'
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) correctly applied via HTML body style — NOT from chart rendering
-      Chrome: No chart chrome visible; only Cloudflare "You have been blocked / You are unable to access highcharts.com" error text
-      Data: No heatmap cells, no colorbar, no annotations, no axes, no title rendered
-      Legibility verdict: FAIL — Pipeline failure: requests.get() was blocked by Cloudflare; the Cloudflare HTML error page was injected as a <script> tag so no chart ever rendered; screenshot captured only the error page
+      Background: Warm off-white (#FAF8F1) — correct light surface
+      Chrome: Title "heatmap-annotated · highcharts · anyplot.ai" clearly readable in dark ink at top. Y-axis labels (Revenue, Profit, Growth, ROI, Debt, Assets, Employees) readable in INK_SOFT on the left. X-axis labels at the bottom are PARTIALLY CUT OFF at the canvas edge — clipped and barely readable.
+      Data: 7x7 correlation matrix heatmap with diverging blue-orange colorscale. Diagonal = 1 in deep orange; strongly negative values (e.g., -0.84) in deep blue; near-zero values fade to beige (PAGE_BG midpoint). Data labels in bold dark ink (#1A1A17) are readable across all cells. Colorbar on the right is narrow but functional.
+      Legibility verdict: PASS with noted defect — x-axis bottom labels cut off
 
     Dark render (plot-dark.png):
-      Background: Near-black (#1A1A17) correctly applied via HTML body style — NOT from chart rendering
-      Chrome: Same Cloudflare error page; browser-default black text on near-black background (dark-on-dark failure for the error text, but this is irrelevant as no chart was rendered)
-      Data: No data colors visible; no chart elements at all; cannot confirm Okabe-Ito or colorAxis palette
-      Legibility verdict: FAIL — Same pipeline failure as light render; both images show only the Cloudflare block page
+      Background: Near-black (#1A1A17) — correct dark surface
+      Chrome: Title readable in near-white light text. Y-axis labels readable (light-colored #B8B7B0). X-axis bottom labels again cut off — on dark background these appear effectively invisible. Colorbar labels appear light-colored and readable.
+      Data: Colors identical to light render (oranges and blues). Critical issue: colorscale midpoint is set to PAGE_BG which is #1A1A17 in dark mode — cells with correlation near zero (e.g., Growth-Profit = 0.00) render as near-black and MERGE with the dark background, causing cell grid structure to disappear for mid-range values. Data labels (near-white #F0EFE8) are visible on dark cells but contrast is marginal on moderately-colored cells.
+      Legibility verdict: PARTIAL FAIL — near-zero cells lose visual structure in dark mode; x-axis bottom labels cut off and invisible
   criteria_checklist:
     visual_quality:
-      score: 0
+      score: 21
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 0
+        score: 5
         max: 8
-        passed: false
-        comment: No chart rendered; only Cloudflare error page text visible
+        passed: true
+        comment: Font sizes explicitly set (title 28px, axis 22px, ticks 18px, data
+          labels 20px) but x-axis bottom labels clipped at canvas edge in both renders
       - id: VQ-02
         name: No Overlap
-        score: 0
+        score: 5
         max: 6
-        passed: false
-        comment: N/A; no chart elements exist to overlap
+        passed: true
+        comment: No text-on-text overlap; x-axis labels are clipped by canvas but
+          do not overlap each other
       - id: VQ-03
         name: Element Visibility
-        score: 0
+        score: 4
         max: 6
-        passed: false
-        comment: No data elements visible; chart did not render
+        passed: true
+        comment: 'Cells visible for strong values; near-zero cells in dark mode blend
+          into #1A1A17 background due to PAGE_BG midpoint, losing cell grid structure'
       - id: VQ-04
         name: Color Accessibility
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: No chart colors rendered
+        passed: true
+        comment: Blue-orange diverging scheme is CVD-safe; numeric annotations provide
+          redundant encoding
       - id: VQ-05
         name: Layout & Canvas
-        score: 0
+        score: 2
         max: 4
-        passed: false
-        comment: No chart layout; Cloudflare error page only
+        passed: true
+        comment: Chart fills canvas well but x-axis bottom labels cut off — clear
+          layout defect
       - id: VQ-06
         name: Axis Labels & Title
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: No axes or title present in rendered output
+        passed: true
+        comment: Title correct format; Variables label appropriate for correlation
+          matrix
       - id: VQ-07
         name: Palette Compliance
-        score: 0
+        score: 1
         max: 2
         passed: false
-        comment: No palette applied to chart; background color correct only from HTML
-          body style
+        comment: Custom blue-orange not recommended BrBG; midpoint tied to PAGE_BG
+          causes blending; backgrounds and chrome colors are theme-adaptive
     design_excellence:
-      score: 0
+      score: 9
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 0
+        score: 4
         max: 8
-        passed: false
-        comment: Chart did not render
+        passed: true
+        comment: Well-configured Highcharts default; cell borders add definition;
+          not particularly distinguished
       - id: DE-02
         name: Visual Refinement
-        score: 0
+        score: 3
         max: 6
-        passed: false
-        comment: Chart did not render
+        passed: true
+        comment: Cell borders, sized colorbar, grid suppressed; still largely standard
+          Highcharts appearance
       - id: DE-03
         name: Data Storytelling
-        score: 0
+        score: 2
         max: 6
         passed: false
-        comment: Chart did not render
+        comment: Correlation matrix displayed without narrative emphasis; no highlighting
+          of notable relationships
     spec_compliance:
-      score: 0
+      score: 14
       max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 0
+        score: 5
         max: 5
-        passed: false
-        comment: No heatmap rendered; Cloudflare block page shown instead
+        passed: true
+        comment: Correct heatmap with numeric annotations in each cell
       - id: SC-02
         name: Required Features
-        score: 0
+        score: 3
         max: 4
-        passed: false
-        comment: No annotated cells, no colorbar visible
+        passed: true
+        comment: 'Has colorbar, diverging colormap, numeric annotations; missing auto-contrasting
+          text color (spec: text color automatically contrasts with background)'
       - id: SC-03
         name: Data Mapping
-        score: 0
+        score: 3
         max: 3
-        passed: false
-        comment: No data mapping visible
+        passed: true
+        comment: 7x7 matrix properly mapped with variable labels and value colors
       - id: SC-04
         name: Title & Legend
-        score: 0
+        score: 3
         max: 3
-        passed: false
-        comment: No title or colorbar legend visible
+        passed: true
+        comment: Exact title format; colorbar legend present
     data_quality:
-      score: 11
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 4
+        score: 6
         max: 6
         passed: true
-        comment: Code defines a 7x7 correlation matrix with full range [-1,1] and
-          diagonal=1; good variation but smaller end of 5-20 spec range
+        comment: 7x7 matrix; symmetric; diagonal=1; full range of positive, negative,
+          near-zero correlations
       - id: DQ-02
         name: Realistic Context
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Financial indicators (Revenue, Profit, Growth, ROI, Debt, Assets,
-          Employees) is plausible and neutral
+        comment: Financial indicators correlation matrix — real, neutral business
+          analytics scenario
       - id: DQ-03
         name: Appropriate Scale
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: Correlation values in [-1,1] are factually correct; random generation
-          with seed 42 ensures reproducibility
+        comment: All values clipped to [-1,1]; diagonal=1.0; plausible for financial
+          metrics
     code_quality:
-      score: 8
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -177,60 +186,59 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Flat script: imports, theme tokens, data, chart options, download
-          JS, render HTML, screenshot'
+        comment: 'Linear structure: imports → theme tokens → data → chart config →
+          HTML → screenshot; no functions/classes'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) is set
+        comment: np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Uses requests library instead of stdlib urllib.request shown in library
-          guide; all other imports are used
+        passed: true
+        comment: 'All imports used: json, os, tempfile, time, pathlib.Path, numpy,
+          requests, selenium'
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Chart options dict is well-structured; but using requests instead
-          of urllib is the root cause of render failure
+        passed: true
+        comment: Clean, readable; chart options as dictionary is a clear pattern
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Correctly saves as plot-{THEME}.png and plot-{THEME}.html
+        comment: Saves plot-{THEME}.png and plot-{THEME}.html
     library_mastery:
-      score: 4
+      score: 6
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Does not use highcharts_core Python package (Chart/Series objects);
-          builds raw JSON dict; uses requests instead of urllib
+        passed: true
+        comment: Uses Highcharts heatmap module correctly; direct JSON config is valid
+          but bypasses highcharts_core Python API
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Correctly identifies heatmap module need, uses colorAxis with diverging
-          stops, enables dataLabels — Highcharts-specific features; cannot visually
-          verify since render failed
+        passed: true
+        comment: Uses colorAxis for continuous color mapping, dataLabels.format with
+          format string, symbolHeight for colorbar sizing
   verdict: REJECTED
 impl_tags:
   dependencies:
   - selenium
+  - requests
   techniques:
-  - colorbar
   - annotations
+  - colorbar
   - html-export
   patterns:
   - data-generation

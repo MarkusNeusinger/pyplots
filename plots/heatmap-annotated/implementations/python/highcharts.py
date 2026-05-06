@@ -1,7 +1,7 @@
 """ anyplot.ai
 heatmap-annotated: Annotated Heatmap
 Library: highcharts unknown | Python 3.13.13
-Quality: 23/100 | Updated: 2026-05-06
+Quality: 75/100 | Updated: 2026-05-06
 """
 
 import json

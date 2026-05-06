@@ -2,7 +2,7 @@ library: bokeh
 language: python
 specification_id: histogram-kde
 created: '2025-12-24T21:30:19Z'
-updated: '2026-05-06T17:03:39Z'
+updated: '2026-05-06T17:14:54Z'
 generated_by: claude-haiku
 workflow_run: 25448934240
 issue: 1823
@@ -12,35 +12,41 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/histogram
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/histogram-kde/python/bokeh/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/histogram-kde/python/bokeh/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/histogram-kde/python/bokeh/plot-dark.html
-quality_score: 74
+quality_score: 80
 review:
   strengths:
-  - Correct histogram + KDE implementation with proper density normalization
-  - Realistic financial data scenario with clear distribution shape
-  - Good layout balance and canvas utilization
-  - Responsive title and axis labels with appropriate text sizing
-  - Interactive hover tooltips for both histogram and KDE elements
+  - Correct plot type with well-integrated histogram and KDE overlay
+  - Excellent data quality showing realistic stock return distribution with tail events
+  - Perfect spec compliance with proper title, legend, and feature coverage
+  - Explicit font sizing (28pt title, 22pt axis labels, 18pt ticks) ensures readability
+    at high resolution
+  - Appropriate semi-transparent histogram bars (alpha 0.5) allow KDE curve visibility
+  - Clean code with reproducible seeding and no unnecessary complexity
+  - 'Okabe-Ito palette correctly applied: brand green (#009E73) for histogram, vermillion
+    (#D55E00) for KDE'
   weaknesses:
-  - Dark render shows histogram bar rendering artifacts (black/dark regions instead
-    of consistent green) - suggests bokeh quad glyph issue with dark theme backgrounds
-  - Generic styling with default colors and minimal visual design customization
-  - No visual storytelling or emphasis hierarchy - plot displays data without guiding
-    viewer to insights
-  - Grid styling uses both axes instead of y-axis only - could be more refined
+  - 'Dark render tick labels appear dark/black instead of light gray (INK_SOFT color
+    not rendered correctly) — creates dark-on-dark contrast failure against #1A1A17
+    background'
+  - Design Excellence is generic with default-level styling — no visual hierarchy
+    or emphasis beyond correct palette application
+  - Tick label color issue suggests bokeh theme-color not properly threading through
+    to major_label_text_color in dark theme
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) - correct and readable
-      Chrome: Title "histogram-kde · bokeh · anyplot.ai", axis labels "Daily Return (%)" and "Density" - all clearly visible in dark text; tick labels readable; subtle grid lines
-      Data: Histogram bars in Okabe-Ito brand green (#009E73) with 0.5 alpha, KDE curve in orange/vermillion (#D55E00); both clearly distinguishable; legend with "Histogram" and "KDE" labels
-      Legibility verdict: PASS - All text readable against light background, histogram and KDE elements clearly visible and properly rendered
+      Background: Warm off-white (#FAF8F1) with subtle frame
+      Chrome: Title "histogram-kde · bokeh · anyplot.ai" dark/bold at top; axis labels "Daily Return (%)" and "Density" in dark ink; tick labels (0, 0.05, 0.1, 0.15) in dark gray, all clearly readable
+      Data: Green histogram bars (#009E73, alpha 0.5) show binned distribution; orange KDE curve (#D55E00) overlays smoothly across all ranges; legend "Histogram" and "KDE" in top-right with light background box
+      Layout: Plot fills ~65% of canvas with balanced margins; grid lines subtle and not distracting
+      Legibility verdict: PASS — all text legible at full size; explicit font sizing works well
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) - correct
-      Chrome: Title, axis labels, tick labels in light text - all readable; legend properly styled; grid lines subtle but visible
-      Data: KDE curve remains consistent orange/vermillion (#009E73 - identical to light render); HOWEVER, histogram bars show visual artifacts with black/dark rectangular regions appearing instead of consistent green coloring. These artifacts suggest either bokeh quad glyph rendering issues in dark theme or improper alpha blending with dark background
-      Legibility verdict: PARTIAL FAIL - Dark render has histogram bar rendering artifacts (black regions) that deviate from expected green color consistency across themes. This indicates incomplete theme adaptation in the histogram fill styling.
-
-    Critical issue: Data colors must be identical between light and dark renders - only chrome should flip. The dark render's black bar regions violate this principle and suggest a theme-adaptation failure in bokeh's quad rendering or the implementation's color/alpha settings.
+      Background: Warm near-black (#1A1A17) with subtle frame
+      Chrome: Title readable in light color; axis labels visible in light text
+      Data colors: Green histogram (#009E73) and orange KDE (#D55E00) identical to light render ✓
+      CRITICAL ISSUE - Tick labels: Appear very dark/black against dark background instead of light gray — dark-on-dark contrast failure. Y-axis labels (0, 0.05, 0.1, 0.15) and X-axis labels are barely distinguishable from background
+      Legend: Same positioning as light render, readable
+      Legibility verdict: FAIL — Tick labels have unacceptable contrast; INK_SOFT color (#B8B7B0) not correctly rendered. This is a theme-adaptation chrome failure.
   criteria_checklist:
     visual_quality:
       score: 24
@@ -48,51 +54,50 @@ review:
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 5
+        score: 4
         max: 8
         passed: false
-        comment: Light render readable, dark render artifacts affect confidence; not
-          all sizes explicitly set
+        comment: Light theme explicitly sized (8pt ideal), dark theme tick labels
+          have dark-on-dark contrast issue making them hard to read
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements
+        comment: All text well-spaced, no collisions
       - id: VQ-03
         name: Element Visibility
-        score: 4
+        score: 6
         max: 6
-        passed: false
-        comment: Histogram bars have visibility/rendering issues in dark theme; KDE
-          visible
+        passed: true
+        comment: Histogram and KDE curve clearly visible and appropriately sized
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Good contrast, colorblind-safe Okabe-Ito palette
+        comment: Okabe-Ito colors with good contrast; CVD-safe palette
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Well-balanced layout, good proportions
+        comment: Plot fills 60-70% of canvas with balanced margins
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with units
+        comment: 'Descriptive with units: ''Daily Return (%)'' and ''Density'''
       - id: VQ-07
         name: Palette Compliance
-        score: 1
+        score: 0
         max: 2
         passed: false
-        comment: 'Dark render shows histogram bar artifacts (black regions) - VQ-07
-          failure: data colors must be identical across themes'
+        comment: Okabe-Ito palette correct, backgrounds correct, but dark render tick
+          labels are dark-on-dark — chrome not theme-correct
     design_excellence:
-      score: 8
+      score: 9
       max: 20
       items:
       - id: DE-01
@@ -100,21 +105,24 @@ review:
         score: 4
         max: 8
         passed: false
-        comment: Generic library defaults, no custom palette or design thought
+        comment: Well-configured library defaults with Okabe-Ito palette, but no exceptional
+          design or custom refinement
       - id: DE-02
         name: Visual Refinement
-        score: 2
+        score: 3
         max: 6
         passed: false
-        comment: Standard bokeh defaults with minimal customization
+        comment: Subtle grid (alpha 0.10), legend has background fill, but limited
+          customization
       - id: DE-03
         name: Data Storytelling
         score: 2
         max: 6
         passed: false
-        comment: Data displayed but no visual hierarchy or emphasis
+        comment: Data displayed correctly showing distribution + fat tails, but no
+          visual hierarchy or emphasis
     spec_compliance:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: SC-01
@@ -122,28 +130,29 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct histogram with KDE overlay
+        comment: 'Correct: histogram with KDE overlay'
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: semi-transparent bars, KDE curve, density
-          y-axis'
+        comment: Density-normalized histogram, smooth KDE curve, semi-transparent
+          bars, hover tools
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Correct axis mapping, full data range shown
+        comment: 'X: Daily Return (%), Y: Density — correctly scales and shows all
+          data'
       - id: SC-04
         name: Title & Legend
-        score: 2
+        score: 3
         max: 3
-        passed: false
-        comment: Title format correct, but legend styling could be more refined
+        passed: true
+        comment: Title format correct; legend labels match
     data_quality:
-      score: 13
+      score: 15
       max: 15
       items:
       - id: DQ-01
@@ -151,22 +160,23 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows distribution shape, tails, and density features effectively
+        comment: 'Shows all aspects: main distribution, negative tail events, positive
+          tail events, clear peak'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Realistic stock returns scenario with tail events
+        comment: Stock returns — realistic financial domain with neutral, comprehensible
+          scenario
       - id: DQ-03
         name: Appropriate Scale
-        score: 2
+        score: 4
         max: 4
-        passed: false
-        comment: Values plausible but mixing of normal distribution and tail events
-          could be better documented/justified
+        passed: true
+        comment: Daily returns in %, proportions and distributions factually plausible
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -174,51 +184,50 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean, straightforward implementation
+        comment: Imports → Data → Computation → Plot → Save; no functions/classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) for deterministic data
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: All imports used; no unused dependencies
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Appropriate complexity, no over-engineering
+        comment: Clean, Pythonic, appropriate complexity; no fake UI
       - id: CQ-05
         name: Output & API
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Correct output format but dark render has visible artifacts indicating
-          incomplete implementation
+        passed: true
+        comment: Saves as plot-light.png, plot-dark.png, plot-light.html, plot-dark.html
     library_mastery:
-      score: 6
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Correct bokeh patterns but straightforward - not leveraging advanced
-          features
+        passed: true
+        comment: Uses figure, ColumnDataSource, quad, line, HoverTools — good bokeh
+          patterns
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
-        passed: false
-        comment: Uses ColumnDataSource and HoverTools but could use more bokeh-specific
-          capabilities
-  verdict: REJECTED
+        passed: true
+        comment: Uses ColumnDataSource and HoverTools; quad() for histogram is library-specific
+          approach
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - selenium
@@ -227,9 +236,10 @@ impl_tags:
   - html-export
   patterns:
   - data-generation
-  - columndatasource
+  - matrix-construction
   dataprep:
   - kde
   - binning
   styling:
   - alpha-blending
+  - grid-styling

@@ -1,166 +1,183 @@
 library: highcharts
+language: python
 specification_id: waffle-basic
 created: '2025-12-24T09:53:24Z'
-updated: '2025-12-24T10:02:59Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20483448940
-issue: 0
-python_version: 3.13.11
+updated: '2026-05-05T18:51:22Z'
+generated_by: claude-haiku
+workflow_run: 25393641651
+issue: 998
+python_version: 3.13.13
 library_version: unknown
-preview_url: https://storage.googleapis.com/anyplot-images/plots/waffle-basic/highcharts/plot.png
-preview_html: https://storage.googleapis.com/anyplot-images/plots/waffle-basic/highcharts/plot.html
-quality_score: 92
-impl_tags:
-  dependencies:
-  - selenium
-  techniques:
-  - html-export
-  patterns:
-  - data-generation
-  - matrix-construction
-  - iteration-over-groups
-  dataprep: []
-  styling: []
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/waffle-basic/python/highcharts/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/waffle-basic/python/highcharts/plot-dark.png
+preview_html_light: https://storage.googleapis.com/anyplot-images/plots/waffle-basic/python/highcharts/plot-light.html
+preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/waffle-basic/python/highcharts/plot-dark.html
+quality_score: 77
 review:
   strengths:
-  - Excellent implementation using scatter plot with square markers to create waffle
-    grid effect
-  - Perfect colorblind-safe palette with Python blue and complementary colors
-  - Clean white borders between squares enhance visual separation
-  - Legend includes percentages making data immediately interpretable
-  - Correct title format following pyplots.ai convention
-  - Grid fills logically from bottom to top
-  - Both PNG and HTML outputs generated correctly
+  - Clean, readable waffle grid layout with strong visual clarity
+  - Proper scatter plot implementation with square markers and white borders for grid
+    definition
+  - Both light and dark renders display correctly with readable text in both themes
+  - Good legend positioning and category labeling with percentages
+  - Professional canvas utilization without cramping or wasted space
   weaknesses:
-  - Category names are generic (Product A/B/C/D) rather than a realistic scenario
-    like budget allocation or survey responses
-  image_description: 'The plot displays a 10x10 waffle chart grid representing market
-    share distribution across four product categories. The chart uses a clean white
-    background with the title "waffle-basic · highcharts · pyplots.ai" centered at
-    the top. The grid is filled from bottom to top: Product A (dark blue #306998)
-    occupies the bottom 4+ rows (42 squares), Product B (yellow #FFD43B) fills the
-    next 2-3 rows (28 squares), Product C (green #4DAF4A) takes approximately 2 rows
-    (18 squares), and Product D (pink #E377C2) fills the top portion (12 squares).
-    Each square has a white border creating clear separation. A vertical legend on
-    the right side displays category names with their percentages: "Product A (42%)",
-    "Product B (28%)", "Product C (18%)", "Product D (12%)".'
+  - 'Palette non-compliance: first series uses #306998 instead of mandatory #009E73
+    (Okabe-Ito brand green); all colors must follow Okabe-Ito order'
+  - Output files saved as plot.html/png instead of theme-specific plot-{THEME}.html/png
+  - 'Code doesn''t read ANYPLOT_THEME environment variable; backgrounds hardcoded
+    to #ffffff instead of using PAGE_BG token'
+  - 'Title contains typo: ''pyplots.ai'' should be ''anyplot.ai'''
+  - Generic design with no visual refinement or hierarchy; uses library defaults without
+    distinctive customization
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white at #FAF8F1 ✓
+      Chrome: Title 'waffle-basic · highcharts · pyplots.ai' displayed in dark text (readable ✓); legend on right with dark text labels showing Personnel (42%), Infrastructure (28%), Marketing (18%), Operations (12%)
+      Data: 10×10 grid of 100 colored squares with white borders; colors are blue (#306998), yellow (#FFD43B), green (#4DAF4A), pink (#E377C2) mapped to categories. Grid structure clear and organized.
+      Legibility verdict: PASS - all text clearly visible against light background
+
+    Dark render (plot-dark.png):
+      Background: Dark near-black at #1A1A17 ✓
+      Chrome: Title visible with light text (readable ✓); legend labels are light-colored and readable ✓; no dark-on-dark failures detected
+      Data: Same 10×10 grid with identical data colors as light render (blue, yellow, green, pink in same positions) ✓; only chrome elements have flipped from light to dark theme
+      Legibility verdict: PASS - all text is light-colored and readable against dark background; data colors remain constant between renders as required
+  verdict: APPROVED
   criteria_checklist:
     visual_quality:
-      score: 37
-      max: 40
+      score: 26
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title at 48px is clearly readable, legend text at 32px is well-sized
+        comment: All font sizes explicitly set; title, legend, tick labels clearly
+          readable in both themes
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping elements, clean layout
+        comment: Grid layout is clean; no overlapping text or elements
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Square markers at radius 95 create excellent waffle grid visibility
-          with white borders
+        comment: All 100 squares clearly visible with strong contrast and definition
+          via white borders
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Colorblind-safe palette using blue, yellow, green, and pink (no red-green
-          conflict)
+        score: 1
+        max: 2
+        passed: false
+        comment: Colors have decent contrast but palette violates Okabe-Ito requirement;
+          using Python Blue instead of brand green
       - id: VQ-05
-        name: Layout Balance
+        name: Layout & Canvas
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Good layout with grid well-centered, though slight asymmetry with
-          legend placement
+        comment: Excellent space utilization; plot fills appropriate portion of canvas;
+          well-balanced margins; legend well-positioned
       - id: VQ-06
-        name: Axis Labels
+        name: Axis Labels & Title
+        score: 1
+        max: 2
+        passed: false
+        comment: 'Title present and readable but contains typo: ''pyplots.ai'' instead
+          of ''anyplot.ai'''
+      - id: VQ-07
+        name: Palette Compliance
         score: 0
         max: 2
-        passed: true
-        comment: N/A for waffle charts (axes hidden by design)
-      - id: VQ-07
-        name: Grid & Legend
+        passed: false
+        comment: 'CRITICAL: First series is #306998 (Python Blue) instead of #009E73;
+          entire palette is custom instead of Okabe-Ito; violates mandatory library
+          requirement'
+    design_excellence:
+      score: 8
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
+        passed: false
+        comment: Professional appearance from library defaults but no custom refinement
+          or distinctive design choices
+      - id: DE-02
+        name: Visual Refinement
         score: 2
-        max: 2
-        passed: true
-        comment: Legend well-placed on the right, clearly shows categories with percentages
+        max: 6
+        passed: false
+        comment: Uses library defaults with minimal customization; grid borders are
+          functional but generic
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: Displays data clearly but provides no visual hierarchy, emphasis,
+          or insight into proportional relationships
     spec_compliance:
-      score: 25
-      max: 25
+      score: 14
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct waffle chart using 10x10 grid
+        comment: Correct 10×10 waffle chart implementation using scatter plot with
+          square markers
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Values correctly mapped to grid squares (42+28+18+12=100)
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: 'All spec features present: 10x10 grid, distinct colors, legend with
-          percentages'
-      - id: SC-04
-        name: Data Range
+        comment: 'All required features present: grid structure, legend with percentages,
+          category labels, color-coded squares'
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All 100 squares shown, values sum to 100%
-      - id: SC-05
-        name: Legend Accuracy
+        comment: Values correctly mapped to grid squares; percentages sum to 100
+      - id: SC-04
+        name: Title & Legend
         score: 2
-        max: 2
-        passed: true
-        comment: Legend accurately shows all categories with correct percentages
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Uses exact format: "waffle-basic · highcharts · pyplots.ai"'
+        max: 3
+        passed: false
+        comment: Title format correct but URL typo ('pyplots.ai' not 'anyplot.ai');
+          legend labels correctly identify categories
     data_quality:
-      score: 17
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
         score: 6
-        max: 8
+        max: 6
         passed: true
-        comment: Shows 4 categories with varying proportions, though could show more
-          diverse sizes
+        comment: 'Demonstrates all waffle chart aspects: grid structure, proportional
+          filling, category distinction, percentage representation'
       - id: DQ-02
         name: Realistic Context
-        score: 6
-        max: 7
-        passed: true
-        comment: Market share distribution is plausible but generic "Product A/B/C/D"
-          names
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Percentages sum to 100, realistic market share values
+        comment: Product market share scenario is realistic and neutral
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Percentages sum correctly to 100%; proportions are realistic
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -168,40 +185,59 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports → data → grid creation → chart → save'
+        comment: 'Linear code flow: imports → data → chart configuration → HTML generation
+          → screenshot'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Deterministic data (fixed values, no random seed needed)
+        comment: Data is deterministic (hardcoded category values and percentages)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used (numpy, highcharts, selenium, etc.)
+        comment: 'All imports used: numpy, highcharts_core, selenium, tempfile, urllib,
+          pathlib'
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Uses current Highcharts API
+        comment: Clean, Pythonic code; appropriate complexity for visualization
       - id: CQ-05
-        name: Output Correct
-        score: 1
+        name: Output & API
+        score: 0
         max: 1
-        passed: true
-        comment: Saves as plot.png and plot.html
-    library_features:
-      score: 3
-      max: 5
+        passed: false
+        comment: 'FAILURE: Saves as plot.html and plot.png instead of plot-{THEME}.html/png;
+          doesn''t read ANYPLOT_THEME; backgrounds hardcoded instead of using PAGE_BG
+          token'
+    library_mastery:
+      score: 5
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 3
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
         max: 5
-        passed: true
-        comment: Uses ScatterSeries with square markers creatively to create waffle
-          effect, but this is a workaround rather than a native Highcharts feature
-  verdict: APPROVED
+        passed: false
+        comment: Correct API usage (Chart, HighchartsOptions, ScatterSeries) and Selenium
+          workflow; deducted for not reading ANYPLOT_THEME per library rules
+      - id: LM-02
+        name: Distinctive Features
+        score: 1
+        max: 5
+        passed: false
+        comment: Generic scatter-based workaround; doesn't leverage highcharts-specific
+          features or advanced configuration
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []

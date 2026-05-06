@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 histogram-kde: Histogram with KDE Overlay
-Library: letsplot | Python 3.13
-Quality: pending | Updated: 2026-05-06
+Library: letsplot 4.9.0 | Python 3.13.13
+Quality: 84/100 | Updated: 2026-05-06
 """
 
 import os

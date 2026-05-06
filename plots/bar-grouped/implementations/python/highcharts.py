@@ -1,9 +1,10 @@
-""" anyplot.ai
+"""anyplot.ai
 bar-grouped: Grouped Bar Chart
 Library: highcharts unknown | Python 3.13.13
 Quality: 60/100 | Updated: 2026-05-06
 """
 
+import os
 import tempfile
 import time
 import urllib.request
@@ -16,6 +17,17 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
+# Theme-adaptive colors
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+GRID = "rgba(26,26,23,0.10)" if THEME == "light" else "rgba(240,239,232,0.10)"
+
+# Okabe-Ito palette - first series is always #009E73
+OKABE_ITO = ["#009E73", "#D55E00", "#0072B2", "#CC79A7", "#E69F00", "#56B4E9", "#F0E442"]
+
 # Data - Quarterly revenue by product line (realistic business scenario)
 categories = ["Q1", "Q2", "Q3", "Q4"]
 products = {
@@ -23,9 +35,6 @@ products = {
     "Clothing": [189, 215, 243, 275],
     "Home & Garden": [156, 178, 195, 224],
 }
-
-# Colors - Python Blue first, then colorblind-safe palette
-colors = ["#306998", "#FFD43B", "#9467BD"]
 
 # Create chart with container specified
 chart = Chart(container="container")
@@ -36,40 +45,41 @@ chart.options.chart = {
     "type": "column",
     "width": 4800,
     "height": 2700,
-    "backgroundColor": "#ffffff",
+    "backgroundColor": PAGE_BG,
     "marginBottom": 280,
-    "style": {"fontFamily": "Arial, sans-serif"},
+    "style": {"fontFamily": "Arial, sans-serif", "color": INK},
 }
 
 # Title
 chart.options.title = {
-    "text": "bar-grouped · highcharts · pyplots.ai",
-    "style": {"fontSize": "72px", "fontWeight": "bold"},
+    "text": "bar-grouped · highcharts · anyplot.ai",
+    "style": {"fontSize": "28px", "color": INK, "fontWeight": "bold"},
 }
 
 # Subtitle for context
 chart.options.subtitle = {
     "text": "Quarterly Revenue by Product Line (in thousands USD)",
-    "style": {"fontSize": "42px", "color": "#666666"},
+    "style": {"fontSize": "22px", "color": INK_SOFT},
 }
 
 # X-axis configuration
 chart.options.x_axis = {
     "categories": categories,
-    "title": {"text": "Quarter", "style": {"fontSize": "48px", "fontWeight": "bold"}},
-    "labels": {"style": {"fontSize": "36px"}},
-    "lineWidth": 2,
-    "tickWidth": 2,
+    "title": {"text": "Quarter", "style": {"fontSize": "22px", "color": INK, "fontWeight": "bold"}},
+    "labels": {"style": {"fontSize": "18px", "color": INK_SOFT}},
+    "lineColor": INK_SOFT,
+    "tickColor": INK_SOFT,
+    "gridLineColor": GRID,
 }
 
 # Y-axis configuration
 chart.options.y_axis = {
     "min": 0,
-    "title": {"text": "Revenue (thousands USD)", "style": {"fontSize": "48px", "fontWeight": "bold"}},
-    "labels": {"style": {"fontSize": "36px"}, "format": "${value}K"},
-    "gridLineWidth": 1,
-    "gridLineDashStyle": "Dash",
-    "gridLineColor": "#cccccc",
+    "title": {"text": "Revenue (thousands USD)", "style": {"fontSize": "22px", "color": INK, "fontWeight": "bold"}},
+    "labels": {"style": {"fontSize": "18px", "color": INK_SOFT}, "format": "${value}K"},
+    "lineColor": INK_SOFT,
+    "tickColor": INK_SOFT,
+    "gridLineColor": GRID,
 }
 
 # Legend configuration
@@ -81,15 +91,15 @@ chart.options.legend = {
     "x": -50,
     "y": 100,
     "floating": True,
-    "backgroundColor": "#ffffff",
+    "backgroundColor": ELEVATED_BG,
     "borderWidth": 1,
-    "borderColor": "#cccccc",
-    "shadow": True,
-    "itemStyle": {"fontSize": "36px", "fontWeight": "normal"},
-    "symbolHeight": 24,
-    "symbolWidth": 40,
+    "borderColor": INK_SOFT,
+    "shadow": False,
+    "itemStyle": {"fontSize": "18px", "color": INK_SOFT, "fontWeight": "normal"},
+    "symbolHeight": 16,
+    "symbolWidth": 24,
     "symbolRadius": 4,
-    "itemMarginBottom": 10,
+    "itemMarginBottom": 8,
 }
 
 # Plot options for grouped bars
@@ -98,11 +108,11 @@ chart.options.plot_options = {
         "groupPadding": 0.15,
         "pointPadding": 0.05,
         "borderWidth": 2,
-        "borderColor": "#ffffff",
+        "borderColor": PAGE_BG,
         "dataLabels": {
             "enabled": True,
             "format": "${y}K",
-            "style": {"fontSize": "28px", "fontWeight": "bold", "textOutline": "2px white"},
+            "style": {"fontSize": "16px", "fontWeight": "bold", "color": INK},
         },
     }
 }
@@ -112,7 +122,7 @@ for i, (product_name, values) in enumerate(products.items()):
     series = ColumnSeries()
     series.name = product_name
     series.data = values
-    series.color = colors[i]
+    series.color = OKABE_ITO[i]
     chart.add_series(series)
 
 # Download Highcharts JS for inline embedding (required for headless Chrome)
@@ -128,7 +138,7 @@ html_content = f"""<!DOCTYPE html>
     <meta charset="utf-8">
     <script>{highcharts_js}</script>
 </head>
-<body style="margin:0; padding:0; background:#ffffff;">
+<body style="margin:0; padding:0; background:{PAGE_BG};">
     <div id="container" style="width:4800px; height:2700px;"></div>
     <script>{html_str}</script>
 </body>
@@ -140,7 +150,7 @@ with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encodin
     temp_path = f.name
 
 # Save interactive HTML version
-with open("plot.html", "w", encoding="utf-8") as f:
+with open(f"plot-{THEME}.html", "w", encoding="utf-8") as f:
     f.write(html_content)
 
 # Set up headless Chrome for PNG export
@@ -155,7 +165,7 @@ chrome_options.add_argument("--window-size=4800,2700")
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
 time.sleep(5)  # Wait for chart to render
-driver.save_screenshot("plot.png")
+driver.save_screenshot(f"plot-{THEME}.png")
 driver.quit()
 
 # Clean up temp file

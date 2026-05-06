@@ -52,7 +52,21 @@ jobs:
           MODEL_INPUT: ${{ inputs.model }}
           MODEL_PAYLOAD: ${{ github.event.client_payload.model }}
         run: |
-          PR_DATA=$(gh pr view "$PR_NUMBER" --json headRefName,headRefOid,body)
+          # Retry gh pr view — transient API blips were the dominant impl-review
+          # failure mode (5x in 24h on 2026-05-06). Three attempts with backoff.
+          PR_DATA=""
+          for attempt in 1 2 3; do
+            if PR_DATA=$(gh pr view "$PR_NUMBER" --json headRefName,headRefOid,body 2>&1); then
+              break
+            fi
+            echo "::warning::gh pr view failed (attempt ${attempt}/3): ${PR_DATA}"
+            PR_DATA=""
+            sleep $((attempt * 5))
+          done
+          if [ -z "$PR_DATA" ]; then
+            echo "::error::gh pr view failed after 3 attempts for PR #${PR_NUMBER}"
+            exit 1
+          fi
           HEAD_REF=$(echo "$PR_DATA" | jq -r '.headRefName')
           HEAD_SHA=$(echo "$PR_DATA" | jq -r '.headRefOid')
           BODY=$(echo "$PR_DATA" | jq -r '.body')

@@ -548,7 +548,25 @@ jobs:
           fi
 
           git commit -m "chore(${LIBRARY}): add metadata for ${SPEC_ID}"
-          git push origin "$BRANCH"
+
+          # Retry git push — transient races against Claude's earlier push were
+          # the dominant "Create metadata file" failure mode (6x in 24h on
+          # 2026-05-06). On a non-fast-forward, fetch+rebase before retrying.
+          push_ok=0
+          for attempt in 1 2 3; do
+            if git push origin "$BRANCH"; then
+              push_ok=1
+              break
+            fi
+            echo "::warning::git push failed (attempt ${attempt}/3) — fetching + rebasing then retrying"
+            git fetch origin "$BRANCH" || true
+            git pull --rebase origin "$BRANCH" || true
+            sleep $((attempt * 5))
+          done
+          if [ "$push_ok" != "1" ]; then
+            echo "::error::git push failed after 3 attempts on branch ${BRANCH}"
+            exit 1
+          fi
 
           echo "::notice::Created metadata file: $METADATA_FILE (py${PYTHON_VERSION}, ${LIBRARY}==${LIBRARY_VERSION})"
           echo "::notice::Implementation verified present, metadata committed"

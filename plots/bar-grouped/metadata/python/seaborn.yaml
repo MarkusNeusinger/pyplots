@@ -2,7 +2,7 @@ library: seaborn
 language: python
 specification_id: bar-grouped
 created: '2025-12-24T21:28:43Z'
-updated: '2026-05-06T10:57:15Z'
+updated: '2026-05-06T11:02:34Z'
 generated_by: claude-haiku
 workflow_run: 25430916558
 issue: 1822
@@ -12,41 +12,35 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/bar-group
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/bar-grouped/python/seaborn/plot-dark.png
 preview_html_light: null
 preview_html_dark: null
-quality_score: 83
+quality_score: 90
 review:
   strengths:
-  - Perfect visual quality across all six criteria — all text legible, no overlap,
-    proper palette compliance in both themes
-  - 'Flawless spec compliance: correct chart type, all features present, perfect data
-    mapping'
-  - Clean, reproducible code with correct theme-adaptive styling throughout (backgrounds,
-    text, grid, legend)
-  - Professional presentation with good canvas utilization and balanced layout
-  - Theme-correct dark-mode rendering with no dark-on-dark issues and identical data
-    colors
+  - Perfect visual quality with excellent text legibility in both light and dark themes
+  - Flawless palette compliance—Okabe-Ito colors correctly applied and theme tokens
+    properly threaded through all elements
+  - 'Professional visual refinement: subtle grid, spine removal, white bar edges,
+    proper legend positioning'
+  - Clean code structure following KISS principles with deterministic data
+  - Data effectively demonstrates the grouped bar chart's comparative power
   weaknesses:
-  - Design Excellence is generic — uses library defaults with Okabe-Ito palette but
-    no custom design thought or sophistication
-  - No visual hierarchy or data storytelling — plot displays the data correctly but
-    doesn't guide the viewer toward insights
-  - Library Mastery is basic — doesn't leverage seaborn idioms like sns.despine()
-    or sns.set_context()
-  - Data variation could be wider to create stronger visual contrast between regions
-    and departments
+  - Design Excellence could be elevated through custom visual enhancements and more
+    emphasis on strongest performers
+  - Library Mastery is conservative—uses standard barplot without exploring seaborn's
+    more distinctive features
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) — correct theme color, not pure white
-      Chrome: Title "bar-grouped · seaborn · anyplot.ai" in dark INK color (legible); axis labels "Region" and "Satisfaction Score" in dark INK; tick labels 0-100 and region names in dark INK_SOFT; all clearly readable against light background
-      Data: 12 bars in Okabe-Ito colors — first series (IT) in #009E73 (brand green), second (HR) in #D55E00 (vermillion), third (Operations) in #0072B2 (blue); white bar edges provide definition
-      Legend: "Department" title with IT/HR/Operations entries positioned below plot; uses elevated background (#FFFDF6) with dark text; clean positioning
-      Legibility verdict: PASS — all text readable; no light-on-light issues
+      Background: Warm off-white (#FAF8F1), perfectly matching the required light theme surface
+      Chrome: Title "bar-grouped · seaborn · anyplot.ai" at 24pt, axis labels "Region" and "Satisfaction Score" at 20pt, tick labels at 16pt—all clearly readable in dark text against the light background. Grid lines are subtle (alpha=0.10) and visible without dominating. Legend positioned below with proper spacing.
+      Data: Four regions (North, South, East, West) with three departments per region. IT bars in #009E73 (Okabe-Ito position 1), HR in #D55E00 (position 2), Operations in #0072B2 (position 3). Value labels on bars (64-95) are clearly visible. White edges on bars add visual definition.
+      Spines: Top and right removed, left and bottom are subtle and light-colored (#4A4A44).
+      Legibility verdict: PASS - All elements readable, excellent contrast, no text legibility issues
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) — correct theme color, not pure black
-      Chrome: Title in light INK color (#F0EFE8) — legible; axis labels and tick labels in light INK_SOFT (#B8B7B0); all clearly visible against dark background; no dark-on-dark failures
-      Data: Bars render in identical colors to light render (#009E73, #D55E00, #0072B2) — data colors unchanged, only chrome flipped
-      Legend: Uses elevated dark background (#242420) with light text; perfect legibility
-      Legibility verdict: PASS — all text readable; no dark-on-dark issues; brand green #009E73 fully visible
+      Background: Warm near-black (#1A1A17), perfectly matching the required dark theme surface
+      Chrome: Same title and axis labels now rendered in light text (#F0EFE8) and secondary text (#B8B7B0), both providing excellent contrast against dark background. Grid lines remain subtle and visible. Legend box background adapted to #242420. Spines are appropriately lightened.
+      Data: The three data colors (#009E73, #D55E00, #0072B2) are **identical to the light render**—only chrome has adapted. Value labels remain clearly readable. Bar edges maintain white color for definition.
+      No dark-on-dark issues: All text is light on dark, not dark on dark. The brand green (#009E73) is clearly visible and maintains the identity across both themes.
+      Legibility verdict: PASS - All elements readable in dark theme, perfect theme-adaptive chrome, no legibility failures
   criteria_checklist:
     visual_quality:
       score: 30
@@ -57,75 +51,69 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 24pt, labels 20pt, ticks 16pt;
-          perfectly readable in both themes'
+        comment: 'All font sizes explicitly set: Title 24pt, Labels 20pt, Ticks 16pt,
+          all perfectly readable in both themes'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements; all text fully readable; legend positioned
-          cleanly below plot
+        comment: No overlapping text elements, clean spacing throughout
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Bars optimally sized for 12 data points; all elements clearly distinguishable;
-          no density issues
+        comment: 12 bars clearly visible and distinguishable with white edge definition
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito palette is CVD-safe; white bar edges provide contrast;
-          good luminance separation
+        comment: Okabe-Ito palette colorblind-safe with excellent contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Perfect layout; plot fills 60-70% of canvas; balanced margins; no
-          wasted space
+        comment: 'Perfect layout: plot fills 60-70% of canvas with balanced margins'
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels: ''Region'' and ''Satisfaction Score''; title
-          follows spec format'
+        comment: Descriptive labels and correct title format
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series #009E73; Okabe-Ito order; backgrounds #FAF8F1/#1A1A17;
-          text/grid theme-adaptive in both renders'
+        comment: Perfect Okabe-Ito compliance, theme chrome correct in both renders
     design_excellence:
-      score: 10
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
-        passed: false
-        comment: Well-configured defaults; no custom design thought; looks professional
-          but generic
+        passed: true
+        comment: Professional palette and theme-adaptive design with white bar edges
+          adding polish
       - id: DE-02
         name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: 'Excellent: subtle grid, removed spines, generous whitespace, attention
+          to detail'
+      - id: DE-03
+        name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Spines removed; subtle grid; white bar edges; good whitespace; visible
-          refinement
-      - id: DE-03
-        name: Data Storytelling
-        score: 2
-        max: 6
-        passed: false
-        comment: Data displayed clearly but no visual hierarchy or focal point; viewer
-          must find their own insights
+        comment: Good visual hierarchy; viewers can identify patterns across regions
+          and departments
     spec_compliance:
       score: 15
       max: 15
@@ -135,52 +123,47 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct grouped bar chart; multiple bars side-by-side for each category
+        comment: Correct grouped bar chart
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec features: grouped bars, distinct colors, clear legend,
-          proper spacing'
+        comment: 'All features present: distinct colors, legend, spacing, value labels'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: 'X: Region (categories); Y: Score (values); Hue: Department (groups);
-          Y-range 0-100 correct'
+        comment: X/Y correctly assigned, all data visible
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title correct; legend labels match data (IT, HR, Operations)
+        comment: Correct format with matching labels
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Shows multiple regions and departments; good coverage; could show
-          slightly more variation
+        comment: Demonstrates key grouped bar features
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real, neutral scenario (customer satisfaction); plausible business
-          context
+        comment: Real business scenario, neutral, plausible
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Scores 75-90 plausible; Y-axis 0-100 correct; proportions factually
-          sound
+        comment: Satisfaction scores realistic and well-chosen
     code_quality:
       score: 10
       max: 10
@@ -190,49 +173,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear: Imports → Theme → Data → Plot → Save; no functions/classes'
+        comment: Linear flow, no unnecessary functions
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic data (literal dict); consistent output
+        comment: Deterministic hardcoded data
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: os, sys, matplotlib, pandas, seaborn'
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, Pythonic; appropriate complexity; no fake functionality
+        comment: Clean, Pythonic, no fake functionality
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot-{THEME}.png; dpi=300; current seaborn API
+        comment: Correct plot-{THEME}.png output
     library_mastery:
-      score: 4
+      score: 6
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Uses sns.barplot() and sns.set_theme(); correct but standard patterns;
-          could use sns.despine()
+        passed: true
+        comment: Uses sns.barplot() and sns.set_theme() correctly
       - id: LM-02
         name: Distinctive Features
-        score: 1
+        score: 2
         max: 5
         passed: false
-        comment: Generic usage; could work in matplotlib with minor changes; no distinctive
-          seaborn features
+        comment: Generic seaborn usage; could leverage FacetGrid or advanced hue mechanics
   verdict: APPROVED
 impl_tags:
   dependencies: []
@@ -241,5 +222,4 @@ impl_tags:
   - data-generation
   dataprep: []
   styling:
-  - grid-styling
   - edge-highlighting

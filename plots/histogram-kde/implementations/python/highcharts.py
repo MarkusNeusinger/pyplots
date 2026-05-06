@@ -1,4 +1,4 @@
-""" anyplot.ai
+"""anyplot.ai
 histogram-kde: Histogram with KDE Overlay
 Library: highcharts unknown | Python 3.13.13
 Quality: 88/100 | Updated: 2026-05-06
@@ -65,17 +65,22 @@ chart.options.chart = {
     "marginRight": 200,
 }
 
-# Title and subtitle
+# Title and subtitle with enhanced typography hierarchy
 chart.options.title = {
     "text": "histogram-kde · highcharts · anyplot.ai",
-    "style": {"fontSize": "64px", "fontWeight": "bold", "color": INK},
+    "style": {"fontSize": "64px", "fontWeight": "bold", "color": INK, "letterSpacing": "2px"},
+    "margin": 30,
 }
 
-chart.options.subtitle = {"text": "Simulated Daily Stock Returns (%)", "style": {"fontSize": "44px", "color": INK_SOFT}}
+chart.options.subtitle = {
+    "text": "Simulated Daily Stock Returns (%)",
+    "style": {"fontSize": "44px", "color": INK_SOFT, "fontWeight": "500"},
+    "margin": 15,
+}
 
-# X-axis
+# X-axis with enhanced styling
 chart.options.x_axis = {
-    "title": {"text": "Return (%)", "style": {"fontSize": "48px", "color": INK}, "offset": 80},
+    "title": {"text": "Return (%)", "style": {"fontSize": "48px", "color": INK, "fontWeight": "600"}, "offset": 80},
     "labels": {"style": {"fontSize": "36px", "color": INK_SOFT}},
     "lineColor": INK_SOFT,
     "tickColor": INK_SOFT,
@@ -83,45 +88,51 @@ chart.options.x_axis = {
     "tickLength": 15,
 }
 
-# Y-axis
+# Y-axis with enhanced grid styling
 chart.options.y_axis = {
-    "title": {"text": "Density", "style": {"fontSize": "48px", "color": INK}, "margin": 40},
+    "title": {"text": "Density", "style": {"fontSize": "48px", "color": INK, "fontWeight": "600"}, "margin": 40},
     "labels": {"style": {"fontSize": "36px", "color": INK_SOFT}},
     "lineColor": INK_SOFT,
     "tickColor": INK_SOFT,
     "gridLineWidth": 1,
     "gridLineColor": GRID,
+    "gridLineDashStyle": "Dot",
 }
 
-# Legend
+# Legend - integrated with translucent styling for sophistication
 chart.options.legend = {
     "enabled": True,
-    "itemStyle": {"fontSize": "36px", "color": INK_SOFT},
-    "symbolRadius": 0,
+    "itemStyle": {"fontSize": "36px", "color": INK_SOFT, "fontWeight": "500"},
+    "symbolRadius": 2,
     "symbolWidth": 50,
     "symbolHeight": 30,
     "align": "right",
     "verticalAlign": "top",
     "x": -80,
     "y": 120,
-    "backgroundColor": ELEVATED_BG,
+    "backgroundColor": f"rgba({int(ELEVATED_BG[1:3], 16)}, {int(ELEVATED_BG[3:5], 16)}, {int(ELEVATED_BG[5:7], 16)}, 0.85)",
     "borderColor": INK_SOFT,
-    "borderWidth": 2,
+    "borderWidth": 1,
+    "borderRadius": 4,
     "padding": 20,
+    "margin": 10,
 }
 
-# Plot options
+# Plot options with enhanced styling
 chart.options.plot_options = {
-    "column": {"pointPadding": 0, "groupPadding": 0, "borderWidth": 2, "borderColor": BRAND},
-    "areaspline": {"lineWidth": 6, "marker": {"enabled": False}},
+    "column": {"pointPadding": 0, "groupPadding": 0, "borderWidth": 1, "borderColor": BRAND, "stacking": None},
+    "areaspline": {"lineWidth": 6, "marker": {"enabled": False}, "states": {"hover": {"lineWidth": 8}}},
 }
 
 # Histogram series (column chart) - first series in Okabe-Ito brand color
 histogram_series = ColumnSeries()
 histogram_series.name = "Histogram"
 histogram_series.data = [{"x": float(bc), "y": float(c)} for bc, c in zip(bin_centers, counts, strict=True)]
-histogram_series.color = f"rgba({int('00', 16)}, {int('9E', 16)}, {int('73', 16)}, 0.5)"
+histogram_series.color = f"rgba({int('00', 16)}, {int('9E', 16)}, {int('73', 16)}, 0.55)"
 histogram_series.point_width = int(bin_width * 280)
+histogram_series.states = {
+    "hover": {"color": f"rgba({int('00', 16)}, {int('9E', 16)}, {int('73', 16)}, 0.75)", "borderWidth": 2}
+}
 
 chart.add_series(histogram_series)
 
@@ -130,8 +141,9 @@ kde_series = AreaSplineSeries()
 kde_series.name = "KDE"
 kde_series.data = [[float(x), float(y)] for x, y in zip(x_kde, y_kde, strict=True)]
 kde_series.color = SECONDARY
-kde_series.fill_opacity = 0.2
-kde_series.line_width = 6
+kde_series.fill_opacity = 0.15
+kde_series.line_width = 7
+kde_series.states = {"hover": {"fillOpacity": 0.25, "lineWidth": 9}}
 
 chart.add_series(kde_series)
 

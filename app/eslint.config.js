@@ -69,6 +69,18 @@ export default [
         Blob: 'readonly',
         File: 'readonly',
         FileReader: 'readonly',
+        // Idle / animation callback APIs
+        requestIdleCallback: 'readonly',
+        cancelIdleCallback: 'readonly',
+        IdleRequestCallback: 'readonly',
+        IdleDeadline: 'readonly',
+        IdleRequestOptions: 'readonly',
+        IdleCallbackHandle: 'readonly',
+        FrameRequestCallback: 'readonly',
+        // IntersectionObserver type aliases
+        IntersectionObserverCallback: 'readonly',
+        IntersectionObserverInit: 'readonly',
+        IntersectionObserverEntry: 'readonly',
         // React (for JSX runtime)
         React: 'readonly',
       },
@@ -102,6 +114,7 @@ export default [
         beforeAll: 'readonly',
         afterAll: 'readonly',
         globalThis: 'readonly',
+        global: 'readonly',
       },
     },
   },

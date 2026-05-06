@@ -1,221 +1,258 @@
 library: highcharts
+language: python
 specification_id: swarm-basic
 created: '2025-12-23T21:56:34Z'
-updated: '2025-12-23T22:02:17Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20472390631
-issue: 0
-python_version: 3.13.11
+updated: '2026-05-06T22:06:37Z'
+generated_by: claude-sonnet
+workflow_run: 25352250448
+issue: 974
+python_version: 3.13.13
 library_version: unknown
-preview_url: https://storage.googleapis.com/anyplot-images/plots/swarm-basic/highcharts/plot.png
-preview_html: https://storage.googleapis.com/anyplot-images/plots/swarm-basic/highcharts/plot.html
-quality_score: 91
-impl_tags:
-  dependencies:
-    - selenium
-  techniques:
-    - hover-tooltips
-    - html-export
-  patterns:
-    - data-generation
-  dataprep: []
-  styling:
-    - edge-highlighting
-    - grid-styling
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/swarm-basic/python/highcharts/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/swarm-basic/python/highcharts/plot-dark.png
+preview_html_light: https://storage.googleapis.com/anyplot-images/plots/swarm-basic/python/highcharts/plot-light.html
+preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/swarm-basic/python/highcharts/plot-dark.html
+quality_score: 88
 review:
   strengths:
-  - Excellent swarm algorithm implementation that spreads points horizontally to avoid
-    overlap
-  - Colorblind-safe palette with good visual distinction between categories
-  - Realistic, domain-appropriate data showing different distribution shapes (bimodal,
-    normal, tight cluster)
-  - Mean markers clearly distinguish summary statistics from individual data points
-  - Proper title format and clear axis labels
-  - Good canvas utilization and layout balance
+  - Perfect dual-theme adaptation — all chrome tokens (INK, INK_SOFT, ELEVATED_BG,
+    GRID) correctly applied to both light and dark renders with no dark-on-dark failures
+  - 'Excellent data storytelling: bimodal annotations on Engineering and Sales columns,
+    High Performer/Developing zone labels, and an overall mean reference dashed line
+    guide the viewer immediately to key insights'
+  - Per-category background zone bands (x-axis plotBands) with subtle Okabe-Ito-tinted
+    fill provide clear visual structure without overwhelming the data
+  - 'Correct Okabe-Ito palette — first series is #009E73 (brand green), multi-series
+    follows canonical positions 1-4 in order'
+  - Mean diamond markers (Okabe-Ito position 8 adaptive neutral) per category provide
+    the optional statistical summary suggested in the spec
   weaknesses:
-  - Legend appears truncated or not visible in the rendered output - should verify
-    legend displays properly
-  - Helper function for swarm positions deviates from KISS principle (though functionally
-    necessary)
-  - Axis labels lack units (e.g., Performance Score 0-100 would be more informative)
-  image_description: 'The plot displays a swarm plot showing employee performance
-    scores across four departments: Engineering (blue), Marketing (yellow), Sales
-    (purple), and Operations (cyan). Each department has data points spread horizontally
-    to avoid overlap, forming characteristic swarm/beeswarm shapes. The title "swarm-basic
-    · highcharts · pyplots.ai" appears at the top in bold black text, with a subtitle
-    "Employee Performance Scores by Department" below. Red diamond markers indicate
-    the mean for each category. The y-axis shows "Performance Score" ranging from
-    ~34 to 106, and the x-axis shows "Department" with category labels. The background
-    is white with subtle gray dashed grid lines.'
+  - Beeswarm jitter algorithm produces visible point crowding in denser groups (Operations
+    and Marketing columns) — some points overlap slightly, reducing VQ-02
+  - No spine/frame removal — Highcharts scatter keeps the default chart border; removing
+    top/right lines or the outer frame would improve minimalism
+  - 'CQ-04: beeswarm offset computation (lines 47-76) uses nested loops with try/else/break
+    patterns that are slightly verbose for what they accomplish'
+  - 'LM-01: swarm x-offsets computed entirely in Python rather than leveraging any
+    Highcharts layout capability; the library is used as a rendering layer only for
+    the positioning logic'
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white #FAF8F1 — correct; four subtle per-category column bands (green tint for Engineering, blue tint for Sales, orange for Marketing, pink for Operations) provide visual structure
+      Chrome: Title "swarm-basic · highcharts · anyplot.ai" in bold dark INK (#1A1A17) at 72px — clearly readable. Subtitle "Employee Performance Scores by Department — Engineering & Sales show bimodal distributions" in INK_SOFT at 40px — readable. X-axis category labels (Engineering, Marketing, Sales, Operations) in INK_SOFT at 36px — readable. Y-axis "Performance Score" label and tick labels in appropriate dark colors — all readable
+      Data: First series (Engineering) in #009E73 brand green ✓. Multi-series follows Okabe-Ito positions 1-4 (green, orange, blue, pink/purple). Markers at radius 14 with semi-transparent fill (0.80 alpha) and white stroke border. Diamond mean markers in adaptive neutral. "bimodal ↕" annotations in category color above Engineering and Sales. "High Performer" and "Developing" zone labels visible at left. Overall mean dashed reference line at ~74 with label "Overall mean: 74.x"
+      Legibility verdict: PASS — all text clearly readable against warm off-white background; no light-on-light issues
+
+    Dark render (plot-dark.png):
+      Background: Warm near-black #1A1A17 — correct warm dark surface
+      Chrome: Title in #F0EFE8 (INK dark token) — bright, clearly readable against dark background ✓. Subtitle in #B8B7B0 (INK_SOFT dark) — readable ✓. X-axis labels in #B8B7B0 — readable ✓. Y-axis labels in #B8B7B0 — readable ✓. Grid in rgba(240,239,232,0.10) — subtle ✓. Legend bg #242420 (ELEVATED_BG dark), legend text #B8B7B0 ✓. Zone band labels "High Performer" and "Developing" in #B8B7B0 — readable ✓. "bimodal ↕" labels remain in category colors (#009E73, #0072B2) which read well on dark ✓
+      Data: Colors identical to light render — all Okabe-Ito positions 1-4 match exactly ✓. Diamond mean markers visible in adaptive neutral (#E8E8E0 on dark) ✓
+      Legibility verdict: PASS — all text uses correct light-theme tokens; no dark-on-dark failures detected
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 28
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
-        max: 10
-        passed: true
-        comment: Title and labels are clearly readable with appropriate font sizes
-          (72px title, 48px axis titles, 36px labels). Slightly reduced because y-axis
-          tick labels could be larger for the canvas size.
-      - id: VQ-02
-        name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: Points spread nicely to avoid overlap, which is the core feature
-          of a swarm plot. Text elements do not overlap.
+        comment: 'All font sizes explicitly set: title 72px, subtitle 40px, axis labels
+          48px, tick labels 36px. Both themes fully readable.'
+      - id: VQ-02
+        name: No Overlap
+        score: 4
+        max: 6
+        passed: true
+        comment: Beeswarm jitter reduces overlap but some point crowding visible in
+          Operations and Marketing columns.
       - id: VQ-03
         name: Element Visibility
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Markers are well-sized (radius 14) and visible. The swarm algorithm
-          works well, though some categories have slightly more overlap than ideal
-          due to high point density in certain score ranges.
+        comment: Markers radius 14 with 0.80 alpha and white stroke — well-adapted
+          to data density (~30-40 per group).
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
+        score: 2
+        max: 2
         passed: true
-        comment: 'Uses colorblind-safe palette (#306998 blue, #FFD43B yellow, #9467BD
-          purple, #17BECF cyan). No red-green combinations.'
+        comment: Okabe-Ito palette is CVD-safe. Semi-transparent markers still distinguishable.
+          Good contrast.
       - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
+        name: Layout & Canvas
+        score: 4
+        max: 4
         passed: true
-        comment: Good use of canvas space. Plot fills appropriate area with balanced
-          margins. Chart dimensions set to 4800x2700.
+        comment: 4800x2700 canvas with custom margins. Data fills canvas well. Balanced
+          whitespace.
       - id: VQ-06
-        name: Axis Labels
-        score: 1
+        name: Axis Labels & Title
+        score: 2
         max: 2
         passed: true
-        comment: '"Performance Score" and "Department" are descriptive but lack units
-          (score could have been "Performance Score (0-100)" for full marks).'
+        comment: '''Department'' and ''Performance Score'' — descriptive. Units not
+          needed for a 0-100 performance score.'
       - id: VQ-07
-        name: Grid & Legend
-        score: 1
+        name: Palette Compliance
+        score: 2
         max: 2
         passed: true
-        comment: Grid is subtle with dashed lines at 0.1 opacity. However, the legend
-          appears to be cut off or not visible in the rendered image.
+        comment: 'First series #009E73 ✓. Okabe-Ito positions 1-4 in order ✓. Light
+          bg #FAF8F1, dark bg #1A1A17 ✓. All chrome tokens theme-adaptive ✓.'
+    design_excellence:
+      score: 15
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 6
+        max: 8
+        passed: true
+        comment: 'Clearly above defaults: per-category background zones, bimodal annotations,
+          zone labels, mean reference line. Thoughtful information hierarchy. Stops
+          short of FiveThirtyEight-level due to Highcharts chrome.'
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Subtle grid, background zones, good margins. No spine removal (limited
+          in Highcharts scatter). Missing full minimalist refinement.
+      - id: DE-03
+        name: Data Storytelling
+        score: 5
+        max: 6
+        passed: true
+        comment: 'Strong storytelling: bimodal annotations immediately signal distribution
+          shape; zone labels contextualize scores; mean line enables cross-group comparison.
+          Viewer finds the insight quickly.'
     spec_compliance:
-      score: 24
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
-        passed: true
-        comment: Correct swarm/beeswarm plot implementation with horizontal jitter.
-      - id: SC-02
-        name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Categories on x-axis, continuous values on y-axis, correctly assigned.
-      - id: SC-03
+        comment: Correct beeswarm/swarm plot with custom jitter algorithm spreading
+          points horizontally.
+      - id: SC-02
         name: Required Features
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Has individual points, swarm layout, mean markers. Spec suggested
-          "subtle mean or median marker" - implemented with diamond markers, but they
-          could be more subtle.
-      - id: SC-04
-        name: Data Range
+        comment: Points spread to avoid overlap ✓, consistent point sizes ✓, mean
+          markers per category ✓, color distinguishes categories ✓.
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Y-axis shows full range from ~35-105, capturing all data points.
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Categories on x-axis, values on y-axis. All data visible within y
+          range [35, 105].
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend items defined correctly for each category and mean.
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Correct format: "swarm-basic · highcharts · pyplots.ai"'
+        comment: Title 'swarm-basic · highcharts · anyplot.ai' ✓. Legend shows all
+          4 categories + Mean series ✓.
     data_quality:
-      score: 19
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: 'Shows different distribution shapes: Engineering has bimodal (main
-          cluster + high performers), Marketing has wider spread, Sales shows clear
-          bimodal distribution, Operations has tight cluster. Could show one more
-          extreme outlier.'
+        comment: 'Different distribution shapes: bimodal (Engineering, Sales), wide
+          normal (Marketing), narrow normal (Operations). Includes outliers and high-performer
+          clusters.'
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Employee performance scores by department is a realistic, comprehensible
-          scenario matching the spec's applications.
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Performance scores in 40-100 range are realistic for employee metrics.
+        comment: Employee performance scores by department — real-world plausible,
+          neutral topic.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Scores 40-100 on a performance scale. Means ~70-77 are realistic
+          for department averages.
     code_quality:
       score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 2
-        max: 3
-        passed: true
-        comment: Has a helper function `compute_swarm_positions` which technically
-          violates KISS, but it's necessary for the swarm algorithm. Minor deduction.
-      - id: CQ-02
-        name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses `np.random.seed(42)`.
+        comment: Imports → Data → Plot → Save. No functions or classes.
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 2
+        passed: true
+        comment: np.random.seed(42) set.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used.
+        comment: All imports used.
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
         score: 1
-        max: 1
+        max: 2
         passed: true
-        comment: Uses current APIs.
+        comment: Swarm offset algorithm (lines 47-76) uses nested for/else/break patterns
+          that are somewhat verbose. Functionally correct but harder to read.
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as `plot.png`.
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves plot-{THEME}.png and plot-{THEME}.html correctly.
+    library_mastery:
+      score: 7
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: Uses Highcharts Series classes, Chart container, plotBands/plotLines
+          API correctly. Swarm positioning computed in Python — the library is used
+          as a rendering layer for this part.
+      - id: LM-02
+        name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses Highcharts scatter series, custom markers with borders, tooltips
-          with formatting. Could have used more interactive features like zoom, data
-          grouping, or custom events.
+        comment: Uses Highcharts-distinctive plotBands (zone backgrounds with labels)
+          and plotLines (reference lines with labels) — these are native Highcharts
+          features not easily replicated in static libraries.
   verdict: APPROVED
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  - annotations
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
+  - edge-highlighting

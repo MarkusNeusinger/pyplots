@@ -1,160 +1,183 @@
 library: plotly
+language: python
 specification_id: histogram-kde
 created: '2025-12-24T21:38:11Z'
-updated: '2025-12-24T21:43:00Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20494209823
-issue: 0
-python_version: 3.13.11
-library_version: 6.5.0
-preview_url: https://storage.googleapis.com/anyplot-images/plots/histogram-kde/plotly/plot.png
-preview_html: https://storage.googleapis.com/anyplot-images/plots/histogram-kde/plotly/plot.html
-quality_score: 98
-impl_tags:
-  dependencies:
-  - scipy
-  techniques:
-  - hover-tooltips
-  - html-export
-  patterns:
-  - data-generation
-  dataprep:
-  - kde
-  styling:
-  - alpha-blending
+updated: '2026-05-06T16:55:22Z'
+generated_by: claude-haiku
+workflow_run: 25448834158
+issue: 1823
+python_version: 3.13.13
+library_version: 6.7.0
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/histogram-kde/python/plotly/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/histogram-kde/python/plotly/plot-dark.png
+preview_html_light: https://storage.googleapis.com/anyplot-images/plots/histogram-kde/python/plotly/plot-light.html
+preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/histogram-kde/python/plotly/plot-dark.html
+quality_score: 90
 review:
   strengths:
-  - Excellent use of scipy.stats.gaussian_kde for proper KDE calculation
-  - Realistic stock returns data with intentional negative skew (typical of financial
-    data)
-  - Perfect density normalization allowing histogram and KDE to be on comparable scales
-  - Custom hover templates showing both return value and density
-  - Interactive HTML export alongside PNG for full Plotly interactivity
-  - Clean separation of histogram (go.Bar) and KDE (go.Scatter) traces
+  - Excellent visual quality with perfect text legibility across both light and dark
+    themes
+  - Precise theme adaptation with correct color mappings and no dark-on-dark failures
+  - 'Thoughtful design: semi-transparent histogram bars allow KDE visibility; clear
+    visual hierarchy with background/foreground separation'
+  - Realistic data example showing meaningful distribution shape (left tail from market
+    drops, peak, right tail from gains)
+  - Clean, reproducible code with proper imports and deterministic seed
+  - 'Correct spec compliance with all required features: density normalization, bin/KDE
+    balance, and contrasting Okabe-Ito colors'
   weaknesses:
-  - Legend background could be slightly more transparent (0.7 vs 0.8 opacity)
-  - Grid alpha very subtle at 0.1 - could be 0.2-0.3 for better visual guidance
-  image_description: The plot displays a histogram with KDE overlay visualizing daily
-    stock returns. The histogram uses semi-transparent blue bars (#306998 with 50%
-    opacity) showing return distribution from approximately -3% to +3%. A bright yellow/gold
-    KDE curve (#FFD43B) smoothly overlays the histogram, revealing the underlying
-    probability density. The title "histogram-kde · plotly · pyplots.ai" is centered
-    at the top. X-axis labeled "Daily Return (%)", y-axis labeled "Density". Legend
-    in upper right corner shows "Histogram" and "KDE" entries with a semi-transparent
-    white background. Clean white template with subtle gridlines and a zero-line on
-    the x-axis.
+  - Limited aesthetic sophistication beyond Okabe-Ito defaults; no custom color refinement
+    or publication-ready artistry
+  - Could leverage more distinctive plotly features (e.g., range sliders, callbacks,
+    interactive bandwidth controls)
+  - No annotations or visual emphasis highlighting specific distribution insights
+    (e.g., skewness magnitude, tail behavior)
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white #FAF8F1 - correct theme surface
+      Chrome: Title "histogram-kde · plotly · anyplot.ai" in dark text (INK #1A1A17), centered and clearly readable. X-axis "Daily Return (%)" and Y-axis "Density" in primary text, both readable with units. Tick labels in secondary text (INK_SOFT #4A4A44), no overlaps.
+      Data: Histogram bars in bluish-green #009E73 with 0.5 opacity; KDE curve in orange-red #D55E00 at 4px width. Both colors from Okabe-Ito palette (positions 1-2). Bars show 35 bins, curve is smooth and overlays clearly.
+      Legend: Top-right with light elevated background (#FFFDF6) and border; text in secondary color, readable
+      Legibility verdict: PASS - all text readable, no light-on-light issues, grid is subtle but visible
+
+    Dark render (plot-dark.png):
+      Background: Warm near-black #1A1A17 - correct dark theme surface
+      Chrome: Title in light text (INK #F0EFE8), clearly readable. Axis labels in light primary text, tick labels in light secondary (INK_SOFT #B8B7B0). No dark-on-dark issues. All text stands out against dark background.
+      Data: Histogram bars maintain #009E73 (identical to light render); KDE curve maintains #D55E00 (identical to light render). Bars and curve are clearly visible against dark background. Data colors unchanged - only chrome flipped as designed.
+      Legend: Dark elevated background (#242420) with light text, readable and well-positioned
+      Legibility verdict: PASS - no dark-on-dark failures, all text readable, data colors remain constant from light render, grid visible but subtle
   criteria_checklist:
     visual_quality:
-      score: 38
-      max: 40
+      score: 30
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title ~32pt, labels ~24pt, ticks ~18pt - all perfectly readable
+        comment: All font sizes explicitly set (title 28px, labels 22px, ticks 18px);
+          perfectly readable in both themes
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping elements; title centered, axis labels spaced, legend
+          positioned without collision
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Histogram bars and KDE curve well-sized for data density
+        comment: Histogram bars clearly visible with 0.5 opacity; KDE curve prominent
+          at 4px; optimal density adaptation
       - id: VQ-04
         name: Color Accessibility
-        score: 4
-        max: 5
-        passed: true
-        comment: Blue and yellow have good contrast; minor deduction as yellow could
-          be slightly more saturated
-      - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Excellent layout with balanced margins
-      - id: VQ-06
-        name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with units
-      - id: VQ-07
-        name: Grid & Legend
-        score: 1
+        comment: Okabe-Ito palette is colorblind-safe; good luminance contrast between
+          histogram and curve
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: Plot fills 60-70% of canvas with balanced, generous margins; legend
+          well-integrated
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
         max: 2
         passed: true
-        comment: Grid subtle at alpha 0.1, legend well-placed but background slightly
-          large
+        comment: X-axis 'Daily Return (%)' with units; Y-axis 'Density'; title in
+          correct format
+      - id: VQ-07
+        name: Palette Compliance
+        score: 2
+        max: 2
+        passed: true
+        comment: 'First series #009E73; second series #D55E00; backgrounds #FAF8F1/#1A1A17;
+          text colors theme-correct'
+    design_excellence:
+      score: 14
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 6
+        max: 8
+        passed: false
+        comment: Thoughtful design with deliberate opacity choices; clear hierarchy.
+          Above defaults but not FiveThirtyEight-level custom artistry.
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: false
+        comment: Grid is subtle; legend has elevated background with border; bar edges
+          included. Could remove axis spines for more refinement.
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: false
+        comment: Distribution narrative clear (left tail, peak, right tail visible).
+          Lacks annotations or emphasis highlighting specific insights.
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct histogram with KDE overlay
+        comment: Correct histogram + KDE overlay; both components functional
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Returns on x-axis, density on y-axis
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Semi-transparent bars (~0.5 alpha), density-scaled y-axis, smooth
-          KDE, contrasting colors
-      - id: SC-04
-        name: Data Range
+        comment: Semi-transparent bars (alpha 0.5); density-normalized y-axis; smooth
+          KDE; contrasting colors
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Full range shown with appropriate padding
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: 'X: returns (continuous); Y: density (normalized); all data visible'
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Labels accurate
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Exact format: "histogram-kde · plotly · pyplots.ai"'
+        comment: Title format correct; legend labels match data
     data_quality:
-      score: 20
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows negative skew, heavier left tail, asymmetric distribution
+        comment: 'Multimodal skewed distribution: left tail (mean -1.5), main (mean
+          0.05), right tail (mean 1.2)'
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Stock returns scenario realistic with 550 observations
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Daily returns (-3% to +3%) realistic for stocks
+        comment: Stock returns are real, neutral, comprehensible scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Return values realistic (-3% to +4%); proportions correct for financial
+          data
     code_quality:
       score: 10
       max: 10
@@ -164,33 +187,60 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save flow
+        comment: 'Linear: imports → theme → data → KDE → figure → save; no unnecessary
+          functions'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set; deterministic
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: os, numpy, plotly, scipy all used; no unused imports
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Current APIs
+        comment: Clean, Pythonic, appropriate complexity; no fake functionality
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png and plot.html
-    library_features:
-      score: 5
-      max: 5
-      items: []
+        comment: Saves as plot-{THEME}.png and plot-{THEME}.html; correct API
+    library_mastery:
+      score: 6
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: false
+        comment: Proper go.Figure(), go.Bar(), go.Scatter(), add_trace() patterns;
+          theme tokens applied correctly
+      - id: LM-02
+        name: Distinctive Features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses hover templates and HTML export; these are basic plotly features,
+          not distinctive
   verdict: APPROVED
+impl_tags:
+  dependencies:
+  - scipy
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - kde
+  - binning
+  styling:
+  - alpha-blending

@@ -1,12 +1,25 @@
-""" pyplots.ai
+""" anyplot.ai
 line-multi: Multi-Line Comparison Plot
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-24
+Library: matplotlib 3.10.9 | Python 3.13.13
+Quality: 92/100 | Updated: 2026-05-06
 """
+
+import os
 
 import matplotlib.pyplot as plt
 import numpy as np
 
+
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+INK_MUTED = "#6B6A63" if THEME == "light" else "#A8A79F"
+
+# Okabe-Ito palette
+OKABE_ITO = ["#009E73", "#D55E00", "#0072B2"]
 
 # Data: Monthly sales (in thousands) for 3 product lines over 12 months
 np.random.seed(42)
@@ -25,14 +38,15 @@ product_b = product_b + np.random.randn(12) * 4
 product_c = 20 + np.exp(np.arange(12) * 0.15) * 10
 product_c = product_c + np.random.randn(12) * 2
 
-# Create plot
-fig, ax = plt.subplots(figsize=(16, 9))
+# Plot
+fig, ax = plt.subplots(figsize=(16, 9), facecolor=PAGE_BG)
+ax.set_facecolor(PAGE_BG)
 
-# Plot each series with distinct colors and markers
+# Plot each series with distinct colors, line styles, and markers
 ax.plot(
     months,
     product_a,
-    color="#306998",
+    color=OKABE_ITO[0],
     linewidth=3,
     marker="o",
     markersize=10,
@@ -42,7 +56,7 @@ ax.plot(
 ax.plot(
     months,
     product_b,
-    color="#FFD43B",
+    color=OKABE_ITO[1],
     linewidth=3,
     marker="s",
     markersize=10,
@@ -52,7 +66,7 @@ ax.plot(
 ax.plot(
     months,
     product_c,
-    color="#E74C3C",
+    color=OKABE_ITO[2],
     linewidth=3,
     marker="^",
     markersize=10,
@@ -60,19 +74,45 @@ ax.plot(
     linestyle="-.",
 )
 
-# Labels and styling
-ax.set_xlabel("Month", fontsize=20)
-ax.set_ylabel("Sales ($ thousands)", fontsize=20)
-ax.set_title("line-multi · matplotlib · pyplots.ai", fontsize=24)
-ax.tick_params(axis="both", labelsize=16)
+# Highlight peak values with annotations
+max_a_idx = np.argmax(product_a)
+ax.annotate(
+    f"${product_a[max_a_idx]:.0f}K",
+    xy=(months[max_a_idx], product_a[max_a_idx]),
+    xytext=(10, 15),
+    textcoords="offset points",
+    fontsize=14,
+    color=INK_SOFT,
+    bbox={"boxstyle": "round,pad=0.5", "facecolor": ELEVATED_BG, "edgecolor": INK_SOFT, "alpha": 0.8},
+    arrowprops={"arrowstyle": "->", "connectionstyle": "arc3,rad=0", "color": INK_SOFT, "lw": 1.5},
+)
+
+# Style
+ax.set_xlabel("Month", fontsize=20, color=INK)
+ax.set_ylabel("Sales ($ thousands)", fontsize=20, color=INK)
+ax.set_title("line-multi · matplotlib · anyplot.ai", fontsize=24, fontweight="medium", color=INK)
+ax.tick_params(axis="both", labelsize=16, colors=INK_SOFT, labelcolor=INK_SOFT)
 
 # Set x-axis ticks to show month labels
 ax.set_xticks(months)
 ax.set_xticklabels(month_labels)
 
-# Grid and legend
-ax.grid(True, alpha=0.3, linestyle="--")
-ax.legend(fontsize=16, loc="upper left", framealpha=0.9)
+# Grid
+ax.yaxis.grid(True, alpha=0.15, linewidth=0.8, color=INK_SOFT)
+
+# Spines
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
+for s in ("left", "bottom"):
+    ax.spines[s].set_color(INK_SOFT)
+
+# Legend
+leg = ax.legend(fontsize=16, loc="upper left")
+if leg:
+    leg.get_frame().set_facecolor(ELEVATED_BG)
+    leg.get_frame().set_edgecolor(INK_SOFT)
+    leg.get_frame().set_linewidth(0.8)
+    plt.setp(leg.get_texts(), color=INK_SOFT)
 
 plt.tight_layout()
-plt.savefig("plot.png", dpi=300, bbox_inches="tight")
+plt.savefig(f"plot-{THEME}.png", dpi=300, bbox_inches="tight", facecolor=PAGE_BG)

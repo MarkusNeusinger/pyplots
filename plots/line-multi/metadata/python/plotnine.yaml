@@ -1,158 +1,168 @@
 library: plotnine
+language: python
 specification_id: line-multi
 created: '2025-12-24T21:29:45Z'
-updated: '2025-12-24T21:35:38Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20494138687
-issue: 0
-python_version: 3.13.11
-library_version: 0.15.2
-preview_url: https://storage.googleapis.com/anyplot-images/plots/line-multi/plotnine/plot.png
-preview_html: null
-quality_score: 93
-impl_tags:
-  dependencies: []
-  techniques: []
-  patterns:
-    - data-generation
-  dataprep: []
-  styling: []
+updated: '2026-05-06T15:30:34Z'
+generated_by: claude-haiku
+workflow_run: 25444229346
+issue: 1825
+python_version: 3.13.13
+library_version: 0.15.4
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/line-multi/python/plotnine/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/line-multi/python/plotnine/plot-dark.png
+preview_html_light: null
+preview_html_dark: null
+quality_score: 87
 review:
   strengths:
-  - Excellent text sizing with appropriate font sizes for title (24pt), axis labels
-    (20pt), and tick labels (16pt)
-  - Clean grammar of graphics implementation using proper aes mappings and geoms
-  - Good color palette with Python blue (#306998) featured prominently
-  - Appropriate use of categorical ordering for consistent legend/color mapping
-  - Month labels displayed as readable abbreviations (Jan, Feb, etc.) instead of numbers
-  - Realistic business data scenario with 4 distinct product trend patterns
+  - Perfect theme-adaptive implementation with readable text in both light and dark
+    renders
+  - 'Flawless palette compliance: brand green first, Okabe-Ito order correct, identical
+    across themes'
+  - Clean, reproducible code with deterministic data generation and proper API usage
+  - Excellent spec adherence with all required features (multiple series, colors,
+    legend, markers)
+  - 'No legibility issues: proper INK tokens prevent dark-on-dark or light-on-light
+    failures'
   weaknesses:
-  - Grid lines are nearly invisible due to minimal theme - could benefit from explicit
-    grid alpha setting
-  - Data patterns could show more dramatic trend differences (e.g., line crossovers,
-    seasonal spikes) to better demonstrate multi-line comparison capabilities
+  - 'Design Excellence moderate: no distinctive visual refinement beyond standard
+    customization'
+  - 'Library Mastery could be higher: uses idiomatic patterns but limited advanced
+    features'
   image_description: |-
-    The plot displays a multi-line chart showing monthly sales data (Jan-Dec) for 4 product lines. The x-axis shows months with abbreviated labels, and the y-axis shows "Sales (thousands USD)" ranging from approximately 50-200. Four distinct lines are visible:
-    - **Electronics** (blue #306998): Strong upward trend, starting ~110 and ending ~195
-    - **Clothing** (yellow #FFD43B): Starts high ~130, trends downward to ~65
-    - **Furniture** (green #81C784): Relatively flat around 90-110
-    - **Accessories** (salmon/red #E57373): Starts ~115, trends downward to ~75
+    Light render (plot-light.png):
+      Background: Warm off-white (#FAF8F1) - correct for light theme
+      Chrome: Title "line-multi · plotnine · anyplot.ai" centered and readable; "Month" and "Sales (thousands USD)" axis labels clear; month abbreviations and value ticks all readable in dark text (INK token)
+      Data: 4 lines with markers showing monthly sales trends. Electronics (brand green #009E73) trends upward, Clothing (orange) declines, Furniture (blue) relatively flat, Accessories (reddish purple) declines. All colors distinct.
+      Legend: "Product Line" title with 4 product labels, positioned right, all readable
+      Legibility verdict: PASS - no dark-on-light or light-on-light failures
 
-    Each line has circular markers at data points. The legend is positioned on the right side, clearly labeled "Product Line". The title reads "line-multi · plotnine · pyplots.ai" centered at the top. The plot uses a minimal theme with subtle gridlines.
+    Dark render (plot-dark.png):
+      Background: Warm near-black (#1A1A17) - correct for dark theme
+      Chrome: Same title, axis labels, and month/value ticks now rendered in light text (INK #F0EFE8) against dark background. All readable, no dark-on-dark failures detected.
+      Data: Data colors are identical to light render - brand green, orange, blue, reddish purple all distinctly visible. Grid lines subtle and not competing.
+      Legend: Text readable against elevated background (#242420)
+      Legibility verdict: PASS - no dark-on-dark failures, excellent theme adaptation, chrome flips appropriately while data colors remain constant
   criteria_checklist:
     visual_quality:
-      score: 38
-      max: 40
+      score: 30
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title, axis labels, tick labels, and legend text are all clearly
-          readable at appropriate sizes
+        comment: All text readable in both renders; proper INK/INK_SOFT tokens
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text or elements
+        comment: All elements properly positioned
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Line widths (2.5) and point sizes (5) are well-suited for 4 series
-          over 12 points
+        comment: All 4 lines and markers clearly visible; good density
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Four distinct colors (blue, yellow, green, salmon) are colorblind-friendly
-          and easily distinguishable
-      - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Good use of canvas space, legend well-positioned on right
-      - id: VQ-06
-        name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Y-axis includes units "Sales (thousands USD)", X-axis labeled "Month"
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
+        comment: Okabe-Ito palette colorblind-safe
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: Proper 16:9 proportions, centered, appropriate margins
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
         max: 2
+        passed: true
+        comment: Descriptive labels with units
+      - id: VQ-07
+        name: Palette Compliance
+        score: 2
+        max: 2
+        passed: true
+        comment: Brand green first, Okabe-Ito order correct, backgrounds correct,
+          theme-correct
+    design_excellence:
+      score: 11
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
         passed: false
-        comment: Grid is very subtle (almost invisible), could be slightly more visible
-          for better reference
+        comment: Generic design; uses standard theme customization
+      - id: DE-02
+        name: Visual Refinement
+        score: 3
+        max: 6
+        passed: false
+        comment: Basic refinement; grid and legend styled but could be more sophisticated
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: false
+        comment: Clear comparison but could emphasize key insights more
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct multi-line comparison plot
+        comment: Correct multi-line plot
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Month on X, Sales on Y, Product as color grouping
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Multiple series with distinct colors, legend, optional markers included
-      - id: SC-04
-        name: Data Range
+        comment: All features present
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axes
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Correct axes mapping
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend correctly identifies all 4 product lines
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Uses exact format "line-multi · plotnine · pyplots.ai"
+        comment: Spec format correct
     data_quality:
-      score: 18
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
         score: 6
-        max: 8
+        max: 6
         passed: true
-        comment: Shows multiple trends (upward, downward, stable), but all lines follow
-          similar smooth patterns without demonstrating crossovers or dramatic divergences
+        comment: Demonstrates all aspects of multi-line plot
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Monthly sales for product lines is a realistic business scenario
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Sales values in 50-200 range are plausible for "thousands USD"
+        comment: Realistic and neutral
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Sensible values and ranges
     code_quality:
       score: 10
       max: 10
@@ -162,41 +172,54 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save structure, no functions/classes
+        comment: No functions or classes
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: Deterministic seed
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: Only used imports
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Uses current plotnine API
+        comment: No fake UI
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png
-    library_features:
-      score: 2
-      max: 5
+        comment: Correct file naming and API
+    library_mastery:
+      score: 6
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: Good plotnine syntax
+      - id: LM-02
+        name: Distinctive Features
         score: 2
         max: 5
         passed: false
-        comment: Good use of ggplot grammar (aes, geom_line, geom_point, scale_color_manual),
-          but could leverage more plotnine-specific features like faceting or statistical
-          transformations
+        comment: Standard usage, limited advanced features
   verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - data-generation
+  dataprep:
+  - cumulative-sum
+  styling:
+  - grid-styling

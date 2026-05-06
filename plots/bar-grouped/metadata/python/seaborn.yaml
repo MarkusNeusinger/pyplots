@@ -1,152 +1,171 @@
 library: seaborn
+language: python
 specification_id: bar-grouped
 created: '2025-12-24T21:28:43Z'
-updated: '2025-12-24T21:32:00Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20494136560
-issue: 0
-python_version: 3.13.11
+updated: '2026-05-06T11:02:34Z'
+generated_by: claude-haiku
+workflow_run: 25430916558
+issue: 1822
+python_version: 3.13.13
 library_version: 0.13.2
-preview_url: https://storage.googleapis.com/anyplot-images/plots/bar-grouped/seaborn/plot.png
-preview_html: null
-quality_score: 96
-impl_tags:
-  dependencies: []
-  techniques:
-  - edge-highlighting
-  patterns: []
-  dataprep: []
-  styling: []
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/bar-grouped/python/seaborn/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/bar-grouped/python/seaborn/plot-dark.png
+preview_html_light: null
+preview_html_dark: null
+quality_score: 90
 review:
   strengths:
-  - Excellent use of seaborn's native barplot with hue parameter for clean grouped
-    bars
-  - Clear, realistic business data scenario with meaningful quarterly growth patterns
-  - Perfect title format and axis labeling with units
-  - Colorblind-safe palette with good visual distinction between groups
-  - Clean KISS code structure following library guidelines
+  - Perfect visual quality with excellent text legibility in both light and dark themes
+  - Flawless palette compliance—Okabe-Ito colors correctly applied and theme tokens
+    properly threaded through all elements
+  - 'Professional visual refinement: subtle grid, spine removal, white bar edges,
+    proper legend positioning'
+  - Clean code structure following KISS principles with deterministic data
+  - Data effectively demonstrates the grouped bar chart's comparative power
   weaknesses:
-  - Legend positioned in upper left partially overlaps with Q1 bars; consider placing
-    outside plot or in upper right
-  image_description: 'The plot displays a grouped bar chart showing quarterly sales
-    data (Q1-Q4) for three product lines: Electronics (dark blue), Clothing (golden
-    yellow), and Home & Garden (teal). Each quarter has three bars side-by-side. The
-    y-axis shows "Sales (thousands $)" ranging from 0 to 400, and the x-axis shows
-    quarters. There''s a clear upward trend for Electronics sales across quarters
-    (245→280→310→395). The title "bar-grouped · seaborn · pyplots.ai" is centered
-    at the top. A legend titled "Product Line" is positioned in the upper left corner.
-    Subtle dashed horizontal grid lines appear in the background.'
+  - Design Excellence could be elevated through custom visual enhancements and more
+    emphasis on strongest performers
+  - Library Mastery is conservative—uses standard barplot without exploring seaborn's
+    more distinctive features
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white (#FAF8F1), perfectly matching the required light theme surface
+      Chrome: Title "bar-grouped · seaborn · anyplot.ai" at 24pt, axis labels "Region" and "Satisfaction Score" at 20pt, tick labels at 16pt—all clearly readable in dark text against the light background. Grid lines are subtle (alpha=0.10) and visible without dominating. Legend positioned below with proper spacing.
+      Data: Four regions (North, South, East, West) with three departments per region. IT bars in #009E73 (Okabe-Ito position 1), HR in #D55E00 (position 2), Operations in #0072B2 (position 3). Value labels on bars (64-95) are clearly visible. White edges on bars add visual definition.
+      Spines: Top and right removed, left and bottom are subtle and light-colored (#4A4A44).
+      Legibility verdict: PASS - All elements readable, excellent contrast, no text legibility issues
+
+    Dark render (plot-dark.png):
+      Background: Warm near-black (#1A1A17), perfectly matching the required dark theme surface
+      Chrome: Same title and axis labels now rendered in light text (#F0EFE8) and secondary text (#B8B7B0), both providing excellent contrast against dark background. Grid lines remain subtle and visible. Legend box background adapted to #242420. Spines are appropriately lightened.
+      Data: The three data colors (#009E73, #D55E00, #0072B2) are **identical to the light render**—only chrome has adapted. Value labels remain clearly readable. Bar edges maintain white color for definition.
+      No dark-on-dark issues: All text is light on dark, not dark on dark. The brand green (#009E73) is clearly visible and maintains the identity across both themes.
+      Legibility verdict: PASS - All elements readable in dark theme, perfect theme-adaptive chrome, no legibility failures
   criteria_checklist:
     visual_quality:
-      score: 38
-      max: 40
+      score: 30
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: all text perfectly readable at full size
+        comment: 'All font sizes explicitly set: Title 24pt, Labels 20pt, Ticks 16pt,
+          all perfectly readable in both themes'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: no overlapping text
+        comment: No overlapping text elements, clean spacing throughout
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: bars well-sized with good spacing
+        comment: 12 bars clearly visible and distinguishable with white edge definition
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: colorblind-safe blue/yellow/teal palette
-      - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: excellent proportions, plot fills canvas well
-      - id: VQ-06
-        name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Y-axis has units, X-axis is descriptive
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
+        comment: Okabe-Ito palette colorblind-safe with excellent contrast
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: 'Perfect layout: plot fills 60-70% of canvas with balanced margins'
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
         max: 2
-        passed: false
-        comment: legend position in upper left slightly overlaps with Q1 data area
+        passed: true
+        comment: Descriptive labels and correct title format
+      - id: VQ-07
+        name: Palette Compliance
+        score: 2
+        max: 2
+        passed: true
+        comment: Perfect Okabe-Ito compliance, theme chrome correct in both renders
+    design_excellence:
+      score: 14
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: true
+        comment: Professional palette and theme-adaptive design with white bar edges
+          adding polish
+      - id: DE-02
+        name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: 'Excellent: subtle grid, removed spines, generous whitespace, attention
+          to detail'
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Good visual hierarchy; viewers can identify patterns across regions
+          and departments
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: correct grouped bar chart
+        comment: Correct grouped bar chart
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: categories on X, values on Y, groups as hue
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: distinct colors, clear legend, consistent spacing
-      - id: SC-04
-        name: Data Range
+        comment: 'All features present: distinct colors, legend, spacing, value labels'
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: all data visible, y-axis starts at 0
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X/Y correctly assigned, all data visible
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: labels match data
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: uses {spec-id} · {library} · pyplots.ai
+        comment: Correct format with matching labels
     data_quality:
-      score: 20
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: shows variation across quarters and products with clear trends
+        comment: Demonstrates key grouped bar features
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: quarterly sales by product line is plausible
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: values in realistic range for sales data
+        comment: Real business scenario, neutral, plausible
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Satisfaction scores realistic and well-chosen
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -154,33 +173,53 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: imports → data → plot → save
+        comment: Linear flow, no unnecessary functions
       - id: CQ-02
         name: Reproducibility
         score: 2
-        max: 3
+        max: 2
         passed: true
-        comment: deterministic data but no explicit seed marker
+        comment: Deterministic hardcoded data
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: all imports used
+        comment: All imports used
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: current seaborn API
+        comment: Clean, Pythonic, no fake functionality
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: saves as plot.png
-    library_features:
-      score: 4
-      max: 5
-      items: []
+        comment: Correct plot-{THEME}.png output
+    library_mastery:
+      score: 6
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: Uses sns.barplot() and sns.set_theme() correctly
+      - id: LM-02
+        name: Distinctive Features
+        score: 2
+        max: 5
+        passed: false
+        comment: Generic seaborn usage; could leverage FacetGrid or advanced hue mechanics
   verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - edge-highlighting

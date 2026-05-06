@@ -2,7 +2,7 @@ library: pygal
 language: python
 specification_id: waterfall-basic
 created: '2025-12-24T09:51:13Z'
-updated: '2026-05-06T01:10:23Z'
+updated: '2026-05-06T01:18:42Z'
 generated_by: claude-haiku
 workflow_run: 25410895052
 issue: 777
@@ -12,32 +12,39 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/waterfall
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/waterfall-basic/python/pygal/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/waterfall-basic/python/pygal/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/waterfall-basic/python/pygal/plot-dark.html
-quality_score: 87
+quality_score: 82
 review:
   strengths:
-  - Excellent theme adaptation with proper light/dark token switching
-  - Clean, readable typography at full canvas scale
-  - Functional waterfall effect with clear positive/negative/total distinction
-  - Strong data quality with realistic financial scenario and appropriate scale
-  - 'Perfect code quality: simple, deterministic, clean imports'
+  - Excellent technical execution across all visual quality metrics
+  - Theme adaptation is flawless — both light and dark renders readable with correct
+    chrome
+  - Clean, maintainable code with proper data reproducibility
+  - Realistic financial example data demonstrating all waterfall features
+  - Proper font sizing and layout for 4800×2700 canvas
   weaknesses:
-  - Missing connecting lines between bars (spec requirement for waterfall effect)
-  - Stacked bar approach is a functional workaround but less refined than true waterfall
-    with visual connectors
-  - Design excellence could be improved by emphasizing the cumulative flow narrative
-  - Underutilizes Pygal's interactive capabilities (tooltips, hover effects)
+  - 'Palette Order Violation: Total series is orange (position 2) instead of brand
+    green (position 1) — must use position 1 for first series per Okabe-Ito spec'
+  - 'Missing Connecting Lines: Spec requests explicit lines between bars; current
+    stacked approach provides visual continuity but not segment connectors'
+  - 'Generic Design: Uses library defaults with minimal aesthetic refinement — could
+    improve with custom palette, visual hierarchy, or refined typography'
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) - correct, professional tone
-      Chrome: Title "waterfall-basic · pygal · anyplot.ai" clearly visible at top in dark text. Axis labels ("Category", "Amount ($K)") and all tick marks readable. X-axis labels with running totals ($500K, $658K, etc.) clearly visible at 25° rotation.
-      Data: Stacked bars use orange (#D55E00, #E69F00) for totals, green (#009E73) for positive increases, pink (#CC79A7) for negative decreases. Running total values displayed on each bar segment. Legend at bottom shows Total, Increase, Decrease with correct colors.
-      Legibility verdict: PASS - All text elements (title, labels, tick values, data labels) are clearly readable in dark text against the light background. No text-on-text conflicts.
+      Background: Warm off-white #FAF8F1, not pure white
+      Chrome: Title, axis labels ("Category", "Amount ($K)"), and rotated X-axis labels with running totals — all dark text, clearly readable
+      Data: Orange Total bar (#D55E00, position 2); green Increase sections (#009E73, position 1); pink Decrease sections (#CC79A7, position 4)
+      Grid: Subtle horizontal guides visible but don't compete with data
+      Legend: Three series shown (Total, Increase, Decrease) with corresponding colors
+      Legibility verdict: PASS — all text has excellent contrast against light background
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) - correct, provides good contrast for light text
-      Chrome: Title clearly visible in light text. Axis labels and all tick values readable in light text. X-axis labels with running totals clearly visible with proper spacing.
-      Data: Data colors identical to light render (green for increases, pink for decreases, orange for totals), confirming proper theme-adaptive chrome while preserving data color identity. Legend entries visible with light text.
-      Legibility verdict: PASS - All text is clearly readable in light text against the dark background. No dark-on-dark failures detected. Theme adaptation successful.
+      Background: Warm near-black #1A1A17, not pure black
+      Chrome: Title, axis labels, and tick labels rendered in light text (#F0EFE8 or #B8B7B0), clearly visible against dark background
+      Data: Identical colors to light render (orange, green, pink) — only chrome flipped theme-correct
+      Grid: Subtle light traces visible
+      Legibility verdict: PASS — all text is light-colored with no "dark-on-dark" failures; excellent readability on dark surface
+
+    Both renders successfully adapt theme while preserving data color identity (Okabe-Ito positions 1-4 identical across themes).
   criteria_checklist:
     visual_quality:
       score: 29
@@ -48,113 +55,97 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Font sizes explicitly set (title 28px, labels 18px, etc.). All readable
-          at full canvas scale in both light and dark themes.
+        comment: Font sizes explicitly set (28/18/16/14px); all text perfectly readable
+          in both themes
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: X-axis labels rotated 25° with adequate spacing. Running total labels
-          add length but remain readable with minimal collision.
+        comment: X-axis labels well-spaced with rotation; no overlapping elements
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: All bars clearly distinguishable. Data values printed at center of
-          each segment. Legend present and readable.
+        comment: All bars clearly visible, appropriate sizing for 4800×2700 canvas
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito palette is colorblind-safe. Green (#009E73) for positive,
-          pink (#CC79A7) for negative, blue (#0072B2) for totals. CVD-safe.
+        comment: Okabe-Ito palette is CVD-safe with good contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: 4800×2700 px (16:9 landscape). Margins (80, 250 bottom) provide adequate
-          whitespace. No cut-off elements.
+        comment: Correct 4800×2700 size, generous margins, excellent space utilization
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: X-title 'Category', Y-title 'Amount ($K)', main title 'waterfall-basic
-          · pygal · anyplot.ai'. All descriptive with units.
+        comment: Title correct format, axis labels include units
       - id: VQ-07
         name: Palette Compliance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: 'Green (#009E73) used for primary data series (Increase). Backgrounds
-          correct (#FAF8F1 light, #1A1A17 dark). Both renders theme-correct.'
+        passed: false
+        comment: 'VIOLATION: Total series is orange (position 2) instead of brand
+          green (position 1). Backgrounds and chrome are theme-correct.'
     design_excellence:
-      score: 13
+      score: 8
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 4
         max: 8
         passed: false
-        comment: Professional custom Style object with theme-adaptive colors. Explicit
-          typography. However, uses standard Okabe-Ito without custom refinement.
-          Stacked-bar workaround is functional but lacks elegance of traditional waterfall
-          with connecting lines.
+        comment: Generic defaults with intentional semantic color scheme but no visual
+          sophistication
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 2
         max: 6
         passed: false
-        comment: Clean layout with subtle y-axis grid. Adequate whitespace. However,
-          stacked bars alone don't emphasize cumulative flow narrative as effectively
-          as connected waterfall lines would.
+        comment: Minimal customization beyond library defaults
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 2
         max: 6
         passed: false
-        comment: Color coding guides viewers (green=gain, pink=loss, orange=totals).
-          Running totals provide context. But visual hierarchy is somewhat generic
-          for a stacked bar. Could create stronger focal point or emphasis.
+        comment: Data displayed clearly but no visual hierarchy or narrative emphasis
     spec_compliance:
-      score: 13
+      score: 14
       max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 4
+        score: 5
         max: 5
-        passed: false
-        comment: Waterfall-like chart using stacked bars. Functional and recognizable,
-          but not a traditional waterfall (spec requests 'Show connecting lines between
-          bars to emphasize the cumulative flow').
+        passed: true
+        comment: Correct waterfall via stacked bar
       - id: SC-02
         name: Required Features
         score: 3
         max: 4
         passed: false
-        comment: '✓ Positive changes green. ✓ Negative changes colored (pink, not
-          red). ✓ Distinct totals. ✓ Running total labels. ✗ MISSING: connecting lines
-          between bars (explicitly mentioned in spec).'
+        comment: All features present except explicit connecting lines between bars
+          (spec requests these)
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: 'X-axis: categories with running totals. Y-axis: amount values in
-          $K. All data visible. Full range displayed.'
+        comment: X/Y correctly assigned
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: 'Title: ''waterfall-basic · pygal · anyplot.ai'' (compliant). Legend:
-          Total, Increase, Decrease. Labels accurate.'
+        comment: Title format and legend labels correct
     data_quality:
       score: 15
       max: 15
@@ -164,22 +155,19 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: '8-point breakdown from Q1 Revenue to Net Income. Demonstrates full
-          waterfall: starting total, revenue items, costs, taxes, final income.'
+        comment: 'Shows all waterfall aspects: revenue, additions, costs, net income'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Quarterly financial scenario (revenue, COGS, operating expenses,
-          taxes). Realistic values ($500K → $377K progression). Neutral context.
+        comment: Realistic financial scenario, neutral and comprehensible
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Y-axis range (0–800K) accommodates Q1 Revenue bar and all stacked
-          components. Values in $K appropriate for quarterly financials.
+        comment: Values in $K are sensible; proportions plausible
     code_quality:
       score: 10
       max: 10
@@ -189,36 +177,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear script. No unnecessary functions or classes. Straightforward
-          data generation and chart creation.
+        comment: Simple imperative code
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic data (hard-coded values). No randomness.
+        comment: Deterministic data
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'Imports: os, pygal, Style. All used; no junk imports.'
+        comment: Only necessary imports
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Manual waterfall calculation clear and appropriate. Spacer-based
-          stacking is recognized workaround. No fake UI.
+        comment: No over-engineering or fake UI
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot-{THEME}.png and plot-{THEME}.html. Uses current Pygal
-          3.1.0 API correctly.
+        comment: Correct output files
     library_mastery:
-      score: 7
+      score: 6
       max: 10
       items:
       - id: LM-01
@@ -226,22 +211,23 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Style object used correctly. Theme-aware ANYPLOT_THEME pattern is
-          idiomatic. StackedBar appropriate. Margin and typography config proper.
-          Spacer-based waterfall is reasonable workaround (Pygal lacks native waterfall).
+        comment: Good use of StackedBar and Style; color assignment slightly non-standard
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 2
         max: 5
         passed: false
-        comment: Custom Style with foreground tokens is good. Data labeling via print_values
-          is nice. However, doesn't leverage Pygal's interactive capabilities (tooltips,
-          hover effects, callbacks) to maximize library strengths.
+        comment: Uses Style and HTML export but no distinctive pygal features
   verdict: APPROVED
 impl_tags:
   dependencies: []
-  techniques: []
+  techniques:
+  - custom-legend
   patterns:
   - data-generation
-  dataprep: []
-  styling: []
+  - matrix-construction
+  - iteration-over-groups
+  dataprep:
+  - cumulative-sum
+  styling:
+  - theme-adaptive

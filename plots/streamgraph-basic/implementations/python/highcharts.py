@@ -1,4 +1,4 @@
-""" anyplot.ai
+"""anyplot.ai
 streamgraph-basic: Basic Stream Graph
 Library: highcharts unknown | Python 3.13.13
 Quality: 83/100 | Updated: 2026-05-05
@@ -110,7 +110,8 @@ chart.options.legend = {
     "enabled": True,
     "layout": "horizontal",
     "align": "center",
-    "verticalAlign": "bottom",
+    "verticalAlign": "top",
+    "y": 80,
     "itemStyle": {"fontSize": "28px", "color": INK_SOFT},
     "backgroundColor": ELEVATED_BG,
     "borderColor": INK_SOFT,
@@ -118,7 +119,6 @@ chart.options.legend = {
     "symbolWidth": 40,
     "symbolHeight": 20,
     "symbolRadius": 6,
-    "y": 20,
 }
 
 chart.options.colors = OKABE_ITO

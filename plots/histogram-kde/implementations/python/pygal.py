@@ -1,7 +1,7 @@
 """ anyplot.ai
 histogram-kde: Histogram with KDE Overlay
 Library: pygal 3.1.0 | Python 3.13.13
-Quality: 88/100 | Updated: 2026-05-06
+Quality: 94/100 | Updated: 2026-05-06
 """
 
 import os

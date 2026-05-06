@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 line-multi: Multi-Line Comparison Plot
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: pending | Created: 2025-05-06
+Library: bokeh 3.9.0 | Python 3.13.13
+Quality: 88/100 | Updated: 2026-05-06
 """
 
 import os

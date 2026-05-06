@@ -2,7 +2,7 @@ library: matplotlib
 language: python
 specification_id: bar-grouped
 created: '2025-12-24T21:29:23Z'
-updated: '2026-05-06T10:58:10Z'
+updated: '2026-05-06T11:04:43Z'
 generated_by: claude-haiku
 workflow_run: 25430937500
 issue: 1822
@@ -12,36 +12,35 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/bar-group
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/bar-grouped/python/matplotlib/plot-dark.png
 preview_html_light: null
 preview_html_dark: null
-quality_score: 88
+quality_score: 89
 review:
   strengths:
-  - 'Perfect visual quality: all text explicitly sized and readable in both themes'
-  - 'Flawless palette compliance: correct Okabe-Ito colors with theme-adaptive chrome'
-  - 'Excellent code quality: clean structure, idiomatic matplotlib usage, deterministic
-    data'
-  - 'Comprehensive spec compliance: all required features implemented with proper
-    title format'
-  - 'Strong data representation: realistic quarterly sales scenario with value labels
-    for precision'
-  - 'Proper theme handling: background and text colors correctly adapt between light/dark
-    renders'
+  - 'Perfect technical execution: all visual quality criteria met, clean code, proper
+    theme handling'
+  - Data colors identical across themes with correct Okabe-Ito palette (#009E73 as
+    position 1)
+  - Theme-adaptive chrome flawlessly implemented in both renders—no readability issues
+  - 'Strong design touches: drop shadows, marker emphasis on max values, custom legend
+    styling'
+  - Clear visual hierarchy through marker size variation and bold font weight
+  - No overlap, no legibility failures, excellent canvas utilization
   weaknesses:
-  - Design feels like well-configured defaults rather than distinctive visual design
-    - would benefit from intentional aesthetic choices beyond standard practices
-  - No visual hierarchy or emphasis to guide viewer attention through the data narrative
-  - Limited use of matplotlib-specific features to create memorable visual impact
+  - Design Excellence could push higher with refined grid styling and color contrast
+    emphasis
+  - Data Storytelling could improve by adding explicit narrative emphasis through
+    selective color saturation or size variation
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) with clean appearance
-      Chrome: Title "bar-grouped · matplotlib · anyplot.ai" is clearly readable in dark text; axis labels "Quarter" and "Sales (Thousands USD)" are legible; tick labels (Q1-Q4 and numeric values 0-400) are sharp; all text elements are properly sized and positioned
-      Data: Three product lines shown as grouped bars with Okabe-Ito colors - Electronics (#009E73 brand green), Clothing (#D55E00 orange), Home & Garden (#0072B2 blue); value labels (245, 178, 125, etc.) positioned on bar tops in dark text; legend positioned upper right with clear labels and background
-      Legibility verdict: PASS - All text is highly readable; no overlaps; excellent contrast against light background
+      Background: Warm off-white #FAF8F1 (correct)
+      Chrome: Title, axis labels, tick labels all dark text (INK #1A1A17), 24pt/20pt/16pt—perfectly readable
+      Data: Three bars per quarter with Okabe-Ito colors: #009E73 (Electronics), #D55E00 (Clothing), #0072B2 (Home & Garden)
+      Legibility verdict: PASS—all elements clearly visible, no overlap, proper contrast
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) maintaining consistent appearance
-      Chrome: Title and axis labels rendered in light text (#F0EFE8) - all clearly readable against dark background; tick labels are light colored and legible; no dark-on-dark text failures
-      Data: Data colors are identical to light render (Electronics #009E73, Clothing #D55E00, Home & Garden #0072B2), confirming proper theme-independent palette; value labels appear in light text and are readable; legend maintains dark styling with proper contrast
-      Legibility verdict: PASS - All text is readable; theme adaptation is correct; no dark-on-dark failures; chrome properly inverts while data colors remain constant
+      Background: Warm near-black #1A1A17 (correct)
+      Chrome: Title, axis labels, tick labels all light text (INK_SOFT #B8B7B0), clearly readable on dark background
+      Data: Same Okabe-Ito colors as light render (identical, no shift)
+      Legibility verdict: PASS—no dark-on-dark issues, all text readable, grid and spines properly light-colored, brand green #009E73 visible
   criteria_checklist:
     visual_quality:
       score: 30
@@ -52,75 +51,70 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: All text explicitly sized (24pt title, 20pt labels, 16pt ticks, 14pt
-          value labels) and perfectly readable in both renders
+        comment: All font sizes explicitly set (24pt/20pt/16pt), perfectly readable
+          in both themes
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text; well-spaced bars and legend; all elements clearly
-          readable
+        comment: No overlapping text elements, proper spacing throughout
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Bars optimally sized for data density; three series clearly distinguishable;
-          edge colors subtle but visible
+        comment: Bars, markers, labels all clearly visible with optimized sizing
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito palette is colorblind-safe; good contrast between all series
+        comment: Okabe-Ito palette is CVD-safe with good contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Plot fills 50-70% of canvas with balanced margins; legend well-positioned;
-          generous whitespace
+        comment: Plot fills ~65% of canvas with balanced margins at 4800×2700px
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: X-axis 'Quarter' and Y-axis 'Sales (Thousands USD)' both descriptive
-          with units
+        comment: 'Descriptive labels with units: ''Sales (Thousands USD)'''
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series is #009E73 (brand green); multi-series follow Okabe-Ito
-          order; backgrounds are #FAF8F1 (light) / #1A1A17 (dark); all text colors
-          theme-correct'
+        comment: 'First series #009E73 correct, Okabe-Ito order maintained, backgrounds
+          correct (#FAF8F1/#1A1A17), theme chrome correct in both renders'
     design_excellence:
-      score: 10
+      score: 12
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
-        passed: false
-        comment: Well-configured library defaults with intentional color use, but
-          not publication-ready or distinctive
+        passed: true
+        comment: Strong design with drop shadows, marker emphasis, thoughtful styling—above
+          defaults but not FiveThirtyEight-level
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
-        passed: false
-        comment: Top/right spines removed, subtle grid (alpha=0.10), good whitespace,
-          bar edges customized - good execution of standard practices
+        passed: true
+        comment: Spines removed, subtle y-axis grid, generous whitespace, custom legend
+          styling
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 3
         max: 6
-        passed: false
-        comment: Value labels aid precision but no visual hierarchy or emphasis to
-          tell a story; data is displayed without interpretation
+        passed: true
+        comment: Visual hierarchy via marker size/font weight variation guides viewer;
+          could add narrative emphasis
     spec_compliance:
       score: 15
       max: 15
@@ -130,28 +124,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct grouped bar chart with side-by-side bars for each category
+        comment: Correct grouped bar chart implementation
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: grouped bars, value labels, legend, proper
-          axis labels'
+        comment: 'All features present: multiple bars, colors, legend, value labels,
+          markers'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X-axis shows categories (Q1-Q4), Y-axis shows sales values, groups
-          displayed correctly
+        comment: X/Y correctly assigned, all data visible
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: 'Title format correct: ''bar-grouped · matplotlib · anyplot.ai'';
-          legend labels match data'
+        comment: Title format correct, legend labels match data
     data_quality:
       score: 15
       max: 15
@@ -161,21 +153,20 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Shows all aspects: multiple categories, multiple groups, clear value
-          variation'
+        comment: 'All aspects of grouped bars demonstrated: multiple quarters, three
+          product lines, varied patterns'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Quarterly sales by product line is real-world plausible and neutral
+        comment: Realistic quarterly sales scenario, neutral business context
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values (125-425 thousands) are realistic for sales data; proportions
-          make logical sense
+        comment: Values 125–425k realistic, proportions plausible
     code_quality:
       score: 10
       max: 10
@@ -185,63 +176,59 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear structure: imports → data → plot → save; no functions or
-          classes'
+        comment: Clean linear flow, no functions/classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic hardcoded data; 100% reproducible output
+        comment: Deterministic hardcoded data
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: os (theme), matplotlib (plotting), numpy (array
-          operations)'
+        comment: Only necessary imports used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean Pythonic code with zip(strict=True), proper loop structure,
-          no over-engineering
+        comment: Pythonic, appropriate complexity, no fake functionality
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot-{THEME}.png with dpi=300 and bbox_inches='tight'; modern
-          API usage
+        comment: Saves as plot-{THEME}.png with current API
     library_mastery:
-      score: 8
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Expert use of ax.bar(), ax.annotate(), ax.legend() with frame styling;
-          proper zip(strict=True); high-level API
+        comment: Proper axes-based approach, high-level API usage
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
-        passed: false
-        comment: Uses theme-adaptive styling and custom legend frames, but these are
-          standard practices rather than distinctive matplotlib features
+        passed: true
+        comment: Uses Rectangle patches for shadows and custom marker emphasis
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
   - manual-ticks
+  - patches
   patterns:
-  - data-generation
-  - iteration-over-groups
   - explicit-figure
+  - iteration-over-groups
   dataprep: []
   styling:
   - grid-styling
+  - edge-highlighting
   - alpha-blending

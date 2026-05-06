@@ -5,6 +5,11 @@ import { shuffleArray } from '../utils/shuffle';
 import { useAppData } from './useLayoutContext';
 
 
+function pickRandom<T>(items: T[]): T {
+  return items[Math.floor(Math.random() * items.length)];
+}
+
+
 export interface FeaturedImpl {
   spec_id: string;
   spec_title: string;
@@ -60,7 +65,7 @@ export function useFeaturedSpecs(count: number = 5): FeaturedImpl[] | null {
 
     return shuffled.map((spec) => {
       const impls = imagesBySpec[spec.id];
-      const pick = impls[Math.floor(Math.random() * impls.length)];
+      const pick = pickRandom(impls);
       return {
         spec_id: spec.id,
         spec_title: spec.title,

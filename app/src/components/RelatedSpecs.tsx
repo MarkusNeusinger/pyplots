@@ -47,15 +47,18 @@ export function RelatedSpecs({ specId, mode = 'spec', library, onHoverTags }: Re
   const [related, setRelated] = useState<RelatedSpec[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
+  const [prevDeps, setPrevDeps] = useState({ specId, mode, library });
   const { isDark } = useTheme();
 
-  useEffect(() => {
-    setExpanded(false);
-  }, [specId]);
+  // React 19 "Adjusting state on prop change": runs during render, no cascading re-render.
+  if (prevDeps.specId !== specId || prevDeps.mode !== mode || prevDeps.library !== library) {
+    setPrevDeps({ specId, mode, library });
+    setLoading(true);
+    if (prevDeps.specId !== specId) setExpanded(false);
+  }
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
     const params = new URLSearchParams({ limit: '24', mode });
     if (library && mode === 'full') params.set('library', library);
     fetch(`${API_URL}/insights/related/${specId}?${params}`)

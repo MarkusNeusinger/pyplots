@@ -204,17 +204,23 @@ export function DebugPage() {
   const [missingLibrary, setMissingLibrary] = useState('');
 
   const [pings, setPings] = useState<Array<{ ms: number; ok: boolean }>>([]);
+  const [prevFetchKey, setPrevFetchKey] = useState({ adminToken, reloadCounter });
 
-  useEffect(() => {
+  // React 19 "adjust state on prop change": reset loading/error when fetch deps change.
+  if (prevFetchKey.adminToken !== adminToken || prevFetchKey.reloadCounter !== reloadCounter) {
+    setPrevFetchKey({ adminToken, reloadCounter });
     setLoading(true);
     setError(null);
+  }
+
+  useEffect(() => {
     adminFetch(`${DEBUG_API_URL}/debug/status`, adminToken)
       .then(async r => {
         // Reaching here means the fetch promise resolved (the response may
         // still be 401/403/503 — those are handled below). Clear the one-shot
         // reload guard so a future cross-origin CF Access redirect can
         // re-trigger the bootstrap.
-        try { sessionStorage.removeItem(RELOAD_GUARD_KEY); } catch {}
+        try { sessionStorage.removeItem(RELOAD_GUARD_KEY); } catch { /* sessionStorage may be unavailable in private mode */ }
         // 403 is the Cloudflare Access JWT path's denial: a signed-in Google
         // account that isn't on the admin_allowed_emails allow-list. Surface
         // it on the auth-required screen with the server's message so the
@@ -242,9 +248,9 @@ export function DebugPage() {
         // the second load ALSO fails (e.g. wrong allow-list).
         if (e instanceof TypeError) {
           let alreadyTried = false;
-          try { alreadyTried = !!sessionStorage.getItem(RELOAD_GUARD_KEY); } catch {}
+          try { alreadyTried = !!sessionStorage.getItem(RELOAD_GUARD_KEY); } catch { /* sessionStorage may be unavailable in private mode */ }
           if (!alreadyTried) {
-            try { sessionStorage.setItem(RELOAD_GUARD_KEY, '1'); } catch {}
+            try { sessionStorage.setItem(RELOAD_GUARD_KEY, '1'); } catch { /* sessionStorage may be unavailable in private mode */ }
             // replace() not assign() — assign would push the broken pre-auth
             // /debug onto the back-stack, so the user could navigate back
             // into the same loop after logging in.

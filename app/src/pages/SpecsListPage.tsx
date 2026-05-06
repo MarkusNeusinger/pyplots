@@ -23,6 +23,14 @@ interface SpecListItem {
   images: PlotImage[];
 }
 
+function initRotationIndices(specs: SpecListItem[]): Record<string, number> {
+  const init: Record<string, number> = {};
+  specs.forEach((spec) => {
+    init[spec.id] = Math.floor(Math.random() * spec.images.length);
+  });
+  return init;
+}
+
 export function SpecsListPage() {
   const { specsData } = useAppData();
   const { saveScrollPosition } = useHomeState();
@@ -95,16 +103,11 @@ export function SpecsListPage() {
     return specs;
   }, [allImages, specsData]);
 
-  // Initialize random rotation indices once specs are loaded
-  useEffect(() => {
-    if (specList.length > 0 && Object.keys(rotationIndex).length === 0) {
-      const initialIndices: Record<string, number> = {};
-      specList.forEach((spec) => {
-        initialIndices[spec.id] = Math.floor(Math.random() * spec.images.length);
-      });
-      setRotationIndex(initialIndices);
-    }
-  }, [specList, rotationIndex]);
+  // Initialize random rotation indices once specs are loaded — runs once because rotationIndex
+  // becomes non-empty after the first call, and stays non-empty.
+  if (specList.length > 0 && Object.keys(rotationIndex).length === 0) {
+    setRotationIndex(initRotationIndices(specList));
+  }
 
   // Show/hide scroll-to-top button based on scroll position
   useEffect(() => {

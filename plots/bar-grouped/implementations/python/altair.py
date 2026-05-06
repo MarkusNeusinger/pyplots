@@ -1,7 +1,7 @@
 """ anyplot.ai
 bar-grouped: Grouped Bar Chart
 Library: altair 6.1.0 | Python 3.13.13
-Quality: 88/100 | Updated: 2026-05-06
+Quality: 86/100 | Updated: 2026-05-06
 """
 
 import os

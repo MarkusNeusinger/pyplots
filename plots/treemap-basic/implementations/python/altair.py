@@ -1,12 +1,28 @@
-""" pyplots.ai
+""" anyplot.ai
 treemap-basic: Basic Treemap
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-24
+Library: altair 6.1.0 | Python 3.13.13
+Quality: 89/100 | Updated: 2026-05-05
 """
 
-import altair as alt
+import os
+import sys
+
 import pandas as pd
 
+
+sys.path.remove(os.path.dirname(__file__))
+import altair as alt
+
+
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+
+# Okabe-Ito palette
+OKABE_ITO = ["#009E73", "#D55E00", "#0072B2", "#CC79A7", "#E69F00", "#56B4E9", "#F0E442"]
 
 # Data - Market capitalization by sector and company (in billions USD)
 data = [
@@ -32,15 +48,6 @@ df = pd.DataFrame(data)
 # Canvas dimensions for 16:9 aspect ratio (4800x2700 at scale_factor=3)
 width = 1600
 height = 900
-
-# Color palette - Python Blue first, then colorblind-safe colors
-colors = {
-    "Technology": "#306998",
-    "Finance": "#FFD43B",
-    "Healthcare": "#4ECDC4",
-    "Energy": "#E07A5F",
-    "Consumer": "#81B29A",
-}
 
 # Compute category totals and sort
 category_totals = df.groupby("category")["value"].sum().sort_values(ascending=False)
@@ -92,10 +99,16 @@ rects_df["display_value"] = rects_df["value"].apply(lambda x: f"${x}B")
 rects_df["area"] = rects_df["dx"] * rects_df["dy"]
 min_area_for_label = width * height * 0.02
 
-# Treemap rectangles with white borders
+# Map categories to colors using Okabe-Ito palette
+color_map = {}
+for i, cat in enumerate(sorted_cats):
+    color_map[cat] = OKABE_ITO[i % len(OKABE_ITO)]
+
+# Treemap rectangles with borders matching theme
+stroke_color = INK_SOFT
 rects_chart = (
     alt.Chart(rects_df)
-    .mark_rect(stroke="#ffffff", strokeWidth=3)
+    .mark_rect(stroke=stroke_color, strokeWidth=2)
     .encode(
         x=alt.X("x:Q", scale=alt.Scale(domain=[0, width]), axis=None),
         y=alt.Y("y:Q", scale=alt.Scale(domain=[0, height]), axis=None),
@@ -103,8 +116,18 @@ rects_chart = (
         y2="y2:Q",
         color=alt.Color(
             "category:N",
-            scale=alt.Scale(domain=list(colors.keys()), range=list(colors.values())),
-            legend=alt.Legend(title="Sector", titleFontSize=22, labelFontSize=18, symbolSize=400, orient="right"),
+            scale=alt.Scale(domain=list(color_map.keys()), range=list(color_map.values())),
+            legend=alt.Legend(
+                title="Sector",
+                titleFontSize=22,
+                labelFontSize=18,
+                symbolSize=400,
+                orient="right",
+                fillColor=ELEVATED_BG,
+                strokeColor=INK_SOFT,
+                titleColor=INK,
+                labelColor=INK_SOFT,
+            ),
         ),
         tooltip=[
             alt.Tooltip("category:N", title="Sector"),
@@ -117,10 +140,10 @@ rects_chart = (
 # Filter for large rectangles that can fit labels
 labels_df = rects_df[rects_df["area"] >= min_area_for_label].copy()
 
-# Company name labels (white bold text)
+# Company name labels
 name_labels = (
     alt.Chart(labels_df)
-    .mark_text(fontSize=20, fontWeight="bold", color="#ffffff", dy=-10)
+    .mark_text(fontSize=20, fontWeight="bold", color=INK, dy=-10)
     .encode(
         x=alt.X("x_center:Q", scale=alt.Scale(domain=[0, width])),
         y=alt.Y("y_center:Q", scale=alt.Scale(domain=[0, height])),
@@ -128,10 +151,10 @@ name_labels = (
     )
 )
 
-# Value labels (white text, smaller)
+# Value labels
 value_labels = (
     alt.Chart(labels_df)
-    .mark_text(fontSize=16, color="#ffffff", dy=10)
+    .mark_text(fontSize=16, color=INK, dy=10)
     .encode(
         x=alt.X("x_center:Q", scale=alt.Scale(domain=[0, width])),
         y=alt.Y("y_center:Q", scale=alt.Scale(domain=[0, height])),
@@ -145,11 +168,16 @@ chart = (
     .properties(
         width=width,
         height=height,
-        title=alt.Title(text="treemap-basic · altair · pyplots.ai", fontSize=28, anchor="middle"),
+        background=PAGE_BG,
+        title=alt.Title(text="treemap-basic · altair · anyplot.ai", fontSize=28, anchor="middle", color=INK),
     )
-    .configure_view(strokeWidth=0)
+    .configure_view(strokeWidth=0, fill=PAGE_BG)
+    .configure_axis(
+        domainColor=INK_SOFT, tickColor=INK_SOFT, gridColor=INK, gridOpacity=0.10, labelColor=INK_SOFT, titleColor=INK
+    )
+    .configure_title(color=INK)
 )
 
 # Save outputs - scale_factor=3 gives 4800x2700
-chart.save("plot.png", scale_factor=3.0)
-chart.save("plot.html")
+chart.save(f"plot-{THEME}.png", scale_factor=3.0)
+chart.save(f"plot-{THEME}.html")

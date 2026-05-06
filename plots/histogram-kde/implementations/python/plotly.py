@@ -1,13 +1,26 @@
-""" pyplots.ai
+""" anyplot.ai
 histogram-kde: Histogram with KDE Overlay
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 98/100 | Created: 2025-12-24
+Library: plotly 6.7.0 | Python 3.13.13
+Quality: 90/100 | Updated: 2026-05-06
 """
+
+import os
 
 import numpy as np
 import plotly.graph_objects as go
 from scipy import stats
 
+
+# Theme tokens (see prompts/default-style-guide.md)
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+GRID = "rgba(26,26,23,0.10)" if THEME == "light" else "rgba(240,239,232,0.10)"
+
+BRAND = "#009E73"  # Okabe-Ito position 1 — first series
+KDE_COLOR = "#D55E00"  # Okabe-Ito position 2
 
 # Data - Stock returns simulation with realistic distribution
 np.random.seed(42)
@@ -40,7 +53,7 @@ fig.add_trace(
         x=bin_centers,
         y=hist_counts,
         width=(bin_edges[1] - bin_edges[0]) * 0.9,
-        marker={"color": "#306998", "opacity": 0.5, "line": {"color": "#306998", "width": 1}},
+        marker={"color": BRAND, "opacity": 0.5, "line": {"color": BRAND, "width": 1}},
         name="Histogram",
         hovertemplate="Return: %{x:.2f}%<br>Density: %{y:.3f}<extra></extra>",
     )
@@ -52,7 +65,7 @@ fig.add_trace(
         x=x_kde,
         y=y_kde,
         mode="lines",
-        line={"color": "#FFD43B", "width": 4},
+        line={"color": KDE_COLOR, "width": 4},
         name="KDE",
         hovertemplate="Return: %{x:.2f}%<br>Density: %{y:.3f}<extra></extra>",
     )
@@ -61,43 +74,44 @@ fig.add_trace(
 # Update layout for 4800x2700 px canvas
 fig.update_layout(
     title={
-        "text": "histogram-kde · plotly · pyplots.ai",
-        "font": {"size": 32, "color": "#333333"},
+        "text": "histogram-kde · plotly · anyplot.ai",
+        "font": {"size": 28, "color": INK},
         "x": 0.5,
         "xanchor": "center",
     },
     xaxis={
-        "title": {"text": "Daily Return (%)", "font": {"size": 24}},
-        "tickfont": {"size": 18},
-        "gridcolor": "rgba(0,0,0,0.1)",
+        "title": {"text": "Daily Return (%)", "font": {"size": 22, "color": INK}},
+        "tickfont": {"size": 18, "color": INK_SOFT},
+        "gridcolor": GRID,
         "gridwidth": 1,
         "zeroline": True,
-        "zerolinecolor": "rgba(0,0,0,0.2)",
-        "zerolinewidth": 2,
+        "zerolinecolor": GRID,
+        "zerolinewidth": 1,
+        "linecolor": INK_SOFT,
     },
     yaxis={
-        "title": {"text": "Density", "font": {"size": 24}},
-        "tickfont": {"size": 18},
-        "gridcolor": "rgba(0,0,0,0.1)",
+        "title": {"text": "Density", "font": {"size": 22, "color": INK}},
+        "tickfont": {"size": 18, "color": INK_SOFT},
+        "gridcolor": GRID,
         "gridwidth": 1,
+        "linecolor": INK_SOFT,
     },
-    template="plotly_white",
+    paper_bgcolor=PAGE_BG,
+    plot_bgcolor=PAGE_BG,
     legend={
-        "font": {"size": 20},
+        "font": {"size": 18, "color": INK_SOFT},
         "x": 0.98,
         "y": 0.98,
         "xanchor": "right",
         "yanchor": "top",
-        "bgcolor": "rgba(255,255,255,0.8)",
-        "bordercolor": "rgba(0,0,0,0.1)",
+        "bgcolor": ELEVATED_BG,
+        "bordercolor": INK_SOFT,
         "borderwidth": 1,
     },
     margin={"l": 100, "r": 80, "t": 120, "b": 100},
     bargap=0.05,
 )
 
-# Save as PNG
-fig.write_image("plot.png", width=1600, height=900, scale=3)
-
-# Save as HTML for interactivity
-fig.write_html("plot.html", include_plotlyjs="cdn")
+# Save as PNG and HTML
+fig.write_image(f"plot-{THEME}.png", width=1600, height=900, scale=3)
+fig.write_html(f"plot-{THEME}.html", include_plotlyjs="cdn")

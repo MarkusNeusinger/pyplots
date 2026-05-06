@@ -148,10 +148,7 @@ describe('SpecOverview', () => {
     });
     // SpecOverview checks `impl.preview_url` as truthy -> falsy string renders skeleton
     const { container } = render(
-      <SpecOverview
-        {...defaultProps}
-        implementations={[makeImpl({ library_id: 'bokeh', preview_url: '' as unknown as string })]}
-      />,
+      <SpecOverview {...defaultProps} implementations={[implNoPreview]} />,
     );
     const skeleton = container.querySelector('.MuiSkeleton-root');
     expect(skeleton).toBeInTheDocument();

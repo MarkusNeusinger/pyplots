@@ -1,156 +1,170 @@
 library: plotly
+language: python
 specification_id: waterfall-basic
 created: '2025-12-24T09:50:29Z'
-updated: '2025-12-24T09:54:54Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20483444132
-issue: 0
-python_version: 3.13.11
-library_version: 6.5.0
-preview_url: https://storage.googleapis.com/anyplot-images/plots/waterfall-basic/plotly/plot.png
-preview_html: https://storage.googleapis.com/anyplot-images/plots/waterfall-basic/plotly/plot.html
-quality_score: 97
-impl_tags:
-  dependencies: []
-  techniques:
-  - html-export
-  patterns:
-  - data-generation
-  dataprep: []
-  styling: []
+updated: '2026-05-06T01:02:03Z'
+generated_by: claude-haiku
+workflow_run: 25410661379
+issue: 777
+python_version: 3.13.13
+library_version: 6.7.0
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/waterfall-basic/python/plotly/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/waterfall-basic/python/plotly/plot-dark.png
+preview_html_light: https://storage.googleapis.com/anyplot-images/plots/waterfall-basic/python/plotly/plot-light.html
+preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/waterfall-basic/python/plotly/plot-dark.html
+quality_score: 98
 review:
   strengths:
-  - Excellent use of Plotly native Waterfall trace with measure types (absolute, relative,
-    total)
-  - Clean connector lines with dotted styling emphasize cumulative flow
-  - 'Proper color differentiation: blue for totals, red for decreases, green for increases'
-  - Value labels positioned outside bars with clear dollar formatting
-  - Realistic financial scenario with appropriate data values
-  - Clean code structure following KISS principles
-  - Both PNG and HTML outputs generated correctly
-  weaknesses:
-  - Red/green color scheme could be improved for colorblind accessibility (consider
-    using blue/orange palette)
-  - Could add a simple legend explaining the color meanings for clarity
-  image_description: The plot displays a waterfall chart showing a quarterly financial
-    breakdown from Revenue ($500,000) to Net Income ($153,750). Blue bars represent
-    totals (Revenue and Net Income), red bars show decreases (Product Costs, Operating
-    Expenses, Marketing, Taxes), and a green bar shows an increase (Other Income).
-    Dotted gray connector lines link consecutive bars to emphasize the cumulative
-    flow. Value labels appear outside each bar with dollar formatting. The Y-axis
-    shows "Amount ($)" with proper currency tick formatting, and the X-axis shows
-    "Category". The title follows the required format centered at the top.
+  - 'Perfect theme compliance: light and dark renders are both readable with correct
+    chrome adaptation'
+  - Idiomatic use of Plotly's native Waterfall trace with measure types (not a custom
+    implementation)
+  - 'Okabe-Ito palette correctly applied: green for increases, orange for decreases,
+    blue for totals'
+  - 'Excellent color storytelling: sign-based coloring immediately conveys financial
+    meaning'
+  - Clean, readable typography with appropriate sizing across all elements (28px title,
+    22px labels, 18px ticks)
+  - Connecting lines enhance the cumulative flow narrative
+  - Legend clearly explains the color scheme with helpful dummy traces
+  weaknesses: []
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white (#FAF8F1) - correct for light theme
+      Chrome: Title, axis labels, and tick labels all in dark INK/INK_SOFT colors - fully readable against light background
+      Data: Blue bars for totals (Revenue $500k, Net Income $153.75k), orange bars for decreases (costs/expenses/taxes), green bar for increase (Other Income). Dotted connector lines in soft gray link bars. Value labels positioned outside in readable dark text.
+      Legibility verdict: PASS - all text is clearly readable on light surface
+
+    Dark render (plot-dark.png):
+      Background: Warm near-black (#1A1A17) - correct for dark theme
+      Chrome: Title and labels in light colors (INK #F0EFE8, INK_SOFT #B8B7B0) - all readable against dark background. No dark-on-dark failures detected.
+      Data: IDENTICAL colors to light render (blue, orange, green from Okabe-Ito) - only chrome flipped, data colors stayed constant. Dotted connector lines visible. Value labels in light text.
+      Legibility verdict: PASS - excellent contrast throughout, no dark-on-dark issues
   criteria_checklist:
     visual_quality:
-      score: 38
-      max: 40
+      score: 30
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: all text clearly readable at full size
+        comment: Title (28px), axis labels (22px), tick labels (18px) all explicitly
+          sized and readable in both themes
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: no overlapping text elements
+        comment: Value labels positioned outside, no collisions
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: bars well-sized and clearly visible
+        comment: All bars and lines clearly visible, appropriate spacing
       - id: VQ-04
         name: Color Accessibility
-        score: 4
-        max: 5
-        passed: true
-        comment: red/green used but blue totals help distinguish
-      - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: excellent use of canvas space
-      - id: VQ-06
-        name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: descriptive with units
-      - id: VQ-07
-        name: Grid & Legend
-        score: 1
+        comment: Okabe-Ito palette ensures CVD safety
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: Good proportions, nothing cut off, generous margins
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
         max: 2
         passed: true
-        comment: subtle grid, no legend but colors self-explanatory
+        comment: Correct title format, axes labeled with units
+      - id: VQ-07
+        name: Palette Compliance
+        score: 2
+        max: 2
+        passed: true
+        comment: Correct backgrounds, theme-adaptive chrome, data colors identical
+          across themes
+    design_excellence:
+      score: 18
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 6
+        max: 8
+        passed: true
+        comment: Custom Okabe-Ito with intentional sign-based coloring, dotted connectors
+          add visual refinement
+      - id: DE-02
+        name: Visual Refinement
+        score: 6
+        max: 6
+        passed: true
+        comment: Subtle grid, generous margins, connecting lines guide the eye
+      - id: DE-03
+        name: Data Storytelling
+        score: 6
+        max: 6
+        passed: true
+        comment: Clear hierarchy showing flow from revenue through costs to net income
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: correct waterfall chart type
+        comment: Native Plotly Waterfall trace
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: categories and values correctly mapped
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: connecting lines, color coding, value labels all present
-      - id: SC-04
-        name: Data Range
+        comment: Color by sign, connecting lines, start/end bars, value labels all
+          present
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: all data visible
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X=categories, Y=values, axes show full range
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: N/A, colors are self-explanatory
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: uses `waterfall-basic · plotly · pyplots.ai`
+        comment: Correct title format and legend explaining colors
     data_quality:
-      score: 20
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: shows positive change, negative changes, and totals
+        comment: Shows all waterfall aspects including cumulative effect
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: plausible quarterly financial breakdown
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: realistic business values (~31% net margin)
+        comment: Financial breakdown is realistic and neutral
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Values sensible for quarterly financials
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -158,39 +172,55 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: clean imports → data → plot → save
+        comment: Linear script, no unnecessary abstractions
       - id: CQ-02
         name: Reproducibility
         score: 2
-        max: 3
+        max: 2
         passed: true
-        comment: deterministic data but no explicit seed comment
+        comment: Deterministic data
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: only used imports
+        comment: Only necessary imports
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: current Plotly API
+        comment: No fake interactivity
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: saves as plot.png
-    library_features:
-      score: 5
-      max: 5
+        comment: Correct file naming and current API
+    library_mastery:
+      score: 10
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
         score: 5
         max: 5
         passed: true
-        comment: excellent use of Plotly's native `go.Waterfall` trace
+        comment: Native Waterfall trace with measure types
+      - id: LM-02
+        name: Distinctive Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Leverages measure parameter, connectors, separate marker styling,
+          dummy legend traces
   verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - custom-legend
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - theme-adaptive

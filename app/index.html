@@ -24,6 +24,23 @@
       })();
     </script>
 
+    <!-- On-device debug console (Eruda), gated behind ?debug=1 so it never
+         ships to normal users. Plain <script> (not type="module") so it runs
+         before module parse-time errors and can capture them — critical for
+         debugging mobile-only crashes where remote DevTools aren't available. -->
+    <script>
+      (function () {
+        try {
+          if (new URLSearchParams(location.search).has('debug')) {
+            var s = document.createElement('script');
+            s.src = 'https://cdn.jsdelivr.net/npm/eruda';
+            s.onload = function () { try { eruda.init(); } catch (e) {} };
+            document.head.appendChild(s);
+          }
+        } catch (e) { /* URLSearchParams unavailable on very old browsers */ }
+      })();
+    </script>
+
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://anyplot.ai/" />

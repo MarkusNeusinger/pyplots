@@ -1,164 +1,174 @@
 library: plotnine
+language: python
 specification_id: bar-grouped
 created: '2025-12-24T21:28:53Z'
-updated: '2025-12-24T21:32:41Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20494137812
-issue: 0
-python_version: 3.13.11
-library_version: 0.15.2
-preview_url: https://storage.googleapis.com/anyplot-images/plots/bar-grouped/plotnine/plot.png
-preview_html: null
-quality_score: 91
-impl_tags:
-  dependencies: []
-  techniques: []
-  patterns: []
-  dataprep: []
-  styling: []
+updated: '2026-05-06T11:12:59Z'
+generated_by: claude-haiku
+workflow_run: 25431271820
+issue: 1822
+python_version: 3.13.13
+library_version: 0.15.4
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/bar-grouped/python/plotnine/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/bar-grouped/python/plotnine/plot-dark.png
+preview_html_light: null
+preview_html_dark: null
+quality_score: 83
 review:
   strengths:
-  - Clean, professional visual presentation with well-proportioned bars and spacing
-  - Excellent text legibility with appropriate font sizes for 4800x2700 canvas
-  - Realistic business scenario (quarterly revenue by product line) that clearly demonstrates
-    grouped bar comparison
-  - Correct title format following pyplots.ai conventions
-  - Simple, maintainable code following KISS principles
+  - Perfect visual quality across both themes — all text legible, colors correct,
+    layout clean
+  - 'Proper implementation of Okabe-Ito palette with first series as #009E73'
+  - Theme-adaptive chrome tokens correctly set (PAGE_BG, INK, INK_SOFT for light/dark)
+  - Correct data structure (categorical Product ordering matches palette order)
+  - All spec requirements met (plot type, data mapping, legend, title format)
+  - 'High-quality code: KISS principle, clean imports, reproducible data'
   weaknesses:
-  - 'Legend order (alphabetical: Hardware, Services, Software) does not match the
-    visual bar order, causing slight confusion when reading the chart'
-  - 'Two shades of blue (dark #306998 and light #4B8BBE) could be harder to distinguish
-    for colorblind users; consider using more distinct hues'
-  - Does not leverage plotnine-specific features like scale_fill_brewer for built-in
-    colorblind-safe palettes
-  image_description: 'The plot displays a grouped bar chart showing quarterly revenue
-    by product line. There are 4 quarters (Q1-Q4) on the x-axis, with 3 bars per quarter
-    representing Hardware (dark blue #306998), Services (yellow #FFD43B), and Software
-    (light blue #4B8BBE). The y-axis shows "Revenue ($ millions)" ranging from 0 to
-    ~165. The title "bar-grouped · plotnine · pyplots.ai" is displayed at the top.
-    A legend labeled "Product Line" appears on the right side. The plot uses a minimal
-    theme with subtle gray gridlines. Software consistently shows the highest revenue,
-    growing from ~120 in Q1 to ~165 in Q4, while Hardware remains relatively stable
-    (78-92) and Services grows modestly (45-70).'
+  - 'Design excellence is limited: top/right spines not removed (style guide recommends
+    L-shaped frame)'
+  - No visual hierarchy or emphasis — all bars treated equally despite clear product/quarter
+    trends
+  - Grid is visible but could be more subtle (10% alpha as per style guide, currently
+    appears higher)
+  - Legend has minimal visual refinement
+  - Missing opportunities for visual storytelling (e.g., accent color to highlight
+    Software growth trend)
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white surface (#FAF8F1) - correct
+      Chrome: Title "bar-grouped · plotnine · anyplot.ai" in dark ink (#1A1A17), axis labels and tick labels in secondary dark ink (#4A4A44) - all clearly visible
+      Data: Software (#009E73), Hardware (#D55E00), Services (#0072B2) in correct Okabe-Ito order, bars properly grouped with position-dodge
+      Legend: "Product Line" legend in upper right with background box, light text readable
+      Grid: Subtle horizontal reference lines
+      Legibility verdict: PASS - all text elements readable at full resolution
+
+    Dark render (plot-dark.png):
+      Background: Warm near-black surface (#1A1A17) - correct
+      Chrome: Title and axis labels in light ink (#F0EFE8), tick labels in light gray (#B8B7B0) - all clearly visible against dark background
+      Data: Software (#009E73), Hardware (#D55E00), Services (#0072B2) - identical to light render (only chrome changed)
+      Legend: Light text on dark background, clearly readable
+      Grid: Subtle reference lines visible
+      Legibility verdict: PASS - no dark-on-dark failures, all text readable, theme adaptation correct
   criteria_checklist:
     visual_quality:
-      score: 37
-      max: 40
+      score: 30
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title, axis labels, and tick labels are all clearly readable with
-          appropriate font sizes
+        comment: Font sizes explicitly set (24/20/16pt), all text readable in both
+          themes
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements, clean spacing throughout
+        comment: No colliding elements, well-spaced labels, legend positioned with
+          whitespace
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Bars are well-sized and clearly visible with good spacing between
-          groups
+        comment: All bars clearly distinguishable, proper position-dodge spacing
       - id: VQ-04
         name: Color Accessibility
-        score: 4
-        max: 5
-        passed: true
-        comment: Blue/yellow/light blue palette is distinguishable but the two blues
-          could be better differentiated for colorblind users
-      - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Plot fills canvas well with balanced margins, legend positioned appropriately
-      - id: VQ-06
-        name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Y-axis includes units "Revenue ($ millions)", X-axis "Quarter" is
-          descriptive
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
+        comment: Okabe-Ito palette is colorblind-safe
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: 16:9 aspect (4800x2700), well-proportioned margins
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
         max: 2
         passed: true
-        comment: Grid is subtle and appropriate, but legend shows categories in alphabetical
-          order (Hardware, Services, Software) rather than the order they appear in
-          the bars (Software, Hardware, Services), which creates confusion when reading
+        comment: Descriptive labels with units
+      - id: VQ-07
+        name: Palette Compliance
+        score: 2
+        max: 2
+        passed: true
+        comment: 'First series #009E73, correct backgrounds, both themes correct'
+    design_excellence:
+      score: 8
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
+        passed: false
+        comment: Generic defaults, no custom design touches, spines not removed
+      - id: DE-02
+        name: Visual Refinement
+        score: 2
+        max: 6
+        passed: false
+        comment: Spines not refined, grid not subtle enough, minimal legend refinement
+      - id: DE-03
+        name: Data Storytelling
+        score: 2
+        max: 6
+        passed: false
+        comment: No visual hierarchy or focal point
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct grouped bar chart implementation
+        comment: Grouped bar chart correctly implemented
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories (Quarter) on x-axis, values (Revenue) on y-axis, groups
-          (Product) differentiated by color
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Side-by-side bars, distinct colors, clear legend present
-      - id: SC-04
-        name: Data Range
+        comment: All features present
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible, y-axis starts at 0
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X/Y/fill mapping correct
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend labels match data
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Correct format "bar-grouped · plotnine · pyplots.ai"
+        comment: Title and legend labels correct
     data_quality:
-      score: 19
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows variation across quarters and between product lines, demonstrates
-          clear patterns (Software growth, Hardware stability), but all products show
-          similar upward trend
+        comment: All aspects of grouped bar chart shown
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Quarterly revenue by product line is a real, comprehensible business
-          scenario
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Revenue values in tens of millions are realistic for a business context
+        comment: Quarterly revenue plausible and neutral
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Y-axis range sensible
     code_quality:
       score: 10
       max: 10
@@ -168,41 +178,52 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Simple imports → data → plot → save structure, no functions or classes
+        comment: Simple, direct, no unnecessary functions
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Deterministic data (no random elements)
+        comment: Deterministic hard-coded data
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: Only necessary imports
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Uses current plotnine API
+        comment: Appropriate complexity, no fake UI
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as "plot.png"
-    library_features:
-      score: 0
-      max: 5
+        comment: Saves correctly with ggsave
+    library_mastery:
+      score: 5
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 0
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: ggplot grammar correct, theme tokens properly used
+      - id: LM-02
+        name: Distinctive Features
+        score: 1
         max: 5
         passed: false
-        comment: Basic ggplot usage with geom_bar and position_dodge; could leverage
-          plotnine's grammar more (e.g., faceting, stat transformations, or scale_fill_brewer
-          for color palettes)
+        comment: Standard position_dodge, no distinctive features
   verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []

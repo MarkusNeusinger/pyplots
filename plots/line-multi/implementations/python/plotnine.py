@@ -1,7 +1,7 @@
 """ anyplot.ai
 line-multi: Multi-Line Comparison Plot
 Library: plotnine 0.15.4 | Python 3.13.13
-Quality: 83/100 | Updated: 2026-05-06
+Quality: 87/100 | Updated: 2026-05-06
 """
 
 import os

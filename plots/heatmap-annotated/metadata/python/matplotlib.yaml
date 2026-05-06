@@ -1,15 +1,233 @@
 library: matplotlib
+language: python
 specification_id: heatmap-annotated
 created: '2025-12-24T21:28:54Z'
-updated: '2025-12-24T21:33:34Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20494136882
-issue: 0
-python_version: 3.13.11
-library_version: 3.10.8
-preview_url: https://storage.googleapis.com/anyplot-images/plots/heatmap-annotated/matplotlib/plot.png
-preview_html: null
-quality_score: 93
+updated: '2026-05-06T13:01:34Z'
+generated_by: claude-haiku
+workflow_run: 25436228701
+issue: 1824
+python_version: 3.13.13
+library_version: 3.10.9
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/heatmap-annotated/python/matplotlib/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/heatmap-annotated/python/matplotlib/plot-dark.png
+preview_html_light: null
+preview_html_dark: null
+quality_score: 86
+review:
+  strengths:
+  - Perfect visual quality with explicit font sizing (24/20/16/14pt) and full readability
+    in both light and dark renders
+  - 'Flawless spec compliance: correct heatmap type with all required features (color
+    mapping, cell annotations, colorbar, adaptive text contrast)'
+  - Authentic scientific data with realistic laboratory correlations, symmetric structure,
+    and appropriate coefficient ranges [-1, 1]
+  - Clean reproducible code with simple KISS structure, proper seeding (np.random.seed(42)),
+    and theme-adaptive styling
+  - 'Proper theme adaptation: backgrounds, text, grid, and colorbar all correctly
+    styled for light (#FAF8F1) and dark (#1A1A17) rendering, with data colors identical
+    across themes'
+  weaknesses:
+  - 'Design Excellence is competent but generic: relies on library defaults and theme
+    tokens without custom aesthetic flourishes or distinctive visual polish'
+  - 'Limited Library Mastery: adaptive text color via simple conditional (INK if abs(value)
+    > 0.5 else INK_SOFT) is straightforward logic, not distinctive to matplotlib or
+    creatively leveraging the library''s features'
+  - 'No visual hierarchy or emphasis techniques beyond color mapping: plot clearly
+    displays correlations but doesn''t use size variation, focal points, or strategic
+    annotation to guide viewer interpretation'
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white (#FAF8F1) — correct, not pure white
+      Chrome: Title in dark INK (#1A1A17, 24pt), axis labels in dark INK (20pt), x-axis tick labels rotated 45° in INK_SOFT (16pt), y-axis labels vertical in INK_SOFT (16pt). All clearly readable against light background. No dark-on-light failures.
+      Data: 8×8 correlation matrix visualized with BrBG diverging colormap. Cell annotations show correlation values (-0.68 to 1.00) in bold 14pt text. High-magnitude values (>0.5) use dark INK text, low-magnitude use lighter INK_SOFT. Diagonal cells (1.0) stand out in dark green. Colorbar on right shows scale with label "Correlation Coefficient".
+      Legibility verdict: PASS — all text is readable; proper contrast between cell values and background
+
+    Dark render (plot-dark.png):
+      Background: Warm near-black (#1A1A17) — correct, not pure black
+      Chrome: Title, axis labels, tick labels now in light INK (#F0EFE8) and INK_SOFT (#B8B7B0). All clearly readable against dark background. No dark-on-dark failures detected (e.g., no black labels on near-black background).
+      Data: BrBG colormap is IDENTICAL to light render — the greens, tans, and beiges have not shifted. This confirms proper theme-adaptive coloring with data colors preserved. Cell annotations appear in off-white (high values) or lighter gray (low values), with good contrast against cells. Colorbar properly themed with light text and labels.
+      Legibility verdict: PASS — all text is readable; no dark-on-dark failures; data colors match light render exactly
+  criteria_checklist:
+    visual_quality:
+      score: 30
+      max: 30
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 8
+        max: 8
+        passed: true
+        comment: All font sizes explicitly set (24/20/16/14pt); perfectly readable
+          in both themes
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
+        passed: true
+        comment: X-axis labels rotated 45°; no overlapping elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 6
+        passed: true
+        comment: Heatmap cells and annotations well-sized and distinct
+      - id: VQ-04
+        name: Color Accessibility
+        score: 2
+        max: 2
+        passed: true
+        comment: BrBG is perceptually uniform and CVD-safe
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: Square 12×12 figure with balanced margins; 50-80% canvas utilization
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
+        max: 2
+        passed: true
+        comment: Title format correct; axis labels descriptive with context
+      - id: VQ-07
+        name: Palette Compliance
+        score: 2
+        max: 2
+        passed: true
+        comment: 'BrBG correct for diverging continuous data; backgrounds #FAF8F1/#1A1A17;
+          text colors theme-adaptive; data colors identical in both renders'
+    design_excellence:
+      score: 12
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
+        passed: true
+        comment: Well-configured library default; thoughtful choices (BrBG, theme
+          tokens) but no custom design flourishes
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Subtle grid styling, refined colorbar; standard appearance with some
+          customization
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Color mapping creates visual hierarchy; diagonal values stand out;
+          no additional emphasis techniques
+    spec_compliance:
+      score: 15
+      max: 15
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 5
+        max: 5
+        passed: true
+        comment: Correct heatmap with cell annotations
+      - id: SC-02
+        name: Required Features
+        score: 4
+        max: 4
+        passed: true
+        comment: Color mapping, numeric annotations, colorbar legend, adaptive text
+          contrast all present
+      - id: SC-03
+        name: Data Mapping
+        score: 3
+        max: 3
+        passed: true
+        comment: X/Y correctly assigned; all data visible
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
+        passed: true
+        comment: Title format correct; colorbar labeled
+    data_quality:
+      score: 15
+      max: 15
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 6
+        passed: true
+        comment: Shows perfect (1.0), strong positive (0.77, 0.81), strong negative
+          (-0.68, -0.62), weak correlations, and symmetric structure
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 5
+        passed: true
+        comment: Real laboratory measurements; scientifically plausible; neutral and
+          appropriate
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Correlation coefficients in [-1, 1]; diagonal=1.0; symmetric; factually
+          sound
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear: imports → theme → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 2
+        passed: true
+        comment: np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: os, matplotlib.pyplot, numpy; all used
+      - id: CQ-04
+        name: Code Elegance
+        score: 2
+        max: 2
+        passed: true
+        comment: Pythonic, appropriate complexity, no over-engineering
+      - id: CQ-05
+        name: Output & API
+        score: 1
+        max: 1
+        passed: true
+        comment: Correct plot-{THEME}.png with dpi=300
+    library_mastery:
+      score: 4
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 3
+        max: 5
+        passed: true
+        comment: Correct axes methods, imshow(), figure.colorbar(); standard patterns
+          but no advanced techniques
+      - id: LM-02
+        name: Distinctive Features
+        score: 1
+        max: 5
+        passed: false
+        comment: Adaptive text color is straightforward conditional logic, not distinctive
+          to matplotlib
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
@@ -23,186 +241,4 @@ impl_tags:
   - correlation-matrix
   styling:
   - custom-colormap
-review:
-  strengths:
-  - Excellent automatic text contrast algorithm (white on dark, black on light backgrounds)
-  - Realistic financial correlation matrix with meaningful relationships (Revenue-Profit
-    positive, Profit-Expenses negative)
-  - Perfect 2-decimal formatting for correlation coefficients
-  - Clean square layout appropriate for symmetric matrices
-  - Proper diverging colormap (RdBu_r) centered at zero
-  weaknesses:
-  - Axis labels are generic ("Variables" instead of "Financial Metrics")
-  - Grid linewidth=2 is slightly heavy; alpha or linewidth=1 would be more subtle
-  - Does not leverage advanced matplotlib features like matshow() or custom Normalize
-  image_description: 'The plot displays an 8×8 annotated correlation heatmap showing
-    relationships between financial metrics: Revenue, Profit, Expenses, Growth, Risk,
-    ROI, Debt, and Assets. The heatmap uses a diverging RdBu_r colormap (red for positive,
-    blue for negative correlations) with values ranging from -1.0 to 1.0. Each cell
-    contains a bold numerical annotation with 2 decimal places. Text color automatically
-    contrasts with the background—white text on dark cells (high |correlation|), black
-    text on light cells (low |correlation|). The diagonal shows 1.00 values (self-correlation)
-    in dark red. A vertical colorbar on the right labeled "Correlation Coefficient"
-    shows the value scale. X-axis labels are rotated 45° for readability. White grid
-    lines separate cells cleanly.'
-  criteria_checklist:
-    visual_quality:
-      score: 38
-      max: 40
-      items:
-      - id: VQ-01
-        name: Text Legibility
-        score: 10
-        max: 10
-        passed: true
-        comment: Title 24pt, axis labels 20pt, tick labels 16pt, annotations 14pt
-          bold - all clearly readable
-      - id: VQ-02
-        name: No Overlap
-        score: 8
-        max: 8
-        passed: true
-        comment: No overlapping text; rotated x-labels prevent collision
-      - id: VQ-03
-        name: Element Visibility
-        score: 8
-        max: 8
-        passed: true
-        comment: Cell annotations perfectly sized relative to cells; clear visual
-          distinction
-      - id: VQ-04
-        name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: RdBu_r diverging colormap is colorblind-safe; red-blue distinction
-          works for most color vision deficiencies
-      - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Square format appropriate for correlation matrix; good use of canvas
-          space
-      - id: VQ-06
-        name: Axis Labels
-        score: 1
-        max: 2
-        passed: false
-        comment: Labels say "Variables" without units; could be more descriptive (e.g.,
-          "Financial Metrics")
-      - id: VQ-07
-        name: Grid & Legend
-        score: 1
-        max: 2
-        passed: true
-        comment: White grid is clean but linewidth=2 is slightly heavy; colorbar well-positioned
-    spec_compliance:
-      score: 25
-      max: 25
-      items:
-      - id: SC-01
-        name: Plot Type
-        score: 8
-        max: 8
-        passed: true
-        comment: Correct annotated heatmap
-      - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X/Y are variable labels, values are correlations
-      - id: SC-03
-        name: Required Features
-        score: 5
-        max: 5
-        passed: true
-        comment: Has annotations, colorbar, automatic text contrast
-      - id: SC-04
-        name: Data Range
-        score: 3
-        max: 3
-        passed: true
-        comment: Full -1 to 1 correlation range shown
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
-        passed: true
-        comment: Colorbar correctly labeled
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Uses "heatmap-annotated · matplotlib · pyplots.ai"
-    data_quality:
-      score: 20
-      max: 20
-      items:
-      - id: DQ-01
-        name: Feature Coverage
-        score: 8
-        max: 8
-        passed: true
-        comment: Shows positive correlations (0.85 Revenue-Profit), negative correlations
-          (-0.52 Profit-Debt), near-zero values, and diagonal=1
-      - id: DQ-02
-        name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Financial metrics correlation matrix is a real-world use case
-      - id: DQ-03
-        name: Appropriate Scale
-        score: 5
-        max: 5
-        passed: true
-        comment: Correlation values are realistic and within valid -1 to 1 range
-    code_quality:
-      score: 10
-      max: 10
-      items:
-      - id: CQ-01
-        name: KISS Structure
-        score: 3
-        max: 3
-        passed: true
-        comment: 'Simple linear flow: imports → data → plot → save'
-      - id: CQ-02
-        name: Reproducibility
-        score: 3
-        max: 3
-        passed: true
-        comment: Uses np.random.seed(42)
-      - id: CQ-03
-        name: Clean Imports
-        score: 2
-        max: 2
-        passed: true
-        comment: Only matplotlib and numpy imported
-      - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
-        passed: true
-        comment: Uses current matplotlib API
-      - id: CQ-05
-        name: Output Correct
-        score: 1
-        max: 1
-        passed: true
-        comment: Saves as plot.png
-    library_features:
-      score: 0
-      max: 5
-      items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 0
-        max: 5
-        passed: false
-        comment: Uses basic imshow() rather than matplotlib's newer matshow() or pcolormesh();
-          no use of Normalize or custom formatters
-  verdict: APPROVED
+  - grid-styling

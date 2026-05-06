@@ -2,7 +2,7 @@ library: pygal
 language: python
 specification_id: line-multi
 created: '2025-12-24T21:32:38Z'
-updated: '2026-05-06T21:47:57Z'
+updated: '2026-05-06T21:57:29Z'
 generated_by: claude-haiku
 workflow_run: 25444156933
 issue: 1825
@@ -12,114 +12,132 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/line-mult
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/line-multi/python/pygal/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/line-multi/python/pygal/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/line-multi/python/pygal/plot-dark.html
-quality_score: 85
+quality_score: 83
 review:
   strengths:
-  - 'Perfect spec compliance: all required multi-line features, correct title format,
-    correct chart type'
-  - 'Perfect data quality: realistic product sales scenario with diverse trend shapes
-    (growth, seasonal arc) and plausible values'
-  - 'Perfect code quality: clean KISS structure, deterministic data, clean imports,
-    proper output for interactive library'
-  - 'Flawless palette and theme compliance: Okabe-Ito order 1-4, correct backgrounds
-    FAF8F1/1A1A17, both renders pass theme-readability'
-  - Font sizes explicitly set to pixel-based style guide values (28/22/18/16)
+  - Full Okabe-Ito palette correctly applied in canonical order — Electronics=green
+    (#009E73), Clothing=orange, Home Goods=blue, Sports=purple
+  - Both light and dark themes render correctly with matching data colors and theme-adaptive
+    chrome (background, text, grid)
+  - 'Complete spec compliance: correct multi-line chart type, 4 series with distinct
+    colors, visible markers, legend, correct title format, descriptive axis labels
+    with units'
+  - Realistic business data with interesting trend variety — Electronics upward growth,
+    Sports seasonality, Clothing and Home Goods moderate growth
+  - 'Correct output: both PNG and HTML generated per-theme — leveraging pygal''s interactive
+    HTML feature'
+  - Font sizes explicitly set matching the pixel-based library guide (28px title,
+    22px labels, 18px ticks, 16px legend)
+  - Clean KISS code structure with no functions/classes, deterministic data, all imports
+    used
   weaknesses:
-  - 'Design excellence lacking: chart looks like a well-configured default with no
-    focal point or visual hierarchy guiding viewer to key insight (Electronics dominant
-    growth, Sports seasonality)'
-  - 'No data storytelling: all four lines rendered identically thick with equal visual
-    weight — no emphasis on the most interesting trend'
-  - Legend floats in top-left corner inside the plot area, creating visual imbalance
-    and crowding
+  - 'Design Excellence is generic: DE-01=4 (well-configured default, not exceptional),
+    DE-02=2 (pygal frame/border unchanged, grid is moderately prominent rather than
+    subtle), DE-03=2 (data displayed but no visual emphasis or storytelling — Sports
+    seasonality vs Electronics growth story not highlighted)'
+  - Legend text (16px) is at the minimum recommended size; at 4800x2700 the two-column
+    bottom legend reads as quite small
+  - No line style variation (all solid) — spec notes this as a recommended distinction
+    technique for additional differentiation
+  - 'Layout (VQ-05) leaves some wasted space: canvas fill is good but margins could
+    be tuned for better balance'
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white #FAF8F1 — correct, not pure white
-      Chrome: Title "line-multi · pygal · anyplot.ai" centered at top in dark ink — readable. Y-axis label "Sales (thousands USD)" vertical on left — readable. X-axis label "Month" at bottom — readable. Tick labels (Jan-Dec, numeric y-values) visible in dark ink on light surface.
-      Data: 4 lines in Okabe-Ito order: Electronics #009E73 (green), Clothing #D55E00 (orange), Home Goods #0072B2 (blue), Sports #CC79A7 (pink-purple). Dots at each data point. Subtle dotted horizontal grid lines.
-      Legend: Top-left corner, small colored squares with series names — readable but small.
-      Legibility verdict: PASS
+      Background: Warm off-white (#FAF8F1) — correct, not pure white
+      Chrome: Title "line-multi · pygal · anyplot.ai" at top (small but readable), y-axis label "Sales (thousands USD)" on left, x-axis label "Month" at bottom, month tick labels visible; two-column legend in bottom-left corner with tiny but readable text
+      Data: 4 smooth lines — Electronics in #009E73 (brand green, correct first series), Clothing in orange (#D55E00), Home Goods in blue (#0072B2), Sports in pink-purple (#CC79A7); all follow Okabe-Ito canonical order; data markers (dots) visible at each data point; horizontal y-axis grid lines subtle and appropriate
+      Legibility verdict: PASS — all text readable against light background; no light-on-light failures; legend text is small but legible
 
     Dark render (plot-dark.png):
-      Background: Warm near-black #1A1A17 — correct, not pure black
-      Chrome: All text elements (title, axis labels, tick labels, legend text) flip to light/off-white on dark surface — clearly readable. No dark-on-dark failures detected. Grid lines appear as subtle lighter dotted lines on dark surface.
-      Data: Identical line colors to light render — Electronics #009E73, Clothing orange, Home Goods blue, Sports pink-purple. Only chrome has flipped.
-      Legibility verdict: PASS
+      Background: Near-black (#1A1A17) — correct, not pure black
+      Chrome: Title, axis labels, and tick labels all render in light color on dark background — clearly readable; legend text similarly light; horizontal grid lines visible as subtle white lines; no dark-on-dark failures detected
+      Data: Colors are identical to light render — Electronics green (#009E73), Clothing orange, Home Goods blue, Sports pink-purple; all remain visually distinct against the dark background; dots visible at each data point
+      Legibility verdict: PASS — all text clearly readable against dark background; data colors unchanged from light theme; chrome correctly flips to light text/chrome
   criteria_checklist:
     visual_quality:
-      score: 29
+      score: 28
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set to pixel-based spec: title=28px, labels=22px,
-          ticks=18px, legend=16px'
+        comment: All font sizes explicitly set (28px title, 22px labels, 18px ticks,
+          16px legend) matching pixel-based guide — minor deduction as sizes are at
+          minimums and legend reads quite small in practice
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: Month labels well-spaced, no text collisions
+        comment: No text overlap; month x-axis labels well-spaced; legend in two-column
+          layout without crowding
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Dots visible (dots_size=6), lines appropriately thick (stroke_width=3)
+        comment: Lines clearly visible (stroke_width=3), data dots visible (dots_size=6),
+          all 4 series distinguishable
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito CVD-safe, all 4 series distinguishable
+        comment: Okabe-Ito palette is CVD-safe; all 4 series have sufficient luminance
+          contrast against both light and dark backgrounds
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: 'Good canvas utilization ~60-70%; minor: legend in top-left corner
-          floats inside plot area'
+        comment: Plot fills good portion of 4800x2700 canvas; explicit margins (100px
+          sides, 120px top, 100px bottom); minor deduction for some wasted space around
+          chart
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Sales (thousands USD) with units; Month descriptive
+        comment: 'Y-axis: ''Sales (thousands USD)'' with units; X-axis: ''Month'';
+          title in correct format'
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series #009E73, Okabe-Ito order 1-4, backgrounds FAF8F1/1A1A17,
-          both themes chrome-correct'
+        comment: 'First series #009E73 (brand green); multi-series follows Okabe-Ito
+          order; background #FAF8F1 light / #1A1A17 dark; chrome correctly theme-adaptive
+          in both renders'
     design_excellence:
-      score: 9
+      score: 8
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
         score: 4
         max: 8
-        passed: false
-        comment: Well-configured default with correct palette and theme tokens, but
-          no exceptional design choices or visual hierarchy
+        passed: true
+        comment: Well-configured pygal with custom style — professional appearance,
+          correct palette, theme-adaptive — but essentially a configured default,
+          not exceptional design
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 2
         max: 6
         passed: false
-        comment: Non-default choices made (show_x_guides=False, explicit margins),
-          above minimal but retains full-border pygal frame
+        comment: Y-guides only is a correct choice; generous margins; but full chart
+          frame/border remains (pygal limitation), grid is moderately visible rather
+          than whisper-subtle, minimal further refinement
       - id: DE-03
         name: Data Storytelling
         score: 2
         max: 6
         passed: false
-        comment: Four trends displayed but nothing guides viewer; no emphasis distinguishes
-          dominant/interesting series
+        comment: Data has an interesting story (Electronics strong growth vs Sports
+          seasonality vs steady Clothing/Home Goods) but no emphasis, color contrast,
+          or annotation highlights this — data is displayed, not interpreted
     spec_compliance:
       score: 15
       max: 15
@@ -129,26 +147,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: pygal.Line() with 4 series, correct multi-line comparison chart
+        comment: Correct multi-line comparison chart (pygal.Line)
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Multiple series, distinct colors, legend, dots at data points
+        comment: Multiple series, distinct colors, legend, data markers (show_dots=True);
+          spec's 'consider varying line styles' is optional
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Months on x-axis, sales values on y-axis, all data visible
+        comment: X=months (sequential), Y=sales values; all 4 series fully visible
+          across 12 data points
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: line-multi · pygal · anyplot.ai correct; legend labels match series
-          names
+        comment: Title 'line-multi · pygal · anyplot.ai' correct; legend labels 'Electronics',
+          'Clothing', 'Home Goods', 'Sports' match data
     data_quality:
       score: 15
       max: 15
@@ -158,22 +178,23 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Diverse trend types: strong upward (Electronics), moderate growth
-          (Clothing/Home Goods), seasonal arc (Sports)'
+        comment: 'Shows diverse trend patterns: upward growth (Electronics), seasonal
+          curve (Sports peaks summer), moderate growth (Clothing, Home Goods); demonstrates
+          trends, correlations, divergences'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Monthly sales for 4 product lines over a year — realistic neutral
-          business scenario
+        comment: Monthly sales for 4 retail product lines — realistic, neutral, business
+          scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values 22-110 thousands USD plausible; Electronics highest, Sports
-          seasonal — factually coherent
+        comment: Sales range 22-110 thousand USD with plausible seasonal patterns;
+          Sports summer peak is factually realistic
     code_quality:
       score: 10
       max: 10
@@ -183,34 +204,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: tokens -> data -> style -> chart -> add series
-          -> save'
+        comment: 'Clean structure: imports → theme tokens → data → style → chart →
+          add series → save; no functions or classes'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Fully deterministic, hardcoded data lists
+        comment: All data hardcoded as deterministic lists; no random generation
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: os, sys, Path, pygal, Style — all used
+        comment: os, sys, pathlib.Path, pygal, pygal.style.Style — all used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean Pythonic; sys.path manipulation necessary for import collision
-          avoidance
+        comment: Clean, readable Pythonic code; sys.path manipulation is necessary
+          for import collision avoidance
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot-{THEME}.png + plot-{THEME}.html correctly for interactive
-          library
+        comment: Saves plot-{THEME}.png and plot-{THEME}.html; current pygal API used
     library_mastery:
       score: 7
       max: 10
@@ -220,16 +240,17 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Comprehensive idiomatic pygal: Style for all theming, x_labels,
-          add(), render_to_png(), render() — above default'
+        comment: 'Idiomatic pygal usage: Line chart, Style object with all tokens,
+          x_labels, add() for series, render_to_png and render() for HTML'
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Saves both PNG and HTML leveraging pygal's distinctive interactive
-          JS chart output; selective guide configuration
-  verdict: REJECTED
+        comment: HTML interactive output (pygal's distinctive feature — JS interactive
+          charts) generated correctly; custom Style system used; smooth spline interpolation
+          is pygal default
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:

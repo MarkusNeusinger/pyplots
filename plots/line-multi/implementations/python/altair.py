@@ -1,13 +1,25 @@
-""" pyplots.ai
+"""anyplot.ai
 line-multi: Multi-Line Comparison Plot
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-24
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-05-06
 """
+
+import os
 
 import altair as alt
 import numpy as np
 import pandas as pd
 
+
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+
+# Okabe-Ito palette for categorical data
+OKABE_ITO = ["#009E73", "#D55E00", "#0072B2", "#CC79A7"]
 
 # Data - Monthly sales for 4 product lines over 24 months
 np.random.seed(42)
@@ -30,41 +42,68 @@ df = pd.DataFrame(
     }
 )
 
-# Color palette - Python Blue first, then colorblind-safe colors
-colors = ["#306998", "#FFD43B", "#E15759", "#59A14F"]
-
 # Create multi-line chart
 chart = (
     alt.Chart(df)
-    .mark_line(strokeWidth=4, point=alt.OverlayMarkDef(size=80, filled=True))
+    .mark_line(strokeWidth=4, point=alt.OverlayMarkDef(size=100, filled=True))
     .encode(
-        x=alt.X("Month:T", title="Month", axis=alt.Axis(labelFontSize=18, titleFontSize=22, format="%b %Y")),
+        x=alt.X(
+            "Month:T",
+            title="Month",
+            axis=alt.Axis(
+                labelFontSize=18,
+                titleFontSize=22,
+                format="%b %Y",
+                labelColor=INK_SOFT,
+                titleColor=INK,
+                domainColor=INK_SOFT,
+                tickColor=INK_SOFT,
+            ),
+        ),
         y=alt.Y(
-            "Sales (thousands):Q", title="Sales (thousands USD)", axis=alt.Axis(labelFontSize=18, titleFontSize=22)
+            "Sales (thousands):Q",
+            title="Sales (thousands USD)",
+            axis=alt.Axis(
+                labelFontSize=18,
+                titleFontSize=22,
+                labelColor=INK_SOFT,
+                titleColor=INK,
+                domainColor=INK_SOFT,
+                tickColor=INK_SOFT,
+                gridOpacity=0.10,
+                gridColor=INK,
+            ),
         ),
         color=alt.Color(
             "Product:N",
-            scale=alt.Scale(range=colors),
+            scale=alt.Scale(range=OKABE_ITO),
             legend=alt.Legend(
                 title="Product Line",
                 titleFontSize=20,
+                titleColor=INK,
                 labelFontSize=18,
+                labelColor=INK_SOFT,
                 orient="right",
                 symbolStrokeWidth=4,
                 symbolSize=200,
+                fillColor=ELEVATED_BG,
+                strokeColor=INK_SOFT,
             ),
         ),
-        strokeDash=alt.StrokeDash("Product:N", legend=None),
+        tooltip=["Month:T", "Sales (thousands):Q", "Product:N"],
     )
     .properties(
-        width=1600, height=900, title=alt.Title(text="line-multi · altair · pyplots.ai", fontSize=28, anchor="middle")
+        width=1600,
+        height=900,
+        background=PAGE_BG,
+        title=alt.Title(text="line-multi · altair · anyplot.ai", fontSize=28, anchor="middle", color=INK),
     )
-    .configure_axis(grid=True, gridOpacity=0.3, gridDash=[4, 4])
-    .configure_view(strokeWidth=0)
+    .configure_view(fill=PAGE_BG, stroke=INK_SOFT)
+    .configure_axis(gridDash=[4, 4])
 )
 
 # Save as PNG (4800 x 2700 px with scale_factor=3)
-chart.save("plot.png", scale_factor=3.0)
+chart.save(f"plot-{THEME}.png", scale_factor=3.0)
 
 # Save as HTML for interactivity
-chart.interactive().save("plot.html")
+chart.interactive().save(f"plot-{THEME}.html")

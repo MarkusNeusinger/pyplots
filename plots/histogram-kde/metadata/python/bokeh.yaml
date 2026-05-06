@@ -2,7 +2,7 @@ library: bokeh
 language: python
 specification_id: histogram-kde
 created: '2025-12-24T21:30:19Z'
-updated: '2026-05-06T16:58:28Z'
+updated: '2026-05-06T17:03:39Z'
 generated_by: claude-haiku
 workflow_run: 25448934240
 issue: 1823
@@ -12,86 +12,85 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/histogram
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/histogram-kde/python/bokeh/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/histogram-kde/python/bokeh/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/histogram-kde/python/bokeh/plot-dark.html
-quality_score: 78
+quality_score: 74
 review:
   strengths:
-  - Correct plot type with all required features (histogram + KDE overlay)
-  - 'Proper Okabe-Ito color usage (#009E73 green, #D55E00 orange) in canonical order'
-  - Excellent data representation showing distribution shape and fat-tail events
-  - Light render has perfect visual quality with clear element hierarchy
-  - Idiomatic Bokeh patterns (figure, ColumnDataSource, quad glyphs, HoverTools)
-  - Semi-transparent histogram bars enabling KDE curve visibility
-  - Deterministic, reproducible implementation with seed
-  - Clean, professional layout with proper legends and axis labels
+  - Correct histogram + KDE implementation with proper density normalization
+  - Realistic financial data scenario with clear distribution shape
+  - Good layout balance and canvas utilization
+  - Responsive title and axis labels with appropriate text sizing
+  - Interactive hover tooltips for both histogram and KDE elements
   weaknesses:
-  - 'CRITICAL: Dark render exhibits severe visibility failure where histogram bars
-    render as pure black, indistinguishable from dark background (#1A1A17)'
-  - Dark theme rendering artifact breaks visual hierarchy and theme compliance symmetry
-  - Generic design lacking visual refinement or sophisticated styling
-  - Limited design excellence - only default colors and minimal customization
-  - No advanced Bokeh features beyond basic HoverTools
+  - Dark render shows histogram bar rendering artifacts (black/dark regions instead
+    of consistent green) - suggests bokeh quad glyph issue with dark theme backgrounds
+  - Generic styling with default colors and minimal visual design customization
+  - No visual storytelling or emphasis hierarchy - plot displays data without guiding
+    viewer to insights
+  - Grid styling uses both axes instead of y-axis only - could be more refined
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) - correct
-      Chrome: Title, axis labels, tick labels all clearly visible in dark text with proper contrast
-      Data: Semi-transparent teal histogram bars (#009E73) with sharp edges, orange KDE curve (#D55E00) overlaid
-      Distribution shape: Main peak ~5% with visible fat-tail events on both sides, scaled to density
-      Legibility verdict: PASS - all text and data elements readable against light background
+      Background: Warm off-white (#FAF8F1) - correct and readable
+      Chrome: Title "histogram-kde · bokeh · anyplot.ai", axis labels "Daily Return (%)" and "Density" - all clearly visible in dark text; tick labels readable; subtle grid lines
+      Data: Histogram bars in Okabe-Ito brand green (#009E73) with 0.5 alpha, KDE curve in orange/vermillion (#D55E00); both clearly distinguishable; legend with "Histogram" and "KDE" labels
+      Legibility verdict: PASS - All text readable against light background, histogram and KDE elements clearly visible and properly rendered
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) - correct color
-      Chrome: Title, axis labels, tick labels readable in light text
-      Data: Data colors identical to light render (green histogram, orange KDE)
-      CRITICAL ISSUE: Certain histogram bars (particularly tail region ~8-15% on right side) render as pure black or severely darkened, becoming nearly indistinguishable from the #1A1A17 background. These bars should maintain #009E73 green but appear as rendering artifacts instead.
-      Legibility verdict: FAIL - dark render has visibility failure where histogram bars lose contrast against dark background; this breaks visual hierarchy and theme compliance
+      Background: Warm near-black (#1A1A17) - correct
+      Chrome: Title, axis labels, tick labels in light text - all readable; legend properly styled; grid lines subtle but visible
+      Data: KDE curve remains consistent orange/vermillion (#009E73 - identical to light render); HOWEVER, histogram bars show visual artifacts with black/dark rectangular regions appearing instead of consistent green coloring. These artifacts suggest either bokeh quad glyph rendering issues in dark theme or improper alpha blending with dark background
+      Legibility verdict: PARTIAL FAIL - Dark render has histogram bar rendering artifacts (black regions) that deviate from expected green color consistency across themes. This indicates incomplete theme adaptation in the histogram fill styling.
+
+    Critical issue: Data colors must be identical between light and dark renders - only chrome should flip. The dark render's black bar regions violate this principle and suggest a theme-adaptation failure in bokeh's quad rendering or the implementation's color/alpha settings.
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 24
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 5
         max: 8
-        passed: true
-        comment: Text readable in light; dark render artifacts slightly affect clarity
+        passed: false
+        comment: Light render readable, dark render artifacts affect confidence; not
+          all sizes explicitly set
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: Clean layout, all elements properly spaced
+        comment: No overlapping text elements
       - id: VQ-03
         name: Element Visibility
         score: 4
         max: 6
         passed: false
-        comment: Light render excellent; dark render shows bars becoming invisible
-          against background
+        comment: Histogram bars have visibility/rendering issues in dark theme; KDE
+          visible
       - id: VQ-04
         name: Color Accessibility
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Okabe-Ito palette CVD-safe, but dark render issue undermines accessibility
+        passed: true
+        comment: Good contrast, colorblind-safe Okabe-Ito palette
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Excellent proportions and margins
+        comment: Well-balanced layout, good proportions
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with units in correct format
+        comment: Descriptive labels with units
       - id: VQ-07
         name: Palette Compliance
         score: 1
         max: 2
         passed: false
-        comment: Colors correct but dark theme rendering fails - bars not visible
+        comment: 'Dark render shows histogram bar artifacts (black regions) - VQ-07
+          failure: data colors must be identical across themes'
     design_excellence:
       score: 8
       max: 20
@@ -101,21 +100,21 @@ review:
         score: 4
         max: 8
         passed: false
-        comment: Generic defaults, no custom design choices
+        comment: Generic library defaults, no custom palette or design thought
       - id: DE-02
         name: Visual Refinement
         score: 2
         max: 6
         passed: false
-        comment: Minimal customization beyond spec requirements
+        comment: Standard bokeh defaults with minimal customization
       - id: DE-03
         name: Data Storytelling
         score: 2
         max: 6
         passed: false
-        comment: Clear hierarchy but no visual emphasis or refinement
+        comment: Data displayed but no visual hierarchy or emphasis
     spec_compliance:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -129,43 +128,45 @@ review:
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: semi-transparent bars, KDE, density scale'
+        comment: 'All features present: semi-transparent bars, KDE curve, density
+          y-axis'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Axes correctly mapped, all data visible
+        comment: Correct axis mapping, full data range shown
       - id: SC-04
         name: Title & Legend
-        score: 3
+        score: 2
         max: 3
-        passed: true
-        comment: Correct format with spec-id · library · domain
+        passed: false
+        comment: Title format correct, but legend styling could be more refined
     data_quality:
-      score: 14
+      score: 13
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Realistic financial data with main distribution and tail events
+        comment: Shows distribution shape, tails, and density features effectively
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Stock returns neutral and plausible
+        comment: Realistic stock returns scenario with tail events
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 2
         max: 4
-        passed: true
-        comment: Sensible daily return percentages
+        passed: false
+        comment: Values plausible but mixing of normal distribution and tail events
+          could be better documented/justified
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -173,47 +174,50 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Straightforward script, no unnecessary abstractions
+        comment: Clean, straightforward implementation
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) for deterministic output
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Appropriate complexity, no fake UI
+        comment: Appropriate complexity, no over-engineering
       - id: CQ-05
         name: Output & API
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Saves as plot-{THEME}.png and plot-{THEME}.html
+        passed: false
+        comment: Correct output format but dark render has visible artifacts indicating
+          incomplete implementation
     library_mastery:
       score: 6
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
-        max: 5
-        passed: true
-        comment: Proper Bokeh patterns (figure, ColumnDataSource, quad glyphs)
-      - id: LM-02
-        name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
         passed: false
-        comment: Basic HoverTools, no advanced Bokeh features
+        comment: Correct bokeh patterns but straightforward - not leveraging advanced
+          features
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: false
+        comment: Uses ColumnDataSource and HoverTools but could use more bokeh-specific
+          capabilities
   verdict: REJECTED
 impl_tags:
   dependencies:
@@ -223,10 +227,9 @@ impl_tags:
   - html-export
   patterns:
   - data-generation
-  - matrix-construction
+  - columndatasource
   dataprep:
   - kde
   - binning
   styling:
   - alpha-blending
-  - theme-adaptive

@@ -2,7 +2,7 @@ library: plotnine
 language: python
 specification_id: ternary-basic
 created: '2025-12-24T09:50:39Z'
-updated: '2026-05-06T03:37:09Z'
+updated: '2026-05-06T03:42:25Z'
 generated_by: claude-haiku
 workflow_run: 25414931905
 issue: 1001
@@ -15,31 +15,32 @@ preview_html_dark: null
 quality_score: 84
 review:
   strengths:
-  - Perfect visual quality and readability in both themes with no legibility issues
-  - Correct ternary plot implementation with proper Cartesian coordinate transformation
-  - 'Excellent palette compliance: Okabe-Ito #009E73 data color identical in light
-    and dark renders, theme-correct chrome throughout'
-  - Realistic soil composition data demonstrating all aspects of ternary visualization
-  - Clean, reproducible code with explicit font sizing and proper theme token usage
+  - Correct ternary coordinate transformation and mapping
+  - Theme-adaptive styling perfectly executed in both light and dark renders
+  - Clean, idiomatic plotnine code using grammar of graphics
+  - Realistic and well-distributed data with good variety
+  - All text readable in both themes with no contrast issues
+  - Proper label positioning avoiding overlaps
   weaknesses:
-  - 'Design Excellence below median: DE-01 scored 4/8 (well-configured default, not
-    exceptional design); DE-02 at 4/6 (good refinement but could be polished further)'
-  - 'Limited data storytelling: visual hierarchy creates structure but lacks emphasis
-    or focal point to guide viewer insight'
-  - 'Library Mastery modest: uses correct patterns but doesn''t leverage advanced
-    plotnine features beyond standard geoms'
+  - Design is functional but minimal — no visual hierarchy or data storytelling
+  - Generic usage pattern without distinctive plotnine features
+  - No visual emphasis or focal point to guide viewer attention
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) creates professional surface
-      Chrome: Title in dark INK color (24pt) centered and clear; vertex labels ("Sand (%)", "Silt (%)", "Clay (%)") in bold dark text (18pt, INK); tick labels (0-100) in gray (INK_SOFT, 14pt) along all three edges—all highly legible against light background
-      Data: 50 green data points (#009E73, size=5, alpha=0.8) well-distributed across ternary space; grid lines (20% intervals) in subtle gray (INK_SOFT, alpha=0.15) aid reading; triangle frame in green (#009E73, size=2) clearly visible
-      Legibility verdict: PASS — all text readable, no light-on-light failures, excellent contrast
+      Background: Warm off-white #FAF8F1 (exactly correct)
+      Chrome: Title "ternary-basic · plotnine · anyplot.ai" in dark text (24pt), vertex labels "Sand (%)", "Silt (%)", "Clay (%)" in bold dark text (18pt), tick labels (0–100) in gray text (14pt) — all clearly readable against light surface
+      Data: 50 points in Okabe-Ito green #009E73 at 80% opacity, well-distributed across triangle interior, clear marker visibility
+      Triangle frame: Brand green #009E73 with proper line weight
+      Grid: Subtle gray lines at 20% intervals, providing orientation without competing with data
+      Legibility verdict: PASS — all elements readable at full resolution
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) provides proper dark theme surface
-      Chrome: Title in light text (F0EFE8), clearly visible; vertex labels in light INK color, bold and legible; tick labels in light INK_SOFT (B8B7B0)—all properly adapted for dark background with NO dark-on-dark failures
-      Data: Data colors identical to light render—same green (#009E73) for points and triangle frame; grid lines visible at same 20% intervals in light gray, maintaining readability on dark surface
-      Legibility verdict: PASS — all chrome properly theme-adapted, data colors consistent, no readability issues
+      Background: Warm near-black #1A1A17 (exactly correct)
+      Chrome: Same title in light text (#F0EFE8, 24pt), vertex labels in light gray (#B8B7B0, 18pt), tick labels in light gray (14pt) — all readable, no dark-on-dark failures
+      Data: Same 50 points in identical green #009E73, confirming theme-independent data colors
+      Triangle frame: Identical green to light render
+      Grid: Light gray lines at same opacity, subtle but visible on dark background
+      Legibility verdict: PASS — all elements readable, no contrast issues, proper theme adaptation with only chrome flipping
   criteria_checklist:
     visual_quality:
       score: 30
@@ -50,48 +51,49 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: All font sizes explicitly set; title 24pt, labels 20pt, ticks 16pt;
-          perfectly readable in both themes
+        comment: Title, vertex, and tick labels all explicit sized and theme-adapted.
+          Readable in both themes at full resolution.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements; labels positioned with offsets
+        comment: All text positioned with offsets. No collisions between labels or
+          data points.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: 50 data points visible; markers optimally sized for density; grid
-          lines subtle but visible
+        comment: All markers, grid, and frame visible. Grid appropriately subtle without
+          competing with data.
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: 'Okabe-Ito #009E73; good contrast; CVD-safe'
+        comment: 'Okabe-Ito green #009E73 is colorblind-safe. No red-green sole signals.'
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: 4800x2700 landscape; plot fills 60-70% with balanced margins
+        comment: 16:9 at 300 DPI = 4800×2700px. Generous margins. Nothing clipped.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with units (Sand/Silt/Clay %); title format correct
+        comment: Vertex labels descriptive with units. Title format correct.
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'Okabe-Ito #009E73 first series; backgrounds #FAF8F1 light / #1A1A17
-          dark; theme-correct chrome in both renders'
+        comment: 'Data: #009E73 (position 1). Background: #FAF8F1 light / #1A1A17
+          dark (exact). Both renders theme-correct.'
     design_excellence:
-      score: 10
+      score: 8
       max: 20
       items:
       - id: DE-01
@@ -99,22 +101,21 @@ review:
         score: 4
         max: 8
         passed: false
-        comment: Well-configured defaults; clean and professional but not exceptionally
-          designed
+        comment: Baseline styling. Uses Okabe-Ito appropriately but no distinctive
+          custom palette or design thought.
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 2
         max: 6
         passed: false
-        comment: Grid styled with alpha=0.15; spines removed via theme_void(); generous
-          whitespace; good refinement visible
+        comment: Minimal customization. theme_void() appropriate but no additional
+          refinement.
       - id: DE-03
         name: Data Storytelling
         score: 2
         max: 6
         passed: false
-        comment: Data displayed through structure/layout but no visual emphasis or
-          focal point
+        comment: No visual hierarchy or focal point. Three groups visible but no emphasis.
     spec_compliance:
       score: 15
       max: 15
@@ -124,28 +125,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct ternary plot with equilateral triangle; all features present
+        comment: Correct ternary plot. Three-component data mapped to equilateral
+          triangle.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Grid at 20% intervals; vertex labels; tick marks 0-100; appropriate
-          markers
+        comment: Grid lines at 20% intervals, vertex labels, tick marks, data points
+          all present.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Correct Cartesian-to-ternary transformation; all 50 points visible;
-          components sum to 100%
+        comment: Ternary-to-Cartesian transformation correct. Axes span 0–100% properly.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format 'ternary-basic · plotnine · anyplot.ai' correct; no
-          legend needed for single series
+        comment: Title format correct. Single-series, legend not needed.
     data_quality:
       score: 15
       max: 15
@@ -155,21 +155,20 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Dirichlet distributions create sand-heavy, silt-heavy, clay-heavy
-          samples; full ternary coverage
+        comment: 'All ternary aspects shown: three-component, proportional summing,
+          spatial distribution.'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real-world soil classification; neutral, educational context
+        comment: Soil composition (sand, silt, clay) is real-world, well-known, neutral.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Proportions 0-100% correct; sum=100% constraint maintained by dirichlet
-          design
+        comment: 0–100% proportions sensible. Data realistic for soil samples.
     code_quality:
       score: 10
       max: 10
@@ -179,58 +178,53 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear flow; no functions/classes; clear progression
+        comment: No functions or classes. Straightforward linear flow.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42); deterministic dirichlet sampling
+        comment: Uses np.random.seed(42). Deterministic.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports; all used
+        comment: 'Only used imports: numpy, pandas, plotnine.'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: No over-engineering; appropriate complexity; no fake functionality
+        comment: No fake UI or workarounds. Appropriate complexity.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as f'plot-{THEME}.png'; current API
+        comment: Saves as plot-{THEME}.png correctly.
     library_mastery:
-      score: 4
+      score: 6
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 3
+        score: 5
         max: 5
-        passed: false
-        comment: Correct ggplot() + geom pattern; proper aes() and theme customization;
-          competent but doesn't leverage advanced patterns
+        passed: true
+        comment: Excellent plotnine idiom. Uses geom_polygon, geom_segment, geom_point.
+          theme_void() and coord_fixed() correct.
       - id: LM-02
         name: Distinctive Features
         score: 1
         max: 5
         passed: false
-        comment: Generic usage; plotnine lacks ternary-specific features, so custom
-          approaches expected
-    score_caps: []
-    total_score: 84
-    total_max: 100
+        comment: No distinctive plotnine features (no faceting, layer composition,
+          or custom scales). Generic for spec.
   verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
-  - layer-composition
-  - annotations
   - manual-ticks
   patterns:
   - data-generation

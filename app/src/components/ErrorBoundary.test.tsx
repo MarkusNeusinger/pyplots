@@ -55,6 +55,53 @@ describe('ErrorBoundary', () => {
     expect(screen.getByRole('button', { name: /go home/i })).toBeInTheDocument();
   });
 
+  it('toggles technical details disclosure', async () => {
+    const { userEvent } = await import('../test-utils');
+    const user = userEvent.setup();
+
+    render(
+      <ErrorBoundary>
+        <ThrowingComponent message="boom on iOS" />
+      </ErrorBoundary>
+    );
+
+    expect(screen.queryByTestId('error-details')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /show technical details/i }));
+
+    const details = screen.getByTestId('error-details');
+    expect(details).toBeInTheDocument();
+    expect(details.textContent).toContain('boom on iOS');
+    expect(details.textContent).toContain('User-Agent:');
+    expect(details.textContent).toContain('URL:');
+
+    await user.click(screen.getByRole('button', { name: /hide technical details/i }));
+    expect(screen.queryByTestId('error-details')).not.toBeInTheDocument();
+  });
+
+  it('copies details to the clipboard', async () => {
+    const { userEvent } = await import('../test-utils');
+    const user = userEvent.setup();
+
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    });
+
+    render(
+      <ErrorBoundary>
+        <ThrowingComponent message="copy me" />
+      </ErrorBoundary>
+    );
+
+    await user.click(screen.getByRole('button', { name: /copy details/i }));
+
+    expect(writeText).toHaveBeenCalledTimes(1);
+    expect(writeText.mock.calls[0][0]).toContain('copy me');
+    expect(await screen.findByRole('button', { name: /copied/i })).toBeInTheDocument();
+  });
+
   it('recovers when Try Again is clicked', async () => {
     const { userEvent } = await import('../test-utils');
     const user = userEvent.setup();

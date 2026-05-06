@@ -38,9 +38,11 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     setHomeState((prev) => ({ ...prev, scrollY: window.scrollY }));
   }, []);
 
-  // Load shared data after browser is idle — gives /plots/filter bandwidth priority
+  // Load shared data after browser is idle — gives /plots/filter bandwidth priority.
+  // Safari/iOS doesn't ship requestIdleCallback by default, so feature-detect
+  // and fall back to setTimeout — otherwise the TypeError takes the app down.
   useEffect(() => {
-    const id = window.requestIdleCallback(async () => {
+    const callback = async () => {
       try {
         const [specsRes, libsRes, statsRes] = await Promise.all([
           fetch(`${API_URL}/specs`),
@@ -65,8 +67,17 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       } catch (err) {
         console.warn('Initial data load incomplete:', err instanceof Error ? err.message : err);
       }
-    }, { timeout: 2000 });
-    return () => window.cancelIdleCallback(id);
+    };
+
+    const hasRIC = typeof window.requestIdleCallback === 'function';
+    const id: number = hasRIC
+      ? window.requestIdleCallback(callback, { timeout: 2000 })
+      : window.setTimeout(callback, 1);
+
+    return () => {
+      if (hasRIC) window.cancelIdleCallback(id);
+      else window.clearTimeout(id);
+    };
   }, []);
 
   return (

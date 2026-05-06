@@ -1,12 +1,31 @@
-""" pyplots.ai
+""" anyplot.ai
 bar-grouped: Grouped Bar Chart
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-24
+Library: altair 6.1.0 | Python 3.13.13
+Quality: 86/100 | Updated: 2026-05-06
 """
 
-import altair as alt
+import os
+import sys
+
 import pandas as pd
 
+
+# Remove current directory from path to avoid local altair.py shadowing
+script_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path = [p for p in sys.path if p != script_dir and os.path.abspath(p) != script_dir]
+
+import altair as alt  # noqa: E402
+
+
+# Theme tokens (see prompts/default-style-guide.md "Background" + "Theme-adaptive Chrome")
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+
+# Okabe-Ito palette (positions 1→3)
+OKABE_ITO = ["#009E73", "#D55E00", "#0072B2"]
 
 # Data: Quarterly revenue by product line
 data = pd.DataFrame(
@@ -35,25 +54,38 @@ chart = (
     alt.Chart(data)
     .mark_bar(cornerRadiusTopLeft=3, cornerRadiusTopRight=3)
     .encode(
-        x=alt.X("Quarter:O", title="Quarter", axis=alt.Axis(labelFontSize=18, titleFontSize=22)),
+        x=alt.X(
+            "Quarter:O",
+            title="Quarter",
+            axis=alt.Axis(labelFontSize=18, titleFontSize=22, labelColor=INK_SOFT, titleColor=INK),
+        ),
         xOffset="Product:N",
-        y=alt.Y("Revenue:Q", title="Revenue (thousands USD)", axis=alt.Axis(labelFontSize=18, titleFontSize=22)),
+        y=alt.Y(
+            "Revenue:Q",
+            title="Revenue (thousands USD)",
+            axis=alt.Axis(labelFontSize=18, titleFontSize=22, labelColor=INK_SOFT, titleColor=INK),
+        ),
         color=alt.Color(
             "Product:N",
-            scale=alt.Scale(domain=["Software", "Hardware", "Services"], range=["#306998", "#FFD43B", "#4ECDC4"]),
+            scale=alt.Scale(domain=["Software", "Hardware", "Services"], range=OKABE_ITO),
             legend=alt.Legend(
-                title="Product Line", titleFontSize=20, labelFontSize=18, orient="top-right", direction="vertical"
+                title="Product Line", titleFontSize=20, labelFontSize=18, orient="bottom", direction="horizontal"
             ),
         ),
         tooltip=["Quarter", "Product", "Revenue"],
     )
     .properties(
-        width=1600, height=900, title=alt.Title("bar-grouped · altair · pyplots.ai", fontSize=28, anchor="middle")
+        width=1600,
+        height=900,
+        background=PAGE_BG,
+        title=alt.Title("bar-grouped · altair · anyplot.ai", fontSize=28, anchor="middle"),
     )
-    .configure_axis(gridColor="#E0E0E0", gridOpacity=0.3)
-    .configure_view(strokeWidth=0)
+    .configure_axis(domainColor=INK_SOFT, tickColor=INK_SOFT, gridColor=INK, gridOpacity=0.10)
+    .configure_view(fill=PAGE_BG, stroke=INK_SOFT, strokeWidth=0)
+    .configure_title(color=INK)
+    .configure_legend(fillColor=ELEVATED_BG, strokeColor=INK_SOFT, labelColor=INK_SOFT, titleColor=INK)
 )
 
 # Save as PNG and HTML
-chart.save("plot.png", scale_factor=3.0)
-chart.save("plot.html")
+chart.save(f"plot-{THEME}.png", scale_factor=3.0)
+chart.save(f"plot-{THEME}.html")

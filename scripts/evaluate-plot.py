@@ -133,16 +133,20 @@ LIBRARY_PATTERNS = {
 }
 
 
-def get_plot_paths(spec_id: str, library: str) -> dict:
+def get_plot_paths(spec_id: str, library: str, language: str = "python") -> dict:
     """Get all relevant paths for a plot implementation."""
     plots_dir = PROJECT_ROOT / "plots" / spec_id
+    impl_dir = plots_dir / "implementations" / language
     return {
         "spec": plots_dir / "specification.md",
-        "impl": plots_dir / "implementations" / f"{library}.py",
-        "metadata": plots_dir / "metadata" / f"{library}.yaml",
-        "image": plots_dir / "implementations" / "plot.png",
+        "impl": impl_dir / f"{library}.py",
+        "metadata": plots_dir / "metadata" / language / f"{library}.yaml",
+        "image": impl_dir / "plot.png",
+        "image_light": impl_dir / "plot-light.png",
+        "image_dark": impl_dir / "plot-dark.png",
         "library_rules": PROJECT_ROOT / "prompts" / "library" / f"{library}.md",
         "quality_criteria": PROJECT_ROOT / "prompts" / "quality-criteria.md",
+        "quality_evaluator": PROJECT_ROOT / "prompts" / "quality-evaluator.md",
     }
 
 
@@ -361,104 +365,58 @@ def run_auto_reject_checks(spec_id: str, library: str, run_code: bool = True) ->
 # =============================================================================
 
 def create_evaluation_prompt(spec_id: str, library: str, paths: dict) -> str:
-    """Create the evaluation prompt for Claude (v2 criteria)."""
+    """Build the evaluation prompt by composing the canonical evaluator + criteria
+    files (mirrors the workflow pattern — single source of truth for the rubric).
+    """
     spec_content = paths["spec"].read_text() if paths["spec"].exists() else "NOT FOUND"
     impl_content = paths["impl"].read_text() if paths["impl"].exists() else "NOT FOUND"
     criteria_content = paths["quality_criteria"].read_text() if paths["quality_criteria"].exists() else "NOT FOUND"
+    evaluator_content = paths["quality_evaluator"].read_text() if paths["quality_evaluator"].exists() else "NOT FOUND"
     library_rules = paths["library_rules"].read_text() if paths["library_rules"].exists() else ""
 
-    return f"""## Task: Evaluate Plot Quality (v2 Criteria)
+    return f"""{evaluator_content}
 
-You are evaluating a **{library}** implementation of **{spec_id}**.
+---
 
-**Important:** This implementation has already passed Auto-Reject checks (syntax, runtime, output, library usage).
-Focus purely on QUALITY evaluation.
+## Local CLI Mode — Single Render Only
+
+This invocation is from the `evaluate-plot.py` local CLI, not the production
+review workflow. Only a single rendered preview (`plot.png`) is attached, and
+there is no `plot-light.png` / `plot-dark.png` theme pair (or `plot-*.html`)
+available. Score VQ-07 (Palette Compliance) and any other theme-aware criteria
+based on the single render shown — do not deduct for "missing theme variant".
+
+## Inputs
+
+You are evaluating **{library}** implementation of **{spec_id}**. The implementation
+has already passed Stage 1 auto-reject checks (syntax, runtime, output, library
+usage). Focus purely on Stage 2 quality scoring.
 
 ### Specification
+
 ```markdown
 {spec_content}
 ```
 
 ### Implementation ({library}.py)
+
 ```python
 {impl_content}
 ```
 
 ### Library Rules
+
 ```markdown
 {library_rules}
 ```
 
-### Quality Criteria
+### Quality Criteria (full rubric)
+
 ```markdown
 {criteria_content}
 ```
 
-### Your Task
-
-Evaluate STRICTLY. Remember:
-- 90-100 = Publication quality (Nature/Science)
-- 70-89 = Professional
-- 50-69 = Acceptable
-- <50 = Rejected
-
-Provide evaluation as JSON:
-
-```json
-{{
-  "score": <0-100>,
-  "tier": "<Excellent|Good|Acceptable|Poor>",
-
-  "visual_quality": {{
-    "vq01_text_legibility": {{"score": <0-10>, "note": "..."}},
-    "vq02_no_overlap": {{"score": <0-8>, "note": "..."}},
-    "vq03_element_visibility": {{"score": <0-8>, "note": "..."}},
-    "vq04_color_accessibility": {{"score": <0-5>, "note": "..."}},
-    "vq05_layout_balance": {{"score": <0-5>, "note": "..."}},
-    "vq06_axis_labels": {{"score": <0-2>, "note": "..."}},
-    "vq07_grid_legend": {{"score": <0-2>, "note": "..."}},
-    "total": <0-40>
-  }},
-
-  "spec_compliance": {{
-    "sc01_plot_type": {{"score": <0-8>, "note": "..."}},
-    "sc02_data_mapping": {{"score": <0-5>, "note": "..."}},
-    "sc03_required_features": {{"score": <0-5>, "note": "..."}},
-    "sc04_data_range": {{"score": <0-3>, "note": "..."}},
-    "sc05_legend_accuracy": {{"score": <0-2>, "note": "..."}},
-    "sc06_title_format": {{"score": <0-2>, "note": "..."}},
-    "total": <0-25>
-  }},
-
-  "data_quality": {{
-    "dq01_feature_coverage": {{"score": <0-8>, "note": "..."}},
-    "dq02_realistic_context": {{"score": <0-7>, "note": "..."}},
-    "dq03_appropriate_scale": {{"score": <0-5>, "note": "..."}},
-    "total": <0-20>
-  }},
-
-  "code_quality": {{
-    "cq01_kiss_structure": {{"score": <0-3>, "note": "..."}},
-    "cq02_reproducibility": {{"score": <0-3>, "note": "..."}},
-    "cq03_clean_imports": {{"score": <0-2>, "note": "..."}},
-    "cq04_no_deprecated_api": {{"score": <0-1>, "note": "..."}},
-    "cq05_output_correct": {{"score": <0-1>, "note": "..."}},
-    "total": <0-10>
-  }},
-
-  "library_features": {{
-    "lf01_distinctive_features": {{"score": <0-5>, "note": "..."}},
-    "total": <0-5>
-  }},
-
-  "strengths": ["..."],
-  "weaknesses": ["..."],
-  "improvements": ["..."],
-  "summary": "One sentence summary"
-}}
-```
-
-Be STRICT - a "good" plot should score around 70-80, not 95.
+Return the JSON output in the exact shape specified in the evaluator's "Output Format" section.
 """
 
 
@@ -560,21 +518,23 @@ def print_quality_result(result: dict, verbose: bool = False):
     print(f"QUALITY SCORE: {score}/100 ({tier})")
     print("="*60)
 
-    # Category scores
+    # Category scores — must match the canonical 6-category rubric in prompts/quality-criteria.md.
     vq = result.get("visual_quality", {}).get("total", "?")
+    de = result.get("design_excellence", {}).get("total", "?")
     sc = result.get("spec_compliance", {}).get("total", "?")
     dq = result.get("data_quality", {}).get("total", "?")
     cq = result.get("code_quality", {}).get("total", "?")
-    lf = result.get("library_features", {}).get("total", "?")
+    lm = result.get("library_mastery", {}).get("total", "?")
 
-    print(f"\n  Visual Quality:    {vq}/40")
-    print(f"  Spec Compliance:   {sc}/25")
-    print(f"  Data Quality:      {dq}/20")
+    print(f"\n  Visual Quality:    {vq}/30")
+    print(f"  Design Excellence: {de}/20")
+    print(f"  Spec Compliance:   {sc}/15")
+    print(f"  Data Quality:      {dq}/15")
     print(f"  Code Quality:      {cq}/10")
-    print(f"  Library Features:  {lf}/5")
+    print(f"  Library Mastery:   {lm}/10")
 
     if verbose:
-        for category in ["visual_quality", "spec_compliance", "data_quality", "code_quality", "library_features"]:
+        for category in ["visual_quality", "design_excellence", "spec_compliance", "data_quality", "code_quality", "library_mastery"]:
             cat_data = result.get(category, {})
             print(f"\n{category.upper()}:")
             for key, val in cat_data.items():

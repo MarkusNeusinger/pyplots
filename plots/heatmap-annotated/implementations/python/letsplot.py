@@ -1,8 +1,10 @@
-""" pyplots.ai
+"""anyplot.ai
 heatmap-annotated: Annotated Heatmap
-Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-24
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-24
 """
+
+import os
 
 import numpy as np
 import pandas as pd
@@ -10,6 +12,13 @@ from lets_plot import *
 
 
 LetsPlot.setup_html()
+
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
 
 # Data - Correlation matrix for stock sectors
 np.random.seed(42)
@@ -43,26 +52,27 @@ df["text_color"] = df["value"].apply(lambda v: "white" if abs(v) > 0.5 else "bla
 # Create heatmap with annotations
 plot = (
     ggplot(df, aes(x="x", y="y", fill="value"))
-    + geom_tile(color="white", size=0.5)
+    + geom_tile(color=INK_SOFT, size=0.3)
     + geom_text(aes(label="label", color="text_color"), size=12, fontface="bold")
     + scale_color_identity()
-    + scale_fill_gradient2(low="#2166AC", mid="#F7F7F7", high="#B2182B", midpoint=0, name="Correlation", limits=[-1, 1])
-    + labs(x="Sector", y="Sector", title="heatmap-annotated · lets-plot · pyplots.ai")
+    + scale_fill_gradient2(low="#2166AC", mid=PAGE_BG, high="#B2182B", midpoint=0, name="Correlation", limits=[-1, 1])
+    + labs(x="Sector", y="Sector", title="heatmap-annotated · letsplot · anyplot.ai")
     + theme_minimal()
     + theme(
-        plot_title=element_text(size=24, face="bold"),
-        axis_title=element_text(size=20),
-        axis_text=element_text(size=16),
+        plot_background=element_rect(fill=PAGE_BG, color=PAGE_BG),
+        panel_background=element_rect(fill=PAGE_BG),
+        plot_title=element_text(size=24, color=INK),
+        axis_title=element_text(size=20, color=INK),
+        axis_text=element_text(size=16, color=INK_SOFT),
         axis_text_x=element_text(angle=45, hjust=1),
-        legend_title=element_text(size=18),
-        legend_text=element_text(size=14),
+        legend_background=element_rect(fill=ELEVATED_BG, color=INK_SOFT),
+        legend_title=element_text(size=18, color=INK),
+        legend_text=element_text(size=14, color=INK_SOFT),
         panel_grid=element_blank(),
     )
     + ggsize(1600, 900)
 )
 
-# Save PNG (scale 3x for 4800x2700)
-ggsave(plot, "plot.png", path=".", scale=3)
-
-# Save HTML for interactivity
-ggsave(plot, "plot.html", path=".")
+# Save PNG and HTML (scale 3x for 4800x2700)
+ggsave(plot, f"plot-{THEME}.png", path=".", scale=3)
+ggsave(plot, f"plot-{THEME}.html", path=".")

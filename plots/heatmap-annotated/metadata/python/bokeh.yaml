@@ -2,7 +2,7 @@ library: bokeh
 language: python
 specification_id: heatmap-annotated
 created: '2025-12-24T21:29:19Z'
-updated: '2026-05-06T21:49:38Z'
+updated: '2026-05-06T22:01:04Z'
 generated_by: claude-haiku
 workflow_run: 25436538604
 issue: 1824
@@ -15,115 +15,130 @@ preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/heatmap-a
 quality_score: 84
 review:
   strengths:
-  - Comprehensive spec compliance — all required features (colorbar, cell annotations,
-    diverging palette, contrast text, 2dp formatting) implemented correctly
-  - Correct use of BrBG11 diverging palette per style guide for correlation data
-  - 'Fully themed chrome: title, axes, ticks, borders all respond to ANYPLOT_THEME'
-  - Clean idiomatic Bokeh code with transform() + LinearColorMapper and proper ColumnDataSource
-    usage
-  - Realistic, neutral financial metrics dataset with good range of correlation magnitudes
-  - Correct square canvas format (3600x3600) appropriate for a symmetric correlation
-    matrix
+  - 'Perfect spec compliance: annotated heatmap with diverging BrBG11 palette, colorbar,
+    and contrast-aware cell text colors'
+  - 'Excellent data quality: realistic 8×8 financial correlation matrix with seed-reproducible
+    data and plausible real-world correlations'
+  - 'Perfect code quality: KISS structure, reproducible seed, clean imports, idiomatic
+    Bokeh ColumnDataSource + transform pattern'
+  - 'Idiomatic Bokeh: uses LinearColorMapper + transform() for data-driven rect fill,
+    HoverTool with named column references, ColorBar layout attachment'
+  - 'Good visual refinement: grid lines removed, tick marks removed, axis lines removed
+    — clean minimal chrome'
+  - Diverging colormap creates natural visual hierarchy — Revenue/Profit/ROI cluster
+    visible immediately, Debt negative correlations stand out in teal
   weaknesses:
-  - 'Colorbar text not theme-adapted: color_bar.major_label_text_color and color_bar.title_text_color
-    must be set to INK_SOFT and INK respectively to guarantee dark-mode correctness'
-  - 'Design Excellence is low: no visual hierarchy or emphasis on key correlations
-    — the strongest relationships (Revenue–Profit 0.82, Debt–ROI -0.29) are not highlighted'
-  - Top x-axis labels are slightly clipped at the canvas edge — reduce orientation
-    angle or add top padding via p.min_border_top
-  - 'VQ-07 partial: colorbar chrome not explicitly theme-adapted'
+  - 'Dark render: ColorBar major_label_text_color and title_text_color are not set
+    — they default to black on the #1A1A17 border_fill_color, causing dark-on-dark
+    unreadable colorbar labels. Fix: add major_label_text_color=INK_SOFT and title_text_color=INK
+    to the ColorBar constructor.'
+  - 'VQ-07 chrome failure: colorbar text in dark mode uses Bokeh default (black) instead
+    of theme-adaptive INK/INK_SOFT tokens. Fix: set color_bar.major_label_text_color
+    = INK_SOFT and color_bar.title_text_color = INK after creating the ColorBar.'
+  - Design Excellence is functional but not exceptional — cell borders are hardcoded
+    white (line_color='white') which works but limits design flexibility. Could use
+    a subtle border matching the surface background instead for a more polished look.
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white #FAF8F1 — correct theme surface
-      Chrome: Title "heatmap-annotated · bokeh · anyplot.ai" in dark ink, clearly readable. Axis labels "Financial Metric" in dark ink, readable. Tick labels (variable names) in INK_SOFT, readable. Top x-axis labels rotated and slightly clipped at canvas edge.
-      Data: 8x8 correlation matrix with BrBG11 diverging colormap. Strong positive correlations (Revenue-Profit 0.82) render in dark brown; strong negative (Debt-ROI -0.29) in teal; near-zero in cream/beige. White cell borders separate cells cleanly. Each cell annotated with 2dp correlation value in white (dark cells) or black (light cells).
-      Colorbar: "Pearson Correlation" label visible on right side, tick values -0.8 to 0.8 visible.
-      Legibility verdict: PASS — all main chart text readable; minor clipping of top axis labels noted.
+      Background: Warm off-white (#FAF8F1) — correct theme surface, not pure white.
+      Chrome: Title "heatmap-annotated · bokeh · anyplot.ai" rendered in dark ink at top, clearly readable. "Financial Metric" x-axis label (placed above via x_axis_location="above") visible below title. Y-axis label "Financial Metric" on left, readable. Variable name tick labels (Revenue, Profit, Assets, Debt, Growth, ROI, Market Cap, Volume) on both axes — x-axis rotated ~40°, all readable without overlap. Colorbar on right side with "Pearson Correlation" title and numeric tick labels (−1 to 1) — all clearly legible in dark text on light background.
+      Data: BrBG11 diverging palette — dark brown for high positive correlations (diagonal 1.00, Revenue-Profit 0.82, Revenue-ROI 0.56), cream/neutral for near-zero correlations, teal/cyan for negative correlations (Debt-ROI −0.29). Cell text: white text on dark brown cells, black text on lighter cells — all readable. First data series is continuous (not categorical), BrBG is the correct diverging colormap.
+      Legibility verdict: PASS — all text elements clearly readable against the warm off-white surface.
 
     Dark render (plot-dark.png):
-      Background: Near-black #1A1A17 — correct dark theme surface
-      Chrome: Title and axis labels visible in light ink against dark background. Tick labels readable. No dark-on-dark failures in main chart body.
-      Data: BrBG11 cell colors identical to light render — dark brown, teal, cream unchanged. Cell annotation text (white/black per cell value) remains readable on cell backgrounds. Data colors are identical between light and dark renders.
-      Colorbar: Colorbar major_label_text_color and title_text_color NOT explicitly set to theme tokens — Bokeh defaults to dark text. Colorbar labels appear marginally visible in the screenshot but this is not explicitly guaranteed by the code and represents a chrome correctness gap.
-      Legibility verdict: PASS for main chart; PARTIAL FAIL for colorbar text (not explicitly themed, dark default text risk on dark background).
+      Background: Warm near-black (#1A1A17) — correct dark theme surface. Page border fill is also dark.
+      Chrome: Title and axis labels adapt correctly to dark theme (light text visible). Variable name tick labels on y-axis and rotated x-axis labels are light-colored and readable. HOWEVER: ColorBar major_label_text_color and title_text_color are NOT set in code — they default to Bokeh's default (black). With the border_fill_color = #1A1A17, the colorbar panel background is dark, causing the numeric scale labels (−0.8, −0.6, ..., 0.8, 1) and "Pearson Correlation" title text to appear as dark text on near-black background. This is a dark-on-dark failure for the colorbar text elements.
+      Data: Cell fill colors are identical to light render — BrBG palette browns and teals unchanged (Okabe-Ito positions 1–7 are theme-invariant; continuous data colors are also theme-invariant). Cell annotation text (white/black based on |val|>0.5) renders correctly.
+      Legibility verdict: PARTIAL FAIL — main plot labels and title are readable, but colorbar scale labels and title are unreadable (dark-on-dark) in the dark render.
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 24
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 3
         max: 8
-        passed: true
-        comment: All font sizes explicitly set (title 32pt, labels 24pt, ticks 18pt,
-          annotations 24pt, colorbar 16/20pt). Colorbar text color not theme-adapted;
-          top axis labels slightly clipped.
+        passed: false
+        comment: 'Main plot text (title, axis labels, tick labels) explicitly sized
+          and readable in both renders. ColorBar major_label_text_color and title_text_color
+          not set — defaults to black on #1A1A17 dark background → dark-on-dark failure
+          for colorbar scale labels in dark render.'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping elements in either render
+        comment: No overlap. X-axis labels rotated 0.7 rad (~40°) — all 8 labels readable.
+          Y-axis labels one per row. Cell text centered, no collision.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: All heatmap cells and annotations clearly visible
+        comment: All 64 heatmap cells visible with appropriate fill colors. Cell text
+          at 24pt is prominent. Colorbar strip clearly visible.
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: BrBG diverging palette is CVD-safe; white/black annotation contrast
-          adapts to cell brightness
+        comment: BrBG diverging palette is perceptually uniform and CVD-safe. White/black
+          cell text contrast logic (|val|>0.5 → white, else black) ensures sufficient
+          contrast within cells.
       - id: VQ-05
         name: Layout & Canvas
-        score: 3
+        score: 4
         max: 4
         passed: true
-        comment: 'Square 3600x3600 appropriate for symmetric matrix. Minor: top axis
-          labels slightly clipped at canvas edge.'
+        comment: Square 3600×3600 format appropriate for symmetric matrix. Heatmap
+          fills canvas well. Colorbar positioned right. All rows/columns including
+          Volume visible within canvas bounds.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Financial Metric on both axes; title follows required format
+        comment: Title 'heatmap-annotated · bokeh · anyplot.ai' correct. Both axes
+          labeled 'Financial Metric'. Colorbar titled 'Pearson Correlation'. Descriptive
+          without needing units.
       - id: VQ-07
         name: Palette Compliance
         score: 1
         max: 2
         passed: false
-        comment: 'BrBG11 diverging palette correct for correlation data. Backgrounds
-          correct (#FAF8F1/#1A1A17). Deduction: colorbar major_label_text_color and
-          title_text_color not set to INK_SOFT/INK tokens.'
+        comment: 'BrBG11 diverging palette is correct for correlation data. Backgrounds
+          correct: #FAF8F1 light, #1A1A17 dark. However, colorbar text colors not
+          theme-adaptive — dark-on-dark in dark render is a chrome compliance failure.'
     design_excellence:
-      score: 10
+      score: 12
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
         score: 4
         max: 8
-        passed: false
-        comment: Well-configured library default. Good palette choice, clean chrome
-          removal. No exceptional design innovations.
+        passed: true
+        comment: Well-configured professional design. BrBG palette appropriate for
+          diverging correlation data. Clean typography hierarchy. Not exceptional
+          but clearly above generic defaults.
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
         passed: true
-        comment: Grid disabled, axis lines removed, tick marks hidden, white cell
-          borders for structure. Above default 2.
+        comment: 'Good refinement: grid lines removed, tick marks removed, axis lines
+          removed. White cell borders create clean cell separation. Some room for
+          improvement in colorbar chrome theming.'
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 4
         max: 6
-        passed: false
-        comment: Data displays correlation patterns naturally but implementation adds
-          no visual hierarchy or emphasis on key relationships.
+        passed: true
+        comment: 'Good: diverging colormap creates immediate visual hierarchy. Revenue/Profit/ROI/Market
+          Cap cluster of high correlations visible as dark brown block. Debt negative
+          correlations visible as teal. Viewer can identify the financial relationship
+          story.'
     spec_compliance:
       score: 15
       max: 15
@@ -133,26 +148,30 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct annotated heatmap using rect() + text() overlay
+        comment: 'Correct: annotated heatmap with rect glyphs colored by value and
+          text annotations showing numeric values in each cell.'
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features: text annotations, diverging colormap, colorbar, 2dp
-          formatting, white/black contrast text'
+        comment: 'All spec features present: numeric value labels in cells, color
+          intensity encoding, colorbar legend, contrast-aware text colors (white/black
+          based on cell darkness), diverging colormap for positive/negative values.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Correlation values correctly mapped to color; axes correctly assigned
+        comment: 8×8 correlation matrix correctly mapped. X/Y axes show all 8 financial
+          metric variables. Values range from -1 to 1 as expected for correlations.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format; colorbar labeled 'Pearson Correlation'
+        comment: Title 'heatmap-annotated · bokeh · anyplot.ai' matches required format
+          exactly. ColorBar serves as legend with 'Pearson Correlation' label.
     data_quality:
       score: 15
       max: 15
@@ -162,22 +181,27 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Shows full range: strong positive (0.82), strong negative (-0.29),
-          near-zero (0.01), perfect diagonal (1.00)'
+        comment: 'Full spectrum: diagonal 1.00, strong positive correlations (0.82,
+          0.62, 0.58), moderate positives (0.56, 0.50), near-zero (0.01, 0.03), moderate
+          negatives (-0.15, -0.17, -0.25, -0.29). All aspects of correlation matrix
+          shown.'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Financial metrics correlation matrix is a canonical real-world use
-          case, neutral and comprehensible
+        comment: 'Financial metrics (Revenue, Profit, Assets, Debt, Growth, ROI, Market
+          Cap, Volume) — real-world neutral business scenario. Correlations are economically
+          plausible: Revenue-Profit highly correlated, Debt negatively correlated
+          with profitability.'
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Pearson correlation values constrained to [-1,1] by construction;
-          plausible financial relationships
+        comment: Correlation values bounded [-1, 1] as mathematically required. Diagonal
+          = 1.0 correct. Symmetric matrix (corrcoef output). Values match expected
+          financial metric relationships.
     code_quality:
       score: 10
       max: 10
@@ -187,53 +211,57 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear structure: imports -> tokens -> data -> figure -> styling
-          -> colorbar -> save'
+        comment: 'Linear structure: imports → theme tokens → data generation → Bokeh
+          data prep → figure creation → styling → save. No functions or classes.'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) set before data generation.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imported symbols are used
+        comment: 'All imports used: os, sys, time, Path, numpy, bokeh.io, bokeh.models
+          (all 5 imports), bokeh.palettes, bokeh.plotting, bokeh.transform, selenium.'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean Pythonic code; transform() + LinearColorMapper is elegant Bokeh
-          pattern
+        comment: Clean Pythonic code. Text color logic (white if abs(val)>0.5 else
+          black) is simple and effective. ColumnDataSource approach is idiomatic.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot-{THEME}.html + plot-{THEME}.png via Selenium; correct
-          naming
+        comment: Saves plot-{THEME}.html and plot-{THEME}.png via Selenium headless
+          Chrome pattern as required for interactive Bokeh library.
     library_mastery:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: 'Proper Bokeh patterns: ColumnDataSource, transform() for color encoding,
-          rect()+text() overlay, ColorBar with BasicTicker'
+        comment: 'Expertly uses Bokeh patterns: ColumnDataSource for all data, LinearColorMapper
+          + transform() for data-driven fill, HoverTool with @column references, ColorBar
+          add_layout, BasicTicker for colorbar ticks.'
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: HoverTool for interactivity, transform() for server-side color mapping,
-          HTML+Selenium export pipeline
-  verdict: REJECTED
+        comment: 'Uses Bokeh-specific features: transform() from bokeh.transform for
+          declarative color mapping (cannot replicate in matplotlib without manual
+          loops), HoverTool for interactive correlation inspection — genuine Bokeh
+          advantage over static libraries.'
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - selenium
@@ -250,3 +278,4 @@ impl_tags:
   - correlation-matrix
   styling:
   - custom-colormap
+  - edge-highlighting

@@ -1,169 +1,176 @@
 library: letsplot
+language: python
 specification_id: line-multi
 created: '2025-12-24T21:34:29Z'
-updated: '2025-12-24T21:42:08Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20494140585
-issue: 0
-python_version: 3.13.11
-library_version: 4.8.2
-preview_url: https://storage.googleapis.com/anyplot-images/plots/line-multi/letsplot/plot.png
-preview_html: https://storage.googleapis.com/anyplot-images/plots/line-multi/letsplot/plot.html
-quality_score: 93
-impl_tags:
-  dependencies: []
-  techniques:
-    - html-export
-  patterns:
-    - data-generation
-  dataprep: []
-  styling: []
+updated: '2026-05-06T15:36:02Z'
+generated_by: claude-haiku
+workflow_run: 25444383803
+issue: 1825
+python_version: 3.13.13
+library_version: 4.9.0
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/line-multi/python/letsplot/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/line-multi/python/letsplot/plot-dark.png
+preview_html_light: https://storage.googleapis.com/anyplot-images/plots/line-multi/python/letsplot/plot-light.html
+preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/line-multi/python/letsplot/plot-dark.html
+quality_score: 85
 review:
   strengths:
-  - Excellent text sizing with explicit font sizes for all elements (28pt title, 22pt
-    axis titles, 18pt axis/legend text)
-  - Clean data generation creating distinct trend patterns (growth, seasonal, gradual)
-    that demonstrate the multi-line comparison effectively
-  - Proper use of lets-plot grammar with long-format data and aes mappings
-  - Good marker visibility with size=5 and alpha=0.9 on points
-  - Generates both PNG and HTML outputs showcasing lets-plot dual static/interactive
-    capability
-  - Professional title format following pyplots.ai convention
+  - Perfect visual quality with both light and dark themes rendering correctly and
+    readably
+  - Excellent palette compliance with proper Okabe-Ito colors and theme-adaptive chrome
+  - Thoughtful design with clear visual hierarchy (Electronics emphasized as top performer)
+  - Clean, professional styling without visual clutter
+  - Reproducible, well-structured code with clear intent (data separation for layering)
+  - Idiomatic letsplot usage throughout
   weaknesses:
-  - Color palette (blue/yellow/red) while distinguishable could be more colorblind-safe;
-    consider using scale_color_brewer or viridis
-  - Legend title Product is generic; could be more contextual like Product Line
-  - Could add tooltips for the HTML version to enhance interactivity
-  image_description: 'The plot displays a multi-line comparison chart showing monthly
-    sales data for three product lines over 12 months. The chart features three distinct
-    colored lines: blue (#306998) for Electronics showing strong upward growth from
-    ~155 to ~219 thousands USD, yellow (#FFD43B) for Clothing displaying a seasonal
-    pattern starting at ~122, dipping to ~63 in August then recovering to ~78, and
-    red (#DC2626) for Home Goods showing gradual growth from ~88 to ~104. Each line
-    has circular markers at data points. The title "line-multi · letsplot · pyplots.ai"
-    is centered at the top. X-axis shows month abbreviations (Jan-Dec), Y-axis shows
-    "Sales (thousands USD)" ranging from 60-220. The legend is positioned on the right
-    side with clear labeling. The background uses a subtle gray grid on white.'
+  - The geom_smooth() trend line adds complexity beyond the core specification (nice-to-have,
+    not required)
+  - Visual hierarchy could be more dramatic for stronger data storytelling impact
+  - Limited showcasing of distinctive letsplot-specific features beyond standard ggplot2
+    patterns
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white (#FAF8F1) - correct for light theme
+      Chrome: Title "line-multi · letsplot · anyplot.ai" in dark text (clearly visible). Axis labels "Month" and "Sales (thousands USD)" in primary text color (readable). Tick labels for months (Jan-Dec) and sales values in secondary text color (clearly visible).
+      Data: Three distinct lines with proper Okabe-Ito colors - Clothing (green #009E73), Home Goods (orange #D55E00), Electronics (blue #0072B2). All markers visible. Visual hierarchy through line thickness (Electronics larger) and opacity variation. Loess trend line on Electronics.
+      Legend: Clear legend on right side identifying "Product Line" with all three series.
+      Legibility verdict: PASS - All text readable with good contrast against light background
+
+    Dark render (plot-dark.png):
+      Background: Warm near-black (#1A1A17) - correct for dark theme
+      Chrome: All text (title, axis labels, tick labels) rendered in light colors with good contrast against dark background. No dark-on-dark failures detected. Specifically, no near-black text on near-black background.
+      Data: The three data colors (green #009E73, orange #D55E00, blue #0072B2) are identical to light render - only chrome changed as expected. Visual hierarchy, markers, and trend line present and visible.
+      Legend: Same legend information clearly visible with light text.
+      Legibility verdict: PASS - All text readable with good contrast against dark background. Proper theme adaptation confirmed.
   criteria_checklist:
     visual_quality:
-      score: 38
-      max: 40
+      score: 30
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title at 28pt, axis titles at 22pt, axis text at 18pt, legend at
-          18-20pt - all perfectly readable
+        comment: All fonts properly sized (title 24pt, labels 20pt, ticks 16pt) and
+          colored for both light and dark themes
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text, month labels well-spaced
+        comment: Clean spacing, no collisions between text, lines, or markers
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Lines at size=2.5 and points at size=5 are clearly visible, appropriate
-          for 12 data points per series
+        comment: All markers and lines clearly distinguishable with appropriate sizing
+          for data density
       - id: VQ-04
         name: Color Accessibility
-        score: 4
-        max: 5
-        passed: true
-        comment: Blue, yellow, and red are distinguishable; blue-yellow-red palette
-          is fairly colorblind-safe but not optimal (could use viridis or more distinct
-          hues)
-      - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Plot fills canvas well, legend positioned appropriately on right,
-          balanced margins
-      - id: VQ-06
-        name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: '"Sales (thousands USD)" includes units, "Month" is descriptive'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 1
+        comment: Okabe-Ito palette is CVD-safe, no problematic red-green sole signaling
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: Good 16:9 proportions (4800x2700px), generous margins, nothing cut
+          off
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
         max: 2
         passed: true
-        comment: Grid is subtle with alpha, but minor gridlines are blank which is
-          good; legend is well-placed but title "Product" could be more descriptive
+        comment: Title includes spec-id, library, and domain; y-axis has units (thousands
+          USD)
+      - id: VQ-07
+        name: Palette Compliance
+        score: 2
+        max: 2
+        passed: true
+        comment: 'First series #009E73, Okabe-Ito order, backgrounds #FAF8F1/#1A1A17,
+          both renders theme-correct'
+    design_excellence:
+      score: 13
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: true
+        comment: Visual hierarchy with varying line thickness and opacity, custom
+          palette usage, intentional data layering. Solid design but not groundbreaking
+      - id: DE-02
+        name: Visual Refinement
+        score: 3
+        max: 6
+        passed: true
+        comment: L-shaped axes (top/right spines removed), no grid, generous whitespace.
+          Minimal additional refinement
+      - id: DE-03
+        name: Data Storytelling
+        score: 5
+        max: 6
+        passed: true
+        comment: Visual hierarchy guides viewer to Electronics as top performer; loess
+          trend reinforces pattern; clear focal point
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
         comment: Correct multi-line comparison plot
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X (Month) and Y (Sales) correctly assigned, color mapped to Product
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Multiple series, distinct colors, legend, markers at data points
-          all present
-      - id: SC-04
-        name: Data Range
+        comment: Distinct colors, legend, optional markers all present
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Y-axis shows full range of data (60-220), all 12 months visible
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X-axis (Month), Y-axis (Sales) correct; all series properly mapped
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend correctly identifies all three product lines
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Uses correct format "line-multi · letsplot · pyplots.ai"
+        comment: Title format correct; legend labels match
     data_quality:
-      score: 18
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows distinct trends (growth, seasonal, gradual), convergence, and
-          divergence; could show more crossing of lines for richer comparison
+        comment: Three distinct product lines with different trends
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
+        score: 5
+        max: 5
         passed: true
-        comment: Monthly sales for product lines is a plausible real-world scenario
+        comment: Monthly sales data is realistic and neutral
       - id: DQ-03
         name: Appropriate Scale
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Values in 60-220 thousands USD range are reasonable; the Clothing
-          sharp dip to 63 in August is dramatic but plausible for seasonal
+        comment: Sales values (60-220k USD/month) are sensible
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -171,42 +178,57 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear structure: imports → data → plot → save'
+        comment: No unnecessary functions; straightforward plotting logic
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: Uses np.random.seed(42) for deterministic output
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'Only necessary imports: numpy, pandas, lets_plot'
+        comment: Only necessary imports (numpy, pandas, lets_plot)
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
+        score: 2
+        max: 2
+        passed: true
+        comment: Appropriate complexity; visual hierarchy via data separation justified
+      - id: CQ-05
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: All API calls are current
-      - id: CQ-05
-        name: Output Correct
-        score: 0
-        max: 1
-        passed: false
-        comment: Saves as plot.png but uses path="." parameter; minor issue
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves as plot-{THEME}.png and plot-{THEME}.html; current API
+    library_mastery:
+      score: 7
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 3
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
         max: 5
         passed: true
-        comment: Uses lets-plot ggplot grammar correctly with aes, geom_line, geom_point,
-          scale_color_manual, theme_minimal, and ggsize. Also generates HTML for interactivity.
-          However, doesn't showcase more advanced lets-plot features like tooltips,
-          hover interactivity, or coord features.
+        comment: Proper ggplot2-style grammar, correct aes(), scale_color_manual(),
+          theme config
+      - id: LM-02
+        name: Distinctive Features
+        score: 2
+        max: 5
+        passed: true
+        comment: geom_smooth() with loess used but standard ggplot2; theme tokens
+          applied correctly
   verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending

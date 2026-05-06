@@ -89,7 +89,7 @@ class Settings(BaseSettings):
     # AI MODEL CONFIGURATION
     # =============================================================================
 
-    claude_model: str = "claude-3-5-sonnet-20240620"
+    claude_model: str = "claude-sonnet-4-6"
     """Claude model to use for code generation and review"""
 
     claude_max_tokens: int = 4000

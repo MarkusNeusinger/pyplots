@@ -33,6 +33,20 @@ on:
         description: "Issue number (optional, for tracking)"
         required: false
         type: string
+      model:
+        description: "Claude model to use (also threaded into review + repair)"
+        required: false
+        type: choice
+        default: 'sonnet'
+        options:
+          - haiku
+          - sonnet
+          - opus
+      change_request:
+        description: "One-sentence cross-library divergence hint from daily-regen pre-flight similarity audit (empty = none)"
+        required: false
+        type: string
+        default: ''
 
 # Global concurrency: max 3 concurrent implementation workflows
 concurrency:
@@ -72,12 +86,14 @@ jobs:
             SPEC_ID="${{ inputs.specification_id }}"
             LIBRARY="${{ inputs.library }}"
             ISSUE="${{ inputs.issue_number }}"
+            MODEL="${{ inputs.model }}"
           else
             # From label trigger: generate:{library}
             LIBRARY=$(echo "$LABEL_NAME" | sed 's/^generate://')
             # Extract spec ID from issue title: [spec-id] ...
             SPEC_ID=$(echo "$ISSUE_TITLE" | sed -n 's/^\[\([a-z0-9-]*\)\].*/\1/p')
             ISSUE="${{ github.event.issue.number }}"
+            MODEL=""
           fi
 
           if [ -z "$SPEC_ID" ]; then
@@ -90,6 +106,11 @@ jobs:
             exit 1
           fi
 
+          # Default model when caller didn't supply one (label trigger path).
+          if [ -z "$MODEL" ]; then
+            MODEL="sonnet"
+          fi
+
           # Language: only python supported today. Future multi-language work will derive this per spec.
           LANGUAGE="python"
 
@@ -97,8 +118,9 @@ jobs:
           echo "library=$LIBRARY" >> $GITHUB_OUTPUT
           echo "language=$LANGUAGE" >> $GITHUB_OUTPUT
           echo "issue_number=$ISSUE" >> $GITHUB_OUTPUT
+          echo "model=$MODEL" >> $GITHUB_OUTPUT
 
-          echo "::notice::Generating $LANGUAGE/$LIBRARY for $SPEC_ID (issue: ${ISSUE:-none})"
+          echo "::notice::Generating $LANGUAGE/$LIBRARY for $SPEC_ID (issue: ${ISSUE:-none}, model: ${MODEL})"
 
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6
@@ -301,14 +323,24 @@ jobs:
           mkdir -p "plots/${SPEC_ID}/metadata/${LANGUAGE}"
           echo "::notice::Ensured implementation + metadata directories exist for language '${LANGUAGE}'"
 
+      - name: Stage change_request hint (cross-library divergence)
+        if: ${{ inputs.change_request != '' }}
+        env:
+          CHANGE_REQUEST: ${{ inputs.change_request }}
+        run: |
+          # Written to a file so the prompt template stays variable-free; impl-generate-claude.md
+          # checks for the file's existence and reads it if present.
+          printf '%s\n' "$CHANGE_REQUEST" > /tmp/anyplot-change-request.txt
+          echo "::notice::Change request staged: ${CHANGE_REQUEST}"
+
       - name: Run Claude Code to generate implementation
         id: claude
         continue-on-error: true
         timeout-minutes: 60
-        uses: anthropics/claude-code-action@ef50f123a3a9be95b60040d042717517407c7256  # v1
+        uses: anthropics/claude-code-action@2cc1ac1331eac7a6a96d716dd204dd2888d0fcd2  # v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          claude_args: "--model sonnet"
+          claude_args: "--model ${{ steps.inputs.outputs.model }}"
           # bulk-generate dispatches us from the github-actions bot; explicitly allow it.
           allowed_bots: '*'
           prompt: |
@@ -324,10 +356,10 @@ jobs:
         if: steps.claude.outcome == 'failure'
         id: claude_retry
         timeout-minutes: 60
-        uses: anthropics/claude-code-action@ef50f123a3a9be95b60040d042717517407c7256  # v1
+        uses: anthropics/claude-code-action@2cc1ac1331eac7a6a96d716dd204dd2888d0fcd2  # v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          claude_args: "--model sonnet"
+          claude_args: "--model ${{ steps.inputs.outputs.model }}"
           # bulk-generate dispatches us from the github-actions bot; explicitly allow it.
           allowed_bots: '*'
           prompt: |
@@ -350,6 +382,7 @@ jobs:
           LIBRARY: ${{ steps.inputs.outputs.library }}
           ISSUE: ${{ steps.issue.outputs.number }}
           BRANCH: ${{ steps.branch.outputs.branch }}
+          MODEL: ${{ steps.inputs.outputs.model }}
         run: |
           IMPL_DIR="plots/${SPEC_ID}/implementations/${LANGUAGE}"
 
@@ -445,6 +478,7 @@ jobs:
           lib_ver = '$LIBRARY_VERSION'
           has_html = '$HAS_HTML' == 'true'
           metadata_file = '$METADATA_FILE'
+          model = '$MODEL'
           base_url = f'https://storage.googleapis.com/anyplot-images/plots/{spec}/{language}/{lib}'
 
           # Preserve the original 'created' timestamp on regenerations.
@@ -466,11 +500,11 @@ jobs:
               'specification_id': spec,
               'created': created_ts,
               'updated': ts,
-              # Reflects what claude_args=`--model sonnet` actually runs: whatever
-              # Claude Code's current "sonnet" alias resolves to.
+              # Reflects what claude_args=`--model {model}` actually runs: whatever
+              # Claude Code's current alias for the chosen model resolves to.
               # Use the family name instead of a frozen version string so the
               # metadata doesn't go stale every model release.
-              'generated_by': 'claude-sonnet',
+              'generated_by': f'claude-{model}',
               'workflow_run': run_id,
               'issue': issue,
               'python_version': py_ver,
@@ -710,12 +744,14 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
+          MODEL: ${{ steps.inputs.outputs.model }}
         run: |
           # Use repository_dispatch as workaround for workflow_dispatch caching issue
           gh api repos/${{ github.repository }}/dispatches \
             -f event_type=review-pr \
-            -f 'client_payload[pr_number]='"$PR_NUMBER"
-          echo "::notice::Triggered impl-review.yml via repository_dispatch for PR #$PR_NUMBER"
+            -f "client_payload[pr_number]=$PR_NUMBER" \
+            -f "client_payload[model]=$MODEL"
+          echo "::notice::Triggered impl-review.yml via repository_dispatch for PR #$PR_NUMBER (model=$MODEL)"
 
       - name: Determine result
         id: result
@@ -736,6 +772,10 @@ jobs:
           SPEC_ID: ${{ steps.inputs.outputs.specification_id }}
           LIBRARY: ${{ steps.inputs.outputs.library }}
           ISSUE: ${{ steps.issue.outputs.number }}
+          MODEL: ${{ steps.inputs.outputs.model }}
+          # Pass via env (not template-interpolated into the script) so hints
+          # containing quotes / $ / backticks can't break shell parsing.
+          CHANGE_REQUEST: ${{ inputs.change_request }}
         run: |
           echo "::notice::Handling generation failure for $LIBRARY/$SPEC_ID"
 
@@ -775,7 +815,7 @@ jobs:
 
           To retry manually:
           \`\`\`
-          gh workflow run impl-generate.yml -f specification_id=${SPEC_ID} -f library=${LIBRARY} -f issue_number=${ISSUE}
+          gh workflow run impl-generate.yml -f specification_id=${SPEC_ID} -f library=${LIBRARY} -f issue_number=${ISSUE} -f model=${MODEL}
           \`\`\`
 
           ---
@@ -794,11 +834,22 @@ jobs:
             # Clean up generate label before retry
             gh issue edit "$ISSUE" --remove-label "generate:${LIBRARY}" 2>/dev/null || true
 
-            # Automatic retry via workflow_dispatch
+            # Automatic retry via workflow_dispatch.
+            # Forward `change_request` so cross-library divergence hints from
+            # daily-regen pre-flight survive the retry — otherwise the first
+            # attempt has the hint but the retry doesn't, defeating the audit.
+            # CHANGE_REQUEST is read from env to keep raw quotes/$/backticks
+            # inside the hint from breaking shell parsing.
             gh workflow run impl-generate.yml \
               -f specification_id="${SPEC_ID}" \
               -f library="${LIBRARY}" \
-              -f issue_number="${ISSUE}"
+              -f issue_number="${ISSUE}" \
+              -f model="${MODEL}" \
+              -f change_request="${CHANGE_REQUEST}"
 
-            echo "::notice::Triggered automatic retry for ${LIBRARY}/${SPEC_ID} (attempt $((ATTEMPT + 1)))"
+            if [ -n "${CHANGE_REQUEST}" ]; then
+              echo "::notice::Triggered automatic retry for ${LIBRARY}/${SPEC_ID} (attempt $((ATTEMPT + 1)), model=${MODEL}, change_request=present)"
+            else
+              echo "::notice::Triggered automatic retry for ${LIBRARY}/${SPEC_ID} (attempt $((ATTEMPT + 1)), model=${MODEL}, change_request=none)"
+            fi
           fi

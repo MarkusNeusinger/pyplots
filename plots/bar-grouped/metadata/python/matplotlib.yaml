@@ -1,158 +1,174 @@
 library: matplotlib
+language: python
 specification_id: bar-grouped
 created: '2025-12-24T21:29:23Z'
-updated: '2025-12-24T21:34:51Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20494136513
-issue: 0
-python_version: 3.13.11
-library_version: 3.10.8
-preview_url: https://storage.googleapis.com/anyplot-images/plots/bar-grouped/matplotlib/plot.png
-preview_html: null
-quality_score: 95
-impl_tags:
-  dependencies: []
-  techniques:
-  - annotations
-  - edge-highlighting
-  patterns:
-  - explicit-figure
-  dataprep: []
-  styling: []
+updated: '2026-05-06T11:04:43Z'
+generated_by: claude-haiku
+workflow_run: 25430937500
+issue: 1822
+python_version: 3.13.13
+library_version: 3.10.9
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/bar-grouped/python/matplotlib/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/bar-grouped/python/matplotlib/plot-dark.png
+preview_html_light: null
+preview_html_dark: null
+quality_score: 89
 review:
   strengths:
-  - Excellent visual clarity with well-sized text and properly spaced bars
-  - Colorblind-safe color palette using Python brand colors plus complementary green
-  - Value labels on bars enhance precise comparisons as suggested in spec notes
-  - Data tells a realistic story with different growth patterns per product line
-  - Clean KISS code structure following matplotlib best practices
+  - 'Perfect technical execution: all visual quality criteria met, clean code, proper
+    theme handling'
+  - Data colors identical across themes with correct Okabe-Ito palette (#009E73 as
+    position 1)
+  - Theme-adaptive chrome flawlessly implemented in both renders—no readability issues
+  - 'Strong design touches: drop shadows, marker emphasis on max values, custom legend
+    styling'
+  - Clear visual hierarchy through marker size variation and bold font weight
+  - No overlap, no legibility failures, excellent canvas utilization
   weaknesses:
-  - Legend position in upper left may conflict with data if values were higher in
-    Q1 (upper right or outside plot would be safer)
-  image_description: The plot displays a grouped bar chart with quarterly sales data
-    (Q1-Q4) for three product categories. Electronics is shown in Python Blue (#306998),
-    Clothing in Python Yellow (#FFD43B), and Home & Garden in green (#4CAF50). Each
-    category group contains three side-by-side bars with value labels displayed above
-    each bar (e.g., 245, 178, 125 for Q1). The title "bar-grouped · matplotlib · pyplots.ai"
-    is centered at the top. The y-axis label reads "Sales (Thousands USD)" with values
-    from 0 to ~450, and the x-axis shows "Quarter" with Q1-Q4 labels. A legend in
-    the upper left corner identifies each product line. Subtle dashed grid lines appear
-    on the y-axis with good transparency.
+  - Design Excellence could push higher with refined grid styling and color contrast
+    emphasis
+  - Data Storytelling could improve by adding explicit narrative emphasis through
+    selective color saturation or size variation
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white #FAF8F1 (correct)
+      Chrome: Title, axis labels, tick labels all dark text (INK #1A1A17), 24pt/20pt/16pt—perfectly readable
+      Data: Three bars per quarter with Okabe-Ito colors: #009E73 (Electronics), #D55E00 (Clothing), #0072B2 (Home & Garden)
+      Legibility verdict: PASS—all elements clearly visible, no overlap, proper contrast
+
+    Dark render (plot-dark.png):
+      Background: Warm near-black #1A1A17 (correct)
+      Chrome: Title, axis labels, tick labels all light text (INK_SOFT #B8B7B0), clearly readable on dark background
+      Data: Same Okabe-Ito colors as light render (identical, no shift)
+      Legibility verdict: PASS—no dark-on-dark issues, all text readable, grid and spines properly light-colored, brand green #009E73 visible
   criteria_checklist:
     visual_quality:
-      score: 38
-      max: 40
+      score: 30
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt, all perfectly
-          readable
+        comment: All font sizes explicitly set (24pt/20pt/16pt), perfectly readable
+          in both themes
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text, bars well-spaced, value labels clear
+        comment: No overlapping text elements, proper spacing throughout
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Bars sized appropriately with good spacing between groups
+        comment: Bars, markers, labels all clearly visible with optimized sizing
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Blue/Yellow/Green palette is colorblind-safe, high contrast
-      - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Plot fills canvas well, balanced margins, legend well-positioned
-      - id: VQ-06
-        name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Y-axis includes units "(Thousands USD)", X-axis descriptive "Quarter"
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
+        comment: Okabe-Ito palette is CVD-safe with good contrast
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: Plot fills ~65% of canvas with balanced margins at 4800×2700px
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
         max: 2
-        passed: false
-        comment: Grid at alpha=0.3 is good, but legend could be positioned in less
-          data-relevant area (upper right would be better as it doesn't interfere
-          with potential higher values)
+        passed: true
+        comment: 'Descriptive labels with units: ''Sales (Thousands USD)'''
+      - id: VQ-07
+        name: Palette Compliance
+        score: 2
+        max: 2
+        passed: true
+        comment: 'First series #009E73 correct, Okabe-Ito order maintained, backgrounds
+          correct (#FAF8F1/#1A1A17), theme chrome correct in both renders'
+    design_excellence:
+      score: 12
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: true
+        comment: Strong design with drop shadows, marker emphasis, thoughtful styling—above
+          defaults but not FiveThirtyEight-level
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Spines removed, subtle y-axis grid, generous whitespace, custom legend
+          styling
+      - id: DE-03
+        name: Data Storytelling
+        score: 3
+        max: 6
+        passed: true
+        comment: Visual hierarchy via marker size/font weight variation guides viewer;
+          could add narrative emphasis
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct grouped bar chart
+        comment: Correct grouped bar chart implementation
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories on X, groups as side-by-side bars, values as heights
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Distinct colors, legend, consistent spacing, value labels
-      - id: SC-04
-        name: Data Range
+        comment: 'All features present: multiple bars, colors, legend, value labels,
+          markers'
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Y-axis starts at 0, includes headroom for labels
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X/Y correctly assigned, all data visible
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend labels match data series exactly
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Correct format "bar-grouped · matplotlib · pyplots.ai"
+        comment: Title format correct, legend labels match data
     data_quality:
-      score: 20
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: 'Shows varied patterns: Electronics peaks in Q4, Clothing grows steadily,
-          Home & Garden peaks mid-year'
+        comment: 'All aspects of grouped bars demonstrated: multiple quarters, three
+          product lines, varied patterns'
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Quarterly sales by product line is a common business scenario
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Values in hundreds of thousands USD are realistic for retail sales
+        comment: Realistic quarterly sales scenario, neutral business context
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Values 125–425k realistic, proportions plausible
     code_quality:
-      score: 8
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -160,41 +176,59 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save structure, no functions/classes
+        comment: Clean linear flow, no functions/classes
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses deterministic hardcoded data, no randomness
+        comment: Deterministic hardcoded data
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only matplotlib.pyplot and numpy imported, both used
+        comment: Only necessary imports used
       - id: CQ-04
-        name: No Deprecated API
-        score: 0
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Uses `strict=True` in zip which is Python 3.10+ only (minor compatibility
-          concern)
+        comment: Pythonic, appropriate complexity, no fake functionality
       - id: CQ-05
-        name: Output Correct
-        score: 0
+        name: Output & API
+        score: 1
         max: 1
         passed: true
-        comment: Saves as 'plot.png' correctly
-    library_features:
-      score: 4
-      max: 5
+        comment: Saves as plot-{THEME}.png with current API
+    library_mastery:
+      score: 7
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
         score: 4
         max: 5
         passed: true
-        comment: Good use of bar positioning with np.arange offsets, ax.annotate for
-          value labels, edge styling with white borders
+        comment: Proper axes-based approach, high-level API usage
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Rectangle patches for shadows and custom marker emphasis
   verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - manual-ticks
+  - patches
+  patterns:
+  - explicit-figure
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - grid-styling
+  - edge-highlighting
+  - alpha-blending

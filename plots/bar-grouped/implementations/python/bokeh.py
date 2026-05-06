@@ -1,14 +1,29 @@
-""" pyplots.ai
+""" anyplot.ai
 bar-grouped: Grouped Bar Chart
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-24
+Library: bokeh 3.9.0 | Python 3.13.13
+Quality: 90/100 | Updated: 2026-05-06
 """
 
-from bokeh.io import export_png
+import os
+import time
+from pathlib import Path
+
+from bokeh.io import output_file, save
 from bokeh.models import ColumnDataSource, FactorRange, Legend, LegendItem
 from bokeh.plotting import figure
-from bokeh.transform import factor_cmap
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
+
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+
+# Okabe-Ito palette (first series is always #009E73)
+OKABE_ITO = ["#009E73", "#D55E00", "#0072B2"]
 
 # Data - Quarterly revenue by product line (in thousands)
 categories = ["Q1", "Q2", "Q3", "Q4"]
@@ -19,28 +34,20 @@ data = {"Electronics": [245, 278, 312, 385], "Clothing": [180, 165, 210, 295], "
 # Create factors for grouped bars
 x = [(cat, group) for cat in categories for group in groups]
 values = [data[group][i] for i, cat in enumerate(categories) for group in groups]
+colors = [OKABE_ITO[groups.index(factor[1])] for factor in x]
 
-source = ColumnDataSource(data={"x": x, "values": values})
+source = ColumnDataSource(data={"x": x, "values": values, "color": colors})
 
 # Create figure with categorical axis
 p = figure(
     x_range=FactorRange(*x, group_padding=0.3),
     width=4800,
     height=2700,
-    title="Quarterly Revenue by Product · bar-grouped · bokeh · pyplots.ai",
+    title="Quarterly Revenue by Product · bar-grouped · bokeh · anyplot.ai",
 )
 
-# Create grouped bars with colors
-colors = ["#306998", "#FFD43B", "#4CAF50"]
-bars = p.vbar(
-    x="x",
-    top="values",
-    width=0.85,
-    source=source,
-    line_color="white",
-    line_width=3,
-    fill_color=factor_cmap("x", palette=colors, factors=groups, start=1, end=2),
-)
+# Create grouped bars with theme-adaptive colors from source
+bars = p.vbar(x="x", top="values", width=0.85, source=source, fill_color="color", line_color="white", line_width=3)
 
 # Add value labels on top of bars
 for factor, value in zip(x, values, strict=True):
@@ -51,57 +58,82 @@ for factor, value in zip(x, values, strict=True):
         text_align="center",
         text_baseline="bottom",
         text_font_size="16pt",
-        text_color="#333333",
+        text_color=INK,
     )
 
-# Title styling - larger for 4800x2700
-p.title.text_font_size = "36pt"
-p.title.text_color = "#333333"
+# Title styling
+p.title.text_font_size = "28pt"
+p.title.text_color = INK
 
 # X-axis styling
 p.xaxis.axis_label = "Quarter"
-p.xaxis.axis_label_text_font_size = "28pt"
-p.xaxis.major_label_text_font_size = "1pt"  # Hide individual bar labels (minimal)
-p.xaxis.major_label_text_color = "#fafafa"  # Match background to hide
-p.xaxis.group_text_font_size = "24pt"
-p.xaxis.major_label_orientation = 0
-p.xaxis.separator_line_color = None
+p.xaxis.axis_label_text_font_size = "22pt"
+p.xaxis.major_label_text_font_size = "18pt"
+p.xaxis.major_label_text_color = INK_SOFT
+p.xaxis.axis_label_text_color = INK
 
 # Y-axis styling
 p.yaxis.axis_label = "Revenue ($ Thousands)"
-p.yaxis.axis_label_text_font_size = "28pt"
-p.yaxis.major_label_text_font_size = "20pt"
+p.yaxis.axis_label_text_font_size = "22pt"
+p.yaxis.major_label_text_font_size = "18pt"
+p.yaxis.major_label_text_color = INK_SOFT
+p.yaxis.axis_label_text_color = INK
 
 # Grid styling
 p.xgrid.grid_line_color = None
-p.ygrid.grid_line_alpha = 0.3
-p.ygrid.grid_line_dash = "dashed"
+p.ygrid.grid_line_color = INK
+p.ygrid.grid_line_alpha = 0.10
 
-# Add legend manually with correct colors
+# Background and outline
+p.background_fill_color = PAGE_BG
+p.border_fill_color = PAGE_BG
+p.outline_line_color = INK_SOFT
+p.xaxis.axis_line_color = INK_SOFT
+p.yaxis.axis_line_color = INK_SOFT
+p.xaxis.major_tick_line_color = INK_SOFT
+p.yaxis.major_tick_line_color = INK_SOFT
+
+# Create legend with correct colors for each group
 legend_items = [
     LegendItem(label=groups[0], renderers=[bars], index=0),
-    LegendItem(label=groups[1], renderers=[bars], index=1),
-    LegendItem(label=groups[2], renderers=[bars], index=2),
+    LegendItem(label=groups[1], renderers=[bars], index=3),
+    LegendItem(label=groups[2], renderers=[bars], index=6),
 ]
 legend = Legend(items=legend_items, location="top_right", orientation="vertical")
-legend.label_text_font_size = "22pt"
-legend.glyph_height = 30
-legend.glyph_width = 30
-legend.spacing = 15
-legend.padding = 25
-legend.background_fill_alpha = 0.8
+legend.label_text_font_size = "16pt"
+legend.label_text_color = INK_SOFT
+legend.background_fill_color = ELEVATED_BG
+legend.background_fill_alpha = 1.0
+legend.border_line_color = INK_SOFT
+legend.glyph_height = 20
+legend.glyph_width = 20
+legend.spacing = 10
+legend.padding = 15
 p.add_layout(legend)
 
 # Set y-axis range to accommodate labels
 p.y_range.start = 0
 p.y_range.end = 430
 
-# Background
-p.background_fill_color = "#fafafa"
-p.border_fill_color = "#ffffff"
+# Save HTML output
+output_file(f"plot-{THEME}.html")
+save(p)
 
-# Outline
-p.outline_line_color = None
-
-# Save output
-export_png(p, filename="plot.png")
+# Screenshot with Selenium
+W, H = 4800, 2700
+opts = Options()
+for arg in (
+    "--headless=new",
+    "--no-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-gpu",
+    f"--window-size={W},{H}",
+    "--hide-scrollbars",
+):
+    opts.add_argument(arg)
+driver = webdriver.Chrome(options=opts)
+driver.set_window_size(W, H)
+driver.get(f"file://{Path(f'plot-{THEME}.html').resolve()}")
+time.sleep(3)
+driver.save_screenshot(f"plot-{THEME}.png")
+driver.quit()

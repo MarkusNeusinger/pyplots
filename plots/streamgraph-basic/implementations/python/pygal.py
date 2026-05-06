@@ -1,7 +1,7 @@
-""" anyplot.ai
+"""anyplot.ai
 streamgraph-basic: Basic Stream Graph
 Library: pygal 3.1.0 | Python 3.13.13
-Quality: 79/100 | Updated: 2026-05-05
+Quality: 79/100 | Updated: 2026-05-06
 """
 
 import os
@@ -25,6 +25,9 @@ INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
 INK_MUTED = "#6B6A63" if THEME == "light" else "#A8A79F"
 
 OKABE_ITO = ("#009E73", "#D55E00", "#0072B2", "#CC79A7", "#E69F00")
+
+# Prepend background color for the invisible baseline series, then Okabe-Ito for genres
+COLORS = (PAGE_BG,) + OKABE_ITO
 
 # Data: monthly streaming hours by music genre over two years
 np.random.seed(42)
@@ -69,13 +72,15 @@ for genre in genres:
     values = np.maximum(values, 5)
     data[genre] = values.tolist()
 
-# Centered baseline for streamgraph effect
+# True streamgraph baseline: center the entire stack symmetrically around y=0.
+# baseline[t] = -total[t]/2 so the stack spans from -total/2 to +total/2.
 data_array = np.array([data[genre] for genre in genres])
 total_at_each_time = data_array.sum(axis=0)
-baseline_offset = total_at_each_time / 2
+baseline = (-total_at_each_time / 2).tolist()
 
-y_min = -baseline_offset.max() * 1.1
-y_max = baseline_offset.max() * 1.1
+# Symmetric y-axis range with a small margin
+half_total_max = total_at_each_time.max() / 2
+y_range = half_total_max * 1.12
 
 # Style
 custom_style = Style(
@@ -84,7 +89,7 @@ custom_style = Style(
     foreground=INK,
     foreground_strong=INK,
     foreground_subtle=INK_MUTED,
-    colors=OKABE_ITO,
+    colors=COLORS,
     title_font_size=28,
     label_font_size=22,
     major_label_font_size=18,
@@ -101,7 +106,7 @@ chart = pygal.StackedLine(
     height=2700,
     title="streamgraph-basic · pygal · anyplot.ai",
     x_title="Month",
-    y_title="Streaming Hours (centered)",
+    y_title="Streaming Hours",
     style=custom_style,
     fill=True,
     show_dots=False,
@@ -116,23 +121,19 @@ chart = pygal.StackedLine(
     interpolate="cubic",
     show_minor_x_labels=False,
     x_label_rotation=45,
-    range=(y_min, y_max),
+    range=(-y_range, y_range),
 )
 
 chart.x_labels = month_labels
 chart.x_labels_major = ["Jan 23", "Jul 23", "Jan 24", "Jul 24"]
 
-# Shift first layer to center the streamgraph around y=0
-shifted_data = []
-for i, genre in enumerate(genres):
-    if i == 0:
-        shifted_values = (np.array(data[genre]) - baseline_offset).tolist()
-    else:
-        shifted_values = data[genre]
-    shifted_data.append((genre, shifted_values))
+# Invisible baseline series shifts the stack so genres span -total/2 to +total/2.
+# Color matches background (PAGE_BG) so it renders as transparent.
+chart.add("", baseline)
 
-for genre, values in shifted_data:
-    chart.add(genre, values)
+# Genre series added with actual positive values — pygal stacks them on top of baseline
+for genre in genres:
+    chart.add(genre, data[genre])
 
 # Save
 chart.render_to_png(f"plot-{THEME}.png")

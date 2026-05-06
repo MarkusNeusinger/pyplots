@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" anyplot.ai
 scatter-regression-linear: Scatter Plot with Linear Regression
-Library: seaborn 0.13.2 | Python 3.13.11
-Quality: pending | Created: 2025-12-24
+Library: seaborn 0.13.2 | Python 3.13.13
+Quality: 93/100 | Updated: 2026-05-06
 """
 
 import os

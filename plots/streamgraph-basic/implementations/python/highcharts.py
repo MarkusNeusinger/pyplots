@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 streamgraph-basic: Basic Stream Graph
 Library: highcharts unknown | Python 3.13.13
-Quality: 83/100 | Updated: 2026-05-05
+Quality: 86/100 | Updated: 2026-05-06
 """
 
 import os

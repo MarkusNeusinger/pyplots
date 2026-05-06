@@ -1,4 +1,4 @@
-""" anyplot.ai
+"""anyplot.ai
 line-multi: Multi-Line Comparison Plot
 Library: letsplot 4.9.0 | Python 3.13.13
 Quality: 83/100 | Updated: 2026-05-06
@@ -19,7 +19,6 @@ PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
 ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
 INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
 INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
-RULE = "rgba(26,26,23,0.10)" if THEME == "light" else "rgba(240,239,232,0.10)"
 
 # Okabe-Ito palette
 OKABE_ITO = ["#009E73", "#D55E00", "#0072B2"]
@@ -44,26 +43,34 @@ df = pd.DataFrame(
     }
 )
 
-# Plot
+# Create separate dataframe for Electronics to create visual hierarchy
+electronics_df = df[df["Product Line"] == "Electronics"]
+other_df = df[df["Product Line"] != "Electronics"]
+
+# Plot with visual hierarchy: emphasize Electronics (top performer) with smooth trend
 plot = (
     ggplot(df, aes(x="Month", y="Sales", color="Product Line"))
-    + geom_line(size=2.5)
-    + geom_point(size=5, alpha=0.9)
+    + geom_line(data=other_df, size=2.2, alpha=0.85)
+    + geom_point(data=other_df, size=4.5, alpha=0.75)
+    + geom_line(data=electronics_df, size=3, alpha=1.0)
+    + geom_point(data=electronics_df, size=5.5, alpha=0.95)
+    + geom_smooth(data=electronics_df, method="loess", span=0.4, se=False, color=OKABE_ITO[0], size=1.2, alpha=0.4)
     + scale_color_manual(values=OKABE_ITO)
     + scale_x_continuous(breaks=months.tolist(), labels=month_labels)
     + labs(title="line-multi · letsplot · anyplot.ai", x="Month", y="Sales (thousands USD)")
     + theme(
         plot_background=element_rect(fill=PAGE_BG, color=PAGE_BG),
         panel_background=element_rect(fill=PAGE_BG, color=PAGE_BG),
-        panel_grid_major=element_line(color=RULE, size=0.3),
+        panel_grid_major=element_blank(),
         panel_grid_minor=element_blank(),
-        axis_title=element_text(size=20, color=INK),
+        axis_title=element_text(size=20, color=INK, face="plain"),
         axis_text=element_text(size=16, color=INK_SOFT),
-        plot_title=element_text(size=24, color=INK),
+        plot_title=element_text(size=24, color=INK, face="plain"),
         legend_title=element_text(size=16, color=INK),
         legend_text=element_text(size=16, color=INK_SOFT),
         legend_background=element_rect(fill=ELEVATED_BG, color=INK_SOFT),
         legend_position="right",
+        axis_line=element_line(color=INK_SOFT, size=0.5),
     )
     + ggsize(1600, 900)
 )

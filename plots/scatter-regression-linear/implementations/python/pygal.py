@@ -1,14 +1,26 @@
-""" pyplots.ai
+"""anyplot.ai
 scatter-regression-linear: Scatter Plot with Linear Regression
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 90/100 | Created: 2025-12-24
+Library: pygal | Python 3.13
+Quality: pending | Created: 2025-05-06
 """
+
+import os
 
 import numpy as np
 import pygal
 from pygal.style import Style
 from scipy import stats
 
+
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+INK_MUTED = "#6B6A63" if THEME == "light" else "#A8A79F"
+
+OKABE_ITO = ("#009E73", "#D55E00", "#0072B2", "#CC79A7", "#E69F00", "#56B4E9", "#F0E442")
 
 # Data - Study hours vs exam scores
 np.random.seed(42)
@@ -33,22 +45,20 @@ se_line = se_y * np.sqrt(1 / n + (x_line - x_mean) ** 2 / np.sum((x - x_mean) **
 ci_upper = y_line + t_val * se_line
 ci_lower = y_line - t_val * se_line
 
-# Style for 4800x2700 px canvas
+# Custom style for 4800x2700 px canvas
 custom_style = Style(
-    background="white",
-    plot_background="white",
-    foreground="#333333",
-    foreground_strong="#333333",
-    foreground_subtle="#666666",
-    colors=("#306998", "#E74C3C", "#82B366"),
-    title_font_size=72,
-    label_font_size=48,
-    major_label_font_size=42,
-    legend_font_size=42,
-    value_font_size=36,
-    stroke_width=5,
-    opacity=0.7,
-    opacity_hover=0.9,
+    background=PAGE_BG,
+    plot_background=PAGE_BG,
+    foreground=INK,
+    foreground_strong=INK,
+    foreground_subtle=INK_MUTED,
+    colors=OKABE_ITO,
+    title_font_size=28,
+    label_font_size=22,
+    major_label_font_size=18,
+    legend_font_size=16,
+    value_font_size=14,
+    stroke_width=3,
 )
 
 # Create XY scatter chart
@@ -56,25 +66,24 @@ chart = pygal.XY(
     width=4800,
     height=2700,
     style=custom_style,
-    title="scatter-regression-linear · pygal · pyplots.ai",
-    x_title="Study Hours",
-    y_title="Exam Score",
+    title="scatter-regression-linear · pygal · anyplot.ai",
+    x_title="Study Hours (hrs)",
+    y_title="Exam Score (points)",
     show_legend=True,
     legend_at_bottom=False,
-    legend_box_size=36,
-    dots_size=18,
+    legend_box_size=24,
+    dots_size=16,
     stroke=False,
     show_x_guides=True,
     show_y_guides=True,
     truncate_legend=-1,
 )
 
-# Add scatter points with larger dots for better visibility
-scatter_data = [{"value": (float(x[i]), float(y[i])), "label": ""} for i in range(n_points)]
-chart.add("Data Points", scatter_data, dots_size=18, stroke=False)
+# Add scatter points
+scatter_data = [{"value": (float(x[i]), float(y[i]))} for i in range(n_points)]
+chart.add("Data Points", scatter_data, dots_size=16, stroke=False)
 
-# Add confidence interval as a filled band
-# Create filled area by plotting upper bound going forward, then lower bound going backward
+# Add confidence interval band (95%) as semi-transparent fill
 ci_band_data = []
 step = 3
 for i in range(0, len(x_line), step):
@@ -84,19 +93,20 @@ for i in range(len(x_line) - 1, -1, -step):
 ci_band_data.append(ci_band_data[0])
 
 chart.add(
-    "95% CI Band", ci_band_data, stroke=True, fill=True, show_dots=False, stroke_style={"width": 2, "opacity": 0.3}
+    "95% CI Band", ci_band_data, stroke=True, fill=True, show_dots=False, stroke_style={"width": 1, "opacity": 0.2}
 )
 
-# Add regression line with equation annotation
-equation = f"y = {slope:.2f}x + {intercept:.1f}"
+# Add regression line (thicker, more prominent)
+equation = f"y = {slope:.2f}x + {intercept:.1f}, R² = {r_squared:.3f}"
 chart.add(
-    f"Regression: {equation} (R² = {r_squared:.3f})",
+    "Regression Line",
     [(float(x_line[i]), float(y_line[i])) for i in range(len(x_line))],
     stroke=True,
     show_dots=False,
-    stroke_style={"width": 6},
+    stroke_style={"width": 5},
 )
 
 # Render to PNG and HTML
-chart.render_to_png("plot.png")
-chart.render_to_file("plot.html")
+chart.render_to_png(f"plot-{THEME}.png")
+with open(f"plot-{THEME}.html", "wb") as f:
+    f.write(chart.render())

@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 bar-grouped: Grouped Bar Chart
-Library: bokeh | Python 3.13
-Quality: pending | Created: 2025-12-24
+Library: bokeh 3.9.0 | Python 3.13.13
+Quality: 90/100 | Updated: 2026-05-06
 """
 
 import os

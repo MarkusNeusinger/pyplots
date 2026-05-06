@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 line-multi: Multi-Line Comparison Plot
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2025-05-06
+Library: highcharts unknown | Python 3.13.13
+Quality: 88/100 | Updated: 2026-05-06
 """
 
 import os

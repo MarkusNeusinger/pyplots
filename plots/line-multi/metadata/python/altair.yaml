@@ -2,7 +2,7 @@ library: altair
 language: python
 specification_id: line-multi
 created: '2025-12-24T21:30:29Z'
-updated: '2026-05-06T15:21:54Z'
+updated: '2026-05-06T15:27:04Z'
 generated_by: claude-haiku
 workflow_run: 25444091202
 issue: 1825
@@ -15,29 +15,31 @@ preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/line-mult
 quality_score: 87
 review:
   strengths:
-  - 'Perfect theme adaptation: data colors identical across light/dark renders, chrome
-    elements properly theme-aware with no legibility failures'
-  - 'Correct Okabe-Ito color palette with first series as #009E73; clean legend'
-  - All text explicitly sized and readable at full resolution; no overlaps
-  - Clean, reproducible code with seed; straightforward structure
-  - 'Altair-idiomatic usage: mark overlays, encoding, configuration'
+  - 'Correct Okabe-Ito palette applied perfectly (first series = #009E73)'
+  - 'Excellent theme adaptation: both light and dark renders pass readability (no
+    dark-on-dark failures)'
+  - Explicitly set font sizes throughout ensure legibility at 4800×2700px
+  - Clean, idiomatic altair code using high-level API
+  - Comprehensive legend and axis labeling with units
+  - Realistic, neutral product sales data with distinct trends per line
+  - Proper interactive HTML export in addition to PNG
   weaknesses:
-  - Design Excellence scores are defaults (no exceptional aesthetic polish or visual
-    storytelling beyond meeting spec)
-  - No visual hierarchy or emphasis to guide the reader through the data comparison
-  - No annotations or callouts to highlight key insights
+  - 'Design Excellence is baseline: no distinctive styling choices or visual refinement
+    beyond well-configured defaults'
+  - No visual hierarchy or emphasis to guide viewer interpretation (all four series
+    treated equally)
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white #FAF8F1, as required. Provides good contrast for all elements.
-      Chrome: Title "line-multi · altair · anyplot.ai" (28px dark), Y-axis label "Sales (thousands USD)" (22px dark), X-axis label "Month" (22px dark), tick labels (18px dark) all clearly readable. Legend "Product Line" with all four entries (Electronics, Furniture, Clothing, Books) visible against elevated background. No text readability issues.
-      Data: Four distinct colored lines with markers. Electronics #009E73 (Okabe-Ito 1), Furniture #D55E00 (Okabe-Ito 2), Books #0072B2 (Okabe-Ito 3), Clothing #CC79A7 (Okabe-Ito 4). Line width 4px, marker size 100 - all clearly visible. Subtle dashed Y-grid (opacity 0.10) supports readability without competing.
-      Legibility verdict: PASS
+      Background: Warm off-white (#FAF8F1) - correct tone, not pure white
+      Chrome: Title "line-multi · altair · anyplot.ai" centered and dark; X-axis labels (dates Feb 2023-Dec 2024) readable; Y-axis label "Sales (thousands USD)" with units; tick labels all dark and visible; legend on right with clear product labels
+      Data: Four distinct lines in Okabe-Ito colors: Electronics (#009E73 brand green), Furniture (#D55E00 vermillion), Clothing (#0072B2 blue), Books (#CC79A7 reddish purple); each with 4px stroke width and size-100 point markers; subtle dashed grid provides reference
+      Legibility verdict: PASS - all text readable, no overlaps, proper contrast
 
     Dark render (plot-dark.png):
-      Background: Warm near-black #1A1A17, as required. Provides good contrast for light text and data elements.
-      Chrome: Title in light text (28px, INK #F0EFE8) clearly readable. Axis labels (22px, INK #F0EFE8) and tick labels (18px, INK_SOFT #B8B7B0) all clearly visible against dark background. Legend on elevated dark background (#242420) with light text - no dark-on-dark failures. All chrome elements properly theme-adapted.
-      Data: Data colors IDENTICAL to light render - #009E73, #D55E00, #0072B2, #CC79A7. Lines and markers maintain full contrast against dark surface. Dashed Y-grid visible with light opacity.
-      Legibility verdict: PASS - both renders theme-correct with only chrome adapting, data colors unchanged confirming proper theme implementation.
+      Background: Warm near-black (#1A1A17) - correct tone, not pure black
+      Chrome: Title rendered in light color; axis labels and tick labels in light text (#F0EFE8 equivalent); all readable with no dark-on-dark failures; legend box has elevated dark background (#242420) with light text and light stroke
+      Data: Identical colors to light render - #009E73, #D55E00, #0072B2, #CC79A7 perfectly preserved across themes; subtle dashed grid with appropriate opacity; no color shifts or theme violations
+      Legibility verdict: PASS - all text clearly visible, brand green remains distinguishable, theme adaptation perfect
   criteria_checklist:
     visual_quality:
       score: 30
@@ -48,68 +50,67 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: All text explicitly sized (18-22px) and readable in both themes
+        comment: All font sizes explicitly set (title 28px, labels 22px, ticks 18px);
+          perfectly readable in both themes
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: Clean spacing, no overlapping elements, legend well-positioned
+        comment: Zero overlapping text; all elements properly spaced
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Markers (size=100) and lines (strokeWidth=4) clearly distinguishable
-          in both themes
+        comment: Line width (4px) and point size (100) optimally adapted to data density
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito palette is CVD-safe with good contrast
+        comment: Okabe-Ito palette ensures CVD-safe contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: 1600x900 proportions correct, nothing cut off, generous margins
+        comment: Excellent balance; plot fills 60-70% of canvas with generous margins
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with units; title format correct
+        comment: Descriptive with units; title format correct
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series #009E73; positions 1,2,3,4 followed in order; backgrounds
-          correct; both renders theme-correct'
+        comment: 'First series #009E73; Okabe-Ito order correct; backgrounds and theme
+          chrome perfect'
     design_excellence:
-      score: 9
+      score: 8
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 4
         max: 8
-        passed: true
-        comment: Intentional font hierarchy and theme tokens, but no custom aesthetic
-          beyond requirements
+        passed: false
+        comment: Well-configured defaults; professional but not distinctive
       - id: DE-02
         name: Visual Refinement
         score: 2
         max: 6
         passed: false
-        comment: Minimal customization; grid and spines present but default configuration
+        comment: Minimal customization beyond defaults
       - id: DE-03
         name: Data Storytelling
         score: 2
         max: 6
         passed: false
-        comment: Straightforward comparison without visual hierarchy or emphasis
+        comment: Data displayed but no visual hierarchy or emphasis
     spec_compliance:
       score: 15
       max: 15
@@ -119,25 +120,25 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct multi-line chart with four distinct series
+        comment: Correct multi-line chart
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: multiple lines, legend, distinct colors'
+        comment: All spec requirements met
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: 'X: temporal (months); Y: continuous (sales); all data visible'
+        comment: X/Y correctly assigned
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct; legend labels match data
+        comment: Format correct; labels match
     data_quality:
       score: 15
       max: 15
@@ -147,21 +148,19 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Demonstrates all multi-line aspects: comparison, differentiation,
-          trends'
+        comment: Diverse product trends shown
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Monthly product sales (realistic, neutral); values plausible (50-180k
-          USD)
+        comment: Real-world plausible business scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 24-month span; sales range sensible for product categories
+        comment: Values and time span appropriate
     code_quality:
       score: 10
       max: 10
@@ -171,33 +170,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Straightforward script; no unnecessary functions or classes
+        comment: 'Linear flow: imports → seed → data → chart → save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Uses np.random.seed(42) for deterministic output
+        comment: np.random.seed(42) ensures determinism
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports (os, altair, numpy, pandas) are used
+        comment: Only necessary imports; all used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Appropriate complexity; no fake UI
+        comment: Pythonic; theme-adaptive; no over-engineering
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot-{THEME}.png and plot-{THEME}.html correctly
+        comment: Correct format and scale_factor
     library_mastery:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: LM-01
@@ -205,23 +204,23 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Chart creation, mark_line with OverlayMarkDef, encode(), configure_*
-          are all idiomatic Altair
+        comment: Expert use of alt.Chart() → mark_line() → encode() pattern
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Uses OverlayMarkDef, tooltip encoding, theme-aware tokens; some distinctive
-          features
+        comment: Uses interactive() export; OverlayMarkDef; sophisticated configuration
   verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
-  - hover-tooltips
   - html-export
+  - hover-tooltips
   patterns:
   - data-generation
   dataprep:
   - cumulative-sum
-  styling: []
+  - time-series
+  styling:
+  - publication-ready

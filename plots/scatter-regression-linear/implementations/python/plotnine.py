@@ -1,8 +1,10 @@
-""" pyplots.ai
+""" anyplot.ai
 scatter-regression-linear: Scatter Plot with Linear Regression
-Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-24
+Library: plotnine 0.15.4 | Python 3.13.13
+Quality: 93/100 | Updated: 2026-05-06
 """
+
+import os
 
 import numpy as np
 import pandas as pd
@@ -10,16 +12,30 @@ from plotnine import (
     aes,
     annotate,
     element_line,
+    element_rect,
     element_text,
     geom_point,
     geom_smooth,
     ggplot,
+    ggsave,
     labs,
     theme,
     theme_minimal,
 )
 from scipy import stats
 
+
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+INK_MUTED = "#6B6A63" if THEME == "light" else "#A8A79F"
+
+# Okabe-Ito palette
+BRAND = "#009E73"  # First categorical series
+ACCENT = "#D55E00"  # Second series (for regression line)
 
 # Data - Study hours vs exam score relationship
 np.random.seed(42)
@@ -42,21 +58,25 @@ annotation_text = f"{equation_text}\n{r_squared_text}"
 # Plot
 plot = (
     ggplot(df, aes(x="study_hours", y="exam_score"))
-    + geom_point(size=4, alpha=0.65, color="#306998")
-    + geom_smooth(method="lm", se=True, color="#FFD43B", fill="#FFD43B", alpha=0.3, size=2)
-    + annotate("text", x=2, y=92, label=annotation_text, ha="left", va="top", size=14, color="#333333")
-    + labs(title="scatter-regression-linear · plotnine · pyplots.ai", x="Study Hours", y="Exam Score (%)")
+    + geom_point(size=4.5, alpha=0.70, color=BRAND)
+    + geom_smooth(method="lm", se=True, color=ACCENT, fill=ACCENT, alpha=0.25, size=2)
+    + annotate("text", x=2, y=92, label=annotation_text, ha="left", va="top", size=14, color=INK)
+    + labs(title="scatter-regression-linear · plotnine · anyplot.ai", x="Study Hours", y="Exam Score (%)")
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
-        text=element_text(size=14),
-        axis_title=element_text(size=20),
-        axis_text=element_text(size=16),
-        plot_title=element_text(size=24),
-        panel_grid_major=element_line(color="#cccccc", alpha=0.3),
-        panel_grid_minor=element_line(color="#dddddd", alpha=0.2),
+        plot_background=element_rect(fill=PAGE_BG, color=PAGE_BG),
+        panel_background=element_rect(fill=PAGE_BG, color=PAGE_BG),
+        panel_grid_major=element_line(color=INK, size=0.3, alpha=0.08),
+        panel_grid_minor=element_line(color=INK, size=0.2, alpha=0.04),
+        panel_border=element_rect(color=INK_SOFT, fill=None, size=0.5),
+        axis_title=element_text(size=20, color=INK),
+        axis_text=element_text(size=16, color=INK_SOFT),
+        axis_line=element_line(color=INK_SOFT, size=0.5),
+        plot_title=element_text(size=24, color=INK),
+        text=element_text(size=14, color=INK),
     )
 )
 
 # Save
-plot.save("plot.png", dpi=300, verbose=False)
+ggsave(plot, filename=f"plot-{THEME}.png", dpi=300, width=16, height=9, verbose=False)

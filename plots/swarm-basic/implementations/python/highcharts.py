@@ -1,7 +1,7 @@
 """ anyplot.ai
 swarm-basic: Basic Swarm Plot
 Library: highcharts unknown | Python 3.13.13
-Quality: 86/100 | Updated: 2026-05-06
+Quality: 88/100 | Updated: 2026-05-06
 """
 
 import os

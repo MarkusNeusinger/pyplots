@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 scatter-regression-linear: Scatter Plot with Linear Regression
-Library: highcharts | Python 3.13
-Quality: 93 | Updated: 2025-05-06
+Library: highcharts unknown | Python 3.13.13
+Quality: 94/100 | Updated: 2026-05-06
 """
 
 import os

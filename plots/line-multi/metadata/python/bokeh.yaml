@@ -2,7 +2,7 @@ library: bokeh
 language: python
 specification_id: line-multi
 created: '2025-12-24T21:30:25Z'
-updated: '2026-05-06T15:18:20Z'
+updated: '2026-05-06T15:24:19Z'
 generated_by: claude-haiku
 workflow_run: 25443808524
 issue: 1825
@@ -15,34 +15,36 @@ preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/line-mult
 quality_score: 88
 review:
   strengths:
-  - 'Perfect color palette compliance — Okabe-Ito colors correctly applied in canonical
-    order with #009E73 as first series'
-  - Excellent readability in both light and dark themes — all text properly sized
-    and theme-adapted with no legibility issues
-  - Complete spec compliance — multi-line plot with all required features including
-    interactive tooltips
-  - High-quality realistic data — monthly product sales with diverse trends provide
-    excellent comparison context
-  - Proper Bokeh implementation — correct use of ColumnDataSource, HoverTool, and
-    screenshot workflow
-  - Clean reproducible code — deterministic with seed, simple structure, proper imports
+  - Solid theme-adaptive implementation with proper contrast and readable text in
+    both light and dark renders
+  - Proper Okabe-Ito palette compliance with brand green as first series
+  - Clear multi-line visualization with effective line style variation for series
+    differentiation
+  - Interactive hover tooltips provide value for Bokeh implementation
+  - Deterministic data generation with np.random.seed(42) ensures reproducibility
+  - Clean, readable code with no unnecessary complexity
+  - Proper use of ColumnDataSource and Bokeh's Legend API
   weaknesses:
-  - Design refinement opportunity — spines remain present; could remove top/right
-    spines for more polished look
-  - Limited advanced Bokeh features — basic interactive tooltips but no CustomJS callbacks
-    or range-selection tools
+  - Design Excellence lacks distinctive visual innovation beyond defaults and minimal
+    customization
+  - Data Storytelling could use emphasis techniques (color intensity variation, selective
+    highlighting) to guide viewer focus
+  - Visual Refinement limited by Bokeh's lack of spine control; whitespace could be
+    more generous
+  - Library Mastery doesn't leverage advanced Bokeh features like callbacks, selections,
+    or streaming data
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) - matches style guide precisely
-      Chrome: Title "line-multi · bokeh · anyplot.ai" (28pt, dark text), X-axis "Month" (22pt), Y-axis "Sales (thousands $)" (22pt), tick labels (18pt dark/soft text)
-      Data: Four product lines with correct Okabe-Ito colors: Electronics #009E73 solid, Clothing #D55E00 solid, Furniture #0072B2 dashed, Groceries #CC79A7 dashed. Markers visible at each point. Grid subtle and non-competing.
-      Legibility verdict: PASS - all text readable, excellent contrast against light background
+      Background: Warm off-white (#FAF8F1) as specified
+      Chrome: Title, axis labels, and tick labels all clearly visible in dark text (INK color)
+      Data: Four distinct product lines displayed with proper Okabe-Ito colors — Electronics in brand green (#009E73), Clothing in reddish purple (#CC79A7), Furniture in blue (#0072B2), Groceries in orange (#D55E00). Lines use solid and dashed styles for differentiation. Markers placed at monthly data points. Grid lines are subtle at 10% alpha.
+      Legibility verdict: PASS — All text is fully readable against the light background with strong contrast
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) - matches style guide precisely
-      Chrome: Same title, axis labels, and tick labels but all rendered in light colors (#F0EFE8 for primary, #B8B7B0 for secondary)
-      Data: All four series colors identical to light render (#009E73, #D55E00, #0072B2, #CC79A7) - data colors do not flip, only chrome flips
-      Legibility verdict: PASS - all text light-colored and readable against dark background, no dark-on-dark failures, brand green #009E73 clearly visible
+      Background: Warm near-black (#1A1A17) as specified
+      Chrome: Title, axis labels, and tick labels all clearly visible in light text (INK and INK_SOFT colors). No dark-on-dark contrast failures.
+      Data: Colors are identical to light render — brand green, reddish purple, blue, and orange maintain their exact values. Line and marker styles match perfectly. Grid lines remain subtle.
+      Legibility verdict: PASS — All text is fully readable against the dark background. No legibility failures in either render.
   criteria_checklist:
     visual_quality:
       score: 30
@@ -53,68 +55,72 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Title 28pt, labels 22pt, ticks 18pt - all explicitly set and perfectly
-          readable in both themes
+        comment: All text sizes properly scaled (28pt title, 22pt labels, 18pt ticks);
+          fully readable in both themes
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: Clean separation of all text elements, legend well-positioned
+        comment: Four distinct lines with clear separation; no text collisions
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Markers (18px) and lines (5px width) optimally sized for canvas
+        comment: 5pt line width and 18pt markers clearly visible; solid/dashed styles
+          effectively differentiate
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito palette is colorblind-safe with good contrast
+        comment: Okabe-Ito palette used; colorblind-safe and distinct colors
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Perfect layout with ~60% plot utilization and balanced margins
+        comment: Landscape 4800×2700 ideal for multi-line comparison; good proportions
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with units
+        comment: Format correct; includes units (thousands \$); descriptive month
+          labels
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series #009E73, Okabe-Ito order correct, backgrounds #FAF8F1/#1A1A17,
-          theme-correct chrome in both renders'
+        comment: 'First series #009E73; follows Okabe-Ito order; backgrounds correct;
+          both renders theme-compliant'
     design_excellence:
-      score: 11
+      score: 12
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
         passed: false
-        comment: Professional defaults with nice line style variation, but no custom
-          refinement
+        comment: Professional Okabe-Ito usage with thoughtful sizing; uses canonical
+          order rather than custom selection; lacks distinctive visual innovation
       - id: DE-02
         name: Visual Refinement
+        score: 4
+        max: 6
+        passed: false
+        comment: Subtle 10% alpha grid; clean outline; well-styled legend; limited
+          by Bokeh spine control; whitespace could be more generous
+      - id: DE-03
+        name: Data Storytelling
         score: 3
         max: 6
         passed: false
-        comment: Subtle grid and markers, but spines not removed
-      - id: DE-03
-        name: Data Storytelling
-        score: 4
-        max: 6
-        passed: false
-        comment: Clear visual hierarchy with green as focal point, good trend visibility
+        comment: Clear trends visible but lacks deliberate emphasis techniques; no
+          focal-point design to guide viewer
     spec_compliance:
       score: 15
       max: 15
@@ -124,26 +130,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct multi-line comparison plot
+        comment: Correct multi-line comparison with 4 product lines on shared axes
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: multiple series, colors, line styles, markers,
-          legend, tooltips'
+        comment: 'All features present: distinct colors, legend, line styles, markers,
+          interactive tooltips'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=Month, Y=Sales correctly mapped
+        comment: X-axis months 1-12; Y-axis sales thousands; 4 series correctly aligned
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title and legend labels correct
+        comment: Format correct; legend clearly labels all series
     data_quality:
       score: 15
       max: 15
@@ -153,19 +159,20 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Shows all aspects: different trends, multiple categories'
+        comment: 4 series with diverse trend patterns; comprehensive multi-line demonstration
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real business scenario, neutral and comprehensible
+        comment: Sales data plausible and realistic; neutral context
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values sensible and proportionally realistic
+        comment: Sales range and timeline appropriate; deterministic generation with
+          seed
     code_quality:
       score: 10
       max: 10
@@ -175,33 +182,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Simple linear script, no unnecessary functions
+        comment: Simple linear flow; no unnecessary functions
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Random seed set for deterministic output
+        comment: np.random.seed(42); environment variable for theme
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used, no waste
+        comment: All imports used appropriately
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, no fake UI, appropriate complexity
+        comment: Clean code; proper ColumnDataSource; no fake interactivity
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Correct output format and current API
+        comment: plot-{THEME}.png and .html correctly named
     library_mastery:
-      score: 7
+      score: 6
       max: 10
       items:
       - id: LM-01
@@ -209,14 +216,15 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Proper ColumnDataSource, correct figure API, follows Bokeh patterns
+        comment: figure(), ColumnDataSource, add_tools(), Legend used properly; follows
+          Bokeh conventions
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 2
         max: 5
         passed: false
-        comment: Uses HoverTool, interactive HTML export, custom Legend styling; could
-          use CustomJS or range-selection
+        comment: HoverTool tooltips and HTML export present; limited use of advanced
+          Bokeh features
   verdict: APPROVED
 impl_tags:
   dependencies:
@@ -232,3 +240,4 @@ impl_tags:
   - cumulative-sum
   styling:
   - grid-styling
+  - alpha-blending

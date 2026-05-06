@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 scatter-regression-linear: Scatter Plot with Linear Regression
-Library: pygal | Python 3.13
-Quality: pending | Created: 2025-05-06
+Library: pygal 3.1.0 | Python 3.13.13
+Quality: 85/100 | Updated: 2026-05-06
 """
 
 import os

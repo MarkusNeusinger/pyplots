@@ -53,15 +53,19 @@ jobs:
           MODEL_PAYLOAD: ${{ github.event.client_payload.model }}
         run: |
           # Retry gh pr view — transient API blips were the dominant impl-review
-          # failure mode (5x in 24h on 2026-05-06). Three attempts with backoff.
+          # failure mode (5x in 24h on 2026-05-06). Three attempts with linear
+          # backoff (5s, 10s); keep stderr separate from stdout so warnings
+          # (rate-limit notices, etc.) don't corrupt the JSON jq parses below.
           PR_DATA=""
           for attempt in 1 2 3; do
-            if PR_DATA=$(gh pr view "$PR_NUMBER" --json headRefName,headRefOid,body 2>&1); then
+            if gh pr view "$PR_NUMBER" --json headRefName,headRefOid,body > /tmp/pr.json 2> /tmp/pr.err; then
+              PR_DATA=$(cat /tmp/pr.json)
               break
             fi
-            echo "::warning::gh pr view failed (attempt ${attempt}/3): ${PR_DATA}"
-            PR_DATA=""
-            sleep $((attempt * 5))
+            echo "::warning::gh pr view failed (attempt ${attempt}/3): $(cat /tmp/pr.err)"
+            if [ "$attempt" -lt 3 ]; then
+              sleep $((attempt * 5))
+            fi
           done
           if [ -z "$PR_DATA" ]; then
             echo "::error::gh pr view failed after 3 attempts for PR #${PR_NUMBER}"

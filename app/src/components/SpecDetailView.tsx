@@ -132,12 +132,14 @@ export function SpecDetailView({
     };
   }, [viewMode, updateScale]);
 
-  // Reset interactive size when switching library
-  useEffect(() => {
+  // Reset interactive size when switching library — React 19 "adjust state on prop change".
+  const [prevLibrary, setPrevLibrary] = useState(selectedLibrary);
+  if (prevLibrary !== selectedLibrary) {
+    setPrevLibrary(selectedLibrary);
     setSizeReady(false);
     setContentWidth(INITIAL_WIDTH);
     setContentHeight(INITIAL_HEIGHT);
-  }, [selectedLibrary]);
+  }
 
   const handleZoomToggle = useCallback(
     (e: React.MouseEvent) => {

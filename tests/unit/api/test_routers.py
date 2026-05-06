@@ -731,6 +731,14 @@ class TestSeoProxyRouter:
         assert "og:title" in response.text
         assert "https://anyplot.ai/palette" in response.text
 
+    def test_seo_map(self, client: TestClient) -> None:
+        """SEO map page should return HTML with og:tags."""
+        response = client.get("/seo-proxy/map")
+        assert response.status_code == 200
+        assert "text/html" in response.headers["content-type"]
+        assert "og:title" in response.text
+        assert "https://anyplot.ai/map" in response.text
+
     def test_seo_stats(self, client: TestClient) -> None:
         """SEO stats page should return HTML with og:tags."""
         response = client.get("/seo-proxy/stats")

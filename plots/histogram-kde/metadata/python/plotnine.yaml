@@ -1,152 +1,175 @@
 library: plotnine
+language: python
 specification_id: histogram-kde
 created: '2025-12-24T21:30:10Z'
-updated: '2025-12-24T21:36:54Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20494139184
-issue: 0
-python_version: 3.13.11
-library_version: 0.15.2
-preview_url: https://storage.googleapis.com/anyplot-images/plots/histogram-kde/plotnine/plot.png
-preview_html: null
-quality_score: 98
-impl_tags:
-  dependencies: []
-  techniques: []
-  patterns:
-  - data-generation
-  dataprep:
-  - kde
-  styling:
-  - alpha-blending
+updated: '2026-05-06T17:02:15Z'
+generated_by: claude-haiku
+workflow_run: 25449133988
+issue: 1823
+python_version: 3.13.13
+library_version: 0.15.4
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/histogram-kde/python/plotnine/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/histogram-kde/python/plotnine/plot-dark.png
+preview_html_light: null
+preview_html_dark: null
+quality_score: 90
 review:
   strengths:
-  - Excellent use of after_stat("density") for proper histogram-KDE scaling
-  - Realistic financial data simulation with multiple market regimes (normal, volatile,
-    low-volatility periods)
-  - Perfect color contrast between blue histogram and yellow KDE curve
-  - Clean grammar of graphics implementation with proper layering
+  - Perfect theme adaptation with INK token switching KDE line color (dark/light)
+    automatically
+  - Excellent use of grammar of graphics with proper aes() mapping and after_stat()
+    for density calculation
+  - Proper density scaling with semi-transparent bars allowing both histogram and
+    KDE to be visible
+  - Clean, reproducible code with explicit font sizing (24pt title, 20pt labels, 16pt
+    ticks)
+  - Realistic stock return data demonstrating multimodal distribution matching real
+    market behavior
+  - All text perfectly legible in both light and dark themes with no readability failures
   weaknesses:
-  - Grid lines are nearly invisible (panel_grid_major alpha=0.3 combined with light
-    color makes them hard to see)
-  image_description: The plot shows a histogram with KDE overlay visualizing stock
-    daily returns. The histogram bars are a semi-transparent steel blue (#306998)
-    with darker blue borders, allowing the bright yellow (#FFD43B) KDE curve to be
-    clearly visible overlaid on top. The distribution is centered around 0% with a
-    slight negative skew and fat tails extending from approximately -10% to +7%. The
-    x-axis is labeled "Daily Return (%)" and the y-axis shows "Density" ranging from
-    0.0 to 0.3. The title "histogram-kde · plotnine · pyplots.ai" appears at the top.
-    The layout uses a minimal theme with a clean white background and very subtle
-    grid lines.
+  - Design Excellence intentionally scored conservatively per calibration anchors
+    (DE defaults are low)
+  - Could explore more distinctive plotnine features like faceting or custom stat
+    layers, but current implementation is appropriate for spec
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white (#FAF8F1) with subtle panel border
+      Chrome: Title "histogram-kde · plotnine · anyplot.ai" in dark text (24pt), axis labels "Daily Return (%)" and "Density" in dark text (20pt), tick labels in softer dark (#4A4A44, 16pt) — all clearly readable against light surface
+      Data: Teal histogram bars (#009E73) with alpha=0.5 semi-transparency, dark KDE curve (size 2.5) overlaid, showing distribution from -10% to +5% daily returns with peak around 0%
+      Grid: Subtle major and minor gridlines at 15% and 8% alpha opacity using dark ink color, not competing with visualization
+      Legibility verdict: PASS ✓
+
+    Dark render (plot-dark.png):
+      Background: Warm near-black (#1A1A17) with subtle panel border
+      Chrome: Title, axis labels, and tick labels all in light colors (#F0EFE8 primary, #B8B7B0 secondary) — all clearly readable against dark surface with no dark-on-dark failures
+      Data: Identical teal histogram bars (#009E73, unchanged from light), but KDE curve now white/light colored for contrast against dark background
+      Grid: Subtle gridlines adapted to light colors at matching 15%/8% opacity, clearly visible without competing
+      Data color consistency: Histogram bars are identical #009E73 between renders (only KDE line changed for theme readability) ✓
+      Legibility verdict: PASS ✓ — no text is dark-on-dark, brand green #009E73 reads well on both surfaces
   criteria_checklist:
     visual_quality:
-      score: 38
-      max: 40
+      score: 30
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: All text perfectly readable with appropriate font sizes
+        comment: All font sizes explicitly set (24/20/16pt), perfectly readable in
+          both themes
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements
+        comment: All text elements fully readable with no collisions
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Histogram bars and KDE line optimally sized
+        comment: Histogram and KDE optimally sized for data density
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Blue/yellow contrast is colorblind-safe
-      - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Good proportions, balanced margins
-      - id: VQ-06
-        name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Descriptive with units
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
+        comment: Okabe-Ito palette CVD-safe with strong contrast
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: Perfect proportions at 4800×2700px with balanced margins
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
         max: 2
+        passed: true
+        comment: Labels include units
+      - id: VQ-07
+        name: Palette Compliance
+        score: 2
+        max: 2
+        passed: true
+        comment: 'First series #009E73, backgrounds #FAF8F1/#1A1A17, theme-adaptive
+          text, data colors identical'
+    design_excellence:
+      score: 12
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
         passed: false
-        comment: Grid is nearly invisible
+        comment: Professional and properly configured, but straightforward without
+          exceptional design
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Subtle custom grid (0.15/0.08 alpha), theme-correct elements, good
+          whitespace
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: KDE overlay creates visual hierarchy; distribution pattern communicates
+          volatility
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
         comment: Correct histogram with KDE overlay
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X/Y correctly assigned with density scaling
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: All spec features present (alpha, density scale, contrasting colors)
-      - id: SC-04
-        name: Data Range
+        comment: Semi-transparent bars, density scaling, KDE curve present
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X/Y correctly assigned, full range visible
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: N/A (single series)
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Uses exact format: histogram-kde · plotnine · pyplots.ai'
+        comment: Title format correct, no legend appropriate
     data_quality:
-      score: 20
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows realistic distribution with skewness and fat tails
+        comment: Shows all histogram-kde aspects with multimodal structure
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Stock returns with varied market conditions
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Realistic percentage values
+        comment: Stock returns is real financial scenario, properly scaled
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Values and proportions factually realistic
     code_quality:
       score: 10
       max: 10
@@ -156,11 +179,11 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save
+        comment: Simple linear flow
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
         comment: Uses np.random.seed(42)
       - id: CQ-03
@@ -168,21 +191,45 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: Only used imports
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Current API usage
+        comment: Clean, Pythonic, no fake functionality
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png
-    library_features:
-      score: 5
-      max: 5
-      items: []
+        comment: Correct output format
+    library_mastery:
+      score: 8
+      max: 10
+      items:
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: Expert use of ggplot() + geom_* API with after_stat() and proper
+          theming
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: false
+        comment: Uses after_stat() and element_* for theme adaptation, solid but could
+          explore more distinctive features
   verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
+  - grid-styling

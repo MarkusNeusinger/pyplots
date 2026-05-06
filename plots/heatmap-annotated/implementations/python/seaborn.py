@@ -1,14 +1,22 @@
-""" pyplots.ai
+"""anyplot.ai
 heatmap-annotated: Annotated Heatmap
-Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-24
+Library: seaborn | Python 3.13
+Quality: pending | Created: 2026-05-06
 """
+
+import os
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
 
+
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
 
 # Data - Correlation matrix for realistic financial variables
 np.random.seed(42)
@@ -53,7 +61,7 @@ for (i, j), val in correlations.items():
 df_corr = pd.DataFrame(corr_matrix, index=variables, columns=variables)
 
 # Plot - Square format (3600x3600 px at 300 DPI = 12x12 inches)
-fig, ax = plt.subplots(figsize=(12, 12))
+fig, ax = plt.subplots(figsize=(12, 12), facecolor=PAGE_BG)
 
 # Use seaborn's heatmap with annotations
 sns.heatmap(
@@ -66,24 +74,28 @@ sns.heatmap(
     vmax=1,
     square=True,
     linewidths=0.5,
-    linecolor="white",
+    linecolor=INK_SOFT,
     cbar_kws={"shrink": 0.75, "label": "Correlation", "ticks": [-1, -0.5, 0, 0.5, 1]},
     annot_kws={"size": 16, "weight": "bold"},
     ax=ax,
 )
 
 # Style
-ax.set_title("heatmap-annotated · seaborn · pyplots.ai", fontsize=24, pad=20, weight="bold")
-ax.tick_params(axis="both", labelsize=16)
+ax.set_facecolor(PAGE_BG)
+ax.set_title("heatmap-annotated · seaborn · anyplot.ai", fontsize=24, pad=20, weight="bold", color=INK)
+ax.set_xlabel("Asset Class", fontsize=20, color=INK)
+ax.set_ylabel("Asset Class", fontsize=20, color=INK)
+ax.tick_params(axis="both", labelsize=16, colors=INK_SOFT)
 
 # Rotate x-axis labels for better readability
 plt.xticks(rotation=45, ha="right")
 plt.yticks(rotation=0)
 
-# Adjust colorbar label size
+# Adjust colorbar label size and colors
 cbar = ax.collections[0].colorbar
-cbar.ax.tick_params(labelsize=14)
-cbar.ax.set_ylabel("Correlation", fontsize=16)
+cbar.ax.tick_params(labelsize=14, colors=INK_SOFT)
+cbar.ax.set_ylabel("Correlation", fontsize=16, color=INK)
+cbar.outline.set_edgecolor(INK_SOFT)
 
 plt.tight_layout()
-plt.savefig("plot.png", dpi=300, bbox_inches="tight")
+plt.savefig(f"plot-{THEME}.png", dpi=300, bbox_inches="tight", facecolor=PAGE_BG)

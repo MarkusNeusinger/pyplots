@@ -36,8 +36,8 @@ Z = np.sin(R)
 fig = plt.figure(figsize=(16, 9), facecolor=PAGE_BG)
 ax = fig.add_subplot(111, projection="3d", facecolor=PAGE_BG)
 
-# Wireframe
-ax.plot_wireframe(X, Y, Z, color=BRAND, linewidth=1.2, alpha=0.9)
+# Wireframe with refined appearance for visual sophistication
+ax.plot_wireframe(X, Y, Z, color=BRAND, linewidth=1.3, alpha=0.95, antialiased=True)
 
 # Style
 ax.set_xlabel("X", fontsize=20, color=INK, labelpad=10)
@@ -50,20 +50,18 @@ ax.tick_params(axis="x", labelsize=16, colors=INK_SOFT)
 ax.tick_params(axis="y", labelsize=16, colors=INK_SOFT)
 ax.tick_params(axis="z", labelsize=16, colors=INK_SOFT)
 
-# Perspective and grid
-ax.view_init(elev=30, azim=45)
-ax.grid(True, alpha=0.1, linewidth=0.8, color=INK_SOFT)
+# Perspective: elevation angle emphasizes surface topology
+ax.view_init(elev=25, azim=45)
+ax.grid(True, alpha=0.08, linewidth=0.7, color=INK_SOFT)
 
-# Spine colors for 3D axes
+# Pane styling: minimize edges for cleaner appearance
 ax.xaxis.pane.set_facecolor(PAGE_BG)
 ax.yaxis.pane.set_facecolor(PAGE_BG)
 ax.zaxis.pane.set_facecolor(PAGE_BG)
-ax.xaxis.pane.set_edgecolor(INK_SOFT)
-ax.yaxis.pane.set_edgecolor(INK_SOFT)
-ax.zaxis.pane.set_edgecolor(INK_SOFT)
-ax.xaxis.pane.set_alpha(0.1)
-ax.yaxis.pane.set_alpha(0.1)
-ax.zaxis.pane.set_alpha(0.1)
+# Remove visible pane edges for visual refinement
+for pane in [ax.xaxis.pane, ax.yaxis.pane, ax.zaxis.pane]:
+    pane.set_edgecolor("none")
+    pane.set_alpha(0.0)
 
 # Save
 plt.savefig(f"plot-{THEME}.png", dpi=300, bbox_inches="tight", facecolor=PAGE_BG, edgecolor="none")

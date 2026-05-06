@@ -1,7 +1,7 @@
-""" pyplots.ai
+""" anyplot.ai
 bar-grouped: Grouped Bar Chart
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-24
+Library: pygal 3.1.0 | Python 3.13.13
+Quality: 85/100 | Updated: 2026-05-06
 """
 
 import pygal

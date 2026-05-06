@@ -1,7 +1,7 @@
 """ anyplot.ai
 heatmap-annotated: Annotated Heatmap
 Library: plotly 6.7.0 | Python 3.13.13
-Quality: 48/100 | Updated: 2026-05-06
+Quality: 80/100 | Updated: 2026-05-06
 """
 
 import numpy as np

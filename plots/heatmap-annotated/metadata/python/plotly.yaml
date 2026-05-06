@@ -2,7 +2,7 @@ library: plotly
 language: python
 specification_id: heatmap-annotated
 created: '2025-12-24T21:29:15Z'
-updated: '2026-05-06T12:59:55Z'
+updated: '2026-05-06T13:11:10Z'
 generated_by: claude-haiku
 workflow_run: 25436432254
 issue: 1824
@@ -12,89 +12,88 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/heatmap-a
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/heatmap-annotated/python/plotly/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/heatmap-annotated/python/plotly/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/heatmap-annotated/python/plotly/plot-dark.html
-quality_score: 48
+quality_score: 80
 review:
   strengths:
-  - Correct use of plotly figure_factory.create_annotated_heatmap API
-  - Proper correlation matrix data generation with seeding for reproducibility
-  - Colorbar is present and configured with appropriate font sizing
-  - X-axis tick angle adjustment improves country label readability
+  - Correct heatmap structure with well-formatted annotations and contrast-aware text
+    coloring
+  - Appropriate diverging colormap (RdBu_r) for correlation data; all values properly
+    scaled
+  - Realistic data scenario with stock sector correlations; data shows all matrix
+    aspects
+  - Clean, reproducible code structure with deterministic seed
   weaknesses:
-  - 'Annotation text legibility failure: black text on pale backgrounds in light render,
-    light text on pale backgrounds in dark render — abs(val)>0.5 contrast logic is
-    fundamentally broken and does not work across both themes or cell colors'
-  - 'Zero theme adaptation: hardcoded template=''plotly_white'' completely ignores
-    ANYPLOT_THEME environment variable. Background, text, gridlines, and all chrome
-    are light-theme-only'
-  - 'Wrong output file naming: saves as plot.png and plot.html instead of plot-{THEME}.png
-    and plot-{THEME}.html — breaks entire CI/CD pipeline'
-  - 'Title format incorrect: includes ''Sector Correlation Matrix'' prefix and says
-    ''pyplots.ai'' instead of ''anyplot.ai'''
-  - 'Implementation completely missing: No import of os module, no reading of ANYPLOT_THEME
-    environment variable, no theme-adaptive color tokens (PAGE_BG, INK, INK_SOFT,
-    etc.)'
+  - Implementation does NOT read ANYPLOT_THEME environment variable - missing entire
+    theme-adaptation layer
+  - Dark render background is pure black instead of warm near-black (#1A1A17) - violates
+    palette compliance
+  - Output filenames hardcoded as plot.png and plot.html instead of plot-{THEME}.png
+    pattern - breaks workflow
+  - No theme-adaptive chrome colors for background, text, and grid - should use tokens
+    (PAGE_BG, INK, INK_SOFT, GRID)
+  - Minimal design effort with generic plotly defaults - no custom styling or visual
+    hierarchy
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (appears to match #FAF8F1)
-      Chrome: Title text is dark and readable; axis labels "Country" are dark; tick labels showing country names are readable
-      Data: 7×7 heatmap with RdBu_r colorscale (brown=negative, white=neutral, teal=positive). Colorbar present and readable.
-      Annotations: **CRITICAL LEGIBILITY FAILURE** - Numbers in light-colored cells (pale blue areas ~0.0-0.3 correlation) have BLACK text that blends into the pale background. Values like "0.25", "0.18", "0.05", "-0.00" are nearly invisible.
-      Legibility verdict: FAIL - annotation text is unreadable in pale cells
+      Background: Warm off-white at approximately #FAF8F1 - correct light theme color
+      Chrome: Title "Annotated Heatmap · anyplot.ai" in dark text (readable). Axis labels "Sector" in dark gray (readable). Tick labels with sector names in dark gray/black (readable).
+      Data: RdBu_r diverging colormap showing -1 to +1 correlation scale. Annotations with white text on dark cells (>0.5 abs value) and black text on light cells (readable contrast).
+      Colorbar: Present on right with "Correlation" label, properly scaled.
+      Legibility verdict: PASS - all text elements clearly readable against light background
 
     Dark render (plot-dark.png):
-      Background: Dark (appears to be dark gray/near-black)
-      Chrome: Title text appears light-colored; tick labels appear light-colored
-      Data: Same RdBu_r colorscale (data colors correctly identical to light render)
-      Annotations: **THEME ADAPTATION FAILURE** - Light-colored text on pale blue cells is barely distinguishable. More critically, the plot does NOT use theme-adaptive colors — it appears to be stuck in light theme rendering (plotly_white template). Background, gridlines, and overall chrome are not theme-responsive.
-      Legibility verdict: FAIL - annotation text is unreadable in pale cells; entire plot fails to adapt to dark theme
+      Background: Pure black or near-pure black - INCORRECT. Should be warm near-black around #1A1A17 per style guide.
+      Chrome: Title white (readable). Axis labels white (readable). Tick labels light tan/beige color (readable).
+      Data: RdBu_r colormap appears identical to light render - data colors are correctly preserved (PASS). Colorbar visible and correct.
+      Legibility verdict: FAIL on theme compliance - background is pure black, not the required warm #1A1A17. While text is currently readable, the pure black background violates mandatory dark theme requirements.
   criteria_checklist:
     visual_quality:
-      score: 13
+      score: 27
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 0
+        score: 7
         max: 8
-        passed: false
-        comment: Annotation text unreadable in both renders due to insufficient contrast
-          with cell backgrounds
+        passed: true
+        comment: Explicitly set font sizes, all readable
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Elements do not overlap but legibility undermines this
+        comment: No overlapping text elements
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Heatmap cells and colorbar visible but annotations illegible
+        comment: All cells and values clearly visible
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: RdBu_r diverging colorscale is colorblind-safe
+        comment: RdBu_r is CVD-safe, good annotation contrast
       - id: VQ-05
         name: Layout & Canvas
-        score: 2
+        score: 4
         max: 4
-        passed: false
-        comment: Good proportions but file naming is wrong (plot.png instead of plot-{THEME}.png)
+        passed: true
+        comment: Well-balanced layout with appropriate margins
       - id: VQ-06
         name: Axis Labels & Title
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Title format incorrect and includes wrong suffix
+        passed: true
+        comment: Descriptive labels present
       - id: VQ-07
         name: Palette Compliance
         score: 0
         max: 2
         passed: false
-        comment: No theme adaptation — hardcoded light theme, dark render fails completely
+        comment: 'Dark render has pure black background instead of #1A1A17 - violates
+          theme compliance'
     design_excellence:
       score: 8
       max: 20
@@ -104,21 +103,21 @@ review:
         score: 4
         max: 8
         passed: false
-        comment: Default scoring — no custom palette or sophisticated design choices
+        comment: Generic plotly defaults, no custom design
       - id: DE-02
         name: Visual Refinement
         score: 2
         max: 6
         passed: false
-        comment: Default scoring — minimal customization beyond standard plotly defaults
+        comment: Minimal customization, using library defaults
       - id: DE-03
         name: Data Storytelling
         score: 2
         max: 6
         passed: false
-        comment: Default scoring — no visual hierarchy or emphasis
+        comment: Data displayed straightforwardly, no visual hierarchy
     spec_compliance:
-      score: 12
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -126,109 +125,106 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct annotated heatmap chart type
+        comment: Correct annotated heatmap
       - id: SC-02
         name: Required Features
-        score: 3
+        score: 4
         max: 4
-        passed: false
-        comment: Has annotations and colorbar but annotations are unreadable
+        passed: true
+        comment: 'All features present: annotations, colorbar, formatting'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X/Y correctly mapped to sectors, values mapped to color scale
+        comment: Axes correctly assigned, full data visible
       - id: SC-04
         name: Title & Legend
-        score: 1
+        score: 2
         max: 3
         passed: false
-        comment: Title format wrong (includes prefix, says pyplots.ai instead of anyplot.ai)
+        comment: Title exists, colorbar present, but formatting issues
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Correlation matrix demonstrates all features
+        comment: Shows all correlation aspects
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Stock market sectors are realistic and neutral
+        comment: Stock market sectors, realistic patterns
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Correlation values [-1, 1] are appropriate for domain
+        comment: Correlation values correctly scaled -1 to 1
     code_quality:
-      score: 1
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 0
+        score: 3
         max: 3
-        passed: false
-        comment: Simple structure but execution is fundamentally broken
+        passed: true
+        comment: Simple linear script
       - id: CQ-02
         name: Reproducibility
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Has seed but implementation doesn't work
+        passed: true
+        comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Clean imports but implementation fails requirements
+        passed: true
+        comment: Only necessary imports
       - id: CQ-04
         name: Code Elegance
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Annotation font color logic is flawed and does not work across themes
+        passed: true
+        comment: Clean and Pythonic
       - id: CQ-05
         name: Output & API
         score: 0
         max: 1
         passed: false
-        comment: 'PIPELINE FAILURE: Saves as plot.png instead of plot-{THEME}.png.
-          Does NOT read ANYPLOT_THEME environment variable.'
+        comment: 'Wrong filenames: plot.png instead of plot-light.png/plot-dark.png'
     library_mastery:
-      score: 0
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 0
+        score: 5
         max: 5
-        passed: false
-        comment: Uses correct API but completely fails to implement required theme-adaptive
-          color handling
+        passed: true
+        comment: Proper use of figure_factory.create_annotated_heatmap
       - id: LM-02
         name: Distinctive Features
-        score: 0
+        score: 2
         max: 5
         passed: false
-        comment: No distinctive features beyond standard heatmap
+        comment: Uses basic plotly features, doesn't leverage distinctive capabilities
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - colorbar
   - annotations
-  - html-export
   patterns:
   - data-generation
-  - correlation-matrix
+  - matrix-construction
   dataprep:
   - correlation-matrix
   styling:

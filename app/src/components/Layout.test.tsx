@@ -150,5 +150,9 @@ describe('AppDataProvider', () => {
     });
 
     expect(screen.getByTestId('child')).toHaveTextContent('renders without TypeError');
+
+    // Restore stubbed globals so subsequent tests in this file (or future ones
+    // appended after this) don't see `undefined` for the idle callback APIs.
+    vi.unstubAllGlobals();
   });
 });
